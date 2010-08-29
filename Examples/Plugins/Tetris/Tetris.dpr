@@ -26,8 +26,9 @@ begin
  end;
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports
+  Main name 'main',
+  Main name 'VSTPluginMain';
 
 begin
 end.

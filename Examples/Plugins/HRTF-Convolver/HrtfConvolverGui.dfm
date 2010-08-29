@@ -141,6 +141,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
               Color = clRed
             end>
           LineWidth = 0
+          Normalize = False
           XAxis.SampleUpper = 511
           XAxis.FractionalLower = -0.500000000000000000
           XAxis.FractionalUpper = 0.500000000000000000
@@ -158,15 +159,16 @@ object FmHrtfConvolver: TFmHrtfConvolver
           Top = 19
           Width = 224
           Height = 208
-          OnMouseWheel = GLSceneViewerMouseWheel
           Camera = GLCamera
           Buffer.FogEnvironment.FogStart = 10.000000000000000000
           Buffer.FogEnvironment.FogEnd = 10.000000000000000000
           Buffer.FogEnvironment.FogDistance = fdEyePlane
           Buffer.BackgroundColor = clBlack
-          FieldOfView = 92.246604919433590000
+          FieldOfView = 92.246604919433600000
           OnMouseDown = GLSceneViewerMouseDown
           OnMouseMove = GLSceneViewerMouseMove
+          OnMouseWheel = GLSceneViewerMouseWheel
+          TabOrder = 0
         end
       end
     end
@@ -199,6 +201,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
               Color = clRed
             end>
           LineWidth = 0
+          Normalize = False
           XAxis.SampleUpper = 511
           XAxis.FractionalLower = -0.500000000000000000
           XAxis.FractionalUpper = 0.500000000000000000
@@ -220,6 +223,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
       Material.FrontProperties.Ambient.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
       Material.FrontProperties.Emission.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
       Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.ColorFormat = 6408
       Material.FaceCulling = fcNoCull
       Direction.Coordinates = {0000000000000000FFFF7F3F00000000}
       Position.Coordinates = {0000000000000000CDCCCCBD0000803F}

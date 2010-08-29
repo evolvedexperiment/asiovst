@@ -37,19 +37,17 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon, DAV_GuiBlend;
+  Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
+  DAV_GuiBlend;
 
 type
-  TFixedPoint = type Integer;
-  TFloatingPoint = type Double;
-
   TGuiCustomPixelMap = class(TInterfacedPersistent, IStreamPersist)
   private
     procedure SetHeight(const Value: Integer);
     procedure SetWidth(const Value: Integer);
     function GetPixel(X, Y: Integer): TPixel32;
     procedure SetPixel(X, Y: Integer; const Value: TPixel32);
-    function GetScanLine(Y: Integer): PPixel32;
+    function GetScanLine(Y: Integer): PPixel32Array;
   protected
     FDataPointer : PPixel32Array;
     FDataSize    : Integer;
@@ -84,7 +82,7 @@ type
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
     property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
-    property ScanLine[Y: Integer]: PPixel32 read GetScanLine;
+    property ScanLine[Y: Integer]: PPixel32Array read GetScanLine;
   end;
 
   TGuiPixelMapMemory = class(TGuiCustomPixelMap)
@@ -116,17 +114,15 @@ type
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); override;
   end;
 
-(*
-    procedure Line(FromX, FromY, ToX, ToY: TFixedPoint; Color: TPixel32); overload;
-    procedure Line(FromX, FromY, ToX, ToY: TFloatingPoint; Color: TPixel32); overload;
-  function FloatingToFixedPoint(Value: TFloatingPoint): TFixedPoint;
-  function FixedToFloatingPoint(Value: TFixedPoint): TFloatingPoint;
-*)
-
 implementation
 
 uses
   Math;
+
+(*
+type
+  TFixedPoint = type Integer;
+  TFloatingPoint = type Double;
 
 const
   CFixedPointOne = 1 shl 16;
@@ -141,6 +137,7 @@ function FixedToFloatingPoint(Value: TFixedPoint): TFloatingPoint;
 begin
  Result := Value / CFixedPointOne;
 end;
+*)
 
 
 { TGuiCustomPixelMap }
@@ -176,9 +173,9 @@ begin
  Result := FDataPointer^[Y * Width + X];
 end;
 
-function TGuiCustomPixelMap.GetScanLine(Y: Integer): PPixel32;
+function TGuiCustomPixelMap.GetScanLine(Y: Integer): PPixel32Array;
 begin
- Result := @FDataPointer^[Y];
+ Result := @FDataPointer^[Y * Width];
 end;
 
 procedure TGuiCustomPixelMap.SetPixel(X, Y: Integer; const Value: TPixel32);
@@ -427,268 +424,6 @@ begin
   end;
 end;
 
-{
-procedure TGuiCustomPixelMap.Line(FromX, FromY, ToX, ToY: TFixedPoint; Color: TPixel32);
-var
-  Index        : Integer;
-  dx, dy, t    : TFixedPoint;
-  Gradient     : Single;
-  FltEnd       : TFixedPoint;
-  IntEnd       : Integer;
-  gap          : TFixedPoint;
-  xpxl1, ypxl1 : Integer;
-  xpxl2, ypxl2 : Integer;
-  Inter        : TFixedPoint;
-  Offset       : TFixedPoint;
-begin
- dx := ToX - FromX;
- dy := ToY - FromY;
- if Abs(dx) > Abs(dy) then
-  begin
-   if ToX < FromX then
-    begin
-     t := FromX;
-     FromX := ToX;
-     ToX := t;
-     t := FromY;
-     FromY := ToY;
-     ToY := t;
-    end;
-   Gradient := dy / dx;
-   Offset   := Round(Gradient * CFixedPointOne);
-   IntEnd   := (FromX + CFixedPointHalf) shr 16;
-   FltEnd   := FromY + Round(Gradient * ((FromX + CFixedPointHalf) and $FFFF0000 - FromX));
-   gap      := CFixedPointOne - ((FromX + CFixedPointHalf) and $FFFF);
-   xpxl1    := IntEnd;
-   ypxl1    := FltEnd and $FFFF0000;
-
-   FDataPointer[ (ypxl1                   shr 16) * Width + xpxl1] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[((ypxl1 + CFixedPointOne) shr 16) * Width + xpxl1] := Color; // weight = Frac(FltEnd) * gap
-   Inter := FltEnd + Offset;
-
-   IntEnd := (ToX + CFixedPointHalf) shr 16;
-   FltEnd := ToY + Round(Gradient * ((ToX + CFixedPointHalf) and $FFFF0000 - ToX));
-   gap := (ToX + CFixedPointHalf) and $FFFF;
-   xpxl2 := IntEnd;
-   ypxl2 := FltEnd and $FFFF0000;
-   FDataPointer[ (ypxl2                   shr 16) * Width + xpxl2] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[((ypxl2 + CFixedPointOne) shr 16) * Width + xpxl2] := Color; // weight = Frac(FltEnd) * gap
-
-   for Index := xpxl1 + 1 to xpxl2 - 1 do
-    begin
-     FDataPointer[ (Inter                   shr 16) * Width + Index] := Color; // weight = (1 - Frac(Inter))
-     FDataPointer[((Inter + CFixedPointOne) shr 16) * Width + Index] := Color; // weight = Frac(Inter)
-     Inter := Inter + Offset;
-    end;
-  end
- else
-  begin
-   if ToY < FromY then
-    begin
-     t := FromX;
-     FromX := ToX;
-     ToX := t;
-     t := FromY;
-     FromY := ToY;
-     ToY := t;
-    end;
-   Gradient := dx / dy;
-   Offset   := Round(Gradient * CFixedPointOne);
-   IntEnd   := (FromY + CFixedPointHalf) shr 16;
-   FltEnd   := FromX + Round(Gradient * ((FromY + CFixedPointHalf) and $FFFF0000 - FromY));
-   gap      := CFixedPointOne - ((FromY + CFixedPointHalf) and $FFFF);
-   ypxl1    := IntEnd;
-   xpxl1    := FltEnd and $FFFF0000;
-
-   FDataPointer[ (ypxl1                   shr 16) * Width + xpxl1] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[((ypxl1 + CFixedPointOne) shr 16) * Width + xpxl1] := Color; // weight = Frac(FltEnd) * gap
-   Inter := FltEnd + Offset;
-
-   IntEnd := (ToY + CFixedPointHalf) shr 16;
-   FltEnd := ToX + Round(Gradient * ((ToY + CFixedPointHalf) and $FFFF0000 - ToY));
-   gap := (ToY + CFixedPointHalf) and $FFFF;
-   ypxl2 := IntEnd;
-   xpxl2 := FltEnd and $FFFF0000;
-   FDataPointer[ (ypxl2                   shr 16) * Width + xpxl2] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[((ypxl2 + CFixedPointOne) shr 16) * Width + xpxl2] := Color; // weight = Frac(FltEnd) * gap
-
-   for Index := ypxl1 + 1 to ypxl2 - 1 do
-    begin
-     FDataPointer[ (Inter                   shr 16) * Width + Index] := Color; // weight = (1 - Frac(Inter))
-     FDataPointer[((Inter + CFixedPointOne) shr 16) * Width + Index] := Color; // weight = Frac(Inter)
-     Inter := Inter + Offset;
-    end;
-(*
-*)
-  end;
-(*
-var
-  x, y, t      : TFixedPoint;
-  dx, dy, xgap : TFixedPoint;
-  xend, yend   : TFixedPoint;
-  xpxl1, ypxl1 : TFixedPoint;
-  xpxl2, ypxl2 : TFixedPoint;
-  intery       : TFixedPoint;
-  Gradient     : TFixedPoint;
-begin
- dx := ToX - FromX;
- dy := ToY - FromY;
- if abs(dx) < abs(dy) then
-  begin
-   t := FromX;
-   FromX := FromY;
-   FromY := t;
-   t := ToX;
-   ToX := ToY;
-   ToY := t;
-   t := dx;
-   dx := dy;
-   dy := t;
-  end;
- if ToX < FromX then
-  begin
-   t := FromX;
-   FromX := ToX;
-   ToX := t;
-   t := FromY;
-   FromY := ToY;
-   ToY := t;
-  end;
- Gradient := round((dy / dx) * CFixedPointOne);
-
- // handle first endpoint
- xend := (FromX + CFixedPointHalf) and $FFFF0000;
- yend := FromY + gradient * (xend - FromX);
- xgap := CFixedPointOne - (FromX + CFixedPointHalf) and $FFFF;
- xpxl1 := xend;  // this will be used in the main loop
- ypxl1 := yend and $FFFF0000;
-
- FDataPointer[(ypxl1 shr 16) * Width + (xpxl1 shr 16)] := Color; // weight = rfpart(yend) * xgap)
- FDataPointer[((ypxl1 + CFixedPointOne) shr 16) * Width + (xpxl1 shr 16)] := Color; // weight = fpart(yend) * xgap
- intery := yend + gradient; // first y-intersection for the main loop
-
- // handle second endpoint
- xend := (ToX + CFixedPointHalf) and $FFFF0000;
- yend := ToY + gradient * (xend - ToX);
- xgap := CFixedPointOne - (ToX + CFixedPointHalf) and $FFFF;
- xpxl2 := xend;  // this will be used in the main loop
- ypxl2 := yend and $FFFF0000;
-
-// FDataPointer[(ypxl2 shr 16) * Width + (xpxl2 shr 16)] := Color; // weight = rfpart (yend) * xgap)
-// FDataPointer[((ypxl2 + CFixedPointOne) shr 16) * Width + (xpxl2 shr 16)] := Color; // weight = fpart (yend) * xgap
-
- // main loop
- x := xpxl1;
- while x < xpxl2 do
-  begin
-   FDataPointer[(intery shr 16) * Width + (x shr 16)] := Color; // weight = rfpart (yend) * xgap)
-   FDataPointer[((intery + CFixedPointOne) shr 16) * Width + (x shr 16)] := Color; // weight = fpart (yend) * xgap
-   intery := intery + gradient;
-   x := x + CFixedPointOne;
-  end;
-*)
-end;
-
-procedure TGuiCustomPixelMap.Line(FromX, FromY, ToX, ToY: TFloatingPoint; Color: TPixel32);
-var
-  Index        : Integer;
-  dx, dy, t    : TFloatingPoint;
-  Gradient     : TFloatingPoint;
-  FltEnd       : TFloatingPoint;
-  IntEnd       : Integer;
-  gap          : TFloatingPoint;
-  xpxl1, ypxl1 : Integer;
-  xpxl2, ypxl2 : Integer;
-  Inter        : TFloatingPoint;
-begin
- dx := ToX - FromX;
- dy := ToY - FromY;
- if abs(dx) > abs(dy) then
-  begin
-   if ToX < FromX then
-    begin
-     t := FromX;
-     FromX := ToX;
-     ToX := t;
-     t := FromY;
-     FromY := ToY;
-     ToY := t;
-    end;
-   Gradient := dy / dx;
-   IntEnd   := Round(FromX);
-   FltEnd   := FromY + gradient * (IntEnd - FromX);
-   gap      := 1 - Frac(FromX + 0.5);
-   xpxl1    := IntEnd;
-   ypxl1    := Trunc(FltEnd);
-
-   FDataPointer[Trunc(ypxl1)     * Width + xpxl1] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[Trunc(ypxl1 + 1) * Width + xpxl1] := Color; // weight = Frac(FltEnd) * gap
-   Inter := FltEnd + gradient;
-
-   IntEnd := Round(ToX);
-   FltEnd := ToY + gradient * (IntEnd - ToX);
-   gap := Frac(ToX + 0.5);
-   xpxl2 := IntEnd;
-   ypxl2 := Trunc(FltEnd);
-   FDataPointer[Trunc(ypxl2)     * Width + xpxl2] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[Trunc(ypxl2 + 1) * Width + xpxl2] := Color; // weight = Frac(FltEnd) * gap
-
-   for Index := xpxl1 + 1 to xpxl2 - 1 do
-    begin
-     CombineMemory(TPixel32(Color), TPixel32(FDataPointer[Trunc(Inter)     * Width + Index]), Round((1 - Frac(Inter)) * 255));
-     CombineMemory(TPixel32(Color), TPixel32(FDataPointer[Trunc(Inter + 1) * Width + Index]), Round(Frac(Inter) * 255));
-(*
-     FDataPointer[Trunc(Inter)     * Width + Index] := Color; // weight = (1 - Frac(Inter))
-     FDataPointer[Trunc(Inter + 1) * Width + Index] := Color; // weight = Frac(Inter)
-*)
-     Inter := Inter + gradient;
-    end;
-  end
- else
-  begin
-   if ToY < FromY then
-    begin
-     t := FromX;
-     FromX := ToX;
-     ToX := t;
-     t := FromY;
-     FromY := ToY;
-     ToY := t;
-    end;
-   Gradient := dx / dy;
-   IntEnd   := Round(FromY);
-   FltEnd   := FromX + gradient * (IntEnd - FromY);
-   gap      := 1 - Frac(FromY + 0.5);
-   ypxl1    := IntEnd;
-   xpxl1    := Trunc(FltEnd);
-
-   FDataPointer[Trunc(ypxl1)     * Width + xpxl1] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[Trunc(ypxl1 + 1) * Width + xpxl1] := Color; // weight = Frac(FltEnd) * gap)
-   Inter := FltEnd + gradient;
-
-   IntEnd := Round(ToY);
-   FltEnd := ToX + gradient * (IntEnd - ToY);
-   gap := Frac(ToY + 0.5);
-   ypxl2 := IntEnd;
-   xpxl2 := Trunc(FltEnd);
-   FDataPointer[Trunc(ypxl2)     * Width + xpxl2] := Color; // weight = (1 - Frac(FltEnd)) * gap
-   FDataPointer[Trunc(ypxl2 + 1) * Width + xpxl2] := Color; // weight = Frac(FltEnd) * gap
-
-   for Index := ypxl1 + 1 to ypxl2 - 1 do
-    begin
-     FDataPointer[Index * Width + Trunc(Inter)] := Color; // weight = (1 - Frac(Inter))
-     FDataPointer[Index * Width + Trunc(Inter + 1)] := Color; // weight = Frac(Inter)
-     Inter := Inter + Gradient;
-    end;
-  end;
-
-(*
- Line(FloatingToFixedPoint(FromX), FloatingToFixedPoint(FromY),
-   FloatingToFixedPoint(ToX), FloatingToFixedPoint(ToY), Color);
-*)
-end;
-}
-
 
 { TGuiPixelMapMemory }
 
@@ -755,7 +490,7 @@ end;
 procedure TGuiPixelMapMemory.AllocateDataPointer;
 begin
  FDataSize := FWidth * FHeight * SizeOf(Cardinal);
- ReallocMem(FDataPointer, FDataSize);
+ ReallocateAlignedMemory(Pointer(FDataPointer), FDataSize);
  Clear;
 end;
 

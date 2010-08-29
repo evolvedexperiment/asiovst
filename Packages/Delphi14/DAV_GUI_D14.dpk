@@ -62,6 +62,7 @@ contains
   DAV_GuiSelectBox in '..\..\Source\GUI\DAV_GuiSelectBox.pas',
   DAV_GuiSlider in '..\..\Source\GUI\DAV_GuiSlider.pas',
   DAV_GuiStaticWaveform in '..\..\Source\GUI\DAV_GuiStaticWaveform.pas',
-  DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas';
+  DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
+  DAV_GuiLEDnew in '..\..\Source\GUI\DAV_GuiLEDnew.pas';
 
 end.

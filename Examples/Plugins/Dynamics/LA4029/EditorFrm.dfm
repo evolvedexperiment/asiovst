@@ -200,7 +200,7 @@ object FmLA4029: TFmLA4029
       Height = 72
       Color = clBlack
       GlyphIndex = 0
-      GlyphCount = 65
+      NumGlyphs = 65
       StitchKind = skHorizontal
       PopupMenu = PopupVUMeterSpeed
     end
@@ -659,7 +659,7 @@ object FmLA4029: TFmLA4029
       end
     end
   end
-  object Timer1: TTimer
+  object Timer: TTimer
     Interval = 30
     OnTimer = VUMeterTimerTimer
     Left = 264

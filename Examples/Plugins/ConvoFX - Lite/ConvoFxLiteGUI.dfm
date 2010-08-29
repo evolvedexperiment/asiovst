@@ -72,6 +72,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbIRSelected: TGuiLabel
     Left = 8
@@ -86,6 +88,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnMouseDown = LbIRSelectedMouseDown
   end
   object LbGain: TGuiLabel
@@ -101,6 +105,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbGainValue: TGuiLabel
     Left = 86
@@ -115,6 +121,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialDamp: TGuiDial
     Left = 164
@@ -152,6 +160,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbDampValue: TGuiLabel
     Left = 164
@@ -166,6 +176,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DIL: TGuiDialImageList
     DialImages = <>

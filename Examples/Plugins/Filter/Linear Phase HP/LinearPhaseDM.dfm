@@ -1,4 +1,5 @@
 object LinearPhaseDataModule: TLinearPhaseDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'

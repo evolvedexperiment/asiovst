@@ -112,6 +112,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Speed'
+    Shadow.Color = clBlack
   end
   object LbStages: TGuiLabel
     Left = 65
@@ -121,6 +122,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Stages'
+    Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
     Left = 128
@@ -130,6 +132,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Depth'
+    Shadow.Color = clBlack
   end
   object LbMix: TGuiLabel
     Left = 188
@@ -139,6 +142,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Mix'
+    Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
     Left = 3
@@ -153,6 +157,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbStagesValue: TGuiLabel
     Left = 63
@@ -167,6 +172,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
     Left = 123
@@ -181,6 +187,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbMixValue: TGuiLabel
     Left = 183
@@ -195,6 +202,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialDrift: TGuiDial
     Left = 254
@@ -226,6 +234,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Drift'
+    Shadow.Color = clBlack
   end
   object LbDriftValue: TGuiLabel
     Left = 241
@@ -240,6 +249,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object DIL: TGuiDialImageList
     DialImages = <>

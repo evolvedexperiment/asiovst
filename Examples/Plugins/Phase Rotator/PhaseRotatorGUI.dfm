@@ -97,6 +97,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Freq.'
+    Shadow.Color = clBlack
   end
   object LbStages: TGuiLabel
     Left = 65
@@ -106,6 +107,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Stages'
+    Shadow.Color = clBlack
   end
   object LbBandwidth: TGuiLabel
     Left = 128
@@ -115,6 +117,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Shadow.Color = clBlack
   end
   object LbFrequencyValue: TGuiLabel
     Left = 0
@@ -129,6 +132,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
     OnDblClick = DialFrequencyDblClick
   end
   object LbStagesValue: TGuiLabel
@@ -144,6 +148,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
     OnDblClick = DialStagesDblClick
   end
   object LbBandwidthValue: TGuiLabel
@@ -159,6 +164,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Color = clBlack
     OnDblClick = DialBandwidthDblClick
   end
   object DIL: TGuiDialImageList

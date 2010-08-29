@@ -49,9 +49,9 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDetect(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParameterHighpassActiveDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterHighpassTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterHighpassOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterHighpassActiveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterHighpassTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterHighpassOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -59,8 +59,7 @@ type
     procedure ParameterBandwidthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassActiveChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCaptureHumProfileChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterAttenuationChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterAttenuationChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection : TCriticalSection;
     FHumRemoval      : array of TDspHumRemoval;
@@ -134,7 +133,7 @@ begin
 end;
 
 procedure THumRemovalModule.ParameterHighpassOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
@@ -147,7 +146,7 @@ begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
   if Assigned(FHumRemoval[Channel]) then
    case Round(Value) of
-    0 : FHumRemoval[Channel].HighpassFilterType := TButterworthLowCut;
+    0 : FHumRemoval[Channel].HighpassFilterType := TButterworthLowCutFilter;
     1 : FHumRemoval[Channel].HighpassFilterType := TChebyshev1LowCutFilter;
     2 : FHumRemoval[Channel].HighpassFilterType := TChebyshev2LowCutFilter;
    end;
@@ -276,7 +275,7 @@ begin
 end;
 
 procedure THumRemovalModule.ParameterHighpassActiveDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 const
   CActiveStr : array [0..1] of string = ('On', 'Off');
 begin
@@ -284,7 +283,7 @@ begin
 end;
 
 procedure THumRemovalModule.ParameterHighpassTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'Butterworth';

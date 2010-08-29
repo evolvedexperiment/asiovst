@@ -50,9 +50,9 @@ type
     FLastOpcode : TDispatcherOpcode;
     procedure SyncLogDisplay;
   protected
-    procedure HostCallDispatchEffect(const opcode: TDispatcherOpcode;
-      const Index: Integer; const Value: Integer; const ptr: Pointer;
-      const opt: Single); override;
+    function HostCallDispatchEffect(const opcode : TDispatcherOpcode;
+      const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer;
+      const opt: Single): TVstIntPtr; override;
     procedure HostCallSetParameter(const Index: Integer; const Value: Single); override;
     function HostCallGetParameter(const Index: Integer): Single; override;
   public
@@ -93,8 +93,9 @@ begin
  TFmVOL(GUI).MOpcodeLog.Lines.Assign(OpcodeLog);
 end;
 
-procedure TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
-  const Index, Value: Integer; const ptr: Pointer; const opt: Single);
+function TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
+  const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer;
+  const opt: Single): TVstIntPtr;
 var
   FormatSettings : TFormatSettings;
   ChunkName      : TChunkName;

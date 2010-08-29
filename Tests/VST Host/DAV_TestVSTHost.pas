@@ -287,7 +287,7 @@ procedure TVstPluginBasicTests.TestPrograms;
 var
   ProgIndex  : Integer;
   ParamIndex : Integer;
-  str        : string;
+  str        : AnsiString;
   MS         : TMemoryStream;
   MPN        : TMidiProgramName;
 begin
@@ -304,10 +304,12 @@ begin
         Parameter[ParamIndex] := Random;
         GetParamName(ParamIndex);
         Str := GetParamDisplay(ParamIndex);
-        Str := Str + GetParamLabel(ParamIndex);
+        Str := Str + ' ' + GetParamLabel(ParamIndex);
         String2Parameter(ParamIndex, Str);
        end;
-      SetLength(str, 20);
+      if Length(str) > 20
+       then SetLength(str, 20);
+      str := str + #0;
       SetProgramName(str);
       CopyCurrentProgramTo(Random(numPrograms));
       FillChar(MPN, SizeOf(MPN), 0);
@@ -2893,7 +2895,7 @@ procedure TVstPluginIOTests.SetupBuffers;
 var
   Channel : Integer;
 begin
- assert(FBlocksize > 0);
+ Assert(FBlocksize > 0);
  with FVstHost[0] do
   begin
    // setup inputs
@@ -3018,7 +3020,7 @@ var
 begin
  with FVstHost[0] do
   begin
-   assert(assigned(VstEffectPointer));
+   Assert(Assigned(VstEffectPointer));
 
    if not Assigned(VstEffectPointer.Process64Replacing)
     then Fail('Process() does not exists');
@@ -3041,9 +3043,9 @@ procedure TVstPluginIOTests.TestProcess64Replacing;
 begin
  with FVstHost[0] do
   begin
-   assert(assigned(VstEffectPointer));
+   Assert(Assigned(VstEffectPointer));
 
-   if not assigned(VstEffectPointer.Process64Replacing)
+   if not Assigned(VstEffectPointer.Process64Replacing)
     then Fail('Process64Replacing(() does not exists');
 
    // empty process call
@@ -3246,7 +3248,7 @@ procedure TVSTProcessThread.SetupBuffers;
 var
   Channel : Integer;
 begin
- assert(FBlocksize > 0);
+ Assert(FBlocksize > 0);
  with FVSTPlugin do
   begin
    // setup inputs
@@ -3280,7 +3282,7 @@ begin
  if FBlockSize <> Value then
   begin
    FBlockSize := Value;
-   if assigned(FVstProcessThread)
+   if Assigned(FVstProcessThread)
     then FVstProcessThread.BlockSize := FBlockSize;
   end;
 end;

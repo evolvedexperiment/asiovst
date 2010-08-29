@@ -68,7 +68,7 @@ type
     procedure GuiLEDOversamplingClick(Sender: TObject);
     procedure SBModeChange(Sender: TObject);
   private
-    fBackground : TBitmap;  
+    FBackground : TBitmap;
   public
     procedure UpdateMode;
     procedure UpdateFrequency;
@@ -83,7 +83,7 @@ implementation
 {$R *.dfm}
 
 uses
-  SplitTemplateDM, DAV_VSTModuleWithPrograms;
+  DAV_Common, DAV_VSTModuleWithPrograms, SplitTemplateDM;
 
 procedure TFmSplitter.BtLowClick(Sender: TObject);
 begin
@@ -119,7 +119,7 @@ begin
    if VstHost[1 - Index].EditVisible then VstHost[1 - Index].CloseEdit;
 
    PluginVisible    := Index;
-   PnGui.Visible    := assigned(VstHost[Index]) and VstHost[Index].Active;
+   PnGui.Visible    := Assigned(VstHost[Index]) and VstHost[Index].Active;
    ShBorder.Visible := PnGui.Visible;
 
    // set plugin GUI size
@@ -193,21 +193,21 @@ end;
 
 procedure TFmSplitter.FormDestroy(Sender: TObject);
 begin
- if assigned(fBackground)
-  then FreeAndNil(fBackground); 
+ if Assigned(FBackground)
+  then FreeAndNil(FBackground);
 end;
 
 procedure TFmSplitter.FormPaint(Sender: TObject);
 begin
- if assigned(fBackground)
-  then Canvas.Draw(0, PnControl.Height, fBackground);
+ if Assigned(FBackground)
+  then Canvas.Draw(0, PnControl.Height, FBackground);
 end;
 
 procedure Lighten(var Pixel: TRGB24; Amount: Byte);
 begin
- Pixel.B := round($2B - Amount);
- Pixel.G := round($31 - Amount);
- Pixel.R := round($33 - Amount);
+ Pixel.B := Round($2B - Amount);
+ Pixel.G := Round($31 - Amount);
+ Pixel.R := Round($33 - Amount);
 end;
 
 procedure TFmSplitter.FormResize(Sender: TObject);
@@ -219,9 +219,9 @@ var
   b      : Byte;
 begin
  // Create Background Image (if not already done
- if not assigned(fBackground)
-  then fBackground := TBitmap.Create;
- with fBackground do
+ if not Assigned(FBackground)
+  then FBackground := TBitmap.Create;
+ with FBackground do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;

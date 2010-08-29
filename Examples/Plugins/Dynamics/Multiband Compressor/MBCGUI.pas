@@ -208,7 +208,7 @@ begin
  try
   with GuiDialImageList.DialImages.Add do
    begin
-    NumGlyphs := 65;
+    GlyphCount := 65;
     DialBitmap.LoadFromStream(RS);
    end;
   DialMasterGain.DialImageIndex  := 0;

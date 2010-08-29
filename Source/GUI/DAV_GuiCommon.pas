@@ -89,6 +89,10 @@ type
   PRGB32Array = ^TRGB32Array;
   TArrayOfRGB32 = array of TRGB32;
 
+  TBGR32Array = packed array[0..MaxInt div SizeOf(TBGR32) - 1] of TBGR32;
+  PBGR32Array = ^TBGR32Array;
+  TArrayOfBGR32 = array of TBGR32;
+
   TRGB24 = packed record
     R, G, B: Byte;
   end;
@@ -102,6 +106,10 @@ type
   TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
   TArrayOfRGB24 = array of TRGB24;
+
+  TBGR24Array = packed array[0..MaxInt div SizeOf(TBGR24) - 1] of TBGR24;
+  PBGR24Array = ^TBGR24Array;
+  TArrayOfBGR24 = array of TBGR24;
 
   TRGB24Word = packed record
     R, G, B : Word;

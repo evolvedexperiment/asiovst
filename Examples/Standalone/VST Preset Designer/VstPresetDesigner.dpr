@@ -9,6 +9,7 @@ uses
 
 begin
   Application.Initialize;
+  Application.Title := 'VST Preset Designer';
   Application.CreateForm(TFmVstPresetDesigner, FmVstPresetDesigner);
 //  Application.CreateForm(TFmModifier, FmModifier);
   Application.Run;

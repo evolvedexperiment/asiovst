@@ -21,12 +21,13 @@ end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
-  Result := WinampDSPModuleHeader(TVOLDataModule);
+ Result := WinampDSPModuleHeader(TVOLDataModule);
 end;
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
-exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+exports
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain',
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

@@ -205,7 +205,7 @@ end;
 
 procedure DestroyExportTreeNode(Node: PExportTreeNode);
 begin
-  if assigned(Node) then
+  if Assigned(Node) then
    begin
     DestroyExportTreeNode(Node^.Next);
     DestroyExportTreeNode(Node^.Down);
@@ -249,23 +249,23 @@ var
     Write(Node^.TheChar);
     IdentOld := Ident;
     SubNode := Node^.Next;
-    while assigned(SubNode) do
+    while Assigned(SubNode) do
      begin
       Write(SubNode^.TheChar);
-      if not assigned(SubNode^.Next) then break;
+      if not Assigned(SubNode^.Next) then break;
       Inc(Ident);
       SubNode := SubNode^.Next;
      end;
     writeLN;
     Inc(Ident);
-    while assigned(SubNode) and (SubNode <> Node) do
+    while Assigned(SubNode) and (SubNode <> Node) do
      begin
-      if assigned(SubNode^.Down) then DumpNode(SubNode^.Down);
+      if Assigned(SubNode^.Down) then DumpNode(SubNode^.Down);
       SubNode := SubNode^.Prevoius;
       Dec(Ident);
      end;
     Ident := IdentOld;
-    if assigned(Node^.Down) then DumpNode(Node^.Down);
+    if Assigned(Node^.Down) then DumpNode(Node^.Down);
   end;
 
 begin
@@ -288,7 +288,7 @@ begin
     for Position := 1 to stringLength do
      begin
       stringChar := FunctionName[Position];
-      if assigned(Node) then
+      if Assigned(Node) then
        begin
         NodeChar := Node^.TheChar;
         if NodeChar = stringChar then
@@ -297,7 +297,7 @@ begin
           Node := Node^.Next;
          end else
          begin
-          while (NodeChar < stringChar) and assigned(Node^.Down) do
+          while (NodeChar < stringChar) and Assigned(Node^.Down) do
            begin
             Node := Node^.Down;
             NodeChar := Node^.TheChar;
@@ -313,7 +313,7 @@ begin
              begin
               NewNode^.Down := Node^.Down;
               NewNode^.Up := Node;
-              if assigned(NewNode^.Down) then
+              if Assigned(NewNode^.Down) then
                 NewNode^.Down^.Up := NewNode;
               NewNode^.Prevoius := Node^.Prevoius;
               Node^.Down := NewNode;
@@ -321,11 +321,11 @@ begin
              begin
               NewNode^.Down := Node;
               NewNode^.Up := Node^.Up;
-              if assigned(NewNode^.Up) then
+              if Assigned(NewNode^.Up) then
                 NewNode^.Up^.Down := NewNode;
               NewNode^.Prevoius := Node^.Prevoius;
-              if not assigned(NewNode^.Up) then
-                if assigned(NewNode^.Prevoius)
+              if not Assigned(NewNode^.Up) then
+                if Assigned(NewNode^.Prevoius)
                  then NewNode^.Prevoius^.Next := NewNode
                  else FRoot := NewNode;
               Node^.Up := NewNode;
@@ -339,12 +339,12 @@ begin
         for PositionCounter := Position to stringLength do
          begin
           NewNode := CreateExportTreeNode(FunctionName[PositionCounter]);
-          if assigned(LastNode) then
+          if Assigned(LastNode) then
            begin
             NewNode^.Prevoius := LastNode;
             LastNode^.Next := NewNode;
             LastNode := LastNode^.Next;
-           end else if not assigned(FRoot) then
+           end else if not Assigned(FRoot) then
            begin
             FRoot := NewNode;
             LastNode := FRoot;
@@ -353,7 +353,7 @@ begin
         break;
        end;
      end;
-    if assigned(LastNode) then
+    if Assigned(LastNode) then
       if not LastNode^.LinkExist then
        begin
         LastNode^.Link := Link;
@@ -377,10 +377,10 @@ begin
     for Position := 1 to stringLength do
      begin
       stringChar := FunctionName[Position];
-      if assigned(Node) then
+      if Assigned(Node) then
        begin
         NodeChar := Node^.TheChar;
-        while (NodeChar <> stringChar) and assigned(Node^.Down) do
+        while (NodeChar <> stringChar) and Assigned(Node^.Down) do
          begin
           Node := Node^.Down;
           NodeChar := Node^.TheChar;
@@ -416,10 +416,10 @@ begin
     for Position := 1 to stringLength do
      begin
       stringChar := FunctionName[Position];
-      if assigned(Node) then
+      if Assigned(Node) then
        begin
         NodeChar := Node^.TheChar;
-        while (NodeChar <> stringChar) and assigned(Node^.Down) do
+        while (NodeChar <> stringChar) and Assigned(Node^.Down) do
          begin
           Node := Node^.Down;
           NodeChar := Node^.TheChar;
@@ -457,9 +457,8 @@ end;
 destructor TDLLLoader.Destroy;
 begin
   if @FDLLProc <> nil then Unload;
-  if assigned(FExportTree)
+  if Assigned(FExportTree)
    then FreeAndNil(FExportTree);
-  FDLLProc := nil;
   FExportTree := nil;
   inherited Destroy;
 end;
@@ -678,13 +677,13 @@ var
         ImageNTHeaders.OptionalHeader.DataDirectory[
         IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress);
       Position := 0;
-      while assigned(Relocations) and (Position <
+      while Assigned(Relocations) and (Position <
           ImageNTHeaders.OptionalHeader.DataDirectory[
           IMAGE_DIRECTORY_ENTRY_BASERELOC].Size) do
        begin
         BaseRelocation := PImageBaseRelocation(Relocations);
         Base := ConvertPointer(BaseRelocation^.VirtualAddress);
-        if not assigned(Base) then
+        if not Assigned(Base) then
           exit;
         NumberOfRelocations :=
           (BaseRelocation^.SizeOfBlock - SizeOf(TImageBaseRelocation)) div
@@ -738,7 +737,7 @@ var
       ImportDescriptor := ConvertPointer(
         ImageNTHeaders.OptionalHeader.DataDirectory[
         IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
-      if assigned(ImportDescriptor) then
+      if Assigned(ImportDescriptor) then
        begin
         SetLength(FImportArray, 0);
         while ImportDescriptor^.Name <> 0 do
@@ -952,9 +951,13 @@ var
 begin
   Result := False;
   if @FDLLProc <> nil then
+   begin
     FDLLProc(LongWord(FImageBase), DLL_PROCESS_DETACH, nil);
+    FDLLProc := nil;
+   end;
+
   for I := 0 to Length(FSections) - 1 do
-    if assigned(FSections[I].Base) then
+    if Assigned(FSections[I].Base) then
       VirtualFree(FSections[I].Base, 0, MEM_RELEASE);
 
   SetLength(FSections, 0);
@@ -978,7 +981,7 @@ begin
 
   SetLength(FExportArray, 0);
   VirtualFree(FImageBase, 0, MEM_RELEASE);
-  if assigned(FExportTree) then
+  if Assigned(FExportTree) then
    begin
     FExportTree.Destroy;
     FExportTree := nil;
@@ -990,7 +993,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if assigned(FExportTree) then
+  if Assigned(FExportTree) then
     FExportTree.Find(FunctionName, Result)
   else
     for I := 0 to Length(FExportArray) - 1 do

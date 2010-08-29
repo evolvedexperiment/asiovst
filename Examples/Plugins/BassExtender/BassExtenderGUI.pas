@@ -152,7 +152,7 @@ begin
    PngBmp.LoadFromStream(RS);
    with DIL.DialImages.Add do
     begin
-     NumGlyphs := 65;
+     GlyphCount := 65;
      DialBitmap.Assign(PngBmp);
     end;
    DialFrequency.DialImageIndex := 0;

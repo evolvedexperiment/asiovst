@@ -85,6 +85,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiSlider.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStaticWaveform.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiLEDnew.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -45,10 +45,10 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOverlapFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection : TCriticalSection;
@@ -62,7 +62,7 @@ implementation
 {$R *.DFM}
 
 uses
- DAV_Approximations, SonogramGui, DAV_VSTParameters;
+ DAV_Approximations, DAV_VSTParameters, SonogramGui;
 
 procedure TSonogramDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -109,13 +109,13 @@ begin
 end;
 
 procedure TSonogramDataModule.ParameterIntegerDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 procedure TSonogramDataModule.ParameterWindowDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;

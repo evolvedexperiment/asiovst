@@ -82,9 +82,9 @@ uses
 procedure TFmSonogram.FormCreate(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  Line   : PBGR24Array;
 
 begin
  // Create Background Image
@@ -106,9 +106,9 @@ begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
+       Line[x].B := Round($70 - $34 * (s[1] - h));
+       Line[x].G := Round($84 - $48 * (s[1] - h));
+       Line[x].R := Round($8D - $50 * (s[1] - h));
       end;
     end;
   end;

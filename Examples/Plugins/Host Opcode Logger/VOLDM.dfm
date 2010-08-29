@@ -1,5 +1,4 @@
 object VOLDataModule: TVOLDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -9,7 +8,6 @@ object VOLDataModule: TVOLDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Init'
   IORatio = 1.000000000000000000
   UniqueID = 'DVOL'
@@ -30,7 +28,6 @@ object VOLDataModule: TVOLDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Category 1'
       DisplayName = 'Parameter 1'
@@ -45,7 +42,6 @@ object VOLDataModule: TVOLDataModule
       OnParameterChange = ParamChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Category 1'
       DisplayName = 'Parameter 2'
@@ -63,7 +59,6 @@ object VOLDataModule: TVOLDataModule
       OnParameterChange = ParamChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Parameter 3'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayCategory]

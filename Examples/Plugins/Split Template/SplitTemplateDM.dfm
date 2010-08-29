@@ -1,5 +1,4 @@
 object SplitTemplateDataModule: TSplitTemplateDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -10,7 +9,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Spli'
@@ -46,7 +44,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Split'
       DisplayName = 'Mode'
@@ -87,7 +84,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       OnCustomParameterDisplay = ParamFreqDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Split'
       DisplayName = 'Order'
@@ -108,7 +104,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       OnCustomParameterDisplay = ParamOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Volume'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayCategory]
@@ -127,7 +122,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       OnParameterChange = ParamVolumeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Oversampling'
       DisplayName = 'Oversampling'
@@ -145,7 +139,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       OnCustomParameterDisplay = ParamOversamplingDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Oversampling'
       DisplayName = 'OS Factor'
@@ -208,12 +201,12 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       item
         DisplayName = 'Low'
         VstOfflineTasks = <>
-        OnAudioMasterAutomate = LowParameterAutomate
+        OnAudioMasterAutomate = ParameterLowAutomate
       end
       item
         DisplayName = 'High'
         VstOfflineTasks = <>
-        OnAudioMasterAutomate = HighParameterAutomate
+        OnAudioMasterAutomate = ParameterHighAutomate
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

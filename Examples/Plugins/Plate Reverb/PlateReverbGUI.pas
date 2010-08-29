@@ -105,7 +105,7 @@ begin
    begin
     Width := 48;
     Height := 48;
-    NumGlyphs := 64;
+    GlyphCount := 64;
     StitchKind := skVertical;
     DialBitmap.LoadFromStream(RS);
    end;

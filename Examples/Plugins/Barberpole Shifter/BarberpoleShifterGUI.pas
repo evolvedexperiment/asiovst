@@ -67,33 +67,64 @@ implementation
 {$R *.DFM}
 
 uses
-  PngImage, DAV_GuiCommon, BarberpoleShifterDM, DAV_VSTModuleWithPrograms;
+  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
+  DAV_GuiCommon, DAV_VSTModuleWithPrograms, BarberpoleShifterDM;
 
 { TFmBarberpoleShifter }
 
 procedure TFmBarberpoleShifter.FormCreate(Sender: TObject);
 var
+  {$IFDEF FPC}
+  PngBmp : TPNGImage;
+  {$ELSE}
   RS     : TResourceStream;
+  {$IFDEF DELPHI2010_UP}
+  PngBmp : TPngImage;
+  {$ELSE}
   PngBmp : TPngObject;
-
+  {$ENDIF}
+  {$ENDIF}
 begin
  // Create Background Image
  FBackgrounBitmap := TBitmap.Create;
  FBackgrounBitmap.PixelFormat := pf24bit;
 
+ {$IFDEF FPC}
+ PngBmp := TPNGImage.Create;
+ try
+  PngBmp.LoadFromLazarusResource('BarberpoleShifter');
+
+  // yet todo!
+
+ finally
+  FreeAndNil(PngBmp);
+ end;
+ {$ELSE}
+ {$IFDEF DELPHI2010_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'BarberpoleShifter', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
+   {$IFDEF DELPHI2010_UP}
+   DialFrequency.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialFrequency.DialBitmap.Canvas, Point(0, 0));
+   DialMix.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialMix.DialBitmap.Canvas, Point(0, 0));
+   {$ELSE}
    DialFrequency.DialBitmap.Assign(PngBmp);
    DialMix.DialBitmap.Assign(PngBmp);
+   {$ENDIF}
   finally
    RS.Free;
   end;
  finally
   FreeAndNil(PngBmp);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmBarberpoleShifter.FormResize(Sender: TObject);
@@ -101,7 +132,7 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  Line   : PBGR24Array;
 begin
  with FBackgrounBitmap do
   begin

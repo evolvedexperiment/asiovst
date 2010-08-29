@@ -302,13 +302,17 @@ asm
 end;
 {$ENDIF}
 
-procedure TPolyphaseUpsampler32.ProcessSample2(const Input : Single; out Output : TDAV2SingleArray);
+procedure TPolyphaseUpsampler32.ProcessSample2(const Input: Single; out Output: TDAV2SingleArray);
 {$IFDEF PUREPASCAL}
 begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
- Output[0] := FY[0];
- Output[1] := FY[1];
+ PDAV2SingleArray(FY)^[0] := (Input - PDAV2SingleArray(FY)^[0]) *
+   PDAV2SingleArray(FCoefficients)^[0] + PDAV2SingleArray(FX)^[0];
+ PDAV2SingleArray(FX)^[0] := Input;
+ PDAV2SingleArray(FY)^[1] := (Input - PDAV2SingleArray(FY)^[1]) *
+   PDAV2SingleArray(FCoefficients)^[1] + PDAV2SingleArray(FX)^[1];
+ PDAV2SingleArray(FX)^[1] := Input;
+ Output[0] := PDAV2SingleArray(FY)^[0];
+ Output[1] := PDAV2SingleArray(FY)^[1];
 end;
 {$ELSE}
 asm
@@ -466,9 +470,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov  esi, [eax.FX]                  // esi = FX
- mov  edi, [eax.FY]                  // edi = FY
- mov  ebx, [eax.FCoefficients]       // ebx = FCoefficients
+ mov   esi, [eax.FX]                 // esi = FX
+ mov   edi, [eax.FY]                 // edi = FY
+ mov   ebx, [eax.FCoefficients]      // ebx = FCoefficients
 
  fld   [esi].Single                  // FX[0]
  fld   Input.Single                  // Input, FX[0]
@@ -487,7 +491,7 @@ asm
  fstp  [edi + 4].Single              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
  push ecx                            // The Saviour of ECX
- mov  ecx,[eax.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
+ mov  ecx, [eax.FNumberOfCoeffs]     // ECX = self.FNumberOfCoeffs
  sub  ecx, 4                         // "Den Rest mach ich selber"
 @Loopy:
  fld   [esi +  8].Single             // FX[2], FY[2]
@@ -930,23 +934,23 @@ procedure TPolyphaseUpsampler64.ProcessSampleLarge(const Input : Double; out Out
 var
   i : Integer;
 begin
- FY[ 0] := (Input  - FY[ 0]) * FCoefficients[ 0] + FX[ 0]; FX[ 0] := Input;
- FY[ 1] := (Input  - FY[ 1]) * FCoefficients[ 1] + FX[ 1]; FX[ 1] := Input;
+ FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
+ FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
 
- for i := 2 to FNumberOfCoeffs-1 do
+ for i := 2 to FNumberOfCoeffs - 1 do
   begin
-   FY[ i] := (FY[i-2] - FY[i]) * FCoefficients[i] + FX[i];
-   FX[ i] :=  FY[i-2];
+   FY[i] := (FY[i - 2] - FY[i]) * FCoefficients[i] + FX[i];
+   FX[i] :=  FY[i - 2];
   end;
- Output[0] := FY[FNumberOfCoeffs-2];
- Output[1] := FY[FNumberOfCoeffs-1];
+ Output[0] := FY[FNumberOfCoeffs - 2];
+ Output[1] := FY[FNumberOfCoeffs - 1];
 end;
 {$ELSE}
 asm
  pushad
- mov esi, [eax.FX]                   // esi = FX
- mov edi, [eax.FY]                   // edi = FY
- mov ebx, [eax.FCoefficients]        // ecx = FCoefficients
+ mov   esi, [eax.FX]                 // esi = FX
+ mov   edi, [eax.FY]                 // edi = FY
+ mov   ebx, [eax.FCoefficients]      // ebx = FCoefficients
 
  fld   [esi].Double                  // FX[0]
  fld   Input.Double                  // Input, FX[0]
@@ -965,8 +969,8 @@ asm
  fstp  [edi + 8].Double              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
  push ecx                            // The Saviour of ECX
- mov ecx,[eax.FNumberOfCoeffs]       // ECX=self.FNumberOfCoeffs
- sub ecx, 4                          // "Den Rest mach ich selber"
+ mov  ecx, [eax.FNumberOfCoeffs]     // ECX = self.FNumberOfCoeffs
+ sub  ecx, 4                         // "Den Rest mach ich selber"
 @Loopy:
  fld   [esi + 16].Double             // FX[2], FY[2]
  fld   [edi].Double                  // FY[0], FX[2], FY[2]
@@ -978,8 +982,8 @@ asm
  add   esi, 8
  add   edi, 8
  add   ebx, 8                        // Weiter geht's
- loop @Loopy
- pop   ecx                             // ecx hat ausgedient!
+ loop  @Loopy
+ pop   ecx                           // ecx hat ausgedient!
 
  fld   [esi + 16].Double             // FX[2], FY[2]
  fld   [edi].Double                  // FY[0], FX[2], FY[2]

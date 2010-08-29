@@ -156,7 +156,7 @@ begin
    PngBmp.LoadFromStream(RS);
    with GuiDialImageList.DialImages.Add, DialBitmap do
     begin
-     NumGlyphs := 65;
+     GlyphCount := 65;
      Canvas.FillRect(Canvas.ClipRect);
      Assign(PngBmp);
     end;
@@ -173,7 +173,7 @@ begin
    PngBmp.LoadFromStream(RS);
    with GuiDialImageList.DialImages.Add, DialBitmap do
     begin
-     NumGlyphs := 65;
+     GlyphCount := 65;
      Canvas.FillRect(Canvas.ClipRect);
      Assign(PngBmp);
     end;
@@ -188,7 +188,7 @@ begin
    PngBmp.LoadFromStream(RS);
    with GuiDialImageList.DialImages.Add, DialBitmap do
     begin
-     NumGlyphs := 65;
+     GlyphCount := 65;
      Canvas.FillRect(Canvas.ClipRect);
      Assign(PngBmp);
     end;

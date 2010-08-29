@@ -41,7 +41,7 @@ uses
 type
   TPlugInPlugModule = class(TVSTModule)
     VstHost: TVstHost;
-    function VST2ModuleCanDo(Sender: TObject; CanDoText: String): Integer;
+    function VST2ModuleCanDo(Sender: TObject; CanDoText: AnsiString): Integer;
     procedure VST2ModuleCreate(Sender: TObject);
     procedure VST2ModuleBeforeProgramChange(Sender: TObject);
     procedure VST2ModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
@@ -76,7 +76,7 @@ end;
 
 procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 begin
- VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames);
+ VstHost[0].Process32Replacing(@Inputs[0], @Outputs[0], SampleFrames);
 end;
 
 procedure TPlugInPlugModule.VST2ModuleCreate(Sender: TObject);
@@ -112,7 +112,7 @@ end;
 
 procedure TPlugInPlugModule.VST2ModuleBeforeProgramChange(Sender: TObject);
 begin
- VstHost[0].ProgramNr:=CurrentProgram;
+ VstHost[0].CurrentProgram := CurrentProgram;
 end;
 
 procedure TPlugInPlugModule.VST2ModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
@@ -120,7 +120,8 @@ begin
  VstHost[0].SetBlockSizeAndSampleRate(BlockSize, SampleRate)
 end;
 
-function TPlugInPlugModule.VST2ModuleCanDo(Sender: TObject; CanDoText: String): Integer;
+function TPlugInPlugModule.VST2ModuleCanDo(Sender: TObject;
+  CanDoText: AnsiString): Integer;
 begin
  result := VstHost[0].VstCanDo(CanDoText);
 end;

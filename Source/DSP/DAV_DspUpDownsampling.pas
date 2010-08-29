@@ -239,8 +239,8 @@ var
   Frequency : Double;
 begin
  Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
- assert(assigned(FFilter[0]));
- assert(assigned(FFilter[1]));
+ Assert(Assigned(FFilter[0]));
+ Assert(Assigned(FFilter[1]));
  FFilter[0].Frequency := Frequency;
  FFilter[1].Frequency := Frequency;
  FFilter[0].ResetStates;
@@ -270,7 +270,7 @@ function TDAVUpDownsampling.Downsample32(Input: PDAVSingleFixedArray): Single;
 var
   i : Integer;
 begin
- result := FFilter[1].ProcessSample64(Input[0] + cDenorm32);
+ Result := FFilter[1].ProcessSample64(Input[0] + cDenorm32);
  for i := 1 to Factor - 1
   do FFilter[1].ProcessSample64(Input[i]);
 end;
@@ -294,7 +294,7 @@ begin
   begin
    oldFilter := FFilter[i];
    FFilter[i] := FFilterClass.Create(FOrder);
-   if assigned(oldFilter)
+   if Assigned(oldFilter)
     then FFilter[i].Assign(oldFilter);
    if FFilter[i] is TCustomChebyshev1Filter then
     with TCustomChebyshev1Filter(FFilter[i]) do
@@ -353,7 +353,7 @@ var
 begin
  oldFilter := FFilter;
  FFilter := FFilterClass.Create;
- if assigned(oldFilter)
+ if Assigned(oldFilter)
   then FFilter.Assign(oldFilter);
  if FFilter is TCustomChebyshev1Filter then
   with TCustomChebyshev1Filter(FFilter) do
@@ -379,7 +379,7 @@ end;
 
 procedure TDAVUpSampling.UpdateFilter;
 begin
- assert(assigned(FFilter));
+ Assert(Assigned(FFilter));
  FFilter.Frequency := TransitionBandwidth * 0.5 * SampleRate;
  FFilter.SampleRate := FFactor * SampleRate;
  FFilter.ResetStates;
@@ -434,7 +434,7 @@ var
 begin
  OldFilter := FFilter;
  FFilter := FFilterClass.Create;
- if assigned(oldFilter)
+ if Assigned(oldFilter)
   then FFilter.Assign(oldFilter);
  if FFilter is TCustomChebyshev1Filter then
   with TCustomChebyshev1Filter(FFilter) do
@@ -478,7 +478,7 @@ end;
 
 procedure TDAVDownSampling.UpdateFilter;
 begin
- assert(assigned(FFilter));
+ Assert(Assigned(FFilter));
  FFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate;
  FFilter.SampleRate := SampleRate * FFactor;
  FFilter.ResetStates;
