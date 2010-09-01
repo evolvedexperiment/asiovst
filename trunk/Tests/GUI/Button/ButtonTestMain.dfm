@@ -24,6 +24,7 @@ object FmButton: TFmButton
     Height = 24
     Alignment = taCenter
     Caption = 'Button A'
+    Shadow.Color = clBlack
   end
   object ButtonB: TGuiButton
     Left = 78
@@ -33,6 +34,7 @@ object FmButton: TFmButton
     AntiAlias = gaaLinear2x
     Alignment = taCenter
     Caption = 'Button B'
+    Shadow.Color = clBlack
   end
   object ButtonC: TGuiButton
     Left = 8
@@ -42,6 +44,7 @@ object FmButton: TFmButton
     AntiAlias = gaaLinear3x
     Alignment = taCenter
     Caption = 'Button C'
+    Shadow.Color = clBlack
   end
   object ButtonD: TGuiButton
     Left = 78
@@ -51,6 +54,7 @@ object FmButton: TFmButton
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     Caption = 'Button D'
+    Shadow.Color = clBlack
   end
   object LbLineWidth: TLabel
     Left = 8

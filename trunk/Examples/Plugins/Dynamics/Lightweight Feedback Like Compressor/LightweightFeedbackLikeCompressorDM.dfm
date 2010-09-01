@@ -1,4 +1,5 @@
 object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeCompressorDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.3'
   EffectName = 'Lightweight Feedback Compressor'

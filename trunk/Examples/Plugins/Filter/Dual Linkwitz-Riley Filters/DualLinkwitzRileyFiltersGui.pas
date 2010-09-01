@@ -36,8 +36,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Menus, DAV_GuiPanel, DAV_GuiLabel,
-  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED;
+  Dialogs, ExtCtrls, StdCtrls, Menus, DAV_GuiPixelMap, DAV_GuiPanel,
+  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGroup,
+  DAV_GuiEQGraph, DAV_GuiLED;
 
 type
   TFmLinkwitzRiley = class(TForm)
@@ -105,6 +106,7 @@ type
     PnDisplay: TGuiPanel;
     PuFrequency: TPopupMenu;
     PuPreset: TPopupMenu;
+    DIL: TGuiDialImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -136,7 +138,7 @@ type
     procedure PuPresetPopup(Sender: TObject);
     procedure LbDisplayClick(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TGuiPixelMapMemory;
     FCurrentDial     : TGuiDial;
     FIsLow           : Boolean;
     FDirectUpdate    : Boolean;
@@ -155,27 +157,34 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, Registry, PNGImage, DAV_GuiCommon, DAV_VSTModuleWithPrograms,
-  DualLinkwitzRileyFiltersDM;
+  Math, Registry, {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
+  DAV_GuiCommon, DAV_VSTModuleWithPrograms, DualLinkwitzRileyFiltersDM;
 
 resourcestring
   RCStrLinkwitzRiley = 'Linkwitz-Riley';
 
 procedure TFmLinkwitzRiley.FormCreate(Sender: TObject);
 var
-  RS     : TResourceStream;
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
+  {$IFDEF FPC}
+  PngBmp : TPNGImage;
+  {$ELSE}
+  RS     : TResourceStream;
+  {$IFDEF DELPHI2010_UP}
+  PngBmp : TPngImage;
+  {$ELSE}
   PngBmp : TPngObject;
+  {$ENDIF}
+  {$ENDIF}
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
+ FBackgrounBitmap := TGuiPixelMapMemory.Create;
  with FBackgrounBitmap do
   begin
-   PixelFormat := pf24bit;
    Width := Self.Width;
    Height := Self.Height;
    s[0] := 0;
@@ -183,35 +192,61 @@ begin
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
+     ScnLn := Scanline[y];
      h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[1] := 0.97 * s[0] + 0.03 * Random;
        s[0] := s[1];
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
       end;
     end;
   end;
 
+ {$IFDEF FPC}
+ PngBmp := TPNGImage.Create;
+ try
+  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
+
+  // yet todo!
+
+ finally
+  FreeAndNil(PngBmp);
+ end;
+ {$ELSE}
+ {$IFDEF DELPHI2010_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'ClipperKnob', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
-   DialLowpassFrequency.DialBitmap.Assign(PngBmp);
-   DialLowpassSlope.DialBitmap.Assign(PngBmp);
-   DialHighpassFrequency.DialBitmap.Assign(PngBmp);
-   DialHighpassSlope.DialBitmap.Assign(PngBmp);
+   with DIL.DialImages[0] do
+    begin
+     {$IFDEF DELPHI2010_UP}
+     DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
+     {$ELSE}
+     DialBitmap.Assign(PngBmp);
+     {$ENDIF}
+     GlyphCount := 65;
+    end;
+   DialLowpassFrequency.DialImageIndex := 0;
+   DialLowpassSlope.DialImageIndex := 0;
+   DialHighpassFrequency.DialImageIndex := 0;
+   DialHighpassSlope.DialImageIndex := 0;
   finally
    RS.Free;
   end;
  finally
   FreeAndNil(PngBmp);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmLinkwitzRiley.FormDestroy(Sender: TObject);
@@ -221,7 +256,8 @@ end;
 
 procedure TFmLinkwitzRiley.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackgrounBitmap)
+  then FBackgrounBitmap.PaintTo(Canvas);
 end;
 
 procedure TFmLinkwitzRiley.FormShow(Sender: TObject);
@@ -283,7 +319,7 @@ end;
 
 procedure TFmLinkwitzRiley.DialDblClick(Sender: TObject);
 begin
- if not assigned(FEdValue)
+ if not Assigned(FEdValue)
   then FEdValue := TEdit.Create(Self);
 
  with FEdValue do
@@ -315,7 +351,7 @@ begin
     CharPos := Pos(':', TextValue);
     if CharPos > 0
      then Delete(TextValue, 1, CharPos);
-    StringToParameter(FEdValue.Tag, TextValue);
+    StringToParameter(FEdValue.Tag, AnsiString(TextValue));
     FreeAndNil(FEdValue);
    except
    end;
@@ -334,7 +370,7 @@ end;
 procedure TFmLinkwitzRiley.DialLowpassFrequencyMouseEnter(Sender: TObject);
 begin
  with TDualLinkwitzRileyFiltersModule(Owner)
-  do LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[0] + ' ' + ParameterLabel[0];
+  do LbDisplay.Caption := 'Freq.: ' + string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
 
  if Sender is TGuiDial
   then FCurrentDial := TGuiDial(Sender)
@@ -352,7 +388,7 @@ end;
 procedure TFmLinkwitzRiley.DialLowpassSlopeMouseEnter(Sender: TObject);
 begin
  with TDualLinkwitzRileyFiltersModule(Owner)
-  do LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + ' ' + ParameterLabel[1];
+  do LbDisplay.Caption := 'Slope: ' + string(ParameterDisplay[1] + ' ' + ParameterLabel[1]);
 end;
 
 procedure TFmLinkwitzRiley.EQGraphUpdateTimer(Sender: TObject);
@@ -379,7 +415,7 @@ end;
 procedure TFmLinkwitzRiley.DialHighpassFrequencyMouseEnter(Sender: TObject);
 begin
  with TDualLinkwitzRileyFiltersModule(Owner)
-  do LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2];
+  do LbDisplay.Caption := 'Freq.: ' + string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
 
  if Sender is TGuiDial
   then FCurrentDial := TGuiDial(Sender)
@@ -397,7 +433,7 @@ end;
 procedure TFmLinkwitzRiley.DialHighpassSlopeMouseEnter(Sender: TObject);
 begin
  with TDualLinkwitzRileyFiltersModule(Owner)
-  do LbDisplay.Caption := 'Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3];
+  do LbDisplay.Caption := 'Slope: ' + string(ParameterDisplay[3] + ' ' + ParameterLabel[3]);
 end;
 
 procedure TFmLinkwitzRiley.LbDisplayClick(Sender: TObject);
@@ -427,7 +463,7 @@ begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    CurrentBit := round(Parameter[4]);
-   Parameter[4] := (CurrentBit and $2) or ((not CurrentBit) and $1)
+   Parameter[4] := (CurrentBit and $2) or ((not CurrentBit) and $1);
   end;
 
  if Assigned(FEdValue)
@@ -441,7 +477,7 @@ begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    CurrentBit := round(Parameter[4]);
-   Parameter[4] := (CurrentBit and $1) or ((not CurrentBit) and $2)
+   Parameter[4] := (CurrentBit and $1) or ((not CurrentBit) and $2);
   end;
 
  if Assigned(FEdValue)
@@ -450,8 +486,8 @@ end;
 
 procedure TFmLinkwitzRiley.MiFrequencyClick(Sender: TObject);
 begin
- assert(Sender is TMenuItem);
- if assigned(FCurrentDial)
+ Assert(Sender is TMenuItem);
+ if Assigned(FCurrentDial)
   then FCurrentDial.Position := TMenuItem(Sender).Tag;
 end;
 
@@ -513,8 +549,8 @@ end;
 
 procedure TFmLinkwitzRiley.Mi31Hz5Click(Sender: TObject);
 begin
- assert(Sender is TMenuItem);
- if assigned(FCurrentDial)
+ Assert(Sender is TMenuItem);
+ if Assigned(FCurrentDial)
   then FCurrentDial.Position := 31.5;
 end;
 
@@ -524,7 +560,8 @@ begin
   begin
    if DialLowpassFrequency.Position <> Parameter[0]
     then DialLowpassFrequency.Position := Parameter[0];
-   LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbDisplay.Caption := 'Freq.: ' + string(ParameterDisplay[0] + ' ' +
+     ParameterLabel[0]);
    UpdateEQGraph;
   end;
 end;
@@ -535,7 +572,8 @@ begin
   begin
    if DialLowpassSlope.Position <> Parameter[1]
     then DialLowpassSlope.Position := Parameter[1];
-   LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + ' ' + ParameterLabel[1];
+   LbDisplay.Caption := 'Slope: ' + string(ParameterDisplay[1] + ' ' +
+     ParameterLabel[1]);
    UpdateEQGraph;
   end;
 end;

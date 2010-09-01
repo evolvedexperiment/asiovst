@@ -13,21 +13,21 @@ type
   private
     FAutoSize      : Boolean;
     FVUMeterBitmap : TBitmap;
-    FNumGlyphs     : Integer;
+    FGlyphCount     : Integer;
     FLastGlyph     : Integer;
     FGlyphIndex    : Integer;
     FStitchKind    : TGuiStitchKind;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetVUMeterBitmap(const Value: TBitmap);
-    procedure SetNumGlyphs(const Value: Integer);
+    procedure SetGlyphCount(const Value: Integer);
     procedure SetGlyphIndex(Value: Integer);
     procedure SetStitchKind(const Value: TGuiStitchKind);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure UpdateBuffer; override;
     procedure AutoSizeChanged; virtual;
-    procedure NumGlyphsChanged; virtual;
+    procedure GlyphCountChanged; virtual;
     procedure GlyphIndexChanged; virtual;
     procedure StitchKindChanged; virtual;
   public
@@ -38,7 +38,7 @@ type
 
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property GlyphIndex: Integer read FGlyphIndex write SetGlyphIndex;
-    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
+    property GlyphCount: Integer read FGlyphCount write SetGlyphCount default 1;
     property VUMeterBitmap: TBitmap read FVUMeterBitmap write SetVUMeterBitmap;
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
   end;
@@ -47,7 +47,7 @@ type
   published
     property AutoSize;
     property Color;
-    property NumGlyphs;
+    property GlyphCount;
     property PopupMenu;
     property GlyphIndex;
     property StitchKind;
@@ -64,7 +64,7 @@ constructor TCustomGuiVUMeter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FGlyphIndex             := 0;
-  FNumGlyphs              := 1;
+  FGlyphCount              := 1;
   FLastGlyph              := -1;
   FStitchKind             := skHorizontal;
   FVUMeterBitmap          := TBitmap.Create;
@@ -79,16 +79,16 @@ end;
 
 procedure TCustomGuiVUMeter.DoAutoSize;
 begin
- if FVUMeterBitmap.Empty or (FNumGlyphs = 0) then Exit;
+ if FVUMeterBitmap.Empty or (FGlyphCount = 0) then Exit;
 
  if FStitchKind = skVertical then
   begin
    Width  := FVUMeterBitmap.Width;
-   Height := FVUMeterBitmap.Height div FNumGlyphs;
+   Height := FVUMeterBitmap.Height div FGlyphCount;
   end
  else
   begin
-   Width  := FVUMeterBitmap.Width div FNumGlyphs;
+   Width  := FVUMeterBitmap.Width div FGlyphCount;
    Height := FVUMeterBitmap.Height;
   end;
 end;
@@ -108,20 +108,20 @@ begin
   with FBuffer.Canvas do
    begin
     GlyphNr := FGlyphIndex;
-    if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
+    if (GlyphNr >= FGlyphCount) then GlyphNr := FGlyphCount - 1 else
     if (GlyphNr < 0) then GlyphNr := 0;
     if GlyphNr = FLastGlyph then Exit;
     theRect := ClientRect;
 
     if FStitchKind = skVertical then
      begin
-      theRect.Top    := FVUMeterBitmap.Height * GlyphNr div FNumGlyphs;
-      theRect.Bottom := FVUMeterBitmap.Height * (GlyphNr + 1) div FNumGlyphs;
+      theRect.Top    := FVUMeterBitmap.Height * GlyphNr div FGlyphCount;
+      theRect.Bottom := FVUMeterBitmap.Height * (GlyphNr + 1) div FGlyphCount;
      end
     else
      begin
-      theRect.Left  := FVUMeterBitmap.Width * GlyphNr div FNumGlyphs;
-      theRect.Right := FVUMeterBitmap.Width * (GlyphNr + 1) div FNumGlyphs;
+      theRect.Left  := FVUMeterBitmap.Width * GlyphNr div FGlyphCount;
+      theRect.Right := FVUMeterBitmap.Width * (GlyphNr + 1) div FGlyphCount;
      end;
 
     Lock;
@@ -151,16 +151,16 @@ begin
  DoAutoSize;
 end;
 
-procedure TCustomGuiVUMeter.SetNumGlyphs(const Value: Integer);
+procedure TCustomGuiVUMeter.SetGlyphCount(const Value: Integer);
 begin
- if FNumGlyphs <> Value then
+ if FGlyphCount <> Value then
   begin
-   FNumGlyphs := Value;
-   NumGlyphsChanged;
+   FGlyphCount := Value;
+   GlyphCountChanged;
   end;
 end;
 
-procedure TCustomGuiVUMeter.NumGlyphsChanged;
+procedure TCustomGuiVUMeter.GlyphCountChanged;
 begin
  FLastGlyph := -1;
  DoAutoSize;
@@ -169,7 +169,7 @@ end;
 procedure TCustomGuiVUMeter.SetGlyphIndex(Value: Integer);
 begin
  if Value < 0 then Value := 0 else
- if Value > FNumGlyphs then Value := FNumGlyphs;
+ if Value > FGlyphCount then Value := FGlyphCount;
 
  if FGlyphIndex <> Value then
   begin

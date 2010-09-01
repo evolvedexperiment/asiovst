@@ -1,5 +1,6 @@
 package DAV_GUI_D14;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -63,6 +64,7 @@ contains
   DAV_GuiSlider in '..\..\Source\GUI\DAV_GuiSlider.pas',
   DAV_GuiStaticWaveform in '..\..\Source\GUI\DAV_GuiStaticWaveform.pas',
   DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
-  DAV_GuiLEDnew in '..\..\Source\GUI\DAV_GuiLEDnew.pas';
+  DAV_GuiPixelMap in '..\..\Source\GUI\DAV_GuiPixelMap.pas',
+  DAV_GuiVector in '..\..\Source\GUI\DAV_GuiVector.pas';
 
 end.

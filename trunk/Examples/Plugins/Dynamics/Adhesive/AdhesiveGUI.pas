@@ -360,7 +360,7 @@ end;
 procedure TFmAdhesive.TimerTimer(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner).FastCompressor, VUMeter
-  do GlyphIndex := round(NumGlyphs * Limit(-GainReductiondB, 0, 40) / 40);
+  do GlyphIndex := round(GlyphCount * Limit(-GainReductiondB, 0, 40) / 40);
 end;
 
 procedure TFmAdhesive.UpdateThreshold;

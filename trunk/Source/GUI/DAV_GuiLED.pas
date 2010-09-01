@@ -37,90 +37,611 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
   {$ELSE} Windows, {$ENDIF} Classes, Graphics, Forms, Messages, SysUtils,
-  Controls, DAV_GuiBaseControl;
+  Controls, DAV_GuiCommon, DAV_GuiPixelMap;
 
 type
-  TCustomGuiLED = class(TCustomGuiBaseAntialiasedControl)
+  TParentControl = class(TWinControl);
+
+  TCustomGuiLED = class(TGraphicControl)
   private
+    FPixelMap     : TGuiCustomPixelMap;
+    FOnPaint      : TNotifyEvent;
+
     FLEDColor     : TColor;
-    FOnChange     : TNotifyEvent;
     FBrightness   : Single;
     FUniformity   : Single;
     FBorderFactor : Single;
+    FLineWidth    : Single;
+    FTransparent  : Boolean;
+    FOnChange     : TNotifyEvent;
     procedure SetLEDColor(const Value: TColor);
     procedure SetBrightness(const Value: Single);
     procedure SetUniformity(const Value: Single);
     procedure SetBorderStrength(const Value: Single);
     function GetUniformity: Single;
     function GetBorderStrength: Single;
+    procedure SetTransparent(const Value: Boolean);
   protected
-    procedure RenderLEDToBitmap24(const Bitmap: TBitmap); virtual;
-    procedure RenderLEDToBitmap32(const Bitmap: TBitmap); virtual;
-    procedure SettingsChanged(Sender: TObject); virtual;
-    procedure UpdateBuffer; override;
+    {$IFNDEF FPC}
+    {$IFNDEF COMPILER10_UP}
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseEnter : TNotifyEvent;
+
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    {$ENDIF}
+
+    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
+    {$ELSE}
+    procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
+    procedure CMEnabledChanged(var Message: TLMessage); message CM_ENABLEDCHANGED;
+    procedure WMEraseBkgnd(var Message: TLmEraseBkgnd); message LM_ERASEBKGND;
+    {$ENDIF}
+
+    procedure RenderLED(const PixelMap: TGuiCustomPixelMap);
+    procedure SetLineWidth(const Value: Single);
+
+    procedure Paint; override;
+    procedure ResizeBuffer; virtual;
+    procedure UpdateBuffer; virtual;
+    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
+
+    procedure BorderStrengthChanged; virtual;
+    procedure BrightnessChanged; virtual;
+    procedure LEDColorChanged; virtual;
+    procedure LineWidthChanged; virtual;
+    procedure TransparentChanged; virtual;
+    procedure UniformityChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-  published
-    property Color;
-    property LineWidth;
-    property LEDColor: TColor read FLEDColor write SetLEDColor default clBlack;
-    property Brightness_Percent: Single read FBrightness write SetBrightness;
+
+    procedure Resize; override;
+    procedure Loaded; override;
+
     property BorderStrength_Percent: Single read GetBorderStrength write SetBorderStrength;
+    property Brightness_Percent: Single read FBrightness write SetBrightness;
+    property LEDColor: TColor read FLEDColor write SetLEDColor default clBlack;
+    property LineWidth: Single read FLineWidth write SetLineWidth;
+    property Transparent: Boolean read FTransparent write SetTransparent;
     property Uniformity_Percent: Single read GetUniformity write SetUniformity;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
   end;
 
   TGuiLED = class(TCustomGuiLED)
   published
+    property BorderStrength_Percent;
+    property Brightness_Percent;
+    property LEDColor;
+    property LineWidth;
+    property Uniformity_Percent;
+    property Transparent;
+
     property Align;
     property Anchors;
-    property AntiAlias;
     property Color;
+    property Constraints;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
     property Enabled;
-    property LEDColor;
-    property LineColor;
-    property LineWidth;
     property ParentColor;
-    property Transparent;
+    property ParentShowHint;
+    property PopupMenu;
+    property ShowHint;
     property Visible;
-    property OnChange;
+
+    {$IFNDEF FPC}
+    property OnCanResize;
+    {$ENDIF}
     property OnClick;
+    property OnConstrainedResize;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDragDrop;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
     property OnMouseDown;
-    property OnMouseEnter;
-    property OnMouseLeave;
     property OnMouseMove;
     property OnMouseUp;
+    {$IFDEF Delphi6_Up}
     property OnMouseWheel;
     property OnMouseWheelDown;
     property OnMouseWheelUp;
-    property OnPaint;
+    {$ENDIF}
     property OnResize;
+    property OnStartDock;
+    property OnStartDrag;
+    property OnPaint;
+    property OnMouseEnter;
+    property OnMouseLeave;
   end;
 
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Math, DAV_Common, DAV_Complex, DAV_GuiCommon;
+  ExtCtrls, Math, DAV_Common, DAV_Complex, DAV_Approximations, DAV_GuiBlend;
 
-resourcestring
-  RCStrWrongPixelFormat = 'Wrong pixel format!';
+procedure CopyParentImage(Control: TControl; PixelMap: TGuiCustomPixelMap);
+var
+  I         : Integer;
+  SubCount  : Integer;
+  SaveIndex : Integer;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
+  ParentDC  : HDC;
+  CompDC    : HDC;
+  CtrlCnvs  : TControlCanvas;
+  Bmp       : TBitmap;
+const
+  Gray : TPixel32 = (ARGB : $7F700F7F);
+begin
+ if (Control = nil) or (Control.Parent = nil) then Exit;
+ SubCount := Control.Parent.ControlCount;
+ // set
+ {$IFDEF WIN32}
+ with Control.Parent
+  do ControlState := ControlState + [csPaintCopy];
+ try
+ {$ENDIF}
 
+  with Control do
+   begin
+    SelfR := Bounds(Left, Top, Width, Height);
+    Pnt.X := -Left;
+    Pnt.Y := -Top;
+   end;
+
+(*
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Control.Width;
+    Height := Control.Height;
+    PixelFormat := pf32bit;
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Control.Parent.ClientWidth, Control.Parent.ClientHeight);
+     with TParentControl(Control.Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+     PixelMap.Draw(Bmp);
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
+    end;
+   finally
+    Free;
+   end;
+*)
+
+(*
+  CtrlCnvs := TControlCanvas.Create;
+  try
+   CtrlCnvs.Handle := Control.Parent.Handle;
+   PixelMap.Draw(CtrlCnvs);
+  finally
+   CtrlCnvs.Free;
+  end;
+*)
+
+
+(*
+  ParentDC := GetDC(Control.Parent.Handle);
+  try
+   CompDC := CreateCompatibleDC(CompDC);
+   try
+//    PixelMap.D
+//    GetDIBits()
+     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo,
+       DIB_RGB_COLORS, Buffer, 0, 0);
+   finally
+    DeleteDC(CompDC);
+   end;
+  finally
+   ReleaseDC(Control.Parent.Handle, ParentDC);
+  end;
+*)
+//  GetDIBits(
+
+
+
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Control.Width;
+    Height := Control.Height;
+    PixelFormat := pf32bit;
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Control.Parent.ClientWidth, Control.Parent.ClientHeight);
+     with TParentControl(Control.Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
+    end;
+
+    // Copy images of graphic controls
+    for I := 0 to SubCount - 1 do
+     begin
+      if Control.Parent.Controls[I] = Control then Break else
+       if (Control.Parent.Controls[I] <> nil) and
+          (Control.Parent.Controls[I] is TGraphicControl)
+        then
+         with TGraphicControl(Control.Parent.Controls[I]) do
+          begin
+           CtlR := Bounds(Left, Top, Width, Height);
+           if Bool(IntersectRect(R, SelfR, CtlR)) and Visible then
+            begin
+             {$IFDEF WIN32}
+             ControlState := ControlState + [csPaintCopy];
+             {$ENDIF}
+             SaveIndex := SaveDC(Canvas.Handle);
+             try
+              SaveIndex := SaveDC(Canvas.Handle);
+              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
+              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
+              Perform(WM_PAINT, Canvas.Handle, 0);
+             finally
+              RestoreDC(Handle, SaveIndex);
+              {$IFDEF WIN32}
+              ControlState := ControlState - [csPaintCopy];
+              {$ENDIF}
+             end;
+            end;
+          end;
+     end;
+    PixelMap.Draw(Bmp);
+   finally
+    Free;
+   end;
+
+ {$IFDEF WIN32}
+ finally
+   with Control.Parent do ControlState := ControlState - [csPaintCopy];
+ end;
+ {$ENDIF}
+end;
+
+
+{ TCustomGuiLED }
 
 constructor TCustomGuiLED.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner);
- FLEDColor    := clBlack;
- FLineColor   := clRed;
+ inherited;
+ FPixelMap := TGuiPixelMapMemory.Create;
+
+ FLEDColor    := clRed;
  FLineWidth   := 1;
  FBrightness  := 100;
  FUniformity  := 0.4;
- FBuffer.PixelFormat := pf32bit
+
+ ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
+   csDoubleClicks, csReplicatable, csOpaque];
 end;
 
 destructor TCustomGuiLED.Destroy;
 begin
- inherited Destroy;
+ FreeAndNil(FPixelMap);
+ inherited;
+end;
+
+procedure TCustomGuiLED.Resize;
+begin
+ inherited Resize;
+ ResizeBuffer;
+end;
+
+procedure TCustomGuiLED.ResizeBuffer;
+begin
+ if (Width > 0) and (Height > 0) then
+  begin
+   FPixelMap.Width := Width;
+   FPixelMap.Height := Height;
+   UpdateBuffer;
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiLED.Loaded;
+begin
+ inherited;
+ ResizeBuffer;
+end;
+
+procedure TCustomGuiLED.Paint;
+begin
+ FPixelMap.PaintTo(Canvas);
+ if Assigned(FOnPaint) then FOnPaint(Self);
+end;
+
+procedure TCustomGuiLED.CopyParentImage(PixelMap: TGuiCustomPixelMap);
+var
+  I         : Integer;
+  SubCount  : Integer;
+  SaveIndex : Integer;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
+  ParentDC  : HDC;
+  CompDC    : HDC;
+  CtrlCnvs  : TControlCanvas;
+  Bmp       : TBitmap;
+const
+  Gray : TPixel32 = (ARGB : $7F700F7F);
+begin
+ if (Parent = nil) then Exit;
+ SubCount := Parent.ControlCount;
+ // set
+ {$IFDEF WIN32}
+ with Parent
+  do ControlState := ControlState + [csPaintCopy];
+ try
+ {$ENDIF}
+
+  SelfR := Bounds(Left, Top, Width, Height);
+  Pnt.X := -Left;
+  Pnt.Y := -Top;
+
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Self.Width;
+    Height := Self.Height;
+    PixelFormat := pf32bit;
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+     with TParentControl(Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
+    end;
+
+    // Copy images of graphic controls
+    for I := 0 to SubCount - 1 do
+     begin
+      if Parent.Controls[I] = Self then Break else
+       if (Parent.Controls[I] <> nil) and
+          (Parent.Controls[I] is TGraphicControl)
+        then
+         with TGraphicControl(Parent.Controls[I]) do
+          begin
+           CtlR := Bounds(Left, Top, Width, Height);
+           if Bool(IntersectRect(R, SelfR, CtlR)) and Visible then
+            begin
+             {$IFDEF WIN32}
+             ControlState := ControlState + [csPaintCopy];
+             {$ENDIF}
+             SaveIndex := SaveDC(Canvas.Handle);
+             try
+              SaveIndex := SaveDC(Canvas.Handle);
+              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
+              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
+              Perform(WM_PAINT, Canvas.Handle, 0);
+             finally
+              RestoreDC(Handle, SaveIndex);
+              {$IFDEF WIN32}
+              ControlState := ControlState - [csPaintCopy];
+              {$ENDIF}
+             end;
+            end;
+          end;
+     end;
+    PixelMap.Draw(Bmp);
+   finally
+    Free;
+   end;
+
+ {$IFDEF WIN32}
+ finally
+   with Parent do ControlState := ControlState - [csPaintCopy];
+ end;
+ {$ENDIF}
+end;
+
+procedure TCustomGuiLED.BorderStrengthChanged;
+begin
+ UpdateBuffer;
+ Invalidate;
+end;
+
+procedure TCustomGuiLED.BrightnessChanged;
+begin
+ UpdateBuffer;
+ Invalidate;
+end;
+
+procedure TCustomGuiLED.LEDColorChanged;
+begin
+ UpdateBuffer;
+ Invalidate;
+end;
+
+procedure TCustomGuiLED.LineWidthChanged;
+begin
+ UpdateBuffer;
+ Invalidate;
+end;
+
+procedure TCustomGuiLED.TransparentChanged;
+begin
+ UpdateBuffer;
+ Invalidate;
+end;
+
+procedure TCustomGuiLED.UniformityChanged;
+begin
+ UpdateBuffer;
+ Invalidate;
+end;
+
+
+procedure TCustomGuiLED.SetBorderStrength(const Value: Single);
+begin
+ if BorderStrength_Percent <> Value then
+  begin
+   FBorderFactor := 1 - Limit(0.01 * Value, 0, 1);
+   BorderStrengthChanged;
+  end;
+end;
+
+procedure TCustomGuiLED.SetBrightness(const Value: Single);
+begin
+ if FBrightness <> Value then
+  begin
+   FBrightness := Value;
+   BrightnessChanged
+  end;
+end;
+
+procedure TCustomGuiLED.SetLEDColor(const Value: TColor);
+begin
+ if (Value <> FLEDColor) then
+  begin
+   FLEDColor := Value;
+   LEDColorChanged;
+  end;
+end;
+
+procedure TCustomGuiLED.SetLineWidth(const Value: Single);
+begin
+ if FLineWidth <> Value then
+  begin
+   FLineWidth := Value;
+   LineWidthChanged;
+  end;
+end;
+
+procedure TCustomGuiLED.SetTransparent(const Value: Boolean);
+begin
+ if FTransparent <> Value then
+  begin
+   FTransparent := Value;
+   TransparentChanged;
+  end;
+end;
+
+procedure TCustomGuiLED.SetUniformity(const Value: Single);
+begin
+ if Uniformity_Percent <> Value then
+  begin
+   FUniformity := Sqr(1 - Limit(0.01 * Value, 0, 1));
+   UniformityChanged;
+  end;
+end;
+
+procedure TCustomGuiLED.UpdateBuffer;
+begin
+ if FTransparent
+  then CopyParentImage(FPixelMap)
+  else FPixelMap.Clear(Color);
+ RenderLED(FPixelMap);
+end;
+
+procedure TCustomGuiLED.RenderLED(const PixelMap: TGuiCustomPixelMap);
+var
+  X, Y          : Integer;
+  ScnLne        : PPixel32Array;
+  LEDColor      : TPixel32;
+  CombColor     : TPixel32;
+  Rad           : Single;
+  XStart        : Single;
+  BW, BWx       : Single;
+  Scale         : Single;
+  Center        : TComplexSingle;
+  SqrDist       : Single;
+  Bright        : Single;
+  PixelWidth    : Single;
+  ReciSqrRad    : Single;
+  Temp          : Single;
+
+const
+  CBlack : TPixel32 = (ARGB : $FF000000);
+begin
+ with PixelMap do
+  begin
+   LEDColor := ConvertColor(FLEDColor);
+   Bright := 0.3 + 0.007 * FBrightness;
+
+   // draw circle
+   Rad := 0.5 * Math.Min(Width, Height) - 3;
+   if Rad <= 0 then Exit;
+   Temp := 1 / Rad;
+   ReciSqrRad := Sqr(Temp);
+   BWx := 1 - (FLineWidth - 1) * Temp;
+   BW := 1 - FLineWidth * Temp;
+   PixelWidth := 1 - Temp;
+
+   Center.Re := 0.5 * Width;
+   Center.Im := 0.5 * Height;
+
+   for Y := Round(Center.Im - Rad) to Round(Center.Im + Rad) do
+    begin
+     XStart := Sqr(Rad) - Sqr(Y - Center.Im);
+     if XStart < 0
+      then Continue
+      else XStart := Sqrt(XStart) - 0.4999999;
+     ScnLne := Scanline[Y];
+     for X := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
+      begin
+       // calculate squared distance
+       SqrDist := Sqr(X - Center.Re) + Sqr(Y - Center.Im);
+       Scale := Bright * (1 - FUniformity * SqrDist * ReciSqrRad);
+
+       if SqrDist <= Sqr(BW * Rad) then
+        begin
+         CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
+         BlendMemory(CombColor, ScnLne[X]);
+        end else
+       if SqrDist <= Sqr(BWx * Rad) then
+        begin
+         Temp := BWx * Rad - FastSqrtBab2(SqrDist);
+         Scale := (Temp + (1 - Temp) * FBorderFactor) * Scale;
+
+         CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
+         BlendMemory(CombColor, ScnLne[X]);
+        end else
+       if SqrDist < Sqr(PixelWidth * Rad) then
+        begin
+         CombColor := CombineRegister(LEDColor, CBlack, Round(FBorderFactor * Scale * $FF));
+         BlendMemory(CombColor, ScnLne[X]);
+        end
+       else
+        begin
+         Scale := FBorderFactor * Scale;
+         CombColor.B := Round(Scale * LEDColor.B);
+         CombColor.G := Round(Scale * LEDColor.G);
+         CombColor.R := Round(Scale * LEDColor.R);
+         CombColor.A := Round($FF * (Rad - FastSqrtBab2(SqrDist)));
+         BlendMemory(CombColor, ScnLne[X]);
+        end;
+
+       EMMS;
+      end;
+    end;
+  end;
 end;
 
 function TCustomGuiLED.GetBorderStrength: Single;
@@ -130,312 +651,46 @@ end;
 
 function TCustomGuiLED.GetUniformity: Single;
 begin
- Result := 100 * (1 - sqrt(FUniformity));
+ Result := 100 * (1 - Sqrt(FUniformity));
 end;
 
-procedure TCustomGuiLED.SettingsChanged(Sender: TObject);
+{$IFNDEF FPC}
+{$IFNDEF COMPILER10_UP}
+procedure TCustomGuiLED.CMMouseEnter(var Message: TMessage);
 begin
+  if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+end;
+
+procedure TCustomGuiLED.CMMouseLeave(var Message: TMessage);
+begin
+  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
+end;
+{$ENDIF}
+
+{$ELSE}
+procedure TBufferedGraphicControl.WMEraseBkgnd(var Message: TLmEraseBkgnd);
+begin
+  Message.Result := 0;
+end;
+{$ENDIF}
+
+procedure TCustomGuiLED.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+begin
+ inherited;
+ UpdateBuffer;
  Invalidate;
 end;
 
-procedure TCustomGuiLED.SetUniformity(const Value: Single);
+procedure TCustomGuiLED.CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
- if FUniformity <> Value then
-  begin
-   FUniformity := Sqr(1 - Limit(0.01 * Value, 0, 1));
-   Invalidate;
-  end;
+ inherited;
+ UpdateBuffer;
+ Invalidate;
 end;
 
-procedure TCustomGuiLED.SetBorderStrength(const Value: Single);
+procedure TCustomGuiLED.WMEraseBkgnd(var Message: TWmEraseBkgnd);
 begin
- if FBorderFactor <> Value then
-  begin
-   FBorderFactor := 1 - Limit(0.01 * Value, 0, 1);
-   Invalidate;
-  end;
-end;
-
-procedure TCustomGuiLED.SetBrightness(const Value: Single);
-begin
- if FBrightness <> Value then
-  begin
-   FBrightness := Value;
-   Invalidate;
-  end;
-end;
-
-procedure TCustomGuiLED.SetLEDColor(const Value: TColor);
-begin
- if (Value <> FLEDColor) then
-  begin
-   FLEDColor := Value;
-   Invalidate;
-  end;
-end;
-
-procedure TCustomGuiLED.RenderLEDToBitmap24(const Bitmap: TBitmap);
-var
-  Steps, Y      : Integer;
-  Rad           : Single;
-  XStart        : Single;
-  BW            : Single;
-  Center        : TComplexSingle;
-  {$IFDEF FPC}
-  SrcIntfImg    : TLazIntfImage;
-  CurCol        : TFPColor;
-  ImgHandle     : HBitmap;
-  ImgMaskHandle : HBitmap;
-  {$ELSE}
-  Line          : PBGR24Array;
-  {$ENDIF}
-  LEDColor      : TBGR24;
-  Scale         : Single;
-  Bright        : Single;
-begin
- with Bitmap, Canvas do
-  begin
-   Brush.Color := Self.Color;
-   Assert(Bitmap.PixelFormat = pf24bit);
-
-   LEDColor.R := $FF and FLEDColor;
-   LEDColor.G := $FF and (FLEDColor shr 8);
-   LEDColor.B := $FF and (FLEDColor shr 16);
-   Bright := 0.3 + 0.007 * FBrightness;
-
-   // draw circle
-   Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
-   if Rad <= 0 then Exit;
-   BW := 1 - FLineWidth * OversamplingFactor / Rad;
-
-   Center.Re := 0.5 * Width;
-   Center.Im := 0.5 * Height;
-   Pen.Color := FLineColor;
-   Brush.Color := FLEDColor;
-
-   {$IFDEF FPC}
-   SrcIntfImg := TLazIntfImage.Create(0, 0);
-   with SrcIntfImg do
-    try
-     LoadFromBitmap(Bitmap.BitmapHandle, Bitmap.MaskHandle);
-     for Y := 0 to Round(2 * Rad) do
-      begin
-       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
-       for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
-        begin
-         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
-
-         if Sqr(steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
-          then Scale := FBorderFactor * Scale;
-
-         Scale := 256 * Scale;
-
-         // manipulate pixel
-         CurCol := Colors[Steps, Round(2 * (Center.Im - (Rad - Y))) div 2];
-
-         CurCol.Blue  := Round(Scale * LEDColor.B);
-         CurCol.Green := Round(Scale * LEDColor.G);
-         CurCol.Red   := Round(Scale * LEDColor.R);
-
-         Colors[Steps, Round(2 * (Center.Im - (Rad - Y))) div 2] := CurCol;
-//         assert(Integer(@(Line[Steps])) and 1 <> 1);
-        end;
-      end;
-     CreateBitmaps(ImgHandle, ImgMaskHandle, false);
-     Bitmap.Handle := ImgHandle;
-     Bitmap.MaskHandle := ImgMaskHandle;
-    finally
-     Free;
-    end;
-   {$ELSE}
-   for Y := 0 to Round(2 * Rad) do
-    begin
-     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
-     Line := Scanline[Round(2 * (Center.Im - (Rad - Y))) div 2];
-     for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
-      begin
-       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
-
-       if Sqr(steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
-        then Scale := FBorderFactor * Scale;
-       Line[Steps].B := Round(Scale * LEDColor.B);
-       Line[Steps].G := Round(Scale * LEDColor.G);
-       Line[Steps].R := Round(Scale * LEDColor.R);
-//       assert(Integer(@(Line[Steps])) and 1 <> 1);
-      end;
-    end;
-   {$ENDIF}
-  end;
-end;
-
-procedure TCustomGuiLED.RenderLEDToBitmap32(const Bitmap: TBitmap);
-var
-  Steps, Y      : Integer;
-  Rad           : Single;
-  XStart        : Single;
-  BW            : Single;
-  Center        : TComplexSingle;
-  {$IFDEF FPC}
-  SrcIntfImg    : TLazIntfImage;
-  YPixelPos     : Integer;
-  CurCol        : TFPColor;
-  ImgHandle     : HBitmap;
-  ImgMaskHandle : HBitmap;
-  {$ELSE}
-  Line          : PBGR32Array;
-  {$ENDIF}
-  LEDColor      : TBGR32;
-  Scale         : Single;
-  Bright        : Single;
-begin
- with Bitmap, Canvas do
-  begin
-   Brush.Color := Self.Color;
-   Assert(Bitmap.PixelFormat = pf32bit);
-
-   LEDColor.A := $FF;
-   LEDColor.R := $FF and FLEDColor;
-   LEDColor.G := $FF and (FLEDColor shr 8);
-   LEDColor.B := $FF and (FLEDColor shr 16);
-   Bright := 0.3 + 0.007 * FBrightness;
-
-   // draw circle
-   Rad := 0.45 * Math.Min(Width, Height) - 0.5 * FLineWidth;
-   if Rad <= 0 then Exit;
-   BW := 1 - FLineWidth * OversamplingFactor / Rad;
-
-   Center.Re := 0.5 * Width;
-   Center.Im := 0.5 * Height;
-   Pen.Color := FLineColor;
-   Brush.Color := FLEDColor;
-
-   {$IFDEF FPC}
-   SrcIntfImg := TLazIntfImage.Create(0, 0);
-   with SrcIntfImg do
-    try
-     LoadFromBitmap(Bitmap.BitmapHandle, Bitmap.MaskHandle);
-     for Y := 0 to Round(2 * Rad) do
-      begin
-       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
-       for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
-        begin
-         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(Steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
-
-         if Sqr(Steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
-          then Scale := FBorderFactor * Scale;
-
-         Scale := 256 * Scale;
-
-         // manipulate pixel
-         YPixelPos := Round(2 * (Center.Im - (Rad - Y))) div 2;
-         CurCol := Colors[Steps, YPixelPos];
-
-         CurCol.Blue  := Round(Scale * LEDColor.B);
-         CurCol.Green := Round(Scale * LEDColor.G);
-         CurCol.Red   := Round(Scale * LEDColor.R);
-
-         Colors[Steps, YPixelPos] := CurCol;
-//         assert(Integer(@(Line[Steps])) and 1 <> 1);
-        end;
-      end;
-     CreateBitmaps(ImgHandle, ImgMaskHandle, false);
-     Bitmap.Handle := ImgHandle;
-     Bitmap.MaskHandle := ImgMaskHandle;
-    finally
-     Free;
-    end;
-   {$ELSE}
-   for Y := 0 to Round(2 * Rad) do
-    begin
-     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
-     Line := Scanline[Round(2 * (Center.Im - (Rad - Y))) div 2];
-     for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
-      begin
-       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(Steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
-
-       if Sqr(Steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
-        then Scale := FBorderFactor * Scale;
-       Line[Steps].B := Round(Scale * LEDColor.B);
-       Line[Steps].G := Round(Scale * LEDColor.G);
-       Line[Steps].R := Round(Scale * LEDColor.R);
-      end;
-    end;
-   {$ENDIF}
-  end;
-end;
-
-procedure TCustomGuiLED.UpdateBuffer;
-var
-  Bmp : TBitmap;
-begin
- if (Width > 0) and (Height > 0) then
-  with FBuffer.Canvas do
-   begin
-    Lock;
-    try
-     if AntiAlias = gaaNone then
-      begin
-       Assert(FBuffer.Width = Width);
-       Assert(FBuffer.Height = Height);
-
-       // draw background
-       {$IFNDEF FPC}
-       if FTransparent
-        then CopyParentImage(Self, FBuffer.Canvas)
-        else
-       {$ENDIF}
-        begin
-         Brush.Color := Self.Color;
-         FillRect(ClipRect);
-        end;
-
-       // render bitmap depending on bit depth
-       case FBuffer.PixelFormat of
-        pf24bit : RenderLEDToBitmap24(FBuffer);
-        pf32bit : RenderLEDToBitmap32(FBuffer);
-        else raise Exception.Create(RCStrWrongPixelFormat);
-       end;
-
-      end
-     else
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := OversamplingFactor * FBuffer.Width;
-         Height      := OversamplingFactor * FBuffer.Height;
-         {$IFNDEF FPC}
-         if FTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           UpsampleBitmap(Bmp);
-          end
-         else
-         {$ENDIF}
-          with Bmp.Canvas do
-           begin
-            Brush.Color := Self.Color;
-            FillRect(ClipRect);
-           end;
-
-         // render bitmap depending on bit depth
-         case FBuffer.PixelFormat of
-          pf24bit : RenderLEDToBitmap24(Bmp);
-          pf32bit : RenderLEDToBitmap32(Bmp);
-          else raise Exception.Create(RCStrWrongPixelFormat);
-         end;
-
-         DownsampleBitmap(Bmp);
-         FBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         Free;
-        end;
-      end;
-    finally
-     Unlock;
-    end;
-   end;
+ Message.Result := 0;
 end;
 
 end.

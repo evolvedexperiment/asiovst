@@ -17,7 +17,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'ABX algorithm Test';
+  Application.Title := 'ABX Algorithm Test';
   Application.CreateForm(TFmAbxAlgorithmTest, FmAbxAlgorithmTest);
   Application.CreateForm(TFmAudioSettings, FmAudioSettings);
   Application.Run;

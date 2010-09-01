@@ -67,76 +67,76 @@ object FmGenerator: TFmGenerator
     Caption = '0'
   end
   object LED6: TGuiLED
-    Left = 349
-    Top = 38
-    Width = 12
-    Height = 12
-    LEDColor = clRed
+    Left = 344
+    Top = 34
+    Width = 19
+    Height = 19
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.000000000000000000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = True
   end
   object LED5: TGuiLED
-    Left = 349
-    Top = 56
-    Width = 12
-    Height = 12
-    LEDColor = clRed
+    Left = 344
+    Top = 52
+    Width = 19
+    Height = 19
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.000000000000000000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = True
   end
   object LED4: TGuiLED
-    Left = 349
-    Top = 74
-    Width = 12
-    Height = 12
-    LEDColor = clRed
+    Left = 344
+    Top = 70
+    Width = 19
+    Height = 19
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.000000000000000000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = True
   end
   object LED3: TGuiLED
-    Left = 349
-    Top = 92
-    Width = 12
-    Height = 12
-    LEDColor = clRed
+    Left = 344
+    Top = 88
+    Width = 19
+    Height = 19
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.000000000000000000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = True
   end
   object LED2: TGuiLED
-    Left = 349
-    Top = 110
-    Width = 12
-    Height = 12
-    LEDColor = clRed
+    Left = 344
+    Top = 106
+    Width = 19
+    Height = 19
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.000000000000000000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = True
   end
   object LED1: TGuiLED
-    Left = 349
-    Top = 128
-    Width = 12
-    Height = 12
-    LEDColor = clRed
+    Left = 344
+    Top = 124
+    Width = 19
+    Height = 19
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.000000000000000000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = True
   end
   object BtPlay: TSpeedButton
     Left = 441
@@ -410,7 +410,6 @@ object FmGenerator: TFmGenerator
         Width = 59
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         ItemIndex = 0
         TabOrder = 3
         Text = '1'
@@ -428,7 +427,6 @@ object FmGenerator: TFmGenerator
         Width = 59
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         ItemIndex = 0
         TabOrder = 4
         Text = '1'
@@ -475,7 +473,6 @@ object FmGenerator: TFmGenerator
         Width = 59
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         ItemIndex = 0
         TabOrder = 1
         Text = '1'
@@ -605,7 +602,6 @@ object FmGenerator: TFmGenerator
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akBottom]
-    ItemHeight = 13
     TabOrder = 1
     OnChange = DriverComboChange
   end
@@ -661,6 +657,7 @@ object FmGenerator: TFmGenerator
       DisplayChannels = <>
       LineColor = clYellow
       LineWidth = 0
+      Normalize = False
       XAxis.SampleUpper = 255
       XAxis.FractionalLower = -0.500000000000000000
       XAxis.FractionalUpper = 0.500000000000000000

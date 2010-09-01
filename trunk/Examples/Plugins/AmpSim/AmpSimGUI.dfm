@@ -69,13 +69,12 @@ object FmCombo: TFmCombo
     Top = 8
     Width = 25
     Height = 25
-    LineWidth = 2
-    LEDColor = 192
+    BorderStrength_Percent = 80.000000000000000000
     Brightness_Percent = 100.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = 192
+    LineWidth = 2.400000095367432000
     Uniformity_Percent = 44.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = 192
+    Transparent = False
     OnClick = LbStereoClick
   end
   object LbStereo: TGuiLabel

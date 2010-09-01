@@ -107,15 +107,15 @@ object FmJNDEQT: TFmJNDEQT
   end
   object ClipLED: TGuiLED
     Left = 299
-    Top = 295
-    Width = 12
-    Height = 11
-    LEDColor = clRed
-    Brightness_Percent = 100.000000000000000000
+    Top = 293
+    Width = 16
+    Height = 16
     BorderStrength_Percent = 80.000000000000000000
-    Uniformity_Percent = 50.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Brightness_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 1.799999952316284000
+    Uniformity_Percent = 30.000001907348630000
+    Transparent = False
   end
   object LbClipIndicator: TGuiLabel
     Left = 229

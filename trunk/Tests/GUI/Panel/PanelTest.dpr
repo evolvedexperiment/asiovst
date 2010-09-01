@@ -2,7 +2,8 @@ program PanelTest;
 
 uses
   Forms,
-  PanelTestMain in 'PanelTestMain.pas' {FmPanelTest};
+  PanelTestMain in 'PanelTestMain.pas' {FmPanelTest},
+  DAV_GuiPanelNew in '..\..\..\Source\GUI\DAV_GuiPanelNew.pas';
 
 {$R *.res}
 

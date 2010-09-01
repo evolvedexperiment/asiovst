@@ -53,15 +53,15 @@ type
     procedure VSTModuleProcessBandpass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterLowpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLowpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure StringOrderToParameter(Sender: TObject; const Index: Integer;
-      const ParameterString: string; var Value: Single);
+      const ParameterString: AnsiString; var Value: Single);
   private
     FLowpass     : array of array [0..1] of TButterworthLowPassFilter;
     FHighpass    : array of array [0..1] of TButterworthHighPassFilter;
@@ -199,9 +199,9 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.StringOrderToParameter(Sender: TObject;
-  const Index: Integer; const ParameterString: string; var Value: Single);
+  const Index: Integer; const ParameterString: AnsiString; var Value: Single);
 var
-  ProcStr : string;
+  ProcStr : AnsiString;
   Indxes  : array [0..1] of Integer;
 begin
  with ParameterProperties[Index] do
@@ -220,7 +220,7 @@ begin
 
      ProcStr := Copy(ProcStr, Indxes[0], Indxes[1] - Indxes[0]);
 
-     Value := Round(StrToFloat(ProcStr) / 12);
+     Value := Round(StrToFloat(string(ProcStr)) / 12);
     end;
   end;
 end;
@@ -292,13 +292,13 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.ParameterOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(12 * Round(Parameter[Index]));
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Freq : Single;
 begin
@@ -308,7 +308,7 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := 'kHz';
@@ -332,7 +332,7 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.ParameterTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case round(Parameter[Index]) of
   0: PreDefined := 'Bypass';

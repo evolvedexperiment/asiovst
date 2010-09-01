@@ -15,6 +15,7 @@ uses
 
 begin
   Application.Initialize;
+  Application.Title := 'Generator';
   Application.CreateForm(TFmGenerator, FmGenerator);
   Application.Run;
 end.

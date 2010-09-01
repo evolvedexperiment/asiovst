@@ -3,8 +3,8 @@ unit AdsrTestMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiBaseControl, DAV_GuiADSRGraph;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  DAV_GuiBaseControl, DAV_GuiADSRGraph;
 
 type
   TFmAdsrTest = class(TForm)

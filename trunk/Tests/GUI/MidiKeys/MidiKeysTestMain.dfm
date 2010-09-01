@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 218
   Top = 77
   Caption = 'Form1'
-  ClientHeight = 184
+  ClientHeight = 149
   ClientWidth = 533
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,9 +19,9 @@ object Form1: TForm1
     Top = 8
     Width = 256
     Height = 64
-    KeyDownMode = kdmFlat
-    Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
+    Height3d = 0.200000002980232200
+    KeyDownMode = kdmFlat
     KeyZones = <>
   end
   object MidiKeysB: TGuiMidiKeys
@@ -29,9 +29,9 @@ object Form1: TForm1
     Top = 8
     Width = 256
     Height = 64
-    KeyDownMode = kdmFlat
-    Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
+    Height3d = 0.200000002980232200
+    KeyDownMode = kdmFlat
     KeyZones = <>
   end
   object MidiKeysC: TGuiMidiKeys
@@ -39,9 +39,9 @@ object Form1: TForm1
     Top = 78
     Width = 256
     Height = 64
-    KeyDownMode = kdmFlat
-    Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
+    Height3d = 0.200000002980232200
+    KeyDownMode = kdmFlat
     KeyZones = <>
   end
   object MidiKeysD: TGuiMidiKeys
@@ -49,20 +49,9 @@ object Form1: TForm1
     Top = 78
     Width = 256
     Height = 64
-    KeyDownMode = kdmFlat
-    Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
+    Height3d = 0.200000002980232200
+    KeyDownMode = kdmFlat
     KeyZones = <>
-  end
-  object GuiLED1: TGuiLED
-    Left = 264
-    Top = 148
-    Width = 29
-    Height = 29
-    LEDColor = clRed
-    Brightness_Percent = 100.000000000000000000
-    Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear2x
-    LineColor = clRed
   end
 end

@@ -29,9 +29,7 @@ uses
   DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_GuiCorrelationMeter,
   DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign,
   DAV_GuiDialRenderer, {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds,
-  {$ENDIF} DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider, DAV_GuiMediaButton,
-  DAV_GuiLEDnew
-  ;
+  {$ENDIF} DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider, DAV_GuiMediaButton;
 
 procedure Register;
 begin
@@ -42,7 +40,7 @@ begin
     TGuiLevelMeter, TGuiColorLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx,
     TGuiDialImageList, TGuiDialImageRenderer, TGuiEQGraph, TGuiEQSlide,
     {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiSwitch,
-    TGuiSlider, TGuiMediaButton, TGuiLEDnew]);
+    TGuiSlider, TGuiMediaButton]);
 
   RegisterPropertyEditor(TypeInfo(string), TGuiDialLayerCollectionItem, 'PrimitiveClassName', nil);
   RegisterPropertyEditor(TypeInfo(TCustomGuiDialPrimitive), TGuiDialLayerCollectionItem, 'Primitive', TPrimitiveClassProperty);

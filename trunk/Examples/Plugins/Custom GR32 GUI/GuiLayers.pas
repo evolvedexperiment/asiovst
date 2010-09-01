@@ -49,7 +49,7 @@ type
   TStitchDirection = (sdVertical, sdHorizontal);
   TDialLayer = class(TBitmapLayer, IVSTParameter)
   private
-    FNumGlyphs       : Integer;
+    FGlyphCount       : Integer;
     FStitchBitmap    : TBitmap32;
     FStitchDirection : TStitchDirection;
     FStitchIndex     : Integer;
@@ -58,13 +58,13 @@ type
     FOnChanged       : TNotifyEvent;
     function GetParameter: Integer;
     procedure StitchBitmapChangedHandler(Sender: TObject);
-    procedure SetNumGlyphs(const Value: Integer);
+    procedure SetGlyphCount(const Value: Integer);
     procedure SetStitchBitmap(const Value: TBitmap32);
     procedure SetStitchDirection(const Value: TStitchDirection);
     procedure SetStitchIndex(Value: Integer);
     procedure SetParameter(const Value: Integer);
   protected
-    procedure NumGlyphsChanged; virtual;
+    procedure GlyphCountChanged; virtual;
     procedure StitchDirectionChanged; virtual;
     procedure StitchIndexChanged; virtual;
     procedure ParameterChanged; virtual;
@@ -83,7 +83,7 @@ type
     property StitchBitmap: TBitmap32 read FStitchBitmap write SetStitchBitmap;
     property StitchDirection: TStitchDirection read FStitchDirection write SetStitchDirection;
     property StitchIndex: Integer read FStitchIndex write SetStitchIndex;
-    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
+    property GlyphCount: Integer read FGlyphCount write SetGlyphCount default 1;
     property Parameter: Integer read GetParameter write SetParameter;
 
     property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
@@ -229,7 +229,7 @@ begin
   end;
 
  FStitchDirection := sdHorizontal;
- FNumGlyphs := 1;
+ FGlyphCount := 1;
  FStitchIndex := 0;
 end;
 
@@ -253,56 +253,56 @@ begin
  if FStitchBitmap.Width > FStitchBitmap.Height then
   begin
    FStitchDirection := sdHorizontal;
-   FNumGlyphs := Round(FStitchBitmap.Width / FStitchBitmap.Height);
+   FGlyphCount := Round(FStitchBitmap.Width / FStitchBitmap.Height);
 
-   if FStitchBitmap.Width <> FStitchBitmap.Height * FNumGlyphs then
+   if FStitchBitmap.Width <> FStitchBitmap.Height * FGlyphCount then
     begin
-     for i := 0 to FNumGlyphs div 2 do
+     for i := 0 to FGlyphCount div 2 do
       begin
-       if (FStitchBitmap.Width div (FNumGlyphs + i)) = (FStitchBitmap.Width / (FNumGlyphs + i)) then
+       if (FStitchBitmap.Width div (FGlyphCount + i)) = (FStitchBitmap.Width / (FGlyphCount + i)) then
         begin
-         FNumGlyphs := FNumGlyphs + i;
+         FGlyphCount := FGlyphCount + i;
          Break;
         end;
-       if (FStitchBitmap.Width div (FNumGlyphs - i)) = (FStitchBitmap.Width / (FNumGlyphs - i)) then
+       if (FStitchBitmap.Width div (FGlyphCount - i)) = (FStitchBitmap.Width / (FGlyphCount - i)) then
         begin
-         FNumGlyphs := FNumGlyphs - i;
+         FGlyphCount := FGlyphCount - i;
          Break;
         end;
       end;
     end;
 
-   Bitmap.Width := FStitchBitmap.Width div FNumGlyphs;
+   Bitmap.Width := FStitchBitmap.Width div FGlyphCount;
    Bitmap.Height := FStitchBitmap.Height;
   end
  else
   begin
    FStitchDirection := sdVertical;
-   FNumGlyphs := Round(FStitchBitmap.Height / FStitchBitmap.Width);
+   FGlyphCount := Round(FStitchBitmap.Height / FStitchBitmap.Width);
 
-   if FStitchBitmap.Height <> FStitchBitmap.Width * FNumGlyphs then
+   if FStitchBitmap.Height <> FStitchBitmap.Width * FGlyphCount then
     begin
-     for i := 0 to FNumGlyphs div 2 do
+     for i := 0 to FGlyphCount div 2 do
       begin
-       if (FStitchBitmap.Height div (FNumGlyphs + i)) = (FStitchBitmap.Height / (FNumGlyphs + i)) then
+       if (FStitchBitmap.Height div (FGlyphCount + i)) = (FStitchBitmap.Height / (FGlyphCount + i)) then
         begin
-         FNumGlyphs := FNumGlyphs + i;
+         FGlyphCount := FGlyphCount + i;
          Break;
         end;
-       if (FStitchBitmap.Height div (FNumGlyphs - i)) = (FStitchBitmap.Height / (FNumGlyphs - i)) then
+       if (FStitchBitmap.Height div (FGlyphCount - i)) = (FStitchBitmap.Height / (FGlyphCount - i)) then
         begin
-         FNumGlyphs := FNumGlyphs - i;
+         FGlyphCount := FGlyphCount - i;
          Break;
         end;
       end;
     end;
 
    Bitmap.Width := FStitchBitmap.Width;
-   Bitmap.Height := FStitchBitmap.Height div FNumGlyphs;
+   Bitmap.Height := FStitchBitmap.Height div FGlyphCount;
   end;
 
- if FStitchIndex >= FNumGlyphs
-  then FStitchIndex := FNumGlyphs - 1;
+ if FStitchIndex >= FGlyphCount
+  then FStitchIndex := FGlyphCount - 1;
 
  RecalculateLocation;
  RenderDialToBitmap;
@@ -330,7 +330,7 @@ begin
  FMousePos.Y := Y;
 end;
 
-procedure TDialLayer.NumGlyphsChanged;
+procedure TDialLayer.GlyphCountChanged;
 begin
  RecalculateLocation;
  RenderDialToBitmap;
@@ -357,8 +357,8 @@ procedure TDialLayer.RecalculateLocation;
 begin
  with Location, FStitchBitmap do
   if FStitchDirection = sdHorizontal
-   then Location := FloatRect(Left, Top, Left + Width / FNumGlyphs, Top + Height)
-   else Location := FloatRect(Left, Top, Left + Width, Top + Height / FNumGlyphs);
+   then Location := FloatRect(Left, Top, Left + Width / FGlyphCount, Top + Height)
+   else Location := FloatRect(Left, Top, Left + Width, Top + Height / FGlyphCount);
  Bitmap.Width := Round(Location.Right - Location.Left);
  Bitmap.Height := Round(Location.Bottom - Location.Top);
 end;
@@ -370,10 +370,10 @@ begin
   if (Width > 0) and (Height > 0) then
    begin
     if FStitchDirection = sdHorizontal
-     then Bitmap.Draw(0, 0, Rect((FStitchIndex * Width) div FNumGlyphs, 0,
-       ((FStitchIndex + 1) * Width) div FNumGlyphs, Height), FStitchBitmap)
-     else Bitmap.Draw(0, 0, Rect(0, (FStitchIndex * Height) div FNumGlyphs,
-       Width, ((FStitchIndex + 1) * Height) div FNumGlyphs), FStitchBitmap);
+     then Bitmap.Draw(0, 0, Rect((FStitchIndex * Width) div FGlyphCount, 0,
+       ((FStitchIndex + 1) * Width) div FGlyphCount, Height), FStitchBitmap)
+     else Bitmap.Draw(0, 0, Rect(0, (FStitchIndex * Height) div FGlyphCount,
+       Width, ((FStitchIndex + 1) * Height) div FGlyphCount), FStitchBitmap);
    end;
 end;
 
@@ -382,12 +382,12 @@ begin
 
 end;
 
-procedure TDialLayer.SetNumGlyphs(const Value: Integer);
+procedure TDialLayer.SetGlyphCount(const Value: Integer);
 begin
- if FNumGlyphs <> Value then
+ if FGlyphCount <> Value then
   begin
-   FNumGlyphs := Value;
-   NumGlyphsChanged;
+   FGlyphCount := Value;
+   GlyphCountChanged;
   end;
 end;
 
@@ -417,7 +417,7 @@ end;
 procedure TDialLayer.SetStitchIndex(Value: Integer);
 begin
  if Value < 0 then Value := 0 else
- if Value >= FNumGlyphs then Value := FNumGlyphs - 1;
+ if Value >= FGlyphCount then Value := FGlyphCount - 1;
 
  if FStitchIndex <> Value then
   begin

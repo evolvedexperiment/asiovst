@@ -742,29 +742,29 @@ object FmASIO: TFmASIO
     OnDblClick = LbFrequencyDblClick
   end
   object LedClipR: TGuiLED
-    Left = 620
+    Left = 621
     Top = 293
     Width = 16
     Height = 16
-    LEDColor = clRed
-    Brightness_Percent = 100.000000000000000000
     BorderStrength_Percent = 50.000000000000000000
-    Uniformity_Percent = 50.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Brightness_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 1.799999952316284000
+    Uniformity_Percent = 33.000000000000000000
+    Transparent = False
     OnClick = LedClipRClick
   end
   object LedClipL: TGuiLED
-    Left = 620
+    Left = 621
     Top = 58
     Width = 16
     Height = 16
-    LEDColor = clRed
-    Brightness_Percent = 100.000000000000000000
     BorderStrength_Percent = 50.000000000000000000
-    Uniformity_Percent = 50.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Brightness_Percent = 100.000000000000000000
+    LEDColor = clRed
+    LineWidth = 1.799999952316284000
+    Uniformity_Percent = 33.000000000000000000
+    Transparent = False
     OnClick = LedClipLClick
   end
   object DriverCombo: TComboBox

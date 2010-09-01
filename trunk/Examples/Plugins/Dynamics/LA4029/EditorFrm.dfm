@@ -200,7 +200,7 @@ object FmLA4029: TFmLA4029
       Height = 72
       Color = clBlack
       GlyphIndex = 0
-      NumGlyphs = 65
+      GlyphCount = 65
       StitchKind = skHorizontal
       PopupMenu = PopupVUMeterSpeed
     end

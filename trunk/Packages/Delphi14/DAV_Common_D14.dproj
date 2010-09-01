@@ -98,6 +98,7 @@
 			<DCCReference Include="..\..\Source\DAV_Types.pas"/>
 			<DCCReference Include="..\..\Source\DAV_VectorMath.pas"/>
 			<DCCReference Include="..\..\Source\DAV_WaveFileTypes.pas"/>
+			<DCCReference Include="..\..\Source\DAV_MemoryUtils.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -150,7 +151,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-08-28 12:43</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-08-31 15:56</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

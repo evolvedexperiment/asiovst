@@ -23,13 +23,12 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 8
     Width = 41
     Height = 40
-    LineWidth = 2
-    LEDColor = clRed
-    Brightness_Percent = 10.000000000000000000
     BorderStrength_Percent = 70.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.700000047683716000
     Uniformity_Percent = 44.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = False
   end
   object BtStartStop: TGuiButton
     Left = 8
@@ -47,6 +46,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     LineColor = 2105376
     LineWidth = 3
     Radius = 7
+    Shadow.Color = clBlack
     OnClick = BtStartStopClick
   end
   object GuiLED2: TGuiLED
@@ -54,39 +54,36 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 8
     Width = 41
     Height = 40
-    LineWidth = 2
-    LEDColor = clRed
-    Brightness_Percent = 10.000000000000000000
     BorderStrength_Percent = 70.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.700000047683716000
     Uniformity_Percent = 44.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = False
   end
   object GuiLED3: TGuiLED
     Left = 254
     Top = 8
     Width = 41
     Height = 40
-    LineWidth = 2
-    LEDColor = clRed
-    Brightness_Percent = 10.000000000000000000
     BorderStrength_Percent = 70.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.700000047683716000
     Uniformity_Percent = 44.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = False
   end
   object GuiLED4: TGuiLED
     Left = 301
     Top = 8
     Width = 41
     Height = 40
-    LineWidth = 2
-    LEDColor = clRed
-    Brightness_Percent = 10.000000000000000000
     BorderStrength_Percent = 70.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = clRed
+    LineWidth = 2.700000047683716000
     Uniformity_Percent = 44.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
+    Transparent = False
   end
   object LbMic1: TGuiLabel
     Left = 160
@@ -172,6 +169,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     LineColor = 2105376
     LineWidth = 3
     Radius = 5
+    Shadow.Color = clBlack
     OnClick = BtSetupClick
   end
   object BtExit: TGuiButton
@@ -190,6 +188,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     LineColor = 2105376
     LineWidth = 3
     Radius = 5
+    Shadow.Color = clBlack
     OnClick = BtExitClick
   end
   object Timer: TTimer

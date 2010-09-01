@@ -12,7 +12,6 @@ type
     MidiKeysB: TGuiMidiKeys;
     MidiKeysC: TGuiMidiKeys;
     MidiKeysD: TGuiMidiKeys;
-    GuiLED1: TGuiLED;
     procedure FormCreate(Sender: TObject);
   private
     { Private-Deklarationen }

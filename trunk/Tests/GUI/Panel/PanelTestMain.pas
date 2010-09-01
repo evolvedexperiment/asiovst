@@ -3,20 +3,20 @@ unit PanelTestMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, ExtCtrls, DAV_GuiPanel;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiPanel, DAV_GuiPanelNew;
 
 type
   TFmPanelTest = class(TForm)
+    CbTransparent: TCheckBox;
+    LbLineWidth: TLabel;
+    LbRoundRadius: TLabel;
     PanelA: TGuiPanel;
     PanelB: TGuiPanel;
     PanelC: TGuiPanel;
     PanelD: TGuiPanel;
-    TbRoundRadius: TTrackBar;
-    LbRoundRadius: TLabel;
     TbLineWidth: TTrackBar;
-    Label1: TLabel;
-    CbTransparent: TCheckBox;
+    TbRoundRadius: TTrackBar;
     procedure TbRoundRadiusChange(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
     procedure TbLineWidthChange(Sender: TObject);
@@ -43,10 +43,10 @@ end;
 
 procedure TFmPanelTest.TbLineWidthChange(Sender: TObject);
 begin
- PanelA.Linewidth := TbLinewidth.Position;
- PanelB.Linewidth := TbLinewidth.Position;
- PanelC.Linewidth := TbLinewidth.Position;
- PanelD.Linewidth := TbLinewidth.Position;
+ PanelA.Borderwidth := 0.5 * TbLinewidth.Position;
+ PanelB.Borderwidth := 0.5 * TbLinewidth.Position;
+ PanelC.Borderwidth := 0.5 * TbLinewidth.Position;
+ PanelD.Borderwidth := 0.5 * TbLinewidth.Position;
 end;
 
 procedure TFmPanelTest.TbRoundRadiusChange(Sender: TObject);
