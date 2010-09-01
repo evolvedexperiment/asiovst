@@ -75,6 +75,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbRatio: TGuiLabel
     Left = 83
@@ -89,6 +91,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbThresholdOffsetValue: TGuiLabel
     Left = 7
@@ -102,6 +106,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
     Left = 78
@@ -115,6 +121,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialKnee: TGuiDial
     Left = 158
@@ -151,6 +159,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
     Left = 145
@@ -164,6 +174,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialAttack: TGuiDial
     Left = 224
@@ -201,6 +213,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
     Left = 211
@@ -214,6 +228,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRelease: TGuiDial
     Left = 290
@@ -251,6 +267,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
     Left = 277
@@ -264,6 +282,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object SbWindowFunction: TGuiSelectBox
     Left = 151
@@ -318,6 +338,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbCaptureNoiseProfile: TGuiLabel
     Left = 178
@@ -331,6 +353,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LedNoiseProfileClick
   end
   object LedNoiseProfile: TGuiLED
@@ -338,11 +362,12 @@ object FmNoiseReduction: TFmNoiseReduction
     Top = 124
     Width = 16
     Height = 16
-    LEDColor = 14277598
+    BorderStrength_Percent = 80.000000000000000000
     Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.299999952316284000
     Uniformity_Percent = 40.000000000000000000
-    AntiAlias = gaaLinear3x
-    LineColor = 14277598
+    Transparent = False
     OnClick = LedNoiseProfileClick
   end
   object GuiLabel1: TGuiLabel
@@ -357,6 +382,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object SbFftSize: TGuiSelectBox
     Left = 85

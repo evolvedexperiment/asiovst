@@ -358,17 +358,16 @@ object FmAdvancedClipper: TFmAdvancedClipper
       end
       object LEDHardClip: TGuiLED
         Left = 5
-        Top = 2
-        Width = 15
-        Height = 15
-        Color = 4938079
-        LineWidth = 2
-        LEDColor = 14870505
-        Brightness_Percent = 90.000000000000000000
+        Top = 0
+        Width = 18
+        Height = 18
         BorderStrength_Percent = 75.000000000000000000
+        Brightness_Percent = 90.000000000000000000
+        LEDColor = 14870505
+        LineWidth = 2.299999952316284000
         Uniformity_Percent = 36.754447937011720000
-        AntiAlias = gaaLinear4x
-        LineColor = 3226174
+        Transparent = False
+        Color = 4938079
         ParentColor = False
         OnClick = LbHardClipClick
       end
@@ -437,45 +436,44 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Shadow.Color = clBlack
     end
     object ClipLEDInput: TGuiLED
-      Left = 21
-      Top = 9
-      Width = 28
-      Height = 28
-      LineWidth = 2
-      LEDColor = 8244410
-      Brightness_Percent = 100.000000000000000000
+      Left = 19
+      Top = 4
+      Width = 32
+      Height = 32
       BorderStrength_Percent = 75.000000000000000000
+      Brightness_Percent = 100.000000000000000000
+      LEDColor = 8244410
+      LineWidth = 3.000000000000000000
       Uniformity_Percent = 50.000000000000000000
-      AntiAlias = gaaLinear4x
-      LineColor = 3226174
+      Transparent = False
+      ParentShowHint = False
+      ShowHint = True
       OnClick = ClipLEDClick
     end
     object ClipLEDStage1: TGuiLED
-      Left = 83
-      Top = 9
-      Width = 28
-      Height = 28
-      LineWidth = 2
-      LEDColor = 8234444
-      Brightness_Percent = 100.000000000000000000
+      Left = 81
+      Top = 4
+      Width = 32
+      Height = 32
       BorderStrength_Percent = 75.000000000000000000
+      Brightness_Percent = 100.000000000000000000
+      LEDColor = 8234444
+      LineWidth = 3.000000000000000000
       Uniformity_Percent = 50.000000000000000000
-      AntiAlias = gaaLinear4x
-      LineColor = 3226174
+      Transparent = False
       OnClick = ClipLEDClick
     end
     object ClipLEDStage2: TGuiLED
-      Left = 148
-      Top = 9
-      Width = 28
-      Height = 28
-      LineWidth = 2
-      LEDColor = 8226252
-      Brightness_Percent = 100.000000000000000000
+      Left = 146
+      Top = 4
+      Width = 32
+      Height = 32
       BorderStrength_Percent = 75.000000000000000000
+      Brightness_Percent = 100.000000000000000000
+      LEDColor = 8226252
+      LineWidth = 3.000000000000000000
       Uniformity_Percent = 50.000000000000000000
-      AntiAlias = gaaLinear4x
-      LineColor = 3226174
+      Transparent = False
       OnClick = ClipLEDClick
     end
   end

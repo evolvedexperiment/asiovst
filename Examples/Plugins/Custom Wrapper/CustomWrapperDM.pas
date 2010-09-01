@@ -227,7 +227,7 @@ begin
          else inc(i);
        end;
      end;
-   Dial.NumGlyphs := j + i;
+   Dial.GlyphCount := j + i;
 
   finally
    RS.Free;

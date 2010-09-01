@@ -341,15 +341,15 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
   end
   object LEDStereo: TGuiLED
     Left = 248
-    Top = 9
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
+    Top = 7
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.299999952316284000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear3x
-    LineColor = clRed
+    Transparent = False
     OnClick = LEDStereoClick
   end
   object LbStereo: TGuiLabel
@@ -370,15 +370,15 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
   end
   object LEDLimit: TGuiLED
     Left = 248
-    Top = 30
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
+    Top = 28
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.299999952316284000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear3x
-    LineColor = clRed
+    Transparent = False
     OnClick = LEDLimitClick
   end
   object GuiLabel2: TGuiLabel
@@ -399,15 +399,15 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
   end
   object LEDAutoGain: TGuiLED
     Left = 248
-    Top = 69
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
+    Top = 67
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.299999952316284000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear3x
-    LineColor = clRed
+    Transparent = False
     OnClick = LEDAutoGainClick
   end
   object GuiLabel3: TGuiLabel
@@ -428,15 +428,15 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
   end
   object LEDOversample: TGuiLED
     Left = 248
-    Top = 51
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
+    Top = 49
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.299999952316284000
     Uniformity_Percent = 36.754447937011720000
-    AntiAlias = gaaLinear3x
-    LineColor = clRed
+    Transparent = False
     Visible = False
     OnClick = LEDAutoGainClick
   end

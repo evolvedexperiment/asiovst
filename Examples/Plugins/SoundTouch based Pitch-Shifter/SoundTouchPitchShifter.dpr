@@ -30,9 +30,8 @@ begin
 end;
 
 exports
-  VstPluginMain name 'main';
-  VstPluginMain name 'VSTPluginMain';
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain',
   WinampDSPGetHeader name 'winampDSPGetHeader2';
 
-begin
 end.

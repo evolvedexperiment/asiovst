@@ -552,7 +552,7 @@ begin
     then PeakLevel := InputPeakLevel
     else PeakLevel := OutputPeakLevel;
 
-   VUMeter.GlyphIndex := round((25 + Limit(PeakLevel, -25, 0)) * VUMeter.NumGlyphs * COne25th);
+   VUMeter.GlyphIndex := round((25 + Limit(PeakLevel, -25, 0)) * VUMeter.GlyphCount * COne25th);
   end;
 end;
 

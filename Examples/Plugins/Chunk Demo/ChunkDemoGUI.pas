@@ -133,7 +133,7 @@ begin
      DialBitmap.Width := PngBmp.Width;
      DialBitmap.Height := PngBmp.Height;
      PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
-     NumGlyphs := 65;
+     GlyphCount := 65;
     end;
 
 (*
@@ -152,7 +152,7 @@ begin
    with DIL.DialImages.Add do
     begin
      DialBitmap.Assign(PngBmp);
-     NumGlyphs := 65;
+     GlyphCount := 65;
     end;
 *)
    DialAlpha.DialImageIndex := 0;

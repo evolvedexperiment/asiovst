@@ -113,12 +113,12 @@ object FmHumRemoval: TFmHumRemoval
       Top = 38
       Width = 16
       Height = 16
-      LEDColor = 14277598
+      BorderStrength_Percent = 80.000000000000000000
       Brightness_Percent = 10.000000000000000000
-      BorderStrength_Percent = 100.000000000000000000
+      LEDColor = 14277598
+      LineWidth = 1.299999952316284000
       Uniformity_Percent = 40.000000000000000000
-      AntiAlias = gaaLinear3x
-      LineColor = 14277598
+      Transparent = False
       OnClick = LedHighpassActiveClick
     end
     object SbHighpassType: TGuiSelectBox
@@ -299,7 +299,7 @@ object FmHumRemoval: TFmHumRemoval
       LineColor = 12632777
       LineWidth = 2
       Max = 0.300000011920929000
-      Min = 0.029999999329447740
+      Min = 0.029999999329447750
       GlyphCount = 65
       OnChange = DialNotchBandwidthChange
       PointerAngles.Start = 225
@@ -345,12 +345,12 @@ object FmHumRemoval: TFmHumRemoval
       Top = 38
       Width = 16
       Height = 16
-      LEDColor = 14277598
+      BorderStrength_Percent = 80.000000000000000000
       Brightness_Percent = 10.000000000000000000
-      BorderStrength_Percent = 100.000000000000000000
+      LEDColor = 14277598
+      LineWidth = 1.299999952316284000
       Uniformity_Percent = 40.000000000000000000
-      AntiAlias = gaaLinear3x
-      LineColor = 14277598
+      Transparent = False
       OnClick = LedHumProfileClick
     end
     object LbCaptureHumProfile: TGuiLabel

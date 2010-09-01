@@ -1,6 +1,6 @@
 object FmPanelTest: TFmPanelTest
-  Left = 218
-  Top = 77
+  Left = 286
+  Top = 101
   Caption = 'Panel Test'
   ClientHeight = 132
   ClientWidth = 278
@@ -20,7 +20,7 @@ object FmPanelTest: TFmPanelTest
     Height = 13
     Caption = 'Round Radius:'
   end
-  object Label1: TLabel
+  object LbLineWidth: TLabel
     Left = 8
     Top = 109
     Width = 54
@@ -33,9 +33,10 @@ object FmPanelTest: TFmPanelTest
     Width = 128
     Height = 32
     Caption = 'PanelA'
-    LineColor = clBtnShadow
+    LineColor = 4605510
     PanelColor = clBlue
     ParentColor = True
+    Radius = 4
     TabOrder = 0
     UseDockManager = True
   end
@@ -44,12 +45,11 @@ object FmPanelTest: TFmPanelTest
     Top = 8
     Width = 128
     Height = 32
-    AntiAlias = gaaLinear2x
     Caption = 'GuiPanel1'
-    LineColor = clBtnShadow
+    LineColor = 4605510
     PanelColor = clLime
     ParentColor = True
-    Radius = 3
+    Radius = 4
     TabOrder = 1
     UseDockManager = True
   end
@@ -58,9 +58,8 @@ object FmPanelTest: TFmPanelTest
     Top = 46
     Width = 128
     Height = 32
-    AntiAlias = gaaLinear3x
     Caption = 'GuiPanel1'
-    LineColor = clBtnShadow
+    LineColor = 4605510
     PanelColor = clRed
     ParentColor = True
     Radius = 4
@@ -72,12 +71,11 @@ object FmPanelTest: TFmPanelTest
     Top = 46
     Width = 128
     Height = 32
-    AntiAlias = gaaLinear4x
     Caption = 'GuiPanel1'
-    LineColor = clBtnShadow
+    LineColor = 4605510
     PanelColor = clYellow
     ParentColor = True
-    Radius = 5
+    Radius = 4
     TabOrder = 3
     UseDockManager = True
   end
@@ -98,9 +96,8 @@ object FmPanelTest: TFmPanelTest
     Top = 108
     Width = 118
     Height = 18
-    Max = 8
-    Min = 1
-    Position = 1
+    Max = 16
+    Position = 4
     TabOrder = 5
     ThumbLength = 12
     OnChange = TbLineWidthChange

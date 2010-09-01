@@ -770,19 +770,19 @@ end;
 procedure TCustomGuiBaseMouseControl.DragMouseMoveLeft(Shift: TShiftState; X,
   Y: Integer);
 begin
-  if assigned(FOnDragMouseMove) then FOnDragMouseMove(self, mbLeft, Shift, X, Y);
+  if Assigned(FOnDragMouseMove) then FOnDragMouseMove(Self, mbLeft, Shift, X, Y);
 end;
 
 procedure TCustomGuiBaseMouseControl.DragMouseMoveMiddle(Shift: TShiftState; X,
   Y: Integer);
 begin
-  if assigned(FOnDragMouseMove) then FOnDragMouseMove(self, mbMiddle, Shift, X, Y);
+  if Assigned(FOnDragMouseMove) then FOnDragMouseMove(Self, mbMiddle, Shift, X, Y);
 end;
 
 procedure TCustomGuiBaseMouseControl.DragMouseMoveRight(Shift: TShiftState; X,
   Y: Integer);
 begin
-  if assigned(FOnDragMouseMove) then FOnDragMouseMove(self, mbRight, Shift, X, Y);
+  if Assigned(FOnDragMouseMove) then FOnDragMouseMove(Self, mbRight, Shift, X, Y);
 end;
 
 function TCustomGuiBaseMouseControl.GetRedrawInterval: Integer;

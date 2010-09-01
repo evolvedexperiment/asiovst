@@ -30,7 +30,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Font.Name = 'Tahoma'
     Font.Style = []
     LineColor = 14277598
-    LineWidth = 2
+    PanelColor = clBlack
     ParentFont = False
     Radius = 5
     TabOrder = 0
@@ -71,6 +71,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbGateAttackValue: TGuiLabel
       Left = 48
@@ -85,6 +86,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialGateRelease: TGuiDial
       Left = 147
@@ -123,6 +125,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbGateReleaseValue: TGuiLabel
       Left = 126
@@ -137,6 +140,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialGateThreshold: TGuiDial
       Left = 227
@@ -174,6 +178,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbGateThresholdValue: TGuiLabel
       Left = 208
@@ -188,6 +193,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialGateRatio: TGuiDial
       Left = 307
@@ -226,6 +232,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbGateRatioValue: TGuiLabel
       Left = 286
@@ -240,6 +247,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialGateKnee: TGuiDial
       Left = 387
@@ -277,6 +285,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbGateKneeValue: TGuiLabel
       Left = 368
@@ -291,6 +300,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LmLeft: TGuiColorLevelMeter
       Left = 9
@@ -327,6 +337,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Style = [fsBold]
       ParentFont = False
       Visible = False
+      Shadow.Color = clBlack
     end
     object LbInputGainRight: TGuiLabel
       Left = 28
@@ -343,6 +354,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Style = [fsBold]
       ParentFont = False
       Visible = False
+      Shadow.Color = clBlack
     end
   end
   object GbCompressor: TGuiGroup
@@ -358,7 +370,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Font.Name = 'Tahoma'
     Font.Style = []
     LineColor = 14277598
-    LineWidth = 2
+    PanelColor = clBlack
     ParentFont = False
     Radius = 5
     TabOrder = 1
@@ -398,6 +410,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbCompressorThresholdValue: TGuiLabel
       Left = 171
@@ -412,6 +425,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialCompressorAttack: TGuiDial
       Left = 27
@@ -450,6 +464,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbCompressorAttackValue: TGuiLabel
       Left = 8
@@ -464,6 +479,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialCompressorRelease: TGuiDial
       Left = 107
@@ -502,6 +518,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbCompressorReleaseValue: TGuiLabel
       Left = 86
@@ -516,6 +533,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialCompressorRatio: TGuiDial
       Left = 27
@@ -554,6 +572,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbCompressorRatioValue: TGuiLabel
       Left = 6
@@ -568,6 +587,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialCompressorKnee: TGuiDial
       Left = 107
@@ -605,6 +625,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbCompressorKneeValue: TGuiLabel
       Left = 88
@@ -619,6 +640,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialCompressorMakeUpGain: TGuiDial
       Left = 190
@@ -656,6 +678,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbCompressorMakeUpGainValue: TGuiLabel
       Left = 171
@@ -670,17 +693,19 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LEDAutoGain: TGuiLED
       Left = 110
       Top = 7
       Width = 15
       Height = 15
-      LEDColor = 14277598
+      BorderStrength_Percent = 100.000000000000000000
       Brightness_Percent = 10.000000000000000000
+      LEDColor = 14277598
+      LineWidth = 1.000000000000000000
       Uniformity_Percent = 40.000000000000000000
-      AntiAlias = gaaLinear3x
-      LineColor = 14277598
+      Transparent = False
       OnClick = LEDAutoGainClick
     end
     object LbAutomaticMakeupGain: TGuiLabel
@@ -696,6 +721,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LEDAutoGainClick
     end
   end
@@ -712,7 +738,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Font.Name = 'Tahoma'
     Font.Style = []
     LineColor = 14277598
-    LineWidth = 2
+    PanelColor = clBlack
     ParentFont = False
     Radius = 5
     TabOrder = 2
@@ -721,6 +747,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Top = 35
       Width = 145
       Height = 160
+      BorderColor = 11383224
       FrameColor = 11383224
       SeriesCollection = <
         item
@@ -763,7 +790,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Font.Name = 'Tahoma'
     Font.Style = []
     LineColor = 14277598
-    LineWidth = 2
+    PanelColor = clBlack
     ParentFont = False
     Radius = 5
     TabOrder = 3
@@ -804,6 +831,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLimiterAttackValue: TGuiLabel
       Left = 93
@@ -818,6 +846,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLimiterRelease: TGuiDial
       Left = 200
@@ -856,6 +885,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLimiterReleaseValue: TGuiLabel
       Left = 179
@@ -870,6 +900,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLimiterThreshold: TGuiDial
       Left = 288
@@ -907,6 +938,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLimiterThresholdValue: TGuiLabel
       Left = 269
@@ -921,6 +953,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLimiterKnee: TGuiDial
       Left = 387
@@ -958,6 +991,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLimiterKneeValue: TGuiLabel
       Left = 368
@@ -972,6 +1006,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbSoftClip: TGuiLabel
       Left = 26
@@ -986,6 +1021,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LbSoftClipClick
     end
     object LEDSoftClip: TGuiLED
@@ -993,11 +1029,12 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Top = 34
       Width = 15
       Height = 15
-      LEDColor = 14277598
+      BorderStrength_Percent = 80.000000000000000000
       Brightness_Percent = 10.000000000000000000
+      LEDColor = 14277598
+      LineWidth = 1.399999976158142000
       Uniformity_Percent = 40.000000000000000000
-      AntiAlias = gaaLinear3x
-      LineColor = 14277598
+      Transparent = False
       OnClick = LbSoftClipClick
     end
   end

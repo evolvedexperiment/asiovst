@@ -214,7 +214,7 @@ begin
    if Gr32Gui.Layers[LayerIndex] is TDialLayer then
     with TDialLayer(Gr32Gui.Layers[LayerIndex]) do
      if Parameter = ParameterIndex
-      then StitchIndex := Round((NumGlyphs - 1) * VSTParameter[ParameterIndex]);
+      then StitchIndex := Round((GlyphCount - 1) * VSTParameter[ParameterIndex]);
 end;
 
 procedure TFmCustomGr32Gui.DialLayerChanged(Sender: TObject);
@@ -222,7 +222,7 @@ begin
  Assert(Sender is TDialLayer);
  with TVSTModule(Self.Owner), TDialLayer(Sender) do
   begin
-   VSTParameter[Parameter] := StitchIndex / (NumGlyphs - 1);
+   VSTParameter[Parameter] := StitchIndex / (GlyphCount - 1);
   end;
 end;
 
@@ -529,7 +529,7 @@ begin
         CurrentValue := ReadString(SectionName, 'Filename', '');
         with AddDialLayer(CurrentValue) do
          begin
-          NumGlyphs := ReadInteger(SectionName, 'Glyph Count', NumGlyphs);
+          GlyphCount := ReadInteger(SectionName, 'Glyph Count', GlyphCount);
           StitchIndex := ReadInteger(SectionName, 'Glyph Index', StitchIndex);
           StitchDirection := TStitchDirection(ReadInteger(SectionName, 'Direction', Integer(StitchDirection)));
           Location := FloatRect(ReadFloat(SectionName, 'Left', Location.Left),
@@ -665,7 +665,7 @@ begin
              begin
               // eventually glyph count
               if ValueExists('Glyph Count')
-               then NumGlyphs := ReadInteger('Glyph Count');
+               then GlyphCount := ReadInteger('Glyph Count');
 
               // eventually glyph index
               if ValueExists('Glyph Index')
@@ -776,7 +776,7 @@ begin
          if TObject(Tag) is TExtraData
           then WriteString('Filename', TExtraData(Tag).FileName);
 
-         WriteInteger('Glyph Count', NumGlyphs);
+         WriteInteger('Glyph Count', GlyphCount);
          WriteInteger('Glyph Index', StitchIndex);
          WriteInteger('Direction', Integer(StitchDirection));
 

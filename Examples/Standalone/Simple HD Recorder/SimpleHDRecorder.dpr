@@ -2,12 +2,12 @@ program SimpleHDRecorder;
 
 uses
   FastMM4,
+  FastMove,
   madExcept,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
-  FastMove,
   Forms,
   SHRmain in 'SHRmain.pas' {FmSimpleHDRecorder},
   SHRSetup in 'SHRSetup.pas' {FmSetup};

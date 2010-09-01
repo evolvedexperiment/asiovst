@@ -28,15 +28,16 @@ type
   protected
     procedure Changed(EditType: TGuiADSRGraphMouseEdit);
     procedure AssignTo(Dest: TPersistent); override;
+
     property OnChange: TGuiADSROnChange read FOnChange write FOnChange;
   public
     constructor Create; virtual;
     destructor Destroy; override;
   published
-    property Attack : Single read FAttack write SetAttack;
-    property Decay : Single read FDecay write SetDecay;
-    property Sustain : Single read FSustain write SetSustain;
-    property Release : Single read FRelease write SetRelease;
+    property Attack: Single read FAttack write SetAttack;
+    property Decay: Single read FDecay write SetDecay;
+    property Sustain: Single read FSustain write SetSustain;
+    property Release: Single read FRelease write SetRelease;
   end;
 
 
@@ -378,18 +379,18 @@ end;
 
 procedure TGuiADSRGraph.CalcIntValues;
 var
-  nwidth  : Integer;
-  nheight : Integer;
+  IntWidth  : Integer;
+  IntHeight : Integer;
 begin
- nwidth := Width - 2 * FEnvHPadding - 1;
- nheight := Height -2 * FEnvVPadding - 1;
+ IntWidth := Width - 2 * FEnvHPadding - 1;
+ IntHeight := Height - 2 * FEnvVPadding - 1;
 
  with FADSRSettings do
   begin
-   FA := Round(0.25 * nwidth * Attack);
-   FD := FA+Round(0.25 * nwidth * Decay);
-   FS := Round(nheight * (1 - Sustain));
-   FR := nwidth - round(0.25 * nwidth * Release);
+   FA := Round(0.25 * IntWidth * Attack);
+   FD := FA + Round(0.25 * IntWidth * Decay);
+   FS := Round(IntHeight * (1 - Sustain));
+   FR := IntWidth - Round(0.25 * IntWidth * Release);
   end;
 
  FA := FA + FEnvHPadding;
@@ -432,19 +433,19 @@ end;
 
 procedure TGuiADSRGraph.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
 var
-  nwidth  : Integer;
-  nheight : Integer;
+  IntWidth  : Integer;
+  IntHeight : Integer;
 begin
- nwidth := Width - 2 * FEnvHPadding - 1;
- nheight := Height - 2 * FEnvVPadding - 1;
+ IntWidth := Width - 2 * FEnvHPadding - 1;
+ IntHeight := Height - 2 * FEnvVPadding - 1;
  x := x - FEnvHPadding;
  y := y - FEnvVPadding;
  if not (ssLeft in Shift) then FMouseEdit := meNone else
  case FMouseEdit of
-  meAttack   : FADSRSettings.Attack := 4 * x / nwidth;
-  meDecay    : FADSRSettings.Decay := 4 * (x - FA + FEnvHPadding) / nwidth;
-  meSustain  : FADSRSettings.Sustain := 1 - y / nheight;
-  meRelease  : FADSRSettings.Release := 4 * (nwidth - x) / nwidth;
+  meAttack   : FADSRSettings.Attack := 4 * x / IntWidth;
+  meDecay    : FADSRSettings.Decay := 4 * (x - FA + FEnvHPadding) / IntWidth;
+  meSustain  : FADSRSettings.Sustain := 1 - y / IntHeight;
+  meRelease  : FADSRSettings.Release := 4 * (IntWidth - x) / IntWidth;
  end;
 
  inherited;

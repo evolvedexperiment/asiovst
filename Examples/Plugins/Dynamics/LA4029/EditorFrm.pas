@@ -413,14 +413,14 @@ function TFmLA4029.VUMeterValueToPos(Value: Double): Integer;
 begin
  // ToDo: Create a true mapping
  if Value < -40 then result := 0 else
- if Value >   3 then result := VUMeter.NumGlyphs - 1 else
+ if Value >   3 then result := VUMeter.GlyphCount - 1 else
  if Value < -10 then result := round(((40 + Value) / 30) * 22) else
  if Value <  -7 then result := round(22 + (10 + Value) * 1.66) else
  if Value <  -5 then result := round(28 + (7 + Value) * 2.5) else
  if Value <  -3 then result := round(33 + (5 + Value) * 2.5) else
  if Value <  -1 then result := round(38 + (3 + Value) * 2.5) else
  if Value <   0 then result := round(43 + (1 + Value) * 5)
-  else result := round(48 + Value / 3 * (VUMeter.NumGlyphs - 49));
+  else result := round(48 + Value / 3 * (VUMeter.GlyphCount - 49));
 end;
 
 procedure TFmLA4029.VUMeterTimerTimer(Sender: TObject);

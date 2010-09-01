@@ -144,6 +144,8 @@ procedure Upsample3xBitmap24(var Bitmap: TBitmap);
 procedure Upsample4xBitmap32(var Bitmap: TBitmap);
 procedure Upsample4xBitmap24(var Bitmap: TBitmap);
 
+function ConvertColor(Color: TColor): TPixel32; overload;
+function ConvertColor(Color: TPixel32): TColor; overload;
 procedure HLSToRGB(const H, L, S: Single; out R, G, B: Single); overload;
 function HLSToRGB(const H, L, S: Single): TColor; overload;
 procedure RGBToHLS(const R, G, B: Single; out H, L, S: Single); overload;
@@ -868,6 +870,47 @@ begin
        do Line[i, 4 * x + j] := Line[0, x];
    end;
  {$ENDIF}
+end;
+
+function ConvertColor(Color: TColor): TPixel32;
+{$IFDEF WIN_COLOR_FIX}
+var
+  I: Longword;
+{$ENDIF}
+begin
+  if Color < 0 then Color := GetSysColor(Color and $000000FF);
+
+{$IFDEF WIN_COLOR_FIX}
+  Result := $FF000000;
+  I := (Color and $00FF0000) shr 16;
+  if I <> 0 then Result := Result or TColor32(Integer(I) - 1);
+  I := Color and $0000FF00;
+  if I <> 0 then Result := Result or TColor32(Integer(I) - $00000100);
+  I := Color and $000000FF;
+  if I <> 0 then Result := Result or TColor32(Integer(I) - 1) shl 16;
+{$ELSE}
+  asm
+   MOV    EAX, Color
+   BSWAP  EAX
+   MOV    AL,  $FF
+   ROR    EAX, 8
+   MOV    Result, EAX
+  end;
+{$ENDIF}
+end;
+
+function ConvertColor(Color: TPixel32): TColor;
+{$IFNDEF TARGET_x86}
+begin
+ Result := ((Color.ARGB and $00FF0000) shr 16) or
+            (Color.ARGB and $0000FF00) or
+           ((Color.ARGB and $000000FF) shl 16);
+{$ELSE}
+asm
+ ROL    EAX, 8
+ XOR    AL, AL
+ BSWAP  EAX
+{$ENDIF}
 end;
 
 procedure HLSToRGB(const H, L, S: Single; out R, G, B: Single);

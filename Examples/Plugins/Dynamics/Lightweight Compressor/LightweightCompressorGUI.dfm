@@ -339,15 +339,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
   end
   object LEDStereo: TGuiLED
     Left = 248
-    Top = 9
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
-    Brightness_Percent = 10.000000000000000000
+    Top = 8
+    Width = 16
+    Height = 16
     BorderStrength_Percent = 100.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.000000000000000000
     Uniformity_Percent = 40.000000000000000000
-    AntiAlias = gaaLinear3x
-    LineColor = 14277598
+    Transparent = False
     OnClick = LEDStereoClick
   end
   object LbStereo: TGuiLabel
@@ -368,15 +368,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
   end
   object LEDLimit: TGuiLED
     Left = 248
-    Top = 30
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
-    Brightness_Percent = 10.000000000000000000
+    Top = 29
+    Width = 16
+    Height = 16
     BorderStrength_Percent = 100.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.000000000000000000
     Uniformity_Percent = 40.000000000000000000
-    AntiAlias = gaaLinear3x
-    LineColor = 14277598
+    Transparent = False
     OnClick = LEDLimitClick
   end
   object GuiLabel2: TGuiLabel
@@ -397,15 +397,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
   end
   object LEDAutoGain: TGuiLED
     Left = 248
-    Top = 69
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
-    Brightness_Percent = 10.000000000000000000
+    Top = 68
+    Width = 16
+    Height = 16
     BorderStrength_Percent = 100.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.000000000000000000
     Uniformity_Percent = 40.000000000000000000
-    AntiAlias = gaaLinear3x
-    LineColor = 14277598
+    Transparent = False
     OnClick = LEDAutoGainClick
   end
   object GuiLabel3: TGuiLabel
@@ -426,15 +426,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
   end
   object LEDOversample: TGuiLED
     Left = 248
-    Top = 51
-    Width = 15
-    Height = 15
-    LEDColor = 14277598
-    Brightness_Percent = 10.000000000000000000
+    Top = 50
+    Width = 16
+    Height = 16
     BorderStrength_Percent = 100.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    LineWidth = 1.000000000000000000
     Uniformity_Percent = 40.000000000000000000
-    AntiAlias = gaaLinear3x
-    LineColor = 14277598
+    Transparent = False
     Visible = False
     OnClick = LEDAutoGainClick
   end

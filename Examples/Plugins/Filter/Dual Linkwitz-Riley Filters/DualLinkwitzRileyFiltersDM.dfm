@@ -1,5 +1,4 @@
 object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'DualLinkwitzRileyFilters'
@@ -9,7 +8,6 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
   TailSize = 131072
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'LiRi'
@@ -46,7 +44,6 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Lowpass Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -88,7 +85,6 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Highpass Order'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -108,7 +104,6 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
       OnStringToParameter = StringOrderToParameter
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

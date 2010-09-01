@@ -112,7 +112,7 @@ begin
     begin
      DialBitmap.Canvas.Brush.Color := $696969;
      DialBitmap.Assign(PngBmp);
-     NumGlyphs := 65;
+     GlyphCount := 65;
     end;
    DialFreq.DialImageIndex := 0;
    DialOrder.DialImageIndex := 0;

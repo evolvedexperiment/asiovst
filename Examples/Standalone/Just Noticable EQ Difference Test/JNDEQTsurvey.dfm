@@ -57,32 +57,28 @@ object FmSurvey: TFmSurvey
     Shadow.Visible = True
   end
   object LEDGenderMale: TGuiLED
-    Left = 57
-    Top = 41
-    Width = 12
-    Height = 12
-    LineWidth = 2
-    LEDColor = 10333885
-    Brightness_Percent = 10.000000000000000000
+    Left = 54
+    Top = 38
+    Width = 18
+    Height = 18
     BorderStrength_Percent = 70.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 10333885
+    LineWidth = 2.200000047683716000
     Uniformity_Percent = 40.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
     Transparent = True
     OnClick = LbGenderMaleClick
   end
   object LEDGenderFemale: TGuiLED
-    Left = 105
-    Top = 41
-    Width = 12
-    Height = 12
-    LineWidth = 2
-    LEDColor = 10333885
-    Brightness_Percent = 10.000000000000000000
+    Left = 102
+    Top = 38
+    Width = 18
+    Height = 18
     BorderStrength_Percent = 70.000000000000000000
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 10333885
+    LineWidth = 2.200000047683716000
     Uniformity_Percent = 40.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
     Transparent = True
     OnClick = LbGenderFemaleClick
   end

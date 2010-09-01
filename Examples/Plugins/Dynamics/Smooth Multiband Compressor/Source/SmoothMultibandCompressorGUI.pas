@@ -47,15 +47,15 @@ const
 type
   TVerticallyStitchedBitmap32 = class(TBitmap32)
   private
-    FNumGlyphs: Integer;
+    FGlyphCount: Integer;
     function GetRealHeight: Integer;
-    procedure SetNumGlyphs(const Value: Integer);
+    procedure SetGlyphCount(const Value: Integer);
   public
     constructor Create; override;
   published
     property RealWidth : Integer read FWidth;
     property RealHeight : Integer read GetRealHeight;
-    property NumGlyphs : Integer read FNumGlyphs write SetNumGlyphs;
+    property GlyphCount : Integer read FGlyphCount write SetGlyphCount;
   end;
 
   TEditValue = (edNone, edLow, edHigh, edAttack, edRelease, edThreshold,
@@ -194,7 +194,7 @@ begin
      tmp.LoadFromStream(RS);
      GKnob := TVerticallyStitchedBitmap32.Create;
      GKnob.DrawMode := dmBlend;
-     GKnob.NumGlyphs := 64;
+     GKnob.GlyphCount := 64;
      GKnob.Assign(tmp);
 //     RestitchPNG2Bitmap32(tmp, GKnob);
      GKnob.Font.Assign(tmp.Canvas.Font);
@@ -256,7 +256,7 @@ begin
       tmp.LoadFromStream(RS);
       GSoftClip := TVerticallyStitchedBitmap32.Create;
       GSoftClip.DrawMode := dmBlend;
-      GSoftClip.NumGlyphs := 2;
+      GSoftClip.GlyphCount := 2;
       RestitchPNG2Bitmap32(tmp, GSoftClip);
       GSoftClip.Font.Assign(tmp.Canvas.Font);
      finally
@@ -281,7 +281,7 @@ begin
       tmp.LoadFromStream(RS);
       GAutoGain := TVerticallyStitchedBitmap32.Create;
       GAutoGain.DrawMode := dmBlend;
-      GAutoGain.NumGlyphs := 2;
+      GAutoGain.GlyphCount := 2;
       RestitchPNG2Bitmap32(tmp, GAutoGain);
       GAutoGain.Font.Assign(tmp.Canvas.Font);
      finally
@@ -709,11 +709,11 @@ end;
 procedure TFmSmoothMultibandCompressor.RestitchPNG2Bitmap32(const PNG : TPNGGraphic; const BMP : TVerticallyStitchedBitmap32);
 var i : Integer;
 begin
- BMP.Width  := PNG.Width div BMP.numGlyphs;
- BMP.Height := PNG.Height * BMP.numGlyphs;
+ BMP.Width  := PNG.Width div BMP.GlyphCount;
+ BMP.Height := PNG.Height * BMP.GlyphCount;
  PNG.Canvas.Lock;
  try
-  for i := 0 to BMP.numGlyphs - 1
+  for i := 0 to BMP.GlyphCount - 1
    do BitBlt(BMP.Handle, 0, i * PNG.Height, PNG.Width, PNG.Height, PNG.Canvas.Handle, i * BMP.Width, 0, SRCCOPY);
  finally
   PNG.Canvas.UnLock;
@@ -760,9 +760,9 @@ begin
   try
    BeginUpdate;
    with ParameterProperties[0]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[0]));
+    do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[0]));
    if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
    r := GRectTop[0];
    Draw(r, r, GBG);
    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -789,9 +789,9 @@ begin
   try
    BeginUpdate;
    with ParameterProperties[1]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[1]));
+    do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[1]));
    if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
    r := GRectTop[1];
    Draw(r, r, GBG);
    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -818,8 +818,8 @@ begin
   try
    BeginUpdate;
    with ParameterProperties[24]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[24]));
-   i := Limit(i, 0, GKnob.NumGlyphs - 1);
+    do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[24]));
+   i := Limit(i, 0, GKnob.GlyphCount - 1);
    r := GRectTop[2];
    Draw(r, r, GBG);
    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -845,9 +845,9 @@ begin
   try
    BeginUpdate;
    with ParameterProperties[2]
-    do i := Round((GSoftClip.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[2]));
+    do i := Round((GSoftClip.GlyphCount - 1) * Parameter2VSTParameter(Parameter[2]));
    if i < 0 then i := 0
-    else if i >= GSoftClip.NumGlyphs then i := GSoftClip.NumGlyphs - 1;
+    else if i >= GSoftClip.GlyphCount then i := GSoftClip.GlyphCount - 1;
    r := GRectTop[3];
    Draw(r, r, GBG);
    Draw(r, Rect(0, i * GSoftClip.RealHeight, GSoftClip.RealWidth, (i + 1) * GSoftClip.RealHeight), GSoftClip);
@@ -867,9 +867,9 @@ begin
    try
     BeginUpdate;
     with ParameterProperties[5 + Stage * 7]
-     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[5 + Stage * 7]));
+     do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[5 + Stage * 7]));
     if i < 0 then i := 0
-     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+     else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
     r := GRectStage[Stage, 0];
     Draw(r, r, GBG);
     Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -897,9 +897,9 @@ begin
    try
     BeginUpdate;
     with ParameterProperties[6 + Stage * 7]
-     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[6 + Stage * 7]));
+     do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[6 + Stage * 7]));
     if i < 0 then i := 0
-     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+     else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
     r := GRectStage[Stage, 1];
     Draw(r, r, GBG);
     Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -927,9 +927,9 @@ begin
    try
     BeginUpdate;
     with ParameterProperties[3 + Stage * 7]
-     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[3 + Stage * 7]));
+     do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[3 + Stage * 7]));
     if i < 0 then i := 0
-     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+     else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
     r := GRectStage[Stage, 2];
     Draw(r, r, GBG);
     Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -957,9 +957,9 @@ begin
    try
     BeginUpdate;
     with ParameterProperties[4 + Stage * 7]
-     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[4 + Stage * 7]));
+     do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[4 + Stage * 7]));
     if i < 0 then i := 0
-     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+     else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
     r := GRectStage[Stage, 3];
     Draw(r, r, GBG);
     Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -987,9 +987,9 @@ begin
    try
     BeginUpdate;
     with ParameterProperties[7 + Stage * 7]
-     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[7 + Stage * 7]));
+     do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[7 + Stage * 7]));
     if i < 0 then i := 0
-     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+     else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
     r := GRectStage[Stage, 4];
     Draw(r, r, GBG);
     Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -1017,9 +1017,9 @@ begin
    try
     BeginUpdate;
     with ParameterProperties[8 + Stage * 7]
-     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[8 + Stage * 7]));
+     do i := Round((GKnob.GlyphCount - 1) * Parameter2VSTParameter(Parameter[8 + Stage * 7]));
     if i < 0 then i := 0
-     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+     else if i >= GKnob.GlyphCount then i := GKnob.GlyphCount - 1;
     r := GRectStage[Stage, 5];
     Draw(r, r, GBG);
     Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
@@ -1089,7 +1089,7 @@ begin
     BeginUpdate;
     i := Integer(bsSmooth in BandStates[Stage]);
     if i < 0 then i := 0
-     else if i >= GAutoGain.NumGlyphs then i := GAutoGain.NumGlyphs - 1;
+     else if i >= GAutoGain.GlyphCount then i := GAutoGain.GlyphCount - 1;
     r := GRectStage[Stage, 7];
     Draw(r, r, GBG);
     Draw(r, Rect(0, i * GAutoGain.RealHeight, GAutoGain.RealWidth, (i + 1) * GAutoGain.RealHeight), GAutoGain);
@@ -1301,17 +1301,17 @@ end;
 constructor TVerticallyStitchedBitmap32.Create;
 begin
  inherited;
- FNumGlyphs := 1;
+ FGlyphCount := 1;
 end;
 
 function TVerticallyStitchedBitmap32.GetRealHeight: Integer;
 begin
- result := FHeight div FNumGlyphs;
+ result := FHeight div FGlyphCount;
 end;
 
-procedure TVerticallyStitchedBitmap32.SetNumGlyphs(const Value: Integer);
+procedure TVerticallyStitchedBitmap32.SetGlyphCount(const Value: Integer);
 begin
- FNumGlyphs := Value;
+ FGlyphCount := Value;
 end;
 
 end.
