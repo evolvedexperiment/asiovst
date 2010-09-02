@@ -109,6 +109,10 @@ function BranchlessClipLower(Value: Single; const Lower: Single): Single; overlo
 function BranchlessClipLower(Value: Double; const Lower: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function BranchlessClipUpper(Value: Single; const Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function BranchlessClipUpper(Value: Double; const Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipPositive(Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipPositive(Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipNegative(Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipNegative(Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 procedure WrapInt(var Value: Integer; Upper: Integer; Lower: Integer = 0);
 function Smallest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function Smallest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -792,6 +796,26 @@ begin
  Result := Upper -(Value + Abs(Value)) * 0.5;
 end;
 
+function BranchlessClipPositive(Value: Single): Single;
+begin
+ Result := (Value + Abs(Value)) * 0.5;
+end;
+
+function BranchlessClipPositive(Value: Double): Double;
+begin
+ Result := (Value + Abs(Value)) * 0.5;
+end;
+
+function BranchlessClipNegative(Value: Single): Single;
+begin
+ Result := (Abs(Value) - Value) * 0.5;
+end;
+
+function BranchlessClipNegative(Value: Double): Double;
+begin
+ Result := (Abs(Value) - Value) * 0.5;
+end;
+
 procedure WrapInt(var Value: Integer; Upper: Integer; Lower: Integer = 0);
 begin
  while Value >= Upper do Value := Value - Upper;
@@ -1195,11 +1219,14 @@ begin
 end;
 
 function UnDenormalize(const Value : Single) : Single;
+var
+  IntValue : Integer absolute Value;
 begin
- if (Abs(value) < 1.0E-20)
+ if (IntValue and $7F8000) = 0
   then Result := 0.0
   else Result := Value;
 end;
+
 
 { String Functions }
 

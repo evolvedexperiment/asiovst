@@ -31,6 +31,8 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsUnderline]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object SBType: TGuiSelectBox
     Left = 205
@@ -70,6 +72,8 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
     Left = 8
@@ -85,18 +89,20 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsUnderline]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiPanel1: TGuiPanel
     Left = 8
     Top = 37
     Width = 321
     Height = 84
-    AntiAlias = gaaLinear4x
     Caption = 'GuiPanel1'
     LineColor = 13948116
+    BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True
-    Radius = 7
+    Radius = 7.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object DialLevel: TGuiDial
@@ -204,6 +210,8 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbTune: TGuiLabel
       Left = 69
@@ -221,6 +229,8 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDryMix: TGuiLabel
       Left = 123
@@ -238,6 +248,8 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbThreshold: TGuiLabel
       Left = 193
@@ -255,6 +267,8 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialRelease: TGuiDial
       Left = 257
@@ -293,6 +307,8 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object GuiPanel2: TGuiPanel
@@ -300,12 +316,12 @@ object FmSubBoost: TFmSubBoost
     Top = 133
     Width = 129
     Height = 84
-    AntiAlias = gaaLinear4x
     Caption = 'GuiPanel1'
     LineColor = 13948116
+    BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True
-    Radius = 7
+    Radius = 7.000000000000000000
     TabOrder = 1
     UseDockManager = True
     object DialInputFilter: TGuiDial
@@ -373,6 +389,8 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFilterOrder: TGuiLabel
       Left = 61
@@ -390,6 +408,8 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
 end

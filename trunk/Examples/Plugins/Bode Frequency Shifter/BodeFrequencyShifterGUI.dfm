@@ -70,16 +70,14 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Width = 90
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'PnDisplay'
-      LineColor = 5398887
-      Linewidth = 1
+      LineColor = 3226174
+      BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
-      Transparent = True
       DesignSize = (
         90
         17)
@@ -152,16 +150,14 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Width = 83
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'PnDisplay'
-      LineColor = 5398887
-      Linewidth = 1
+      LineColor = 3226174
+      BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
-      Transparent = True
       DesignSize = (
         83
         17)

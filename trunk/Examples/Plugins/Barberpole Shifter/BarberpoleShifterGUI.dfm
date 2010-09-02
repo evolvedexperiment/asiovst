@@ -70,22 +70,20 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       Width = 90
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'PnDisplay'
-      LineColor = 5398887
-      Linewidth = 1
+      LineColor = 5267301
+      BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
-      Transparent = True
       DesignSize = (
         90
         17)
       object LbFrequencyValue: TGuiLabel
         Left = 5
-        Top = 2
+        Top = 3
         Width = 81
         Height = 12
         Alignment = taCenter
@@ -152,16 +150,14 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       Width = 83
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'PnDisplay'
-      LineColor = 5398887
-      Linewidth = 1
+      LineColor = 5267301
+      BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
-      Transparent = True
       DesignSize = (
         83
         17)

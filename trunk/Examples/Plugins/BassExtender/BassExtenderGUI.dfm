@@ -23,15 +23,13 @@ object FmBassExtender: TFmBassExtender
     Top = 8
     Width = 529
     Height = 271
-    AntiAlias = gaaLinear4x
     LineColor = 1450277
-    Linewidth = 3
+    BorderWidth = 2.000000000000000000
     PanelColor = 2372409
     ParentColor = True
-    Radius = 13
+    Radius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
-    Transparent = True
     object GuiLabel2: TGuiLabel
       Left = 13
       Top = 7

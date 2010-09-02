@@ -53,8 +53,8 @@ type
     DIL: TGuiDialImageList;
     GpStage1: TGuiGroup;
     GpStage2: TGuiGroup;
-    GuiPanel1: TGuiPanel;
-    GuiPanel2: TGuiPanel;
+    PnHardClipping: TGuiPanel;
+    PnClipping: TGuiPanel;
     LbClipInput: TGuiLabel;
     LbClipStage1: TGuiLabel;
     LbClipStage2: TGuiLabel;

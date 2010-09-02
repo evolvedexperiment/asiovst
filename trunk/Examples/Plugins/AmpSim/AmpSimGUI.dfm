@@ -72,7 +72,7 @@ object FmCombo: TFmCombo
     BorderStrength_Percent = 80.000000000000000000
     Brightness_Percent = 100.000000000000000000
     LEDColor = 192
-    LineWidth = 2.400000095367432000
+    BorderWidth = 2.500000000000000000
     Uniformity_Percent = 44.000000000000000000
     Transparent = False
     OnClick = LbStereoClick
@@ -101,15 +101,14 @@ object FmCombo: TFmCombo
     Top = 39
     Width = 361
     Height = 125
-    AntiAlias = gaaLinear4x
     Caption = 'Panel'
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 4227200
     ParentColor = True
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
-    Transparent = True
     OnClick = PnControlsClick
     object LbResonanceValue: TLabel
       Left = 288

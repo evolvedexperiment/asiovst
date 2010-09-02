@@ -118,7 +118,7 @@ object FmUniQuE: TFmUniQuE
       BorderStrength_Percent = 100.000000000000000000
       Brightness_Percent = 100.000000000000000000
       LEDColor = clLime
-      LineWidth = 2.200000047683716000
+      BorderWidth = 2.299999952316284000
       Uniformity_Percent = 44.000000000000000000
       Transparent = False
       Color = 5329233
@@ -167,7 +167,7 @@ object FmUniQuE: TFmUniQuE
       BorderStrength_Percent = 100.000000000000000000
       Brightness_Percent = 100.000000000000000000
       LEDColor = 60671
-      LineWidth = 2.200000047683716000
+      BorderWidth = 2.299999952316284000
       Uniformity_Percent = 44.000000000000000000
       Transparent = False
       Color = 5329233
@@ -199,7 +199,7 @@ object FmUniQuE: TFmUniQuE
       BorderStrength_Percent = 100.000000000000000000
       Brightness_Percent = 100.000000000000000000
       LEDColor = 16735092
-      LineWidth = 2.200000047683716000
+      BorderWidth = 2.299999952316284000
       Uniformity_Percent = 44.000000000000000000
       Transparent = False
       Color = 5329233
