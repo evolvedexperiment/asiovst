@@ -66,13 +66,12 @@ object FmRingModulator: TFmRingModulator
       Top = 86
       Width = 114
       Height = 17
-      AntiAlias = gaaLinear4x
       Caption = 'PnDisplay'
-      LineColor = 5398887
-      Linewidth = 1
+      LineColor = 3226174
+      BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       Transparent = True

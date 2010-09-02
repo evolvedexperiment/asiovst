@@ -197,11 +197,11 @@ object FmPlateReverb: TFmPlateReverb
     Top = 88
     Width = 434
     Height = 23
-    AntiAlias = gaaLinear4x
     LineColor = clWhite
+    BorderWidth = 2.000000000000000000
     PanelColor = clWhite
     ParentColor = True
-    Radius = 9
+    Radius = 9.000000000000000000
     TabOrder = 2
     UseDockManager = True
     Transparent = True

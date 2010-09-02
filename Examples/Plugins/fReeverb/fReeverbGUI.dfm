@@ -30,6 +30,7 @@ object FmReverb: TFmReverb
     OnChange = DialDryChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialWet: TGuiDial
     Left = 70
@@ -45,6 +46,7 @@ object FmReverb: TFmReverb
     OnChange = DialWetChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialWidth: TGuiDial
     Left = 124
@@ -60,6 +62,7 @@ object FmReverb: TFmReverb
     OnChange = DialWidthChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialDamp: TGuiDial
     Left = 178
@@ -75,6 +78,7 @@ object FmReverb: TFmReverb
     OnChange = DialDampChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialRoomSize: TGuiDial
     Left = 232
@@ -90,6 +94,7 @@ object FmReverb: TFmReverb
     OnChange = DialRoomSizeChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialStretch: TGuiDial
     Left = 286
@@ -105,17 +110,18 @@ object FmReverb: TFmReverb
     OnChange = DialStretchChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object PnLabel: TGuiPanel
     Left = 12
     Top = 88
     Width = 329
     Height = 23
-    AntiAlias = gaaLinear4x
     LineColor = clWhite
+    BorderWidth = 2.000000000000000000
     PanelColor = clWhite
     ParentColor = True
-    Radius = 9
+    Radius = 9.000000000000000000
     TabOrder = 2
     UseDockManager = True
     Transparent = True
@@ -135,6 +141,8 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbWet: TGuiLabel
       Left = 58
@@ -152,6 +160,8 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbWidth: TGuiLabel
       Left = 112
@@ -169,6 +179,8 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbSize: TGuiLabel
       Left = 220
@@ -186,6 +198,8 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbStretch: TGuiLabel
       Left = 274
@@ -203,6 +217,8 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDamp: TGuiLabel
       Left = 166
@@ -220,6 +236,8 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object CBFreeze: TCheckBox
@@ -275,6 +293,8 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object BtAB: TGuiButton
       Left = 213
@@ -292,6 +312,7 @@ object FmReverb: TFmReverb
       LineColor = 5855577
       ButtonColor = 14803425
       Radius = 4
+      Shadow.Color = clBlack
     end
     object BtAbout: TGuiButton
       Left = 280
@@ -309,6 +330,7 @@ object FmReverb: TFmReverb
       LineColor = 5855577
       ButtonColor = 14803425
       Radius = 4
+      Shadow.Color = clBlack
       OnClick = BtAboutClick
     end
   end

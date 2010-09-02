@@ -27,15 +27,14 @@ object FmExciter: TFmExciter
     Width = 303
     Height = 113
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
     Caption = 'PnControl'
     LineColor = clWhite
+    BorderWidth = 2.000000000000000000
     PanelColor = 6908265
     ParentColor = True
-    Radius = 13
+    Radius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
-    Transparent = True
     object DialTune: TGuiDial
       Left = 16
       Top = 24

@@ -65,6 +65,7 @@ contains
   DAV_GuiStaticWaveform in '..\..\Source\GUI\DAV_GuiStaticWaveform.pas',
   DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
   DAV_GuiPixelMap in '..\..\Source\GUI\DAV_GuiPixelMap.pas',
-  DAV_GuiVector in '..\..\Source\GUI\DAV_GuiVector.pas';
+  DAV_GuiVector in '..\..\Source\GUI\DAV_GuiVector.pas',
+  DAV_GuiBlend in '..\..\Source\GUI\DAV_GuiBlend.pas';
 
 end.

@@ -113,9 +113,9 @@ procedure TFmBassExtender.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  Line   : PBGR24Array;
   PngBmp : TPngObject;
 
 begin
@@ -138,9 +138,9 @@ begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
 
-       Line[x].B := round($30 - $24 * (s[1] - h));
-       Line[x].G := round($44 - $38 * (s[1] - h));
-       Line[x].R := round($4D - $40 * (s[1] - h));
+       Line[x].B := Round($30 - $24 * (s[1] - h));
+       Line[x].G := Round($44 - $38 * (s[1] - h));
+       Line[x].R := Round($4D - $40 * (s[1] - h));
       end;
     end;
   end;

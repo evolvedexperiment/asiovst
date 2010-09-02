@@ -1,6 +1,6 @@
 object FmPanelTest: TFmPanelTest
-  Left = 286
-  Top = 101
+  Left = 375
+  Top = 133
   Caption = 'Panel Test'
   ClientHeight = 132
   ClientWidth = 278
@@ -96,7 +96,8 @@ object FmPanelTest: TFmPanelTest
     Top = 108
     Width = 118
     Height = 18
-    Max = 16
+    Max = 32
+    Frequency = 2
     Position = 4
     TabOrder = 5
     ThumbLength = 12

@@ -1,58 +1,87 @@
 unit DAV_GuiPanel;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Messages, Controls, Graphics, ExtCtrls, DAV_GuiBaseControl;
+  Classes, Messages, Controls, Graphics, ExtCtrls, DAV_GuiBaseControl,
+  DAV_GuiPixelMap;
 
 type
   TCustomGuiPanel = class(TCustomPanel)
   private
-    FAntiAlias      : TGuiAntiAlias;
     FBorderVisible  : Boolean;
     FPanelColor     : TColor;
     FOwnerDraw      : Boolean;
-    FOSFactor       : Integer;
-    FRoundRadius    : Integer;
+    FRoundRadius    : Single;
     FTransparent    : Boolean;
-    FLineWidth      : Integer;
+    FBorderWidth    : Single;
     FLineColor      : TColor;
-    FBitmap         : TBitmap;
+    FPixelMap       : TGuiPixelMapMemory;
     FBitmapChanged  : Boolean;
     procedure CMEnabledChanged (var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMTextChanged (var Message: TWmNoParams); message CM_TEXTCHANGED;
-    procedure RenderPanelToBitmap(Bitmap: TBitmap);
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetBorderVisible(const Value: Boolean);
     procedure SetOwnerDraw(const Value: Boolean);
     procedure SetLineColor(const Value: TColor);
-    procedure SetLinewidth(const Value: Integer);
+    procedure SetBorderWidth(const Value: Single);
     procedure SetPanelColor(const Value: TColor);
-    procedure SetRoundRadius(const Value: Integer);
+    procedure SetRoundRadius(const Value: Single);
     procedure SetTransparent (const Value: Boolean);
-    procedure PaintBitmap;
     procedure SetBitmapChanged(const Value: Boolean);
-    procedure DownsampleBitmap(Bitmap: TBitmap);
-    procedure UpsampleBitmap(Bitmap: TBitmap);
+    procedure LineColorChanged;
   protected
     procedure Paint; override;
     procedure Resize; override;
-    property BitmapChanged: Boolean read FBitmapChanged write SetBitmapChanged; 
+    procedure PaintBitmap; virtual;
+    procedure OwnerDrawChanged; virtual;
+    procedure RenderPanel(PixelMap: TGuiCustomPixelMap);
+    procedure RenderPanelNew(const PixelMap: TGuiCustomPixelMap);
+    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
+
+    property BitmapChanged: Boolean read FBitmapChanged write SetBitmapChanged;
   public
-    constructor Create (AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AssignTo(Dest: TPersistent); override;
 
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property BorderVisible: Boolean read FBorderVisible write SetBorderVisible default True;
     property PanelColor: TColor read FPanelColor write SetPanelColor default clBtnShadow;
     property OwnerDraw: Boolean read FOwnerDraw write SetOwnerDraw default True;
     property LineColor: TColor read FLineColor write SetLineColor default clBtnHighlight;
-    property Linewidth: Integer read FLineWidth write SetLinewidth default 2;
-    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
+    property BorderWidth: Single read FBorderWidth write SetBorderWidth;
+    property Radius: Single read FRoundRadius write SetRoundRadius;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
@@ -61,7 +90,6 @@ type
     property Align;
     property Alignment;
     property Anchors;
-    property AntiAlias;
     property AutoSize;
     property BiDiMode;
     property BorderVisible;
@@ -75,10 +103,9 @@ type
     property DragMode;
     property Enabled;
     property OwnerDraw;
-    property Font;
     property Hint;
     property LineColor;
-    property Linewidth;
+    property BorderWidth;
     property PanelColor;
     property ParentBiDiMode;
     property ParentColor;
@@ -121,28 +148,32 @@ type
 implementation
 
 uses
-  Types, SysUtils, Math, DAV_Math, DAV_Complex, DAV_GuiCommon;
+  Types, SysUtils, Math, DAV_Common, DAV_Math, DAV_Complex, DAV_Approximations,
+  DAV_GuiCommon, DAV_GuiBlend;
 
 { TCustomGuiPanel }
 
 constructor TCustomGuiPanel.Create (AOwner: TComponent);
 begin
  inherited Create(AOwner);
- ParentFont           := True;
  FPanelColor          := clBtnHighlight;
  FLineColor           := clBtnShadow;
- FLineWidth           := 2;
+ FBorderWidth         := 2;
  FRoundRadius         := 2;
  FBorderVisible       := True;
  FOwnerDraw           := True;
- FOSFactor            := 1;
- FAntiAlias           := gaaNone;
- FBitmap              := TBitmap.Create;
- FBitmap.PixelFormat  := pf32bit;
+ FPixelMap            := TGuiPixelMapMemory.Create;
  FBitmapChanged       := True;
+ FTransparent         := False;
  ParentColor          := True;
  ControlStyle         := ControlStyle + [csAcceptsControls, csOpaque];
  SetBounds(0, 0, 185, 41);
+end;
+
+destructor TCustomGuiPanel.Destroy;
+begin
+ FreeAndNil(FPixelMap);
+ inherited;
 end;
 
 procedure TCustomGuiPanel.SetOwnerDraw(const Value: Boolean);
@@ -150,9 +181,7 @@ begin
  if FOwnerDraw <> Value then
   begin
    FOwnerDraw := Value;
-   if FOwnerDraw
-    then BitmapChanged := True
-    else Invalidate;
+   OwnerDrawChanged;
   end;
 end;
 
@@ -161,15 +190,15 @@ begin
  if FLineColor <> Value then
   begin
    FLineColor := Value;
-   if FOwnerDraw then BitmapChanged := True;
+   LineColorChanged;
   end;
 end;
 
-procedure TCustomGuiPanel.SetLinewidth(const Value: Integer);
+procedure TCustomGuiPanel.SetBorderWidth(const Value: Single);
 begin
- if FLineWidth <> Value then
+ if FBorderWidth <> Value then
   begin
-   FLineWidth := Value;
+   FBorderWidth := Value;
    if FOwnerDraw then BitmapChanged := True;
   end;
 end;
@@ -183,88 +212,27 @@ begin
   end;
 end;
 
-procedure TCustomGuiPanel.UpsampleBitmap(Bitmap: TBitmap);
+procedure TCustomGuiPanel.OwnerDrawChanged;
 begin
- case FAntiAlias of
-   gaaLinear2x: Upsample2xBitmap32(Bitmap);
-   gaaLinear3x: Upsample3xBitmap32(Bitmap);
-   gaaLinear4x: Upsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample4xBitmap32(Bitmap);
-                end;
-  else raise Exception.Create('not yet supported');
- end;
+ if FOwnerDraw
+  then BitmapChanged := True
+  else Invalidate;
 end;
 
-destructor TCustomGuiPanel.Destroy;
+procedure TCustomGuiPanel.LineColorChanged;
 begin
- FreeAndNil(FBitmap);
- inherited;
-end;
-
-procedure TCustomGuiPanel.DownsampleBitmap(Bitmap: TBitmap);
-begin
- case FAntiAlias of
-   gaaLinear2x: Downsample2xBitmap32(Bitmap);
-   gaaLinear3x: Downsample3xBitmap32(Bitmap);
-   gaaLinear4x: Downsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample4xBitmap32(Bitmap);
-                end;
-  else raise Exception.Create('not yet supported');
- end;
+ if FOwnerDraw
+  then BitmapChanged := True;
 end;
 
 procedure TCustomGuiPanel.PaintBitmap;
 begin
  if (Width > 0) and (Height > 0) then
-  with FBitmap do
+  with FPixelMap do
    begin
-    Canvas.Lock;
-    try
-
-     with Canvas.Brush do
-      begin
-       Style := bsSolid;
-       Color := Self.Color;
-      end;
-      
-     Width  := FOSFactor * Self.ClientRect.Right;
-     Height := FOSFactor * Self.ClientRect.Bottom;
-     case FAntiAlias of
-      gaaNone     :
-       begin
-        {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, Canvas) else {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(FBitmap);
-       end;
-      else
-       begin
-        {$IFNDEF FPC}
-        if FTransparent then
-         begin
-          CopyParentImage(Self, FBitmap.Canvas);
-          UpsampleBitmap(FBitmap);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(FBitmap);
-        DownsampleBitmap(FBitmap);
-       end;
-     end;
-    finally
-     Canvas.Unlock;
-    end;
+    {$IFNDEF FPC}if FTransparent then CopyParentImage(FPixelMap) else {$ENDIF}
+    Clear(Color);
+    RenderPanelNew(FPixelMap);
    end;
 end;
 
@@ -279,11 +247,198 @@ begin
       FBitmapChanged := False;
       PaintBitmap;
      end;
-    Canvas.Draw(0, 0, FBitmap);
+    FPixelMap.PaintTo(Canvas);
    end;
 end;
 
-procedure TCustomGuiPanel.RenderPanelToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiPanel.RenderPanelNew(const PixelMap: TGuiCustomPixelMap);
+var
+  X, Y              : Integer;
+  ScnLne            : PPixel32Array;
+  PanelColor        : TPixel32;
+  BorderColor       : TPixel32;
+  CombColor         : TPixel32;
+  Radius            : Single;
+  XStart            : Single;
+  BorderWidth       : Single;
+  SqrRadMinusBorder : Single;
+  RadMinusBorderOne : Single;
+  Scale             : Single;
+  Center            : TComplexSingle;
+  SqrDist           : Single;
+  Bright            : Single;
+  SqrRadMinusOne    : Single;
+  ReciSqrRad        : Single;
+  Temp              : Single;
+  BorderFactor      : Single;
+  CombAlpha         : Integer;
+
+const
+  CBlack : TPixel32 = (ARGB : $FF000000);
+begin
+ with PixelMap do
+  begin
+   PanelColor := ConvertColor(FPanelColor);
+   BorderColor := ConvertColor(FLineColor);
+
+   // draw circle
+   Radius := Min(FRoundRadius, 0.5 * Width);
+   Radius := Min(Radius, 0.5 * Height);
+   BorderWidth := Max(FBorderWidth + 1, 2);
+
+   ReciSqrRad := 1 / Sqr(Radius);
+   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth + 1);
+   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth));
+   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
+
+   Center.Re := Radius;
+   Center.Im := Radius;
+
+   for Y := 0 to Round(Radius) - 1  do
+    begin
+     XStart := Sqr(Radius) - Sqr(Y - Radius);
+     if XStart < 0
+      then Continue
+      else XStart := Sqrt(XStart) - 0.4999999;
+     ScnLne := Scanline[Y];
+
+     for X := Round(Radius - XStart) to Round(Width - Radius + XStart) do
+      begin
+       // calculate squared distance
+       if X < Radius
+        then SqrDist := Sqr(X - Radius) + Sqr(Y - Radius) else
+       if X > Width - Radius
+        then SqrDist := Sqr(X - Width + Radius) + Sqr(Y - Radius)
+        else SqrDist := Sqr(Y - Radius);
+
+       if SqrDist <= SqrRadMinusBorder
+        then CombColor := PanelColor
+        else
+       if SqrDist <= Sqr(RadMinusBorderOne) then
+        begin
+         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+         CombColor := CombineRegister(BorderColor, PanelColor, Round($FF - Temp * $FF));
+        end else
+       if SqrDist < SqrRadMinusOne
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+         end;
+
+       BlendMemory(CombColor, ScnLne[X]);
+       EMMS;
+      end;
+    end;
+
+   for Y := Round(Radius) to Round(Height - Radius) do
+    begin
+     ScnLne := Scanline[Y];
+     for X := 1 to Width - 1 do
+      begin
+       // check whether position is a border
+       if (Y < BorderWidth - 1) or (Y > Height - BorderWidth + 1)
+        then CombColor := BorderColor else
+
+       // check whether position is an upper half border
+       if (Y < BorderWidth) then
+        begin
+         Temp := BorderWidth - Y;
+         if (X < BorderWidth - 1) or (X > Width - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF));
+          end else
+         if (X > Width - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + BorderWidth) * (1 - Temp);
+           CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF))
+          end
+         else CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF));
+        end else
+
+       // check whether position is a lower half border
+       if (Y > Height - BorderWidth) then
+        begin
+         Temp := Y - (Height - BorderWidth);
+         if (X < BorderWidth - 1) or (X > Width - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF));
+          end else
+         if (X > Width - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + BorderWidth) * (1 - Temp);
+           CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF))
+          end
+         else CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF));
+        end else
+
+       if (X < BorderWidth - 1) or (X > Width - BorderWidth + 1)
+        then CombColor := BorderColor else
+       if (X < BorderWidth) then
+        begin
+         Temp := BorderWidth - X;
+         CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF));
+        end else
+       if (X > Width - BorderWidth) then
+        begin
+         Temp := X - (Width - BorderWidth);
+         CombColor := CombineRegister(BorderColor, PanelColor, Round(Temp * $FF));
+        end
+       else CombColor := PanelColor;
+
+       BlendMemory(CombColor, ScnLne[X]);
+       EMMS;
+      end;
+    end;
+
+   for Y := Round(Height - Radius) + 1 to Round(Height)- 1 do
+    begin
+     XStart := Sqr(Radius) - Sqr(Y - Height + Radius);
+     if XStart < 0
+      then Continue
+      else XStart := Sqrt(XStart) - 0.4999999;
+     ScnLne := Scanline[Y];
+
+     for X := Round(Radius - XStart) to Round(Width - Radius + XStart) do
+      begin
+       // calculate squared distance
+       if X < Radius
+        then SqrDist := Sqr(X - Radius) + Sqr(Y - Height + Radius) else
+       if X > Width - Radius
+        then SqrDist := Sqr(X - Width + Radius) + Sqr(Y - Height + Radius)
+        else SqrDist := Sqr(Y - Height + Radius);
+
+       if SqrDist <= SqrRadMinusBorder
+        then CombColor := PanelColor
+        else
+       if SqrDist <= Sqr(RadMinusBorderOne) then
+        begin
+         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+         CombColor := CombineRegister(BorderColor, PanelColor, Round($FF - Temp * $FF));
+        end else
+       if SqrDist < SqrRadMinusOne
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+         end;
+
+       BlendMemory(CombColor, ScnLne[X]);
+       EMMS;
+      end;
+    end;
+  end;
+end;
+
+procedure TCustomGuiPanel.RenderPanel(PixelMap: TGuiCustomPixelMap);
 var
   Val, Off : TComplexDouble;
   Steps, i : Integer;
@@ -291,11 +446,9 @@ var
   rad      : Integer;
   PtsArray : Array of TPoint;
 begin
- with Bitmap.Canvas do
+ with PixelMap do
   begin
-   Lock;
-   Font.Assign(Self.Font);
-   Font.Size := FOSFactor * Font.Size;
+{   Lock;
 
    Brush.Style := bsClear;
    Brush.Color := FPanelColor;
@@ -378,42 +531,27 @@ begin
      end;
    end;
 
-(*
-   // Draw Text
-   Canvas.Font := Self.Font;
-   Canvas.Brush.Style := bsClear;
-   if not Enabled then
-    begin
-     OffsetRect(textBounds, 1, 1);
-     Canvas.Font.Color := fDisabledHighlightColor;
-     DrawText(Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
-     OffsetRect(textBounds, -1, -1);
-     Canvas.Font.Color := fDisabledShadowColor;
-     DrawText(Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
-    end
-   else DrawText(Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
-*)
-
    Unlock;
+}
   end;
 end;
 
 procedure TCustomGuiPanel.Resize;
 begin
  inherited;
- if FBitmap.Width <> Width then
+ if FPixelMap.Width <> Width then
   begin
-   FBitmap.Width := Width;
+   FPixelMap.Width := Width;
    FBitmapChanged := True;
   end;
- if FBitmap.Height <> Height then
+ if FPixelMap.Height <> Height then
   begin
-   FBitmap.Height := Height;
+   FPixelMap.Height := Height;
    FBitmapChanged := True;
   end;
 end;
 
-procedure TCustomGuiPanel.SetRoundRadius(const Value: Integer);
+procedure TCustomGuiPanel.SetRoundRadius(const Value: Single);
 begin
  if FRoundRadius <> Value then
   begin
@@ -428,10 +566,95 @@ begin
  if FOwnerDraw then BitmapChanged := True;
 end;
 
-procedure TCustomGuiPanel.CMTextChanged(var Message: TWmNoParams);
+procedure TCustomGuiPanel.CopyParentImage(PixelMap: TGuiCustomPixelMap);
+var
+  I         : Integer;
+  SubCount  : Integer;
+  SaveIndex : Integer;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
+  ParentDC  : HDC;
+  CompDC    : HDC;
+  CtrlCnvs  : TControlCanvas;
+  Bmp       : TBitmap;
+const
+  Gray : TPixel32 = (ARGB : $7F700F7F);
 begin
- inherited;
- if FOwnerDraw then BitmapChanged := True;
+ if (Parent = nil) then Exit;
+ SubCount := Parent.ControlCount;
+ // set
+ {$IFDEF WIN32}
+ with Parent
+  do ControlState := ControlState + [csPaintCopy];
+ try
+ {$ENDIF}
+
+  SelfR := Bounds(Left, Top, Width, Height);
+  Pnt.X := -Left;
+  Pnt.Y := -Top;
+
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Self.Width;
+    Height := Self.Height;
+    PixelFormat := pf32bit;
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+     with TParentControl(Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
+    end;
+
+    // Copy images of graphic controls
+    for I := 0 to SubCount - 1 do
+     begin
+      if Parent.Controls[I] = Self then Break else
+       if (Parent.Controls[I] <> nil) and
+          (Parent.Controls[I] is TGraphicControl)
+        then
+         with TGraphicControl(Parent.Controls[I]) do
+          begin
+           CtlR := Bounds(Left, Top, Width, Height);
+           if Bool(IntersectRect(R, SelfR, CtlR)) and Visible then
+            begin
+             {$IFDEF WIN32}
+             ControlState := ControlState + [csPaintCopy];
+             {$ENDIF}
+             SaveIndex := SaveDC(Canvas.Handle);
+             try
+              SaveIndex := SaveDC(Canvas.Handle);
+              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
+              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
+              Perform(WM_PAINT, Canvas.Handle, 0);
+             finally
+              RestoreDC(Handle, SaveIndex);
+              {$IFDEF WIN32}
+              ControlState := ControlState - [csPaintCopy];
+              {$ENDIF}
+             end;
+            end;
+          end;
+     end;
+    PixelMap.Draw(Bmp);
+   finally
+    Free;
+   end;
+
+ {$IFDEF WIN32}
+ finally
+   with Parent do ControlState := ControlState - [csPaintCopy];
+ end;
+ {$ENDIF}
 end;
 
 procedure TCustomGuiPanel.SetTransparent(const Value: Boolean);
@@ -439,23 +662,6 @@ begin
  if FTransparent <> Value then
   begin
    FTransparent := Value;
-   if FOwnerDraw then BitmapChanged := True;
-  end;
-end;
-
-procedure TCustomGuiPanel.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSFactor :=  1;
-     gaaLinear2x : FOSFactor :=  2;
-     gaaLinear3x : FOSFactor :=  3;
-     gaaLinear4x : FOSFactor :=  4;
-     gaaLinear8x : FOSFactor :=  8;
-    gaaLinear16x : FOSFactor := 16;
-   end;
    if FOwnerDraw then BitmapChanged := True;
   end;
 end;
@@ -482,6 +688,5 @@ begin
   then (Dest as TBitmap).Canvas.Assign(Canvas)
   else inherited;
 end;
-
 
 end.

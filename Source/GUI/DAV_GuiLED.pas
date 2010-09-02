@@ -51,15 +51,15 @@ type
     FBrightness   : Single;
     FUniformity   : Single;
     FBorderFactor : Single;
-    FLineWidth    : Single;
+    FBorderWidth  : Single;
     FTransparent  : Boolean;
     FOnChange     : TNotifyEvent;
+    function GetUniformity: Single;
+    function GetBorderStrength: Single;
     procedure SetLEDColor(const Value: TColor);
     procedure SetBrightness(const Value: Single);
     procedure SetUniformity(const Value: Single);
     procedure SetBorderStrength(const Value: Single);
-    function GetUniformity: Single;
-    function GetBorderStrength: Single;
     procedure SetTransparent(const Value: Boolean);
   protected
     {$IFNDEF FPC}
@@ -81,7 +81,7 @@ type
     {$ENDIF}
 
     procedure RenderLED(const PixelMap: TGuiCustomPixelMap);
-    procedure SetLineWidth(const Value: Single);
+    procedure SetBorderWidth(const Value: Single);
 
     procedure Paint; override;
     procedure ResizeBuffer; virtual;
@@ -91,7 +91,7 @@ type
     procedure BorderStrengthChanged; virtual;
     procedure BrightnessChanged; virtual;
     procedure LEDColorChanged; virtual;
-    procedure LineWidthChanged; virtual;
+    procedure BorderWidthChanged; virtual;
     procedure TransparentChanged; virtual;
     procedure UniformityChanged; virtual;
   public
@@ -104,7 +104,7 @@ type
     property BorderStrength_Percent: Single read GetBorderStrength write SetBorderStrength;
     property Brightness_Percent: Single read FBrightness write SetBrightness;
     property LEDColor: TColor read FLEDColor write SetLEDColor default clBlack;
-    property LineWidth: Single read FLineWidth write SetLineWidth;
+    property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property Transparent: Boolean read FTransparent write SetTransparent;
     property Uniformity_Percent: Single read GetUniformity write SetUniformity;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -116,7 +116,7 @@ type
     property BorderStrength_Percent;
     property Brightness_Percent;
     property LEDColor;
-    property LineWidth;
+    property BorderWidth;
     property Uniformity_Percent;
     property Transparent;
 
@@ -164,7 +164,7 @@ type
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Common, DAV_Complex, DAV_Approximations, DAV_GuiBlend;
+  ExtCtrls, Math, DAV_Math, DAV_Common, DAV_Complex, DAV_Approximations, DAV_GuiBlend;
 
 procedure CopyParentImage(Control: TControl; PixelMap: TGuiCustomPixelMap);
 var
@@ -327,7 +327,7 @@ begin
  FPixelMap := TGuiPixelMapMemory.Create;
 
  FLEDColor    := clRed;
- FLineWidth   := 1;
+ FBorderWidth := 1.5;
  FBrightness  := 100;
  FUniformity  := 0.4;
 
@@ -479,7 +479,7 @@ begin
  Invalidate;
 end;
 
-procedure TCustomGuiLED.LineWidthChanged;
+procedure TCustomGuiLED.BorderWidthChanged;
 begin
  UpdateBuffer;
  Invalidate;
@@ -512,7 +512,7 @@ begin
  if FBrightness <> Value then
   begin
    FBrightness := Value;
-   BrightnessChanged
+   BrightnessChanged;
   end;
 end;
 
@@ -525,12 +525,12 @@ begin
   end;
 end;
 
-procedure TCustomGuiLED.SetLineWidth(const Value: Single);
+procedure TCustomGuiLED.SetBorderWidth(const Value: Single);
 begin
- if FLineWidth <> Value then
+ if FBorderWidth <> Value then
   begin
-   FLineWidth := Value;
-   LineWidthChanged;
+   FBorderWidth := Value;
+   BorderWidthChanged;
   end;
 end;
 
@@ -562,20 +562,23 @@ end;
 
 procedure TCustomGuiLED.RenderLED(const PixelMap: TGuiCustomPixelMap);
 var
-  X, Y          : Integer;
-  ScnLne        : PPixel32Array;
-  LEDColor      : TPixel32;
-  CombColor     : TPixel32;
-  Rad           : Single;
-  XStart        : Single;
-  BW, BWx       : Single;
-  Scale         : Single;
-  Center        : TComplexSingle;
-  SqrDist       : Single;
-  Bright        : Single;
-  PixelWidth    : Single;
-  ReciSqrRad    : Single;
-  Temp          : Single;
+  X, Y              : Integer;
+  ScnLne            : PPixel32Array;
+  LEDColor          : TPixel32;
+  CombColor         : TPixel32;
+  Radius            : Single;
+  XStart            : Single;
+  RadMinusBorderOne : Single;
+  Scale             : Single;
+  Center            : TComplexSingle;
+  SqrYDist          : Single;
+  SqrDist           : Single;
+  Bright            : Single;
+  SqrRadMinusOne    : Single;
+  SqrRadMinusBorder : Single;
+  ReciSqrRad        : Single;
+  Temp              : Single;
+  CombAlpha         : Integer;
 
 const
   CBlack : TPixel32 = (ARGB : $FF000000);
@@ -586,58 +589,93 @@ begin
    Bright := 0.3 + 0.007 * FBrightness;
 
    // draw circle
-   Rad := 0.5 * Math.Min(Width, Height) - 3;
-   if Rad <= 0 then Exit;
-   Temp := 1 / Rad;
-   ReciSqrRad := Sqr(Temp);
-   BWx := 1 - (FLineWidth - 1) * Temp;
-   BW := 1 - FLineWidth * Temp;
-   PixelWidth := 1 - Temp;
+   Radius := 0.5 * Math.Min(Width, Height) - 3;
+   if Radius <= 0 then Exit;
+
+   ReciSqrRad := 1 / Sqr(Radius);
+   RadMinusBorderOne := BranchlessClipPositive(Radius - FBorderWidth + 1);
+   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - FBorderWidth));
+   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
 
    Center.Re := 0.5 * Width;
    Center.Im := 0.5 * Height;
 
-   for Y := Round(Center.Im - Rad) to Round(Center.Im + Rad) do
+   for Y := Round(Center.Im - Radius) to Round(Center.Im + Radius) do
     begin
-     XStart := Sqr(Rad) - Sqr(Y - Center.Im);
+     // calculate squared vertical distance
+     SqrYDist := Sqr(Y - Center.Im);
+
+     XStart := Sqr(Radius) - SqrYDist;
      if XStart < 0
       then Continue
       else XStart := Sqrt(XStart) - 0.4999999;
+
      ScnLne := Scanline[Y];
      for X := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
       begin
        // calculate squared distance
-       SqrDist := Sqr(X - Center.Re) + Sqr(Y - Center.Im);
+       SqrDist := Sqr(X - Center.Re) + SqrYDist;
        Scale := Bright * (1 - FUniformity * SqrDist * ReciSqrRad);
 
-       if SqrDist <= Sqr(BW * Rad) then
+       if FBorderWidth > 1.5 then
         begin
-         CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
-         BlendMemory(CombColor, ScnLne[X]);
-        end else
-       if SqrDist <= Sqr(BWx * Rad) then
-        begin
-         Temp := BWx * Rad - FastSqrtBab2(SqrDist);
-         Scale := (Temp + (1 - Temp) * FBorderFactor) * Scale;
+         if SqrDist <= SqrRadMinusBorder
+          then CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF))
+          else
+         if SqrDist <= Sqr(RadMinusBorderOne) then
+          begin
+           Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+           Scale := (Temp + (1 - Temp) * FBorderFactor) * Scale;
 
-         CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
-         BlendMemory(CombColor, ScnLne[X]);
-        end else
-       if SqrDist < Sqr(PixelWidth * Rad) then
-        begin
-         CombColor := CombineRegister(LEDColor, CBlack, Round(FBorderFactor * Scale * $FF));
-         BlendMemory(CombColor, ScnLne[X]);
+           CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
+          end else
+         if SqrDist < SqrRadMinusOne
+          then CombColor := CombineRegister(LEDColor, CBlack, Round(FBorderFactor * Scale * $FF))
+          else
+           begin
+            Scale := FBorderFactor * Scale;
+            CombColor := CBlack;
+            CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+            CombineMemory(LEDColor, CombColor, Round(Scale * $FF));
+            CombColor.A := CombAlpha;
+           end;
         end
        else
         begin
-         Scale := FBorderFactor * Scale;
-         CombColor.B := Round(Scale * LEDColor.B);
-         CombColor.G := Round(Scale * LEDColor.G);
-         CombColor.R := Round(Scale * LEDColor.R);
-         CombColor.A := Round($FF * (Rad - FastSqrtBab2(SqrDist)));
-         BlendMemory(CombColor, ScnLne[X]);
-        end;
+         if SqrDist < SqrRadMinusOne
+          then CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF))
+          else
+           begin
+            CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
+            EMMS;
+            Temp := FastSqrtBab2(SqrDist) - (Radius - 1);
+            Scale := (Temp + (1 - Temp) * FBorderFactor) * 0.5 * FBorderWidth * Scale;
+            CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+            CombColor := CombineRegister(CBlack, CombColor, Round((1 - Scale) * $FF));
+            CombColor.A := CombAlpha;
 
+ (*
+            Scale := FBorderFactor * Scale;
+            CombColor := CBlack;
+            CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+            CombineMemory(LEDColor, CombColor, Round(Scale * $FF));
+            CombColor.A := CombAlpha;
+            BlendMemory(CombColor, ScnLne[X]);
+
+ (*
+            Scale := FBorderFactor * Scale;
+            Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+            CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+            Scale := (Temp + (1 - Temp) * FBorderFactor) * Scale;
+            CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
+            CombineMemory(LEDColor, CombColor, Round(Scale * $FF));
+            CombColor.A := CombAlpha;
+            BlendMemory(CombColor, ScnLne[X]);
+ *)
+           end;
+         end;
+
+       BlendMemory(CombColor, ScnLne[X]);
        EMMS;
       end;
     end;

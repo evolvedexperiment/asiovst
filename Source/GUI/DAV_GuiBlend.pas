@@ -48,8 +48,8 @@ type
   TBlendRegister    = function(Foreground, Background: TPixel32): TPixel32;
   TBlendMemory      = procedure(Foreground: TPixel32; var Background: TPixel32);
   TBlendLine        = procedure(Source, Destination: PPixel32; Count: Cardinal);
-  TCombineRegister  = function(X, Y: TPixel32; Weight: Cardinal): TPixel32;
-  TCombineMemory    = procedure(X: TPixel32; var Y: TPixel32; Weight: Integer);
+  TCombineRegister  = function(Foreground, Background: TPixel32; Weight: Cardinal): TPixel32;
+  TCombineMemory    = procedure(Foreground: TPixel32; var Background: TPixel32; Weight: Integer);
   TCombineLine      = procedure(Source, Destination: PPixel32; Count: Integer; Weight: Cardinal);
 
 
@@ -284,7 +284,7 @@ begin
 asm
   // test the counter for zero or negativity
   TEST    ECX,ECX
-  JS      @4
+  JS      @Done
 
   PUSH    EBX
   PUSH    ESI
@@ -293,13 +293,12 @@ asm
   MOV     ESI, EAX         // ESI <- Src
   MOV     EDI, EDX         // EDI <- Dst
 
-  // loop start
-@1:
+@LoopStart:
   MOV     EAX, [ESI]
   TEST    EAX, $FF000000
-  JZ      @3              // complete transparency, proceed to next point
+  JZ      @NextPixel
 
-  PUSH    ECX             // store counter
+  PUSH    ECX
 
   // Get weight W = Fa * M
   MOV     ECX, EAX         // ECX  <-  Fa Fr Fg Fb
@@ -307,7 +306,7 @@ asm
 
   // Test Fa = 255 ?
   CMP     ECX, $FF
-  JZ      @2
+  JZ      @CopyPixel
 
   // P = W * F
   MOV     EBX, EAX         // EBX  <-  Fa Fr Fg Fb
@@ -341,28 +340,27 @@ asm
 
   // Z = P + Q (assuming no overflow at each byte)
   ADD     EAX, EBX         // EAX  <-  Za Zr Zg Zb
-@2:
+@CopyPixel:
   MOV     [EDI], EAX
-  POP     ECX             // restore counter
+  POP     ECX
 
-@3:
+@NextPixel:
   ADD     ESI, 4
   ADD     EDI, 4
 
-  // loop end
   DEC     ECX
-  JNZ     @1
+  JNZ     @LoopStart
 
   POP     EDI
   POP     ESI
   POP     EBX
 
-@4:
+@Done:
   RET
 {$ENDIF}
 end;
 
-function CombineRegisterNative(X, Y: TPixel32; Weight: Cardinal): TPixel32;
+function CombineRegisterNative(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
 {$IFDEF PUREPASCAL}
 var
   AlphaForeground : PByteArray;
@@ -370,26 +368,26 @@ var
 begin
  if Weight = 0 then
   begin
-   Result := Y;
+   Result := Background;
    Exit;
   end;
 
  if Weight >= $FF then
   begin
-   Result := X;
+   Result := ForeGround;
    Exit;
   end;
 
- with X do
+ with ForeGround do
   begin
    AlphaForeground := @DivTable[Weight];
    AlphaBackground := @DivTable[255 - Weight];
-   R := AlphaBackground[Y.R] + AlphaForeground[R];
-   G := AlphaBackground[Y.G] + AlphaForeground[G];
-   B := AlphaBackground[Y.B] + AlphaForeground[B];
-   A := AlphaBackground[Y.A] + AlphaForeground[A];
+   R := AlphaBackground[Background.R] + AlphaForeground[R];
+   G := AlphaBackground[Background.G] + AlphaForeground[G];
+   B := AlphaBackground[Background.B] + AlphaForeground[B];
+   A := AlphaBackground[Background.A] + AlphaForeground[A];
   end;
- Result := X;
+ Result := ForeGround;
 {$ELSE}
 asm
   // combine RGBA channels of colors X and Y with the weight of X given in W
@@ -447,7 +445,7 @@ asm
 {$ENDIF}
 end;
 
-procedure CombineMemoryNative(X: TPixel32; var Y: TPixel32; Weight: Cardinal);
+procedure CombineMemoryNative(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
 {$IFDEF PUREPASCAL}
 var
   AlphaForeground : PByteArray;
@@ -458,20 +456,20 @@ begin
 
  if Weight >= $FF then
   begin
-   Y := X;
+   Background := ForeGround;
    Exit;
   end;
 
- with X do
+ with ForeGround do
   begin
    AlphaForeground := @DivTable[Weight];
    AlphaBackground := @DivTable[255 - Weight];
-   R := AlphaBackground[Y.R] + AlphaForeground[R];
-   G := AlphaBackground[Y.G] + AlphaForeground[G];
-   B := AlphaBackground[Y.B] + AlphaForeground[B];
-   A := AlphaBackground[Y.A] + AlphaForeground[A];
+   R := AlphaBackground[Background.R] + AlphaForeground[R];
+   G := AlphaBackground[Background.G] + AlphaForeground[G];
+   B := AlphaBackground[Background.B] + AlphaForeground[B];
+   A := AlphaBackground[Background.A] + AlphaForeground[A];
   end;
- Y := X;
+ Background := ForeGround;
 {$ELSE}
 asm
   // EAX <- F
@@ -614,25 +612,22 @@ end;
 
 procedure BlendLineMMX(Source, Destination: PPixel32; Count: Integer);
 asm
-  // test the counter for zero or negativity
   TEST      ECX, ECX
-  JS        @4
+  JS        @Done
 
   PUSH      ESI
   PUSH      EDI
 
-  MOV       ESI, EAX         // ESI <- Src
-  MOV       EDI, EDX         // EDI <- Dst
+  MOV       ESI, EAX
+  MOV       EDI, EDX
 
-  // loop start
-@1:
+@LoopStart:
   MOV       EAX, [ESI]
   TEST      EAX, $FF000000
-  JZ        @3              // complete transparency, proceed to next point
+  JZ        @NextPixel
   CMP       EAX, $FF000000
-  JNC       @2              // opaque pixel, copy without blending
+  JNC       @CopyPixel
 
-  // blend
   MOVD      MM0, EAX
   PXOR      MM3, MM3
   MOVD      MM2, [EDI]
@@ -651,25 +646,24 @@ asm
   PACKUSWB  MM2, MM3
   MOVD      EAX, MM2
 
-@2:
+@CopyPixel:
   MOV       [EDI], EAX
 
-@3:
+@NextPixel:
   ADD       ESI, 4
   ADD       EDI, 4
 
-// loop end
   DEC       ECX
-  JNZ       @1
+  JNZ       @LoopStart
 
   POP       EDI
   POP       ESI
 
-@4:
+@Done:
   RET
 end;
 
-function CombineRegisterMMX(X, Y, W: TPixel32): TPixel32;
+function CombineRegisterMMX(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
 asm
   MOVD      MM1, EAX
   PXOR      MM0, MM0
@@ -734,16 +728,16 @@ procedure CombineLineMMX(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
 asm
   TEST      ECX, ECX
-  JS        @3
+  JS        @Done
 
   PUSH      EBX
   MOV       EBX, Weight
 
   TEST      EBX, EBX
-  JZ        @2              // weight is zero
+  JZ        @LoopEnd        // weight is zero
 
   CMP       EDX, $FF
-  JZ        @4              // weight = 255  =>  copy src to dst
+  JZ        @DoneMove       // weight = 255  =>  copy src to dst
 
   SHL       EBX, 4
   ADD       EBX, AlphaPointer
@@ -751,8 +745,7 @@ asm
   MOV       EBX, BiasPointer
   MOVQ      MM4, [EBX]
 
-// loop start
-@1:
+@LoopStart:
   MOVD      MM1, [EAX]
   PXOR      MM0, MM0
   MOVD      MM2, [EDX]
@@ -773,14 +766,14 @@ asm
   ADD       EDX, 4
 
   DEC       ECX
-  JNZ       @1
-@2:
+  JNZ       @LoopStart
+@LoopEnd:
   POP       EBX
   POP       EBP
-@3:
+@Done:
   RET       $0004
 
-@4:
+@DoneMove:
   CALL      Move
   POP       EBX
 end;
@@ -842,6 +835,176 @@ asm
 @Copy:
   MOV       [EDX], EAX
 end;
+
+procedure BlendLineSSE2(Source, Destination: PPixel32; Count: Integer);
+asm
+  TEST      ECX, ECX
+  JS        @Done
+
+  PUSH      ESI
+  PUSH      EDI
+
+  MOV       ESI, EAX
+  MOV       EDI, EDX
+
+@LoopStart:
+  MOV       EAX, [ESI]
+  TEST      EAX, $FF000000
+  JZ        @NextPixel
+  CMP       EAX, $FF000000
+  JNC       @CopyPixel
+
+  MOVD      XMM0, EAX
+  PXOR      XMM3, XMM3
+  MOVD      XMM2, [EDI]
+  PUNPCKLBW XMM0, XMM3
+  MOV       EAX,  BiasPointer
+  PUNPCKLBW XMM2, XMM3
+  MOVQ      XMM1, XMM0
+  PUNPCKLBW XMM1, XMM3
+  PUNPCKHWD XMM1, XMM1
+  PSUBW     XMM0, XMM2
+  PUNPCKHDQ XMM1, XMM1
+  PSLLW     XMM2, 8
+  PMULLW    XMM0, XMM1
+  PADDW     XMM2, [EAX]
+  PADDW     XMM2, XMM0
+  PSRLW     XMM2, 8
+  PACKUSWB  XMM2, XMM3
+  MOVD      EAX,  XMM2
+
+@CopyPixel:
+  MOV       [EDI], EAX
+
+@NextPixel:
+  ADD       ESI, 4
+  ADD       EDI, 4
+
+  DEC       ECX
+  JNZ       @LoopStart
+
+  POP       EDI
+  POP       ESI
+
+@Done:
+  RET
+end;
+
+function CombineRegisterSSE2(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
+asm
+  MOVD      XMM1, EAX
+  PXOR      XMM0, XMM0
+  SHL       ECX, 4
+
+  MOVD      XMM2, EDX
+  PUNPCKLBW XMM1, XMM0
+  PUNPCKLBW XMM2, XMM0
+
+  ADD       ECX, AlphaPointer
+
+  PSUBW     XMM1, XMM2
+  PMULLW    XMM1, [ECX]
+  PSLLW     XMM2, 8
+
+  MOV       ECX, BiasPointer
+
+  PADDW     XMM2, [ECX]
+  PADDW     XMM1, XMM2
+  PSRLW     XMM1, 8
+  PACKUSWB  XMM1, XMM0
+  MOVD      EAX, XMM1
+end;
+
+procedure CombineMemorySSE2(F: TPixel32; var B: TPixel32; W: TPixel32);
+asm
+  JCXZ      @Done
+  CMP       ECX, $FF
+  JZ        @Copy
+
+  MOVD      XMM1, EAX
+  PXOR      XMM0, XMM0
+
+  SHL       ECX, 4
+
+  MOVD      XMM2, [EDX]
+  PUNPCKLBW XMM1, XMM0
+  PUNPCKLBW XMM2, XMM0
+
+  ADD       ECX, AlphaPointer
+
+  PSUBW     XMM1, XMM2
+  PMULLW    XMM1, [ECX]
+  PSLLW     XMM2, 8
+
+  MOV       ECX, BiasPointer
+
+  PADDW     XMM2, [ECX]
+  PADDW     XMM1, XMM2
+  PSRLW     XMM1, 8
+  PACKUSWB  XMM1, XMM0
+  MOVD      [EDX], XMM1
+
+@Done:
+  RET
+
+@Copy:
+  MOV       [EDX], EAX
+end;
+
+procedure CombineLineSSE2(Source, Destination: PPixel32; Count: Integer;
+  Weight: Cardinal);
+asm
+  TEST      ECX, ECX
+  JS        @Done
+
+  PUSH      EBX
+  MOV       EBX, Weight
+
+  TEST      EBX, EBX
+  JZ        @LoopEnd
+
+  CMP       EDX, $FF
+  JZ        @DoneMove
+
+  SHL       EBX, 4
+  ADD       EBX, AlphaPointer
+  MOVQ      XMM3, [EBX]
+  MOV       EBX, BiasPointer
+  MOVQ      XMM4, [EBX]
+
+@LoopStart:
+  MOVD      XMM1, [EAX]
+  PXOR      XMM0, XMM0
+  MOVD      XMM2, [EDX]
+  PUNPCKLBW XMM1, XMM0
+  PUNPCKLBW XMM2, XMM0
+
+  PSUBW     XMM1, XMM2
+  PMULLW    XMM1, XMM3
+  PSLLW     XMM2, 8
+
+  PADDW     XMM2, XMM4
+  PADDW     XMM1, XMM2
+  PSRLW     XMM1, 8
+  PACKUSWB  XMM1, XMM0
+  MOVD      [EDX], XMM1
+
+  ADD       EAX, 4
+  ADD       EDX, 4
+
+  DEC       ECX
+  JNZ       @LoopStart
+@LoopEnd:
+  POP       EBX
+  POP       EBP
+@Done:
+  RET       $0004
+
+@DoneMove:
+  CALL      Move
+  POP       EBX
+end;
+
 
 {$ENDIF}
 
@@ -922,6 +1085,7 @@ begin
    Add(@EMMSNative);
    {$IFNDEF PUREPASCAL}
    Add(@EMMSMMX, [pfMMX]);
+   Add(@EMMSNative, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -963,6 +1127,7 @@ begin
    Add(@BlendLineNative);
    {$IFNDEF PUREPASCAL}
    Add(@BlendLineMMX, [pfMMX]);
+   Add(@BlendLineSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -976,6 +1141,7 @@ begin
    Add(@CombineRegisterNative);
    {$IFNDEF PUREPASCAL}
    Add(@CombineRegisterMMX, [pfMMX]);
+   Add(@CombineRegisterSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -989,6 +1155,7 @@ begin
    Add(@CombineMemoryNative);
    {$IFNDEF PUREPASCAL}
    Add(@CombineMemoryMMX, [pfMMX]);
+   Add(@CombineMemorySSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1002,6 +1169,7 @@ begin
    Add(@CombineLineNative);
    {$IFNDEF PUREPASCAL}
    Add(@CombineLineMMX, [pfMMX]);
+   Add(@CombineLineSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;

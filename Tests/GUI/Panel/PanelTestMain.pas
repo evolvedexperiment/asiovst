@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiPanel, DAV_GuiPanelNew;
+  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiPanel;
 
 type
   TFmPanelTest = class(TForm)
@@ -43,10 +43,10 @@ end;
 
 procedure TFmPanelTest.TbLineWidthChange(Sender: TObject);
 begin
- PanelA.Borderwidth := 0.5 * TbLinewidth.Position;
- PanelB.Borderwidth := 0.5 * TbLinewidth.Position;
- PanelC.Borderwidth := 0.5 * TbLinewidth.Position;
- PanelD.Borderwidth := 0.5 * TbLinewidth.Position;
+ PanelA.Borderwidth := 0.25 * TbLinewidth.Position;
+ PanelB.Borderwidth := 0.25 * TbLinewidth.Position;
+ PanelC.Borderwidth := 0.25 * TbLinewidth.Position;
+ PanelD.Borderwidth := 0.25 * TbLinewidth.Position;
 end;
 
 procedure TFmPanelTest.TbRoundRadiusChange(Sender: TObject);

@@ -517,7 +517,7 @@ end;
 
 function Sigmoid(const Input: Single): Single;
 begin
- if (abs(Input) < 1)
+ if (Abs(Input) < 1)
   then Result := Input * (1.5 - 0.5 * Input * Input)
   else
    if Input < 0
@@ -527,7 +527,7 @@ end;
 
 function Sigmoid(const Input: Double): Double;
 begin
- if (abs(Input) < 1)
+ if (Abs(Input) < 1)
   then Result := Input * (1.5 - 0.5 * Input * Input)
   else
    if Input < 0

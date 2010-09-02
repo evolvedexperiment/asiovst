@@ -156,28 +156,27 @@ object FmAdvancedClipper: TFmAdvancedClipper
     end
     object PnDisplay: TGuiPanel
       Left = 75
-      Top = 7
+      Top = 5
       Width = 114
-      Height = 17
-      AntiAlias = gaaLinear4x
+      Height = 20
       Caption = 'PnDisplay'
-      LineColor = 5398887
-      Linewidth = 1
-      PanelColor = 3226174
-      ParentColor = True
-      Radius = 5
+      Color = 7373965
+      Enabled = False
+      LineColor = 4938079
+      BorderWidth = 1.000000000000000000
+      PanelColor = 4938079
+      Radius = 4.000000000000000000
       TabOrder = 0
       UseDockManager = True
-      Transparent = True
       object LbDisplay: TGuiLabel
         Left = 5
-        Top = 2
+        Top = 4
         Width = 105
-        Height = 12
+        Height = 13
         Alignment = taCenter
         AntiAlias = gaaLinear4x
         Caption = 'Advanced Clipper'
-        Color = 3226174
+        Color = 4938079
         Font.Charset = ANSI_CHARSET
         Font.Color = 15659506
         Font.Height = -11
@@ -323,24 +322,22 @@ object FmAdvancedClipper: TFmAdvancedClipper
       ParentFont = False
       Shadow.Color = clBlack
     end
-    object GuiPanel1: TGuiPanel
+    object PnHardClipping: TGuiPanel
       Left = 80
-      Top = 7
+      Top = 5
       Width = 105
-      Height = 19
-      AntiAlias = gaaLinear4x
+      Height = 20
       Caption = 'PnDisplay'
-      LineColor = 5925488
-      Linewidth = 1
+      Color = 7373965
+      LineColor = 4938079
+      BorderWidth = 1.000000000000000000
       PanelColor = 4938079
-      ParentColor = True
-      Radius = 5
+      Radius = 4.000000000000000000
       TabOrder = 0
       UseDockManager = True
-      Transparent = True
       object LbHardClip: TGuiLabel
         Left = 26
-        Top = 3
+        Top = 4
         Width = 68
         Height = 14
         Alignment = taCenter
@@ -358,13 +355,13 @@ object FmAdvancedClipper: TFmAdvancedClipper
       end
       object LEDHardClip: TGuiLED
         Left = 5
-        Top = 0
+        Top = 1
         Width = 18
         Height = 18
-        BorderStrength_Percent = 75.000000000000000000
+        BorderStrength_Percent = 60.000003814697270000
         Brightness_Percent = 90.000000000000000000
         LEDColor = 14870505
-        LineWidth = 2.299999952316284000
+        BorderWidth = 2.599999904632568000
         Uniformity_Percent = 36.754447937011720000
         Transparent = False
         Color = 4938079
@@ -373,18 +370,16 @@ object FmAdvancedClipper: TFmAdvancedClipper
       end
     end
   end
-  object GuiPanel2: TGuiPanel
+  object PnClipping: TGuiPanel
     Left = 8
     Top = 231
     Width = 201
     Height = 54
-    AntiAlias = gaaLinear4x
-    Caption = 'PnClipping'
     LineColor = 15659506
-    Linewidth = 3
+    BorderWidth = 2.000000000000000000
     PanelColor = 7373965
     ParentColor = True
-    Radius = 7
+    Radius = 7.000000000000000000
     TabOrder = 2
     UseDockManager = True
     object LbClipInput: TGuiLabel
@@ -440,10 +435,10 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 4
       Width = 32
       Height = 32
-      BorderStrength_Percent = 75.000000000000000000
+      BorderStrength_Percent = 60.000003814697270000
       Brightness_Percent = 100.000000000000000000
       LEDColor = 8244410
-      LineWidth = 3.000000000000000000
+      BorderWidth = 2.799999952316284000
       Uniformity_Percent = 50.000000000000000000
       Transparent = False
       ParentShowHint = False
@@ -455,10 +450,10 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 4
       Width = 32
       Height = 32
-      BorderStrength_Percent = 75.000000000000000000
+      BorderStrength_Percent = 60.000003814697270000
       Brightness_Percent = 100.000000000000000000
       LEDColor = 8234444
-      LineWidth = 3.000000000000000000
+      BorderWidth = 2.799999952316284000
       Uniformity_Percent = 50.000000000000000000
       Transparent = False
       OnClick = ClipLEDClick
@@ -468,10 +463,10 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 4
       Width = 32
       Height = 32
-      BorderStrength_Percent = 75.000000000000000000
+      BorderStrength_Percent = 60.000003814697270000
       Brightness_Percent = 100.000000000000000000
       LEDColor = 8226252
-      LineWidth = 3.000000000000000000
+      BorderWidth = 2.799999952316284000
       Uniformity_Percent = 50.000000000000000000
       Transparent = False
       OnClick = ClipLEDClick
@@ -485,7 +480,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
   end
   object DIL: TGuiDialImageList
     DialImages = <>
-    Left = 56
+    Left = 32
     Top = 24
   end
 end
