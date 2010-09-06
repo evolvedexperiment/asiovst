@@ -620,62 +620,62 @@ begin
        if FBorderWidth > 1.5 then
         begin
          if SqrDist <= SqrRadMinusBorder
-          then CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF))
+          then CombColor := CombinePixel(LEDColor, CBlack, Round(Scale * $FF))
           else
          if SqrDist <= Sqr(RadMinusBorderOne) then
           begin
            Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
            Scale := (Temp + (1 - Temp) * FBorderFactor) * Scale;
 
-           CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
+           CombColor := CombinePixel(LEDColor, CBlack, Round(Scale * $FF));
           end else
          if SqrDist < SqrRadMinusOne
-          then CombColor := CombineRegister(LEDColor, CBlack, Round(FBorderFactor * Scale * $FF))
+          then CombColor := CombinePixel(LEDColor, CBlack, Round(FBorderFactor * Scale * $FF))
           else
            begin
             Scale := FBorderFactor * Scale;
             CombColor := CBlack;
             CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
-            CombineMemory(LEDColor, CombColor, Round(Scale * $FF));
+            CombinePixelInplace(LEDColor, CombColor, Round(Scale * $FF));
             CombColor.A := CombAlpha;
            end;
         end
        else
         begin
          if SqrDist < SqrRadMinusOne
-          then CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF))
+          then CombColor := CombinePixel(LEDColor, CBlack, Round(Scale * $FF))
           else
            begin
-            CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
+            CombColor := CombinePixel(LEDColor, CBlack, Round(Scale * $FF));
             EMMS;
             Temp := FastSqrtBab2(SqrDist) - (Radius - 1);
             Scale := (Temp + (1 - Temp) * FBorderFactor) * 0.5 * FBorderWidth * Scale;
             CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
-            CombColor := CombineRegister(CBlack, CombColor, Round((1 - Scale) * $FF));
+            CombColor := CombinePixel(CBlack, CombColor, Round((1 - Scale) * $FF));
             CombColor.A := CombAlpha;
 
  (*
             Scale := FBorderFactor * Scale;
             CombColor := CBlack;
             CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
-            CombineMemory(LEDColor, CombColor, Round(Scale * $FF));
+            CombinePixelInplace(LEDColor, CombColor, Round(Scale * $FF));
             CombColor.A := CombAlpha;
-            BlendMemory(CombColor, ScnLne[X]);
+            BlendPixelInplace(CombColor, ScnLne[X]);
 
  (*
             Scale := FBorderFactor * Scale;
             Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
             CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
             Scale := (Temp + (1 - Temp) * FBorderFactor) * Scale;
-            CombColor := CombineRegister(LEDColor, CBlack, Round(Scale * $FF));
-            CombineMemory(LEDColor, CombColor, Round(Scale * $FF));
+            CombColor := CombinePixel(LEDColor, CBlack, Round(Scale * $FF));
+            CombinePixelInplace(LEDColor, CombColor, Round(Scale * $FF));
             CombColor.A := CombAlpha;
-            BlendMemory(CombColor, ScnLne[X]);
+            BlendPixelInplace(CombColor, ScnLne[X]);
  *)
            end;
          end;
 
-       BlendMemory(CombColor, ScnLne[X]);
+       BlendPixelInplace(CombColor, ScnLne[X]);
        EMMS;
       end;
     end;

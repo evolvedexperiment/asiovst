@@ -35,6 +35,7 @@ object FmChebyshev: TFmChebyshev
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbChebyshevFilterDemo: TGuiLabel
     Left = 8
@@ -50,6 +51,7 @@ object FmChebyshev: TFmChebyshev
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object PnControls: TGuiPanel
     Left = 8
@@ -57,17 +59,11 @@ object FmChebyshev: TFmChebyshev
     Width = 274
     Height = 129
     Anchors = [akLeft, akTop, akRight, akBottom]
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 10526927
-    Font.Height = -16
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold]
     LineColor = 10526927
-    Linewidth = 3
+    BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick
@@ -141,6 +137,7 @@ object FmChebyshev: TFmChebyshev
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbRipple: TGuiLabel
       Left = 94
@@ -158,6 +155,7 @@ object FmChebyshev: TFmChebyshev
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialOrder: TGuiDial
       Left = 190
@@ -199,6 +197,7 @@ object FmChebyshev: TFmChebyshev
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
       Left = 182
@@ -214,8 +213,9 @@ object FmChebyshev: TFmChebyshev
       Font.Color = 10526927
       Font.Height = -13
       Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
       OnDblClick = DialOrderDblClick
     end
     object LbRippleValue: TGuiLabel
@@ -232,8 +232,9 @@ object FmChebyshev: TFmChebyshev
       Font.Color = 10526927
       Font.Height = -13
       Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
       OnDblClick = DialRippleDblClick
     end
     object LbFrequencyValue: TGuiLabel
@@ -250,8 +251,9 @@ object FmChebyshev: TFmChebyshev
       Font.Color = 10526927
       Font.Height = -13
       Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
       OnDblClick = DialFrequencyDblClick
     end
   end

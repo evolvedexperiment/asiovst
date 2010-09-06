@@ -131,6 +131,33 @@ type
   end;
 *)
 
+const
+  // Some predefined color constants
+  pxBlack32     : TPixel32 = (ARGB : $FF000000);
+  pxDarkGray32  : TPixel32 = (ARGB : $FF3F3F3F);
+  pxGray32      : TPixel32 = (ARGB : $FF7F7F7F);
+  pxLightGray32 : TPixel32 = (ARGB : $FFBFBFBF);
+  pxWhite32     : TPixel32 = (ARGB : $FFFFFFFF);
+  pxMaroon32    : TPixel32 = (ARGB : $FF7F0000);
+  pxGreen32     : TPixel32 = (ARGB : $FF007F00);
+  pxOlive32     : TPixel32 = (ARGB : $FF7F7F00);
+  pxNavy32      : TPixel32 = (ARGB : $FF00007F);
+  pxPurple32    : TPixel32 = (ARGB : $FF7F007F);
+  pxTeal32      : TPixel32 = (ARGB : $FF007F7F);
+  pxRed32       : TPixel32 = (ARGB : $FFFF0000);
+  pxLime32      : TPixel32 = (ARGB : $FF00FF00);
+  pxYellow32    : TPixel32 = (ARGB : $FFFFFF00);
+  pxBlue32      : TPixel32 = (ARGB : $FF0000FF);
+  pxFuchsia32   : TPixel32 = (ARGB : $FFFF00FF);
+  pxAqua32      : TPixel32 = (ARGB : $FF00FFFF);
+
+  pxSemiWhite32 : TPixel32 = (ARGB : $7FFFFFFF);
+  pxSemiBlack32 : TPixel32 = (ARGB : $7F000000);
+  pxSemiRed32   : TPixel32 = (ARGB : $7FFF0000);
+  pxSemiGreen32 : TPixel32 = (ARGB : $7F00FF00);
+  pxSemiBlue32  : TPixel32 = (ARGB : $7F0000FF);
+
+
 procedure Downsample2xBitmap32(var Bitmap: TBitmap);
 procedure Downsample2xBitmap24(var Bitmap: TBitmap);
 procedure Downsample3xBitmap32(var Bitmap: TBitmap);
@@ -883,11 +910,11 @@ begin
 {$IFDEF WIN_COLOR_FIX}
   Result := $FF000000;
   I := (Color and $00FF0000) shr 16;
-  if I <> 0 then Result := Result or TColor32(Integer(I) - 1);
+  if I <> 0 then Result := Result or TPixel32(Integer(I) - 1);
   I := Color and $0000FF00;
-  if I <> 0 then Result := Result or TColor32(Integer(I) - $00000100);
+  if I <> 0 then Result := Result or TPixel32(Integer(I) - $00000100);
   I := Color and $000000FF;
-  if I <> 0 then Result := Result or TColor32(Integer(I) - 1) shl 16;
+  if I <> 0 then Result := Result or TPixel32(Integer(I) - 1) shl 16;
 {$ELSE}
   asm
    MOV    EAX, Color

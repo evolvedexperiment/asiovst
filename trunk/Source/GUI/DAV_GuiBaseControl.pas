@@ -40,8 +40,6 @@ uses
   Graphics, Classes, Controls, ExtCtrls, DAV_GuiCommon;
 
 type
-  TParentControl = class(TWinControl);
-
   TGuiOnDragMouseMove = procedure(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
 
@@ -342,6 +340,9 @@ uses
 
 resourcestring
   RCStrNotSupported = 'not supported';
+
+type
+  TParentControl = class(TWinControl);
 
 procedure CopyParentImage(Control: TControl; Dest: TCanvas);
 var

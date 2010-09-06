@@ -7,9 +7,9 @@ object FmButterworth: TFmButterworth
   ClientWidth = 200
   Color = 657940
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Color = 10526927
+  Font.Height = -13
+  Font.Name = 'Verdana'
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
@@ -20,7 +20,7 @@ object FmButterworth: TFmButterworth
     200
     243)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object LbButterworthFilterDemoShaddow: TGuiLabel
     Left = 9
     Top = 11
@@ -34,6 +34,7 @@ object FmButterworth: TFmButterworth
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbButterworthFilterDemo: TGuiLabel
     Left = 6
@@ -49,23 +50,18 @@ object FmButterworth: TFmButterworth
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object PnControls: TGuiPanel
     Left = 8
     Top = 44
     Width = 184
     Height = 129
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 10526927
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
     LineColor = 10526927
-    Linewidth = 3
+    BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick
@@ -107,6 +103,13 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 10526927
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnDblClick = LbFrequencyValueDblClick
     end
     object DialOrder: TGuiDial
@@ -143,6 +146,13 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 10526927
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnDblClick = LbOrderValueDblClick
     end
     object LbOrderValue: TGuiLabel
@@ -155,6 +165,13 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 10526927
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LbOrderValueDblClick
     end
     object LbFrequencyValue: TGuiLabel
@@ -167,6 +184,13 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 10526927
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LbFrequencyValueDblClick
     end
   end
@@ -176,26 +200,26 @@ object FmButterworth: TFmButterworth
     Width = 184
     Height = 56
     AntiAlias = gaaLinear4x
-    GraphColorDark = 4145018
-    GraphColorLight = 2829139
-    ColorChart = 1315880
+    BorderColor = 10526927
     BorderRadius = 8
     BorderWidth = 2
-    BorderColor = 10526927
+    ColorChart = 1315880
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = 10526927
         OnGetFilterGain = GetFilterGain
       end>
+    GraphColorDark = 4145018
+    GraphColorLight = 2829139
+    XAxis.LabelPosition = xlpBottom
+    XAxis.UpperFrequency = 20000.000000000000000000
+    XAxis.LowerFrequency = 20.000000000000000000
     YAxis.LabelPosition = ylpRight
     YAxis.LowerLevel = -36.000000000000000000
     YAxis.UpperLevel = 6.000000000000000000
     YAxis.Granularity = 20.000000000000000000
     YAxis.MaximumGridLines = 3
-    XAxis.LabelPosition = xlpBottom
-    XAxis.UpperFrequency = 20000.000000000000000000
-    XAxis.LowerFrequency = 20.000000000000000000
     Anchors = [akLeft, akTop, akBottom]
     Color = 657940
     Font.Charset = DEFAULT_CHARSET
@@ -209,7 +233,7 @@ object FmButterworth: TFmButterworth
     Enabled = False
     Interval = 20
     OnTimer = EQGraphUpdateTimer
-    Left = 96
-    Top = 192
+    Left = 80
+    Top = 176
   end
 end
