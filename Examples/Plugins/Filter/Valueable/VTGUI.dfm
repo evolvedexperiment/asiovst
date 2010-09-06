@@ -30,6 +30,8 @@ object FmVT: TFmVT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbBassFLat: TGuiLabel
     Left = 65
@@ -44,86 +46,103 @@ object FmVT: TFmVT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialLowGain: TGuiDial
     Left = 20
     Top = 218
     Width = 128
     Height = 128
+    DialImageIndex = -1
     LineColor = 103128
+    LineWidth = 2
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     GlyphCount = 65
+    OnChange = DialLowGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 200.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialLowGainChange
+    WheelStep = 1.000000000000000000
   end
   object DialHiGain: TGuiDial
     Left = 20
     Top = 31
     Width = 128
     Height = 128
+    DialImageIndex = -1
     LineColor = 103128
+    LineWidth = 2
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     GlyphCount = 65
+    OnChange = DialHiGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 200.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialHiGainChange
+    WheelStep = 1.000000000000000000
   end
   object DialSelector: TGuiDial
     Left = 162
     Top = 142
     Width = 84
     Height = 84
-    LineColor = 103128
     DefaultPosition = 1.000000000000000000
+    DialImageIndex = -1
+    LineColor = 103128
+    LineWidth = 2
     Max = 4.000000000000000000
     Min = 1.000000000000000000
     GlyphCount = 4
+    OnChange = DialSelectorChange
     PointerAngles.Start = 45
     PointerAngles.Range = 90
     PointerAngles.Resolution = 90.000000000000000000
     Position = 1.000000000000000000
     ScrollRange_Pixel = 200.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialSelectorChange
+    WheelStep = 1.000000000000000000
   end
   object DialLowBypass: TGuiDial
     Left = 29
     Top = 349
     Width = 32
     Height = 32
+    DialImageIndex = -1
     LineColor = 103128
+    LineWidth = 2
     Max = 1.000000000000000000
     GlyphCount = 2
+    OnChange = DialLowBypassChange
     PointerAngles.Start = 180
     PointerAngles.Range = 180
     PointerAngles.Resolution = 180.000000000000000000
     ScrollRange_Pixel = 20.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialLowBypassChange
+    WheelStep = 1.000000000000000000
   end
   object DialHiBypass: TGuiDial
     Left = 18
     Top = 163
     Width = 32
     Height = 32
+    DialImageIndex = -1
     LineColor = 103128
+    LineWidth = 2
     Max = 1.000000000000000000
     GlyphCount = 2
+    OnChange = DialHiBypassChange
     PointerAngles.Start = 180
     PointerAngles.Range = 180
     PointerAngles.Resolution = 180.000000000000000000
     ScrollRange_Pixel = 20.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialHiBypassChange
+    WheelStep = 1.000000000000000000
   end
   object LbTitle: TGuiLabel
     Left = 162
@@ -138,6 +157,8 @@ object FmVT: TFmVT
     Font.Height = -32
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbBass: TGuiLabel
     Left = 67
@@ -152,6 +173,8 @@ object FmVT: TFmVT
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbTreble: TGuiLabel
     Left = 52
@@ -166,6 +189,8 @@ object FmVT: TFmVT
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbSubTitle: TGuiLabel
     Left = 199
@@ -180,6 +205,8 @@ object FmVT: TFmVT
     Font.Height = -32
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbDrive: TGuiLabel
     Left = 202
@@ -194,6 +221,8 @@ object FmVT: TFmVT
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbRoasty1: TGuiLabel
     Left = 256
@@ -207,6 +236,8 @@ object FmVT: TFmVT
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LbRoasty1Click
   end
   object LbRoasty2: TGuiLabel
@@ -221,6 +252,8 @@ object FmVT: TFmVT
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LbRoasty2Click
   end
   object LbSteamin1: TGuiLabel
@@ -235,6 +268,8 @@ object FmVT: TFmVT
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LbSteamin1Click
   end
   object LbSteamin2: TGuiLabel
@@ -249,6 +284,8 @@ object FmVT: TFmVT
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LbSteamin2Click
   end
   object GuiLabel1: TGuiLabel
@@ -264,6 +301,8 @@ object FmVT: TFmVT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiLabel2: TGuiLabel
     Left = 14
@@ -278,6 +317,8 @@ object FmVT: TFmVT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiLabel3: TGuiLabel
     Left = 132
@@ -291,6 +332,8 @@ object FmVT: TFmVT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiLabel4: TGuiLabel
     Left = 132
@@ -304,19 +347,20 @@ object FmVT: TFmVT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiPanel: TGuiPanel
     Left = 163
     Top = 275
     Width = 178
     Height = 106
-    AntiAlias = gaaLinear4x
     Caption = 'GuiPanel'
-    LineColor = 329145
-    Linewidth = 3
+    LineColor = 103128
+    BorderWidth = 2.000000000000000000
     PanelColor = 103128
     ParentColor = True
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True
@@ -326,16 +370,20 @@ object FmVT: TFmVT
       Width = 32
       Height = 32
       Color = 103128
+      DialImageIndex = -1
       LineColor = 329145
+      LineWidth = 2
       Max = 12.000000000000000000
       Min = -12.000000000000000000
       GlyphCount = 31
+      OnChange = DialOutputGainChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 100.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialOutputGainChange
+      WheelStep = 1.000000000000000000
     end
     object DialChannel: TGuiDial
       Left = 114
@@ -343,18 +391,22 @@ object FmVT: TFmVT
       Width = 32
       Height = 32
       Color = 103128
-      LineColor = 329145
       DefaultPosition = 1.000000000000000000
+      DialImageIndex = -1
+      LineColor = 329145
+      LineWidth = 2
       Max = 2.000000000000000000
       Min = 1.000000000000000000
       GlyphCount = 2
+      OnChange = DialChannelChange
+      ParentColor = False
       PointerAngles.Start = 180
       PointerAngles.Range = 180
       PointerAngles.Resolution = 180.000000000000000000
       Position = 1.000000000000000000
       ScrollRange_Pixel = 20.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialChannelChange
+      WheelStep = 1.000000000000000000
     end
     object LbGain: TGuiLabel
       Left = 13
@@ -369,6 +421,8 @@ object FmVT: TFmVT
       Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbChannel: TGuiLabel
       Left = 13
@@ -383,6 +437,8 @@ object FmVT: TFmVT
       Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbGainValue: TGuiLabel
       Left = 109
@@ -397,6 +453,8 @@ object FmVT: TFmVT
       Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbMono: TGuiLabel
       Left = 112
@@ -412,6 +470,8 @@ object FmVT: TFmVT
       Font.Height = -9
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbStereo: TGuiLabel
       Left = 111
@@ -427,6 +487,8 @@ object FmVT: TFmVT
       Font.Height = -9
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
 end

@@ -45,45 +45,49 @@ uses
 { Function Prototypes }
 
 type
-  TBlendRegister    = function(Foreground, Background: TPixel32): TPixel32;
-  TBlendMemory      = procedure(Foreground: TPixel32; var Background: TPixel32);
-  TBlendLine        = procedure(Source, Destination: PPixel32; Count: Cardinal);
-  TCombineRegister  = function(Foreground, Background: TPixel32; Weight: Cardinal): TPixel32;
-  TCombineMemory    = procedure(Foreground: TPixel32; var Background: TPixel32; Weight: Integer);
-  TCombineLine      = procedure(Source, Destination: PPixel32; Count: Integer; Weight: Cardinal);
+  TBlendMergePixel        = function(Foreground, Background: TPixel32): TPixel32;
+  TBlendMergePixelInplace = procedure(Foreground: TPixel32; var Background: TPixel32);
+  TBlendMergeLine         = procedure(Source, Destination: PPixel32; Count: Cardinal);
+  TCombinePixel           = function(Foreground, Background: TPixel32; Weight: Cardinal): TPixel32;
+  TCombinePixelInplace    = procedure(Foreground: TPixel32; var Background: TPixel32; Weight: Integer);
+  TCombineLine            = procedure(Source, Destination: PPixel32; Count: Integer; Weight: Cardinal);
 
 
 { Function Pointers }
 
 var
-  BlendRegister    : TBlendRegister;
-  BlendMemory      : TBlendMemory;
-  BlendLine        : TBlendLine;
-  CombineRegister  : TCombineRegister;
-  CombineMemory    : TCombineMemory;
-  CombineLine      : TCombineLine;
-  EMMS             : procedure;
+  BlendPixel          : TBlendMergePixel;
+  BlendPixelInplace   : TBlendMergePixelInplace;
+  BlendLine           : TBlendMergeLine;
+  CombinePixel        : TCombinePixel;
+  CombinePixelInplace : TCombinePixelInplace;
+  CombineLine         : TCombineLine;
+  EMMS                : procedure;
+  MergePixel          : TBlendMergePixel;
+  MergePixelInplace   : TBlendMergePixelInplace;
+  MergeLine           : TBlendMergeLine;
 
 
 
 { Binding Function Pointers }
 
 var
-  BindingBlendRegister    : TFunctionBinding;
-  BindingBlendMemory      : TFunctionBinding;
-  BindingBlendLine        : TFunctionBinding;
-  BindingCombineRegister  : TFunctionBinding;
-  BindingCombineMemory    : TFunctionBinding;
-  BindingCombineLine      : TFunctionBinding;
-  BindingEMMS             : TFunctionBinding;
+  BindingBlendPixel          : TFunctionBinding;
+  BindingBlendPixelInplace   : TFunctionBinding;
+  BindingBlendLine           : TFunctionBinding;
+  BindingCombinePixel        : TFunctionBinding;
+  BindingCombinePixelInplace : TFunctionBinding;
+  BindingCombineLine         : TFunctionBinding;
+  BindingEMMS                : TFunctionBinding;
+  BindingMergePixel          : TFunctionBinding;
+  BindingMergePixelInplace   : TFunctionBinding;
+  BindingMergeLine           : TFunctionBinding;
 
 
 { Binding List }
 
 var
-  BindingBlend   : TFunctionBindingList;
-
-function Lighten(C: TPixel32; Amount: Integer): TPixel32;
+  BindingBlend : TFunctionBindingList;
 
 implementation
 
@@ -99,94 +103,82 @@ var
   {$ENDIF}
 
 const
-  CBias = $00800080;
+  CBias = $00FE00FE; // $00800080
 
-function BlendRegisterNative(Foreground, Background: TPixel32): TPixel32;
+function BlendPixelNative(Foreground, Background: TPixel32): TPixel32;
 {$IFDEF PUREPASCAL}
 var
   AlphaForeground : PByteArray;
   AlphaBackground : PByteArray;
 begin
- if Foreground.A = 0 then
-  begin
-   Result := Background;
-   Exit;
-  end;
-
- if Foreground.A = $FF then
-  begin
-   Result := Foreground;
-   Exit;
-  end;
-
- with Background do
-  begin
-   AlphaForeground := @DivTable[Foreground.A];
-   AlphaBackground := @DivTable[not Foreground.A];
-   R := AlphaForeground[Foreground.R] + AlphaBackground[R];
-   G := AlphaForeground[Foreground.G] + AlphaBackground[G];
-   B := AlphaForeground[Foreground.B] + AlphaBackground[B];
-  end;
- Result := Background;
+ if Foreground.A =   0 then Result := Background else
+ if Foreground.A = $FF then Result := Foreground else
+  with Background do
+   begin
+    AlphaForeground := @DivTable[Foreground.A];
+    AlphaBackground := @DivTable[not Foreground.A];
+    R := AlphaForeground[Foreground.R] + AlphaBackground[R];
+    G := AlphaForeground[Foreground.G] + AlphaBackground[G];
+    B := AlphaForeground[Foreground.B] + AlphaBackground[B];
+    A := $FF;
+    Result := Background;
+   end;
 {$ELSE}
 asm
-  // test foreground alpha = 255 ?
-  CMP     EAX, $FF000000   // Foreground = 255 ? => Result = EAX
+  CMP     EAX, $FF000000
   JNC     @Done
 
-  // test foreground alpha = 0 ?
-  TEST    EAX, $FF000000   // Foreground = 0 ?   => Result = EDX
+  TEST    EAX, $FF000000
   JZ      @CopyPixel
 
-  // get weight W = (foreground alpha) * M
-  MOV     ECX, EAX         // ECX  <-  Fa Fr Fg Fb
-  SHR     ECX, 24          // ECX  <-  00 00 00 Fa
+  MOV     ECX, EAX
+  SHR     ECX, 24
 
   PUSH    EBX
 
-  // P = W * F
-  MOV     EBX, EAX         // EBX  <-  Fa Fr Fg Fb
-  AND     EAX, $00FF00FF   // EAX  <-  00 Fr 00 Fb
-  AND     EBX, $FF00FF00   // EBX  <-  Fa 00 Fg 00
-  IMUL    EAX, ECX         // EAX  <-  Pr ** Pb **
-  SHR     EBX, 8           // EBX  <-  00 Fa 00 Fg
-  IMUL    EBX, ECX         // EBX  <-  Pa ** Pg **
+  MOV     EBX, EAX
+  AND     EAX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EAX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     EAX, CBias
-  AND     EAX, $FF00FF00   // EAX  <-  Pr 00 Pb 00
-  SHR     EAX, 8           // EAX  <-  00 Pr ** Pb
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Pa 00 Pg 00
-  OR      EAX, EBX         // EAX  <-  Pa Pr Pg Pb
+  AND     EBX, $FF00FF00
+  OR      EAX, EBX
 
-  // W = 1 - W; Q = W * B
-  XOR     ECX, $000000FF   // ECX  <-  1 - ECX
-  MOV     EBX, EDX         // EBX  <-  Ba Br Bg Bb
-  AND     EDX, $00FF00FF   // EDX  <-  00 Br 00 Bb
-  AND     EBX, $FF00FF00   // EBX  <-  Ba 00 Bg 00
-  IMUL    EDX, ECX         // EDX  <-  Qr ** Qb **
-  SHR     EBX, 8           // EBX  <-  00 Ba 00 Bg
-  IMUL    EBX, ECX         // EBX  <-  Qa ** Qg **
+  XOR     ECX, $000000FF
+  MOV     EBX, EDX
+  AND     EDX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EDX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     EDX, CBias
-  AND     EDX, $FF00FF00   // EDX  <-  Qr 00 Qb 00
-  SHR     EDX, 8           // EDX  <-  00 Qr ** Qb
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Qa 00 Qg 00
-  OR      EBX, EDX         // EBX  <-  Qa Qr Qg Qb
+  AND     EBX, $FF00FF00
+  OR      EBX, EDX
 
-  // Z = P + Q (assuming no overflow at each byte)
-  ADD     EAX, EBX         // EAX  <-  Za Zr Zg Zb
+  ADD     EAX, EBX
+  OR      EAX, $FF000000
 
   POP     EBX
   RET
 
 @CopyPixel:
   MOV     EAX, EDX
+  OR      EAX, $FF000000
 
-@Done:     RET
+@Done:
+  RET
 {$ENDIF}
 end;
 
-procedure BlendMemoryNative(Foreground: TPixel32; var Background: TPixel32);
+procedure BlendPixelInplaceNative(Foreground: TPixel32; var Background: TPixel32);
 {$IFDEF PUREPASCAL}
 var
   AlphaForeground : PByteArray;
@@ -210,53 +202,48 @@ begin
   end;
 {$ELSE}
 asm
-  // Test Fa = 0 ?
-  TEST    EAX, $FF000000   // Fa = 0 ?   => do not write
+  TEST    EAX, $FF000000
   JZ      @Done
 
-  // Get weight W = Fa * M
-  MOV     ECX, EAX         // ECX  <-  Fa Fr Fg Fb
-  SHR     ECX, 24          // ECX  <-  00 00 00 Fa
+  MOV     ECX, EAX
+  SHR     ECX, 24
 
-  // Test Fa = 255 ?
   CMP     ECX, $FF
   JZ      @CopyPixel
 
   PUSH    EBX
   PUSH    ESI
 
-  // P = W * F
-  MOV     EBX, EAX         // EBX  <-  Fa Fr Fg Fb
-  AND     EAX, $00FF00FF   // EAX  <-  00 Fr 00 Fb
-  AND     EBX, $FF00FF00   // EBX  <-  Fa 00 Fg 00
-  IMUL    EAX, ECX         // EAX  <-  Pr ** Pb **
-  SHR     EBX, 8           // EBX  <-  00 Fa 00 Fg
-  IMUL    EBX, ECX         // EBX  <-  Pa ** Pg **
+  MOV     EBX, EAX
+  AND     EAX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EAX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     EAX, CBias
-  AND     EAX, $FF00FF00   // EAX  <-  Pr 00 Pb 00
-  SHR     EAX, 8           // EAX  <-  00 Pr ** Pb
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Pa 00 Pg 00
-  OR      EAX, EBX         // EAX  <-  Pa Pr Pg Pb
+  AND     EBX, $FF00FF00
+  OR      EAX, EBX
 
-  // W = 1 - W; Q = W * B
   MOV     ESI, [EDX]
-  XOR     ECX, $000000FF   // ECX  <-  1 - ECX
-  MOV     EBX, ESI         // EBX  <-  Ba Br Bg Bb
-  AND     ESI, $00FF00FF   // ESI  <-  00 Br 00 Bb
-  AND     EBX, $FF00FF00   // EBX  <-  Ba 00 Bg 00
-  IMUL    ESI, ECX         // ESI  <-  Qr ** Qb **
-  SHR     EBX, 8           // EBX  <-  00 Ba 00 Bg
-  IMUL    EBX, ECX         // EBX  <-  Qa ** Qg **
+  XOR     ECX, $000000FF
+  MOV     EBX, ESI
+  AND     ESI, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    ESI, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     ESI, CBias
-  AND     ESI, $FF00FF00   // ESI  <-  Qr 00 Qb 00
-  SHR     ESI, 8           // ESI  <-  00 Qr ** Qb
+  AND     ESI, $FF00FF00
+  SHR     ESI, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Qa 00 Qg 00
-  OR      EBX, ESI         // EBX  <-  Qa Qr Qg Qb
+  AND     EBX, $FF00FF00
+  OR      EBX, ESI
 
-  // Z = P + Q (assuming no overflow at each byte)
-  ADD     EAX, EBX         // EAX  <-  Za Zr Zg Zb
+  ADD     EAX, EBX
+  OR      EAX, $FF000000
   MOV     [EDX], EAX
 
   POP     ESI
@@ -264,7 +251,9 @@ asm
   RET
 
 @CopyPixel:
+  OR      EAX, $FF000000
   MOV     [EDX], EAX
+
 @Done:
   RET
 {$ENDIF}
@@ -275,23 +264,22 @@ procedure BlendLineNative(Source, Destination: PPixel32; Count: Integer);
 begin
  while Count > 0 do
   begin
-   BlendMemory(Source^, Destination^);
+   BlendPixelInplace(Source^, Destination^);
    Inc(Source);
    Inc(Destination);
    Dec(Count);
   end;
 {$ELSE}
 asm
-  // test the counter for zero or negativity
-  TEST    ECX,ECX
+  TEST    ECX, ECX
   JS      @Done
 
   PUSH    EBX
   PUSH    ESI
   PUSH    EDI
 
-  MOV     ESI, EAX         // ESI <- Src
-  MOV     EDI, EDX         // EDI <- Dst
+  MOV     ESI, EAX
+  MOV     EDI, EDX
 
 @LoopStart:
   MOV     EAX, [ESI]
@@ -300,47 +288,43 @@ asm
 
   PUSH    ECX
 
-  // Get weight W = Fa * M
-  MOV     ECX, EAX         // ECX  <-  Fa Fr Fg Fb
-  SHR     ECX, 24          // ECX  <-  00 00 00 Fa
+  MOV     ECX, EAX
+  SHR     ECX, 24
 
-  // Test Fa = 255 ?
   CMP     ECX, $FF
   JZ      @CopyPixel
 
-  // P = W * F
-  MOV     EBX, EAX         // EBX  <-  Fa Fr Fg Fb
-  AND     EAX, $00FF00FF   // EAX  <-  00 Fr 00 Fb
-  AND     EBX, $FF00FF00   // EBX  <-  Fa 00 Fg 00
-  IMUL    EAX, ECX         // EAX  <-  Pr ** Pb **
-  SHR     EBX, 8           // EBX  <-  00 Fa 00 Fg
-  IMUL    EBX, ECX         // EBX  <-  Pa ** Pg **
-  ADD     EAX, BiasPointer
-  AND     EAX, $FF00FF00   // EAX  <-  Pr 00 Pb 00
-  SHR     EAX, 8           // EAX  <-  00 Pr ** Pb
-  ADD     EBX, BiasPointer
-  AND     EBX, $FF00FF00   // EBX  <-  Pa 00 Pg 00
-  OR      EAX, EBX         // EAX  <-  Pa Pr Pg Pb
+  MOV     EBX, EAX
+  AND     EAX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EAX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
+  ADD     EBX, CBias
+  AND     EBX, $FF00FF00
+  OR      EAX, EBX
 
-  // W = 1 - W; Q = W * B
   MOV     EDX, [EDI]
-  XOR     ECX, $000000FF   // ECX  <-  1 - ECX
-  MOV     EBX, EDX         // EBX  <-  Ba Br Bg Bb
-  AND     EDX, $00FF00FF   // ESI  <-  00 Br 00 Bb
-  AND     EBX, $FF00FF00   // EBX  <-  Ba 00 Bg 00
-  IMUL    EDX, ECX         // ESI  <-  Qr ** Qb **
-  SHR     EBX, 8           // EBX  <-  00 Ba 00 Bg
-  IMUL    EBX, ECX         // EBX  <-  Qa ** Qg **
-  ADD     EDX, BiasPointer
-  AND     EDX, $FF00FF00   // ESI  <-  Qr 00 Qb 00
-  SHR     EDX, 8           // ESI  <-  00 Qr ** Qb
-  ADD     EBX, BiasPointer
-  AND     EBX, $FF00FF00   // EBX  <-  Qa 00 Qg 00
-  OR      EBX, EDX         // EBX  <-  Qa Qr Qg Qb
+  XOR     ECX, $000000FF
+  MOV     EBX, EDX
+  AND     EDX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EDX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
+  ADD     EDX, CBias
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
+  ADD     EBX, CBias
+  AND     EBX, $FF00FF00
+  OR      EBX, EDX
 
-  // Z = P + Q (assuming no overflow at each byte)
-  ADD     EAX, EBX         // EAX  <-  Za Zr Zg Zb
+  ADD     EAX, EBX
 @CopyPixel:
+  OR      EAX, $FF000000
   MOV     [EDI], EAX
   POP     ECX
 
@@ -360,7 +344,7 @@ asm
 {$ENDIF}
 end;
 
-function CombineRegisterNative(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
+function CombinePixelNative(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
 {$IFDEF PUREPASCAL}
 var
   AlphaForeground : PByteArray;
@@ -390,50 +374,40 @@ begin
  Result := ForeGround;
 {$ELSE}
 asm
-  // combine RGBA channels of colors X and Y with the weight of X given in W
-  // Result Z = W * X + (1 - W) * Y (all channels are combined, including alpha)
-  // EAX <- X
-  // EDX <- Y
-  // ECX <- W
-
-  // W = 0 or $FF?
-  JCXZ    @Copy            // CX = 0 ?  => Result := EDX
-  CMP     ECX, $FF         // CX = $FF ?  => Result := EAX
+  JCXZ    @Copy
+  CMP     ECX, $FF
   JE      @Done
 
   PUSH    EBX
 
-  // P = W * X
-  MOV     EBX, EAX         // EBX  <-  Xa Xr Xg Xb
-  AND     EAX, $00FF00FF   // EAX  <-  00 Xr 00 Xb
-  AND     EBX, $FF00FF00   // EBX  <-  Xa 00 Xg 00
-  IMUL    EAX, ECX         // EAX  <-  Pr ** Pb **
-  SHR     EBX, 8           // EBX  <-  00 Xa 00 Xg
-  IMUL    EBX, ECX         // EBX  <-  Pa ** Pg **
+  MOV     EBX, EAX
+  AND     EAX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EAX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     EAX, CBias
-  AND     EAX, $FF00FF00   // EAX  <-  Pa 00 Pg 00
-  SHR     EAX, 8           // EAX  <-  00 Pr 00 Pb
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Pa 00 Pg 00
-  OR      EAX, EBX         // EAX  <-  Pa Pr Pg Pb
+  AND     EBX, $FF00FF00
+  OR      EAX, EBX
 
-  // W = 1 - W; Q = W * Y
-  XOR     ECX, $000000FF   // ECX  <-  1 - ECX
-  MOV     EBX, EDX         // EBX  <-  Ya Yr Yg Yb
-  AND     EDX, $00FF00FF   // EDX  <-  00 Yr 00 Yb
-  AND     EBX, $FF00FF00   // EBX  <-  Ya 00 Yg 00
-  IMUL    EDX, ECX         // EDX  <-  Qr ** Qb **
-  SHR     EBX, 8           // EBX  <-  00 Ya 00 Yg
-  IMUL    EBX, ECX         // EBX  <-  Qa ** Qg **
+  XOR     ECX, $000000FF
+  MOV     EBX, EDX
+  AND     EDX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EDX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     EDX, CBias
-  AND     EDX, $FF00FF00   // EDX  <-  Qr 00 Qb 00
-  SHR     EDX, 8           // EDX  <-  00 Qr ** Qb
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Qa 00 Qg 00
-  OR      EBX, EDX         // EBX  <-  Qa Qr Qg Qb
+  AND     EBX, $FF00FF00
+  OR      EBX, EDX
 
-  // Z = P + Q (assuming no overflow at each byte)
-  ADD     EAX, EBX         // EAX  <-  Za Zr Zg Zb
+  ADD     EAX, EBX
 
   POP     EBX
   RET
@@ -445,7 +419,7 @@ asm
 {$ENDIF}
 end;
 
-procedure CombineMemoryNative(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
+procedure CombinePixelInplaceNative(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
 {$IFDEF PUREPASCAL}
 var
   AlphaForeground : PByteArray;
@@ -472,50 +446,42 @@ begin
  Background := ForeGround;
 {$ELSE}
 asm
-  // EAX <- F
-  // [EDX] <- B
-  // ECX <- W
-
-  // Check W
-  JCXZ    @Done            // W = 0 ?  => write nothing
-  CMP     ECX, $FF         // W = 255? => write F
+  JCXZ    @Done
+  CMP     ECX, $FF
   JZ      @Copy
 
   PUSH    EBX
   PUSH    ESI
 
-  // P = W * F
-  MOV     EBX, EAX         // EBX  <-  Fa Fr Fg Fb
-  AND     EAX, $00FF00FF   // EAX  <-  00 Fr 00 Fb
-  AND     EBX, $FF00FF00   // EBX  <-  Fa 00 Fg 00
-  IMUL    EAX, ECX         // EAX  <-  Pr ** Pb **
-  SHR     EBX, 8           // EBX  <-  00 Fa 00 Fg
-  IMUL    EBX, ECX         // EBX  <-  00 00 Pg **
+  MOV     EBX, EAX
+  AND     EAX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EAX, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     EAX, CBias
-  AND     EAX, $FF00FF00   // EAX  <-  Pr 00 Pb 00
-  SHR     EAX, 8           // EAX  <-  00 Pr 00 Pb
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Pa 00 Pg 00
-  OR      EAX, EBX         // EAX  <-  00 Pr Pg Pb
+  AND     EBX, $FF00FF00
+  OR      EAX, EBX
 
-// W = 1 - W; Q = W * B
   MOV     ESI, [EDX]
-  XOR     ECX, $000000FF   // ECX  <-  1 - ECX
-  MOV     EBX, ESI         // EBX  <-  Ba Br Bg Bb
-  AND     ESI, $00FF00FF   // ESI  <-  00 Br 00 Bb
-  AND     EBX, $FF00FF00   // EBX  <-  Ba 00 Bg 00
-  IMUL    ESI, ECX         // ESI  <-  Qr ** Qb **
-  SHR     EBX, 8           // EBX  <-  00 Ba 00 Bg
-  IMUL    EBX, ECX         // EBX  <-  Qa 00 Qg **
+  XOR     ECX, $000000FF
+  MOV     EBX, ESI
+  AND     ESI, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    ESI, ECX
+  SHR     EBX, 8
+  IMUL    EBX, ECX
   ADD     ESI, CBias
-  AND     ESI, $FF00FF00   // ESI  <-  Qr 00 Qb 00
-  SHR     ESI, 8           // ESI  <-  00 Qr ** Qb
+  AND     ESI, $FF00FF00
+  SHR     ESI, 8
   ADD     EBX, CBias
-  AND     EBX, $FF00FF00   // EBX  <-  Qa 00 Qg 00
-  OR      EBX, ESI         // EBX  <-  00 Qr Qg Qb
+  AND     EBX, $FF00FF00
+  OR      EBX, ESI
 
-// Z = P + Q (assuming no overflow at each byte)
-  ADD     EAX, EBX         // EAX  <-  00 Zr Zg Zb
+  ADD     EAX, EBX
 
   MOV     [EDX], EAX
 
@@ -532,19 +498,333 @@ end;
 
 procedure CombineLineNative(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
+{$IFDEF PUREPASCAL}
 begin
  while Count > 0 do
   begin
-   CombineMemory(Source^, Destination^, Weight);
+   CombinePixelInplace(Source^, Destination^, Weight);
    Inc(Source);
    Inc(Destination);
    Dec(Count);
   end;
+{$ELSE}
+asm
+  TEST      ECX, ECX
+  JS        @Done
+
+  PUSH      EBX
+  MOV       EBX, Weight
+
+  TEST      EBX, EBX
+  JZ        @LoopEnd        // weight is zero
+
+  CMP       EBX, $FF
+  JZ        @DoneMove       // weight = 255  =>  copy src to dst
+
+  PUSH      EDI
+  PUSH      ESI
+
+@LoopStart:
+  PUSH      EAX
+  MOV       EDI, [EAX]
+  AND       EAX, $00FF00FF
+  AND       EDI, $FF00FF00
+  IMUL      EAX, EBX
+  SHR       EDI, 8
+  IMUL      EDI, EBX
+  ADD       EAX, CBias
+  AND       EAX, $FF00FF00
+  SHR       EAX, 8
+  ADD       EDI, CBias
+  AND       EDI, $FF00FF00
+  OR        EAX, EDI
+
+  MOV       ESI, [EDX]
+  XOR       EBX, $000000FF
+  MOV       EDI, ESI
+  AND       ESI, $00FF00FF
+  AND       EDI, $FF00FF00
+  IMUL      ESI, EBX
+  SHR       EDI, 8
+  IMUL      EDI, EBX
+  ADD       ESI, CBias
+  AND       ESI, $FF00FF00
+  SHR       ESI, 8
+  ADD       EDI, CBias
+  AND       EDI, $FF00FF00
+  OR        EDI, ESI
+
+  ADD       EAX, EDI
+
+  MOV       [EDX], EAX
+
+  POP       EAX
+  ADD       EAX, 4
+  ADD       EDX, 4
+
+  DEC       ECX
+  JNZ       @LoopStart
+
+@LoopEnd:
+  POP       ESI
+  POP       EDI
+
+  POP       EBX
+  POP       EBP
+@Done:
+  RET       $0004
+
+@DoneMove:
+  SHL       ECX, 2
+  CALL      Move
+  POP       EBX
+{$ENDIF}
 end;
+(*
+end;
+*)
 
 procedure EMMSNative;
 begin
  // dummy
+end;
+
+
+function MergePixelNative(Foreground, Background: TPixel32): TPixel32;
+{$IFDEF PUREPASCAL}
+var
+  AlphaForeground : PByteArray;
+  AlphaBackground : PByteArray;
+  AlphaResult     : PByteArray;
+  X               : Integer;
+begin
+ if Foreground.A = $FF then Result := Foreground else
+ if Foreground.A = $0  then Result := Background else
+ if Background.A = $0  then Result := Foreground else
+ if Background.A = $FF
+  then Result := BlendPixel(Foreground, Background)
+  else
+   begin
+    AlphaForeground := @DivTable[Foreground.A];
+    AlphaBackground := @DivTable[Background.A];
+    Result.A := Background.A + Foreground.A - AlphaBackground^[Foreground.A];
+    AlphaResult := @RcTable[Result.A];
+
+    // Red component
+    Result.R := AlphaBackground[Background.R];
+    X := Foreground.R - Result.R;
+    if X >= 0
+     then Result.R := AlphaResult[AlphaForeground[X] + Result.R]
+     else Result.R := AlphaResult[Result.R - AlphaForeground[-X]];
+
+    // Green component
+    Result.G := AlphaBackground[Background.G];
+    X := Foreground.G - Result.G;
+    if X >= 0
+     then Result.G := AlphaResult[AlphaForeground[X] + Result.G]
+     else Result.G := AlphaResult[Result.G - AlphaForeground[-X]];
+
+    // Blue component
+    Result.B := AlphaBackground[Background.B];
+    X := Foreground.B - Result.B;
+    if X >= 0
+     then Result.B := AlphaResult[AlphaForeground[X] + Result.B]
+     else Result.B := AlphaResult[Result.B - AlphaForeground[-X]];
+   end;
+{$ELSE}
+asm
+  // EAX <- F
+  // EDX <- B
+
+  // if F.A = 0 then
+  TEST    EAX, $FF000000
+  JZ      @CopyPixel
+
+  // else if B.A = 255 then
+  CMP     EDX, $FF000000
+  JNC     @Blend
+
+  // else if F.A = 255 then
+  CMP     EAX, $FF000000
+  JNC     @Done
+
+  // else if B.A = 0 then
+  TEST    EDX, $FF000000
+  JZ      @Done
+
+@4:
+  PUSH    EBX
+  PUSH    ESI
+  PUSH    EDI
+  ADD     ESP, -$0C
+  MOV     [ESP + $04], EDX
+  MOV     [ESP], EAX
+
+  // AH <- F.A
+  // DL, CL <- B.A
+  SHR     EAX, 16
+  AND     EAX, $0000FF00
+  SHR     EDX, 24
+  MOV     CL, DL
+  NOP
+  NOP
+  NOP
+
+  // EDI <- PF
+  // EDX <- PB
+  // ESI <- PR
+
+  // PF := @DivTable[F.A];
+  LEA     EDI, [EAX + DivTable]
+  // PB := @DivTable[B.A];
+  SHL     EDX, $08
+  LEA     EDX, [EDX + DivTable]
+
+  // Result.A := B.A + F.A - PB[F.A];
+  SHR     EAX, 8
+  ADD     ECX, EAX
+  SUB     ECX, [EDX + EAX]
+  MOV     [ESP + $0B], CL
+
+  // PR := @RcTable[Result.A];
+  SHL     ECX, $08
+  AND     ECX, $FFFF
+  LEA     ESI, [ECX + RcTable]
+
+  { Red component }
+
+  // Result.R := PB[B.R];
+  XOR     EAX, EAX
+  MOV     AL, [ESP + $06]
+  MOV     CL, [EDX + EAX]
+  MOV     [ESP + $0A], CL
+  // X := F.R - Result.R;
+  MOV     AL, [ESP + $02]
+  XOR     EBX, EBX
+  MOV     BL, CL
+  SUB     EAX, EBX
+
+  // if X >= 0 then
+  JL      @5
+  // Result.R := PR[PF[X] + Result.R]
+  MOVZX   EAX, BYTE PTR[EDI + EAX]
+  AND     ECX, $FF
+  ADD     EAX, ECX
+  MOV     AL, [EDI + EAX]
+  MOV     [ESP + $0A], AL
+  JMP     @6
+@5:
+  // Result.R := PR[Result.R - PF[-X]];
+  NEG     EAX
+  MOVZX   EAX, BYTE PTR[EDI + EAX]
+  XOR     ECX, ECX
+  MOV     CL, [ESP + $0A]
+  SUB     ECX, EAX
+  MOV     AL, [ESI + ECX]
+  MOV     [ESP + $0A], AL
+
+
+  { Green component }
+
+@6:
+  // Result.G := PB[B.G];
+  XOR     EAX, EAX
+  MOV     AL, [ESP + $05]
+  MOV     CL, [EDX + EAX]
+  MOV     [ESP + $09], CL
+  // X := F.G - Result.G;
+  MOV     AL, [ESP + $01]
+  XOR     EBX, EBX
+  MOV     BL, CL
+  SUB     EAX, EBX
+  // if X >= 0 then
+  JL @7
+  // Result.G := PR[PF[X] + Result.G]
+  MOVZX   EAX, BYTE PTR[EDI + EAX]
+  AND     ECX, $FF
+  ADD     EAX, ECX
+  MOV     AL, [ESI + EAX]
+  MOV     [ESP + $09], AL
+  JMP     @8
+@7:
+  // Result.G := PR[Result.G - PF[-X]];
+  NEG     EAX
+  MOVZX   EAX, BYTE PTR[EDI + EAX]
+  XOR     ECX, ECX
+  MOV     CL, [ESP + $09]
+  SUB     ECX, EAX
+  MOV     AL, [ESI + ECX]
+  MOV     [ESP + $09], AL
+
+
+  { Blue component }
+
+@8:
+  // Result.B := PB[B.B];
+  XOR     EAX, EAX
+  MOV     AL, [ESP + $04]
+  MOV     CL, [EDX + EAX]
+  MOV     [ESP + $08], CL
+  // X := F.B - Result.B;
+  MOV     AL, [ESP]
+  XOR     EDX, EDX
+  MOV     DL, CL
+  SUB     EAX, EDX
+  // if X >= 0 then
+  JL      @9
+  // Result.B := PR[PF[X] + Result.B]
+  MOVZX   EAX, BYTE PTR[EDI + EAX]
+  XOR     EDX, EDX
+  MOV     DL, CL
+  ADD     EAX, EDX
+  MOV     AL, [ESI + EAX]
+  MOV     [ESP + $08], AL
+  JMP     @10
+@9:
+  // Result.B := PR[Result.B - PF[-X]];
+  NEG     EAX
+  MOVZX   EAX, BYTE PTR[EDI + EAX]
+  XOR     EDX, EDX
+  MOV     DL, CL
+  SUB     EDX, EAX
+  MOV     AL, [ESI + EDX]
+  MOV     [ESP + $08],AL
+
+@10:
+  // EAX <- Result
+  MOV     EAX, [ESP + $08]
+
+  // end;
+  ADD     ESP, $0C
+  POP     EDI
+  POP     ESI
+  POP     EBX
+  RET
+
+@Blend:
+  CALL DWORD PTR [BlendPixel]
+  OR   EAX, $FF000000
+  RET
+@CopyPixel:
+  MOV EAX, EDX
+@Done:
+{$ENDIF}
+end;
+
+procedure MergePixelInplaceNative(Foreground: TPixel32; var Background: TPixel32);
+begin
+ Background := MergePixelNative(Foreground, Background);
+end;
+
+procedure MergeLineNative(Source, Destination: PPixel32; Count: Cardinal);
+begin
+ while Count > 0 do
+  begin
+   Destination^ := MergePixel(Source^, Destination^);
+   Inc(Source);
+   Inc(Destination);
+   Dec(Count);
+  end;
 end;
 
 
@@ -557,7 +837,7 @@ asm
   EMMS
 end;
 
-function BlendRegisterMMX(Foreground, Background: TPixel32): TPixel32;
+function BlendPixelMMX(Foreground, Background: TPixel32): TPixel32;
 asm
   MOVD      MM0, EAX
   PXOR      MM3, MM3
@@ -578,7 +858,7 @@ asm
   MOVD      EAX, MM2
 end;
 
-procedure BlendMemoryMMX(Foreground: TPixel32; var Background: TPixel32);
+procedure BlendPixelInplaceMMX(Foreground: TPixel32; var Background: TPixel32);
 asm
   TEST      EAX, $FF000000
   JZ        @Done
@@ -663,7 +943,7 @@ asm
   RET
 end;
 
-function CombineRegisterMMX(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
+function CombinePixelMMX(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
 asm
   MOVD      MM1, EAX
   PXOR      MM0, MM0
@@ -688,7 +968,7 @@ asm
   MOVD      EAX, MM1
 end;
 
-procedure CombineMemoryMMX(F: TPixel32; var B: TPixel32; W: TPixel32);
+procedure CombinePixelInplaceMMX(F: TPixel32; var B: TPixel32; W: TPixel32);
 asm
   JCXZ      @Done
   CMP       ECX, $FF
@@ -736,7 +1016,7 @@ asm
   TEST      EBX, EBX
   JZ        @LoopEnd        // weight is zero
 
-  CMP       EDX, $FF
+  CMP       EBX, $FF
   JZ        @DoneMove       // weight = 255  =>  copy src to dst
 
   SHL       EBX, 4
@@ -774,6 +1054,7 @@ asm
   RET       $0004
 
 @DoneMove:
+  SHL       ECX, 2
   CALL      Move
   POP       EBX
 end;
@@ -781,7 +1062,7 @@ end;
 
 { SSE2 }
 
-function BlendRegisterSSE2(Foreground, Background: TPixel32): TPixel32;
+function BlendPixelSSE2(Foreground, Background: TPixel32): TPixel32;
 asm
   MOVD      XMM0, EAX
   PXOR      XMM3, XMM3
@@ -803,7 +1084,7 @@ asm
   MOVD      EAX, XMM2
 end;
 
-procedure BlendMemorySSE2(Foreground: TPixel32; var Background: TPixel32);
+procedure BlendPixelInplaceSSE2(Foreground: TPixel32; var Background: TPixel32);
 asm
   TEST      EAX, $FF000000
   JZ        @Done
@@ -890,7 +1171,7 @@ asm
   RET
 end;
 
-function CombineRegisterSSE2(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
+function CombinePixelSSE2(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
 asm
   MOVD      XMM1, EAX
   PXOR      XMM0, XMM0
@@ -915,7 +1196,7 @@ asm
   MOVD      EAX, XMM1
 end;
 
-procedure CombineMemorySSE2(F: TPixel32; var B: TPixel32; W: TPixel32);
+procedure CombinePixelInplaceSSE2(F: TPixel32; var B: TPixel32; W: TPixel32);
 asm
   JCXZ      @Done
   CMP       ECX, $FF
@@ -963,7 +1244,7 @@ asm
   TEST      EBX, EBX
   JZ        @LoopEnd
 
-  CMP       EDX, $FF
+  CMP       EBX, $FF
   JZ        @DoneMove
 
   SHL       EBX, 4
@@ -1001,6 +1282,7 @@ asm
   RET       $0004
 
 @DoneMove:
+  SHL       ECX, 2
   CALL      Move
   POP       EBX
 end;
@@ -1009,28 +1291,15 @@ end;
 {$ENDIF}
 
 
-{ Misc. }
-
-function Lighten(C: TPixel32; Amount: Integer): TPixel32;
-begin
- Result := C;
- Inc(Result.R, Amount);
- Inc(Result.G, Amount);
- Inc(Result.B, Amount);
-
- if Result.R > 255 then Result.R := 255 else if Result.R < 0 then Result.R := 0;
- if Result.G > 255 then Result.G := 255 else if Result.G < 0 then Result.G := 0;
- if Result.B > 255 then Result.B := 255 else if Result.B < 0 then Result.B := 0;
-end;
-
-
 { Global Functions }
 
 procedure CreateTables;
 var
   I, J : Integer;
+{$IFNDEF PUREPASCAL}
   L    : Longword;
   P    : ^Longword;
+{$ENDIF}
 const
   COne256th : Double = 1 / 255;
 begin
@@ -1059,8 +1328,8 @@ begin
    P^ := L;
    Inc(P);
   end;
- BiasPointer := Pointer(Integer(AlphaPointer) + $80 * 4 * SizeOf(Cardinal));
- Assert(PCardinal(BiasPointer)^ = $00800080);
+ BiasPointer := Pointer(Integer(AlphaPointer) + $FF * 4 * SizeOf(Cardinal));
+ Assert(PCardinal(BiasPointer)^ = $00FF00FF);
  {$ENDIF}
 end;
 
@@ -1091,29 +1360,29 @@ begin
   end;
 
  // create function binding for blend register
- BindingBlendRegister := TFunctionBinding.Create(
-   @@BlendRegister, @BlendRegisterNative);
- BindingBlend.AddBinding(BindingBlendRegister);
- with BindingBlendRegister do
+ BindingBlendPixel := TFunctionBinding.Create(
+   @@BlendPixel, @BlendPixelNative);
+ BindingBlend.AddBinding(BindingBlendPixel);
+ with BindingBlendPixel do
   begin
-   Add(@BlendRegisterNative);
+   Add(@BlendPixelNative);
    {$IFNDEF PUREPASCAL}
-   Add(@BlendRegisterMMX, [pfMMX]);
-   Add(@BlendRegisterSSE2, [pfSSE2]);
+   Add(@BlendPixelMMX, [pfMMX]);
+   Add(@BlendPixelSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
 
  // create function binding for blend memory
- BindingBlendMemory := TFunctionBinding.Create(
-   @@BlendMemory, @BlendMemoryNative);
- BindingBlend.AddBinding(BindingBlendMemory);
- with BindingBlendMemory do
+ BindingBlendPixelInplace := TFunctionBinding.Create(
+   @@BlendPixelInplace, @BlendPixelInplaceNative);
+ BindingBlend.AddBinding(BindingBlendPixelInplace);
+ with BindingBlendPixelInplace do
   begin
-   Add(@BlendMemoryNative);
+   Add(@BlendPixelInplaceNative);
    {$IFNDEF PUREPASCAL}
-   Add(@BlendMemoryMMX, [pfMMX]);
-   Add(@BlendMemorySSE2, [pfSSE2]);
+   Add(@BlendPixelInplaceMMX, [pfMMX]);
+   Add(@BlendPixelInplaceSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1133,29 +1402,29 @@ begin
   end;
 
  // create function binding for combine register
- BindingCombineRegister := TFunctionBinding.Create(
-   @@CombineRegister, @CombineRegisterNative);
- BindingBlend.AddBinding(BindingCombineRegister);
- with BindingCombineRegister do
+ BindingCombinePixel := TFunctionBinding.Create(
+   @@CombinePixel, @CombinePixelNative);
+ BindingBlend.AddBinding(BindingCombinePixel);
+ with BindingCombinePixel do
   begin
-   Add(@CombineRegisterNative);
+   Add(@CombinePixelNative);
    {$IFNDEF PUREPASCAL}
-   Add(@CombineRegisterMMX, [pfMMX]);
-   Add(@CombineRegisterSSE2, [pfSSE2]);
+   Add(@CombinePixelMMX, [pfMMX]);
+   Add(@CombinePixelSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
 
  // create function binding for combine memory
- BindingCombineMemory := TFunctionBinding.Create(
-   @@CombineMemory, @CombineMemoryNative);
- BindingBlend.AddBinding(BindingCombineMemory);
- with BindingCombineMemory do
+ BindingCombinePixelInplace := TFunctionBinding.Create(
+   @@CombinePixelInplace, @CombinePixelInplaceNative);
+ BindingBlend.AddBinding(BindingCombinePixelInplace);
+ with BindingCombinePixelInplace do
   begin
-   Add(@CombineMemoryNative);
+   Add(@CombinePixelInplaceNative);
    {$IFNDEF PUREPASCAL}
-   Add(@CombineMemoryMMX, [pfMMX]);
-   Add(@CombineMemorySSE2, [pfSSE2]);
+   Add(@CombinePixelInplaceMMX, [pfMMX]);
+   Add(@CombinePixelInplaceSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1170,6 +1439,48 @@ begin
    {$IFNDEF PUREPASCAL}
    Add(@CombineLineMMX, [pfMMX]);
    Add(@CombineLineSSE2, [pfSSE2]);
+   {$ENDIF}
+   RebindProcessorSpecific;
+  end;
+
+ // create function binding for combine register
+ BindingMergePixel := TFunctionBinding.Create(
+   @@MergePixel, @MergePixelNative);
+ BindingBlend.AddBinding(BindingMergePixel);
+ with BindingMergePixel do
+  begin
+   Add(@MergePixelNative);
+   {$IFNDEF PUREPASCAL}
+//   Add(@MergePixelMMX, [pfMMX]);
+//   Add(@MergePixelSSE2, [pfSSE2]);
+   {$ENDIF}
+   RebindProcessorSpecific;
+  end;
+
+ // create function binding for Merge memory
+ BindingMergePixelInplace := TFunctionBinding.Create(
+   @@MergePixelInplace, @MergePixelInplaceNative);
+ BindingBlend.AddBinding(BindingMergePixelInplace);
+ with BindingMergePixelInplace do
+  begin
+   Add(@MergePixelInplaceNative);
+   {$IFNDEF PUREPASCAL}
+//   Add(@MergePixelInplaceMMX, [pfMMX]);
+//   Add(@MergePixelInplaceSSE2, [pfSSE2]);
+   {$ENDIF}
+   RebindProcessorSpecific;
+  end;
+
+ // create function binding for Merge line
+ BindingMergeLine := TFunctionBinding.Create(
+   @@MergeLine, @MergeLineNative);
+ BindingBlend.AddBinding(BindingMergeLine);
+ with BindingMergeLine do
+  begin
+   Add(@MergeLineNative);
+   {$IFNDEF PUREPASCAL}
+//   Add(@MergeLineMMX, [pfMMX]);
+//   Add(@MergeLineSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;

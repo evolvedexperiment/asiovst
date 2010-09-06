@@ -25,10 +25,10 @@ object FmLA4029: TFmLA4029
     Width = 321
     Height = 170
     LineColor = clGray
-    Linewidth = 1
+    BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True
@@ -130,14 +130,13 @@ object FmLA4029: TFmLA4029
       Top = 11
       Width = 16
       Height = 16
-      Color = clBlack
-      LineWidth = 2
-      LEDColor = clRed
-      Brightness_Percent = 100.000000000000000000
       BorderStrength_Percent = 100.000000000000000000
+      Brightness_Percent = 100.000000000000000000
+      LEDColor = clRed
+      BorderWidth = 1.500000000000000000
       Uniformity_Percent = 36.754447937011720000
-      AntiAlias = gaaLinear4x
-      LineColor = clRed
+      Transparent = False
+      Color = clBlack
       ParentColor = False
       OnClick = LEDOnOffClick
     end
@@ -356,11 +355,11 @@ object FmLA4029: TFmLA4029
       Top = 142
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
       ParentColor = True
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbMixValue: TLabel
@@ -387,10 +386,10 @@ object FmLA4029: TFmLA4029
     Width = 321
     Height = 129
     LineColor = clGray
-    Linewidth = 1
+    BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     Transparent = True
@@ -545,11 +544,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbKneeValue: TLabel
@@ -574,11 +573,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 1
       UseDockManager = True
       object LbInputValue: TLabel
@@ -604,11 +603,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 2
       UseDockManager = True
       object LbRatioValue: TLabel
@@ -633,11 +632,11 @@ object FmLA4029: TFmLA4029
       Top = 102
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 3
       UseDockManager = True
       object LbOutputValue: TLabel

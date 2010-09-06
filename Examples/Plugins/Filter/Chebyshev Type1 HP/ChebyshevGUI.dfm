@@ -7,9 +7,9 @@ object FmChebyshev: TFmChebyshev
   ClientWidth = 290
   Color = 657940
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Color = 10526927
+  Font.Height = -13
+  Font.Name = 'Verdana'
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
@@ -21,7 +21,7 @@ object FmChebyshev: TFmChebyshev
     290
     181)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object LbChebyshevFilterDemoShaddow: TGuiLabel
     Left = 11
     Top = 11
@@ -35,6 +35,7 @@ object FmChebyshev: TFmChebyshev
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbChebyshevFilterDemo: TGuiLabel
     Left = 8
@@ -50,6 +51,7 @@ object FmChebyshev: TFmChebyshev
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object PnControls: TGuiPanel
     Left = 8
@@ -57,17 +59,11 @@ object FmChebyshev: TFmChebyshev
     Width = 274
     Height = 129
     Anchors = [akLeft, akTop, akRight, akBottom]
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 10526927
-    Font.Height = -13
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold]
     LineColor = 10526927
-    Linewidth = 3
+    BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick
@@ -135,6 +131,13 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 10526927
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbRipple: TGuiLabel
       Left = 94
@@ -146,6 +149,13 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Ripple'
       Color = 1315880
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 10526927
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialOrder: TGuiDial
       Left = 190
@@ -181,6 +191,13 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 10526927
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
       Left = 182
@@ -192,6 +209,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
+      Shadow.Color = clBlack
       OnDblClick = DialOrderDblClick
     end
     object LbRippleValue: TGuiLabel
@@ -204,6 +222,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Ripple'
       Color = 1315880
+      Shadow.Color = clBlack
       OnDblClick = DialRippleDblClick
     end
     object LbFrequencyValue: TGuiLabel
@@ -216,6 +235,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
+      Shadow.Color = clBlack
       OnDblClick = DialFrequencyDblClick
     end
   end

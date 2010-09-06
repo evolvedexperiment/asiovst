@@ -35,7 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
+  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
+  {$IFDEF Windows} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
   DAV_GuiBlend;
@@ -48,6 +49,7 @@ type
     procedure SetHeight(const Value: Integer);
     procedure SetPixel(X, Y: Integer; const Value: TPixel32);
     procedure SetWidth(const Value: Integer);
+    function GetDataPointer: PPixel32Array;
   protected
     FDataPointer : PPixel32Array;
     FDataSize    : Integer;
@@ -85,6 +87,7 @@ type
 
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
+    property DataPointer: PPixel32Array read GetDataPointer;
     property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
     property ScanLine[Y: Integer]: PPixel32Array read GetScanLine;
   end;
@@ -123,7 +126,7 @@ type
 implementation
 
 uses
-  Math;
+  Math, DAV_GuiPng;
 
 { TGuiCustomPixelMap }
 
@@ -171,6 +174,11 @@ begin
  Clear(ConvertColor(Color));
 end;
 
+function TGuiCustomPixelMap.GetDataPointer: PPixel32Array;
+begin
+ Result := FDataPointer;
+end;
+
 function TGuiCustomPixelMap.GetPixel(X, Y: Integer): TPixel32;
 begin
  Result := FDataPointer^[Y * Width + X];
@@ -183,7 +191,7 @@ end;
 
 procedure TGuiCustomPixelMap.SetPixel(X, Y: Integer; const Value: TPixel32);
 begin
- BlendMemory(Value, FDataPointer[Y * Width + X]);
+ BlendPixelInplace(Value, FDataPointer[Y * Width + X]);
 end;
 
 procedure TGuiCustomPixelMap.SetSize(Width, Height: Integer);
@@ -269,16 +277,26 @@ procedure TGuiCustomPixelMap.LoadFromStream(Stream: TStream);
 var
   BitmapFileHeader : TBitmapFileHeader;
 begin
- with Stream do
-  begin
-   if Size < SizeOf(TBitmapFileHeader)
-    then raise Exception.Create('Invalid bitmap header found!');
+ if TPortableNetworkGraphic32.CanLoad(Stream)
+  then
+   begin
+    with TPortableNetworkGraphic32.Create do
+     begin
+      LoadFromStream(Stream);
+      AssignTo(Self);
+     end;
+  end
+ else
+  with Stream do
+   begin
+    if Size < SizeOf(TBitmapFileHeader)
+     then raise Exception.Create('Invalid bitmap header found!');
 
-   Read(BitmapFileHeader, SizeOf(TBitmapFileHeader));
+    Read(BitmapFileHeader, SizeOf(TBitmapFileHeader));
 
-   if BitmapFileHeader.bfType <> $4D42
-    then raise Exception.Create('Invalid bitmap header found!');
-  end;
+    if BitmapFileHeader.bfType <> $4D42
+     then raise Exception.Create('Invalid bitmap header found!');
+   end;
 end;
 
 procedure TGuiCustomPixelMap.SaveToStream(Stream: TStream);
@@ -317,7 +335,7 @@ begin
   try
    for Y := Rect.Top to Rect.Bottom - 1 do
     for X := Rect.Left to Rect.Right - 1
-     do BlendMemory(Color, FDataPointer[Y * Width + X]);
+     do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
   finally
    EMMS;
   end;
@@ -341,10 +359,10 @@ begin
  try
   if ToY < FromY  then
    for Y := ToY to FromY - 1
-    do BlendMemory(Color, FDataPointer[Y * Width + X])
+    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
   else
    for Y := FromY to ToY - 1
-    do BlendMemory(Color, FDataPointer[Y * Width + X]);
+    do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
  finally
   EMMS;
  end;
@@ -358,10 +376,10 @@ begin
  try
   if ToX < FromX  then
    for X := ToX to FromX - 1
-    do BlendMemory(Color, FDataPointer[Y * Width + X])
+    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
   else
    for X := FromX to ToX - 1
-    do BlendMemory(Color, FDataPointer[Y * Width + X])
+    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
  finally
   EMMS;
  end;
@@ -409,7 +427,7 @@ begin
    x := FromX;
    y := FromY;
    err := el shr 1;
-   BlendMemory(Color, FDataPointer[Y * Width + X]);
+   BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
 
    for t := 1 to el - 1 do
     begin
@@ -425,7 +443,7 @@ begin
        x := x + pdx;
        y := y + pdy;
       end;
-     BlendMemory(Color, FDataPointer[Y * Width + X]);
+     BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
     end;
   finally
    EMMS;
@@ -586,8 +604,10 @@ begin
 end;
 
 procedure TGuiPixelMapDIB.Draw(Bitmap: TBitmap; X, Y: Integer);
+(*
 var
   CompBitmap : HBITMAP;
+*)
 begin
 (*
  CompBitmap := CreateCompatibleBitmap(Canvas.Handle, Width, Height);
@@ -637,4 +657,3 @@ begin
 end;
 
 end.
-

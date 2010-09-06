@@ -25,10 +25,10 @@ object FmLA1701: TFmLA1701
     Width = 321
     Height = 170
     LineColor = clGray
-    Linewidth = 1
+    BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True
@@ -47,8 +47,10 @@ object FmLA1701: TFmLA1701
       Min = -0.699000000953674300
       GlyphCount = 65
       OnChange = DialAttackChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialRelease: TGuiDial
       Left = 8
@@ -66,9 +68,11 @@ object FmLA1701: TFmLA1701
       Min = 1.000000000000000000
       GlyphCount = 65
       OnChange = DialReleaseChange
+      ParentColor = False
       Position = 1.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbRelease: TGuiLabel
       Left = 8
@@ -84,6 +88,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
       Left = 8
@@ -99,6 +105,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbTitle: TGuiLabel
       Left = 149
@@ -114,6 +122,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LbTitleClick
     end
     object LEDOnOff: TGuiLED
@@ -121,14 +131,15 @@ object FmLA1701: TFmLA1701
       Top = 11
       Width = 16
       Height = 16
+      BorderStrength_Percent = 100.000000000000000000
       Brightness_Percent = 100.000000000000000000
-      Color = clBlack
-      LineWidth = 2
       LEDColor = clRed
-      AntiAlias = gaaLinear4x
-      LineColor = clRed
-      OnClick = LEDOnOffClick
+      BorderWidth = 1.500000000000000000
+      Uniformity_Percent = 36.754447937011720000
+      Transparent = False
+      Color = clBlack
       ParentColor = False
+      OnClick = LEDOnOffClick
     end
     object LbOnOff: TGuiLabel
       Left = 86
@@ -144,6 +155,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LEDOnOffClick
     end
     object LbSlow: TGuiLabel
@@ -160,6 +173,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFast: TGuiLabel
       Left = 8
@@ -175,6 +190,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object VUMeter: TGuiVUMeter
       Left = 72
@@ -205,6 +222,7 @@ object FmLA1701: TFmLA1701
       LineWidth = 2
       ButtonColor = 2105376
       Radius = 5
+      Shadow.Color = clBlack
       OnClick = BtInClick
     end
     object BtGR: TGuiButton
@@ -225,6 +243,7 @@ object FmLA1701: TFmLA1701
       LineWidth = 2
       ButtonColor = clBlack
       Radius = 5
+      Shadow.Color = clBlack
       OnClick = BtGRClick
     end
     object BtOut: TGuiButton
@@ -245,6 +264,7 @@ object FmLA1701: TFmLA1701
       LineWidth = 2
       ButtonColor = clBlack
       Radius = 5
+      Shadow.Color = clBlack
       OnClick = BtOutClick
     end
     object LbVUMeterDisplay: TLabel
@@ -279,6 +299,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLevelingAmplifier: TLabel
       Left = 219
@@ -324,19 +346,21 @@ object FmLA1701: TFmLA1701
       Max = 100.000000000000000000
       GlyphCount = 65
       OnChange = DialMixChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object PnMix: TGuiPanel
       Left = 248
       Top = 142
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
       ParentColor = True
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbMixValue: TLabel
@@ -363,10 +387,10 @@ object FmLA1701: TFmLA1701
     Width = 321
     Height = 117
     LineColor = clGray
-    Linewidth = 1
+    BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     Transparent = True
@@ -385,8 +409,10 @@ object FmLA1701: TFmLA1701
       Min = -24.000000000000000000
       GlyphCount = 65
       OnChange = DialInputChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialOutput: TGuiDial
       Left = 88
@@ -403,8 +429,10 @@ object FmLA1701: TFmLA1701
       Min = -24.000000000000000000
       GlyphCount = 65
       OnChange = DialOutputChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbInput: TGuiLabel
       Left = 8
@@ -420,6 +448,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOutput: TGuiLabel
       Left = 88
@@ -435,6 +465,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialRatio: TGuiDial
       Left = 168
@@ -450,8 +482,10 @@ object FmLA1701: TFmLA1701
       Max = 2.000000000000000000
       GlyphCount = 65
       OnChange = DialRatioChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbRatioX: TGuiLabel
       Left = 168
@@ -467,6 +501,8 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialKnee: TGuiDial
       Left = 248
@@ -482,8 +518,10 @@ object FmLA1701: TFmLA1701
       Max = 10.000000000000000000
       GlyphCount = 65
       OnChange = DialKneeChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbKnee: TGuiLabel
       Left = 248
@@ -499,17 +537,19 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object PnKnee: TGuiPanel
       Left = 248
       Top = 90
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbKneeValue: TLabel
@@ -534,11 +574,11 @@ object FmLA1701: TFmLA1701
       Top = 90
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 1
       UseDockManager = True
       object LbInputValue: TLabel
@@ -564,11 +604,11 @@ object FmLA1701: TFmLA1701
       Top = 90
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 2
       UseDockManager = True
       object LbRatioValue: TLabel
@@ -593,11 +633,11 @@ object FmLA1701: TFmLA1701
       Top = 90
       Width = 64
       Height = 17
-      AntiAlias = gaaLinear4x
       Color = clBlack
       LineColor = 3355443
+      BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5
+      Radius = 5.000000000000000000
       TabOrder = 3
       UseDockManager = True
       object LbOutputValue: TLabel

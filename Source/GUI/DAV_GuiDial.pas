@@ -91,13 +91,12 @@ type
     procedure SetDialImageIndex(Value: Integer);
     procedure SetDialImageList(const Value: TGuiDialImageList);
     procedure SetDialAlpha(const Value: TBitmap);
-    procedure StitchKindChanged;
   protected
     FAutoSize      : Boolean;
     FDialBitmap    : TBitmap;
     FDialAlpha     : TBitmap;
     FImageList     : TImageList;
-    FGlyphCount     : Integer;
+    FGlyphCount    : Integer;
     FOnChange      : TNotifyEvent;
     FStitchKind    : TGuiStitchKind;
     FDialImageList : TGuiDialImageList;
@@ -106,6 +105,7 @@ type
     function GetGlyphNr: Integer; virtual; abstract;
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure GlyphCountChanged; virtual;
+    procedure StitchKindChanged; virtual;
     procedure UpdateBuffer; override;
     procedure RenderBitmap(const Bitmap: TBitmap); virtual; abstract;
 
@@ -113,6 +113,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
     property DialAlpha: TBitmap read FDialAlpha write SetDialAlpha;
@@ -576,7 +577,7 @@ begin
  inherited Create(AOwner);
  FLineColor              := clRed;
  FLineWidth              := 2;
- FGlyphCount              := 1;
+ FGlyphCount             := 1;
  FStitchKind             := skHorizontal;
  FDialBitmap             := TBitmap.Create;
  FDialBitmap.PixelFormat := pf24bit;

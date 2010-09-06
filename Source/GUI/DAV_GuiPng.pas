@@ -36,7 +36,8 @@ interface
 
 uses
   Windows, Classes, Graphics, SysUtils, zlib, DAV_Types, DAV_ChunkClasses,
-  DAV_GuiCommon, DAV_GuiPngTypes, DAV_GuiPngClasses, DAV_GuiPngChunks;
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPngTypes, DAV_GuiPngClasses,
+  DAV_GuiPngChunks;
 
 type
   TTransferNonInterlaced = procedure (Source, Destination, Alpha: Pointer) of object;
@@ -152,6 +153,19 @@ type
 
     property SignificantBitsChunk: TChunkPngSignificantBits read FSignificantBits write SetSignificantBits;
     property PrimaryChromaticitiesChunk: TChunkPngPrimaryChromaticities read FChromaChunk write SetChromaChunk;
+  end;
+
+  TPortableNetworkGraphic32 = class(TPortableNetworkGraphic)
+  private
+    function ColorInPalette(Pixel: TPixel32): Integer;
+    procedure AssignPropertiesFromPixelMap(PixelMap: TGuiCustomPixelMap);
+  protected
+    function PixelmapScanline(Bitmap: TObject; Y: Integer): Pointer; virtual;
+  public
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure DrawToPixelMap(PixelMap: TGuiCustomPixelMap); virtual;
   end;
 
   TPortableNetworkGraphicBitmap = class(TPortableNetworkGraphic)
@@ -2011,6 +2025,368 @@ end;
 *)
 
 
+{ TPortableNetworkGraphic32 }
+
+procedure TPortableNetworkGraphic32.Assign(Source: TPersistent);
+var
+  EncoderClass : TCustomPngEncoderClass;
+  DataStream   : TMemoryStream;
+begin
+ if Source is TGuiCustomPixelMap then
+  with TGuiCustomPixelMap(Source) do
+   begin
+    // Assign
+    AssignPropertiesFromPixelMap(TGuiCustomPixelMap(Source));
+
+    case ImageHeader.ColorType of
+     ctGrayscale  :
+      case ImageHeader.BitDepth of
+       1  : EncoderClass := TPngRGBAGrayscale1bitEncoder;
+       2  : EncoderClass := TPngRGBAGrayscale2bitEncoder;
+       4  : EncoderClass := TPngRGBAGrayscale4bitEncoder;
+       8  : EncoderClass := TPngRGBAGrayscale8bitEncoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctTrueColor : EncoderClass := TPngRGBATrueColor8bitEncoder;
+     ctIndexedColor :
+      case ImageHeader.BitDepth of
+       1 : EncoderClass := TPngRGBAPalette1bitEncoder;
+       2 : EncoderClass := TPngRGBAPalette2bitEncoder;
+       4 : EncoderClass := TPngRGBAPalette4bitEncoder;
+       8 : EncoderClass := TPngRGBAPalette8bitEncoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctGrayscaleAlpha : EncoderClass := TPngRGBAGrayscaleAlpha8bitEncoder;
+     ctTrueColorAlpha : EncoderClass := TPngRGBATrueColorAlpha8bitEncoder;
+     else raise EPngError.Create(RCStrUnsupportedFormat);
+    end;
+
+   DataStream := TMemoryStream.Create;
+   with DataStream do
+    try
+     with EncoderClass.Create(DataStream, FImageHeader, FGammaChunk, FPaletteChunk) do
+      try
+       EncodeFromScanline(TGuiCustomPixelMap(Source), PixelmapScanline);
+      finally
+       Free;
+      end;
+
+     // reset data stream position
+     DataStream.Seek(0, soFromBeginning);
+
+     // compress image data from data stream
+     CompressImageDataFromStream(DataStream);
+    finally
+     FreeAndNil(DataStream);
+    end;
+  end
+ else inherited;
+end;
+
+procedure TPortableNetworkGraphic32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TGuiCustomPixelMap then
+  begin
+   TGuiCustomPixelMap(Dest).Width := ImageHeader.Width;
+   TGuiCustomPixelMap(Dest).Height := ImageHeader.Height;
+   DrawToPixelMap(TGuiCustomPixelMap(Dest));
+  end
+ else inherited;
+end;
+
+function ColorIndexInPalette(Pixel: TPixel32; Palette: TPalette24): Integer; overload;
+begin
+ for Result := 0 to Length(Palette) - 1 do
+  if (Pixel.R = Palette[Result].R) and
+     (Pixel.G = Palette[Result].G) and
+     (Pixel.B = Palette[Result].B)
+   then Exit;
+ Result := -1;
+end;
+
+procedure TPortableNetworkGraphic32.AssignPropertiesFromPixelMap(
+  PixelMap: TGuiCustomPixelMap);
+var
+  Index         : Integer;
+  IsAlpha       : Boolean;
+  IsGrayScale   : Boolean;
+  IsPalette     : Boolean;
+  Color         : TPixel32;
+  TempPalette   : TPalette24;
+  TempAlpha     : Byte;
+begin
+ with PixelMap do
+  begin
+   // basic properties
+   ImageHeader.Width := Width;
+   ImageHeader.Height := Height;
+   ImageHeader.CompressionMethod := 0;
+   ImageHeader.InterlaceMethod := imNone;
+
+   // initialize
+   SetLength(TempPalette, 0);
+   IsGrayScale := True;
+   IsPalette := True;
+   IsAlpha := False;
+   TempAlpha := 0;
+
+   // check every pixel in the bitmap for the use of the alpha channel,
+   // whether the image is grayscale or whether the colors can be stored
+   // as a palette (and build the palette at the same time
+   for Index := 0 to Width * Height - 1 do
+    begin
+     Color := DataPointer[Index];
+
+     // check whether the palette is empty
+     if Length(TempPalette) = 0 then
+      begin
+       IsAlpha := Color.A < 255 ;
+
+       // eventually store first alpha component
+       if IsAlpha
+        then TempAlpha := Color.A;
+
+       SetLength(TempPalette, 1);
+       TempPalette[0].R := Color.R;
+       TempPalette[0].G := Color.G;
+       TempPalette[0].B := Color.B;
+       IsGrayScale := (Color.R = Color.G) and
+         (Color.B = Color.G);
+      end
+     else
+      begin
+       // check alpha channel
+       if (Color.A < 255) then
+        begin
+         if IsAlpha then
+          if IsPalette and (TempAlpha <> Color.A)
+           then IsPalette := False else
+          else TempAlpha := Color.A;
+
+         IsAlpha := True;
+        end;
+       if ColorIndexInPalette(Color, TempPalette) < 0 then
+        begin
+         if IsPalette then
+          if (Length(TempPalette) < 256) then
+           begin
+            SetLength(TempPalette, Length(TempPalette) + 1);
+            TempPalette[Length(TempPalette) - 1].R := Color.R;
+            TempPalette[Length(TempPalette) - 1].G := Color.G;
+            TempPalette[Length(TempPalette) - 1].B := Color.B;
+            if IsGrayScale and not ((Color.R = Color.G) and
+              (Color.B = Color.G))
+             then IsGrayScale := False;
+           end
+          else IsPalette := False
+         else
+          if not ((Color.R = Color.G) and
+            (Color.B = Color.G))
+           then IsGrayScale := False;
+        end;
+      end;
+
+     if IsAlpha and (not IsPalette) and (not IsGrayScale)
+      then Break;
+    end;
+
+   // set image header
+   with ImageHeader do
+    if IsGrayScale then
+     if IsAlpha  then
+      begin
+       ColorType := ctGrayscaleAlpha;
+       BitDepth := 8;
+      end
+     else
+      begin
+       ColorType := ctIndexedColor; // ctGrayscale
+       if Length(TempPalette) <= 2
+        then BitDepth := 1 else
+       if Length(TempPalette) <= 4
+        then BitDepth := 2 else
+       if Length(TempPalette) <= 16
+        then BitDepth := 4
+        else BitDepth := 8;
+      end else
+    if IsPalette then
+     begin
+      ColorType := ctIndexedColor;
+      if Length(TempPalette) <= 2
+       then BitDepth := 1 else
+      if Length(TempPalette) <= 4
+       then BitDepth := 2 else
+      if Length(TempPalette) <= 16
+       then BitDepth := 4
+       else BitDepth := 8;
+      end
+     else
+      if IsAlpha then
+       begin
+        ColorType := ctTrueColorAlpha;
+        BitDepth := 8;
+       end
+      else
+       begin
+        ColorType := ctTrueColor;
+        BitDepth := 8;
+       end;
+
+   // eventually prepare palette
+   if ImageHeader.HasPalette then
+    begin
+     Assert(Length(TempPalette) <= 256);
+
+     if not Assigned(FPaletteChunk)
+      then FPaletteChunk := TChunkPngPalette.Create(ImageHeader);
+
+     FPaletteChunk.Count := Length(TempPalette);
+     for Index := 0 to Length(TempPalette) - 1
+      do FPaletteChunk.PaletteEntry[Index] := TempPalette[Index];
+    end;
+
+   {$IFDEF StoreGamma}
+   // add linear gamma chunk
+   if not Assigned(FGammaChunk)
+    then FGammaChunk := TChunkPngGamma.Create(ImageHeader);
+   FGammaChunk.GammaAsSingle := 1;
+   {$ELSE}
+   // delete any gama correction table
+   if Assigned(FGammaChunk)
+    then FreeAndNil(FGammaChunk);
+   {$ENDIF}
+  end;
+end;
+
+function TPortableNetworkGraphic32.ColorInPalette(Pixel: TPixel32): Integer;
+var
+  Color24 : TRGB24;
+begin
+ for Result := 0 to FPaletteChunk.Count - 1 do
+  begin
+   Color24 := PaletteChunk.PaletteEntry[Result];
+   if (Pixel.R = Color24.R) and
+      (Pixel.G = Color24.G) and
+      (Pixel.B = Color24.B)
+    then Exit;
+  end;
+ Result := -1;
+end;
+
+procedure TPortableNetworkGraphic32.DrawToPixelMap(
+  PixelMap: TGuiCustomPixelMap);
+var
+  DecoderClass : TCustomPngDecoderClass;
+  DataStream   : TMemoryStream;
+begin
+ DataStream := TMemoryStream.Create;
+ try
+  // decompress image data to data stream
+  DecompressImageDataToStream(DataStream);
+
+  // reset data stream position
+  DataStream.Seek(0, soFromBeginning);
+
+  case ImageHeader.InterlaceMethod of
+   imNone  :
+    case ImageHeader.ColorType of
+     ctGrayscale  :
+      case ImageHeader.BitDepth of
+       1  : DecoderClass := TPngGrayscale1bitRGBADecoder;
+       2  : DecoderClass := TPngGrayscale2bitRGBADecoder;
+       4  : DecoderClass := TPngGrayscale4bitRGBADecoder;
+       8  : DecoderClass := TPngGrayscale8bitRGBADecoder;
+       16 : DecoderClass := TPngGrayscale16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctTrueColor :
+      case ImageHeader.BitDepth of
+        8 : DecoderClass := TPngTrueColor8bitRGBADecoder;
+       16 : DecoderClass := TPngTrueColor16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctIndexedColor :
+      case ImageHeader.BitDepth of
+       1, 2, 4 : DecoderClass := TPngPaletteRGBADecoder;
+       8       : DecoderClass := TPngPalette8bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctGrayscaleAlpha :
+      case ImageHeader.BitDepth of
+        8  : DecoderClass := TPngGrayscaleAlpha8bitRGBADecoder;
+       16  : DecoderClass := TPngGrayscaleAlpha16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctTrueColorAlpha :
+      case ImageHeader.BitDepth of
+        8  : DecoderClass := TPngTrueColorAlpha8bitRGBADecoder;
+       16  : DecoderClass := TPngTrueColorAlpha16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     else raise EPngError.Create(RCStrUnsupportedFormat);
+    end;
+   imAdam7 :
+    case ImageHeader.ColorType of
+     ctGrayscale  :
+      case ImageHeader.BitDepth of
+       1  : DecoderClass := TPngAdam7Grayscale1bitRGBADecoder;
+       2  : DecoderClass := TPngAdam7Grayscale2bitRGBADecoder;
+       4  : DecoderClass := TPngAdam7Grayscale4bitRGBADecoder;
+       8  : DecoderClass := TPngAdam7Grayscale8bitRGBADecoder;
+       16 : DecoderClass := TPngAdam7Grayscale16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctTrueColor :
+      case ImageHeader.BitDepth of
+        8 : DecoderClass := TPngAdam7TrueColor8bitRGBADecoder;
+       16 : DecoderClass := TPngAdam7TrueColor16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctIndexedColor :
+      case ImageHeader.BitDepth of
+       1 : DecoderClass := TPngAdam7Palette1bitRGBADecoder;
+       2 : DecoderClass := TPngAdam7Palette2bitRGBADecoder;
+       4 : DecoderClass := TPngAdam7Palette4bitRGBADecoder;
+       8 : DecoderClass := TPngAdam7Palette8bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctGrayscaleAlpha :
+      case ImageHeader.BitDepth of
+        8  : DecoderClass := TPngAdam7GrayscaleAlpha8bitRGBADecoder;
+       16  : DecoderClass := TPngAdam7GrayscaleAlpha16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     ctTrueColorAlpha :
+      case ImageHeader.BitDepth of
+        8  : DecoderClass := TPngAdam7TrueColorAlpha8bitRGBADecoder;
+       16  : DecoderClass := TPngAdam7TrueColorAlpha16bitRGBADecoder;
+       else raise EPngError.Create(RCStrUnsupportedFormat);
+      end;
+     else raise EPngError.Create(RCStrUnsupportedFormat);
+    end;
+   else raise EPngError.Create(RCStrUnsupportedFormat);
+  end;
+
+  with DecoderClass.Create(DataStream, FImageHeader, FGammaChunk, FPaletteChunk) do
+   try
+    DecodeToScanline(PixelMap, PixelMapScanline);
+   finally
+    Free;
+   end;
+ finally
+  FreeAndNil(DataStream);
+ end;
+end;
+
+function TPortableNetworkGraphic32.PixelmapScanline(Bitmap: TObject;
+  Y: Integer): Pointer;
+begin
+ if Bitmap is TGuiCustomPixelMap
+  then Result := TGuiCustomPixelMap(Bitmap).ScanLine[Y]
+  else Result := nil;
+end;
+
+
 { TPortableNetworkGraphicBitmap }
 
 function TPortableNetworkGraphicBitmap.GetScanline(Bitmap: TObject; Y: Integer): Pointer;
@@ -2139,7 +2515,7 @@ begin
  Result := -1;
 end;
 
-function ColorIndexInPalette(Color: TRGB32; Palette: TPalette24): Integer;
+function ColorIndexInPalette(Color: TRGB32; Palette: TPalette24): Integer; overload;
 begin
  for Result := 0 to Length(Palette) - 1 do
   if (Color.R = Palette[Result].R) and

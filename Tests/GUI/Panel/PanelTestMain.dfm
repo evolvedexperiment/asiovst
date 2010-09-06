@@ -11,6 +11,10 @@ object FmPanelTest: TFmPanelTest
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object LbRoundRadius: TLabel
@@ -34,9 +38,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Caption = 'PanelA'
     LineColor = 4605510
+    BorderWidth = 2.000000000000000000
     PanelColor = clBlue
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
   end
@@ -47,9 +52,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Caption = 'GuiPanel1'
     LineColor = 4605510
+    BorderWidth = 2.000000000000000000
     PanelColor = clLime
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
   end
@@ -60,9 +66,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Caption = 'GuiPanel1'
     LineColor = 4605510
+    BorderWidth = 2.000000000000000000
     PanelColor = clRed
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 2
     UseDockManager = True
   end
@@ -73,9 +80,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Caption = 'GuiPanel1'
     LineColor = 4605510
+    BorderWidth = 2.000000000000000000
     PanelColor = clYellow
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 3
     UseDockManager = True
   end

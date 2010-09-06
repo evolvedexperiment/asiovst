@@ -32,7 +32,7 @@ unit DAV_MemoryUtils;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
   Classes, SysUtils;
@@ -96,8 +96,10 @@ begin
 end;
 
 procedure ReallocateAlignedMemory(var P: Pointer; Size: Integer);
+{$IFNDEF DELPHI10_UP}
 var
   Index : Integer;
+{$ENDIF}
 begin
  // check for size = 0
  if Size = 0 then
@@ -137,8 +139,10 @@ begin
 end;
 
 procedure FreeAlignedMemory(P: Pointer);
+{$IFNDEF DELPHI10_UP}
 var
   Index : Integer;
+{$ENDIF}
 begin
  {$IFNDEF DELPHI10_UP}
  for Index := 0 to UnalignedMemoryList.Count - 1 do

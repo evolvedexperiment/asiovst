@@ -60,7 +60,6 @@ type
     LbKneeValue: TLabel;
     LbLevelingAmplifier: TLabel;
     LbMix: TGuiLabel;
-    LbMixValue: TLabel;
     LbOnOff: TGuiLabel;
     LbOutput: TGuiLabel;
     LbOutputValue: TLabel;
@@ -78,7 +77,6 @@ type
     PnB: TGuiPanel;
     PnInputValue: TGuiPanel;
     PnKnee: TGuiPanel;
-    PnMix: TGuiPanel;
     PnOutputValue: TGuiPanel;
     PnRatio: TGuiPanel;
     PopupVUMeterSpeed: TPopupMenu;
@@ -86,6 +84,8 @@ type
     SpDivide2: TShape;
     Timer: TTimer;
     VUMeter: TGuiVUMeter;
+    PnMix: TGuiPanel;
+    LbMixValue: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);

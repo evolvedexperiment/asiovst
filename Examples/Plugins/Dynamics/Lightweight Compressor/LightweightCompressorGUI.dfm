@@ -338,14 +338,14 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Shadow.Color = clBlack
   end
   object LEDStereo: TGuiLED
-    Left = 248
-    Top = 8
-    Width = 16
-    Height = 16
-    BorderStrength_Percent = 100.000000000000000000
+    Left = 247
+    Top = 7
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
-    LineWidth = 1.000000000000000000
+    BorderWidth = 2.299999952316284000
     Uniformity_Percent = 40.000000000000000000
     Transparent = False
     OnClick = LEDStereoClick
@@ -367,14 +367,14 @@ object FmLightweightCompressor: TFmLightweightCompressor
     OnClick = LEDStereoClick
   end
   object LEDLimit: TGuiLED
-    Left = 248
-    Top = 29
-    Width = 16
-    Height = 16
-    BorderStrength_Percent = 100.000000000000000000
+    Left = 247
+    Top = 28
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
-    LineWidth = 1.000000000000000000
+    BorderWidth = 2.299999952316284000
     Uniformity_Percent = 40.000000000000000000
     Transparent = False
     OnClick = LEDLimitClick
@@ -396,14 +396,14 @@ object FmLightweightCompressor: TFmLightweightCompressor
     OnClick = LEDLimitClick
   end
   object LEDAutoGain: TGuiLED
-    Left = 248
-    Top = 68
-    Width = 16
-    Height = 16
-    BorderStrength_Percent = 100.000000000000000000
+    Left = 247
+    Top = 67
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
-    LineWidth = 1.000000000000000000
+    BorderWidth = 2.299999952316284000
     Uniformity_Percent = 40.000000000000000000
     Transparent = False
     OnClick = LEDAutoGainClick
@@ -425,14 +425,14 @@ object FmLightweightCompressor: TFmLightweightCompressor
     OnClick = LEDAutoGainClick
   end
   object LEDOversample: TGuiLED
-    Left = 248
-    Top = 50
-    Width = 16
-    Height = 16
-    BorderStrength_Percent = 100.000000000000000000
+    Left = 247
+    Top = 49
+    Width = 18
+    Height = 18
+    BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
-    LineWidth = 1.000000000000000000
+    BorderWidth = 2.299999952316284000
     Uniformity_Percent = 40.000000000000000000
     Transparent = False
     Visible = False

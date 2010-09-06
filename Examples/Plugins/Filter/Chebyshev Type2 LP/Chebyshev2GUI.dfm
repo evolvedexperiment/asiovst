@@ -7,9 +7,9 @@ object FmChebyshev: TFmChebyshev
   ClientWidth = 290
   Color = 657940
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Color = 10526927
+  Font.Height = -13
+  Font.Name = 'Verdana'
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
@@ -19,7 +19,7 @@ object FmChebyshev: TFmChebyshev
     290
     181)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object LbChebyshevFilterDemoShaddow: TGuiLabel
     Left = 11
     Top = 11
@@ -57,17 +57,11 @@ object FmChebyshev: TFmChebyshev
     Width = 274
     Height = 129
     Anchors = [akLeft, akTop, akRight, akBottom]
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 10526927
-    Font.Height = -13
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold]
     LineColor = 10526927
-    Linewidth = 3
+    BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     DesignSize = (
