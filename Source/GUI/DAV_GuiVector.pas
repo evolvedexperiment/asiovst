@@ -38,15 +38,10 @@ uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
   {$IFDEF Windows} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon;
+  Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon, DAV_GuiFixedPoint;
 
 type
-  TIntFloatRecord = record
-    Value   : Integer;
-    Fractal : Single;
-  end;
-
-  TGuiCustomPrimitive = class(TPersistent)
+  TGuiCustomGeometricShape = class(TPersistent)
   private
     FOnChange : TNotifyEvent;
   protected
@@ -55,140 +50,140 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
-  TGuiCustomSimplePrimitive = class(TGuiCustomPrimitive)
+  TGuiCustomCenteredGeometricShape = class(TGuiCustomGeometricShape)
   private
-    FColor: TColor;
-    FAlpha: Byte;
-    procedure SetAlpha(const Value: Byte);
-    procedure SetColor(const Value: TColor);
-  protected
-    procedure AlphaChanged; virtual;
-    procedure ColorChanged; virtual;
-  public
-    property Color: TColor read FColor write SetColor;
-    property Alpha: Byte read FAlpha write SetAlpha;
-  end;
-
-  TGuiCustomCenteredPrimitive = class(TGuiCustomSimplePrimitive)
-  private
-    FCenterX : TIntFloatRecord;
-    FCenterY : TIntFloatRecord;
-    procedure SetCenterX(const Value: TIntFloatRecord);
-    procedure SetCenterY(const Value: TIntFloatRecord);
+    FCenterX : TFixed24Dot8Point;
+    FCenterY : TFixed24Dot8Point;
+    procedure SetCenterX(const Value: TFixed24Dot8Point);
+    procedure SetCenterY(const Value: TFixed24Dot8Point);
   protected
     procedure CenterXChanged; virtual;
     procedure CenterYChanged; virtual;
   public
-    property CenterX: TIntFloatRecord read FCenterX write SetCenterX;
-    property CenterY: TIntFloatRecord read FCenterY write SetCenterY;
+    property CenterX: TFixed24Dot8Point read FCenterX write SetCenterX;
+    property CenterY: TFixed24Dot8Point read FCenterY write SetCenterY;
   end;
 
-  TGuiCustomCircle = class(TGuiCustomCenteredPrimitive)
+  TGuiCustomCircle = class(TGuiCustomCenteredGeometricShape)
   private
-    FRadius  : TIntFloatRecord;
-    procedure SetRadius(const Value: TIntFloatRecord);
+    FRadius  : TFixed24Dot8Point;
+    procedure SetRadius(const Value: TFixed24Dot8Point);
   protected
     procedure RadiusChanged; virtual;
   public
-    property Radius: TIntFloatRecord read FRadius write SetRadius;
+    property Radius: TFixed24Dot8Point read FRadius write SetRadius;
   end;
-
   TGuiCircle = class(TGuiCustomCircle);
 
-  TGuiCustomEllipse = class(TGuiCustomCenteredPrimitive)
+  TGuiCustomEllipse = class(TGuiCustomCenteredGeometricShape)
   private
-    FRadiusX  : TIntFloatRecord;
-    FRadiusY  : TIntFloatRecord;
-    procedure SetRadiusX(const Value: TIntFloatRecord);
-    procedure SetRadiusY(const Value: TIntFloatRecord);
+    FRadiusX  : TFixed24Dot8Point;
+    FRadiusY  : TFixed24Dot8Point;
+    procedure SetRadiusX(const Value: TFixed24Dot8Point);
+    procedure SetRadiusY(const Value: TFixed24Dot8Point);
   protected
     procedure RadiusXChanged; virtual;
     procedure RadiusYChanged; virtual;
   public
-    property RadiusX: TIntFloatRecord read FRadiusX write SetRadiusX;
-    property RadiusY: TIntFloatRecord read FRadiusY write SetRadiusY;
+    property RadiusX: TFixed24Dot8Point read FRadiusX write SetRadiusX;
+    property RadiusY: TFixed24Dot8Point read FRadiusY write SetRadiusY;
   end;
+  TGuiEllipse = class(TGuiCustomEllipse);
 
-  TGuiEllipse = class(TGuiCustomCircle);
-
-(*
-  TCustomLine = class(TPersistent)
+  TGuiCustomRectangle = class(TGuiCustomGeometricShape)
+  private
+    FRight: TFixed24Dot8Point;
+    FBottom: TFixed24Dot8Point;
+    FTop: TFixed24Dot8Point;
+    FLeft: TFixed24Dot8Point;
+    procedure SetBottom(const Value: TFixed24Dot8Point);
+    procedure SetLeft(const Value: TFixed24Dot8Point);
+    procedure SetRight(const Value: TFixed24Dot8Point);
+    procedure SetTop(const Value: TFixed24Dot8Point);
+  protected
+    procedure BottomChanged; virtual;
+    procedure LeftChanged; virtual;
+    procedure RightChanged; virtual;
+    procedure TopChanged; virtual;
   public
-    property X1: TPoint
-//    property
+    property Left: TFixed24Dot8Point read FLeft write SetLeft;
+    property Right: TFixed24Dot8Point read FRight write SetRight;
+    property Top: TFixed24Dot8Point read FTop write SetTop;
+    property Bottom: TFixed24Dot8Point read FBottom write SetBottom;
   end;
-*)
+  TGuiRectangle = TGuiCustomRectangle;
+
+  TGuiCustomRoundedRectangle = class(TGuiCustomRectangle)
+  private
+    FBorderRadius: TFixed24Dot8Point;
+    procedure SetBorderRadius(const Value: TFixed24Dot8Point);
+  protected
+    procedure BorderRadiusChanged; virtual;
+  public
+    property BorderRadius: TFixed24Dot8Point read FBorderRadius write SetBorderRadius;
+  end;
+  TGuiRoundedRectangle = class(TGuiCustomRoundedRectangle);
+
+  TGuiCustomLine = class(TGuiCustomGeometricShape)
+  private
+    FXB: TFixed24Dot8Point;
+    FYB: TFixed24Dot8Point;
+    FXA: TFixed24Dot8Point;
+    FYA: TFixed24Dot8Point;
+    procedure SetXA(const Value: TFixed24Dot8Point);
+    procedure SetXB(const Value: TFixed24Dot8Point);
+    procedure SetYA(const Value: TFixed24Dot8Point);
+    procedure SetYB(const Value: TFixed24Dot8Point);
+  protected
+    procedure XAChanged; virtual;
+    procedure YAChanged; virtual;
+    procedure XBChanged; virtual;
+    procedure YBChanged; virtual;
+  public
+    property XA: TFixed24Dot8Point read FXA write SetXA;
+    property YA: TFixed24Dot8Point read FYA write SetYA;
+    property XB: TFixed24Dot8Point read FXB write SetXB;
+    property YB: TFixed24Dot8Point read FYB write SetYB;
+  end;
+  TGuiLine = class(TGuiCustomLine);
 
 implementation
 
-{ TGuiCustomPrimitive }
+{ TGuiCustomGeometricShape }
 
-procedure TGuiCustomPrimitive.Changed;
+procedure TGuiCustomGeometricShape.Changed;
 begin
  if Assigned(FOnChange)
   then FOnChange(Self);
 end;
 
 
-{ TGuiCustomSimplePrimitive }
+{ TGuiCustomCenteredGeometricShape }
 
-procedure TGuiCustomSimplePrimitive.SetAlpha(const Value: Byte);
+procedure TGuiCustomCenteredGeometricShape.SetCenterX(const Value: TFixed24Dot8Point);
 begin
- if FAlpha <> Value then
-  begin
-   FAlpha := Value;
-   AlphaChanged;
-  end;
-end;
-
-procedure TGuiCustomSimplePrimitive.SetColor(const Value: TColor);
-begin
- if FColor <> Value then
-  begin
-   FColor := Value;
-   ColorChanged;
-  end;
-end;
-
-procedure TGuiCustomSimplePrimitive.AlphaChanged;
-begin
- Changed;
-end;
-
-procedure TGuiCustomSimplePrimitive.ColorChanged;
-begin
- Changed;
-end;
-
-
-{ TGuiCustomCenteredPrimitive }
-
-procedure TGuiCustomCenteredPrimitive.SetCenterX(const Value: TIntFloatRecord);
-begin
- if (FCenterX.Value <> Value.Value) or
-    (FCenterX.Fractal <> Value.Fractal) then
+ if FCenterX.Fixed <> Value.Fixed then
   begin
    FCenterX := Value;
    CenterXChanged;
   end;
 end;
 
-procedure TGuiCustomCenteredPrimitive.SetCenterY(const Value: TIntFloatRecord);
+procedure TGuiCustomCenteredGeometricShape.SetCenterY(const Value: TFixed24Dot8Point);
 begin
- if (FCenterY.Value <> Value.Value) or
-    (FCenterY.Fractal <> Value.Fractal) then
+ if (FCenterY.Fixed <> Value.Fixed) then
   begin
    FCenterY := Value;
    CenterYChanged;
   end;
 end;
 
-procedure TGuiCustomCenteredPrimitive.CenterXChanged;
+procedure TGuiCustomCenteredGeometricShape.CenterXChanged;
 begin
  Changed;
 end;
 
-procedure TGuiCustomCenteredPrimitive.CenterYChanged;
+procedure TGuiCustomCenteredGeometricShape.CenterYChanged;
 begin
  Changed;
 end;
@@ -196,10 +191,9 @@ end;
 
 { TGuiCustomCircle }
 
-procedure TGuiCustomCircle.SetRadius(const Value: TIntFloatRecord);
+procedure TGuiCustomCircle.SetRadius(const Value: TFixed24Dot8Point);
 begin
- if (FRadius.Value <> Value.Value) or
-    (FRadius.Fractal <> Value.Fractal) then
+ if (FRadius.Fixed <> Value.Fixed) then
   begin
    FRadius := Value;
    RadiusChanged;
@@ -214,20 +208,18 @@ end;
 
 { TGuiCustomEllipse }
 
-procedure TGuiCustomEllipse.SetRadiusX(const Value: TIntFloatRecord);
+procedure TGuiCustomEllipse.SetRadiusX(const Value: TFixed24Dot8Point);
 begin
- if (FRadiusX.Value <> Value.Value) or
-    (FRadiusX.Fractal <> Value.Fractal) then
+ if (FRadiusX.Fixed <> Value.Fixed) then
   begin
    FRadiusX := Value;
    RadiusXChanged;
   end;
 end;
 
-procedure TGuiCustomEllipse.SetRadiusY(const Value: TIntFloatRecord);
+procedure TGuiCustomEllipse.SetRadiusY(const Value: TFixed24Dot8Point);
 begin
- if (FRadiusY.Value <> Value.Value) or
-    (FRadiusY.Fractal <> Value.Fractal) then
+ if (FRadiusY.Fixed <> Value.Fixed) then
   begin
    FRadiusY := Value;
    RadiusYChanged;
@@ -242,6 +234,141 @@ end;
 procedure TGuiCustomEllipse.RadiusYChanged;
 begin
  Changed;
+end;
+
+
+{ TGuiCustomRectangle }
+
+procedure TGuiCustomRectangle.BottomChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomRectangle.LeftChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomRectangle.RightChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomRectangle.TopChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomRectangle.SetBottom(const Value: TFixed24Dot8Point);
+begin
+ if FBottom.Fixed <> Value.Fixed then
+  begin
+   FBottom := Value;
+   BottomChanged;
+  end;
+end;
+
+procedure TGuiCustomRectangle.SetLeft(const Value: TFixed24Dot8Point);
+begin
+ if FLeft.Fixed <> Value.Fixed then
+  begin
+   FLeft := Value;
+   LeftChanged;
+  end;
+end;
+
+procedure TGuiCustomRectangle.SetRight(const Value: TFixed24Dot8Point);
+begin
+ if FRight.Fixed <> Value.Fixed then
+  begin
+   FRight := Value;
+   RightChanged;
+  end;
+end;
+
+procedure TGuiCustomRectangle.SetTop(const Value: TFixed24Dot8Point);
+begin
+ if FTop.Fixed <> Value.Fixed then
+  begin
+   FTop := Value;
+   TopChanged;
+  end;
+end;
+
+
+{ TGuiCustomLine }
+
+procedure TGuiCustomLine.XAChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomLine.XBChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomLine.YAChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomLine.YBChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomLine.SetXA(const Value: TFixed24Dot8Point);
+begin
+ if FXA.Fixed <> Value.Fixed then
+  begin
+   FXA := Value;
+   XAChanged;
+  end;
+end;
+
+procedure TGuiCustomLine.SetXB(const Value: TFixed24Dot8Point);
+begin
+ if FXB.Fixed <> Value.Fixed then
+  begin
+   FXB := Value;
+   XBChanged;
+  end;
+end;
+
+procedure TGuiCustomLine.SetYA(const Value: TFixed24Dot8Point);
+begin
+ if FYA.Fixed <> Value.Fixed then
+  begin
+   FYA := Value;
+   YAChanged;
+  end;
+end;
+
+procedure TGuiCustomLine.SetYB(const Value: TFixed24Dot8Point);
+begin
+ if FYB.Fixed <> Value.Fixed then
+  begin
+   FYB := Value;
+   YBChanged;
+  end;
+end;
+
+{ TGuiCustomRoundedRectangle }
+
+procedure TGuiCustomRoundedRectangle.BorderRadiusChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomRoundedRectangle.SetBorderRadius(
+  const Value: TFixed24Dot8Point);
+begin
+ if FBorderRadius.Fixed <> Value.Fixed then
+  begin
+   FBorderRadius := Value;
+   BorderRadiusChanged;
+  end;
 end;
 
 end.
