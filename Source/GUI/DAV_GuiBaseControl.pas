@@ -494,6 +494,7 @@ begin
   FBuffer.PixelFormat := pf24bit;
   ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
                    csDoubleClicks, csReplicatable, csOpaque];
+//  DoubleBuffered := True;
 end;
 
 destructor TBufferedGraphicControl.Destroy;

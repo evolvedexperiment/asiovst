@@ -13,7 +13,7 @@ type
   private
     FAutoSize      : Boolean;
     FVUMeterBitmap : TBitmap;
-    FGlyphCount     : Integer;
+    FGlyphCount    : Integer;
     FLastGlyph     : Integer;
     FGlyphIndex    : Integer;
     FStitchKind    : TGuiStitchKind;
@@ -64,7 +64,7 @@ constructor TCustomGuiVUMeter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FGlyphIndex             := 0;
-  FGlyphCount              := 1;
+  FGlyphCount             := 1;
   FLastGlyph              := -1;
   FStitchKind             := skHorizontal;
   FVUMeterBitmap          := TBitmap.Create;
