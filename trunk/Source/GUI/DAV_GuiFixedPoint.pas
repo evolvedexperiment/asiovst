@@ -143,7 +143,7 @@ end;
 function FixedFloor(Value: TFixed16Dot16Point): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := Value.Fixed shr 16;
+  Result := (Value.Fixed and $80000000) or (Value.Fixed shr 16);
 {$ELSE}
 asm
   SAR     EAX, 16;
@@ -153,7 +153,7 @@ end;
 function FixedFloor(Value: TFixed24Dot8Point): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := Value.Fixed shr 8;
+  Result := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
 {$ELSE}
 asm
   SAR     EAX, 8;
@@ -163,7 +163,7 @@ end;
 function FixedCeil(Value: TFixed16Dot16Point): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed + $FFFF) shr 16;
+  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FFFF) shr 16);
 {$ELSE}
 asm
   ADD     EAX, $FFFF
@@ -174,7 +174,7 @@ end;
 function FixedCeil(Value: TFixed24Dot8Point): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed + $FF) shr 8;
+  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FF) shr 8);
 {$ELSE}
 asm
   ADD     EAX, $FF
@@ -185,7 +185,7 @@ end;
 function FixedRound(Value: TFixed16Dot16Point): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed + $7FFF) shr 16;
+  Result := (Value.Fixed and $80000000) or (Value.Fixed + $7FFF) shr 16;
 {$ELSE}
 asm
   ADD     EAX, $7FFF
@@ -196,7 +196,7 @@ end;
 function FixedRound(Value: TFixed24Dot8Point): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed + $7F) shr 8;
+  Result := (Value.Fixed and $80000000) or (Value.Fixed + $7F) shr 8;
 {$ELSE}
 asm
   ADD     EAX, $7F

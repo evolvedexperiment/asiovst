@@ -425,14 +425,15 @@ begin
    CenterY := GeometricShape.CenterY;
 
    // calculate affected scanlines
-   YRange[0] := (CenterY.Fixed - Radius.Fixed + $7F) shr 8;
-   YRange[1] := (CenterY.Fixed + Radius.Fixed + $7F) shr 8;
+
+   YRange[0] := FixedRound(FixedSub(CenterY, Radius));
+   YRange[1] := FixedRound(FixedAdd(CenterY, Radius));
 
    // check whether the bitmap needs to be drawn at all
    if YRange[0] >= Height then Exit;
    if YRange[1] < 0 then Exit;
-   if (CenterX.Fixed - Radius.Fixed + $7F) shr 8 >= Width then Exit;
-   if (CenterX.Fixed + Radius.Fixed + $7F) shr 8 < 0 then Exit;
+   if FixedRound(FixedSub(CenterX, Radius)) >= Width then Exit;
+   if FixedRound(FixedAdd(CenterX, Radius)) < 0 then Exit;
 
    // eventually limit range
    if YRange[0] < 0 then YRange[0] := 0;
@@ -447,14 +448,14 @@ begin
      // calculate squared vertical distance
      SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
 
-     XStart := FixedSub(FixedSqr(Radius), SqrYDist);
+     XStart.Fixed := FixedSqr(Radius).Fixed - SqrYDist.Fixed;
      if XStart.Fixed <= 0
       then Continue
       else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
 
      // calculate affected pixels within this scanline
-     XRange[0] := (CenterX.Fixed - XStart.Fixed + $7F) shr 8;
-     XRange[1] := (CenterX.Fixed + XStart.Fixed + $7F) shr 8;
+     XRange[0] := FixedRound(FixedSub(CenterX, XStart));
+     XRange[1] := FixedRound(FixedAdd(CenterX, XStart));
 
      // eventually limit range
      if XRange[0] < 0 then XRange[0] := 0;
@@ -513,8 +514,9 @@ var
   XRange         : array [0..1] of Integer;
   SqrYDist       : Single;
   SqrDist        : Single;
+  SqrBorderDist  : Single;
   SqrRadMinusOne : TComplexSingle;
-  SqrRadRatio    : Single;
+  SqrRadRatio    : array [0..1] of Single;
 begin
  with PixelMap do
   begin
@@ -527,7 +529,7 @@ begin
      Rad.Re := ConvertFromFixed24Dot8Point(RadiusX) + 1;
      Rad.Im := ConvertFromFixed24Dot8Point(RadiusY) + 1;
      if (Rad.Re <= 0) or (Rad.Im <= 0) then Exit;
-     SqrRadRatio := Sqr(Rad.Re / Rad.Im);
+     SqrRadRatio[0] := Sqr(Rad.Re / Rad.Im);
 
      Center.Re := ConvertFromFixed24Dot8Point(CenterX);
      Center.Im := ConvertFromFixed24Dot8Point(CenterY);
@@ -549,13 +551,14 @@ begin
 
    SqrRadMinusOne.Re := Sqr(BranchlessClipPositive(Rad.Re - 1));
    SqrRadMinusOne.Im := Sqr(BranchlessClipPositive(Rad.Im - 1));
+   SqrRadRatio[1] := (SqrRadMinusOne.Re / SqrRadMinusOne.Im);
 
    for Y := YRange[0] to YRange[1] do
     begin
      // calculate squared vertical distance
      SqrYDist := Sqr(Y - Center.Im);
 
-     XStart := Sqr(Rad.Re) - SqrYDist * SqrRadRatio;
+     XStart := Sqr(Rad.Re) - SqrYDist * SqrRadRatio[0];
      if XStart <= 0
       then Continue
       else XStart := Sqrt(XStart) - 0.5;
@@ -576,20 +579,18 @@ begin
 
        CombColor := PixelColor32;
 
-(*
-       XStart := SqrRadMinusOne.Re - SqrYDist * (SqrRadMinusOne.Re / SqrRadMinusOne.Im);
-       if XStart <= 0
-        then
-        else XStart := Sqrt(XStart) - 0.5;
+       XStart := SqrRadMinusOne.Re - SqrYDist * SqrRadRatio[1];
+       SqrBorderDist := XStart + SqrYDist;
 
-       if X < XStart
-        then CombColor.ARGB := $FFFFFFFF;
-
-(*
-       if SqrDist >= SqrRadMinusOne
-        then CombColor.A := Round(CombColor.A * (Rad.Re - FastSqrtBab2(SqrDist)));
-*)
-
+       if SqrDist >= SqrBorderDist then
+        begin
+         if SqrBorderDist > 0 then
+          begin
+           XStart := 1 - (FastSqrtBab2(SqrDist) - FastSqrtBab2(SqrBorderDist));
+           if XStart < 0 then XStart := 0;
+           CombColor.A := Round(XStart * CombColor.A);
+          end;
+        end;
        BlendPixelInplace(CombColor, ScnLne[X]);
        EMMS;
       end;

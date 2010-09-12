@@ -36,7 +36,7 @@ unit DAV_GuiBlend;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{-$DEFINE PUREPASCAL}
+{$DEFINE PUREPASCAL}
 
 uses
   SysUtils, DAV_GuiCommon, DAV_Bindings;
@@ -108,21 +108,24 @@ const
 function BlendPixelNative(Foreground, Background: TPixel32): TPixel32;
 {$IFDEF PUREPASCAL}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
+  Alpha : Byte;
 begin
  if Foreground.A =   0 then Result := Background else
  if Foreground.A = $FF then Result := Foreground else
-  with Background do
-   begin
-    AlphaForeground := @DivTable[Foreground.A];
-    AlphaBackground := @DivTable[not Foreground.A];
-    R := AlphaForeground[Foreground.R] + AlphaBackground[R];
-    G := AlphaForeground[Foreground.G] + AlphaBackground[G];
-    B := AlphaForeground[Foreground.B] + AlphaBackground[B];
-    A := $FF;
-    Result := Background;
-   end;
+  begin
+   Alpha := (ForeGround.ARGB shr 24);
+   ForeGround.ARGB := ((((Alpha * (ForeGround.ARGB and $00FF00FF)) + CBias)
+     and $FF00FF00) shr 8) or ((Alpha * ((ForeGround.ARGB and $FF00FF00)
+     shr 8) + CBias) and $FF00FF00);
+
+   Alpha := Alpha xor $FF;
+
+   Background.ARGB := ((((Alpha * (Background.ARGB and $00FF00FF)) + CBias)
+     and $FF00FF00) shr 8) or ((Alpha * ((Background.ARGB and $FF00FF00)
+     shr 8) + CBias) and $FF00FF00);
+
+   Result.ARGB := (Background.ARGB + Foreground.ARGB) or $FF000000;
+  end;
 {$ELSE}
 asm
   CMP     EAX, $FF000000
@@ -181,8 +184,7 @@ end;
 procedure BlendPixelInplaceNative(Foreground: TPixel32; var Background: TPixel32);
 {$IFDEF PUREPASCAL}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
+  Alpha : Byte;
 begin
  if Foreground.A = 0 then Exit;
 
@@ -192,14 +194,18 @@ begin
    Exit;
   end;
 
- with Background do
-  begin
-    AlphaForeground := @DivTable[Foreground.A];
-    AlphaBackground := @DivTable[not Foreground.A];
-    R := AlphaForeground[Foreground.R] + AlphaBackground[R];
-    G := AlphaForeground[Foreground.G] + AlphaBackground[G];
-    B := AlphaForeground[Foreground.B] + AlphaBackground[B];
-  end;
+ Alpha := (ForeGround.ARGB shr 24);
+ ForeGround.ARGB := ((((Alpha * (ForeGround.ARGB and $00FF00FF)) + CBias)
+   and $FF00FF00) shr 8) or ((Alpha * ((ForeGround.ARGB and $FF00FF00)
+   shr 8) + CBias) and $FF00FF00);
+
+ Alpha := Alpha xor $FF;
+
+ Background.ARGB := ((((Alpha * (Background.ARGB and $00FF00FF)) + CBias)
+   and $FF00FF00) shr 8) or ((Alpha * ((Background.ARGB and $FF00FF00)
+   shr 8) + CBias) and $FF00FF00);
+
+ Background.ARGB := (Background.ARGB + Foreground.ARGB) or $FF000000;
 {$ELSE}
 asm
   TEST    EAX, $FF000000
@@ -347,31 +353,22 @@ end;
 function CombinePixelNative(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
 {$IFDEF PUREPASCAL}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
+  Temp            : TPixel32;
 begin
- if Weight = 0 then
+ if Weight = 0 then Result := Background else
+ if Weight >= $FF then Result := ForeGround else
   begin
-   Result := Background;
-   Exit;
-  end;
+   ForeGround.ARGB := (((Weight * ((ForeGround.ARGB and $FF00FF00) shr 8)) +
+     CBias) and $FF00FF00) + ((((Weight * (ForeGround.ARGB and $00FF00FF)) +
+     CBias) and $FF00FF00) shr 8);
 
- if Weight >= $FF then
-  begin
-   Result := ForeGround;
-   Exit;
-  end;
+   Weight := Weight xor $000000FF;
+   Background.ARGB := (((Weight * ((Background.ARGB and $FF00FF00) shr 8)) +
+     CBias) and $FF00FF00) + ((((Weight * (Background.ARGB and $00FF00FF)) +
+     CBias) and $FF00FF00) shr 8);
 
- with ForeGround do
-  begin
-   AlphaForeground := @DivTable[Weight];
-   AlphaBackground := @DivTable[255 - Weight];
-   R := AlphaBackground[Background.R] + AlphaForeground[R];
-   G := AlphaBackground[Background.G] + AlphaForeground[G];
-   B := AlphaBackground[Background.B] + AlphaForeground[B];
-   A := AlphaBackground[Background.A] + AlphaForeground[A];
+   Result.ARGB := Background.ARGB + Foreground.ARGB;
   end;
- Result := ForeGround;
 {$ELSE}
 asm
   JCXZ    @Copy
@@ -422,28 +419,22 @@ end;
 procedure CombinePixelInplaceNative(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
 {$IFDEF PUREPASCAL}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
+  Temp            : TPixel32;
 begin
- if Weight = 0
-  then Exit;
-
- if Weight >= $FF then
+ if Weight = 0 then Exit else
+ if Weight >= $FF then Background := ForeGround else
   begin
-   Background := ForeGround;
-   Exit;
-  end;
+   ForeGround.ARGB := (((Weight * ((ForeGround.ARGB and $FF00FF00) shr 8)) +
+     CBias) and $FF00FF00) + ((((Weight * (ForeGround.ARGB and $00FF00FF)) +
+     CBias) and $FF00FF00) shr 8);
 
- with ForeGround do
-  begin
-   AlphaForeground := @DivTable[Weight];
-   AlphaBackground := @DivTable[255 - Weight];
-   R := AlphaBackground[Background.R] + AlphaForeground[R];
-   G := AlphaBackground[Background.G] + AlphaForeground[G];
-   B := AlphaBackground[Background.B] + AlphaForeground[B];
-   A := AlphaBackground[Background.A] + AlphaForeground[A];
+   Weight := Weight xor $000000FF;
+   Background.ARGB := (((Weight * ((Background.ARGB and $FF00FF00) shr 8)) +
+     CBias) and $FF00FF00) + ((((Weight * (Background.ARGB and $00FF00FF)) +
+     CBias) and $FF00FF00) shr 8);
+
+   Background.ARGB := Background.ARGB + Foreground.ARGB;
   end;
- Background := ForeGround;
 {$ELSE}
 asm
   JCXZ    @Done
