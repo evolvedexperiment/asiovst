@@ -61,6 +61,7 @@ type
   case Integer of
    0: (ARGB: Cardinal);
    1: (B, G, R, A: Byte);
+   2: (Bytes: array [0..3] of Byte);
   end;
   PPixel32 = ^TPixel32;
 

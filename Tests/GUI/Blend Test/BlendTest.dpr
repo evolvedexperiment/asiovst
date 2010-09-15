@@ -20,7 +20,8 @@ uses
   GUITestRunner,
   TextTestRunner,
   TestGuiBlend in 'TestGuiBlend.pas',
-  DAV_GuiBlend in '..\..\..\Source\GUI\DAV_GuiBlend.pas';
+  DAV_GuiBlend in '..\..\..\Source\GUI\DAV_GuiBlend.pas',
+  DAV_GuiBlendReference in '..\..\..\Source\GUI\DAV_GuiBlendReference.pas';
 
 { *.RES}
 
