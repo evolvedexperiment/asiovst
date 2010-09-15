@@ -25,10 +25,12 @@ unit DAV_GuiBlend;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  The below code is still a placeholder! Parts of it may still contain      //
-//  copyrighted code. It must be reviewed in detail, before it should be used //
+//  Several optimizations has been copied from the Graphics32 project which   //
+//  is under the same license as this project.                                //
+//  Please check the file GR32_Blend.pas at http://graphics32.org for         //
+//  further copyright information!                                            //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010             //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +38,7 @@ unit DAV_GuiBlend;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$DEFINE PUREPASCAL}
+{-$DEFINE PUREPASCAL}
 
 uses
   SysUtils, DAV_GuiCommon, DAV_Bindings;
@@ -92,18 +94,16 @@ var
 implementation
 
 uses
-  DAV_MemoryUtils;
+  DAV_Common, DAV_MemoryUtils;
 
+{$IFNDEF PUREPASCAL}
 var
-  RcTable: array [Byte, Byte] of Byte;
-  DivTable: array [Byte, Byte] of Byte;
-  {$IFNDEF PUREPASCAL}
   BiasPointer: Pointer;
   AlphaPointer: Pointer;
-  {$ENDIF}
+{$ENDIF}
 
 const
-  CBias = $00FE00FE; // $00800080
+  CBias = $00800080; // with this value the error is distributed equally
 
 function BlendPixelNative(Foreground, Background: TPixel32): TPixel32;
 {$IFDEF PUREPASCAL}
@@ -571,23 +571,11 @@ asm
   POP       EBX
 {$ENDIF}
 end;
-(*
-end;
-*)
-
-procedure EMMSNative;
-begin
- // dummy
-end;
-
 
 function MergePixelNative(Foreground, Background: TPixel32): TPixel32;
-{$IFDEF PUREPASCAL}
 var
-  AlphaForeground : PByteArray;
-  AlphaBackground : PByteArray;
-  AlphaResult     : PByteArray;
-  X               : Integer;
+  Temp  : Integer;
+  Scale : Integer;
 begin
  if Foreground.A = $FF then Result := Foreground else
  if Foreground.A = $0  then Result := Background else
@@ -596,210 +584,13 @@ begin
   then Result := BlendPixel(Foreground, Background)
   else
    begin
-    AlphaForeground := @DivTable[Foreground.A];
-    AlphaBackground := @DivTable[Background.A];
-    Result.A := Background.A + Foreground.A - AlphaBackground^[Foreground.A];
-    AlphaResult := @RcTable[Result.A];
-
-    // Red component
-    Result.R := AlphaBackground[Background.R];
-    X := Foreground.R - Result.R;
-    if X >= 0
-     then Result.R := AlphaResult[AlphaForeground[X] + Result.R]
-     else Result.R := AlphaResult[Result.R - AlphaForeground[-X]];
-
-    // Green component
-    Result.G := AlphaBackground[Background.G];
-    X := Foreground.G - Result.G;
-    if X >= 0
-     then Result.G := AlphaResult[AlphaForeground[X] + Result.G]
-     else Result.G := AlphaResult[Result.G - AlphaForeground[-X]];
-
-    // Blue component
-    Result.B := AlphaBackground[Background.B];
-    X := Foreground.B - Result.B;
-    if X >= 0
-     then Result.B := AlphaResult[AlphaForeground[X] + Result.B]
-     else Result.B := AlphaResult[Result.B - AlphaForeground[-X]];
+    Temp := Sqr($FF) - (Foreground.A xor $FF) * (Background.A xor $FF);
+    Result.A := (Temp + $80) shr 8;
+    Scale := (Sqr($FF) * Foreground.A) div Temp;
+    Result.R := Background.R + (Scale * ($FF + Foreground.R - Background.R) + $7F) shr 8 + 1 - Scale;
+    Result.G := Background.G + (Scale * ($FF + Foreground.G - Background.G) + $7F) shr 8 + 1 - Scale;
+    Result.B := Background.B + (Scale * ($FF + Foreground.B - Background.B) + $7F) shr 8 + 1 - Scale;
    end;
-{$ELSE}
-asm
-  // EAX <- F
-  // EDX <- B
-
-  // if F.A = 0 then
-  TEST    EAX, $FF000000
-  JZ      @CopyPixel
-
-  // else if B.A = 255 then
-  CMP     EDX, $FF000000
-  JNC     @Blend
-
-  // else if F.A = 255 then
-  CMP     EAX, $FF000000
-  JNC     @Done
-
-  // else if B.A = 0 then
-  TEST    EDX, $FF000000
-  JZ      @Done
-
-@4:
-  PUSH    EBX
-  PUSH    ESI
-  PUSH    EDI
-  ADD     ESP, -$0C
-  MOV     [ESP + $04], EDX
-  MOV     [ESP], EAX
-
-  // AH <- F.A
-  // DL, CL <- B.A
-  SHR     EAX, 16
-  AND     EAX, $0000FF00
-  SHR     EDX, 24
-  MOV     CL, DL
-  NOP
-  NOP
-  NOP
-
-  // EDI <- PF
-  // EDX <- PB
-  // ESI <- PR
-
-  // PF := @DivTable[F.A];
-  LEA     EDI, [EAX + DivTable]
-  // PB := @DivTable[B.A];
-  SHL     EDX, $08
-  LEA     EDX, [EDX + DivTable]
-
-  // Result.A := B.A + F.A - PB[F.A];
-  SHR     EAX, 8
-  ADD     ECX, EAX
-  SUB     ECX, [EDX + EAX]
-  MOV     [ESP + $0B], CL
-
-  // PR := @RcTable[Result.A];
-  SHL     ECX, $08
-  AND     ECX, $FFFF
-  LEA     ESI, [ECX + RcTable]
-
-  { Red component }
-
-  // Result.R := PB[B.R];
-  XOR     EAX, EAX
-  MOV     AL, [ESP + $06]
-  MOV     CL, [EDX + EAX]
-  MOV     [ESP + $0A], CL
-  // X := F.R - Result.R;
-  MOV     AL, [ESP + $02]
-  XOR     EBX, EBX
-  MOV     BL, CL
-  SUB     EAX, EBX
-
-  // if X >= 0 then
-  JL      @5
-  // Result.R := PR[PF[X] + Result.R]
-  MOVZX   EAX, BYTE PTR[EDI + EAX]
-  AND     ECX, $FF
-  ADD     EAX, ECX
-  MOV     AL, [EDI + EAX]
-  MOV     [ESP + $0A], AL
-  JMP     @6
-@5:
-  // Result.R := PR[Result.R - PF[-X]];
-  NEG     EAX
-  MOVZX   EAX, BYTE PTR[EDI + EAX]
-  XOR     ECX, ECX
-  MOV     CL, [ESP + $0A]
-  SUB     ECX, EAX
-  MOV     AL, [ESI + ECX]
-  MOV     [ESP + $0A], AL
-
-
-  { Green component }
-
-@6:
-  // Result.G := PB[B.G];
-  XOR     EAX, EAX
-  MOV     AL, [ESP + $05]
-  MOV     CL, [EDX + EAX]
-  MOV     [ESP + $09], CL
-  // X := F.G - Result.G;
-  MOV     AL, [ESP + $01]
-  XOR     EBX, EBX
-  MOV     BL, CL
-  SUB     EAX, EBX
-  // if X >= 0 then
-  JL @7
-  // Result.G := PR[PF[X] + Result.G]
-  MOVZX   EAX, BYTE PTR[EDI + EAX]
-  AND     ECX, $FF
-  ADD     EAX, ECX
-  MOV     AL, [ESI + EAX]
-  MOV     [ESP + $09], AL
-  JMP     @8
-@7:
-  // Result.G := PR[Result.G - PF[-X]];
-  NEG     EAX
-  MOVZX   EAX, BYTE PTR[EDI + EAX]
-  XOR     ECX, ECX
-  MOV     CL, [ESP + $09]
-  SUB     ECX, EAX
-  MOV     AL, [ESI + ECX]
-  MOV     [ESP + $09], AL
-
-
-  { Blue component }
-
-@8:
-  // Result.B := PB[B.B];
-  XOR     EAX, EAX
-  MOV     AL, [ESP + $04]
-  MOV     CL, [EDX + EAX]
-  MOV     [ESP + $08], CL
-  // X := F.B - Result.B;
-  MOV     AL, [ESP]
-  XOR     EDX, EDX
-  MOV     DL, CL
-  SUB     EAX, EDX
-  // if X >= 0 then
-  JL      @9
-  // Result.B := PR[PF[X] + Result.B]
-  MOVZX   EAX, BYTE PTR[EDI + EAX]
-  XOR     EDX, EDX
-  MOV     DL, CL
-  ADD     EAX, EDX
-  MOV     AL, [ESI + EAX]
-  MOV     [ESP + $08], AL
-  JMP     @10
-@9:
-  // Result.B := PR[Result.B - PF[-X]];
-  NEG     EAX
-  MOVZX   EAX, BYTE PTR[EDI + EAX]
-  XOR     EDX, EDX
-  MOV     DL, CL
-  SUB     EDX, EAX
-  MOV     AL, [ESI + EDX]
-  MOV     [ESP + $08],AL
-
-@10:
-  // EAX <- Result
-  MOV     EAX, [ESP + $08]
-
-  // end;
-  ADD     ESP, $0C
-  POP     EDI
-  POP     ESI
-  POP     EBX
-  RET
-
-@Blend:
-  CALL DWORD PTR [BlendPixel]
-  OR   EAX, $FF000000
-  RET
-@CopyPixel:
-  MOV EAX, EDX
-@Done:
-{$ENDIF}
 end;
 
 procedure MergePixelInplaceNative(Foreground: TPixel32; var Background: TPixel32);
@@ -817,6 +608,12 @@ begin
    Dec(Count);
   end;
 end;
+
+procedure EMMSNative;
+begin
+ // dummy
+end;
+
 
 
 { MMX Functions }
@@ -1050,6 +847,64 @@ asm
   POP       EBX
 end;
 
+(*
+function MergePixelMMX(Foreground, Background: TPixel32): TPixel32;
+asm
+  TEST      EAX, $FF000000  // foreground completely transparent =>
+  JZ        @CopyPixel      // result = background
+  CMP       EAX, $FF000000  // foreground completely opaque =>
+  JNC       @Done           // result = foreground
+  TEST      EDX, $FF000000  // background completely transparent =>
+  JZ        @Done           // result = foreground
+
+  PXOR      MM7, MM7        // MM7  <-  00 00 00 00 00 00 00 00
+  MOVD      MM0, EAX        // MM0  <-  00 00 00 00 Fa Fr Fg Fb
+  MOVD      MM1, EDX        // MM1  <-  00 00 00 00 Ba Br Bg Bb
+  SHR       EAX, $18        // EAX  <-  00 00 00 Fa
+  SHR       EDX, $18        // EDX  <-  00 00 00 Ba
+  MOV       ECX, EDX        // ECX  <-  00 00 00 Ba
+//  IMUL
+
+  // Fa + Ba - Fa * Ba
+  // Fa * (1 - Ba) + Ba
+
+{
+  ROR       EDX, 24         // EDX  <-  Br Bg Bb Ba
+  MOVZX     ECX, DL         // ECX  <-  00 00 00 Ba
+  PUNPCKLBW MM0, MM7        // MM0  <-  00 Fa 00 Fr 00 Fg 00 Fb
+  SUB       EAX, $FF        // EAX  <-  (Fa - 1)
+  XOR       ECX, $FF        // ECX  <-  (1 - Ba)
+  IMUL      ECX, EAX        // ECX  <-  (Fa - 1) * (1 - Ba)  =  Ra - 1
+  IMUL      ECX, $8081      // ECX  <-  Xa 00 00 00
+  ADD       ECX, $8081*$FF*$FF
+  SHR       ECX, 15         // ECX  <-  Ra
+  MOV       DL, CH          // EDX  <-  Br Bg Bb Ra
+  ROR       EDX, 8          // EDX  <-  Ra Br Bg Bb
+  MOVD      MM1, EDX        // MM1  <-  Ra Br Bg Bb
+  PUNPCKLBW MM1, MM7        // MM1  <-  00 Ra 00 Br 00 Bg 00 Bb
+  SHL       EAX, 20         // EAX  <-  Fa 00 00
+  PSUBW     MM0, MM1        // MM0  <-  ** Da ** Dr ** Dg ** Db
+  ADD       EAX, $0FF01000
+  PSLLW     MM0, 4
+  XOR       EDX, EDX        // EDX  <-  00
+  DIV       EAX, ECX        // EAX  <-  Fa / Ra  =  Wa
+  MOVD      MM4, EAX        // MM3  <-  Wa
+//  PSHUFLW   MM4, MM4, $C0   // MM3  <-  00 00 ** Wa ** Wa ** Wa
+  PMULHW    MM0, MM4        // MM0  <-  00 00 ** Pr ** Pg ** Pb
+  PADDW     MM0, MM1        // MM0  <-  00 Ra 00 Rr 00 Rg 00 Rb
+  PACKUSWB  MM0, MM7        // MM0  <-  Ra Rr Rg Rb
+  MOVD      EAX, MM0
+}
+
+  RET
+
+@CopyPixel:
+  MOV       EAX, EDX
+
+@Done:
+end;
+*)
+
 
 { SSE2 }
 
@@ -1059,7 +914,7 @@ asm
   PXOR      XMM3, XMM3
   MOVD      XMM2, EDX
   PUNPCKLBW XMM0, XMM3
-  MOV       ECX, BiasPointer
+  MOV       ECX,  BiasPointer
   PUNPCKLBW XMM2, XMM3
   MOVQ      XMM1, XMM0
   PUNPCKLBW XMM1, XMM3
@@ -1278,6 +1133,52 @@ asm
   POP       EBX
 end;
 
+function MergePixelSSE2(Foreground, Background: TPixel32): TPixel32;
+asm
+  TEST      EAX, $FF000000  // foreground completely transparent =>
+  JZ        @CopyPixel      // result = background
+  CMP       EAX, $FF000000  // foreground completely opaque =>
+  JNC       @Done           // result = foreground
+  TEST      EDX, $FF000000  // background completely transparent =>
+  JZ        @Done           // result = foreground
+
+  PXOR      XMM7, XMM7      // XMM7  <-  00 00 00 00 00 00 00 00
+  MOVD      XMM0, EAX       // XMM0  <-  00 00 00 00 Fa Fr Fg Fb
+  SHR       EAX, 24         //  EAX  <-  00 00 00 Fa
+  ROR       EDX, 24
+  MOVZX     ECX, DL         //  ECX  <-  00 00 00 Ba
+  PUNPCKLBW XMM0, XMM7      // XMM0  <-  00 Fa 00 Fr 00 Fg 00 Fb
+  SUB       EAX, $FF        //  EAX  <-  (Fa - 1)
+  XOR       ECX, $FF        //  ECX  <-  (1 - Ba)
+  IMUL      ECX, EAX        //  ECX  <-  (Fa - 1) * (1 - Ba)  =  Ra - 1
+  IMUL      ECX, $8081      //  ECX  <-  Xa 00 00 00
+  ADD       ECX, $8081*$FF*$FF
+  SHR       ECX, 15         //  ECX  <-  Ra
+  MOV       DL, CH          //  EDX  <-  Br Bg Bb Ra
+  ROR       EDX, 8          //  EDX  <-  Ra Br Bg Bb
+  MOVD      XMM1, EDX       // XMM1  <-  Ra Br Bg Bb
+  PUNPCKLBW XMM1, XMM7      // XMM1  <-  00 Ra 00 Br 00 Bg 00 Bb
+  SHL       EAX, 20         //  EAX  <-  Fa 00 00
+  PSUBW     XMM0, XMM1      // XMM0  <-  ** Da ** Dr ** Dg ** Db
+  ADD       EAX, $0FF01000
+  PSLLW     XMM0, 4
+  XOR       EDX, EDX        //  EDX  <-  00
+  DIV       EAX, ECX        //  EAX  <-  Fa / Ra  =  Wa
+  MOVD      XMM4, EAX       // XMM3  <-  Wa
+  PSHUFLW   XMM4, XMM4, $C0 // XMM3  <-  00 00 ** Wa ** Wa ** Wa
+  PMULHW    XMM0, XMM4      // XMM0  <-  00 00 ** Pr ** Pg ** Pb
+  PADDW     XMM0, XMM1      // XMM0  <-  00 Ra 00 Rr 00 Rg 00 Rb
+  PACKUSWB  XMM0, XMM7      // XMM0  <-  Ra Rr Rg Rb
+  MOVD      EAX, XMM0
+
+  RET
+
+@CopyPixel:
+  MOV       EAX, EDX
+
+@Done:
+end;
+
 
 {$ENDIF}
 
@@ -1285,24 +1186,13 @@ end;
 { Global Functions }
 
 procedure CreateTables;
-var
-  I, J : Integer;
 {$IFNDEF PUREPASCAL}
-  L    : Longword;
-  P    : ^Longword;
+var
+  I : Integer;
+  L : Longword;
+  P : ^Longword;
 {$ENDIF}
-const
-  COne256th : Double = 1 / 255;
 begin
- for J := 0 to 255 do
-  for I := 0 to 255 do
-   begin
-    DivTable[I, J] := Round(I * J * COne256th);
-    if I > 0
-     then RcTable[I, J] := Round(J * 255 / I)
-     else RcTable[I, J] := 0;
-   end;
-
  {$IFNDEF PUREPASCAL}
  GetAlignedMemory(AlphaPointer, 256 * 4 * SizeOf(Cardinal));
 
