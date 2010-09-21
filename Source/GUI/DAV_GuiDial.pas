@@ -405,7 +405,7 @@ type
   TGuiDialImageCollectionItem = class(TCollectionItem)
   private
     FDialBitmap  : TBitmap;
-    FGlyphCount   : Integer;
+    FGlyphCount  : Integer;
     FOnChange    : TNotifyEvent;
     FStitchKind  : TGuiStitchKind;
     FLinkedDials : TObjectList;
@@ -1265,6 +1265,7 @@ begin
   then GlyphCount := Max(1, FStringList.Count);
  Invalidate;
 end;
+
 
 { TCustomGuiDialMetal }
 

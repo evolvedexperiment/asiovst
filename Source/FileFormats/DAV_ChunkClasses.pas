@@ -154,14 +154,14 @@ type
     procedure AddChunk(Chunk : TCustomChunk); virtual;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
-    property SubChunk[index : Integer] : TCustomChunk read GetSubChunk;
+    property SubChunk[index : Integer]: TCustomChunk read GetSubChunk;
     property Count : Integer read GetCount;
   end;
 
   TChunkContainer = class(TCustomChunkContainer)
   protected
     FRegisteredChunks : array of TDefinedChunkClass;
-    function GetChunkClass(ChunkName : TChunkName) : TCustomChunkClass; override;
+    function GetChunkClass(ChunkName : TChunkName): TCustomChunkClass; override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     procedure RegisterChunkClass(ChunkClass : TDefinedChunkClass);
@@ -705,10 +705,10 @@ begin
  Result := FChunkList.Count;
 end;
 
-function TCustomChunkContainer.GetSubChunk(index: Integer): TCustomChunk;
+function TCustomChunkContainer.GetSubChunk(Index: Integer): TCustomChunk;
 begin
- if (index >= 0) and (index < FChunkList.Count)
-  then Result := FChunkList[index]
+ if (Index >= 0) and (Index < FChunkList.Count)
+  then Result := FChunkList[Index]
   else Result := nil;
 end;
 
@@ -797,7 +797,7 @@ var
 begin
  Result := TUnknownChunk;
  for i := 0 to Length(FRegisteredChunks) - 1 do
-  if CompareChunkNames(GetClassChunkName, ChunkName) then
+  if CompareChunkNames(FRegisteredChunks[i].GetClassChunkName, ChunkName) then
    begin
     Result := FRegisteredChunks[i];
     Exit;

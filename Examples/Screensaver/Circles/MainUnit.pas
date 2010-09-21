@@ -20,7 +20,7 @@ type
     FPixelMap    : TGuiPixelMapMemory;
     FMouseCount  : Integer;
     FOldMousePos : TPoint;
-    FCircles     : array of TGuiPixelCircle;
+    FCircles     : array of TGuiPixelFilledCircle;
     procedure FormIdle(Sender: TObject; var Done: Boolean);
   public
     procedure Render;
@@ -33,10 +33,12 @@ implementation
 
 {$R *.dfm}
 
+uses
+  DAV_GuiFixedPoint;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   Index    : Integer;
-  IntFloat : TIntFloatRecord;
 begin
  SetLength(FCircles, 16);
 
@@ -48,20 +50,16 @@ begin
  ClientHeight := Screen.Height;
  ClientWidth := Screen.Width;
 
- IntFloat.Fractal := 0;
  for Index := 0 to Length(FCircles) - 1 do
   begin
-   FCircles[Index] := TGuiPixelCircle.Create;
-   with FCircles[Index], Primitive do
+   FCircles[Index] := TGuiPixelFilledCircle.Create;
+   with FCircles[Index], GeometricShape do
     begin
      Color := Random($3FFF); //Random($FFFFFF);
      Alpha := 1 + Random($FE);
-     IntFloat.Value := -$FF + Random(ClientWidth - 1 + 2 * $FF);
-     CenterX := IntFloat;
-     IntFloat.Value := -$FF + Random(ClientHeight - 1 + 2 * $FF);
-     CenterY := IntFloat;
-     IntFloat.Value := 0; //$FF - Alpha;
-     Radius := IntFloat;
+     CenterX := ConvertToFixed24Dot8Point(-$FF + Random(ClientWidth - 1 + 2 * $FF));
+     CenterY := ConvertToFixed24Dot8Point(-$FF + Random(ClientHeight - 1 + 2 * $FF));
+     Radius := ConvertToFixed24Dot8Point(0);
     end;
   end;
 
@@ -114,36 +112,26 @@ end;
 
 procedure TMainForm.Render;
 var
-  Index    : Integer;
-  IntFloat : TIntFloatRecord;
+  Index : Integer;
 const
   CShade : TPixel32 = (ARGB : $03000000);
 begin
  if Random(3) = 0
   then FPixelMap.FillRect(Rect(0, 0, ClientWidth, ClientHeight), CShade);
- IntFloat.Fractal := 0;
  for Index := 0 to Length(FCircles) - 1 do
-  with FCircles[Index], Primitive do
+  with FCircles[Index], GeometricShape do
    begin
     Alpha := Round(0.94 * Alpha) - 1;
     if Alpha = 0 then
      begin
-      IntFloat.Value := -$FF + Random(ClientWidth - 1 + 2 * $FF);
-      CenterX := IntFloat;
-      IntFloat.Value := -$FF + Random(ClientHeight - 1 + 2 * $FF);
-      CenterY := IntFloat;
-      IntFloat.Value := 0;
-      Radius := IntFloat;
+      CenterX := ConvertToFixed24Dot8Point(-$FF + Random(ClientWidth - 1 + 2 * $FF));
+      CenterY := ConvertToFixed24Dot8Point(-$FF + Random(ClientHeight - 1 + 2 * $FF));
+      Radius := ConvertToFixed24Dot8Point(0);
       Color := Random($3FFF);
       Alpha := 1 + Random($FE);
      end
-    else
-     begin
-      IntFloat := Radius;
-      IntFloat.Value := Round(Sqrt(Sqr(IntFloat.Value) + 256));
-      Radius := IntFloat;
-     end;
-    DrawFixedPoint(FPixelMap);
+    else Radius := ConvertToFixed24Dot8Point(Radius.Fixed / 256 + 1);
+    Draw(FPixelMap);
    end;
  Invalidate;
 end;

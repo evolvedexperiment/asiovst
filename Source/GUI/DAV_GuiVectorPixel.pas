@@ -42,21 +42,28 @@ uses
   DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiFixedPoint;
 
 type
+  TGuiPixelPrimitiveDraw = procedure(PixelMap: TGuiCustomPixelMap) of object;
   TGuiFillEvent = procedure(Sender: TObject; const X, Y: Integer;
-    var Pixel: TPixel32);
+    var Pixel: TPixel32) of object;
 
   TCustomGuiPixelPrimitive = class(TPersistent)
   protected
     FGeometricShape : TGuiCustomGeometricShape;
     FOnChanged      : TNotifyEvent;
+    FDrawDraft      : TGuiPixelPrimitiveDraw;
+    FDraw           : TGuiPixelPrimitiveDraw;
     procedure Changed; virtual;
-  public
-    procedure Draw(PixelMap: TGuiCustomPixelMap); virtual; abstract;
     procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); virtual; abstract;
-    procedure DrawDraft(PixelMap: TGuiCustomPixelMap); virtual; abstract;
+    procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); virtual; abstract;
+  public
+    constructor Create; virtual;
 
+    property Draw: TGuiPixelPrimitiveDraw read FDraw;
+    property DrawDraft: TGuiPixelPrimitiveDraw read FDrawDraft;
+    property GeometricShape: TGuiCustomGeometricShape read FGeometricShape;
     property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
   end;
+  TCustomGuiPixelPrimitiveClass = class of TCustomGuiPixelPrimitive;
 
   TCustomGuiPixelSimplePrimitive = class(TCustomGuiPixelPrimitive)
   private
@@ -92,85 +99,41 @@ type
   TGuiPixelFilledRectangle = class(TCustomGuiPixelFillPrimitive)
   private
     function GetGeometricShape: TGuiRectangle;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-
-    procedure Draw(PixelMap: TGuiCustomPixelMap); override;
+  protected
     procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawDraft(PixelMap: TGuiCustomPixelMap); override;
+    procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
 
     property GeometricShape: TGuiRectangle read GetGeometricShape;
   end;
 
-  TGuiPixelFilledCircle = class(TCustomGuiPixelFillPrimitive)
-  public
-    procedure Draw(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawDraft(PixelMap: TGuiCustomPixelMap); override;
-  private
-    function GetGeometricShape: TGuiCircle;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-
-    property GeometricShape: TGuiCircle read GetGeometricShape;
-  end;
-
   TGuiPixelFilledEllipse = class(TCustomGuiPixelFillPrimitive)
-  public
-    procedure Draw(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawDraft(PixelMap: TGuiCustomPixelMap); override;
   private
     function GetGeometricShape: TGuiEllipse;
+  protected
+    procedure DrawFloatingPoint(PixelMap: TGuiCustomPixelMap);
+    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
+    procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
 
     property GeometricShape: TGuiEllipse read GetGeometricShape;
   end;
 
-  TGuiPixelLine = class(TCustomGuiPixelFramePrimitive)
-  private
-    function GetGeometricShape: TGuiLine;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-
-    procedure Draw(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawDraft(PixelMap: TGuiCustomPixelMap); override;
-
-    property GeometricShape: TGuiLine read GetGeometricShape;
-  end;
-
   TGuiPixelFrameRectangle = class(TCustomGuiPixelFramePrimitive)
   private
     function GetGeometricShape: TGuiRectangle;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-
-    procedure Draw(PixelMap: TGuiCustomPixelMap); override;
+  protected
     procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawDraft(PixelMap: TGuiCustomPixelMap); override;
+    procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
 
     property GeometricShape: TGuiRectangle read GetGeometricShape;
-  end;
-
-  TGuiPixelFrameCircle = class(TCustomGuiPixelFramePrimitive)
-  private
-    function GetGeometricShape: TGuiCircle;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-
-    procedure Draw(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
-    procedure DrawDraft(PixelMap: TGuiCustomPixelMap); override;
-
-    property GeometricShape: TGuiCircle read GetGeometricShape;
   end;
 
 implementation
@@ -187,6 +150,13 @@ begin
   then FOnChanged(Self);
 end;
 
+
+constructor TCustomGuiPixelPrimitive.Create;
+begin
+ inherited;
+ FDrawDraft := DrawDraftShape;
+ FDraw := DrawFixedPoint;
+end;
 
 { TCustomGuiPixelSimplePrimitive }
 
@@ -238,256 +208,13 @@ begin
 end;
 
 
-{ TGuiPixelFilledCircle }
-
-constructor TGuiPixelFilledCircle.Create;
-begin
- inherited;
- FGeometricShape := TGuiCircle.Create;
-end;
-
-destructor TGuiPixelFilledCircle.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
-end;
-
-function TGuiPixelFilledCircle.GetGeometricShape: TGuiCircle;
-begin
- Result := TGuiCircle(FGeometricShape);
-end;
-
-procedure TGuiPixelFilledCircle.DrawDraft(PixelMap: TGuiCustomPixelMap);
-var
-  X, Y         : Integer;
-  ScnLne       : PPixel32Array;
-  PixelColor32 : TPixel32;
-  SingleRadius : Single;
-  Center       : TComplexSingle;
-  XStart       : Single;
-  YRange       : array [0..1] of Integer;
-  XRange       : array [0..1] of Integer;
-  SqrYDist     : Single;
-begin
- with PixelMap do
-  begin
-   // transfer the GeometricShape data to local variables
-   with GeometricShape do
-    begin
-     PixelColor32 := ConvertColor(Color);
-     PixelColor32.A := Alpha;
-     SingleRadius := ConvertFromFixed24Dot8Point(Radius) + 1;
-     Center.Re := ConvertFromFixed24Dot8Point(CenterX);
-     Center.Im := ConvertFromFixed24Dot8Point(CenterY);
-    end;
-
-   // calculate affected scanlines
-   YRange[0] := Round(Center.Im - SingleRadius);
-   YRange[1] := Round(Center.Im + SingleRadius);
-
-   // check whether the bitmap needs to be drawn at all
-   if YRange[0] >= Height then Exit;
-   if YRange[1] < 0 then Exit;
-   if Center.Re - SingleRadius >= Width then Exit;
-   if Center.Re + SingleRadius < 0 then Exit;
-
-   // eventually limit range
-   if YRange[0] < 0 then YRange[0] := 0;
-   if YRange[1] >= Height then YRange[1] := Height - 1;
-
-   for Y := YRange[0] to YRange[1] do
-    begin
-     // calculate squared vertical distance
-     SqrYDist := Sqr(Y - Center.Im);
-
-     XStart := Sqr(SingleRadius) - SqrYDist;
-     if XStart <= 0
-      then Continue
-      else XStart := Sqrt(XStart) - 0.5;
-
-     // calculate affected pixels within this scanline
-     XRange[0] := Round(Center.Re - XStart);
-     XRange[1] := Round(Center.Re + XStart);
-
-     // eventually limit range
-     if XRange[0] < 0 then XRange[0] := 0;
-     if XRange[1] >= Width then XRange[1] := Width - 1;
-
-     ScnLne := Scanline[Y];
-     for X := XRange[0] to XRange[1]
-      do BlendPixelInplace(PixelColor32, ScnLne[X]);
-     EMMS;
-    end;
-  end;
-end;
-
-procedure TGuiPixelFilledCircle.Draw(PixelMap: TGuiCustomPixelMap);
-var
-  X, Y           : Integer;
-  ScnLne         : PPixel32Array;
-  PixelColor32   : TPixel32;
-  CombColor      : TPixel32;
-  Radius         : Single;
-  Center         : TComplexSingle;
-  XStart         : Single;
-  YRange         : array [0..1] of Integer;
-  XRange         : array [0..1] of Integer;
-  SqrYDist       : Single;
-  SqrDist        : Single;
-  SqrRadMinusOne : Single;
-begin
- with PixelMap do
-  begin
-   PixelColor32 := ConvertColor(Color);
-   PixelColor32.A := Alpha;
-
-   // transfer the GeometricShape data to local variables
-   Radius := ConvertFromFixed24Dot8Point(GeometricShape.Radius) + 1;
-   Center.Re := ConvertFromFixed24Dot8Point(GeometricShape.CenterX);
-   Center.Im := ConvertFromFixed24Dot8Point(GeometricShape.CenterY);
-
-   // calculate affected scanlines
-   YRange[0] := Round(Center.Im - Radius);
-   YRange[1] := Round(Center.Im + Radius);
-
-   // check whether the bitmap needs to be drawn at all
-   if YRange[0] >= Height then Exit;
-   if YRange[1] < 0 then Exit;
-   if Center.Re - Radius >= Width then Exit;
-   if Center.Re + Radius < 0 then Exit;
-
-   // eventually limit range
-   if YRange[0] < 0 then YRange[0] := 0;
-   if YRange[1] >= Height then YRange[1] := Height - 1;
-
-   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
-
-   for Y := YRange[0] to YRange[1] do
-    begin
-     // calculate squared vertical distance
-     SqrYDist := Sqr(Y - Center.Im);
-
-     XStart := Sqr(Radius) - SqrYDist;
-     if XStart <= 0
-      then Continue
-      else XStart := Sqrt(XStart) - 0.5;
-
-     // calculate affected pixels within this scanline
-     XRange[0] := Round(Center.Re - XStart);
-     XRange[1] := Round(Center.Re + XStart);
-
-     // eventually limit range
-     if XRange[0] < 0 then XRange[0] := 0;
-     if XRange[1] >= Width then XRange[1] := Width - 1;
-
-     ScnLne := Scanline[Y];
-     for X := XRange[0] to XRange[1] do
-      begin
-       // calculate squared distance
-       SqrDist := Sqr(X - Center.Re) + SqrYDist;
-
-       CombColor := PixelColor32;
-       if SqrDist >= SqrRadMinusOne
-        then CombColor.A := Round(CombColor.A * (Radius - FastSqrtBab2(SqrDist)));
-
-       BlendPixelInplace(CombColor, ScnLne[X]);
-       EMMS;
-      end;
-
-    end;
-  end;
-end;
-
-procedure TGuiPixelFilledCircle.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
-var
-  X, Y           : Integer;
-  ScnLne         : PPixel32Array;
-  PixelColor32   : TPixel32;
-  CombColor      : TPixel32;
-  YRange         : array [0..1] of Integer;
-  XRange         : array [0..1] of Integer;
-  Radius         : TFixed24Dot8Point;
-  CenterX        : TFixed24Dot8Point;
-  CenterY        : TFixed24Dot8Point;
-  XStart         : TFixed24Dot8Point;
-  SqrYDist       : TFixed24Dot8Point;
-  SqrDist        : TFixed24Dot8Point;
-  SqrRadMinusOne : TFixed24Dot8Point;
-begin
- with PixelMap do
-  begin
-   // transfer the GeometricShape data to local variables
-   PixelColor32 := ConvertColor(Color);
-   PixelColor32.A := Alpha;
-
-   Radius  := FixedAdd(GeometricShape.Radius, CFixed24Dot8One);
-   CenterX := GeometricShape.CenterX;
-   CenterY := GeometricShape.CenterY;
-
-   // calculate affected scanlines
-
-   YRange[0] := FixedRound(FixedSub(CenterY, Radius));
-   YRange[1] := FixedRound(FixedAdd(CenterY, Radius));
-
-   // check whether the bitmap needs to be drawn at all
-   if YRange[0] >= Height then Exit;
-   if YRange[1] < 0 then Exit;
-   if FixedRound(FixedSub(CenterX, Radius)) >= Width then Exit;
-   if FixedRound(FixedAdd(CenterX, Radius)) < 0 then Exit;
-
-   // eventually limit range
-   if YRange[0] < 0 then YRange[0] := 0;
-   if YRange[1] >= Height then YRange[1] := Height - 1;
-
-   if Radius.Fixed > 0
-    then SqrRadMinusOne := FixedSqr(FixedSub(Radius, CFixed24Dot8One))
-    else SqrRadMinusOne.Fixed := 0;
-
-   for Y := YRange[0] to YRange[1] do
-    begin
-     // calculate squared vertical distance
-     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
-
-     XStart.Fixed := FixedSqr(Radius).Fixed - SqrYDist.Fixed;
-     if XStart.Fixed <= 0
-      then Continue
-      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
-
-     // calculate affected pixels within this scanline
-     XRange[0] := FixedRound(FixedSub(CenterX, XStart));
-     XRange[1] := FixedRound(FixedAdd(CenterX, XStart));
-
-     // eventually limit range
-     if XRange[0] < 0 then XRange[0] := 0;
-     if XRange[1] >= Width then XRange[1] := Width - 1;
-
-     ScnLne := Scanline[Y];
-     for X := XRange[0] to XRange[1] do
-      begin
-       // calculate squared distance
-       SqrDist.Fixed := X shl 8 - CenterX.Fixed;
-       SqrDist.Fixed := FixedSqr(SqrDist).Fixed + SqrYDist.Fixed;
-       CombColor := PixelColor32;
-       if SqrDist.Fixed >= SqrRadMinusOne.Fixed then
-        begin
-         SqrDist.Fixed := Radius.Fixed - FixedSqrt(SqrDist).Fixed;
-         CombColor.A := ((SqrDist.Fixed * CombColor.A + $7F) shr 8);
-        end;
-
-       BlendPixelInplace(CombColor, ScnLne[X]);
-      end;
-    end;
-   EMMS;
-  end;
-end;
-
-
 { TGuiPixelFilledEllipse }
 
 constructor TGuiPixelFilledEllipse.Create;
 begin
  inherited;
  FGeometricShape := TGuiEllipse.Create;
+ FDraw := DrawFloatingPoint;
 end;
 
 destructor TGuiPixelFilledEllipse.Destroy;
@@ -501,7 +228,7 @@ begin
  Result := TGuiEllipse(FGeometricShape);
 end;
 
-procedure TGuiPixelFilledEllipse.Draw(PixelMap: TGuiCustomPixelMap);
+procedure TGuiPixelFilledEllipse.DrawFloatingPoint(PixelMap: TGuiCustomPixelMap);
 var
   X, Y           : Integer;
   ScnLne         : PPixel32Array;
@@ -599,7 +326,7 @@ begin
   end;
 end;
 
-procedure TGuiPixelFilledEllipse.DrawDraft(PixelMap: TGuiCustomPixelMap);
+procedure TGuiPixelFilledEllipse.DrawDraftShape(PixelMap: TGuiCustomPixelMap);
 var
   X, Y         : Integer;
   ScnLne       : PPixel32Array;
@@ -689,12 +416,7 @@ begin
  inherited;
 end;
 
-procedure TGuiPixelFilledRectangle.Draw(PixelMap: TGuiCustomPixelMap);
-begin
- DrawFixedPoint(PixelMap);
-end;
-
-procedure TGuiPixelFilledRectangle.DrawDraft(PixelMap: TGuiCustomPixelMap);
+procedure TGuiPixelFilledRectangle.DrawDraftShape(PixelMap: TGuiCustomPixelMap);
 var
   X, Y         : Integer;
   XRange       : array [0..1] of Integer;
@@ -878,40 +600,6 @@ begin
 end;
 
 
-{ TGuiPixelLine }
-
-constructor TGuiPixelLine.Create;
-begin
- FGeometricShape := TGuiLine.Create;
-end;
-
-destructor TGuiPixelLine.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
-end;
-
-function TGuiPixelLine.GetGeometricShape: TGuiLine;
-begin
- Result := TGuiLine(FGeometricShape);
-end;
-
-procedure TGuiPixelLine.Draw(PixelMap: TGuiCustomPixelMap);
-begin
-
-end;
-
-procedure TGuiPixelLine.DrawDraft(PixelMap: TGuiCustomPixelMap);
-begin
-
-end;
-
-procedure TGuiPixelLine.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
-begin
-
-end;
-
-
 { TGuiPixelFrameRectangle }
 
 constructor TGuiPixelFrameRectangle.Create;
@@ -931,12 +619,7 @@ begin
  Result := TGuiRectangle(FGeometricShape)
 end;
 
-procedure TGuiPixelFrameRectangle.Draw(PixelMap: TGuiCustomPixelMap);
-begin
- DrawFixedPoint(PixelMap);
-end;
-
-procedure TGuiPixelFrameRectangle.DrawDraft(PixelMap: TGuiCustomPixelMap);
+procedure TGuiPixelFrameRectangle.DrawDraftShape(PixelMap: TGuiCustomPixelMap);
 var
   X, Y         : Integer;
   XRange       : array [0..1] of Integer;
@@ -1043,112 +726,8 @@ end;
 
 procedure TGuiPixelFrameRectangle.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
 begin
- DrawDraft(PixelMap);
+ DrawDraftShape(PixelMap);
 end;
 
-
-{ TGuiPixelFrameCircle }
-
-constructor TGuiPixelFrameCircle.Create;
-begin
- inherited;
- FGeometricShape := TGuiCircle.Create;
-end;
-
-destructor TGuiPixelFrameCircle.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
-end;
-
-function TGuiPixelFrameCircle.GetGeometricShape: TGuiCircle;
-begin
- Result := TGuiCircle(FGeometricShape)
-end;
-
-procedure TGuiPixelFrameCircle.Draw(PixelMap: TGuiCustomPixelMap);
-begin
- DrawDraft(PixelMap);
-end;
-
-procedure TGuiPixelFrameCircle.DrawDraft(PixelMap: TGuiCustomPixelMap);
-var
-  X, Y          : Integer;
-  ScnLne        : PPixel32Array;
-  PixelColor32  : TPixel32;
-  SingleRadius  : Single;
-  Center        : TComplexSingle;
-  XStart        : Single;
-  YRange        : array [0..1] of Integer;
-  XRange        : array [0..1] of Integer;
-  SqrYDist      : Single;
-  SqrDist       : Single;
-  SqrMinusWidth : Single;
-begin
- with PixelMap do
-  begin
-   // transfer the GeometricShape data to local variables
-   with GeometricShape do
-    begin
-     PixelColor32 := ConvertColor(Color);
-     PixelColor32.A := Alpha;
-     SingleRadius := ConvertFromFixed24Dot8Point(Radius) + 1;
-     Center.Re := ConvertFromFixed24Dot8Point(CenterX);
-     Center.Im := ConvertFromFixed24Dot8Point(CenterY);
-
-     // inner radius
-     SqrMinusWidth := Sqr(BranchlessClipPositive(SingleRadius - Self.Width.Fixed * CFixed24Dot8ToFloat));
-    end;
-
-   // calculate affected scanlines
-   YRange[0] := Round(Center.Im - SingleRadius);
-   YRange[1] := Round(Center.Im + SingleRadius);
-
-   // check whether the bitmap needs to be drawn at all
-   if YRange[0] >= Height then Exit;
-   if YRange[1] < 0 then Exit;
-   if Center.Re - SingleRadius >= Width then Exit;
-   if Center.Re + SingleRadius < 0 then Exit;
-
-   // eventually limit range
-   if YRange[0] < 0 then YRange[0] := 0;
-   if YRange[1] >= Height then YRange[1] := Height - 1;
-
-   for Y := YRange[0] to YRange[1] do
-    begin
-     // calculate squared vertical distance
-     SqrYDist := Sqr(Y - Center.Im);
-
-     XStart := Sqr(SingleRadius) - SqrYDist;
-     if XStart <= 0
-      then Continue
-      else XStart := Sqrt(XStart) - 0.5;
-
-     // calculate affected pixels within this scanline
-     XRange[0] := Round(Center.Re - XStart);
-     XRange[1] := Round(Center.Re + XStart);
-
-     // eventually limit range
-     if XRange[0] < 0 then XRange[0] := 0;
-     if XRange[1] >= Width then XRange[1] := Width - 1;
-
-     ScnLne := Scanline[Y];
-     for X := XRange[0] to XRange[1] do
-      begin
-       // calculate squared distance
-       SqrDist := Sqr(X - Center.Re) + SqrYDist;
-
-       if SqrDist >= SqrMinusWidth
-        then BlendPixelInplace(PixelColor32, ScnLne[X]);
-      end;
-     EMMS;
-    end;
-  end;
-end;
-
-procedure TGuiPixelFrameCircle.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
-begin
- DrawDraft(PixelMap);
-end;
 
 end.

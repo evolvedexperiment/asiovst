@@ -53,12 +53,18 @@ type
   protected
     FDataPointer : PPixel32Array;
     FDataSize    : Integer;
+    FBitmapInfo  : TBitmapInfo;
     FWidth       : Integer;
     FHeight      : Integer;
-    FBitmapInfo  : TBitmapInfo;
+    FOnChange    : TNotifyEvent;
+    FOnResize    : TNotifyEvent;
     procedure HeightChanged(UpdateBitmap: Boolean = True); virtual;
     procedure WidthChanged(UpdateBitmap: Boolean = True); virtual;
     procedure SizeChangedAtOnce; virtual;
+    procedure Changed; virtual;
+    procedure Resized; virtual;
+
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
 
@@ -70,6 +76,7 @@ type
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); overload; virtual; abstract;
     procedure PaintTo(Canvas: TCanvas); overload; virtual;
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); overload; virtual; abstract;
+    procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); overload; virtual; abstract;
 
     procedure LoadFromFile(const Filename: TFileName); virtual;
     procedure SaveToFile(const Filename: TFileName); virtual;
@@ -90,6 +97,9 @@ type
     property DataPointer: PPixel32Array read GetDataPointer;
     property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
     property ScanLine[Y: Integer]: PPixel32Array read GetScanLine;
+
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property OnResize: TNotifyEvent read FOnResize write FOnResize;
   end;
 
   TGuiPixelMapMemory = class(TGuiCustomPixelMap)
@@ -102,7 +112,14 @@ type
     destructor Destroy; override;
 
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); override;
+    procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
+
+  published
+    property Width;
+    property Height;
+    property OnChange;
+    property OnResize;
   end;
 
   TGuiPixelMapDIB = class(TGuiCustomPixelMap)
@@ -120,7 +137,13 @@ type
     destructor Destroy; override;
 
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); override;
+    procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
+  published
+    property Width;
+    property Height;
+    property OnChange;
+    property OnResize;
   end;
 
 implementation
@@ -146,6 +169,23 @@ begin
   end;
 end;
 
+procedure TGuiCustomPixelMap.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TGuiCustomPixelMap then
+  with TGuiCustomPixelMap(Dest) do
+   begin
+    SetSize(Self.Width, Self.Height);
+    FBitmapInfo := Self.FBitmapInfo;
+
+    Assert(FDataSize = Self.FDataSize);
+    Move(Self.FDataPointer^, FDataPointer^, FDataSize);
+
+    FOnChange := Self.FOnChange;
+    FOnResize := Self.FOnResize;
+   end
+ else inherited;
+end;
+
 procedure TGuiCustomPixelMap.Draw(Bitmap: TBitmap);
 begin
  Draw(Bitmap, 0, 0);
@@ -159,6 +199,11 @@ end;
 procedure TGuiCustomPixelMap.Clear;
 begin
  FillChar(FDataPointer^, FDataSize, 0);
+end;
+
+procedure TGuiCustomPixelMap.Changed;
+begin
+ if Assigned(FOnChange) then FOnChange(Self);
 end;
 
 procedure TGuiCustomPixelMap.Clear(Color: TPixel32);
@@ -213,6 +258,7 @@ procedure TGuiCustomPixelMap.SizeChangedAtOnce;
 begin
  HeightChanged(False);
  WidthChanged(False);
+ Resized;
 end;
 
 procedure TGuiCustomPixelMap.SetHeight(const Value: Integer);
@@ -242,11 +288,13 @@ end;
 procedure TGuiCustomPixelMap.HeightChanged(UpdateBitmap: Boolean = True);
 begin
  FBitmapInfo.bmiHeader.biHeight := -FHeight;
+ if UpdateBitmap then Resized;
 end;
 
 procedure TGuiCustomPixelMap.WidthChanged(UpdateBitmap: Boolean = True);
 begin
  FBitmapInfo.bmiHeader.biWidth := FWidth;
+ if UpdateBitmap then Resized;
 end;
 
 procedure TGuiCustomPixelMap.LoadFromFile(const Filename: TFileName);
@@ -296,6 +344,8 @@ begin
 
     if BitmapFileHeader.bfType <> $4D42
      then raise Exception.Create('Invalid bitmap header found!');
+
+    Read(FBitmapInfo, SizeOf(TBitmapInfo));
    end;
 end;
 
@@ -450,6 +500,12 @@ begin
   end;
 end;
 
+procedure TGuiCustomPixelMap.Resized;
+begin
+ if Assigned(FOnResize) then FOnResize(Self);
+ Changed;
+end;
+
 
 { TGuiPixelMapMemory }
 
@@ -513,6 +569,46 @@ begin
         Move(FDataPointer^, Buffer^, Width * Height * SizeOf(Cardinal));
         BitBlt(Canvas.Handle, X, Y, Width, Height, DeviceContext,
           0, 0, SRCCOPY);
+       finally
+        if OldObject <> 0
+         then SelectObject(DeviceContext, OldObject);
+        DeleteObject(Bitmap);
+       end;
+      end;
+    finally
+     DeleteDC(DeviceContext);
+    end;
+  end;
+end;
+
+procedure TGuiPixelMapMemory.PaintTo(Canvas: TCanvas; Rect: TRect;
+  X: Integer = 0; Y: Integer = 0);
+var
+  Bitmap        : HBITMAP;
+  DeviceContext : HDC;
+  Buffer        : Pointer;
+  OldObject     : HGDIOBJ;
+  H, W          : Integer;
+begin
+ W := Min(Width, Rect.Right - Rect.Left);
+ H := Min(Height, Rect.Bottom - Rect.Top);
+ if SetDIBitsToDevice(Canvas.Handle, X, Y, W, H, Rect.Left, Rect.Top, 0, Height,
+   FDataPointer, FBitmapInfo, DIB_RGB_COLORS) = 0 then
+  begin
+   // create compatible device context
+   DeviceContext := CreateCompatibleDC(Canvas.Handle);
+   if DeviceContext <> 0 then
+    try
+     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo,
+       DIB_RGB_COLORS, Buffer, 0, 0);
+
+     if Bitmap <> 0 then
+      begin
+       OldObject := SelectObject(DeviceContext, Bitmap);
+       try
+        Move(FDataPointer^, Buffer^, Width * Height * SizeOf(Cardinal));
+        BitBlt(Canvas.Handle, X, Y, W, H, DeviceContext, Rect.Left, Rect.Top,
+          SRCCOPY);
        finally
         if OldObject <> 0
          then SelectObject(DeviceContext, OldObject);
@@ -624,6 +720,13 @@ end;
 procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; X, Y: Integer);
 begin
  BitBlt(Canvas.Handle, X, Y, Width, Height, FDC, X, Y, SRCCOPY);
+end;
+
+procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0;
+  Y: Integer = 0);
+begin
+ BitBlt(Canvas.Handle, X, Y, Min(Width, Rect.Right - Rect.Left),
+   Min(Height, Rect.Bottom - Rect.Top), FDC, Rect.Left, Rect.Top, SRCCOPY);
 end;
 
 procedure TGuiPixelMapDIB.SizeChangedAtOnce;

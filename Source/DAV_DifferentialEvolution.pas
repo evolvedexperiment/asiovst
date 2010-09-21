@@ -356,17 +356,17 @@ var
   Mul     : Double;
   i, Pop  : Integer;
 begin
- if assigned(FOnInitPopulation) then
+ if Assigned(FOnInitPopulation) then
   for Pop := 0 to FPopulationCount - 1
    do FOnInitPopulation(Self, FCurrentGeneration[Pop].FPopulation)
   else
  for i := 0 to FVariableCount - 1 do
   begin
-   assert(FMinArr[i] <= FMaxArr[i]);
+   Assert(FMinArr[i] <= FMaxArr[i]);
    Offset := FMinArr[i];
    Mul    := FMaxArr[i] - FMinArr[i];
    for Pop := 0 to FPopulationCount - 1
-    do FCurrentGeneration[Pop].FPopulation[i] := Offset + random * Mul;
+    do FCurrentGeneration[Pop].FPopulation[i] := Offset + Random * Mul;
   end;
  FBestPopulation := -1;
 end;
