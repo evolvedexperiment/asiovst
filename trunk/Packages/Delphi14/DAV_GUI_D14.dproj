@@ -86,9 +86,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStaticWaveform.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPixelMap.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiVector.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiBlend.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiPng.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngChunks.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngClasses.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
@@ -96,6 +94,17 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngTypes.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedControls.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDialNew.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiFixedPoint.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiVector.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixel.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelCircle.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelLine.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiPng.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngImageList.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedSwitch.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiPixelMapDesign.pas">
+				<Form>FmPixelMapDialog</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -148,7 +157,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-09-08 11:13</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-09-20 01:43</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

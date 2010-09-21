@@ -73,6 +73,8 @@ function ConvertToFixed24Dot8Point(Value: Single): TFixed24Dot8Point; overload;
 function ConvertToFixed24Dot8Point(Value: Integer): TFixed24Dot8Point; overload;
 function ConvertFromFixed16Dot16Point(Value: TFixed16Dot16Point): Single; overload;
 function ConvertFromFixed24Dot8Point(Value: TFixed24Dot8Point): Single; overload;
+function ConvertFromFixed16Dot16PointToInteger(Value: TFixed16Dot16Point): Integer; overload;
+function ConvertFromFixed24Dot8PointToInteger(Value: TFixed24Dot8Point): Integer; overload;
 function FixedFloor(Value: TFixed16Dot16Point): Integer; overload;
 function FixedFloor(Value: TFixed24Dot8Point): Integer; overload;
 function FixedCeil(Value: TFixed16Dot16Point): Integer; overload;
@@ -132,12 +134,22 @@ end;
 
 function ConvertFromFixed16Dot16Point(Value: TFixed16Dot16Point): Single;
 begin
- Result := Value.Fixed shr 16 + Value.Frac * CFixed16Dot16ToFloat;
+ Result := Value.Fixed * CFixed16Dot16ToFloat;
 end;
 
 function ConvertFromFixed24Dot8Point(Value: TFixed24Dot8Point): Single;
 begin
- Result := Value.Fixed shr 8 + Value.Frac * CFixed24Dot8ToFloat;
+ Result := Value.Fixed * CFixed24Dot8ToFloat;
+end;
+
+function ConvertFromFixed16Dot16PointToInteger(Value: TFixed16Dot16Point): Integer;
+begin
+ Result := Round(Value.Fixed * CFixed16Dot16ToFloat);
+end;
+
+function ConvertFromFixed24Dot8PointToInteger(Value: TFixed24Dot8Point): Integer;
+begin
+ Result := Round(Value.Fixed * CFixed24Dot8ToFloat);
 end;
 
 function FixedFloor(Value: TFixed16Dot16Point): Integer;

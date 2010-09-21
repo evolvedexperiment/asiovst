@@ -49,10 +49,12 @@ uses
 type
   TBlendMergePixel        = function(Foreground, Background: TPixel32): TPixel32;
   TBlendMergePixelInplace = procedure(Foreground: TPixel32; var Background: TPixel32);
+  TBlendMergePixelLine    = procedure(Foreground: TPixel32; Destination: PPixel32; Count: Cardinal);
   TBlendMergeLine         = procedure(Source, Destination: PPixel32; Count: Cardinal);
   TCombinePixel           = function(Foreground, Background: TPixel32; Weight: Cardinal): TPixel32;
   TCombinePixelInplace    = procedure(Foreground: TPixel32; var Background: TPixel32; Weight: Integer);
-  TCombineLine            = procedure(Source, Destination: PPixel32; Count: Integer; Weight: Cardinal);
+  TCombinePixelLine       = procedure(Source, Destination: PPixel32; Count: Integer; Weight: Cardinal);
+  TCombineLine            = procedure(Foreground: TPixel32; Destination: PPixel32; Count: Integer; Weight: Cardinal);
 
 
 { Function Pointers }
@@ -60,13 +62,16 @@ type
 var
   BlendPixel          : TBlendMergePixel;
   BlendPixelInplace   : TBlendMergePixelInplace;
+  BlendPixelLine      : TBlendMergePixelLine;
   BlendLine           : TBlendMergeLine;
   CombinePixel        : TCombinePixel;
   CombinePixelInplace : TCombinePixelInplace;
+  CombinePixelLine    : TCombinePixelLine;
   CombineLine         : TCombineLine;
   EMMS                : procedure;
   MergePixel          : TBlendMergePixel;
   MergePixelInplace   : TBlendMergePixelInplace;
+  MergePixelLine      : TBlendMergePixelLine;
   MergeLine           : TBlendMergeLine;
 
 
@@ -76,13 +81,16 @@ var
 var
   BindingBlendPixel          : TFunctionBinding;
   BindingBlendPixelInplace   : TFunctionBinding;
+  BindingBlendPixelLine      : TFunctionBinding;
   BindingBlendLine           : TFunctionBinding;
   BindingCombinePixel        : TFunctionBinding;
   BindingCombinePixelInplace : TFunctionBinding;
+  BindingCombinePixelLine    : TFunctionBinding;
   BindingCombineLine         : TFunctionBinding;
   BindingEMMS                : TFunctionBinding;
   BindingMergePixel          : TFunctionBinding;
   BindingMergePixelInplace   : TFunctionBinding;
+  BindingMergePixelLine      : TFunctionBinding;
   BindingMergeLine           : TFunctionBinding;
 
 
@@ -262,6 +270,96 @@ asm
 
 @Done:
   RET
+{$ENDIF}
+end;
+
+procedure BlendPixelLineNative(Foreground: TPixel32; Destination: PPixel32; Count: Integer);
+{$IFDEF PUREPASCAL}
+begin
+ while Count > 0 do
+  begin
+   BlendPixelInplace(Foreground, Destination^);
+   Inc(Destination);
+   Dec(Count);
+  end;
+{$ELSE}
+asm
+  TEST    ECX, ECX
+  JS      @Done
+
+  TEST    EAX, $FF000000
+  JZ      @Done
+
+  PUSH    EBX
+  PUSH    ESI
+  PUSH    EDI
+
+  MOV     EDI, EDX
+
+  MOV     ESI, EAX
+  SHR     ESI, 24
+
+  CMP     ESI, $FF
+  JZ      @CopyPixel
+
+  MOV     EBX, EAX
+  AND     EAX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EAX, ESI
+  SHR     EBX, 8
+  IMUL    EBX, ESI
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
+  ADD     EBX, CBias
+  AND     EBX, $FF00FF00
+  OR      EAX, EBX
+  XOR     ESI, $000000FF
+
+@LoopStart:
+
+  MOV     EDX, [EDI]
+  MOV     EBX, EDX
+  AND     EDX, $00FF00FF
+  AND     EBX, $FF00FF00
+  IMUL    EDX, ESI
+  SHR     EBX, 8
+  IMUL    EBX, ESI
+  ADD     EDX, CBias
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
+  ADD     EBX, CBias
+  AND     EBX, $FF00FF00
+  OR      EBX, EDX
+
+  ADD     EBX, EAX
+
+  OR      EBX, $FF000000
+  MOV     [EDI], EBX
+
+@NextPixel:
+  ADD     EDI, 4
+
+  DEC     ECX
+  JNZ     @LoopStart
+
+  POP     EDI
+  POP     ESI
+  POP     EBX
+
+@Done:
+  RET
+
+@CopyPixel:
+  MOV     [EDI], EAX
+  ADD     EDI, 4
+
+  DEC     ECX
+  JNZ     @CopyPixel
+
+  POP     EDI
+  POP     ESI
+  POP     EBX
 {$ENDIF}
 end;
 
@@ -1264,6 +1362,20 @@ begin
    {$IFNDEF PUREPASCAL}
    Add(@BlendPixelInplaceMMX, [pfMMX]);
    Add(@BlendPixelInplaceSSE2, [pfSSE2]);
+   {$ENDIF}
+   RebindProcessorSpecific;
+  end;
+
+ // create function binding for blend line
+ BindingBlendPixelLine := TFunctionBinding.Create(
+   @@BlendPixelLine, @BlendPixelLineNative);
+ BindingBlend.AddBinding(BindingBlendPixelLine);
+ with BindingBlendPixelLine do
+  begin
+   Add(@BlendPixelLineNative);
+   {$IFNDEF PUREPASCAL}
+//   Add(@BlendPixelLineMMX, [pfMMX]);
+//   Add(@BlendPixelLineSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;

@@ -37,23 +37,21 @@ interface
 uses
   Windows, Classes, Graphics, SysUtils, zlib, DAV_Types, DAV_ChunkClasses,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPngTypes, DAV_GuiPngClasses,
-  DAV_GuiPngChunks;
+  DAV_GuiFileFormats, DAV_GuiPngChunks;
 
 type
   TTransferNonInterlaced = procedure (Source, Destination, Alpha: Pointer) of object;
   TTransferAdam7 = procedure (const Pass: Byte; Source, Destination, Alpha: Pointer) of object;
 
-  TPortableNetworkGraphic = class(TInterfacedPersistent, IStreamPersist)
+  TPortableNetworkGraphic = class(TGuiCustomFileFormat)
   private
     function GetBitDepth: Byte;
     function GetColorType: TColorType;
     function GetCompressionMethod: Byte;
     function GetFilterMethod: TFilterMethod;
-    function GetHeight: Integer;
     function GetInterlaceMethod: TInterlaceMethod;
     function GetPaletteEntry(index: Integer): TRGB24;
     function GetPaletteEntryCount: Integer;
-    function GetWidth: Integer;
     function GetGamma: Single;
     function GetModifiedTime: TDateTime;
     function GetPixelsPerUnitX: Cardinal;
@@ -69,7 +67,6 @@ type
     procedure SetFilterMethod(const Value: TFilterMethod);
     procedure SetGamma(const Value: Single);
     procedure SetModifiedTime(const Value: TDateTime);
-    procedure SetHeight(const Value: Integer);
     procedure SetImageHeader(const Value: TChunkPngImageHeader);
     procedure SetInterlaceMethod(const Value: TInterlaceMethod);
     procedure SetGammaChunk(const Value: TChunkPngGamma);
@@ -77,7 +74,6 @@ type
     procedure SetPhysicalDimensions(const Value: TChunkPngPhysicalPixelDimensions);
     procedure SetSignificantBits(const Value: TChunkPngSignificantBits);
     procedure SetTimeChunk(const Value: TChunkPngTime);
-    procedure SetWidth(const Value: Integer);
 
     function CalculateCRC(Buffer: PByte; Count: Cardinal): Cardinal; overload;
     function CalculateCRC(Stream: TStream): Cardinal; overload;
@@ -101,6 +97,11 @@ type
     FChromaChunk         : TChunkPngPrimaryChromaticities;
     FDataChunkList       : TChunkList;
     FAdditionalChunkList : TChunkList;
+
+    function GetHeight: Integer; override;
+    function GetWidth: Integer; override;
+    procedure SetWidth(const Value: Integer); override;
+    procedure SetHeight(const Value: Integer); override;
 
     procedure Clear; virtual;
     procedure AssignTo(Dest: TPersistent); override;
@@ -2041,23 +2042,23 @@ begin
     case ImageHeader.ColorType of
      ctGrayscale  :
       case ImageHeader.BitDepth of
-       1  : EncoderClass := TPngRGBAGrayscale1bitEncoder;
-       2  : EncoderClass := TPngRGBAGrayscale2bitEncoder;
-       4  : EncoderClass := TPngRGBAGrayscale4bitEncoder;
-       8  : EncoderClass := TPngRGBAGrayscale8bitEncoder;
+       1  : EncoderClass := TPngBGRAGrayscale1bitEncoder;
+       2  : EncoderClass := TPngBGRAGrayscale2bitEncoder;
+       4  : EncoderClass := TPngBGRAGrayscale4bitEncoder;
+       8  : EncoderClass := TPngBGRAGrayscale8bitEncoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
-     ctTrueColor : EncoderClass := TPngRGBATrueColor8bitEncoder;
+     ctTrueColor : EncoderClass := TPngBGRATrueColor8bitEncoder;
      ctIndexedColor :
       case ImageHeader.BitDepth of
-       1 : EncoderClass := TPngRGBAPalette1bitEncoder;
-       2 : EncoderClass := TPngRGBAPalette2bitEncoder;
-       4 : EncoderClass := TPngRGBAPalette4bitEncoder;
-       8 : EncoderClass := TPngRGBAPalette8bitEncoder;
+       1 : EncoderClass := TPngBGRAPalette1bitEncoder;
+       2 : EncoderClass := TPngBGRAPalette2bitEncoder;
+       4 : EncoderClass := TPngBGRAPalette4bitEncoder;
+       8 : EncoderClass := TPngBGRAPalette8bitEncoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
-     ctGrayscaleAlpha : EncoderClass := TPngRGBAGrayscaleAlpha8bitEncoder;
-     ctTrueColorAlpha : EncoderClass := TPngRGBATrueColorAlpha8bitEncoder;
+     ctGrayscaleAlpha : EncoderClass := TPngBGRAGrayscaleAlpha8bitEncoder;
+     ctTrueColorAlpha : EncoderClass := TPngBGRATrueColorAlpha8bitEncoder;
      else raise EPngError.Create(RCStrUnsupportedFormat);
     end;
 
@@ -2292,35 +2293,35 @@ begin
     case ImageHeader.ColorType of
      ctGrayscale  :
       case ImageHeader.BitDepth of
-       1  : DecoderClass := TPngGrayscale1bitRGBADecoder;
-       2  : DecoderClass := TPngGrayscale2bitRGBADecoder;
-       4  : DecoderClass := TPngGrayscale4bitRGBADecoder;
-       8  : DecoderClass := TPngGrayscale8bitRGBADecoder;
-       16 : DecoderClass := TPngGrayscale16bitRGBADecoder;
+       1  : DecoderClass := TPngGrayscale1bitBGRADecoder;
+       2  : DecoderClass := TPngGrayscale2bitBGRADecoder;
+       4  : DecoderClass := TPngGrayscale4bitBGRADecoder;
+       8  : DecoderClass := TPngGrayscale8bitBGRADecoder;
+       16 : DecoderClass := TPngGrayscale16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctTrueColor :
       case ImageHeader.BitDepth of
-        8 : DecoderClass := TPngTrueColor8bitRGBADecoder;
-       16 : DecoderClass := TPngTrueColor16bitRGBADecoder;
+        8 : DecoderClass := TPngTrueColor8bitBGRADecoder;
+       16 : DecoderClass := TPngTrueColor16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctIndexedColor :
       case ImageHeader.BitDepth of
-       1, 2, 4 : DecoderClass := TPngPaletteRGBADecoder;
-       8       : DecoderClass := TPngPalette8bitRGBADecoder;
+       1, 2, 4 : DecoderClass := TPngPaletteBGRADecoder;
+       8       : DecoderClass := TPngPalette8bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctGrayscaleAlpha :
       case ImageHeader.BitDepth of
-        8  : DecoderClass := TPngGrayscaleAlpha8bitRGBADecoder;
-       16  : DecoderClass := TPngGrayscaleAlpha16bitRGBADecoder;
+        8  : DecoderClass := TPngGrayscaleAlpha8bitBGRADecoder;
+       16  : DecoderClass := TPngGrayscaleAlpha16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctTrueColorAlpha :
       case ImageHeader.BitDepth of
-        8  : DecoderClass := TPngTrueColorAlpha8bitRGBADecoder;
-       16  : DecoderClass := TPngTrueColorAlpha16bitRGBADecoder;
+        8  : DecoderClass := TPngTrueColorAlpha8bitBGRADecoder;
+       16  : DecoderClass := TPngTrueColorAlpha16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      else raise EPngError.Create(RCStrUnsupportedFormat);
@@ -2329,37 +2330,37 @@ begin
     case ImageHeader.ColorType of
      ctGrayscale  :
       case ImageHeader.BitDepth of
-       1  : DecoderClass := TPngAdam7Grayscale1bitRGBADecoder;
-       2  : DecoderClass := TPngAdam7Grayscale2bitRGBADecoder;
-       4  : DecoderClass := TPngAdam7Grayscale4bitRGBADecoder;
-       8  : DecoderClass := TPngAdam7Grayscale8bitRGBADecoder;
-       16 : DecoderClass := TPngAdam7Grayscale16bitRGBADecoder;
+       1  : DecoderClass := TPngAdam7Grayscale1bitBGRADecoder;
+       2  : DecoderClass := TPngAdam7Grayscale2bitBGRADecoder;
+       4  : DecoderClass := TPngAdam7Grayscale4bitBGRADecoder;
+       8  : DecoderClass := TPngAdam7Grayscale8bitBGRADecoder;
+       16 : DecoderClass := TPngAdam7Grayscale16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctTrueColor :
       case ImageHeader.BitDepth of
-        8 : DecoderClass := TPngAdam7TrueColor8bitRGBADecoder;
-       16 : DecoderClass := TPngAdam7TrueColor16bitRGBADecoder;
+        8 : DecoderClass := TPngAdam7TrueColor8bitBGRADecoder;
+       16 : DecoderClass := TPngAdam7TrueColor16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctIndexedColor :
       case ImageHeader.BitDepth of
-       1 : DecoderClass := TPngAdam7Palette1bitRGBADecoder;
-       2 : DecoderClass := TPngAdam7Palette2bitRGBADecoder;
-       4 : DecoderClass := TPngAdam7Palette4bitRGBADecoder;
-       8 : DecoderClass := TPngAdam7Palette8bitRGBADecoder;
+       1 : DecoderClass := TPngAdam7Palette1bitBGRADecoder;
+       2 : DecoderClass := TPngAdam7Palette2bitBGRADecoder;
+       4 : DecoderClass := TPngAdam7Palette4bitBGRADecoder;
+       8 : DecoderClass := TPngAdam7Palette8bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctGrayscaleAlpha :
       case ImageHeader.BitDepth of
-        8  : DecoderClass := TPngAdam7GrayscaleAlpha8bitRGBADecoder;
-       16  : DecoderClass := TPngAdam7GrayscaleAlpha16bitRGBADecoder;
+        8  : DecoderClass := TPngAdam7GrayscaleAlpha8bitBGRADecoder;
+       16  : DecoderClass := TPngAdam7GrayscaleAlpha16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      ctTrueColorAlpha :
       case ImageHeader.BitDepth of
-        8  : DecoderClass := TPngAdam7TrueColorAlpha8bitRGBADecoder;
-       16  : DecoderClass := TPngAdam7TrueColorAlpha16bitRGBADecoder;
+        8  : DecoderClass := TPngAdam7TrueColorAlpha8bitBGRADecoder;
+       16  : DecoderClass := TPngAdam7TrueColorAlpha16bitBGRADecoder;
        else raise EPngError.Create(RCStrUnsupportedFormat);
       end;
      else raise EPngError.Create(RCStrUnsupportedFormat);
