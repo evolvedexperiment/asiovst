@@ -1,8 +1,14 @@
 program CircledPictureDrawing;
 
 uses
+  FastMM4,
+  FastMove,
+  madExcept,
+  madLinkDisAsm,
+  madListModules,
   Forms,
-  MainUnit in 'MainUnit.pas' {FmCircledPictureDialog};
+  MainUnit in 'MainUnit.pas' {FmCircledPictureDialog},
+  SettingsUnit in 'SettingsUnit.pas' {FmSettings};
 
 {$R *.res}
 
