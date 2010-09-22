@@ -1,8 +1,8 @@
 object FmCircledPictureDialog: TFmCircledPictureDialog
-  Left = 299
-  Top = 55
+  Left = 392
+  Top = 72
   Caption = 'Circled Picture Dialog'
-  ClientHeight = 217
+  ClientHeight = 234
   ClientWidth = 424
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,9 +16,6 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  DesignSize = (
-    424
-    217)
   PixelsPerInch = 96
   TextHeight = 13
   object PaintBoxRef: TPaintBox
@@ -35,41 +32,28 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
     Height = 201
     OnPaint = PaintBoxDrawPaint
   end
-  object LbCosts: TLabel
-    Left = 352
-    Top = 8
-    Width = 64
-    Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    ParentShowHint = False
-    ShowHint = True
-    Transparent = True
-  end
-  object LbTrialCount: TLabel
-    Left = 352
-    Top = 196
-    Width = 64
-    Height = 13
-    Alignment = taRightJustify
-    Anchors = [akRight, akBottom]
-    AutoSize = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    ParentShowHint = False
-    ShowHint = True
-    Transparent = True
+  object StatusBar: TStatusBar
+    Left = 0
+    Top = 215
+    Width = 424
+    Height = 19
+    Panels = <
+      item
+        Text = 'No Reference'
+        Width = 72
+      end
+      item
+        Text = 'Trials:'
+        Width = 64
+      end
+      item
+        Text = 'Cost:'
+        Width = 72
+      end
+      item
+        Text = 'Global Costs:'
+        Width = 50
+      end>
   end
   object MainMenu: TMainMenu
     Left = 24
@@ -83,6 +67,10 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
       object MiSaveResult: TMenuItem
         Caption = 'Save Result...'
         OnClick = MiSaveResultClick
+      end
+      object MiSaveHighResolution: TMenuItem
+        Caption = 'Save High Resolution...'
+        OnClick = MiSaveHighResolutionClick
       end
       object N3: TMenuItem
         Caption = '-'
@@ -105,10 +93,9 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
       end
     end
     object MiEvolve: TMenuItem
-      Caption = '&Evolve'
+      Caption = '&Optimizer'
       object MiStart: TMenuItem
-        Caption = '&Start'
-        OnClick = MiStartClick
+        Action = AcStart
       end
       object MiStopContinue: TMenuItem
         Caption = 'St&op'
@@ -119,8 +106,16 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
         Caption = '-'
       end
       object MiNext: TMenuItem
-        Caption = '&Next'
-        OnClick = MiNextClick
+        Action = AcNext
+      end
+      object MiBack: TMenuItem
+        Action = AcBack
+      end
+      object N4: TMenuItem
+        Caption = '-'
+      end
+      object MiSettings: TMenuItem
+        Action = AcSettings
       end
     end
   end
@@ -147,5 +142,30 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
     Filter = 'Circles (*.circles)|*.circles'
     Left = 200
     Top = 72
+  end
+  object ActionList: TActionList
+    Left = 24
+    Top = 72
+    object AcStart: TAction
+      Category = 'Optimizer'
+      Caption = '&Start'
+      ShortCut = 120
+      OnExecute = AcStartExecute
+    end
+    object AcNext: TAction
+      Category = 'Optimizer'
+      Caption = '&Next'
+      OnExecute = AcNextExecute
+    end
+    object AcBack: TAction
+      Category = 'Optimizer'
+      Caption = '&Back'
+      OnExecute = AcBackExecute
+    end
+    object AcSettings: TAction
+      Category = 'Optimizer'
+      Caption = 'S&ettings'
+      OnExecute = AcSettingsExecute
+    end
   end
 end
