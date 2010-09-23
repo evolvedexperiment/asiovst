@@ -87,10 +87,14 @@ function FixedSub(A, B: TFixed16Dot16Point): TFixed16Dot16Point; overload;
 function FixedSub(A, B: TFixed24Dot8Point): TFixed24Dot8Point; overload;
 function FixedMul(A, B: TFixed16Dot16Point): TFixed16Dot16Point; overload;
 function FixedMul(A, B: TFixed24Dot8Point): TFixed24Dot8Point; overload;
+function FixedMul(A: TFixed16Dot16Point; B: Integer): TFixed16Dot16Point; overload;
+function FixedMul(A: TFixed24Dot8Point; B: Integer): TFixed24Dot8Point; overload;
 function Fixed16Dot16Mul(A, B: Integer): Integer; overload;
 function Fixed24Dot8Mul(A, B: Integer): Integer; overload;
 function FixedDiv(A, B: TFixed16Dot16Point): TFixed16Dot16Point; overload;
 function FixedDiv(A, B: TFixed24Dot8Point): TFixed24Dot8Point; overload;
+function FixedDiv(A: TFixed16Dot16Point; B: Integer): TFixed16Dot16Point; overload;
+function FixedDiv(A: TFixed24Dot8Point; B: Integer): TFixed24Dot8Point; overload;
 function FixedReciprocal(Value: TFixed16Dot16Point): TFixed16Dot16Point; overload;
 function FixedReciprocal(Value: TFixed24Dot8Point): TFixed24Dot8Point; overload;
 function FixedSqr(Value: TFixed16Dot16Point): TFixed16Dot16Point; overload;
@@ -282,6 +286,32 @@ asm
 {$ENDIF}
 end;
 
+function FixedMul(A: TFixed16Dot16Point; B: Integer): TFixed16Dot16Point;
+{$IFDEF PUREPASCAL}
+var
+  IntResult : Integer absolute Result;
+begin
+  IntResult := Round(A.Fixed * CFixed16Dot16ToFloat * B);
+{$ELSE}
+asm
+  IMUL    EDX
+  SHRD    EAX, EDX, 16
+{$ENDIF}
+end;
+
+function FixedMul(A: TFixed24Dot8Point; B: Integer): TFixed24Dot8Point;
+{$IFDEF PUREPASCAL}
+var
+  IntResult : Integer absolute Result;
+begin
+  IntResult := Round(A.Fixed * CFixed24Dot8ToFloat * B);
+{$ELSE}
+asm
+  IMUL    EDX
+  SHRD    EAX, EDX, 8
+{$ENDIF}
+end;
+
 function Fixed16Dot16Mul(A, B: Integer): Integer;
 {$IFDEF PUREPASCAL}
 var
@@ -330,6 +360,38 @@ var
   IntResult : Integer absolute Result;
 begin
   IntResult := Round(A.Fixed / B.Fixed * CFixed24Dot8One.Fixed);
+{$ELSE}
+asm
+  MOV     ECX, B
+  CDQ
+  SHLD    EDX, EAX, 8
+  SHL     EAX, 8
+  IDIV    ECX
+{$ENDIF}
+end;
+
+function FixedDiv(A: TFixed16Dot16Point; B: Integer): TFixed16Dot16Point;
+{$IFDEF PUREPASCAL}
+var
+  IntResult : Integer absolute Result;
+begin
+  IntResult := Round(A.Fixed / B * CFixed16Dot16One.Fixed);
+{$ELSE}
+asm
+  MOV     ECX, B
+  CDQ
+  SHLD    EDX, EAX, 16
+  SHL     EAX, 16
+  IDIV    ECX
+{$ENDIF}
+end;
+
+function FixedDiv(A: TFixed24Dot8Point; B: Integer): TFixed24Dot8Point;
+{$IFDEF PUREPASCAL}
+var
+  IntResult : Integer absolute Result;
+begin
+  IntResult := Round(A.Fixed / B * CFixed24Dot8One.Fixed);
 {$ELSE}
 asm
   MOV     ECX, B

@@ -85,11 +85,13 @@ type
     function GetMinArr(Index: Integer): Double;
     procedure SetMaxArr(Index: Integer; const Value: Double);
     function GetMaxArr(Index: Integer): Double;
-    procedure RecreatePopulation;
   protected
     FOnCalcCosts : TDifferentialEvolutionEvent;
     FOnInitPopulation : TDifferentialEvolutionEvent;
     FAutoInitialize : Boolean;
+    procedure PopulationCountChanged; virtual;
+    procedure RecreatePopulation; virtual;
+    procedure VariableCountChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -153,8 +155,11 @@ begin
  CalculateGainR0;
 
  FBestPopulation := -1;
- PopulationCount := 1000;
- VariableCount := 1;
+ FPopulationCount := 1000;
+ PopulationCountChanged;
+
+ FVariableCount := 1;
+ VariableCountChanged;
 end;
 
 destructor TDifferentialEvolution.Destroy;
@@ -257,7 +262,7 @@ begin
    FNextGeneration[Population].FValidCostFlag := True;
 
 //   if IsNan(FNextGeneration[Pop].FCost)
-//    then FNextGeneration[Pop].FCost := FOnCalcCosts(self, FNextGeneration[Pop].FPopulation);
+//    then FNextGeneration[Pop].FCost := FOnCalcCosts(Self, FNextGeneration[Pop].FPopulation);
 
    if (FNextGeneration[Population].FCost < FCurrentGeneration[Population].FCost)
     then
@@ -296,7 +301,7 @@ end;
 
 function TDifferentialEvolution.GetBestPopulation: TDifferentialEvolutionPopulation;
 begin
- assert (FBestPopulation >= 0);
+ Assert(FBestPopulation >= 0);
  Result := (FCurrentGeneration[FBestPopulation].FPopulation);
 end;
 
@@ -316,8 +321,8 @@ end;
 
 function TDifferentialEvolution.GetBestCost: Double;
 begin
- assert (FBestPopulation >= 0);
- assert (FCurrentGeneration[FBestPopulation].FValidCostFlag);
+ Assert(FBestPopulation >= 0);
+ Assert(FCurrentGeneration[FBestPopulation].FValidCostFlag);
  Result := FCurrentGeneration[FBestPopulation].FCost;
 end;
 
@@ -352,22 +357,25 @@ end;
 
 procedure TDifferentialEvolution.RandomizePopulation;
 var
-  Offset  : Double;
-  Mul     : Double;
-  i, Pop  : Integer;
+  Offset   : Double;
+  Mul      : Double;
+  Index    : Integer;
+  PopIndex : Integer;
 begin
  if Assigned(FOnInitPopulation) then
-  for Pop := 0 to FPopulationCount - 1
-   do FOnInitPopulation(Self, FCurrentGeneration[Pop].FPopulation)
+  for PopIndex := 0 to FPopulationCount - 1
+   do FOnInitPopulation(Self, FCurrentGeneration[PopIndex].FPopulation)
   else
- for i := 0 to FVariableCount - 1 do
+
+ for Index := 0 to FVariableCount - 1 do
   begin
-   Assert(FMinArr[i] <= FMaxArr[i]);
-   Offset := FMinArr[i];
-   Mul    := FMaxArr[i] - FMinArr[i];
-   for Pop := 0 to FPopulationCount - 1
-    do FCurrentGeneration[Pop].FPopulation[i] := Offset + Random * Mul;
+   Assert(FMinArr[Index] <= FMaxArr[Index]);
+   Offset := FMinArr[Index];
+   Mul    := FMaxArr[Index] - FMinArr[Index];
+   for PopIndex := 0 to FPopulationCount - 1
+    do FCurrentGeneration[PopIndex].FPopulation[Index] := Offset + Random * Mul;
   end;
+
  FBestPopulation := -1;
 end;
 
@@ -407,41 +415,56 @@ begin
 end;
 
 procedure TDifferentialEvolution.SetVariableCount(const Value: Integer);
-var
-  i : Integer;
 begin
- assert(Value > 0);
+ Assert(Value > 0);
  if Value <> FVariableCount then
   begin
    FVariableCount := Value;
-   SetLength(FMinArr, FVariableCount);
-   SetLength(FMaxArr, FVariableCount);
-   SetLength(FBestArr, FVariableCount);
-   for i := 0 to FVariableCount - 1 do
-    begin
-     FMinArr[i]  := -100;
-     FMaxArr[i]  :=  100;
-     FBestArr[i] :=    0;
-    end;
-   RecreatePopulation;
+   VariableCountChanged;
   end;
 end;
 
 procedure TDifferentialEvolution.SetPopulationCount(const Value: Integer);
-var
-  i : Integer;
 begin
- assert(Value >= 5);
- for i := 0 to Length(FCurrentGeneration) - 1 do
-  if assigned(FCurrentGeneration[i])
-   then FreeAndNil(FCurrentGeneration[i]);
- for i := 0 to Length(FNextGeneration) - 1 do
-  if assigned(FNextGeneration[i])
-   then FreeAndNil(FNextGeneration[i]);
- FPopulationCount := Value;
+ Assert(Value >= 5);
+
+ if FPopulationCount <> Value then
+  begin
+   FPopulationCount := Value;
+   PopulationCountChanged;
+  end;
+end;
+
+procedure TDifferentialEvolution.VariableCountChanged;
+var
+  Index : Integer;
+begin
+ SetLength(FMinArr, FVariableCount);
+ SetLength(FMaxArr, FVariableCount);
+ SetLength(FBestArr, FVariableCount);
+ for Index := 0 to FVariableCount - 1 do
+  begin
+   FMinArr[Index]  := -100;
+   FMaxArr[Index]  :=  100;
+   FBestArr[Index] :=    0;
+  end;
+ RecreatePopulation;
+end;
+
+procedure TDifferentialEvolution.PopulationCountChanged;
+var
+  Index : Integer;
+begin
+ for Index := 0 to Length(FCurrentGeneration) - 1 do
+  if Assigned(FCurrentGeneration[Index])
+   then FreeAndNil(FCurrentGeneration[Index]);
+ for Index := 0 to Length(FNextGeneration) - 1 do
+  if Assigned(FNextGeneration[Index])
+   then FreeAndNil(FNextGeneration[Index]);
+
  // Size all the arrays
- SetLength(FCurrentGeneration,FPopulationCount);
- SetLength(FNextGeneration,FPopulationCount);
+ SetLength(FCurrentGeneration, FPopulationCount);
+ SetLength(FNextGeneration, FPopulationCount);
  RecreatePopulation;
 end;
 
@@ -572,8 +595,8 @@ begin
     then FNextGeneration[i] := TEvaluatedPopulation.Create
     else FNextGeneration[i].FValidCostFlag := False;
 
-   SetLength(FCurrentGeneration[i].FPopulation,FVariableCount);
-   SetLength(FNextGeneration[i].FPopulation,FVariableCount);
+   SetLength(FCurrentGeneration[i].FPopulation, FVariableCount);
+   SetLength(FNextGeneration[i].FPopulation, FVariableCount);
   end;
 
  if AutoInitialize
