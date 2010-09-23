@@ -43,6 +43,10 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
         Width = 72
       end
       item
+        Text = 'Circles:'
+        Width = 64
+      end
+      item
         Text = 'Trials:'
         Width = 64
       end
@@ -52,7 +56,7 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
       end
       item
         Text = 'Global Costs:'
-        Width = 50
+        Width = 100
       end>
   end
   object MainMenu: TMainMenu

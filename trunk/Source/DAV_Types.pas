@@ -104,12 +104,12 @@ type
   TDAV8SingleArray = Array [0..7] of Single;
   PDAV8SingleArray = ^TDAV8SingleArray;
   TDAV8DoubleArray = Array [0..7] of Double;
-  PDAV8DoubleArray = ^TDAV8SingleArray;
+  PDAV8DoubleArray = ^TDAV8DoubleArray;
 
   TDAV16SingleArray = Array [0..15] of Single;
   PDAV16SingleArray = ^TDAV16SingleArray;
   TDAV16DoubleArray = Array [0..15] of Double;
-  PDAV16DoubleArray = ^TDAV16SingleArray;
+  PDAV16DoubleArray = ^TDAV16DoubleArray;
 
   PDAV512SingleArray = ^TDAV1024SingleArray;
   TDAV512SingleArray = array[0..512] of Single;

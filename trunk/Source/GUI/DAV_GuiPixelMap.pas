@@ -329,9 +329,11 @@ begin
   then
    begin
     with TPortableNetworkGraphic32.Create do
-     begin
+     try
       LoadFromStream(Stream);
       AssignTo(Self);
+     finally
+      Free;
      end;
   end
  else
