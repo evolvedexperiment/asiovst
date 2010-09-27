@@ -76,57 +76,68 @@ type
     SaveDialog: TSaveDialog;
     SaveDialogCircles: TSaveDialog;
     StatusBar: TStatusBar;
+    MiOpenBest: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
+    procedure AcBackExecute(Sender: TObject);
+    procedure AcNextExecute(Sender: TObject);
+    procedure AcSettingsExecute(Sender: TObject);
+    procedure AcStartExecute(Sender: TObject);
     procedure MiExitClick(Sender: TObject);
     procedure MiOpenDrawingClick(Sender: TObject);
     procedure MiOpenReferenceClick(Sender: TObject);
     procedure MiSaveDrawingClick(Sender: TObject);
+    procedure MiSaveHighResolutionClick(Sender: TObject);
     procedure MiSaveResultClick(Sender: TObject);
     procedure MiStopContinueClick(Sender: TObject);
-    procedure MiSaveHighResolutionClick(Sender: TObject);
     procedure PaintBoxDrawPaint(Sender: TObject);
     procedure PaintBoxRefPaint(Sender: TObject);
-    procedure AcStartExecute(Sender: TObject);
-    procedure AcNextExecute(Sender: TObject);
-    procedure AcBackExecute(Sender: TObject);
-    procedure AcSettingsExecute(Sender: TObject);
+    procedure MiOpenBestClick(Sender: TObject);
   private
-    FReference         : TGuiCustomPixelMap;
-    FDrawing           : TGuiCustomPixelMap;
-    FNewDrawing        : TGuiCustomPixelMap;
-    FBestDrawing       : TGuiCustomPixelMap;
-    FIniFileName       : TFileName;
-    FDiffEvol          : TDifferentialEvolution;
-    FEvolution         : TEvolutionThread;
-    FCircles           : array of TGuiPixelFilledCircle;
-    FCumulatedError    : array [0..1] of PDAVDoubleFixedArray;
-    FCurrentCircle     : Integer;
-    FWorstCost         : Double;
-    FMaximumCost       : Double;
-    FTrialCount        : Integer;
-    FTrialsPerCircle   : Integer;
-    FUpdateTrials      : Integer;
-    FTrialsSinceUpdate : Integer;
-    FLastBestCosts     : Double;
-    FAutoNextTrial     : Boolean;
-    FInitialSeed       : Integer;
-    FNumberOfCircles   : Integer;
+    FWorstCost               : Double;
+    FMaximumCost             : Double;
+    FMaximumRadius           : Double;
+    FLastBestCosts           : Double;
+    FCumulatedError          : array [0..1] of PDAVDoubleFixedArray;
+    FReference               : TGuiCustomPixelMap;
+    FDrawing                 : TGuiCustomPixelMap;
+    FNewDrawing              : TGuiCustomPixelMap;
+    FBestDrawing             : TGuiCustomPixelMap;
+    FIniFileName             : TFileName;
+    FDiffEvol                : TDifferentialEvolution;
+    FEvolution               : TEvolutionThread;
+    FCircles                 : array of TGuiPixelFilledCircle;
+    FCurrentCircle           : Integer;
+    FTrialCount              : Integer;
+    FTrialsPerCircle         : Integer;
+    FUpdateTrials            : Integer;
+    FTrialsSinceUpdate       : Integer;
+    FInitialSeed             : Integer;
+    FNumberOfCircles         : Integer;
+    FCrossover               : Single;
+    FAutoNextTrial           : Boolean;
+    FCorrectColor            : Boolean;
+    FCorrectRadius           : Boolean;
+    FCorrectPosition         : Boolean;
+    FCorrectInvisibleCircles : Boolean;
+    FRandomCircle            : Boolean;
     procedure SetInitialSeed(const Value: Integer);
     procedure SetTrialsPerCircle(const Value: Integer);
     procedure SetUpdateTrials(const Value: Integer);
     procedure SetNumberOfCircles(const Value: Integer);
+    procedure SetCrossover(const Value: Single);
   protected
     procedure CalculateStaticCosts;
     procedure SaveDrawing(FileName: TFileName);
     procedure LoadDrawing(FileName: TFileName);
+    procedure LoadBest(FileName: TFileName);
     procedure DrawPopulation(Population: TDifferentialEvolutionPopulation;
       PixelMap: TGuiCustomPixelMap);
   public
     procedure LoadReference(FileName: TFileName);
-    function CalculateError(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+    function CalculateError(Sender: TObject; var Population: TDifferentialEvolutionPopulation): Double;
     procedure Evolve;
     procedure InitializeEvolution;
     procedure DrawResults;
@@ -138,7 +149,13 @@ type
     property TrialsPerCircle: Integer read FTrialsPerCircle write SetTrialsPerCircle;
     property UpdateTrials: Integer read FUpdateTrials write SetUpdateTrials;
     property InitialSeed: Integer read FInitialSeed write SetInitialSeed;
+    property Crossover: Single read FCrossover write SetCrossover;
     property NumberOfCircles: Integer read FNumberOfCircles write SetNumberOfCircles;
+    property CorrectColor: Boolean read FCorrectColor write FCorrectColor;
+    property CorrectRadius: Boolean read FCorrectRadius write FCorrectRadius;
+    property CorrectPosition: Boolean read FCorrectPosition write FCorrectPosition;
+    property CorrectInvisible: Boolean read FCorrectInvisibleCircles write FCorrectInvisibleCircles;
+    property RandomCircle: Boolean read FRandomCircle write FRandomCircle;
   end;
 
 var
@@ -250,7 +267,7 @@ begin
  FInitialSeed := 1000;
  FTrialsPerCircle := 3000;
  FTrialsSinceUpdate := 30;
- FNumberOfCircles := 16;
+ FNumberOfCircles := 1;
 
  // create pixel maps
  FReference := TGuiPixelMapMemory.Create;
@@ -269,7 +286,7 @@ begin
    PopulationCount := FInitialSeed;
    VariableCount := 7 * FNumberOfCircles;
    CrossOver := 0.5;
-   OnCalcCosts := CalculateError;
+   OnCalculateCosts := CalculateError;
   end;
 end;
 
@@ -316,6 +333,14 @@ begin
    FTrialsPerCircle := ReadInteger('Settings', 'Trials Per Circle', FTrialsPerCircle);
    FUpdateTrials := ReadInteger('Settings', 'Update Trials', FUpdateTrials);
    FInitialSeed := ReadInteger('Settings', 'Initial Seed', FInitialSeed);
+   FCrossover := 0.01 * ReadInteger('Settings', 'Crossover', Round(100 * FCrossover));
+   FCorrectColor := ReadBool('Settings', 'Correct Color', True);
+   FCorrectRadius := ReadBool('Settings', 'Correct Radius', True);
+   FCorrectPosition := ReadBool('Settings', 'Correct Position', True);
+   FCorrectInvisibleCircles := ReadBool('Settings', 'Correct Invisible Circles', True);
+   FRandomCircle := ReadBool('Settings', 'Random Circle', True);
+
+   NumberOfCircles := ReadInteger('Settings', 'Number of Circles', FNumberOfCircles);
    LoadReference(ReadString('Recent', 'Reference', ''));
   finally
    Free;
@@ -342,8 +367,7 @@ begin
    GeometricShape.CenterX := ConvertToFixed24Dot8Point(Data^[0]);
    GeometricShape.CenterY := ConvertToFixed24Dot8Point(Data^[1]);
    GeometricShape.Radius := ConvertToFixed24Dot8Point(Data^[2]);
-   Color := Round($FF * Data^[3]) shl 16 +
-     Round($FF * Data^[4]) shl 8 + Round($FF * Data^[5]);
+   Color := HLSToRGB(Data^[3], Data^[4], Data^[5]);
    Alpha := Round($FF * Data^[6]);
   end;
 end;
@@ -357,6 +381,9 @@ procedure TFmCircledPictureDialog.AcSettingsExecute(Sender: TObject);
 begin
  with TFmSettings.Create(Self) do
   try
+   if Assigned(EvolutionThread)
+    then SeCircleCount.Enabled := EvolutionThread.Suspended
+    else SeCircleCount.Enabled := True;
    ShowModal;
   finally
    Free;
@@ -400,14 +427,14 @@ begin
 end;
 
 function TFmCircledPictureDialog.CalculateError(Sender: TObject;
-  const Population: TDifferentialEvolutionPopulation): Double;
+  var Population: TDifferentialEvolutionPopulation): Double;
 var
+  TempData      : array [0..6] of Double;
   PixelData     : array [0..1] of PPixel32Array;
   PixelRange    : array [0..1] of Integer;
   CircleIndex   : Integer;
   Index, Offset : Integer;
-const
-  COne255th : Double = 1 / 255;
+  NewOffset     : Integer;
 begin
  Assert(FReference <> nil);
  Assert(FDrawing <> nil);
@@ -422,13 +449,24 @@ begin
 
    if FNumberOfCircles = 1 then
     begin
+     if (Population[2] < 1) or (Population[2] > FMaximumRadius)
+      then Population[2] := 1 + Random * (FMaximumRadius - 1);
+     if (Population[3] < 0) or (Population[3] > 1)
+      then Population[3] := Random;
+     if (Population[4] < 0) or (Population[4] > 1)
+      then Population[4] := Random;
+     if (Population[5] < 0) or (Population[5] > 1)
+      then Population[5] := Random;
+     if (Population[6] < 0) or (Population[6] > 1)
+      then Population[6] := Random;
+
      if (Population[0] < -Width) or (Population[0] > 2 * Width) or
        ((Population[0] < 0) and (Population[2] < -Population[0])) or
        ((Population[0] > Width) and (Population[2] < (Population[0] - Width))) or
        (Population[1] < -Height) or (Population[1] > 2 * Height) or
        ((Population[1] < 0) and (Population[2] < -Population[1])) or
        ((Population[1] > Height) and (Population[2] < (Population[1] - Height))) or
-       (Population[2] < 1) or (Population[2] > Max(Width, Height)) or
+       (Population[2] < 1) or (Population[2] > FMaximumRadius) or
        (Population[3] < 0) or (Population[3] > 1) or
        (Population[4] < 0) or (Population[4] > 1) or
        (Population[5] < 0) or (Population[5] > 1) or
@@ -466,14 +504,99 @@ begin
     begin
      for CircleIndex := 0 to FNumberOfCircles - 1 do
       begin
+       if Random > 0.1 then Break;
+
+       // get offsets
+       Offset := Random(FNumberOfCircles - 1) * 7;
+       repeat
+        NewOffset := Random(FNumberOfCircles - 1) * 7;
+       until NewOffset <> Offset;
+
+       Move(Population[Offset], TempData[0], SizeOf(TempData));
+       Move(Population[NewOffset], Population[Offset], SizeOf(TempData));
+       Move(TempData[0], Population[NewOffset], SizeOf(TempData));
+      end;
+
+     for CircleIndex := 0 to FNumberOfCircles - 1 do
+      begin
        Offset := 7 * CircleIndex;
+
+       if FRandomCircle and (Random < 0.01) then
+        begin
+         if Random < 0.3 then
+          begin
+           Population[Offset + 0] := (2 * Random - 0.5) * FReference.Width;
+           Population[Offset + 1] := (2 * Random - 0.5) * FReference.Height;
+           Population[Offset + 2] :=  1 + Random * (FMaximumRadius - 1);
+          end;
+         if Random < 0.7 then
+          begin
+           Population[Offset + 3] :=  Random;
+           Population[Offset + 4] :=  Random;
+           Population[Offset + 5] :=  Random;
+           Population[Offset + 6] :=  Random;
+          end;
+        end;
+
+       // eventually set new x and y coordinates
+       if FCorrectPosition then
+        begin
+         while (Population[Offset] < -Width) or (Population[Offset] > 2 * Width)
+          do Population[Offset] := (2 * Random - 0.5) * Width;
+         while (Population[Offset + 1] < -Height) or (Population[Offset + 1] > 2 * Height)
+          do Population[Offset + 1] := (2 * Random - 0.5) * Height;
+
+         if FCorrectInvisibleCircles then
+          begin
+           while (Population[Offset] < 0) and (Population[Offset + 2] < -Population[Offset])
+            do Population[Offset] := -Population[Offset + 2] + Random * (Width - Population[Offset + 2]);
+           while (Population[Offset] > Width) and (Population[Offset + 2] < Population[Offset] - Width)
+            do Population[Offset] := (Width + Population[Offset + 2]) - Random * (Width - Population[Offset + 2]);
+           while (Population[Offset + 1] < 0) and (Population[Offset + 2] < -Population[Offset + 1])
+            do Population[Offset + 1] := -Population[Offset + 2] + Random * (Height - Population[Offset + 2]);
+           while (Population[Offset + 1] > Height) and (Population[Offset + 2] < Population[Offset + 1] - Height)
+            do Population[Offset + 1] := (Height + Population[Offset + 2]) - Random * (Height - Population[Offset + 2]);
+          end;
+        end;
+
+       // eventually correct radius
+       if FCorrectRadius then
+        begin
+         while (Population[Offset + 2] < 1) or (Population[Offset + 2] > FMaximumRadius)
+          do Population[Offset + 2] := 1 + Random * (FMaximumRadius - 1);
+
+         if FCorrectInvisibleCircles then
+          begin
+           while (Population[Offset] < 0) and (Population[Offset + 2] < -Population[Offset])
+            do Population[Offset + 2] := -Population[Offset] + Random * (FMaximumRadius + Population[Offset]);
+           while (Population[Offset] > Width) and (Population[Offset + 2] < Population[Offset] - Width)
+            do Population[Offset + 2] := (Population[Offset] - Width) + Random * (FMaximumRadius - Population[Offset] + Width);
+           while (Population[Offset + 1] < 0) and (Population[Offset + 2] < -Population[Offset + 1])
+            do Population[Offset + 2] := -Population[Offset + 1] + Random * (FMaximumRadius + Population[Offset + 1]);
+           while (Population[Offset + 1] > Height) and (Population[Offset + 2] < Population[Offset + 1] - Height)
+            do Population[Offset + 2] := (Population[Offset + 1] - Height) + Random * (FMaximumRadius - Population[Offset + 1] + Height);
+          end;
+        end;
+
+       if FCorrectColor then
+        begin
+         if (Population[Offset + 3] < 0) or (Population[Offset + 3] > 1)
+          then Population[Offset + 3] := Random;
+         if (Population[Offset + 4] < 0) or (Population[Offset + 4] > 1)
+          then Population[Offset + 4] := Random;
+         if (Population[Offset + 5] < 0) or (Population[Offset + 5] > 1)
+          then Population[Offset + 5] := Random;
+         if (Population[Offset + 6] < 0) or (Population[Offset + 6] > 1)
+          then Population[Offset + 6] := Random;
+        end;
+
        if (Population[Offset] < -Width) or (Population[Offset] > 2 * Width) or
          ((Population[Offset] < 0) and (Population[Offset + 2] < -Population[Offset])) or
          ((Population[Offset] > Width) and (Population[Offset + 2] < (Population[Offset] - Width))) or
          (Population[Offset + 1] < -Height) or (Population[Offset + 1] > 2 * Height) or
          ((Population[Offset + 1] < 0) and (Population[Offset + 2] < -Population[Offset + 1])) or
          ((Population[Offset + 1] > Height) and (Population[Offset + 2] < (Population[Offset + 1] - Height))) or
-         (Population[Offset + 2] < 1) or (Population[Offset + 2] > Max(Width, Height)) or
+         (Population[Offset + 2] < 1) or (Population[Offset + 2] > FMaximumRadius) or
          (Population[Offset + 3] < 0) or (Population[Offset + 3] > 1) or
          (Population[Offset + 4] < 0) or (Population[Offset + 4] > 1) or
          (Population[Offset + 5] < 0) or (Population[Offset + 5] > 1) or
@@ -526,8 +649,8 @@ begin
      GeometricShape.CenterX := ConvertToFixed24Dot8Point(Population[7 * Index + 0]);
      GeometricShape.CenterY := ConvertToFixed24Dot8Point(Population[7 * Index + 1]);
      GeometricShape.Radius := ConvertToFixed24Dot8Point(Population[7 * Index + 2]);
-     Color := Round($FF * Population[7 * Index + 3]) shl 16 +
-       Round($FF * Population[7 * Index + 4]) shl 8 + Round($FF * Population[7 * Index + 5]);
+     Color := HLSToRGB(Population[7 * Index + 3], Population[7 * Index + 4],
+       Population[7 * Index + 5]);
      Alpha := Round($FF * Population[7 * Index + 6]);
 
      Draw(PixelMap);
@@ -578,8 +701,6 @@ begin
    if FileExists(OldFileName)
     then DeleteFile(OldFileName);
 
-   SetLength(FCircles, Length(FCircles) + 1);
-   FCircles[FCurrentCircle] := TGuiPixelFilledCircle.Create;
    StatusBar.Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
 
    InitializeEvolution;
@@ -590,13 +711,15 @@ begin
    if (FCurrentCircle > 0) then
     begin
      Dec(FCurrentCircle, FNumberOfCircles);
-     FreeAndNil(FCircles[FCurrentCircle + 1]);
+     for Index := FCurrentCircle to Length(FCircles) - 1
+      do FreeAndNil(FCircles[Index]);
      SetLength(FCircles, FCurrentCircle + 1);
      InitializeEvolution;
     end;
    AcBack.Checked := False;
   end;
 
+ Randomize;
  Inc(FTrialCount);
  DifferentialEvolution.Evolve;
 
@@ -662,9 +785,8 @@ begin
      GeometricShape.CenterX := ConvertToFixed24Dot8Point(FDiffEvol.GetBestPopulation[0]);
      GeometricShape.CenterY := ConvertToFixed24Dot8Point(FDiffEvol.GetBestPopulation[1]);
      GeometricShape.Radius := ConvertToFixed24Dot8Point(FDiffEvol.GetBestPopulation[2]);
-     Color := Round($FF * FDiffEvol.GetBestPopulation[3]) shl 16 +
-       Round($FF * FDiffEvol.GetBestPopulation[4]) shl 8 +
-       Round($FF * FDiffEvol.GetBestPopulation[5]);
+     Color := HLSToRGB(FDiffEvol.GetBestPopulation[3], FDiffEvol.GetBestPopulation[4],
+       FDiffEvol.GetBestPopulation[5]);
      Alpha := Round($FF * FDiffEvol.GetBestPopulation[6]);
     end;
 
@@ -686,6 +808,15 @@ begin
  end;
 end;
 
+procedure TFmCircledPictureDialog.SetCrossover(const Value: Single);
+begin
+ if (FCrossover <> Value) and (Value >= 0) and (Value <= 1) then
+  begin
+   FCrossover := Value;
+   FDiffEvol.CrossOver := Value;
+  end;
+end;
+
 procedure TFmCircledPictureDialog.SetInitialSeed(const Value: Integer);
 begin
  if (FInitialSeed <> Value) and (Value > 0)
@@ -697,6 +828,7 @@ begin
  if (FNumberOfCircles <> Value) and (Value > 0) then
   begin
    FNumberOfCircles := Value;
+   FDiffEvol.VariableCount := 7 * FNumberOfCircles;
   end;
 end;
 
@@ -716,6 +848,38 @@ begin
   then FUpdateTrials := Value;
 end;
 
+procedure TFmCircledPictureDialog.LoadBest(FileName: TFileName);
+var
+  Circles : TCircleChunkContainer;
+  Index   : Integer;
+  Pixel   : TPixel32;
+  H, S, L : Single;
+begin
+ try
+  Circles := TCircleChunkContainer.Create;
+  Circles.LoadFromFile(FileName);
+
+  for Index := 0 to Min(FNumberOfCircles, Circles.Count) - 1 do
+   with DifferentialEvolution do
+    begin
+     BestPopulation[7 * Index    ] := ConvertFromFixed24Dot8Point(Circles[Index].CenterX);
+     BestPopulation[7 * Index + 1] := ConvertFromFixed24Dot8Point(Circles[Index].CenterY);
+     BestPopulation[7 * Index + 2] := ConvertFromFixed24Dot8Point(Circles[Index].Radius);
+     Pixel.R := Circles[Index].Color and $FF;
+     Pixel.G := (Circles[Index].Color shr 8) and $FF;
+     Pixel.B := (Circles[Index].Color shr 16) and $FF;
+
+     PixelToHLS(Pixel, H, S, L);
+     BestPopulation[7 * Index + 3] := H;
+     BestPopulation[7 * Index + 4] := S;
+     BestPopulation[7 * Index + 5] := L;
+     BestPopulation[7 * Index + 6] := Circles[Index].Alpha * COne255th;
+    end;
+ finally
+  if Assigned(Circles) then FreeAndNil(Circles);
+ end;
+end;
+
 procedure TFmCircledPictureDialog.LoadDrawing(FileName: TFileName);
 var
   Circles : TCircleChunkContainer;
@@ -727,7 +891,11 @@ begin
 
   FDrawing.Clear;
   FCurrentCircle := Circles.Count;
-  SetLength(FCircles, Circles.Count + 1);
+
+  for Index := 0 to Length(FCircles) - 1
+   do FreeAndNil(FCircles[Index]);
+
+  SetLength(FCircles, Circles.Count);
   for Index := 0 to Circles.Count - 1 do
    begin
     // eventually create
@@ -748,28 +916,24 @@ begin
    end;
 
   // eventually create current circle
-  if not Assigned(FCircles[FCurrentCircle]) then
+  if Assigned(FEvolution) then
    begin
-    FCircles[FCurrentCircle] := TGuiPixelFilledCircle.Create;
-    if Assigned(FEvolution) then
-     begin
-      FEvolution.Terminate;
-      if FEvolution.Suspended
-       then FEvolution.Suspended := False;
-      FEvolution.WaitFor;
-      FreeAndNil(FEvolution);
-     end;
-
-    InitializeEvolution;
-    FEvolution := TEvolutionThread.Create(True);
-    FEvolution.Priority := tpLower;
-    FEvolution.Start;
-    FEvolution.Suspended := True;
-    MiStopContinue.Enabled := True;
-    MiSaveDrawing.Enabled := True;
-    MiStopContinue.Tag := 1;
-    MiStopContinue.Caption := 'C&ontinue';
+    FEvolution.Terminate;
+    if FEvolution.Suspended
+     then FEvolution.Suspended := False;
+    FEvolution.WaitFor;
+    FreeAndNil(FEvolution);
    end;
+
+  InitializeEvolution;
+  FEvolution := TEvolutionThread.Create(True);
+  FEvolution.Priority := tpLower;
+  FEvolution.Start;
+  FEvolution.Suspended := True;
+  MiStopContinue.Enabled := True;
+  MiSaveDrawing.Enabled := True;
+  MiStopContinue.Tag := 1;
+  MiStopContinue.Caption := 'C&ontinue';
 
   FBestDrawing.Assign(FDrawing);
   PaintBoxDraw.Invalidate;
@@ -781,6 +945,15 @@ end;
 procedure TFmCircledPictureDialog.MiExitClick(Sender: TObject);
 begin
  Close;
+end;
+
+procedure TFmCircledPictureDialog.MiOpenBestClick(Sender: TObject);
+begin
+ with OpenDialogCircles do
+  begin
+   if Execute
+    then LoadBest(FileName);
+  end;
 end;
 
 procedure TFmCircledPictureDialog.MiOpenDrawingClick(Sender: TObject);
@@ -869,26 +1042,31 @@ procedure TFmCircledPictureDialog.InitializeEvolution;
 var
   Index : Integer;
 begin
+ // calculate maximum radius
+ FMaximumRadius := 1.5 * Max(Width, Height);
+ if FMaximumRadius < 1 then FMaximumRadius := 1;
+
  FTrialCount := 0;
  with FDiffEvol do
   begin
+   CrossOver := FCrossover;
    PopulationCount := FInitialSeed;
    for Index := 0 to FNumberOfCircles - 1 do
     begin
-     MinArr[7 * Index + 0] := -0.5 * FReference.Width;
-     MaxArr[7 * Index + 0] :=  1.5 * FReference.Width;
-     MinArr[7 * Index + 1] := -0.5 * FReference.Height;
-     MaxArr[7 * Index + 1] :=  1.5 * FReference.Height;
-     MinArr[7 * Index + 2] :=  1;
-     MaxArr[7 * Index + 2] :=  0.5 * Max(FReference.Width, FReference.Height);
-     MinArr[7 * Index + 3] :=  0;
-     MaxArr[7 * Index + 3] :=  1;
-     MinArr[7 * Index + 4] :=  0;
-     MaxArr[7 * Index + 4] :=  1;
-     MinArr[7 * Index + 5] :=  0;
-     MaxArr[7 * Index + 5] :=  1;
-     MinArr[7 * Index + 6] :=  0;
-     MaxArr[7 * Index + 6] :=  1;
+     MinConstraints[7 * Index + 0] := -0.5 * FReference.Width;
+     MaxConstraints[7 * Index + 0] :=  1.5 * FReference.Width;
+     MinConstraints[7 * Index + 1] := -0.5 * FReference.Height;
+     MaxConstraints[7 * Index + 1] :=  1.5 * FReference.Height;
+     MinConstraints[7 * Index + 2] :=  1;
+     MaxConstraints[7 * Index + 2] :=  0.5 * FMaximumRadius;
+     MinConstraints[7 * Index + 3] :=  0;
+     MaxConstraints[7 * Index + 3] :=  1;
+     MinConstraints[7 * Index + 4] :=  0;
+     MaxConstraints[7 * Index + 4] :=  1;
+     MinConstraints[7 * Index + 5] :=  0;
+     MaxConstraints[7 * Index + 5] :=  1;
+     MinConstraints[7 * Index + 6] :=  0;
+     MaxConstraints[7 * Index + 6] :=  1;
     end;
    Initialize;
   end;
@@ -897,12 +1075,10 @@ end;
 
 procedure TFmCircledPictureDialog.CalculateStaticCosts;
 var
+  CurrentCost : Double;
   DataSize    : Integer;
   PixelData   : array [0..1] of PPixel32Array;
   Index       : Integer;
-  CurrentCost : Double;
-const
-  COne255th : Double = 1 / 255;
 begin
  // calculate worst cost
  {$IFDEF UseApproximation}
@@ -914,6 +1090,7 @@ begin
  // calculate temporary data size
  DataSize := FReference.Width * FReference.Height * SizeOf(Double);
 
+ // allocate memory for cumulated error
  ReallocMem(FCumulatedError[0], DataSize);
  ReallocMem(FCumulatedError[1], DataSize);
 
