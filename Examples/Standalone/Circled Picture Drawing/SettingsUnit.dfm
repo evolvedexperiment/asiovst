@@ -1,0 +1,232 @@
+object FmSettings: TFmSettings
+  Left = 299
+  Top = 51
+  BorderStyle = bsDialog
+  Caption = 'Settings'
+  ClientHeight = 257
+  ClientWidth = 385
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnClose = FormClose
+  OnShow = FormShow
+  DesignSize = (
+    385
+    257)
+  PixelsPerInch = 96
+  TextHeight = 13
+  object GbTrials: TGroupBox
+    Left = 8
+    Top = 8
+    Width = 237
+    Height = 89
+    Caption = 'Trials'
+    TabOrder = 0
+    object LbTrialsPerCircle: TLabel
+      Left = 8
+      Top = 27
+      Width = 75
+      Height = 13
+      Caption = 'Trials per circle:'
+    end
+    object LbUpdateTrials: TLabel
+      Left = 8
+      Top = 55
+      Width = 132
+      Height = 13
+      Caption = 'Trials between GUI update:'
+    end
+    object SeTrialsPerCircle: TSpinEdit
+      Left = 162
+      Top = 24
+      Width = 67
+      Height = 22
+      MaxValue = 9999999
+      MinValue = 1
+      TabOrder = 0
+      Value = 3000
+      OnKeyPress = SeSettingsPress
+    end
+    object SeUpdateTrials: TSpinEdit
+      Left = 162
+      Top = 52
+      Width = 67
+      Height = 22
+      MaxValue = 9999999
+      MinValue = 1
+      TabOrder = 1
+      Value = 30
+      OnKeyPress = SeSettingsPress
+    end
+    object CbAuto: TCheckBox
+      Left = 100
+      Top = 26
+      Width = 40
+      Height = 17
+      Caption = 'auto'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
+  end
+  object GbOptimizer: TGroupBox
+    Left = 8
+    Top = 103
+    Width = 237
+    Height = 115
+    Caption = 'Optimizer'
+    TabOrder = 1
+    object LbInitialSeed: TLabel
+      Left = 8
+      Top = 27
+      Width = 56
+      Height = 13
+      Caption = 'Initial seed:'
+    end
+    object LbCrossover: TLabel
+      Left = 8
+      Top = 55
+      Width = 86
+      Height = 13
+      Caption = 'Crossover (in %):'
+    end
+    object SeInitialSeed: TSpinEdit
+      Left = 162
+      Top = 24
+      Width = 67
+      Height = 22
+      MaxValue = 9999999
+      MinValue = 5
+      TabOrder = 0
+      Value = 1000
+      OnKeyPress = SeSettingsPress
+    end
+    object SeCrossover: TSpinEdit
+      Left = 162
+      Top = 52
+      Width = 67
+      Height = 22
+      MaxValue = 100
+      MinValue = 0
+      TabOrder = 1
+      Value = 50
+      OnKeyPress = SeSettingsPress
+    end
+  end
+  object BtOK: TButton
+    Left = 140
+    Top = 224
+    Width = 75
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = '&OK'
+    Default = True
+    ModalResult = 1
+    TabOrder = 2
+    OnClick = BtOKClick
+  end
+  object BtCancel: TButton
+    Left = 221
+    Top = 224
+    Width = 75
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = '&Cancel'
+    ModalResult = 2
+    TabOrder = 3
+  end
+  object BtApply: TButton
+    Left = 302
+    Top = 224
+    Width = 75
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = '&Apply'
+    TabOrder = 4
+    OnClick = BtApplyClick
+  end
+  object GbModifications: TGroupBox
+    Left = 251
+    Top = 71
+    Width = 126
+    Height = 147
+    Caption = 'Modifications'
+    TabOrder = 5
+    object CbCorrectColor: TCheckBox
+      Left = 12
+      Top = 26
+      Width = 97
+      Height = 17
+      Caption = 'Correct Color'
+      TabOrder = 0
+      OnKeyPress = SeSettingsPress
+    end
+    object CbCorrectPosition: TCheckBox
+      Left = 12
+      Top = 49
+      Width = 97
+      Height = 17
+      Caption = 'Correct Position'
+      TabOrder = 1
+      OnKeyPress = SeSettingsPress
+    end
+    object CbCorrectRadius: TCheckBox
+      Left = 12
+      Top = 72
+      Width = 97
+      Height = 17
+      Caption = 'Correct Radius'
+      TabOrder = 2
+      OnKeyPress = SeSettingsPress
+    end
+    object CbCorrectInvisible: TCheckBox
+      Left = 12
+      Top = 95
+      Width = 97
+      Height = 17
+      Caption = 'Correct Invisible'
+      TabOrder = 3
+      OnKeyPress = SeSettingsPress
+    end
+    object CbRandomCircle: TCheckBox
+      Left = 12
+      Top = 118
+      Width = 97
+      Height = 17
+      Caption = 'Random Circles'
+      TabOrder = 4
+      OnKeyPress = SeSettingsPress
+    end
+  end
+  object GbCircles: TGroupBox
+    Left = 251
+    Top = 8
+    Width = 126
+    Height = 57
+    Caption = 'Circles'
+    TabOrder = 6
+    object LbCircleCount: TLabel
+      Left = 12
+      Top = 27
+      Width = 33
+      Height = 13
+      Caption = 'Count:'
+    end
+    object SeCircleCount: TSpinEdit
+      Left = 51
+      Top = 24
+      Width = 65
+      Height = 22
+      MaxValue = 999
+      MinValue = 1
+      TabOrder = 0
+      Value = 1
+      OnKeyPress = SeSettingsPress
+    end
+  end
+end

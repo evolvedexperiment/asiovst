@@ -48,11 +48,11 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
       end
       item
         Text = 'Trials:'
-        Width = 64
+        Width = 72
       end
       item
         Text = 'Cost:'
-        Width = 72
+        Width = 80
       end
       item
         Text = 'Global Costs:'
@@ -82,6 +82,10 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
       object MiOpenDrawing: TMenuItem
         Caption = 'Open Drawing...'
         OnClick = MiOpenDrawingClick
+      end
+      object MiOpenBest: TMenuItem
+        Caption = 'Open Best...'
+        OnClick = MiOpenBestClick
       end
       object MiSaveDrawing: TMenuItem
         Caption = 'Save Drawing...'
@@ -159,6 +163,7 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
     object AcNext: TAction
       Category = 'Optimizer'
       Caption = '&Next'
+      ShortCut = 119
       OnExecute = AcNextExecute
     end
     object AcBack: TAction
@@ -169,6 +174,7 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
     object AcSettings: TAction
       Category = 'Optimizer'
       Caption = 'S&ettings'
+      ShortCut = 121
       OnExecute = AcSettingsExecute
     end
   end
