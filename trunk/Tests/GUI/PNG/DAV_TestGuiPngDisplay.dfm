@@ -26,7 +26,6 @@ object FmDisplay: TFmDisplay
     Top = 31
     Width = 339
     Height = 203
-    Anchors = [akLeft, akTop, akRight, akBottom]
   end
   object LbQuestion: TLabel
     Left = 82
@@ -38,10 +37,10 @@ object FmDisplay: TFmDisplay
     Caption = 'Does the image display correctly?'
   end
   object LbRenderer: TLabel
-    Left = 149
+    Left = 145
     Top = 9
     Width = 58
-    Height = 16
+    Height = 13
     Anchors = [akTop, akRight]
     Caption = 'Interpreter:'
   end
@@ -77,9 +76,9 @@ object FmDisplay: TFmDisplay
     OnClick = RbPngImageClick
   end
   object RbInternal: TRadioButton
-    Left = 213
+    Left = 209
     Top = 8
-    Width = 55
+    Width = 59
     Height = 17
     Anchors = [akTop, akRight]
     Caption = 'Internal'
