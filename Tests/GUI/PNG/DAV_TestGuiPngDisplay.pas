@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, PngImage, DAV_GuiPng;
+  StdCtrls, ExtCtrls, PngImage, DAV_GuiPng, DAV_GuiPixelMap;
 
 type
   TFmDisplay = class(TForm)
@@ -19,13 +19,13 @@ type
     procedure RbPngImageClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    FReference : TBitmap;
-    FInternal  : TBitmap;
+    FReference : TGuiCustomPixelMap;
+    FInternal  : TGuiCustomPixelMap;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property Reference: TBitmap read FReference write FReference;
-    property Internal: TBitmap read FInternal write FInternal;
+    property Reference: TGuiCustomPixelMap read FReference write FReference;
+    property Internal: TGuiCustomPixelMap read FInternal write FInternal;
   end;
 
 var
@@ -38,8 +38,8 @@ implementation
 constructor TFmDisplay.Create(AOwner: TComponent);
 begin
  inherited;
- FInternal := TBitmap.Create;
- FReference := TBitmap.Create;
+ FInternal := TGuiPixelMapMemory.Create;
+ FReference := TGuiPixelMapMemory.Create;
 end;
 
 destructor TFmDisplay.Destroy;
@@ -51,17 +51,17 @@ end;
 
 procedure TFmDisplay.FormShow(Sender: TObject);
 begin
- Image.Canvas.Draw(0, 0, FInternal);
+ FInternal.PaintTo(Image.Canvas);
 end;
 
 procedure TFmDisplay.RbInternalClick(Sender: TObject);
 begin
- Image.Canvas.Draw(0, 0, FInternal);
+ FInternal.PaintTo(Image.Canvas);
 end;
 
 procedure TFmDisplay.RbPngImageClick(Sender: TObject);
 begin
- Image.Canvas.Draw(0, 0, FReference);
+ FReference.PaintTo(Image.Canvas);
 end;
 
 end.

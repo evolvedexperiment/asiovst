@@ -686,7 +686,7 @@ begin
    Dest^.R := FMappingTable[CGrayScaleTable1Bit[(Src^ shr BitIndex) and $1]];
    Dest^.G := Dest^.R;
    Dest^.B := Dest^.R;
-   Dest^.A := 255;
+   Dest^.A := $FF;
    if BitIndex = 0 then
     begin
      BitIndex := 8;

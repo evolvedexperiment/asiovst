@@ -2091,6 +2091,13 @@ begin
    TGuiCustomPixelMap(Dest).Width := ImageHeader.Width;
    TGuiCustomPixelMap(Dest).Height := ImageHeader.Height;
    DrawToPixelMap(TGuiCustomPixelMap(Dest));
+  end else
+ if Dest is TBitmap then
+  begin
+   TBitmap(Dest).Width := ImageHeader.Width;
+   TBitmap(Dest).Height := ImageHeader.Height;
+//   TBitmap(Dest).
+//   DrawToPixelMap(TGuiCustomPixelMap(Dest));
   end
  else inherited;
 end;

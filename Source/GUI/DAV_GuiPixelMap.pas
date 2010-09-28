@@ -44,12 +44,12 @@ uses
 type
   TGuiCustomPixelMap = class(TInterfacedPersistent, IStreamPersist)
   private
+    function GetDataPointer: PPixel32Array;
     function GetPixel(X, Y: Integer): TPixel32;
     function GetScanLine(Y: Integer): PPixel32Array;
     procedure SetHeight(const Value: Integer);
     procedure SetPixel(X, Y: Integer; const Value: TPixel32);
     procedure SetWidth(const Value: Integer);
-    function GetDataPointer: PPixel32Array;
   protected
     FDataPointer : PPixel32Array;
     FDataSize    : Integer;
@@ -84,6 +84,7 @@ type
     procedure SaveToStream(Stream: TStream); virtual;
 
     procedure SetSize(Width, Height: Integer); virtual;
+    procedure ResetAlpha; virtual;
 
     // simple Painting functions
     procedure FillRect(Rect: TRect; Color: TPixel32);
@@ -91,6 +92,7 @@ type
     procedure Line(FromX, FromY, ToX, ToY: Integer; Color: TPixel32);
     procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32);
     procedure VerticalLine(X, FromY, ToY: Integer; Color: TPixel32);
+    procedure Assign(Source: TPersistent); override;
 
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
@@ -167,6 +169,32 @@ begin
    biPlanes := 1;
    biCompression := BI_RGB;
   end;
+end;
+
+procedure TGuiCustomPixelMap.Assign(Source: TPersistent);
+var
+  TempBitmap : TBitmap;
+begin
+ if Source is TBitmap then
+  with TBitmap(Source) do
+   begin
+    Self.SetSize(Width, Height);
+    Draw(TBitmap(Source));
+   end else
+ if Source is TGraphic then
+  with TGraphic(Source) do
+   begin
+    Self.SetSize(Width, Height);
+    TempBitmap := TBitmap.Create;
+    try
+     TempBitmap.Assign(Source);
+     Draw(TempBitmap);
+    finally
+     if Assigned(TempBitmap)
+      then FreeAndNil(TempBitmap);
+    end;
+   end
+ else inherited;
 end;
 
 procedure TGuiCustomPixelMap.AssignTo(Dest: TPersistent);
@@ -500,6 +528,14 @@ begin
   finally
    EMMS;
   end;
+end;
+
+procedure TGuiCustomPixelMap.ResetAlpha;
+var
+  Index : Integer;
+begin
+ for Index := 0 to FWidth * FHeight - 1
+  do FDataPointer^[Index].A := $FF;
 end;
 
 procedure TGuiCustomPixelMap.Resized;

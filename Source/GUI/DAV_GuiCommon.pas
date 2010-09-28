@@ -39,6 +39,9 @@ uses
   {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes;
 
+const
+  COne255th : Double = 1 / 255;
+
 type
   {$A1}
 
@@ -177,6 +180,10 @@ function ConvertColor(Color: TPixel32): TColor; overload;
 procedure HLSToRGB(const H, L, S: Single; out R, G, B: Single); overload;
 function HLSToRGB(const H, L, S: Single): TColor; overload;
 procedure RGBToHLS(const R, G, B: Single; out H, L, S: Single); overload;
+procedure RGBToHLS(const Color: TColor; out H, L, S: Single); overload;
+
+procedure PixelToHLS(Pixel: TPixel32; out H, L, S: Single);
+function HLSToPixel(H, L, S: Single): TPixel32;
 
 implementation
 
@@ -986,7 +993,7 @@ var
 begin
   Cmax := Max(R, Max(G, B));
   Cmin := Min(R, Min(G, B));
-  L := (Cmax + Cmin) / 2;
+  L := (Cmax + Cmin) * 0.5;
 
   if Cmax = Cmin then
   begin
@@ -1019,6 +1026,84 @@ var
 begin
   HLSToRGB(H, L, S, R, G, B);
   Result := (Round(R * 255) or (Round(G * 255) shl 8) or (Round(B * 255) shl 16));
+end;
+
+procedure RGBToHLS(const Color: TColor; out H, L, S: Single); overload;
+begin
+ RGBToHLS(COne255th * (Color and $FF), COne255th * ((Color shr 8) and $FF),
+   COne255th * ((Color shr 16) and $FF),H, L, S);
+end;
+
+procedure PixelToHLS(Pixel: TPixel32; out H, L, S: Single);
+var
+  D, Cmax, Cmin: Single;
+begin
+ with Pixel do
+  begin
+   Cmax := Max(R, Max(G, B)) * COne255th;
+   Cmin := Min(R, Min(G, B)) * COne255th;
+   L := (Cmax + Cmin) * 0.5;
+
+   if Cmax = Cmin then
+    begin
+     H := 0;
+     S := 0
+    end
+   else
+    begin
+     D := Cmax - Cmin;
+     if L < 0.5
+      then S := D / (Cmax + Cmin)
+      else S := D / (2 - Cmax - Cmin);
+
+     if R * COne255th = Cmax
+      then H := (G - B) * COne255th / D
+      else
+     if G * COne255th = Cmax
+      then H := 2 + (B - R) * COne255th / D
+      else H := 4 + (R - G) * COne255th / D;
+     H := H / 6;
+     if H < 0 then H := H + 1;
+    end;
+  end;
+end;
+
+function HLSToPixel(H, L, S: Single): TPixel32;
+var
+  M1, M2: Single;
+
+  function HueToColorValue(Hue: Single): Single;
+  begin
+    Hue := Hue - Floor(Hue);
+
+    if 6 * Hue < 1
+     then Result := M1 + (M2 - M1) * Hue * 6
+     else
+    if 2 * Hue < 1
+     then Result := M2
+     else
+    if 3 * Hue < 2
+     then Result := M1 + (M2 - M1) * (2 / 3 - Hue) * 6
+     else Result := M1;
+  end;
+
+begin
+ if S = 0 then
+  begin
+   Result.R := Round(255 * L);
+   Result.G := Result.R;
+   Result.B := Result.R;
+  end
+ else
+  begin
+   if L <= 0.5
+    then M2 := L * (1 + S)
+    else M2 := L + S - L * S;
+   M1 := 2 * L - M2;
+   Result.R := Round(HueToColorValue(H + 1 / 3) * 255);
+   Result.G := Round(HueToColorValue(H) * 255);
+   Result.B := Round(HueToColorValue(H - 1 / 3) * 255);
+  end;
 end;
 
 end.

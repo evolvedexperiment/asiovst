@@ -670,10 +670,10 @@ function TChunkPngImageHeader.GetBytesPerRow: Integer;
 begin
  case FColorType of
   ctGrayscale,
-  ctIndexedColor,
-  ctGrayscaleAlpha : Result := FWidth;
-  ctTrueColor      : Result := 3 * FWidth;
-  ctTrueColorAlpha : Result := 4 * FWidth;
+  ctIndexedColor   : Result := ((FWidth * FBitDepth + $7) and not $7) shr 3;
+  ctGrayscaleAlpha : Result := 2 * (FBitDepth shr 3) * FWidth;
+  ctTrueColor      : Result := 3 * (FBitDepth shr 3) * FWidth;
+  ctTrueColorAlpha : Result := 4 * (FBitDepth shr 3) * FWidth;
   else raise EPngError.Create(RCStrUnknownColorType);
  end;
 end;
@@ -700,7 +700,7 @@ end;
 
 function TChunkPngImageHeader.GetHasPalette: Boolean;
 begin
- Result := FColorType in [ctGrayscale, ctIndexedColor, ctGrayscaleAlpha];
+ Result := FColorType in [ctIndexedColor];
 end;
 
 procedure TChunkPngImageHeader.LoadFromStream(Stream: TStream);
@@ -772,6 +772,8 @@ end;
 
 procedure TChunkPngImageHeader.SaveToStream(Stream: TStream);
 begin
+ FChunkSize := 13;
+
  inherited;
 
  with Stream do
@@ -804,6 +806,9 @@ end;
 
 constructor TCustomChunkPngWithHeader.Create(Header: TChunkPngImageHeader);
 begin
+ if not (Header is TChunkPngImageHeader)
+  then raise EPngError.Create(RCStrHeaderInvalid);
+
  FHeader := Header;
  inherited Create;
 end;
