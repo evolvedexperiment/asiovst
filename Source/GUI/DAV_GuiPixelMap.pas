@@ -50,6 +50,7 @@ type
     procedure SetHeight(const Value: Integer);
     procedure SetPixel(X, Y: Integer; const Value: TPixel32);
     procedure SetWidth(const Value: Integer);
+    function GetPixelPointer(X, Y: Integer): PPixel32;
   protected
     FDataPointer : PPixel32Array;
     FDataSize    : Integer;
@@ -74,6 +75,8 @@ type
 
     procedure Draw(Bitmap: TBitmap); overload; virtual;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); overload; virtual; abstract;
+    procedure Draw(PixelMap: TGuiCustomPixelMap); overload; virtual;
+    procedure Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer); overload; virtual;
     procedure PaintTo(Canvas: TCanvas); overload; virtual;
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); overload; virtual; abstract;
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); overload; virtual; abstract;
@@ -98,6 +101,7 @@ type
     property Height: Integer read FHeight write SetHeight;
     property DataPointer: PPixel32Array read GetDataPointer;
     property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
+    property PixelPointer[X, Y: Integer]: PPixel32 read GetPixelPointer;
     property ScanLine[Y: Integer]: PPixel32Array read GetScanLine;
 
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -116,7 +120,6 @@ type
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); override;
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
-
   published
     property Width;
     property Height;
@@ -151,7 +154,7 @@ type
 implementation
 
 uses
-  Math, DAV_GuiPng;
+  Math, DAV_GuiPng, DAV_GuiFileFormats;
 
 { TGuiCustomPixelMap }
 
@@ -169,6 +172,34 @@ begin
    biPlanes := 1;
    biCompression := BI_RGB;
   end;
+end;
+
+procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer);
+var
+  ClipRect : TRect;
+  Index    : Integer;
+begin
+ with ClipRect do
+  begin
+   Left := X;
+   if Left < 0 then Left := 0;
+   Top := Y;
+   if Top < 0 then Top := 0;
+   Right := X + PixelMap.Width;
+   if Right > Self.Width then Right := Self.Width;
+   Bottom := Y + PixelMap.Height;
+   if Bottom > Self.Height then Bottom := Self.Height;
+
+   // blend scanlines
+   for Index := Top to Bottom - 1
+     do BlendLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
+       PixelPointer[Left, Top + Index], Right - Left);
+  end;
+end;
+
+procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap);
+begin
+ Draw(PixelMap, 0, 0);
 end;
 
 procedure TGuiCustomPixelMap.Assign(Source: TPersistent);
@@ -257,6 +288,11 @@ begin
  Result := FDataPointer^[Y * Width + X];
 end;
 
+function TGuiCustomPixelMap.GetPixelPointer(X, Y: Integer): PPixel32;
+begin
+ Result := @FDataPointer^[Y * Width + X];
+end;
+
 function TGuiCustomPixelMap.GetScanLine(Y: Integer): PPixel32Array;
 begin
  Result := @FDataPointer^[Y * Width];
@@ -339,8 +375,22 @@ end;
 
 procedure TGuiCustomPixelMap.SaveToFile(const Filename: TFileName);
 var
-  Stream: TStream;
+  Stream          : TStream;
+  FileFormatClass : TGuiCustomFileFormatClass;
 begin
+ FileFormatClass := FindGraphicFileFormatByExtension(ExtractFileExt(Filename));
+ if Assigned(FileFormatClass) then
+  begin
+   with FileFormatClass.Create do
+    try
+     Assign(Self);
+     SaveToFile(Filename);
+     Exit;
+    finally
+     Free;
+    end;
+  end;
+
  Stream := TFileStream.Create(Filename, fmCreate);
  try
   SaveToStream(Stream);
@@ -353,10 +403,10 @@ procedure TGuiCustomPixelMap.LoadFromStream(Stream: TStream);
 var
   BitmapFileHeader : TBitmapFileHeader;
 begin
- if TPortableNetworkGraphic32.CanLoad(Stream)
+ if TPortableNetworkGraphicPixel32.CanLoad(Stream)
   then
    begin
-    with TPortableNetworkGraphic32.Create do
+    with TPortableNetworkGraphicPixel32.Create do
      try
       LoadFromStream(Stream);
       AssignTo(Self);
@@ -391,6 +441,7 @@ begin
     begin
      bfType := $4D42;
      bfSize := SizeOf(TBitmapInfo) + Width * Height * SizeOf(Cardinal);
+     bfOffBits := SizeOf(BitmapFileHeader) + SizeOf(TBitmapInfo);
     end;
 
    // write bitmap file header to stream
@@ -555,8 +606,12 @@ end;
 
 procedure TGuiPixelMapMemory.Draw(Bitmap: TBitmap; X, Y: Integer);
 begin
- GetDIBits(Bitmap.Canvas.Handle, Bitmap.Handle, 0, Bitmap.Height,
-   FDataPointer, FBitmapInfo, DIB_RGB_COLORS);
+ if Bitmap.Height <> 0 then
+  begin
+   if GetDIBits(Bitmap.Canvas.Handle, Bitmap.Handle, 0, Bitmap.Height,
+     FDataPointer, FBitmapInfo, DIB_RGB_COLORS) = 0
+    then raise Exception.Create('Error');
+  end;
 
 (*
 var

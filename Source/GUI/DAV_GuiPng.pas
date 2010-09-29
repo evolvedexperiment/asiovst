@@ -82,11 +82,6 @@ type
     {$ENDIF}
     procedure ReadImageDataChunk(Stream: TStream);
     procedure ReadUnknownChunk(Stream: TStream);
-
-    procedure FilterSub(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
-    procedure FilterUp(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
-    procedure FilterAverage(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
-    procedure FilterPaeth(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
   protected
     FImageHeader         : TChunkPngImageHeader;
     FPaletteChunk        : TChunkPngPalette;
@@ -105,12 +100,12 @@ type
 
     procedure Clear; virtual;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure FilterRow(FilterMethod: TAdaptiveFilterMethod; CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
 
     procedure CopyImageData(Stream: TStream);
     procedure StoreImageData(Stream: TStream);
     procedure DecompressImageDataToStream(Stream: TStream);
     procedure CompressImageDataFromStream(Stream: TStream);
+    class function CanHandleExtension(const FileName: TFileName): Boolean; override;
 
     property ImageHeader: TChunkPngImageHeader read FImageHeader write SetImageHeader;
     property PaletteChunk: TChunkPngPalette read FPaletteChunk write SetPaletteChunk;
@@ -118,17 +113,14 @@ type
     property TimeChunk: TChunkPngTime read FTimeChunk write SetTimeChunk;
     property PhysicalPixelDimensionsChunk: TChunkPngPhysicalPixelDimensions read FPhysicalDimensions write SetPhysicalDimensions;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
 
-    procedure LoadFromStream(Stream: TStream); virtual;
-    procedure SaveToStream(Stream: TStream); virtual;
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
 
-    procedure LoadFromFile(Filename: TFilename); virtual;
-    procedure SaveToFile(Filename: TFilename); virtual;
-
-    class function CanLoad(const FileName: TFileName): Boolean; overload;
-    class function CanLoad(Stream: TStream): Boolean; overload;
+    class function CanLoad(const FileName: TFileName): Boolean; overload; override;
+    class function CanLoad(Stream: TStream): Boolean; overload; override;
 
     function HasPhysicalPixelDimensionsInformation: Boolean;
     function HasGammaInformation: Boolean;
@@ -156,9 +148,8 @@ type
     property PrimaryChromaticitiesChunk: TChunkPngPrimaryChromaticities read FChromaChunk write SetChromaChunk;
   end;
 
-  TPortableNetworkGraphic32 = class(TPortableNetworkGraphic)
+  TPortableNetworkGraphicPixel32 = class(TPortableNetworkGraphic)
   private
-    function ColorInPalette(Pixel: TPixel32): Integer;
     procedure AssignPropertiesFromPixelMap(PixelMap: TGuiCustomPixelMap);
   protected
     function PixelmapScanline(Bitmap: TObject; Y: Integer): Pointer; virtual;
@@ -169,6 +160,7 @@ type
     procedure DrawToPixelMap(PixelMap: TGuiCustomPixelMap); virtual;
   end;
 
+(*
   TPortableNetworkGraphicBitmap = class(TPortableNetworkGraphic)
   private
     function ColorInPalette(Color: TRGB32): Integer;
@@ -200,6 +192,7 @@ type
 
     procedure LoadFromResourceName(Instance: THandle; const ResName: String);
   end;
+*)
 
 implementation
 
@@ -235,6 +228,7 @@ begin
  FImageHeader         := TChunkPngImageHeader.Create;
  FDataChunkList       := TChunkList.Create;
  FAdditionalChunkList := TChunkList.Create;
+ inherited;
 end;
 
 destructor TPortableNetworkGraphic.Destroy;
@@ -563,6 +557,12 @@ begin
   end;
 end;
 
+class function TPortableNetworkGraphic.CanHandleExtension(
+  const FileName: TFileName): Boolean;
+begin
+ Result := Pos('png', FileName) >= 0;
+end;
+
 class function TPortableNetworkGraphic.CanLoad(Stream: TStream): Boolean;
 var
   ChunkID : TChunkName;
@@ -575,18 +575,6 @@ begin
    Stream.Seek(-4, soFromCurrent);
    Result := ChunkID = '‰PNG';
   end;
-end;
-
-procedure TPortableNetworkGraphic.LoadFromFile(Filename: TFilename);
-var
-  FileStream : TFileStream;
-begin
- FileStream := TFileStream.Create(FileName, fmOpenRead);
- try
-  LoadFromStream(FileStream);
- finally
-  FreeAndNil(FileStream);
- end;
 end;
 
 procedure TPortableNetworkGraphic.LoadFromStream(Stream: TStream);
@@ -761,18 +749,6 @@ begin
   end;
 end;
 
-procedure TPortableNetworkGraphic.SaveToFile(Filename: TFilename);
-var
-  FileStream : TFileStream;
-begin
- FileStream := TFileStream.Create(FileName, fmCreate);
- try
-  SaveToStream(FileStream);
- finally
-  FreeAndNil(FileStream);
- end;
-end;
-
 procedure TPortableNetworkGraphic.SaveToStream(Stream: TStream);
 var
   ChunkName    : TChunkName;
@@ -941,9 +917,9 @@ end;
 
 procedure TPortableNetworkGraphic.ReadUnknownChunk(Stream: TStream);
 var
-  UnknownChunk : TUnknownChunk;
+  UnknownChunk : TUnknownPngChunk;
 begin
- UnknownChunk := TUnknownChunk.Create;
+ UnknownChunk := TUnknownPngChunk.Create;
  UnknownChunk.LoadFromStream(Stream);
  FAdditionalChunkList.Add(UnknownChunk);
 end;
@@ -987,7 +963,6 @@ function TPortableNetworkGraphic.CalculateCRC(Stream: TStream): Cardinal;
 var
   CrcValue : Cardinal;
   Value    : Byte;
-  Buffer   : PByte;
 begin
  if Stream is TMemoryStream
   then Result := CalculateCRC(TMemoryStream(Stream).Memory, Stream.Size)
@@ -1073,24 +1048,6 @@ begin
  Result := CalculateCRC(Stream) = CRC;
 end;
 {$ENDIF}
-
-procedure TPortableNetworkGraphic.FilterSub(CurrentRow, PreviousRow: PByteArray;
-  BytesPerRow, PixelByteSize: Integer);
-var
-  Index : Integer;
-begin
- for Index := PixelByteSize + 1 to BytesPerRow
-  do CurrentRow[Index] := (CurrentRow[Index] + CurrentRow[Index - PixelByteSize]) and $FF;
-end;
-
-procedure TPortableNetworkGraphic.FilterUp(CurrentRow, PreviousRow: PByteArray;
-  BytesPerRow, PixelByteSize: Integer);
-var
-  Index : Integer;
-begin
- for Index := 1 to BytesPerRow
-  do CurrentRow[Index] := (CurrentRow[Index] + PreviousRow[Index]) and $FF;
-end;
 
 function TPortableNetworkGraphic.GetBitDepth: Byte;
 begin
@@ -1190,60 +1147,6 @@ end;
 function TPortableNetworkGraphic.HasPhysicalPixelDimensionsInformation: Boolean;
 begin
  Result := Assigned(FPhysicalDimensions);
-end;
-
-procedure TPortableNetworkGraphic.FilterAverage(CurrentRow, PreviousRow: PByteArray;
-  BytesPerRow, PixelByteSize: Integer);
-var
-  Index : Integer;
-begin
- for Index := 1 to PixelByteSize
-  do CurrentRow[Index] := (CurrentRow[Index] + PreviousRow[Index] shr 1) and $FF;
-
- for Index := PixelByteSize + 1 to BytesPerRow
-  do CurrentRow[Index] := (CurrentRow[Index] + (CurrentRow[Index - PixelByteSize] + PreviousRow[Index]) shr 1) and $FF;
-end;
-
-function PaethPredictor(a, b, c: Byte): Byte;
-var
-  DistA, DistB, DistC: Integer;
-begin
- DistA := Abs(b - c);
- DistB := Abs(a - c);
- DistC := Abs(a + b - c * 2);
-
- if (DistA <= DistB) and (DistA <= DistC) then Result := a else
- if DistB <= DistC
-  then Result := b
-  else Result := c;
-end;
-
-procedure TPortableNetworkGraphic.FilterPaeth(CurrentRow, PreviousRow: PByteArray;
-  BytesPerRow, PixelByteSize: Integer);
-var
-  Index : Integer;
-begin
- for Index := 1 to PixelByteSize
-  do CurrentRow[Index] := (CurrentRow[Index] +
-       PaethPredictor(0, PreviousRow[Index], 0)) and $FF;
-
- for Index := PixelByteSize + 1 to BytesPerRow
-  do CurrentRow[Index] := (CurrentRow[Index] +
-       PaethPredictor(CurrentRow[Index - PixelByteSize], PreviousRow[Index],
-         PreviousRow[Index - PixelByteSize])) and $FF;
-end;
-
-procedure TPortableNetworkGraphic.FilterRow(FilterMethod: TAdaptiveFilterMethod;
-  CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
-begin
- case FilterMethod of
-  afmNone    : ;
-  afmSub     : FilterSub(CurrentRow, PreviousRow, BytesPerRow, PixelByteSize);
-  afmUp      : FilterUp(CurrentRow, PreviousRow, BytesPerRow, PixelByteSize);
-  afmAverage : FilterAverage(CurrentRow, PreviousRow, BytesPerRow, PixelByteSize);
-  afmPaeth   : FilterPaeth(CurrentRow, PreviousRow, BytesPerRow, PixelByteSize);
-  else raise EPngError.Create(RCStrUnsupportedFilter);
- end;
 end;
 
 procedure TPortableNetworkGraphic.Clear;
@@ -2026,9 +1929,9 @@ end;
 *)
 
 
-{ TPortableNetworkGraphic32 }
+{ TPortableNetworkGraphicPixel32 }
 
-procedure TPortableNetworkGraphic32.Assign(Source: TPersistent);
+procedure TPortableNetworkGraphicPixel32.Assign(Source: TPersistent);
 var
   EncoderClass : TCustomPngEncoderClass;
   DataStream   : TMemoryStream;
@@ -2084,7 +1987,7 @@ begin
  else inherited;
 end;
 
-procedure TPortableNetworkGraphic32.AssignTo(Dest: TPersistent);
+procedure TPortableNetworkGraphicPixel32.AssignTo(Dest: TPersistent);
 begin
  if Dest is TGuiCustomPixelMap then
   begin
@@ -2112,7 +2015,7 @@ begin
  Result := -1;
 end;
 
-procedure TPortableNetworkGraphic32.AssignPropertiesFromPixelMap(
+procedure TPortableNetworkGraphicPixel32.AssignPropertiesFromPixelMap(
   PixelMap: TGuiCustomPixelMap);
 var
   Index         : Integer;
@@ -2266,22 +2169,7 @@ begin
   end;
 end;
 
-function TPortableNetworkGraphic32.ColorInPalette(Pixel: TPixel32): Integer;
-var
-  Color24 : TRGB24;
-begin
- for Result := 0 to FPaletteChunk.Count - 1 do
-  begin
-   Color24 := PaletteChunk.PaletteEntry[Result];
-   if (Pixel.R = Color24.R) and
-      (Pixel.G = Color24.G) and
-      (Pixel.B = Color24.B)
-    then Exit;
-  end;
- Result := -1;
-end;
-
-procedure TPortableNetworkGraphic32.DrawToPixelMap(
+procedure TPortableNetworkGraphicPixel32.DrawToPixelMap(
   PixelMap: TGuiCustomPixelMap);
 var
   DecoderClass : TCustomPngDecoderClass;
@@ -2386,7 +2274,7 @@ begin
  end;
 end;
 
-function TPortableNetworkGraphic32.PixelmapScanline(Bitmap: TObject;
+function TPortableNetworkGraphicPixel32.PixelmapScanline(Bitmap: TObject;
   Y: Integer): Pointer;
 begin
  if Bitmap is TGuiCustomPixelMap
@@ -2395,6 +2283,7 @@ begin
 end;
 
 
+(*
 { TPortableNetworkGraphicBitmap }
 
 function TPortableNetworkGraphicBitmap.GetScanline(Bitmap: TObject; Y: Integer): Pointer;
@@ -2559,8 +2448,7 @@ begin
    IsAlpha := False;
    TempAlpha := 0;
 
-(*
-
+{
    // check every pixel in the bitmap for the use of the alpha channel,
    // whether the image is grayscale or whether the colors can be stored
    // as a palette (and build the palette at the same time
@@ -2693,7 +2581,7 @@ begin
    if Assigned(FGammaChunk)
     then FreeAndNil(FGammaChunk);
    {$ENDIF}
-*)
+}
   end;
 end;
 
@@ -2763,10 +2651,11 @@ begin
   end
  else inherited;
 end;
-
+*)
 
 { TPngBitmap }
 
+(*
 constructor TPngBitmap.Create;
 begin
  inherited;
@@ -2780,7 +2669,7 @@ end;
 
 procedure TPngBitmap.Assign(Source: TPersistent);
 begin
-(*
+{
  if Source is TPortableNetworkGraphicBitmap then
   with TPortableNetworkGraphicBitmap(Source) do
    begin
@@ -2792,26 +2681,25 @@ begin
     DrawToBitmap(Self);
    end
  else
-*)
+}
 
  inherited;
 end;
 
 procedure TPngBitmap.AssignTo(Dest: TPersistent);
 begin
-(*
+{
  if Dest is TPortableNetworkGraphic then
   with TPortableNetworkGraphic(Dest) do
    begin
 
    end
  else
-*)
+}
 
  inherited;
 end;
 
-(*
 function TPngBitmap.GetScanline(Bitmap: TObject; Y: Integer): Pointer;
 var
   Percent : Byte;
@@ -2824,9 +2712,7 @@ begin
  Progress(Self, psRunning, Percent, True,
     Rect(0, 0, FPNG.Width, Y), IntToStr(Percent));
 end;
-*)
 
-(*
 procedure TPngBitmap.MatchPixelFormat;
 begin
  with FPNG do
@@ -2865,7 +2751,6 @@ begin
     end;
   end;
 end;
-*)
 
 function TPngBitmap.GetSupportsPartialTransparency: Boolean;
 begin
@@ -2878,7 +2763,7 @@ var
   MaxLogPalette   : TMaxLogPalette;
   PngPaletteEntry : TRGB24;
 begin
-(*
+{
  with FPNG do
   if Assigned(PaletteChunk) then
    begin
@@ -2901,10 +2786,9 @@ begin
 //    CopyPaletteToDIB(FPalette);
   end
  else Result := CreateHalftonePalette(Canvas.Handle);
-*)
+}
 end;
 
-(*
 procedure TPngBitmap.RenderPNG;
 var
   DecoderClass : TCustomPngDecoderClass;
@@ -3040,7 +2924,6 @@ begin
    end;
   end;
 end;
-*)
 
 procedure TPngBitmap.LoadFromResourceName(Instance: THandle;
   const ResName: String);
@@ -3079,6 +2962,7 @@ begin
    Free;
   end;
 end;
+*)
 
 
 procedure BuildCrcTable(Polynomial: Cardinal);
@@ -3106,10 +2990,11 @@ end;
 
 initialization
   BuildCrcTable($EDB88320);
-  TPicture.RegisterFileFormat('PNG', 'Portable Network Graphics', TPngBitmap);
+  RegisterGraphicFileFormat(TPortableNetworkGraphicPixel32);
+//  TPicture.RegisterFileFormat('PNG', 'Portable Network Graphics', TPngBitmap);
 
 finalization
   if Assigned(GCrcTable) then Dispose(GCrcTable);
-  TPicture.UnregisterGraphicClass(TPngBitmap);
+//  TPicture.UnregisterGraphicClass(TPngBitmap);
 
 end.

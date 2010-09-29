@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, PngImage, DAV_GuiPng, DAV_GuiPixelMap;
+  StdCtrls, ExtCtrls, PngImage, DAV_GuiCommon, DAV_GuiPng, DAV_GuiPixelMap;
 
 type
   TFmDisplay = class(TForm)
@@ -57,11 +57,13 @@ end;
 procedure TFmDisplay.RbInternalClick(Sender: TObject);
 begin
  FInternal.PaintTo(Image.Canvas);
+ Image.Invalidate;
 end;
 
 procedure TFmDisplay.RbPngImageClick(Sender: TObject);
 begin
  FReference.PaintTo(Image.Canvas);
+ Image.Invalidate;
 end;
 
 end.

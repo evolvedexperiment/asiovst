@@ -329,7 +329,7 @@ type
   protected
     FBytesPerRow : Integer;
     FRowByteSize : Integer;
-    function ColorInPalette(Color: TRGB32): Integer; virtual;
+    function ColorInPalette(Color: TBGR32): Integer; virtual;
     procedure TransferData(Source: Pointer; Destination: Pointer); virtual; abstract;
   public
     constructor Create(Stream: TStream; Header: TChunkPngImageHeader;
@@ -1862,7 +1862,7 @@ begin
 end;
 
 function TCustomPngNonInterlacedEncoder.ColorInPalette(
-  Color: TRGB32): Integer;
+  Color: TBGR32): Integer;
 var
   Color24 : TRGB24;
 begin
@@ -1911,7 +1911,7 @@ procedure TPngRGBAGrayscale1bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -1939,7 +1939,7 @@ procedure TPngRGBAGrayscale2bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -1967,7 +1967,7 @@ procedure TPngRGBAGrayscale4bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -1995,7 +1995,7 @@ procedure TPngRGBAGrayscale8bitEncoder.TransferData(Source: Pointer;
 var
   Index : Integer;
   Dest  : PByte absolute Destination;
-  Src   : PRGB32 absolute Source;
+  Src   : PBGR32 absolute Source;
 begin
  for Index := 0 to FHeader.Width - 1 do
   begin
@@ -2013,7 +2013,7 @@ procedure TPngRGBATrueColor8bitEncoder.TransferData(Source: Pointer;
 var
   Index : Integer;
   Dest  : PRGB24 absolute Destination;
-  Src   : PRGB32 absolute Source;
+  Src   : PBGR32 absolute Source;
 begin
  for Index := 0 to FHeader.Width - 1 do
   begin
@@ -2033,7 +2033,7 @@ procedure TPngRGBAPalette1bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -2061,7 +2061,7 @@ procedure TPngRGBAPalette2bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -2089,7 +2089,7 @@ procedure TPngRGBAPalette4bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -2117,7 +2117,7 @@ procedure TPngRGBAPalette8bitEncoder.TransferData(Source: Pointer;
 var
   Index : Integer;
   Dest  : PByte absolute Destination;
-  Src   : PRGB32 absolute Source;
+  Src   : PBGR32 absolute Source;
 begin
  for Index := 0 to FHeader.Width - 1 do
   begin
@@ -2135,7 +2135,7 @@ procedure TPngRGBAGrayscaleAlpha8bitEncoder.TransferData(Source: Pointer;
 var
   Index : Integer;
   Dest  : PByte absolute Destination;
-  Src   : PRGB32 absolute Source;
+  Src   : PBGR32 absolute Source;
 begin
  for Index := 0 to FHeader.Width - 1 do
   begin
@@ -2162,7 +2162,7 @@ procedure TPngBGRATrueColor8bitEncoder.TransferData(Source: Pointer;
 var
   Index : Integer;
   Dest  : PRGB24 absolute Destination;
-  Src   : PRGB32 absolute Source;
+  Src   : PBGR32 absolute Source;
 begin
  for Index := 0 to FHeader.Width - 1 do
   begin
@@ -2182,7 +2182,7 @@ procedure TPngBGRAPalette1bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -2210,7 +2210,7 @@ procedure TPngBGRAPalette2bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -2238,7 +2238,7 @@ procedure TPngBGRAPalette4bitEncoder.TransferData(Source: Pointer;
 var
   Index    : Integer;
   Dest     : PByte absolute Destination;
-  Src      : PRGB32 absolute Source;
+  Src      : PBGR32 absolute Source;
   BitIndex : Byte;
 begin
  BitIndex := 8;
@@ -2266,7 +2266,7 @@ procedure TPngBGRAPalette8bitEncoder.TransferData(Source: Pointer;
 var
   Index : Integer;
   Dest  : PByte absolute Destination;
-  Src   : PRGB32 absolute Source;
+  Src   : PBGR32 absolute Source;
 begin
  for Index := 0 to FHeader.Width - 1 do
   begin
@@ -2283,7 +2283,7 @@ procedure TPngBGRATrueColorAlpha8bitEncoder.TransferData(Source: Pointer;
   Destination: Pointer);
 var
   Index : Integer;
-  Dest  : PRGB32 absolute Source;
+  Dest  : PRGB32 absolute Destination;
   Src   : PBGR32 absolute Source;
 begin
  for Index := 0 to FHeader.Width - 1 do
@@ -2291,6 +2291,7 @@ begin
    Dest^.R := Src^.R;
    Dest^.G := Src^.G;
    Dest^.B := Src^.B;
+   Dest^.A := Src^.A;
    Inc(Src);
    Inc(Dest);
   end;

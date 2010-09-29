@@ -63,15 +63,94 @@ type
 
     class function CanLoad(const FileName: TFileName): Boolean; overload; virtual; abstract;
     class function CanLoad(Stream: TStream): Boolean; overload; virtual; abstract;
+    class function CanHandleExtension(const FileName: TFileName): Boolean; virtual; abstract;
 
     procedure LoadFromStream(Stream: TStream); virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
-
-    procedure LoadFromFile(Filename: TFilename); virtual; abstract;
-    procedure SaveToFile(Filename: TFilename); virtual; abstract;
+  public
+    constructor Create; virtual; abstract;
+    procedure LoadFromFile(Filename: TFilename); virtual;
+    procedure SaveToFile(Filename: TFilename); virtual;
   end;
+  TGuiCustomFileFormatClass = class of TGuiCustomFileFormat;
+
+procedure RegisterGraphicFileFormat(FileFormatClass: TGuiCustomFileFormatClass);
+procedure RegisterGraphicFileFormats(FileFormatClasses: array of TGuiCustomFileFormatClass);
+function FindGraphicFileFormatByExtension(Extension: TFileName): TGuiCustomFileFormatClass;
 
 implementation
+
+var
+  GGraphicFileFormatClasses : array of TGuiCustomFileFormatClass;
+
+function IsGraphicFileFormatRegistered(FileFormatClass: TGuiCustomFileFormatClass): Boolean;
+var
+  FileFormatClassIndex : Integer;
+begin
+ Result := False;
+ for FileFormatClassIndex := 0 to Length(GGraphicFileFormatClasses) - 1 do
+  if GGraphicFileFormatClasses[FileFormatClassIndex] = FileFormatClass then
+   begin
+    Result := True;
+    Exit;
+   end;
+end;
+
+procedure RegisterGraphicFileFormat(FileFormatClass: TGuiCustomFileFormatClass);
+begin
+ Assert(IsGraphicFileFormatRegistered(FileFormatClass) = False);
+ SetLength(GGraphicFileFormatClasses, Length(GGraphicFileFormatClasses) + 1);
+ GGraphicFileFormatClasses[Length(GGraphicFileFormatClasses) - 1] := FileFormatClass;
+end;
+
+procedure RegisterGraphicFileFormats(FileFormatClasses: array of TGuiCustomFileFormatClass);
+var
+  FileFormatClassIndex : Integer;
+begin
+ for FileFormatClassIndex := 0 to Length(FileFormatClasses) - 1
+  do RegisterGraphicFileFormat(FileFormatClasses[FileFormatClassIndex]);
+end;
+
+function FindGraphicFileFormatByExtension(Extension: TFileName): TGuiCustomFileFormatClass;
+var
+  FileFormatClassIndex : Integer;
+begin
+ Result := nil;
+ for FileFormatClassIndex := 0 to Length(GGraphicFileFormatClasses) - 1 do
+  with GGraphicFileFormatClasses[FileFormatClassIndex] do
+   if CanHandleExtension(Extension) then
+    begin
+     Result := GGraphicFileFormatClasses[FileFormatClassIndex];
+     Exit;
+    end;
+end;
+
+
+{ TGuiCustomFileFormat }
+
+procedure TGuiCustomFileFormat.LoadFromFile(Filename: TFilename);
+var
+  FileStream : TFileStream;
+begin
+ FileStream := TFileStream.Create(FileName, fmOpenRead);
+ try
+  LoadFromStream(FileStream);
+ finally
+  FreeAndNil(FileStream);
+ end;
+end;
+
+procedure TGuiCustomFileFormat.SaveToFile(Filename: TFilename);
+var
+  FileStream : TFileStream;
+begin
+ FileStream := TFileStream.Create(FileName, fmCreate);
+ try
+  SaveToStream(FileStream);
+ finally
+  FreeAndNil(FileStream);
+ end;
+end;
 
 end.
 
