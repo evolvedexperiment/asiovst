@@ -3,7 +3,7 @@ object FmSettings: TFmSettings
   Top = 51
   BorderStyle = bsDialog
   Caption = 'Settings'
-  ClientHeight = 257
+  ClientHeight = 283
   ClientWidth = 385
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object FmSettings: TFmSettings
   OnShow = FormShow
   DesignSize = (
     385
-    257)
+    283)
   PixelsPerInch = 96
   TextHeight = 13
   object GbTrials: TGroupBox
@@ -63,7 +63,7 @@ object FmSettings: TFmSettings
       Value = 30
       OnKeyPress = SeSettingsPress
     end
-    object CbAuto: TCheckBox
+    object CbAutoTrials: TCheckBox
       Left = 100
       Top = 26
       Width = 40
@@ -78,7 +78,7 @@ object FmSettings: TFmSettings
     Left = 8
     Top = 103
     Width = 237
-    Height = 115
+    Height = 141
     Caption = 'Optimizer'
     TabOrder = 1
     object LbInitialSeed: TLabel
@@ -94,6 +94,20 @@ object FmSettings: TFmSettings
       Width = 86
       Height = 13
       Caption = 'Crossover (in %):'
+    end
+    object Label1: TLabel
+      Left = 8
+      Top = 83
+      Width = 71
+      Height = 13
+      Caption = 'Weight (in %):'
+    end
+    object LbBest: TLabel
+      Left = 8
+      Top = 111
+      Width = 99
+      Height = 13
+      Caption = 'Consider best (in %)'
     end
     object SeInitialSeed: TSpinEdit
       Left = 162
@@ -114,13 +128,44 @@ object FmSettings: TFmSettings
       MaxValue = 100
       MinValue = 0
       TabOrder = 1
-      Value = 50
+      Value = 90
+      OnKeyPress = SeSettingsPress
+    end
+    object SeWeight: TSpinEdit
+      Left = 162
+      Top = 80
+      Width = 67
+      Height = 22
+      MaxValue = 100
+      MinValue = 0
+      TabOrder = 2
+      Value = 70
+      OnKeyPress = SeSettingsPress
+    end
+    object CbWeightDither: TCheckBox
+      Left = 98
+      Top = 82
+      Width = 58
+      Height = 17
+      Caption = 'dither'
+      TabOrder = 3
+      OnKeyPress = SeSettingsPress
+    end
+    object SeBest: TSpinEdit
+      Left = 162
+      Top = 108
+      Width = 67
+      Height = 22
+      MaxValue = 100
+      MinValue = 0
+      TabOrder = 4
+      Value = 0
       OnKeyPress = SeSettingsPress
     end
   end
   object BtOK: TButton
     Left = 140
-    Top = 224
+    Top = 250
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -132,7 +177,7 @@ object FmSettings: TFmSettings
   end
   object BtCancel: TButton
     Left = 221
-    Top = 224
+    Top = 250
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -142,7 +187,7 @@ object FmSettings: TFmSettings
   end
   object BtApply: TButton
     Left = 302
-    Top = 224
+    Top = 250
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -154,7 +199,7 @@ object FmSettings: TFmSettings
     Left = 251
     Top = 71
     Width = 126
-    Height = 147
+    Height = 173
     Caption = 'Modifications'
     TabOrder = 5
     object CbCorrectColor: TCheckBox
@@ -202,6 +247,15 @@ object FmSettings: TFmSettings
       TabOrder = 4
       OnKeyPress = SeSettingsPress
     end
+    object CbChangeOrder: TCheckBox
+      Left = 12
+      Top = 141
+      Width = 97
+      Height = 17
+      Caption = 'Change Order'
+      TabOrder = 5
+      OnKeyPress = SeSettingsPress
+    end
   end
   object GbCircles: TGroupBox
     Left = 251
@@ -226,7 +280,18 @@ object FmSettings: TFmSettings
       MinValue = 1
       TabOrder = 0
       Value = 1
+      OnChange = SeCircleCountChange
       OnKeyPress = SeSettingsPress
     end
+  end
+  object CbAutoInitialSeed: TCheckBox
+    Left = 108
+    Top = 129
+    Width = 42
+    Height = 17
+    Caption = 'auto'
+    TabOrder = 7
+    OnClick = CbAutoInitialSeedClick
+    OnKeyPress = SeSettingsPress
   end
 end

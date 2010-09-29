@@ -158,7 +158,7 @@ end;
 function TEvaluatedPopulation.GetData(Index: Integer): Double;
 begin
  if (Index > 0) and (Index <= Length(FData))
-  then result := FData[Index]
+  then Result := FData[Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
@@ -197,7 +197,7 @@ begin
  CalculateGainR0;
 
  FBestPopulationIndex := -1;
- FPopulationCount := 1000;
+ FPopulationCount := 100;
  PopulationCountChanged;
 
  FVariableCount := 1;

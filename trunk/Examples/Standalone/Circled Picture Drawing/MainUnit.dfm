@@ -87,6 +87,10 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
         Caption = 'Open Best...'
         OnClick = MiOpenBestClick
       end
+      object MiCopyReference: TMenuItem
+        Caption = 'Copy Reference'
+        OnClick = MiCopyReferenceClick
+      end
       object MiSaveDrawing: TMenuItem
         Caption = 'Save Drawing...'
         Enabled = False

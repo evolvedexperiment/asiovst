@@ -297,47 +297,47 @@ var
   X, Y             : Integer;
 begin
  PNGObject := nil;
-  try
-   PNGObject := TPngObject.Create;
-   PNGObject.LoadFromStream(SrcStream);
+ try
+  PNGObject := TPngObject.Create;
+  PNGObject.LoadFromStream(SrcStream);
 
-   PixelMap.Assign(PNGObject);
-   PixelMap.ResetAlpha;
+  PixelMap.Assign(PNGObject);
+  PixelMap.ResetAlpha;
 
-   case PNGObject.TransparencyMode of
-    ptmPartial:
-      begin
-       if (PNGObject.Header.ColorType = COLOR_GRAYSCALEALPHA) or
-          (PNGObject.Header.ColorType = COLOR_RGBALPHA) then
-        begin
-         PixelPtr := PPixel32(PixelMap.DataPointer);
-         for Y := 0 to PixelMap.Height - 1 do
-          begin
-           AlphaPtr := PByte(PNGObject.AlphaScanline[Y]);
-           for X := 0 to PixelMap.Width - 1 do
-            begin
-             PixelPtr^.ARGB := (PixelPtr^.ARGB and $00FFFFFF) or (Integer(AlphaPtr^) shl 24);
-             Inc(PixelPtr);
-             Inc(AlphaPtr);
-            end;
-          end;
-        end;
-      end;
-    ptmBit:
-      begin
-       TransparentColor := ConvertColor(PNGObject.TransparentColor);
-       PixelPtr := PPixel32(PixelMap.DataPointer);
-       for X := 0 to PixelMap.Height * PixelMap.Width - 1 do
-        begin
-         if PixelPtr^.ARGB = TransparentColor.ARGB
-          then PixelPtr^.ARGB := PixelPtr^.ARGB and $00FFFFFF;
-         Inc(PixelPtr);
-        end;
-      end;
-   end;
-  finally
-   if Assigned(PNGObject) then PNGObject.Free;
+  case PNGObject.TransparencyMode of
+   ptmPartial:
+     begin
+      if (PNGObject.Header.ColorType = COLOR_GRAYSCALEALPHA) or
+         (PNGObject.Header.ColorType = COLOR_RGBALPHA) then
+       begin
+        PixelPtr := PPixel32(PixelMap.DataPointer);
+        for Y := 0 to PixelMap.Height - 1 do
+         begin
+          AlphaPtr := PByte(PNGObject.AlphaScanline[Y]);
+          for X := 0 to PixelMap.Width - 1 do
+           begin
+            PixelPtr^.ARGB := (PixelPtr^.ARGB and $00FFFFFF) or (Integer(AlphaPtr^) shl 24);
+            Inc(PixelPtr);
+            Inc(AlphaPtr);
+           end;
+         end;
+       end;
+     end;
+   ptmBit:
+     begin
+      TransparentColor := ConvertColor(PNGObject.TransparentColor);
+      PixelPtr := PPixel32(PixelMap.DataPointer);
+      for X := 0 to PixelMap.Height * PixelMap.Width - 1 do
+       begin
+        if PixelPtr^.ARGB = TransparentColor.ARGB
+         then PixelPtr^.ARGB := PixelPtr^.ARGB and $00FFFFFF;
+        Inc(PixelPtr);
+       end;
+     end;
   end;
+ finally
+  if Assigned(PNGObject) then PNGObject.Free;
+ end;
 end;
 
 procedure LoadPNGintoPixelMap(PixelMap: TGuiCustomPixelMap; Filename: string);
@@ -454,6 +454,8 @@ end;
 { TCustomTestPng32Drawing }
 
 procedure TCustomTestPng32Drawing.InternalTestDrawing(FileName: TFileName);
+var
+  TempPixelMap : TGuiCustomPixelMap;
 begin
  if not FileExists(FileName)
   then Fail(Format(RCStrTestFileNotFound, [FileName]));
@@ -470,7 +472,14 @@ begin
    ClientWidth := FPortableNetworkGraphic.Width + 16;
    ClientHeight := FPortableNetworkGraphic.Height + LbRenderer.Height + BtYes.Height + 32;
 
-   Internal.Assign(FPortableNetworkGraphic);
+   TempPixelMap := TGuiPixelMapMemory.Create;
+   try
+    TempPixelMap.Assign(FPortableNetworkGraphic);
+    Internal.SetSize(TempPixelMap.Width, TempPixelMap.Height);
+    Internal.Draw(TempPixelMap);
+   finally
+    FreeAndNil(TempPixelMap);
+   end;
 
    Assert(Internal.Height = FPortableNetworkGraphic.Height);
    Assert(Internal.Width = FPortableNetworkGraphic.Width);
@@ -704,7 +713,7 @@ procedure TTestPng32DrawingSuiteBasicNonInterlaced.TestDrawingIndexed1bit;
 var
   PixelMap : TGuiCustomPixelMap;
 begin
- InternalTestDrawing('basn3p01.png');
+ InternalTestDrawing(CPngSuiteDir + 'basn3p01.png');
 
  // check if format for saving can be determined correctly
  PixelMap := TGuiPixelMapMemory.Create;
