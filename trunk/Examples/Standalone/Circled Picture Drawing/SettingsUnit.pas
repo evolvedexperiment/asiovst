@@ -31,13 +31,16 @@ type
     SeInitialSeed: TSpinEdit;
     SeTrialsPerCircle: TSpinEdit;
     SeUpdateTrials: TSpinEdit;
-    CbAutoInitialSeed: TCheckBox;
     Label1: TLabel;
     SeWeight: TSpinEdit;
     CbWeightDither: TCheckBox;
     LbBest: TLabel;
     SeBest: TSpinEdit;
     CbChangeOrder: TCheckBox;
+    CbRandomOrder: TCheckBox;
+    LbAdditional: TLabel;
+    SeAdditional: TSpinEdit;
+    CbAutoInitialSeed: TCheckBox;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtApplyClick(Sender: TObject);
@@ -113,6 +116,7 @@ begin
    SeCrossover.Value := ReadInteger('Settings', 'Crossover', SeCrossover.Value);
    SeWeight.Value := ReadInteger('Settings', 'Weight', SeWeight.Value);
    SeBest.Value := ReadInteger('Settings', 'Best', SeBest.Value);
+   SeAdditional.Value := ReadInteger('Settings', 'Additional', SeAdditional.Value);
    SeCircleCount.Value := ReadInteger('Settings', 'Number of Circles', SeCircleCount.Value);
    CbCorrectColor.Checked := ReadBool('Settings', 'Correct Color', CbCorrectColor.Checked);
    CbCorrectPosition.Checked := ReadBool('Settings', 'Correct Position', CbCorrectPosition.Checked);
@@ -121,12 +125,14 @@ begin
    CbRandomCircle.Checked := ReadBool('Settings', 'Random Circle', CbRandomCircle.Checked);
    CbWeightDither.Checked := ReadBool('Settings', 'Weight Dither', CbWeightDither.Checked);
    CbChangeOrder.Checked := ReadBool('Settings', 'Change Order', CbChangeOrder.Checked);
+   CbRandomOrder.Checked := ReadBool('Settings', 'Random Order', CbRandomOrder.Checked);
 
    // update GUI
    SeInitialSeed.Enabled := not CbAutoInitialSeed.Checked;
    if CbAutoInitialSeed.Checked
     then SeInitialSeed.Value := 10 * 7 * SeCircleCount.Value;
    CbChangeOrder.Enabled := SeCircleCount.Value > 1;
+   CbRandomOrder.Enabled := not CbChangeOrder.Enabled;
   finally
    Free;
   end;
@@ -144,6 +150,7 @@ begin
    WriteInteger('Settings', 'Crossover', SeCrossover.Value);
    WriteInteger('Settings', 'Weight', SeWeight.Value);
    WriteInteger('Settings', 'Best', SeBest.Value);
+   WriteInteger('Settings', 'Additional', SeAdditional.Value);
    WriteInteger('Settings', 'Number of Circles', SeCircleCount.Value);
    WriteBool('Settings', 'Correct Color', CbCorrectColor.Checked);
    WriteBool('Settings', 'Correct Position', CbCorrectPosition.Checked);
@@ -152,16 +159,19 @@ begin
    WriteBool('Settings', 'Random Circle', CbRandomCircle.Checked);
    WriteBool('Settings', 'Weight Dither', CbWeightDither.Checked);
    WriteBool('Settings', 'Change Order', CbChangeOrder.Checked);
+   WriteBool('Settings', 'Random Order', CbRandomOrder.Checked);
 
    // update program settings
    AutoNextTrial := CbAutoTrials.Checked;
    AutoInitialSeed := CbAutoInitialSeed.Checked;
+   NumberOfCircles := SeCircleCount.Value;
    TrialsPerCircle := SeTrialsPerCircle.Value;
    UpdateTrials := SeUpdateTrials.Value;
    InitialSeed := SeInitialSeed.Value;
    Crossover := 0.01 * SeCrossover.Value;
    Weight := 0.01 * SeWeight.Value;
    Best := 0.01 * SeBest.Value;
+   Additional := 0.01 * SeAdditional.Value;
    WeightDither := CbWeightDither.Checked;
    ChangeOrder := CbChangeOrder.Checked;
    CorrectColor := CbCorrectColor.Checked;
@@ -169,7 +179,7 @@ begin
    CorrectRadius := CbCorrectRadius.Checked;
    CorrectInvisible := CbCorrectInvisible.Checked;
    RandomCircle := CbRandomCircle.Checked;
-   NumberOfCircles := SeCircleCount.Value;
+   RandomOrder := CbRandomOrder.Checked;
   finally
    Free;
   end;
@@ -180,6 +190,7 @@ begin
  if CbAutoInitialSeed.Checked
   then SeInitialSeed.Value := 10 * 7 * SeCircleCount.Value;
  CbChangeOrder.Enabled := SeCircleCount.Value > 1;
+ CbRandomOrder.Enabled := not CbChangeOrder.Enabled;
 end;
 
 procedure TFmSettings.SeSettingsPress(Sender: TObject; var Key: Char);

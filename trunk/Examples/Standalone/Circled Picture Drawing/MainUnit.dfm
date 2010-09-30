@@ -1,6 +1,6 @@
 object FmCircledPictureDialog: TFmCircledPictureDialog
-  Left = 392
-  Top = 72
+  Left = 300
+  Top = 56
   Caption = 'Circled Picture Dialog'
   ClientHeight = 234
   ClientWidth = 424
@@ -75,6 +75,10 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
       object MiSaveHighResolution: TMenuItem
         Caption = 'Save High Resolution...'
         OnClick = MiSaveHighResolutionClick
+      end
+      object MiSaveAnimation: TMenuItem
+        Caption = 'Save Animation...'
+        OnClick = MiSaveAnimationClick
       end
       object N3: TMenuItem
         Caption = '-'

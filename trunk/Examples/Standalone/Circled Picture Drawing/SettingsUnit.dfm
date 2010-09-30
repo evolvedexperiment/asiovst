@@ -3,7 +3,7 @@ object FmSettings: TFmSettings
   Top = 51
   BorderStyle = bsDialog
   Caption = 'Settings'
-  ClientHeight = 283
+  ClientHeight = 308
   ClientWidth = 385
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,14 +17,14 @@ object FmSettings: TFmSettings
   OnShow = FormShow
   DesignSize = (
     385
-    283)
+    308)
   PixelsPerInch = 96
   TextHeight = 13
   object GbTrials: TGroupBox
     Left = 8
     Top = 8
     Width = 237
-    Height = 89
+    Height = 81
     Caption = 'Trials'
     TabOrder = 0
     object LbTrialsPerCircle: TLabel
@@ -66,7 +66,7 @@ object FmSettings: TFmSettings
     object CbAutoTrials: TCheckBox
       Left = 100
       Top = 26
-      Width = 40
+      Width = 43
       Height = 17
       Caption = 'auto'
       Checked = True
@@ -76,9 +76,9 @@ object FmSettings: TFmSettings
   end
   object GbOptimizer: TGroupBox
     Left = 8
-    Top = 103
+    Top = 95
     Width = 237
-    Height = 141
+    Height = 174
     Caption = 'Optimizer'
     TabOrder = 1
     object LbInitialSeed: TLabel
@@ -109,6 +109,13 @@ object FmSettings: TFmSettings
       Height = 13
       Caption = 'Consider best (in %)'
     end
+    object LbAdditional: TLabel
+      Left = 8
+      Top = 139
+      Width = 133
+      Height = 13
+      Caption = 'Additional Population (in %)'
+    end
     object SeInitialSeed: TSpinEdit
       Left = 162
       Top = 24
@@ -117,7 +124,7 @@ object FmSettings: TFmSettings
       MaxValue = 9999999
       MinValue = 5
       TabOrder = 0
-      Value = 1000
+      Value = 100
       OnKeyPress = SeSettingsPress
     end
     object SeCrossover: TSpinEdit
@@ -143,9 +150,9 @@ object FmSettings: TFmSettings
       OnKeyPress = SeSettingsPress
     end
     object CbWeightDither: TCheckBox
-      Left = 98
+      Left = 100
       Top = 82
-      Width = 58
+      Width = 56
       Height = 17
       Caption = 'dither'
       TabOrder = 3
@@ -162,10 +169,31 @@ object FmSettings: TFmSettings
       Value = 0
       OnKeyPress = SeSettingsPress
     end
+    object SeAdditional: TSpinEdit
+      Left = 162
+      Top = 136
+      Width = 67
+      Height = 22
+      MaxValue = 100
+      MinValue = 0
+      TabOrder = 5
+      Value = 0
+      OnKeyPress = SeSettingsPress
+    end
+    object CbAutoInitialSeed: TCheckBox
+      Left = 100
+      Top = 26
+      Width = 43
+      Height = 17
+      Caption = 'auto'
+      TabOrder = 6
+      OnClick = CbAutoInitialSeedClick
+      OnKeyPress = SeSettingsPress
+    end
   end
   object BtOK: TButton
     Left = 140
-    Top = 250
+    Top = 275
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -177,7 +205,7 @@ object FmSettings: TFmSettings
   end
   object BtCancel: TButton
     Left = 221
-    Top = 250
+    Top = 275
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -187,7 +215,7 @@ object FmSettings: TFmSettings
   end
   object BtApply: TButton
     Left = 302
-    Top = 250
+    Top = 275
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -197,9 +225,9 @@ object FmSettings: TFmSettings
   end
   object GbModifications: TGroupBox
     Left = 251
-    Top = 71
+    Top = 95
     Width = 126
-    Height = 173
+    Height = 174
     Caption = 'Modifications'
     TabOrder = 5
     object CbCorrectColor: TCheckBox
@@ -261,7 +289,7 @@ object FmSettings: TFmSettings
     Left = 251
     Top = 8
     Width = 126
-    Height = 57
+    Height = 81
     Caption = 'Circles'
     TabOrder = 6
     object LbCircleCount: TLabel
@@ -283,15 +311,14 @@ object FmSettings: TFmSettings
       OnChange = SeCircleCountChange
       OnKeyPress = SeSettingsPress
     end
-  end
-  object CbAutoInitialSeed: TCheckBox
-    Left = 108
-    Top = 129
-    Width = 42
-    Height = 17
-    Caption = 'auto'
-    TabOrder = 7
-    OnClick = CbAutoInitialSeedClick
-    OnKeyPress = SeSettingsPress
+    object CbRandomOrder: TCheckBox
+      Left = 12
+      Top = 54
+      Width = 97
+      Height = 17
+      Caption = 'Random Order'
+      TabOrder = 1
+      OnKeyPress = SeSettingsPress
+    end
   end
 end
