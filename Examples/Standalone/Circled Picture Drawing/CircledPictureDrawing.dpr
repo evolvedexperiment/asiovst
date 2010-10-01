@@ -8,7 +8,9 @@ uses
   madListModules,
   Forms,
   MainUnit in 'MainUnit.pas' {FmCircledPictureDialog},
-  SettingsUnit in 'SettingsUnit.pas' {FmSettings};
+  SettingsUnit in 'SettingsUnit.pas' {FmSettings},
+  ProgressBarUnit in 'ProgressBarUnit.pas' {FmProgressBar},
+  AdditionalChunks in 'AdditionalChunks.pas';
 
 {$R *.res}
 

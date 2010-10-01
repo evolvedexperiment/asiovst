@@ -10,36 +10,6 @@ uses
   DAV_GuiVectorPixel, DAV_GuiVectorPixelCircle;
 
 type
-  TCircleChunk = class(TDefinedChunk)
-  protected
-    FAlpha   : Byte;
-    FCenterX : TFixed24Dot8Point;
-    FCenterY : TFixed24Dot8Point;
-    FColor   : TColor;
-    FRadius  : TFixed24Dot8Point;
-  public
-    constructor Create; override;
-    procedure LoadFromStream(Stream : TStream); override;
-    procedure SaveToStream(Stream : TStream); override;
-    class function GetClassChunkName: TChunkName; override;
-
-    property Radius: TFixed24Dot8Point read FRadius write FRadius;
-    property CenterX: TFixed24Dot8Point read FCenterX write FCenterX;
-    property CenterY: TFixed24Dot8Point read FCenterY write FCenterY;
-    property Color: TColor read FColor write FColor;
-    property Alpha: Byte read FAlpha write FAlpha;
-  end;
-
-  TCircleChunkContainer = class(TChunkContainer)
-  private
-    function GetCircle(Index: Integer): TCircleChunk;
-  public
-    constructor Create; override;
-    class function GetClassChunkName: TChunkName; override;
-
-    property Circle[Index: Integer]: TCircleChunk read GetCircle; default;
-  end;
-
   TEvolutionThread = class(TThread)
   protected
     procedure Execute; override;
@@ -53,6 +23,7 @@ type
     ActionList: TActionList;
     MainMenu: TMainMenu;
     MiBack: TMenuItem;
+    MiCopyReference: TMenuItem;
     MiEvolve: TMenuItem;
     MiExit: TMenuItem;
     MiFile: TMenuItem;
@@ -60,6 +31,7 @@ type
     MiOpenBest: TMenuItem;
     MiOpenDrawing: TMenuItem;
     MiOpenReference: TMenuItem;
+    MiSaveAnimation: TMenuItem;
     MiSaveDrawing: TMenuItem;
     MiSaveHighResolution: TMenuItem;
     MiSaveResult: TMenuItem;
@@ -77,8 +49,9 @@ type
     SaveDialog: TSaveDialog;
     SaveDialogCircles: TSaveDialog;
     StatusBar: TStatusBar;
-    MiCopyReference: TMenuItem;
-    MiSaveAnimation: TMenuItem;
+    MiSavePopulation: TMenuItem;
+    N5: TMenuItem;
+    MiLoadPopulation: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -99,6 +72,8 @@ type
     procedure MiStopContinueClick(Sender: TObject);
     procedure PaintBoxDrawPaint(Sender: TObject);
     procedure PaintBoxRefPaint(Sender: TObject);
+    procedure MiSavePopulationClick(Sender: TObject);
+    procedure MiLoadPopulationClick(Sender: TObject);
   private
     FWorstCost               : Double;
     FMaximumCost             : Double;
@@ -135,6 +110,7 @@ type
     FWeight                  : Single;
     FBest                    : Single;
     FAdditional              : Single;
+    FDrawDraft               : Boolean;
     procedure SetInitialSeed(const Value: Integer);
     procedure SetTrialsPerCircle(const Value: Integer);
     procedure SetUpdateTrials(const Value: Integer);
@@ -145,6 +121,10 @@ type
     procedure SetAdditional(const Value: Single);
     procedure SetRandomOrder(const Value: Boolean);
   protected
+    procedure ResetCircles;
+    procedure SaveDrawingBackup;
+    procedure SavePopulationBackup(FileName: TFileName);
+    procedure LoadPopulationBackup(FileName: TFileName);
     procedure CalculateStaticCosts; virtual;
     procedure SaveDrawing(FileName: TFileName);
     procedure SaveAnimation(FileName: TFileName; ScaleFactor: Single;
@@ -157,7 +137,8 @@ type
     procedure LoadReference(FileName: TFileName);
     function CalculateError(Sender: TObject; var Population: TDifferentialEvolutionPopulation): Double;
     procedure Evolve;
-    procedure InitializeEvolution;
+    procedure InitializeEvolution(InitializePopulation: Boolean = True);
+    procedure StartOptimization(InitializePopulation: Boolean = True);
     procedure DrawResults;
 
     property Additional: Single read FAdditional write SetAdditional;
@@ -191,58 +172,8 @@ implementation
 {$R *.dfm}
 
 uses
-  Filectrl, Math, Registry, IniFiles, DAV_Approximations, SettingsUnit;
-
-{ TCircleChunk }
-
-constructor TCircleChunk.Create;
-begin
- inherited;
- FChunkSize := 3 * SizeOf(TFixed24Dot8Point) + SizeOf(TColor) + SizeOf(Byte);
-end;
-
-class function TCircleChunk.GetClassChunkName: TChunkName;
-begin
- Result := 'circ';
-end;
-
-procedure TCircleChunk.LoadFromStream(Stream: TStream);
-begin
- inherited;
-
- with Stream do
-  begin
-   Assert(Stream.Size >= FChunkSize);
-   Read(FRadius, SizeOf(TFixed24Dot8Point));
-   Read(FCenterX, SizeOf(TFixed24Dot8Point));
-   Read(FCenterY, SizeOf(TFixed24Dot8Point));
-   Read(FAlpha, SizeOf(Byte));
-   Read(FColor, SizeOf(TColor));
-  end;
-end;
-
-procedure TCircleChunk.SaveToStream(Stream: TStream);
-begin
- inherited;
-
- with Stream do
-  begin
-   Write(FRadius, SizeOf(TFixed24Dot8Point));
-   Write(FCenterX, SizeOf(TFixed24Dot8Point));
-   Write(FCenterY, SizeOf(TFixed24Dot8Point));
-   Write(FAlpha, SizeOf(Byte));
-   Write(FColor, SizeOf(TColor));
-  end;
-end;
-
-
-{ TCircleChunkContainer }
-
-constructor TCircleChunkContainer.Create;
-begin
- RegisterChunkClass(TCircleChunk);
- inherited;
-end;
+  Filectrl, Math, Registry, IniFiles, DAV_Approximations, SettingsUnit,
+  ProgressBarUnit, AdditionalChunks;
 
 
 { TEvolution }
@@ -267,19 +198,6 @@ begin
   end;
 end;
 
-function TCircleChunkContainer.GetCircle(Index: Integer): TCircleChunk;
-begin
- if (Index >= 0) and (Index < Count) and
-  (FChunkList[Index] is TCircleChunk)
-  then Result := TCircleChunk(FChunkList[Index])
-  else Result := nil;
-end;
-
-class function TCircleChunkContainer.GetClassChunkName: TChunkName;
-begin
- Result := 'Crcl';
-end;
-
 
 { TFmCircledPictureDialog }
 
@@ -298,6 +216,7 @@ begin
  FWeight := 0.7;
  FBest := 0;
  FAdditional := 0;
+ FDrawDraft := True;
  FRandomCircle := False;
  FRandomOrder := False;
  FWeightDither := False;
@@ -422,35 +341,8 @@ begin
 end;
 
 procedure TFmCircledPictureDialog.AcStartExecute(Sender: TObject);
-var
-  Index : Integer;
 begin
- for Index := 0 to Length(FCircles) - 1
-  do FreeAndNil(FCircles[Index]);
-
- // initialize first circle
- FCurrentCircle := 0;
- FCurrentOrder := 0;
-
- // initialize evolution
- InitializeEvolution;
-
- if Assigned(FEvolution) then
-  begin
-   FEvolution.Terminate;
-   if FEvolution.Suspended
-    then FEvolution.Suspended := False;
-   FEvolution.WaitFor;
-   FreeAndNil(FEvolution);
-  end;
-
- FEvolution := TEvolutionThread.Create(True);
- FEvolution.Priority := tpLower;
- FEvolution.Start;
- MiStopContinue.Enabled := True;
- MiSaveDrawing.Enabled := False;
- StatusBar.Panels[0].Text := 'Running';
- StatusBar.Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
+ StartOptimization;
 end;
 
 procedure TFmCircledPictureDialog.AcNextExecute(Sender: TObject);
@@ -541,6 +433,24 @@ begin
     finally
      if Assigned(DrawingHR) then FreeAndNil(DrawingHR);
     end;
+  end;
+end;
+
+procedure TFmCircledPictureDialog.MiSavePopulationClick(Sender: TObject);
+begin
+ SavePopulationBackup('Backup.pop');
+end;
+
+procedure TFmCircledPictureDialog.MiLoadPopulationClick(Sender: TObject);
+begin
+ with TOpenDialog.Create(Self) do
+  try
+   Filter := 'Population Backup (*.pop)|*.pop';
+   DefaultExt := '.pop';
+   if Execute
+    then LoadPopulationBackup(FileName);
+  finally
+   Free;
   end;
 end;
 
@@ -688,6 +598,46 @@ begin
    Abs(Reference.G - Current.G) +
    Abs(Reference.R - Current.R)) * COne255th;
  Result := 0.1 * Result + 0.9 * Sqr(Result);
+end;
+
+procedure TFmCircledPictureDialog.ResetCircles;
+var
+  Index : Integer;
+begin
+ for Index := 0 to Length(FCircles) - 1
+  do FreeAndNil(FCircles[Index]);
+
+ // initialize first circle
+ FCurrentCircle := 0;
+ FCurrentOrder := 0;
+end;
+
+procedure TFmCircledPictureDialog.StartOptimization(InitializePopulation: Boolean = True);
+begin
+ ResetCircles;
+
+ // initialize evolution
+ InitializeEvolution(InitializePopulation);
+
+ if Assigned(FEvolution) then
+  begin
+   FEvolution.Terminate;
+   if FEvolution.Suspended
+    then FEvolution.Suspended := False;
+   FEvolution.WaitFor;
+   FreeAndNil(FEvolution);
+  end;
+
+ FEvolution := TEvolutionThread.Create(True);
+ FEvolution.Priority := tpLower;
+ FEvolution.Start;
+ MiStopContinue.Enabled := True;
+ MiSaveDrawing.Enabled := False;
+ MiSavePopulation.Enabled := True;
+ MiNext.Enabled := True;
+ MiBack.Enabled := True;
+ StatusBar.Panels[0].Text := 'Running';
+ StatusBar.Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
 end;
 
 function TFmCircledPictureDialog.CalculateError(Sender: TObject;
@@ -939,8 +889,12 @@ begin
    PixelMap.Clear;
 
    // draw background circles
-   for Index := 0 to FCurrentOrder - 1
-    do FCircles[Index].Draw(PixelMap);
+   if FDrawDraft then
+    for Index := 0 to FCurrentOrder - 1
+     do FCircles[Index].DrawDraft(PixelMap)
+   else
+    for Index := 0 to FCurrentOrder - 1
+     do FCircles[Index].Draw(PixelMap);
 
    // draw recent circle
    with TGuiPixelFilledCircle.Create do
@@ -951,7 +905,9 @@ begin
      Color := HLSToRGB(Population[3], Population[4], Population[5]);
      Alpha := Round($FF * Population[6]);
 
-     Draw(PixelMap);
+     if FDrawDraft
+      then DrawDraft(PixelMap)
+      else Draw(PixelMap);
     finally
      Free;
     end;
@@ -978,7 +934,9 @@ begin
          Population[7 * Index + 5]);
        Alpha := Round($FF * Population[7 * Index + 6]);
 
-       Draw(PixelMap);
+       if FDrawDraft
+        then DrawDraft(PixelMap)
+        else Draw(PixelMap);
       end;
     finally
      Free;
@@ -995,7 +953,7 @@ begin
  PaintBoxDraw.Invalidate;
 end;
 
-procedure TFmCircledPictureDialog.InitializeEvolution;
+procedure TFmCircledPictureDialog.InitializeEvolution(InitializePopulation: Boolean = True);
 var
   Index : Integer;
 begin
@@ -1004,28 +962,32 @@ begin
  if FMaximumRadius < 1 then FMaximumRadius := 1;
 
  FTrialCount := 0;
- with FDiffEvol do
+
+ if InitializePopulation then
   begin
-   CrossOver := FCrossover;
-   PopulationCount := FInitialSeed;
-   for Index := 0 to FNumberOfCircles - 1 do
+   with FDiffEvol do
     begin
-     MinConstraints[7 * Index + 0] := -0.5 * FReference.Width;
-     MaxConstraints[7 * Index + 0] :=  1.5 * FReference.Width;
-     MinConstraints[7 * Index + 1] := -0.5 * FReference.Height;
-     MaxConstraints[7 * Index + 1] :=  1.5 * FReference.Height;
-     MinConstraints[7 * Index + 2] :=  1;
-     MaxConstraints[7 * Index + 2] :=  0.5 * FMaximumRadius;
-     MinConstraints[7 * Index + 3] :=  0;
-     MaxConstraints[7 * Index + 3] :=  1;
-     MinConstraints[7 * Index + 4] :=  0;
-     MaxConstraints[7 * Index + 4] :=  1;
-     MinConstraints[7 * Index + 5] :=  0;
-     MaxConstraints[7 * Index + 5] :=  1;
-     MinConstraints[7 * Index + 6] :=  0;
-     MaxConstraints[7 * Index + 6] :=  1;
+     CrossOver := FCrossover;
+     PopulationCount := FInitialSeed;
+     for Index := 0 to FNumberOfCircles - 1 do
+      begin
+       MinConstraints[7 * Index + 0] := -0.5 * FReference.Width;
+       MaxConstraints[7 * Index + 0] :=  1.5 * FReference.Width;
+       MinConstraints[7 * Index + 1] := -0.5 * FReference.Height;
+       MaxConstraints[7 * Index + 1] :=  1.5 * FReference.Height;
+       MinConstraints[7 * Index + 2] :=  1;
+       MaxConstraints[7 * Index + 2] :=  0.5 * FMaximumRadius;
+       MinConstraints[7 * Index + 3] :=  0;
+       MaxConstraints[7 * Index + 3] :=  1;
+       MinConstraints[7 * Index + 4] :=  0;
+       MaxConstraints[7 * Index + 4] :=  1;
+       MinConstraints[7 * Index + 5] :=  0;
+       MaxConstraints[7 * Index + 5] :=  1;
+       MinConstraints[7 * Index + 6] :=  0;
+       MaxConstraints[7 * Index + 6] :=  1;
+      end;
+     Initialize;
     end;
-   Initialize;
   end;
  CalculateStaticCosts;
 end;
@@ -1083,12 +1045,64 @@ begin
   end;
 end;
 
+procedure TFmCircledPictureDialog.SaveDrawingBackup;
+var
+  OldFileName : TFileName;
+begin
+ OldFileName := 'Backup' + IntToStr(FCurrentCircle) + '.circles';
+ FCurrentCircle := FCurrentCircle + FNumberOfCircles;
+ SaveDrawing('Backup' + IntToStr(FCurrentCircle) + '.circles');
+ if FileExists(OldFileName)
+  then DeleteFile(OldFileName);
+end;
+
+procedure TFmCircledPictureDialog.SavePopulationBackup(FileName: TFileName);
+var
+  Index             : Integer;
+  VariableIndex     : Integer;
+  CurrentPopulation : TPopulationChunk;
+begin
+ with TPopulationChunkContainer.Create do
+  try
+   for Index := 0 to FDiffEvol.PopulationCount - 1 do
+    begin
+     CurrentPopulation := TPopulationChunk.Create;
+     CurrentPopulation.VariableCount := FDiffEvol.VariableCount;
+     for VariableIndex := 0 to FDiffEvol.VariableCount - 1
+      do CurrentPopulation.Variable[VariableIndex] := FDiffEvol.Population[Index][VariableIndex];
+     AddChunk(CurrentPopulation);
+    end;
+   SaveToFile(FileName);
+  finally
+   Free;
+  end;
+end;
+
+procedure TFmCircledPictureDialog.LoadPopulationBackup(FileName: TFileName);
+var
+  Index             : Integer;
+  VariableIndex     : Integer;
+  CurrentPopulation : TPopulationChunk;
+begin
+ with TPopulationChunkContainer.Create do
+  try
+   LoadFromFile(FileName);
+   for Index := 0 to Count - 1 do
+    for VariableIndex := 0 to Min(Population[Index].VariableCount, FDiffEvol.VariableCount) - 1
+     do FDiffEvol.Population[Index][VariableIndex] := Population[Index].Variable[VariableIndex];
+   FDiffEvol.Initialize(False);
+   if not MiStopContinue.Enabled
+    then StartOptimization(False);
+  finally
+   Free;
+  end;
+end;
+
 procedure TFmCircledPictureDialog.Evolve;
 var
   BestCosts      : Double;
   BestPopulation : TDifferentialEvolutionPopulation;
   Index          : Integer;
-  OldFileName    : string;
 begin
  if AcBack.Checked and AcNext.Checked then
   begin
@@ -1121,11 +1135,7 @@ begin
      end;
 
    // save backup
-   OldFileName := 'Backup' + IntToStr(FCurrentCircle) + '.circles';
-   FCurrentCircle := FCurrentCircle + FNumberOfCircles;
-   SaveDrawing('Backup' + IntToStr(FCurrentCircle) + '.circles');
-   if FileExists(OldFileName)
-    then DeleteFile(OldFileName);
+   SaveDrawingBackup;
 
    // update status bar
    StatusBar.Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
@@ -1309,69 +1319,84 @@ var
   Index      : Integer;
   IntScale   : Integer;
 begin
- try
-  Drawing := TGuiPixelMapMemory.Create;
-  Drawing.Width := Round(2 * ScaleFactor * FBestDrawing.Width);
-  Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
-  Drawing.Clear;
+ with TFmProgressBar.Create(Self) do
+  try
+   Show;
+   Drawing := TGuiPixelMapMemory.Create;
+   Drawing.Width := Round(2 * ScaleFactor * FBestDrawing.Width);
+   Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
+   Drawing.Clear;
+   Drawing.SaveToFile(FileName + '\Frame0.png');
 
-  Circle := TGuiPixelFilledCircle.Create;
+   Circle := TGuiPixelFilledCircle.Create;
 
-  IntScale := Round(ScaleFactor * (1 shl 8));
-  OffsetX := ConvertToFixed24Dot8Point(Drawing.Width div 4);
-  OffsetY := ConvertToFixed24Dot8Point(Drawing.Height div 4);
+   IntScale := Round(ScaleFactor * (1 shl 8));
+   OffsetX := ConvertToFixed24Dot8Point(Drawing.Width div 4);
+   OffsetY := ConvertToFixed24Dot8Point(Drawing.Height div 4);
 
-  if AnimatedCircle then
-   begin
-    for FrameIndex := 0 to Length(FCircles) - 1 do
-     begin
-      Drawing.Clear;
+   if AnimatedCircle then
+    begin
+     ProgressBar.Max := Length(FCircles);
+     for FrameIndex := 0 to Length(FCircles) - 1 do
+      begin
+       Drawing.Clear;
 
-      for Index := 0 to FrameIndex - 1 do
-       if Assigned(FCircles[Index]) then
-        with FCircles[Index] do
-         begin
-          Circle.GeometricShape.Radius  := FixedMul(GeometricShape.Radius, IntScale);
-          Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
-          Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
-          Circle.Draw(Drawing);
-         end;
+       for Index := 0 to FrameIndex - 1 do
+        if Assigned(FCircles[Index]) then
+         with FCircles[Index] do
+          begin
+           Circle.GeometricShape.Radius  := FixedMul(GeometricShape.Radius, IntScale);
+           Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
+           Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
+           Circle.Draw(Drawing);
+          end;
 
-       if Assigned(FCircles[FrameIndex]) then
-        with FCircles[FrameIndex] do
-         begin
-          Circle.GeometricShape.Radius  := FixedMul(GeometricShape.Radius, IntScale);
-          Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
-          Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
-          Circle.Draw(Drawing);
-         end;
+        if Assigned(FCircles[FrameIndex]) then
+         with FCircles[FrameIndex] do
+          begin
+           Circle.GeometricShape.Radius  := FixedMul(GeometricShape.Radius, IntScale);
+           Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
+           Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
+           Circle.Draw(Drawing);
+          end;
 
-      Drawing.ResetAlpha;
-      Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
-     end;
-   end
-  else
-   begin
-    for Index := 0 to Length(FCircles) - 1 do
-     if Assigned(FCircles[Index]) then
-      with FCircles[Index] do
-       begin
-        Circle.GeometricShape.Radius := FixedMul(GeometricShape.Radius, IntScale);
-        Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
-        Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
-        Circle.Color := Color;
-        Circle.Alpha := Alpha;
-        Circle.Draw(Drawing);
-        Drawing.ResetAlpha;
-        Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Index) + '.png');
-       end;
-    Drawing.Draw(FReference, Drawing.Width div 4, Drawing.Height div 4);
-    Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
-   end;
- finally
-  if Assigned(Circle) then FreeAndNil(Circle);
-  if Assigned(Drawing) then FreeAndNil(Drawing);
- end;
+       Drawing.ResetAlpha;
+       Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
+      end;
+    end
+   else
+    begin
+     ProgressBar.Max := Length(FCircles) + 16;
+     for Index := 0 to Length(FCircles) - 1 do
+      if Assigned(FCircles[Index]) then
+       with FCircles[Index] do
+        begin
+         Circle.GeometricShape.Radius := FixedMul(GeometricShape.Radius, IntScale);
+         Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
+         Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
+         Circle.Color := Color;
+         Circle.Alpha := Alpha;
+         Circle.Draw(Drawing);
+         Drawing.ResetAlpha;
+         Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Index + 1) + '.png');
+         ProgressBar.StepIt;
+         Application.ProcessMessages;
+        end;
+     (*
+     for Index := 0 to 15 do
+      begin
+       Drawing.Draw(FReference, Drawing.Width div 4, Drawing.Height div 4, $8);
+       Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Length(FCircles) + Index + 1) + '.png');
+       ProgressBar.StepIt;
+       Application.ProcessMessages;
+      end;
+      *)
+    end;
+  finally
+   if Assigned(Circle) then FreeAndNil(Circle);
+   if Assigned(Drawing) then FreeAndNil(Drawing);
+   Free;
+  end;
 end;
 
 procedure TFmCircledPictureDialog.SaveDrawing(FileName: TFileName);
