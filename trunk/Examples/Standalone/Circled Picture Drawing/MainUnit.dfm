@@ -65,38 +65,39 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
     object MiFile: TMenuItem
       Caption = '&File'
       object MiOpenReference: TMenuItem
-        Caption = 'Open Reference...'
+        Caption = '&Open Reference...'
         OnClick = MiOpenReferenceClick
       end
       object MiSaveResult: TMenuItem
-        Caption = 'Save Result...'
+        Caption = '&Save Result...'
         OnClick = MiSaveResultClick
       end
       object MiSaveHighResolution: TMenuItem
-        Caption = 'Save High Resolution...'
+        Caption = 'Save &High Resolution...'
         OnClick = MiSaveHighResolutionClick
       end
       object MiSaveAnimation: TMenuItem
-        Caption = 'Save Animation...'
+        Caption = 'Save &Animation...'
         OnClick = MiSaveAnimationClick
       end
       object N3: TMenuItem
         Caption = '-'
       end
       object MiOpenDrawing: TMenuItem
-        Caption = 'Open Drawing...'
+        Caption = 'Open &Drawing...'
         OnClick = MiOpenDrawingClick
       end
       object MiOpenBest: TMenuItem
-        Caption = 'Open Best...'
+        Caption = 'Open &Best...'
         OnClick = MiOpenBestClick
       end
       object MiCopyReference: TMenuItem
-        Caption = 'Copy Reference'
+        Caption = '&Copy Reference'
+        Visible = False
         OnClick = MiCopyReferenceClick
       end
       object MiSaveDrawing: TMenuItem
-        Caption = 'Save Drawing...'
+        Caption = 'Sa&ve Drawing...'
         Enabled = False
         OnClick = MiSaveDrawingClick
       end
@@ -118,14 +119,28 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
         Enabled = False
         OnClick = MiStopContinueClick
       end
+      object N5: TMenuItem
+        Caption = '-'
+      end
+      object MiSavePopulation: TMenuItem
+        Caption = 'Save &Population'
+        Enabled = False
+        OnClick = MiSavePopulationClick
+      end
+      object MiLoadPopulation: TMenuItem
+        Caption = 'Load Population...'
+        OnClick = MiLoadPopulationClick
+      end
       object N2: TMenuItem
         Caption = '-'
       end
       object MiNext: TMenuItem
         Action = AcNext
+        Enabled = False
       end
       object MiBack: TMenuItem
         Action = AcBack
+        Enabled = False
       end
       object N4: TMenuItem
         Caption = '-'
