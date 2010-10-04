@@ -36,7 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, ExtCtrls;
+  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
+  DAV_GuiPixelMap;
 
 type
   TFmBarberpoleTuner = class(TForm)
@@ -56,8 +57,9 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure BarberpolePaint(Sender: TObject);
     procedure LbNoteClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   end;
 
 implementation
@@ -68,43 +70,48 @@ uses
 {$R *.DFM}
 
 procedure TFmBarberpoleTuner.FormCreate(Sender: TObject);
-var
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  Line   : PRGB24Array;
 begin
- // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
+ // create background pixelmap
+ FBackground := TGuiPixelMapMemory.Create;
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
-      end;
-    end;
-  end;
- Barberpole.ControlStyle := Barberpole.ControlStyle + [csOpaque];  
+ Barberpole.ControlStyle := Barberpole.ControlStyle + [csOpaque];
 end;
 
 procedure TFmBarberpoleTuner.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmBarberpoleTuner.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  s      : array[0..1] of Single;
+  h, hr  : Single;
+  ScnLn  : PPixel32Array;
+begin
+ // resize background pixelmap and render
+ if Assigned(FBackground) then
+  with FBackground do
+   begin
+    SetSize(ClientWidth, ClientHeight);
+    s[0] := 0;
+    s[1] := 0;
+    hr   := 1 / Height;
+    for y := 0 to Height - 1 do
+     begin
+      ScnLn := Scanline[y];
+      h := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
+      for x := 0 to Width - 1 do
+       begin
+        s[1] := 0.97 * s[0] + 0.03 * random;
+        s[0] := s[1];
+
+        ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+        ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+        ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+       end;
+     end;
+   end;
 end;
 
 procedure TFmBarberpoleTuner.FormShow(Sender: TObject);

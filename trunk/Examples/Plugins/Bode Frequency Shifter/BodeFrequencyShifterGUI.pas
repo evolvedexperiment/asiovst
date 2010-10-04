@@ -37,7 +37,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
   Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup;
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap;
 
 type
   TFmBodeFrequencyShifter = class(TForm)
@@ -56,7 +56,7 @@ type
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialMixChange(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateFrequency;
     procedure UpdateMix;
@@ -86,8 +86,7 @@ var
   {$ENDIF}
 begin
  // Create BackgRound Image
- FBackgrounBitmap := TBitmap.Create;
- FBackgrounBitmap.PixelFormat := pf24bit;
+ FBackground := TGuiPixelMapMemory.Create;
 
  {$IFDEF FPC}
  PngBmp := TPNGImage.Create;
@@ -132,28 +131,26 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PBGR24Array;
+  ScnLn  : PPixel32Array;
 begin
- with FBackgrounBitmap do
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
+   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     ScnLn := Scanline[y];
+     h := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
 
-       Line[x].B := Round($70 - $34 * (s[1] - h));
-       Line[x].G := Round($84 - $48 * (s[1] - h));
-       Line[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
       end;
     end;
   end;
@@ -173,7 +170,8 @@ end;
 
 procedure TFmBodeFrequencyShifter.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmBodeFrequencyShifter.DialFrequencyChange(Sender: TObject);
@@ -200,7 +198,7 @@ begin
   begin
    if DialFrequency.Position <> Parameter[0]
     then DialFrequency.Position := Parameter[0];
-   LbFrequencyValue.Caption := ParameterDisplay[0] + 'Hz';
+   LbFrequencyValue.Caption := string(ParameterDisplay[0] + 'Hz');
   end;
 end;
 
@@ -210,7 +208,7 @@ begin
   begin
    if DialMix.Position <> Parameter[1]
     then DialMix.Position := Parameter[1];
-   LbMixValue.Caption := ParameterDisplay[1] + '%';
+   LbMixValue.Caption := string(ParameterDisplay[1] + '%');
   end;
 end;
 

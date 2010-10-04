@@ -75,8 +75,8 @@ type
 
     procedure Draw(Bitmap: TBitmap); overload; virtual;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); overload; virtual; abstract;
-    procedure Draw(PixelMap: TGuiCustomPixelMap); overload; virtual;
-    procedure Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer); overload; virtual;
+    procedure Draw(PixelMap: TGuiCustomPixelMap; Alpha: Byte = $FF); overload; virtual;
+    procedure Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer; Alpha: Byte = $FF); overload; virtual;
     procedure PaintTo(Canvas: TCanvas); overload; virtual;
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); overload; virtual; abstract;
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); overload; virtual; abstract;
@@ -154,7 +154,7 @@ type
 implementation
 
 uses
-  Math, DAV_GuiPng, DAV_GuiFileFormats;
+  Math, DAV_GuiFileFormats;
 
 { TGuiCustomPixelMap }
 
@@ -174,7 +174,8 @@ begin
   end;
 end;
 
-procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer);
+procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer;
+  Alpha: Byte = $FF);
 var
   ClipRect : TRect;
   Index    : Integer;
@@ -192,14 +193,15 @@ begin
 
    // blend scanlines
    for Index := Top to Bottom - 1
-     do BlendLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
-       PixelPointer[Left, Top + Index], Right - Left);
+     do CombineLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
+       PixelPointer[Left, Top + Index], Right - Left, Alpha);
   end;
 end;
 
-procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap);
+procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap;
+  Alpha: Byte = $FF);
 begin
- Draw(PixelMap, 0, 0);
+ Draw(PixelMap, 0, 0, Alpha);
 end;
 
 procedure TGuiCustomPixelMap.Assign(Source: TPersistent);
@@ -391,6 +393,7 @@ begin
     end;
   end;
 
+ // if no file format was found use the default method
  Stream := TFileStream.Create(Filename, fmCreate);
  try
   SaveToStream(Stream);
@@ -402,31 +405,52 @@ end;
 procedure TGuiCustomPixelMap.LoadFromStream(Stream: TStream);
 var
   BitmapFileHeader : TBitmapFileHeader;
+  FileFormatClass  : TGuiCustomFileFormatClass;
+  BitmapInfo       : TBitmapInfo;
+  Bitmap           : TBitmap;
 begin
- if TPortableNetworkGraphicPixel32.CanLoad(Stream)
-  then
-   begin
-    with TPortableNetworkGraphicPixel32.Create do
+ FileFormatClass := FindGraphicFileFormatByStream(Stream);
+ if Assigned(FileFormatClass) then
+  begin
+   with FileFormatClass.Create do
+    try
+     LoadFromStream(Stream);
+     AssignTo(Self);
+     Exit;
+    finally
+     Free;
+    end;
+  end;
+
+ // if no file format was found use the default method
+ with Stream do
+  begin
+   if Size < SizeOf(TBitmapFileHeader)
+    then raise Exception.Create('Invalid bitmap header found!');
+
+   Read(BitmapFileHeader, SizeOf(TBitmapFileHeader));
+
+   if BitmapFileHeader.bfType <> $4D42
+    then raise Exception.Create('Invalid bitmap header found!');
+
+   Read(BitmapInfo, SizeOf(TBitmapInfo));
+
+   if BitmapInfo.bmiHeader.biBitCount = 32 then
+    begin
+
+    end
+   else
+    begin
+     Stream.Seek(-(SizeOf(TBitmapFileHeader) + SizeOf(TBitmapInfo)), soFromCurrent);
+     Bitmap := TBitmap.Create;
      try
-      LoadFromStream(Stream);
-      AssignTo(Self);
+      Bitmap.LoadFromStream(Stream);
+      Self.Assign(Bitmap);
      finally
-      Free;
+      FreeAndNil(Bitmap);
      end;
-  end
- else
-  with Stream do
-   begin
-    if Size < SizeOf(TBitmapFileHeader)
-     then raise Exception.Create('Invalid bitmap header found!');
-
-    Read(BitmapFileHeader, SizeOf(TBitmapFileHeader));
-
-    if BitmapFileHeader.bfType <> $4D42
-     then raise Exception.Create('Invalid bitmap header found!');
-
-    Read(FBitmapInfo, SizeOf(TBitmapInfo));
-   end;
+    end;
+  end;
 end;
 
 procedure TGuiCustomPixelMap.SaveToStream(Stream: TStream);
@@ -606,7 +630,7 @@ end;
 
 procedure TGuiPixelMapMemory.Draw(Bitmap: TBitmap; X, Y: Integer);
 begin
- if Bitmap.Height <> 0 then
+ if (Bitmap.Height <> 0) and (FDataPointer <> nil) then
   begin
    if GetDIBits(Bitmap.Canvas.Handle, Bitmap.Handle, 0, Bitmap.Height,
      FDataPointer, FBitmapInfo, DIB_RGB_COLORS) = 0

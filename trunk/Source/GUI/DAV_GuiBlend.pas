@@ -53,8 +53,8 @@ type
   TBlendMergeLine         = procedure(Source, Destination: PPixel32; Count: Cardinal);
   TCombinePixel           = function(Foreground, Background: TPixel32; Weight: Cardinal): TPixel32;
   TCombinePixelInplace    = procedure(Foreground: TPixel32; var Background: TPixel32; Weight: Integer);
-  TCombinePixelLine       = procedure(Source, Destination: PPixel32; Count: Integer; Weight: Cardinal);
-  TCombineLine            = procedure(Foreground: TPixel32; Destination: PPixel32; Count: Integer; Weight: Cardinal);
+  TCombinePixelLine       = procedure(Foreground: TPixel32; Destination: PPixel32; Count: Integer; Weight: Cardinal);
+  TCombineLine            = procedure(Source, Destination: PPixel32; Count: Integer; Weight: Cardinal);
 
 
 { Function Pointers }
@@ -583,6 +583,17 @@ asm
   MOV     [EDX], EAX
   RET
 {$ENDIF}
+end;
+
+procedure CombinePixelLineNative(Foreground: TPixel32; Destination: PPixel32;
+  Count: Integer; Weight: Cardinal);
+begin
+ while Count > 0 do
+  begin
+   CombinePixelInplace(Foreground, Destination^, Weight);
+   Inc(Destination);
+   Dec(Count);
+  end;
 end;
 
 procedure CombineLineNative(Source, Destination: PPixel32; Count: Integer;
@@ -1418,6 +1429,20 @@ begin
    {$IFNDEF PUREPASCAL}
    Add(@CombinePixelInplaceMMX, [pfMMX]);
    Add(@CombinePixelInplaceSSE2, [pfSSE2]);
+   {$ENDIF}
+   RebindProcessorSpecific;
+  end;
+
+ // create function binding for combine memory
+ BindingCombinePixelLine := TFunctionBinding.Create(
+   @@CombinePixelLine, @CombinePixelLineNative);
+ BindingBlend.AddBinding(BindingCombinePixelLine);
+ with BindingCombinePixelLine do
+  begin
+   Add(@CombinePixelLineNative);
+   {$IFNDEF PUREPASCAL}
+//   Add(@CombinePixelLineMMX, [pfMMX]);
+//   Add(@CombinePixelLineSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;

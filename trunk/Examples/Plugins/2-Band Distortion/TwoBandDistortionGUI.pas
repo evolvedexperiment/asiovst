@@ -37,7 +37,8 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_VSTModule,
-  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel;
+  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel,
+  DAV_GuiPixelMap;
 
 type
   TFmTwoBandDistortion = class(TForm)
@@ -45,6 +46,7 @@ type
     DialHighDist: TGuiDial;
     DialLowDist: TGuiDial;
     DialOrder: TGuiDial;
+    DIL: TGuiDialImageList;
     LbFreq: TGuiLabel;
     LbFreqValue: TGuiLabel;
     LbHighDist: TGuiLabel;
@@ -54,18 +56,18 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControl: TGuiPanel;
-    DIL: TGuiDialImageList;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
     procedure DialLowDistChange(Sender: TObject);
     procedure DialHighDistChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
-    FEdValue         : TEdit;
+    FBackground : TGuiCustomPixelMap;
+    FEdValue    : TEdit;
   public
     procedure UpdateFrequency;
     procedure UpdateOrder;
@@ -91,10 +93,6 @@ uses
 
 procedure TFmTwoBandDistortion.FormCreate(Sender: TObject);
 var
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  b      : ShortInt;
-  Line   : PRGB24Array;
   {$IFDEF FPC}
   PngBmp : TPNGImage;
   {$ELSE}
@@ -108,8 +106,8 @@ var
   {$ENDIF}
 
 begin
- // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
+ // create background pixel map
+ FBackground := TGuiPixelMapMemory.Create;
 
  {$IFDEF FPC}
  PngBmp := TPNGImage.Create;
@@ -130,28 +128,6 @@ begin
  end;
 
  {$ELSE}
-
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       b := Round($3F + $1A * s[1]);
-       s[0] := s[1];
-       Line[x].B := b;
-       Line[x].G := b;
-       Line[x].R := b;
-      end;
-    end;
-  end;
 
  {$IFDEF DELPHI2010_UP}
  PngBmp := TPngImage.Create;
@@ -199,7 +175,37 @@ end;
 
 procedure TFmTwoBandDistortion.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmTwoBandDistortion.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  s      : array[0..1] of Single;
+  b      : ShortInt;
+  ScnLn  : PPixel32Array;
+begin
+ if Assigned(FBackground) then
+  with FBackground do
+   begin
+    SetSize(ClientWidth, ClientHeight);
+    s[0] := 0;
+    s[1] := 0;
+    for y := 0 to Height - 1 do
+     begin
+      ScnLn := Scanline[y];
+      for x := 0 to Width - 1 do
+       begin
+        s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
+        b := Round($3F + $1A * s[1]);
+        s[0] := s[1];
+        ScnLn[x].B := b;
+        ScnLn[x].G := b;
+        ScnLn[x].R := b;
+       end;
+     end;
+   end;
 end;
 
 procedure TFmTwoBandDistortion.DialFreqChange(Sender: TObject);

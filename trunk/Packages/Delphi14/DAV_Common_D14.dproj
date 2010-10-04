@@ -151,7 +151,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-09-20 01:43</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-10-04 19:18</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

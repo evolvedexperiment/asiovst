@@ -45,7 +45,7 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterGuitarStringChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FLowpass          : TButterworthLowPassFilter;
     FBarberpoleFilter : TBarberpoleFilter;
@@ -118,7 +118,7 @@ begin
 end;
 
 procedure TBarberpoleTunerDataModule.ParameterNoteDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   1 : PreDefined := 'E';

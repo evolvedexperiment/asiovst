@@ -41,22 +41,29 @@ uses
   {$ELSE} Windows, Messages, DesignIntf, DesignEditors, VCLEditors, Registry,
   Clipbrd, Consts,{$ENDIF}
   Forms, Graphics, Classes, SysUtils, Dialogs, StdCtrls, Controls, ExtCtrls,
-  DAV_Common, DAV_GuiCommon, DAV_GuiPixelMap;
+  Menus, DAV_Common, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPng,
+  DAV_GuiFileFormatGraphics;
 
 type
   TFmPixelMapDialog = class(TForm)
     PaintBox: TPaintBox;
-    PnToolbar: TPanel;
-    BtOpen: TButton;
-    BtSave: TButton;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
-    procedure PaintBoxPaint(Sender: TObject);
-    procedure BtOpenClick(Sender: TObject);
-    procedure BtSaveClick(Sender: TObject);
+    MainMenu: TMainMenu;
+    MiFile: TMenuItem;
+    MiLoad: TMenuItem;
+    N1: TMenuItem;
+    MiExit: TMenuItem;
+    MiSaveImage: TMenuItem;
+    MiGenerate: TMenuItem;
+    MiBrushedMetal: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormResize(Sender: TObject);
+    procedure PaintBoxPaint(Sender: TObject);
+    procedure MiExitClick(Sender: TObject);
+    procedure MiLoadClick(Sender: TObject);
+    procedure MiSaveImageClick(Sender: TObject);
+    procedure MiBrushedMetalClick(Sender: TObject);
   private
     FPixelMap : TGuiPixelMapMemory;
   public
@@ -94,9 +101,13 @@ implementation
 
 {$R *.dfm}
 
+uses
+  DAV_GuiFileFormats;
+
 procedure TFmPixelMapDialog.FormCreate(Sender: TObject);
 begin
  FPixelMap := TGuiPixelMapMemory.Create;
+ FPixelMap.SetSize(PaintBox.Width, PaintBox.Height);
 end;
 
 procedure TFmPixelMapDialog.FormDestroy(Sender: TObject);
@@ -104,30 +115,72 @@ begin
  FreeAndNil(FPixelMap);
 end;
 
-procedure TFmPixelMapDialog.FormResize(Sender: TObject);
+procedure TFmPixelMapDialog.MiBrushedMetalClick(Sender: TObject);
+var
+  x, y      : Integer;
+  s         : array [0..1] of Single;
+  hr, h     : Single;
+  ByteValue : ShortInt;
+  ScnLn     : PPixel32Array;
 begin
- if Assigned(FPixelMap)
-  then FPixelMap.SetSize(PaintBox.Width, PaintBox.Height);
+ s[0] := 0;
+ s[1] := 0;
+ with FPixelMap do
+  begin
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h     := 0.1 * (1 - Sqr(2 * (y - Height * 0.5) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[0] := s[1];
+
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+      end;
+    end;
+  end;
+ PaintBox.Invalidate;
 end;
 
-procedure TFmPixelMapDialog.BtOpenClick(Sender: TObject);
+procedure TFmPixelMapDialog.MiExitClick(Sender: TObject);
+begin
+ Close;
+end;
+
+procedure TFmPixelMapDialog.MiLoadClick(Sender: TObject);
+var
+  FileFormatClass  : TGuiCustomFileFormatClass;
 begin
  with OpenDialog do
-  begin
+  if Execute then
+   begin
+    FileFormatClass := FindGraphicFileFormatByFileName(OpenDialog.FileName);
+    if Assigned(FileFormatClass) then
+     begin
+      with FileFormatClass.Create do
+       try
+        LoadFromFile(OpenDialog.FileName);
+        AssignTo(FPixelMap);
+       finally
+        Free;
+       end;
+     end;
 
-   if Execute
-    then FPixelMap.LoadFromFile(FileName);
-  end;
+    Self.ClientWidth := FPixelMap.Width + 16;
+    Self.ClientHeight := FPixelMap.Height + 16;
+    PaintBox.Invalidate;
+   end;
 end;
 
-procedure TFmPixelMapDialog.BtSaveClick(Sender: TObject);
+procedure TFmPixelMapDialog.MiSaveImageClick(Sender: TObject);
 begin
  with SaveDialog do
-  begin
-
-   if Execute
-    then FPixelMap.SaveToFile(FileName);
-  end;
+  if Execute
+   then FPixelMap.SaveToFile(FileName);
 end;
 
 procedure TFmPixelMapDialog.PaintBoxPaint(Sender: TObject);
@@ -156,8 +209,12 @@ function TPixelMapEditorComponent.Execute: Boolean;
 begin
  FPixelMapDialog.PixelMap.Assign(FPixelMap);
  Result := (FPixelMapDialog.ShowModal = mrOK);
- if Result
-  then FPixelMap.Assign(FPixelMapDialog.PixelMap);
+ if Result then
+  begin
+   FPixelMap.Assign(FPixelMapDialog.PixelMap);
+   FPixelMapDialog.ClientWidth := FPixelMap.Width + 16;
+   FPixelMapDialog.ClientHeight := FPixelMap.Height + 16;
+  end;
 end;
 
 procedure TPixelMapEditorComponent.SetPixelMap(Value: TGuiCustomPixelMap);

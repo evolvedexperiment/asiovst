@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Types,
-  DAV_VSTModule, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  ExtCtrls, DAV_GuiPanel;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
+  DAV_Types, DAV_VSTModule, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl,
+  DAV_GuiDial, DAV_GuiPanel, DAV_GuiPixelMap;
 
 type
   TFmSplitHarmonizer = class(TForm)
@@ -83,7 +83,7 @@ type
     procedure DialLowpassAChange(Sender: TObject);
     procedure DialLowpassBChange(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateEncoding;
     procedure UpdateSemitones(const Channel: Integer);
@@ -107,29 +107,28 @@ var
   RS     : TResourceStream;
   x, y   : Integer;
   s      : array[0..1] of Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
   PngBmp : TPngObject;
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackground := TGuiPixelMapMemory.Create;
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
    Width := Self.Width;
    Height := Self.Height;
    s[0] := 0;
    s[1] := 0;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
+     ScnLn := Scanline[y];
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
+       s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
        s[0] := s[1];
-       Line[x].B := Round($0F + $0E * s[1]);;
-       Line[x].G := Round($12 + $0E * s[1]);;
-       Line[x].R := Round($13 + $0E * s[1]);;
+       ScnLn[x].B := Round($0F + $0E * s[1]);;
+       ScnLn[x].G := Round($12 + $0E * s[1]);;
+       ScnLn[x].R := Round($13 + $0E * s[1]);;
       end;
     end;
   end;
@@ -162,7 +161,7 @@ end;
 
 procedure TFmSplitHarmonizer.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmSplitHarmonizer.FormShow(Sender: TObject);

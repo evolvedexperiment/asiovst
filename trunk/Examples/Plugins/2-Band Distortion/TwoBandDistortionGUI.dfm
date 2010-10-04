@@ -16,6 +16,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   DesignSize = (
     319

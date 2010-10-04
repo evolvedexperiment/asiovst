@@ -37,7 +37,7 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
   ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup;
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap;
 
 type
   TFmRingModulator = class(TForm)
@@ -51,7 +51,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateFrequency;
   end;
@@ -80,8 +80,7 @@ var
   {$ENDIF}
 begin
  // Create BackgRound Image
- FBackgrounBitmap := TBitmap.Create;
- FBackgrounBitmap.PixelFormat := pf24bit;
+ FBackground := TGuiPixelMapMemory.Create;
 
  {$IFDEF FPC}
  PngBmp := TPNGImage.Create;
@@ -130,28 +129,26 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
 begin
- with FBackgrounBitmap do
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
+   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
 
-       Line[x].B := Round($70 - $34 * (s[1] - h));
-       Line[x].G := Round($84 - $48 * (s[1] - h));
-       Line[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
       end;
     end;
   end;
@@ -159,7 +156,8 @@ end;
 
 procedure TFmRingModulator.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmRingModulator.DialFrequencyChange(Sender: TObject);

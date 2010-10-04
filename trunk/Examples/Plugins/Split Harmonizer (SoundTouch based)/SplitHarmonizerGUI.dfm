@@ -1,6 +1,6 @@
 object FmSplitHarmonizer: TFmSplitHarmonizer
-  Left = 286
-  Top = 77
+  Left = 332
+  Top = 140
   BorderStyle = bsNone
   Caption = 'SoundTouch Detuner'
   ClientHeight = 267
@@ -49,16 +49,16 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Left = 8
     Top = 8
     Width = 398
-    Height = 106
-    AntiAlias = gaaLinear4x
+    Height = 107
     Caption = 'PnStageA'
+    Color = clBlack
     LineColor = 15133420
-    Linewidth = 3
-    PanelColor = 987667
-    ParentColor = True
-    Radius = 7
+    BorderWidth = 2.000000000000000000
+    PanelColor = clBlack
+    Radius = 7.000000000000000000
     TabOrder = 0
     UseDockManager = True
+    Transparent = True
     object DialDetuneA: TGuiDial
       Left = 41
       Top = 38
@@ -259,15 +259,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Top = 151
     Width = 398
     Height = 107
-    AntiAlias = gaaLinear4x
     Caption = 'PnStageA'
+    Color = clBlack
     LineColor = 15133420
-    Linewidth = 3
-    PanelColor = 987667
-    ParentColor = True
-    Radius = 7
+    BorderWidth = 2.000000000000000000
+    PanelColor = clBlack
+    Radius = 7.000000000000000000
     TabOrder = 1
     UseDockManager = True
+    Transparent = True
     object DialDetuneB: TGuiDial
       Left = 41
       Top = 38

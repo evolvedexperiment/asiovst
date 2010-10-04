@@ -53,9 +53,9 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure ParameterFrequencyDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFreqShifter     : array of TBodeFrequencyShifter32;
     FUpMix, FDownMix : Single;
@@ -200,7 +200,7 @@ begin
 end;
 
 procedure TBodeFrequencyShifterDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
@@ -208,7 +208,7 @@ begin
 end;
 
 procedure TBodeFrequencyShifterDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := 'Hz'

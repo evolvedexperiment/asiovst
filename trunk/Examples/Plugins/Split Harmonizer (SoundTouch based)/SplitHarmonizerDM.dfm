@@ -1,4 +1,5 @@
 object SplitHarmonizerModule: TSplitHarmonizerModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]

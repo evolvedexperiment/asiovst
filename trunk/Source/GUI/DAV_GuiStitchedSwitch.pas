@@ -1,4 +1,5 @@
 unit DAV_GuiStitchedSwitch;
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
@@ -34,30 +35,17 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages,
-  {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, SysUtils, Controls, Contnrs, DAV_GuiCommon,
-  DAV_GuiStitchedControls;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
+  {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
+  DAV_GuiCommon, DAV_GuiStitchedControls;
 
 type
   TCustomGuiStitchedSwitch = class(TGuiCustomStitchedControl)
   private
-    FGlyphIndex        : Integer;
-    FDefaultGlyphIndex : Integer;
     FReadOnly          : Boolean;
-    procedure SetGlyphIndex(Value: Integer);
-    procedure SetDefaultGlyphIndex(Value: Integer);
-    procedure GlyphIndexChanged;
   protected
-    function GetGlyphIndex: Integer; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure GlyphCountChanged; override;
   public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
-    property DefaultGlyphIndex: Integer read FDefaultGlyphIndex write SetDefaultGlyphIndex;
-    property GlyphIndex: Integer read FGlyphIndex write SetGlyphIndex;
     property ReadOnly: Boolean read FReadOnly write FReadOnly default false;
   end;
 
@@ -69,99 +57,36 @@ type
     property AutoSize;
     property StitchedImageIndex;
     property StitchedImageList;
+    property Transparent;
     property OnChange;
   end;
 
 implementation
 
+uses
+  DAV_Common, DAV_GuiBlend;
+
 { TCustomGuiStitchedSwitch }
-
-constructor TCustomGuiStitchedSwitch.Create(AOwner: TComponent);
-begin
- inherited;
- FGlyphIndex := 0;
- FDefaultGlyphIndex := 0;
-end;
-
-destructor TCustomGuiStitchedSwitch.Destroy;
-begin
- inherited;
-end;
-
-function TCustomGuiStitchedSwitch.GetGlyphIndex: Integer;
-begin
- Result := FGlyphIndex;
-end;
 
 procedure TCustomGuiStitchedSwitch.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
 begin
  if not FReadOnly then
-  begin
-   if (Button = mbLeft) then
-    if FGlyphIndex < FGlyphCount - 1
-     then GlyphIndex := FGlyphIndex + 1
-     else GlyphIndex := 0 else
-   if (Button = mbRight) then
-    if FGlyphIndex > 0
-     then GlyphIndex := FGlyphIndex - 1
-     else GlyphIndex := FGlyphCount - 1;
-  end;
+  if Assigned(FStitchedItem) then
+   with FStitchedItem do
+    begin
+     if (Button = mbLeft) then
+      if FGlyphIndex < GlyphCount - 1
+       then GlyphIndex := FGlyphIndex + 1
+       else GlyphIndex := 0 else
+     if (Button = mbRight) then
+      if FGlyphIndex > 0
+       then GlyphIndex := FGlyphIndex - 1
+       else GlyphIndex := GlyphCount - 1;
+    end
+  else GlyphIndex := -1;
+
  inherited;
-end;
-
-procedure TCustomGuiStitchedSwitch.GlyphCountChanged;
-begin
- inherited;
- if FDefaultGlyphIndex >= FGlyphCount then DefaultGlyphIndex := FGlyphCount - 1;
- if FGlyphIndex >= FGlyphCount then GlyphIndex := FGlyphCount - 1;
-end;
-
-(*
-procedure TCustomGuiStitchedSwitch.RenderBitmap(const Bitmap: TBitmap);
-var
-  txt : string;
-begin
- with Bitmap, Canvas do
-  begin
-   Brush.Color := Self.Color;
-   Font.Assign(Self.Font);
-   Font.Size := Font.Size * OversamplingFactor;
-   if FGlyphIndex < FStringList.Count
-    then txt := FStringList[FGlyphIndex]
-    else txt := IntToStr(FGlyphIndex);
-   TextOut((Width - TextWidth(txt)) div 2, 0, txt);
-  end;
-end;
-*)
-
-procedure TCustomGuiStitchedSwitch.SetDefaultGlyphIndex(Value: Integer);
-begin
- if Value < 0 then Value := 0 else
- if Value >= FGlyphCount then Value := FGlyphCount - 1;
- if Value <> FDefaultGlyphIndex then
-  begin
-   FDefaultGlyphIndex := Value;
-  end;
-end;
-
-procedure TCustomGuiStitchedSwitch.SetGlyphIndex(Value: Integer);
-begin
- if Value < 0 then Value := 0 else
- if Value >= FGlyphCount then Value := FGlyphCount - 1;
- if Value <> FGlyphIndex then
-  begin
-   FGlyphIndex := Value;
-   GlyphIndexChanged;
-  end;
-end;
-
-procedure TCustomGuiStitchedSwitch.GlyphIndexChanged;
-begin
- if Assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = [])
-  then FOnChange(Self);
- Invalidate;
 end;
 
 end.
-

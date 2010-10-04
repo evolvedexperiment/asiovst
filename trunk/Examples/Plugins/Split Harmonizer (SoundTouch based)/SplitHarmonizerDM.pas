@@ -57,7 +57,7 @@ type
     procedure ParameterDelayAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDelayBChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterEncodeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterEncodeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterEncodeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixRightChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSemiTonesAChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -67,7 +67,7 @@ type
     procedure ParameterOverlapChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSeekWindowChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSequenceChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterAutoSettingsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLowpassAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLowpassBChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -289,7 +289,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'
@@ -414,7 +414,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.ParameterEncodeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'L/R';
