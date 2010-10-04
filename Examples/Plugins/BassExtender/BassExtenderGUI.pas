@@ -88,7 +88,7 @@ type
     procedure DialCompressionChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TBitmap;
   public
     procedure UpdateAttack;
     procedure UpdateBalance;
@@ -120,8 +120,8 @@ var
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackground := TBitmap.Create;
+ with FBackground do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -279,7 +279,7 @@ end;
 
 procedure TFmBassExtender.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackground);
 end;
 
 procedure TFmBassExtender.FormShow(Sender: TObject);

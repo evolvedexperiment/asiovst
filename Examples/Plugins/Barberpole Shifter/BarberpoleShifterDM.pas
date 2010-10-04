@@ -117,9 +117,9 @@ end;
 procedure TBarberpoleShifterDataModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMix[0] := max(0, -(0.01 * Value));
- FMix[2] := max(0, (0.01 * Value));
- FMix[1] := 1 - max(FMix[0], FMix[2]);
+ FMix[0] := Max(0, -(0.01 * Value));
+ FMix[2] := Max(0, (0.01 * Value));
+ FMix[1] := 1 - Max(FMix[0], FMix[2]);
 
  if EditorForm is TFmBarberpoleShifter
   then TFmBarberpoleShifter(EditorForm).UpdateMix;

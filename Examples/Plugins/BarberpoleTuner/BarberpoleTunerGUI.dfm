@@ -15,6 +15,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
   Scaled = False
   OnCreate = FormCreate
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13

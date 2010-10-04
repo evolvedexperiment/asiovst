@@ -86,6 +86,7 @@ type
     function GetBestPopulationData(Index: Integer): Double;
     function GetMaxConstraints(Index: Integer): Double;
     function GetMinConstraints(Index: Integer): Double;
+    function GetPopulation(Index: Integer): TDifferentialEvolutionPopulation;
     procedure SetBestPopulationData(Index: Integer; const Value: Double);
     procedure SetCrossOver(const Value: Double);
     procedure SetGainBest(const Value: Double);
@@ -96,6 +97,7 @@ type
     procedure SetMinConstraints(Index: Integer; const Value: Double);
     procedure SetPopulationCount(const Value: Integer);
     procedure SetVariableCount(const Value: Integer);
+    procedure SetPopulation(Index: Integer; const Value: TDifferentialEvolutionPopulation);
   protected
     FOnCalculateCosts : TDifferentialEvolutionEvent;
     FOnInitPopulation : TDifferentialEvolutionEvent;
@@ -109,13 +111,14 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Initialize;
+    procedure Initialize(InitializePopulation: Boolean = True);
     function Evolve: Double;
     function GetBestPopulation: TDifferentialEvolutionPopulation;
     function GetBestCost: Double;
     property MinConstraints[Index: Integer]: Double read GetMinConstraints write SetMinConstraints;
     property MaxConstraints[Index: Integer]: Double read GetMaxConstraints write SetMaxConstraints;
     property BestPopulation[Index: Integer]: Double read GetBestPopulationData write SetBestPopulationData;
+    property Population[Index: Integer]: TDifferentialEvolutionPopulation read GetPopulation write SetPopulation;
   published
     property OnCalculateCosts: TDifferentialEvolutionEvent read FOnCalculateCosts write FOnCalculateCosts;
     property OnInitPopulation: TDifferentialEvolutionEvent read FOnInitPopulation write FOnInitPopulation;
@@ -364,7 +367,7 @@ begin
  Result := FCurrentGeneration[FBestPopulationIndex].FCost;
 end;
 
-procedure TDifferentialEvolution.Initialize;
+procedure TDifferentialEvolution.Initialize(InitializePopulation: Boolean = True);
 var
   PopulationIndex : Integer;
   VariableIndex   : Integer;
@@ -380,13 +383,16 @@ begin
    FNextGeneration[PopulationIndex].FCost := 0;
   end;
 
- RandomizePopulation;
-
- // Introduce the "best" population if it is provided
- if FHasBestPopulation then
+ if InitializePopulation then
   begin
-   for VariableIndex := 0 to FVariableCount - 1
-    do FCurrentGeneration[0].FData[VariableIndex] := FBestPopulation[VariableIndex];
+   RandomizePopulation;
+
+   // Introduce the "best" population if it is provided
+   if FHasBestPopulation then
+    begin
+     for VariableIndex := 0 to FVariableCount - 1
+      do FCurrentGeneration[0].FData[VariableIndex] := FBestPopulation[VariableIndex];
+    end;
   end;
 end;
 
@@ -459,6 +465,18 @@ begin
   end;
 end;
 
+procedure TDifferentialEvolution.SetPopulation(Index: Integer;
+  const Value: TDifferentialEvolutionPopulation);
+begin
+ if (Index >= 0) and (Index < Length(FCurrentGeneration)) then
+  begin
+   if Length(Value) = VariableCount
+    then Move(Value, FCurrentGeneration[Index].FData[0], VariableCount * SizeOf(Double))
+    else raise Exception.Create('Variable count mismatch');
+  end
+ else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
 procedure TDifferentialEvolution.SetPopulationCount(const Value: Integer);
 begin
  Assert(Value >= 5);
@@ -517,6 +535,14 @@ begin
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 
  Result := FMinConstraints[Index];
+end;
+
+function TDifferentialEvolution.GetPopulation(
+  Index: Integer): TDifferentialEvolutionPopulation;
+begin
+ if (Index >= 0) and (Index < Length(FCurrentGeneration))
+  then Result := FCurrentGeneration[Index].FData
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 function TDifferentialEvolution.GetBestPopulationData(Index: Integer): Double;

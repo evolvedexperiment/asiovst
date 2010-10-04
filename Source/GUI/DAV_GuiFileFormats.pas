@@ -64,11 +64,12 @@ type
     class function CanLoad(const FileName: TFileName): Boolean; overload; virtual; abstract;
     class function CanLoad(Stream: TStream): Boolean; overload; virtual; abstract;
     class function CanHandleExtension(const FileName: TFileName): Boolean; virtual; abstract;
+  public
+    constructor Create; virtual; abstract;
+    procedure AssignTo(Dest: TPersistent); virtual;
 
     procedure LoadFromStream(Stream: TStream); virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
-  public
-    constructor Create; virtual; abstract;
     procedure LoadFromFile(Filename: TFilename); virtual;
     procedure SaveToFile(Filename: TFilename); virtual;
   end;
@@ -77,6 +78,8 @@ type
 procedure RegisterGraphicFileFormat(FileFormatClass: TGuiCustomFileFormatClass);
 procedure RegisterGraphicFileFormats(FileFormatClasses: array of TGuiCustomFileFormatClass);
 function FindGraphicFileFormatByExtension(Extension: TFileName): TGuiCustomFileFormatClass;
+function FindGraphicFileFormatByFileName(FileName: TFileName): TGuiCustomFileFormatClass;
+function FindGraphicFileFormatByStream(Stream: TStream): TGuiCustomFileFormatClass;
 
 implementation
 
@@ -125,8 +128,41 @@ begin
     end;
 end;
 
+function FindGraphicFileFormatByStream(Stream: TStream): TGuiCustomFileFormatClass;
+var
+  FileFormatClassIndex : Integer;
+begin
+ Result := nil;
+ for FileFormatClassIndex := 0 to Length(GGraphicFileFormatClasses) - 1 do
+  with GGraphicFileFormatClasses[FileFormatClassIndex] do
+   if CanLoad(Stream) then
+    begin
+     Result := GGraphicFileFormatClasses[FileFormatClassIndex];
+     Exit;
+    end;
+end;
+
+function FindGraphicFileFormatByFileName(FileName: TFileName): TGuiCustomFileFormatClass;
+var
+  FileFormatClassIndex : Integer;
+begin
+ Result := nil;
+ for FileFormatClassIndex := 0 to Length(GGraphicFileFormatClasses) - 1 do
+  with GGraphicFileFormatClasses[FileFormatClassIndex] do
+   if CanLoad(FileName) then
+    begin
+     Result := GGraphicFileFormatClasses[FileFormatClassIndex];
+     Exit;
+    end;
+end;
+
 
 { TGuiCustomFileFormat }
+
+procedure TGuiCustomFileFormat.AssignTo(Dest: TPersistent);
+begin
+ inherited AssignTo(Dest);
+end;
 
 procedure TGuiCustomFileFormat.LoadFromFile(Filename: TFilename);
 var

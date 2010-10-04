@@ -124,45 +124,63 @@ type
 
   TGuiCustomStitchedControl = class(TCustomControl)
   private
+    FColor: TColor;
+    FTransparent: Boolean;
     function GetStitchedIndex: Integer;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
-    procedure SetGlyphCount(const Value: Integer);
-    procedure SetStitchKind(const Value: TGuiStitchKind);
     procedure SetStitchedIndex(Value: Integer);
     procedure SetStitchedList(const Value: TGuiStitchedImageList);
+    procedure SetColor(const Value: TColor);
+    procedure SetTransparent(const Value: Boolean);
+    procedure SetGlyphIndex(Value: Integer);
+    procedure SetDefaultGlyphIndex(Value: Integer);
   protected
-    FAutoSize     : Boolean;
-    FBuffer       : TGuiCustomPixelMap;
-    FGlyphCount   : Integer;
-    FOnChange     : TNotifyEvent;
-    FStitchKind   : TGuiStitchKind;
-    FStitchedList : TGuiStitchedImageList;
-    FStitchedItem : TGuiStitchedImageCollectionItem;
+    FAutoSize          : Boolean;
+    FUpdateBuffer      : Boolean;
+    FBackBuffer        : TGuiCustomPixelMap;
+    FBuffer            : TGuiCustomPixelMap;
+    FOnChange          : TNotifyEvent;
+    FStitchedList      : TGuiStitchedImageList;
+    FStitchedItem      : TGuiStitchedImageCollectionItem;
 
-    function GetGlyphIndex: Integer; virtual; abstract;
-    procedure GlyphCountChanged; virtual;
-    procedure StitchKindChanged; virtual;
-//    procedure UpdateBuffer; override;
+    FGlyphIndex        : Integer;
+    FDefaultGlyphIndex : Integer;
 
-    procedure Render(const Pixmap: TGuiCustomPixelMap); virtual; abstract;
+    procedure BufferChanged; virtual;
+    procedure ColorChanged; virtual;
+    procedure DefaultGlyphIndexChanged; virtual;
+    procedure GlyphIndexChanged; virtual;
+    procedure StitchedIndexChanged; virtual;
+    procedure StitchedListChanged; virtual;
+    procedure UpdateBuffer; virtual;
+    procedure UpdateBackBuffer; virtual;
+    procedure TransparentChanged; virtual;
+
     procedure Paint; override;
-
-    property GlyphCount: Integer read FGlyphCount write SetGlyphCount default 1;
+    procedure Resize; override;
+    procedure Loaded; override;
+    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
 
     property Buffer: TGuiCustomPixelMap read FBuffer;
+    property GlyphIndex: Integer read FGlyphIndex write SetGlyphIndex;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
+    property Color: TColor read FColor write SetColor default clBtnFace;
+    property DefaultGlyphIndex: Integer read FDefaultGlyphIndex write SetDefaultGlyphIndex;
     property StitchedImageIndex: Integer read GetStitchedIndex write SetStitchedIndex;
     property StitchedImageList: TGuiStitchedImageList read FStitchedList write SetStitchedList;
+    property Transparent: Boolean read FTransparent write SetTransparent default False;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
-    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
   end;
 
 implementation
+
+uses
+  DAV_Common, DAV_GuiBlend;
 
 { TGuiStitchedImageCollection }
 
@@ -244,8 +262,6 @@ begin
  if FLinkedStitcheds.IndexOf(Stitched) < 0 then
   begin
    FLinkedStitcheds.Add(Stitched);
-   Stitched.GlyphCount := GlyphCount;
-   Stitched.StitchKind := StitchKind;
    case StitchKind of
     skHorizontal :
      begin
@@ -302,26 +318,31 @@ end;
 
 procedure TGuiStitchedImageCollectionItem.GlyphCountChanged;
 var
-  i : Integer;
+  Index : Integer;
 begin
- for i := 0 to FLinkedStitcheds.Count - 1
-  do TGuiCustomStitchedControl(FLinkedStitcheds[i]).GlyphCount := GlyphCount;
+ for Index := 0 to FLinkedStitcheds.Count - 1 do
+  with TGuiCustomStitchedControl(FLinkedStitcheds[Index]) do
+   begin
+    if FDefaultGlyphIndex >= FGlyphCount then DefaultGlyphIndex := FGlyphCount - 1;
+    if FGlyphIndex >= FGlyphCount then GlyphIndex := FGlyphCount - 1;
+
+    if FAutoSize then DoAutoSize;
+   end;
 end;
 
 procedure TGuiStitchedImageCollectionItem.StitchKindChanged;
 var
-  i : Integer;
+  Index : Integer;
 begin
- for i := 0 to FLinkedStitcheds.Count - 1
-  do TGuiCustomStitchedControl(FLinkedStitcheds[i]).StitchKind := StitchKind;
+ for Index := 0 to FLinkedStitcheds.Count - 1 do
+  with TGuiCustomStitchedControl(FLinkedStitcheds[Index]) do
+   if FAutoSize then DoAutoSize;
 end;
 
 procedure TGuiStitchedImageCollectionItem.SetGlyphCount(const Value: Integer);
 begin
-(*
- if Value <= 0
-  then raise Exception.Create(RCStrGlyphCountMustBePositive);
-*)
+// if Value <= 0
+//  then raise Exception.Create(RCStrGlyphCountMustBePositive);
 
  if FGlyphCount <> Value then
   begin
@@ -378,110 +399,112 @@ end;
 constructor TGuiCustomStitchedControl.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
- FBuffer     := TGuiCustomPixelMap.Create;
- FGlyphCount := 1;
- FStitchKind := skHorizontal;
+ FBuffer            := TGuiPixelMapMemory.Create;
+ FBackBuffer        := TGuiPixelMapMemory.Create;
+ FUpdateBuffer      := False;
+ FColor             := clBtnFace;
+ FGlyphIndex        := 0;
+ FDefaultGlyphIndex := 0;
+
+ ControlStyle       := ControlStyle + [csOpaque];
 end;
 
 destructor TGuiCustomStitchedControl.Destroy;
 begin
  FreeAndNil(FBuffer);
+ FreeAndNil(FBackBuffer);
  inherited Destroy;
 end;
 
-(*
-procedure TGuiCustomStitchedControl.UpdateBuffer;
+type
+  TParentControl = class(TWinControl);
+
+procedure TGuiCustomStitchedControl.CopyParentImage(
+  PixelMap: TGuiCustomPixelMap);
 var
-  theRect   : TRect;
-  GlyphIndex   : Integer;
-  Bmp       : TGuiCustomPixelMap;
-  OwnerDraw : Boolean;
+  I         : Integer;
+  SubCount  : Integer;
+  SaveIndex : Integer;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
+  Bmp       : TBitmap;
 begin
- if [csLoading..csDestroying] * ComponentState <> [] then exit;
+ if (Parent = nil) then Exit;
+ SubCount := Parent.ControlCount;
+ // set
+ {$IFDEF WIN32}
+ with Parent
+  do ControlState := ControlState + [csPaintCopy];
+ try
+ {$ENDIF}
 
- if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
-  begin
-   Lock;
-   Brush.Color := Self.Color;
-   OwnerDraw := FBuffer.Empty and not Assigned(FImageList);
-   if OwnerDraw and Assigned(FStitchedList) and Assigned(FStitchedItem)
-    then OwnerDraw := FStitchedItem.FBuffer.Empty;
+  SelfR := Bounds(Left, Top, Width, Height);
+  Pnt.X := -Left;
+  Pnt.Y := -Top;
 
-   if OwnerDraw then
-    if AntiAlias = gaaNone then
-     begin
-      // draw background
-      {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
-      FillRect(ClipRect);
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Self.Width;
+    Height := Self.Height;
+    PixelFormat := pf32bit;
 
-      RenderPixelMap(FBuffer);
-     end
-    else
-     begin
-      Bmp := TGuiCustomPixelMap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := OversamplingFactor * FBuffer.Width;
-        Height      := OversamplingFactor * FBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        {$IFNDEF FPC}
-        if FTransparent then
-         begin
-          CopyParentImage(Self, Bmp.Canvas);
-          UpsamplePixelMap(Bmp);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderPixelMap(Bmp);
-        DownsamplePixelMap(Bmp);
-        FBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        FreeAndNil(Bmp);
-       end;
-    end
-   else
-    begin
-     // draw background
-     Brush.Color := Self.Color;
-     {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
-     FillRect(ClipRect);
-
-     GlyphIndex := GetGlyphIndex;
-     if (GlyphIndex >= FGlyphCount) then GlyphIndex := FGlyphCount - 1 else
-     if (GlyphIndex < 0) then GlyphIndex := 0;
-
-     if Assigned(FStitchedItem)
-      then Bmp := FStitchedItem.FBuffer
-      else Bmp := PixelMap;
-
-     if not Bmp.Empty then
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+     with TParentControl(Parent) do
       begin
-
-       theRect := ClientRect;
-       if FStitchKind = skVertical then
-        begin
-         theRect.Top    := Bmp.Height * GlyphIndex div FGlyphCount;
-         theRect.Bottom := Bmp.Height * (GlyphIndex + 1) div FGlyphCount;
-        end
-       else
-        begin
-         theRect.Left  := Bmp.Width * GlyphIndex div FGlyphCount;
-         theRect.Right := Bmp.Width * (GlyphIndex + 1) div FGlyphCount;
-        end;
-
-       with ClientRect do
-        begin
-         BitBlt(Handle, Left, Top, Right - Left, Bottom - Top,
-           Bmp.Canvas.Handle, theRect.Left, theRect.Top, CopyMode);
-        end;
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
       end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
     end;
-   Unlock;
-  end;
+
+    // Copy images of graphic controls
+    for I := 0 to SubCount - 1 do
+     begin
+      if Parent.Controls[I] = Self then Break else
+       if (Parent.Controls[I] <> nil) and
+          (Parent.Controls[I] is TGraphicControl)
+        then
+         with TGraphicControl(Parent.Controls[I]) do
+          begin
+           CtlR := Bounds(Left, Top, Width, Height);
+           if Boolean(IntersectRect(R, SelfR, CtlR)) and Visible then
+            begin
+             {$IFDEF WIN32}
+             ControlState := ControlState + [csPaintCopy];
+             {$ENDIF}
+             SaveIndex := SaveDC(Canvas.Handle);
+             try
+              SaveIndex := SaveDC(Canvas.Handle);
+              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
+              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
+              Perform(WM_PAINT, Canvas.Handle, 0);
+             finally
+              RestoreDC(Handle, SaveIndex);
+              {$IFDEF WIN32}
+              ControlState := ControlState - [csPaintCopy];
+              {$ENDIF}
+             end;
+            end;
+          end;
+     end;
+    PixelMap.Draw(Bmp);
+   finally
+    Free;
+   end;
+
+ {$IFDEF WIN32}
+ finally
+   with Parent do ControlState := ControlState - [csPaintCopy];
+ end;
+ {$ENDIF}
 end;
-*)
 
 function TGuiCustomStitchedControl.GetStitchedIndex: Integer;
 begin
@@ -492,18 +515,22 @@ end;
 
 procedure TGuiCustomStitchedControl.DoAutoSize;
 begin
-// if FBuffer.Empty or (FGlyphCount = 0) then Exit;
+ if Assigned(FStitchedItem) then
+  with FStitchedItem do
+   begin
+    if (GlyphCount = 0) then Exit;
 
- if FStitchKind = skVertical then
-  begin
-   Width  := FBuffer.Width;
-   Height := FBuffer.Height div FGlyphCount;
-  end
- else
-  begin
-   Width  := FBuffer.Width div FGlyphCount;
-   Height := FBuffer.Height;
-  end;
+    if StitchKind = skVertical then
+     begin
+      Width  := FBuffer.Width;
+      Height := FBuffer.Height div GlyphCount;
+     end
+    else
+     begin
+      Width  := FBuffer.Width div GlyphCount;
+      Height := FBuffer.Height;
+     end;
+   end;
 end;
 
 procedure TGuiCustomStitchedControl.SetAutoSize(const Value: boolean);
@@ -515,33 +542,45 @@ begin
   end;
 end;
 
-procedure TGuiCustomStitchedControl.SetGlyphCount(const Value: Integer);
+procedure TGuiCustomStitchedControl.SetColor(const Value: TColor);
 begin
- if FGlyphCount <> Value then
+ if FColor <> Value then
   begin
-   FGlyphCount := Value;
-   GlyphCountChanged;
+   FColor := Value;
+   ColorChanged;
   end;
-end;
-
-procedure TGuiCustomStitchedControl.GlyphCountChanged;
-begin
- DoAutoSize;
 end;
 
 procedure TGuiCustomStitchedControl.Paint;
 begin
  inherited;
- //
+
+ if FUpdateBuffer
+  then UpdateBuffer;
+
+ if Assigned(FBuffer)
+  then FBuffer.PaintTo(Canvas);
 end;
 
-(*
-procedure TGuiCustomStitchedControl.SetPixelMap(const Value: TGuiCustomPixelMap);
+procedure TGuiCustomStitchedControl.Resize;
 begin
-  FBuffer.Assign(Value);
-  DoAutoSize;
+ if Assigned(FBuffer)
+  then FBuffer.SetSize(Width, Height);
+
+ if Assigned(FBackBuffer) then
+  begin
+   FBackBuffer.SetSize(Width, Height);
+   UpdateBackBuffer;
+  end;
+
+ inherited;
 end;
-*)
+
+procedure TGuiCustomStitchedControl.Loaded;
+begin
+ inherited;
+ Resize;
+end;
 
 procedure TGuiCustomStitchedControl.SetStitchedIndex(Value: Integer);
 begin
@@ -558,7 +597,7 @@ begin
     then FStitchedList[Value].LinkStitchedControl(Self)
     else FStitchedItem.UnLinkStitchedControl(Self);
    FStitchedItem := FStitchedList[Value];
-   Invalidate;
+   StitchedIndexChanged;
   end;
 end;
 
@@ -569,22 +608,138 @@ begin
    FStitchedList := Value;
    if not Assigned(FStitchedList)
     then FStitchedItem := nil;
-   Invalidate;
+   StitchedListChanged;
   end;
 end;
 
-procedure TGuiCustomStitchedControl.SetStitchKind(const Value: TGuiStitchKind);
+procedure TGuiCustomStitchedControl.SetTransparent(const Value: Boolean);
 begin
- if FStitchKind <> Value then
+ if FTransparent <> Value then
   begin
-   FStitchKind := Value;
-   StitchKindChanged;
+   FTransparent := Value;
+   TransparentChanged;
   end;
 end;
 
-procedure TGuiCustomStitchedControl.StitchKindChanged;
+procedure TGuiCustomStitchedControl.SetDefaultGlyphIndex(Value: Integer);
 begin
- DoAutoSize;
+ if Assigned(FStitchedItem)
+  then Value := Limit(Value, 0, FStitchedItem.GlyphCount - 1)
+  else Value := -1;
+
+ if Value <> FDefaultGlyphIndex then
+  begin
+   FDefaultGlyphIndex := Value;
+   DefaultGlyphIndexChanged;
+  end;
+end;
+
+procedure TGuiCustomStitchedControl.SetGlyphIndex(Value: Integer);
+begin
+ if Assigned(FStitchedItem)
+  then Value := Limit(Value, 0, FStitchedItem.GlyphCount - 1)
+  else Value := -1;
+
+ if Value <> FGlyphIndex then
+  begin
+   FGlyphIndex := Value;
+   GlyphIndexChanged;
+  end;
+end;
+
+procedure TGuiCustomStitchedControl.ColorChanged;
+begin
+ UpdateBackBuffer;
+end;
+
+procedure TGuiCustomStitchedControl.DefaultGlyphIndexChanged;
+begin
+ //
+end;
+
+procedure TGuiCustomStitchedControl.BufferChanged;
+begin
+ FUpdateBuffer := True;
+ Invalidate;
+end;
+
+procedure TGuiCustomStitchedControl.GlyphIndexChanged;
+begin
+ if Assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = [])
+  then FOnChange(Self);
+
+ BufferChanged;
+end;
+
+procedure TGuiCustomStitchedControl.StitchedIndexChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TGuiCustomStitchedControl.StitchedListChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TGuiCustomStitchedControl.TransparentChanged;
+begin
+ UpdateBackBuffer;
+end;
+
+procedure TGuiCustomStitchedControl.UpdateBackBuffer;
+var
+  PixelColor32 : TPixel32;
+begin
+ if FTransparent then CopyParentImage(FBackBuffer) else
+  begin
+   PixelColor32 := ConvertColor(FColor);
+   FBackBuffer.FillRect(ClientRect, PixelColor32);
+  end;
+end;
+
+procedure TGuiCustomStitchedControl.UpdateBuffer;
+var
+  DataPointer : PPixel32Array;
+  LineIndex   : Integer;
+begin
+ FUpdateBuffer := False;
+
+ inherited;
+
+ Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
+
+ Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
+   FBuffer.Width * SizeOf(TPixel32));
+
+ if Assigned(FStitchedItem) then
+  with FStitchedItem do
+   begin
+    case StitchKind of
+     skHorizontal :
+      begin
+       for LineIndex := 0 to Self.Height - 1 do
+        begin
+         DataPointer := StitchedPixelMap.ScanLine[
+           LineIndex * StitchedPixelMap.Width + FGlyphIndex * Self.Width];
+         BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.ScanLine[LineIndex]), Self.Width);
+        end;
+       EMMS;
+      end;
+     skVertical   :
+      begin
+       DataPointer := StitchedPixelMap.ScanLine[FGlyphIndex * Self.Height];
+       BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.DataPointer),
+         Self.Height * Self.Width);
+       EMMS;
+      end;
+    end;
+   end
+ else
+  begin
+   if FGlyphIndex = 0
+    then FBuffer.FillRect(ClientRect, pxLime32)
+    else FBuffer.FillRect(ClientRect, pxRed32);
+  end;
 end;
 
 end.
