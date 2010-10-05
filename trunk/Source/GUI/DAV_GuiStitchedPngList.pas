@@ -1,4 +1,4 @@
-unit DAV_GuiStitchedSwitch;
+unit DAV_GuiStitchedPngList;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -37,67 +37,96 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
   {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
-  DAV_GuiCommon, DAV_GuiStitchedControls;
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiPng;
 
 type
-  TCustomGuiStitchedSwitch = class(TGuiCustomStitchedControl)
+  TGuiStitchedPNGCollectionItem = class(TGuiCustomStitchedCollectionItem)
   private
-    FReadOnly          : Boolean;
-  protected
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure UpdateBuffer; override;
+    FPng : TPortableNetworkGraphicPixel32;
+    procedure SetPng(const Value: TPortableNetworkGraphicPixel32);
   public
-    property ReadOnly: Boolean read FReadOnly write FReadOnly default false;
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
+  published
+    property PortableNetworkGraphic: TPortableNetworkGraphicPixel32 read FPng write SetPng;
+    property DisplayName;
+    property GlyphCount;
+    property StitchKind;
+    property OnChange;
+    property Height;
+    property Width;
   end;
 
-  TGuiStichedSwitch = class(TCustomGuiStitchedSwitch)
+  TGuiStitchedPNGList = class(TGuiCustomStitchedList)
+  private
+    FStitchedImageCollection : TGuiStitchedImageCollection;
+    function GetItems(Index: Integer): TGuiStitchedPNGCollectionItem;
+  protected
+    function GetCount: Integer; override;
+    property Items[Index: Integer]: TGuiStitchedPNGCollectionItem read GetItems; default;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
   published
-    property DefaultGlyphIndex;
-    property GlyphIndex;
-    property ReadOnly;
-    property AutoSize;
-    property StitchedImageList;
-    property StitchedImageIndex;
-    property Transparent;
-    property OnChange;
+    property StitchedPNGs: TGuiStitchedImageCollection read FStitchedImageCollection write FStitchedImageCollection;
   end;
+
 
 implementation
 
 uses
   DAV_Common, DAV_GuiBlend;
 
-{ TCustomGuiStitchedSwitch }
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
-procedure TCustomGuiStitchedSwitch.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+
+{ TGuiStitchedPNGCollectionItem }
+
+constructor TGuiStitchedPNGCollectionItem.Create(Collection: TCollection);
 begin
- if not FReadOnly then
-  if Assigned(FStitchedItem) then
-   with FStitchedItem do
-    begin
-     if (Button = mbLeft) then
-      if FGlyphIndex < GlyphCount - 1
-       then GlyphIndex := FGlyphIndex + 1
-       else GlyphIndex := 0 else
-     if (Button = mbRight) then
-      if FGlyphIndex > 0
-       then GlyphIndex := FGlyphIndex - 1
-       else GlyphIndex := GlyphCount - 1;
-    end
-  else GlyphIndex := -1;
+ inherited;
+ FPng := TPortableNetworkGraphicPixel32.Create;
+end;
 
+destructor TGuiStitchedPNGCollectionItem.Destroy;
+begin
+ FreeAndNil(FPng);
  inherited;
 end;
 
-procedure TCustomGuiStitchedSwitch.UpdateBuffer;
+procedure TGuiStitchedPNGCollectionItem.SetPng(
+  const Value: TPortableNetworkGraphicPixel32);
 begin
- inherited;
+ FPng.Assign(Value);
+end;
 
- if not (Assigned(FStitchedList) and (FStitchedItemIndex >= 0)) then
-  if Assigned(FBuffer) and (FGlyphIndex = 0)
-   then FBuffer.FillRect(ClientRect, pxLime32)
-   else FBuffer.FillRect(ClientRect, pxRed32);
+
+{ TGuiStitchedPNGList }
+
+constructor TGuiStitchedPNGList.Create(AOwner: TComponent);
+begin
+  inherited;
+  FStitchedImageCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedPngCollectionItem);
+end;
+
+destructor TGuiStitchedPNGList.Destroy;
+begin
+  FreeAndNil(FStitchedImageCollection);
+  inherited;
+end;
+
+function TGuiStitchedPNGList.GetCount: Integer;
+begin
+  Result := FStitchedImageCollection.Count;
+end;
+
+function TGuiStitchedPNGList.GetItems(
+  Index: Integer): TGuiStitchedPNGCollectionItem;
+begin
+ if (Index >= 0) and (Index < FStitchedImageCollection.Count)
+  then Result := TGuiStitchedPNGCollectionItem(FStitchedImageCollection[Index])
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 end.

@@ -48,11 +48,13 @@ type
     FMouseInControl  : Boolean;
     FMouseIsDown     : Boolean;
     FPosition        : Single;
+    FDefaultPosition : Single;
     FRange           : Single;
     FRangeReciprocal : Single;
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
     procedure SetPosition(Value: Single);
+    procedure SetDefaultPosition(const Value: Single);
 
     function PositionToAngle: Single;
   protected
@@ -67,6 +69,7 @@ type
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
 
     procedure CalculateRange; virtual;
+    procedure DefaultPositionChanged; virtual;
     procedure MaximumChanged; virtual;
     procedure MinimumChanged; virtual;
     procedure PositionChanged; virtual;
@@ -81,6 +84,7 @@ type
     property Max: Single read FMax write SetMax;
     property Min: Single read FMin write SetMin;
     property Position: Single read FPosition write SetPosition;
+    property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
   end;
@@ -88,14 +92,13 @@ type
   TGuiStichedDial = class(TCustomGuiStitchedDial)
   published
     property AutoSize;
-    property DefaultGlyphIndex;
     property LockCursor;
     property Max;
     property Min;
     property OnChange;
     property Position;
-    property StitchedImageIndex;
     property StitchedImageList;
+    property StitchedImageIndex;
     property Transparent;
     property OnMouseEnter;
     property OnMouseLeave;
@@ -122,6 +125,16 @@ begin
  FMax := 100;
  FPosition := 0;
  CalculateRange;
+end;
+
+procedure TCustomGuiStitchedDial.DefaultPositionChanged;
+begin
+ inherited;
+
+ // calculate matching default glyph index
+ if Assigned(FStitchedItem)
+  then DefaultGlyphIndex := Round(DefaultPosition * FRangeReciprocal *
+    FStitchedItem.GlyphCount);
 end;
 
 procedure TCustomGuiStitchedDial.GlyphIndexChanged;
@@ -243,6 +256,15 @@ end;
 function TCustomGuiStitchedDial.PositionToAngle: Single;
 begin
   Result := (FPosition - Min) * 360 * FRangeReciprocal;
+end;
+
+procedure TCustomGuiStitchedDial.SetDefaultPosition(const Value: Single);
+begin
+ if FDefaultPosition <> Value then
+  begin
+   FDefaultPosition := Value;
+   DefaultPositionChanged;
+  end;
 end;
 
 procedure TCustomGuiStitchedDial.SetMax(const Value: Single);

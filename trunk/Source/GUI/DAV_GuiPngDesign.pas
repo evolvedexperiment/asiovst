@@ -1,4 +1,4 @@
-unit DAV_GuiPixelMapDesign;
+unit DAV_GuiPngDesign;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -25,7 +25,7 @@ unit DAV_GuiPixelMapDesign;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010             //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,50 +41,48 @@ uses
   {$ELSE} Windows, Messages, DesignIntf, DesignEditors, VCLEditors, Registry,
   Clipbrd, Consts,{$ENDIF}
   Forms, Graphics, Classes, SysUtils, Dialogs, StdCtrls, Controls, ExtCtrls,
-  Menus, DAV_Common, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPng,
-  DAV_GuiFileFormatGraphics;
+  Menus, DAV_Common, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPng;
 
 type
-  TFmPixelMapDialog = class(TForm)
+  TFmPngDialog = class(TForm)
     PaintBox: TPaintBox;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
     MainMenu: TMainMenu;
     MiFile: TMenuItem;
-    MiLoad: TMenuItem;
+    MiLoadPng: TMenuItem;
+    MiSavePng: TMenuItem;
     N1: TMenuItem;
     MiExit: TMenuItem;
-    MiSaveImage: TMenuItem;
-    MiGenerate: TMenuItem;
-    MiBrushedMetal: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure MiExitClick(Sender: TObject);
-    procedure MiLoadClick(Sender: TObject);
-    procedure MiSaveImageClick(Sender: TObject);
-    procedure MiBrushedMetalClick(Sender: TObject);
+    procedure MiLoadPngClick(Sender: TObject);
+    procedure MiSavePngClick(Sender: TObject);
   private
     FPixelMap : TGuiPixelMapMemory;
     FBuffer   : TGuiPixelMapMemory;
+    FPng      : TPortableNetworkGraphicPixel32;
   public
     property PixelMap: TGuiPixelMapMemory read FPixelMap;
+    property PortableNetworkGraphic: TPortableNetworkGraphicPixel32 read FPng;
   end;
 
-  TPixelMapEditorComponent = class(TComponent)
+  TPngEditorComponent = class(TComponent)
   private
-    FPixelMap       : TGuiCustomPixelMap;
-    FPixelMapDialog : TFmPixelMapDialog;
-    procedure SetPixelMap(Value: TGuiCustomPixelMap);
+    FPng       : TPortableNetworkGraphicPixel32;
+    FPngDialog : TFmPngDialog;
+    procedure SetPng(Value: TPortableNetworkGraphicPixel32);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function Execute: Boolean;
 
-    property PixelMap: TGuiCustomPixelMap read FPixelMap write SetPixelMap;
+    property PortableNetworkGraphic: TPortableNetworkGraphicPixel32 read FPng write SetPng;
   end;
 
-  TPixelMapProperty = class(TClassProperty)
+  TPngProperty = class(TClassProperty)
   public
     procedure Edit; override;
     function GetAttributes: TPropertyAttributes; override;
@@ -92,12 +90,13 @@ type
     procedure SetValue(const Value: string); override;
   end;
 
-  TPixelMapEditor = class(TComponentEditor)
+  TPngEditor = class(TComponentEditor)
   public
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
   end;
+
 
 implementation
 
@@ -106,77 +105,38 @@ implementation
 uses
   DAV_GuiFileFormats;
 
-procedure TFmPixelMapDialog.FormCreate(Sender: TObject);
+procedure TFmPngDialog.FormCreate(Sender: TObject);
 begin
  FPixelMap := TGuiPixelMapMemory.Create;
  FPixelMap.SetSize(PaintBox.Width, PaintBox.Height);
 
  FBuffer := TGuiPixelMapMemory.Create;
  FBuffer.SetSize(PaintBox.Width, PaintBox.Height);
+
+ FPng := TPortableNetworkGraphicPixel32.Create;
 end;
 
-procedure TFmPixelMapDialog.FormDestroy(Sender: TObject);
+procedure TFmPngDialog.FormDestroy(Sender: TObject);
 begin
+ FreeAndNil(FPng);
  FreeAndNil(FPixelMap);
  FreeAndNil(FBuffer);
 end;
 
-procedure TFmPixelMapDialog.MiBrushedMetalClick(Sender: TObject);
-var
-  x, y      : Integer;
-  s         : array [0..1] of Single;
-  hr, h     : Single;
-  ByteValue : ShortInt;
-  ScnLn     : PPixel32Array;
-begin
- s[0] := 0;
- s[1] := 0;
- with FPixelMap do
-  begin
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     ScnLn := Scanline[y];
-     h     := 0.1 * (1 - Sqr(2 * (y - Height * 0.5) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
-
-       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
-       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
-       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
-       ScnLn[x].A := $FF;
-      end;
-    end;
-  end;
- PaintBox.Invalidate;
-end;
-
-procedure TFmPixelMapDialog.MiExitClick(Sender: TObject);
+procedure TFmPngDialog.MiExitClick(Sender: TObject);
 begin
  Close;
 end;
 
-procedure TFmPixelMapDialog.MiLoadClick(Sender: TObject);
+procedure TFmPngDialog.MiLoadPngClick(Sender: TObject);
 var
   FileFormatClass  : TGuiCustomFileFormatClass;
 begin
  with OpenDialog do
   if Execute then
    begin
-    FileFormatClass := FindGraphicFileFormatByFileName(OpenDialog.FileName);
-    if Assigned(FileFormatClass) then
-     begin
-      with FileFormatClass.Create do
-       try
-        LoadFromFile(OpenDialog.FileName);
-        AssignTo(FPixelMap);
-        FBuffer.SetSize(PaintBox.Width, PaintBox.Height);
-       finally
-        Free;
-       end;
-     end;
+    FPng.LoadFromFile(OpenDialog.FileName);
+    FPng.AssignTo(FPixelMap);
 
     Self.ClientWidth := FPixelMap.Width + 16;
     Self.ClientHeight := FPixelMap.Height + 16;
@@ -184,14 +144,14 @@ begin
    end;
 end;
 
-procedure TFmPixelMapDialog.MiSaveImageClick(Sender: TObject);
+procedure TFmPngDialog.MiSavePngClick(Sender: TObject);
 begin
  with SaveDialog do
   if Execute
-   then FPixelMap.SaveToFile(FileName);
+   then FPng.SaveToFile(FileName);
 end;
 
-procedure TFmPixelMapDialog.PaintBoxPaint(Sender: TObject);
+procedure TFmPngDialog.PaintBoxPaint(Sender: TObject);
 var
   X, Y   : Integer;
   ScnLn  : PPixel32Array;
@@ -206,10 +166,9 @@ begin
    if Assigned(FBuffer) then
     begin
      FBuffer.SetSize(FPixelMap.Width, FPixelMap.Height);
-
-     // draw checker board
      XIndex := 0;
      YIndex := 0;
+
      for Y := 0 to FPixelMap.Height - 1 do
       begin
        ScnLn := FBuffer.ScanLine[Y];
@@ -230,108 +189,107 @@ begin
 end;
 
 
-{ TPixelMapEditorComponent }
+{ TPngEditorComponent }
 
-constructor TPixelMapEditorComponent.Create(AOwner: TComponent);
+constructor TPngEditorComponent.Create(AOwner: TComponent);
 begin
  inherited;
- FPixelMap := TGuiPixelMapMemory.Create;
- FPixelMapDialog := TFmPixelMapDialog.Create(Self);
+ FPng := TPortableNetworkGraphicPixel32.Create;
+ FPngDialog := TFmPngDialog.Create(Self);
 end;
 
-destructor TPixelMapEditorComponent.Destroy;
+destructor TPngEditorComponent.Destroy;
 begin
- FreeAndNil(FPixelMap);
- FreeAndNil(FPixelMapDialog);
+ FreeAndNil(FPng);
+ FreeAndNil(FPngDialog);
  inherited;
 end;
 
-function TPixelMapEditorComponent.Execute: Boolean;
+function TPngEditorComponent.Execute: Boolean;
 begin
- with FPixelMapDialog do
+ with FPngDialog do
   begin
-   PixelMap.Assign(Self.FPixelMap);
-   ClientWidth := FPixelMap.Width + 16;
-   ClientHeight := FPixelMap.Height + 16;
+   PortableNetworkGraphic.Assign(Self.FPng);
+   PortableNetworkGraphic.AssignTo(PixelMap);
+   ClientWidth := FPng.Width + 16;
+   ClientHeight := FPng.Height + 16;
    Result := ShowModal = mrOK;
-   // if Result then
-
-   Self.FPixelMap.Assign(FPixelMapDialog.PixelMap);
+   Self.FPng.Assign(FPngDialog.PortableNetworkGraphic);
    Result := True;
   end;
 end;
 
-procedure TPixelMapEditorComponent.SetPixelMap(Value: TGuiCustomPixelMap);
+procedure TPngEditorComponent.SetPng(Value: TPortableNetworkGraphicPixel32);
 begin
  try
-  FPixelMap.Assign(Value);
+  FPng.Assign(Value);
  except
   on E: Exception do ShowMessage(E.Message);
  end;
 end;
 
 
-{ TPixelMapProperty }
+{ TPngProperty }
 
-procedure TPixelMapProperty.Edit;
+procedure TPngProperty.Edit;
 var
-  PixelMapEditor: TPixelMapEditorComponent;
+  PngEditor: TPngEditorComponent;
 begin
  try
-  PixelMapEditor := TPixelMapEditorComponent.Create(nil);
+  PngEditor := TPngEditorComponent.Create(nil);
   try
-   PixelMapEditor.PixelMap := TGuiCustomPixelMap(Pointer(GetOrdValue));
-   if PixelMapEditor.Execute then
+   PngEditor.PortableNetworkGraphic := TPortableNetworkGraphicPixel32(Pointer(GetOrdValue));
+   if PngEditor.Execute then
     begin
-     SetOrdValue(Longint(PixelMapEditor.PixelMap));
+     SetOrdValue(Longint(PngEditor.PortableNetworkGraphic));
      Designer.Modified;
     end;
   finally
-   FreeAndNil(PixelMapEditor);
+   FreeAndNil(PngEditor);
   end;
  except
   on E: Exception do ShowMessage(E.Message);
  end;
 end;
 
-function TPixelMapProperty.GetAttributes: TPropertyAttributes;
+function TPngProperty.GetAttributes: TPropertyAttributes;
 begin
  Result := [paDialog, paSubProperties];
 end;
 
-function TPixelMapProperty.GetValue: string;
+function TPngProperty.GetValue: string;
 var
-  PixelMap: TGuiCustomPixelMap;
+  Png: TPortableNetworkGraphicPixel32;
 begin
  try
-  PixelMap := TGuiCustomPixelMap(GetOrdValue);
-  if (PixelMap = nil) then Result := srNone
-  else Result := Format('%s [%d,%d]', [PixelMap.ClassName, PixelMap.Width, PixelMap.Height]);
+  Png := TPortableNetworkGraphicPixel32(GetOrdValue);
+  if (Png = nil) then Result := srNone
+  else Result := Format('%s [%d,%d]', [Png.ClassName, Png.Width, Png.Height]);
  except
   on E: Exception do ShowMessage(E.Message);
  end;
 end;
 
-procedure TPixelMapProperty.SetValue(const Value: string);
+procedure TPngProperty.SetValue(const Value: string);
 begin
   if Value = '' then SetOrdValue(0);
 end;
 
 
-{ TPixelMapEditor }
+{ TPngEditor }
 
-procedure TPixelMapEditor.ExecuteVerb(Index: Integer);
+procedure TPngEditor.ExecuteVerb(Index: Integer);
 begin
  inherited;
  // yet todo, not used yet!
 end;
 
-function TPixelMapEditor.GetVerb(Index: Integer): string;
+function TPngEditor.GetVerb(Index: Integer): string;
 begin
- if Index = 0 then Result := 'PixelMap Editor...';
+ if Index = 0 then Result := 'Png Editor...';
 end;
 
-function TPixelMapEditor.GetVerbCount: Integer;
+function TPngEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;
