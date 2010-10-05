@@ -29,9 +29,9 @@ uses
   DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_GuiCorrelationMeter,
   DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign,
   DAV_GuiDialRenderer, {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds,
-  {$ENDIF} DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider, DAV_GuiMediaButton,
-  DAV_GuiDialNew, DAV_GuiStitchedControls, DAV_GuiStitchedSwitch,
-  DAV_GuiPixelMap, DAV_GuiPixelMapDesign;
+  {$ENDIF} DAV_GuiPixelMap, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider,
+  DAV_GuiMediaButton, DAV_GuiDialNew, DAV_GuiStitchedControls,
+  DAV_GuiStitchedSwitch, DAV_GuiStitchedDial, DAV_GuiPixelMapDesign;
 
 procedure Register;
 begin
@@ -43,7 +43,7 @@ begin
     TGuiDialImageList, TGuiDialImageRenderer, TGuiEQGraph, TGuiEQSlide,
     {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiSwitch,
     TGuiSlider, TGuiMediaButton, TGuiSimpleDial, TGuiStitchedImageList,
-    TGuiStichedSwitch]);
+    TGuiStichedSwitch, TGuiStichedDial]);
 
   RegisterPropertyEditor(TypeInfo(TGuiCustomPixelMap), nil, '', TPixelMapProperty);
 
