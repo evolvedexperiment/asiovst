@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedSwitch;
+  DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList;
 
 type
   TFmSwitchTest = class(TForm)
@@ -14,6 +14,7 @@ type
     GuiStichedSwitch1: TGuiStichedSwitch;
     GuiStichedSwitch2: TGuiStichedSwitch;
     GuiStichedSwitch3: TGuiStichedSwitch;
+    GuiStitchedPNGList: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -21,8 +22,6 @@ type
     procedure GuiStichedSwitchChange(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
-  public
-    { Public-Deklarationen }
   end;
 
 var
@@ -44,10 +43,7 @@ begin
   end;
  FBackground := TGuiPixelMapMemory.Create;
 
- GuiStichedSwitch0.StitchedImageIndex := 0;
- GuiStichedSwitch1.StitchedImageIndex := 0;
- GuiStichedSwitch2.StitchedImageIndex := 0;
- GuiStichedSwitch3.StitchedImageIndex := 0;
+ GuiStichedSwitch2.Transparent := True;
 end;
 
 procedure TFmSwitchTest.FormDestroy(Sender: TObject);

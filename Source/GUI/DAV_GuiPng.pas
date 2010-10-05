@@ -128,6 +128,7 @@ type
     procedure RemovePhysicalPixelDimensionsInformation;
     procedure RemoveGammaInformation;
     procedure RemoveModifiedTimeInformation;
+    procedure Assign(Source: TPersistent); override;
 
     property Width: Integer read GetWidth write SetWidth;
     property Height: Integer read GetHeight write SetHeight;
@@ -152,6 +153,9 @@ type
   private
     procedure AssignPropertiesFromPixelMap(PixelMap: TGuiCustomPixelMap);
   protected
+    procedure ReadData(Stream: TStream); virtual;
+    procedure WriteData(Stream: TStream); virtual;
+    procedure DefineProperties(Filer: TFiler); override;
     function PixelmapScanline(Bitmap: TObject; Y: Integer): Pointer; virtual;
   public
     procedure AssignTo(Dest: TPersistent); override;
@@ -950,12 +954,39 @@ begin
  FDataChunkList.Add(ImageDataChunk);
 end;
 
+procedure TPortableNetworkGraphic.Assign(Source: TPersistent);
+begin
+ if Source is TPortableNetworkGraphic then
+  with TPortableNetworkGraphic(Source) do
+   begin
+    Self.FImageHeader.Assign(FImageHeader);
+    Self.FPaletteChunk.Assign(FPaletteChunk);
+    Self.FGammaChunk.Assign(FGammaChunk);
+    Self.FTimeChunk.Assign(FTimeChunk);
+    Self.FSignificantBits.Assign(FSignificantBits);
+    Self.FPhysicalDimensions.Assign(FPhysicalDimensions);
+    Self.FChromaChunk.Assign(FChromaChunk);
+    Self.FDataChunkList.Assign(FDataChunkList);
+    Self.FAdditionalChunkList.Assign(FAdditionalChunkList);
+   end
+ else inherited;
+end;
+
 procedure TPortableNetworkGraphic.AssignTo(Dest: TPersistent);
 begin
  if Dest is TPortableNetworkGraphic then
-  begin
-
-  end
+  with TPortableNetworkGraphic(Dest) do
+   begin
+    FImageHeader.Assign(Self.FImageHeader);
+    FPaletteChunk.Assign(Self.FPaletteChunk);
+    FGammaChunk.Assign(Self.FGammaChunk);
+    FTimeChunk.Assign(Self.FTimeChunk);
+    FSignificantBits.Assign(Self.FSignificantBits);
+    FPhysicalDimensions.Assign(Self.FPhysicalDimensions);
+    FChromaChunk.Assign(Self.FChromaChunk);
+    FDataChunkList.Assign(Self.FDataChunkList);
+    FAdditionalChunkList.Assign(Self.FAdditionalChunkList);
+   end
  else inherited;
 end;
 
@@ -2282,6 +2313,30 @@ begin
   else Result := nil;
 end;
 
+
+procedure TPortableNetworkGraphicPixel32.ReadData(Stream: TStream);
+begin
+ LoadFromStream(Stream);
+end;
+
+procedure TPortableNetworkGraphicPixel32.WriteData(Stream: TStream);
+begin
+ SaveToStream(Stream);
+end;
+
+procedure TPortableNetworkGraphicPixel32.DefineProperties(Filer: TFiler);
+var
+  HasData : Boolean;
+begin
+ HasData := Width * Height <> 0;
+(*
+ if HasData and (Filer.Ancestor <> nil)
+  then HasData := not ((Filer.Ancestor is TGuiCustomPixelMap) and
+    Equal(TGuiCustomPixelMap(Filer.Ancestor)));
+*)
+
+ Filer.DefineBinaryProperty('Data', ReadData, WriteData, HasData);
+end;
 
 (*
 { TPortableNetworkGraphicBitmap }

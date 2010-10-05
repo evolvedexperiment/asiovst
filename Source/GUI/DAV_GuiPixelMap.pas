@@ -83,6 +83,8 @@ type
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); overload; virtual; abstract;
     procedure Draw(PixelMap: TGuiCustomPixelMap; Alpha: Byte = $FF); overload; virtual;
     procedure Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer; Alpha: Byte = $FF); overload; virtual;
+    procedure DrawTransparent(PixelMap: TGuiCustomPixelMap); overload; virtual;
+    procedure DrawTransparent(PixelMap: TGuiCustomPixelMap; X, Y: Integer); overload; virtual;
     procedure PaintTo(Canvas: TCanvas); overload; virtual;
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); overload; virtual; abstract;
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); overload; virtual; abstract;
@@ -204,6 +206,35 @@ begin
   end;
 end;
 
+procedure TGuiCustomPixelMap.DrawTransparent(PixelMap: TGuiCustomPixelMap);
+begin
+ DrawTransparent(PixelMap, 0, 0);
+end;
+
+procedure TGuiCustomPixelMap.DrawTransparent(PixelMap: TGuiCustomPixelMap; X,
+  Y: Integer);
+var
+  ClipRect : TRect;
+  Index    : Integer;
+begin
+ with ClipRect do
+  begin
+   Left := X;
+   if Left < 0 then Left := 0;
+   Top := Y;
+   if Top < 0 then Top := 0;
+   Right := X + PixelMap.Width;
+   if Right > Self.Width then Right := Self.Width;
+   Bottom := Y + PixelMap.Height;
+   if Bottom > Self.Height then Bottom := Self.Height;
+
+   // blend scanlines
+   for Index := Top to Bottom - 1
+     do BlendLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
+       PixelPointer[Left, Top + Index], Right - Left);
+  end;
+end;
+
 procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap;
   Alpha: Byte = $FF);
 begin
@@ -214,11 +245,24 @@ procedure TGuiCustomPixelMap.Assign(Source: TPersistent);
 var
   TempBitmap : TBitmap;
 begin
+ if Source is TGuiCustomPixelMap then
+  with TGuiCustomPixelMap(Source) do
+   begin
+    Self.SetSize(Width, Height);
+    Self.FBitmapInfo := FBitmapInfo;
+
+    Assert(Self.FDataSize = FDataSize);
+    Move(FDataPointer^, Self.FDataPointer^, FDataSize);
+
+    Self.FOnChange := FOnChange;
+    Self.FOnResize := FOnResize;
+   end else
  if Source is TBitmap then
   with TBitmap(Source) do
    begin
     Self.SetSize(Width, Height);
     Draw(TBitmap(Source));
+    if Assigned(FOnChange) then FOnChange(Self);
    end else
  if Source is TGraphic then
   with TGraphic(Source) do
@@ -228,6 +272,7 @@ begin
     try
      TempBitmap.Assign(Source);
      Draw(TempBitmap);
+     if Assigned(FOnChange) then FOnChange(Self);
     finally
      if Assigned(TempBitmap)
       then FreeAndNil(TempBitmap);
@@ -519,6 +564,7 @@ begin
   begin
    WriteBuffer(FWidth, 4);
    WriteBuffer(FHeight, 4);
+   Assert(FDataSize = FWidth * FHeight * SizeOf(TPixel32));
    WriteBuffer(FDataPointer^, FDataSize);
   end;
 end;
