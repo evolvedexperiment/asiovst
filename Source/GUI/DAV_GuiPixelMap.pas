@@ -66,6 +66,12 @@ type
     procedure Resized; virtual;
 
     procedure AssignTo(Dest: TPersistent); override;
+    function Equal(PixelMap: TGuiCustomPixelMap): Boolean;
+    function Empty: Boolean;
+
+    procedure ReadData(Stream: TStream); virtual;
+    procedure WriteData(Stream: TStream); virtual;
+    procedure DefineProperties(Filer: TFiler); override;
   public
     constructor Create; virtual;
 
@@ -476,6 +482,57 @@ begin
 
    Write(FDataPointer^, Width * Height * SizeOf(Cardinal));
   end;
+end;
+
+function TGuiCustomPixelMap.Empty: Boolean;
+begin
+ Result := FDataSize = 0;
+end;
+
+function TGuiCustomPixelMap.Equal(PixelMap: TGuiCustomPixelMap): Boolean;
+begin
+ Result := (PixelMap.Width = FWidth) and (PixelMap.Height = FHeight);
+
+ if Result
+  then Result := CompareMem(FDataPointer, PixelMap.FDataPointer, FDataSize);
+end;
+
+procedure TGuiCustomPixelMap.ReadData(Stream: TStream);
+var
+  TempWidth, TempHeight: Integer;
+begin
+ with Stream do
+  try
+   ReadBuffer(TempWidth, 4);
+   ReadBuffer(TempHeight, 4);
+   SetSize(TempWidth, TempHeight);
+   Assert(FDataSize = FWidth * FHeight * SizeOf(TPixel32));
+   ReadBuffer(FDataPointer^, FDataSize);
+  finally
+   Changed;
+  end;
+end;
+
+procedure TGuiCustomPixelMap.WriteData(Stream: TStream);
+begin
+ with Stream do
+  begin
+   WriteBuffer(FWidth, 4);
+   WriteBuffer(FHeight, 4);
+   WriteBuffer(FDataPointer^, FDataSize);
+  end;
+end;
+
+procedure TGuiCustomPixelMap.DefineProperties(Filer: TFiler);
+var
+  HasData : Boolean;
+begin
+ HasData := (FDataSize > 0);
+ if HasData and (Filer.Ancestor <> nil)
+  then HasData := not ((Filer.Ancestor is TGuiCustomPixelMap) and
+    Equal(TGuiCustomPixelMap(Filer.Ancestor)));
+
+ Filer.DefineBinaryProperty('Data', ReadData, WriteData, HasData);
 end;
 
 procedure TGuiCustomPixelMap.FillRect(Rect: TRect; Color: TPixel32);

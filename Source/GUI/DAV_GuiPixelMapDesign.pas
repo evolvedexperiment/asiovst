@@ -66,6 +66,7 @@ type
     procedure MiBrushedMetalClick(Sender: TObject);
   private
     FPixelMap : TGuiPixelMapMemory;
+    FBuffer   : TGuiPixelMapMemory;
   public
     property PixelMap: TGuiPixelMapMemory read FPixelMap;
   end;
@@ -108,11 +109,15 @@ procedure TFmPixelMapDialog.FormCreate(Sender: TObject);
 begin
  FPixelMap := TGuiPixelMapMemory.Create;
  FPixelMap.SetSize(PaintBox.Width, PaintBox.Height);
+
+ FBuffer := TGuiPixelMapMemory.Create;
+ FBuffer.SetSize(PaintBox.Width, PaintBox.Height);
 end;
 
 procedure TFmPixelMapDialog.FormDestroy(Sender: TObject);
 begin
  FreeAndNil(FPixelMap);
+ FreeAndNil(FBuffer);
 end;
 
 procedure TFmPixelMapDialog.MiBrushedMetalClick(Sender: TObject);
@@ -140,6 +145,7 @@ begin
        ScnLn[x].B := Round($70 - $34 * (s[1] - h));
        ScnLn[x].G := Round($84 - $48 * (s[1] - h));
        ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLn[x].A := $FF;
       end;
     end;
   end;
@@ -185,8 +191,18 @@ end;
 
 procedure TFmPixelMapDialog.PaintBoxPaint(Sender: TObject);
 begin
- if Assigned(FPixelMap)
-  then FPixelMap.PaintTo(PaintBox.Canvas);
+ if Assigned(FPixelMap) then
+  begin
+   if Assigned(FBuffer) then
+    begin
+     FBuffer.SetSize(FPixelMap.Width, FPixelMap.Height);
+     FBuffer.FillRect(Rect(0, 0, FPixelMap.Width, FPixelMap.Height),
+       ConvertColor(Self.Color));
+     FBuffer.Draw(FPixelMap);
+     FBuffer.PaintTo(PaintBox.Canvas);
+    end
+   else FPixelMap.PaintTo(PaintBox.Canvas);
+  end;
 end;
 
 
@@ -207,13 +223,14 @@ end;
 
 function TPixelMapEditorComponent.Execute: Boolean;
 begin
- FPixelMapDialog.PixelMap.Assign(FPixelMap);
- Result := (FPixelMapDialog.ShowModal = mrOK);
- if Result then
+ with FPixelMapDialog do
   begin
-   FPixelMap.Assign(FPixelMapDialog.PixelMap);
-   FPixelMapDialog.ClientWidth := FPixelMap.Width + 16;
-   FPixelMapDialog.ClientHeight := FPixelMap.Height + 16;
+   PixelMap.Assign(Self.FPixelMap);
+   ClientWidth := FPixelMap.Width + 16;
+   ClientHeight := FPixelMap.Height + 16;
+   Result := True; // ShowModal = mrOK;
+   if Result
+    then Self.FPixelMap.Assign(PixelMap);
   end;
 end;
 

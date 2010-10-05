@@ -81,6 +81,7 @@ contains
   DAV_GuiPng in '..\..\Source\GUI\DAV_GuiPng.pas',
   DAV_GuiPngImageList in '..\..\Source\GUI\DAV_GuiPngImageList.pas',
   DAV_GuiStitchedSwitch in '..\..\Source\GUI\DAV_GuiStitchedSwitch.pas',
-  DAV_GuiPixelMapDesign in '..\..\Source\GUI\DAV_GuiPixelMapDesign.pas' {FmPixelMapDialog};
+  DAV_GuiPixelMapDesign in '..\..\Source\GUI\DAV_GuiPixelMapDesign.pas' {FmPixelMapDialog},
+  DAV_GuiStitchedDial in '..\..\Source\GUI\DAV_GuiStitchedDial.pas';
 
 end.
