@@ -959,15 +959,76 @@ begin
  if Source is TPortableNetworkGraphic then
   with TPortableNetworkGraphic(Source) do
    begin
-    Self.FImageHeader.Assign(FImageHeader);
-    Self.FPaletteChunk.Assign(FPaletteChunk);
-    Self.FGammaChunk.Assign(FGammaChunk);
-    Self.FTimeChunk.Assign(FTimeChunk);
-    Self.FSignificantBits.Assign(FSignificantBits);
-    Self.FPhysicalDimensions.Assign(FPhysicalDimensions);
-    Self.FChromaChunk.Assign(FChromaChunk);
-    Self.FDataChunkList.Assign(FDataChunkList);
-    Self.FAdditionalChunkList.Assign(FAdditionalChunkList);
+    if Assigned(Self.FImageHeader) then Self.FImageHeader.Assign(FImageHeader);
+
+    // assign palette chunk
+    if Assigned(Self.FPaletteChunk) then
+     if Assigned(FPaletteChunk)
+      then Self.FPaletteChunk.Assign(FPaletteChunk)
+      else FreeAndNil(Self.FPaletteChunk) else
+    if Assigned(FPaletteChunk) then
+     begin
+      Self.FPaletteChunk := TChunkPngPalette.Create(FImageHeader);
+      Self.FPaletteChunk.Assign(FPaletteChunk);
+     end;
+
+    // assign gamma chunk
+    if Assigned(Self.FGammaChunk) then
+     if Assigned(FGammaChunk)
+      then Self.FGammaChunk.Assign(FGammaChunk)
+      else FreeAndNil(Self.FGammaChunk) else
+    if Assigned(FGammaChunk) then
+     begin
+      Self.FGammaChunk := TChunkPngGamma.Create(FImageHeader);
+      Self.FGammaChunk.Assign(FGammaChunk);
+     end;
+
+    // assign time chunk
+    if Assigned(Self.FTimeChunk) then
+     if Assigned(FTimeChunk)
+      then Self.FTimeChunk.Assign(FTimeChunk)
+      else FreeAndNil(Self.FTimeChunk) else
+    if Assigned(FTimeChunk) then
+     begin
+      Self.FTimeChunk := TChunkPngTime.Create(FImageHeader);
+      Self.FTimeChunk.Assign(FTimeChunk);
+     end;
+
+    // assign significant bits
+    if Assigned(Self.FSignificantBits) then
+     if Assigned(FSignificantBits)
+      then Self.FSignificantBits.Assign(FSignificantBits)
+      else FreeAndNil(Self.FSignificantBits) else
+    if Assigned(FSignificantBits) then
+     begin
+      Self.FSignificantBits := TChunkPngSignificantBits.Create(FImageHeader);
+      Self.FSignificantBits.Assign(FSignificantBits);
+     end;
+
+    // assign physical dimensions
+    if Assigned(Self.FPhysicalDimensions) then
+     if Assigned(FPhysicalDimensions)
+      then Self.FPhysicalDimensions.Assign(FPhysicalDimensions)
+      else FreeAndNil(Self.FPhysicalDimensions) else
+    if Assigned(FPhysicalDimensions) then
+     begin
+      Self.FPhysicalDimensions := TChunkPngPhysicalPixelDimensions.Create(FImageHeader);
+      Self.FPhysicalDimensions.Assign(FPhysicalDimensions);
+     end;
+
+    // assign primary chromaticities
+    if Assigned(Self.FChromaChunk) then
+     if Assigned(FChromaChunk)
+      then Self.FChromaChunk.Assign(FChromaChunk)
+      else FreeAndNil(Self.FChromaChunk) else
+    if Assigned(FChromaChunk) then
+     begin
+      Self.FChromaChunk := TChunkPngPrimaryChromaticities.Create(FImageHeader);
+      Self.FChromaChunk.Assign(FChromaChunk);
+     end;
+
+    if Assigned(Self.FDataChunkList) then Self.FDataChunkList.Assign(FDataChunkList);
+    if Assigned(Self.FAdditionalChunkList) then Self.FAdditionalChunkList.Assign(FAdditionalChunkList);
    end
  else inherited;
 end;
@@ -2022,9 +2083,10 @@ procedure TPortableNetworkGraphicPixel32.AssignTo(Dest: TPersistent);
 begin
  if Dest is TGuiCustomPixelMap then
   begin
-   TGuiCustomPixelMap(Dest).Width := ImageHeader.Width;
-   TGuiCustomPixelMap(Dest).Height := ImageHeader.Height;
-   DrawToPixelMap(TGuiCustomPixelMap(Dest));
+   TGuiCustomPixelMap(Dest).Width := Abs(ImageHeader.Width);
+   TGuiCustomPixelMap(Dest).Height := Abs(ImageHeader.Height);
+   if ImageHeader.Width * ImageHeader.Height <> 0
+    then DrawToPixelMap(TGuiCustomPixelMap(Dest));
   end else
  if Dest is TBitmap then
   begin

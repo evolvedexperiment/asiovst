@@ -40,7 +40,7 @@ uses
 type
   TCustomTestPng32 = class(TTestCase)
   protected
-    FPortableNetworkGraphic: TPortableNetworkGraphic32;
+    FPortableNetworkGraphic: TPortableNetworkGraphicPixel32;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -51,6 +51,7 @@ type
     procedure InternalTestInvalidFile(FileName: TFileName);
   published
     procedure TestScanning;
+    procedure TestBasicAssign;
     procedure TestBasicWriting;
     procedure TestPerformanceTest;
     procedure TestInvalidFiles;
@@ -357,7 +358,7 @@ end;
 
 procedure TCustomTestPng32.SetUp;
 begin
- FPortableNetworkGraphic := TPortableNetworkGraphic32.Create;
+ FPortableNetworkGraphic := TPortableNetworkGraphicPixel32.Create;
 end;
 
 procedure TCustomTestPng32.TearDown;
@@ -431,6 +432,32 @@ begin
  FPortableNetworkGraphic.LoadFromFile(FileName);
 end;
 
+procedure TTestPng32File.TestBasicAssign;
+var
+  TempStream : array [0..1] of TMemoryStream;
+  TempPng    : TPortableNetworkGraphicPixel32;
+begin
+ try
+  TempStream[0] := TMemoryStream.Create;
+  TempStream[1] := TMemoryStream.Create;
+  with FPortableNetworkGraphic do
+   begin
+    FPortableNetworkGraphic.LoadFromFile(CTestPngDir + 'TestTrueColor32bit.png');
+    FPortableNetworkGraphic.SaveToStream(TempStream[0]);
+    TempPng := TPortableNetworkGraphicPixel32.Create;
+    TempPng.Assign(FPortableNetworkGraphic);
+    TempStream[0].Seek(0, soFromBeginning);
+    TempPng.SaveToStream(TempStream[1]);
+    CheckEquals(TempStream[0].Size, TempStream[1].Size);
+    CompareMem(TempStream[0].Memory, TempStream[1].Memory, TempStream[0].Size);
+   end;
+ finally
+  if Assigned(TempStream[0]) then FreeAndNil(TempStream[0]);
+  if Assigned(TempStream[1]) then FreeAndNil(TempStream[1]);
+  if Assigned(TempPng) then FreeAndNil(TempPng);
+ end;
+end;
+
 procedure TTestPng32File.TestBasicWriting;
 var
   TempStream : TMemoryStream;
@@ -474,7 +501,7 @@ begin
 
    TempPixelMap := TGuiPixelMapMemory.Create;
    try
-    TempPixelMap.Assign(FPortableNetworkGraphic);
+    FPortableNetworkGraphic.AssignTo(TempPixelMap);
     Internal.SetSize(TempPixelMap.Width, TempPixelMap.Height);
     Internal.Draw(TempPixelMap);
    finally
@@ -614,7 +641,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor); // ctGrayscale
@@ -639,7 +666,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor); // ctGrayscale
@@ -664,7 +691,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor); // ctGrayscale
@@ -689,7 +716,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor); // ctGrayscale
@@ -719,7 +746,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor);
@@ -745,7 +772,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor);
@@ -771,7 +798,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor);
@@ -797,7 +824,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctIndexedColor);
@@ -823,7 +850,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctTrueColor);
@@ -849,7 +876,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctTrueColor);
@@ -875,7 +902,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctGrayscaleAlpha);
@@ -901,7 +928,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctGrayscaleAlpha);
@@ -927,7 +954,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctTrueColorAlpha);
@@ -953,7 +980,7 @@ begin
  PixelMap := TGuiPixelMapMemory.Create;
  try
   PixelMap.Assign(FPortableNetworkGraphic);
-  with TPortableNetworkGraphic32.Create do
+  with TPortableNetworkGraphicPixel32.Create do
    try
     Assign(PixelMap);
     Check(ColorType = ctTrueColorAlpha);

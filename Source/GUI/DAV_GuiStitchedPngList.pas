@@ -59,7 +59,6 @@ type
 
   TGuiStitchedPNGList = class(TGuiCustomStitchedList)
   private
-    FStitchedImageCollection : TGuiStitchedImageCollection;
     function GetItems(Index: Integer): TGuiStitchedPNGCollectionItem;
   protected
     function GetCount: Integer; override;
@@ -68,7 +67,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property StitchedPNGs: TGuiStitchedImageCollection read FStitchedImageCollection write FStitchedImageCollection;
+    property StitchedPNGs: TGuiStitchedImageCollection read FStitchedCollection write FStitchedCollection;
   end;
 
 
@@ -107,25 +106,25 @@ end;
 constructor TGuiStitchedPNGList.Create(AOwner: TComponent);
 begin
   inherited;
-  FStitchedImageCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedPngCollectionItem);
+  FStitchedCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedPngCollectionItem);
 end;
 
 destructor TGuiStitchedPNGList.Destroy;
 begin
-  FreeAndNil(FStitchedImageCollection);
+  FreeAndNil(FStitchedCollection);
   inherited;
 end;
 
 function TGuiStitchedPNGList.GetCount: Integer;
 begin
-  Result := FStitchedImageCollection.Count;
+  Result := FStitchedCollection.Count;
 end;
 
 function TGuiStitchedPNGList.GetItems(
   Index: Integer): TGuiStitchedPNGCollectionItem;
 begin
- if (Index >= 0) and (Index < FStitchedImageCollection.Count)
-  then Result := TGuiStitchedPNGCollectionItem(FStitchedImageCollection[Index])
+ if (Index >= 0) and (Index < FStitchedCollection.Count)
+  then Result := TGuiStitchedPNGCollectionItem(FStitchedCollection[Index])
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 

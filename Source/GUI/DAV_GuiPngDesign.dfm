@@ -12,6 +12,8 @@ object FmPngDialog: TFmPngDialog
   Font.Style = []
   Menu = MainMenu
   OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignSize = (
     218
     145)
@@ -23,6 +25,7 @@ object FmPngDialog: TFmPngDialog
     Width = 202
     Height = 129
     Anchors = [akLeft, akTop, akRight, akBottom]
+    OnPaint = PaintBoxPaint
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.png'

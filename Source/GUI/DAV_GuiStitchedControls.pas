@@ -109,15 +109,18 @@ type
   end;
 
   TGuiCustomStitchedList = class(TComponent)
+  private
+    function GetItems(Index: Integer): TGuiCustomStitchedCollectionItem;
   protected
+    FStitchedCollection : TGuiStitchedImageCollection;
     function GetCount: Integer; virtual; abstract;
+    property Items[Index: Integer]: TGuiCustomStitchedCollectionItem read GetItems; default;
   public
     property Count: Integer read GetCount;
   end;
 
   TGuiStitchedImageList = class(TGuiCustomStitchedList)
   private
-    FStitchedImageCollection : TGuiStitchedImageCollection;
     function GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
   protected
     function GetCount: Integer; override;
@@ -126,7 +129,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property StitchedImages: TGuiStitchedImageCollection read FStitchedImageCollection write FStitchedImageCollection;
+    property StitchedImages: TGuiStitchedImageCollection read FStitchedCollection write FStitchedCollection;
   end;
 
   TGuiCustomStitchedControl = class(TCustomControl)
@@ -134,7 +137,7 @@ type
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetStitchedIndex(Value: Integer);
-    procedure SetStitchedList(const Value: TGuiStitchedImageList);
+    procedure SetStitchedList(const Value: TGuiCustomStitchedList);
     procedure SetColor(const Value: TColor);
     procedure SetTransparent(const Value: Boolean);
     procedure SetGlyphIndex(Value: Integer);
@@ -149,7 +152,7 @@ type
     FBuffer            : TGuiCustomPixelMap;
     FOnChange          : TNotifyEvent;
     FStitchedItemIndex : Integer;
-    FStitchedList      : TGuiStitchedImageList;
+    FStitchedList      : TGuiCustomStitchedList;
     FStitchedItem      : TGuiCustomStitchedCollectionItem;
 
     FGlyphIndex        : Integer;
@@ -181,7 +184,7 @@ type
 
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property Color: TColor read FColor write SetColor default clBtnFace;
-    property StitchedImageList: TGuiStitchedImageList read FStitchedList write SetStitchedList;
+    property StitchedImageList: TGuiCustomStitchedList read FStitchedList write SetStitchedList;
     property StitchedImageIndex: Integer read FStitchedItemIndex write SetStitchedIndex default -1;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -387,24 +390,35 @@ end;
 constructor TGuiStitchedImageList.Create(AOwner: TComponent);
 begin
   inherited;
-  FStitchedImageCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedImageCollectionItem);
+  FStitchedCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedImageCollectionItem);
 end;
 
 destructor TGuiStitchedImageList.Destroy;
 begin
-  FreeAndNil(FStitchedImageCollection);
+  FreeAndNil(FStitchedCollection);
   inherited;
 end;
 
 function TGuiStitchedImageList.GetCount: Integer;
 begin
-  Result := FStitchedImageCollection.Count;
+  Result := FStitchedCollection.Count;
 end;
 
 function TGuiStitchedImageList.GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
 begin
- if (Index >= 0) and (Index < FStitchedImageCollection.Count)
-  then Result := TGuiStitchedImageCollectionItem(FStitchedImageCollection[Index])
+ if (Index >= 0) and (Index < FStitchedCollection.Count)
+  then Result := TGuiStitchedImageCollectionItem(FStitchedCollection[Index])
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
+
+{ TGuiCustomStitchedList }
+
+function TGuiCustomStitchedList.GetItems(
+  Index: Integer): TGuiCustomStitchedCollectionItem;
+begin
+ if (Index >= 0) and (Index < FStitchedCollection.Count)
+  then Result := TGuiCustomStitchedCollectionItem(FStitchedCollection[Index])
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
@@ -597,8 +611,6 @@ begin
   begin
    if Assigned(FStitchedItem) and (FGlyphIndex >= FStitchedItem.FGlyphCount)
     then FGlyphIndex := -1;
-
-   GlyphIndexChanged;
   end;
 
  // check and set default glyph index
@@ -606,8 +618,6 @@ begin
   begin
    if Assigned(FStitchedItem) and (FDefaultGlyphIndex >= FStitchedItem.FGlyphCount)
     then FGlyphIndex := -1;
-
-   DefaultGlyphIndexChanged;
   end;
 end;
 
@@ -664,7 +674,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomStitchedControl.SetStitchedList(const Value: TGuiStitchedImageList);
+procedure TGuiCustomStitchedControl.SetStitchedList(const Value: TGuiCustomStitchedList);
 begin
  if FStitchedList <> Value then
   begin
@@ -819,7 +829,7 @@ begin
       begin
        for LineIndex := 0 to Self.Height - 1 do
         begin
-         DataPointer := StitchedPixelMap.ScanLine[
+         DataPointer := FStitchedItem.StitchedPixelMap.ScanLine[
            LineIndex * StitchedPixelMap.Width + FGlyphIndex * Self.Width];
          BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.ScanLine[LineIndex]), Self.Width);
         end;
