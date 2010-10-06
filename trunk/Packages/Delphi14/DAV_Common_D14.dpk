@@ -1,6 +1,5 @@
 package DAV_Common_D14;
 
-{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -40,8 +39,8 @@ contains
   DAV_AudioFileAU in '..\..\Source\FileFormats\DAV_AudioFileAU.pas',
   DAV_AudioFileWAV in '..\..\Source\FileFormats\DAV_AudioFileWAV.pas',
   DAV_AudioMemory in '..\..\Source\DAV_AudioMemory.pas',
-  DAV_BitReserve in '..\..\Source\DAV_BitReserve.pas',
   DAV_Bindings in '..\..\Source\DAV_Bindings.pas',
+  DAV_BitReserve in '..\..\Source\DAV_BitReserve.pas',
   DAV_BlockArithmetrics in '..\..\Source\DAV_BlockArithmetrics.pas',
   DAV_BlockConvert in '..\..\Source\DAV_BlockConvert.pas',
   DAV_BlockConvert32 in '..\..\Source\DAV_BlockConvert32.pas',
@@ -64,6 +63,7 @@ contains
   DAV_Huffman in '..\..\Source\DAV_Huffman.pas',
   DAV_InvMDCT in '..\..\Source\DAV_InvMDCT.pas',
   DAV_Math in '..\..\Source\DAV_Math.pas',
+  DAV_MemoryUtils in '..\..\Source\DAV_MemoryUtils.pas',
   DAV_MidiFile in '..\..\Source\DAV_MidiFile.pas',
   DAV_MpegAudio in '..\..\Source\FileFormats\DAV_MpegAudio.pas',
   DAV_MpegAudioLayer3 in '..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas',
@@ -76,7 +76,6 @@ contains
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
-  DAV_MemoryUtils in '..\..\Source\DAV_MemoryUtils.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
 
 end.

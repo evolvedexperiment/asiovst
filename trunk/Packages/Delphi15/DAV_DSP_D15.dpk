@@ -1,6 +1,5 @@
-package DAV_DSP_D12;
+package DAV_DSP_D15;
 
-{$M+}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -28,7 +27,7 @@ package DAV_DSP_D12;
 requires
   vcl,
   rtl,
-  DAV_Common_D12;
+  DAV_Common_D15;
 
 contains
   DAV_DspRegister in '..\..\Source\Dsp\DAV_DspRegister.pas',
