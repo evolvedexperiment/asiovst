@@ -106,6 +106,7 @@ begin
   begin
    if Assigned(P)
     then FreeAlignedMemory(P);
+   P := nil;
    Exit;
   end;
 

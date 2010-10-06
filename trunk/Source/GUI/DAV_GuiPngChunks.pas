@@ -1678,7 +1678,7 @@ end;
 
 { TChunkPngImageData }
 
-constructor TChunkPngImageData.Create;
+constructor TChunkPngImageData.Create(Header: TChunkPngImageHeader);
 begin
  inherited;
  FData := TMemoryStream.Create;
@@ -2103,9 +2103,6 @@ begin
 
  with Stream do
   begin
-   if Size < 32
-    then raise EPngError.Create(RCStrChunkSizeTooSmall);
-
    // write white point x
    WriteSwappedCardinal(Stream, FWhiteX);
 
@@ -2688,18 +2685,22 @@ end;
 
 procedure TChunkList.AssignTo(Dest: TPersistent);
 var
-  Index : Integer;
+  Index      : Integer;
+  ChunkClass : TCustomChunkPngWithHeaderClass;
 begin
  if Dest is TChunkList then
   with TChunkList(Dest) do
    begin
-    Self.Clear;
-    SetLength(Self.FChunks, Count);
-    for Index := 0 to Count - 1 do
-     begin
-      Self.FChunks[Index] := TCustomChunk(FChunks[Index].ClassType.Create);
-      Self.FChunks[Index].Assign(FChunks[Index]);
-     end;
+    Clear;
+    SetLength(FChunks, Self.Count);
+    for Index := 0 to Self.Count - 1 do
+     if Self.FChunks[Index] is TCustomChunkPngWithHeader then
+      begin
+       ChunkClass := TCustomChunkPngWithHeaderClass(Self.FChunks[Index].ClassType);
+       FChunks[Index] := ChunkClass.Create(TCustomChunkPngWithHeader(Self.FChunks[Index]).FHeader);
+       FChunks[Index].Assign(Self.FChunks[Index]);
+      end
+     else inherited;
    end else inherited;
 end;
 

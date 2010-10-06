@@ -860,10 +860,17 @@ begin
 end;
 
 procedure TGuiPixelMapMemory.AllocateDataPointer;
+var
+  NewDataSize : Integer;
 begin
- FDataSize := FWidth * FHeight * SizeOf(Cardinal);
- ReallocateAlignedMemory(Pointer(FDataPointer), FDataSize);
- Clear;
+ NewDataSize := FWidth * FHeight * SizeOf(Cardinal);
+ if FDataSize <> NewDataSize then
+  begin
+   FDataSize := NewDataSize;
+   Assert(FDataSize >= 0);
+   ReallocateAlignedMemory(Pointer(FDataPointer), FDataSize);
+   Clear;
+  end;
 end;
 
 
