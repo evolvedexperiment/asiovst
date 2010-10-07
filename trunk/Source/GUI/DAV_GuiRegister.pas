@@ -30,7 +30,7 @@ uses
   DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign,
   DAV_GuiDialRenderer, {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds,
   {$ENDIF} DAV_GuiPixelMap, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider,
-  DAV_GuiMediaButton, DAV_GuiDialNew, DAV_GuiStitchedControls, DAV_GuiPng,
+  DAV_GuiMediaButton, DAV_GuiStitchedControls, DAV_GuiPng,
   DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch, DAV_GuiStitchedDial,
   DAV_GuiPixelMapDesign, DAV_GuiPngDesign;
 
@@ -43,7 +43,7 @@ begin
     TGuiLevelMeter, TGuiColorLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx,
     TGuiDialImageList, TGuiDialImageRenderer, TGuiEQGraph, TGuiEQSlide,
     {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiSwitch,
-    TGuiSlider, TGuiMediaButton, TGuiSimpleDial, TGuiStitchedImageList,
+    TGuiSlider, TGuiMediaButton, TGuiStitchedImageList,
     TGuiStitchedPNGList, TGuiStichedSwitch, TGuiStichedDial]);
 
   RegisterPropertyEditor(TypeInfo(TGuiCustomPixelMap), nil, '', TPixelMapProperty);
