@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Graphics, SysUtils, zlib, DAV_Types, DAV_ChunkClasses,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPngTypes, DAV_GuiPngClasses,
-  DAV_GuiFileFormats, DAV_GuiPngChunks;
+  Windows, Classes, Graphics, SysUtils, {$IFDEF DELPHI14_UP} zlib,
+  {$ELSE} ZLibEx, {$ENDIF}
+  DAV_Types, DAV_ChunkClasses, DAV_GuiCommon, DAV_GuiPixelMap,
+  DAV_GuiPngTypes, DAV_GuiPngClasses, DAV_GuiFileFormats, DAV_GuiPngChunks;
 
 type
   TTransferNonInterlaced = procedure (Source, Destination, Alpha: Pointer) of object;
@@ -492,7 +493,7 @@ end;
 procedure TPortableNetworkGraphic.DecompressImageDataToStream(Stream: TStream);
 var
   DataStream  : TMemoryStream;
-  ZStream     : TDecompressionStream;
+  ZStream     : TZDecompressionStream;
 begin
  DataStream := TMemoryStream.Create;
  try

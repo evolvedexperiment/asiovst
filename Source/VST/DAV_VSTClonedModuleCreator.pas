@@ -49,7 +49,7 @@ type
 implementation
 
 uses
-  SysUtils, Classes, {$IFDEF DELPHI10_UP} AnsiStrings,{$ENDIF} DAV_VSTEffect,
+  SysUtils, Classes, {$IFDEF DELPHI14_UP} AnsiStrings,{$ENDIF} DAV_VSTEffect,
   DAV_OpenToolsUtils, DAV_VSTParameters;
 
 const
