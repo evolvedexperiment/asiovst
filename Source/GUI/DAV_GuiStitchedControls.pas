@@ -62,12 +62,11 @@ type
 
   TGuiCustomStitchedCollectionItem = class(TCollectionItem)
   private
-    FStitchedPixelMap : TGuiCustomPixelMap;
-    FGlyphCount       : Integer;
-    FOnChange         : TNotifyEvent;
-    FStitchKind       : TGuiStitchKind;
-    FLinkedStitcheds  : TObjectList;
-    FDisplayName      : string;
+    FGlyphCount     : Integer;
+    FOnChange       : TNotifyEvent;
+    FStitchKind     : TGuiStitchKind;
+    FLinkedStitches : TObjectList;
+    FDisplayName    : string;
     function GetHeight: Integer;
     function GetWidth: Integer;
     procedure SetStitchedPixelMap(const Value: TGuiCustomPixelMap);
@@ -77,16 +76,19 @@ type
     procedure SetHeight(const Value: Integer);
     procedure SetWidth(const Value: Integer);
   protected
+    FStitchedPixelMap : TGuiCustomPixelMap;
     procedure GlyphCountChanged; virtual;
     procedure StitchKindChanged; virtual;
 
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
+
+    procedure LinkStitchedControl(Stitched: TGuiCustomStitchedControl);
+    procedure UnLinkStitchedControl(Stitched: TGuiCustomStitchedControl);
+    procedure UnLinkStitchedControls;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-    procedure LinkStitchedControl(Stitched: TGuiCustomStitchedControl);
-    procedure UnLinkStitchedControl(Stitched: TGuiCustomStitchedControl);
 
     property DisplayName: string read GetDisplayName write SetDisplayName;
     property StitchedPixelMap: TGuiCustomPixelMap read FStitchedPixelMap write SetStitchedPixelMap;
@@ -197,6 +199,7 @@ uses
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  RCStrGlyphCountMustBePositive = 'The glyph count must be positive';
 
 { TGuiStitchedImageCollection }
 
@@ -230,9 +233,15 @@ end;
 
 procedure TGuiStitchedImageCollection.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
+var
+  LinkedControlIndex : Integer;
 begin
+(*
+ if Action in [cnDeleting, cnExtracting] then
+  if Item is TGuiCustomStitchedCollectionItem
+   then TGuiCustomStitchedCollectionItem(Item).UnLinkStitchedControls;
+*)
  inherited;
- // add things that depend on the order here!
 end;
 
 procedure TGuiStitchedImageCollection.SetItem(Index: Integer;
@@ -250,13 +259,14 @@ begin
  FGlyphCount                := 1;
  FStitchedPixelMap          := TGuiPixelMapMemory.Create;
  FStitchedPixelMap.OnResize := SettingsChanged;
- FLinkedStitcheds           := TObjectList.Create(False);
+ FLinkedStitches            := TObjectList.Create(False);
 end;
 
 destructor TGuiCustomStitchedCollectionItem.Destroy;
 begin
+ UnLinkStitchedControls;
  FreeAndNil(FStitchedPixelMap);
- FreeAndNil(FLinkedStitcheds);
+ FreeAndNil(FLinkedStitches);
  inherited;
 end;
 
@@ -277,9 +287,9 @@ end;
 
 procedure TGuiCustomStitchedCollectionItem.LinkStitchedControl(Stitched: TGuiCustomStitchedControl);
 begin
- if FLinkedStitcheds.IndexOf(Stitched) < 0 then
+ if FLinkedStitches.IndexOf(Stitched) < 0 then
   begin
-   FLinkedStitcheds.Add(Stitched);
+   FLinkedStitches.Add(Stitched);
    case StitchKind of
     skHorizontal :
      begin
@@ -297,15 +307,22 @@ end;
 
 procedure TGuiCustomStitchedCollectionItem.UnLinkStitchedControl(Stitched: TGuiCustomStitchedControl);
 begin
- FLinkedStitcheds.Remove(Stitched);
+ FLinkedStitches.Remove(Stitched);
+end;
+
+procedure TGuiCustomStitchedCollectionItem.UnLinkStitchedControls;
+begin
+ while FLinkedStitches.Count > 0 do
+  with TGuiCustomStitchedControl(FLinkedStitches[Index])
+   do StitchedImageIndex := -1;
 end;
 
 procedure TGuiCustomStitchedCollectionItem.SettingsChanged(Sender: TObject);
 var
   Index : Integer;
 begin
- for Index := 0 to FLinkedStitcheds.Count - 1 do
-  with TGuiCustomStitchedControl(FLinkedStitcheds[Index]) do
+ for Index := 0 to FLinkedStitches.Count - 1 do
+  with TGuiCustomStitchedControl(FLinkedStitches[Index]) do
    begin
     GlyphCount := Self.GlyphCount;
     StitchKind := Self.StitchKind;
@@ -338,8 +355,8 @@ procedure TGuiCustomStitchedCollectionItem.GlyphCountChanged;
 var
   Index : Integer;
 begin
- for Index := 0 to FLinkedStitcheds.Count - 1 do
-  with TGuiCustomStitchedControl(FLinkedStitcheds[Index]) do
+ for Index := 0 to FLinkedStitches.Count - 1 do
+  with TGuiCustomStitchedControl(FLinkedStitches[Index]) do
    begin
     if FDefaultGlyphIndex >= FGlyphCount then DefaultGlyphIndex := FGlyphCount - 1;
     if FGlyphIndex >= FGlyphCount then GlyphIndex := FGlyphCount - 1;
@@ -352,15 +369,15 @@ procedure TGuiCustomStitchedCollectionItem.StitchKindChanged;
 var
   Index : Integer;
 begin
- for Index := 0 to FLinkedStitcheds.Count - 1 do
-  with TGuiCustomStitchedControl(FLinkedStitcheds[Index]) do
+ for Index := 0 to FLinkedStitches.Count - 1 do
+  with TGuiCustomStitchedControl(FLinkedStitches[Index]) do
    if FAutoSize then DoAutoSize;
 end;
 
 procedure TGuiCustomStitchedCollectionItem.SetGlyphCount(const Value: Integer);
 begin
-// if Value <= 0
-//  then raise Exception.Create(RCStrGlyphCountMustBePositive);
+ if Value <= 0
+  then raise Exception.Create(RCStrGlyphCountMustBePositive);
 
  if FGlyphCount <> Value then
   begin
@@ -545,13 +562,13 @@ begin
 
     if StitchKind = skVertical then
      begin
-      Width  := FBuffer.Width;
-      Height := FBuffer.Height div GlyphCount;
+      Self.Width  := FStitchedPixelMap.Width;
+      Self.Height := FStitchedPixelMap.Height div GlyphCount;
      end
     else
      begin
-      Width  := FBuffer.Width div GlyphCount;
-      Height := FBuffer.Height;
+      Self.Width  := FStitchedPixelMap.Width div GlyphCount;
+      Self.Height := FStitchedPixelMap.Height;
      end;
    end;
 end;
@@ -651,8 +668,8 @@ begin
  // check if Stitched image list is available
  if not Assigned(FStitchedList) then Exit;
 
- // limit range to existing Stitched images
- if Value < 0 then Value := 0 else
+ // limit range to existing stitched images (or -1 for nothing)
+ if Value < 0 then Value := -1 else
  if Value >= FStitchedList.Count then Value := FStitchedList.Count - 1;
 
  if StitchedImageIndex <> Value then
@@ -823,25 +840,27 @@ begin
    begin
     // check whether the stitched item contains at least one glyph
     if GlyphCount = 0 then Exit;
-    
+
     case StitchKind of
      skHorizontal :
-      begin
-       for LineIndex := 0 to Self.Height - 1 do
-        begin
-         DataPointer := FStitchedItem.StitchedPixelMap.ScanLine[
-           LineIndex * StitchedPixelMap.Width + FGlyphIndex * Self.Width];
-         BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.ScanLine[LineIndex]), Self.Width);
-        end;
-       EMMS;
-      end;
+      if FGlyphIndex * Self.Width < StitchedPixelMap.Width then
+       begin
+        for LineIndex := 0 to Self.Height - 1 do
+         begin
+          DataPointer := FStitchedItem.StitchedPixelMap.ScanLine[
+            LineIndex * StitchedPixelMap.Width + FGlyphIndex * Self.Width];
+          BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.ScanLine[LineIndex]), Self.Width);
+         end;
+        EMMS;
+       end;
      skVertical   :
-      begin
-       DataPointer := StitchedPixelMap.ScanLine[FGlyphIndex * Self.Height];
-       BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.DataPointer),
-         Self.Height * Self.Width);
-       EMMS;
-      end;
+      if FGlyphIndex * Self.Height < StitchedPixelMap.Height then
+       begin
+        DataPointer := StitchedPixelMap.ScanLine[FGlyphIndex * Self.Height];
+        BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.DataPointer),
+          Self.Height * Self.Width);
+        EMMS;
+       end;
     end;
    end;
 end;

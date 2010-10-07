@@ -100,7 +100,6 @@ type
     procedure SetHeight(const Value: Integer); override;
 
     procedure Clear; virtual;
-    procedure AssignTo(Dest: TPersistent); override;
 
     procedure CopyImageData(Stream: TStream);
     procedure StoreImageData(Stream: TStream);
@@ -130,6 +129,7 @@ type
     procedure RemoveGammaInformation;
     procedure RemoveModifiedTimeInformation;
     procedure Assign(Source: TPersistent); override;
+    procedure AssignTo(Dest: TPersistent); override;
 
     property Width: Integer read GetWidth write SetWidth;
     property Height: Integer read GetHeight write SetHeight;

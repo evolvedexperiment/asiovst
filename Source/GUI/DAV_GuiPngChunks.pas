@@ -303,11 +303,12 @@ type
   end;
 
   TPngSignificantBitsFormat6 = class(TCustomPngSignificantBits)
-  protected
+  private
     FRedBits   : Byte;
     FBlueBits  : Byte;
     FGreenBits : Byte;
     FAlphaBits : Byte;
+  protected
     class function GetChunkSize: Integer; override;
     procedure AssignTo(Dest: TPersistent); override;
   public

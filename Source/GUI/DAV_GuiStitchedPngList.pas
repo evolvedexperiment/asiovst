@@ -44,6 +44,8 @@ type
   private
     FPng : TPortableNetworkGraphicPixel32;
     procedure SetPng(const Value: TPortableNetworkGraphicPixel32);
+  protected
+    procedure BuildPixelMap;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
@@ -62,6 +64,7 @@ type
     function GetItems(Index: Integer): TGuiStitchedPNGCollectionItem;
   protected
     function GetCount: Integer; override;
+    procedure Loaded; override;
     property Items[Index: Integer]: TGuiStitchedPNGCollectionItem read GetItems; default;
   public
     constructor Create(AOwner: TComponent); override;
@@ -94,6 +97,15 @@ begin
  inherited;
 end;
 
+procedure TGuiStitchedPNGCollectionItem.BuildPixelMap;
+begin
+ if Assigned(FPng) and Assigned(FStitchedPixelMap) then
+  begin
+   FStitchedPixelMap.SetSize(FPng.Width, FPng.Height);
+   FPng.DrawToPixelMap(FStitchedPixelMap);
+  end;
+end;
+
 procedure TGuiStitchedPNGCollectionItem.SetPng(
   const Value: TPortableNetworkGraphicPixel32);
 begin
@@ -105,8 +117,8 @@ end;
 
 constructor TGuiStitchedPNGList.Create(AOwner: TComponent);
 begin
-  inherited;
-  FStitchedCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedPngCollectionItem);
+ inherited;
+ FStitchedCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedPngCollectionItem);
 end;
 
 destructor TGuiStitchedPNGList.Destroy;
@@ -126,6 +138,17 @@ begin
  if (Index >= 0) and (Index < FStitchedCollection.Count)
   then Result := TGuiStitchedPNGCollectionItem(FStitchedCollection[Index])
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
+procedure TGuiStitchedPNGList.Loaded;
+var
+  Index : Integer;
+begin
+ inherited;
+ if Assigned(FStitchedCollection) then
+  for Index := 0 to FStitchedCollection.Count - 1 do
+   if FStitchedCollection[Index] is TGuiStitchedPNGCollectionItem
+    then TGuiStitchedPNGCollectionItem(FStitchedCollection[Index]).BuildPixelMap;
 end;
 
 end.
