@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
   DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList;
 
 type

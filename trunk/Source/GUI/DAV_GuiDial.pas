@@ -144,8 +144,8 @@ type
     FWheelStep        : Single;
     FOnQuantizeValue  : TQuantizeValueEvent;
     function CircularMouseToPosition(X, Y: Integer): Single;
-    function GetNormalizedPosition: Single;
     function PositionToAngle: Single;
+    function GetNormalizedPosition: Single;
     function GetMappedPosition: Single;
     function MapValue(Value: Double): Double;
     function UnmapValue(Value: Double): Double;
@@ -602,10 +602,10 @@ end;
 
 procedure TCustomGuiStitchedControl.UpdateBuffer;
 var
-  theRect   : TRect;
-  GlyphNr   : Integer;
-  Bmp       : TBitmap;
-  OwnerDraw : Boolean;
+  theRect    : TRect;
+  GlyphIndex : Integer;
+  Bmp        : TBitmap;
+  OwnerDraw  : Boolean;
 begin
  if [csLoading..csDestroying] * ComponentState <> [] then exit;
 
@@ -658,9 +658,9 @@ begin
      {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
      FillRect(ClipRect);
 
-     GlyphNr := GetGlyphNr;
-     if (GlyphNr >= FGlyphCount) then GlyphNr := FGlyphCount - 1 else
-     if (GlyphNr < 0) then GlyphNr := 0;
+     GlyphIndex := GetGlyphNr;
+     if (GlyphIndex >= FGlyphCount) then GlyphIndex := FGlyphCount - 1 else
+     if (GlyphIndex < 0) then GlyphIndex := 0;
 
      if Assigned(FDialImageItem)
       then Bmp := FDialImageItem.FDialBitmap
@@ -672,13 +672,13 @@ begin
        theRect := ClientRect;
        if FStitchKind = skVertical then
         begin
-         theRect.Top    := Bmp.Height * GlyphNr div FGlyphCount;
-         theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FGlyphCount;
+         theRect.Top    := Bmp.Height * GlyphIndex div FGlyphCount;
+         theRect.Bottom := Bmp.Height * (GlyphIndex + 1) div FGlyphCount;
         end
        else
         begin
-         theRect.Left  := Bmp.Width * GlyphNr div FGlyphCount;
-         theRect.Right := Bmp.Width * (GlyphNr + 1) div FGlyphCount;
+         theRect.Left  := Bmp.Width * GlyphIndex div FGlyphCount;
+         theRect.Right := Bmp.Width * (GlyphIndex + 1) div FGlyphCount;
         end;
 
        with ClientRect do
@@ -688,8 +688,8 @@ begin
         end;
       end else
 
-     if assigned(ImageList)
-      then ImageList.Draw(FBuffer.Canvas, 0, 0, GlyphNr);
+     if Assigned(ImageList)
+      then ImageList.Draw(FBuffer.Canvas, 0, 0, GlyphIndex);
     end;
    Unlock;
   end;
@@ -862,7 +862,7 @@ function TCustomGuiDial.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
 var
   Difference : Single;
 begin
- Difference := FWheelStep * WheelDelta / ( 120 * FScrollRange );
+ Difference := FWheelStep * WheelDelta / (120 * FScrollRange);
 
 // apply inertia function
  if Difference < 0
@@ -937,6 +937,13 @@ end;
 function TCustomGuiDial.GetMappedPosition: Single;
 begin
  Result := MapValue(NormalizedPosition) * (Max - Min) + Min;
+end;
+
+function TCustomGuiDial.MapValue(Value: Double): Double;
+begin
+ if Value < 0
+  then Result := -Power(Abs(Value), FCurveMappingExp)
+  else Result :=  Power(Abs(Value), FCurveMappingExp);
 end;
 
 function TCustomGuiDial.UnmapValue(Value: Double): Double;
@@ -1070,13 +1077,6 @@ begin
   if Result < Min then Result := FPosition;
 end;
 
-function TCustomGuiDial.MapValue(Value: Double): Double;
-begin
- if Value < 0
-  then Result := -Power(Abs(Value), FCurveMappingExp)
-  else Result :=  Power(Abs(Value), FCurveMappingExp);
-end;
-
 procedure TCustomGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
@@ -1094,7 +1094,7 @@ end;
 procedure TCustomGuiDial.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
 var
   Difference : Double;
-  NewValue   : Double;   
+  NewValue   : Double;
 
 begin
  Difference := (MouseState.LastEventY - Y) / FScrollRange;

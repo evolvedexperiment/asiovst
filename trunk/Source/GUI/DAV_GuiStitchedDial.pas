@@ -40,58 +40,79 @@ uses
   DAV_GuiCommon, DAV_GuiStitchedControls;
 
 type
+  TQuantizeValueEvent = procedure(Sender: TObject; var Value: Double) of object;
+
   TCustomGuiStitchedDial = class(TGuiCustomStitchedControl)
   private
-    FLockCursor      : Boolean;
-    FMax             : Single;
-    FMin             : Single;
-    FMouseInControl  : Boolean;
-    FMouseIsDown     : Boolean;
-    FPosition        : Single;
-    FDefaultPosition : Single;
-    FRange           : Single;
-    FRangeReciprocal : Single;
+    FLockCursor          : Boolean;
+    FMax                 : Single;
+    FMin                 : Single;
+    FIgnoreNextMouseMove : Boolean;
+    FPosition            : Single;
+    FDefaultPosition     : Single;
+    FRange               : Single;
+    FRangeReciprocal     : Single;
+
+    FCurveMapping        : Single;
+    FCurveMappingExp     : Single;
+    FScrollRange         : Single;
+    FWheelStep           : Single;
+    FOnQuantizeValue     : TQuantizeValueEvent;
+
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
     procedure SetPosition(Value: Single);
     procedure SetDefaultPosition(const Value: Single);
 
     function PositionToAngle: Single;
+    function GetNormalizedPosition: Single;
+    function GetMappedPosition: Single;
+    function MapValue(Value: Double): Double;
+    function UnmapValue(Value: Double): Double;
+    procedure SetCurveMapping(const Value: Single);
+    procedure SetNormalizedPosition(const Value: Single);
+    procedure ReadMaxProperty(Reader: TReader);
+    procedure WriteMaxProperty(Writer: TWriter);
   protected
-    FOldMousPos      : TPoint;
-    FOnMouseEnter    : TNotifyEvent;
-    FOnMouseLeave    : TNotifyEvent;
+    FOldMousPos   : TPoint;
 
-    procedure MouseEnter; virtual;
-    procedure MouseLeave; virtual;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+      MousePos: TPoint): Boolean; override;
+    procedure DefineProperties(Filer: TFiler); override;
 
     procedure CalculateRange; virtual;
+    procedure CalculateExponentialCurveMapping;
+    procedure CurveMappingChanged; virtual;
     procedure DefaultPositionChanged; virtual;
     procedure MaximumChanged; virtual;
     procedure MinimumChanged; virtual;
     procedure PositionChanged; virtual;
     procedure GlyphIndexChanged; override;
 
-    property MouseInControl: Boolean read FMouseInControl;
     property Range: Single read FRange;
+    property NormalizedPosition: Single read GetNormalizedPosition write SetNormalizedPosition;
+    property MappedPosition: Single read GetMappedPosition;
   public
     constructor Create(AOwner: TComponent); override;
 
+    property CurveMapping: Single read FCurveMapping write SetCurveMapping;
     property LockCursor: Boolean read FLockCursor write FLockCursor;
     property Max: Single read FMax write SetMax;
     property Min: Single read FMin write SetMin;
     property Position: Single read FPosition write SetPosition;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
-    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property WheelStep: Single read FWheelStep write FWheelStep;
+    property OnQuantizeValue: TQuantizeValueEvent read FOnQuantizeValue write FOnQuantizeValue;
   end;
 
   TGuiStichedDial = class(TCustomGuiStitchedDial)
   published
     property AutoSize;
+    property CurveMapping;
+    property DefaultPosition;
     property LockCursor;
     property Max;
     property Min;
@@ -100,6 +121,7 @@ type
     property StitchedImageList;
     property StitchedImageIndex;
     property Transparent;
+    property WheelStep;
     property OnMouseEnter;
     property OnMouseLeave;
     property OnMouseDown;
@@ -121,10 +143,26 @@ uses
 constructor TCustomGuiStitchedDial.Create(AOwner: TComponent);
 begin
  inherited;
- FMin := 0;
- FMax := 100;
- FPosition := 0;
+ FMin             := 0;
+ FMax             := 100;
+ FPosition        := 0;
+ FCurveMapping    := 0;
+ FCurveMappingExp := 1;
+ FDefaultPosition := 0;
+ FScrollRange     := 400;
+ FWheelStep       := 1;
  CalculateRange;
+end;
+
+procedure TCustomGuiStitchedDial.CurveMappingChanged;
+begin
+ CalculateExponentialCurveMapping;
+ BufferChanged;
+end;
+
+procedure TCustomGuiStitchedDial.CalculateExponentialCurveMapping;
+begin
+ FCurveMappingExp := Power(2, FCurveMapping);
 end;
 
 procedure TCustomGuiStitchedDial.DefaultPositionChanged;
@@ -135,6 +173,23 @@ begin
  if Assigned(FStitchedItem)
   then DefaultGlyphIndex := Round(DefaultPosition * FRangeReciprocal *
     FStitchedItem.GlyphCount);
+end;
+
+procedure TCustomGuiStitchedDial.DefineProperties(Filer: TFiler);
+begin
+ inherited DefineProperties(Filer);
+ Filer.DefineProperty('Max', ReadMaxProperty,
+   WriteMaxProperty, Max = 0);
+end;
+
+function TCustomGuiStitchedDial.DoMouseWheel(Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint): Boolean;
+var
+  Difference : Single;
+begin
+ Difference := FWheelStep * WheelDelta / (120 * FScrollRange);
+ NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference);
+ Result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
 end;
 
 procedure TCustomGuiStitchedDial.GlyphIndexChanged;
@@ -168,21 +223,22 @@ begin
   else FRangeReciprocal := 1;
 end;
 
-procedure TCustomGuiStitchedDial.MouseEnter;
+(*
+function TCustomGuiStitchedDial.CircularMouseToPosition(X, Y: Integer): Single;
+var
+  Range: Single;
+  Angle: Single;
 begin
- if FMouseIsDown and FLockCursor then exit;
- FMouseInControl := True;
- if Assigned(FOnMouseEnter)
-  then FOnMouseEnter(Self);
-end;
+  Range := Max - (Min - 1);
+  Angle := SafeAngle(RelativeAngle(Width div 2, Height div 2, X, Y) - PointerAngles.Start);
+  Result := Angle * Range / PointerAngles.Range;
+  while Result > Max do Result := Result - Range;
+  while Result < Min do Result := Result + Range;
 
-procedure TCustomGuiStitchedDial.MouseLeave;
-begin
- if FMouseIsDown and FLockCursor then exit;
- FMouseInControl := True;
- if Assigned(FOnMouseLeave)
-  then FOnMouseLeave(Self);
+  if Result > Max then Result := FPosition;
+  if Result < Min then Result := FPosition;
 end;
+*)
 
 procedure TCustomGuiStitchedDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
@@ -190,10 +246,12 @@ begin
  if (Button = mbLeft) then
   begin
    SetFocus;
-   FMouseIsDown := True;
-   FOldMousPos.X := X; FOldMousPos.Y := Y;
+   FOldMousPos := Point(X, Y);
    Click;
-  end;
+  end else
+ if (Button = mbRight) and (ssCtrl in Shift)
+  then Position := DefaultPosition;
+
  if Enabled then inherited MouseDown(Button, Shift, X, Y);
 end;
 
@@ -204,13 +262,12 @@ var
 begin
  if (Button = mbLeft) then
   begin
-   FMouseIsDown := False;
-   FOldMousPos.X := X; FOldMousPos.Y := Y;
-   if FLockCursor and (Screen.Cursor=crNone) then
+   FOldMousPos := Point(X, Y);
+   if FLockCursor and (Screen.Cursor = crNone) then
     begin
-     Pt := Point(Width div 2,Height div 2);
+     Pt := Point(Width div 2, Height div 2);
      Pt := ClientToScreen(Pt);
-     SetCursorPos(Pt.X,Pt.Y);
+     SetCursorPos(Pt.X, Pt.Y);
     end;
    Screen.Cursor := crDefault;
   end;
@@ -219,32 +276,57 @@ end;
 
 procedure TCustomGuiStitchedDial.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
-  Range: Single;
+  Difference : Double;
+  NewValue   : Double;
+  Pt         : TPoint;
 begin
  inherited;
- if FLockCursor and FMouseIsDown then Screen.Cursor := crNone;
-// if FMouseIsDown then Position := CircularMouseToPosition(X, Y);
 
- Range := Max - (Min - 1);
-
- if FMouseIsDown then
+ if FIgnoreNextMouseMove then
   begin
-   if ssShift in Shift then Range := 0.1 * Range;
-   if ssCtrl in Shift
-    then Range := 0.0005 * Range
-    else Range := 0.005 * Range;
-   Position := Position + (FOldMousPos.Y - Y) * Range;
+   FIgnoreNextMouseMove := False;
+   Exit;
   end;
 
- FOldMousPos.X := X;
- FOldMousPos.Y := Y;
+ if FLockCursor and (ssLeft in Shift)
+  then Screen.Cursor := crNone;
+
+ if (ssLeft in Shift) then
+  begin
+   Difference := (FOldMousPos.Y - Y) / FScrollRange;
+
+   if ssShift in Shift
+    then NewValue := MapValue(NormalizedPosition) + Difference * 0.1
+    else NewValue := MapValue(NormalizedPosition) + Difference;
+
+   NormalizedPosition := UnMapValue(NewValue);
+  end else;
+(*
+ if (ssRight in Shift)
+  then Position := CircularMouseToPosition(x, y);
+*)
+
+ if FLockCursor and (ssLeft in Shift) then
+  begin
+   FOldMousPos := Point(Width div 2, Height div 2);
+   Pt := ClientToScreen(FOldMousPos);
+   FIgnoreNextMouseMove := True;
+   SetCursorPos(Pt.X, Pt.Y);
+  end
+ else
+  begin
+   FOldMousPos.X := X;
+   FOldMousPos.Y := Y;
+  end;
 end;
 
 procedure TCustomGuiStitchedDial.PositionChanged;
 begin
  // calculate matching glyph index
  if Assigned(FStitchedItem)
-  then GlyphIndex := Round(Position * FRangeReciprocal * FStitchedItem.GlyphCount);
+  then GlyphIndex := Round(NormalizedPosition * FStitchedItem.GlyphCount);
+ // GlyphIndex := Trunc(MapValue(NormalizedPosition) * FStitchedItem.GlyphCount);
+
 
  if not (csLoading in ComponentState) then
   if Assigned(FOnChange)
@@ -256,6 +338,51 @@ end;
 function TCustomGuiStitchedDial.PositionToAngle: Single;
 begin
   Result := (FPosition - Min) * 360 * FRangeReciprocal;
+end;
+
+procedure TCustomGuiStitchedDial.ReadMaxProperty(Reader: TReader);
+begin
+ FMax := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiStitchedDial.WriteMaxProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FMax);
+end;
+
+function TCustomGuiStitchedDial.GetMappedPosition: Single;
+begin
+ Result := MapValue(NormalizedPosition) * (Max - Min) + Min;
+end;
+
+function TCustomGuiStitchedDial.GetNormalizedPosition: Single;
+begin
+ if Max = Min
+  then Result := Min
+  else Result := (FPosition - Min) / (Max - Min);
+end;
+
+function TCustomGuiStitchedDial.MapValue(Value: Double): Double;
+begin
+ if Value < 0
+  then Result := -Power(Abs(Value), FCurveMappingExp)
+  else Result :=  Power(Abs(Value), FCurveMappingExp);
+end;
+
+function TCustomGuiStitchedDial.UnmapValue(Value: Double): Double;
+begin
+ if Value < 0
+  then Result := -Power(Abs(Value), 1 / FCurveMappingExp)
+  else Result :=  Power(Abs(Value), 1 / FCurveMappingExp)
+end;
+
+procedure TCustomGuiStitchedDial.SetCurveMapping(const Value: Single);
+begin
+ if FCurveMapping <> Value then
+  begin
+   FCurveMapping := Value;
+   CurveMappingChanged;
+  end;
 end;
 
 procedure TCustomGuiStitchedDial.SetDefaultPosition(const Value: Single);
@@ -289,6 +416,18 @@ begin
    FMin := Value;
    MinimumChanged;
   end;
+end;
+
+procedure TCustomGuiStitchedDial.SetNormalizedPosition(const Value: Single);
+var
+  NewValue : Double;
+begin
+ NewValue := Min + Value * (Max - Min);
+
+ if Assigned(FOnQuantizeValue)
+  then FOnQuantizeValue(Self, NewValue);
+
+ Position := NewValue;
 end;
 
 procedure TCustomGuiStitchedDial.SetPosition(Value: Single);
