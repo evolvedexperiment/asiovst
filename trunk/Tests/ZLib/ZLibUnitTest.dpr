@@ -9,9 +9,11 @@ uses
   TestFramework,
   GUITestRunner,
   TextTestRunner,
+  TestDAV_ZLib in 'TestDAV_ZLib.pas',
   DAV_ZLib in '..\..\Source\DAV_ZLib.pas',
   DAV_Adler32 in '..\..\Source\DAV_Adler32.pas',
-  TestDAV_ZLib in 'TestDAV_ZLib.pas';
+  DAV_Deflate in '..\..\Source\GUI\DAV_Deflate.pas',
+  DAV_CircularByteBuffer in '..\..\Source\DAV_CircularByteBuffer.pas';
 
 begin
   Application.Initialize;

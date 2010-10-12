@@ -19,12 +19,15 @@ type
   strict private
     FCompressedDataStream : TMemoryStream;
     FZDecompressionStream : TZDecompressionStream;
+
   protected
     procedure InitializeCompressedData;
+    function TestPolynomial(Input: Word): Byte;
   public
     procedure SetUp; override;
     procedure TearDown; override;
   published
+    procedure TestMZlib;
     procedure TestProperties;
     procedure TestRead;
     procedure TestSeek;
@@ -33,7 +36,7 @@ type
 implementation
 
 uses
-  SysUtils, zlib;
+  SysUtils, zlib, mzlib;
 
 procedure TestTZDecompressionStream.SetUp;
 begin
@@ -57,13 +60,44 @@ var
   Value             : Byte;
   CompressionStream : zlib.TZCompressionStream;
 begin
- CompressionStream := TZCompressionStream.Create(FCompressedDataStream);
- for Index := 0 to High(Byte) - 1 do
+ CompressionStream := TZCompressionStream.Create(FCompressedDataStream, zcDefault);
+ for Index := 0 to High(Word) do
   begin
-   Value := Index xor $AC;
+   Value := TestPolynomial(Index);
    CompressionStream.Write(Value, 1);
   end;
  FreeAndNil(CompressionStream);
+
+// FCompressedDataStream.SaveToFile(ExtractFilePath(ParamStr(0)) + 'Dummy.z');
+end;
+
+procedure TestTZDecompressionStream.TestMZlib;
+var
+  ZState : mzlib.TZState;
+  Index  : Integer;
+  Buffer : array [Word] of Byte;
+begin
+ FillChar(ZState, SizeOf(ZState), 0);
+ ZState.NextInput := FCompressedDataStream.Memory;
+ ZState.AvailableInput := FCompressedDataStream.Size;
+ InflateInit(ZState);
+
+ ZState.NextOutput := @Buffer;
+ ZState.AvailableOutput := Length(Buffer);
+ mzlib.Inflate(ZState, Z_PARTIAL_FLUSH);
+
+ // check whether the decompressed bytes have the expected value
+ for Index := 0 to Length(Buffer) - 1 do
+  begin
+   CheckEquals(TestPolynomial(Index), Buffer[Index]);
+  end;
+end;
+
+function TestTZDecompressionStream.TestPolynomial(Input: Word): Byte;
+begin
+// Result := Input xor $AC;
+// Result := Input mod 4;
+ Result := Input mod 64;
 end;
 
 procedure TestTZDecompressionStream.TestProperties;
@@ -76,7 +110,7 @@ procedure TestTZDecompressionStream.TestRead;
 var
  ReturnValue : Integer;
  Index       : Integer;
- Buffer      : array [Byte] of Byte;
+ Buffer      : array [Word] of Byte;
 begin
  FillChar(Buffer[0], Length(Buffer), 0);
 
@@ -86,9 +120,9 @@ begin
  CheckEquals(Length(Buffer), ReturnValue, 'A wrong amount of bytes were read');
 
  // check whether the decompressed bytes have the expected value
- for Index := 0 to High(Byte) - 1 do
+ for Index := 0 to Length(Buffer) - 1 do
   begin
-   CheckEquals(Index xor $AC, Buffer[Index]);
+   CheckEquals(TestPolynomial(Index), Buffer[Index]);
   end;
 end;
 
