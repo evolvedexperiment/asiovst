@@ -33,6 +33,8 @@ unit DAV_Adler32;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 function Adler32(Adler: Cardinal; Data: PByte; Length: Cardinal): Cardinal;
 function Adler32Combine(Adler1, Adler2: Cardinal; Length: Int64): Cardinal;
 
