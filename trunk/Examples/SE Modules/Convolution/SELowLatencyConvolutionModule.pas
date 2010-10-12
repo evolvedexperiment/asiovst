@@ -37,8 +37,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Classes, SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Complex,
-  DAV_DspConvolution;
+  Windows, Classes, SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule,
+  DAV_Complex, DAV_DspConvolution;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -135,7 +135,9 @@ begin
  except
   RegisteredName := '';
  end;
- if (RegisteredName <> 'Treck.de') and (RegisteredName <> 'Boris Kovalev')
+ if (RegisteredName <> 'Treck.de') and
+    (RegisteredName <> 'Boris Kovalev') and
+    (RegisteredName <> 'Victor Pavia')
   then
    begin
     ID := $29A2A826;
