@@ -13,7 +13,8 @@ uses
   DAV_ZLib in '..\..\Source\DAV_ZLib.pas',
   DAV_Adler32 in '..\..\Source\DAV_Adler32.pas',
   DAV_Deflate in '..\..\Source\GUI\DAV_Deflate.pas',
-  DAV_CircularByteBuffer in '..\..\Source\DAV_CircularByteBuffer.pas';
+  DAV_CircularByteBuffer in '..\..\Source\DAV_CircularByteBuffer.pas',
+  DAV_ZStream in '..\..\Source\DAV_ZStream.pas';
 
 begin
   Application.Initialize;

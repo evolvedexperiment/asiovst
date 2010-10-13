@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Graphics, SysUtils, {$IFDEF DELPHI14_UP} zlib,
-  {$ELSE} ZLibEx, {$ENDIF}
+  Windows, Classes, Graphics, SysUtils,
+//  {$IFDEF DELPHI14_UP} zlib, {$ELSE} ZLibEx, {$ENDIF}
+  DAV_ZStream,
   DAV_Types, DAV_ChunkClasses, DAV_GuiCommon, DAV_GuiPixelMap,
   DAV_GuiPngTypes, DAV_GuiPngClasses, DAV_GuiFileFormats, DAV_GuiPngChunks;
 
