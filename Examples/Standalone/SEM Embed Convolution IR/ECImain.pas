@@ -25,7 +25,7 @@ unit ECImain;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, StdCtrls, DAV_DLLResources;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Menus, StdCtrls, DAV_DLLResources;
 
 type
   TFmSemEmbedConvolutionIR = class(TForm)
@@ -139,18 +139,18 @@ end;
 
 procedure TFmSemEmbedConvolutionIR.MIAddIRClick(Sender: TObject);
 var
-  i  : Integer;
-  RD : TResourceDetails;
+  Index : Integer;
+  RD    : TResourceDetails;
 begin
  with OpenDialogWAV do
   if Execute then
-   for i := 0 to Files.Count - 1 do
+   for Index := 0 to Files.Count - 1 do
     begin
      with TMemoryStream.Create do
       try
-       ListBox.Items.Add(ExtractFileName(Files[i]));
-       LoadFromFile(Files[i]);
-       RD := TResourceDetails.CreateResourceDetails(FSEModule, 0, 'IR' + IntToStr(i), 'IR', Size, Memory);
+       ListBox.Items.Add(ExtractFileName(Files[Index]));
+       LoadFromFile(Files[Index]);
+       RD := TResourceDetails.CreateResourceDetails(FSEModule, 0, 'IR' + IntToStr(Index), 'IR', Size, Memory);
        FSEModule.AddResource(RD);
       finally
        Free;
