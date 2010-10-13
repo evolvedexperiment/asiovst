@@ -122,14 +122,17 @@ type
     property StitchedImageIndex;
     property Transparent;
     property WheelStep;
-    property OnMouseEnter;
-    property OnMouseLeave;
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
     property OnMouseWheel;
     property OnMouseWheelDown;
     property OnMouseWheelUp;
+
+    {$IFDEF DELPHI8_UP}
+    property OnMouseEnter;
+    property OnMouseLeave;
+    {$ENDIF}
   end;
 
 implementation
