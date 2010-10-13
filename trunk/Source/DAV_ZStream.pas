@@ -38,7 +38,7 @@ uses
   Classes, ZLib;
 
 type
-  {$IFNDEF DELPHI8_UP}
+  {$IFNDEF DELPHI14_UP}
   TZCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
   {$ENDIF}
 
