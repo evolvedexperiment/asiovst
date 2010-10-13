@@ -148,17 +148,19 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-    {$IFDEF Delphi6_Up}
-    property OnMouseWheel;
-    property OnMouseWheelDown;
-    property OnMouseWheelUp;
-    {$ENDIF}
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
     property OnPaint;
+    {$IFDEF Delphi6_Up}
+    property OnMouseWheel;
+    property OnMouseWheelDown;
+    property OnMouseWheelUp;
+    {$IFDEF DELPHI8_Up}
     property OnMouseEnter;
     property OnMouseLeave;
+    {$ENDIF}
+    {$ENDIF}
   end;
 
 implementation

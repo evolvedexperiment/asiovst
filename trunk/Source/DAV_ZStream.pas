@@ -38,13 +38,17 @@ uses
   Classes, ZLib;
 
 type
+  {$IFNDEF DELPHI8_UP}
+  TZCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
+  {$ENDIF}
+
   TCustomZStream = class(TStream)
   private
     FStream     : TStream;
     FStreamPos  : Int64;
     FOnProgress : TNotifyEvent;
     FZStream    : TZStreamRec;
-    FBuffer     : array[Word] of AnsiChar;
+    FBuffer     : array [Word] of AnsiChar;
   protected
     constructor Create(Stream: TStream);
     procedure DoProgress; dynamic;
@@ -84,6 +88,9 @@ implementation
 uses
   SysUtils;
 
+resourcestring
+  RCStrInvalidStreamOperation = 'Invalid stream operation';
+
 const
   CZErrorMessages : array [0..9] of PAnsiChar = (
     'need dictionary', 'stream end', '', 'file error', 'stream error',
@@ -118,6 +125,9 @@ end;
 
 constructor TZCompressionStream.Create(Destination: TStream;
   CompressionLevel: TZCompressionLevel);
+const
+  ZLevels: array [TZCompressionLevel] of ShortInt =
+    (Z_NO_COMPRESSION, Z_BEST_SPEED, Z_DEFAULT_COMPRESSION, Z_BEST_COMPRESSION);
 begin
  inherited Create(Destination);
 
@@ -161,7 +171,7 @@ end;
 
 function TZCompressionStream.Read(var Buffer; Count: Integer): Integer;
 begin
- raise Exception.Create(SZInvalid);
+ raise Exception.Create(RCStrInvalidStreamOperation);
 end;
 
 function TZCompressionStream.Write(const Buffer; Count: Integer): Integer;
@@ -195,7 +205,7 @@ function TZCompressionStream.Seek(Offset: Integer; Origin: Word): Integer;
 begin
  if (Offset = 0) and (Origin = soFromCurrent)
   then Result := FZStream.total_in
-  else raise Exception.Create(SZInvalid);
+  else raise Exception.Create(RCStrInvalidStreamOperation);
 end;
 
 function TZCompressionStream.GetCompressionRate: Single;
@@ -267,7 +277,7 @@ end;
 
 function TZDecompressionStream.Write(const Buffer; Count: Integer): Integer;
 begin
- raise Exception.Create(SZInvalid);
+ raise Exception.Create(RCStrInvalidStreamOperation);
 end;
 
 function TZDecompressionStream.Seek(Offset: Integer; Origin: Word): Integer;
@@ -298,7 +308,7 @@ begin
   end else
  if (Offset = 0) and (Origin = soFromEnd)
   then while Read(TempBuffer, SizeOf(TempBuffer)) > 0 do
-  else raise Exception.Create(SZInvalid);
+  else raise Exception.Create(RCStrInvalidStreamOperation);
 
  Result := FZStream.total_out;
 end;
