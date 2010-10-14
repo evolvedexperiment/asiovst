@@ -1,4 +1,4 @@
-unit DAV_StitchedButton;
+unit DAV_GuiStitchedButton;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -53,6 +53,7 @@ type
       Y: Integer); override;
     procedure CMEnabledChanged(var Message: TMessage);
       message CM_ENABLEDCHANGED;
+    procedure Click; override;
   end;
 
   TGuiStichedButton = class(TCustomGuiStitchedButton)
@@ -61,7 +62,9 @@ type
     property StitchedImageList;
     property StitchedImageIndex;
     property Transparent;
+
     property OnChange;
+    property OnClick;
   end;
 
 implementation
@@ -70,6 +73,11 @@ uses
   DAV_Common, DAV_GuiBlend;
 
 { TCustomGuiStitchedButton }
+
+procedure TCustomGuiStitchedButton.Click;
+begin
+ if Enabled then inherited;
+end;
 
 procedure TCustomGuiStitchedButton.CMEnabledChanged(var Message: TMessage);
 begin
