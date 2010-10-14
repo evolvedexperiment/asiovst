@@ -32,7 +32,7 @@ uses
   {$ENDIF} DAV_GuiPixelMap, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider,
   DAV_GuiMediaButton, DAV_GuiStitchedControls, DAV_GuiPng,
   DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch, DAV_GuiStitchedDial,
-  DAV_GuiPixelMapDesign, DAV_GuiPngDesign;
+  DAV_StitchedButton, DAV_GuiPixelMapDesign, DAV_GuiPngDesign;
 
 procedure Register;
 begin
@@ -43,8 +43,8 @@ begin
     TGuiLevelMeter, TGuiColorLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx,
     TGuiDialImageList, TGuiDialImageRenderer, TGuiEQGraph, TGuiEQSlide,
     {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiSwitch,
-    TGuiSlider, TGuiMediaButton, TGuiStitchedImageList,
-    TGuiStitchedPNGList, TGuiStichedSwitch, TGuiStichedDial]);
+    TGuiSlider, TGuiMediaButton, TGuiStitchedImageList, TGuiStitchedPNGList,
+    TGuiStichedSwitch, TGuiStichedDial, TGuiStichedButton]);
 
   RegisterPropertyEditor(TypeInfo(TGuiCustomPixelMap), nil, '', TPixelMapProperty);
   RegisterPropertyEditor(TypeInfo(TPortableNetworkGraphicPixel32), nil, '', TPngProperty);
