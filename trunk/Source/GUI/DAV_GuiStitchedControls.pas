@@ -843,13 +843,13 @@ begin
 
     case StitchKind of
      skHorizontal :
-      if FGlyphIndex * Self.Width < StitchedPixelMap.Width then
+      if FGlyphIndex * Self.Width < FStitchedItem.StitchedPixelMap.Width then
        begin
+        DataPointer := @StitchedPixelMap.DataPointer[FGlyphIndex * Self.Width];
         for LineIndex := 0 to Self.Height - 1 do
          begin
-          DataPointer := FStitchedItem.StitchedPixelMap.ScanLine[
-            LineIndex * StitchedPixelMap.Width + FGlyphIndex * Self.Width];
           BlendLine(PPixel32(DataPointer), PPixel32(FBuffer.ScanLine[LineIndex]), Self.Width);
+          DataPointer := @DataPointer[StitchedPixelMap.Width];
          end;
         EMMS;
        end;
