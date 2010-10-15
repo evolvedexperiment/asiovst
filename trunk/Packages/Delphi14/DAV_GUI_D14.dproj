@@ -104,6 +104,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiSlider.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStaticWaveform.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedControls.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedButton.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedDial.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedPngList.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedSwitch.pas"/>
@@ -164,7 +165,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-10-06 03:57</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-10-15 22:45</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>
