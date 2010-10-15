@@ -108,15 +108,17 @@ type
     property OnQuantizeValue: TQuantizeValueEvent read FOnQuantizeValue write FOnQuantizeValue;
   end;
 
-  TGuiStichedDial = class(TCustomGuiStitchedDial)
+  TGuiStitchedDial  = class(TCustomGuiStitchedDial)
   published
     property AutoSize;
+    property Color;
     property CurveMapping;
     property DefaultPosition;
     property LockCursor;
     property Max;
     property Min;
     property OnChange;
+    property ParentColor;
     property Position;
     property StitchedImageList;
     property StitchedImageIndex;

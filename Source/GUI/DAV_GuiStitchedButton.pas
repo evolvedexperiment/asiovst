@@ -56,7 +56,7 @@ type
     procedure Click; override;
   end;
 
-  TGuiStichedButton = class(TCustomGuiStitchedButton)
+  TGuiStitchedButton = class(TCustomGuiStitchedButton)
   published
     property AutoSize;
     property StitchedImageList;

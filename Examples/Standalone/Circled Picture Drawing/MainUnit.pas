@@ -7,7 +7,7 @@ uses
   Menus, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   DAV_Common, DAV_Types, DAV_ChunkClasses, DAV_DifferentialEvolution,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFixedPoint, DAV_GuiVector,
-  DAV_GuiVectorPixel, DAV_GuiVectorPixelCircle;
+  DAV_GuiVectorPixel, DAV_GuiVectorPixelCircle, DAV_GuiFileFormats, DAV_GuiPng;
 
 type
   TEvolutionThread = class(TThread)
@@ -62,18 +62,18 @@ type
     procedure AcStartExecute(Sender: TObject);
     procedure MiCopyReferenceClick(Sender: TObject);
     procedure MiExitClick(Sender: TObject);
+    procedure MiLoadPopulationClick(Sender: TObject);
     procedure MiOpenBestClick(Sender: TObject);
     procedure MiOpenDrawingClick(Sender: TObject);
     procedure MiOpenReferenceClick(Sender: TObject);
     procedure MiSaveAnimationClick(Sender: TObject);
     procedure MiSaveDrawingClick(Sender: TObject);
     procedure MiSaveHighResolutionClick(Sender: TObject);
+    procedure MiSavePopulationClick(Sender: TObject);
     procedure MiSaveResultClick(Sender: TObject);
     procedure MiStopContinueClick(Sender: TObject);
     procedure PaintBoxDrawPaint(Sender: TObject);
     procedure PaintBoxRefPaint(Sender: TObject);
-    procedure MiSavePopulationClick(Sender: TObject);
-    procedure MiLoadPopulationClick(Sender: TObject);
   private
     FWorstCost               : Double;
     FMaximumCost             : Double;
@@ -216,7 +216,7 @@ begin
  FWeight := 0.7;
  FBest := 0;
  FAdditional := 0;
- FDrawDraft := True;
+ FDrawDraft := False;
  FRandomCircle := False;
  FRandomOrder := False;
  FWeightDither := False;
@@ -1052,7 +1052,7 @@ begin
  OldFileName := 'Backup' + IntToStr(FCurrentCircle) + '.circles';
  FCurrentCircle := FCurrentCircle + FNumberOfCircles;
  SaveDrawing('Backup' + IntToStr(FCurrentCircle) + '.circles');
- if FileExists(OldFileName)
+ if FileExists(OldFileName) and (FCurrentCircle mod 128 <> 0)
   then DeleteFile(OldFileName);
 end;
 

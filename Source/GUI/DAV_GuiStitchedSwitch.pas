@@ -50,7 +50,7 @@ type
     property ReadOnly: Boolean read FReadOnly write FReadOnly default false;
   end;
 
-  TGuiStichedSwitch = class(TCustomGuiStitchedSwitch)
+  TGuiStitchedSwitch = class(TCustomGuiStitchedSwitch)
   published
     property DefaultGlyphIndex;
     property GlyphIndex;

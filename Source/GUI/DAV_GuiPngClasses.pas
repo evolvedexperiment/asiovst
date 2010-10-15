@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, ZLib;
 
 type
   EPngError = class(Exception);
@@ -46,6 +46,13 @@ function ReadSwappedCardinal(Stream: TStream): Cardinal;
 procedure WriteSwappedWord(Stream: TStream; Value: Word);
 procedure WriteSwappedSmallInt(Stream: TStream; Value: SmallInt);
 procedure WriteSwappedCardinal(Stream: TStream; Value: Cardinal);
+
+procedure ZCompress(Data: Pointer; Size: Integer; const Output: TStream;
+  Level: Byte = Z_BEST_COMPRESSION); overload;
+procedure ZCompress(const Input: TMemoryStream; const Output: TStream;
+  Level: Byte = Z_BEST_COMPRESSION); overload;
+procedure ZDecompress(Data: Pointer; Size: Integer; const Output: TStream); overload;
+procedure ZDecompress(const Input: TMemoryStream; const Output: TStream); overload;
 
 implementation
 
@@ -103,5 +110,121 @@ begin
  Stream.Write(Value, SizeOf(Cardinal));
 end;
 
+
+{ zlib functions }
+
+procedure ZCompress(Data: Pointer; Size: Integer; const Output: TStream;
+  Level: Byte = Z_BEST_COMPRESSION); overload;
+const
+  CBufferSize = $8000;
+var
+  ZStreamRecord : TZStreamRec;
+  ZResult       : Integer;
+  TempBuffer    : Pointer;
+begin
+ FillChar(ZStreamRecord, SizeOf(TZStreamRec), 0);
+
+ with ZStreamRecord do
+  begin
+   next_in := Data;
+   avail_in := Size;
+   {$IFNDEF ZLibEx}
+   zalloc := zlibAllocMem;
+   zfree := zlibFreeMem;
+   {$ENDIF}
+  end;
+
+ if DeflateInit_(ZStreamRecord, Level ,ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+  then raise EPngError.Create('Error during compression');
+
+ GetMem(TempBuffer, CBufferSize);
+ try
+  while ZStreamRecord.avail_in > 0 do
+   begin
+    ZStreamRecord.next_out := TempBuffer;
+    ZStreamRecord.avail_out := CBufferSize;
+
+    ZResult := deflate(ZStreamRecord, Z_NO_FLUSH);
+
+    Output.Write(TempBuffer^, CBufferSize - ZStreamRecord.avail_out);
+   end;
+
+  repeat
+   ZStreamRecord.next_out := TempBuffer;
+   ZStreamRecord.avail_out := CBufferSize;
+
+   ZResult := deflate(ZStreamRecord, Z_FINISH);
+
+   Output.Write(TempBuffer^, CBufferSize - ZStreamRecord.avail_out);
+  until (ZResult = Z_STREAM_END) and (ZStreamRecord.avail_out > 0);
+ finally
+  Dispose(TempBuffer);
+ end;
+
+ if deflateEnd(ZStreamRecord) > 0
+  then raise EPngError.Create('Error on stream validation');
+end;
+
+procedure ZCompress(const Input: TMemoryStream; const Output: TStream;
+  Level: Byte = Z_BEST_COMPRESSION); overload;
+begin
+ ZCompress(Input.Memory, Input.Size, Output, Level);
+end;
+
+procedure ZDecompress(Data: Pointer; Size: Integer; const Output: TStream); overload;
+const
+  CBufferSize = $8000;
+var
+  ZStreamRecord : TZStreamRec;
+  ZResult       : Integer;
+  TempBuffer    : Pointer;
+begin
+ FillChar(ZStreamRecord, SizeOf(TZStreamRec), 0);
+
+ with ZStreamRecord do
+  begin
+   next_in := Data;
+   avail_in := Size;
+   {$IFNDEF ZLibEx}
+   zalloc := zlibAllocMem;
+   zfree := zlibFreeMem;
+   {$ENDIF}
+  end;
+
+ if inflateInit_(ZStreamRecord, ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+  then raise EPngError.Create('Error during decompression');
+
+ GetMem(TempBuffer, CBufferSize);
+ try
+  while ZStreamRecord.avail_in > 0 do
+   begin
+    ZStreamRecord.next_out := TempBuffer;
+    ZStreamRecord.avail_out := CBufferSize;
+
+    ZResult := inflate(ZStreamRecord, Z_NO_FLUSH);
+
+    Output.Write(TempBuffer^, CBufferSize - ZStreamRecord.avail_out);
+   end;
+
+  repeat
+   ZStreamRecord.next_out := TempBuffer;
+   ZStreamRecord.avail_out := CBufferSize;
+
+   ZResult := inflate(ZStreamRecord, Z_FINISH);
+
+   Output.Write(TempBuffer^, CBufferSize - ZStreamRecord.avail_out);
+  until (ZResult = Z_STREAM_END) and (ZStreamRecord.avail_out > 0);
+ finally
+  Dispose(TempBuffer);
+ end;
+
+ if inflateEnd(ZStreamRecord) > 0
+  then raise EPngError.Create('Error on stream validation');
+end;
+
+procedure ZDecompress(const Input: TMemoryStream; const Output: TStream); overload;
+begin
+ ZDecompress(Input.Memory, Input.Size, Output);
+end;
 
 end.

@@ -36,8 +36,6 @@ interface
 
 uses
   Windows, Classes, Graphics, SysUtils,
-//  {$IFDEF DELPHI14_UP} zlib, {$ELSE} ZLibEx, {$ENDIF}
-  DAV_ZStream,
   DAV_Types, DAV_ChunkClasses, DAV_GuiCommon, DAV_GuiPixelMap,
   DAV_GuiPngTypes, DAV_GuiPngClasses, DAV_GuiFileFormats, DAV_GuiPngChunks;
 
@@ -47,6 +45,7 @@ type
 
   TPortableNetworkGraphic = class(TGuiCustomFileFormat)
   private
+    FCompressionLevel      : Byte;
     function GetBitDepth: Byte;
     function GetColorType: TColorType;
     function GetCompressionMethod: Byte;
@@ -66,6 +65,7 @@ type
     procedure SetChromaChunk(const Value: TChunkPngPrimaryChromaticities);
     procedure SetColorType(const Value: TColorType);
     procedure SetCompressionMethod(const Value: Byte);
+    procedure SetCompressionLevel(const Value: Byte);
     procedure SetFilterMethod(const Value: TFilterMethod);
     procedure SetGamma(const Value: Single);
     procedure SetModifiedTime(const Value: TDateTime);
@@ -106,6 +106,9 @@ type
     procedure StoreImageData(Stream: TStream);
     procedure DecompressImageDataToStream(Stream: TStream);
     procedure CompressImageDataFromStream(Stream: TStream);
+
+    procedure CompressionLevelChanged; virtual;
+
     class function CanHandleExtension(const FileName: TFileName): Boolean; override;
 
     property ImageHeader: TChunkPngImageHeader read FImageHeader write SetImageHeader;
@@ -137,6 +140,7 @@ type
     property BitDepth: Byte read GetBitDepth write SetBitDepth;
     property ColorType: TColorType read GetColorType write SetColorType;
     property CompressionMethod: Byte read GetCompressionMethod write SetCompressionMethod;
+    property CompressionLevel: Byte read FCompressionLevel write SetCompressionLevel;
     property FilterMethod: TFilterMethod read GetFilterMethod write SetFilterMethod;
     property InterlaceMethod: TInterlaceMethod read GetInterlaceMethod write SetInterlaceMethod;
     property PaletteEntry[index: Integer]: TRGB24 read GetPaletteEntry;
@@ -204,11 +208,6 @@ implementation
 
 uses
   Math, DAV_Common, DAV_GuiPngCoder, DAV_GuiPngResourceStrings;
-
-resourcestring
-  RCStrUnsupportedFilter = 'Unsupported Filter';
-  RCStrUnsupportedFormat = 'Unsupported Format';
-  RCStrPaletteMissing = 'Required palette is missing';
 
 type
   TPalette24 = array of TRGB24;
@@ -403,12 +402,24 @@ end;
 
 procedure TPortableNetworkGraphic.SetBitDepth(const Value: Byte);
 begin
- raise EPngError.Create('Bit depth may not be specified directly yet!');
+ raise EPngError.Create(RCStrBitDepthTranscodingError);
 end;
 
 procedure TPortableNetworkGraphic.SetColorType(const Value: TColorType);
 begin
- raise EPngError.Create('Color Type may not be specified directly yet!');
+ raise EPngError.Create(RCStrColorTypeTranscodingError);
+end;
+
+procedure TPortableNetworkGraphic.SetCompressionLevel(const Value: Byte);
+begin
+ if not (Value in [1..9])
+  then raise EPngError.Create(RCStrInvalidCompressionLevel);
+
+ if FCompressionLevel <> Value then
+  begin
+   FCompressionLevel := Value;
+   CompressionLevelChanged;
+  end;
 end;
 
 procedure TPortableNetworkGraphic.SetCompressionMethod(const Value: Byte);
@@ -493,8 +504,7 @@ end;
 
 procedure TPortableNetworkGraphic.DecompressImageDataToStream(Stream: TStream);
 var
-  DataStream  : TMemoryStream;
-  ZStream     : TZDecompressionStream;
+  DataStream : TMemoryStream;
 begin
  DataStream := TMemoryStream.Create;
  try
@@ -508,14 +518,8 @@ begin
   // reset data stream position to zero
   DataStream.Seek(0, soFromBeginning);
 
-  // create z decompression stream on data stream
-  ZStream := TZDecompressionStream.Create(DataStream);
-  try
-   // decode z-stream data to decoded data stream
-   Stream.CopyFrom(ZStream, ZStream.Size);
-  finally
-   FreeAndNil(ZStream);
-  end;
+  // decompress z-stream
+  ZDecompress(DataStream, Stream);
  finally
   FreeAndNil(DataStream);
  end;
@@ -523,22 +527,17 @@ end;
 
 procedure TPortableNetworkGraphic.CompressImageDataFromStream(Stream: TStream);
 var
-  DataStream  : TMemoryStream;
-  ZStream     : TZCompressionStream;
+  DataStream : TMemoryStream;
 begin
  DataStream := TMemoryStream.Create;
  try
   // set compression method
   FImageHeader.CompressionMethod := 0;
 
-  // create z compression stream on stream
-  ZStream := TZCompressionStream.Create(DataStream);
-  try
-   // encode z-stream data to encoded data stream
-   ZStream.CopyFrom(Stream, Stream.Size);
-  finally
-   FreeAndNil(ZStream);
-  end;
+  // compress Stream to DataStream
+  if Stream is TMemoryStream
+   then ZCompress(TMemoryStream(Stream), DataStream, FCompressionLevel)
+   else raise EPngError.Create(RCStrNotYetImplemented);
 
   // reset data stream position to zero
   DataStream.Seek(0, soFromBeginning);
@@ -938,13 +937,28 @@ end;
 
 procedure TPortableNetworkGraphic.RemoveModifiedTimeInformation;
 begin
-
+ if Assigned(FTimeChunk)
+  then FreeAndNil(FTimeChunk);
 end;
 
 procedure TPortableNetworkGraphic.RemovePhysicalPixelDimensionsInformation;
 begin
  if Assigned(FPhysicalDimensions)
   then FreeAndNil(FPhysicalDimensions);
+end;
+
+procedure TPortableNetworkGraphic.CompressionLevelChanged;
+var
+  TempStream : TMemoryStream;
+begin
+ TempStream := TMemoryStream.Create;
+ try
+  DecompressImageDataToStream(TempStream);
+  TempStream.Seek(0, soFromBeginning);
+  CompressImageDataFromStream(TempStream);
+ finally
+  FreeAndNil(TempStream);
+ end;
 end;
 
 procedure TPortableNetworkGraphic.ReadImageDataChunk(Stream: TStream);

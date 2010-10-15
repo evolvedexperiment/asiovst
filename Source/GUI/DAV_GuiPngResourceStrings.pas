@@ -36,7 +36,9 @@ interface
 
 resourcestring
   RCStrAncillaryUnknownChunk = 'Unknown chunk is marked as ancillary';
+  RCStrBitDepthTranscodingError = 'Bit depth may not be specified directly yet!';
   RCStrChunkSizeTooSmall = 'Chunk size too small!';
+  RCStrColorTypeTranscodingError = 'Color Type may not be specified directly yet!';
   RCStrDataIncomplete = 'Data not complete';
   RCStrDirectCompressionMethodSetError = 'Compression Method may not be specified directly yet!';
   RCStrDirectFilterMethodSetError = 'Filter Method may not be specified directly yet!';
@@ -48,6 +50,7 @@ resourcestring
   RCStrHeaderInvalid = 'The provided header is not valid!';
   RCStrIncompletePalette = 'Palette is incomplete';
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  RCStrInvalidCompressionLevel = 'Invalid compression level';
   RCStrNewHeaderError = 'New header may not be nil!';
   RCStrNoModifiedTime = 'Modified time not available!';
   RCStrNotAValidPNGFile = 'Not a valid PNG file';
