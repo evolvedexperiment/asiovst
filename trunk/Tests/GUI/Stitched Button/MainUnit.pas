@@ -8,8 +8,8 @@ uses
 
 type
   TFmStitchedButtonTest = class(TForm)
-    StitchedButtonA: TGuiStichedButton;
-    StitchedButtonB: TGuiStichedButton;
+    StitchedButtonA: TGuiStitchedButton;
+    StitchedButtonB: TGuiStitchedButton;
     GuiStitchedPNGList: TGuiStitchedPNGList;
     procedure StitchedButtonBClick(Sender: TObject);
     procedure StitchedButtonAClick(Sender: TObject);

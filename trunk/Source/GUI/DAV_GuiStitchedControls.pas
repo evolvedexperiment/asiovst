@@ -140,13 +140,11 @@ type
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetStitchedIndex(Value: Integer);
     procedure SetStitchedList(const Value: TGuiCustomStitchedList);
-    procedure SetColor(const Value: TColor);
     procedure SetTransparent(const Value: Boolean);
     procedure SetGlyphIndex(Value: Integer);
     procedure SetDefaultGlyphIndex(Value: Integer);
   protected
     FAutoSize          : Boolean;
-    FColor             : TColor;
     FTransparent       : Boolean;
     FUpdateBuffer      : Boolean;
     FUpdateBackBuffer  : Boolean;
@@ -185,7 +183,6 @@ type
     destructor Destroy; override;
 
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
-    property Color: TColor read FColor write SetColor default clBtnFace;
     property StitchedImageList: TGuiCustomStitchedList read FStitchedList write SetStitchedList;
     property StitchedImageIndex: Integer read FStitchedItemIndex write SetStitchedIndex default -1;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
@@ -448,7 +445,6 @@ begin
  FBuffer            := TGuiPixelMapMemory.Create;
  FBackBuffer        := TGuiPixelMapMemory.Create;
  FUpdateBuffer      := False;
- FColor             := clBtnFace;
  FGlyphIndex        := 0;
  FDefaultGlyphIndex := 0;
  FStitchedItemIndex := -1;
@@ -458,9 +454,15 @@ end;
 
 destructor TGuiCustomStitchedControl.Destroy;
 begin
+ // unlink any stitched item
+ if Assigned(FStitchedItem)
+  then FStitchedItem.UnLinkStitchedControl(Self);
+
+ // free buffers
  FreeAndNil(FBuffer);
  FreeAndNil(FBackBuffer);
- inherited Destroy;
+
+ inherited;
 end;
 
 type
@@ -647,15 +649,6 @@ begin
   end;
 end;
 
-procedure TGuiCustomStitchedControl.SetColor(const Value: TColor);
-begin
- if FColor <> Value then
-  begin
-   FColor := Value;
-   ColorChanged;
-  end;
-end;
-
 procedure TGuiCustomStitchedControl.SetStitchedIndex(Value: Integer);
 begin
  if csLoading in ComponentState then
@@ -698,6 +691,8 @@ begin
    FStitchedList := Value;
    if not Assigned(FStitchedList) then
     begin
+     if Assigned(FStitchedItem)
+      then FStitchedItem.UnLinkStitchedControl(Self);
      FStitchedItem := nil;
      FStitchedItemIndex := -1;
     end;
@@ -809,7 +804,7 @@ var
 begin
  if FTransparent then CopyParentImage(FBackBuffer) else
   begin
-   PixelColor32 := ConvertColor(FColor);
+   PixelColor32 := ConvertColor(Color);
    FBackBuffer.FillRect(ClientRect, PixelColor32);
   end;
 

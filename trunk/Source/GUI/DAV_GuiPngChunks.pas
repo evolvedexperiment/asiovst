@@ -36,8 +36,6 @@ interface
 
 uses
   Classes, Graphics, SysUtils,
-//  {$IFDEF DELPHI14_UP} zlib, {$ELSE} ZLibEx, {$ENDIF}
-  DAV_ZStream,
   DAV_Types, DAV_ChunkClasses, DAV_GuiCommon, DAV_GuiPngTypes,
   DAV_GuiPngClasses;
 
@@ -1520,9 +1518,10 @@ end;
 
 procedure TChunkPngCompressedTextChunk.LoadFromStream(Stream: TStream);
 var
-  RawData      : TMemoryStream;
-  Decompressed : TZDecompressionStream;
-  Index        : Integer;
+  DataIn     : Pointer;
+  DataInSize : Integer;
+  Output     : TMemoryStream;
+  Index      : Integer;
 begin
  inherited;
 
@@ -1548,19 +1547,21 @@ begin
    // read text
    if FCompressionMethod = 0 then
     begin
-     RawData := TMemoryStream.Create;
+     DataInSize := Size - Position;
+     GetMem(DataIn, DataInSize);
      try
-      RawData.CopyFrom(Stream, Size - Position);
-      RawData.Seek(0, soFromBeginning);
-      Decompressed := TZDecompressionStream.Create(RawData);
+      Read(DataIn^, DataInSize);
+
+      Output := TMemoryStream.Create;
       try
-       SetLength(FText, Decompressed.Size);
-       Decompressed.Read(FText[1], Decompressed.Size);
+       ZDecompress(DataIn, DataInSize, Output);
+       SetLength(FText, Output.Size);
+       Move(Output.Memory^, FText[1], Output.Size);
       finally
-       FreeAndNil(Decompressed);
+       FreeAndNil(Output);
       end;
      finally
-      FreeAndNil(RawData);
+      Dispose(DataIn);
      end;
     end;
   end;
@@ -1568,17 +1569,16 @@ end;
 
 procedure TChunkPngCompressedTextChunk.SaveToStream(Stream: TStream);
 var
-  DataStream : TMemoryStream;
-  Compressed : TZCompressionStream;
-  Temp       : Byte;
+  OutputStream : TMemoryStream;
+  Temp         : Byte;
 begin
- DataStream := TMemoryStream.Create;
+ OutputStream := TMemoryStream.Create;
  try
-  DataStream.Write(FText[1], Length(FText));
-  Compressed := TZCompressionStream.Create(DataStream);
+  // compress text
+  ZCompress(@FText[1], Length(FText), OutputStream);
 
   // calculate chunk size
-  FChunkSize := Length(FKeyword) + Compressed.Size + 1;
+  FChunkSize := Length(FKeyword) + OutputStream.Size + 1;
 
   inherited;
 
@@ -1598,11 +1598,10 @@ begin
     Write(FCompressionMethod, SizeOf(Byte));
 
     // write text
-    Compressed.Seek(0, soFromBeginning);
-    CopyFrom(Compressed, Compressed.Size);
+    Write(OutputStream.Memory^, OutputStream.Size);
    end;
  finally
-  FreeAndNil(DataStream);
+  FreeAndNil(OutputStream);
  end;
 end;
 

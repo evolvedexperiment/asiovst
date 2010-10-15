@@ -4,28 +4,29 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList;
+  Dialogs, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, StdCtrls;
 
 type
-  TFmSwitchTest = class(TForm)
-    GuiStitchedImageList: TGuiStitchedImageList;
-    GuiStichedSwitch0: TGuiStichedSwitch;
-    GuiStichedSwitch1: TGuiStichedSwitch;
-    GuiStichedSwitch2: TGuiStichedSwitch;
-    GuiStichedSwitch3: TGuiStichedSwitch;
+  TFmDialTest = class(TForm)
+    GuiStitchedDial0: TGuiStitchedDial;
+    GuiStitchedDial1: TGuiStitchedDial;
+    GuiStitchedDial2: TGuiStitchedDial;
+    GuiStitchedDial3: TGuiStitchedDial;
     GuiStitchedPNGList: TGuiStitchedPNGList;
+    LbValue: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure GuiStichedSwitchChange(Sender: TObject);
+    procedure GuiStitchedDial0Change(Sender: TObject);
+    procedure GuiStitchedDial1Change(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   end;
 
 var
-  FmSwitchTest: TFmSwitchTest;
+  FmDialTest: TFmDialTest;
 
 implementation
 
@@ -34,30 +35,30 @@ implementation
 uses
   DAV_GuiFileFormats, DAV_GuiPng;
 
-procedure TFmSwitchTest.FormCreate(Sender: TObject);
+procedure TFmDialTest.FormCreate(Sender: TObject);
 begin
- with GuiStitchedImageList[0], StitchedPixelMap do
-  begin
-   LoadFromFile('BigStop.png');
-   GlyphCount := 2;
-  end;
  FBackground := TGuiPixelMapMemory.Create;
 
- GuiStichedSwitch2.Transparent := True;
+ GuiStitchedDial0.StitchedImageIndex := 0;
+ GuiStitchedDial1.StitchedImageIndex := 0;
+ GuiStitchedDial2.StitchedImageIndex := 0;
+ GuiStitchedDial3.StitchedImageIndex := 0;
+
+ GuiStitchedDial0.LockCursor := True;
 end;
 
-procedure TFmSwitchTest.FormDestroy(Sender: TObject);
+procedure TFmDialTest.FormDestroy(Sender: TObject);
 begin
  FreeAndNil(FBackground);
 end;
 
-procedure TFmSwitchTest.FormPaint(Sender: TObject);
+procedure TFmDialTest.FormPaint(Sender: TObject);
 begin
  if Assigned(FBackground)
   then FBackground.PaintTo(Canvas);
 end;
 
-procedure TFmSwitchTest.FormResize(Sender: TObject);
+procedure TFmDialTest.FormResize(Sender: TObject);
 var
   x, y   : Integer;
   s      : array[0..1] of Single;
@@ -86,9 +87,14 @@ begin
    end;
 end;
 
-procedure TFmSwitchTest.GuiStichedSwitchChange(Sender: TObject);
+procedure TFmDialTest.GuiStitchedDial0Change(Sender: TObject);
 begin
- with Sender as TGuiStichedSwitch do Transparent := GlyphIndex = 1;
+ LbValue.Caption := FloatToStrF(GuiStitchedDial0.Position, ffGeneral, 4, 4);
+end;
+
+procedure TFmDialTest.GuiStitchedDial1Change(Sender: TObject);
+begin
+ GuiStitchedDial0.CurveMapping := GuiStitchedDial1.Position;
 end;
 
 end.

@@ -17,7 +17,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'Circled Picture Drawing';
+  Application.Title := 'Circled Picture Optimizer';
   Application.CreateForm(TFmCircledPictureDialog, FmCircledPictureDialog);
   Application.Run;
 end.

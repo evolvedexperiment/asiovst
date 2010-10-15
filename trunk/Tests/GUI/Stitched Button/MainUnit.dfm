@@ -13,7 +13,7 @@ object FmStitchedButtonTest: TFmStitchedButtonTest
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object StitchedButtonA: TGuiStichedButton
+  object StitchedButtonA: TGuiStitchedButton
     Left = 8
     Top = 8
     Width = 100
@@ -23,7 +23,7 @@ object FmStitchedButtonTest: TFmStitchedButtonTest
     StitchedImageIndex = 0
     OnClick = StitchedButtonAClick
   end
-  object StitchedButtonB: TGuiStichedButton
+  object StitchedButtonB: TGuiStitchedButton
     Left = 114
     Top = 8
     Width = 100

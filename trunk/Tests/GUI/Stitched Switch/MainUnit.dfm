@@ -17,7 +17,7 @@ object FmSwitchTest: TFmSwitchTest
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object GuiStichedSwitch0: TGuiStichedSwitch
+  object GuiStitchedSwitch0: TGuiStitchedSwitch
     Left = 8
     Top = 8
     Width = 40
@@ -26,9 +26,9 @@ object FmSwitchTest: TFmSwitchTest
     GlyphIndex = 0
     StitchedImageList = GuiStitchedImageList
     StitchedImageIndex = 0
-    OnChange = GuiStichedSwitchChange
+    OnChange = GuiStitchedSwitchChange
   end
-  object GuiStichedSwitch1: TGuiStichedSwitch
+  object GuiStitchedSwitch1: TGuiStitchedSwitch
     Left = 54
     Top = 8
     Width = 40
@@ -37,9 +37,9 @@ object FmSwitchTest: TFmSwitchTest
     GlyphIndex = 0
     StitchedImageList = GuiStitchedPNGList
     StitchedImageIndex = 0
-    OnChange = GuiStichedSwitchChange
+    OnChange = GuiStitchedSwitchChange
   end
-  object GuiStichedSwitch2: TGuiStichedSwitch
+  object GuiStitchedSwitch2: TGuiStitchedSwitch
     Left = 8
     Top = 54
     Width = 40
@@ -49,7 +49,7 @@ object FmSwitchTest: TFmSwitchTest
     StitchedImageList = GuiStitchedImageList
     StitchedImageIndex = 0
   end
-  object GuiStichedSwitch3: TGuiStichedSwitch
+  object GuiStitchedSwitch3: TGuiStitchedSwitch
     Left = 54
     Top = 54
     Width = 40
