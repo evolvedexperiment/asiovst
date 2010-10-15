@@ -61,8 +61,8 @@
 			<DCCReference Include="..\..\Source\FileFormats\DAV_AudioFileAU.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_AudioFileWAV.pas"/>
 			<DCCReference Include="..\..\Source\DAV_AudioMemory.pas"/>
-			<DCCReference Include="..\..\Source\DAV_BitReserve.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Bindings.pas"/>
+			<DCCReference Include="..\..\Source\DAV_BitReserve.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BlockArithmetrics.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BlockConvert.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BlockConvert32.pas"/>
@@ -85,6 +85,7 @@
 			<DCCReference Include="..\..\Source\DAV_Huffman.pas"/>
 			<DCCReference Include="..\..\Source\DAV_InvMDCT.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Math.pas"/>
+			<DCCReference Include="..\..\Source\DAV_MemoryUtils.pas"/>
 			<DCCReference Include="..\..\Source\DAV_MidiFile.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_MpegAudio.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas"/>
@@ -98,7 +99,7 @@
 			<DCCReference Include="..\..\Source\DAV_Types.pas"/>
 			<DCCReference Include="..\..\Source\DAV_VectorMath.pas"/>
 			<DCCReference Include="..\..\Source\DAV_WaveFileTypes.pas"/>
-			<DCCReference Include="..\..\Source\DAV_MemoryUtils.pas"/>
+			<DCCReference Include="..\..\Source\DAV_ZStream.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -151,8 +152,13 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-10-06 03:57</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-10-15 22:45</VersionInfoKeys>
 					</VersionInfoKeys>
+					<Excluded_Packages>
+						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\7.0\Bpl\GR32_Charts_D14.bpl">GR32 Charts</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Beispiele für gekapselte Komponenten für Automation Server</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Beispiele für gekapselte Komponenten für Automation Server</Excluded_Packages>
+					</Excluded_Packages>
 				</Delphi.Personality>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>

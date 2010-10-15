@@ -1,6 +1,5 @@
 package DAV_SEHost_D14;
 
-{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
