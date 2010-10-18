@@ -2,7 +2,7 @@ object FmDialTest: TFmDialTest
   Left = 394
   Top = 74
   Caption = 'Dial Test'
-  ClientHeight = 150
+  ClientHeight = 161
   ClientWidth = 151
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,24 +18,30 @@ object FmDialTest: TFmDialTest
   PixelsPerInch = 96
   TextHeight = 13
   object LbValue: TLabel
-    Left = 64
-    Top = 66
+    Left = 84
+    Top = 73
     Width = 26
     Height = 13
     Caption = 'Value'
+  end
+  object LbCurrentValue: TLabel
+    Left = 8
+    Top = 73
+    Width = 70
+    Height = 13
+    Caption = 'Current Value:'
   end
   object GuiStitchedDial0: TGuiStitchedDial
     Left = 8
     Top = 8
     Width = 64
     Height = 64
-    CurveMapping = 2.000000000000000000
-    DefaultPosition = 50.000000000000000000
+    CurveMapping = 1.000000000000000000
     LockCursor = False
     Max = 100.000000000000000000
-    OnChange = GuiStitchedDial0Change
-    StitchedImageList = GuiStitchedPNGList
+    OnChange = GuiStitchedDialChange
     StitchedImageIndex = 0
+    StitchedImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end
@@ -47,33 +53,35 @@ object FmDialTest: TFmDialTest
     LockCursor = False
     Max = 2.000000000000000000
     Min = -2.000000000000000000
-    OnChange = GuiStitchedDial1Change
-    StitchedImageList = GuiStitchedPNGList
+    OnChange = Dial0MappingChange
     StitchedImageIndex = 0
+    StitchedImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end
   object GuiStitchedDial2: TGuiStitchedDial
     Left = 8
-    Top = 78
+    Top = 89
     Width = 64
     Height = 64
     LockCursor = False
     Max = 100.000000000000000000
-    StitchedImageList = GuiStitchedPNGList
+    OnChange = GuiStitchedDialChange
     StitchedImageIndex = 0
+    StitchedImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end
   object GuiStitchedDial3: TGuiStitchedDial
     Left = 78
-    Top = 78
+    Top = 89
     Width = 64
     Height = 64
     LockCursor = False
     Max = 100.000000000000000000
-    StitchedImageList = GuiStitchedPNGList
+    OnChange = GuiStitchedDialChange
     StitchedImageIndex = 0
+    StitchedImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end
