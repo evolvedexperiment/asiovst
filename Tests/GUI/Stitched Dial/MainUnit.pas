@@ -15,12 +15,13 @@ type
     GuiStitchedDial3: TGuiStitchedDial;
     GuiStitchedPNGList: TGuiStitchedPNGList;
     LbValue: TLabel;
+    LbCurrentValue: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure GuiStitchedDial0Change(Sender: TObject);
-    procedure GuiStitchedDial1Change(Sender: TObject);
+    procedure GuiStitchedDialChange(Sender: TObject);
+    procedure Dial0MappingChange(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   end;
@@ -87,14 +88,20 @@ begin
    end;
 end;
 
-procedure TFmDialTest.GuiStitchedDial0Change(Sender: TObject);
+procedure TFmDialTest.GuiStitchedDialChange(Sender: TObject);
 begin
- LbValue.Caption := FloatToStrF(GuiStitchedDial0.Position, ffGeneral, 4, 4);
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender)
+   do LbValue.Caption := FloatToStrF(Value, ffGeneral, 4, 4);
 end;
 
-procedure TFmDialTest.GuiStitchedDial1Change(Sender: TObject);
+procedure TFmDialTest.Dial0MappingChange(Sender: TObject);
 begin
- GuiStitchedDial0.CurveMapping := GuiStitchedDial1.Position;
+ GuiStitchedDial0.CurveMapping := GuiStitchedDial1.Value;
+
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender)
+   do LbValue.Caption := FloatToStrF(Value, ffGeneral, 4, 4);
 end;
 
 end.
