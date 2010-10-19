@@ -3,9 +3,9 @@ unit MainUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   Dialogs, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, StdCtrls;
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmDialTest = class(TForm)
@@ -22,6 +22,7 @@ type
     procedure FormPaint(Sender: TObject);
     procedure GuiStitchedDialChange(Sender: TObject);
     procedure Dial0MappingChange(Sender: TObject);
+    procedure GuiStitchedDial3Change(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   end;
@@ -88,6 +89,14 @@ begin
    end;
 end;
 
+procedure TFmDialTest.GuiStitchedDial3Change(Sender: TObject);
+begin
+ GuiStitchedDial0.Value := GuiStitchedDial3.Value;
+ GuiStitchedDial2.Value := GuiStitchedDial3.Value;
+
+ GuiStitchedDialChange(Sender);
+end;
+
 procedure TFmDialTest.GuiStitchedDialChange(Sender: TObject);
 begin
  if Sender is TGuiStitchedDial then
@@ -99,9 +108,7 @@ procedure TFmDialTest.Dial0MappingChange(Sender: TObject);
 begin
  GuiStitchedDial0.CurveMapping := GuiStitchedDial1.Value;
 
- if Sender is TGuiStitchedDial then
-  with TGuiStitchedDial(Sender)
-   do LbValue.Caption := FloatToStrF(Value, ffGeneral, 4, 4);
+ GuiStitchedDialChange(Sender);
 end;
 
 end.

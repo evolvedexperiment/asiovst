@@ -74,7 +74,7 @@ type
     procedure ReadMaxProperty(Reader: TReader);
     procedure WriteMaxProperty(Writer: TWriter);
   protected
-    FOldMousPos   : TPoint;
+    FOldMousePos : TPoint;
 
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -91,6 +91,7 @@ type
     procedure MinimumChanged; virtual;
     procedure ValueChanged; virtual;
     procedure ChangeDialPosition(Amount: Single);
+    procedure Loaded; override;
 
     property Range: Single read FRange;
     property NormalizedValue: Single read GetNormalizedValue;
@@ -148,14 +149,18 @@ uses
 constructor TCustomGuiStitchedDial.Create(AOwner: TComponent);
 begin
  inherited;
- FMin             := 0;
- FMax             := 100;
- FValue           := 0;
- FDefaultValue    := 0;
- FCurveMapping    := 0;
- FCurveMappingExp := 1;
- FScrollRange     := 400;
- FWheelStep       := 1;
+ FMin                 := 0;
+ FMax                 := 100;
+ FValue               := 0;
+ FDefaultValue        := 0;
+ FCurveMapping        := 0;
+ FCurveMappingExp     := 1;
+ FScrollRange         := 400;
+ FWheelStep           := 1;
+ FLockCursor          := False;
+ FIgnoreNextMouseMove := False;
+ FNormalizedPosition  := 0;
+
  CalculateRange;
 end;
 
@@ -184,6 +189,13 @@ end;
 function TCustomGuiStitchedDial.GetNormalizedValue: Single;
 begin
  Result := (Value - FMin) * FRangeReciprocal;
+end;
+
+procedure TCustomGuiStitchedDial.Loaded;
+begin
+ inherited;
+ FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
+ GlyphIndex := Round(FNormalizedPosition * (FStitchedItem.GlyphCount - 1));
 end;
 
 procedure TCustomGuiStitchedDial.CalculateRange;
@@ -259,7 +271,7 @@ begin
  if (Button = mbLeft) then
   begin
    SetFocus;
-   FOldMousPos := Point(X, Y);
+   FOldMousePos := Point(X, Y);
    Click;
   end else
  if (Button = mbRight) and (ssCtrl in Shift)
@@ -275,7 +287,7 @@ var
 begin
  if (Button = mbLeft) then
   begin
-   FOldMousPos := Point(X, Y);
+   FOldMousePos := Point(X, Y);
    if FLockCursor and (Screen.Cursor = crNone) then
     begin
      Pt := Point(Width div 2, Height div 2);
@@ -306,23 +318,23 @@ begin
 
  if (ssLeft in Shift) then
   if ssShift in Shift
-   then ChangeDialPosition(0.1 * (FOldMousPos.Y - Y) / FScrollRange)
-   else ChangeDialPosition((FOldMousPos.Y - Y) / FScrollRange)
+   then ChangeDialPosition(0.1 * (FOldMousePos.Y - Y) / FScrollRange)
+   else ChangeDialPosition((FOldMousePos.Y - Y) / FScrollRange)
   else
  if (ssRight in Shift)
   then; //Position := CircularMouseToPosition(x, y);
 
  if FLockCursor and (ssLeft in Shift) then
   begin
-   FOldMousPos := Point(Width div 2, Height div 2);
-   Pt := ClientToScreen(FOldMousPos);
+   FOldMousePos := Point(Width div 2, Height div 2);
+   Pt := ClientToScreen(FOldMousePos);
    FIgnoreNextMouseMove := True;
    SetCursorPos(Pt.X, Pt.Y);
   end
  else
   begin
-   FOldMousPos.X := X;
-   FOldMousPos.Y := Y;
+   FOldMousePos.X := X;
+   FOldMousePos.Y := Y;
   end;
 end;
 
