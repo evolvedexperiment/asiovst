@@ -23,6 +23,7 @@ object FmDialTest: TFmDialTest
     Width = 26
     Height = 13
     Caption = 'Value'
+    Transparent = True
   end
   object LbCurrentValue: TLabel
     Left = 8
@@ -30,6 +31,7 @@ object FmDialTest: TFmDialTest
     Width = 70
     Height = 13
     Caption = 'Current Value:'
+    Transparent = True
   end
   object GuiStitchedDial0: TGuiStitchedDial
     Left = 8
@@ -79,7 +81,7 @@ object FmDialTest: TFmDialTest
     Height = 64
     LockCursor = False
     Max = 100.000000000000000000
-    OnChange = GuiStitchedDialChange
+    OnChange = GuiStitchedDial3Change
     StitchedImageIndex = 0
     StitchedImageList = GuiStitchedPNGList
     Transparent = True

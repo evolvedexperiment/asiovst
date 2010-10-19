@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, Controls, ExtCtrls, DAV_GuiCommon;
+  Graphics, Classes, Controls, ExtCtrls, DAV_GuiCommon, DAV_GuiPixelMap;
 
 type
   TCustomGuiBackground = class(TComponent)
@@ -54,7 +54,7 @@ type
     procedure SetColor(const Value: TColor);
     procedure SetAmount(const Value: Byte);
   protected
-    FBitmap : TBitmap;
+    FPixelMap : TGuiCustomPixelMap;
     procedure ActiveChanged; virtual;
     procedure AmountChanged; virtual;
     procedure ColorChanged; virtual;
@@ -102,8 +102,7 @@ begin
   then FColor := ColorToRGB(TCustomForm(AOwner).Color)
   else FColor := $C8D0D4;
 
- FBitmap := TBitmap.Create;
- FBitmap.PixelFormat := pf24bit;
+ FPixelMap := TGuiPixelMapMemory.Create;
 
  FPrevParentWndProc := Pointer(GetWindowLong(FParentHandle, GWL_WNDPROC));
  P := MakeObjectInstance(NewParentWndProc);
@@ -112,6 +111,7 @@ end;
 
 destructor TCustomGuiBackground.Destroy;
 begin
+ FreeAndNil(FPixelMap);
  SetWindowLong(FParentHandle, GWL_WNDPROC, LongInt(FPrevParentWndProc));
  inherited;
 end;
@@ -119,21 +119,27 @@ end;
 procedure TCustomGuiBackground.NewParentWndProc(var Msg: TMessage);
 var
   DC : hDC;
+  CC : TControlCanvas;
 begin
  with Msg do
   begin
-   Result := CallWindowProc(FPrevParentWndProc, FParentHandle, Msg,
-     WParam, LParam);
+   Result := CallWindowProc(FPrevParentWndProc, FParentHandle, Msg, WParam,
+     LParam);
    if FActive then
     case Msg of
      WM_PAINT :
       begin
        DC := GetWindowDC(FParentHandle);
-       with TControlCanvas.Create do
-        begin
-         Handle := DC;
-         Draw(FOffset.X, FOffset.Y, FBitmap);
-        end;
+       CC := TControlCanvas.Create;
+       try
+        with CC do
+         begin
+          Handle := DC;
+          FPixelMap.PaintTo(CC, FOffset.X, FOffset.Y);
+         end;
+       finally
+        FreeAndNil(CC);
+       end;
       end;
      WM_MOVE :
       begin
@@ -141,7 +147,7 @@ begin
        FOffset.Y := LParamHi - FParentWinControl.Top;
       end;
      WM_SIZE :
-      with FBitmap do
+      with FPixelMap do
        begin
         Width := LParamLo;
         Height := LParamHi;
@@ -195,39 +201,39 @@ end;
 
 procedure TCustomGuiBackground.DrawBackground;
 var
-  x, y : Integer;
-  s    : array[0..1] of Single;
-  Val  : Integer;
-  Line : PRGB24Array;
+  x, y  : Integer;
+  s     : array [0..1] of Single;
+  Val   : Integer;
+  ScnLn : PPixel32Array;
 begin
- with FBitmap do
+ with FPixelMap do
   begin
    s[0] := 0;
    s[1] := 0;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
+     ScnLn := Scanline[y];
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
 
        Val := (FColor shr 16) and $FF;
        Val := Round(Val + FAmount * s[1]);
-       if Val <= 0 then Line[x].B := 0 else
-       if Val >= 255 then Line[x].B := 255
-        else Line[x].B := Val;
+       if Val <= 0 then ScnLn[x].B := 0 else
+       if Val >= 255 then ScnLn[x].B := 255
+        else ScnLn[x].B := Val;
 
        Val := (FColor shr 8) and $FF;
        Val := Round(Val + FAmount * s[1]);
-       if Val <= 0 then Line[x].G := 0 else
-       if Val >= 255 then Line[x].G := 255
-        else Line[x].G := Val;
+       if Val <= 0 then ScnLn[x].G := 0 else
+       if Val >= 255 then ScnLn[x].G := 255
+        else ScnLn[x].G := Val;
 
        Val := FColor and $FF;
        Val := Round(Val + FAmount * s[1]);
-       if Val <= 0 then Line[x].R := 0 else
-       if Val >= 255 then Line[x].R := 255
-        else Line[x].R := Val;
+       if Val <= 0 then ScnLn[x].R := 0 else
+       if Val >= 255 then ScnLn[x].R := 255
+        else ScnLn[x].R := Val;
 
        s[0] := s[1];
       end;
