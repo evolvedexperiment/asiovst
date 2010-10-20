@@ -32,7 +32,7 @@ unit DAV_GuiPng;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Windows, Classes, Graphics, SysUtils,

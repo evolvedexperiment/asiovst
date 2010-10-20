@@ -242,7 +242,9 @@ begin
    if PngEditor.Execute then
     begin
      SetOrdValue(Longint(PngEditor.PortableNetworkGraphic));
+     {$IFNDEF FPC}
      Designer.Modified;
+     {$ENDIF}
     end;
   finally
    FreeAndNil(PngEditor);

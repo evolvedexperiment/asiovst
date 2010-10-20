@@ -1,6 +1,5 @@
-{ Diese Datei wurde automatisch von Lazarus erzeugt. Sie darf nicht bearbeitet 
-  werden!
-  Dieser Quelltext dient nur dem Übersetzen und Installieren des Packages.
+{ This file was automatically created by Lazarus. Do not edit!
+  This source is only used to compile and install the package.
  }
 
 unit DAV_GUI_Lazarus; 
@@ -12,7 +11,9 @@ uses
   DAV_GuiAudioDataDisplay, DAV_GuiBaseControl, DAV_GuiButton, 
   DAV_GuiDynamicWaveform, DAV_GuiLabel, DAV_GuiMidiKeys, DAV_GuiMidiKeyZones, 
   DAV_GuiPanel, DAV_GuiRegister, DAV_GuiSelectBox, DAV_GuiStaticWaveform, 
-  LazarusPackageIntf;
+  DAV_GuiPngTypes, DAV_GuiPng, DAV_GuiPngChunks, DAV_GuiPngClasses, 
+  DAV_GuiPngCoder, DAV_GuiPngDesign, DAV_GuiPngImageList, 
+  DAV_GuiPngResourceStrings, LazarusPackageIntf;
 
 implementation
 

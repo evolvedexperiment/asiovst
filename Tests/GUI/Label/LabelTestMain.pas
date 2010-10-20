@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes,
-  Graphics, Controls, Forms, Dialogs, StdCtrls, LResources, DAV_GuiLabel;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPixelMap;
 
 type
   TFmLabelTest = class(TForm)
@@ -51,7 +52,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     { Public-Deklarationen }
   end;
@@ -67,55 +68,47 @@ implementation
 
 procedure TFmLabelTest.FormCreate(Sender: TObject);
 begin
- FBackgrounBitmap := TBitmap.Create;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmLabelTest.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmLabelTest.FormResize(Sender: TObject);
-{$IFDEF FPC}
-begin
-
-end;
-{$ELSE}
 var
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  Line   : PRGB24Array;
+  x, y  : Integer;
+  s     : array[0..1] of Single;
+  h, hr : Single;
+  ScnLn : PPixel32Array;
 begin
- with FBackgrounBitmap do
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
+   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
+     ScnLn := Scanline[y];
      h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := round($8D - $50 * (s[1] - h));
       end;
     end;
   end;
 end;
-{$ENDIF}
 
 procedure TFmLabelTest.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmLabelTest.CbTransparentClick(Sender: TObject);

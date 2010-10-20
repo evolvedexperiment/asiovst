@@ -32,13 +32,16 @@ unit DAV_GuiPngClasses;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, ZLib;
+  Classes, SysUtils, {$IFDEF FPC} ZBase, ZDeflate, ZInflate; {$ELSE}ZLib; {$ENDIF}
 
 type
   EPngError = class(Exception);
+  {$IFDEF FPC}
+  TZStreamRec = z_stream;
+  {$ENDIF}
 
 function ReadSwappedWord(Stream: TStream): Word;
 function ReadSwappedSmallInt(Stream: TStream): SmallInt;
@@ -128,13 +131,15 @@ begin
   begin
    next_in := Data;
    avail_in := Size;
+   {$IFNDEF FPC}
    {$IFNDEF ZLibEx}
    zalloc := zlibAllocMem;
    zfree := zlibFreeMem;
    {$ENDIF}
+   {$ENDIF}
   end;
 
- if DeflateInit_(ZStreamRecord, Level ,ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+ if DeflateInit_(@ZStreamRecord, Level ,ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
   then raise EPngError.Create('Error during compression');
 
  GetMem(TempBuffer, CBufferSize);
@@ -185,13 +190,15 @@ begin
   begin
    next_in := Data;
    avail_in := Size;
+   {$IFNDEF FPC}
    {$IFNDEF ZLibEx}
    zalloc := zlibAllocMem;
    zfree := zlibFreeMem;
    {$ENDIF}
+   {$ENDIF}
   end;
 
- if inflateInit_(ZStreamRecord, ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+ if inflateInit_(@ZStreamRecord, ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
   then raise EPngError.Create('Error during decompression');
 
  GetMem(TempBuffer, CBufferSize);

@@ -664,7 +664,7 @@ begin
             CombColor.A := CombAlpha;
             BlendPixelInplace(CombColor, ScnLne[X]);
 
- (*
+ ( *
             Scale := FBorderFactor * Scale;
             Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
             CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
@@ -707,8 +707,13 @@ begin
 end;
 {$ENDIF}
 
+procedure TCustomGuiLED.WMEraseBkgnd(var Message: TWmEraseBkgnd);
+begin
+ Message.Result := 0;
+end;
+
 {$ELSE}
-procedure TBufferedGraphicControl.WMEraseBkgnd(var Message: TLmEraseBkgnd);
+procedure TCustomGuiLED.WMEraseBkgnd(var Message: TLmEraseBkgnd);
 begin
   Message.Result := 0;
 end;
@@ -726,11 +731,6 @@ begin
  inherited;
  UpdateBuffer;
  Invalidate;
-end;
-
-procedure TCustomGuiLED.WMEraseBkgnd(var Message: TWmEraseBkgnd);
-begin
- Message.Result := 0;
 end;
 
 end.

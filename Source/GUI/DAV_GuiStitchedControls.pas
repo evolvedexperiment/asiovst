@@ -492,6 +492,7 @@ begin
   Pnt.X := -Left;
   Pnt.Y := -Top;
 
+  {$IFNDEF FPC}
   Bmp := TBitmap.Create;
   with Bmp do
    try
@@ -547,6 +548,7 @@ begin
    finally
     Free;
    end;
+  {$ENDIF}
 
  {$IFDEF WIN32}
  finally
