@@ -763,7 +763,9 @@ begin
 end;
 
 class procedure TCustomGuiGraphXYDataSeries.Error(const Msg: string; Data: Integer);
-
+{$IFDEF FPC}
+begin
+{$ELSE}
   function ReturnAddr: Pointer;
   asm
     MOV EAX, [EBP + 4]
@@ -771,6 +773,7 @@ class procedure TCustomGuiGraphXYDataSeries.Error(const Msg: string; Data: Integ
 
 begin
   raise EListError.CreateFmt(Msg, [Data]) at ReturnAddr;
+{$ENDIF}
 end;
 
 class procedure TCustomGuiGraphXYDataSeries.Error(Msg: PResStringRec;

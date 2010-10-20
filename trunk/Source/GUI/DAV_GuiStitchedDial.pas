@@ -141,7 +141,10 @@ type
 implementation
 
 uses
-  Consts, Math, DAV_Common, DAV_GuiBlend;
+  Math, DAV_Common, DAV_GuiBlend;
+
+resourcestring
+  RCStrOutOfRange = 'Value must be between %d and %d';
 
 
 { TCustomGuiStitchedDial }
@@ -419,7 +422,7 @@ begin
   begin
    if Value < FMin then
     if not (csLoading in ComponentState) then
-     raise EInvalidOperation.CreateFmt(SOutOfRange, [FMin + 1, MaxInt]);
+     raise EInvalidOperation.CreateFmt(RCStrOutOfRange, [FMin + 1, MaxInt]);
    FMax := Value;
    MaximumChanged;
   end;
@@ -431,7 +434,7 @@ begin
   begin
    if Value > FMax then
     if not (csLoading in ComponentState)
-     then raise EInvalidOperation.CreateFmt(SOutOfRange, [-MaxInt, FMax - 1]);
+     then raise EInvalidOperation.CreateFmt(RCStrOutOfRange, [-MaxInt, FMax - 1]);
    FMin := Value;
    MinimumChanged;
   end;

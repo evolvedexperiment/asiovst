@@ -1030,8 +1030,8 @@ end;
 
 procedure RGBToHLS(const Color: TColor; out H, L, S: Single); overload;
 begin
- RGBToHLS(COne255th * (Color and $FF), COne255th * ((Color shr 8) and $FF),
-   COne255th * ((Color shr 16) and $FF),H, L, S);
+ RGBToHLS(COne255th * (Color and $FF), COne255th * ((Color shr 8) and 255),
+   COne255th * ((Color shr 16) and 255), H, L, S);
 end;
 
 procedure PixelToHLS(Pixel: TPixel32; out H, L, S: Single);

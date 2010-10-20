@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Name Value="DAV_GUI_Lazarus"/>
     <CompilerOptions>
-      <Version Value="8"/>
+      <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <OtherUnitFiles Value="..\..\Source\;..\..\Source\GUI\"/>
@@ -13,6 +13,7 @@
       <Parsing>
         <SyntaxOptions>
           <CStyleOperator Value="False"/>
+          <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
       <Other>
@@ -20,7 +21,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="14">
+    <Files Count="22">
       <Item1>
         <Filename Value="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
         <UnitName Value="DAV_GuiVUMeter"/>
@@ -78,6 +79,38 @@
         <Filename Value="..\..\Source\GUI\DAV_GuiStaticWaveform.pas"/>
         <UnitName Value="DAV_GuiStaticWaveform"/>
       </Item14>
+      <Item15>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPngTypes.pas"/>
+        <UnitName Value="DAV_GuiPngTypes"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPng.pas"/>
+        <UnitName Value="DAV_GuiPng"/>
+      </Item16>
+      <Item17>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPngChunks.pas"/>
+        <UnitName Value="DAV_GuiPngChunks"/>
+      </Item17>
+      <Item18>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPngClasses.pas"/>
+        <UnitName Value="DAV_GuiPngClasses"/>
+      </Item18>
+      <Item19>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
+        <UnitName Value="DAV_GuiPngCoder"/>
+      </Item19>
+      <Item20>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPngDesign.pas"/>
+        <UnitName Value="DAV_GuiPngDesign"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPngImageList.pas"/>
+        <UnitName Value="DAV_GuiPngImageList"/>
+      </Item21>
+      <Item22>
+        <Filename Value="..\..\Source\GUI\DAV_GuiPngResourceStrings.pas"/>
+        <UnitName Value="DAV_GuiPngResourceStrings"/>
+      </Item22>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">

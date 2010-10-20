@@ -32,7 +32,7 @@ unit DAV_GuiFileFormats;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, SysUtils;

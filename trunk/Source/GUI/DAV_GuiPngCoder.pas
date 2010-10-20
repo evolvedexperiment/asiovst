@@ -32,7 +32,7 @@ unit DAV_GuiPngCoder;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, Graphics, SysUtils, zlib, DAV_Classes, DAV_ChunkClasses,

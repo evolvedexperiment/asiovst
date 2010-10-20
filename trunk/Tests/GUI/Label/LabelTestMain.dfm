@@ -28,6 +28,8 @@ object FmLabelTest: TFmLabelTest
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LabelC: TGuiLabel
     Left = 8
@@ -41,6 +43,8 @@ object FmLabelTest: TFmLabelTest
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LabelB: TGuiLabel
     Left = 71
@@ -54,6 +58,8 @@ object FmLabelTest: TFmLabelTest
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LabelD: TGuiLabel
     Left = 71
@@ -67,6 +73,8 @@ object FmLabelTest: TFmLabelTest
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object CbTransparent: TCheckBox
     Left = 25

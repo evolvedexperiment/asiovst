@@ -284,7 +284,9 @@ begin
    if PixelMapEditor.Execute then
     begin
      SetOrdValue(Longint(PixelMapEditor.PixelMap));
+     {$IFNDEF FPC}
      Designer.Modified;
+     {$ENDIF}
     end;
   finally
    FreeAndNil(PixelMapEditor);

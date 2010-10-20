@@ -32,7 +32,7 @@ unit DAV_GuiPngImageList;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Windows, Classes, Graphics, SysUtils, ImgList, Contnrs, DAV_GuiCommon,

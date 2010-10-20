@@ -31,7 +31,7 @@ unit DAV_GuiFileFormatGraphics;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, SysUtils, Graphics, DAV_GuiFileFormats, DAV_GuiPixelMap;

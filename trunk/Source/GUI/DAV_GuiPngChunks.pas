@@ -32,7 +32,7 @@ unit DAV_GuiPngChunks;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, Graphics, SysUtils,
@@ -619,7 +619,7 @@ type
     constructor Create; override;
   end;
 
-  TChunkList = class(TPersistent)
+  TPngChunkList = class(TPersistent)
   private
     FChunks : array of TCustomChunk;
     function GetCount: Integer;
@@ -2672,27 +2672,27 @@ begin
 end;
 
 
-{ TChunkList }
+{ TPngChunkList }
 
-destructor TChunkList.Destroy;
+destructor TPngChunkList.Destroy;
 begin
  Clear;
  inherited;
 end;
 
-procedure TChunkList.Add(Item: TCustomChunk);
+procedure TPngChunkList.Add(Item: TCustomChunk);
 begin
  SetLength(FChunks, Length(FChunks) + 1);
  FChunks[Length(FChunks) - 1] := Item;
 end;
 
-procedure TChunkList.AssignTo(Dest: TPersistent);
+procedure TPngChunkList.AssignTo(Dest: TPersistent);
 var
   Index      : Integer;
   ChunkClass : TCustomChunkPngWithHeaderClass;
 begin
- if Dest is TChunkList then
-  with TChunkList(Dest) do
+ if Dest is TPngChunkList then
+  with TPngChunkList(Dest) do
    begin
     Clear;
     SetLength(FChunks, Self.Count);
@@ -2707,7 +2707,7 @@ begin
    end else inherited;
 end;
 
-procedure TChunkList.Clear;
+procedure TPngChunkList.Clear;
 var
   Index : Integer;
 begin
@@ -2716,7 +2716,7 @@ begin
  SetLength(FChunks, 0)
 end;
 
-procedure TChunkList.Delete(Index: Integer);
+procedure TPngChunkList.Delete(Index: Integer);
 begin
  if (Index < 0) or (Index >= Count)
   then raise EPngError.Create(RCStrEmptyChunkList);
@@ -2726,19 +2726,19 @@ begin
  SetLength(FChunks, Length(FChunks) - 1);
 end;
 
-function TChunkList.GetChunk(Index: Integer): TCustomChunk;
+function TPngChunkList.GetChunk(Index: Integer): TCustomChunk;
 begin
  if Cardinal(Index) >= Cardinal(Count)
   then raise EPngError.CreateFmt(RCStrIndexOutOfBounds, [Index])
   else Result := FChunks[Index];
 end;
 
-function TChunkList.GetCount: Integer;
+function TPngChunkList.GetCount: Integer;
 begin
  Result := Length(FChunks);
 end;
 
-function TChunkList.IndexOf(Item: TCustomChunk): Integer;
+function TPngChunkList.IndexOf(Item: TCustomChunk): Integer;
 begin
  for Result := 0 to Count - 1 do
   if FChunks[Result] = Item
@@ -2746,7 +2746,7 @@ begin
  Result := -1;
 end;
 
-procedure TChunkList.Remove(Item: TCustomChunk);
+procedure TPngChunkList.Remove(Item: TCustomChunk);
 begin
  Delete(IndexOf(Item));
 end;

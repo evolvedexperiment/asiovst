@@ -45,14 +45,19 @@ type
     FMouseInRect : Boolean;
   protected
     procedure UpdateBuffer; override;
+    {$IFDEF FPC}
+    procedure CMMouseEnter(var Message: TLMessage); message LM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TLMessage); message LM_MOUSELEAVE;
+    procedure CMEnabledChanged(var Message: TLMessage); message CM_ENABLEDCHANGED;
+    {$ELSE}
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    {$ENDIF}
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X: Integer;
       Y: Integer); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,
       Y: Integer); override;
-    procedure CMEnabledChanged(var Message: TMessage);
-      message CM_ENABLEDCHANGED;
     procedure Click; override;
   end;
 
@@ -79,7 +84,8 @@ begin
  if Enabled then inherited;
 end;
 
-procedure TCustomGuiStitchedButton.CMEnabledChanged(var Message: TMessage);
+procedure TCustomGuiStitchedButton.CMEnabledChanged(var Message:
+  {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  if Assigned(FStitchedItem) then
   with FStitchedItem do
@@ -90,7 +96,8 @@ begin
     else GlyphIndex := 0;
 end;
 
-procedure TCustomGuiStitchedButton.CMMouseEnter(var Message: TMessage);
+procedure TCustomGuiStitchedButton.CMMouseEnter(var Message:
+  {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FMouseInRect := True;
  if Enabled and Assigned(FStitchedItem) then
@@ -99,7 +106,8 @@ begin
     then GlyphIndex := 3;
 end;
 
-procedure TCustomGuiStitchedButton.CMMouseLeave(var Message: TMessage);
+procedure TCustomGuiStitchedButton.CMMouseLeave(var Message:
+    {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FMouseInRect := False;
  if Enabled and Assigned(FStitchedItem) then

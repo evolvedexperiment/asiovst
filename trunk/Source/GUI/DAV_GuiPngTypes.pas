@@ -32,7 +32,7 @@ unit DAV_GuiPngTypes;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 type
   {$A1}
