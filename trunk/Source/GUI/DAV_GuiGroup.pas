@@ -7,7 +7,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
-  DAV_GuiCommon, DAV_GuiBaseControl;
+  DAV_GuiCommon, DAV_GuiBaseControl, DAV_GuiFont, DAV_GuiPixelMap,
+  DAV_GuiByteMap;
 
 type
   TCustomGuiGroup = class(TCustomGroupBox)

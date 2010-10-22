@@ -39,39 +39,11 @@ uses
   {$IFDEF Windows} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
-  DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFilters;
+  DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
 
 {-$DEFINE UseShadowBuffer}
 
 type
-  TGuiShadow = class(TPersistent)
-  private
-    FBlur         : Single;
-    FOffset       : TPoint;
-    FTransparency : Byte;
-    FVisible      : Boolean;
-    FOnChange     : TNotifyEvent;
-    function GetOffsetX: Integer;
-    function GetOffsetY: Integer;
-    procedure SetBlur(const Value: Single);
-    procedure SetOffsetX(const Value: Integer);
-    procedure SetOffsetY(const Value: Integer);
-    procedure SetTransparency(const Value: Byte);
-    procedure SetVisible(const Value: Boolean);
-    procedure SetOffset(const Value: TPoint);
-    procedure Changed;
-  public
-    constructor Create; virtual;
-    property Offset: TPoint read FOffset write SetOffset;
-  published
-    property Blur: Single read FBlur write SetBlur;
-    property OffsetX: Integer read GetOffsetX write SetOffsetX default 1;
-    property OffsetY: Integer read GetOffsetY write SetOffsetY default 1;
-    property Transparency: Byte read FTransparency write SetTransparency default $FF;
-    property Visible: Boolean read FVisible write SetVisible default False;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
-  end;
-
   TCustomGuiFont = class(TPersistent)
   private
     FAntiAliasing : Boolean;
@@ -271,92 +243,6 @@ begin
 end;
 
 
-{ TGuiShadow }
-
-constructor TGuiShadow.Create;
-begin
- inherited;
- FBlur         := 4;
- FOffset.X     := 1;
- FOffset.Y     := 1;
- FTransparency := $FF;
- FVisible      := False;
-end;
-
-procedure TGuiShadow.Changed;
-begin
- if Assigned(FOnChange)
-  then FOnChange(Self);
-end;
-
-function TGuiShadow.GetOffsetX: Integer;
-begin
- Result := FOffset.X;
-end;
-
-function TGuiShadow.GetOffsetY: Integer;
-begin
- Result := FOffset.Y;
-end;
-
-procedure TGuiShadow.SetBlur(const Value: Single);
-begin
- if Value <= 0
-  then raise Exception.Create('Must be positive!');
- 
- if FBlur <> Value then
-  begin
-   FBlur := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiShadow.SetOffset(const Value: TPoint);
-begin
- if (FOffset.X <> Value.X) or (FOffset.Y <> Value.Y) then
-  begin
-   FOffset := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiShadow.SetOffsetX(const Value: Integer);
-begin
- if FOffset.X <> Value then
-  begin
-   FOffset.X := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiShadow.SetOffsetY(const Value: Integer);
-begin
- if FOffset.Y <> Value then
-  begin
-   FOffset.Y := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiShadow.SetTransparency(const Value: Byte);
-begin
- if FTransparency <> Value then
-  begin
-   FTransparency := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiShadow.SetVisible(const Value: Boolean);
-begin
- if FVisible <> Value then
-  begin
-   FVisible := Value;
-   Changed;
-  end;
-end;
-
-
 { TCustomGuiFont }
 
 constructor TCustomGuiFont.Create;
@@ -524,8 +410,8 @@ begin
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, pxBlack32,
-          X + FShadow.FOffset.X - BlurOffset,
-          Y + FShadow.FOffset.Y - BlurOffset);
+          X + FShadow.Offset.X - BlurOffset,
+          Y + FShadow.Offset.Y - BlurOffset);
 
        FBuffer.Clear;
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
@@ -705,20 +591,20 @@ begin
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, pxBlack32, Rect(
-          X + FShadow.FOffset.X - BlurOffset div FOSFactor,
-          Y + FShadow.FOffset.Y - BlurOffset div FOSFactor,
-          X + FShadow.FOffset.X - (BlurOffset + FBuffer.Width) div FOSFactor,
-          Y + FShadow.FOffset.Y - (BlurOffset + FBuffer.Height) div FOSFactor));
+          X + FShadow.Offset.X - BlurOffset div FOSFactor,
+          Y + FShadow.Offset.Y - BlurOffset div FOSFactor,
+          X + FShadow.Offset.X - (BlurOffset + FBuffer.Width) div FOSFactor,
+          Y + FShadow.Offset.Y - (BlurOffset + FBuffer.Height) div FOSFactor));
        {$ELSE}
        FBlurFilter.Radius := FShadow.Blur;
        FBlurFilter.Filter(FBuffer);
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, pxBlack32, Rect(
-          X + FShadow.FOffset.X - BlurOffset div FOSFactor,
-          Y + FShadow.FOffset.Y - BlurOffset div FOSFactor,
-          X + FShadow.FOffset.X + (FBuffer.Width - BlurOffset) div FOSFactor,
-          Y + FShadow.FOffset.Y + (FBuffer.Height - BlurOffset) div FOSFactor));
+          X + FShadow.Offset.X - BlurOffset div FOSFactor,
+          Y + FShadow.Offset.Y - BlurOffset div FOSFactor,
+          X + FShadow.Offset.X + (FBuffer.Width - BlurOffset) div FOSFactor,
+          Y + FShadow.Offset.Y + (FBuffer.Height - BlurOffset) div FOSFactor));
 
        FBuffer.Clear;
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),

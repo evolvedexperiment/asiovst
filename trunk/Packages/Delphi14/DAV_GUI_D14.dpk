@@ -88,6 +88,10 @@ contains
   DAV_GuiVectorPixelCircle in '..\..\Source\GUI\DAV_GuiVectorPixelCircle.pas',
   DAV_GuiVectorPixelLine in '..\..\Source\GUI\DAV_GuiVectorPixelLine.pas',
   DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
-  DAV_GuiFont in '..\..\Source\GUI\DAV_GuiFont.pas';
+  DAV_GuiFilters in '..\..\Source\GUI\DAV_GuiFilters.pas',
+  DAV_GuiFont in '..\..\Source\GUI\DAV_GuiFont.pas',
+  DAV_GuiByteMap in '..\..\Source\GUI\DAV_GuiByteMap.pas',
+  DAV_GuiCustomMap in '..\..\Source\GUI\DAV_GuiCustomMap.pas',
+  DAV_GuiShadow in '..\..\Source\GUI\DAV_GuiShadow.pas';
 
 end.
