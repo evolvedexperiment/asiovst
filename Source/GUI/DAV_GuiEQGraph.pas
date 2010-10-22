@@ -284,11 +284,11 @@ type
 
   TGuiEQGraph = class(TCustomGuiEQGraph)
   private
-    FBuffer           : TBitmap;
-    FAntiAlias        : TGuiAntiAlias;
-    FOSFactor         : Integer;
-    FTransparent      : Boolean;
-    FChartChanged     : Boolean;
+    FBuffer       : TBitmap;
+    FAntiAlias    : TGuiAntiAlias;
+    FOSFactor     : Integer;
+    FTransparent  : Boolean;
+    FChartChanged : Boolean;
 
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetTransparent(const Value: Boolean);

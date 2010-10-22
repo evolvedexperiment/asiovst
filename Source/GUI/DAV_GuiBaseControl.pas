@@ -89,7 +89,7 @@ type
     FTransparency : Byte;
     FVisible      : Boolean;
     FOnChange     : TNotifyEvent;
-    FColor: TColor;
+    FColor        : TColor;
     function GetOffsetX: Integer;
     function GetOffsetY: Integer;
     procedure SetBlur(const Value: Byte);
@@ -98,8 +98,9 @@ type
     procedure SetTransparency(const Value: Byte);
     procedure SetVisible(const Value: Boolean);
     procedure SetOffset(const Value: TPoint);
-    procedure Changed;
     procedure SetColor(const Value: TColor);
+  protected
+    procedure Changed;
   public
     constructor Create; virtual;
     property Offset : TPoint read FOffset write SetOffset;
@@ -209,11 +210,10 @@ type
 
   TCustomGuiBaseControl = class(TBufferedGraphicControl)
   protected
-    FLineColor       : TColor;
-    FLineWidth       : Integer;
-    FTransparent     : Boolean;
+    FLineColor   : TColor;
+    FLineWidth   : Integer;
+    FTransparent : Boolean;
     procedure SetTransparent(Value: Boolean); virtual;
-
     procedure SetLineWidth(Value: Integer); virtual;
     procedure SetLineColor(Value: TColor); virtual;
   public

@@ -46,12 +46,14 @@ type
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FVibrato         : Array [0..1] of TDspVibrato32;
+    FVibrato         : array [0..1] of TDspVibrato32;
+    FMix, FMixInv    : Single;
     FCriticalSection : TCriticalSection;
     function GetFlanger(Index: Integer): TDspVibrato32;
   public
@@ -154,6 +156,23 @@ begin
    do UpdateSpeed;
 end;
 
+procedure TSimpleFlangerModule.ParamMixChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FCriticalSection.Enter;
+ try
+  FMix := 0.01 * Value;
+  FMixInv := 2 - FMix;
+ finally
+  FCriticalSection.Leave;
+ end;
+
+ // update GUI
+ if EditorForm is TFmSimpleFlanger then
+  with TFmSimpleFlanger(EditorForm)
+   do UpdateMix;
+end;
+
 procedure TSimpleFlangerModule.ParamDepthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -171,6 +190,18 @@ begin
    do UpdateDepth;
 end;
 
+procedure TSimpleFlangerModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ FCriticalSection.Enter;
+ try
+  if Assigned(FVibrato[0]) then FVibrato[0].SampleRate := SampleRate;
+  if Assigned(FVibrato[1]) then FVibrato[1].SampleRate := SampleRate;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
 procedure TSimpleFlangerModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -180,7 +211,7 @@ begin
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(Inputs[Channel, Sample] + FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
+    do Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
  finally
   FCriticalSection.Leave;
  end;
@@ -195,19 +226,7 @@ begin
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TSimpleFlangerModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
-begin
- FCriticalSection.Enter;
- try
-  if Assigned(FVibrato[0]) then FVibrato[0].SampleRate := SampleRate;
-  if Assigned(FVibrato[1]) then FVibrato[1].SampleRate := SampleRate;
+    do Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
  finally
   FCriticalSection.Leave;
  end;

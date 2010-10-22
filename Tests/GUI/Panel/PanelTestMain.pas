@@ -27,7 +27,7 @@ type
     procedure TbLineWidthChange(Sender: TObject);
     procedure TbRoundRadiusChange(Sender: TObject);
   private
-    FBackgroundBitmap : TGuiPixelMapMemory;
+    FBackground : TGuiCustomPixelMap;
   end;
 
 var
@@ -44,18 +44,18 @@ implementation
 procedure TFmPanelTest.FormCreate(Sender: TObject);
 begin
  // Create Background Image
- FBackgroundBitmap := TGuiPixelMapMemory.Create;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmPanelTest.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgroundBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmPanelTest.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackgroundBitmap)
-  then FBackgroundBitmap.PaintTo(Canvas);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmPanelTest.FormResize(Sender: TObject);
@@ -65,7 +65,7 @@ var
   h, hr  : Single;
   ScnLne : PPixel32Array;
 begin
- with FBackgroundBitmap do
+ with FBackground do
   begin
    Width := Self.Width;
    Height := Self.Height;

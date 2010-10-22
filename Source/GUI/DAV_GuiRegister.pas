@@ -23,16 +23,17 @@ implementation
 {$IFNDEF FPC}{$R ..\..\Resources\DAV_GuiRegister.res}{$ENDIF}
 
 uses
-  {$IFDEF FPC} LResources, {$ELSE} DAV_GuiGroup, DAV_GuiLevelMeter, {$ENDIF}
-  DAV_GuiADSRGraph, DAV_GuiStaticWaveform, DAV_GuiDynamicWaveform,
-  DAV_GuiAudioDataDisplay, DAV_GuiLED, DAV_GuiPanel, DAV_GuiDial, DAV_GuiLabel,
-  DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_GuiCorrelationMeter,
-  DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign,
-  DAV_GuiDialRenderer, {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds,
-  {$ENDIF} DAV_GuiPixelMap, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider,
-  DAV_GuiMediaButton, DAV_GuiStitchedControls, DAV_GuiPng,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch, DAV_GuiStitchedDial,
-  DAV_GuiStitchedButton, DAV_GuiPixelMapDesign, DAV_GuiPngDesign;
+  {$IFDEF FPC} LResources, {$ELSE} DAV_GuiGroup, DAV_GuiLevelMeter,
+  DAV_GuiModular, DAV_GuiBackgrounds,{$ENDIF} DAV_GuiADSRGraph,
+  DAV_GuiAudioDataDisplay, DAV_GuiButton, DAV_GuiCorrelationMeter,
+  DAV_GuiDial, DAV_GuiDialDesign, DAV_GuiDialRenderer, DAV_GuiDynamicWaveform,
+  DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiGraphXY, DAV_GuiGraphXYDesign,
+  DAV_GuiLabel, DAV_GuiLED, DAV_GuiMediaButton, DAV_GuiMidiKeys,
+  DAV_GuiPaintBox, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPixelMapDesign,
+  DAV_GuiPng, DAV_GuiPngDesign, DAV_GuiSelectBox, DAV_GuiSlider,
+  DAV_GuiStaticWaveform, DAV_GuiStitchedButton, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch,
+  DAV_GuiVUMeter;
 
 procedure Register;
 begin
@@ -44,7 +45,7 @@ begin
     TGuiDialImageList, TGuiDialImageRenderer, TGuiEQGraph, TGuiEQSlide,
     {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiSwitch,
     TGuiSlider, TGuiMediaButton, TGuiStitchedImageList, TGuiStitchedPNGList,
-    TGuiStitchedSwitch, TGuiStitchedDial, TGuiStitchedButton]);
+    TGuiStitchedSwitch, TGuiStitchedDial, TGuiStitchedButton, TGuiPaintBox]);
 
   RegisterPropertyEditor(TypeInfo(TGuiCustomPixelMap), nil, '', TPixelMapProperty);
   RegisterPropertyEditor(TypeInfo(TPortableNetworkGraphicPixel32), nil, '', TPngProperty);
