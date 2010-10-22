@@ -6,17 +6,17 @@ interface
 
 uses
   Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
-  DAV_GuiBaseControl;
+  DAV_GuiBaseControl, DAV_GuiPixelMap;
 
 type
   TCustomGuiLabel = class(TBufferedGraphicControl)
   private
-    FAntiAlias        : TGuiAntiAlias;
-    FAlignment        : TAlignment;
-    FCaption          : string;
-    FOSFactor         : Integer;
-    FTransparent      : Boolean;
-    FShadow           : TGUIShadow;
+    FAntiAlias   : TGuiAntiAlias;
+    FAlignment   : TAlignment;
+    FCaption     : string;
+    FOSFactor    : Integer;
+    FTransparent : Boolean;
+    FShadow      : TGUIShadow;
     procedure SetTransparent(Value: Boolean); virtual;
     procedure ShadowChangedHandler(Sender: TObject);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);

@@ -250,6 +250,7 @@ uses
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  RCStrUnknownFloatingPointFormat = 'Floating point format unknown';
 
 { TCustomDelayLine }
 
@@ -570,6 +571,7 @@ begin
   ft16 : Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos]);
   ft32 : Result := PDAVSingleFixedArray(FBuffer)^[Pos];
   ft64 : Result := PDAVDoubleFixedArray(FBuffer)^[Pos];
+  else raise Exception.Create(RCStrUnknownFloatingPointFormat);
  end;
 end;
 
@@ -650,6 +652,7 @@ begin
           Result := PDAVDoubleFixedArray(FBuffer)^[FBufferPos];
           PDAVDoubleFixedArray(FBuffer)^[FBufferPos] := Input;
          end;
+  else raise Exception.Create(RCStrUnknownFloatingPointFormat);
  end;
 
  Inc(FBufferPos);
@@ -672,6 +675,7 @@ begin
           Result := PDAVDoubleFixedArray(FBuffer)^[FBufferPos];
           PDAVDoubleFixedArray(FBuffer)^[FBufferPos] := Input;
          end;
+  else raise Exception.Create(RCStrUnknownFloatingPointFormat);
  end;
 
  Inc(FBufferPos);
@@ -736,6 +740,7 @@ begin
            if Abs(PDAVDoubleFixedArray(FBuffer)^[Pos]) > Result
             then Result := Abs(PDAVDoubleFixedArray(FBuffer)^[Pos]);
          end;
+  else raise Exception.Create(RCStrUnknownFloatingPointFormat);
  end;
 end;
 
@@ -764,6 +769,7 @@ begin
            if PDAVDoubleFixedArray(FBuffer)^[Pos] > Result
             then Result := PDAVDoubleFixedArray(FBuffer)^[Pos];
          end;
+  else raise Exception.Create(RCStrUnknownFloatingPointFormat);
  end;
 end;
 
@@ -792,6 +798,7 @@ begin
            if PDAVDoubleFixedArray(FBuffer)^[Pos] < Result
             then Result := PDAVDoubleFixedArray(FBuffer)^[Pos];
          end;
+  else raise Exception.Create(RCStrUnknownFloatingPointFormat);
  end;
 end;
 

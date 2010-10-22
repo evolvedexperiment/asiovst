@@ -113,6 +113,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelCircle.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelLine.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiFont.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -165,7 +166,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-10-15 22:45</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-10-21 00:27</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>
