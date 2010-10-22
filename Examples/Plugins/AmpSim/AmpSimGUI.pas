@@ -36,17 +36,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ExtCtrls, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiDial,
-  DAV_GuiLED, DAV_GuiPanel;
+  ExtCtrls, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiLED,
+  DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiPixelMap;
 
 type
   TFmCombo = class(TForm)
-    DialBias: TGuiDial;
-    DialDrive: TGuiDial;
-    DialFrequency: TGuiDial;
-    DialOutput: TGuiDial;
-    DialResonance: TGuiDial;
-    DIL: TGuiDialImageList;
     GuiLED: TGuiLED;
     PnControls: TGuiPanel;
     LbBias: TGuiLabel;
@@ -62,6 +57,12 @@ type
     LbResonanceValue: TLabel;
     LbStereo: TGuiLabel;
     SBModel: TGuiSelectBox;
+    DialDrive: TGuiStitchedDial;
+    DialBias: TGuiStitchedDial;
+    DialOutput: TGuiStitchedDial;
+    DialFrequency: TGuiStitchedDial;
+    DialResonance: TGuiStitchedDial;
+    DSIL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -77,8 +78,9 @@ type
     procedure PnControlsClick(Sender: TObject);
     procedure SBModelChange(Sender: TObject);
     procedure DialBiasDblClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackground : TBitmap;
+    FBackground : TGuiCustomPixelMap;
     FEdValue    : TEdit;
   public
     procedure UpdateBias;
@@ -102,59 +104,14 @@ uses
   DAV_GuiCommon, AmpSimDM;
 
 procedure TFmCombo.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  Line   : PBGR24Array;
-
 begin
- RS := TResourceStream.Create(hInstance, 'AmpKnob', 'BMP');
- try
-  with DIL.DialImages.Add do
-   begin
-    GlyphCount := 65;
-    DialBitmap.LoadFromStream(RS);
-   end;
-  DialDrive.DialImageIndex := 0;
-  DialBias.DialImageIndex := 0;
-  DialOutput.DialImageIndex := 0;
-  DialFrequency.DialImageIndex := 0;
-  DialResonance.DialImageIndex := 0;
- finally
-  RS.Free;
- end;
-
  // Create Background Image
- FBackground := TBitmap.Create;
- with FBackground do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.06 * random - 0.03;
-       s[0] := s[1];
-
-       Line[x].B := round($40 - $10 * (s[1] - h));
-       Line[x].G := round($80 - $20 * (s[1] - h));
-       Line[x].R := round($80 - $20 * (s[1] - h));
-      end;
-    end;
-  end;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmCombo.FormDestroy(Sender: TObject);
 begin
+ FreeAndNil(FBackground);
  if Assigned(FEdValue)
   then FreeAndNil(FEdValue);
 end;
@@ -173,7 +130,38 @@ end;
 
 procedure TFmCombo.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackground);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmCombo.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  s      : array [0..1] of Single;
+  h, hr  : Single;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   s[0] := 0;
+   s[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.06 * random - 0.03;
+       s[0] := s[1];
+
+       ScnLn[x].B := Round($40 - $10 * (s[1] - h));
+       ScnLn[x].G := Round($80 - $20 * (s[1] - h));
+       ScnLn[x].R := Round($80 - $20 * (s[1] - h));
+      end;
+    end;
+  end;
 end;
 
 procedure TFmCombo.SBModelChange(Sender: TObject);
@@ -193,8 +181,8 @@ begin
  with TComboDataModule(Owner) do
   begin
    Drive := ParameterByName['Drive'];
-   if DialDrive.Position <> Drive
-    then DialDrive.Position := Drive;
+   if DialDrive.Value <> Drive
+    then DialDrive.Value := Drive;
    LbDriveValue.Caption := FloatToStrF(Drive, ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -206,8 +194,8 @@ begin
  with TComboDataModule(Owner) do
   begin
    Bias := ParameterByName['Bias'];
-   if DialBias.Position <> Bias
-    then DialBias.Position := Bias;
+   if DialBias.Value <> Bias
+    then DialBias.Value := Bias;
    LbBiasValue.Caption :=  FloatToStrF(Bias, ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -219,8 +207,8 @@ begin
  with TComboDataModule(Owner) do
   begin
    Frequency := ParameterByName['HPF Frequency'];
-   if DialFrequency.Position <> Frequency
-    then DialFrequency.Position := Frequency;
+   if DialFrequency.Value <> Frequency
+    then DialFrequency.Value := Frequency;
    LbFrequencyValue.Caption := FloatToStrF(Frequency, ffGeneral, 5, 5) + ' Hz';
   end;
 end;
@@ -266,8 +254,8 @@ begin
  with TComboDataModule(Owner) do
   begin
    Output := ParameterByName['Output'];
-   if DialOutput.Position <> Output
-    then DialOutput.Position := Output;
+   if DialOutput.Value <> Output
+    then DialOutput.Value := Output;
    LbOutputValue.Caption := FloatToStrF(Output, ffGeneral, 3, 3) + ' dB';
   end;
 end;
@@ -279,8 +267,8 @@ begin
  with TComboDataModule(Owner) do
   begin
    Reso := ParameterByName['HPF Resonance'];
-   if DialResonance.Position <> Reso
-    then DialResonance.Position := Reso;
+   if DialResonance.Value <> Reso
+    then DialResonance.Value := Reso;
    LbResonanceValue.Caption := FloatToStrF(Reso, ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -290,8 +278,8 @@ begin
  Assert(Owner is TComboDataModule);
  with TComboDataModule(Owner) do
   begin
-   if Parameter[2] <> DialBias.Position
-    then Parameter[2] := DialBias.Position;
+   if Parameter[2] <> DialBias.Value
+    then Parameter[2] := DialBias.Value;
   end;
 end;
 
@@ -300,8 +288,8 @@ begin
  Assert(Owner is TComboDataModule);
  with TComboDataModule(Owner) do
   begin
-   if Parameter[1] <> DialDrive.Position
-    then Parameter[1] := DialDrive.Position;
+   if Parameter[1] <> DialDrive.Value
+    then Parameter[1] := DialDrive.Value;
   end;
 end;
 
@@ -352,8 +340,8 @@ begin
  Assert(Owner is TComboDataModule);
  with TComboDataModule(Owner) do
   begin
-   if Parameter[3] <> DialOutput.Position
-    then Parameter[3] := DialOutput.Position;
+   if Parameter[3] <> DialOutput.Value
+    then Parameter[3] := DialOutput.Value;
   end;
 end;
 
@@ -362,8 +350,8 @@ begin
  Assert(Owner is TComboDataModule);
  with TComboDataModule(Owner) do
   begin
-   if Parameter[5] <> DialFrequency.Position
-    then Parameter[5] := DialFrequency.Position;
+   if Parameter[5] <> DialFrequency.Value
+    then Parameter[5] := DialFrequency.Value;
   end;
 end;
 
@@ -372,8 +360,8 @@ begin
  Assert(Owner is TComboDataModule);
  with TComboDataModule(Owner) do
   begin
-   if Parameter[6] <> DialResonance.Position
-    then Parameter[6] := DialResonance.Position;
+   if Parameter[6] <> DialResonance.Value
+    then Parameter[6] := DialResonance.Value;
   end;
 end;
 

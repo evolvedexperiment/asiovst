@@ -18,4 +18,3 @@ SRL F16 SmallRoomLeft.F16
 SRR F16 SmallRoomRight.F16
 TRL F16 TiledRoomLeft.F16
 TRR F16 TiledRoomRight.F16
-ConvoFxKnob PNG ..\..\..\..\Resources\Knobs\ConvoFx.png

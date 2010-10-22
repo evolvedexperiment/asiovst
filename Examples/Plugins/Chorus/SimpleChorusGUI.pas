@@ -36,14 +36,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
+  Controls, DAV_GuiBaseControl, DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiLabel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmSimpleChorus = class(TForm)
-    DialDepth: TGuiDial;
-    DialMix: TGuiDial;
-    DialSpeed: TGuiDial;
-    DialStages: TGuiDial;
     LbDepth: TGuiLabel;
     LbDepthValue: TGuiLabel;
     LbMix: TGuiLabel;
@@ -52,11 +49,14 @@ type
     LbSpeedValue: TGuiLabel;
     LbStages: TGuiLabel;
     LbStagesValue: TGuiLabel;
-    DialDrift: TGuiDial;
     LbDrift: TGuiLabel;
     LbDriftValue: TGuiLabel;
-    DIL: TGuiDialImageList;
-    procedure FormCreate(Sender: TObject);
+    DialSpeed: TGuiStitchedDial;
+    DialStages: TGuiStitchedDial;
+    DialDepth: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DialDrift: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure DialSpeedChange(Sender: TObject);
     procedure DialStagesChange(Sender: TObject);
@@ -76,35 +76,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_VSTModuleWithPrograms, SimpleChorusDM;
-
-procedure TFmSimpleChorus.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'ChorusKnob', 'PNG');
-  try
-   with DIL.DialImages.Add do
-    begin
-     GlyphCount := 65;
-     PngBmp.LoadFromStream(RS);
-     DialBitmap.Assign(PngBmp);
-    end;
-   DialSpeed.DialImageIndex  := 0;
-   DialDepth.DialImageIndex  := 0;
-   DialStages.DialImageIndex := 0;
-   DialMix.DialImageIndex    := 0;
-   DialDrift.DialImageIndex  := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
+  Math, DAV_VSTModuleWithPrograms, SimpleChorusDM;
 
 procedure TFmSimpleChorus.FormShow(Sender: TObject);
 begin
@@ -119,8 +91,8 @@ procedure TFmSimpleChorus.DialDepthChange(Sender: TObject);
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if Parameter[2] <> DialDepth.Position
-    then Parameter[2] := DialDepth.Position;
+   if Parameter[2] <> DialDepth.Value
+    then Parameter[2] := DialDepth.Value;
   end;
 end;
 
@@ -128,8 +100,8 @@ procedure TFmSimpleChorus.DialDriftChange(Sender: TObject);
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if Parameter[4] <> DialDrift.Position
-    then Parameter[4] := DialDrift.Position;
+   if Parameter[4] <> DialDrift.Value
+    then Parameter[4] := DialDrift.Value;
   end;
 end;
 
@@ -137,8 +109,8 @@ procedure TFmSimpleChorus.DialMixChange(Sender: TObject);
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if Parameter[3] <> DialMix.Position
-    then Parameter[3] := DialMix.Position;
+   if Parameter[3] <> DialMix.Value
+    then Parameter[3] := DialMix.Value;
   end;
 end;
 
@@ -146,8 +118,8 @@ procedure TFmSimpleChorus.DialSpeedChange(Sender: TObject);
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if Parameter[0] <> DialSpeed.Position
-    then Parameter[0] := DialSpeed.Position;
+   if Parameter[0] <> DialSpeed.Value
+    then Parameter[0] := DialSpeed.Value;
   end;
 end;
 
@@ -155,8 +127,8 @@ procedure TFmSimpleChorus.DialStagesChange(Sender: TObject);
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if Parameter[1] <> DialStages.Position
-    then Parameter[1] := DialStages.Position;
+   if Parameter[1] <> DialStages.Value
+    then Parameter[1] := DialStages.Value;
   end;
 end;
 
@@ -167,8 +139,8 @@ begin
  with TSimpleChorusModule(Owner) do
   begin
    Depth := Parameter[2];
-   if DialDepth.Position <> Depth
-    then DialDepth.Position := Depth;
+   if DialDepth.Value <> Depth
+    then DialDepth.Value := Depth;
    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -180,8 +152,8 @@ begin
  with TSimpleChorusModule(Owner) do
   begin
    Drift := Parameter[4];
-   if DialDrift.Position <> Drift
-    then DialDrift.Position := Drift;
+   if DialDrift.Value <> Drift
+    then DialDrift.Value := Drift;
    LbDriftValue.Caption := FloatToStrF(RoundTo(Drift, -1), ffGeneral, 3, 2) + ' %';
   end;
 end;
@@ -193,8 +165,8 @@ begin
  with TSimpleChorusModule(Owner) do
   begin
    Mix := Parameter[3];
-   if DialMix.Position <> Mix
-    then DialMix.Position := Mix;
+   if DialMix.Value <> Mix
+    then DialMix.Value := Mix;
    LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -206,8 +178,8 @@ begin
  with TSimpleChorusModule(Owner) do
   begin
    Speed := Parameter[0];
-   if DialSpeed.Position <> Speed
-    then DialSpeed.Position := Speed;
+   if DialSpeed.Value <> Speed
+    then DialSpeed.Value := Speed;
    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;
@@ -216,8 +188,8 @@ procedure TFmSimpleChorus.UpdateStages;
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if DialStages.Position <> Parameter[1]
-    then DialStages.Position := Parameter[1];
+   if DialStages.Value <> Parameter[1]
+    then DialStages.Value := Parameter[1];
    LbStagesValue.Caption := IntToStr(round(Parameter[1]));
   end;
 end;

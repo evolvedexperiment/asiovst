@@ -230,8 +230,10 @@ end;
 
 procedure TGuiStitchedImageCollection.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
+(*
 var
   LinkedControlIndex : Integer;
+*)
 begin
 (*
  if Action in [cnDeleting, cnExtracting] then
@@ -431,6 +433,7 @@ end;
 function TGuiCustomStitchedList.GetItems(
   Index: Integer): TGuiCustomStitchedCollectionItem;
 begin
+ Assert(Assigned(FStitchedCollection));
  if (Index >= 0) and (Index < FStitchedCollection.Count)
   then Result := TGuiCustomStitchedCollectionItem(FStitchedCollection[Index])
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);

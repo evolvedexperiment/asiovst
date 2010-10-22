@@ -36,21 +36,15 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiGroup, DAV_GuiPanel, DAV_GuiLabel,
-  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLED;
+  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiBaseControl,
+  DAV_GuiGroup, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiLED,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmAdvancedClipper = class(TForm)
     ClipLEDInput: TGuiLED;
     ClipLEDStage1: TGuiLED;
     ClipLEDStage2: TGuiLED;
-    DialFilterOrder1: TGuiDial;
-    DialFilterOrder2: TGuiDial;
-    DialInputGain: TGuiDial;
-    DialOSFactor1: TGuiDial;
-    DialOSFactor2: TGuiDial;
-    DialOutputGain: TGuiDial;
-    DIL: TGuiDialImageList;
     GpStage1: TGuiGroup;
     GpStage2: TGuiGroup;
     PnHardClipping: TGuiPanel;
@@ -69,6 +63,13 @@ type
     LEDHardClip: TGuiLED;
     PnDisplay: TGuiPanel;
     Timer: TTimer;
+    DialInputGain: TGuiStitchedDial;
+    DialOSFactor1: TGuiStitchedDial;
+    DialFilterOrder1: TGuiStitchedDial;
+    DialOSFactor2: TGuiStitchedDial;
+    DialFilterOrder2: TGuiStitchedDial;
+    DialOutputGain: TGuiStitchedDial;
+    DSIL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -82,8 +83,9 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ClipLEDClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackgroundBitmap : TBitmap;
+    FBackgroundBitmap : TGuiCustomPixelMap;
   public
     procedure UpdateInputGain;
     procedure UpdateOSFactor1;
@@ -99,97 +101,11 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
-  DAV_Common, DAV_GuiCommon, AdvancedClipperDM;
+  Math, DAV_Common, DAV_GuiCommon, AdvancedClipperDM;
 
 procedure TFmAdvancedClipper.FormCreate(Sender: TObject);
-var
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  Line   : PBGR24Array;
-  {$IFDEF FPC}
-  PngBmp : TPNGImage;
-  {$ELSE}
-  RS     : TResourceStream;
-  {$IFDEF DELPHI2010_UP}
-  PngBmp : TPngImage;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-  {$ENDIF}
-
 begin
- // Create Background Image
- FBackgroundBitmap := TBitmap.Create;
- with FBackgroundBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
-
-       Line[x].B := Round($70 - $34 * (s[1] - h));
-       Line[x].G := Round($84 - $48 * (s[1] - h));
-       Line[x].R := Round($8D - $50 * (s[1] - h));
-      end;
-    end;
-  end;
-
- {$IFDEF FPC}
- PngBmp := TPNGImage.Create;
- try
-  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
-
-  // yet todo!
-
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ELSE}
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'ClipperKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with DIL.DialImages.Add do
-    begin
-     DialBitmap.Canvas.Brush.Color := $70848D;
-     {$IFDEF DELPHI2010_UP}
-     DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
-     {$ELSE}
-     DialBitmap.Assign(PngBmp);
-     {$ENDIF}
-     GlyphCount := 65;
-    end;
-   DialFilterOrder1.DialImageIndex := 0;
-   DialFilterOrder2.DialImageIndex := 0;
-   DialInputGain.DialImageIndex := 0;
-   DialOSFactor1.DialImageIndex := 0;
-   DialOSFactor2.DialImageIndex := 0;
-   DialOutputGain.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ENDIF}
+ FBackgroundBitmap := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmAdvancedClipper.FormDestroy(Sender: TObject);
@@ -199,7 +115,38 @@ end;
 
 procedure TFmAdvancedClipper.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgroundBitmap);
+ if Assigned(FBackgroundBitmap)
+  then FBackgroundBitmap.PaintTo(Canvas);
+end;
+
+procedure TFmAdvancedClipper.FormResize(Sender: TObject);
+var
+  x, y  : Integer;
+  s     : array[0..1] of Single;
+  h, hr : Single;
+  ScnLn : PPixel32Array;
+begin
+ with FBackgroundBitmap do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   s[0] := 0;
+   s[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[0] := s[1];
+
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+      end;
+    end;
+  end;
 end;
 
 procedure TFmAdvancedClipper.FormShow(Sender: TObject);
@@ -218,7 +165,7 @@ procedure TFmAdvancedClipper.DialFilterOrder1Change(Sender: TObject);
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
-   ParameterByName['Stage 1: Filter Order'] := DialFilterOrder1.Position;
+   ParameterByName['Stage 1: Filter Order'] := DialFilterOrder1.Value;
   end;
 end;
 
@@ -226,7 +173,7 @@ procedure TFmAdvancedClipper.DialFilterOrder2Change(Sender: TObject);
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
-   ParameterByName['Stage 2: Filter Order'] := DialFilterOrder2.Position;
+   ParameterByName['Stage 2: Filter Order'] := DialFilterOrder2.Value;
   end;
 end;
 
@@ -234,7 +181,7 @@ procedure TFmAdvancedClipper.DialInputGainChange(Sender: TObject);
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
-   ParameterByName['Input Gain'] := DialInputGain.Position;
+   ParameterByName['Input Gain'] := DialInputGain.Value;
   end;
 end;
 
@@ -242,7 +189,7 @@ procedure TFmAdvancedClipper.DialOutputGainChange(Sender: TObject);
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
-   ParameterByName['Output Gain'] := DialOutputGain.Position;
+   ParameterByName['Output Gain'] := DialOutputGain.Value;
   end;
 end;
 
@@ -250,7 +197,7 @@ procedure TFmAdvancedClipper.DialOSFactor1Change(Sender: TObject);
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
-   ParameterByName['Stage 1: Oversampling Factor'] := DialOSFactor1.Position;
+   ParameterByName['Stage 1: Oversampling Factor'] := DialOSFactor1.Value;
   end;
 end;
 
@@ -258,7 +205,7 @@ procedure TFmAdvancedClipper.DialOSFactor2Change(Sender: TObject);
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
-   ParameterByName['Stage 2: Oversampling Factor'] := DialOSFactor2.Position;
+   ParameterByName['Stage 2: Oversampling Factor'] := DialOSFactor2.Value;
   end;
 end;
 
@@ -295,78 +242,78 @@ end;
 
 procedure TFmAdvancedClipper.UpdateInputGain;
 var
-  value : Single;
+  Value : Single;
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
    Value := ParameterByName['Input Gain'];
-   if DialInputGain.Position <> Value
-    then DialInputGain.Position := Value;
+   if DialInputGain.Value <> Value
+    then DialInputGain.Value := Value;
    LbDisplay.Caption := 'Input Gain: ' + FloatToStrF(Value, ffGeneral, 2, 2) + 'dB';
   end;
 end;
 
 procedure TFmAdvancedClipper.UpdateOrder1;
 var
-  value : Single;
+  Value : Single;
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
    Value := ParameterByName['Stage 1: Filter Order'];
-   if DialFilterOrder1.Position <> Value
-    then DialFilterOrder1.Position := Value;
+   if DialFilterOrder1.Value <> Value
+    then DialFilterOrder1.Value := Value;
    LbDisplay.Caption := 'Filter Order: ' + IntToStr(round(Value));
   end;
 end;
 
 procedure TFmAdvancedClipper.UpdateOrder2;
 var
-  value : Single;
+  Value : Single;
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
    Value := ParameterByName['Stage 2: Filter Order'];
-   if DialFilterOrder2.Position <> Value
-    then DialFilterOrder2.Position := Value;
+   if DialFilterOrder2.Value <> Value
+    then DialFilterOrder2.Value := Value;
    LbDisplay.Caption := 'Filter Order: ' + IntToStr(round(Value));
   end;
 end;
 
 procedure TFmAdvancedClipper.UpdateOSFactor1;
 var
-  value : Single;
+  Value : Single;
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
    Value := ParameterByName['Stage 1: Oversampling Factor'];
-   if DialOSFactor1.Position <> Value
-    then DialOSFactor1.Position := Value;
+   if DialOSFactor1.Value <> Value
+    then DialOSFactor1.Value := Value;
    LbDisplay.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
   end;
 end;
 
 procedure TFmAdvancedClipper.UpdateOSFactor2;
 var
-  value : Single;
+  Value : Single;
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
    Value := ParameterByName['Stage 2: Oversampling Factor'];
-   if DialOSFactor2.Position <> Value
-    then DialOSFactor2.Position := Value;
+   if DialOSFactor2.Value <> Value
+    then DialOSFactor2.Value := Value;
    LbDisplay.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
   end;
 end;
 
 procedure TFmAdvancedClipper.UpdateOutputGain;
 var
-  value : Single;
+  Value : Single;
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
    Value := ParameterByName['Output Gain'];
-   if DialOutputGain.Position <> Value
-    then DialOutputGain.Position := Value;
+   if DialOutputGain.Value <> Value
+    then DialOutputGain.Value := Value;
    LbDisplay.Caption := 'Output Gain: ' + FloatToStrF(Value, ffGeneral, 2, 2) + 'dB';
   end;
 end;

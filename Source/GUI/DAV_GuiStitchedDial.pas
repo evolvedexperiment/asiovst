@@ -99,7 +99,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
-    property LockCursor: Boolean read FLockCursor write FLockCursor;
+    property LockCursor: Boolean read FLockCursor write FLockCursor default False;
     property Max: Single read FMax write SetMax;
     property Min: Single read FMin write SetMin;
     property Value: Single read FValue write SetValue;
@@ -304,9 +304,7 @@ end;
 
 procedure TCustomGuiStitchedDial.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
-  Difference : Double;
-  NewValue   : Double;
-  Pt         : TPoint;
+  Pt : TPoint;
 begin
  inherited;
 

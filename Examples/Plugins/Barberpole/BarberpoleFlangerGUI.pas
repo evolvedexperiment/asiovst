@@ -36,14 +36,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox;
+  Controls, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmBarberpoleFlanger = class(TForm)
-    DialDepth: TGuiDial;
-    DialMix: TGuiDial;
-    DialSpeed: TGuiDial;
-    DialStages: TGuiDial;
     LbDepth: TGuiLabel;
     LbDepthValue: TGuiLabel;
     LbMix: TGuiLabel;
@@ -52,9 +49,13 @@ type
     LbSpeedValue: TGuiLabel;
     LbStages: TGuiLabel;
     LbStagesValue: TGuiLabel;
-    GuiLabel1: TGuiLabel;
+    LbAlgorithm: TGuiLabel;
     SBAlgorithm: TGuiSelectBox;
-    procedure FormCreate(Sender: TObject);
+    DSIL: TGuiStitchedPNGList;
+    DialSpeed: TGuiStitchedDial;
+    DialStages: TGuiStitchedDial;
+    DialDepth: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
     procedure FormShow(Sender: TObject);
     procedure DialSpeedChange(Sender: TObject);
     procedure DialStagesChange(Sender: TObject);
@@ -74,29 +75,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_VSTModuleWithPrograms, BarberpoleFlangerDM;
-
-procedure TFmBarberpoleFlanger.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'BarberpoleKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialSpeed.DialBitmap.Assign(PngBmp);
-   DialDepth.DialBitmap.Assign(PngBmp);
-   DialStages.DialBitmap.Assign(PngBmp);
-   DialMix.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
+  Math, DAV_VSTModuleWithPrograms, BarberpoleFlangerDM;
 
 procedure TFmBarberpoleFlanger.FormShow(Sender: TObject);
 begin
@@ -120,8 +99,8 @@ procedure TFmBarberpoleFlanger.DialStagesChange(Sender: TObject);
 begin
  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[0] <> DialStages.Position
-    then Parameter[0] := DialStages.Position;
+   if Parameter[0] <> DialStages.Value
+    then Parameter[0] := DialStages.Value;
   end;
 end;
 
@@ -129,8 +108,8 @@ procedure TFmBarberpoleFlanger.DialSpeedChange(Sender: TObject);
 begin
  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[1] <> DialSpeed.Position
-    then Parameter[1] := DialSpeed.Position;
+   if Parameter[1] <> DialSpeed.Value
+    then Parameter[1] := DialSpeed.Value;
   end;
 end;
 
@@ -138,8 +117,8 @@ procedure TFmBarberpoleFlanger.DialDepthChange(Sender: TObject);
 begin
  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[2] <> DialDepth.Position
-    then Parameter[2] := DialDepth.Position;
+   if Parameter[2] <> DialDepth.Value
+    then Parameter[2] := DialDepth.Value;
   end;
 end;
 
@@ -147,8 +126,8 @@ procedure TFmBarberpoleFlanger.DialMixChange(Sender: TObject);
 begin
  with TBarberpoleFlangerModule(Owner) do
   begin
-   if Parameter[3] <> DialMix.Position
-    then Parameter[3] := DialMix.Position;
+   if Parameter[3] <> DialMix.Value
+    then Parameter[3] := DialMix.Value;
   end;
 end;
 
@@ -159,8 +138,8 @@ begin
  with TBarberpoleFlangerModule(Owner) do
   begin
    Depth := Parameter[2];
-   if DialDepth.Position <> Depth
-    then DialDepth.Position := Depth;
+   if DialDepth.Value <> Depth
+    then DialDepth.Value := Depth;
    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -172,8 +151,8 @@ begin
  with TBarberpoleFlangerModule(Owner) do
   begin
    Mix := Parameter[3];
-   if DialMix.Position <> Mix
-    then DialMix.Position := Mix;
+   if DialMix.Value <> Mix
+    then DialMix.Value := Mix;
    LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -185,8 +164,8 @@ begin
  with TBarberpoleFlangerModule(Owner) do
   begin
    Speed := Parameter[1];
-   if DialSpeed.Position <> Speed
-    then DialSpeed.Position := Speed;
+   if DialSpeed.Value <> Speed
+    then DialSpeed.Value := Speed;
    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;
@@ -195,8 +174,8 @@ procedure TFmBarberpoleFlanger.UpdateStages;
 begin
  with TBarberpoleFlangerModule(Owner) do
   begin
-   if DialStages.Position <> Parameter[0]
-    then DialStages.Position := Parameter[0];
+   if DialStages.Value <> Parameter[0]
+    then DialStages.Value := Parameter[0];
    LbStagesValue.Caption := IntToStr(round(Parameter[0]));
   end;
 end;

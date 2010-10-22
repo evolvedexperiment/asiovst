@@ -2,7 +2,6 @@
 library BodeFrequencyShifterMono;
 
 {$IFNDEF Wrapper}
-{$R 'BodeFrequencyShifter.res' 'BodeFrequencyShifter.rc'}
 
 uses
   DAV_VSTEffect,

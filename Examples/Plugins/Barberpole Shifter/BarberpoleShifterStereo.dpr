@@ -2,7 +2,6 @@
 library BarberpoleShifterStereo;
 
 {$IFNDEF Wrapper}
-{$R 'BarberpoleShifter.res' 'BarberpoleShifter.rc'}
 
 uses
   FastMM4, // either download the library or comment if there is an error here

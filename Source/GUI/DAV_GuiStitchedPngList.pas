@@ -108,8 +108,37 @@ end;
 
 procedure TGuiStitchedPNGCollectionItem.SetPng(
   const Value: TPortableNetworkGraphicPixel32);
+var
+  SizeModified : Boolean;
 begin
  FPng.Assign(Value);
+
+ BuildPixelMap;
+
+ SizeModified := False;
+ if Width <> FPng.Width then
+  begin
+   Width := FPng.Width;
+   SizeModified := True;
+  end;
+
+ if Height <> FPng.Height then
+  begin
+   Height := FPng.Height;
+   SizeModified := True;
+  end;
+
+ if SizeModified and (Width > 1) and (Height > 1) then
+  if Width > Height then
+   begin
+    if Width mod Height = 0
+     then GlyphCount := Width div Height;
+   end
+  else
+   begin
+    if Height mod Width = 0
+     then GlyphCount := Height div Width;
+   end;
 end;
 
 
@@ -123,8 +152,8 @@ end;
 
 destructor TGuiStitchedPNGList.Destroy;
 begin
-  FreeAndNil(FStitchedCollection);
-  inherited;
+ FreeAndNil(FStitchedCollection);
+ inherited;
 end;
 
 function TGuiStitchedPNGList.GetCount: Integer;
@@ -145,6 +174,7 @@ var
   Index : Integer;
 begin
  inherited;
+
  if Assigned(FStitchedCollection) then
   for Index := 0 to FStitchedCollection.Count - 1 do
    if FStitchedCollection[Index] is TGuiStitchedPNGCollectionItem

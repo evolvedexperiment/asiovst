@@ -2,7 +2,6 @@
 library BarberpoleShifterMono;
 
 {$IFNDEF Wrapper}
-{$R 'BarberpoleShifter.res' 'BarberpoleShifter.rc'}
 
 uses
   Forms,
