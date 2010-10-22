@@ -25,7 +25,7 @@ unit ConvoFXLiteGUI;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,27 +36,27 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmConvoFXLite = class(TForm)
-    DialIR: TGuiDial;
-    DialGain: TGuiDial;
     LbIR: TGuiLabel;
     LbIRSelected: TGuiLabel;
     LbGain: TGuiLabel;
     LbGainValue: TGuiLabel;
-    DialDamp: TGuiDial;
     LbDamp: TGuiLabel;
     LbDampValue: TGuiLabel;
-    DIL: TGuiDialImageList;
-    procedure DialIRChange(Sender: TObject);
+    DialIR: TGuiStitchedDial;
+    DialGain: TGuiStitchedDial;
+    DialDamp: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
-    procedure LbIRSelectedMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure FormCreate(Sender: TObject);
+    procedure DialIRChange(Sender: TObject);
     procedure DialGainChange(Sender: TObject);
     procedure DialDampChange(Sender: TObject);
+    procedure LbIRSelectedMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   public
     procedure UpdateIRSelect;
     procedure UpdateGain;
@@ -70,57 +70,6 @@ implementation
 uses
   Dialogs, Math, PngImage, ConvoFXLiteDM, DAV_VSTModuleWithPrograms;
 
-procedure TFmConvoFXLite.DialDampChange(Sender: TObject);
-begin
- with TConvoFXLiteDataModule(Owner) do
-  begin
-   Parameter[4] := DialDamp.Position;
-  end;
-end;
-
-procedure TFmConvoFXLite.DialGainChange(Sender: TObject);
-begin
- with TConvoFXLiteDataModule(Owner) do
-  begin
-   Parameter[3] := DialGain.Position;
-  end;
-end;
-
-procedure TFmConvoFXLite.DialIRChange(Sender: TObject);
-begin
- with TConvoFXLiteDataModule(Owner) do
-  begin
-   if Round(Parameter[2]) <> Round(DialIR.Position)
-    then Parameter[2] := Round(DialIR.Position);
-  end;
-end;
-
-procedure TFmConvoFXLite.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'ConvoFXKnob', 'PNG');
-  try
-   with DIL.DialImages.Add do
-    begin
-     GlyphCount := 65;
-     PngBmp.LoadFromStream(RS);
-     DialBitmap.Assign(PngBmp);
-    end;
-   DialIR.DialImageIndex := 0;
-   DialGain.DialImageIndex := 0;
-   DialDamp.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
-
 procedure TFmConvoFXLite.FormShow(Sender: TObject);
 begin
  UpdateIRSelect;
@@ -128,12 +77,37 @@ begin
  UpdateDamping;
 end;
 
+procedure TFmConvoFXLite.DialDampChange(Sender: TObject);
+begin
+ with TConvoFXLiteDataModule(Owner) do
+  begin
+   Parameter[4] := DialDamp.Value;
+  end;
+end;
+
+procedure TFmConvoFXLite.DialGainChange(Sender: TObject);
+begin
+ with TConvoFXLiteDataModule(Owner) do
+  begin
+   Parameter[3] := DialGain.Value;
+  end;
+end;
+
+procedure TFmConvoFXLite.DialIRChange(Sender: TObject);
+begin
+ with TConvoFXLiteDataModule(Owner) do
+  begin
+   if Round(Parameter[2]) <> Round(DialIR.Value)
+    then Parameter[2] := Round(DialIR.Value);
+  end;
+end;
+
 procedure TFmConvoFXLite.LbIRSelectedMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
  case Button of
-  mbLeft  : DialIR.Position := Round(DialIR.Position) + 1;
-  mbRight : DialIR.Position := Round(DialIR.Position) - 1;
+  mbLeft  : DialIR.Value := Round(DialIR.Value) + 1;
+  mbRight : DialIR.Value := Round(DialIR.Value) - 1;
  end;
 end;
 
@@ -141,8 +115,8 @@ procedure TFmConvoFXLite.UpdateGain;
 begin
  with TConvoFXLiteDataModule(Owner) do
   begin
-   if DialGain.Position <> Parameter[3]
-    then DialGain.Position := Parameter[3];
+   if DialGain.Value <> Parameter[3]
+    then DialGain.Value := Parameter[3];
    LbGainValue.Caption := FloatToStrF(RoundTo(Parameter[3], -1), ffGeneral, 2, 2) + ' dB';
   end;
 end;
@@ -151,8 +125,8 @@ procedure TFmConvoFXLite.UpdateDamping;
 begin
  with TConvoFXLiteDataModule(Owner) do
   begin
-   if DialDamp.Position <> Parameter[4]
-    then DialDamp.Position := Parameter[4];
+   if DialDamp.Value <> Parameter[4]
+    then DialDamp.Value := Parameter[4];
    if Parameter[4] < 1000
     then LbDampValue.Caption := FloatToStrF(RoundTo(Parameter[4], -1), ffGeneral, 3, 3) + ' Hz'
     else LbDampValue.Caption := FloatToStrF(RoundTo(1E-3 * Parameter[4], -1), ffGeneral, 3, 3) + ' kHz';
@@ -163,8 +137,8 @@ procedure TFmConvoFXLite.UpdateIRSelect;
 begin
  with TConvoFXLiteDataModule(Owner) do
   begin
-   if Round(DialIR.Position) <> Round(Parameter[2])
-    then DialIR.Position := Round(Parameter[2]);
+   if Round(DialIR.Value) <> Round(Parameter[2])
+    then DialIR.Value := Round(Parameter[2]);
    LbIRSelected.Caption := IntToStr(Round(Parameter[2]));
   end;
 end;

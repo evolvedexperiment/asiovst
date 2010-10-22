@@ -36,15 +36,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiPanel;
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPanel,
+  DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList;
 
 type
   TFmExciter = class(TForm)
-    DialMix: TGuiDial;
-    DialOrder: TGuiDial;
-    DialShape: TGuiDial;
-    DialTune: TGuiDial;
     LbFreq: TGuiLabel;
     LbFreqValue: TGuiLabel;
     LbMix: TGuiLabel;
@@ -54,6 +51,11 @@ type
     LbShape: TGuiLabel;
     LbShapeValue: TGuiLabel;
     PnControl: TGuiPanel;
+    DSPL: TGuiStitchedPNGList;
+    DialTune: TGuiStitchedDial;
+    DialShape: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -61,8 +63,10 @@ type
     procedure DialShapeChange(Sender: TObject);
     procedure DialMixChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    FBackgroundBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateTune;
     procedure UpdateOrder;
@@ -75,107 +79,60 @@ implementation
 {$R *.DFM}
 
 uses
-  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF} DAV_GUICommon, ExciterDM;
+  DAV_GUICommon, ExciterDM;
 
 procedure TFmExciter.FormCreate(Sender: TObject);
-var
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  b      : ShortInt;
-  Line   : PRGB24Array;
-  h, hr  : Single;
-  {$IFDEF FPC}
-  PngBmp : TPNGImage;
-  {$ELSE}
-  RS     : TResourceStream;
-  {$IFDEF DELPHI2010_UP}
-  PngBmp : TPngImage;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-  {$ENDIF}
-
 begin
- // Create Background Image
- FBackgroundBitmap := TBitmap.Create;
- with FBackgroundBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width       := Self.Width;
-   Height      := Self.Height;
-   hr          := 1 / Height;
-   s[0]        := 0;
-   s[1]        := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.6 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       b := Round($3F + $1A * (h + s[1]));
-       s[0] := s[1];
-       Line[x].B := b;
-       Line[x].G := b;
-       Line[x].R := b;
-      end;
-    end;
-  end;
+ FBackground := TGuiPixelMapMemory.Create;
+end;
 
- {$IFDEF FPC}
- PngBmp := TPNGImage.Create;
- try
-  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
-
-  // yet todo!
-
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ELSE}
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'ExciterKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   {$IFDEF DELPHI2010_UP}
-   DialShape.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialShape.DialBitmap.Canvas, Point(0, 0));
-   DialMix.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialMix.DialBitmap.Canvas, Point(0, 0));
-   DialTune.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialTune.DialBitmap.Canvas, Point(0, 0));
-   DialOrder.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialOrder.DialBitmap.Canvas, Point(0, 0));
-   {$ELSE}
-   PngBmp.AssignTo(DialTune.DialBitmap);
-   PngBmp.AssignTo(DialOrder.DialBitmap);
-   DialShape.DialBitmap.Assign(PngBmp);
-   DialMix.DialBitmap.Assign(PngBmp);
-   {$ENDIF}
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ENDIF}
+procedure TFmExciter.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmExciter.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgroundBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmExciter.FormResize(Sender: TObject);
+var
+  x, y  : Integer;
+  s     : array [0..1] of Single;
+  b     : ShortInt;
+  ScnLn : PPixel32Array;
+  h, hr : Single;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   hr := 1 / Height;
+   s[0] := 0;
+   s[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h := 0.6 * (1 - Sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
+       b := Round($3F + $1A * (h + s[1]));
+       s[0] := s[1];
+       ScnLn[x].B := b;
+       ScnLn[x].G := b;
+       ScnLn[x].R := b;
+      end;
+    end;
+  end;
 end;
 
 procedure TFmExciter.DialTuneChange(Sender: TObject);
 begin
  with Owner as TExciterDataModule do
   begin
-   ParameterByName['Tune'] := DialTune.Position;
+   ParameterByName['Tune'] := DialTune.Value;
   end;
 end;
 
@@ -183,7 +140,7 @@ procedure TFmExciter.DialMixChange(Sender: TObject);
 begin
  with Owner as TExciterDataModule do
   begin
-   ParameterByName['Mix'] := DialMix.Position;
+   ParameterByName['Mix'] := DialMix.Value;
   end; 
 end;
 
@@ -191,7 +148,7 @@ procedure TFmExciter.DialShapeChange(Sender: TObject);
 begin
  with Owner as TExciterDataModule do
   begin
-   ParameterByName['Shape'] := DialShape.Position;
+   ParameterByName['Shape'] := DialShape.Value;
   end;
 end;
 
@@ -202,12 +159,12 @@ var
 begin
  with Owner as TExciterDataModule do
   begin
-   DesiredOrder := round(DialOrder.Position);
+   DesiredOrder := round(DialOrder.Value);
    CurrentOrder := ParameterByName['Order'];
    if round(CurrentOrder) = DesiredOrder then
-    if DialOrder.Position < CurrentOrder
+    if DialOrder.Value < CurrentOrder
      then ParameterByName['Order'] := DesiredOrder - 1 else
-    if DialOrder.Position > CurrentOrder
+    if DialOrder.Value > CurrentOrder
      then ParameterByName['Order'] := DesiredOrder + 1 else
    else ParameterByName['Order'] := DesiredOrder;
   end;
@@ -231,8 +188,8 @@ begin
    if Freq < 1000
     then LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + 'Hz'
     else LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + 'kHz';
-   if DialTune.Position <> Freq
-    then DialTune.Position := Freq;
+   if DialTune.Value <> Freq
+    then DialTune.Value := Freq;
   end;
 end;
 
@@ -244,8 +201,8 @@ begin
   begin
    Mix := ParameterByName['Mix'];
    LbMixValue.Caption := FloatToStrF(Mix, ffGeneral, 3, 1) + '%';
-   if DialMix.Position <> Mix
-    then DialMix.Position := Mix;
+   if DialMix.Value <> Mix
+    then DialMix.Value := Mix;
   end;
 end;
 
@@ -257,8 +214,8 @@ begin
   begin
    Shape := ParameterByName['Shape'];
    LbShapeValue.Caption := FloatToStrF(Shape, ffGeneral, 3, 1) + '%';
-   if DialShape.Position <> Shape
-    then DialShape.Position := Shape;
+   if DialShape.Value <> Shape
+    then DialShape.Value := Shape;
   end;
 end;
 
@@ -270,8 +227,8 @@ begin
   begin
    Order := round(ParameterByName['Order']);
    LbOrderValue.Caption := IntToStr(Order);
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
   end;
 end;
 

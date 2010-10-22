@@ -37,18 +37,20 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
   Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap;
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmBodeFrequencyShifter = class(TForm)
-    DialFrequency: TGuiDial;
-    DialMix: TGuiDial;
     GpFrequency: TGuiGroup;
     GpMix: TGuiGroup;
     LbFrequencyValue: TGuiLabel;
     LbMixValue: TGuiLabel;
     PnDisplay: TGuiPanel;
     PnMix: TGuiPanel;
+    DialFrequency: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DSPL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -67,71 +69,22 @@ implementation
 {$R *.DFM}
 
 uses
-  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
   DAV_GuiCommon, DAV_VSTModuleWithPrograms, BodeFrequencyShifterDM;
 
 { TFmBodeFrequencyShifter }
 
 procedure TFmBodeFrequencyShifter.FormCreate(Sender: TObject);
-var
-  {$IFDEF FPC}
-  PngBmp : TPNGImage;
-  {$ELSE}
-  RS     : TResourceStream;
-  {$IFDEF DELPHI2010_UP}
-  PngBmp : TPngImage;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-  {$ENDIF}
 begin
  // Create BackgRound Image
  FBackground := TGuiPixelMapMemory.Create;
-
- {$IFDEF FPC}
- PngBmp := TPNGImage.Create;
- try
-  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
-
-  // yet todo!
-
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ELSE}
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'BodeFrequencyShifter', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   {$IFDEF DELPHI2010_UP}
-   DialFrequency.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialFrequency.DialBitmap.Canvas, Point(0, 0));
-   DialMix.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialMix.DialBitmap.Canvas, Point(0, 0));
-   {$ELSE}
-   DialFrequency.DialBitmap.Assign(PngBmp);
-   DialMix.DialBitmap.Assign(PngBmp);
-   {$ENDIF}
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ENDIF}
 end;
 
 procedure TFmBodeFrequencyShifter.FormResize(Sender: TObject);
 var
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  ScnLn  : PPixel32Array;
+  x, y  : Integer;
+  s     : array[0..1] of Single;
+  h, hr : Single;
+  ScnLn : PPixel32Array;
 begin
  with FBackground do
   begin
@@ -178,8 +131,8 @@ procedure TFmBodeFrequencyShifter.DialFrequencyChange(Sender: TObject);
 begin
  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if Parameter[0] <> DialFrequency.Position
-    then Parameter[0] := DialFrequency.Position;
+   if Parameter[0] <> DialFrequency.Value
+    then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
@@ -187,8 +140,8 @@ procedure TFmBodeFrequencyShifter.DialMixChange(Sender: TObject);
 begin
  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if Parameter[1] <> DialMix.Position
-    then Parameter[1] := DialMix.Position;
+   if Parameter[1] <> DialMix.Value
+    then Parameter[1] := DialMix.Value;
   end;
 end;
 
@@ -196,8 +149,8 @@ procedure TFmBodeFrequencyShifter.UpdateFrequency;
 begin
  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if DialFrequency.Position <> Parameter[0]
-    then DialFrequency.Position := Parameter[0];
+   if DialFrequency.Value <> Parameter[0]
+    then DialFrequency.Value := Parameter[0];
    LbFrequencyValue.Caption := string(ParameterDisplay[0] + 'Hz');
   end;
 end;
@@ -206,8 +159,8 @@ procedure TFmBodeFrequencyShifter.UpdateMix;
 begin
  with TBodeFrequencyShifterDataModule(Owner) do
   begin
-   if DialMix.Position <> Parameter[1]
-    then DialMix.Position := Parameter[1];
+   if DialMix.Value <> Parameter[1]
+    then DialMix.Value := Parameter[1];
    LbMixValue.Caption := string(ParameterDisplay[1] + '%');
   end;
 end;

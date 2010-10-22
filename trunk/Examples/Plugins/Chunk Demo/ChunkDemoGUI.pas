@@ -35,26 +35,26 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmChunkDemo = class(TForm)
-    DialAlpha: TGuiDial;
     LbAlpha: TGuiLabel;
     LbBeta: TGuiLabel;
     LbGamma: TGuiLabel;
     LbDelta: TGuiLabel;
-    DialBeta: TGuiDial;
-    DialGamma: TGuiDial;
-    DialDelta: TGuiDial;
-    DIL: TGuiDialImageList;
+    DialAlpha: TGuiStitchedDial;
+    DialBeta: TGuiStitchedDial;
+    DialGamma: TGuiStitchedDial;
+    DialDelta: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure DialAlphaChange(Sender: TObject);
     procedure DialBetaChange(Sender: TObject);
     procedure DialGammaChange(Sender: TObject);
     procedure DialDeltaChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
   public
     procedure UpdateAlpha;
     procedure UpdateBeta;
@@ -71,11 +71,19 @@ uses
 
 { TFmChunkDemo }
 
+procedure TFmChunkDemo.FormShow(Sender: TObject);
+begin
+ UpdateAlpha;
+ UpdateBeta;
+ UpdateGamma;
+ UpdateDelta;
+end;
+
 procedure TFmChunkDemo.DialAlphaChange(Sender: TObject);
 begin
  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[0] := DialAlpha.Position;
+   Parameter[0] := DialAlpha.Value;
   end;
 end;
 
@@ -83,7 +91,7 @@ procedure TFmChunkDemo.DialBetaChange(Sender: TObject);
 begin
  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[1] := DialBeta.Position;
+   Parameter[1] := DialBeta.Value;
   end;
 end;
 
@@ -91,7 +99,7 @@ procedure TFmChunkDemo.DialGammaChange(Sender: TObject);
 begin
  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[2] := DialGamma.Position;
+   Parameter[2] := DialGamma.Value;
   end;
 end;
 
@@ -99,80 +107,8 @@ procedure TFmChunkDemo.DialDeltaChange(Sender: TObject);
 begin
  with TChunkDemoDataModule(Owner) do
   begin
-   Parameter[3] := DialDelta.Position;
+   Parameter[3] := DialDelta.Value;
   end;
-end;
-
-procedure TFmChunkDemo.FormCreate(Sender: TObject);
-var
-  RS       : TResourceStream;
-{$IFDEF DELPHI2010_UP}
-  PngBmp   : TPngImage;
-{$ELSE}
-  PngBmp   : TPngObject;
-{$ENDIF}
-(*
-  x, y     : Integer;
-  ScanLine : array [0..1] of PByteArray;
-  b        : Byte;
-*)
-begin
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'ChunkDemoKnob', 'PNG');
-  try
-   PngBmp.TransparentColor := Self.Color;
-   PngBmp.LoadFromStream(RS);
-
-   with DIL.DialImages.Add do
-    begin
-     DialBitmap.Width := PngBmp.Width;
-     DialBitmap.Height := PngBmp.Height;
-     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
-     GlyphCount := 65;
-    end;
-
-(*
-   for y := 0 to (Height div 2) - 1 do
-    begin
-     ScanLine[0] := PngBmp.Scanline[y];
-     ScanLine[1] := PngBmp.Scanline[(Height div 2)];
-     for x := 0 to (3 * Width) - 1 do
-      begin
-       b := ScanLine[0]^[x];
-       ScanLine[0]^[x] := ScanLine[1]^[(3 * Width) - 1 - x];
-       ScanLine[1]^[(3 * Width) - 1 - x] := b;
-      end;
-    end;
-
-   with DIL.DialImages.Add do
-    begin
-     DialBitmap.Assign(PngBmp);
-     GlyphCount := 65;
-    end;
-*)
-   DialAlpha.DialImageIndex := 0;
-   DialGamma.DialImageIndex := 0;
-   DialBeta.DialImageIndex := 0;
-   DialDelta.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
-
-procedure TFmChunkDemo.FormShow(Sender: TObject);
-begin
- UpdateAlpha;
- UpdateBeta;
- UpdateGamma;
- UpdateDelta;
 end;
 
 procedure TFmChunkDemo.UpdateAlpha;
@@ -182,8 +118,8 @@ begin
  with TChunkDemoDataModule(Owner) do
   begin
    Alpha := Parameter[0];
-   if DialAlpha.Position <> Alpha
-    then DialAlpha.Position := Alpha;
+   if DialAlpha.Value <> Alpha
+    then DialAlpha.Value := Alpha;
   end;
 end;
 
@@ -194,8 +130,8 @@ begin
  with TChunkDemoDataModule(Owner) do
   begin
    Beta := Parameter[1];
-   if DialBeta.Position <> Beta
-    then DialBeta.Position := Beta;
+   if DialBeta.Value <> Beta
+    then DialBeta.Value := Beta;
   end;
 end;
 
@@ -206,8 +142,8 @@ begin
  with TChunkDemoDataModule(Owner) do
   begin
    Delta := Parameter[2];
-   if DialGamma.Position <> Delta
-    then DialGamma.Position := Delta;
+   if DialGamma.Value <> Delta
+    then DialGamma.Value := Delta;
   end;
 end;
 
@@ -218,8 +154,8 @@ begin
  with TChunkDemoDataModule(Owner) do
   begin
    Gamma := Parameter[3];
-   if DialDelta.Position <> Gamma
-    then DialDelta.Position := Gamma;
+   if DialDelta.Value <> Gamma
+    then DialDelta.Value := Gamma;
   end;
 end;
 

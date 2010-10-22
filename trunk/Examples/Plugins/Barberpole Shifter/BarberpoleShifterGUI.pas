@@ -36,19 +36,21 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
-  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap;
+  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl,
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmBarberpoleShifter = class(TForm)
-    DialFrequency: TGuiDial;
-    DialMix: TGuiDial;
     GpFrequency: TGuiGroup;
     GpMix: TGuiGroup;
     LbFrequencyValue: TGuiLabel;
     LbMixValue: TGuiLabel;
     PnDisplay: TGuiPanel;
     PnMix: TGuiPanel;
+    DialFrequency: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DSPL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -73,57 +75,8 @@ uses
 { TFmBarberpoleShifter }
 
 procedure TFmBarberpoleShifter.FormCreate(Sender: TObject);
-var
-  {$IFDEF FPC}
-  PngBmp : TPNGImage;
-  {$ELSE}
-  RS     : TResourceStream;
-  {$IFDEF DELPHI2010_UP}
-  PngBmp : TPngImage;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-  {$ENDIF}
 begin
- // Create Background Image
  FBackground := TGuiPixelMapMemory.Create;
-
- {$IFDEF FPC}
- PngBmp := TPNGImage.Create;
- try
-  PngBmp.LoadFromLazarusResource('BarberpoleShifter');
-
-  // yet todo!
-
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ELSE}
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'BarberpoleShifter', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   {$IFDEF DELPHI2010_UP}
-   DialFrequency.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialFrequency.DialBitmap.Canvas, Point(0, 0));
-   DialMix.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialMix.DialBitmap.Canvas, Point(0, 0));
-   {$ELSE}
-   DialFrequency.DialBitmap.Assign(PngBmp);
-   DialMix.DialBitmap.Assign(PngBmp);
-   {$ENDIF}
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ENDIF}
 end;
 
 procedure TFmBarberpoleShifter.FormResize(Sender: TObject);
@@ -142,15 +95,16 @@ begin
    for y := 0 to Height - 1 do
     begin
      ScnLn := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[1] := 0.97 * s[0] + 0.03 * Random;
        s[0] := s[1];
 
-       ScnLn[x].B := round($70 - $34 * (s[1] - h));
-       ScnLn[x].G := round($84 - $48 * (s[1] - h));
-       ScnLn[x].R := round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLn[x].A := $FF;
       end;
     end;
   end;
@@ -171,8 +125,8 @@ procedure TFmBarberpoleShifter.DialFrequencyChange(Sender: TObject);
 begin
  with TBarberpoleShifterDataModule(Owner) do
   begin
-   if Parameter[0] <> DialFrequency.Position
-    then Parameter[0] := DialFrequency.Position;
+   if Parameter[0] <> DialFrequency.Value
+    then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
@@ -180,8 +134,8 @@ procedure TFmBarberpoleShifter.DialMixChange(Sender: TObject);
 begin
  with TBarberpoleShifterDataModule(Owner) do
   begin
-   if Parameter[1] <> DialMix.Position
-    then Parameter[1] := DialMix.Position;
+   if Parameter[1] <> DialMix.Value
+    then Parameter[1] := DialMix.Value;
   end;
 end;
 
@@ -189,8 +143,8 @@ procedure TFmBarberpoleShifter.UpdateFrequency;
 begin
  with TBarberpoleShifterDataModule(Owner) do
   begin
-   if DialFrequency.Position <> Parameter[0]
-    then DialFrequency.Position := Parameter[0];
+   if DialFrequency.Value <> Parameter[0]
+    then DialFrequency.Value := Parameter[0];
    LbFrequencyValue.Caption := string(ParameterDisplay[0] + 'Hz');
   end;
 end;
@@ -199,8 +153,8 @@ procedure TFmBarberpoleShifter.UpdateMix;
 begin
  with TBarberpoleShifterDataModule(Owner) do
   begin
-   if DialMix.Position <> Parameter[1]
-    then DialMix.Position := Parameter[1];
+   if DialMix.Value <> Parameter[1]
+    then DialMix.Value := Parameter[1];
    LbMixValue.Caption := string(ParameterDisplay[1] + '%');
   end;
 end;

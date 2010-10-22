@@ -1,11 +1,6 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library AmpSim;
 
-// if the file below is missing please execute the batch file in this
-// directory first to compile the resource file
-
-{$R 'AmpKnob.res' 'AmpKnob.rc'}
-
 uses
   FastMM4, // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here

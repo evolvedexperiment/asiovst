@@ -37,16 +37,11 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_VSTModule,
-  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel,
-  DAV_GuiPixelMap;
+  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPanel, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmTwoBandDistortion = class(TForm)
-    DialFreq: TGuiDial;
-    DialHighDist: TGuiDial;
-    DialLowDist: TGuiDial;
-    DialOrder: TGuiDial;
-    DIL: TGuiDialImageList;
     LbFreq: TGuiLabel;
     LbFreqValue: TGuiLabel;
     LbHighDist: TGuiLabel;
@@ -56,6 +51,11 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControl: TGuiPanel;
+    DialFreq: TGuiStitchedDial;
+    DialLowDist: TGuiStitchedDial;
+    DialHighDist: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
+    DSIL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -82,89 +82,11 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_GUICommon,
-  {$IFDEF FPC}
-  LazPNG,
-  {$ELSE}
-  PNGImage,
-  {$ENDIF}
-  DAV_GuiPng,
-  TwoBandDistortionDM;
+  Math, DAV_GUICommon, DAV_GuiPng, TwoBandDistortionDM;
 
 procedure TFmTwoBandDistortion.FormCreate(Sender: TObject);
-var
-  {$IFDEF FPC}
-  PngBmp : TPNGImage;
-  {$ELSE}
-  RS     : TResourceStream;
-  {$IFDEF DELPHI2010_UP}
-  PngBmp : TPngImage;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-//  PngBmp : TPngBitmap;
-  {$ENDIF}
-
 begin
- // create background pixel map
  FBackground := TGuiPixelMapMemory.Create;
-
- {$IFDEF FPC}
- PngBmp := TPNGImage.Create;
- try
-  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
-  with DIL.DialImages.Add do
-   begin
-    DialBitmap.Canvas.Brush.Color := $696969;
-    DialBitmap.Assign(PngBmp);
-    GlyphCount := 65;
-   end;
-  DialFreq.DialImageIndex := 0;
-  DialOrder.DialImageIndex := 0;
-  DialHighDist.DialImageIndex := 0;
-  DialLowDist.DialImageIndex := 0;
- finally
-  FreeAndNil(PngBmp);
- end;
-
- {$ELSE}
-
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
-
-// PngBmp := TPngBitmap.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'TwoBandKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with DIL.DialImages.Add do
-    begin
-     DialBitmap.Canvas.Brush.Color := $696969;
-     {$IFDEF DELPHI2010_UP}
-     DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-     PngBmp.Draw(DialBitmap.Canvas, Rect(0, 0, DialBitmap.Width,
-       DialBitmap.Height));
-     {$ELSE}
-     DialBitmap.Assign(PngBmp);
-     {$ENDIF}
-//     PngBmp.AssignTo(DialBitmap);
-//     DialBitmap.Assign(PngBmp);
-     GlyphCount := 65;
-    end;
-   DialFreq.DialImageIndex := 0;
-   DialOrder.DialImageIndex := 0;
-   DialHighDist.DialImageIndex := 0;
-   DialLowDist.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ENDIF}
 end;
 
 procedure TFmTwoBandDistortion.FormDestroy(Sender: TObject);
@@ -212,7 +134,7 @@ procedure TFmTwoBandDistortion.DialFreqChange(Sender: TObject);
 begin
  with Owner as TTwoBandDistortionDataModule do
   begin
-   ParameterByName['Frequency'] := DialFreq.Position;
+   ParameterByName['Frequency'] := DialFreq.Value;
   end;
 end;
 
@@ -220,7 +142,7 @@ procedure TFmTwoBandDistortion.DialHighDistChange(Sender: TObject);
 begin
  with Owner as TTwoBandDistortionDataModule do
   begin
-   ParameterByName['High Distortion'] := DialHighDist.Position;
+   ParameterByName['High Distortion'] := DialHighDist.Value;
   end; 
 end;
 
@@ -228,7 +150,7 @@ procedure TFmTwoBandDistortion.DialLowDistChange(Sender: TObject);
 begin
  with Owner as TTwoBandDistortionDataModule do
   begin
-   ParameterByName['Low Distortion'] := DialLowDist.Position;
+   ParameterByName['Low Distortion'] := DialLowDist.Value;
   end;
 end;
 
@@ -239,12 +161,12 @@ var
 begin
  with Owner as TTwoBandDistortionDataModule do
   begin
-   DesiredOrder := round(DialOrder.Position);
+   DesiredOrder := round(DialOrder.Value);
    CurrentOrder := ParameterByName['Order'];
    if round(CurrentOrder) = DesiredOrder then
-    if DialOrder.Position < CurrentOrder
+    if DialOrder.Value < CurrentOrder
      then ParameterByName['Order'] := DesiredOrder - 1 else
-    if DialOrder.Position > CurrentOrder
+    if DialOrder.Value > CurrentOrder
      then ParameterByName['Order'] := DesiredOrder + 1 else
   end;
 end;
@@ -269,8 +191,8 @@ begin
    if Freq < CThousand
     then LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 4) + ' Hz'
     else LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';
-   if DialFreq.Position <> Freq
-    then DialFreq.Position := Freq;
+   if DialFreq.Value <> Freq
+    then DialFreq.Value := Freq;
   end;
 end;
 
@@ -282,8 +204,8 @@ begin
   begin
    HighDist := ParameterByName['High Distortion'];
    LbHighDistValue.Caption := FloatToStrF(RoundTo(HighDist, -2), ffGeneral, 3, 1) + '%';
-   if DialHighDist.Position <> HighDist
-    then DialHighDist.Position := HighDist;
+   if DialHighDist.Value <> HighDist
+    then DialHighDist.Value := HighDist;
   end;
 end;
 
@@ -295,8 +217,8 @@ begin
   begin
    LowDist := ParameterByName['Low Distortion'];
    LbLowDistValue.Caption := FloatToStrF(RoundTo(LowDist, -2), ffGeneral, 3, 1) + '%';
-   if DialLowDist.Position <> LowDist
-    then DialLowDist.Position := LowDist;
+   if DialLowDist.Value <> LowDist
+    then DialLowDist.Value := LowDist;
   end;
 end;
 
@@ -308,8 +230,8 @@ begin
   begin
    Order := round(ParameterByName['Order']);
    LbOrderValue.Caption := IntToStr(Order);
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
   end;
 end;
 
