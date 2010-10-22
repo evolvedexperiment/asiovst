@@ -92,8 +92,8 @@ type
     FSignificantBits     : TChunkPngSignificantBits;
     FPhysicalDimensions  : TChunkPngPhysicalPixelDimensions;
     FChromaChunk         : TChunkPngPrimaryChromaticities;
-    FDataChunkList       : TChunkList;
-    FAdditionalChunkList : TChunkList;
+    FDataChunkList       : TPngChunkList;
+    FAdditionalChunkList : TPngChunkList;
 
     function GetHeight: Integer; override;
     function GetWidth: Integer; override;
@@ -231,8 +231,8 @@ const
 constructor TPortableNetworkGraphic.Create;
 begin
  FImageHeader         := TChunkPngImageHeader.Create;
- FDataChunkList       := TChunkList.Create;
- FAdditionalChunkList := TChunkList.Create;
+ FDataChunkList       := TPngChunkList.Create;
+ FAdditionalChunkList := TPngChunkList.Create;
  inherited;
 end;
 

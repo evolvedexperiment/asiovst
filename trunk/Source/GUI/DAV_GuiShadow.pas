@@ -48,6 +48,7 @@ type
     FTransparency : Byte;
     FVisible      : Boolean;
     FOnChange     : TNotifyEvent;
+    FColor        : TColor;
     function GetOffsetX: Integer;
     function GetOffsetY: Integer;
     procedure SetBlur(const Value: Single);
@@ -56,12 +57,15 @@ type
     procedure SetTransparency(const Value: Byte);
     procedure SetVisible(const Value: Boolean);
     procedure SetOffset(const Value: TPoint);
-    procedure Changed;
+    procedure SetColor(const Value: TColor);
+  protected
+    procedure Changed; virtual;
   public
     constructor Create; virtual;
     property Offset: TPoint read FOffset write SetOffset;
   published
     property Blur: Single read FBlur write SetBlur;
+    property Color: TColor read FColor write SetColor;
     property OffsetX: Integer read GetOffsetX write SetOffsetX default 1;
     property OffsetY: Integer read GetOffsetY write SetOffsetY default 1;
     property Transparency: Byte read FTransparency write SetTransparency default $FF;
@@ -107,6 +111,15 @@ begin
  if FBlur <> Value then
   begin
    FBlur := Value;
+   Changed;
+  end;
+end;
+
+procedure TGuiShadow.SetColor(const Value: TColor);
+begin
+ if FColor <> Value then
+  begin
+   FColor := Value;
    Changed;
   end;
 end;

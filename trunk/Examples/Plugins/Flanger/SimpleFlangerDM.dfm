@@ -79,6 +79,7 @@ object SimpleFlangerModule: TSimpleFlangerModule
       Units = '%'
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
+      OnParameterChange = ParamMixChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
