@@ -1,5 +1,6 @@
 package DAV_GUI_D14;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -86,6 +87,7 @@ contains
   DAV_GuiVectorPixel in '..\..\Source\GUI\DAV_GuiVectorPixel.pas',
   DAV_GuiVectorPixelCircle in '..\..\Source\GUI\DAV_GuiVectorPixelCircle.pas',
   DAV_GuiVectorPixelLine in '..\..\Source\GUI\DAV_GuiVectorPixelLine.pas',
-  DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas';
+  DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
+  DAV_GuiFont in '..\..\Source\GUI\DAV_GuiFont.pas';
 
 end.

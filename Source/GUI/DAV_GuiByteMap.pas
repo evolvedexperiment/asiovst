@@ -1,4 +1,4 @@
-unit DAV_GuiPixelMap;
+unit DAV_GuiByteMap;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -39,66 +39,61 @@ uses
   {$IFDEF Windows} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
-  DAV_GuiCustomMap, DAV_GuiByteMap, DAV_GuiBlend;
+  DAV_GuiCustomMap, DAV_GuiBlend;
 
 type
-  TGuiCustomPixelMap = class(TGuiCustomMap)
+  TGuiCustomByteMap = class(TGuiCustomMap)
   private
-    function GetDataPointer: PPixel32Array;
-    function GetPixel(X, Y: Integer): TPixel32;
-    function GetPixelPointer(X, Y: Integer): PPixel32;
-    function GetScanLine(Y: Integer): PPixel32Array;
-    procedure SetPixel(X, Y: Integer; const Value: TPixel32);
+    function GetDataPointer: PByteArray;
+    function GetValue(X, Y: Integer): Byte;
+    function GetValuePointer(X, Y: Integer): PByteArray;
+    function GetScanLine(Y: Integer): PByteArray;
+    procedure SetValue(X, Y: Integer; const Value: Byte);
   protected
-    FDataPointer : PPixel32Array;
-    FBitmapInfo  : TBitmapInfo;
+    FDataPointer : PByteArray;
+    FBitmapInfo  : PBitmapInfo;
     procedure HeightChanged(UpdateBitmap: Boolean = True); override;
     procedure WidthChanged(UpdateBitmap: Boolean = True); override;
 
     procedure AssignTo(Dest: TPersistent); override;
-    function Equal(PixelMap: TGuiCustomPixelMap): Boolean;
+    function Equal(ByteMap: TGuiCustomByteMap): Boolean;
 
     procedure ReadData(Stream: TStream); override;
     procedure WriteData(Stream: TStream); override;
     procedure DefineProperties(Filer: TFiler); override;
   public
     constructor Create; override;
+    destructor Destroy; override;
 
     procedure Clear; overload; override;
-    procedure Clear(Color: TColor); reintroduce; overload; virtual;
-    procedure Clear(Color: TPixel32); reintroduce; overload; virtual;
+    procedure Clear(Data: Byte); reintroduce; overload; virtual;
 
     procedure Draw(Bitmap: TBitmap); overload; virtual;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); overload; virtual; abstract;
-    procedure Draw(PixelMap: TGuiCustomPixelMap; Alpha: Byte = $FF); overload; virtual;
-    procedure Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer); overload; virtual;
-    procedure Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer; Alpha: Byte); overload; virtual;
-    procedure DrawTransparent(PixelMap: TGuiCustomPixelMap); overload; virtual;
-    procedure DrawTransparent(PixelMap: TGuiCustomPixelMap; X, Y: Integer); overload; virtual;
-    procedure DrawByteMap(ByteMap: TGuiCustomByteMap; Color: TPixel32); overload; virtual;
-    procedure DrawByteMap(ByteMap: TGuiCustomByteMap; Color: TPixel32; X, Y: Integer); overload; virtual;
-    procedure DrawByteMap(ByteMap: TGuiCustomByteMap; Color: TPixel32; Rect: TRect); overload; virtual;
+    procedure Draw(ByteMap: TGuiCustomByteMap; Alpha: Byte = $FF); overload; virtual;
+    procedure Draw(ByteMap: TGuiCustomByteMap; X, Y: Integer); overload; virtual;
+    procedure Draw(ByteMap: TGuiCustomByteMap; X, Y: Integer; Alpha: Byte); overload; virtual;
+    procedure DrawTransparent(ByteMap: TGuiCustomByteMap); overload; virtual;
+    procedure DrawTransparent(ByteMap: TGuiCustomByteMap; X, Y: Integer); overload; virtual;
 
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
-    procedure ResetAlpha; virtual;
-
-    // simple Painting functions
-    procedure FillRect(Rect: TRect; Color: TPixel32);
-    procedure FrameRect(Rect: TRect; Color: TPixel32);
-    procedure Line(FromX, FromY, ToX, ToY: Integer; Color: TPixel32);
-    procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32);
-    procedure VerticalLine(X, FromY, ToY: Integer; Color: TPixel32);
+    // simple painting functions
+    procedure FillRect(Rect: TRect; Data: Byte);
+    procedure FrameRect(Rect: TRect; Data: Byte);
+    procedure Line(FromX, FromY, ToX, ToY: Integer; Data: Byte);
+    procedure HorizontalLine(FromX, ToX, Y: Integer; Data: Byte);
+    procedure VerticalLine(X, FromY, ToY: Integer; Data: Byte);
     procedure Assign(Source: TPersistent); override;
 
-    property DataPointer: PPixel32Array read GetDataPointer;
-    property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
-    property PixelPointer[X, Y: Integer]: PPixel32 read GetPixelPointer;
-    property ScanLine[Y: Integer]: PPixel32Array read GetScanLine;
+    property DataPointer: PByteArray read GetDataPointer;
+    property Value[X, Y: Integer]: Byte read GetValue write SetValue;
+    property ValuePointer[X, Y: Integer]: PByteArray read GetValuePointer;
+    property ScanLine[Y: Integer]: PByteArray read GetScanLine;
   end;
 
-  TGuiPixelMapMemory = class(TGuiCustomPixelMap)
+  TGuiByteMapMemory = class(TGuiCustomByteMap)
   protected
     procedure AllocateDataPointer; virtual;
     procedure HeightChanged(UpdateBitmap: Boolean = True); override;
@@ -117,7 +112,7 @@ type
     property OnResize;
   end;
 
-  TGuiPixelMapDIB = class(TGuiCustomPixelMap)
+  TGuiByteMapDIB = class(TGuiCustomByteMap)
   protected
     FDC            : HDC;
     FBitmapHandle  : HBITMAP;
@@ -146,89 +141,48 @@ type
 implementation
 
 uses
-  Math, DAV_GuiFileFormats;
+  Math, DAV_GuiFileFormats, DAV_GuiPixelMap;
 
-{ TGuiCustomPixelMap }
+{ TGuiCustomByteMap }
 
-constructor TGuiCustomPixelMap.Create;
+constructor TGuiCustomByteMap.Create;
+var
+  Index : Integer;
 begin
  inherited;
  FDataPointer := nil;
 
+ GetMem(FBitmapInfo, SizeOf(TBitmapInfoHeader) + 256);
+
  // initialize header
- FillChar(FBitmapInfo.bmiHeader, SizeOf(TBitmapInfoHeader), 0);
- with FBitmapInfo.bmiHeader do
+ FillChar(FBitmapInfo^.bmiHeader, SizeOf(TBitmapInfoHeader), 0);
+ with FBitmapInfo^.bmiHeader do
   begin
    biSize := SizeOf(TBitmapInfoHeader);
-   biBitCount := 32;
+   biBitCount := 8;
    biPlanes := 1;
    biCompression := BI_RGB;
   end;
+ for Index := 0 to 255 do
+  with FBitmapInfo.bmiColors[Index] do
+   begin
+    rgbBlue     := Index;
+    rgbGreen    := Index;
+    rgbRed      := Index;
+    rgbReserved := 0;
+   end;
 end;
 
-procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer);
+destructor TGuiCustomByteMap.Destroy;
+begin
+ Dispose(FBitmapInfo);
+ inherited;
+end;
+
+procedure TGuiCustomByteMap.Draw(ByteMap: TGuiCustomByteMap; X, Y: Integer);
 var
   ClipRect : TRect;
   Index    : Integer;
-begin
- with ClipRect do
-  begin
-   Left := X;
-   if Left < 0 then Left := 0;
-   Top := Y;
-   if Top < 0 then Top := 0;
-   Right := X + PixelMap.Width;
-   if Right > Self.Width then Right := Self.Width;
-   Bottom := Y + PixelMap.Height;
-   if Bottom > Self.Height then Bottom := Self.Height;
-
-   // blend scanlines
-   for Index := Top to Bottom - 1
-     do BlendLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
-       PixelPointer[Left, Top + Index], Right - Left);
-   EMMS;
-  end;
-end;
-
-procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap; X, Y: Integer;
-  Alpha: Byte);
-var
-  ClipRect : TRect;
-  Index    : Integer;
-begin
- with ClipRect do
-  begin
-   Left := X;
-   if Left < 0 then Left := 0;
-   Top := Y;
-   if Top < 0 then Top := 0;
-   Right := X + PixelMap.Width;
-   if Right > Self.Width then Right := Self.Width;
-   Bottom := Y + PixelMap.Height;
-   if Bottom > Self.Height then Bottom := Self.Height;
-
-   // combine scanlines
-   for Index := Top to Bottom - 1
-     do CombineLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
-       PixelPointer[Left, Top + Index], Right - Left, Alpha);
-   EMMS;
-  end;
-end;
-
-procedure TGuiCustomPixelMap.DrawByteMap(ByteMap: TGuiCustomByteMap;
-  Color: TPixel32);
-begin
- DrawByteMap(ByteMap, Color, 0, 0);
-end;
-
-procedure TGuiCustomPixelMap.DrawByteMap(ByteMap: TGuiCustomByteMap;
-  Color: TPixel32; X, Y: Integer);
-var
-  ClipRect : TRect;
-  IX, IY   : Integer;
-  NewColor : TPixel32;
-  ScnLn    : PPixel32Array;
-  ByteLine : PByteArray;
 begin
  with ClipRect do
   begin
@@ -241,68 +195,41 @@ begin
    Bottom := Y + ByteMap.Height;
    if Bottom > Self.Height then Bottom := Self.Height;
 
-   // ignore alpha
-   Color.ARGB := Color.ARGB and $FFFFFF;
-
-   // blend scanlines
-   for IY := Top to Bottom - 1 do
-    begin
-     ScnLn := ScanLine[IY];
-     ByteLine := ByteMap.ScanLine[IY - Y];
-     for IX := Left to Right - 1 do
-      begin
-       NewColor.ARGB := (ByteLine^[IX - X] shl 24) or Color.ARGB;
-       MergePixelInplace(NewColor, ScnLn^[IX]);
-      end;
-    end;
-   EMMS;
+   for Index := Top to Bottom - 1
+    do Move(ByteMap.ValuePointer[Left - X, Top - Y + Index]^,
+      ValuePointer[Left, Top + Index]^, Right - Left);
   end;
 end;
 
-procedure TGuiCustomPixelMap.DrawByteMap(ByteMap: TGuiCustomByteMap;
-  Color: TPixel32; Rect: TRect);
+procedure TGuiCustomByteMap.Draw(ByteMap: TGuiCustomByteMap; X, Y: Integer;
+  Alpha: Byte);
 var
   ClipRect : TRect;
-  IX, IY   : Integer;
-  NewColor : TPixel32;
-  ScnLn    : PPixel32Array;
-  ByteLine : PByteArray;
+  Index    : Integer;
 begin
  with ClipRect do
   begin
-   Left := Rect.Left;
+   Left := X;
    if Left < 0 then Left := 0;
-   Top := Rect.Top;
+   Top := Y;
    if Top < 0 then Top := 0;
-   Right := Min(Rect.Left + ByteMap.Width, Rect.Right);
+   Right := X + ByteMap.Width;
    if Right > Self.Width then Right := Self.Width;
-   Bottom := Min(Rect.Top + ByteMap.Height, Rect.Bottom);
+   Bottom := Y + ByteMap.Height;
    if Bottom > Self.Height then Bottom := Self.Height;
 
-   // ignore alpha
-   Color.ARGB := Color.ARGB and $FFFFFF;
-
-   // blend scanlines
-   for IY := Top to Bottom - 1 do
-    begin
-     ScnLn := ScanLine[IY];
-     ByteLine := ByteMap.ScanLine[IY - Rect.Top];
-     for IX := Left to Right - 1 do
-      begin
-       NewColor.ARGB := (ByteLine^[IX - Rect.Left] shl 24) or Color.ARGB;
-       MergePixelInplace(NewColor, ScnLn^[IX]);
-      end;
-    end;
-   EMMS;
+   for Index := Top to Bottom - 1
+    do Move(ByteMap.ValuePointer[Left - X, Top - Y + Index]^,
+      ValuePointer[Left, Top + Index]^, Right - Left);
   end;
 end;
 
-procedure TGuiCustomPixelMap.DrawTransparent(PixelMap: TGuiCustomPixelMap);
+procedure TGuiCustomByteMap.DrawTransparent(ByteMap: TGuiCustomByteMap);
 begin
- DrawTransparent(PixelMap, 0, 0);
+ DrawTransparent(ByteMap, 0, 0);
 end;
 
-procedure TGuiCustomPixelMap.DrawTransparent(PixelMap: TGuiCustomPixelMap; X,
+procedure TGuiCustomByteMap.DrawTransparent(ByteMap: TGuiCustomByteMap; X,
   Y: Integer);
 var
   ClipRect : TRect;
@@ -314,31 +241,41 @@ begin
    if Left < 0 then Left := 0;
    Top := Y;
    if Top < 0 then Top := 0;
-   Right := X + PixelMap.Width;
+   Right := X + ByteMap.Width;
    if Right > Self.Width then Right := Self.Width;
-   Bottom := Y + PixelMap.Height;
+   Bottom := Y + ByteMap.Height;
    if Bottom > Self.Height then Bottom := Self.Height;
 
    // blend scanlines
    for Index := Top to Bottom - 1
-     do BlendLine(PixelMap.PixelPointer[Left - X, Index - Y],
-       PixelPointer[Left, Index], Right - Left);
+    do Move(ByteMap.ValuePointer[Left - X, Index - Y]^,
+      ValuePointer[Left, Index]^, Right - Left);
   end;
 end;
 
-procedure TGuiCustomPixelMap.Draw(PixelMap: TGuiCustomPixelMap;
+procedure TGuiCustomByteMap.Draw(ByteMap: TGuiCustomByteMap;
   Alpha: Byte = $FF);
 begin
- Draw(PixelMap, 0, 0, Alpha);
+ Draw(ByteMap, 0, 0, Alpha);
 end;
 
-procedure TGuiCustomPixelMap.Assign(Source: TPersistent);
+procedure TGuiCustomByteMap.Assign(Source: TPersistent);
 var
   TempBitmap : TBitmap;
 begin
+ if Source is TGuiCustomByteMap then
+  with TGuiCustomByteMap(Source) do
+   begin
+    Self.SetSize(Width, Height);
+    Move(FBitmapInfo^, Self.FBitmapInfo^, SizeOf(TBitmapInfoHeader));
+    Assert(Self.FDataSize = FDataSize);
+    Move(FDataPointer^, Self.FDataPointer^, FDataSize);
+    Self.FOnChange := FOnChange;
+    Self.FOnResize := FOnResize;
+   end else
 (*
  if Source is TGuiCustomByteMap then
-  with TGuiCustomPixelMap(Source) do
+  with TGuiCustomByteMap(Source) do
    begin
     Self.SetSize(Width, Height);
     Self.FBitmapInfo := FBitmapInfo;
@@ -350,18 +287,6 @@ begin
     Self.FOnResize := FOnResize;
    end else
 *)
- if Source is TGuiCustomPixelMap then
-  with TGuiCustomPixelMap(Source) do
-   begin
-    Self.SetSize(Width, Height);
-    Self.FBitmapInfo := FBitmapInfo;
-
-    Assert(Self.FDataSize = FDataSize);
-    Move(FDataPointer^, Self.FDataPointer^, FDataSize);
-
-    Self.FOnChange := FOnChange;
-    Self.FOnResize := FOnResize;
-   end else
  if Source is TBitmap then
   with TBitmap(Source) do
    begin
@@ -386,10 +311,10 @@ begin
  else inherited;
 end;
 
-procedure TGuiCustomPixelMap.AssignTo(Dest: TPersistent);
+procedure TGuiCustomByteMap.AssignTo(Dest: TPersistent);
 begin
- if Dest is TGuiCustomPixelMap then
-  with TGuiCustomPixelMap(Dest) do
+ if Dest is TGuiCustomByteMap then
+  with TGuiCustomByteMap(Dest) do
    begin
     SetSize(Self.Width, Self.Height);
     FBitmapInfo := Self.FBitmapInfo;
@@ -403,67 +328,62 @@ begin
  else inherited;
 end;
 
-procedure TGuiCustomPixelMap.Draw(Bitmap: TBitmap);
+procedure TGuiCustomByteMap.Draw(Bitmap: TBitmap);
 begin
  Draw(Bitmap, 0, 0);
 end;
 
-procedure TGuiCustomPixelMap.Clear;
+procedure TGuiCustomByteMap.Clear;
 begin
  FillChar(FDataPointer^, FDataSize, 0);
 end;
 
-procedure TGuiCustomPixelMap.Clear(Color: TPixel32);
+procedure TGuiCustomByteMap.Clear(Data: Byte);
 var
   Index : Integer;
 begin
  for Index := 0 to FWidth * FHeight - 1
-  do FDataPointer^[Index] := Color;
+  do FDataPointer^[Index] := Data;
 end;
 
-procedure TGuiCustomPixelMap.Clear(Color: TColor);
-begin
- Clear(ConvertColor(Color));
-end;
-
-function TGuiCustomPixelMap.GetDataPointer: PPixel32Array;
+function TGuiCustomByteMap.GetDataPointer: PByteArray;
 begin
  Result := FDataPointer;
 end;
 
-function TGuiCustomPixelMap.GetPixel(X, Y: Integer): TPixel32;
+function TGuiCustomByteMap.GetValue(X, Y: Integer): Byte;
 begin
  Result := FDataPointer^[Y * Width + X];
 end;
 
-function TGuiCustomPixelMap.GetPixelPointer(X, Y: Integer): PPixel32;
+function TGuiCustomByteMap.GetValuePointer(X, Y: Integer): PByteArray;
 begin
  Result := @FDataPointer^[Y * Width + X];
 end;
 
-function TGuiCustomPixelMap.GetScanLine(Y: Integer): PPixel32Array;
+function TGuiCustomByteMap.GetScanLine(Y: Integer): PByteArray;
 begin
  Result := @FDataPointer^[Y * Width];
 end;
 
-procedure TGuiCustomPixelMap.SetPixel(X, Y: Integer; const Value: TPixel32);
+procedure TGuiCustomByteMap.SetValue(X, Y: Integer; const Value: Byte);
 begin
- BlendPixelInplace(Value, FDataPointer[Y * Width + X]);
+ FDataPointer[Y * Width + X] := Value;
 end;
 
-procedure TGuiCustomPixelMap.HeightChanged(UpdateBitmap: Boolean = True);
+procedure TGuiCustomByteMap.HeightChanged(UpdateBitmap: Boolean = True);
 begin
  FBitmapInfo.bmiHeader.biHeight := -FHeight;
  if UpdateBitmap then Resized;
 end;
 
-procedure TGuiCustomPixelMap.WidthChanged(UpdateBitmap: Boolean = True);
+procedure TGuiCustomByteMap.WidthChanged(UpdateBitmap: Boolean = True);
 begin
  FBitmapInfo.bmiHeader.biWidth := FWidth;
  if UpdateBitmap then Resized;
 end;
 
-procedure TGuiCustomPixelMap.LoadFromStream(Stream: TStream);
+procedure TGuiCustomByteMap.LoadFromStream(Stream: TStream);
 var
   BitmapFileHeader : TBitmapFileHeader;
   FileFormatClass  : TGuiCustomFileFormatClass;
@@ -514,7 +434,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomPixelMap.SaveToStream(Stream: TStream);
+procedure TGuiCustomByteMap.SaveToStream(Stream: TStream);
 var
   BitmapFileHeader : TBitmapFileHeader;
 begin
@@ -539,15 +459,15 @@ begin
   end;
 end;
 
-function TGuiCustomPixelMap.Equal(PixelMap: TGuiCustomPixelMap): Boolean;
+function TGuiCustomByteMap.Equal(ByteMap: TGuiCustomByteMap): Boolean;
 begin
- Result := (PixelMap.Width = FWidth) and (PixelMap.Height = FHeight);
+ Result := (ByteMap.Width = FWidth) and (ByteMap.Height = FHeight);
 
  if Result
-  then Result := CompareMem(FDataPointer, PixelMap.FDataPointer, FDataSize);
+  then Result := CompareMem(FDataPointer, ByteMap.FDataPointer, FDataSize);
 end;
 
-procedure TGuiCustomPixelMap.ReadData(Stream: TStream);
+procedure TGuiCustomByteMap.ReadData(Stream: TStream);
 var
   TempWidth, TempHeight: Integer;
 begin
@@ -556,99 +476,82 @@ begin
    ReadBuffer(TempWidth, 4);
    ReadBuffer(TempHeight, 4);
    SetSize(TempWidth, TempHeight);
-   Assert(FDataSize = FWidth * FHeight * SizeOf(TPixel32));
+   Assert(FDataSize = FWidth * FHeight);
    ReadBuffer(FDataPointer^, FDataSize);
   finally
    Changed;
   end;
 end;
 
-procedure TGuiCustomPixelMap.WriteData(Stream: TStream);
+procedure TGuiCustomByteMap.WriteData(Stream: TStream);
 begin
  with Stream do
   begin
    WriteBuffer(FWidth, 4);
    WriteBuffer(FHeight, 4);
-   Assert(FDataSize = FWidth * FHeight * SizeOf(TPixel32));
+   Assert(FDataSize = FWidth * FHeight);
    WriteBuffer(FDataPointer^, FDataSize);
   end;
 end;
 
-procedure TGuiCustomPixelMap.DefineProperties(Filer: TFiler);
+procedure TGuiCustomByteMap.DefineProperties(Filer: TFiler);
 var
   HasData : Boolean;
 begin
  HasData := (FDataSize > 0);
  if HasData and (Filer.Ancestor <> nil)
-  then HasData := not ((Filer.Ancestor is TGuiCustomPixelMap) and
-    Equal(TGuiCustomPixelMap(Filer.Ancestor)));
+  then HasData := not ((Filer.Ancestor is TGuiCustomByteMap) and
+    Equal(TGuiCustomByteMap(Filer.Ancestor)));
 
  Filer.DefineBinaryProperty('Data', ReadData, WriteData, HasData);
 end;
 
-procedure TGuiCustomPixelMap.FillRect(Rect: TRect; Color: TPixel32);
+procedure TGuiCustomByteMap.FillRect(Rect: TRect; Data: Byte);
 var
   X, Y : Integer;
 begin
- if Color.A = $FF then
-  for Y := Rect.Top to Rect.Bottom - 1 do
-   for X := Rect.Left to Rect.Right - 1
-    do FDataPointer[Y * Width + X] := Color
- else
-  try
-   for Y := Rect.Top to Rect.Bottom - 1 do
-    for X := Rect.Left to Rect.Right - 1
-     do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
-  finally
-   EMMS;
-  end;
+ for Y := Rect.Top to Rect.Bottom - 1 do
+  for X := Rect.Left to Rect.Right - 1
+   do FDataPointer[Y * Width + X] := Data
 end;
 
-procedure TGuiCustomPixelMap.FrameRect(Rect: TRect; Color: TPixel32);
+procedure TGuiCustomByteMap.FrameRect(Rect: TRect; Data: Byte);
 begin
  // top & bottom
- HorizontalLine(Rect.Left, Rect.Right, Rect.Top, Color);
- HorizontalLine(Rect.Left, Rect.Right, Rect.Bottom - 1, Color);
+ HorizontalLine(Rect.Left, Rect.Right, Rect.Top, Data);
+ HorizontalLine(Rect.Left, Rect.Right, Rect.Bottom - 1, Data);
 
  // left & right
- VerticalLine(Rect.Left, Rect.Top + 1, Rect.Bottom - 1, Color);
- VerticalLine(Rect.Right - 1, Rect.Top + 1, Rect.Bottom - 1, Color);
+ VerticalLine(Rect.Left, Rect.Top + 1, Rect.Bottom - 1, Data);
+ VerticalLine(Rect.Right - 1, Rect.Top + 1, Rect.Bottom - 1, Data);
 end;
 
-procedure TGuiCustomPixelMap.VerticalLine(X, FromY, ToY: Integer; Color: TPixel32);
+procedure TGuiCustomByteMap.VerticalLine(X, FromY, ToY: Integer; Data: Byte);
 var
   Y : Integer;
 begin
- try
-  if ToY < FromY  then
-   for Y := ToY to FromY - 1
-    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
-  else
-   for Y := FromY to ToY - 1
-    do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
- finally
-  EMMS;
- end;
+ if ToY < FromY  then
+  for Y := ToY to FromY - 1
+   do FDataPointer[Y * Width + X] := Data
+ else
+  for Y := FromY to ToY - 1
+   do FDataPointer[Y * Width + X] := Data;
 end;
 
-procedure TGuiCustomPixelMap.HorizontalLine(FromX, ToX, Y: Integer;
-  Color: TPixel32);
+procedure TGuiCustomByteMap.HorizontalLine(FromX, ToX, Y: Integer;
+  Data: Byte);
 var
   X : Integer;
 begin
- try
-  if ToX < FromX  then
-   for X := ToX to FromX - 1
-    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
-  else
-   for X := FromX to ToX - 1
-    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
- finally
-  EMMS;
- end;
+ if ToX < FromX  then
+  for X := ToX to FromX - 1
+   do FDataPointer[Y * Width + X] := Data
+ else
+  for X := FromX to ToX - 1
+   do FDataPointer[Y * Width + X] := Data;
 end;
 
-procedure TGuiCustomPixelMap.Line(FromX, FromY, ToX, ToY: Integer; Color: TPixel32);
+procedure TGuiCustomByteMap.Line(FromX, FromY, ToX, ToY: Integer; Data: Byte);
 var
   x, y, t     : Integer;
   dx, dy      : Integer;
@@ -657,9 +560,9 @@ var
   ddx, ddy    : Integer;
   es, el, err : Integer;
 begin
- if FromY = ToY then HorizontalLine(FromX, ToX, FromY, Color) else
- if FromX = ToX then VerticalLine(FromX, FromY, ToY, Color) else
-  try
+ if FromY = ToY then HorizontalLine(FromX, ToX, FromY, Data) else
+ if FromX = ToX then VerticalLine(FromX, FromY, ToY, Data) else
+  begin
    dx := ToX - FromX;
    dy := ToY - FromY;
 
@@ -690,7 +593,7 @@ begin
    x := FromX;
    y := FromY;
    err := el shr 1;
-   BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
+   FDataPointer[Y * Width + X] := Data;
 
    for t := 1 to el - 1 do
     begin
@@ -706,36 +609,26 @@ begin
        x := x + pdx;
        y := y + pdy;
       end;
-     BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
+     FDataPointer[Y * Width + X] := Data;
     end;
-  finally
-   EMMS;
   end;
 end;
 
-procedure TGuiCustomPixelMap.ResetAlpha;
-var
-  Index : Integer;
-begin
- for Index := 0 to FWidth * FHeight - 1
-  do FDataPointer^[Index].A := $FF;
-end;
 
+{ TGuiByteMapMemory }
 
-{ TGuiPixelMapMemory }
-
-destructor TGuiPixelMapMemory.Destroy;
+destructor TGuiByteMapMemory.Destroy;
 begin
  Dispose(FDataPointer);
  inherited;
 end;
 
-procedure TGuiPixelMapMemory.Draw(Bitmap: TBitmap; X, Y: Integer);
+procedure TGuiByteMapMemory.Draw(Bitmap: TBitmap; X, Y: Integer);
 begin
  if (Bitmap.Height <> 0) and (FDataPointer <> nil) then
   begin
    if GetDIBits(Bitmap.Canvas.Handle, Bitmap.Handle, 0, Bitmap.Height,
-     FDataPointer, FBitmapInfo, DIB_RGB_COLORS) = 0
+     FDataPointer, FBitmapInfo^, DIB_RGB_COLORS) = 0
     then raise Exception.Create('Error');
   end;
 
@@ -764,7 +657,7 @@ var
 *)
 end;
 
-procedure TGuiPixelMapMemory.PaintTo(Canvas: TCanvas; X, Y: Integer);
+procedure TGuiByteMapMemory.PaintTo(Canvas: TCanvas; X, Y: Integer);
 var
   Bitmap        : HBITMAP;
   DeviceContext : HDC;
@@ -772,13 +665,13 @@ var
   OldObject     : HGDIOBJ;
 begin
  if SetDIBitsToDevice(Canvas.Handle, X, Y, Width, Height, 0, 0, 0, Height,
-   FDataPointer, FBitmapInfo, DIB_RGB_COLORS) = 0 then
+   FDataPointer, FBitmapInfo^, DIB_RGB_COLORS) = 0 then
   begin
    // create compatible device context
    DeviceContext := CreateCompatibleDC(Canvas.Handle);
    if DeviceContext <> 0 then
     try
-     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo,
+     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo^,
        DIB_RGB_COLORS, Buffer, 0, 0);
 
      if Bitmap <> 0 then
@@ -800,7 +693,7 @@ begin
   end;
 end;
 
-procedure TGuiPixelMapMemory.PaintTo(Canvas: TCanvas; Rect: TRect;
+procedure TGuiByteMapMemory.PaintTo(Canvas: TCanvas; Rect: TRect;
   X: Integer = 0; Y: Integer = 0);
 var
   Bitmap        : HBITMAP;
@@ -812,14 +705,14 @@ begin
  W := Min(Width, Rect.Right - Rect.Left);
  H := Min(Height, Rect.Bottom - Rect.Top);
  if SetDIBitsToDevice(Canvas.Handle, X, Y, W, H, Rect.Left, Rect.Top, 0, Height,
-   FDataPointer, FBitmapInfo, DIB_RGB_COLORS) = 0 then
+   FDataPointer, FBitmapInfo^, DIB_RGB_COLORS) = 0 then
   begin
    // create compatible device context
    DeviceContext := CreateCompatibleDC(Canvas.Handle);
    if DeviceContext <> 0 then
     try
-     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo,
-       DIB_RGB_COLORS, Buffer, 0, 0);
+     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo^, DIB_RGB_COLORS,
+       Buffer, 0, 0);
 
      if Bitmap <> 0 then
       begin
@@ -840,29 +733,29 @@ begin
   end;
 end;
 
-procedure TGuiPixelMapMemory.HeightChanged(UpdateBitmap: Boolean);
+procedure TGuiByteMapMemory.HeightChanged(UpdateBitmap: Boolean);
 begin
  inherited;
  if UpdateBitmap then AllocateDataPointer;
 end;
 
-procedure TGuiPixelMapMemory.WidthChanged(UpdateBitmap: Boolean);
+procedure TGuiByteMapMemory.WidthChanged(UpdateBitmap: Boolean);
 begin
  inherited;
  if UpdateBitmap then AllocateDataPointer;
 end;
 
-procedure TGuiPixelMapMemory.SizeChangedAtOnce;
+procedure TGuiByteMapMemory.SizeChangedAtOnce;
 begin
  inherited;
  AllocateDataPointer;
 end;
 
-procedure TGuiPixelMapMemory.AllocateDataPointer;
+procedure TGuiByteMapMemory.AllocateDataPointer;
 var
   NewDataSize : Integer;
 begin
- NewDataSize := FWidth * FHeight * SizeOf(Cardinal);
+ NewDataSize := FWidth * FHeight;
  if FDataSize <> NewDataSize then
   begin
    FDataSize := NewDataSize;
@@ -873,30 +766,30 @@ begin
 end;
 
 
-{ TGuiPixelMapDIB }
+{ TGuiByteMapDIB }
 
-constructor TGuiPixelMapDIB.Create;
+constructor TGuiByteMapDIB.Create;
 begin
  inherited;
 end;
 
-destructor TGuiPixelMapDIB.Destroy;
+destructor TGuiByteMapDIB.Destroy;
 begin
  DisposeDeviceIndependentBitmap;
  inherited;
 end;
 
-procedure TGuiPixelMapDIB.AllocateDeviceIndependentBitmap;
+procedure TGuiByteMapDIB.AllocateDeviceIndependentBitmap;
 var
   NewDataSize : Integer;
 begin
- NewDataSize := FWidth * FHeight * SizeOf(Cardinal);
+ NewDataSize := FWidth * FHeight;
  if FDataSize <> NewDataSize then
   begin
    FDataSize := NewDataSize;
    Assert(FDataSize >= 0);
 
-   FBitmapHandle := CreateDIBSection(0, FBitmapInfo, DIB_RGB_COLORS,
+   FBitmapHandle := CreateDIBSection(0, FBitmapInfo^, DIB_RGB_COLORS,
      Pointer(FDataPointer), 0, 0);
 
    if FDataPointer = nil
@@ -925,7 +818,7 @@ begin
   end;
 end;
 
-procedure TGuiPixelMapDIB.DisposeDeviceIndependentBitmap;
+procedure TGuiByteMapDIB.DisposeDeviceIndependentBitmap;
 begin
  if FDC <> 0 then DeleteDC(FDC);
  FDC := 0;
@@ -936,7 +829,7 @@ begin
  FDataPointer := nil;
 end;
 
-procedure TGuiPixelMapDIB.Draw(Bitmap: TBitmap; X, Y: Integer);
+procedure TGuiByteMapDIB.Draw(Bitmap: TBitmap; X, Y: Integer);
 (*
 var
   CompBitmap : HBITMAP;
@@ -954,19 +847,19 @@ begin
 *)
 end;
 
-procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; X, Y: Integer);
+procedure TGuiByteMapDIB.PaintTo(Canvas: TCanvas; X, Y: Integer);
 begin
  BitBlt(Canvas.Handle, X, Y, Width, Height, FDC, X, Y, SRCCOPY);
 end;
 
-procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0;
+procedure TGuiByteMapDIB.PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0;
   Y: Integer = 0);
 begin
  BitBlt(Canvas.Handle, X, Y, Min(Width, Rect.Right - Rect.Left),
    Min(Height, Rect.Bottom - Rect.Top), FDC, Rect.Left, Rect.Top, SRCCOPY);
 end;
 
-procedure TGuiPixelMapDIB.SizeChangedAtOnce;
+procedure TGuiByteMapDIB.SizeChangedAtOnce;
 begin
  inherited;
  DisposeDeviceIndependentBitmap;
@@ -974,7 +867,7 @@ begin
   then AllocateDeviceIndependentBitmap;
 end;
 
-procedure TGuiPixelMapDIB.HeightChanged(UpdateBitmap: Boolean);
+procedure TGuiByteMapDIB.HeightChanged(UpdateBitmap: Boolean);
 begin
  inherited;
  if UpdateBitmap then
@@ -985,7 +878,7 @@ begin
   end;
 end;
 
-procedure TGuiPixelMapDIB.WidthChanged(UpdateBitmap: Boolean);
+procedure TGuiByteMapDIB.WidthChanged(UpdateBitmap: Boolean);
 begin
  inherited;
  if UpdateBitmap then

@@ -139,8 +139,13 @@ begin
    {$ENDIF}
   end;
 
+ {$IFDEF FPC}
  if DeflateInit_(@ZStreamRecord, Level ,ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
   then raise EPngError.Create('Error during compression');
+ {$ELSE}
+ if DeflateInit_(ZStreamRecord, Level ,ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+  then raise EPngError.Create('Error during compression');
+ {$ENDIF}
 
  GetMem(TempBuffer, CBufferSize);
  try
@@ -198,8 +203,13 @@ begin
    {$ENDIF}
   end;
 
+ {$IFDEF FPC}
  if inflateInit_(@ZStreamRecord, ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
   then raise EPngError.Create('Error during decompression');
+ {$ELSE}
+ if inflateInit_(ZStreamRecord, ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+  then raise EPngError.Create('Error during decompression');
+ {$ENDIF}
 
  GetMem(TempBuffer, CBufferSize);
  try

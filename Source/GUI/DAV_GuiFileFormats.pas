@@ -66,7 +66,7 @@ type
     class function CanHandleExtension(const FileName: TFileName): Boolean; virtual; abstract;
   public
     constructor Create; virtual; abstract;
-    procedure AssignTo(Dest: TPersistent); virtual;
+    procedure AssignTo(Dest: TPersistent); override;
 
     procedure LoadFromStream(Stream: TStream); virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;

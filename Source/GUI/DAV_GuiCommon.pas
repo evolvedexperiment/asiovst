@@ -297,7 +297,7 @@ begin
   end;
 end;
 {$ELSE}
-  Line : Array [0..2] of PRGB24Array;
+  Line : array [0..2] of PRGB24Array;
 begin
  with Bitmap do
   begin
@@ -323,7 +323,7 @@ var
   x, y : Integer;
 {$IFDEF FPC}
   SrcIntfImg    : TLazIntfImage;
-  SourcePixels  : Array [0..2, 0..2] of TFPColor;
+  SourcePixels  : array [0..2, 0..2] of TFPColor;
   DestPixel     : TFPColor; // TRGB32
   ImgHandle     : HBitmap;
   ImgMaskHandle : HBitmap;
@@ -373,7 +373,7 @@ begin
 end;
 {$ELSE}
   x3   : Integer;
-  Line : Array [0..3] of PRGB32Array;
+  Line : array [0..3] of PRGB32Array;
 begin
  with Bitmap do
   begin
@@ -410,7 +410,7 @@ var
   x, y : Integer;
 {$IFDEF FPC}
   SrcIntfImg    : TLazIntfImage;
-  SourcePixels  : Array [0..2, 0..2] of TFPColor;
+  SourcePixels  : array [0..2, 0..2] of TFPColor;
   DestPixel     : TFPColor; // TRGB32
   ImgHandle     : HBitmap;
   ImgMaskHandle : HBitmap;
@@ -460,7 +460,7 @@ begin
 end;
 {$ELSE}
   x3   : Integer;
-  Line : Array [0..3] of PRGB24Array;
+  Line : array [0..3] of PRGB24Array;
 begin
  with Bitmap do
   begin
@@ -494,7 +494,7 @@ var
   x, y : Integer;
 {$IFDEF FPC}
   SrcIntfImg    : TLazIntfImage;
-  SourcePixels  : Array [0..3, 0..3] of TFPColor;
+  SourcePixels  : array [0..3, 0..3] of TFPColor;
   DestPixel     : TFPColor; // TRGB32
   ImgHandle     : HBitmap;
   ImgMaskHandle : HBitmap;
@@ -554,7 +554,7 @@ begin
 end;
 {$ELSE}
   x4   : Integer;
-  Line : Array [0..4] of PRGB32Array;
+  Line : array [0..4] of PRGB32Array;
 begin
  with Bitmap do
   begin
@@ -596,7 +596,7 @@ var
   x, y : Integer;
 {$IFDEF FPC}
   SrcIntfImg    : TLazIntfImage;
-  SourcePixels  : Array [0..3, 0..3] of TFPColor;
+  SourcePixels  : array [0..3, 0..3] of TFPColor;
   DestPixel     : TFPColor; // TRGB32
   ImgHandle     : HBitmap;
   ImgMaskHandle : HBitmap;
@@ -656,7 +656,7 @@ begin
 end;
 {$ELSE}
   x4   : Integer;
-  Line : Array [0..4] of PRGB24Array;
+  Line : array [0..4] of PRGB24Array;
 begin
  with Bitmap do
   begin
@@ -694,7 +694,7 @@ var
   x, y         : Integer;
 {$IFDEF FPC}
   SrcIntfImg   : TLazIntfImage;
-  SourcePixels : Array [0..1, 0..1] of TFPColor;
+  SourcePixels : array [0..1, 0..1] of TFPColor;
   DestPixel    : TFPColor;
 begin
  SrcIntfImg := TLazIntfImage.Create(0, 0);
@@ -730,7 +730,7 @@ begin
 end;
 {$ELSE}
   x2   : Integer;
-  Line : Array [0..2] of PRGB32Array;
+  Line : array [0..2] of PRGB32Array;
 begin
  with Bitmap do
   begin
@@ -759,7 +759,7 @@ procedure Upsample2xBitmap24(var Bitmap: TBitmap);
 var
   x, y : Integer;
   x2   : Integer;
-  Line : Array [0..2] of PRGB24Array;
+  Line : array [0..2] of PRGB24Array;
 begin
  {$IFNDEF FPC}
  with Bitmap do
@@ -789,7 +789,7 @@ procedure Upsample3xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
   x3   : Integer;
-  Line : Array [0..3] of PRGB32Array;
+  Line : array [0..3] of PRGB32Array;
 begin
  {$IFNDEF FPC}
  with Bitmap do
@@ -825,7 +825,7 @@ procedure Upsample3xBitmap24(var Bitmap: TBitmap);
 var
   x, y : Integer;
   x3   : Integer;
-  Line : Array [0..3] of PRGB24Array;
+  Line : array [0..3] of PRGB24Array;
 begin
  {$IFNDEF FPC}
  with Bitmap do
@@ -861,7 +861,7 @@ procedure Upsample4xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
   i, j : Integer;
-  Line : Array [0..4] of PRGB32Array;
+  Line : array [0..4] of PRGB32Array;
 begin
  {$IFNDEF FPC}
  with Bitmap do
@@ -886,7 +886,7 @@ procedure Upsample4xBitmap24(var Bitmap: TBitmap);
 var
   x, y : Integer;
   i, j : Integer;
-  Line : Array [0..4] of PRGB32Array;
+  Line : array [0..4] of PRGB32Array;
 begin
  {$IFNDEF FPC}
  with Bitmap do
