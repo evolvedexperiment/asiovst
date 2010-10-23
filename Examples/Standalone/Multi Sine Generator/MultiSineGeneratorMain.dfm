@@ -749,7 +749,7 @@ object FmASIO: TFmASIO
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 100.000000000000000000
     LEDColor = clRed
-    LineWidth = 1.799999952316284000
+    BorderWidth = 2.000000000000000000
     Uniformity_Percent = 33.000000000000000000
     Transparent = False
     OnClick = LedClipRClick
@@ -762,7 +762,7 @@ object FmASIO: TFmASIO
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 100.000000000000000000
     LEDColor = clRed
-    LineWidth = 1.799999952316284000
+    BorderWidth = 2.000000000000000000
     Uniformity_Percent = 33.000000000000000000
     Transparent = False
     OnClick = LedClipLClick

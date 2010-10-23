@@ -37,17 +37,18 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED;
+  DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList;
 
 type
   TFmLightweightFeedbackCompressor = class(TForm)
-    DialAttack: TGuiDial;
-    DialKnee: TGuiDial;
-    DialMakeUpGain: TGuiDial;
-    DialRatio: TGuiDial;
-    DialRelease: TGuiDial;
-    DialThreshold: TGuiDial;
-    GuiDialImageList: TGuiDialImageList;
+    DialAttack: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialMakeUpGain: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     GuiGraphXY: TGuiGraphXY;
     GuiLabel2: TGuiLabel;
     GuiLabel3: TGuiLabel;
@@ -96,37 +97,12 @@ type
 implementation
 
 uses
-  Math, PngImage, DAV_VSTModuleWithPrograms, LightweightFeedbackCompressorDM;
+  Math, DAV_VSTModuleWithPrograms, LightweightFeedbackCompressorDM;
 
 {$R *.DFM}
 
 procedure TFmLightweightFeedbackCompressor.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
 begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'FeedbackCompressorKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[0].DialBitmap do
-    begin
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialThreshold.DialImageIndex := 0;
-   DialKnee.DialImageIndex := 0;
-   DialRatio.DialImageIndex := 0;
-   DialAttack.DialImageIndex := 0;
-   DialRelease.DialImageIndex := 0;
-   DialMakeUpGain.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
   begin
    OnEvaluate := EvaluateCharacteristic;

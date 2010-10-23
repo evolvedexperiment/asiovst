@@ -119,6 +119,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiCustomMap.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiShadow.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPaintBox.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedDisplay.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -171,7 +172,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-10-22 19:15</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-10-23 12:38</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

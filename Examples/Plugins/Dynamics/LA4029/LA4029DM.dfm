@@ -1,4 +1,5 @@
 object LA4029DataModule: TLA4029DataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'LA-4029 Leveling Amplifier'

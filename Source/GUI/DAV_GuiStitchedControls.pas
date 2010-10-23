@@ -143,6 +143,7 @@ type
     procedure SetTransparent(const Value: Boolean);
     procedure SetGlyphIndex(Value: Integer);
     procedure SetDefaultGlyphIndex(Value: Integer);
+    function GetGlyphCount: Integer;
   protected
     FAutoSize          : Boolean;
     FTransparent       : Boolean;
@@ -183,6 +184,7 @@ type
     destructor Destroy; override;
 
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
+    property GlyphCount: Integer read GetGlyphCount;
     property StitchedImageList: TGuiCustomStitchedList read FStitchedList write SetStitchedList;
     property StitchedImageIndex: Integer read FStitchedItemIndex write SetStitchedIndex default -1;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
@@ -321,12 +323,8 @@ var
   Index : Integer;
 begin
  for Index := 0 to FLinkedStitches.Count - 1 do
-  with TGuiCustomStitchedControl(FLinkedStitches[Index]) do
-   begin
-    GlyphCount := Self.GlyphCount;
-    StitchKind := Self.StitchKind;
-    BufferChanged;
-   end;
+  with TGuiCustomStitchedControl(FLinkedStitches[Index])
+   do BufferChanged;
 end;
 
 procedure TGuiCustomStitchedCollectionItem.SetWidth(const Value: Integer);
@@ -780,6 +778,13 @@ procedure TGuiCustomStitchedControl.BufferChanged;
 begin
  FUpdateBuffer := True;
  Invalidate;
+end;
+
+function TGuiCustomStitchedControl.GetGlyphCount: Integer;
+begin
+ if Assigned(FStitchedItem)
+  then Result := FStitchedItem.GlyphCount
+  else Result := 0;
 end;
 
 procedure TGuiCustomStitchedControl.GlyphIndexChanged;

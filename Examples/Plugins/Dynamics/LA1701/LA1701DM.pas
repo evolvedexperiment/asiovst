@@ -1,4 +1,4 @@
-unit LA1701DM;
+﻿unit LA1701DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -49,16 +49,16 @@ type
     procedure VSTModuleProcessDoubleReplacingBypass(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleSoftBypass(Sender: TObject; isBypass: Boolean);
-    procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamVUMeterDisplayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -143,9 +143,9 @@ begin
  // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
-   if DialInput.Position <> Value then
+   if DialInput.Value <> Value then
     begin
-     DialInput.Position := Value;
+     DialInput.Value := Value;
      UpdateInput;
     end;
 end;
@@ -159,9 +159,9 @@ begin
  // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
-   if DialOutput.Position <> Value then
+   if DialOutput.Value <> Value then
     begin
-     DialOutput.Position := Value;
+     DialOutput.Value := Value;
      UpdateOutput;
     end;
 end;
@@ -174,9 +174,9 @@ begin
  // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
-   if DialKnee.Position <> Value then
+   if DialKnee.Value <> Value then
     begin
-     DialKnee.Position := Value;
+     DialKnee.Value := Value;
      UpdateKnee;
     end;
 end;
@@ -189,9 +189,9 @@ begin
  // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
-   if DialRatio.Position <> Log10(Value) then
+   if DialRatio.Value <> Log10(Value) then
     begin
-     DialRatio.Position := Log10(Value);
+     DialRatio.Value := Log10(Value);
      UpdateRatio;
     end;
 end;
@@ -204,9 +204,9 @@ begin
  // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
-   if DialRelease.Position <> Log10(Value) then
+   if DialRelease.Value <> Log10(Value) then
     begin
-     DialRelease.Position := Log10(Value);
+     DialRelease.Value := Log10(Value);
      UpdateRelease;
     end;
 end;
@@ -227,7 +227,7 @@ begin
   end;
 end;
 
-procedure TLA1701DataModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TLA1701DataModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1 then PreDefined := 'µs';
 end;
@@ -273,7 +273,7 @@ begin
 end;
 
 procedure TLA1701DataModule.ParamOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 0.5
   then PreDefined := 'On'
@@ -292,7 +292,7 @@ begin
   then FHighpass.Order := round(Value);
 end;
 
-procedure TLA1701DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TLA1701DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(round(Parameter[Index]));
 end;
@@ -303,7 +303,7 @@ begin
   then FHighpass.Frequency := Value;
 end;
 
-procedure TLA1701DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TLA1701DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case round(Parameter[Index]) of
   0: Predefined := 'Input';
@@ -324,7 +324,7 @@ begin
 end;
 
 procedure TLA1701DataModule.ParamAttackDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1
   then PreDefined := FloatToStrF(1E3 * Parameter[Index], ffFixed, 3, 1)
@@ -332,7 +332,7 @@ begin
 end;
 
 procedure TLA1701DataModule.ParamRatioDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := '1:' + PreDefined;
 end;
@@ -353,9 +353,9 @@ begin
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
-   if DialAttack.Position <> Log10(Value) then
+   if DialAttack.Value <> Log10(Value) then
     begin
-     DialAttack.Position := Log10(Value);
+     DialAttack.Value := Log10(Value);
      UpdateAttack;
     end;
 end;

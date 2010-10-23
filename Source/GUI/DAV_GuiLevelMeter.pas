@@ -294,94 +294,98 @@ begin
 end;
 
 procedure TCustomGuiLevelMeter.DrawSingleBarHI(BarRect: TRect; Peak, MaxPeak: Single);
-var ClipIndRect, GaugeRect, tmpRect: TRect; tmp: Single;
+var
+  ClipIndRect : TRect;
+  GaugeRect   : TRect;
+  tmpRect     : TRect;
+  tmp         : Single;
 begin
-  case FShowClipping of
-    scNo:          begin GaugeRect   := BarRect;
-                         ClipIndRect := Rect(0,0,0,0); end;
-    scTopLeft:     begin GaugeRect   := Rect(BarRect.Left+FClippingBoxSize+1, BarRect.Top, BarRect.Right, BarRect.Bottom);
-                         ClipIndRect := Rect(BarRect.Left, BarRect.Top, BarRect.Left+FClippingBoxSize, BarRect.Bottom); end;
-    scBottomRight: begin GaugeRect   := Rect(BarRect.Left, BarRect.Top, BarRect.Right-FClippingBoxSize-1, BarRect.Bottom);
-                         ClipIndRect := Rect(BarRect.Right-FClippingBoxSize, BarRect.Top, BarRect.Right, BarRect.Bottom); end;
-  end;
+ case FShowClipping of
+   scNo:          begin GaugeRect   := BarRect;
+                        ClipIndRect := Rect(0,0,0,0); end;
+   scTopLeft:     begin GaugeRect   := Rect(BarRect.Left+FClippingBoxSize+1, BarRect.Top, BarRect.Right, BarRect.Bottom);
+                        ClipIndRect := Rect(BarRect.Left, BarRect.Top, BarRect.Left+FClippingBoxSize, BarRect.Bottom); end;
+   scBottomRight: begin GaugeRect   := Rect(BarRect.Left, BarRect.Top, BarRect.Right-FClippingBoxSize-1, BarRect.Bottom);
+                        ClipIndRect := Rect(BarRect.Right-FClippingBoxSize, BarRect.Top, BarRect.Right, BarRect.Bottom); end;
+ end;
 
-  tmp := min(1, Peak);
-  tmpRect := GaugeRect;
-  tmpRect.Left := Round(tmpRect.Right-(tmpRect.Right-tmpRect.Left)*tmp);
-  DrawGauge(tmpRect);
+ tmp := Min(1, Peak);
+ tmpRect := GaugeRect;
+ tmpRect.Left := Round(tmpRect.Right-(tmpRect.Right-tmpRect.Left)*tmp);
+ DrawGauge(tmpRect);
 
-  if FShowMaximum then
-  begin
-    tmp := min(1, MaxPeak);
-    GaugeRect.Left := Round(GaugeRect.Right-(GaugeRect.Right-GaugeRect.Left)*tmp);
-    DrawMaxPeakLine(GaugeRect.Left, GaugeRect.Top, GaugeRect.Left, GaugeRect.Bottom);
-  end;
+ if FShowMaximum then
+ begin
+   tmp := Min(1, MaxPeak);
+   GaugeRect.Left := Round(GaugeRect.Right - (GaugeRect.Right - GaugeRect.Left) * tmp);
+   DrawMaxPeakLine(GaugeRect.Left, GaugeRect.Top, GaugeRect.Left, GaugeRect.Bottom);
+ end;
 
-  if (FShowClipping<>scNo) and (MaxPeak>1) then DrawClipIndicator(ClipIndRect);
+ if (FShowClipping <> scNo) and (MaxPeak > 1) then DrawClipIndicator(ClipIndRect);
 end;
 
 procedure TCustomGuiLevelMeter.DrawSingleBarV(BarRect: TRect; Peak, MaxPeak: Single);
 var
-  ClipIndRect,
-  GaugeRect,
-  tmpRect      : TRect;
-  tmp          : Single;
+  ClipIndRect : TRect;
+  GaugeRect   : TRect;
+  tmpRect     : TRect;
+  tmp         : Single;
 begin
-  case FShowClipping of
-    scNo:          begin GaugeRect   := BarRect;
-                         ClipIndRect := Rect(0,0,0,0); end;
-    scTopLeft:     begin GaugeRect   := Rect(BarRect.Left, BarRect.Top+FClippingBoxSize+1, BarRect.Right, BarRect.Bottom);
-                         ClipIndRect := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Top+FClippingBoxSize); end;
-    scBottomRight: begin GaugeRect   := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Bottom-FClippingBoxSize-1);
-                         ClipIndRect := Rect(BarRect.Left, BarRect.Bottom-FClippingBoxSize, BarRect.Right, BarRect.Bottom); end;
+ case FShowClipping of
+   scNo:          begin GaugeRect   := BarRect;
+                        ClipIndRect := Rect(0,0,0,0); end;
+   scTopLeft:     begin GaugeRect   := Rect(BarRect.Left, BarRect.Top+FClippingBoxSize+1, BarRect.Right, BarRect.Bottom);
+                        ClipIndRect := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Top+FClippingBoxSize); end;
+   scBottomRight: begin GaugeRect   := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Bottom-FClippingBoxSize-1);
+                        ClipIndRect := Rect(BarRect.Left, BarRect.Bottom-FClippingBoxSize, BarRect.Right, BarRect.Bottom); end;
+ end;
+
+ tmp := min(1, Peak);
+ tmpRect := GaugeRect;
+ tmpRect.Top := Round(tmpRect.Bottom-(tmpRect.Bottom-tmpRect.Top)*tmp);
+ DrawGauge(tmpRect);
+
+ if FShowMaximum then
+  begin
+   tmp := min(1, MaxPeak);
+   GaugeRect.Top := Round(GaugeRect.Bottom-(GaugeRect.Bottom-GaugeRect.Top)*tmp);
+   DrawMaxPeakLine(GaugeRect.Left, GaugeRect.Top, GaugeRect.Right, GaugeRect.Top);
   end;
 
-  tmp := min(1, Peak);
-  tmpRect := GaugeRect;
-  tmpRect.Top := Round(tmpRect.Bottom-(tmpRect.Bottom-tmpRect.Top)*tmp);
-  DrawGauge(tmpRect);
-
-  if FShowMaximum then
-   begin
-    tmp := min(1, MaxPeak);
-    GaugeRect.Top := Round(GaugeRect.Bottom-(GaugeRect.Bottom-GaugeRect.Top)*tmp);
-    DrawMaxPeakLine(GaugeRect.Left, GaugeRect.Top, GaugeRect.Right, GaugeRect.Top);
-   end;
-
-  if (FShowClipping <> scNo) and
-     (MaxPeak > 1) then DrawClipIndicator(ClipIndRect);
+ if (FShowClipping <> scNo) and
+    (MaxPeak > 1) then DrawClipIndicator(ClipIndRect);
 end;
 
 procedure TCustomGuiLevelMeter.DrawSingleBarVI(BarRect: TRect; Peak, MaxPeak: Single);
 var
-  ClipIndRect,
-  GaugeRect,
-  tmpRect      : TRect;
-  tmp          : Single;
+  ClipIndRect : TRect;
+  GaugeRect   : TRect;
+  tmpRect     : TRect;
+  tmp         : Single;
 begin
-  case FShowClipping of
-    scNo:          begin GaugeRect   := BarRect;
-                         ClipIndRect := Rect(0,0,0,0); end;
-    scTopLeft:     begin GaugeRect   := Rect(BarRect.Left, BarRect.Top+FClippingBoxSize+1, BarRect.Right, BarRect.Bottom);
-                         ClipIndRect := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Top+FClippingBoxSize); end;
-    scBottomRight: begin GaugeRect   := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Bottom-FClippingBoxSize-1);
-                         ClipIndRect := Rect(BarRect.Left, BarRect.Bottom-FClippingBoxSize, BarRect.Right, BarRect.Bottom); end;
+ case FShowClipping of
+   scNo:          begin GaugeRect   := BarRect;
+                        ClipIndRect := Rect(0,0,0,0); end;
+   scTopLeft:     begin GaugeRect   := Rect(BarRect.Left, BarRect.Top+FClippingBoxSize+1, BarRect.Right, BarRect.Bottom);
+                        ClipIndRect := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Top+FClippingBoxSize); end;
+   scBottomRight: begin GaugeRect   := Rect(BarRect.Left, BarRect.Top, BarRect.Right, BarRect.Bottom-FClippingBoxSize-1);
+                        ClipIndRect := Rect(BarRect.Left, BarRect.Bottom-FClippingBoxSize, BarRect.Right, BarRect.Bottom); end;
+ end;
+
+ tmp := min(1, Peak);
+ tmpRect := GaugeRect;
+ tmpRect.Bottom := Round((tmpRect.Bottom-tmpRect.Top)*tmp + tmpRect.Top);
+ DrawGauge(tmpRect);
+
+ if FShowMaximum then
+  begin
+   tmp := min(1, MaxPeak);
+   GaugeRect.Bottom := Round((GaugeRect.Bottom - GaugeRect.Top) * tmp + GaugeRect.Top);
+   DrawMaxPeakLine(GaugeRect.Left, GaugeRect.Bottom, GaugeRect.Right, GaugeRect.Bottom);
   end;
 
-  tmp := min(1, Peak);
-  tmpRect := GaugeRect;
-  tmpRect.Bottom := Round((tmpRect.Bottom-tmpRect.Top)*tmp + tmpRect.Top);
-  DrawGauge(tmpRect);
-
-  if FShowMaximum then
-   begin
-    tmp := min(1, MaxPeak);
-    GaugeRect.Bottom := Round((GaugeRect.Bottom - GaugeRect.Top) * tmp + GaugeRect.Top);
-    DrawMaxPeakLine(GaugeRect.Left, GaugeRect.Bottom, GaugeRect.Right, GaugeRect.Bottom);
-   end;
-
-  if (FShowClipping <> scNo) and
-     (MaxPeak > 1) then DrawClipIndicator(ClipIndRect);
+ if (FShowClipping <> scNo) and
+    (MaxPeak > 1) then DrawClipIndicator(ClipIndRect);
 end;
 
 procedure TCustomGuiLevelMeter.UpdateBuffer;
@@ -422,11 +426,11 @@ end;
 
 procedure TCustomGuiLevelMeter.SetBarWidthPercentage(const Value: Single);
 begin
-  if FBarWidthPercentage <> Value then
-   begin
-    FBarWidthPercentage := Value;
-    BarWidthPercentageChanged;
-   end;
+ if FBarWidthPercentage <> Value then
+  begin
+   FBarWidthPercentage := Value;
+   BarWidthPercentageChanged;
+  end;
 end;
 
 procedure TCustomGuiLevelMeter.BarWidthPercentageChanged;

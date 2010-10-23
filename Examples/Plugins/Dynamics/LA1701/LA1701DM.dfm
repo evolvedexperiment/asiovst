@@ -1,4 +1,5 @@
 object LA1701DataModule: TLA1701DataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'LA-1701 Leveling Amplifier'
