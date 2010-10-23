@@ -42,15 +42,14 @@ type
   THardKneeCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure SLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSimpleCompressors : Array [0..1] of TSimpleCompressor;
+    FSimpleCompressors : array [0..1] of TSimpleCompressor;
     function GetCompressor(Index: Integer): TSimpleCompressor;
   public
     property Compressor[Index: Integer]: TSimpleCompressor read GetCompressor;
@@ -67,18 +66,13 @@ procedure THardKneeCompressorDataModule.VSTModuleOpen(Sender: TObject);
 begin
  FSimpleCompressors[0] := TSimpleCompressor.Create;
  FSimpleCompressors[1] := TSimpleCompressor.Create;
+ EditorFormClass := TFmHardKneeCompressor;
 end;
 
 procedure THardKneeCompressorDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FSimpleCompressors[0]);
  FreeAndNil(FSimpleCompressors[1]);
-end;
-
-procedure THardKneeCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmHardKneeCompressor.Create(Self);
 end;
 
 procedure THardKneeCompressorDataModule.SLThresholdChange(

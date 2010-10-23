@@ -91,7 +91,6 @@ object HardKneeCompressorDataModule: THardKneeCompressorDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
