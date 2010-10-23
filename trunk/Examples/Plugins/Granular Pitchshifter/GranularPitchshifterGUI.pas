@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox,
+  Controls, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiLabel, DAV_GuiSelectBox,
   DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type

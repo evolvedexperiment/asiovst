@@ -35,33 +35,33 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_GuiDial, DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiSelectBox,
-  DAV_GuiLED;
+  DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmNoiseReduction = class(TForm)
-    DialThresholdOffset: TGuiDial;
-    DialRatio: TGuiDial;
     LbThresholdOffset: TGuiLabel;
     LbRatio: TGuiLabel;
     LbThresholdOffsetValue: TGuiLabel;
     LbRatioValue: TGuiLabel;
-    DialKnee: TGuiDial;
     LbKnee: TGuiLabel;
     LbKneeValue: TGuiLabel;
-    DIL: TGuiDialImageList;
-    DialAttack: TGuiDial;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
-    DialRelease: TGuiDial;
     LbRelease: TGuiLabel;
     LbReleaseValue: TGuiLabel;
     SbWindowFunction: TGuiSelectBox;
     LbWindowFunction: TGuiLabel;
     LbCaptureNoiseProfile: TGuiLabel;
     LedNoiseProfile: TGuiLED;
-    GuiLabel1: TGuiLabel;
+    LbFftSize: TGuiLabel;
     SbFftSize: TGuiSelectBox;
-    procedure FormCreate(Sender: TObject);
+    DialThresholdOffset: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialAttack: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure SbWindowFunctionChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialThresholdOffsetChange(Sender: TObject);
@@ -88,34 +88,6 @@ implementation
 
 uses
   Math, PngImage, DAV_Common, DAV_VSTModuleWithPrograms, NoiseReductionDM;
-
-procedure TFmNoiseReduction.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Knob', 'PNG');
-  try
-   with DIL.DialImages.Add do
-    begin
-     GlyphCount := 65;
-     PngBmp.LoadFromStream(RS);
-     DialBitmap.Assign(PngBmp);
-    end;
-   DialThresholdOffset.DialImageIndex  := 0;
-   DialRatio.DialImageIndex := 0;
-   DialKnee.DialImageIndex    := 0;
-   DialAttack.DialImageIndex  := 0;
-   DialRelease.DialImageIndex  := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
 
 procedure TFmNoiseReduction.FormShow(Sender: TObject);
 begin
@@ -147,8 +119,8 @@ procedure TFmNoiseReduction.DialThresholdOffsetChange(Sender: TObject);
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if Parameter[0] <> DialThresholdOffset.Position
-    then Parameter[0] := DialThresholdOffset.Position;
+   if Parameter[0] <> DialThresholdOffset.Value
+    then Parameter[0] := DialThresholdOffset.Value;
   end;
 end;
 
@@ -156,8 +128,8 @@ procedure TFmNoiseReduction.DialRatioChange(Sender: TObject);
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if Parameter[3] <> DialRatio.Position
-    then Parameter[3] := DialRatio.Position;
+   if Parameter[3] <> DialRatio.Value
+    then Parameter[3] := DialRatio.Value;
   end;
 end;
 
@@ -165,8 +137,8 @@ procedure TFmNoiseReduction.DialKneeChange(Sender: TObject);
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if Parameter[4] <> DialKnee.Position
-    then Parameter[4] := DialKnee.Position;
+   if Parameter[4] <> DialKnee.Value
+    then Parameter[4] := DialKnee.Value;
   end;
 end;
 
@@ -174,8 +146,8 @@ procedure TFmNoiseReduction.DialAttackChange(Sender: TObject);
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if Parameter[5] <> DialAttack.Position
-    then Parameter[5] := DialAttack.Position;
+   if Parameter[5] <> DialAttack.Value
+    then Parameter[5] := DialAttack.Value;
   end;
 end;
 
@@ -183,8 +155,8 @@ procedure TFmNoiseReduction.DialReleaseChange(Sender: TObject);
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if Parameter[6] <> DialRelease.Position
-    then Parameter[6] := DialRelease.Position;
+   if Parameter[6] <> DialRelease.Value
+    then Parameter[6] := DialRelease.Value;
   end;
 end;
 
@@ -210,8 +182,8 @@ procedure TFmNoiseReduction.UpdateThresholdOffset;
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if DialThresholdOffset.Position <> Parameter[0] 
-    then DialThresholdOffset.Position := Parameter[0];
+   if DialThresholdOffset.Value <> Parameter[0]
+    then DialThresholdOffset.Value := Parameter[0];
 
    LbThresholdOffsetValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
@@ -239,8 +211,8 @@ procedure TFmNoiseReduction.UpdateRatio;
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if DialRatio.Position <> Parameter[3]
-    then DialRatio.Position := Parameter[3];
+   if DialRatio.Value <> Parameter[3]
+    then DialRatio.Value := Parameter[3];
    LbRatioValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
   end;
 end;
@@ -249,8 +221,8 @@ procedure TFmNoiseReduction.UpdateKnee;
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if DialKnee.Position <> Parameter[4]
-    then DialKnee.Position := Parameter[4];
+   if DialKnee.Value <> Parameter[4]
+    then DialKnee.Value := Parameter[4];
    LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
   end;
 end;
@@ -259,8 +231,8 @@ procedure TFmNoiseReduction.UpdateAttack;
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if DialAttack.Position <> Parameter[5]
-    then DialAttack.Position := Parameter[5];
+   if DialAttack.Value <> Parameter[5]
+    then DialAttack.Value := Parameter[5];
    LbAttackValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
   end;
 end;
@@ -269,8 +241,8 @@ procedure TFmNoiseReduction.UpdateRelease;
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if DialRelease.Position <> Parameter[6]
-    then DialRelease.Position := Parameter[6];
+   if DialRelease.Value <> Parameter[6]
+    then DialRelease.Value := Parameter[6];
    LbReleaseValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
   end;
 end;

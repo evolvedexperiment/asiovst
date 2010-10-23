@@ -36,8 +36,8 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiStitchedControls, 
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmConvoFXLite = class(TForm)
