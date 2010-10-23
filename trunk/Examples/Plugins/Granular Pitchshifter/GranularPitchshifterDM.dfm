@@ -1,4 +1,5 @@
 object GranularPitchShifterModule: TGranularPitchShifterModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]

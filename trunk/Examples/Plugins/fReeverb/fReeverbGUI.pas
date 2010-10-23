@@ -25,7 +25,7 @@ unit fReeverbGUI;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,8 +36,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel,
-  DAV_GuiPanel, DAV_GuiSelectBox, DAV_GuiButton;
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiLabel,
+  DAV_GuiPanel, DAV_GuiSelectBox, DAV_GuiButton, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
 
@@ -45,12 +46,6 @@ type
     BtAB: TGuiButton;
     BtAbout: TGuiButton;
     CBFreeze: TCheckBox;
-    DialDamp: TGuiDial;
-    DialDry: TGuiDial;
-    DialRoomSize: TGuiDial;
-    DialStretch: TGuiDial;
-    DialWet: TGuiDial;
-    DialWidth: TGuiDial;
     LbPreset: TGuiLabel;
     PnLabel: TGuiPanel;
     PnToolbar: TPanel;
@@ -61,7 +56,13 @@ type
     LbSize: TGuiLabel;
     LbStretch: TGuiLabel;
     LbDamp: TGuiLabel;
-    procedure FormCreate(Sender: TObject);
+    DialDry: TGuiStitchedDial;
+    DialWet: TGuiStitchedDial;
+    DialWidth: TGuiStitchedDial;
+    DialDamp: TGuiStitchedDial;
+    DialRoomSize: TGuiStitchedDial;
+    DialStretch: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure BtAboutClick(Sender: TObject);
     procedure CBFreezeClick(Sender: TObject);
@@ -87,23 +88,6 @@ implementation
 
 uses
   Dialogs, fReeverbModule;
-
-procedure TFmReverb.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'ReverbKnob', 'BMP');
- try
-  DialDry.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
-  DialWet.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
-  DialWidth.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
-  DialDamp.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
-  DialRoomSize.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialStretch.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
- finally
-  RS.Free;
- end;
-end;
 
 procedure TFmReverb.FormShow(Sender: TObject);
 var
@@ -135,54 +119,54 @@ end;
 procedure TFmReverb.UpdateDamp;
 begin
  with TfReeverbVST(Owner) do
-  if DialDamp.Position <> Parameter[6] then
+  if DialDamp.Value <> Parameter[6] then
    begin
-    DialDamp.Position := Parameter[6];
+    DialDamp.Value := Parameter[6];
    end;
 end;
 
 procedure TFmReverb.UpdateDry;
 begin
  with TfReeverbVST(Owner) do
-  if DialDry.Position <> Parameter[0]  then
+  if DialDry.Value <> Parameter[0]  then
    begin
-    DialDry.Position := Parameter[0];
+    DialDry.Value := Parameter[0];
    end;
 end;
 
 procedure TFmReverb.UpdateSize;
 begin
  with TfReeverbVST(Owner) do
-  if DialRoomSize.Position <> Parameter[3] then
+  if DialRoomSize.Value <> Parameter[3] then
    begin
-    DialRoomSize.Position := Parameter[3];
+    DialRoomSize.Value := Parameter[3];
    end;
 end;
 
 procedure TFmReverb.UpdateStretch;
 begin
  with TfReeverbVST(Owner) do
-  if DialStretch.Position <> Parameter[5] then
+  if DialStretch.Value <> Parameter[5] then
    begin
-    DialStretch.Position := Parameter[5];
+    DialStretch.Value := Parameter[5];
    end;
 end;
 
 procedure TFmReverb.UpdateWet;
 begin
  with TfReeverbVST(Owner) do
-  if DialWet.Position <> Parameter[1]  then
+  if DialWet.Value <> Parameter[1]  then
    begin
-    DialWet.Position := Parameter[1];
+    DialWet.Value := Parameter[1];
    end;
 end;
 
 procedure TFmReverb.UpdateWidth;
 begin
  with TfReeverbVST(Owner) do
-  if DialWidth.Position <> Parameter[2]  then
+  if DialWidth.Value <> Parameter[2]  then
    begin
-    DialWidth.Position := Parameter[2];
+    DialWidth.Value := Parameter[2];
    end;
 end;
 
@@ -192,7 +176,7 @@ var
 begin
  with TfReeverbVST(Owner) do
   begin
-   Value := DialDry.Position;
+   Value := DialDry.Value;
    if Parameter[0] <> Value
     then Parameter[0] := Value;
   end;
@@ -204,7 +188,7 @@ var
 begin
  with TfReeverbVST(Owner) do
   begin
-   Value := DialWet.Position;
+   Value := DialWet.Value;
    if Parameter[1] <> Value
     then Parameter[1] := Value;
   end;
@@ -213,18 +197,18 @@ end;
 procedure TFmReverb.DialWidthChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[2] <> DialWidth.Position then
+  if Parameter[2] <> DialWidth.Value then
    begin
-    Parameter[2] := DialWidth.Position;
+    Parameter[2] := DialWidth.Value;
    end;
 end;
 
 procedure TFmReverb.DialRoomSizeChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[3] <> DialRoomSize.Position then
+  if Parameter[3] <> DialRoomSize.Value then
    begin
-    Parameter[3] := DialRoomSize.Position;
+    Parameter[3] := DialRoomSize.Value;
    end;
 end;
 
@@ -243,18 +227,18 @@ end;
 procedure TFmReverb.DialStretchChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[5] <> DialStretch.Position then
+  if Parameter[5] <> DialStretch.Value then
    begin
-    Parameter[5] := DialStretch.Position;
+    Parameter[5] := DialStretch.Value;
    end;
 end;
 
 procedure TFmReverb.DialDampChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[6] <> DialDamp.Position then
+  if Parameter[6] <> DialDamp.Value then
    begin
-    Parameter[6] := DialDamp.Position;
+    Parameter[6] := DialDamp.Value;
    end;
 end;
 

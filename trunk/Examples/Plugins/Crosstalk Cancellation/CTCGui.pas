@@ -25,7 +25,7 @@ unit CTCGui;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel;
+  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
+  DAV_GuiPixelMap, DAV_GuiPng;
 
 type
   TFmCTC = class(TForm)
@@ -69,7 +70,11 @@ type
     CBBypass: TCheckBox;
     CBAGC: TCheckBox;
     LbSwitches: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure SbRecursionStepsChange(Sender: TObject);
     procedure SbAttenuationChange(Sender: TObject);
     procedure SbListenerDistanceChange(Sender: TObject);
@@ -77,12 +82,9 @@ type
     procedure SbOutputGainChange(Sender: TObject);
     procedure SbFilterGainChange(Sender: TObject);
     procedure SbFilterFrequencyChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure CBBypassClick(Sender: TObject);
   private
-    FBackground : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateSpeakerDistance;
     procedure UpdateListenerDistance;
@@ -101,63 +103,11 @@ implementation
 {$R *.DFM}
 
 uses
-  PngImage, CTCDM, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
+  DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms, CTCDM;
 
 procedure TFmCTC.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  Line   : PBGR24Array;
-  PngBmp : TPngObject;
 begin
-  // Create Background Image
- FBackground := TBitmap.Create;
- with FBackground do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.3 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
-
-       Line[x].B := round($C8 - $3A * (s[1] - h));
-       Line[x].G := round($D0 - $3C * (s[1] - h));
-       Line[x].R := round($D4 - $40 * (s[1] - h));
-      end;
-    end;
-  end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Left', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   FBackground.Canvas.Draw(8, 8, PngBmp);
-  finally
-   RS.Free;
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'Right', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   FBackground.Canvas.Draw(Width - PngBmp.Width - 8, 8, PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmCTC.FormDestroy(Sender: TObject);
@@ -167,7 +117,69 @@ end;
 
 procedure TFmCTC.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackground);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmCTC.FormResize(Sender: TObject);
+var
+  RS     : TResourceStream;
+  Png32  : TPortableNetworkGraphicPixel32;
+  PM     : TGuiCustomPixelMap;
+  x, y   : Integer;
+  s      : array [0..1] of Single;
+  h, hr  : Single;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   s[0] := 0;
+   s[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h    := 0.3 * (1 - Sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * Random;
+       s[0] := s[1];
+
+       ScnLn[x].B := Round($C8 - $3A * (s[1] - h));
+       ScnLn[x].G := Round($D0 - $3C * (s[1] - h));
+       ScnLn[x].R := Round($D4 - $40 * (s[1] - h));
+      end;
+    end;
+  end;
+
+ Png32 := TPortableNetworkGraphicPixel32.Create;
+ try
+  PM := TGuiPixelMapMemory.Create;
+  try
+   RS := TResourceStream.Create(hInstance, 'Left', 'PNG');
+   try
+    Png32.LoadFromStream(RS);
+    PM.Assign(Png32);
+    FBackground.Draw(PM, 8, 8);
+   finally
+    RS.Free;
+   end;
+
+   RS := TResourceStream.Create(hInstance, 'Right', 'PNG');
+   try
+    Png32.LoadFromStream(RS);
+    PM.Assign(Png32);
+    FBackground.Draw(PM, Width - Png32.Width - 8, 8);
+   finally
+    RS.Free;
+   end;
+  finally
+   FreeAndNil(PM);
+  end;
+ finally
+  FreeAndNil(Png32);
+ end;
 end;
 
 procedure TFmCTC.FormShow(Sender: TObject);
