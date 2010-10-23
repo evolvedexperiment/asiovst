@@ -48,22 +48,22 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterCompressorAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCompressorAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterCompressorRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterGateRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterCompressorRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterGateRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterCompressorKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterCompressorMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterCompressorMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterGateAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCompressorRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCompressorReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCompressorThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterGateThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -369,7 +369,7 @@ begin
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -381,7 +381,7 @@ begin
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -394,37 +394,37 @@ begin
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterCompressorRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := '1 : ' + FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterGateRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3) + ' : 1';
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightDynamicsDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';

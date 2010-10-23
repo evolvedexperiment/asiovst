@@ -32,20 +32,21 @@ uses
   DAV_GuiPaintBox, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPixelMapDesign,
   DAV_GuiPng, DAV_GuiPngDesign, DAV_GuiSelectBox, DAV_GuiSlider,
   DAV_GuiStaticWaveform, DAV_GuiStitchedButton, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch,
-  DAV_GuiVUMeter;
+  DAV_GuiStitchedDial, DAV_GuiStitchedDisplay, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
 
 procedure Register;
 begin
-  RegisterComponents('ASIO/VST GUI', [TGuiDynamicWaveform, TGuiStaticWaveform,
-    TGuiADSRGraph, TGuiAudioDataDisplay, TGuiLabel, TGuiPanel, TGuiLED,
-    TGuiVUMeter, TGuiDial, TGuiDialMetal, TGuiCorrelationMeter, TGuiSelectBox,
-    TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroupA, TGuiGroupB, TGuiGroup,
-    TGuiLevelMeter, TGuiColorLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx,
-    TGuiDialImageList, TGuiDialImageRenderer, TGuiEQGraph, TGuiEQSlide,
-    {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiSwitch,
-    TGuiSlider, TGuiMediaButton, TGuiStitchedImageList, TGuiStitchedPNGList,
-    TGuiStitchedSwitch, TGuiStitchedDial, TGuiStitchedButton, TGuiPaintBox]);
+  RegisterComponents('ASIO/VST GUI', [
+    TGuiADSRGraph, TGuiAudioDataDisplay, TGuiButton, TGuiCorrelationMeter,
+    TGuiDial, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer,
+    TGuiDialMetal, TGuiDynamicWaveform, TGuiEQGraph, TGuiEQSlide, TGuiGraphXY,
+    TGuiLabel, TGuiLED, TGuiMediaButton, TGuiMidiKeys, TGuiPaintBox, TGuiPanel,
+    TGuiSelectBox, TGuiSlider, TGuiStaticWaveform, TGuiStitchedButton,
+    TGuiStitchedDial, TGuiStitchedDisplay, TGuiStitchedImageList,
+    TGuiStitchedPNGList, TGuiStitchedSwitch, TGuiSwitch, TGuiVUMeter
+    {$IFNDEF FPC}, TGuiGroupA, TGuiGroupB, TGuiGroup, TGuiLevelMeter,
+    TGuiColorLevelMeter, TGuiModular, TGuiBackground {$ENDIF}]);
 
   RegisterPropertyEditor(TypeInfo(TGuiCustomPixelMap), nil, '', TPixelMapProperty);
   RegisterPropertyEditor(TypeInfo(TPortableNetworkGraphicPixel32), nil, '', TPngProperty);

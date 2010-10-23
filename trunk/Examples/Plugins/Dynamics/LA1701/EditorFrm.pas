@@ -37,7 +37,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, StdCtrls,
   ExtCtrls, Menus, DAV_Types, DAV_VSTModule, DAV_GuiButton, DAV_GuiVUMeter,
-  DAV_GuiLED, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel;
+  DAV_GuiPixelMap, DAV_GuiLED, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPanel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
+  DAV_GuiPng, DAV_GuiStitchedDisplay;
 
 type
   TLevelState = (lsIn, lsGR, lsOut);
@@ -45,13 +47,14 @@ type
     BtGR: TGuiButton;
     BtIn: TGuiButton;
     BtOut: TGuiButton;
-    DialAttack: TGuiDial;
-    DialInput: TGuiDial;
-    DialKnee: TGuiDial;
-    DialMix: TGuiDial;
-    DialOutput: TGuiDial;
-    DialRatio: TGuiDial;
-    DialRelease: TGuiDial;
+    DialAttack: TGuiStitchedDial;
+    DialInput: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DialOutput: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbAttack: TGuiLabel;
     LbFast: TGuiLabel;
     LbInput: TGuiLabel;
@@ -85,11 +88,12 @@ type
     SpDivide1: TShape;
     SpDivide2: TShape;
     Timer1: TTimer;
-    VUMeter: TGuiVUMeter;
+    VUMeter: TGuiStitchedDisplay;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure BtGRClick(Sender: TObject);
     procedure BtInClick(Sender: TObject);
     procedure BtOutClick(Sender: TObject);
@@ -100,15 +104,15 @@ type
     procedure DialOutputChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
+    procedure LbTitleClick(Sender: TObject);
     procedure LEDOnOffClick(Sender: TObject);
     procedure MIFastClick(Sender: TObject);
     procedure MIMediumClick(Sender: TObject);
     procedure MISlowClick(Sender: TObject);
     procedure PopupVUMeterSpeedPopup(Sender: TObject);
     procedure VUMeterTimerTimer(Sender: TObject);
-    procedure LbTitleClick(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TGuiCustomPixelMap;
     procedure SetLevelState(const Value: TLevelState);
     function GetLevelState: TLevelState;
     function VUMeterValueToPos(Value: Double): Integer;
@@ -131,88 +135,11 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_GUICommon, LA1701DM;
+  Math, DAV_GUICommon, LA1701DM;
 
 procedure TFmLA1701.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  ClrBt  : Byte;
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  b      : ShortInt;
-  Line   : PRGB32Array;
-  PngBmp : TPngObject;
-
 begin
- // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- ClrBt := $F + random($40);
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf32bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.9 * s[0] + 0.1 * (2 * random - 1);
-       b := round($F * s[1]);
-       s[0] := s[1];
-       Line[x].B := ClrBt + b;
-       Line[x].G := ClrBt + b;
-       Line[x].R := ClrBt + b;
-       Line[x].A := 0;
-      end;
-    end;
-  end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'PanKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialInput.DialBitmap.Assign(PngBmp);
-   DialOutput.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
-  RS := TResourceStream.Create(hInstance, 'RatioKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialRatio.DialBitmap.Assign(PngBmp);
-   DialKnee.DialBitmap.Assign(PngBmp);
-   DialMix.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
-  RS := TResourceStream.Create(hInstance, 'AttackKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialAttack.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
-  RS := TResourceStream.Create(hInstance, 'ReleaseKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialRelease.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
-  RS := TResourceStream.Create(hInstance, 'VUMeter', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   VUMeter.VUMeterBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
+ FBackgrounBitmap := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmLA1701.FormDestroy(Sender: TObject);
@@ -222,8 +149,38 @@ end;
 
 procedure TFmLA1701.FormPaint(Sender: TObject);
 begin
- if assigned(FBackgrounBitmap)
-  then Self.Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackgrounBitmap)
+  then FBackgrounBitmap.PaintTo(Canvas);
+end;
+
+procedure TFmLA1701.FormResize(Sender: TObject);
+var
+  x, y        : Integer;
+  FilterState : array[0..1] of Single;
+  ClrBt, b    : ShortInt;
+  ScnLn       : PPixel32Array;
+begin
+ ClrBt := $F + Random($40);
+ with FBackgrounBitmap do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   FilterState[0] := 0;
+   FilterState[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       FilterState[1] := 0.9 * FilterState[0] + 0.1 * (2 * Random - 1);
+       b := Round($F * FilterState[1]);
+       FilterState[0] := FilterState[1];
+       ScnLn[x].B := ClrBt + b;
+       ScnLn[x].G := ClrBt + b;
+       ScnLn[x].R := ClrBt + b;
+       ScnLn[x].A := 0;
+      end;
+    end;
+  end;
 end;
 
 procedure TFmLA1701.FormShow(Sender: TObject);
@@ -320,9 +277,9 @@ procedure TFmLA1701.UpdateInput;
 begin
  with TLA1701DataModule(Owner) do
   begin
-   if DialInput.Position <> Parameter[1]
-    then DialInput.Position := Parameter[1];
-   LbInputValue.Caption := FloatToStrF(DialInput.Position, ffFixed, 3, 1) + ' dB';
+   if DialInput.Value <> Parameter[1]
+    then DialInput.Value := Parameter[1];
+   LbInputValue.Caption := FloatToStrF(DialInput.Value, ffFixed, 3, 1) + ' dB';
   end;
 end;
 
@@ -330,9 +287,9 @@ procedure TFmLA1701.UpdateKnee;
 begin
  with TLA1701DataModule(Owner) do
   begin
-   if DialKnee.Position <> Parameter[6]
-    then DialKnee.Position := Parameter[6];
-   LbKneeValue.Caption := FloatToStrF(DialKnee.Position, ffFixed, 3, 1);
+   if DialKnee.Value <> Parameter[6]
+    then DialKnee.Value := Parameter[6];
+   LbKneeValue.Caption := FloatToStrF(DialKnee.Value, ffFixed, 3, 1);
   end;
 end;
 
@@ -340,9 +297,9 @@ procedure TFmLA1701.UpdateMix;
 begin
  with TLA1701DataModule(Owner) do
   begin
-   if DialMix.Position <> Parameter[7]
-    then DialMix.Position := Parameter[7];
-   LbMixValue.Caption := FloatToStrF(DialMix.Position, ffFixed, 3, 1) + '%';
+   if DialMix.Value <> Parameter[7]
+    then DialMix.Value := Parameter[7];
+   LbMixValue.Caption := FloatToStrF(DialMix.Value, ffFixed, 3, 1) + '%';
   end;
 end;
 
@@ -392,9 +349,9 @@ procedure TFmLA1701.UpdateOutput;
 begin
  with TLA1701DataModule(Owner) do
   begin
-   if DialOutput.Position <> Parameter[2]
-    then DialOutput.Position := Parameter[2];
-   LbOutputValue.Caption := FloatToStrF(DialOutput.Position, ffFixed, 3, 1) + ' dB';
+   if DialOutput.Value <> Parameter[2]
+    then DialOutput.Value := Parameter[2];
+   LbOutputValue.Caption := FloatToStrF(DialOutput.Value, ffFixed, 3, 1) + ' dB';
   end;
 end;
 
@@ -405,8 +362,8 @@ begin
  with TLA1701DataModule(Owner) do
   begin
    s := Log10(Parameter[3]);
-   if DialAttack.Position <> s
-    then DialAttack.Position := s;
+   if DialAttack.Value <> s
+    then DialAttack.Value := s;
 //   LbAttackValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 2) + ' ms';
   end;
 end;
@@ -418,8 +375,8 @@ begin
  with TLA1701DataModule(Owner) do
   begin
    s := Log10(Parameter[4]);
-   if DialRelease.Position <> s
-    then DialRelease.Position := s;
+   if DialRelease.Value <> s
+    then DialRelease.Value := s;
 //   LbReleaseValue.Caption := FloatToStrF(Parameter[4], ffGeneral, 4, 5) + ' ms';
   end;
 end;
@@ -455,8 +412,8 @@ begin
  with TLA1701DataModule(Owner) do
   begin
    s := Log10(Parameter[5]);
-   if DialRatio.Position <> s
-    then DialRatio.Position := s;
+   if DialRatio.Value <> s
+    then DialRatio.Value := s;
    LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[5], ffFixed, 3, 1);
   end;
 end;
@@ -465,8 +422,8 @@ procedure TFmLA1701.DialInputChange(Sender: TObject);
 begin
  with TLA1701DataModule(Owner) do
   begin
-   if Parameter[1] <> DialInput.Position
-    then Parameter[1] := DialInput.Position;
+   if Parameter[1] <> DialInput.Value
+    then Parameter[1] := DialInput.Value;
    UpdateInput;
   end;
 end;
@@ -475,8 +432,8 @@ procedure TFmLA1701.DialOutputChange(Sender: TObject);
 begin
  with TLA1701DataModule(Owner) do
   begin
-   if Parameter[2] <> DialOutput.Position
-    then Parameter[2] := DialOutput.Position;
+   if Parameter[2] <> DialOutput.Value
+    then Parameter[2] := DialOutput.Value;
    UpdateOutput;
   end;
 end;
@@ -502,7 +459,7 @@ var
 begin
  with TLA1701DataModule(Owner) do
   begin
-   s := Power(10, DialAttack.Position);
+   s := Power(10, DialAttack.Value);
    Parameter[3] := s;
   end;
 end;
@@ -513,7 +470,7 @@ var
 begin
  with TLA1701DataModule(Owner) do
   begin
-   s := Power(10, DialRelease.Position);
+   s := Power(10, DialRelease.Value);
    Parameter[4] := s;
   end;
 end;
@@ -524,7 +481,7 @@ var
 begin
  with TLA1701DataModule(Owner) do
   begin
-   s := Power(10, DialRatio.Position);
+   s := Power(10, DialRatio.Value);
    if abs (Parameter[5] - s) > 1E-3
     then Parameter[5] := s;
    UpdateRatio;
@@ -535,7 +492,7 @@ procedure TFmLA1701.DialKneeChange(Sender: TObject);
 begin
  with TLA1701DataModule(Owner) do
   begin
-   Parameter[6] := DialKnee.Position;
+   Parameter[6] := DialKnee.Value;
    UpdateKnee;
   end;
 end;
@@ -544,7 +501,7 @@ procedure TFmLA1701.DialMixChange(Sender: TObject);
 begin
  with TLA1701DataModule(Owner) do
   begin
-   Parameter[7] := DialMix.Position;
+   Parameter[7] := DialMix.Value;
    UpdateMix;
   end;
 end;

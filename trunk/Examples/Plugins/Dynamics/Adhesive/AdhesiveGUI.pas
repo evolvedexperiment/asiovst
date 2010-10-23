@@ -38,7 +38,8 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
   DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPng,
   DAV_GuiVUMeter, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiDial;
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiDial,
+  DAV_GuiStitchedDisplay, DAV_GuiStitchedSwitch;
 
 type
   TFmAdhesive = class(TForm)
@@ -96,11 +97,11 @@ type
     Shape6: TShape;
     Shape7: TShape;
     Shape8: TShape;
-    SwLimit: TGuiSwitch;
-    SwOnOff: TGuiSwitch;
-    SwSideChain: TGuiSwitch;
     Timer: TTimer;
-    VUMeter: TGuiVUMeter;
+    VUMeter: TGuiStitchedDisplay;
+    SwOnOff: TGuiStitchedSwitch;
+    SwLimit: TGuiStitchedSwitch;
+    SwSideChain: TGuiStitchedSwitch;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
@@ -274,7 +275,7 @@ procedure TFmAdhesive.SwOnOffChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[7] := 1 - SwOnOff.GlyphNr;
+   Parameter[7] := 1 - SwOnOff.GlyphIndex;
   end;
 end;
 
@@ -282,7 +283,7 @@ procedure TFmAdhesive.SwLimitChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[8] := 1 - SwLimit.GlyphNr;
+   Parameter[8] := 1 - SwLimit.GlyphIndex;
   end;
 end;
 
@@ -298,7 +299,7 @@ procedure TFmAdhesive.SwSideChainChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[10] := 1 - SwSideChain.GlyphNr;
+   Parameter[10] := 1 - SwSideChain.GlyphIndex;
   end;
 end;
 
@@ -408,7 +409,7 @@ procedure TFmAdhesive.UpdateOnOff;
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   SwOnOff.GlyphNr := 1 - Round(Parameter[7]);
+   SwOnOff.GlyphIndex := 1 - Round(Parameter[7]);
   end;
 end;
 
@@ -416,7 +417,7 @@ procedure TFmAdhesive.UpdateExtSideChain;
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   SwSideChain.GlyphNr := 1 - Round(Parameter[10]);
+   SwSideChain.GlyphIndex := 1 - Round(Parameter[10]);
   end;
 end;
 
@@ -424,7 +425,7 @@ procedure TFmAdhesive.UpdatePeakClip;
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   SwLimit.GlyphNr := 1 - Round(Parameter[8]);
+   SwLimit.GlyphIndex := 1 - Round(Parameter[8]);
   end;
 end;
 

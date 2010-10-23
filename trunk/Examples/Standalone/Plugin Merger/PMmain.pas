@@ -25,7 +25,7 @@ unit PMmain;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,11 +137,11 @@ begin
            then break;
           Aspect := Height / (j - i);
           if (Aspect > 0) and (abs(Aspect - round(Aspect)) < 1E-24)
-           then break
+           then Break
            else inc(i);
          end;
        end;
-     DialPreview.NumGlyphs := j + i;
+     DialPreview.GlyphCount := j + i;
     finally
      Free;
     end;
@@ -172,9 +172,9 @@ var
 begin
  with TIniFile.Create('PluginMerger.ini') do
   try
-   EdKnob.Text := ReadString('Last State','Knob', EdKnob.Text);
-   Left := ReadInteger('Last State','Left', Left);
-   Top  := ReadInteger('Last State','Top', Top);
+   EdKnob.Text := ReadString('Last State', 'Knob', EdKnob.Text);
+   Left := ReadInteger('Last State', 'Left', Left);
+   Top  := ReadInteger('Last State', 'Top', Top);
    SL := TStringList.Create;
    try
     ReadSectionValues('Merged Plugins', SL);

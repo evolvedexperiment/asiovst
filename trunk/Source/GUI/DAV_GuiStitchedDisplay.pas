@@ -1,4 +1,4 @@
-unit DAV_GuiStitchedSwitch;
+unit DAV_GuiStitchedDisplay;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -40,24 +40,18 @@ uses
   DAV_GuiCommon, DAV_GuiStitchedControls;
 
 type
-  TCustomGuiStitchedSwitch = class(TGuiCustomStitchedControl)
-  private
-    FReadOnly          : Boolean;
+  TCustomGuiStitchedDisplay = class(TGuiCustomStitchedControl)
   protected
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure UpdateBuffer; override;
-  public
-    property ReadOnly: Boolean read FReadOnly write FReadOnly default false;
   end;
 
-  TGuiStitchedSwitch = class(TCustomGuiStitchedSwitch)
+  TGuiStitchedDisplay = class(TCustomGuiStitchedDisplay)
   published
     property Anchors;
     property AutoSize;
     property DefaultGlyphIndex;
     property GlyphIndex;
     property PopupMenu;
-    property ReadOnly;
     property StitchedImageIndex;
     property StitchedImageList;
     property Transparent;
@@ -69,38 +63,14 @@ implementation
 uses
   DAV_Common, DAV_GuiBlend;
 
-{ TCustomGuiStitchedSwitch }
+{ TCustomGuiStitchedDisplay }
 
-procedure TCustomGuiStitchedSwitch.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
-begin
- if not FReadOnly then
-  if Assigned(FStitchedItem) then
-   with FStitchedItem do
-    begin
-     if (Button = mbLeft) then
-      if FGlyphIndex < GlyphCount - 1
-       then GlyphIndex := FGlyphIndex + 1
-       else GlyphIndex := 0 else
-     if (Button = mbRight) then
-      if FGlyphIndex > 0
-       then GlyphIndex := FGlyphIndex - 1
-       else GlyphIndex := GlyphCount - 1;
-    end
-  else GlyphIndex := -1;
-
- inherited;
-end;
-
-procedure TCustomGuiStitchedSwitch.UpdateBuffer;
+procedure TCustomGuiStitchedDisplay.UpdateBuffer;
 begin
  inherited;
-
  if not (Assigned(FStitchedList) and (FStitchedItemIndex >= 0)) then
-  if Assigned(FBuffer) then
-   if (FGlyphIndex = 0)
-    then FBuffer.FillRect(ClientRect, pxLime32)
-    else FBuffer.FillRect(ClientRect, pxRed32);
+  if Assigned(FBuffer)
+   then FBuffer.FillRect(ClientRect, ConvertColor(Color));
 end;
 
 end.
