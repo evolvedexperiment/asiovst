@@ -1,8 +1,6 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library ButterworthHP;
 
-{$R 'Butterworth.res' 'Butterworth.rc'}
-
 uses
   FastMM4,
   FastMove,

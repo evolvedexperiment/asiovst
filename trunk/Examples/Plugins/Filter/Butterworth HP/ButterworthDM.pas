@@ -49,11 +49,11 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure StringToFrequencyParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
-    procedure StringToOrderParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure StringToFrequencyParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
+    procedure StringToOrderParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
   private
     FFilter: array of TCustomButterworthFilter;
   public  
@@ -136,7 +136,7 @@ end;
 // parameter display
 
 procedure TButterworthHPModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
@@ -144,7 +144,7 @@ begin
 end;
 
 procedure TButterworthHPModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := 'Hz'
@@ -152,18 +152,18 @@ begin
 end;
 
 procedure TButterworthHPModule.ParameterOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 
-// string to parameter conversion
+// AnsiString to parameter conversion
 
 procedure TButterworthHPModule.StringToFrequencyParameter(
-  Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
 var
-  Str    : string;
+  Str    : AnsiString;
   Indxes : array [0..1] of Integer;
   Mult   : Single;
 begin
@@ -204,9 +204,9 @@ begin
 end;
 
 procedure TButterworthHPModule.StringToOrderParameter(Sender: TObject;
-  const Index: Integer; const ParameterString: string; var Value: Single);
+  const Index: Integer; const ParameterString: AnsiString; var Value: Single);
 var
-  Str    : string;
+  Str    : AnsiString;
   Indxes : array [0..1] of Integer;
 begin
  Str := Trim(ParameterString);
