@@ -32,36 +32,37 @@ unit SpectralNoiseGateGui;
 
 interface
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiDial, DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiSelectBox;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
+  DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel, DAV_GuiBaseControl,
+  DAV_GuiSelectBox, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmSpectralNoiseGate = class(TForm)
-    DialThreshold: TGuiDial;
-    DialFftOrder: TGuiDial;
-    DialRatio: TGuiDial;
-    LbThreshold: TGuiLabel;
-    LbFftOrder: TGuiLabel;
-    LbRatio: TGuiLabel;
-    LbThresholdValue: TGuiLabel;
-    LbFftOrderValue: TGuiLabel;
-    LbRatioValue: TGuiLabel;
-    DialKnee: TGuiDial;
-    LbKnee: TGuiLabel;
-    LbKneeValue: TGuiLabel;
-    DIL: TGuiDialImageList;
-    DialAttack: TGuiDial;
+    DialAttack: TGuiStitchedDial;
+    DialFftOrder: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
-    DialRelease: TGuiDial;
+    LbFftOrder: TGuiLabel;
+    LbFftOrderValue: TGuiLabel;
+    LbKnee: TGuiLabel;
+    LbKneeValue: TGuiLabel;
+    LbRatio: TGuiLabel;
+    LbRatioValue: TGuiLabel;
     LbRelease: TGuiLabel;
     LbReleaseValue: TGuiLabel;
-    SbWindowFunction: TGuiSelectBox;
+    LbThreshold: TGuiLabel;
+    LbThresholdValue: TGuiLabel;
     LbWindowFunction: TGuiLabel;
-    procedure FormCreate(Sender: TObject);
-    procedure SbWindowFunctionChange(Sender: TObject);
+    SbWindowFunction: TGuiSelectBox;
     procedure FormShow(Sender: TObject);
+    procedure SbWindowFunctionChange(Sender: TObject);
     procedure DialThresholdChange(Sender: TObject);
     procedure DialFftOrderChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
@@ -85,35 +86,6 @@ implementation
 uses
   Math, PngImage, DAV_VSTModuleWithPrograms, SpectralNoiseGateDM;
 
-procedure TFmSpectralNoiseGate.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Knob', 'PNG');
-  try
-   with DIL.DialImages.Add do
-    begin
-     GlyphCount := 65;
-     PngBmp.LoadFromStream(RS);
-     DialBitmap.Assign(PngBmp);
-    end;
-   DialThreshold.DialImageIndex  := 0;
-   DialFftOrder.DialImageIndex  := 0;
-   DialRatio.DialImageIndex := 0;
-   DialKnee.DialImageIndex    := 0;
-   DialAttack.DialImageIndex  := 0;
-   DialRelease.DialImageIndex  := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
-
 procedure TFmSpectralNoiseGate.FormShow(Sender: TObject);
 begin
  UpdateThreshold;
@@ -129,8 +101,8 @@ procedure TFmSpectralNoiseGate.DialThresholdChange(Sender: TObject);
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if Parameter[0] <> DialThreshold.Position
-    then Parameter[0] := DialThreshold.Position;
+   if Parameter[0] <> DialThreshold.Value
+    then Parameter[0] := DialThreshold.Value;
   end;
 end;
 
@@ -138,8 +110,8 @@ procedure TFmSpectralNoiseGate.DialFftOrderChange(Sender: TObject);
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if Parameter[1] <> DialFftOrder.Position
-    then Parameter[1] := DialFftOrder.Position;
+   if Parameter[1] <> DialFftOrder.Value
+    then Parameter[1] := DialFftOrder.Value;
   end;
 end;
 
@@ -147,8 +119,8 @@ procedure TFmSpectralNoiseGate.DialRatioChange(Sender: TObject);
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if Parameter[3] <> DialRatio.Position
-    then Parameter[3] := DialRatio.Position;
+   if Parameter[3] <> DialRatio.Value
+    then Parameter[3] := DialRatio.Value;
   end;
 end;
 
@@ -156,8 +128,8 @@ procedure TFmSpectralNoiseGate.DialKneeChange(Sender: TObject);
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if Parameter[4] <> DialKnee.Position
-    then Parameter[4] := DialKnee.Position;
+   if Parameter[4] <> DialKnee.Value
+    then Parameter[4] := DialKnee.Value;
   end;
 end;
 
@@ -165,8 +137,8 @@ procedure TFmSpectralNoiseGate.DialAttackChange(Sender: TObject);
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if Parameter[5] <> DialAttack.Position
-    then Parameter[5] := DialAttack.Position;
+   if Parameter[5] <> DialAttack.Value
+    then Parameter[5] := DialAttack.Value;
   end;
 end;
 
@@ -174,8 +146,8 @@ procedure TFmSpectralNoiseGate.DialReleaseChange(Sender: TObject);
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if Parameter[6] <> DialRelease.Position
-    then Parameter[6] := DialRelease.Position;
+   if Parameter[6] <> DialRelease.Value
+    then Parameter[6] := DialRelease.Value;
   end;
 end;
 
@@ -192,8 +164,8 @@ procedure TFmSpectralNoiseGate.UpdateThreshold;
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if DialThreshold.Position <> Parameter[0]
-    then DialThreshold.Position := Parameter[0];
+   if DialThreshold.Value <> Parameter[0]
+    then DialThreshold.Value := Parameter[0];
    LbThresholdValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -202,8 +174,8 @@ procedure TFmSpectralNoiseGate.UpdateFftOrder;
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if DialFftOrder.Position <> Parameter[1]
-    then DialFftOrder.Position := Parameter[1];
+   if DialFftOrder.Value <> Parameter[1]
+    then DialFftOrder.Value := Parameter[1];
    LbFftOrderValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
   end;
 end;
@@ -221,8 +193,8 @@ procedure TFmSpectralNoiseGate.UpdateRatio;
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if DialRatio.Position <> Parameter[3]
-    then DialRatio.Position := Parameter[3];
+   if DialRatio.Value <> Parameter[3]
+    then DialRatio.Value := Parameter[3];
    LbRatioValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
   end;
 end;
@@ -231,8 +203,8 @@ procedure TFmSpectralNoiseGate.UpdateKnee;
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if DialKnee.Position <> Parameter[4]
-    then DialKnee.Position := Parameter[4];
+   if DialKnee.Value <> Parameter[4]
+    then DialKnee.Value := Parameter[4];
    LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
   end;
 end;
@@ -241,8 +213,8 @@ procedure TFmSpectralNoiseGate.UpdateAttack;
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if DialAttack.Position <> Parameter[5]
-    then DialAttack.Position := Parameter[5];
+   if DialAttack.Value <> Parameter[5]
+    then DialAttack.Value := Parameter[5];
    LbAttackValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
   end;
 end;
@@ -251,8 +223,8 @@ procedure TFmSpectralNoiseGate.UpdateRelease;
 begin
  with TSpectralNoiseGateModule(Owner) do
   begin
-   if DialRelease.Position <> Parameter[6]
-    then DialRelease.Position := Parameter[6];
+   if DialRelease.Value <> Parameter[6]
+    then DialRelease.Value := Parameter[6];
    LbReleaseValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
   end;
 end;

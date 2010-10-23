@@ -33,44 +33,44 @@ unit NoiseReductionGui;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiDial, DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiSelectBox,
-  DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
+  DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel, DAV_GuiBaseControl,
+  DAV_GuiSelectBox, DAV_GuiLED, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmNoiseReduction = class(TForm)
-    LbThresholdOffset: TGuiLabel;
-    LbRatio: TGuiLabel;
-    LbThresholdOffsetValue: TGuiLabel;
-    LbRatioValue: TGuiLabel;
-    LbKnee: TGuiLabel;
-    LbKneeValue: TGuiLabel;
+    DialAttack: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThresholdOffset: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
+    LbCaptureNoiseProfile: TGuiLabel;
+    LbFftSize: TGuiLabel;
+    LbKnee: TGuiLabel;
+    LbKneeValue: TGuiLabel;
+    LbRatio: TGuiLabel;
+    LbRatioValue: TGuiLabel;
     LbRelease: TGuiLabel;
     LbReleaseValue: TGuiLabel;
-    SbWindowFunction: TGuiSelectBox;
+    LbThresholdOffset: TGuiLabel;
+    LbThresholdOffsetValue: TGuiLabel;
     LbWindowFunction: TGuiLabel;
-    LbCaptureNoiseProfile: TGuiLabel;
     LedNoiseProfile: TGuiLED;
-    LbFftSize: TGuiLabel;
     SbFftSize: TGuiSelectBox;
-    DialThresholdOffset: TGuiStitchedDial;
-    DialRatio: TGuiStitchedDial;
-    DialKnee: TGuiStitchedDial;
-    DialAttack: TGuiStitchedDial;
-    DialRelease: TGuiStitchedDial;
-    GSPL: TGuiStitchedPNGList;
-    procedure SbWindowFunctionChange(Sender: TObject);
+    SbWindowFunction: TGuiSelectBox;
     procedure FormShow(Sender: TObject);
-    procedure DialThresholdOffsetChange(Sender: TObject);
-    procedure DialRatioChange(Sender: TObject);
-    procedure DialKneeChange(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
+    procedure DialKneeChange(Sender: TObject);
+    procedure DialRatioChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
+    procedure DialThresholdOffsetChange(Sender: TObject);
     procedure LedNoiseProfileClick(Sender: TObject);
     procedure SbFftSizeChange(Sender: TObject);
+    procedure SbWindowFunctionChange(Sender: TObject);
   public
     procedure UpdateMatchThreshold;
     procedure UpdateFftOrder;
