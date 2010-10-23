@@ -39,6 +39,7 @@ object ButterworthHPModule: TButterworthHPModule
       OnParameterChange = ParamFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
+      OnStringToParameter = StringToFrequencyParameter
     end
     item
       CurveFactor = 1.000000000000000000

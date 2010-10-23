@@ -35,7 +35,9 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -27
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbTitleShadow: TGuiLabel
     Left = 10
@@ -50,7 +52,9 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
     Left = 8
@@ -65,7 +69,9 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbFreqLowValue: TGuiLabel
     Left = 8
@@ -81,7 +87,9 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object FrequencyBar: TPaintBox
     Left = 8
@@ -107,7 +115,9 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -27
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbFreqHighValue: TGuiLabel
     Left = 236
@@ -123,7 +133,9 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object GuiLabel1: TGuiLabel
     Left = 8
@@ -138,7 +150,9 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -27
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object GuiLabel2: TGuiLabel
     Left = 7
@@ -153,6 +167,8 @@ object FmBugpassLite: TFmBugpassLite
     Font.Height = -27
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
 end

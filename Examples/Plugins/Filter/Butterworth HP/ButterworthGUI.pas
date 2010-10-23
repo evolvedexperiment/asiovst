@@ -37,13 +37,15 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows {$ENDIF}, Messages,
   SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel,
-  DAV_GuiEQGraph;
+  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPng, DAV_GuiPanel,
+  DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmButterworth = class(TForm)
-    DialFrequency: TGuiDial;
-    DialOrder: TGuiDial;
+    DialFrequency: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     GuiEQGraph: TGuiEQGraph;
     LbButterworthFilterDemo: TGuiLabel;
     LbButterworthFilterDemoShaddow: TGuiLabel;
@@ -53,7 +55,6 @@ type
     LbOrderValue: TGuiLabel;
     PnControls: TGuiPanel;
     Timer: TTimer;
-    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
@@ -81,19 +82,6 @@ implementation
 uses
   DAV_VSTModuleWithPrograms, ButterworthDM;
 
-procedure TFmButterworth.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'WineKnob', 'BMP');
- try
-  DialFrequency.DialBitmap.LoadFromStream(RS);
-  DialOrder.DialBitmap.Assign(DialFrequency.DialBitmap);
- finally
-  FreeAndNil(RS);
- end;
-end;
-
 procedure TFmButterworth.FormDestroy(Sender: TObject);
 begin
  if Assigned(FEdValue)
@@ -104,7 +92,7 @@ procedure TFmButterworth.DialFrequencyChange(Sender: TObject);
 begin
  with TButterworthHPModule(Owner) do
   begin
-   ParameterByName['Frequency'] := DialFrequency.Position;
+   ParameterByName['Frequency'] := DialFrequency.Value;
   end;
 end;
 
@@ -112,7 +100,7 @@ procedure TFmButterworth.DialOrderChange(Sender: TObject);
 begin
  with TButterworthHPModule(Owner) do
   begin
-   ParameterByName['Order'] := DialOrder.Position;
+   ParameterByName['Order'] := DialOrder.Value;
   end;
 end;
 
@@ -194,8 +182,8 @@ begin
  with TButterworthHPModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
-   if DialFrequency.Position <> Freq
-    then DialFrequency.Position := Freq;
+   if DialFrequency.Value <> Freq
+    then DialFrequency.Value := Freq;
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 4, 4) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4) + ' kHz';
@@ -210,8 +198,8 @@ begin
  with TButterworthHPModule(Owner) do
   begin
    Order := ParameterByName['Order'];
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
    LbOrderValue.Caption := IntToStr(round(Order));
    EQGraphUpdate;
   end;
