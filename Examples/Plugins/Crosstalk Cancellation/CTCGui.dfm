@@ -16,6 +16,7 @@ object FmCTC: TFmCTC
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   DesignSize = (
     665

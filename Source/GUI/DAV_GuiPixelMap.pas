@@ -184,8 +184,8 @@ begin
 
    // blend scanlines
    for Index := Top to Bottom - 1
-     do BlendLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
-       PixelPointer[Left, Top + Index], Right - Left);
+     do BlendLine(PixelMap.PixelPointer[Left - X, Index - Y],
+       PixelPointer[Left, Index], Right - Left);
    EMMS;
   end;
 end;
@@ -209,8 +209,8 @@ begin
 
    // combine scanlines
    for Index := Top to Bottom - 1
-     do CombineLine(PixelMap.PixelPointer[Left - X, Top - Y + Index],
-       PixelPointer[Left, Top + Index], Right - Left, Alpha);
+     do CombineLine(PixelMap.PixelPointer[Left - X, Index - Y],
+       PixelPointer[Left, Index], Right - Left, Alpha);
    EMMS;
   end;
 end;

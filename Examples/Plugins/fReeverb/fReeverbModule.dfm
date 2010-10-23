@@ -1,4 +1,5 @@
 object fReeverbVST: TfReeverbVST
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'fReeverb'
