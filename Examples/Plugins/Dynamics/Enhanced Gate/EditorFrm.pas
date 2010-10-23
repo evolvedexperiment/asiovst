@@ -36,30 +36,25 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
-  Gauges, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLED, DAV_GuiGroup;
+  Gauges, ExtCtrls, DAV_Types, DAV_GuiPixelMap, DAV_GuiPng, DAV_VSTModule,
+  DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiGroup, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
-  TRGB32 = packed record
-    B, G, R, A: Byte;
-  end;
-  TRGB32Array = packed array[0..MaxInt div SizeOf(TRGB32) - 1] of TRGB32;
-  PRGB32Array = ^TRGB32Array;
-
   TEditorForm = class(TForm)
     CBDuck: TCheckBox;
     CBOnOff: TGuiLED;
     CBSideChain: TComboBox;
     CBStereoLink: TCheckBox;
-    DialAttack: TGuiDial;
-    DialDecay: TGuiDial;
-    DialHiCut: TGuiDial;
-    DialHold: TGuiDial;
-    DialKnee: TGuiDial;
-    DialLoCut: TGuiDial;
-    DialRange: TGuiDial;
-    DialRatio: TGuiDial;
-    DialThreshold: TGuiDial;
+    DialAttack: TGuiStitchedDial;
+    DialDecay: TGuiStitchedDial;
+    DialHiCut: TGuiStitchedDial;
+    DialHold: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialLoCut: TGuiStitchedDial;
+    DialRange: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
     EdAttack: TEdit;
     EdDecay: TEdit;
     EdHiCut: TEdit;
@@ -74,6 +69,7 @@ type
     GBDynamics: TGuiGroup;
     GBMain: TGuiGroup;
     GBSideChain: TGuiGroup;
+    GSPL: TGuiStitchedPNGList;
     LbAttack: TLabel;
     LbDecay: TLabel;
     LbEnhancedAudioGate: TLabel;
@@ -87,7 +83,6 @@ type
     LbSource: TLabel;
     LbThreshold: TLabel;
     VUTimer: TTimer;
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure CBOnOffClick(Sender: TObject);
@@ -104,6 +99,11 @@ type
     procedure DialKneeChange(Sender: TObject);
     procedure DialRangeChange(Sender: TObject);
     procedure VUTimerTimer(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+  private
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateThreshold;
     procedure UpdateAttack;
@@ -123,78 +123,49 @@ implementation
 uses
   Math, DAV_GUICommon, EnhancedGateDM;
 
-procedure TEditorForm.CBOnOffClick(Sender: TObject);
-begin
-  with TEnhancedGateDataModule(Owner)
-   do Parameter[0] := Integer(CBOnOff.Brightness_Percent > 90);
-end;
-
-procedure TEditorForm.DialThresholdChange(Sender: TObject);
-begin
-  with TEnhancedGateDataModule(Owner)
-   do Parameter[1] := DialThreshold.Position;
-  UpdateThreshold;
-end;
-
 procedure TEditorForm.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
 begin
- RS := TResourceStream.Create(hInstance, 'BigKnob3D', 'BMP');
- try
-  DialThreshold.DialBitmap.LoadFromStream(RS);
-  DialAttack.DialBitmap.Assign(DialThreshold.DialBitmap);
-  DialHold.DialBitmap.Assign(DialThreshold.DialBitmap);
-  DialDecay.DialBitmap.Assign(DialThreshold.DialBitmap);
- finally
-  FreeAndNil(RS);
- end;
- RS := TResourceStream.Create(hInstance, 'SmallKnob3D', 'BMP');
- try
-  DialLoCut.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
-  DialHiCut.DialBitmap.Assign(DialLoCut.DialBitmap);
-  DialRatio.DialBitmap.Assign(DialLoCut.DialBitmap);
-  DialKnee.DialBitmap.Assign(DialLoCut.DialBitmap);
-  DialRange.DialBitmap.Assign(DialLoCut.DialBitmap);
- finally
-  FreeAndNil(RS);
- end;
+ FBackground := TGuiPixelMapMemory.Create;
+end;
+
+procedure TEditorForm.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackground);
 end;
 
 procedure TEditorForm.FormPaint(Sender: TObject);
-var
-  x, y : Integer;
-  s    : array[0..1] of Single;
-  b    : ShortInt;
-  bmp  : TBitmap;
-  Line : PRGB32Array;
 begin
-  bmp := TBitmap.Create;
-  with bmp do
-   try
-    PixelFormat := pf32bit;
-    Width := Self.Width;
-    Height := Self.Height;
-    s[0] := 0;
-    s[1] := 0;
-    for y := 0 to Height - 1 do
-     begin
-      Line := Scanline[y];
-      for x := 0 to Width - 1 do
-       begin
-        s[1] := 0.9 * s[0] + 0.1 * (2 * random - 1);
-        b := round($F * s[1]);
-        s[0] := s[1];
-        Line[x].B := $AC + b;
-        Line[x].G := $D9 + b;
-        Line[x].R := $F0 + b;
-        Line[x].A := 0;
-       end;
-     end;
-    Self.Canvas.Draw(0, 0, bmp);
-   finally
-    Free;
-   end;
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TEditorForm.FormResize(Sender: TObject);
+var
+  x, y  : Integer;
+  s     : array [0..1] of Single;
+  b     : ShortInt;
+  ScnLn : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   s[0] := 0;
+   s[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.9 * s[0] + 0.1 * (2 * Random - 1);
+       b := Round($1F * s[1]);
+       s[0] := s[1];
+       ScnLn[x].B := $A4 + b;
+       ScnLn[x].G := $D1 + b;
+       ScnLn[x].R := $EA + b;
+       ScnLn[x].A := $FF;
+      end;
+    end;
+  end;
 end;
 
 procedure TEditorForm.FormShow(Sender: TObject);
@@ -214,24 +185,37 @@ begin
  UpdateRatio;
 end;
 
+procedure TEditorForm.CBOnOffClick(Sender: TObject);
+begin
+  with TEnhancedGateDataModule(Owner)
+   do Parameter[0] := Integer(CBOnOff.Brightness_Percent > 90);
+end;
+
+procedure TEditorForm.DialThresholdChange(Sender: TObject);
+begin
+  with TEnhancedGateDataModule(Owner)
+   do Parameter[1] := DialThreshold.Value;
+  UpdateThreshold;
+end;
+
 procedure TEditorForm.DialAttackChange(Sender: TObject);
 begin
   with TEnhancedGateDataModule(Owner)
-   do Parameter[2] := Power(10, DialAttack.Position);
+   do Parameter[2] := Power(10, DialAttack.Value);
   UpdateAttack;
 end;
 
 procedure TEditorForm.DialHoldChange(Sender: TObject);
 begin
   with TEnhancedGateDataModule(Owner)
-   do Parameter[3] := Power(10, DialHold.Position);
+   do Parameter[3] := Power(10, DialHold.Value);
   UpdateHold;
 end;
 
 procedure TEditorForm.DialDecayChange(Sender: TObject);
 begin
   with TEnhancedGateDataModule(Owner)
-   do Parameter[4] := Power(10, DialDecay.Position);
+   do Parameter[4] := Power(10, DialDecay.Value);
   UpdateDecay;
 end;
 
@@ -256,32 +240,32 @@ end;
 procedure TEditorForm.DialLoCutChange(Sender: TObject);
 begin
   with TEnhancedGateDataModule(Owner)
-   do Parameter[8] := Power(10, DialLoCut.Position);
+   do Parameter[8] := Power(10, DialLoCut.Value);
   UpdateLoCut;
 end;
 
 procedure TEditorForm.DialHiCutChange(Sender: TObject);
 begin
   with TEnhancedGateDataModule(Owner)
-   do Parameter[9] := 0.001 * Power(10, DialHiCut.Position);
+   do Parameter[9] := 0.001 * Power(10, DialHiCut.Value);
   UpdateHiCut;
 end;
 
 procedure TEditorForm.DialRatioChange(Sender: TObject);
 begin
-  with TEnhancedGateDataModule(Owner) do Parameter[10] := DialRatio.Position;
+  with TEnhancedGateDataModule(Owner) do Parameter[10] := DialRatio.Value;
   UpdateRatio;
 end;
 
 procedure TEditorForm.DialKneeChange(Sender: TObject);
 begin
-  with TEnhancedGateDataModule(Owner) do Parameter[11] := DialKnee.Position;
+  with TEnhancedGateDataModule(Owner) do Parameter[11] := DialKnee.Value;
   UpdateKnee;
 end;
 
 procedure TEditorForm.DialRangeChange(Sender: TObject);
 begin
-  with TEnhancedGateDataModule(Owner) do Parameter[12] := DialRange.Position;
+  with TEnhancedGateDataModule(Owner) do Parameter[12] := DialRange.Value;
   UpdateRange;
 end;
 
@@ -289,9 +273,9 @@ procedure TEditorForm.UpdateThreshold;
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialThreshold.Position <> Parameter[1]
-     then DialThreshold.Position := Parameter[1];
-    EdThreshold.Text := FloatToStrF(DialThreshold.Position, ffFixed, 5, 1) + ' dB';
+    if DialThreshold.Value <> Parameter[1]
+     then DialThreshold.Value := Parameter[1];
+    EdThreshold.Text := FloatToStrF(DialThreshold.Value, ffFixed, 5, 1) + ' dB';
    end;
 end;
 
@@ -310,9 +294,9 @@ var
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialAttack.Position <> Log10(Parameter[2])
-     then DialAttack.Position := Log10(Parameter[2]);
-    i := Round(1.499999 - DialAttack.Position);
+    if DialAttack.Value <> Log10(Parameter[2])
+     then DialAttack.Value := Log10(Parameter[2]);
+    i := Round(1.499999 - DialAttack.Value);
     if i < 0 then i := 0 else if i > 2 then i := 2;
     EdAttack.Text := FloatToStrF(Parameter[2], ffFixed, 5, i) + ' ms';
    end;
@@ -324,9 +308,9 @@ var
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialHold.Position <> Log10(Parameter[3])
-     then DialHold.Position := Log10(Parameter[3]);
-    i := Round(1.499999 - DialHold.Position);
+    if DialHold.Value <> Log10(Parameter[3])
+     then DialHold.Value := Log10(Parameter[3]);
+    i := Round(1.499999 - DialHold.Value);
     if i < 0 then i := 0 else if i > 2 then i := 2;
     EdHold.Text := FloatToStrF(Parameter[3], ffFixed, 5, i) + ' s';
    end;
@@ -338,9 +322,9 @@ var
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialDecay.Position <> Log10(Parameter[4])
-     then DialDecay.Position := Log10(Parameter[4]);
-    i := Round(1.499999 - DialDecay.Position);
+    if DialDecay.Value <> Log10(Parameter[4])
+     then DialDecay.Value := Log10(Parameter[4]);
+    i := Round(1.499999 - DialDecay.Value);
     if i < 0 then i := 0 else if i > 2 then i := 2;
     EdDecay.Text := FloatToStrF(Parameter[4], ffFixed, 5, i) + ' ms';
    end;
@@ -350,8 +334,8 @@ procedure TEditorForm.UpdateLoCut;
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialLoCut.Position <> Log10(Parameter[8])
-     then DialLoCut.Position := Log10(Parameter[8]);
+    if DialLoCut.Value <> Log10(Parameter[8])
+     then DialLoCut.Value := Log10(Parameter[8]);
     if Parameter[8] < 1000
      then EdLoCut.Text := FloatToStrF(Parameter[8], ffFixed, 5, Round(2.49999 - Log10(Parameter[8]))) + ' Hz'
      else EdLoCut.Text := FloatToStrF(0.001 * Parameter[8], ffFixed, 5, 1) + ' kHz';
@@ -365,8 +349,8 @@ procedure TEditorForm.UpdateHiCut;
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialHiCut.Position <> Log10(1000 * Parameter[9])
-     then DialHiCut.Position := Log10(1000 * Parameter[9]);
+    if DialHiCut.Value <> Log10(1000 * Parameter[9])
+     then DialHiCut.Value := Log10(1000 * Parameter[9]);
     if Parameter[9] < 1000
      then EdHiCut.Text := FloatToStrF(1000 * Parameter[9], ffFixed, 5, 0) + ' Hz'
      else EdHiCut.Text := FloatToStrF(Parameter[9], ffFixed, 5, Round(4.49999 - Log10(Parameter[9]))) + ' kHz';
@@ -380,8 +364,8 @@ procedure TEditorForm.UpdateRatio;
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialRatio.Position <> Parameter[10]
-     then DialRatio.Position := Parameter[10];
+    if DialRatio.Value <> Parameter[10]
+     then DialRatio.Value := Parameter[10];
     EdRatio.Text := FloatToStrF(Parameter[10], ffGeneral, 5, 5);
    end;
 end;
@@ -390,8 +374,8 @@ procedure TEditorForm.UpdateKnee;
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialKnee.Position <> Parameter[11]
-     then DialKnee.Position := Parameter[11];
+    if DialKnee.Value <> Parameter[11]
+     then DialKnee.Value := Parameter[11];
     EdKnee.Text := FloatToStrF(Parameter[11], ffFixed, 5, 2) + ' dB';
    end;
 end;
@@ -400,8 +384,8 @@ procedure TEditorForm.UpdateRange;
 begin
   with TEnhancedGateDataModule(Owner) do
    begin
-    if DialRange.Position <> Parameter[12]
-     then DialRange.Position := Parameter[12];
+    if DialRange.Value <> Parameter[12]
+     then DialRange.Value := Parameter[12];
     EdRange.Text := FloatToStrF(Parameter[12], ffFixed, 5, 1) + ' dB';
    end;
 end;

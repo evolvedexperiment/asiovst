@@ -37,7 +37,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
   DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel,
-  DAV_GuiPanel, DAV_GuiSelectBox, DAV_GuiButton;
+  DAV_GuiPanel, DAV_GuiSelectBox, DAV_GuiButton, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
 
@@ -45,12 +46,6 @@ type
     BtAB: TGuiButton;
     BtAbout: TGuiButton;
     CBFreeze: TCheckBox;
-    DialDampingFrequency: TGuiDial;
-    DialDry: TGuiDial;
-    DialInputDiffusion: TGuiDial;
-    DialDecayDiffusion: TGuiDial;
-    DialWet: TGuiDial;
-    DialPreDelay: TGuiDial;
     LbPreset: TGuiLabel;
     PnLabel: TGuiPanel;
     PnToolbar: TPanel;
@@ -61,12 +56,17 @@ type
     LbInputDiffusion: TGuiLabel;
     LbDecayDiffusion: TGuiLabel;
     LbDampingFrequency: TGuiLabel;
-    DIL: TGuiDialImageList;
-    DialDecay: TGuiDial;
     LbDecay: TGuiLabel;
     LbMod: TGuiLabel;
-    DialModulation: TGuiDial;
-    procedure FormCreate(Sender: TObject);
+    DialDry: TGuiStitchedDial;
+    DialWet: TGuiStitchedDial;
+    DialPreDelay: TGuiStitchedDial;
+    DialDampingFrequency: TGuiStitchedDial;
+    DialInputDiffusion: TGuiStitchedDial;
+    DialDecayDiffusion: TGuiStitchedDial;
+    DialDecay: TGuiStitchedDial;
+    DialModulation: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure BtAboutClick(Sender: TObject);
     procedure DialWetChange(Sender: TObject);
@@ -75,8 +75,8 @@ type
     procedure DialInputDiffusionChange(Sender: TObject);
     procedure DialDecayDiffusionChange(Sender: TObject);
     procedure DialDampingFrequencyChange(Sender: TObject);
-    procedure SBPresetChange(Sender: TObject);
     procedure DialDecayChange(Sender: TObject);
+    procedure SBPresetChange(Sender: TObject);
   public
     procedure UpdateDry;
     procedure UpdateWet;
@@ -94,33 +94,6 @@ implementation
 
 uses
   Dialogs, PlateReverbModule;
-
-procedure TFmPlateReverb.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'PlateReverbKnob', 'BMP');
- try
-  with DIL.DialImages.Add do
-   begin
-    Width := 48;
-    Height := 48;
-    GlyphCount := 64;
-    StitchKind := skVertical;
-    DialBitmap.LoadFromStream(RS);
-   end;
-  DialDry.DialImageIndex := 0;
-  DialWet.DialImageIndex := 0;     
-  DialPreDelay.DialImageIndex := 0;
-  DialDecay.DialImageIndex := 0;
-  DialDampingFrequency.DialImageIndex := 0;
-  DialInputDiffusion.DialImageIndex := 0;
-  DialDecayDiffusion.DialImageIndex := 0;
-  DialModulation.DialImageIndex := 0;
- finally
-  RS.Free;
- end;
-end;
 
 procedure TFmPlateReverb.FormShow(Sender: TObject);
 var
@@ -154,72 +127,72 @@ end;
 procedure TFmPlateReverb.UpdateDry;
 begin
  with TPlateReverbVST(Owner) do
-  if DialDry.Position <> Parameter[0]  then
+  if DialDry.Value <> Parameter[0]  then
    begin
-    DialDry.Position := Parameter[0];
+    DialDry.Value := Parameter[0];
    end;
 end;
 
 procedure TFmPlateReverb.UpdateWet;
 begin
  with TPlateReverbVST(Owner) do
-  if DialWet.Position <> Parameter[1]  then
+  if DialWet.Value <> Parameter[1]  then
    begin
-    DialWet.Position := Parameter[1];
+    DialWet.Value := Parameter[1];
    end;
 end;
 
 procedure TFmPlateReverb.UpdatePreDelay;
 begin
  with TPlateReverbVST(Owner) do
-  if DialPreDelay.Position <> Parameter[2]  then
+  if DialPreDelay.Value <> Parameter[2]  then
    begin
-    DialPreDelay.Position := Parameter[2];
+    DialPreDelay.Value := Parameter[2];
    end;
 end;
 
 procedure TFmPlateReverb.UpdateDecay;
 begin
  with TPlateReverbVST(Owner) do
-  if DialDecay.Position <> Parameter[3]  then
+  if DialDecay.Value <> Parameter[3]  then
    begin
-    DialDecay.Position := Parameter[3];
+    DialDecay.Value := Parameter[3];
    end;
 end;
 
 procedure TFmPlateReverb.UpdateDampingFrequency;
 begin
  with TPlateReverbVST(Owner) do
-  if DialDampingFrequency.Position <> Parameter[4] then
+  if DialDampingFrequency.Value <> Parameter[4] then
    begin
-    DialDampingFrequency.Position := Parameter[4];
+    DialDampingFrequency.Value := Parameter[4];
    end;
 end;
 
 procedure TFmPlateReverb.UpdateInputDiffusion;
 begin
  with TPlateReverbVST(Owner) do
-  if DialInputDiffusion.Position <> Parameter[5] then
+  if DialInputDiffusion.Value <> Parameter[5] then
    begin
-    DialInputDiffusion.Position := Parameter[5];
+    DialInputDiffusion.Value := Parameter[5];
    end;
 end;
 
 procedure TFmPlateReverb.UpdateDecayDiffusion;
 begin
  with TPlateReverbVST(Owner) do
-  if DialDecayDiffusion.Position <> Parameter[6] then
+  if DialDecayDiffusion.Value <> Parameter[6] then
    begin
-    DialDecayDiffusion.Position := Parameter[6];
+    DialDecayDiffusion.Value := Parameter[6];
    end;
 end;
 
 procedure TFmPlateReverb.UpdateModulation;
 begin
  with TPlateReverbVST(Owner) do
-  if DialModulation.Position <> Parameter[7] then
+  if DialModulation.Value <> Parameter[7] then
    begin
-    DialModulation.Position := Parameter[7];
+    DialModulation.Value := Parameter[7];
    end;
 end;
 
@@ -229,7 +202,7 @@ var
 begin
  with TPlateReverbVST(Owner) do
   begin
-   Value := DialDry.Position;
+   Value := DialDry.Value;
    if Parameter[0] <> Value
     then Parameter[0] := Value;
   end;
@@ -241,7 +214,7 @@ var
 begin
  with TPlateReverbVST(Owner) do
   begin
-   Value := DialWet.Position;
+   Value := DialWet.Value;
    if Parameter[1] <> Value
     then Parameter[1] := Value;
   end;
@@ -250,45 +223,45 @@ end;
 procedure TFmPlateReverb.DialPreDelayChange(Sender: TObject);
 begin
  with TPlateReverbVST(Owner) do
-  if Parameter[2] <> DialPreDelay.Position then
+  if Parameter[2] <> DialPreDelay.Value then
    begin
-    Parameter[2] := DialPreDelay.Position;
+    Parameter[2] := DialPreDelay.Value;
    end;
 end;
 
 procedure TFmPlateReverb.DialDecayChange(Sender: TObject);
 begin
  with TPlateReverbVST(Owner) do
-  if Parameter[3] <> DialDecay.Position then
+  if Parameter[3] <> DialDecay.Value then
    begin
-    Parameter[3] := DialDecay.Position;
+    Parameter[3] := DialDecay.Value;
    end;
 end;
 
 procedure TFmPlateReverb.DialDampingFrequencyChange(Sender: TObject);
 begin
  with TPlateReverbVST(Owner) do
-  if Parameter[4] <> DialDampingFrequency.Position then
+  if Parameter[4] <> DialDampingFrequency.Value then
    begin
-    Parameter[4] := DialDampingFrequency.Position;
+    Parameter[4] := DialDampingFrequency.Value;
    end;
 end;
 
 procedure TFmPlateReverb.DialInputDiffusionChange(Sender: TObject);
 begin
  with TPlateReverbVST(Owner) do
-  if Parameter[5] <> DialInputDiffusion.Position then
+  if Parameter[5] <> DialInputDiffusion.Value then
    begin
-    Parameter[5] := DialInputDiffusion.Position;
+    Parameter[5] := DialInputDiffusion.Value;
    end;
 end;
 
 procedure TFmPlateReverb.DialDecayDiffusionChange(Sender: TObject);
 begin
  with TPlateReverbVST(Owner) do
-  if Parameter[6] <> DialDecayDiffusion.Position then
+  if Parameter[6] <> DialDecayDiffusion.Value then
    begin
-    Parameter[6] := DialDecayDiffusion.Position;
+    Parameter[6] := DialDecayDiffusion.Value;
    end;
 end;
 

@@ -37,15 +37,11 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_GuiLED, DAV_GuiBaseControl, DAV_GuiDial, Controls, DAV_GuiLabel,
-  DAV_GuiSelectBox, StdCtrls, DAV_GuiGroup, DAV_GuiEQGraph;
+  DAV_GuiSelectBox, StdCtrls, DAV_GuiGroup, DAV_GuiEQGraph,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmHumRemoval = class(TForm)
-    DialFundamentalFrequency: TGuiDial;
-    DialHighpassFrequency: TGuiDial;
-    DialHighpassOrder: TGuiDial;
-    DialNotchBandwidth: TGuiDial;
-    DIL: TGuiDialImageList;
     GbHighpass: TGuiGroup;
     GbNotchFilters: TGuiGroup;
     GuiEQGraph: TGuiEQGraph;
@@ -61,7 +57,11 @@ type
     LedHighpassActive: TGuiLED;
     LedHumProfile: TGuiLED;
     SbHighpassType: TGuiSelectBox;
-    procedure FormCreate(Sender: TObject);
+    DialHighpassFrequency: TGuiStitchedDial;
+    DialHighpassOrder: TGuiStitchedDial;
+    DialFundamentalFrequency: TGuiStitchedDial;
+    DialNotchBandwidth: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     function GuiEQGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure DialFundamentalFrequencyChange(Sender: TObject);
@@ -86,34 +86,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_Common, DAV_VSTModuleWithPrograms, HumRemovalDSP;
-
-procedure TFmHumRemoval.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Knob', 'PNG');
-  try
-   with DIL.DialImages.Add do
-    begin
-     GlyphCount := 65;
-     PngBmp.LoadFromStream(RS);
-     DialBitmap.Assign(PngBmp);
-    end;
-   DialHighpassFrequency.DialImageIndex    := 0;
-   DialHighpassOrder.DialImageIndex        := 0;
-   DialFundamentalFrequency.DialImageIndex := 0;
-   DialNotchBandwidth.DialImageIndex       := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
+  Math, DAV_Common, DAV_VSTModuleWithPrograms, HumRemovalDSP;
 
 procedure TFmHumRemoval.FormShow(Sender: TObject);
 begin
@@ -163,8 +136,8 @@ procedure TFmHumRemoval.DialHighpassFrequencyChange(Sender: TObject);
 begin
  with THumRemovalModule(Owner) do
   begin
-   if Parameter[2] <> DialHighpassFrequency.Position
-    then Parameter[2] := DialHighpassFrequency.Position;
+   if Parameter[2] <> DialHighpassFrequency.Value
+    then Parameter[2] := DialHighpassFrequency.Value;
   end;
 end;
 
@@ -172,8 +145,8 @@ procedure TFmHumRemoval.DialHighpassOrderChange(Sender: TObject);
 begin
  with THumRemovalModule(Owner) do
   begin
-   if Parameter[3] <> DialHighpassOrder.Position
-    then Parameter[3] := DialHighpassOrder.Position;
+   if Parameter[3] <> DialHighpassOrder.Value
+    then Parameter[3] := DialHighpassOrder.Value;
   end;
 end;
 
@@ -181,8 +154,8 @@ procedure TFmHumRemoval.DialFundamentalFrequencyChange(Sender: TObject);
 begin
  with THumRemovalModule(Owner) do
   begin
-   if Parameter[4] <> DialFundamentalFrequency.Position
-    then Parameter[4] := DialFundamentalFrequency.Position;
+   if Parameter[4] <> DialFundamentalFrequency.Value
+    then Parameter[4] := DialFundamentalFrequency.Value;
   end;
 end;
 
@@ -190,8 +163,8 @@ procedure TFmHumRemoval.DialNotchBandwidthChange(Sender: TObject);
 begin
  with THumRemovalModule(Owner) do
   begin
-   if Parameter[5] <> DialNotchBandwidth.Position
-    then Parameter[5] := DialNotchBandwidth.Position;
+   if Parameter[5] <> DialNotchBandwidth.Value
+    then Parameter[5] := DialNotchBandwidth.Value;
   end;
 end;
 
@@ -218,8 +191,8 @@ procedure TFmHumRemoval.UpdateHighpassFrequency;
 begin
  with THumRemovalModule(Owner) do
   begin
-   if DialHighpassFrequency.Position <> Parameter[2]
-    then DialHighpassFrequency.Position := Parameter[2];
+   if DialHighpassFrequency.Value <> Parameter[2]
+    then DialHighpassFrequency.Value := Parameter[2];
    LbHighpassFrequencyValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
    GuiEQGraph.ChartChanged;
   end;
@@ -229,8 +202,8 @@ procedure TFmHumRemoval.UpdateHighpassOrder;
 begin
  with THumRemovalModule(Owner) do
   begin
-   if DialHighpassOrder.Position <> Parameter[3]
-    then DialHighpassOrder.Position := Parameter[3];
+   if DialHighpassOrder.Value <> Parameter[3]
+    then DialHighpassOrder.Value := Parameter[3];
    LbHighpassOrderValue.Caption := ParameterDisplay[3];
    GuiEQGraph.ChartChanged;
   end;
@@ -240,8 +213,8 @@ procedure TFmHumRemoval.UpdateFundamentalFrequency;
 begin
  with THumRemovalModule(Owner) do
   begin
-   if DialFundamentalFrequency.Position <> Parameter[4]
-    then DialFundamentalFrequency.Position := Parameter[4];
+   if DialFundamentalFrequency.Value <> Parameter[4]
+    then DialFundamentalFrequency.Value := Parameter[4];
    LbFundamentalFrequencyValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
    GuiEQGraph.ChartChanged;
   end;
@@ -251,8 +224,8 @@ procedure TFmHumRemoval.UpdateBandwidth;
 begin
  with THumRemovalModule(Owner) do
   begin
-   if DialNotchBandwidth.Position <> Parameter[5]
-    then DialNotchBandwidth.Position := Parameter[5];
+   if DialNotchBandwidth.Value <> Parameter[5]
+    then DialNotchBandwidth.Value := Parameter[5];
    LbNotchBandwidthValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
    GuiEQGraph.ChartChanged;
   end;

@@ -37,17 +37,18 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
   Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
+  Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmSimpleVibrato = class(TForm)
-    DialDepth: TGuiDial;
-    DialSpeed: TGuiDial;
     LbDepth: TGuiLabel;
     LbDepthValue: TGuiLabel;
     LbSpeed: TGuiLabel;
     LbSpeedValue: TGuiLabel;
-    procedure FormCreate(Sender: TObject);
+    GSPL: TGuiStitchedPNGList;
+    DialSpeed: TGuiStitchedDial;
+    DialDepth: TGuiStitchedDial;
     procedure FormShow(Sender: TObject);
     procedure DialSpeedChange(Sender: TObject);
     procedure DialDepthChange(Sender: TObject);
@@ -63,36 +64,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, {$IFDEF FPC} Graphics, {$ELSE} PngImage, {$ENDIF}
-  DAV_VSTModuleWithPrograms, SimpleVibratoDM;
-
-procedure TFmSimpleVibrato.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  {$IFDEF FPC}
-  PngBmp : TPortableNetworkGraphic;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-begin
- {$IFDEF FPC}
- PngBmp := TPortableNetworkGraphic.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'VibratoKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialSpeed.DialBitmap.Assign(PngBmp);
-   DialDepth.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
+  Math, DAV_VSTModuleWithPrograms, SimpleVibratoDM;
 
 procedure TFmSimpleVibrato.FormShow(Sender: TObject);
 begin
@@ -104,8 +76,8 @@ procedure TFmSimpleVibrato.DialDepthChange(Sender: TObject);
 begin
  with TSimpleVibratoModule(Owner) do
   begin
-   if Parameter[1] <> DialDepth.Position
-    then Parameter[1] := DialDepth.Position;
+   if Parameter[1] <> DialDepth.Value
+    then Parameter[1] := DialDepth.Value;
   end;
 end;
 
@@ -113,8 +85,8 @@ procedure TFmSimpleVibrato.DialSpeedChange(Sender: TObject);
 begin
  with TSimpleVibratoModule(Owner) do
   begin
-   if Parameter[0] <> DialSpeed.Position
-    then Parameter[0] := DialSpeed.Position;
+   if Parameter[0] <> DialSpeed.Value
+    then Parameter[0] := DialSpeed.Value;
   end;
 end;
 
@@ -125,8 +97,8 @@ begin
  with TSimpleVibratoModule(Owner) do
   begin
    Depth := Parameter[1];
-   if DialDepth.Position <> Depth
-    then DialDepth.Position := Depth;
+   if DialDepth.Value <> Depth
+    then DialDepth.Value := Depth;
    LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -138,8 +110,8 @@ begin
  with TSimpleVibratoModule(Owner) do
   begin
    Speed := Parameter[0];
-   if DialSpeed.Position <> Speed
-    then DialSpeed.Position := Speed;
+   if DialSpeed.Value <> Speed
+    then DialSpeed.Value := Speed;
    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;

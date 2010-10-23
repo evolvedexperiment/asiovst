@@ -1,4 +1,5 @@
 object SimpleVibratoModule: TSimpleVibratoModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]

@@ -45,12 +45,11 @@ type
   TEnhancedGateDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure EAGThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure EAGPowerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGDuckChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGStereoLinkChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -59,7 +58,7 @@ type
     procedure EAGDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGLoCutChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGHiCutChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure EAGSideChainSourceDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure EAGSideChainSourceDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure EAGSideChainSourceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -99,6 +98,8 @@ begin
  Parameter[10] :=   1.0;
  Parameter[11] :=   1.0;
  Parameter[12] :=  40.0;
+
+ EditorFormClass := TEditorForm;
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleClose(Sender: TObject);
@@ -107,12 +108,6 @@ var
 begin
  for i := 0 to CNrChannels - 1
   do FreeAndNil(FEnhancedGates[i]);
-end;
-
-procedure TEnhancedGateDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TEditorForm.Create(Self);
 end;
 
 procedure TEnhancedGateDataModule.EAGPowerChange(Sender: TObject;
@@ -136,7 +131,7 @@ begin
      else CBOnOff.Brightness_Percent := 20;
 end;
 
-procedure TEnhancedGateDataModule.EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TEnhancedGateDataModule.EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Boolean(Round(Parameter[index]))
   then PreDefined := 'On'
@@ -192,7 +187,7 @@ begin
 end;
 
 procedure TEnhancedGateDataModule.EAGSideChainSourceDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  if Boolean(Round(Parameter[index]))
   then PreDefined := 'Ext'

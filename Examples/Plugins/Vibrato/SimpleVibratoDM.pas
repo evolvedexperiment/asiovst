@@ -55,7 +55,7 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FVibrato         : Array [0..1] of TDspVibrato32;
+    FVibrato         : array [0..1] of TDspVibrato32;
     FCriticalSection : TCriticalSection;
     function GetVibrato(Index: Integer): TDspVibrato32;
   public

@@ -4,28 +4,28 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiDial, DAV_GuiLabel, Controls, DAV_GuiBaseControl;
+  DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel, Controls, DAV_GuiBaseControl,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmPhaseRotator = class(TForm)
-    DialBandwidth: TGuiDial;
-    DialFrequency: TGuiDial;
-    DialStages: TGuiDial;
-    DIL: TGuiDialImageList;
     LbBandwidth: TGuiLabel;
     LbBandwidthValue: TGuiLabel;
     LbFreq: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
     LbStages: TGuiLabel;
     LbStagesValue: TGuiLabel;
-    procedure FormCreate(Sender: TObject);
+    DialFrequency: TGuiStitchedDial;
+    DialStages: TGuiStitchedDial;
+    DialBandwidth: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormClick(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialStagesChange(Sender: TObject);
     procedure DialBandwidthChange(Sender: TObject);
     procedure EdValueKeyPress(Sender: TObject; var Key: Char);
-    procedure FormClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure DialFrequencyDblClick(Sender: TObject);
     procedure DialStagesDblClick(Sender: TObject);
     procedure DialBandwidthDblClick(Sender: TObject);
@@ -44,38 +44,6 @@ implementation
 uses
   PngImage, PhaseRotatorDSP, DAV_VSTModuleWithPrograms;
 
-procedure TFmPhaseRotator.FormClick(Sender: TObject);
-begin
- if Assigned(FEdValue)
-  then FreeAndNil(FEdValue);
-end;
-
-procedure TFmPhaseRotator.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'PhaseRotatorKnob', 'PNG');
-  try
-   with DIL.DialImages.Add do
-    begin
-     GlyphCount := 65;
-     PngBmp.LoadFromStream(RS);
-     DialBitmap.Assign(PngBmp);
-    end;
-   DialFrequency.DialImageIndex  := 0;
-   DialStages.DialImageIndex  := 0;
-   DialBandwidth.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
-
 procedure TFmPhaseRotator.FormDestroy(Sender: TObject);
 begin
  if Assigned(FEdValue)
@@ -87,6 +55,12 @@ begin
  UpdateFrequency;
  UpdateBandwidth;
  UpdateStages;
+end;
+
+procedure TFmPhaseRotator.FormClick(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmPhaseRotator.DialBandwidthDblClick(Sender: TObject);
@@ -115,8 +89,8 @@ procedure TFmPhaseRotator.DialFrequencyChange(Sender: TObject);
 begin
  with TPhaseRotatorModule(Owner) do
   begin
-   if Parameter[0] <> DialFrequency.Position
-    then Parameter[0] := DialFrequency.Position;
+   if Parameter[0] <> DialFrequency.Value
+    then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
@@ -146,8 +120,8 @@ procedure TFmPhaseRotator.DialStagesChange(Sender: TObject);
 begin
  with TPhaseRotatorModule(Owner) do
   begin
-   if Parameter[1] <> Round(DialStages.Position)
-    then Parameter[1] := Round(DialStages.Position);
+   if Parameter[1] <> Round(DialStages.Value)
+    then Parameter[1] := Round(DialStages.Value);
   end;
 end;
 
@@ -188,8 +162,8 @@ procedure TFmPhaseRotator.DialBandwidthChange(Sender: TObject);
 begin
  with TPhaseRotatorModule(Owner) do
   begin
-   if Parameter[2] <> DialBandwidth.Position
-    then Parameter[2] := DialBandwidth.Position;
+   if Parameter[2] <> DialBandwidth.Value
+    then Parameter[2] := DialBandwidth.Value;
   end;
 end;
 
@@ -197,8 +171,8 @@ procedure TFmPhaseRotator.UpdateFrequency;
 begin
  with TPhaseRotatorModule(Owner) do
   begin
-   if DialFrequency.Position <> Parameter[0]
-    then DialFrequency.Position := Parameter[0];
+   if DialFrequency.Value <> Parameter[0]
+    then DialFrequency.Value := Parameter[0];
 
    LbFrequencyValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
@@ -208,8 +182,8 @@ procedure TFmPhaseRotator.UpdateStages;
 begin
  with TPhaseRotatorModule(Owner) do
   begin
-   if DialStages.Position <> Parameter[1]
-    then DialStages.Position := Parameter[1];
+   if DialStages.Value <> Parameter[1]
+    then DialStages.Value := Parameter[1];
 
    LbStagesValue.Caption := ParameterDisplay[1];
   end;
@@ -219,8 +193,8 @@ procedure TFmPhaseRotator.UpdateBandwidth;
 begin
  with TPhaseRotatorModule(Owner) do
   begin
-   if DialBandwidth.Position <> Parameter[2]
-    then DialBandwidth.Position := Parameter[2];
+   if DialBandwidth.Value <> Parameter[2]
+    then DialBandwidth.Value := Parameter[2];
 
    LbBandwidthValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
   end;

@@ -35,24 +35,24 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Graphics, DAV_Types,
-  DAV_VSTModule, DAV_GuiBaseControl, Controls, ExtCtrls, DAV_GuiPanel,
-  DAV_GuiDial, DAV_GuiLabel;
+  Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, ExtCtrls,
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiPanel, DAV_GuiLabel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
+  DAV_GuiPng;
 
 type
   TFmBassExtender = class(TForm)
-    PnMain: TGuiPanel;
-    DialAttack: TGuiDial;
-    DialBalance: TGuiDial;
-    DialCompression: TGuiDial;
-    DialDivide: TGuiDial;
-    DialFrequency: TGuiDial;
-    DialOrder: TGuiDial;
-    DialRatio: TGuiDial;
-    DialRelease: TGuiDial;
-    DialShape: TGuiDial;
-    DialThreshold: TGuiDial;
-    GuiLabel2: TGuiLabel;
+    DialAttack: TGuiStitchedDial;
+    DialBalance: TGuiStitchedDial;
+    DialCompression: TGuiStitchedDial;
+    DialDivide: TGuiStitchedDial;
+    DialFrequency: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialShape: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
     LbBalance: TGuiLabel;
@@ -73,7 +73,7 @@ type
     LbShapeValue: TGuiLabel;
     LbThreshold: TGuiLabel;
     LbThresholdValue: TGuiLabel;
-    DIL: TGuiDialImageList;
+    PnMain: TGuiPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
@@ -87,6 +87,7 @@ type
     procedure DialReleaseChange(Sender: TObject);
     procedure DialCompressionChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     FBackground : TBitmap;
   public
@@ -110,89 +111,16 @@ uses
 {$R *.DFM}
 
 procedure TFmBassExtender.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  h, hr  : Single;
-  Line   : PBGR24Array;
-  PngBmp : TPngObject;
-
 begin
- // Create Background Image
  FBackground := TBitmap.Create;
- with FBackground do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.3 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
-
-       Line[x].B := Round($30 - $24 * (s[1] - h));
-       Line[x].G := Round($44 - $38 * (s[1] - h));
-       Line[x].R := Round($4D - $40 * (s[1] - h));
-      end;
-    end;
-  end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'BassExtender', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with DIL.DialImages.Add do
-    begin
-     GlyphCount := 65;
-     DialBitmap.Assign(PngBmp);
-    end;
-   DialFrequency.DialImageIndex := 0;
-   DialOrder.DialImageIndex := 0;
-   DialDivide.DialImageIndex := 0;
-   DialShape.DialImageIndex := 0;
-   DialRatio.DialImageIndex := 0;
-   DialAttack.DialImageIndex := 0;
-   DialRelease.DialImageIndex := 0;
-   DialCompression.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'BassExtenderPan', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialBalance.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'BassExtenderThreshold', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialThreshold.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
 end;
 
 procedure TFmBassExtender.DialAttackChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Attack'] <> DialAttack.Position
-    then ParameterByName['Attack'] := DialAttack.Position;
+   if ParameterByName['Attack'] <> DialAttack.Value
+    then ParameterByName['Attack'] := DialAttack.Value;
   end;
 end;
 
@@ -200,8 +128,8 @@ procedure TFmBassExtender.DialBalanceChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Balance'] <> DialBalance.Position
-    then ParameterByName['Balance'] := DialBalance.Position;
+   if ParameterByName['Balance'] <> DialBalance.Value
+    then ParameterByName['Balance'] := DialBalance.Value;
   end;
 end;
 
@@ -209,8 +137,8 @@ procedure TFmBassExtender.DialCompressionChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Compression Mix'] <> DialCompression.Position
-    then ParameterByName['Compression Mix'] := DialCompression.Position;
+   if ParameterByName['Compression Mix'] <> DialCompression.Value
+    then ParameterByName['Compression Mix'] := DialCompression.Value;
   end;
 end;
 
@@ -218,8 +146,8 @@ procedure TFmBassExtender.DialDivideChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Divider'] <> DialDivide.Position
-    then ParameterByName['Divider'] := DialDivide.Position;
+   if ParameterByName['Divider'] <> DialDivide.Value
+    then ParameterByName['Divider'] := DialDivide.Value;
   end;
 end;
 
@@ -227,8 +155,8 @@ procedure TFmBassExtender.DialFrequencyChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Split Frequency'] <> DialFrequency.Position
-    then ParameterByName['Split Frequency'] := DialFrequency.Position;
+   if ParameterByName['Split Frequency'] <> DialFrequency.Value
+    then ParameterByName['Split Frequency'] := DialFrequency.Value;
   end;
 end;
 
@@ -236,8 +164,8 @@ procedure TFmBassExtender.DialOrderChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Split Order'] <> DialOrder.Position
-    then ParameterByName['Split Order'] := DialOrder.Position;
+   if ParameterByName['Split Order'] <> DialOrder.Value
+    then ParameterByName['Split Order'] := DialOrder.Value;
   end;
 end;
 
@@ -245,8 +173,8 @@ procedure TFmBassExtender.DialRatioChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Ratio'] <> DialRatio.Position
-    then ParameterByName['Ratio'] := DialRatio.Position;
+   if ParameterByName['Ratio'] <> DialRatio.Value
+    then ParameterByName['Ratio'] := DialRatio.Value;
   end;
 end;
 
@@ -254,8 +182,8 @@ procedure TFmBassExtender.DialReleaseChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Release'] <> DialRelease.Position
-    then ParameterByName['Release'] := DialRelease.Position;
+   if ParameterByName['Release'] <> DialRelease.Value
+    then ParameterByName['Release'] := DialRelease.Value;
   end;
 end;
 
@@ -263,8 +191,8 @@ procedure TFmBassExtender.DialShapeChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Shape'] <> DialShape.Position
-    then ParameterByName['Shape'] := DialShape.Position;
+   if ParameterByName['Shape'] <> DialShape.Value
+    then ParameterByName['Shape'] := DialShape.Value;
   end;
 end;
 
@@ -272,14 +200,45 @@ procedure TFmBassExtender.DialThresholdChange(Sender: TObject);
 begin
  with TBassExtenderModule(Owner) do
   begin
-   if ParameterByName['Threshold'] <> DialThreshold.Position
-    then ParameterByName['Threshold'] := DialThreshold.Position;
+   if ParameterByName['Threshold'] <> DialThreshold.Value
+    then ParameterByName['Threshold'] := DialThreshold.Value;
   end;
 end;
 
 procedure TFmBassExtender.FormPaint(Sender: TObject);
 begin
  Canvas.Draw(0, 0, FBackground);
+end;
+
+procedure TFmBassExtender.FormResize(Sender: TObject);
+var
+  RS     : TResourceStream;
+  x, y   : Integer;
+  s      : array [0..1] of Single;
+  h, hr  : Single;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   s[0] := 0;
+   s[1] := 0;
+   hr := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h := 0.3 * (1 - sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[0] := s[1];
+
+       ScnLn[x].B := Round($30 - $24 * (s[1] - h));
+       ScnLn[x].G := Round($44 - $38 * (s[1] - h));
+       ScnLn[x].R := Round($4D - $40 * (s[1] - h));
+      end;
+    end;
+  end;
 end;
 
 procedure TFmBassExtender.FormShow(Sender: TObject);
@@ -303,8 +262,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Attack := ParameterByName['Attack'];
-   if DialAttack.Position <> Attack
-    then DialAttack.Position := Attack;
+   if DialAttack.Value <> Attack
+    then DialAttack.Value := Attack;
    if Attack < 1000
     then LbAttackValue.Caption := FloatToStrF(Attack, ffGeneral, 3, 3) + ' µs'
     else LbAttackValue.Caption := FloatToStrF(1E-3 * Attack, ffGeneral, 3, 3) + ' ms';
@@ -318,8 +277,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Balance := ParameterByName['Balance'];
-   if DialBalance.Position <> Balance
-    then DialBalance.Position := Balance;
+   if DialBalance.Value <> Balance
+    then DialBalance.Value := Balance;
 //   Balance := round(1E5 * Balance) * 1E-5;
    LbBalanceValue.Caption := FloatToStrF(RoundTo(Balance, -2), ffGeneral, 3, 4) + '%';
   end;
@@ -332,8 +291,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Compression := ParameterByName['Compression Mix'];
-   if DialCompression.Position <> Compression
-    then DialCompression.Position := Compression;
+   if DialCompression.Value <> Compression
+    then DialCompression.Value := Compression;
    LbCompressionValue.Caption := FloatToStrF(RoundTo(Compression, -2), ffGeneral, 3, 3) + '%';
   end;
 end;
@@ -345,8 +304,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Divider := ParameterByName['Divider'];
-   if DialDivide.Position <> Divider
-    then DialDivide.Position := Divider;
+   if DialDivide.Value <> Divider
+    then DialDivide.Value := Divider;
    LbDivideValue.Caption := FloatToStrF(Divider, ffGeneral, 3, 3) + '%';
   end;
 end;
@@ -358,8 +317,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Ratio := ParameterByName['Ratio'];
-   if DialRatio.Position <> Ratio
-    then DialRatio.Position := Ratio;
+   if DialRatio.Value <> Ratio
+    then DialRatio.Value := Ratio;
    if Ratio = 1000
     then LbRatioValue.Caption := '1 : oo'
     else LbRatioValue.Caption := '1 : ' + FloatToStrF(Ratio, ffGeneral, 3, 4);
@@ -373,8 +332,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Release := ParameterByName['Release'];
-   if DialRelease.Position <> Release
-    then DialRelease.Position := Release;
+   if DialRelease.Value <> Release
+    then DialRelease.Value := Release;
    if Release < 1000
     then LbReleaseValue.Caption := FloatToStrF(Release, ffGeneral, 3, 2) + ' ms'
     else LbReleaseValue.Caption := FloatToStrF(Release * 1E-3, ffGeneral, 3, 2) + ' s';
@@ -388,8 +347,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Shape := ParameterByName['Shape'];
-   if DialShape.Position <> Shape
-    then DialShape.Position := Shape;
+   if DialShape.Value <> Shape
+    then DialShape.Value := Shape;
    LbShapeValue.Caption := FloatToStrF(RoundTo(Shape, -2), ffGeneral, 3, 2) + '%';
   end;
 end;
@@ -401,8 +360,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Frequency := ParameterByName['Split Frequency'];
-   if DialFrequency.Position <> Frequency
-    then DialFrequency.Position := Frequency;
+   if DialFrequency.Value <> Frequency
+    then DialFrequency.Value := Frequency;
    if Frequency < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Frequency, ffGeneral, 3, 2) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Frequency * 1E-3, ffGeneral, 3, 2) + ' kHz';
@@ -416,8 +375,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Order := ParameterByName['Split Order'];
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
    LbOrderValue.Caption := IntToStr(2 * round(Order));
   end;
 end;
@@ -429,8 +388,8 @@ begin
  with TBassExtenderModule(Owner) do
   begin
    Threshold := ParameterByName['Threshold'];
-   if DialThreshold.Position <> Threshold
-    then DialThreshold.Position := Threshold;
+   if DialThreshold.Value <> Threshold
+    then DialThreshold.Value := Threshold;
    Threshold := round(1E4 * Threshold) * 1E-4;
    LbThresholdValue.Caption := FloatToStrF(RoundTo(Threshold, -2), ffGeneral, 3, 4) + 'dB';
   end;

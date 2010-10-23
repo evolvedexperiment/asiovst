@@ -1,4 +1,5 @@
 object EnhancedGateDataModule: TEnhancedGateDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Gate'
@@ -275,7 +276,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessBypass
   OnProcessReplacing = VSTModuleProcessBypass
   OnSampleRateChange = VSTModuleSampleRateChange

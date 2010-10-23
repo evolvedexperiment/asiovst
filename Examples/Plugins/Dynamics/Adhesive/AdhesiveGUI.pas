@@ -36,35 +36,57 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiVUMeter;
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPng,
+  DAV_GuiVUMeter, DAV_GuiPixelMap, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiDial;
 
 type
   TFmAdhesive = class(TForm)
-    DialAttack: TGuiDial;
-    DialFilter: TGuiDial;
-    DialKnee: TGuiDial;
-    DialMakeUpGain: TGuiDial;
-    DialMix: TGuiDial;
-    DialRatio: TGuiDial;
-    DialRelease: TGuiDial;
-    DialThreshold: TGuiDial;
-    GuiDialImageList: TGuiDialImageList;
-    LbTimeConstants: TGuiLabel;
-    LbCharacteristic: TGuiLabel;
-    LbIO: TGuiLabel;
+    DialAttack: TGuiStitchedDial;
+    DialFilter: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialMakeUpGain: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
+    GuiLabel1: TGuiLabel;
+    GuiLabel2: TGuiLabel;
+    GuiLabel3: TGuiLabel;
+    GuiLabel4: TGuiLabel;
+    GuiLabel5: TGuiLabel;
+    GuiLabel6: TGuiLabel;
+    GuiLabel7: TGuiLabel;
+    GuiLabel8: TGuiLabel;
+    GuiLabel9: TGuiLabel;
     LbAttack: TGuiLabel;
+    LbCharacteristic: TGuiLabel;
     LbExt: TGuiLabel;
     LbIn: TGuiLabel;
+    LbIO: TGuiLabel;
     LbKnee: TGuiLabel;
+    LbKneeMax: TGuiLabel;
+    LbKneeMin: TGuiLabel;
     LbMakeUpGain: TGuiLabel;
+    LbMakeUpMax: TGuiLabel;
+    LbMakeUpMid: TGuiLabel;
+    LbMakeupMin: TGuiLabel;
     LbMix: TGuiLabel;
     LbPeakClip: TGuiLabel;
     LbRatio: TGuiLabel;
+    LbRatioMax: TGuiLabel;
+    LbRatioMed: TGuiLabel;
+    LbRatioMin: TGuiLabel;
     LbRelease: TGuiLabel;
     LbSCHP: TGuiLabel;
+    LbSCmin: TGuiLabel;
     LbSideChain: TGuiLabel;
     LbThreshold: TGuiLabel;
+    LbThresholdMax: TGuiLabel;
+    LbThresholdMid: TGuiLabel;
+    LbThresholdMin: TGuiLabel;
+    LbTimeConstants: TGuiLabel;
     LbTitle: TGuiLabel;
     Shape1: TShape;
     Shape2: TShape;
@@ -79,27 +101,6 @@ type
     SwSideChain: TGuiSwitch;
     Timer: TTimer;
     VUMeter: TGuiVUMeter;
-    LbThresholdMin: TGuiLabel;
-    LbThresholdMid: TGuiLabel;
-    LbThresholdMax: TGuiLabel;
-    LbMakeupMin: TGuiLabel;
-    LbMakeUpMid: TGuiLabel;
-    LbMakeUpMax: TGuiLabel;
-    LbRatioMin: TGuiLabel;
-    LbRatioMax: TGuiLabel;
-    LbRatioMed: TGuiLabel;
-    LbKneeMin: TGuiLabel;
-    LbKneeMax: TGuiLabel;
-    GuiLabel1: TGuiLabel;
-    GuiLabel2: TGuiLabel;
-    GuiLabel3: TGuiLabel;
-    LbSCmin: TGuiLabel;
-    GuiLabel4: TGuiLabel;
-    GuiLabel5: TGuiLabel;
-    GuiLabel6: TGuiLabel;
-    GuiLabel7: TGuiLabel;
-    GuiLabel8: TGuiLabel;
-    GuiLabel9: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
@@ -120,7 +121,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
   private
-    FBackground : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateAttack;
     procedure UpdateRelease;
@@ -143,90 +144,34 @@ uses
 {$R *.DFM}
 
 procedure TFmAdhesive.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
 begin
- FBackground := TBitmap.Create;
- FBackground.PixelFormat := pf24bit;
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'CytomicBlue', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList.DialImages.Add, DialBitmap do
-    begin
-     GlyphCount := 65;
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialThreshold.DialImageIndex := 0;
-   DialKnee.DialImageIndex := 0;
-   DialRatio.DialImageIndex := 0;
-   DialMakeUpGain.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'CytomicYellow', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList.DialImages.Add, DialBitmap do
-    begin
-     GlyphCount := 65;
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialMix.DialImageIndex := 1;
-   DialFilter.DialImageIndex := 1;
-  finally
-   RS.Free;
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'CytomicGreen', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList.DialImages.Add, DialBitmap do
-    begin
-     GlyphCount := 65;
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialAttack.DialImageIndex := 2;
-   DialRelease.DialImageIndex := 2;
-  finally
-   RS.Free;
-  end;
-
- finally
-  FreeAndNil(PngBmp);
- end;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmAdhesive.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackground);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmAdhesive.FormResize(Sender: TObject);
 var
-  x, y : Integer;
-  b    : Byte;
-  Line : PRGB24Array;
+  x, y  : Integer;
+  b     : Byte;
+  ScnLn : PPixel32Array;
 begin
  with FBackground do
   begin
-   Width := ClientWidth;
-   Height := ClientHeight;
+   SetSize(ClientWidth, ClientHeight);
    for y := 0 to Height - 1 do
     begin
-     Line := ScanLine[y];
+     ScnLn := ScanLine[y];
      for x := 0 to Width - 1 do
       begin
-       b := random(16);
-       Line[x].B := b;
-       Line[x].G := b;
-       Line[x].R := b;
+       b := Random(16);
+       ScnLn[x].B := b;
+       ScnLn[x].G := b;
+       ScnLn[x].R := b;
       end;
     end;
   end;
@@ -273,7 +218,7 @@ procedure TFmAdhesive.DialThresholdChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[0] := -DialThreshold.Position;
+   Parameter[0] := -DialThreshold.Value;
   end;
 end;
 
@@ -281,7 +226,7 @@ procedure TFmAdhesive.DialMakeUpGainChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[1] := DialMakeUpGain.Position;
+   Parameter[1] := DialMakeUpGain.Value;
   end;
 end;
 
@@ -289,7 +234,7 @@ procedure TFmAdhesive.DialRatioChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[2] := DialRatio.Position;
+   Parameter[2] := DialRatio.Value;
   end;
 end;
 
@@ -297,7 +242,7 @@ procedure TFmAdhesive.DialKneeChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[3] := DialKnee.Position;
+   Parameter[3] := DialKnee.Value;
   end;
 end;
 
@@ -305,7 +250,7 @@ procedure TFmAdhesive.DialAttackChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[4] := DialAttack.Position;
+   Parameter[4] := DialAttack.Value;
   end;
 end;
 
@@ -313,7 +258,7 @@ procedure TFmAdhesive.DialReleaseChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[5] := 1E3 * DialRelease.Position;
+   Parameter[5] := 1E3 * DialRelease.Value;
   end;
 end;
 
@@ -321,7 +266,7 @@ procedure TFmAdhesive.DialMixChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[6] := DialMix.Position;
+   Parameter[6] := DialMix.Value;
   end;
 end;
 
@@ -345,7 +290,7 @@ procedure TFmAdhesive.DialFilterChange(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   Parameter[9] := DialFilter.Position;
+   Parameter[9] := DialFilter.Value;
   end;
 end;
 
@@ -360,7 +305,7 @@ end;
 procedure TFmAdhesive.TimerTimer(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner).FastCompressor, VUMeter
-  do GlyphIndex := round(GlyphCount * Limit(-GainReductiondB, 0, 40) / 40);
+  do GlyphIndex := Round(GlyphCount * Limit(-GainReductiondB, 0, 40) / 40);
 end;
 
 procedure TFmAdhesive.UpdateThreshold;
@@ -370,8 +315,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    Threshold := -Parameter[0];
-   if Threshold <> DialThreshold.Position
-    then DialThreshold.Position := Threshold;
+   if Threshold <> DialThreshold.Value
+    then DialThreshold.Value := Threshold;
   end;
 end;
 
@@ -382,8 +327,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    MakeUp := Parameter[1];
-   if MakeUp <> DialMakeUpGain.Position
-    then DialMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialMakeUpGain.Value
+    then DialMakeUpGain.Value := MakeUp;
   end;
 end;
 
@@ -394,8 +339,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    Ratio := Parameter[2];
-   if Ratio <> DialRatio.Position
-    then DialRatio.Position := Ratio;
+   if Ratio <> DialRatio.Value
+    then DialRatio.Value := Ratio;
   end;
 end;
 
@@ -406,8 +351,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    Knee := Parameter[3];
-   if Knee <> DialKnee.Position
-    then DialKnee.Position := Knee;
+   if Knee <> DialKnee.Value
+    then DialKnee.Value := Knee;
   end;
 end;
 
@@ -418,8 +363,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    Attack := Parameter[4];
-   if Attack <> DialAttack.Position
-    then DialAttack.Position := Attack;
+   if Attack <> DialAttack.Value
+    then DialAttack.Value := Attack;
   end;
 end;
 
@@ -430,8 +375,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    Release := 1E-3 * Parameter[5];
-   if Release <> DialRelease.Position
-    then DialRelease.Position := Release;
+   if Release <> DialRelease.Value
+    then DialRelease.Value := Release;
   end;
 end;
 
@@ -442,8 +387,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    SidechainFilter := Parameter[9];
-   if SidechainFilter <> DialFilter.Position
-    then DialFilter.Position := SidechainFilter;
+   if SidechainFilter <> DialFilter.Value
+    then DialFilter.Value := SidechainFilter;
   end;
 end;
 
@@ -454,8 +399,8 @@ begin
  with TAdhesiveDataModule(Owner) do
   begin
    Mix := Parameter[6];
-   if Mix <> DialMix.Position
-    then DialMix.Position := Mix;
+   if Mix <> DialMix.Value
+    then DialMix.Value := Mix;
   end;
 end;
 
@@ -463,7 +408,7 @@ procedure TFmAdhesive.UpdateOnOff;
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   SwOnOff.GlyphNr := 1 - round(Parameter[7]);
+   SwOnOff.GlyphNr := 1 - Round(Parameter[7]);
   end;
 end;
 
@@ -471,7 +416,7 @@ procedure TFmAdhesive.UpdateExtSideChain;
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   SwSideChain.GlyphNr := 1 - round(Parameter[10]);
+   SwSideChain.GlyphNr := 1 - Round(Parameter[10]);
   end;
 end;
 
@@ -479,7 +424,7 @@ procedure TFmAdhesive.UpdatePeakClip;
 begin
  with TAdhesiveDataModule(Owner) do
   begin
-   SwLimit.GlyphNr := 1 - round(Parameter[8]);
+   SwLimit.GlyphNr := 1 - Round(Parameter[8]);
   end;
 end;
 
