@@ -49,7 +49,7 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFilterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection     : TCriticalSection;
@@ -104,7 +104,7 @@ begin
 end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterFilterOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(2 * Round(0.5 * Parameter[Index]));
 end;
@@ -112,7 +112,7 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLinkwitzRileyFilter) then
+ if Assigned(FLinkwitzRileyFilter) then
   begin
    FOversampled := Value > 0.5;
    CalculateFilterKernel;
@@ -122,7 +122,7 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterFilterOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLinkwitzRileyFilter) then
+ if Assigned(FLinkwitzRileyFilter) then
   begin
    FLinkwitzRileyFilter.Order := Round(0.5 * Parameter[Index]);
    CalculateFilterKernel;
@@ -137,7 +137,7 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.ParamFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLinkwitzRileyFilter) then
+ if Assigned(FLinkwitzRileyFilter) then
   begin
    if FOversampled
     then FLinkwitzRileyFilter.Frequency := 0.5 * Value
@@ -229,8 +229,8 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if abs(SampleRate) > 0 then
-  if assigned(FLinkwitzRileyFilter) then
+ if Abs(SampleRate) > 0 then
+  if Assigned(FLinkwitzRileyFilter) then
    begin
     FLinkwitzRileyFilter.SampleRate := SampleRate;
     CalculateFilterKernel;

@@ -35,15 +35,13 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiDial, DAV_GuiGroup, DAV_GuiEQGraph;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
+  StdCtrls, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiBaseControl,
+  DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList, DAV_GuiPixelMap;
 
 type
   TFmLinkwitzRiley = class(TForm)
-    DialFrequency: TGuiDial;
-    DialSlope: TGuiDial;
-    DialType: TGuiDial;
     GbFrequencyResponse: TGuiGroup;
     GpLinkwitzRiley: TGuiGroup;
     GuiEQGraph: TGuiEQGraph;
@@ -52,16 +50,22 @@ type
     LbSlope: TGuiLabel;
     LbType: TGuiLabel;
     PnDisplay: TGuiPanel;
-    procedure FormPaint(Sender: TObject);
+    GSPL: TGuiStitchedPNGList;
+    DialFrequency: TGuiStitchedDial;
+    DialSlope: TGuiStitchedDial;
+    DialType: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure DialTypeChange(Sender: TObject);
     procedure DialSlopeChange(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     function GuiEQGraphGetFilterGain(Sender: TObject;
       const Frequency: Single): Single;
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateFrequency;
     procedure UpdateSlope;
@@ -73,63 +77,53 @@ implementation
 {$R *.dfm}
 
 uses
-  DAV_GuiCommon, PNGImage, LinkwitzRileySeparatedDM, DAV_VSTModuleWithPrograms;
+  DAV_GuiCommon, DAV_VSTModuleWithPrograms, LinkwitzRileySeparatedDM;
 
 procedure TFmLinkwitzRiley.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  Line   : PRGB24Array;
-  PngBmp : TPngObject;
-
 begin
- // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackground := TGuiPixelMapMemory.Create;
+end;
+
+procedure TFmLinkwitzRiley.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackground);
+end;
+
+procedure TFmLinkwitzRiley.FormPaint(Sender: TObject);
+begin
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmLinkwitzRiley.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  s      : array [0..1] of Single;
+  h, hr  : Single;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
+   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[1] := 0.97 * s[0] + 0.03 * Random;
        s[0] := s[1];
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLn[x].A := $FF;
       end;
     end;
   end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'ClipperKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialFrequency.DialBitmap.Assign(PngBmp);
-   DialSlope.DialBitmap.Assign(PngBmp);
-   DialType.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
-
-procedure TFmLinkwitzRiley.FormPaint(Sender: TObject);
-begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmLinkwitzRiley.FormShow(Sender: TObject);
@@ -153,8 +147,8 @@ procedure TFmLinkwitzRiley.DialFrequencyChange(Sender: TObject);
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if Parameter[0] <> DialFrequency.Position
-    then Parameter[0] := DialFrequency.Position;
+   if Parameter[0] <> DialFrequency.Value
+    then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
@@ -162,8 +156,8 @@ procedure TFmLinkwitzRiley.DialSlopeChange(Sender: TObject);
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if Parameter[1] <> DialSlope.Position
-    then Parameter[1] := DialSlope.Position;
+   if Parameter[1] <> DialSlope.Value
+    then Parameter[1] := DialSlope.Value;
   end;
 end;
 
@@ -171,8 +165,8 @@ procedure TFmLinkwitzRiley.DialTypeChange(Sender: TObject);
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if Parameter[2] <> DialType.Position
-    then Parameter[2] := DialType.Position;
+   if Parameter[2] <> DialType.Value
+    then Parameter[2] := DialType.Value;
   end;
 end;
 
@@ -180,8 +174,8 @@ procedure TFmLinkwitzRiley.UpdateFrequency;
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if DialFrequency.Position <> Parameter[0]
-    then DialFrequency.Position := Parameter[0];
+   if DialFrequency.Value <> Parameter[0]
+    then DialFrequency.Value := Parameter[0];
    LbDisplay.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -190,8 +184,8 @@ procedure TFmLinkwitzRiley.UpdateSlope;
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if DialSlope.Position <> Parameter[1]
-    then DialSlope.Position := Parameter[1];
+   if DialSlope.Value <> Parameter[1]
+    then DialSlope.Value := Parameter[1];
    LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + 'dB/Oct';
   end;
 end;
@@ -200,8 +194,8 @@ procedure TFmLinkwitzRiley.UpdateType;
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if DialType.Position <> Parameter[2]
-    then DialType.Position := Parameter[2];
+   if DialType.Value <> Parameter[2]
+    then DialType.Value := Parameter[2];
    LbDisplay.Caption := ParameterDisplay[2];
   end;
 end;

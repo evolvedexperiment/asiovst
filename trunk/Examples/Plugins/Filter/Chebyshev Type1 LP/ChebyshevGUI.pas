@@ -36,14 +36,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial,
-  DAV_GuiPanel;
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList;
 
 type
   TFmChebyshev = class(TForm)
-    DialFrequency: TGuiDial;
-    DialOrder: TGuiDial;
-    DialRipple: TGuiDial;
     LbChebyshevFilterDemo: TGuiLabel;
     LbChebyshevFilterDemoShaddow: TGuiLabel;
     LbFrequency: TGuiLabel;
@@ -53,7 +51,10 @@ type
     LbRipple: TGuiLabel;
     LbRippleValue: TGuiLabel;
     PnControls: TGuiPanel;
-    procedure FormCreate(Sender: TObject);
+    GSPL: TGuiStitchedPNGList;
+    DialFrequency: TGuiStitchedDial;
+    DialRipple: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -79,20 +80,6 @@ implementation
 
 uses
   DAV_VSTModuleWithPrograms, ChebyshevDM;
-
-procedure TFmChebyshev.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'WineKnob', 'BMP');
- try
-  DialFrequency.DialBitmap.LoadFromStream(RS);
-  DialOrder.DialBitmap.Assign(DialFrequency.DialBitmap);
-  DialRipple.DialBitmap.Assign(DialFrequency.DialBitmap);
- finally
-  RS.Free;
- end;
-end;
 
 procedure TFmChebyshev.FormDestroy(Sender: TObject);
 begin
@@ -131,8 +118,8 @@ procedure TFmChebyshev.DialFrequencyChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
   begin
-   if ParameterByName['Frequency'] <> DialFrequency.Position
-    then ParameterByName['Frequency'] := DialFrequency.Position;
+   if ParameterByName['Frequency'] <> DialFrequency.Value
+    then ParameterByName['Frequency'] := DialFrequency.Value;
   end;
 end;
 
@@ -161,8 +148,8 @@ procedure TFmChebyshev.DialOrderChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
   begin
-   if ParameterByName['Order'] <> DialOrder.Position
-    then ParameterByName['Order'] := DialOrder.Position;
+   if ParameterByName['Order'] <> DialOrder.Value
+    then ParameterByName['Order'] := DialOrder.Value;
   end;
 end;
 
@@ -191,8 +178,8 @@ procedure TFmChebyshev.DialRippleChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
   begin
-   if ParameterByName['Ripple'] <> DialRipple.Position
-    then ParameterByName['Ripple'] := DialRipple.Position;
+   if ParameterByName['Ripple'] <> DialRipple.Value
+    then ParameterByName['Ripple'] := DialRipple.Value;
   end;
 end;
 
@@ -235,8 +222,8 @@ begin
  with TChebyshevLPModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
-   if DialFrequency.Position <> Freq
-    then DialFrequency.Position := Freq;
+   if DialFrequency.Value <> Freq
+    then DialFrequency.Value := Freq;
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 5, 5) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 5, 5) + ' kHz'
@@ -250,8 +237,8 @@ begin
  with TChebyshevLPModule(Owner) do
   begin
    Order := ParameterByName['Order'];
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
    LbOrderValue.Caption := IntToStr(round(Order));
   end;
 end;
@@ -263,8 +250,8 @@ begin
  with TChebyshevLPModule(Owner) do
   begin
    Ripple := ParameterByName['Ripple'];
-   if DialRipple.Position <> Ripple
-    then DialRipple.Position := Ripple;
+   if DialRipple.Value <> Ripple
+    then DialRipple.Value := Ripple;
    LbRippleValue.Caption := FloatToStrF(Ripple, ffGeneral, 3, 3) + ' dB';
   end;
 end;

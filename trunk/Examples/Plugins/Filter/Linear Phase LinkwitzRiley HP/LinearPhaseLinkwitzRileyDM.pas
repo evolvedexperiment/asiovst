@@ -49,7 +49,7 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFilterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOversampleChange(
       Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -105,7 +105,7 @@ begin
 end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterFilterOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(2 * Round(0.5 * Parameter[Index]));
 end;

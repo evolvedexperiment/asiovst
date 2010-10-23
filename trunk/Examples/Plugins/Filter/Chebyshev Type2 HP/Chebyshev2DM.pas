@@ -51,7 +51,7 @@ type
     procedure ParamStopbandChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCorrectFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilter  : array [0..1] of TCustomChebyshev2HighpassFilter;
     FResizer : TVstWindowSizer;
@@ -114,7 +114,7 @@ var
   ChannelIndex : Integer;
 begin
  for ChannelIndex := 0 to numInputs - 1 do
-  if assigned(FFilter[ChannelIndex]) then FFilter[ChannelIndex].Stopband := Value;
+  if Assigned(FFilter[ChannelIndex]) then FFilter[ChannelIndex].Stopband := Value;
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev2
@@ -127,7 +127,7 @@ var
   ChannelIndex : Integer;
 begin
  for ChannelIndex := 0 to numInputs - 1 do
-  if assigned(FFilter[ChannelIndex])
+  if Assigned(FFilter[ChannelIndex])
    then FFilter[ChannelIndex].Order := round(Value); //max(2, 2 * round(0.5 * Value));
 
  // update GUI if necessary
@@ -136,7 +136,7 @@ begin
 end;
 
 procedure TChebyshev2HPModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'
@@ -149,7 +149,7 @@ var
   ChannelIndex : Integer;
 begin
  for ChannelIndex := 0 to numInputs - 1 do
-  if assigned(FFilter[ChannelIndex])
+  if Assigned(FFilter[ChannelIndex])
    then FFilter[ChannelIndex].FixFrequency := Value > 0.5;
 end;
 
@@ -159,7 +159,7 @@ var
   ChannelIndex : Integer;
 begin
  for ChannelIndex := 0 to numInputs - 1 do
-  if assigned(FFilter[ChannelIndex])
+  if Assigned(FFilter[ChannelIndex])
    then FFilter[ChannelIndex].Frequency := Value;
 
  // update GUI if necessary
@@ -198,7 +198,7 @@ var
 begin
  if Abs(SampleRate) > 0 then
   for ChannelIndex := 0 to numInputs - 1 do
-   if assigned(FFilter[ChannelIndex])
+   if Assigned(FFilter[ChannelIndex])
     then FFilter[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 

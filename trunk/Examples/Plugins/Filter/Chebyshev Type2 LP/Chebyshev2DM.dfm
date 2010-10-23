@@ -1,5 +1,4 @@
 object Chebyshev2LPModule: TChebyshev2LPModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chebyshev Lowpass Filter'
@@ -7,7 +6,6 @@ object Chebyshev2LPModule: TChebyshev2LPModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
@@ -19,7 +17,6 @@ object Chebyshev2LPModule: TChebyshev2LPModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
       Flags = [ppfParameterUsesFloatStep]
@@ -39,7 +36,6 @@ object Chebyshev2LPModule: TChebyshev2LPModule
       OnParameterChange = ParamFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stopband'
       Flags = [ppfParameterUsesFloatStep]
@@ -58,7 +54,6 @@ object Chebyshev2LPModule: TChebyshev2LPModule
       OnParameterChange = ParamStopbandChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesFloatStep]
@@ -74,7 +69,6 @@ object Chebyshev2LPModule: TChebyshev2LPModule
       OnParameterChange = ParamOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Correct Frequency'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

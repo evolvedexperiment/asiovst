@@ -1,4 +1,5 @@
 object ChebyshevHPModule: TChebyshevHPModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chebyshev Lowpass Filter'

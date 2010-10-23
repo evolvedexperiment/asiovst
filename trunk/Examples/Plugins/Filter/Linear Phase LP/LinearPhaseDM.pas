@@ -49,11 +49,10 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowFunctionsChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure StringToWindowParameter(
-      Sender: TObject; const Index: Integer; const ParameterString: string;
-      var Value: Single);
+    procedure StringToWindowParameter(Sender: TObject; const Index: Integer;
+      const ParameterString: AnsiString; var Value: Single);
   private
     FFilterKernel   : PDAVSingleFixedArray;
     FSignalPadded   : PDAVSingleFixedArray;
@@ -151,17 +150,17 @@ begin
 end;
 
 procedure TLinearPhaseDataModule.ParameterWindowFunctionsDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
 
 procedure TLinearPhaseDataModule.StringToWindowParameter(
-  Sender: TObject; const Index: Integer; const ParameterString: string;
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
   var Value: Single);
 var
   WindowIndex : Integer;
-  Text        : string;
+  Text        : AnsiString;
 begin
  Text := Trim(ParameterString);
  for WindowIndex := 0 to Length(GWindowFunctions) - 1 do
@@ -206,7 +205,7 @@ var
   n       : Double;
   CutOff  : Double;
 begin
- if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
+ if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
    while FSemaphore > 0 do;
    inc(FSemaphore);
@@ -225,7 +224,7 @@ begin
         FFilterKernel^[i] := sin(2.0 * Cutoff * n) / n;
        end;
 
-    if assigned(FWindowFunction)
+    if Assigned(FWindowFunction)
      then FWindowFunction.ProcessBlock32(FFilterKernel, h);
     FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
 
@@ -269,7 +268,7 @@ begin
     FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+     do ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 
@@ -282,7 +281,7 @@ begin
     FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+     do ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFT(FSignalFreq, @Outputs[Channel, 0]);
     {$ELSE}
@@ -294,13 +293,13 @@ begin
     FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+     do ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
     {$ENDIF}{$ENDIF}
    end;
  finally
-  dec(FSemaphore);
+  Dec(FSemaphore);
  end;
 end;
 

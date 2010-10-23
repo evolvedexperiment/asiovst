@@ -1,4 +1,4 @@
-unit LinearPhaseGUI;
+unit LinearPhaseLinkwitzRileyGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -25,7 +25,7 @@ unit LinearPhaseGUI;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,24 +35,25 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
-  TFmLinearPhase = class(TForm)
+  TFmLinearPhaseLinkwitzRiley = class(TForm)
     LbFrequency: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
-    DialFrequency: TGuiStitchedDial;
+    LbOrder: TGuiLabel;
+    LbOrderValue: TGuiLabel;
     GSPL: TGuiStitchedPNGList;
+    DialFrequency: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
     procedure FormShow(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
-    procedure DialFrequencyDblClick(Sender: TObject);
-    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
-  private
-    FEdValue : TEdit;
+    procedure DialOrderChange(Sender: TObject);
   public
     procedure UpdateFrequency;
+    procedure UpdateOrder;
   end;
 
 implementation
@@ -60,59 +61,37 @@ implementation
 {$R *.DFM}
 
 uses
-  LinearPhaseDM, DAV_VSTModuleWithPrograms;
+  DAV_VSTModuleWithPrograms, LinearPhaseLinkwitzRileyDM;
 
-procedure TFmLinearPhase.FormShow(Sender: TObject);
+procedure TFmLinearPhaseLinkwitzRiley.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
+ UpdateOrder;
 end;
 
-procedure TFmLinearPhase.DialFrequencyDblClick(Sender: TObject);
+procedure TFmLinearPhaseLinkwitzRiley.DialFrequencyChange(Sender: TObject);
 begin
- if not Assigned(FEdValue)
-  then FEdValue := TEdit.Create(Self);
-
- with FEdValue do
-  begin
-   Parent := Self;
-   Left := LbFrequencyValue.Left;
-   Top := LbFrequencyValue.Top;
-   Width := LbFrequencyValue.Width;
-   Height := LbFrequencyValue.Height;
-   BorderStyle := bsNone;
-   Color := Self.Color;
-   Text := LbFrequencyValue.Caption;
-   Tag := 0;
-   OnKeyPress := EdValueKeyPress;
-   SetFocus;
-  end;
-end;
-
-procedure TFmLinearPhase.EdValueKeyPress(Sender: TObject; var Key: Char);
-begin
- with TLinearPhaseDataModule(Owner) do
-  if (Key = #13) and Assigned(FEdValue) then
-   try
-    StringToParameter(FEdValue.Tag, FEdValue.Text);
-    FreeAndNil(FEdValue);
-   except
-   end;
-end;
-
-procedure TFmLinearPhase.DialFrequencyChange(Sender: TObject);
-begin
- with TLinearPhaseDataModule(Owner) do
+ with TLinearPhaseLinkwitzRileyDataModule(Owner) do
   begin
    if Parameter[0] <> DialFrequency.Value
     then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
-procedure TFmLinearPhase.UpdateFrequency;
+procedure TFmLinearPhaseLinkwitzRiley.DialOrderChange(Sender: TObject);
+begin
+ with TLinearPhaseLinkwitzRileyDataModule(Owner) do
+  begin
+   if Parameter[1] <> DialOrder.Value
+    then Parameter[1] := DialOrder.Value;
+  end;
+end;
+
+procedure TFmLinearPhaseLinkwitzRiley.UpdateFrequency;
 var
   Freq : Single;
 begin
- with TLinearPhaseDataModule(Owner) do
+ with TLinearPhaseLinkwitzRileyDataModule(Owner) do
   begin
    Freq := Parameter[0];
    if DialFrequency.Value <> Freq
@@ -120,6 +99,19 @@ begin
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';
+  end;
+end;
+
+procedure TFmLinearPhaseLinkwitzRiley.UpdateOrder;
+var
+  Order : Single;
+begin
+ with TLinearPhaseLinkwitzRileyDataModule(Owner) do
+  begin
+   Order := Parameter[1];
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
+   LbOrderValue.Caption := IntToStr(24 * Round(0.5 * Order)) + 'dB/Oct';
   end;
 end;
 

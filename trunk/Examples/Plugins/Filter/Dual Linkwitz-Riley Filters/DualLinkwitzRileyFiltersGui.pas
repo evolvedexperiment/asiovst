@@ -37,17 +37,18 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, StdCtrls, Menus, DAV_GuiPixelMap, DAV_GuiPanel,
-  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGroup,
-  DAV_GuiEQGraph, DAV_GuiLED;
+  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmLinkwitzRiley = class(TForm)
-    DialHighpassFrequency: TGuiDial;
-    DialHighpassSlope: TGuiDial;
-    DialLowpassFrequency: TGuiDial;
-    DialLowpassSlope: TGuiDial;
+    DialHighpassFrequency: TGuiStitchedDial;
+    DialHighpassSlope: TGuiStitchedDial;
+    DialLowpassFrequency: TGuiStitchedDial;
+    DialLowpassSlope: TGuiStitchedDial;
     EQGraphUpdate: TTimer;
     GpDualLiknwitzRiley: TGuiGroup;
+    GSPL: TGuiStitchedPNGList;
     GuiEQGraph: TGuiEQGraph;
     LbDisplay: TGuiLabel;
     LbFrequency: TGuiLabel;
@@ -106,7 +107,6 @@ type
     PnDisplay: TGuiPanel;
     PuFrequency: TPopupMenu;
     PuPreset: TPopupMenu;
-    DIL: TGuiDialImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -126,6 +126,7 @@ type
     procedure EQGraphUpdateTimer(Sender: TObject);
     procedure GpDualLiknwitzRileyClick(Sender: TObject);
     procedure GuiEQGraphClick(Sender: TObject);
+    procedure LbDisplayClick(Sender: TObject);
     procedure LbMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure LbShowFrequencyPlotClick(Sender: TObject);
     procedure LedHighCutClick(Sender: TObject);
@@ -136,10 +137,9 @@ type
     procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
     procedure PuPresetPopup(Sender: TObject);
-    procedure LbDisplayClick(Sender: TObject);
   private
     FBackgrounBitmap : TGuiPixelMapMemory;
-    FCurrentDial     : TGuiDial;
+    FCurrentDial     : TGuiStitchedDial;
     FIsLow           : Boolean;
     FDirectUpdate    : Boolean;
     FEdValue         : TEdit;
@@ -169,31 +169,19 @@ var
   s      : array[0..1] of Single;
   h, hr  : Single;
   ScnLn  : PPixel32Array;
-  {$IFDEF FPC}
-  PngBmp : TPNGImage;
-  {$ELSE}
-  RS     : TResourceStream;
-  {$IFDEF DELPHI2010_UP}
-  PngBmp : TPngImage;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-  {$ENDIF}
-
 begin
  // Create Background Image
  FBackgrounBitmap := TGuiPixelMapMemory.Create;
  with FBackgrounBitmap do
   begin
-   Width := Self.Width;
-   Height := Self.Height;
+   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
      ScnLn := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * Random;
@@ -205,48 +193,6 @@ begin
       end;
     end;
   end;
-
- {$IFDEF FPC}
- PngBmp := TPNGImage.Create;
- try
-  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
-
-  // yet todo!
-
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ELSE}
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'ClipperKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with DIL.DialImages[0] do
-    begin
-     {$IFDEF DELPHI2010_UP}
-     DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
-     {$ELSE}
-     DialBitmap.Assign(PngBmp);
-     {$ENDIF}
-     GlyphCount := 65;
-    end;
-   DialLowpassFrequency.DialImageIndex := 0;
-   DialLowpassSlope.DialImageIndex := 0;
-   DialHighpassFrequency.DialImageIndex := 0;
-   DialHighpassSlope.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ENDIF}
 end;
 
 procedure TFmLinkwitzRiley.FormDestroy(Sender: TObject);
@@ -309,8 +255,8 @@ begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if ssAlt in KeyboardStateToShiftState
-    then NewValue := RoundFrequency(DialLowpassFrequency.Position)
-    else NewValue := DialLowpassFrequency.Position;
+    then NewValue := RoundFrequency(DialLowpassFrequency.Value)
+    else NewValue := DialLowpassFrequency.Value;
 
    if Parameter[0] <> NewValue
     then Parameter[0] := NewValue;
@@ -372,16 +318,16 @@ begin
  with TDualLinkwitzRileyFiltersModule(Owner)
   do LbDisplay.Caption := 'Freq.: ' + string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
 
- if Sender is TGuiDial
-  then FCurrentDial := TGuiDial(Sender)
+ if Sender is TGuiStitchedDial
+  then FCurrentDial := TGuiStitchedDial(Sender)
 end;
 
 procedure TFmLinkwitzRiley.DialLowpassSlopeChange(Sender: TObject);
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   if Parameter[1] <> DialLowpassSlope.Position
-    then Parameter[1] := DialLowpassSlope.Position;
+   if Parameter[1] <> DialLowpassSlope.Value
+    then Parameter[1] := DialLowpassSlope.Value;
   end;
 end;
 
@@ -404,8 +350,8 @@ begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if ssAlt in KeyboardStateToShiftState
-    then NewValue := RoundFrequency(DialHighpassFrequency.Position)
-    else NewValue := DialHighpassFrequency.Position;
+    then NewValue := RoundFrequency(DialHighpassFrequency.Value)
+    else NewValue := DialHighpassFrequency.Value;
 
    if Parameter[2] <> NewValue
     then Parameter[2] := NewValue;
@@ -417,16 +363,16 @@ begin
  with TDualLinkwitzRileyFiltersModule(Owner)
   do LbDisplay.Caption := 'Freq.: ' + string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
 
- if Sender is TGuiDial
-  then FCurrentDial := TGuiDial(Sender)
+ if Sender is TGuiStitchedDial
+  then FCurrentDial := TGuiStitchedDial(Sender)
 end;
 
 procedure TFmLinkwitzRiley.DialHighpassSlopeChange(Sender: TObject);
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   if Parameter[3] <> DialHighpassSlope.Position
-    then Parameter[3] := DialHighpassSlope.Position;
+   if Parameter[3] <> DialHighpassSlope.Value
+    then Parameter[3] := DialHighpassSlope.Value;
   end;
 end;
 
@@ -488,7 +434,7 @@ procedure TFmLinkwitzRiley.MiFrequencyClick(Sender: TObject);
 begin
  Assert(Sender is TMenuItem);
  if Assigned(FCurrentDial)
-  then FCurrentDial.Position := TMenuItem(Sender).Tag;
+  then FCurrentDial.Value := TMenuItem(Sender).Tag;
 end;
 
 procedure TFmLinkwitzRiley.MiLoadClick(Sender: TObject);
@@ -505,8 +451,8 @@ end;
 
 procedure TFmLinkwitzRiley.PuFrequencyPopup(Sender: TObject);
 begin
- if Sender is TGuiDial
-  then FCurrentDial := TGuiDial(Sender)
+ if Sender is TGuiStitchedDial
+  then FCurrentDial := TGuiStitchedDial(Sender)
 end;
 
 procedure TFmLinkwitzRiley.PuPresetPopup(Sender: TObject);
@@ -551,15 +497,15 @@ procedure TFmLinkwitzRiley.Mi31Hz5Click(Sender: TObject);
 begin
  Assert(Sender is TMenuItem);
  if Assigned(FCurrentDial)
-  then FCurrentDial.Position := 31.5;
+  then FCurrentDial.Value := 31.5;
 end;
 
 procedure TFmLinkwitzRiley.UpdateLowpassFrequency;
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   if DialLowpassFrequency.Position <> Parameter[0]
-    then DialLowpassFrequency.Position := Parameter[0];
+   if DialLowpassFrequency.Value <> Parameter[0]
+    then DialLowpassFrequency.Value := Parameter[0];
    LbDisplay.Caption := 'Freq.: ' + string(ParameterDisplay[0] + ' ' +
      ParameterLabel[0]);
    UpdateEQGraph;
@@ -570,8 +516,8 @@ procedure TFmLinkwitzRiley.UpdateLowpassSlope;
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   if DialLowpassSlope.Position <> Parameter[1]
-    then DialLowpassSlope.Position := Parameter[1];
+   if DialLowpassSlope.Value <> Parameter[1]
+    then DialLowpassSlope.Value := Parameter[1];
    LbDisplay.Caption := 'Slope: ' + string(ParameterDisplay[1] + ' ' +
      ParameterLabel[1]);
    UpdateEQGraph;
@@ -582,8 +528,8 @@ procedure TFmLinkwitzRiley.UpdateHighpassFrequency;
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   if DialHighpassFrequency.Position <> Parameter[2]
-    then DialHighpassFrequency.Position := Parameter[2];
+   if DialHighpassFrequency.Value <> Parameter[2]
+    then DialHighpassFrequency.Value := Parameter[2];
    LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2];
    UpdateEQGraph;
   end;
@@ -593,8 +539,8 @@ procedure TFmLinkwitzRiley.UpdateHighpassSlope;
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   if DialHighpassSlope.Position <> Parameter[3]
-    then DialHighpassSlope.Position := Parameter[3];
+   if DialHighpassSlope.Value <> Parameter[3]
+    then DialHighpassSlope.Value := Parameter[3];
    LbDisplay.Caption := 'Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3];
    UpdateEQGraph;
   end;

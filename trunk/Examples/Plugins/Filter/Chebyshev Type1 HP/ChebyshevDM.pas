@@ -50,13 +50,12 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRippleChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure StringToFrequencyParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
-    procedure StringToOrderParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
-    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRippleDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure StringToFrequencyParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
+    procedure StringToOrderParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRippleDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilter  : array of TCustomChebyshev1HighpassFilter;
     FResizer : TVstWindowSizer;
@@ -164,13 +163,13 @@ end;
 // parameter display
 
 procedure TChebyshevHPModule.ParameterRippleDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4);
 end;
 
 procedure TChebyshevHPModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
@@ -178,7 +177,7 @@ begin
 end;
 
 procedure TChebyshevHPModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := 'Hz'
@@ -186,18 +185,18 @@ begin
 end;
 
 procedure TChebyshevHPModule.ParameterOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 
-// string to parameter conversion
+// AnsiString to parameter conversion
 
 procedure TChebyshevHPModule.StringToFrequencyParameter(
-  Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
 var
-  Str    : string;
+  Str    : AnsiString;
   Indxes : array [0..1] of Integer;
   Mult   : Single;
 begin
@@ -228,9 +227,9 @@ begin
 end;
 
 procedure TChebyshevHPModule.StringToOrderParameter(Sender: TObject;
-  const Index: Integer; const ParameterString: string; var Value: Single);
+  const Index: Integer; const ParameterString: AnsiString; var Value: Single);
 var
-  Str    : string;
+  Str    : AnsiString;
   Indxes : array [0..1] of Integer;
 begin
  Str := Trim(ParameterString);
