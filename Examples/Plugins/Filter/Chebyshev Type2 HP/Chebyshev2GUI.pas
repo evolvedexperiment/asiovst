@@ -36,14 +36,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial,
-  DAV_GuiPanel;
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmChebyshev2 = class(TForm)
-    DialFrequency: TGuiDial;
-    DialOrder: TGuiDial;
-    DialStopband: TGuiDial;
     LbChebyshev2FilterDemo: TGuiLabel;
     LbChebyshev2FilterDemoShaddow: TGuiLabel;
     LbFrequency: TGuiLabel;
@@ -53,7 +50,10 @@ type
     LbStopband: TGuiLabel;
     LbStopbandValue: TGuiLabel;
     PnControls: TGuiPanel;
-    procedure FormCreate(Sender: TObject);
+    GSPL: TGuiStitchedPNGList;
+    DialFrequency: TGuiStitchedDial;
+    DialStopband: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -79,20 +79,6 @@ implementation
 
 uses
   DAV_VSTModuleWithPrograms, Chebyshev2DM;
-
-procedure TFmChebyshev2.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'WineKnob', 'BMP');
- try
-  DialFrequency.DialBitmap.LoadFromStream(RS);
-  DialOrder.DialBitmap.Assign(DialFrequency.DialBitmap);
-  DialStopband.DialBitmap.Assign(DialFrequency.DialBitmap);
- finally
-  RS.Free;
- end;
-end;
 
 procedure TFmChebyshev2.FormDestroy(Sender: TObject);
 begin
@@ -131,8 +117,8 @@ procedure TFmChebyshev2.DialFrequencyChange(Sender: TObject);
 begin
  with TChebyshev2HPModule(Owner) do
   begin
-   if ParameterByName['Frequency'] <> DialFrequency.Position
-    then ParameterByName['Frequency'] := DialFrequency.Position;
+   if ParameterByName['Frequency'] <> DialFrequency.Value
+    then ParameterByName['Frequency'] := DialFrequency.Value;
   end;
 end;
 
@@ -161,8 +147,8 @@ procedure TFmChebyshev2.DialOrderChange(Sender: TObject);
 begin
  with TChebyshev2HPModule(Owner) do
   begin
-   if ParameterByName['Order'] <> DialOrder.Position
-    then ParameterByName['Order'] := DialOrder.Position;
+   if ParameterByName['Order'] <> DialOrder.Value
+    then ParameterByName['Order'] := DialOrder.Value;
   end;
 end;
 
@@ -191,8 +177,8 @@ procedure TFmChebyshev2.DialStopbandChange(Sender: TObject);
 begin
  with TChebyshev2HPModule(Owner) do
   begin
-   if ParameterByName['Stopband'] <> DialStopband.Position
-    then ParameterByName['Stopband'] := DialStopband.Position;
+   if ParameterByName['Stopband'] <> DialStopband.Value
+    then ParameterByName['Stopband'] := DialStopband.Value;
   end;
 end;
 
@@ -235,8 +221,8 @@ begin
  with TChebyshev2HPModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
-   if DialFrequency.Position <> Freq
-    then DialFrequency.Position := Freq;
+   if DialFrequency.Value <> Freq
+    then DialFrequency.Value := Freq;
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 5, 5) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 5, 5) + ' kHz'
@@ -250,8 +236,8 @@ begin
  with TChebyshev2HPModule(Owner) do
   begin
    Order := ParameterByName['Order'];
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
    LbOrderValue.Caption := IntToStr(round(Order));
   end;
 end;
@@ -263,8 +249,8 @@ begin
  with TChebyshev2HPModule(Owner) do
   begin
    Stopband := ParameterByName['Stopband'];
-   if DialStopband.Position <> Stopband
-    then DialStopband.Position := Stopband;
+   if DialStopband.Value <> Stopband
+    then DialStopband.Value := Stopband;
    LbStopbandValue.Caption := FloatToStrF(Stopband, ffGeneral, 3, 3) + ' dB';
   end;
 end;

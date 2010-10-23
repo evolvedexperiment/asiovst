@@ -1,5 +1,4 @@
 object LinearPhaseLinkwitzRileyDataModule: TLinearPhaseLinkwitzRileyDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
@@ -8,7 +7,6 @@ object LinearPhaseLinkwitzRileyDataModule: TLinearPhaseLinkwitzRileyDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'LPHP'
@@ -39,7 +37,6 @@ object LinearPhaseLinkwitzRileyDataModule: TLinearPhaseLinkwitzRileyDataModule
       OnParameterChange = ParamFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter Order'
       LargeStepFloat = 2.000000000000000000
@@ -55,7 +52,6 @@ object LinearPhaseLinkwitzRileyDataModule: TLinearPhaseLinkwitzRileyDataModule
       OnCustomParameterDisplay = ParameterFilterOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Oversample'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]

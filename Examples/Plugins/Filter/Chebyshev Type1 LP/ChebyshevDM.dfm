@@ -1,5 +1,4 @@
 object ChebyshevLPModule: TChebyshevLPModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chebyshev Lowpass Filter'
@@ -7,7 +6,6 @@ object ChebyshevLPModule: TChebyshevLPModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
@@ -19,7 +17,6 @@ object ChebyshevLPModule: TChebyshevLPModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
       Flags = [ppfParameterUsesFloatStep]
@@ -37,9 +34,10 @@ object ChebyshevLPModule: TChebyshevLPModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+      OnCustomParameterDisplay = ParamFrequencyDisplay
+      OnStringToParameter = StringToFrequency
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ripple'
       Flags = [ppfParameterUsesFloatStep]
@@ -56,7 +54,6 @@ object ChebyshevLPModule: TChebyshevLPModule
       OnParameterChange = ParamRippleChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesFloatStep]
@@ -70,6 +67,8 @@ object ChebyshevLPModule: TChebyshevLPModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
+      OnCustomParameterDisplay = ParamOrderDisplay
+      OnStringToParameter = StringToOrder
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

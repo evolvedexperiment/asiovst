@@ -1,21 +1,21 @@
-object FmLinearPhase: TFmLinearPhase
+object FmLinearPhaseLinkwitzRiley: TFmLinearPhaseLinkwitzRiley
   Left = 425
   Top = 147
   BorderStyle = bsNone
   Caption = 'Linear Phase Lowpass'
   ClientHeight = 133
-  ClientWidth = 111
-  Color = 6974058
+  ClientWidth = 209
+  Color = 6776679
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clSilver
-  Font.Height = -16
+  Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = [fsBold]
+  Font.Style = []
   OldCreateOrder = False
   Scaled = False
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 19
+  TextHeight = 13
   object LbFrequency: TGuiLabel
     Left = 10
     Top = 14
@@ -24,6 +24,12 @@ object FmLinearPhase: TFmLinearPhase
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Frequency'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
     Shadow.Color = clBlack
   end
   object LbFrequencyValue: TGuiLabel
@@ -34,6 +40,44 @@ object FmLinearPhase: TFmLinearPhase
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = '20 Hz'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
+  end
+  object LbOrder: TGuiLabel
+    Left = 128
+    Top = 14
+    Width = 51
+    Height = 21
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Order'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
+  end
+  object LbOrderValue: TGuiLabel
+    Left = 105
+    Top = 102
+    Width = 97
+    Height = 22
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = '20 Hz'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
     Shadow.Color = clBlack
   end
   object DialFrequency: TGuiStitchedDial
@@ -41,14 +85,27 @@ object FmLinearPhase: TFmLinearPhase
     Top = 36
     Width = 65
     Height = 65
-    AutoSize = True
-    CurveMapping = -2.099999904632568000
+    CurveMapping = -1.700000047683716000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFrequencyChange
     StitchedImageIndex = 0
     StitchedImageList = GSPL
     Value = 20.000000000000000000
+    WheelStep = 1.000000000000000000
+  end
+  object DialOrder: TGuiStitchedDial
+    Left = 121
+    Top = 36
+    Width = 65
+    Height = 65
+    CurveMapping = -0.600000023841857900
+    Max = 32.000000000000000000
+    Min = 2.000000000000000000
+    OnChange = DialOrderChange
+    StitchedImageIndex = 0
+    StitchedImageList = GSPL
+    Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
@@ -2814,7 +2871,7 @@ object FmLinearPhase: TFmLinearPhase
         Height = 2015
         Width = 65
       end>
-    Left = 48
-    Top = 64
+    Left = 96
+    Top = 48
   end
 end

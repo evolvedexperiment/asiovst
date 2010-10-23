@@ -50,6 +50,16 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRippleChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure StringToFrequency(
+      Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
+      var Value: Single);
+    procedure StringToOrder(
+      Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
+      var Value: Single);
+    procedure ParamOrderDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamFrequencyDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilter  : array of TCustomChebyshev1LowpassFilter;
     FResizer : TVstWindowSizer;
@@ -115,7 +125,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Value;
+  if Assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Value;
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
@@ -128,12 +138,88 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].Order := round(Value); // max(2, 2 * round(0.5 * Value));
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
   then TFmChebyshev(EditorForm).UpdateOrder;
+end;
+
+procedure TChebyshevLPModule.StringToFrequency(
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
+  var Value: Single);
+var
+  Str    : AnsiString;
+  Indxes : array [0..1] of Integer;
+  Mult   : Single;
+begin
+ Str := Trim(ParameterString);
+ if Str = '' then Exit;
+
+ // process unit extensions
+ if Pos('k', Str) > 0 then Mult := 1E3 else
+ if Pos('m', Str) > 0 then Mult := 1E-3
+  else Mult := 1;
+
+ Indxes[0] := 1;
+ while (Indxes[0] <= Length(Str)) and
+  (not (Str[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
+
+ if (Indxes[0] >= Length(Str)) then Exit;
+
+ Indxes[1] := Indxes[0] + 1;
+ while (Indxes[1] <= Length(Str)) and
+  (Str[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
+
+ Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
+
+ try
+  Value := Mult * StrToFloat(Str);
+ except
+ end;
+end;
+
+procedure TChebyshevLPModule.StringToOrder(
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
+  var Value: Single);
+var
+  Str    : AnsiString;
+  Indxes : array [0..1] of Integer;
+begin
+ Str := Trim(ParameterString);
+ if Str = '' then Exit;
+
+ Indxes[0] := 1;
+ while (Indxes[0] <= Length(Str)) and
+  (not (Str[Indxes[0]] in ['0'..'9'])) do Inc(Indxes[0]);
+
+ if (Indxes[0] > Length(Str)) then Exit;
+
+ Indxes[1] := Indxes[0] + 1;
+ while (Indxes[1] <= Length(Str)) and
+  (Str[Indxes[1]] in ['0'..'9']) do Inc(Indxes[1]);
+
+ Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
+
+ try
+  Value := Round(StrToFloat(Str));
+ except
+ end;
+end;
+
+procedure TChebyshevLPModule.ParamOrderDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ PreDefined := IntToStr(Round(Parameter[Index]));
+end;
+
+procedure TChebyshevLPModule.ParamFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
+  else PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4)
 end;
 
 procedure TChebyshevLPModule.ParamFrequencyChange(Sender: TObject;
@@ -142,7 +228,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].Frequency := Value;
 
  // update GUI if necessary
@@ -156,7 +242,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].SampleRate := SampleRate;
 end;
 

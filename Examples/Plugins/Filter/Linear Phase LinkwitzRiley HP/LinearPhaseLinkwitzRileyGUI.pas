@@ -36,18 +36,19 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmLinearPhaseLinkwitzRiley = class(TForm)
-    DialFrequency: TGuiDial;
     LbFrequency: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
-    DialOrder: TGuiDial;
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
+    GSPL: TGuiStitchedPNGList;
+    DialFrequency: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
     procedure DialFrequencyChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
   public
@@ -62,19 +63,6 @@ implementation
 uses
   LinearPhaseLinkwitzRileyDM, DAV_VSTModuleWithPrograms;
 
-procedure TFmLinearPhaseLinkwitzRiley.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'YamahaKnob', 'BMP');
- try
-  DialFrequency.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialOrder.DialBitmap.LoadFromStream(RS);
- finally
-  RS.Free;
- end;
-end;
-
 procedure TFmLinearPhaseLinkwitzRiley.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
@@ -85,8 +73,8 @@ procedure TFmLinearPhaseLinkwitzRiley.DialFrequencyChange(Sender: TObject);
 begin
  with TLinearPhaseLinkwitzRileyDataModule(Owner) do
   begin
-   if Parameter[0] <> DialFrequency.Position
-    then Parameter[0] := DialFrequency.Position;
+   if Parameter[0] <> DialFrequency.Value
+    then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
@@ -94,8 +82,8 @@ procedure TFmLinearPhaseLinkwitzRiley.DialOrderChange(Sender: TObject);
 begin
  with TLinearPhaseLinkwitzRileyDataModule(Owner) do
   begin
-   if Parameter[1] <> DialOrder.Position
-    then Parameter[1] := DialOrder.Position;
+   if Parameter[1] <> DialOrder.Value
+    then Parameter[1] := DialOrder.Value;
   end;
 end;
 
@@ -106,8 +94,8 @@ begin
  with TLinearPhaseLinkwitzRileyDataModule(Owner) do
   begin
    Freq := Parameter[0];
-   if DialFrequency.Position <> Freq
-    then DialFrequency.Position := Freq;
+   if DialFrequency.Value <> Freq
+    then DialFrequency.Value := Freq;
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';
@@ -121,8 +109,8 @@ begin
  with TLinearPhaseLinkwitzRileyDataModule(Owner) do
   begin
    Order := Parameter[1];
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
    LbOrderValue.Caption := IntToStr(24 * Round(0.5 * Order)) + 'dB/Oct';
   end;
 end;

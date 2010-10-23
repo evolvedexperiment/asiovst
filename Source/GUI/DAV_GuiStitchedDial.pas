@@ -200,7 +200,9 @@ begin
  if Assigned(FStitchedItem) then
   begin
    FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
-   GlyphIndex := Round(FNormalizedPosition * (FStitchedItem.GlyphCount - 1));
+   if FStitchedItem.GlyphCount = 0
+    then FGlyphIndex := -1
+    else FGlyphIndex := Round(FNormalizedPosition * (FStitchedItem.GlyphCount - 1));
   end;
 end;
 

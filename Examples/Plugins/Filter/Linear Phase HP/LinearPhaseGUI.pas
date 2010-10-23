@@ -34,16 +34,17 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmLinearPhase = class(TForm)
-    DialFrequency: TGuiDial;
     LbFrequency: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
-    procedure FormCreate(Sender: TObject);
+    DialFrequency: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialFrequencyDblClick(Sender: TObject);
@@ -61,18 +62,6 @@ implementation
 uses
   LinearPhaseDM, DAV_VSTModuleWithPrograms;
 
-procedure TFmLinearPhase.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'YamahaKnob', 'BMP');
- try
-  DialFrequency.DialBitmap.LoadFromStream(RS); RS.Position := 0;
- finally
-  RS.Free;
- end;
-end;
-
 procedure TFmLinearPhase.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
@@ -82,8 +71,8 @@ procedure TFmLinearPhase.DialFrequencyChange(Sender: TObject);
 begin
  with TLinearPhaseDataModule(Owner) do
   begin
-   if Parameter[0] <> DialFrequency.Position
-    then Parameter[0] := DialFrequency.Position;
+   if Parameter[0] <> DialFrequency.Value
+    then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
@@ -126,8 +115,8 @@ begin
  with TLinearPhaseDataModule(Owner) do
   begin
    Freq := Parameter[0];
-   if DialFrequency.Position <> Freq
-    then DialFrequency.Position := Freq;
+   if DialFrequency.Value <> Freq
+    then DialFrequency.Value := Freq;
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';

@@ -36,14 +36,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial,
-  DAV_GuiPanel;
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmChebyshev = class(TForm)
-    DialFrequency: TGuiDial;
-    DialOrder: TGuiDial;
-    DialStopband: TGuiDial;
     LbChebyshevFilterDemo: TGuiLabel;
     LbChebyshevFilterDemoShaddow: TGuiLabel;
     LbFrequency: TGuiLabel;
@@ -53,6 +50,10 @@ type
     LbStopband: TGuiLabel;
     LbStopbandValue: TGuiLabel;
     PnControls: TGuiPanel;
+    GSPL: TGuiStitchedPNGList;
+    DialFrequency: TGuiStitchedDial;
+    DialStopband: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);

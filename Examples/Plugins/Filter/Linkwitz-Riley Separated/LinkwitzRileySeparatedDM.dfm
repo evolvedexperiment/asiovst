@@ -1,14 +1,16 @@
-object Chebyshev2HPModule: TChebyshev2HPModule
+object LinkwitzRileySeparatedModule: TLinkwitzRileySeparatedModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'Chebyshev2 Lowpass Filter'
+  EffectName = 'LinkwitzRileySeparated'
   ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
+  TailSize = 131072
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'CbcL'
+  UniqueID = 'LiRi'
   ShellPlugins = <>
   Programs = <
     item
@@ -17,82 +19,69 @@ object Chebyshev2HPModule: TChebyshev2HPModule
     end>
   ParameterProperties = <
     item
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 10000.000000000000000000
       DisplayName = 'Frequency'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 100.000000000000000000
-      LargeStepInteger = 100
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
-      Min = 20.000000000000000000
-      MinInteger = 20
+      Min = 2.000000000000000000
+      MinInteger = 2
       ReportVST2Properties = True
       ShortLabel = 'Freq'
-      SmallStepFloat = 10.000000000000000000
-      StepFloat = 50.000000000000000000
-      StepInteger = 50
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
-      OnParameterChange = ParamFrequencyChange
-    end
-    item
-      CurveFactor = 1.000000000000000000
-      DisplayName = 'Stopband'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 1.000000000000000000
-      LargeStepInteger = 1
-      Max = -0.009999999776482582
-      MaxInteger = 0
-      Min = -100.000000000000000000
-      MinInteger = -100
-      ReportVST2Properties = True
-      ShortLabel = 'Stopbnd'
-      SmallStepFloat = 0.100000001490116100
-      StepFloat = 0.100000001490116100
-      Units = 'dB'
-      VSTModule = Owner
-      OnParameterChange = ParamStopbandChange
+      OnParameterChange = ParameterFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 2.000000000000000000
-      LargeStepInteger = 2
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
       Max = 16.000000000000000000
       MaxInteger = 16
+      Min = 1.000000000000000000
+      MinInteger = 1
       ReportVST2Properties = True
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      Units = 'dB/Oct'
       VSTModule = Owner
-      OnParameterChange = ParamOrderChange
+      OnParameterChange = ParameterOrderChange
+      OnCustomParameterDisplay = ParameterOrderDisplay
     end
     item
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Correct Frequency'
+      DisplayName = 'Type'
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
       ReportVST2Properties = True
-      ShortLabel = 'Correct'
+      ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParameterCorrectFrequencyChange
-      OnCustomParameterDisplay = ParameterOnOffDisplay
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 778
-  Top = 75
+  Left = 286
+  Top = 77
   Height = 150
   Width = 215
 end
