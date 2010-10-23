@@ -140,7 +140,7 @@ type
 implementation
 
 uses
-  AdhesiveDM, PngImage, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
+  AdhesiveDM, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 

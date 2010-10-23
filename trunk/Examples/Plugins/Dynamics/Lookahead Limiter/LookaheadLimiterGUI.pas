@@ -36,46 +36,47 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
-  Menus, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiDial,
-  DAV_GuiLevelMeter, DAV_GuiSelectBox, DAV_GuiLabel;
+  Menus, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLED,
+  DAV_GuiLevelMeter, DAV_GuiSelectBox, DAV_GuiLabel, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmLookaheadLimiter = class(TForm)
-    DialOutput: TGuiDial;
-    DialRelease: TGuiDial;
-    DialInput: TGuiDial;
-    GuiDialImageList: TGuiDialImageList;
+    DialInput: TGuiStitchedDial;
+    DialOutput: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     Lb0dB: TGuiLabel;
     Lb10dB: TGuiLabel;
-    Lb30dB: TGuiLabel;
+    Lb15dB: TGuiLabel;
+    Lb5dB: TGuiLabel;
     LbGR: TGuiLabel;
-    LbOutput: TGuiLabel;
-    LbOutputValue: TGuiLabel;
-    LbRelease: TGuiLabel;
-    LbReleaseValue: TGuiLabel;
     LbInput: TGuiLabel;
     LbInputValue: TGuiLabel;
+    LbOutput: TGuiLabel;
+    LbOutputValue: TGuiLabel;
+    LbProcessingMode: TGuiLabel;
+    LbRelease: TGuiLabel;
+    LbReleaseValue: TGuiLabel;
     LMGainReduction: TGuiColorLevelMeter;
-    Timer: TTimer;
-    Lb20dB: TGuiLabel;
-    PuOutputValues: TPopupMenu;
     Mi001dB: TMenuItem;
     Mi002dB: TMenuItem;
-    Mi0dB: TMenuItem;
     Mi003dB: TMenuItem;
     Mi005dB: TMenuItem;
     Mi01dB: TMenuItem;
     Mi02dB: TMenuItem;
-    GuiLabel1: TGuiLabel;
-    SbProcessingType: TGuiSelectBox;
-    PuInputValues: TPopupMenu;
+    Mi0dB: TMenuItem;
     MiGain0dB: TMenuItem;
     MiGain1dB: TMenuItem;
     MiGain2dB: TMenuItem;
     MiGain3dB: TMenuItem;
-    procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    PuInputValues: TPopupMenu;
+    PuOutputValues: TPopupMenu;
+    SbProcessingType: TGuiSelectBox;
+    Timer: TTimer;
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormClick(Sender: TObject);
     procedure DialInputChange(Sender: TObject);
     procedure DialInputDblClick(Sender: TObject);
     procedure DialOutputChange(Sender: TObject);
@@ -95,7 +96,6 @@ type
     procedure SbProcessingTypeChange(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     procedure DialOutputDblClick(Sender: TObject);
-    procedure FormClick(Sender: TObject);
     procedure DialReleaseDblClick(Sender: TObject);
   private
     FEdValue: TEdit;
@@ -109,35 +109,9 @@ type
 implementation
 
 uses
-  PngImage, DAV_Approximations, DAV_VSTModuleWithPrograms, LookaheadLimiterDM;
+  DAV_Approximations, DAV_VSTModuleWithPrograms, LookaheadLimiterDM;
 
 {$R *.DFM}
-
-procedure TFmLookaheadLimiter.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'LimiterKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[0].DialBitmap do
-    begin
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialInput.DialImageIndex := 0;
-   DialOutput.DialImageIndex := 0;
-   DialRelease.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
 
 procedure TFmLookaheadLimiter.FormDestroy(Sender: TObject);
 begin
@@ -161,27 +135,27 @@ end;
 
 procedure TFmLookaheadLimiter.Mi0dBClick(Sender: TObject);
 begin
- DialOutput.Position := 0;
+ DialOutput.Value := 0;
 end;
 
 procedure TFmLookaheadLimiter.MiGain0dBClick(Sender: TObject);
 begin
- DialInput.Position := 0;
+ DialInput.Value := 0;
 end;
 
 procedure TFmLookaheadLimiter.MiGain1dBClick(Sender: TObject);
 begin
- DialInput.Position := 1;
+ DialInput.Value := 1;
 end;
 
 procedure TFmLookaheadLimiter.MiGain2dBClick(Sender: TObject);
 begin
- DialInput.Position := 2;
+ DialInput.Value := 2;
 end;
 
 procedure TFmLookaheadLimiter.MiGain3dBClick(Sender: TObject);
 begin
- DialInput.Position := 3;
+ DialInput.Value := 3;
 end;
 
 procedure TFmLookaheadLimiter.SbProcessingTypeChange(Sender: TObject);
@@ -194,32 +168,32 @@ end;
 
 procedure TFmLookaheadLimiter.Mi001dBClick(Sender: TObject);
 begin
- DialOutput.Position := -0.01;
+ DialOutput.Value := -0.01;
 end;
 
 procedure TFmLookaheadLimiter.Mi002dBClick(Sender: TObject);
 begin
- DialOutput.Position := -0.02;
+ DialOutput.Value := -0.02;
 end;
 
 procedure TFmLookaheadLimiter.Mi003dBClick(Sender: TObject);
 begin
- DialOutput.Position := -0.03;
+ DialOutput.Value := -0.03;
 end;
 
 procedure TFmLookaheadLimiter.Mi005dBClick(Sender: TObject);
 begin
- DialOutput.Position := -0.05;
+ DialOutput.Value := -0.05;
 end;
 
 procedure TFmLookaheadLimiter.Mi01dBClick(Sender: TObject);
 begin
- DialOutput.Position := -0.1;
+ DialOutput.Value := -0.1;
 end;
 
 procedure TFmLookaheadLimiter.Mi02dBClick(Sender: TObject);
 begin
- DialOutput.Position := -0.2;
+ DialOutput.Value := -0.2;
 end;
 
 procedure TFmLookaheadLimiter.TimerTimer(Sender: TObject);
@@ -239,8 +213,8 @@ procedure TFmLookaheadLimiter.DialInputChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   if Parameter[0] <> DialInput.Position
-    then Parameter[0] := DialInput.Position;
+   if Parameter[0] <> DialInput.Value
+    then Parameter[0] := DialInput.Value;
   end;
 end;
 
@@ -271,8 +245,8 @@ procedure TFmLookaheadLimiter.DialOutputChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   if Parameter[1] <> DialOutput.Position
-    then Parameter[1] := DialOutput.Position;
+   if Parameter[1] <> DialOutput.Value
+    then Parameter[1] := DialOutput.Value;
   end;
 end;
 
@@ -303,8 +277,8 @@ procedure TFmLookaheadLimiter.DialReleaseChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   if Parameter[3] <> DialRelease.Position
-    then Parameter[3] := DialRelease.Position;
+   if Parameter[3] <> DialRelease.Value
+    then Parameter[3] := DialRelease.Value;
   end;
 end;
 
@@ -349,8 +323,8 @@ begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
    Input := Parameter[0];
-   if Input <> DialInput.Position
-    then DialInput.Position := Input;
+   if Input <> DialInput.Value
+    then DialInput.Value := Input;
    LbInputValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -362,8 +336,8 @@ begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
    Output := Parameter[1];
-   if Output <> DialOutput.Position
-    then DialOutput.Position := Output;
+   if Output <> DialOutput.Value
+    then DialOutput.Value := Output;
    LbOutputValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
   end;
 end;
@@ -384,8 +358,8 @@ begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
    Release := Parameter[3];
-   if Release <> DialRelease.Position
-    then DialRelease.Position := Release;
+   if Release <> DialRelease.Value
+    then DialRelease.Value := Release;
    LbReleaseValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
   end;
 end;

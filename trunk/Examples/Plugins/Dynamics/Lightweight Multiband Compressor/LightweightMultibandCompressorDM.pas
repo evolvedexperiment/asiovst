@@ -1,4 +1,4 @@
-unit LightweightMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -52,21 +52,21 @@ type
     procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLowFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMidFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FLightweightMultibandCompressor : array [0..3] of TLightweightSoftKneeCompressor;
     FLinkwitzRiley                  : array [0..1, 0..2] of TLinkwitzRiley;
@@ -188,7 +188,7 @@ begin
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -198,7 +198,7 @@ begin
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -227,7 +227,7 @@ begin
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -257,7 +257,7 @@ begin
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -270,31 +270,31 @@ begin
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case round(Parameter[Index]) of
   0 : PreDefined := 'Off';

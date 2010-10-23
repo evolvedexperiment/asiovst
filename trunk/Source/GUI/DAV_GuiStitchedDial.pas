@@ -197,8 +197,11 @@ end;
 procedure TCustomGuiStitchedDial.Loaded;
 begin
  inherited;
- FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
- GlyphIndex := Round(FNormalizedPosition * (FStitchedItem.GlyphCount - 1));
+ if Assigned(FStitchedItem) then
+  begin
+   FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
+   GlyphIndex := Round(FNormalizedPosition * (FStitchedItem.GlyphCount - 1));
+  end;
 end;
 
 procedure TCustomGuiStitchedDial.CalculateRange;

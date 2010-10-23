@@ -59,27 +59,27 @@ type
     procedure ParameterAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHoldChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterStereoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLowcutFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLowcutSlopeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighcutFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighcutSlopeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterSlopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterSlopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterVstEnableChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FVstHost             : TVstHost;
@@ -445,7 +445,7 @@ begin
 end;
 
 procedure TSidechainCompressorDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -457,27 +457,27 @@ begin
 end;
 
 procedure TSidechainCompressorDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 1000
   then PreDefined := 'kHz';
 end;
 
 procedure TSidechainCompressorDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 1000
   then PreDefined := FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4);
 end;
 
 procedure TSidechainCompressorDataModule.ParameterSlopeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]) * 6);
 end;
 
 procedure TSidechainCompressorDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -490,7 +490,7 @@ begin
 end;
 
 procedure TSidechainCompressorDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
@@ -566,25 +566,25 @@ begin
 end;
 
 procedure TSidechainCompressorDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TSidechainCompressorDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TSidechainCompressorDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TSidechainCompressorDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
@@ -642,7 +642,7 @@ begin
  try
   // process hosted VST plugin
   if FVstHost[0].Active and FProcessVSTSidechain
-   then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
+   then FVstHost[0].Process32Replacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin
      Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
@@ -683,7 +683,7 @@ begin
  try
   // process hosted VST plugin
   if FVstHost[0].Active and FProcessVSTSidechain
-   then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
+   then FVstHost[0].Process32Replacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin
      Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
@@ -714,7 +714,7 @@ begin
  try
   // process hosted VST plugin
   if FVstHost[0].Active and FProcessVSTSidechain
-   then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
+   then FVstHost[0].Process32Replacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin
      Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
@@ -755,7 +755,7 @@ begin
  try
   // process hosted VST plugin
   if FVstHost[0].Active and FProcessVSTSidechain  
-   then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
+   then FVstHost[0].Process32Replacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin
      Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));

@@ -69,7 +69,7 @@ type
     procedure MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLimiterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FLowSplit     : array [0..1] of TLinkwitzRiley;
@@ -211,8 +211,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbLowGaindB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
-    if DlLowGain.Position <> Value
-     then DlLowGain.Position := Value;
+    if DlLowGain.Value <> Value
+     then DlLowGain.Value := Value;
    end;
 end;
 
@@ -226,8 +226,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbMidGaindB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
-    if DlMidGain.Position <> Value
-     then DlMidGain.Position := Value;
+    if DlMidGain.Value <> Value
+     then DlMidGain.Value := Value;
    end;
 end;
 
@@ -241,8 +241,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbHighGaindB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
-    if DlHighGain.Position <> Value
-     then DlHighGain.Position := Value;
+    if DlHighGain.Value <> Value
+     then DlHighGain.Value := Value;
    end;
 end;
 
@@ -256,8 +256,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbLowThresholddB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
-    if DlLowThreshold.Position <> Value
-     then DlLowThreshold.Position := Value;
+    if DlLowThreshold.Value <> Value
+     then DlLowThreshold.Value := Value;
    end;
 end;
 
@@ -271,8 +271,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbMidThresholddB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
-    if DlMidThreshold.Position <> Value
-     then DlMidThreshold.Position := Value;
+    if DlMidThreshold.Value <> Value
+     then DlMidThreshold.Value := Value;
    end;
 end;
 
@@ -286,8 +286,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbHighThresholddB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
-    if DlHighThreshold.Position <> Value
-     then DlHighThreshold.Position := Value;
+    if DlHighThreshold.Value <> Value
+     then DlHighThreshold.Value := Value;
    end;
 end;
 
@@ -302,8 +302,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbLowRatioValue.Caption := '1:' + FloatToStrF(Value, ffGeneral, 3, 2);
-    if DlLowRatio.Position <> Log10(Value)
-     then DlLowRatio.Position := Log10(Value);
+    if DlLowRatio.Value <> Log10(Value)
+     then DlLowRatio.Value := Log10(Value);
    end;
 end;
 
@@ -317,8 +317,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbMidRatioValue.Caption := '1:' + FloatToStrF(Value, ffGeneral, 3, 2);
-    if DlMidRatio.Position <> Log10(Value)
-     then DlMidRatio.Position := Log10(Value);
+    if DlMidRatio.Value <> Log10(Value)
+     then DlMidRatio.Value := Log10(Value);
    end;
 end;
 
@@ -332,8 +332,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbHighRatioValue.Caption := '1:' + FloatToStrF(Value, ffGeneral, 3, 2);
-    if DlHighRatio.Position <> Log10(Value)
-     then DlHighRatio.Position := Log10(Value);
+    if DlHighRatio.Value <> Log10(Value)
+     then DlHighRatio.Value := Log10(Value);
    end;
 end;
 
@@ -347,8 +347,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbLowAttackValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
-    if DlLowAttack.Position <> Log10(Value)
-     then DlLowAttack.Position := Log10(Value);
+    if DlLowAttack.Value <> Log10(Value)
+     then DlLowAttack.Value := Log10(Value);
    end;
 end;
 
@@ -362,8 +362,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbMidAttackValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
-    if DlMidAttack.Position <> Log10(Value)
-     then DlMidAttack.Position := Log10(Value);
+    if DlMidAttack.Value <> Log10(Value)
+     then DlMidAttack.Value := Log10(Value);
    end;
 end;
 
@@ -377,8 +377,8 @@ begin
   with TFmMBC(EditorForm) do
    begin
     LbHighAttackValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
-    if DlHighAttack.Position <> Log10(Value)
-     then DlHighAttack.Position := Log10(Value);
+    if DlHighAttack.Value <> Log10(Value)
+     then DlHighAttack.Value := Log10(Value);
    end;
 end;
 
@@ -431,7 +431,7 @@ begin
 end;
 
 procedure TMBCDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if round(Parameter[Index]) = 0
   then PreDefined := 'Off'

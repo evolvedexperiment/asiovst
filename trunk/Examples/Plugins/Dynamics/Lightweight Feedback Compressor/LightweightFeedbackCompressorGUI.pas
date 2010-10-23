@@ -36,8 +36,8 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiLED,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial,
   DAV_GuiStitchedPngList;
 
 type
@@ -71,12 +71,12 @@ type
     LEDOversample: TGuiLED;
     LEDStereo: TGuiLED;
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialKneeChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure DialMakeUpGainChange(Sender: TObject);
     procedure LEDStereoClick(Sender: TObject);
     procedure LEDLimitClick(Sender: TObject);

@@ -53,16 +53,16 @@ type
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterStereoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FLightweightFeedbackLimiter : array [0..1] of TCustomKneeLimiter;
@@ -78,7 +78,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, LightweightFeedbackLimiterGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Approximations, LightweightFeedbackLimiterGUI,
+  DAV_VSTModuleWithPrograms;
 
 procedure TLightweightFeedbackLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -141,7 +142,7 @@ begin
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -153,7 +154,7 @@ begin
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -166,7 +167,7 @@ begin
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
@@ -181,25 +182,25 @@ begin
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightFeedbackLimiterDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case round(Parameter[Index]) of
   0 : PreDefined := 'Off';
@@ -297,8 +298,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FLightweightFeedbackLimiter[0].ProcessSample(Inputs[0, Sample]);
-   Outputs[1, Sample] := FLightweightFeedbackLimiter[1].ProcessSample(Inputs[1, Sample]);
+   Outputs[0, Sample] := FLightweightFeedbackLimiter[0].ProcessSample32(Inputs[0, Sample]);
+   Outputs[1, Sample] := FLightweightFeedbackLimiter[1].ProcessSample32(Inputs[1, Sample]);
   end;
 end;
 
@@ -325,8 +326,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FastTanhOpt3Term(FLightweightFeedbackLimiter[0].ProcessSample(Inputs[0, Sample]));
-   Outputs[1, Sample] := FastTanhOpt3Term(FLightweightFeedbackLimiter[1].ProcessSample(Inputs[1, Sample]));
+   Outputs[0, Sample] := FastTanhOpt3Term(FLightweightFeedbackLimiter[0].ProcessSample32(Inputs[0, Sample]));
+   Outputs[1, Sample] := FastTanhOpt3Term(FLightweightFeedbackLimiter[1].ProcessSample32(Inputs[1, Sample]));
   end;
 end;
 

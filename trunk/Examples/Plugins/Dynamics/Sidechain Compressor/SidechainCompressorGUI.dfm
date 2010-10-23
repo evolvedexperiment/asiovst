@@ -149,15 +149,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
   end
   object LEDAutoGain: TGuiLED
     Left = 8
-    Top = 297
-    Width = 13
-    Height = 13
-    LEDColor = 9681911
-    Brightness_Percent = 100.000000000000000000
+    Top = 296
+    Width = 15
+    Height = 15
     BorderStrength_Percent = 50.000000000000000000
+    Brightness_Percent = 100.000000000000000000
+    LEDColor = 9681911
+    BorderWidth = 2.000000000000000000
     Uniformity_Percent = 50.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = 9681911
+    Transparent = False
     OnClick = LEDAutoGainClick
   end
   object LbSoftClip: TGuiLabel
@@ -172,15 +172,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
   end
   object LEDSoftClip: TGuiLED
     Left = 137
-    Top = 297
-    Width = 13
-    Height = 13
-    LEDColor = 9681911
-    Brightness_Percent = 100.000000000000000000
+    Top = 296
+    Width = 15
+    Height = 15
     BorderStrength_Percent = 50.000000000000000000
+    Brightness_Percent = 100.000000000000000000
+    LEDColor = 9681911
+    BorderWidth = 2.000000000000000000
     Uniformity_Percent = 50.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = 9681911
+    Transparent = False
     OnClick = LEDSoftClipClick
   end
   object LbStereo: TGuiLabel
@@ -195,15 +195,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
   end
   object LEDStereo: TGuiLED
     Left = 215
-    Top = 297
-    Width = 13
-    Height = 13
-    LEDColor = 9681911
-    Brightness_Percent = 100.000000000000000000
+    Top = 296
+    Width = 15
+    Height = 15
     BorderStrength_Percent = 50.000000000000000000
+    Brightness_Percent = 100.000000000000000000
+    LEDColor = 9681911
+    BorderWidth = 2.000000000000000000
     Uniformity_Percent = 50.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = 9681911
+    Transparent = False
     OnClick = LEDStereoClick
   end
   object GuiGraphXY: TGuiGraphXY
@@ -341,7 +341,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
-  object GuiLabel1: TGuiLabel
+  object LbClear: TGuiLabel
     Left = 406
     Top = 41
     Width = 35
@@ -349,6 +349,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
     Caption = '[clear]'
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 9681911
     Font.Height = -11
@@ -361,15 +362,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
   end
   object LEDSideChain: TGuiLED
     Left = 8
-    Top = 41
-    Width = 13
-    Height = 13
-    LEDColor = 9681911
-    Brightness_Percent = 100.000000000000000000
+    Top = 40
+    Width = 15
+    Height = 15
     BorderStrength_Percent = 50.000000000000000000
+    Brightness_Percent = 100.000000000000000000
+    LEDColor = 9681911
+    BorderWidth = 2.000000000000000000
     Uniformity_Percent = 50.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = 9681911
+    Transparent = False
     OnClick = LEDSideChainClick
   end
   object PnTitle: TPanel
@@ -417,15 +418,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 10.000000000000000000
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
+    OnChange = SliderAttackChange
+    ParentColor = False
     Position = 10.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderAttackChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderRelease: TGuiSlider
     Left = 69
@@ -435,15 +436,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 50.000000000000000000
     Max = 5000.000000000000000000
     Min = 0.050000000745058060
+    OnChange = SliderReleaseChange
+    ParentColor = False
     Position = 50.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderReleaseChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderThreshold: TGuiSlider
     Left = 69
@@ -453,14 +454,14 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     DefaultPosition = -20.000000000000000000
     Max = 10.000000000000000000
     Min = -90.000000000000000000
+    OnChange = SliderThresholdChange
+    ParentColor = False
     Position = -20.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderThresholdChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderKnee: TGuiSlider
     Left = 69
@@ -471,13 +472,13 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     DefaultPosition = 1.000000000000000000
     Max = 10.000000000000000000
+    OnChange = SliderKneeChange
+    ParentColor = False
     Position = 1.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderKneeChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderRatio: TGuiSlider
     Left = 69
@@ -487,15 +488,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     CurveMapping = 1.000000000000000000
     DefaultPosition = 50.000000000000000000
     Max = 100.000000000000000000
     Min = 1.000000000000000000
+    OnChange = SliderRatioChange
+    ParentColor = False
     Position = 10.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderRatioChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderMakeUpGain: TGuiSlider
     Left = 69
@@ -505,14 +506,14 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     DefaultPosition = 50.000000000000000000
     Max = 90.000000000000000000
     Min = -10.000000000000000000
+    OnChange = SliderMakeUpGainChange
+    ParentColor = False
     Position = 10.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderMakeUpGainChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderHold: TGuiSlider
     Left = 88
@@ -522,15 +523,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 10.000000000000000000
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
+    OnChange = SliderHoldChange
+    ParentColor = False
     Position = 10.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderHoldChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderLowcutFrequency: TGuiSlider
     Left = 88
@@ -540,15 +541,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 10.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
+    OnChange = SliderLowcutFrequencyChange
+    ParentColor = False
     Position = 20.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderLowcutFrequencyChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderHighcutFrequency: TGuiSlider
     Left = 88
@@ -558,15 +559,15 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 50.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
+    OnChange = SliderHighcutFrequencyChange
+    ParentColor = False
     Position = 20000.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderHighcutFrequencyChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderHighcutOrder: TGuiSlider
     Left = 88
@@ -576,13 +577,13 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     DefaultPosition = 16.000000000000000000
     Max = 16.000000000000000000
+    OnChange = SliderHighcutOrderChange
+    ParentColor = False
     Position = 2.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderHighcutOrderChange
-    Color = 5196083
-    ParentColor = False
   end
   object SliderLowcutOrder: TGuiSlider
     Left = 88
@@ -592,13 +593,13 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     DefaultPosition = 16.000000000000000000
     Max = 16.000000000000000000
+    OnChange = SliderLowcutOrderChange
+    ParentColor = False
     Position = 2.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderLowcutOrderChange
-    Color = 5196083
-    ParentColor = False
   end
   object GuiEQGraph: TGuiEQGraph
     Left = 276
@@ -642,25 +643,25 @@ object FmSidechainCompressor: TFmSidechainCompressor
     AntiAlias = gaaLinear3x
     BorderColor = 9681911
     BorderRadius = 2
+    Color = 5196083
     DefaultPosition = 50.000000000000000000
     Max = 100.000000000000000000
+    OnChange = SliderMixChange
+    ParentColor = False
     Position = 10.000000000000000000
     SlideColor = 6322591
-    OnChange = SliderMixChange
-    Color = 5196083
-    ParentColor = False
   end
   object GuiPanel1: TGuiPanel
     Left = 135
     Top = 38
     Width = 265
     Height = 20
-    AntiAlias = gaaLinear3x
     Caption = 'GuiPanel1'
     LineColor = 9681911
-    Linewidth = 1
+    BorderWidth = 2.000000000000000000
     PanelColor = 4341035
     ParentColor = True
+    Radius = 2.000000000000000000
     TabOrder = 14
     UseDockManager = True
     DesignSize = (

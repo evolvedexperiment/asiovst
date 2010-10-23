@@ -36,28 +36,33 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiLevelMeter;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiLED,
+  DAV_GuiLevelMeter, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmLightweightLimiter = class(TForm)
-    DialAttack: TGuiDial;
-    DialKnee: TGuiDial;
-    DialMakeUpGain: TGuiDial;
-    DialRelease: TGuiDial;
-    DialThreshold: TGuiDial;
-    GuiDialImageList: TGuiDialImageList;
+    DialAttack: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialMakeUpGain: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     GuiGraphXY: TGuiGraphXY;
-    LbSoftClip: TGuiLabel;
-    LbAutoGain: TGuiLabel;
+    Lb0dB: TGuiLabel;
+    Lb10dB: TGuiLabel;
+    Lb20dB: TGuiLabel;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
+    LbAutoGain: TGuiLabel;
+    LbGR: TGuiLabel;
     LbKnee: TGuiLabel;
     LbKneeValue: TGuiLabel;
     LbMakeUpGain: TGuiLabel;
     LbMakeUpGainValue: TGuiLabel;
     LbRelease: TGuiLabel;
     LbReleaseValue: TGuiLabel;
+    LbSoftClip: TGuiLabel;
     LbStereo: TGuiLabel;
     LbThreshold: TGuiLabel;
     LbThresholdValue: TGuiLabel;
@@ -65,10 +70,6 @@ type
     LEDLimit: TGuiLED;
     LEDStereo: TGuiLED;
     LMGainReduction: TGuiColorLevelMeter;
-    LbGR: TGuiLabel;
-    Lb0dB: TGuiLabel;
-    Lb20dB: TGuiLabel;
-    Lb10dB: TGuiLabel;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
@@ -96,36 +97,12 @@ type
 implementation
 
 uses
-  LightweightLimiterDM, PngImage, DAV_VSTModuleWithPrograms;
+  DAV_VSTModuleWithPrograms, LightweightLimiterDM;
 
 {$R *.DFM}
 
 procedure TFmLightweightLimiter.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
 begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'LimiterKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[0].DialBitmap do
-    begin
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialThreshold.DialImageIndex := 0;
-   DialKnee.DialImageIndex := 0;
-   DialAttack.DialImageIndex := 0;
-   DialRelease.DialImageIndex := 0;
-   DialMakeUpGain.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
   begin
    OnEvaluate := EvaluateCharacteristic;
@@ -183,7 +160,7 @@ procedure TFmLightweightLimiter.DialAttackChange(Sender: TObject);
 begin
  with TLightweightLimiterDataModule(Owner) do
   begin
-   Parameter[0] := DialAttack.Position;
+   Parameter[0] := DialAttack.Value;
   end;
 end;
 
@@ -191,7 +168,7 @@ procedure TFmLightweightLimiter.DialReleaseChange(Sender: TObject);
 begin
  with TLightweightLimiterDataModule(Owner) do
   begin
-   Parameter[1] := DialRelease.Position;
+   Parameter[1] := DialRelease.Value;
   end;
 end;
 
@@ -199,7 +176,7 @@ procedure TFmLightweightLimiter.DialThresholdChange(Sender: TObject);
 begin
  with TLightweightLimiterDataModule(Owner) do
   begin
-   Parameter[2] := DialThreshold.Position;
+   Parameter[2] := DialThreshold.Value;
   end;
 end;
 
@@ -213,7 +190,7 @@ procedure TFmLightweightLimiter.DialKneeChange(Sender: TObject);
 begin
  with TLightweightLimiterDataModule(Owner) do
   begin
-   Parameter[4] := DialKnee.Position;
+   Parameter[4] := DialKnee.Value;
   end;
 end;
 
@@ -221,7 +198,7 @@ procedure TFmLightweightLimiter.DialMakeUpGainChange(Sender: TObject);
 begin
  with TLightweightLimiterDataModule(Owner) do
   begin
-   Parameter[5] := DialMakeUpGain.Position;
+   Parameter[5] := DialMakeUpGain.Value;
   end;
 end;
 
@@ -232,8 +209,8 @@ begin
  with TLightweightLimiterDataModule(Owner) do
   begin
    Attack := Parameter[0];
-   if Attack <> DialAttack.Position
-    then DialAttack.Position := Attack;
+   if Attack <> DialAttack.Value
+    then DialAttack.Value := Attack;
    LbAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -245,8 +222,8 @@ begin
  with TLightweightLimiterDataModule(Owner) do
   begin
    Release := Parameter[1];
-   if Release <> DialRelease.Position
-    then DialRelease.Position := Release;
+   if Release <> DialRelease.Value
+    then DialRelease.Value := Release;
    LbReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
   end;
 end;
@@ -258,8 +235,8 @@ begin
  with TLightweightLimiterDataModule(Owner) do
   begin
    Knee := Parameter[4];
-   if Knee <> DialKnee.Position
-    then DialKnee.Position := Knee;
+   if Knee <> DialKnee.Value
+    then DialKnee.Value := Knee;
    LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
    GuiGraphXY.UpdateGraph;
   end;
@@ -272,8 +249,8 @@ begin
  with TLightweightLimiterDataModule(Owner) do
   begin
    MakeUp := LightweightLimiter[0].MakeUpGain_dB;
-   if MakeUp <> DialMakeUpGain.Position
-    then DialMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialMakeUpGain.Value
+    then DialMakeUpGain.Value := MakeUp;
    LbMakeUpGainValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
    GuiGraphXY.UpdateGraph;
   end;
@@ -286,8 +263,8 @@ begin
  with TLightweightLimiterDataModule(Owner) do
   begin
    Threshold := Parameter[2];
-   if Threshold <> DialThreshold.Position
-    then DialThreshold.Position := Threshold;
+   if Threshold <> DialThreshold.Value
+    then DialThreshold.Value := Threshold;
    LbThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
    GuiGraphXY.UpdateGraph;
   end;

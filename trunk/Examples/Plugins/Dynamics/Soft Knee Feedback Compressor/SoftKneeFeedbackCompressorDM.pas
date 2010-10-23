@@ -51,7 +51,7 @@ type
     procedure ParamMakeUpGainChange( Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleClose(Sender: TObject);
   private
-    FSoftKneeFeedbackCompressors : Array [0..1] of TCustomFeedbackCompressor;
+    FSoftKneeFeedbackCompressors : array [0..1] of TCustomFeedbackCompressor;
   public
   end;
 

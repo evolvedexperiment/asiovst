@@ -1,5 +1,4 @@
 object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Soft Knee Feedback Compressor'
@@ -7,7 +6,6 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'SKFC'
@@ -19,7 +17,6 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -38,7 +35,6 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       OnParameterChange = SLThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ratio'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -92,7 +88,6 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       OnParameterChange = SLReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Make Up Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

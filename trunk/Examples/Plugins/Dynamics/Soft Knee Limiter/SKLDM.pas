@@ -20,7 +20,7 @@ type
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
-    FSoftKneeLimiters : Array [0..1] of TSimpleSoftKneeLimiter;
+    FSoftKneeLimiters : array [0..1] of TSimpleSoftKneeLimiter;
   public
   end;
 

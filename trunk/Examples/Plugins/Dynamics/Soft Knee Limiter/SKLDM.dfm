@@ -1,5 +1,4 @@
 object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Soft Knee Limiter'
@@ -7,7 +6,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'SKLi'
@@ -19,7 +17,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -38,7 +35,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       OnParameterChange = SKLThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Knee'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -94,7 +90,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       OnParameterChange = SKLReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Makeup  Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

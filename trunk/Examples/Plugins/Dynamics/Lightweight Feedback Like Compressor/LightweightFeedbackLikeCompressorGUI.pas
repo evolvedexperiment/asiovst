@@ -35,22 +35,22 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiLED,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmLightweightFeedbackLikeCompressor = class(TForm)
-    DialAttack: TGuiDial;
-    DialKnee: TGuiDial;
-    DialMakeUpGain: TGuiDial;
-    DialRatio: TGuiDial;
-    DialRelease: TGuiDial;
-    DialThreshold: TGuiDial;
-    GuiDialImageList: TGuiDialImageList;
+    DialAttack: TGuiStitchedDial;
+    DialKnee: TGuiStitchedDial;
+    DialMakeUpGain: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     GuiGraphXY: TGuiGraphXY;
-    GuiLabel2: TGuiLabel;
-    GuiLabel3: TGuiLabel;
+    LbLimit: TGuiLabel;
+    LbAutoGain: TGuiLabel;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
     LbKnee: TGuiLabel;
@@ -70,12 +70,12 @@ type
     LEDOversample: TGuiLED;
     LEDStereo: TGuiLED;
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialKneeChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure DialMakeUpGainChange(Sender: TObject);
     procedure LEDStereoClick(Sender: TObject);
     procedure LEDLimitClick(Sender: TObject);
@@ -96,37 +96,12 @@ type
 implementation
 
 uses
-  Math, PngImage, DAV_VSTModuleWithPrograms, LightweightFeedbackLikeCompressorDM;
+  Math, DAV_VSTModuleWithPrograms, LightweightFeedbackLikeCompressorDM;
 
 {$R *.DFM}
 
 procedure TFmLightweightFeedbackLikeCompressor.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
 begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'FeedbackCompressorKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[0].DialBitmap do
-    begin
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialThreshold.DialImageIndex := 0;
-   DialKnee.DialImageIndex := 0;
-   DialRatio.DialImageIndex := 0;
-   DialAttack.DialImageIndex := 0;
-   DialRelease.DialImageIndex := 0;
-   DialMakeUpGain.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series) do
   begin
    OnEvaluate := EvaluateCharacteristic;
@@ -137,8 +112,8 @@ procedure TFmLightweightFeedbackLikeCompressor.FormShow(Sender: TObject);
 begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
-   DialAttack.Min := max(0.01, 2000 / SampleRate);
-   DialRelease.Min := max(0.1, 2000 / SampleRate);
+   DialAttack.Min := Max(0.01, 2000 / SampleRate);
+   DialRelease.Min := Max(0.1, 2000 / SampleRate);
   end;
  UpdateAttack;
  UpdateRelease;
@@ -180,7 +155,7 @@ procedure TFmLightweightFeedbackLikeCompressor.DialAttackChange(Sender: TObject)
 begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
-   Parameter[0] := DialAttack.Position;
+   Parameter[0] := DialAttack.Value;
   end;
 end;
 
@@ -188,7 +163,7 @@ procedure TFmLightweightFeedbackLikeCompressor.DialReleaseChange(Sender: TObject
 begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
-   Parameter[1] := DialRelease.Position;
+   Parameter[1] := DialRelease.Value;
   end;
 end;
 
@@ -196,7 +171,7 @@ procedure TFmLightweightFeedbackLikeCompressor.DialThresholdChange(Sender: TObje
 begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
-   Parameter[2] := DialThreshold.Position;
+   Parameter[2] := DialThreshold.Value;
   end;
 end;
 
@@ -210,7 +185,7 @@ procedure TFmLightweightFeedbackLikeCompressor.DialRatioChange(Sender: TObject);
 begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
-   Parameter[3] := DialRatio.Position;
+   Parameter[3] := DialRatio.Value;
   end;
 end;
 
@@ -218,7 +193,7 @@ procedure TFmLightweightFeedbackLikeCompressor.DialKneeChange(Sender: TObject);
 begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
-   Parameter[4] := DialKnee.Position;
+   Parameter[4] := DialKnee.Value;
   end;
 end;
 
@@ -226,7 +201,7 @@ procedure TFmLightweightFeedbackLikeCompressor.DialMakeUpGainChange(Sender: TObj
 begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
-   Parameter[5] := DialMakeUpGain.Position;
+   Parameter[5] := DialMakeUpGain.Value;
   end;
 end;
 
@@ -237,8 +212,8 @@ begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
    Attack := Parameter[0];
-   if Attack <> DialAttack.Position
-    then DialAttack.Position := Attack;
+   if Attack <> DialAttack.Value
+    then DialAttack.Value := Attack;
    LbAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -250,8 +225,8 @@ begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
    Release := Parameter[1];
-   if Release <> DialRelease.Position
-    then DialRelease.Position := Release;
+   if Release <> DialRelease.Value
+    then DialRelease.Value := Release;
    LbReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
   end;
 end;
@@ -263,8 +238,8 @@ begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
    Knee := Parameter[4];
-   if Knee <> DialKnee.Position
-    then DialKnee.Position := Knee;
+   if Knee <> DialKnee.Value
+    then DialKnee.Value := Knee;
    LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
    GuiGraphXY.UpdateGraph;
   end;
@@ -277,8 +252,8 @@ begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
    MakeUp := LightweightFeedbackLikeCompressor[0].MakeUpGain_dB;
-   if MakeUp <> DialMakeUpGain.Position
-    then DialMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialMakeUpGain.Value
+    then DialMakeUpGain.Value := MakeUp;
    LbMakeUpGainValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
    GuiGraphXY.UpdateGraph;
   end;
@@ -291,8 +266,8 @@ begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[3];
-   if Ratio <> DialRatio.Position
-    then DialRatio.Position := Ratio;
+   if Ratio <> DialRatio.Value
+    then DialRatio.Value := Ratio;
    LbRatioValue.Caption := ParameterDisplay[3] + ' : 1';
    GuiGraphXY.UpdateGraph;
   end;
@@ -305,8 +280,8 @@ begin
  with TLightweightFeedbackLikeCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[2];
-   if Threshold <> DialThreshold.Position
-    then DialThreshold.Position := Threshold;
+   if Threshold <> DialThreshold.Value
+    then DialThreshold.Value := Threshold;
    LbThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
    GuiGraphXY.UpdateGraph;
   end;

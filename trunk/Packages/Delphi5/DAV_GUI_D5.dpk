@@ -83,7 +83,7 @@ contains
   DAV_GuiStitchedControls in '..\..\Source\GUI\DAV_GuiStitchedControls.pas',
   DAV_GuiStitchedButton in '..\..\Source\GUI\DAV_GuiStitchedButton.pas',
   DAV_GuiStitchedDial in '..\..\Source\GUI\DAV_GuiStitchedDial.pas',
-  DAV_GuiStitchedDisplay in '..\..\Source\GUI\DAV_GuiStitchedDisplay.pas';
+  DAV_GuiStitchedDisplay in '..\..\Source\GUI\DAV_GuiStitchedDisplay.pas',
   DAV_GuiStitchedPngList in '..\..\Source\GUI\DAV_GuiStitchedPngList.pas',
   DAV_GuiStitchedSwitch in '..\..\Source\GUI\DAV_GuiStitchedSwitch.pas',
   DAV_GuiVector in '..\..\Source\GUI\DAV_GuiVector.pas',

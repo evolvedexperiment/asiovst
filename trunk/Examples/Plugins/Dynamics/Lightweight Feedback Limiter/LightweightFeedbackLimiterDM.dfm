@@ -1,5 +1,4 @@
 object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Limiter'
@@ -8,7 +7,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
   VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DVLL'
@@ -60,7 +58,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
@@ -80,7 +77,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
@@ -100,7 +96,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Threshold'
@@ -120,7 +115,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -135,7 +129,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'
@@ -153,7 +146,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'MakeUp Gain'
@@ -172,7 +164,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Stereo'
@@ -190,7 +181,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Limit'
@@ -208,7 +198,6 @@ object LightweightFeedbackLimiterDataModule: TLightweightFeedbackLimiterDataModu
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Auto Make Up Gain'

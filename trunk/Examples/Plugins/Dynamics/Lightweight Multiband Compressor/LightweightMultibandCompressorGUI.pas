@@ -35,145 +35,146 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, ExtCtrls, DAV_GuiPanel;
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, DAV_Types,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiLED,
+  DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TGraph = (gLow, gLowMid, gHighMid, gHigh);
   TGraphs = set of TGraph;
   TFmLightweightMultibandCompressor = class(TForm)
-    DialLowAttack: TGuiDial;
-    DialLowKnee: TGuiDial;
-    DialLowMakeUpGain: TGuiDial;
-    DialLowRatio: TGuiDial;
-    DialLowRelease: TGuiDial;
-    DialLowThreshold: TGuiDial;
-    GXYLow: TGuiGraphXY;
-    LbLowAttack: TGuiLabel;
-    LbLowAttackValue: TGuiLabel;
-    LbLowAutogain: TGuiLabel;
-    LbLowKnee: TGuiLabel;
-    LbLowKneeValue: TGuiLabel;
-    LbLowMakeUpGain: TGuiLabel;
-    LbLowMakeUpGainValue: TGuiLabel;
-    LbLowRatio: TGuiLabel;
-    LbLowRatioValue: TGuiLabel;
-    LbLowRelease: TGuiLabel;
-    LbLowReleaseValue: TGuiLabel;
-    LbLowThreshold: TGuiLabel;
-    LbLowThresholdValue: TGuiLabel;
-    PnLowBand: TGuiPanel;
-    DialLowMidAttack: TGuiDial;
-    DialLowMidKnee: TGuiDial;
-    DialLowMidMakeUpGain: TGuiDial;
-    DialLowMidRatio: TGuiDial;
-    DialLowMidRelease: TGuiDial;
-    DialLowMidThreshold: TGuiDial;
-    GXYLowMid: TGuiGraphXY;
-    LbLowMidAttack: TGuiLabel;
-    LbLowMidAttackValue: TGuiLabel;
-    LbLowMidAutogain: TGuiLabel;
-    LbLowMidKnee: TGuiLabel;
-    LbLowMidKneeValue: TGuiLabel;
-    LbLowMidMakeUpGain: TGuiLabel;
-    LbLowMidMakeUpGainValue: TGuiLabel;
-    LbLowMidRatio: TGuiLabel;
-    LbLowMidRatioValue: TGuiLabel;
-    LbLowMidRelease: TGuiLabel;
-    LbLowMidReleaseValue: TGuiLabel;
-    LbLowMidThreshold: TGuiLabel;
-    LbLowMidThresholdValue: TGuiLabel;
-    PnLowMidBand: TGuiPanel;
-    DialHighMidAttack: TGuiDial;
-    DialHighMidKnee: TGuiDial;
-    DialHighMidMakeUpGain: TGuiDial;
-    DialHighMidRatio: TGuiDial;
-    DialHighMidRelease: TGuiDial;
-    DialHighMidThreshold: TGuiDial;
-    GXYHighMid: TGuiGraphXY;
-    LbHighMidAttack: TGuiLabel;
-    LbHighMidAttackValue: TGuiLabel;
-    LbHighMidAutogain: TGuiLabel;
-    LbHighMidKnee: TGuiLabel;
-    LbHighMidKneeValue: TGuiLabel;
-    LbHighMidMakeUpGain: TGuiLabel;
-    LbHighMidMakeUpGainValue: TGuiLabel;
-    LbHighMidRatio: TGuiLabel;
-    LbHighMidRatioValue: TGuiLabel;
-    LbHighMidRelease: TGuiLabel;
-    LbHighMidReleaseValue: TGuiLabel;
-    LbHighMidThreshold: TGuiLabel;
-    LbHighMidThresholdValue: TGuiLabel;
-    PnHighMidBand: TGuiPanel;
-    DialHighAttack: TGuiDial;
-    DialHighKnee: TGuiDial;
-    DialHighMakeUpGain: TGuiDial;
-    DialHighRatio: TGuiDial;
-    DialHighRelease: TGuiDial;
-    DialHighThreshold: TGuiDial;
+    DialHighAttack: TGuiStitchedDial;
+    DialHighFreq: TGuiStitchedDial;
+    DialHighKnee: TGuiStitchedDial;
+    DialHighMakeUpGain: TGuiStitchedDial;
+    DialHighMidAttack: TGuiStitchedDial;
+    DialHighMidKnee: TGuiStitchedDial;
+    DialHighMidMakeUpGain: TGuiStitchedDial;
+    DialHighMidRatio: TGuiStitchedDial;
+    DialHighMidRelease: TGuiStitchedDial;
+    DialHighMidThreshold: TGuiStitchedDial;
+    DialHighRatio: TGuiStitchedDial;
+    DialHighRelease: TGuiStitchedDial;
+    DialHighThreshold: TGuiStitchedDial;
+    DialLowAttack: TGuiStitchedDial;
+    DialLowFreq: TGuiStitchedDial;
+    DialLowKnee: TGuiStitchedDial;
+    DialLowMakeUpGain: TGuiStitchedDial;
+    DialLowMidAttack: TGuiStitchedDial;
+    DialLowMidKnee: TGuiStitchedDial;
+    DialLowMidMakeUpGain: TGuiStitchedDial;
+    DialLowMidRatio: TGuiStitchedDial;
+    DialLowMidRelease: TGuiStitchedDial;
+    DialLowMidThreshold: TGuiStitchedDial;
+    DialLowRatio: TGuiStitchedDial;
+    DialLowRelease: TGuiStitchedDial;
+    DialLowThreshold: TGuiStitchedDial;
+    DialMidFreq: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     GXYHigh: TGuiGraphXY;
+    GXYHighMid: TGuiGraphXY;
+    GXYLow: TGuiGraphXY;
+    GXYLowMid: TGuiGraphXY;
+    LbHigh: TGuiLabel;
     LbHighAttack: TGuiLabel;
     LbHighAttackValue: TGuiLabel;
     LbHighAutogain: TGuiLabel;
+    LbHighBypass: TGuiLabel;
+    LbHighFreqValue: TGuiLabel;
     LbHighKnee: TGuiLabel;
     LbHighKneeValue: TGuiLabel;
     LbHighMakeUpGain: TGuiLabel;
     LbHighMakeUpGainValue: TGuiLabel;
+    LbHighMid: TGuiLabel;
+    LbHighMidAttack: TGuiLabel;
+    LbHighMidAttackValue: TGuiLabel;
+    LbHighMidAutogain: TGuiLabel;
+    LbHighMidBypass: TGuiLabel;
+    LbHighMidKnee: TGuiLabel;
+    LbHighMidKneeValue: TGuiLabel;
+    LbHighMidMakeUpGain: TGuiLabel;
+    LbHighMidMakeUpGainValue: TGuiLabel;
+    LbHighMidMute: TGuiLabel;
+    LbHighMidRatio: TGuiLabel;
+    LbHighMidRatioValue: TGuiLabel;
+    LbHighMidRelease: TGuiLabel;
+    LbHighMidReleaseValue: TGuiLabel;
+    LbHighMidSolo: TGuiLabel;
+    LbHighMidThreshold: TGuiLabel;
+    LbHighMidThresholdValue: TGuiLabel;
+    LbHighMute: TGuiLabel;
     LbHighRatio: TGuiLabel;
     LbHighRatioValue: TGuiLabel;
     LbHighRelease: TGuiLabel;
     LbHighReleaseValue: TGuiLabel;
+    LbHighSolo: TGuiLabel;
     LbHighThreshold: TGuiLabel;
     LbHighThresholdValue: TGuiLabel;
-    PnHighBand: TGuiPanel;
-    GuiDialImageList: TGuiDialImageList;
+    LbLow: TGuiLabel;
+    LbLowAttack: TGuiLabel;
+    LbLowAttackValue: TGuiLabel;
+    LbLowAutogain: TGuiLabel;
+    LbLowBypass: TGuiLabel;
+    LbLowFreqValue: TGuiLabel;
+    LbLowKnee: TGuiLabel;
+    LbLowKneeValue: TGuiLabel;
+    LbLowMakeUpGain: TGuiLabel;
+    LbLowMakeUpGainValue: TGuiLabel;
+    LbLowMid: TGuiLabel;
+    LbLowMidAttack: TGuiLabel;
+    LbLowMidAttackValue: TGuiLabel;
+    LbLowMidAutogain: TGuiLabel;
+    LbLowMidBypass: TGuiLabel;
+    LbLowMidKnee: TGuiLabel;
+    LbLowMidKneeValue: TGuiLabel;
+    LbLowMidMakeUpGain: TGuiLabel;
+    LbLowMidMakeUpGainValue: TGuiLabel;
+    LbLowMidMute: TGuiLabel;
+    LbLowMidRatio: TGuiLabel;
+    LbLowMidRatioValue: TGuiLabel;
+    LbLowMidRelease: TGuiLabel;
+    LbLowMidReleaseValue: TGuiLabel;
+    LbLowMidSolo: TGuiLabel;
+    LbLowMidThreshold: TGuiLabel;
+    LbLowMidThresholdValue: TGuiLabel;
+    LbLowMute: TGuiLabel;
+    LbLowRatio: TGuiLabel;
+    LbLowRatioValue: TGuiLabel;
+    LbLowRelease: TGuiLabel;
+    LbLowReleaseValue: TGuiLabel;
+    LbLowS: TGuiLabel;
+    LbLowThreshold: TGuiLabel;
+    LbLowThresholdValue: TGuiLabel;
+    LbMidFreqValue: TGuiLabel;
     LbSoftClip: TGuiLabel;
-    LEDSoftClip: TGuiLED;
+    LEDHighAutoGain: TGuiLED;
+    LEDHighMidAutoGain: TGuiLED;
     LEDLowAutoGain: TGuiLED;
     LEDLowMidAutoGain: TGuiLED;
-    LEDHighMidAutoGain: TGuiLED;
-    LEDHighAutoGain: TGuiLED;
-    LbLow: TGuiLabel;
-    LbLowMid: TGuiLabel;
-    LbHighMid: TGuiLabel;
-    LbHigh: TGuiLabel;
-    DialLowFreq: TGuiDial;
-    LbLowFreqValue: TGuiLabel;
-    DialMidFreq: TGuiDial;
-    LbMidFreqValue: TGuiLabel;
-    DialHighFreq: TGuiDial;
-    LbHighFreqValue: TGuiLabel;
+    LEDSoftClip: TGuiLED;
+    PnHighBand: TGuiPanel;
+    PnHighMidBand: TGuiPanel;
+    PnLowBand: TGuiPanel;
+    PnLowMidBand: TGuiPanel;
     Timer: TTimer;
-    LbLowS: TGuiLabel;
-    LbLowMute: TGuiLabel;
-    LbLowBypass: TGuiLabel;
-    LbLowMidSolo: TGuiLabel;
-    LbLowMidMute: TGuiLabel;
-    LbLowMidBypass: TGuiLabel;
-    LbHighMidSolo: TGuiLabel;
-    LbHighMidMute: TGuiLabel;
-    LbHighMidBypass: TGuiLabel;
-    LbHighSolo: TGuiLabel;
-    LbHighMute: TGuiLabel;
-    LbHighBypass: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
+    procedure DialHighFreqChange(Sender: TObject);
+    procedure DialKneeChange(Sender: TObject);
+    procedure DialLowFreqChange(Sender: TObject);
+    procedure DialMakeUpGainChange(Sender: TObject);
+    procedure DialMidFreqChange(Sender: TObject);
+    procedure DialRatioChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
     procedure DialThresholdChange(Sender: TObject);
-    procedure DialRatioChange(Sender: TObject);
-    procedure DialKneeChange(Sender: TObject);
-    procedure DialMakeUpGainChange(Sender: TObject);
-    procedure LEDSoftClipClick(Sender: TObject);
-    procedure LEDLowAutoGainClick(Sender: TObject);
-    procedure DialLowFreqChange(Sender: TObject);
-    procedure DialMidFreqChange(Sender: TObject);
-    procedure DialHighFreqChange(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
-    procedure LEDHighMidAutoGainClick(Sender: TObject);
     procedure LEDHighAutoGainClick(Sender: TObject);
+    procedure LEDHighMidAutoGainClick(Sender: TObject);
+    procedure LEDLowAutoGainClick(Sender: TObject);
     procedure LEDLowMidAutoGainClick(Sender: TObject);
+    procedure LEDSoftClipClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     function EvaluateHighCharacteristic(Sender: TObject; X: Double): Double;
     function EvaluateLowMidCharacteristic(Sender: TObject; X: Double): Double;
@@ -221,67 +222,12 @@ type
 implementation
 
 uses
-  PngImage, DAV_Common, DAV_VSTModuleWithPrograms,
-  LightweightMultibandCompressorDM;
+  DAV_Common, DAV_VSTModuleWithPrograms, LightweightMultibandCompressorDM;
 
 {$R *.DFM}
 
 procedure TFmLightweightMultibandCompressor.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
 begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'MultibandCompressorKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[0].DialBitmap do
-    begin
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-
-   DialLowFreq.DialImageIndex := 0;
-   DialMidFreq.DialImageIndex := 0;
-   DialHighFreq.DialImageIndex := 0;
-
-   DialLowThreshold.DialImageIndex := 0;
-   DialLowKnee.DialImageIndex := 0;
-   DialLowRatio.DialImageIndex := 0;
-   DialLowAttack.DialImageIndex := 0;
-   DialLowRelease.DialImageIndex := 0;
-   DialLowMakeUpGain.DialImageIndex := 0;
-
-   DialLowMidThreshold.DialImageIndex := 0;
-   DialLowMidKnee.DialImageIndex := 0;
-   DialLowMidRatio.DialImageIndex := 0;
-   DialLowMidAttack.DialImageIndex := 0;
-   DialLowMidRelease.DialImageIndex := 0;
-   DialLowMidMakeUpGain.DialImageIndex := 0;
-
-   DialHighMidThreshold.DialImageIndex := 0;
-   DialHighMidKnee.DialImageIndex := 0;
-   DialHighMidRatio.DialImageIndex := 0;
-   DialHighMidAttack.DialImageIndex := 0;
-   DialHighMidRelease.DialImageIndex := 0;
-   DialHighMidMakeUpGain.DialImageIndex := 0;
-
-   DialHighThreshold.DialImageIndex := 0;
-   DialHighKnee.DialImageIndex := 0;
-   DialHighRatio.DialImageIndex := 0;
-   DialHighAttack.DialImageIndex := 0;
-   DialHighRelease.DialImageIndex := 0;
-   DialHighMakeUpGain.DialImageIndex := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  try
-   FreeAndNil(PngBmp);
-  except
-  end;
- end;
  with TGuiGraphXYFunctionSeries(GXYLow[0].Series) do
   begin
    OnEvaluate := EvaluateLowCharacteristic;
@@ -366,7 +312,7 @@ procedure TFmLightweightMultibandCompressor.DialLowFreqChange(Sender: TObject);
 begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
-   Parameter[0] := DialLowFreq.Position;
+   Parameter[0] := DialLowFreq.Value;
   end;
 end;
 
@@ -376,7 +322,7 @@ procedure TFmLightweightMultibandCompressor.DialMidFreqChange(Sender: TObject);
 begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
-   Parameter[1] := DialMidFreq.Position;
+   Parameter[1] := DialMidFreq.Value;
   end;
 end;
 
@@ -386,7 +332,7 @@ procedure TFmLightweightMultibandCompressor.DialHighFreqChange(Sender: TObject);
 begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
-   Parameter[2] := DialHighFreq.Position;
+   Parameter[2] := DialHighFreq.Value;
   end;
 end;
 
@@ -420,49 +366,49 @@ end;
 
 procedure TFmLightweightMultibandCompressor.DialAttackChange(Sender: TObject);
 begin
- with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiStitchedDial(Sender) do
   begin
-   Parameter[4 + Tag * 7] := Position;
+   Parameter[4 + Tag * 7] := Value;
   end;
 end;
 
 procedure TFmLightweightMultibandCompressor.DialReleaseChange(Sender: TObject);
 begin
- with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiStitchedDial(Sender) do
   begin
-   Parameter[5 + Tag * 7] := Position;
+   Parameter[5 + Tag * 7] := Value;
   end;
 end;
 
 procedure TFmLightweightMultibandCompressor.DialThresholdChange(Sender: TObject);
 begin
- with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiStitchedDial(Sender) do
   begin
-   Parameter[6 + Tag * 7] := Position;
+   Parameter[6 + Tag * 7] := Value;
   end;
 end;
 
 procedure TFmLightweightMultibandCompressor.DialRatioChange(Sender: TObject);
 begin
- with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiStitchedDial(Sender) do
   begin
-   Parameter[7 + Tag * 7] := Position;
+   Parameter[7 + Tag * 7] := Value;
   end;
 end;
 
 procedure TFmLightweightMultibandCompressor.DialKneeChange(Sender: TObject);
 begin
- with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiStitchedDial(Sender) do
   begin
-   Parameter[8 + Tag * 7] := Position;
+   Parameter[8 + Tag * 7] := Value;
   end;
 end;
 
 procedure TFmLightweightMultibandCompressor.DialMakeUpGainChange(Sender: TObject);
 begin
- with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiStitchedDial(Sender) do
   begin
-   Parameter[9 + Tag * 7] := Position;
+   Parameter[9 + Tag * 7] := Value;
   end;
 end;
 
@@ -513,9 +459,9 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Freq := Parameter[0];
-   if Freq <> DialLowFreq.Position
-    then DialLowFreq.Position := Freq;
-   DialMidFreq.Min := DialLowFreq.Position;
+   if Freq <> DialLowFreq.Value
+    then DialLowFreq.Value := Freq;
+   DialMidFreq.Min := DialLowFreq.Value;
    LbLowFreqValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -527,10 +473,10 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Freq := Parameter[1];
-   if Freq <> DialMidFreq.Position
-    then DialMidFreq.Position := Freq;
-   DialHighFreq.Min := DialMidFreq.Position;
-   DialLowFreq.Max := DialMidFreq.Position;
+   if Freq <> DialMidFreq.Value
+    then DialMidFreq.Value := Freq;
+   DialHighFreq.Min := DialMidFreq.Value;
+   DialLowFreq.Max := DialMidFreq.Value;
    LbMidFreqValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
   end;
 end;
@@ -542,9 +488,9 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Freq := Parameter[2];
-   if Freq <> DialHighFreq.Position
-    then DialHighFreq.Position := Freq;
-   DialMidFreq.Max := DialHighFreq.Position;
+   if Freq <> DialHighFreq.Value
+    then DialHighFreq.Value := Freq;
+   DialMidFreq.Max := DialHighFreq.Value;
    LbHighFreqValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
   end;
 end;
@@ -556,8 +502,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[4];
-   if Attack <> DialLowAttack.Position
-    then DialLowAttack.Position := Attack;
+   if Attack <> DialLowAttack.Value
+    then DialLowAttack.Value := Attack;
    LbLowAttackValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
   end;
 end;
@@ -569,8 +515,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[5];
-   if Release <> DialLowRelease.Position
-    then DialLowRelease.Position := Release;
+   if Release <> DialLowRelease.Value
+    then DialLowRelease.Value := Release;
    LbLowReleaseValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
   end;
 end;
@@ -582,8 +528,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[6];
-   if Threshold <> DialLowThreshold.Position
-    then DialLowThreshold.Position := Threshold;
+   if Threshold <> DialLowThreshold.Value
+    then DialLowThreshold.Value := Threshold;
    LbLowThresholdValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
@@ -596,8 +542,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[7];
-   if Ratio <> DialLowRatio.Position
-    then DialLowRatio.Position := Ratio;
+   if Ratio <> DialLowRatio.Value
+    then DialLowRatio.Value := Ratio;
    LbLowRatioValue.Caption := '1 : ' + ParameterDisplay[7];
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
@@ -610,8 +556,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[8];
-   if Knee <> DialLowKnee.Position
-    then DialLowKnee.Position := Knee;
+   if Knee <> DialLowKnee.Value
+    then DialLowKnee.Value := Knee;
    LbLowKneeValue.Caption := ParameterDisplay[8] + ' ' + ParameterLabel[8];
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
@@ -624,8 +570,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    MakeUp := LightweightMultibandCompressor[0].MakeUpGain_dB;
-   if MakeUp <> DialLowMakeUpGain.Position
-    then DialLowMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialLowMakeUpGain.Value
+    then DialLowMakeUpGain.Value := MakeUp;
    LbLowMakeUpGainValue.Caption := ParameterDisplay[9] + ' ' + ParameterLabel[9];
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
@@ -652,8 +598,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[11];
-   if Attack <> DialLowMidAttack.Position
-    then DialLowMidAttack.Position := Attack;
+   if Attack <> DialLowMidAttack.Value
+    then DialLowMidAttack.Value := Attack;
    LbLowMidAttackValue.Caption := ParameterDisplay[11] + ' ' + ParameterLabel[11];
   end;
 end;
@@ -665,8 +611,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[12];
-   if Release <> DialLowMidRelease.Position
-    then DialLowMidRelease.Position := Release;
+   if Release <> DialLowMidRelease.Value
+    then DialLowMidRelease.Value := Release;
    LbLowMidReleaseValue.Caption := ParameterDisplay[12] + ' ' + ParameterLabel[12];
   end;
 end;
@@ -678,8 +624,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[13];
-   if Threshold <> DialLowMidThreshold.Position
-    then DialLowMidThreshold.Position := Threshold;
+   if Threshold <> DialLowMidThreshold.Value
+    then DialLowMidThreshold.Value := Threshold;
    LbLowMidThresholdValue.Caption := ParameterDisplay[13] + ' ' + ParameterLabel[13];
    GraphNeedUpdate := GraphNeedUpdate + [gLowMid];
   end;
@@ -692,8 +638,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[14];
-   if Ratio <> DialLowMidRatio.Position
-    then DialLowMidRatio.Position := Ratio;
+   if Ratio <> DialLowMidRatio.Value
+    then DialLowMidRatio.Value := Ratio;
    LbLowMidRatioValue.Caption := '1 : ' + ParameterDisplay[14];
    GraphNeedUpdate := GraphNeedUpdate + [gLowMid];
   end;
@@ -706,8 +652,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[15];
-   if Knee <> DialLowMidKnee.Position
-    then DialLowMidKnee.Position := Knee;
+   if Knee <> DialLowMidKnee.Value
+    then DialLowMidKnee.Value := Knee;
    LbLowMidKneeValue.Caption := ParameterDisplay[15] + ' ' + ParameterLabel[15];
    GraphNeedUpdate := GraphNeedUpdate + [gLowMid];
   end;
@@ -720,8 +666,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    MakeUp := LightweightMultibandCompressor[1].MakeUpGain_dB;
-   if MakeUp <> DialLowMidMakeUpGain.Position
-    then DialLowMidMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialLowMidMakeUpGain.Value
+    then DialLowMidMakeUpGain.Value := MakeUp;
    LbLowMidMakeUpGainValue.Caption := ParameterDisplay[16] + ' ' + ParameterLabel[16];
    GraphNeedUpdate := GraphNeedUpdate + [gLowMid];
   end;
@@ -748,8 +694,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[18];
-   if Attack <> DialHighMidAttack.Position
-    then DialHighMidAttack.Position := Attack;
+   if Attack <> DialHighMidAttack.Value
+    then DialHighMidAttack.Value := Attack;
    LbHighMidAttackValue.Caption := ParameterDisplay[18] + ' ' + ParameterLabel[18];
   end;
 end;
@@ -761,8 +707,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[19];
-   if Release <> DialHighMidRelease.Position
-    then DialHighMidRelease.Position := Release;
+   if Release <> DialHighMidRelease.Value
+    then DialHighMidRelease.Value := Release;
    LbHighMidReleaseValue.Caption := ParameterDisplay[19] + ' ' + ParameterLabel[19];
   end;
 end;
@@ -774,8 +720,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[20];
-   if Threshold <> DialHighMidThreshold.Position
-    then DialHighMidThreshold.Position := Threshold;
+   if Threshold <> DialHighMidThreshold.Value
+    then DialHighMidThreshold.Value := Threshold;
    LbHighMidThresholdValue.Caption := ParameterDisplay[20] + ' ' + ParameterLabel[20];
    GraphNeedUpdate := GraphNeedUpdate + [gHighMid];
   end;
@@ -788,8 +734,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[21];
-   if Ratio <> DialHighMidRatio.Position
-    then DialHighMidRatio.Position := Ratio;
+   if Ratio <> DialHighMidRatio.Value
+    then DialHighMidRatio.Value := Ratio;
    LbHighMidRatioValue.Caption := '1 : ' + ParameterDisplay[21];
    GraphNeedUpdate := GraphNeedUpdate + [gHighMid];
   end;
@@ -802,8 +748,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[22];
-   if Knee <> DialHighMidKnee.Position
-    then DialHighMidKnee.Position := Knee;
+   if Knee <> DialHighMidKnee.Value
+    then DialHighMidKnee.Value := Knee;
    LbHighMidKneeValue.Caption := ParameterDisplay[22] + ' ' + ParameterLabel[22];
    GraphNeedUpdate := GraphNeedUpdate + [gHighMid];
   end;
@@ -816,8 +762,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    MakeUp := LightweightMultibandCompressor[2].MakeUpGain_dB;
-   if MakeUp <> DialHighMidMakeUpGain.Position
-    then DialHighMidMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialHighMidMakeUpGain.Value
+    then DialHighMidMakeUpGain.Value := MakeUp;
    LbHighMidMakeUpGainValue.Caption := ParameterDisplay[23] + ' ' + ParameterLabel[23];
    GraphNeedUpdate := GraphNeedUpdate + [gHighMid];
   end;
@@ -844,8 +790,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[25];
-   if Attack <> DialHighAttack.Position
-    then DialHighAttack.Position := Attack;
+   if Attack <> DialHighAttack.Value
+    then DialHighAttack.Value := Attack;
    LbHighAttackValue.Caption := ParameterDisplay[25] + ' ' + ParameterLabel[25];
   end;
 end;
@@ -857,8 +803,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[26];
-   if Release <> DialHighRelease.Position
-    then DialHighRelease.Position := Release;
+   if Release <> DialHighRelease.Value
+    then DialHighRelease.Value := Release;
    LbHighReleaseValue.Caption := ParameterDisplay[26] + ' ' + ParameterLabel[26];
   end;
 end;
@@ -870,8 +816,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[27];
-   if Threshold <> DialHighThreshold.Position
-    then DialHighThreshold.Position := Threshold;
+   if Threshold <> DialHighThreshold.Value
+    then DialHighThreshold.Value := Threshold;
    LbHighThresholdValue.Caption := ParameterDisplay[27] + ' ' + ParameterLabel[27];
    GraphNeedUpdate := GraphNeedUpdate + [gHigh];
   end;
@@ -884,8 +830,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[28];
-   if Ratio <> DialHighRatio.Position
-    then DialHighRatio.Position := Ratio;
+   if Ratio <> DialHighRatio.Value
+    then DialHighRatio.Value := Ratio;
    LbHighRatioValue.Caption := '1 : ' + ParameterDisplay[28];
    GraphNeedUpdate := GraphNeedUpdate + [gHigh];
   end;
@@ -898,8 +844,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[29];
-   if Knee <> DialHighKnee.Position
-    then DialHighKnee.Position := Knee;
+   if Knee <> DialHighKnee.Value
+    then DialHighKnee.Value := Knee;
    LbHighKneeValue.Caption := ParameterDisplay[29] + ' ' + ParameterLabel[29];
    GraphNeedUpdate := GraphNeedUpdate + [gHigh];
   end;
@@ -912,8 +858,8 @@ begin
  with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    MakeUp := LightweightMultibandCompressor[3].MakeUpGain_dB;
-   if MakeUp <> DialHighMakeUpGain.Position
-    then DialHighMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialHighMakeUpGain.Value
+    then DialHighMakeUpGain.Value := MakeUp;
    LbHighMakeUpGainValue.Caption := ParameterDisplay[30] + ' ' + ParameterLabel[30];
    GraphNeedUpdate := GraphNeedUpdate + [gHigh];
   end;
