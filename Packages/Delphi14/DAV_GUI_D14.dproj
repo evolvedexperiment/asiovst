@@ -63,8 +63,10 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiBaseControl.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiBlend.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiButton.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiByteMap.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiCommon.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiCorrelationMeter.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiCustomMap.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDesign.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDial.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDialDesign.pas"/>
@@ -74,6 +76,8 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiEQSlide.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiFileFormatGraphics.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiFileFormats.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiFilters.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiFont.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiFixedPoint.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiGraphXY.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiGraphXYDesign.pas"/>
@@ -85,6 +89,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeys.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeyZones.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiModular.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiPaintBox.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPanel.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPixelMap.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPixelMapDesign.pas">
@@ -101,11 +106,13 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngResourceStrings.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngTypes.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiSelectBox.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiShadow.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiSlider.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStaticWaveform.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedControls.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedButton.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedDial.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedDisplay.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedPngList.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedSwitch.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVector.pas"/>
@@ -113,13 +120,6 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelCircle.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelLine.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiFilters.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiFont.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiByteMap.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiCustomMap.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiShadow.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiPaintBox.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedDisplay.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -1,4 +1,5 @@
 object LightweightLimiterDataModule: TLightweightLimiterDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Limiter'

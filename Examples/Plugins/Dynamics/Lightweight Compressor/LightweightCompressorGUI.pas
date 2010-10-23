@@ -97,7 +97,7 @@ type
 implementation
 
 uses
-  LightweightCompressorDM, PngImage, DAV_VSTModuleWithPrograms;
+  DAV_VSTModuleWithPrograms, LightweightCompressorDM;
 
 {$R *.DFM}
 

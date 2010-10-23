@@ -53,16 +53,16 @@ type
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterStereoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FLightweightLimiter : array [0..1] of TCustomKneeLimiter;
@@ -142,7 +142,7 @@ begin
 end;
 
 procedure TLightweightLimiterDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -154,7 +154,7 @@ begin
 end;
 
 procedure TLightweightLimiterDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -167,7 +167,7 @@ begin
 end;
 
 procedure TLightweightLimiterDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
@@ -186,27 +186,27 @@ begin
 end;
 
 procedure TLightweightLimiterDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightLimiterDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightLimiterDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightLimiterDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;

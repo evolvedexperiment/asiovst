@@ -88,7 +88,7 @@ type
     LbMix: TGuiLabel;
     LbMixValue: TGuiLabel;
     SliderMix: TGuiSlider;
-    GuiLabel1: TGuiLabel;
+    LbClear: TGuiLabel;
     LEDSideChain: TGuiLED;
     GuiPanel1: TGuiPanel;
     LbVstPluginValue: TGuiLabel;
@@ -138,7 +138,7 @@ type
 implementation
 
 uses
-  SidechainCompressorDM, PngImage, DAV_VSTModuleWithPrograms;
+  SidechainCompressorDM, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 

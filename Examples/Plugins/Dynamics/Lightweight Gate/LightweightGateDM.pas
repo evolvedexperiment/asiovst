@@ -51,11 +51,11 @@ type
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FLightweightGate : array [0..1] of TCustomKneeCompressor;
@@ -97,7 +97,7 @@ begin
 
  Parameter[0] := 1.5;
  Parameter[1] := 7.5;
- Parameter[2] := -10;
+ Parameter[2] := -20;
  Parameter[3] := 0.2;
  Parameter[4] := 6;
 
@@ -212,7 +212,7 @@ begin
 end;
 
 procedure TLightweightGateDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -224,7 +224,7 @@ begin
 end;
 
 procedure TLightweightGateDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -237,19 +237,19 @@ begin
 end;
 
 procedure TLightweightGateDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightGateDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightGateDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;

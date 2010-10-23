@@ -36,27 +36,29 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLevelMeter;
+  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLevelMeter,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmMBC = class(TForm)
     CBLimiter: TCheckBox;
-    DlHighAttack: TGuiDial;
-    DlHighGain: TGuiDial;
-    DlHighRatio: TGuiDial;
-    DlHighRelease: TGuiDial;
-    DlHighThreshold: TGuiDial;
-    DlLowAttack: TGuiDial;
-    DlLowGain: TGuiDial;
-    DlLowRatio: TGuiDial;
-    DlLowRelease: TGuiDial;
-    DlLowThreshold: TGuiDial;
-    DlMidAttack: TGuiDial;
-    DlMidGain: TGuiDial;
-    DlMidRatio: TGuiDial;
-    DlMidRelease: TGuiDial;
-    DlMidThreshold: TGuiDial;
+    DialMasterGain: TGuiStitchedDial;
+    DlHighAttack: TGuiStitchedDial;
+    DlHighGain: TGuiStitchedDial;
+    DlHighRatio: TGuiStitchedDial;
+    DlHighRelease: TGuiStitchedDial;
+    DlHighThreshold: TGuiStitchedDial;
+    DlLowAttack: TGuiStitchedDial;
+    DlLowGain: TGuiStitchedDial;
+    DlLowRatio: TGuiStitchedDial;
+    DlLowRelease: TGuiStitchedDial;
+    DlLowThreshold: TGuiStitchedDial;
+    DlMidAttack: TGuiStitchedDial;
+    DlMidGain: TGuiStitchedDial;
+    DlMidRatio: TGuiStitchedDial;
+    DlMidRelease: TGuiStitchedDial;
+    DlMidThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     GuiTimer: TTimer;
     LbAbout1: TLabel;
     LbAbout2: TLabel;
@@ -146,8 +148,8 @@ type
     LMInRight: TGuiColorLevelMeter;
     LMLowLeft: TGuiColorLevelMeter;
     LMLowRed: TGuiColorLevelMeter;
-    LMMidLeft: TGuiColorLevelMeter;
     LMLowRight: TGuiColorLevelMeter;
+    LMMidLeft: TGuiColorLevelMeter;
     LMMidRed: TGuiColorLevelMeter;
     LMMidRight: TGuiColorLevelMeter;
     LMOutLeft: TGuiColorLevelMeter;
@@ -156,8 +158,6 @@ type
     RbLPFIR: TRadioButton;
     SbHighFreq: TScrollBar;
     SbLowFreq: TScrollBar;
-    GuiDialImageList: TGuiDialImageList;
-    DialMasterGain: TGuiDial;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -200,44 +200,33 @@ uses
   Math, DAV_Common, MBCDM;
 
 procedure TFmMBC.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
 begin
  FBackground := TBitmap.Create;
- RS := TResourceStream.Create(hInstance, 'SlimSlowKnob', 'BMP');
- try
-  with GuiDialImageList.DialImages.Add do
-   begin
-    GlyphCount := 65;
-    DialBitmap.LoadFromStream(RS);
-   end;
-  DialMasterGain.DialImageIndex  := 0;
-
-  DlLowThreshold.DialImageIndex  := 0;
-  DlLowRatio.DialImageIndex      := 0;
-  DlLowAttack.DialImageIndex     := 0;
-  DlLowRelease.DialImageIndex    := 0;
-  DlLowGain.DialImageIndex       := 0;
-
-  DlMidThreshold.DialImageIndex  := 0;
-  DlMidRatio.DialImageIndex      := 0;
-  DlMidAttack.DialImageIndex     := 0;
-  DlMidRelease.DialImageIndex    := 0;
-  DlMidGain.DialImageIndex       := 0;
-
-  DlHighThreshold.DialImageIndex := 0;
-  DlHighRatio.DialImageIndex     := 0;
-  DlHighAttack.DialImageIndex    := 0;
-  DlHighRelease.DialImageIndex   := 0;
-  DlHighGain.DialImageIndex      := 0;
- finally
-  RS.Free;
- end;
 end;
 
 procedure TFmMBC.FormDestroy(Sender: TObject);
 begin
  FBackground.Free;
+end;
+
+procedure TFmMBC.GuiTimerTimer(Sender: TObject);
+begin
+ with TMBCDataModule(Owner) do
+  begin
+   LMInLeft.PeakLevel    := InputPeakLeft;
+   LMInRight.PeakLevel   := InputPeakRight;
+   LMOutLeft.PeakLevel   := OutputPeakLeft;
+   LMOutRight.PeakLevel  := OutputPeakRight;
+   LMLowLeft.PeakLevel   := LowInputPeakLeft;
+   LMLowRight.PeakLevel  := LowInputPeakRight;
+   LMLowRed.PeakLevel    := LowGainReduction;
+   LMMidLeft.PeakLevel   := MidInputPeakLeft;
+   LMMidRight.PeakLevel  := MidInputPeakRight;
+   LMMidRed.PeakLevel    := MidGainReduction;
+   LMHighLeft.PeakLevel  := HighInputPeakLeft;
+   LMHighRight.PeakLevel := HighInputPeakRight;
+   LMHighRed.PeakLevel   := HighGainReduction;
+  end;
 end;
 
 procedure TFmMBC.FormPaint(Sender: TObject);
@@ -282,26 +271,6 @@ begin
  UpdateHighRelease;
 end;
 
-procedure TFmMBC.GuiTimerTimer(Sender: TObject);
-begin
- with TMBCDataModule(Owner) do
-  begin
-   LMInLeft.PeakLevel    := InputPeakLeft;
-   LMInRight.PeakLevel   := InputPeakRight;
-   LMOutLeft.PeakLevel   := OutputPeakLeft;
-   LMOutRight.PeakLevel  := OutputPeakRight;
-   LMLowLeft.PeakLevel   := LowInputPeakLeft;
-   LMLowRight.PeakLevel  := LowInputPeakRight;
-   LMLowRed.PeakLevel    := LowGainReduction;
-   LMMidLeft.PeakLevel   := MidInputPeakLeft;
-   LMMidRight.PeakLevel  := MidInputPeakRight;
-   LMMidRed.PeakLevel    := MidGainReduction;
-   LMHighLeft.PeakLevel  := HighInputPeakLeft;
-   LMHighRight.PeakLevel := HighInputPeakRight;
-   LMHighRed.PeakLevel   := HighGainReduction;
-  end;
-end;
-
 procedure TFmMBC.MeterInPaint(Sender: TObject);
 begin
  with TPaintBox(Sender).Canvas do
@@ -322,27 +291,27 @@ end;
 
 procedure TFmMBC.DlLowGainChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[0] := DlLowGain.Position
+ (Owner as TMBCDataModule).Parameter[0] := DlLowGain.Value;
 end;
 
 procedure TFmMBC.DlLowThresholdChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[3] := DlLowThreshold.Position;
+ (Owner as TMBCDataModule).Parameter[3] := DlLowThreshold.Value;
 end;
 
 procedure TFmMBC.DlLowRatioChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[4] := Power(10, DlLowRatio.Position);
+ (Owner as TMBCDataModule).Parameter[4] := Power(10, DlLowRatio.Value);
 end;
 
 procedure TFmMBC.DlLowAttackChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[5] := Power(10, DlLowAttack.Position);
+ (Owner as TMBCDataModule).Parameter[5] := Power(10, DlLowAttack.Value);
 end;
 
 procedure TFmMBC.DlLowReleaseChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[6] := Power(10, DlLowRelease.Position);
+ (Owner as TMBCDataModule).Parameter[6] := Power(10, DlLowRelease.Value);
 end;
 
 procedure TFmMBC.SbLowFreqChange(Sender: TObject);
@@ -352,57 +321,57 @@ end;
 
 procedure TFmMBC.DlMidGainChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[7] := DlMidGain.Position;
+ (Owner as TMBCDataModule).Parameter[7] := DlMidGain.Value;
 end;
 
 procedure TFmMBC.DlMidThresholdChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[8] := DlMidThreshold.Position;
+ (Owner as TMBCDataModule).Parameter[8] := DlMidThreshold.Value;
 end;
 
 procedure TFmMBC.DlMidRatioChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[9] := Power(10, DlMidRatio.Position);
+ (Owner as TMBCDataModule).Parameter[9] := Power(10, DlMidRatio.Value);
 end;
 
 procedure TFmMBC.DlMidAttackChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[10] := Power(10, DlMidAttack.Position);
+ (Owner as TMBCDataModule).Parameter[10] := Power(10, DlMidAttack.Value);
 end;
 
 procedure TFmMBC.DlMidReleaseChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[11] := Power(10, DlMidRelease.Position);
+ (Owner as TMBCDataModule).Parameter[11] := Power(10, DlMidRelease.Value);
 end;
 
 procedure TFmMBC.DlHighGainChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[14] := DlHighGain.Position
+ (Owner as TMBCDataModule).Parameter[14] := DlHighGain.Value
 end;
 
 procedure TFmMBC.DlHighThresholdChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[15] := DlHighThreshold.Position;
+ (Owner as TMBCDataModule).Parameter[15] := DlHighThreshold.Value;
 end;
 
 procedure TFmMBC.DlHighRatioChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[16] := Power(10, DlHighRatio.Position);
+ (Owner as TMBCDataModule).Parameter[16] := Power(10, DlHighRatio.Value);
 end;
 
 procedure TFmMBC.DialMasterGainChange(Sender: TObject);
 begin
- LbMasterGaindB.Caption := FloatToStrF(DialMasterGain.Position, ffGeneral, 5, 2) + 'dB';
+ LbMasterGaindB.Caption := FloatToStrF(DialMasterGain.Value, ffGeneral, 5, 2) + 'dB';
 end;
 
 procedure TFmMBC.DlHighAttackChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[17] := Power(10, DlHighAttack.Position);
+ (Owner as TMBCDataModule).Parameter[17] := Power(10, DlHighAttack.Value);
 end;
 
 procedure TFmMBC.DlHighReleaseChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[18] := Power(10, DlHighRelease.Position);
+ (Owner as TMBCDataModule).Parameter[18] := Power(10, DlHighRelease.Value);
 end;
 
 procedure TFmMBC.SbHighFreqChange(Sender: TObject);
@@ -420,8 +389,8 @@ begin
  with TMBCDataModule(Owner) do
   begin
    Release := Log10(Parameter[6]);
-   if DlLowRelease.Position <> Release
-    then DlLowRelease.Position := Release;
+   if DlLowRelease.Value <> Release
+    then DlLowRelease.Value := Release;
    LbLowReleaseValue.Caption := FloatToStrF(Parameter[6], ffGeneral, 3, 2) + ' ms';
   end;
 end;
@@ -433,8 +402,8 @@ begin
  with TMBCDataModule(Owner) do
   begin
    Release := Log10(Parameter[11]);
-   if DlMidRelease.Position <> Release
-    then DlMidRelease.Position := Release;
+   if DlMidRelease.Value <> Release
+    then DlMidRelease.Value := Release;
    LbMidReleaseValue.Caption := FloatToStrF(Parameter[11], ffGeneral, 3, 2) + ' ms';
   end;
 end;
@@ -446,8 +415,8 @@ begin
  with TMBCDataModule(Owner) do
   begin
    Release := Log10(Parameter[18]);
-   if DlHighRelease.Position <> Release
-    then DlHighRelease.Position := Release;
+   if DlHighRelease.Value <> Release
+    then DlHighRelease.Value := Release;
    LbHighReleaseValue.Caption := FloatToStrF(Parameter[18], ffGeneral, 3, 2) + ' ms';
   end;
 end;

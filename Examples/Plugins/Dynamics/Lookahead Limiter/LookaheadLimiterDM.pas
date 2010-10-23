@@ -51,25 +51,25 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterInputChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterInputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterInputDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterProcessingModeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterProcessingModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterLookaheadDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterProcessingModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterLookaheadDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLookaheadChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure StringToModeParameter(Sender: TObject; const Index: Integer; const ParameterString: string;
+    procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure StringToModeParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
       var Value: Single);
     procedure StringToReleaseParameter(
-      Sender: TObject; const Index: Integer; const ParameterString: string;
+      Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
       var Value: Single);
   private
     FCriticalSection : TCriticalSection;
@@ -161,7 +161,7 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -173,7 +173,7 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -186,31 +186,31 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterOutputDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterInputDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
@@ -230,7 +230,7 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterProcessingModeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'Stereo';
@@ -240,7 +240,7 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterLookaheadDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(2 * Round(0.5 * Parameter[Index]));
 end;
@@ -268,10 +268,10 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.StringToModeParameter(
-  Sender: TObject; const Index: Integer; const ParameterString: string;
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
   var Value: Single);
 var
-  Text : string;
+  Text : AnsiString;
 begin
  Text := Trim(ParameterString);
  if Text = 'Stereo' then Value := 0 else
@@ -280,10 +280,10 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.StringToReleaseParameter(
-  Sender: TObject; const Index: Integer; const ParameterString: string;
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
   var Value: Single);
 var
-  ProcStr : string;
+  ProcStr : AnsiString;
   Indxes  : array [0..1] of Integer;
   Mult    : Single;
 begin
@@ -325,7 +325,7 @@ begin
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterAttackDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case TAttackShape(Round(Limit(Parameter[Index], 0, 1))) of
      asLinear : PreDefined := 'Linear';
