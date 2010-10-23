@@ -253,6 +253,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Top = 124
     Width = 16
     Height = 16
+    BorderStrength_Percent = 100.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
     BorderWidth = 2.000000000000000000
