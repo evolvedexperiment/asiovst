@@ -51,25 +51,25 @@ type
     procedure VSTModuleProcessLightMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessLightMS64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParamAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamBalanceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamCompressionMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDividerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamReleaseLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamReleaseLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamSplitOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamSplitOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamFreqDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamFreqLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamFreqDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamFreqLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamModeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FLowpass       : Array [0..1, 0..1] of TButterworthLowpassFilter;
     FHighpass      : Array [0..1, 0..1] of TButterworthHighpassFilter;
@@ -226,7 +226,7 @@ begin
 end;
 
 procedure TBassExtenderModule.ParamReleaseLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[index] < 1000
   then PreDefined := 'ms'
@@ -234,7 +234,7 @@ begin
 end;
 
 procedure TBassExtenderModule.ParamAttackDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Attack : Single;
 begin
@@ -245,7 +245,7 @@ begin
 end;
 
 procedure TBassExtenderModule.ParamReleaseDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Release : Single;
 begin
@@ -256,7 +256,7 @@ begin
 end;
 
 procedure TBassExtenderModule.ParamRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] = 1000
   then PreDefined := '1 : oo'
@@ -333,13 +333,13 @@ begin
 end;
 
 procedure TBassExtenderModule.ParamSplitOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(round(2 * Parameter[Index]));
 end;
 
 procedure TBassExtenderModule.ParamFreqDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Freq : Single;
 begin
@@ -350,7 +350,7 @@ begin
 end;
 
 procedure TBassExtenderModule.ParamFreqLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then Predefined := 'Hz'
@@ -385,7 +385,7 @@ begin
 end;
 
 procedure TBassExtenderModule.ParamModeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0: PreDefined := 'Stereo';
@@ -406,7 +406,7 @@ begin
   then TFmBassExtender(EditorForm).UpdateAttack;
 end;
 
-procedure TBassExtenderModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TBassExtenderModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[index] < 1000
   then PreDefined := 'µs'

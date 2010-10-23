@@ -2,7 +2,7 @@ object FmSortedDisorder: TFmSortedDisorder
   Left = 218
   Top = 77
   BorderStyle = bsNone
-  Caption = 'FmSortedDisorder'
+  Caption = 'Sorted Disorder'
   ClientHeight = 192
   ClientWidth = 304
   Color = clBtnFace
