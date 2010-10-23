@@ -36,15 +36,17 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap;
+  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
+  DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmRingModulator = class(TForm)
     GpFrequency: TGuiGroup;
-    DialFrequency: TGuiDial;
     PnDisplay: TGuiPanel;
     LbDisplay: TGuiLabel;
+    GSPL: TGuiStitchedPNGList;
+    DialFrequency: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -67,54 +69,8 @@ uses
   DAV_VSTModuleWithPrograms, DAV_VSTParameters, RingModulatorDM;
 
 procedure TFmRingModulator.FormCreate(Sender: TObject);
-var
-  {$IFDEF FPC}
-  PngBmp : TPNGImage;
-  {$ELSE}
-  RS     : TResourceStream;
-  {$IFDEF DELPHI2010_UP}
-  PngBmp : TPngImage;
-  {$ELSE}
-  PngBmp : TPngObject;
-  {$ENDIF}
-  {$ENDIF}
 begin
- // Create BackgRound Image
  FBackground := TGuiPixelMapMemory.Create;
-
- {$IFDEF FPC}
- PngBmp := TPNGImage.Create;
- try
-  PngBmp.LoadFromLazarusResource('RingModulator');
-
-  // yet todo!
-
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ELSE}
- {$IFDEF DELPHI2010_UP}
- PngBmp := TPngImage.Create;
- {$ELSE}
- PngBmp := TPngObject.Create;
- {$ENDIF}
- try
-  RS := TResourceStream.Create(hInstance, 'RingModulator', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   {$IFDEF DELPHI2010_UP}
-   DialFrequency.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-   PngBmp.DrawUsingPixelInformation(DialFrequency.DialBitmap.Canvas, Point(0, 0));
-   {$ELSE}
-   DialFrequency.DialBitmap.Assign(PngBmp);
-   {$ENDIF}
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
- {$ENDIF}
 end;
 
 procedure TFmRingModulator.FormShow(Sender: TObject);
@@ -127,7 +83,7 @@ end;
 procedure TFmRingModulator.FormResize(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   h, hr  : Single;
   ScnLn  : PPixel32Array;
 begin
@@ -164,8 +120,8 @@ procedure TFmRingModulator.DialFrequencyChange(Sender: TObject);
 begin
  with TRingModulatorDataModule(Owner) do
   begin
-   if Parameter[0] <> DialFrequency.Position
-    then Parameter[0] := DialFrequency.Position;
+   if Parameter[0] <> DialFrequency.Value
+    then Parameter[0] := DialFrequency.Value;
   end;
 end;
 
@@ -173,8 +129,8 @@ procedure TFmRingModulator.UpdateFrequency;
 begin
  with TRingModulatorDataModule(Owner) do
   begin
-   if DialFrequency.Position <> Parameter[0]
-    then DialFrequency.Position := Parameter[0];
+   if DialFrequency.Value <> Parameter[0]
+    then DialFrequency.Value := Parameter[0];
    LbDisplay.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
