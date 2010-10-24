@@ -35,32 +35,36 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, ExtCtrls, StdCtrls, DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLabel;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
+  DAV_Types, DAV_VSTModule, DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiLabel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedSwitch;
 
 type
   TFmVT = class(TForm)
-    DialChannel: TGuiDial;
-    DialHiBypassLeft: TGuiDial;
-    DialHiBypassRight: TGuiDial;
-    DialHiGainLeft: TGuiDial;
-    DialHiGainRight: TGuiDial;
-    DialLowBypassLeft: TGuiDial;
-    DialLowBypassRight: TGuiDial;
-    DialLowGainLeft: TGuiDial;
-    DialLowGainRight: TGuiDial;
-    DialOutputGain: TGuiDial;
-    DialSelector: TGuiDial;
+    DialHiGainLeft: TGuiStitchedDial;
+    DialHiGainRight: TGuiStitchedDial;
+    DialLowGainLeft: TGuiStitchedDial;
+    DialLowGainRight: TGuiStitchedDial;
+    DialOutputGain: TGuiStitchedDial;
+    DialSelector: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     GuiPanel: TGuiPanel;
     LbBassFlatLeft: TGuiLabel;
     LbBassFlatRight: TGuiLabel;
     LbBassLeft: TGuiLabel;
+    LbBassLeftMax: TGuiLabel;
     LbBassRight: TGuiLabel;
+    LbBassRightMax: TGuiLabel;
     LbChannel: TGuiLabel;
     LbDrive: TGuiLabel;
     LbGain: TGuiLabel;
     LbGainValue: TGuiLabel;
+    LbHiGainLeftLower: TGuiLabel;
+    LbHiGainLeftUpper: TGuiLabel;
+    LbHiGainRightLower: TGuiLabel;
+    LbLowGainLeftLower: TGuiLabel;
+    LbLowGainRightLower: TGuiLabel;
     LbMono: TGuiLabel;
     LbRoasty1: TGuiLabel;
     LbRoasty2: TGuiLabel;
@@ -73,31 +77,28 @@ type
     LbTrebleFlatRight: TGuiLabel;
     LbTrebleLeft: TGuiLabel;
     LbTrebleRight: TGuiLabel;
-    LbLowGainLeftLower: TGuiLabel;
-    LbHiGainLeftLower: TGuiLabel;
-    LbLowGainRightLower: TGuiLabel;
-    LbHiGainRightLower: TGuiLabel;
-    LbHiGainLeftUpper: TGuiLabel;
-    GuiLabel1: TGuiLabel;
-    GuiLabel2: TGuiLabel;
-    GuiLabel3: TGuiLabel;
-    procedure FormCreate(Sender: TObject);
+    LbTrebleRightMax: TGuiLabel;
+    SwitchChannel: TGuiStitchedSwitch;
+    SwitchLowBypassLeft: TGuiStitchedSwitch;
+    SwitchHiBypassRight: TGuiStitchedSwitch;
+    SwitchHiBypassLeft: TGuiStitchedSwitch;
+    SwitchLowBypassRight: TGuiStitchedSwitch;
     procedure FormShow(Sender: TObject);
-    procedure DialLowGainLeftChange(Sender: TObject);
+    procedure SwitchChannelChange(Sender: TObject);
+    procedure SwitchHiBypassLeftChange(Sender: TObject);
+    procedure SwitchHiBypassRightChange(Sender: TObject);
+    procedure DialHiGainLeftChange(Sender: TObject);
     procedure DialHiGainRightChange(Sender: TObject);
-    procedure DialLowBypassLeftChange(Sender: TObject);
-    procedure DialHiBypassRightChange(Sender: TObject);
+    procedure SwitchLowBypassRightChange(Sender: TObject);
+    procedure DialLowGainLeftChange(Sender: TObject);
+    procedure DialLowGainRightChange(Sender: TObject);
+    procedure DialOutputGainChange(Sender: TObject);
     procedure DialSelectorChange(Sender: TObject);
-    procedure LbRoasty2Click(Sender: TObject);
     procedure LbRoasty1Click(Sender: TObject);
+    procedure LbRoasty2Click(Sender: TObject);
     procedure LbSteamin1Click(Sender: TObject);
     procedure LbSteamin2Click(Sender: TObject);
-    procedure DialOutputGainChange(Sender: TObject);
-    procedure DialChannelChange(Sender: TObject);
-    procedure DialLowGainRightChange(Sender: TObject);
-    procedure DialHiGainLeftChange(Sender: TObject);
-    procedure DialHiBypassLeftChange(Sender: TObject);
-    procedure DialLowBypassRightChange(Sender: TObject);
+    procedure SwitchLowBypassLeftChange(Sender: TObject);
   public
     procedure UpdateBassGainLeft;
     procedure UpdateTrebleGainLeft;
@@ -115,74 +116,16 @@ type
 implementation
 
 uses
-  Math, PngImage, VTModuleStereo;
+  Math, VTModuleStereo;
 
 {$R *.DFM}
-
-procedure TFmVT.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-
-begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'ValueableKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialLowGainLeft.DialBitmap.Assign(PngBmp);
-   DialLowGainRight.DialBitmap.Assign(PngBmp);
-   DialHiGainLeft.DialBitmap.Assign(PngBmp);
-   DialHiGainRight.DialBitmap.Assign(PngBmp);
-  finally
-   FreeAndNil(RS);
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'ValueableMiniKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialOutputGain.DialBitmap.Assign(PngBmp);
-  finally
-   FreeAndNil(RS);
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'ValueableSelector', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialSelector.DialBitmap.Assign(PngBmp);
-  finally
-   FreeAndNil(RS);
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'ValueableSwitchYellow', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialChannel.DialBitmap.Assign(PngBmp);
-  finally
-   FreeAndNil(RS);
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'ValueableSwitchRed', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialHiBypassLeft.DialBitmap.Assign(PngBmp);
-   DialHiBypassRight.DialBitmap.Assign(PngBmp);
-   DialLowBypassLeft.DialBitmap.Assign(PngBmp);
-   DialLowBypassRight.DialBitmap.Assign(PngBmp);
-  finally
-   FreeAndNil(RS);
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
 
 procedure TFmVT.DialLowGainLeftChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[2] <> DialLowGainLeft.Position
-    then Parameter[2] := DialLowGainLeft.Position;
+   if Parameter[2] <> DialLowGainLeft.Value
+    then Parameter[2] := DialLowGainLeft.Value;
    if ssAlt in KeyboardStateToShiftState
     then Parameter[6] := Parameter[2];
   end;
@@ -192,8 +135,8 @@ procedure TFmVT.DialLowGainRightChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[6] <> DialLowGainRight.Position
-    then Parameter[6] := DialLowGainRight.Position;
+   if Parameter[6] <> DialLowGainRight.Value
+    then Parameter[6] := DialLowGainRight.Value;
    if ssAlt in KeyboardStateToShiftState
     then Parameter[2] := Parameter[6];
   end;
@@ -203,8 +146,8 @@ procedure TFmVT.DialHiGainLeftChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[0] <> DialHiGainLeft.Position
-    then Parameter[0] := DialHiGainLeft.Position;
+   if Parameter[0] <> DialHiGainLeft.Value
+    then Parameter[0] := DialHiGainLeft.Value;
    if ssAlt in KeyboardStateToShiftState
     then Parameter[4] := Parameter[0];
   end;
@@ -214,46 +157,46 @@ procedure TFmVT.DialHiGainRightChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[4] <> DialHiGainRight.Position
-    then Parameter[4] := DialHiGainRight.Position;
+   if Parameter[4] <> DialHiGainRight.Value
+    then Parameter[4] := DialHiGainRight.Value;
    if ssAlt in KeyboardStateToShiftState
     then Parameter[0] := Parameter[4];
   end;
 end;
 
-procedure TFmVT.DialLowBypassLeftChange(Sender: TObject);
+procedure TFmVT.SwitchLowBypassLeftChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[3] <> 1 - DialLowBypassLeft.Position
-    then Parameter[3] := 1 - DialLowBypassLeft.Position;
+   if Parameter[3] <> 1 - SwitchLowBypassLeft.GlyphIndex
+    then Parameter[3] := 1 - SwitchLowBypassLeft.GlyphIndex;
   end;
 end;
 
-procedure TFmVT.DialLowBypassRightChange(Sender: TObject);
+procedure TFmVT.SwitchLowBypassRightChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[7] <> 1 - DialLowBypassRight.Position
-    then Parameter[7] := 1 - DialLowBypassRight.Position;
+   if Parameter[7] <> 1 - SwitchLowBypassRight.GlyphIndex
+    then Parameter[7] := 1 - SwitchLowBypassRight.GlyphIndex;
   end;
 end;
 
-procedure TFmVT.DialHiBypassLeftChange(Sender: TObject);
+procedure TFmVT.SwitchHiBypassLeftChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[1] <> 1 - DialHiBypassLeft.Position
-    then Parameter[1] := 1 - DialHiBypassLeft.Position;
+   if Parameter[1] <> 1 - SwitchHiBypassLeft.GlyphIndex
+    then Parameter[1] := 1 - SwitchHiBypassLeft.GlyphIndex;
   end;
 end;
 
-procedure TFmVT.DialHiBypassRightChange(Sender: TObject);
+procedure TFmVT.SwitchHiBypassRightChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[5] <> 1 - DialHiBypassRight.Position
-    then Parameter[5] := 1 - DialHiBypassRight.Position;
+   if Parameter[5] <> 1 - SwitchHiBypassRight.GlyphIndex
+    then Parameter[5] := 1 - SwitchHiBypassRight.GlyphIndex;
   end;
 end;
 
@@ -261,17 +204,17 @@ procedure TFmVT.DialSelectorChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[8] <> DialSelector.Position
-    then Parameter[8] := DialSelector.Position;
+   if Parameter[8] <> DialSelector.Value
+    then Parameter[8] := DialSelector.Value;
   end;
 end;
 
-procedure TFmVT.DialChannelChange(Sender: TObject);
+procedure TFmVT.SwitchChannelChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[9] <> 3 - DialChannel.Position
-    then Parameter[9] := 3 - DialChannel.Position;
+   if Parameter[9] <> 3 - SwitchChannel.GlyphIndex
+    then Parameter[9] := 3 - SwitchChannel.GlyphIndex;
   end;
 end;
 
@@ -279,8 +222,8 @@ procedure TFmVT.DialOutputGainChange(Sender: TObject);
 begin
  with TVTVSTModule(Owner) do
   begin
-   if Parameter[10] <> DialOutputGain.Position
-    then Parameter[10] := DialOutputGain.Position;
+   if Parameter[10] <> DialOutputGain.Value
+    then Parameter[10] := DialOutputGain.Value;
   end;
 end;
 
@@ -321,25 +264,25 @@ end;
 
 procedure TFmVT.UpdateBassBypassLeft;
 var
-  TempPosition : Single;
+  TempPosition : Integer;
 begin
  with TVTVSTModule(Owner) do
   begin
-   TempPosition := 1 - Parameter[3];
-   if DialLowBypassLeft.Position <> TempPosition
-    then DialLowBypassLeft.Position := TempPosition
+   TempPosition := Round(1 - Parameter[3]);
+   if SwitchLowBypassLeft.GlyphIndex <> TempPosition
+    then SwitchLowBypassLeft.GlyphIndex := TempPosition;
   end;
 end;
 
 procedure TFmVT.UpdateBassBypassRight;
 var
-  TempPosition : Single;
+  TempPosition : Integer;
 begin
  with TVTVSTModule(Owner) do
   begin
-   TempPosition := 1 - Parameter[7];
-   if DialLowBypassRight.Position <> TempPosition
-    then DialLowBypassRight.Position := TempPosition
+   TempPosition := Round(1 - Parameter[7]);
+   if SwitchLowBypassRight.GlyphIndex <> TempPosition
+    then SwitchLowBypassRight.GlyphIndex := TempPosition;
   end;
 end;
 
@@ -350,8 +293,8 @@ begin
  with TVTVSTModule(Owner) do
   begin
    TempPosition := Parameter[2];
-   if DialLowGainLeft.Position <> TempPosition
-    then DialLowGainLeft.Position := TempPosition
+   if DialLowGainLeft.Value <> TempPosition
+    then DialLowGainLeft.Value := TempPosition;
   end;
 end;
 
@@ -362,20 +305,20 @@ begin
  with TVTVSTModule(Owner) do
   begin
    TempPosition := Parameter[6];
-   if DialLowGainRight.Position <> TempPosition
-    then DialLowGainRight.Position := TempPosition
+   if DialLowGainRight.Value <> TempPosition
+    then DialLowGainRight.Value := TempPosition;
   end;
 end;
 
 procedure TFmVT.UpdateChannel;
 var
-  TempPosition: Single;
+  TempPosition: Integer;
 begin
  with TVTVSTModule(Owner) do
   begin
-   TempPosition := 3 - Parameter[9];
-   if DialChannel.Position <> TempPosition
-    then DialChannel.Position := TempPosition
+   TempPosition := Round(3 - Parameter[9]);
+   if SwitchChannel.GlyphIndex <> TempPosition
+    then SwitchChannel.GlyphIndex := TempPosition;
   end;
 end;
 
@@ -386,8 +329,8 @@ begin
  with TVTVSTModule(Owner) do
   begin
    TempGain := Parameter[10];
-   if DialOutputGain.Position <> TempGain
-    then DialOutputGain.Position := TempGain;
+   if DialOutputGain.Value <> TempGain
+    then DialOutputGain.Value := TempGain;
    LbGainValue.Caption := FloatToStrF(RoundTo(TempGain, -1), ffGeneral, 0, 1) + ' dB';
   end;
 end;
@@ -399,32 +342,32 @@ begin
  with TVTVSTModule(Owner) do
   begin
    TempPosition := Parameter[8];
-   if DialSelector.Position <> TempPosition
-    then DialSelector.Position := TempPosition
+   if DialSelector.Value <> TempPosition
+    then DialSelector.Value := TempPosition
   end;
 end;
 
 procedure TFmVT.UpdateTrebleBypassLeft;
 var
-  TempPosition : Single;
+  TempPosition : Integer;
 begin
  with TVTVSTModule(Owner) do
   begin
-   TempPosition := 1 - Parameter[1];
-   if DialHiBypassLeft.Position <> TempPosition
-    then DialHiBypassLeft.Position := TempPosition
+   TempPosition := Round(1 - Parameter[1]);
+   if SwitchHiBypassLeft.GlyphIndex <> TempPosition
+    then SwitchHiBypassLeft.GlyphIndex := TempPosition
   end;
 end;
 
 procedure TFmVT.UpdateTrebleBypassRight;
 var
-  TempPosition : Single;
+  TempPosition : Integer;
 begin
  with TVTVSTModule(Owner) do
   begin
-   TempPosition := 1 - Parameter[5];
-   if DialHiBypassRight.Position <> TempPosition
-    then DialHiBypassRight.Position := TempPosition
+   TempPosition := Round(1 - Parameter[5]);
+   if SwitchHiBypassRight.GlyphIndex <> TempPosition
+    then SwitchHiBypassRight.GlyphIndex := TempPosition
   end;
 end;
 
@@ -435,8 +378,8 @@ begin
  with TVTVSTModule(Owner) do
   begin
    TempPosition := Parameter[0];
-   if DialHiGainLeft.Position <> TempPosition
-    then DialHiGainLeft.Position := TempPosition
+   if DialHiGainLeft.Value <> TempPosition
+    then DialHiGainLeft.Value := TempPosition
   end;
 end;
 
@@ -447,8 +390,8 @@ begin
  with TVTVSTModule(Owner) do
   begin
    TempPosition := Parameter[4];
-   if DialHiGainRight.Position <> TempPosition
-    then DialHiGainRight.Position := TempPosition
+   if DialHiGainRight.Value <> TempPosition
+    then DialHiGainRight.Value := TempPosition
   end;
 end;
 

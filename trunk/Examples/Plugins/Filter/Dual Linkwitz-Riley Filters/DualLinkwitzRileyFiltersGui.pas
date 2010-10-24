@@ -137,6 +137,7 @@ type
     procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
     procedure PuPresetPopup(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     FBackgrounBitmap : TGuiPixelMapMemory;
     FCurrentDial     : TGuiStitchedDial;
@@ -157,21 +158,35 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, Registry, {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
-  DAV_GuiCommon, DAV_VSTModuleWithPrograms, DualLinkwitzRileyFiltersDM;
+  Math, Registry, DAV_GuiCommon, DAV_VSTModuleWithPrograms, 
+  DualLinkwitzRileyFiltersDM;
 
 resourcestring
   RCStrLinkwitzRiley = 'Linkwitz-Riley';
 
 procedure TFmLinkwitzRiley.FormCreate(Sender: TObject);
+begin
+ FBackgrounBitmap := TGuiPixelMapMemory.Create;
+end;
+
+procedure TFmLinkwitzRiley.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackgrounBitmap);
+end;
+
+procedure TFmLinkwitzRiley.FormPaint(Sender: TObject);
+begin
+ if Assigned(FBackgrounBitmap)
+  then FBackgrounBitmap.PaintTo(Canvas);
+end;
+
+procedure TFmLinkwitzRiley.FormResize(Sender: TObject);
 var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
   ScnLn  : PPixel32Array;
 begin
- // Create Background Image
- FBackgrounBitmap := TGuiPixelMapMemory.Create;
  with FBackgrounBitmap do
   begin
    SetSize(ClientWidth, ClientHeight);
@@ -193,17 +208,6 @@ begin
       end;
     end;
   end;
-end;
-
-procedure TFmLinkwitzRiley.FormDestroy(Sender: TObject);
-begin
- FreeAndNil(FBackgrounBitmap);
-end;
-
-procedure TFmLinkwitzRiley.FormPaint(Sender: TObject);
-begin
- if Assigned(FBackgrounBitmap)
-  then FBackgrounBitmap.PaintTo(Canvas);
 end;
 
 procedure TFmLinkwitzRiley.FormShow(Sender: TObject);

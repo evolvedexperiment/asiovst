@@ -43,7 +43,6 @@ type
   TSchaebichefLPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -63,15 +62,15 @@ uses
 
 procedure TSchaebichefLPModule.VSTModuleOpen(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FFilter, numInputs);
- for ch := 0 to Length(FFilter) - 1 do
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
   begin
-   FFilter[ch] := TChebyshev1LowpassFilter.Create(4);
-   FFilter[ch].SetFilterValues(1000, 0, 1);
+   FFilter[ChannelIndex] := TChebyshev1LowpassFilter.Create(4);
+   FFilter[ChannelIndex].SetFilterValues(1000, 0, 1);
   end;
 
  // Initial Parameters
@@ -85,20 +84,15 @@ begin
    Parameter[1] := 1;
    Parameter[2] := 4;
   end;
+ EditorFormClass := TFmSchaebichef;
 end;
 
 procedure TSchaebichefLPModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1
-  do FreeAndNil(FFilter[Channel]);
-end;
-
-procedure TSchaebichefLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmSchaebichef.Create(Self);
+ for ChannelIndex := 0 to Length(FFilter) - 1
+  do FreeAndNil(FFilter[ChannelIndex]);
 end;
 
 procedure TSchaebichefLPModule.ParamRippleChange(Sender: TObject;
@@ -107,7 +101,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Value;
+  if Assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Value;
 
  // update GUI if necessary
  if EditorForm is TFmSchaebichef
@@ -120,7 +114,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].Order := round(Value); // max(2, 2 * round(0.5 * Value));
 
  // update GUI if necessary
@@ -134,7 +128,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].Frequency := Value;
 
  // update GUI if necessary
@@ -148,7 +142,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].SampleRate := SampleRate;
 end;
 

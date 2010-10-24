@@ -42,7 +42,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PngImage, PhaseRotatorDSP, DAV_VSTModuleWithPrograms;
+  PhaseRotatorDSP, DAV_VSTModuleWithPrograms;
 
 procedure TFmPhaseRotator.FormDestroy(Sender: TObject);
 begin

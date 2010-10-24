@@ -47,9 +47,9 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParamPowerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPhaseChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -140,7 +140,7 @@ begin
  GUI := TFmUniQuE.Create(Self);
 end;
 
-procedure TUniQuEDataModule.ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TUniQuEDataModule.ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'
@@ -276,12 +276,12 @@ begin
    do UpdatePad;
 end;
 
-procedure TUniQuEDataModule.ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TUniQuEDataModule.ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
-procedure TUniQuEDataModule.ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TUniQuEDataModule.ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := '-'

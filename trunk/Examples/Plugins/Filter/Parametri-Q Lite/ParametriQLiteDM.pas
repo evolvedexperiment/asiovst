@@ -53,7 +53,7 @@ type
     procedure ParameterInputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilters     : array [0..1, 0..7] of TCustomBandwidthIIRFilter;
     FUpSampler   : array [0..1] of TPolyphaseUpsampler64;
@@ -307,7 +307,7 @@ begin
 end;
 
 procedure TParametriQLiteDataModule.ParameterTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case round(Parameter[Index]) of
    0 : PreDefined := 'Bypass';

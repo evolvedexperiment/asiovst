@@ -1,4 +1,4 @@
-﻿unit BassExtenderGUI;
+unit BassExtenderGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -106,7 +106,7 @@ type
 implementation
 
 uses
-  Math, DAV_GuiCommon, BassExtenderDM, PngImage;
+  Math, DAV_GuiCommon, BassExtenderDM;
 
 {$R *.DFM}
 

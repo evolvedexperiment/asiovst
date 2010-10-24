@@ -36,21 +36,22 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial,
-  DAV_GuiPanel;
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
+  DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmSchaebichef = class(TForm)
-    DialOrder: TGuiDial;
-    DialRipple: TGuiDial;
-    DialFrequency: TGuiDial;
     LbFrequencyValue: TGuiLabel;
     LbRippleValue: TGuiLabel;
     LbOrderValue: TGuiLabel;
     LbFrequency: TGuiLabel;
     LbRipple: TGuiLabel;
     LbOrder: TGuiLabel;
-    procedure FormCreate(Sender: TObject);
+    DialOrder: TGuiStitchedDial;
+    DialRipple: TGuiStitchedDial;
+    DialFrequency: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
@@ -75,20 +76,6 @@ implementation
 
 uses
   DAV_VSTModuleWithPrograms, SchaebichefDM;
-
-procedure TFmSchaebichef.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'SchaebichefKnob', 'BMP');
- try
-  DialFrequency.DialBitmap.LoadFromStream(RS);
-  DialOrder.DialBitmap.Assign(DialFrequency.DialBitmap);
-  DialRipple.DialBitmap.Assign(DialFrequency.DialBitmap);
- finally
-  RS.Free;
- end;
-end;
 
 procedure TFmSchaebichef.FormDestroy(Sender: TObject);
 begin
@@ -119,8 +106,8 @@ procedure TFmSchaebichef.DialFrequencyChange(Sender: TObject);
 begin
  with TSchaebichefLPModule(Owner) do
   begin
-   if ParameterByName['Frequency'] <> DialFrequency.Position
-    then ParameterByName['Frequency'] := DialFrequency.Position;
+   if ParameterByName['Frequency'] <> DialFrequency.Value
+    then ParameterByName['Frequency'] := DialFrequency.Value;
   end;
 end;
 
@@ -149,8 +136,8 @@ procedure TFmSchaebichef.DialOrderChange(Sender: TObject);
 begin
  with TSchaebichefLPModule(Owner) do
   begin
-   if ParameterByName['Order'] <> DialOrder.Position
-    then ParameterByName['Order'] := DialOrder.Position;
+   if ParameterByName['Order'] <> DialOrder.Value
+    then ParameterByName['Order'] := DialOrder.Value;
   end;
 end;
 
@@ -179,8 +166,8 @@ procedure TFmSchaebichef.DialRippleChange(Sender: TObject);
 begin
  with TSchaebichefLPModule(Owner) do
   begin
-   if ParameterByName['Ripple'] <> DialRipple.Position
-    then ParameterByName['Ripple'] := DialRipple.Position;
+   if ParameterByName['Ripple'] <> DialRipple.Value
+    then ParameterByName['Ripple'] := DialRipple.Value;
   end;
 end;
 
@@ -210,7 +197,7 @@ begin
  with TSchaebichefLPModule(Owner) do
   if (Key = #13) and Assigned(FEdValue) then
    try
-    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    StringToParameter(FEdValue.Tag, AnsiString(FEdValue.Text));
     FreeAndNil(FEdValue);
    except
    end;
@@ -223,8 +210,8 @@ begin
  with TSchaebichefLPModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
-   if DialFrequency.Position <> Freq
-    then DialFrequency.Position := Freq;
+   if DialFrequency.Value <> Freq
+    then DialFrequency.Value := Freq;
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 5, 5) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 5, 5) + ' kHz'
@@ -238,8 +225,8 @@ begin
  with TSchaebichefLPModule(Owner) do
   begin
    Order := ParameterByName['Order'];
-   if DialOrder.Position <> Order
-    then DialOrder.Position := Order;
+   if DialOrder.Value <> Order
+    then DialOrder.Value := Order;
    LbOrderValue.Caption := IntToStr(6 * Round(Order)) + ' dB / Oct';
   end;
 end;
@@ -251,8 +238,8 @@ begin
  with TSchaebichefLPModule(Owner) do
   begin
    Ripple := ParameterByName['Ripple'];
-   if DialRipple.Position <> Ripple
-    then DialRipple.Position := Ripple;
+   if DialRipple.Value <> Ripple
+    then DialRipple.Value := Ripple;
    LbRippleValue.Caption := IntToStr(Round(Ripple * 10)) + '%';
   end;
 end;

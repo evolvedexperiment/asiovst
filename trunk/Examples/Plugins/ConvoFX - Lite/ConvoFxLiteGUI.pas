@@ -68,7 +68,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Dialogs, Math, PngImage, ConvoFXLiteDM, DAV_VSTModuleWithPrograms;
+  Dialogs, Math, ConvoFXLiteDM, DAV_VSTModuleWithPrograms;
 
 procedure TFmConvoFXLite.FormShow(Sender: TObject);
 begin

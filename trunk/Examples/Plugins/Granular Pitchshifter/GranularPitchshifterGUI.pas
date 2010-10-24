@@ -66,7 +66,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_VSTModuleWithPrograms, GranularPitchShifterDM;
+  Math, DAV_VSTModuleWithPrograms, GranularPitchShifterDM;
 
 procedure TFmGranularPitchShifter.FormShow(Sender: TObject);
 begin

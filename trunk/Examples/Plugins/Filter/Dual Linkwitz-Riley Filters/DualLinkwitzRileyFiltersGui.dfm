@@ -15,6 +15,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
