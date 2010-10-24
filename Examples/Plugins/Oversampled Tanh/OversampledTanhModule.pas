@@ -51,8 +51,8 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject;
       const SampleRate: Single);
   private
-    FDownsampler2x   : array[0..1] of TPolyphaseDownsampler32;
-    FUpSampler2x     : array[0..1] of TPolyphaseUpsampler32;
+    FDownsampler2x   : array [0..1] of TPolyphaseDownsampler32;
+    FUpSampler2x     : array [0..1] of TPolyphaseUpsampler32;
     FBuffer          : PDAVSingleFixedArray;
     FCriticalSection : TCriticalSection;
   end;

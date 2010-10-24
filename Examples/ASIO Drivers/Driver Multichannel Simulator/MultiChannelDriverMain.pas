@@ -24,8 +24,8 @@ const
 type
   TMultiChannelSettings = record
     DriverIndex: Integer;
-    InputAssignment: array[1..16] of integer;
-    OutputAssignment: array[1..16] of integer;
+    InputAssignment: array [1..16] of integer;
+    OutputAssignment: array [1..16] of integer;
     Inputs: Integer;
     Outputs: Integer;
   end;

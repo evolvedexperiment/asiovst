@@ -734,7 +734,7 @@ begin
   begin
    OutBuffer[0,i] := FInputFilter[0].ProcessSample(OutBuffer[0,i]+1E-32);
    OutBuffer[1,i] := OutBuffer[0,i];
-//   z := fHPFilterArray[j].ProcessSample(d+1E-32);
+//   z := fHPFilterArray[j].ProcessSample(d + 1E-32);
   end;
 *)
 end;

@@ -16,7 +16,7 @@ uses {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF}
      Messages, Classes, Sysutils, Graphics;
 
 type
-  TSprite = array[0..3] of array [0..3] of Integer;
+  TSprite = array [0..3, 0..3] of Integer;
   TTetris = class
   private
     FLines            : Integer;

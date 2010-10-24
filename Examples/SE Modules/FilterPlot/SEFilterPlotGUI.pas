@@ -45,7 +45,7 @@ type
   TRGB32 = packed record
     R, G, B, A: Byte;
   end;
-  TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
+  TRGB24Array = packed array [0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
 
   TSEFilterPlotGui = class(TSEGUIBase)

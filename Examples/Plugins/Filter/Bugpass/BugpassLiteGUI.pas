@@ -76,7 +76,7 @@ uses
 procedure TFmBugpassLite.FormCreate(Sender: TObject);
 var
   x, y : Integer;
-  s    : array[0..1] of Single;
+  s    : array [0..1] of Single;
   amt  : Shortint;
   Line : PRGB24Array;
 begin

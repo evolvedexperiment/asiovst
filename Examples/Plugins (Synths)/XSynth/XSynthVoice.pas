@@ -136,7 +136,7 @@ type
     FFrequency  : Single;
     FAmplitude  : Single;
     FReleased   : Boolean;
-    FOscilators : Array[0..1] of TOscilator;
+    FOscilators : array [0..1] of TOscilator;
     FVSTModule  : TVSTModule;
     procedure SetSampleRate(const Value: Single); virtual;
   protected

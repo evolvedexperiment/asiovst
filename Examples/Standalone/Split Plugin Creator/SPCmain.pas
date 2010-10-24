@@ -36,29 +36,28 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls,
-  Menus, Spin, ExtCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiGroup, DAV_ChunkClasses, DAV_ChunkPluginGUI;
+  DAV_GuiBaseControl, DAV_ChunkClasses, DAV_ChunkPluginGUI;
 
 type
   TFmSplitPluginCreator = class(TForm)
-    EdPluginA: TEdit;
-    LbPluginA: TLabel;
-    LbPluginB: TLabel;
-    EdPluginB: TEdit;
+    BtClearA: TButton;
+    BtClearB: TButton;
     BtCreate: TButton;
     BtOpenA: TButton;
-    BtClearA: TButton;
     BtOpenB: TButton;
-    BtClearB: TButton;
-    procedure EdPluginClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    EdPluginA: TEdit;
+    EdPluginB: TEdit;
+    LbPluginA: TLabel;
+    LbPluginB: TLabel;
     procedure FormCreate(Sender: TObject);
-    procedure EdPluginChange(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure BtClearAClick(Sender: TObject);
+    procedure BtClearBClick(Sender: TObject);
     procedure BtCreateClick(Sender: TObject);
     procedure BtOpenAClick(Sender: TObject);
     procedure BtOpenBClick(Sender: TObject);
-    procedure BtClearAClick(Sender: TObject);
-    procedure BtClearBClick(Sender: TObject);
+    procedure EdPluginChange(Sender: TObject);
+    procedure EdPluginClick(Sender: TObject);
   private
     procedure SavePlugin(FileName: TFileName);
   end;
@@ -69,7 +68,7 @@ var
 implementation
 
 uses
-  Graphics, IniFiles, PNGImage, DAV_DLLResources, ShellAPI;
+  IniFiles, ShellAPI, DAV_DLLResources;
 
 {$R *.dfm}
 

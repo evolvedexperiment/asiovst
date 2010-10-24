@@ -3,7 +3,7 @@ unit DAV_DiracInterface;
 interface
 
 uses
-  Windows, Classes, DAV_Common, DAV_Classes;
+  Windows, Classes, DAV_Types, DAV_Classes;
 
 type
   PDiracHandle = THandle;
@@ -54,6 +54,7 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
     class function GetDiracVersion: string;
     procedure ProcessBuffer(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
     property Lambda: TDiracLambda read FLambda write SetLambda;
