@@ -62,8 +62,8 @@ type
     procedure SBMLFOSpeedChange(Sender : TObject; const Index : Integer; var Value : Single);
     procedure SBMTBWChange(Sender : TObject; const Index : Integer; var Value : Single);
   private
-    FHilbert   : array[0..1] of TPhaseHalfPi32;
-    FSineLFO   : array[0..1] of TLFOSine;
+    FHilbert   : array [0..1] of TPhaseHalfPi32;
+    FSineLFO   : array [0..1] of TLFOSine;
     FTBW       : Single;
   public
     property BasicSineLFO: TLFOSine read FSineLFO[0];

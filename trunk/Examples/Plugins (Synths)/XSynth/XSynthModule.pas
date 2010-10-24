@@ -34,10 +34,10 @@ type
   private
     FLevel  : Single;
     FDrive  : Single;
-    FCutoff : Array[0..1] of Single;
-    FRes    : Array[0..1] of Single;
-    FOld    : Array[0..1] of Single;
-    FOscs   : Array[0..1] of TOsc;
+    FCutoff : array [0..1] of Single;
+    FRes    : array [0..1] of Single;
+    FOld    : array [0..1] of Single;
+    FOscs   : array [0..1] of TOsc;
     FVoices : TVoiceList;
     function GetOscilators(index: integer): TOsc;
   public

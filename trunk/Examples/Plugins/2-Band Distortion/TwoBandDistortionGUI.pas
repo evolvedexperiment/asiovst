@@ -104,7 +104,7 @@ end;
 procedure TFmTwoBandDistortion.FormResize(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   b      : ShortInt;
   ScnLn  : PPixel32Array;
 begin

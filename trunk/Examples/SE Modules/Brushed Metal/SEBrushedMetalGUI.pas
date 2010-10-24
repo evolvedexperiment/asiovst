@@ -161,7 +161,7 @@ procedure TSEBrushedMetalGui.BitmapChanged(Sender: TObject);
 var
   x, y, v : Integer;
   hght    : Integer;
-  s       : array[0..1] of Single;
+  s       : array [0..1] of Single;
   h, hr   : Single;
   Line    : PRGB24Array;
 begin

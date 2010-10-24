@@ -65,7 +65,7 @@ type
 implementation
 
 uses
-  ChunkDemoDM, PngImage;
+  ChunkDemoDM;
 
 {$R *.DFM}
 

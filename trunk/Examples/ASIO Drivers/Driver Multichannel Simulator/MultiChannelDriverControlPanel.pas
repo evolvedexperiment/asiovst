@@ -88,8 +88,8 @@ type
     procedure InputSettingsChanged(Sender: TObject);
     procedure OutputSettingsChanged(Sender: TObject);
   public
-    InputBoxes: array[1..16] of TComboBox;
-    OutputBoxes: array[1..16] of TComboBox;
+    InputBoxes: array [1..16] of TComboBox;
+    OutputBoxes: array [1..16] of TComboBox;
     ModifiedSelections: Boolean;
     procedure PanelLoaded; override;
     procedure UpdateSelection;

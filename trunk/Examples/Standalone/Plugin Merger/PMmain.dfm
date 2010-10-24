@@ -10,7 +10,7 @@ object FmPluginMerger: TFmPluginMerger
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  Menu = MainMenu1
+  Menu = MainMenu
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -218,7 +218,7 @@ object FmPluginMerger: TFmPluginMerger
       end
     end
   end
-  object MainMenu1: TMainMenu
+  object MainMenu: TMainMenu
     Left = 24
     Top = 1
     object MIFile: TMenuItem

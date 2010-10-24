@@ -72,7 +72,7 @@ procedure TFmFrequencyDomainPitchShifter.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   Line   : PRGB24Array;
   PngBmp : TPngObject;
 

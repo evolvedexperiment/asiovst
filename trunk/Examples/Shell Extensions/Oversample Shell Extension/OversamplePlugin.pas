@@ -49,7 +49,7 @@ type
     function BuildSubMenu(Menu: HMENU; IndexMenu: Integer; var IDCmdFirst: Integer): HMENU;
     procedure SavePlugin;
   protected
-    szFile: array[0..2 * MAX_PATH] of Char; // just to be sure
+    szFile: array [0..2 * MAX_PATH] of Char; // just to be sure
 
     // Required to disambiguate TComObject.Initialize otherwise a compiler warning will result.
     function IShellExtInit.Initialize = IShellExtInit_Initialize;

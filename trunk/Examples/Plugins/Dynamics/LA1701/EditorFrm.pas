@@ -156,7 +156,7 @@ end;
 procedure TFmLA1701.FormResize(Sender: TObject);
 var
   x, y        : Integer;
-  FilterState : array[0..1] of Single;
+  FilterState : array [0..1] of Single;
   ClrBt, b    : ShortInt;
   ScnLn       : PPixel32Array;
 begin

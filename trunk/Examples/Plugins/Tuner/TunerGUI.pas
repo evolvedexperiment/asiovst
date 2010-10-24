@@ -71,7 +71,7 @@ uses
 procedure TFmTuner.FormCreate(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   b      : ShortInt;
   Line   : PRGB24Array;
 //  RS     : TResourceStream;

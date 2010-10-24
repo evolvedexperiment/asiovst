@@ -122,7 +122,7 @@ end;
 procedure TFmAdvancedClipper.FormResize(Sender: TObject);
 var
   x, y  : Integer;
-  s     : array[0..1] of Single;
+  s     : array [0..1] of Single;
   h, hr : Single;
   ScnLn : PPixel32Array;
 begin

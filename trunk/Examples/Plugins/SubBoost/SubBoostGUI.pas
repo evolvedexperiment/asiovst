@@ -96,7 +96,7 @@ procedure TFmSubBoost.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   b      : ShortInt;
   Line   : PRGB32Array;
   PngBmp : TPngObject;

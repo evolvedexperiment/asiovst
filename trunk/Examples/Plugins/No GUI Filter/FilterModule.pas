@@ -45,7 +45,7 @@ type
     procedure VSTFilterParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCutOffFrequency : Single;
-    FOld             : array [0..1] of array[0..1] of Double;
+    FOld             : array [0..1, 0..1] of Double;
   public
   end;
 

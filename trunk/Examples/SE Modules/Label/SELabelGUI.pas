@@ -9,7 +9,7 @@ type
   TRGB24 = packed record
     B, G, R: Byte;
   end;
-  TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
+  TRGB24Array = packed array [0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
 
   TCustomSELabelGui = class(TSEGUIBase)

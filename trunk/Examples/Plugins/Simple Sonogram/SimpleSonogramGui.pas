@@ -80,7 +80,7 @@ uses
 procedure TFmSonogram.FormCreate(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  s      : array [0..1] of Single;
   h, hr  : Single;
   Line   : PRGB24Array;
 

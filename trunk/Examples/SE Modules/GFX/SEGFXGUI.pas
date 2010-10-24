@@ -663,7 +663,7 @@ var
   dx, dy, tmp          : Single;
   rmax, reciprocal     : Single;
   ty, tx               : Integer;
-  WeightX, WeightY     : array[0..1] of Single;
+  WeightX, WeightY     : array [0..1] of Single;
   Weight               : Single;
   NewRed, NewGreen     : Integer;
   NewBlue              : Integer;
@@ -859,7 +859,7 @@ procedure SplitBlur(var Bitmap: TBitmap; Amount: Byte);
 var
   p0, p1 ,p2 : PByteArray;
   cx, x, y   : Integer;
-  Buf        : array[0..3, 0..2] of Byte;
+  Buf        : array [0..3, 0..2] of Byte;
 begin
  for y := 0 to Bitmap.Height - 1 do
   begin
@@ -1040,7 +1040,7 @@ var
   Offset       : Single;
   ty, tx       : Integer;
   WeightX,
-  WeightY      : array[0..1] of Single;
+  WeightY      : array [0..1] of Single;
   Weight       : Single;
   NewRed,
   NewGreen     : Integer;
@@ -1584,7 +1584,7 @@ procedure TSEGFXBrushedMetalGui.PerformBitmapOperation;
 var
   x, y, v : Integer;
   hght    : Integer;
-  s       : array[0..1] of Single;
+  s       : array [0..1] of Single;
   h, hr   : Single;
   Line    : PByteArray;
 begin
@@ -1628,7 +1628,7 @@ procedure TSEGFXBrushedMetal2Gui.PerformBitmapOperation;
 var
   x, y, v : Integer;
   hght    : Integer;
-  s       : array[0..1] of Single;
+  s       : array [0..1] of Single;
   h, hr   : Single;
   Line    : PByteArray;
 begin

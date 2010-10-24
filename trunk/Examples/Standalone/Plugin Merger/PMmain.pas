@@ -41,7 +41,18 @@ uses
 
 type
   TFmPluginMerger = class(TForm)
-    MainMenu1: TMainMenu;
+    DialPreview: TGuiDial;
+    EdKnob: TEdit;
+    GBPreview: TGuiGroup;
+    LbBackgroundColor: TLabel;
+    LBFont: TLabel;
+    LbFontAA: TLabel;
+    LbFontSize: TLabel;
+    LbKnob: TLabel;
+    LbKnobsPerRow: TLabel;
+    LBPlugins: TListBox;
+    LbTest: TGuiLabel;
+    MainMenu: TMainMenu;
     MIAdd: TMenuItem;
     MIClear: TMenuItem;
     MIExit: TMenuItem;
@@ -49,42 +60,31 @@ type
     MIPlugin: TMenuItem;
     MISaveasVST: TMenuItem;
     PageControl1: TPageControl;
-    TSMergedPlugins: TTabSheet;
-    TabSheet1: TTabSheet;
-    LbKnob: TLabel;
-    LbBackgroundColor: TLabel;
-    ShBackgroundColor: TShape;
-    LbKnobsPerRow: TLabel;
-    EdKnob: TEdit;
-    SEKnobsPerRow: TSpinEdit;
-    GBPreview: TGuiGroup;
-    DialPreview: TGuiDial;
-    LbTest: TGuiLabel;
-    LBFont: TLabel;
-    ShFontColor: TShape;
-    LbFontSize: TLabel;
-    SEFontSize: TSpinEdit;
-    LbFontAA: TLabel;
-    RBAAnone: TRadioButton;
-    RBAA4: TRadioButton;
-    LBPlugins: TListBox;
     RBAA2: TRadioButton;
+    RBAA4: TRadioButton;
     RBAA8: TRadioButton;
-    procedure MIExitClick(Sender: TObject);
-    procedure MIAddClick(Sender: TObject);
-    procedure MISaveasVSTClick(Sender: TObject);
-    procedure MIClearClick(Sender: TObject);
+    RBAAnone: TRadioButton;
+    SEFontSize: TSpinEdit;
+    SEKnobsPerRow: TSpinEdit;
+    ShBackgroundColor: TShape;
+    ShFontColor: TShape;
+    TabSheet1: TTabSheet;
+    TSMergedPlugins: TTabSheet;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure EdKnobChange(Sender: TObject);
     procedure EdKnobClick(Sender: TObject);
     procedure LBPluginsClick(Sender: TObject);
-    procedure ShBackgroundColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure EdKnobChange(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure RBAAnoneClick(Sender: TObject);
+    procedure MIAddClick(Sender: TObject);
+    procedure MIClearClick(Sender: TObject);
+    procedure MIExitClick(Sender: TObject);
+    procedure MISaveasVSTClick(Sender: TObject);
     procedure RBAA2Click(Sender: TObject);
     procedure RBAA4Click(Sender: TObject);
     procedure RBAA8Click(Sender: TObject);
+    procedure RBAAnoneClick(Sender: TObject);
     procedure SEFontSizeChange(Sender: TObject);
+    procedure ShBackgroundColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   end;
 
 var
@@ -96,6 +96,48 @@ uses
   Graphics, IniFiles, PNGImage, DAV_DLLResources;
 
 {$R *.dfm}
+
+procedure TFmPluginMerger.FormCreate(Sender: TObject);
+var
+  SL : TStringList;
+  i  : Integer;
+begin
+ with TIniFile.Create('PluginMerger.ini') do
+  try
+   EdKnob.Text := ReadString('Last State', 'Knob', EdKnob.Text);
+   Left := ReadInteger('Last State', 'Left', Left);
+   Top  := ReadInteger('Last State', 'Top', Top);
+   SL := TStringList.Create;
+   try
+    ReadSectionValues('Merged Plugins', SL);
+    for i := 0 to SL.Count - 1 do
+     if FileExists(SL.ValueFromIndex[i])
+      then LBPlugins.Items.Add(SL.ValueFromIndex[i]);
+    MISaveasVST.Enabled := LBPlugins.Items.Count > 0;
+   finally
+    FreeAndNil(SL);
+   end;
+   EraseSection('Merged Plugins');
+  finally
+   Free;
+  end;
+end;
+
+procedure TFmPluginMerger.FormDestroy(Sender: TObject);
+var
+  i : Integer;
+begin
+ with TIniFile.Create('PluginMerger.ini') do
+  try
+   WriteString('Last State','Knob', EdKnob.Text);
+   WriteInteger('Last State','Left', Left);
+   WriteInteger('Last State','Top', Top);
+   for i := 0 to LBPlugins.Count - 1
+    do WriteString('Merged Plugins', 'VST' + IntToStr(i + 1), LBPlugins.Items[i]);
+  finally
+   Free;
+  end;
+end;
 
 procedure TFmPluginMerger.EdKnobChange(Sender: TObject);
 var
@@ -160,48 +202,6 @@ begin
     begin
      EdKnob.Text := FileName;
     end;
-  finally
-   Free;
-  end;
-end;
-
-procedure TFmPluginMerger.FormCreate(Sender: TObject);
-var
-  SL : TStringList;
-  i  : Integer;
-begin
- with TIniFile.Create('PluginMerger.ini') do
-  try
-   EdKnob.Text := ReadString('Last State', 'Knob', EdKnob.Text);
-   Left := ReadInteger('Last State', 'Left', Left);
-   Top  := ReadInteger('Last State', 'Top', Top);
-   SL := TStringList.Create;
-   try
-    ReadSectionValues('Merged Plugins', SL);
-    for i := 0 to SL.Count - 1 do
-     if FileExists(SL.ValueFromIndex[i])
-      then LBPlugins.Items.Add(SL.ValueFromIndex[i]);
-    MISaveasVST.Enabled := LBPlugins.Items.Count > 0;
-   finally
-    FreeAndNil(SL);
-   end;
-   EraseSection('Merged Plugins');
-  finally
-   Free;
-  end;
-end;
-
-procedure TFmPluginMerger.FormDestroy(Sender: TObject);
-var
-  i : Integer;
-begin
- with TIniFile.Create('PluginMerger.ini') do
-  try
-   WriteString('Last State','Knob', EdKnob.Text);
-   WriteInteger('Last State','Left', Left);
-   WriteInteger('Last State','Top', Top);
-   for i := 0 to LBPlugins.Count - 1
-    do WriteString('Merged Plugins', 'VST' + IntToStr(i + 1), LBPlugins.Items[i]);
   finally
    Free;
   end;
