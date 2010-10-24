@@ -1,5 +1,4 @@
 object UniQuEDataModule: TUniQuEDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'UniQuE'
@@ -7,7 +6,6 @@ object UniQuEDataModule: TUniQuEDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Init'
   IORatio = 1.000000000000000000
   UniqueID = '4g83'
@@ -19,7 +17,6 @@ object UniQuEDataModule: TUniQuEDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Power'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -37,7 +34,6 @@ object UniQuEDataModule: TUniQuEDataModule
       OnCustomParameterDisplay = ParamPowerDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Pad'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -56,7 +52,6 @@ object UniQuEDataModule: TUniQuEDataModule
       OnCustomParameterDisplay = ParamPadDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Phase'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -74,7 +69,6 @@ object UniQuEDataModule: TUniQuEDataModule
       OnCustomParameterDisplay = ParamPhaseDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'Low'
@@ -94,7 +88,6 @@ object UniQuEDataModule: TUniQuEDataModule
       OnParameterChange = ParamLowChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'Mid'
@@ -114,7 +107,6 @@ object UniQuEDataModule: TUniQuEDataModule
       OnParameterChange = ParamMidChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'Pres'
@@ -134,7 +126,6 @@ object UniQuEDataModule: TUniQuEDataModule
       OnParameterChange = ParamPresChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'High'

@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule;
 
 type
   TTimeDomainConvole = procedure(InOutBuffer, IRBuffer: PSingle;
@@ -46,12 +47,11 @@ type
   TVTVSTModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
-    procedure ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+    procedure ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamLowGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHiGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -59,7 +59,10 @@ type
     procedure ParamOutGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamLowBypassChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHiBypassChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
+    FCriticalSection : TCriticalSection;
     FDriveMode       : TDriveMode;
     FBufferPos       : Cardinal;
     FCircularBuffer  : array [0..1] of PDAVSingleFixedArray;
@@ -72,7 +75,6 @@ type
     FOutGain         : Single;
     FConvolveIR      : TTimeDomainConvole;
     FModeBypass      : array [0..1] of Boolean;
-    FSemaphore       : Integer;
     procedure SetCPUDependant;
     procedure SetKernelSize(const Value: Cardinal);
     procedure KernelSizeChanged;
@@ -95,7 +97,7 @@ const
   CKernelSizes: array [1..4, 0..1] of Integer =
     ((148, 55), (144, 49), (147, 55), (146, 50));
 
-  CKernelResourceNames: array [1..4, 0..1] of string =
+  CKernelResourceNames: array [1..4, 0..1] of AnsiString =
     (('Roasty1Bass', 'Roasty1Treble'), ('Roasty2Bass', 'Roasty2Treble'),
      ('Steamin1Bass', 'Steamin1Treble'), ('Steamin2Bass', 'Steamin2Treble'));
 
@@ -219,6 +221,16 @@ asm
     ffree st(0)
 end;
 
+procedure TVTVSTModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TVTVSTModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TVTVSTModule.VSTModuleOpen(Sender: TObject);
 var
   i, m, n, sz : Integer;
@@ -226,7 +238,6 @@ begin
  FDriveMode := dmRoasty1;
  FBassKernel := nil;
  FTrebleKernel := nil;
- FSemaphore := 0;
 
  FOutGain := 1.25;
  FBufferPos := 0;
@@ -253,6 +264,8 @@ begin
  BuildBassFilterKernel;
  BuildTrebleFilterKernel;
  BuildCompleteFilterKernel;
+
+ EditorFormClass := TFmVT;
 end;
 
 procedure TVTVSTModule.VSTModuleClose(Sender: TObject);
@@ -263,12 +276,6 @@ begin
   Dispose(FCircularBuffer[1]);
   Dispose(FBassKernel);
   Dispose(FTrebleKernel);
-end;
-
-procedure TVTVSTModule.VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-// Do not delete this if you are using the editor
-begin
-  GUI := TFmVT.Create(Self);
 end;
 
 procedure TVTVSTModule.SetCPUDependant;
@@ -284,17 +291,20 @@ end;
 
 procedure TVTVSTModule.KernelSizeChanged;
 begin
-  ReallocMem(FFilterKernel, FKernelSize * SizeOf(Single));
-  ReallocMem(FHistoryBuffer[0], FKernelSize * SizeOf(Single));
-  ReallocMem(FHistoryBuffer[1], FKernelSize * SizeOf(Single));
-  ReallocMem(FCircularBuffer[0], 2 * FKernelSize * SizeOf(Single));
-  ReallocMem(FCircularBuffer[1], 2 * FKernelSize * SizeOf(Single));
+ ReallocMem(FFilterKernel, FKernelSize * SizeOf(Single));
+ ReallocMem(FHistoryBuffer[0], FKernelSize * SizeOf(Single));
+ ReallocMem(FHistoryBuffer[1], FKernelSize * SizeOf(Single));
+ ReallocMem(FCircularBuffer[0], 2 * FKernelSize * SizeOf(Single));
+ ReallocMem(FCircularBuffer[1], 2 * FKernelSize * SizeOf(Single));
 
-  FillChar(FFilterKernel^[0], FKernelSize * SizeOf(Single), 0);
-  FillChar(FHistoryBuffer[0]^[0], FKernelSize * SizeOf(Single), 0);
-  FillChar(FHistoryBuffer[1]^[0], FKernelSize * SizeOf(Single), 0);
-  FillChar(FCircularBuffer[0]^[0], 2 * FKernelSize * SizeOf(Single), 0);
-  FillChar(FCircularBuffer[1]^[0], 2 * FKernelSize * SizeOf(Single), 0);
+ FillChar(FFilterKernel^[0], FKernelSize * SizeOf(Single), 0);
+ FillChar(FHistoryBuffer[0]^[0], FKernelSize * SizeOf(Single), 0);
+ FillChar(FHistoryBuffer[1]^[0], FKernelSize * SizeOf(Single), 0);
+ FillChar(FCircularBuffer[0]^[0], 2 * FKernelSize * SizeOf(Single), 0);
+ FillChar(FCircularBuffer[1]^[0], 2 * FKernelSize * SizeOf(Single), 0);
+
+ if FBufferPos >= FKernelSize
+  then FBufferPos := 0;
 end;
 
 procedure TVTVSTModule.SetKernelSize(const Value: Cardinal);
@@ -309,8 +319,9 @@ end;
 procedure TVTVSTModule.ParamHiBypassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FModeBypass[1] := (round(Value) > 0);
+ FModeBypass[1] := (Round(Value) > 0);
  BuildCompleteFilterKernel;
+
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateTrebleBypass;
 end;
@@ -318,28 +329,28 @@ end;
 procedure TVTVSTModule.ParamLowBypassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FModeBypass[0] := (round(Value) > 0);
+ FModeBypass[0] := (Round(Value) > 0);
  BuildCompleteFilterKernel;
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateBassBypass;
 end;
 
-procedure TVTVSTModule.ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+procedure TVTVSTModule.ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case round(Parameter[Index]) of
-    1 : PreDefined := 'Roasty 1';
-    2 : PreDefined := 'Roasty 2';
-    3 : PreDefined := 'Steamin'' 1';
-    4 : PreDefined := 'Steamin'' 2';
-   end;
+ case Round(Parameter[Index]) of
+  1 : PreDefined := 'Roasty 1';
+  2 : PreDefined := 'Roasty 2';
+  3 : PreDefined := 'Steamin'' 1';
+  4 : PreDefined := 'Steamin'' 2';
+ end;
 end;
 
-procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case round(Parameter[Index]) of
-    1 : PreDefined := 'Mono';
-    2 : PreDefined := 'Stereo';
-   end;
+ case round(Parameter[Index]) of
+  1 : PreDefined := 'Mono';
+  2 : PreDefined := 'Stereo';
+ end;
 end;
 
 procedure TVTVSTModule.BuildBassFilterKernel;
@@ -366,11 +377,8 @@ begin
 
  // Build Filter Kernel
  ReallocMem(FBassKernel, CKernelSizes[Integer(FDriveMode), 0] * SizeOf(Single));
- for i := 0 to CKernelSizes[Integer(FDriveMode), 0] - 1 do
-  begin
-   FBassKernel[i] := (1 - SngleIndex) * Lwr^[i] +
-                          SngleIndex  * Upr^[i];
-  end;
+ for i := 0 to CKernelSizes[Integer(FDriveMode), 0] - 1
+  do FBassKernel[i] := (1 - SngleIndex) * Lwr^[i] + SngleIndex  * Upr^[i];
 end;
 
 procedure TVTVSTModule.BuildTrebleFilterKernel;
@@ -397,11 +405,8 @@ begin
 
  // Build Filter Kernel
  ReallocMem(FTrebleKernel, CKernelSizes[Integer(FDriveMode), 1] * SizeOf(Single));
- for i := 0 to CKernelSizes[Integer(FDriveMode), 1] - 1 do
-  begin
-   FTrebleKernel[i] := (1 - SngleIndex) * Lwr^[i] +
-                            SngleIndex  * Upr^[i];
-  end;
+ for i := 0 to CKernelSizes[Integer(FDriveMode), 1] - 1
+  do FTrebleKernel[i] := (1 - SngleIndex) * Lwr^[i] + SngleIndex  * Upr^[i];
 end;
 
 procedure TVTVSTModule.BuildCompleteFilterKernel;
@@ -445,13 +450,12 @@ procedure TVTVSTModule.BuildCompleteFilterKernel;
 var
   TempIR : PDAVSingleFixedArray;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore, 1);
+ FCriticalSection.Enter;
  try
   if FModeBypass[0] and FModeBypass[1] then
    begin
-    FFilterKernel^[0] := 0.8;
     KernelSize := 1;
+    FFilterKernel^[0] := 0.8;
    end else
   if FModeBypass[0] then
    begin
@@ -474,7 +478,7 @@ begin
     Move(TempIR^[0], FFilterKernel^[0], KernelSize * SizeOf(Single));
    end;
  finally
-  dec(FSemaphore, 1);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -516,9 +520,10 @@ begin
  case Round(Value) of
    1 : OnProcess := VSTModuleProcessMono;
    2 : OnProcess := VSTModuleProcessStereo;
- else OnProcess := nil;
+  else OnProcess := nil;
  end;
  OnProcessReplacing := OnProcess;
+
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateChannel;
 end;
@@ -532,15 +537,14 @@ end;
 
 procedure TVTVSTModule.VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i: Cardinal;
+  SampleIndex: Cardinal;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore, 1);
+ FCriticalSection.Enter;
  try
-  for i := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    FHistoryBuffer[0, FBufferPos] := Inputs[0, i];
-    Outputs[0, i] := FOutGain * (FCircularBuffer[0, FBufferPos] + FHistoryBuffer[0, FBufferPos] * FFilterKernel[0]);
+    FHistoryBuffer[0, FBufferPos] := Inputs[0, SampleIndex];
+    Outputs[0, SampleIndex] := FOutGain * (FCircularBuffer[0, FBufferPos] + FHistoryBuffer[0, FBufferPos] * FFilterKernel[0]);
     FCircularBuffer[0, FBufferPos] := 0;
     FConvolveIR(@FCircularBuffer[0, FBufferPos], @FFilterKernel[0], FKernelSize, FHistoryBuffer[0, FBufferPos]);
     Inc(FBufferPos);
@@ -552,25 +556,24 @@ begin
      end;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TVTVSTModule.VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i: Cardinal;
+  SampleIndex: Cardinal;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore, 1);
+ FCriticalSection.Enter;
  try
-  for i := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    FHistoryBuffer[0, FBufferPos] := Inputs[0, i];
-    Outputs[0, i] := FOutGain * (FCircularBuffer[0, FBufferPos] + FHistoryBuffer[0, FBufferPos] * FFilterKernel[0]);
+    FHistoryBuffer[0, FBufferPos] := Inputs[0, SampleIndex];
+    Outputs[0, SampleIndex] := FOutGain * (FCircularBuffer[0, FBufferPos] + FHistoryBuffer[0, FBufferPos] * FFilterKernel[0]);
     FCircularBuffer[0, FBufferPos] := 0;
 
-    FHistoryBuffer[1, FBufferPos] := Inputs[1, i];
-    Outputs[1, i] := FOutGain * (FCircularBuffer[1, FBufferPos] + FHistoryBuffer[1, FBufferPos] * FFilterKernel[0]);
+    FHistoryBuffer[1, FBufferPos] := Inputs[1, SampleIndex];
+    Outputs[1, SampleIndex] := FOutGain * (FCircularBuffer[1, FBufferPos] + FHistoryBuffer[1, FBufferPos] * FFilterKernel[0]);
     FCircularBuffer[1, FBufferPos] := 0;
 
     FConvolveIR(@FCircularBuffer[0, FBufferPos], @FFilterKernel[0], FKernelSize, FHistoryBuffer[0, FBufferPos]);
@@ -587,14 +590,14 @@ begin
      end;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TVTVSTModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if abs(SampleRate - 44100) > 4000
+ if Abs(SampleRate - 44100) > 4000
   then ShowMessage('Samplerates other than 44.1 kHz have not been implemented yet');
 end;
 

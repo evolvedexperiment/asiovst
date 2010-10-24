@@ -134,7 +134,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_GuiCommon, LA4029DM;
+  Math, DAV_GuiCommon, LA4029DM;
 
 procedure TFmLA4029.FormCreate(Sender: TObject);
 begin

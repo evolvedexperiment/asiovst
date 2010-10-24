@@ -87,7 +87,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_Common, DAV_VSTModuleWithPrograms, NoiseReductionDM;
+  Math, DAV_Common, DAV_VSTModuleWithPrograms, NoiseReductionDM;
 
 procedure TFmNoiseReduction.FormShow(Sender: TObject);
 begin

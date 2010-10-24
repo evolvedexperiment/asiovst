@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
-  {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
+  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
   DAV_GuiCommon, DAV_GuiPixelMap;
 
 type
@@ -136,6 +136,7 @@ type
 
   TGuiCustomStitchedControl = class(TCustomControl)
   private
+    function GetGlyphCount: Integer;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetStitchedIndex(Value: Integer);
@@ -143,7 +144,6 @@ type
     procedure SetTransparent(const Value: Boolean);
     procedure SetGlyphIndex(Value: Integer);
     procedure SetDefaultGlyphIndex(Value: Integer);
-    function GetGlyphCount: Integer;
   protected
     FAutoSize          : Boolean;
     FTransparent       : Boolean;
@@ -158,6 +158,8 @@ type
 
     FGlyphIndex        : Integer;
     FDefaultGlyphIndex : Integer;
+
+    procedure CMColorchanged(var Message: TMessage); message CM_COLORCHANGED;
 
     procedure BackBufferChanged; virtual;
     procedure BufferChanged; virtual;
@@ -308,13 +310,14 @@ end;
 
 procedure TGuiCustomStitchedCollectionItem.UnLinkStitchedControl(Stitched: TGuiCustomStitchedControl);
 begin
- FLinkedStitches.Remove(Stitched);
+ if Assigned(Stitched)
+  then FLinkedStitches.Remove(Stitched);
 end;
 
 procedure TGuiCustomStitchedCollectionItem.UnLinkStitchedControls;
 begin
  while FLinkedStitches.Count > 0 do
-  with TGuiCustomStitchedControl(FLinkedStitches[Index])
+  with TGuiCustomStitchedControl(FLinkedStitches[0])
    do StitchedImageIndex := -1;
 end;
 
@@ -755,6 +758,11 @@ begin
  inherited Changed;
  if Assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = [])
   then FOnChange(Self);
+end;
+
+procedure TGuiCustomStitchedControl.CMColorChanged(var Message: TMessage);
+begin
+ ColorChanged;
 end;
 
 procedure TGuiCustomStitchedControl.ColorChanged;

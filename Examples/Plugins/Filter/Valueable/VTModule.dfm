@@ -1,4 +1,7 @@
 object VTVSTModule: TVTVSTModule
+  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Valve Tone '#39'63'
@@ -148,7 +151,6 @@ object VTVSTModule: TVTVSTModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTEditOpen
   OnProcess = VSTModuleProcessStereo
   OnProcessReplacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange

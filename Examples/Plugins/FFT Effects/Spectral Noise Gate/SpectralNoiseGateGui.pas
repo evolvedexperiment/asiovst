@@ -84,7 +84,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, DAV_VSTModuleWithPrograms, SpectralNoiseGateDM;
+  Math, DAV_VSTModuleWithPrograms, SpectralNoiseGateDM;
 
 procedure TFmSpectralNoiseGate.FormShow(Sender: TObject);
 begin

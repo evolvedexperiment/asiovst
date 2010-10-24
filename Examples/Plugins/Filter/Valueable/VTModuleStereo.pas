@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs,
+  DAV_Types, DAV_VSTModule;
 
 type
   TTimeDomainConvole = procedure(InOutBuffer, IRBuffer: PSingle;
@@ -46,14 +47,13 @@ type
   TVTVSTModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMidSide(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamChannelChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+    procedure ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+    procedure ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamHiBypassLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHiBypassRightChange(Sender: TObject; const Index: Integer;var Value: Single);
     procedure ParamHiGainLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -63,8 +63,11 @@ type
     procedure ParamLowGainLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamLowGainRightChange(Sender: TObject; const Index: Integer;var Value: Single);
     procedure ParamOutGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterBypassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterBypassDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
+    FCriticalSection : TCriticalSection;
     FDriveMode       : TDriveMode;
     FBufferPos       : array [0..1] of Cardinal;
     FCircularBuffer  : array [0..1] of PDAVSingleFixedArray;
@@ -77,18 +80,19 @@ type
     FOutGain         : Single;
     FConvolveIR      : TTimeDomainConvole;
     FModeBypass      : array [0..1, 0..1] of Boolean;
-    FSemaphore       : Integer;
+    function GetKernelSize(Index: Integer): Cardinal;
+    procedure SetKernelSize(Index: Integer; const Value: Cardinal);
     procedure SetCPUDependant;
     procedure SetKernelSizeLeft(const Value: Cardinal);
     procedure SetKernelSizeRight(const Value: Cardinal);
+  protected
     procedure BuildBassFilterKernel(const index: Integer);
     procedure BuildTrebleFilterKernel(const index: Integer);
     procedure BuildCompleteFilterKernel(const index: Integer);
-    procedure BuildEntireFilters;
-    procedure KernelSizeLeftChanged;
-    procedure KernelSizeRightChanged;
-    function GetKernelSize(Index: Integer): Cardinal;
-    procedure SetKernelSize(Index: Integer; const Value: Cardinal);
+
+    procedure BuildEntireFilters; virtual;
+    procedure KernelSizeLeftChanged; virtual;
+    procedure KernelSizeRightChanged; virtual;
   public
     property KernelSizeLeft: Cardinal read FKernelSize[0] write SetKernelSizeLeft;
     property KernelSizeRight: Cardinal read FKernelSize[1] write SetKernelSizeRight;
@@ -107,7 +111,7 @@ const
   CKernelSizes: array [1..4, 0..1] of Integer =
     ((148, 55), (144, 49), (147, 55), (146, 50));
 
-  CKernelResourceNames: array [1..4, 0..1] of string =
+  CKernelResourceNames: array [1..4, 0..1] of AnsiString =
     (('Roasty1Bass', 'Roasty1Treble'), ('Roasty2Bass', 'Roasty2Treble'),
      ('Steamin1Bass', 'Steamin1Treble'), ('Steamin2Bass', 'Steamin2Treble'));
 
@@ -231,13 +235,26 @@ asm
     ffree st(0)
 end;
 
+
+{ TVTVSTModule }
+
+procedure TVTVSTModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TVTVSTModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TVTVSTModule.VSTModuleOpen(Sender: TObject);
 var
   i, m, n, sz : Integer;
 begin
- FDriveMode := dmRoasty1;
- FSemaphore := 0;
+ EditorFormClass := TFmVT;
 
+ FDriveMode := dmRoasty1;
  FOutGain := 1.25;
  FBufferPos[0] := 0;
  FBufferPos[1] := 0;
@@ -278,22 +295,16 @@ end;
 
 procedure TVTVSTModule.VSTModuleClose(Sender: TObject);
 begin
-  Dispose(FHistoryBuffer[0]);
-  Dispose(FHistoryBuffer[1]);
-  Dispose(FCircularBuffer[0]);
-  Dispose(FCircularBuffer[1]);
-  Dispose(FBassKernel[0]);
-  Dispose(FBassKernel[1]);
-  Dispose(FTrebleKernel[0]);
-  Dispose(FTrebleKernel[1]);
-  Dispose(FFilterKernel[0]);
-  Dispose(FFilterKernel[1]);
-end;
-
-procedure TVTVSTModule.VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-// Do not delete this if you are using the editor
-begin
-  GUI := TFmVT.Create(Self);
+ Dispose(FHistoryBuffer[0]);
+ Dispose(FHistoryBuffer[1]);
+ Dispose(FCircularBuffer[0]);
+ Dispose(FCircularBuffer[1]);
+ Dispose(FBassKernel[0]);
+ Dispose(FBassKernel[1]);
+ Dispose(FTrebleKernel[0]);
+ Dispose(FTrebleKernel[1]);
+ Dispose(FFilterKernel[0]);
+ Dispose(FFilterKernel[1]);
 end;
 
 procedure TVTVSTModule.SetCPUDependant;
@@ -309,24 +320,30 @@ end;
 
 procedure TVTVSTModule.KernelSizeLeftChanged;
 begin
-  ReallocMem(FFilterKernel[0], FKernelSize[0] * SizeOf(Single));
-  ReallocMem(FHistoryBuffer[0], FKernelSize[0] * SizeOf(Single));
-  ReallocMem(FCircularBuffer[0], 2 * FKernelSize[0] * SizeOf(Single));
+ ReallocMem(FFilterKernel[0], FKernelSize[0] * SizeOf(Single));
+ ReallocMem(FHistoryBuffer[0], FKernelSize[0] * SizeOf(Single));
+ ReallocMem(FCircularBuffer[0], 2 * FKernelSize[0] * SizeOf(Single));
 
-  FillChar(FFilterKernel[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
-  FillChar(FHistoryBuffer[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
-  FillChar(FCircularBuffer[0]^[0], 2 * FKernelSize[0] * SizeOf(Single), 0);
+ FillChar(FFilterKernel[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
+ FillChar(FHistoryBuffer[0]^[0], FKernelSize[0] * SizeOf(Single), 0);
+ FillChar(FCircularBuffer[0]^[0], 2 * FKernelSize[0] * SizeOf(Single), 0);
+
+ if FBufferPos[0] >= FKernelSize[0]
+  then FBufferPos[0] := 0;
 end;
 
 procedure TVTVSTModule.KernelSizeRightChanged;
 begin
-  ReallocMem(FFilterKernel[1], FKernelSize[1] * SizeOf(Single));
-  ReallocMem(FHistoryBuffer[1], FKernelSize[1] * SizeOf(Single));
-  ReallocMem(FCircularBuffer[1], 2 * FKernelSize[1] * SizeOf(Single));
+ ReallocMem(FFilterKernel[1], FKernelSize[1] * SizeOf(Single));
+ ReallocMem(FHistoryBuffer[1], FKernelSize[1] * SizeOf(Single));
+ ReallocMem(FCircularBuffer[1], 2 * FKernelSize[1] * SizeOf(Single));
 
-  FillChar(FFilterKernel[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
-  FillChar(FHistoryBuffer[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
-  FillChar(FCircularBuffer[1]^[0], 2 * FKernelSize[1] * SizeOf(Single), 0);
+ FillChar(FFilterKernel[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
+ FillChar(FHistoryBuffer[1]^[0], FKernelSize[1] * SizeOf(Single), 0);
+ FillChar(FCircularBuffer[1]^[0], 2 * FKernelSize[1] * SizeOf(Single), 0);
+
+ if FBufferPos[1] >= FKernelSize[1]
+  then FBufferPos[1] := 0;
 end;
 
 procedure TVTVSTModule.SetKernelSize(Index: Integer; const Value: Cardinal);
@@ -391,7 +408,7 @@ begin
   with TFmVT(EditorForm) do UpdateBassBypassRight;
 end;
 
-procedure TVTVSTModule.ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+procedure TVTVSTModule.ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
   case round(Parameter[Index]) of
     1 : PreDefined := 'Roasty 1';
@@ -401,7 +418,7 @@ begin
    end;
 end;
 
-procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
   case round(Parameter[Index]) of
     1 : PreDefined := 'Mid/Side';
@@ -520,13 +537,12 @@ procedure TVTVSTModule.BuildCompleteFilterKernel(const index: Integer);
 var
   TempIR : PDAVSingleFixedArray;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore, 1);
+ FCriticalSection.Enter;
  try
   if FModeBypass[index, 0] and FModeBypass[index, 1] then
    begin
-    FFilterKernel[index]^[0] := 0.8;
     KernelSize[index] := 1;
+    FFilterKernel[index]^[0] := 0.8;
    end else
   if FModeBypass[index, 0] then
    begin
@@ -549,7 +565,7 @@ begin
     Move(TempIR^[0], FFilterKernel[index]^[0], KernelSize[index] * SizeOf(Single));
    end;
  finally
-  dec(FSemaphore, 1);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -617,7 +633,7 @@ begin
  case Round(Value) of
    1 : OnProcess := VSTModuleProcessStereo;
    2 : OnProcess := VSTModuleProcessMidSide;
- else OnProcess := nil;
+  else OnProcess := nil;
  end;
  OnProcessReplacing := OnProcess;
  if EditorForm is TFmVT then
@@ -636,8 +652,7 @@ var
   i    : Cardinal;
   M, S : Single;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore, 1);
+ FCriticalSection.Enter;
  try
   for i := 0 to SampleFrames - 1 do
    begin
@@ -671,7 +686,7 @@ begin
      end;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave
  end;
 end;
 
@@ -679,8 +694,7 @@ procedure TVTVSTModule.VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOf
 var
   i: Cardinal;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore, 1);
+ FCriticalSection.Enter;
  try
   for i := 0 to SampleFrames - 1 do
    begin
@@ -711,19 +725,19 @@ begin
      end;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave
  end;
 end;
 
 procedure TVTVSTModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if abs(SampleRate - 44100) > 4000
+ if Abs(SampleRate - 44100) > 4000
   then ShowMessage('Samplerates other than 44.1 kHz have not been implemented yet');
 end;
 
 procedure TVTVSTModule.ParameterBypassDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Boolean(round(Parameter[Index]))
   then PreDefined := 'On'

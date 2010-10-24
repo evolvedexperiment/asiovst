@@ -69,7 +69,6 @@ implementation
 {$R *.DFM}
 
 uses
-  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
   DAV_GuiCommon, DAV_VSTModuleWithPrograms, BarberpoleShifterDM;
 
 { TFmBarberpoleShifter }

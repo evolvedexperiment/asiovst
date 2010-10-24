@@ -1,4 +1,5 @@
 object SchaebichefLPModule: TSchaebichefLPModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Schaebichef Lowpass Filter'
@@ -69,7 +70,6 @@ object SchaebichefLPModule: TSchaebichefLPModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess

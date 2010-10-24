@@ -36,39 +36,42 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLED, DAV_GuiLabel, DAV_GuiGroup,
-  DAV_GuiDial, DAV_GuiBaseControl;
+  DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiGroup,
+  DAV_GuiLED, DAV_GuiBaseControl, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList;
 
 type
   TFmUniQuE = class(TForm)
+    DialHigh: TGuiStitchedDial;
+    DialLow: TGuiStitchedDial;
+    DialMid: TGuiStitchedDial;
+    DialPresence: TGuiStitchedDial;
     GpUnique: TGuiGroup;
-    DialLow: TGuiDial;
-    DialMid: TGuiDial;
-    DialPresence: TGuiDial;
-    DialHigh: TGuiDial;
-    LEDOnOff: TGuiLED;
-    LbOnOff: TGuiLabel;
-    LbPad: TGuiLabel;
-    LEDPad: TGuiLED;
+    GSPL: TGuiStitchedPNGList;
+    LbHigh: TGuiLabel;
     LbInvert: TGuiLabel;
-    LEDInvert: TGuiLED;
     LbLow: TGuiLabel;
     LbMid: TGuiLabel;
+    LbOnOff: TGuiLabel;
+    LbPad: TGuiLabel;
     LbPRes: TGuiLabel;
-    LbHigh: TGuiLabel;
-    procedure OnOffClick(Sender: TObject);
+    LEDInvert: TGuiLED;
+    LEDOnOff: TGuiLED;
+    LEDPad: TGuiLED;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure DialHighChange(Sender: TObject);
     procedure DialLowChange(Sender: TObject);
     procedure DialMidChange(Sender: TObject);
     procedure DialPresenceChange(Sender: TObject);
-    procedure DialHighChange(Sender: TObject);
-    procedure PadClick(Sender: TObject);
     procedure InvertClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure OnOffClick(Sender: TObject);
+    procedure PadClick(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateOnOff;
     procedure UpdatePad;
@@ -87,56 +90,47 @@ uses
   DAV_GuiCommon, UniQuEDM;
 
 procedure TFmUniQuE.FormCreate(Sender: TObject);
-var
-  RS   : TResourceStream;
-  x, y : Integer;
-  s    : array[0..1] of Single;
-  b    : ShortInt;
-  Line : PRGB24Array;
 begin
- RS := TResourceStream.Create(hInstance, 'UniQuEKnob', 'BMP');
- try
-  DialLow.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
-  DialMid.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
-  DialPresence.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialHigh.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
- finally
-  RS.Free;
- end;
-
- // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.9 * s[0] + 0.1 * random;
-       b := round($1F + $32 * s[1]);
-       s[0] := s[1];
-       Line[x].B := b;
-       Line[x].G := b;
-       Line[x].R := b;
-      end;
-    end;
-  end;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmUniQuE.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmUniQuE.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmUniQuE.FormResize(Sender: TObject);
+var
+  X, Y   : Integer;
+  Filter : array [0..1] of Single;
+  Value  : ShortInt;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
+   for Y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[Y];
+     for X := 0 to Width - 1 do
+      begin
+       Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
+       Value := Round($1F + $32 * Filter[1]);
+       Filter[0] := Filter[1];
+       ScnLn[X].B := Value;
+       ScnLn[X].G := Value;
+       ScnLn[X].R := Value;
+      end;
+    end;
+  end;
 end;
 
 procedure TFmUniQuE.FormShow(Sender: TObject);
@@ -178,8 +172,8 @@ procedure TFmUniQuE.UpdateHigh;
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   if DialHigh.Position <> Parameter[6]
-    then DialHigh.Position := Parameter[6];
+   if DialHigh.Value <> Parameter[6]
+    then DialHigh.Value := Parameter[6];
   end;
 end;
 
@@ -187,8 +181,8 @@ procedure TFmUniQuE.UpdateLow;
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   if DialLow.Position <> Parameter[3]
-    then DialLow.Position := Parameter[3];
+   if DialLow.Value <> Parameter[3]
+    then DialLow.Value := Parameter[3];
   end;
 end;
 
@@ -196,8 +190,8 @@ procedure TFmUniQuE.UpdateMid;
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   if DialMid.Position <> Parameter[4]
-    then DialMid.Position := Parameter[4];
+   if DialMid.Value <> Parameter[4]
+    then DialMid.Value := Parameter[4];
   end;
 end;
 
@@ -205,8 +199,8 @@ procedure TFmUniQuE.UpdatePres;
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   if DialPresence.Position <> Parameter[5]
-    then DialPresence.Position := Parameter[5];
+   if DialPresence.Value <> Parameter[5]
+    then DialPresence.Value := Parameter[5];
   end;
 end;
 
@@ -214,7 +208,7 @@ procedure TFmUniQuE.DialLowChange(Sender: TObject);
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   Parameter[3] := DialLow.Position;
+   Parameter[3] := DialLow.Value;
   end;
 end;
 
@@ -222,7 +216,7 @@ procedure TFmUniQuE.DialMidChange(Sender: TObject);
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   Parameter[4] := DialMid.Position;
+   Parameter[4] := DialMid.Value;
   end;
 end;
 
@@ -230,7 +224,7 @@ procedure TFmUniQuE.DialPresenceChange(Sender: TObject);
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   Parameter[5] := DialPresence.Position;
+   Parameter[5] := DialPresence.Value;
   end;
 end;
 
@@ -238,7 +232,7 @@ procedure TFmUniQuE.DialHighChange(Sender: TObject);
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   Parameter[6] := DialHigh.Position;
+   Parameter[6] := DialHigh.Value;
   end;
 end;
 

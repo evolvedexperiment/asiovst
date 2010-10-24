@@ -65,8 +65,7 @@ implementation
 {$ENDIF}
 
 uses
-  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF} DAV_GuiCommon,
-  DAV_VSTModuleWithPrograms, DAV_VSTParameters, RingModulatorDM;
+  DAV_GuiCommon, DAV_VSTModuleWithPrograms, DAV_VSTParameters, RingModulatorDM;
 
 procedure TFmRingModulator.FormCreate(Sender: TObject);
 begin

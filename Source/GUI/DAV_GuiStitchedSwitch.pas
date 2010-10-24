@@ -54,6 +54,7 @@ type
   published
     property Anchors;
     property AutoSize;
+    property Color;
     property DefaultGlyphIndex;
     property GlyphIndex;
     property PopupMenu;

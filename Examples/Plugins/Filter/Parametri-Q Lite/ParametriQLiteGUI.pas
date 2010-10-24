@@ -36,8 +36,10 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, Menus,
-  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiLabel, DAV_GuiVUMeter, DAV_GuiEQGraph;
+  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
+  DAV_GuiVUMeter, DAV_GuiEQGraph, DAV_GuiPixelMap, DAV_GuiStitchedSwitch,
+  DAV_GuiStitchedDisplay, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmParametriQLite = class(TForm)
@@ -49,33 +51,34 @@ type
     Box6: TShape;
     Box7: TShape;
     Box8: TShape;
-    DialBW1: TGuiDial;
-    DialBW2: TGuiDial;
-    DialBW3: TGuiDial;
-    DialBW4: TGuiDial;
-    DialBW5: TGuiDial;
-    DialBW6: TGuiDial;
-    DialBW7: TGuiDial;
-    DialBW8: TGuiDial;
-    DialFreq1: TGuiDial;
-    DialFreq2: TGuiDial;
-    DialFreq3: TGuiDial;
-    DialFreq4: TGuiDial;
-    DialFreq5: TGuiDial;
-    DialFreq6: TGuiDial;
-    DialFreq7: TGuiDial;
-    DialFreq8: TGuiDial;
-    DialGain1: TGuiDial;
-    DialGain2: TGuiDial;
-    DialGain3: TGuiDial;
-    DialGain4: TGuiDial;
-    DialGain5: TGuiDial;
-    DialGain6: TGuiDial;
-    DialGain7: TGuiDial;
-    DialGain8: TGuiDial;
-    DialInput: TGuiDial;
-    DialOutput: TGuiDial;
-    GuiDialImageList: TGuiDialImageList;
+    DialBW1: TGuiStitchedDial;
+    DialBW2: TGuiStitchedDial;
+    DialBW3: TGuiStitchedDial;
+    DialBW4: TGuiStitchedDial;
+    DialBW5: TGuiStitchedDial;
+    DialBW6: TGuiStitchedDial;
+    DialBW7: TGuiStitchedDial;
+    DialBW8: TGuiStitchedDial;
+    DialFreq1: TGuiStitchedDial;
+    DialFreq2: TGuiStitchedDial;
+    DialFreq3: TGuiStitchedDial;
+    DialFreq4: TGuiStitchedDial;
+    DialFreq5: TGuiStitchedDial;
+    DialFreq6: TGuiStitchedDial;
+    DialFreq7: TGuiStitchedDial;
+    DialFreq8: TGuiStitchedDial;
+    DialGain1: TGuiStitchedDial;
+    DialGain2: TGuiStitchedDial;
+    DialGain3: TGuiStitchedDial;
+    DialGain4: TGuiStitchedDial;
+    DialGain5: TGuiStitchedDial;
+    DialGain6: TGuiStitchedDial;
+    DialGain7: TGuiStitchedDial;
+    DialGain8: TGuiStitchedDial;
+    DialInput: TGuiStitchedDial;
+    DialOutput: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
+    GuiEQGraph: TGuiEQGraph;
     GuiMax1: TGuiLabel;
     GuiMax2: TGuiLabel;
     GuiMax3: TGuiLabel;
@@ -147,6 +150,18 @@ type
     LbTypeValue6: TGuiLabel;
     LbTypeValue7: TGuiLabel;
     LbTypeValue8: TGuiLabel;
+    MIAllpass: TMenuItem;
+    MIBandpass: TMenuItem;
+    MIBypass: TMenuItem;
+    MIHighpass: TMenuItem;
+    MIHighshelf: TMenuItem;
+    MILowpass: TMenuItem;
+    MILowshelf: TMenuItem;
+    MILowShelfA: TMenuItem;
+    MINotch: TMenuItem;
+    MIPeak: TMenuItem;
+    N1: TMenuItem;
+    PopupFilter: TPopupMenu;
     SeparatorA1: TShape;
     SeparatorA2: TShape;
     SeparatorA3: TShape;
@@ -184,22 +199,9 @@ type
     ShapeInputLeft: TShape;
     ShapeOutputBottom: TShape;
     ShapeOutputRight: TShape;
-    Switch: TGuiSwitch;
-    VUMeter: TGuiVUMeter;
-    PopupFilter: TPopupMenu;
-    MIBypass: TMenuItem;
-    MIPeak: TMenuItem;
-    MILowshelf: TMenuItem;
-    MIHighshelf: TMenuItem;
-    MILowpass: TMenuItem;
-    MIHighpass: TMenuItem;
-    MIAllpass: TMenuItem;
-    MINotch: TMenuItem;
-    MIBandpass: TMenuItem;
-    N1: TMenuItem;
+    Switch: TGuiStitchedSwitch;
     Timer: TTimer;
-    MILowShelfA: TMenuItem;
-    GuiEQGraph: TGuiEQGraph;
+    VUMeter: TGuiStitchedDisplay;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -222,8 +224,10 @@ type
     procedure PopupFilterPopup(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
+    procedure FormResize(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    FBackgroundBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateGain(const Index: Integer);
     procedure UpdateBandwidth(const Index: Integer);
@@ -234,161 +238,61 @@ type
 implementation
 
 uses
-  PngImage, ParametriQLiteDM, DAV_Common, DAV_GuiCommon, DAV_Approximations,
-  DAV_VSTModuleWithPrograms;
+  DAV_Common, DAV_GuiCommon, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  ParametriQLiteDM;
 
 {$R *.DFM}
 
 procedure TFmParametriQLite.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  PngBmp : TPngObject;
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  b      : ShortInt;
-  rct    : TRect;
-  Line   : PRGB24Array;
 begin
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Knob1', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[0].DialBitmap do
-    begin
-     Canvas.Brush.Color := Color;
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialFreq1.DialImageIndex := 0;
-   DialFreq2.DialImageIndex := 0;
-   DialFreq3.DialImageIndex := 0;
-   DialFreq4.DialImageIndex := 0;
-   DialFreq5.DialImageIndex := 0;
-   DialFreq6.DialImageIndex := 0;
-   DialFreq7.DialImageIndex := 0;
-   DialFreq8.DialImageIndex := 0;
-   DialBW1.DialImageIndex   := 0;
-   DialBW2.DialImageIndex   := 0;
-   DialBW3.DialImageIndex   := 0;
-   DialBW4.DialImageIndex   := 0;
-   DialBW5.DialImageIndex   := 0;
-   DialBW6.DialImageIndex   := 0;
-   DialBW7.DialImageIndex   := 0;
-   DialBW8.DialImageIndex   := 0;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Knob2', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[1].DialBitmap do
-    begin
-     Canvas.Brush.Color := Color;
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialGain1.DialImageIndex := 1;
-   DialGain2.DialImageIndex := 1;
-   DialGain3.DialImageIndex := 1;
-   DialGain4.DialImageIndex := 1;
-   DialGain5.DialImageIndex := 1;
-   DialGain6.DialImageIndex := 1;
-   DialGain7.DialImageIndex := 1;
-   DialGain8.DialImageIndex := 1;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Knob3', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   with GuiDialImageList[2].DialBitmap do
-    begin
-     Canvas.Brush.Color := Color;
-     Canvas.FillRect(Canvas.ClipRect);
-     Assign(PngBmp);
-    end;
-   DialInput.DialImageIndex  := 2;
-   DialOutput.DialImageIndex := 2;
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'VUMeter', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   VUMeter.VUMeterBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'Switch', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   Switch.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-
- // Create Background Image
- FBackgroundBitmap := TBitmap.Create;
- with FBackgroundBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.9 * s[0] + 0.1 * random;
-       b := round($4 * s[1]) - $2;
-       s[0] := s[1];
-       Line[x].B := $2F + b;
-       Line[x].G := $30 + b;
-       Line[x].R := $2E + b;
-      end;
-    end;
-   rct := Rect(8, 8, 221, 190);
-   Canvas.Pen.Color := $00424341;
-   Canvas.Brush.Color := $00161715;
-   Canvas.Rectangle(rct);
-  end;
-
+ FBackground := TGuiPixelMapMemory.Create;
  ShapeInfo.ControlStyle := ShapeInfo.ControlStyle + [csOpaque];
+end;
+
+procedure TFmParametriQLite.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmParametriQLite.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgroundBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmParametriQLite.FormResize(Sender: TObject);
+var
+  X, Y   : Integer;
+  Filter : array [0..1] of Single;
+  Value  : ShortInt;
+  Rct    : TRect;
+  ScnLn  : PPixel32Array;
+const
+  CDisplayRectFrame : TPixel32 = (ARGB: $FF414342);
+  CDisplayRectFill : TPixel32 = (ARGB: $FF151716);
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
+   for Y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[Y];
+     for X := 0 to Width - 1 do
+      begin
+       Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
+       Value := Round($C * Filter[1]) - $6;
+       Filter[0] := Filter[1];
+       ScnLn[X].B := $2F + Value;
+       ScnLn[X].G := $30 + Value;
+       ScnLn[X].R := $2E + Value;
+      end;
+    end;
+   Rct := Rect(8, 8, 221, 190);
+   FillRect(Rct, CDisplayRectFill);
+   FrameRect(Rct, CDisplayRectFrame);
+  end;
 end;
 
 procedure TFmParametriQLite.FormShow(Sender: TObject);
@@ -548,7 +452,7 @@ const
 begin
  with TParametriQLiteDataModule(Owner) do
   begin
-   if Switch.GlyphNr = 0
+   if Switch.GlyphIndex = 0
     then PeakLevel := InputPeakLevel
     else PeakLevel := OutputPeakLevel;
 
@@ -562,48 +466,48 @@ begin
   begin
    case Index of
     0 : begin
-         if DialFreq1.Position <> Parameter[Index * 4 + 1]
-          then DialFreq1.Position := Parameter[Index * 4 + 1];
+         if DialFreq1.Value <> Parameter[Index * 4 + 1]
+          then DialFreq1.Value := Parameter[Index * 4 + 1];
 //         LbFreq1.Caption := ParameterDisplay[Index * 4 + 1];
         end;
     1 : begin
-         if DialFreq2.Position <> Parameter[Index * 4 + 1]
-          then DialFreq2.Position := Parameter[Index * 4 + 1];
+         if DialFreq2.Value <> Parameter[Index * 4 + 1]
+          then DialFreq2.Value := Parameter[Index * 4 + 1];
 //         LbFreq2.Caption := ParameterDisplay[Index * 4 + 1];
         end;
     2 : begin
-         if DialFreq3.Position <> Parameter[Index * 4 + 1]
-          then DialFreq3.Position := Parameter[Index * 4 + 1];
+         if DialFreq3.Value <> Parameter[Index * 4 + 1]
+          then DialFreq3.Value := Parameter[Index * 4 + 1];
 //         LbFreq3.Caption := ParameterDisplay[Index * 4 + 1];
         end;
     3 : begin
-         if DialFreq4.Position <> Parameter[Index * 4 + 1]
-          then DialFreq4.Position := Parameter[Index * 4 + 1];
+         if DialFreq4.Value <> Parameter[Index * 4 + 1]
+          then DialFreq4.Value := Parameter[Index * 4 + 1];
 //         LbFreq4.Caption := ParameterDisplay[Index * 4 + 1];
         end;
     4 : begin
-         if DialFreq5.Position <> Parameter[Index * 4 + 1]
-          then DialFreq5.Position := Parameter[Index * 4 + 1];
+         if DialFreq5.Value <> Parameter[Index * 4 + 1]
+          then DialFreq5.Value := Parameter[Index * 4 + 1];
 //         LbFreq5.Caption := ParameterDisplay[Index * 4 + 1];
         end;
     5 : begin
-         if DialFreq6.Position <> Parameter[Index * 4 + 1]
-          then DialFreq6.Position := Parameter[Index * 4 + 1];
+         if DialFreq6.Value <> Parameter[Index * 4 + 1]
+          then DialFreq6.Value := Parameter[Index * 4 + 1];
 //         LbFreq6.Caption := ParameterDisplay[Index * 4 + 1];
         end;
     6 : begin
-         if DialFreq7.Position <> Parameter[Index * 4 + 1]
-          then DialFreq7.Position := Parameter[Index * 4 + 1];
+         if DialFreq7.Value <> Parameter[Index * 4 + 1]
+          then DialFreq7.Value := Parameter[Index * 4 + 1];
 //         LbFreq7.Caption := ParameterDisplay[Index * 4 + 1];
         end;
     7 : begin
-         if DialFreq8.Position <> Parameter[Index * 4 + 1]
-          then DialFreq8.Position := Parameter[Index * 4 + 1];
+         if DialFreq8.Value <> Parameter[Index * 4 + 1]
+          then DialFreq8.Value := Parameter[Index * 4 + 1];
 //         LbFreq8.Caption := ParameterDisplay[Index * 4 + 1];
         end;
    end;
   end;
- GuiEQGraph.Invalidate;
+ GuiEQGraph.ChartChanged;
 end;
 
 procedure TFmParametriQLite.UpdateBandwidth(const Index: Integer);
@@ -612,48 +516,48 @@ begin
   begin
    case Index of
     0 : begin
-         if DialBW1.Position <> Parameter[Index * 4 + 2]
-          then DialBW1.Position := Parameter[Index * 4 + 2];
+         if DialBW1.Value <> Parameter[Index * 4 + 2]
+          then DialBW1.Value := Parameter[Index * 4 + 2];
 //         LbBW1.Caption := ParameterDisplay[Index * 4 + 2];
         end;
     1 : begin
-         if DialBW2.Position <> Parameter[Index * 4 + 2]
-          then DialBW2.Position := Parameter[Index * 4 + 2];
+         if DialBW2.Value <> Parameter[Index * 4 + 2]
+          then DialBW2.Value := Parameter[Index * 4 + 2];
 //         LbBW2.Caption := ParameterDisplay[Index * 4 + 2];
         end;
     2 : begin
-         if DialBW3.Position <> Parameter[Index * 4 + 2]
-          then DialBW3.Position := Parameter[Index * 4 + 2];
+         if DialBW3.Value <> Parameter[Index * 4 + 2]
+          then DialBW3.Value := Parameter[Index * 4 + 2];
 //         LbBW3.Caption := ParameterDisplay[Index * 4 + 2];
         end;
     3 : begin
-         if DialBW4.Position <> Parameter[Index * 4 + 2]
-          then DialBW4.Position := Parameter[Index * 4 + 2];
+         if DialBW4.Value <> Parameter[Index * 4 + 2]
+          then DialBW4.Value := Parameter[Index * 4 + 2];
 //         LbBW4.Caption := ParameterDisplay[Index * 4 + 2];
         end;
     4 : begin
-         if DialBW5.Position <> Parameter[Index * 4 + 2]
-          then DialBW5.Position := Parameter[Index * 4 + 2];
+         if DialBW5.Value <> Parameter[Index * 4 + 2]
+          then DialBW5.Value := Parameter[Index * 4 + 2];
 //         LbBW5.Caption := ParameterDisplay[Index * 4 + 2];
         end;
     5 : begin
-         if DialBW6.Position <> Parameter[Index * 4 + 2]
-          then DialBW6.Position := Parameter[Index * 4 + 2];
+         if DialBW6.Value <> Parameter[Index * 4 + 2]
+          then DialBW6.Value := Parameter[Index * 4 + 2];
 //         LbBW6.Caption := ParameterDisplay[Index * 4 + 2];
         end;
     6 : begin
-         if DialBW7.Position <> Parameter[Index * 4 + 2]
-          then DialBW7.Position := Parameter[Index * 4 + 2];
+         if DialBW7.Value <> Parameter[Index * 4 + 2]
+          then DialBW7.Value := Parameter[Index * 4 + 2];
 //         LbBW7.Caption := ParameterDisplay[Index * 4 + 2];
         end;
     7 : begin
-         if DialBW8.Position <> Parameter[Index * 4 + 2]
-          then DialBW8.Position := Parameter[Index * 4 + 2];
+         if DialBW8.Value <> Parameter[Index * 4 + 2]
+          then DialBW8.Value := Parameter[Index * 4 + 2];
 //         LbBW8.Caption := ParameterDisplay[Index * 4 + 2];
         end;
    end;
   end;
- GuiEQGraph.Invalidate;
+ GuiEQGraph.ChartChanged;
 end;
 
 procedure TFmParametriQLite.UpdateGain(const Index: Integer);
@@ -662,48 +566,48 @@ begin
   begin
    case Index of
     0 : begin
-         if DialGain1.Position <> Parameter[Index * 4 + 3]
-          then DialGain1.Position := Parameter[Index * 4 + 3];
+         if DialGain1.Value <> Parameter[Index * 4 + 3]
+          then DialGain1.Value := Parameter[Index * 4 + 3];
 //         LbGain1.Caption := ParameterDisplay[Index * 4 + 3];
         end;
     1 : begin
-         if DialGain2.Position <> Parameter[Index * 4 + 3]
-          then DialGain2.Position := Parameter[Index * 4 + 3];
+         if DialGain2.Value <> Parameter[Index * 4 + 3]
+          then DialGain2.Value := Parameter[Index * 4 + 3];
 //         LbGain2.Caption := ParameterDisplay[Index * 4 + 3];
         end;
     2 : begin
-         if DialGain3.Position <> Parameter[Index * 4 + 3]
-          then DialGain3.Position := Parameter[Index * 4 + 3];
+         if DialGain3.Value <> Parameter[Index * 4 + 3]
+          then DialGain3.Value := Parameter[Index * 4 + 3];
 //         LbGain3.Caption := ParameterDisplay[Index * 4 + 3];
         end;
     3 : begin
-         if DialGain4.Position <> Parameter[Index * 4 + 3]
-          then DialGain4.Position := Parameter[Index * 4 + 3];
+         if DialGain4.Value <> Parameter[Index * 4 + 3]
+          then DialGain4.Value := Parameter[Index * 4 + 3];
 //         LbGain4.Caption := ParameterDisplay[Index * 4 + 3];
         end;
     4 : begin
-         if DialGain5.Position <> Parameter[Index * 4 + 3]
-          then DialGain5.Position := Parameter[Index * 4 + 3];
+         if DialGain5.Value <> Parameter[Index * 4 + 3]
+          then DialGain5.Value := Parameter[Index * 4 + 3];
 //         LbGain5.Caption := ParameterDisplay[Index * 4 + 3];
         end;
     5 : begin
-         if DialGain6.Position <> Parameter[Index * 4 + 3]
-          then DialGain6.Position := Parameter[Index * 4 + 3];
+         if DialGain6.Value <> Parameter[Index * 4 + 3]
+          then DialGain6.Value := Parameter[Index * 4 + 3];
 //         LbGain6.Caption := ParameterDisplay[Index * 4 + 3];
         end;
     6 : begin
-         if DialGain7.Position <> Parameter[Index * 4 + 3]
-          then DialGain7.Position := Parameter[Index * 4 + 3];
+         if DialGain7.Value <> Parameter[Index * 4 + 3]
+          then DialGain7.Value := Parameter[Index * 4 + 3];
 //         LbGain7.Caption := ParameterDisplay[Index * 4 + 3];
         end;
     7 : begin
-         if DialGain8.Position <> Parameter[Index * 4 + 3]
-          then DialGain8.Position := Parameter[Index * 4 + 3];
+         if DialGain8.Value <> Parameter[Index * 4 + 3]
+          then DialGain8.Value := Parameter[Index * 4 + 3];
 //         LbGain8.Caption := ParameterDisplay[Index * 4 + 3];
         end;
    end;
   end;
- GuiEQGraph.Invalidate;
+ GuiEQGraph.ChartChanged;
 end;
 
 procedure TFmParametriQLite.UpdateFilterType(const Index: Integer);
@@ -721,7 +625,7 @@ begin
     7 : LbTypeValue8.Caption := ParameterDisplay[Index * 4 + 4];
    end;
   end;
- GuiEQGraph.Invalidate;
+ GuiEQGraph.ChartChanged;
 end;
 
 procedure TFmParametriQLite.DialFreqChange(Sender: TObject);
@@ -730,8 +634,8 @@ var
 begin
  with TParametriQLiteDataModule(Owner) do
   begin
-   Band := (TGuiDial(Sender).Tag - 1);
-   Parameter[Band * 4 + 1] := TGuiDial(Sender).Position;
+   Band := (TGuiStitchedDial(Sender).Tag - 1);
+   Parameter[Band * 4 + 1] := TGuiStitchedDial(Sender).Value;
   end;
 end;
 
@@ -741,8 +645,8 @@ var
 begin
  with TParametriQLiteDataModule(Owner) do
   begin
-   Band := (TGuiDial(Sender).Tag - 1);
-   Parameter[Band * 4 + 2] := TGuiDial(Sender).Position;
+   Band := (TGuiStitchedDial(Sender).Tag - 1);
+   Parameter[Band * 4 + 2] := TGuiStitchedDial(Sender).Value;
   end;
 end;
 
@@ -752,8 +656,8 @@ var
 begin
  with TParametriQLiteDataModule(Owner) do
   begin
-   Band := (TGuiDial(Sender).Tag - 1);
-   Parameter[Band * 4 + 3] := TGuiDial(Sender).Position;
+   Band := (TGuiStitchedDial(Sender).Tag - 1);
+   Parameter[Band * 4 + 3] := TGuiStitchedDial(Sender).Value;
   end;
 end;
 
@@ -761,7 +665,7 @@ procedure TFmParametriQLite.DialInputChange(Sender: TObject);
 begin
  with TParametriQLiteDataModule(Owner) do
   begin
-   Parameter[0] := DialInput.Position;
+   Parameter[0] := DialInput.Value;
   end;
 end;
 
@@ -769,7 +673,7 @@ procedure TFmParametriQLite.DialOutputChange(Sender: TObject);
 begin
  with TParametriQLiteDataModule(Owner) do
   begin
-   Parameter[numParams - 1] := DialOutput.Position;
+   Parameter[numParams - 1] := DialOutput.Value;
   end;
 end;
 
