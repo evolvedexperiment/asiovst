@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Forms, Controls, StdCtrls, DAV_VSTModule;
 
 type

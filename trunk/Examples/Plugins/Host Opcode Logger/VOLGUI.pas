@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  StdCtrls, Controls, Dialogs;
+  {$IFDEF FPC} LCLIntf, {$IFDEF MSWINDOWS} Windows,  {$ENDIF}
+  {$ELSE} Windows, Messages, {$ENDIF} SysUtils, Classes, Forms, StdCtrls,
+  Controls, Dialogs, DAV_Types, DAV_VSTModule;
 
 type
   TFmVOL = class(TForm)
@@ -60,7 +61,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   VOLDM;
@@ -111,7 +116,11 @@ var
 begin
  with SaveDialog do
   begin
+   {$IFDEF FPC}
+   FormatSettings := DefaultFormatSettings;
+   {$ELSE}
    GetLocaleFormatSettings(SysLocale.DefaultLCID, FormatSettings);
+   {$ENDIF}
    FormatSettings.ShortDateFormat := 'yyyymmdd';
    FormatSettings.LongTimeFormat := 'yyyymmdd';
    FormatSettings.ShortTimeFormat := 'hhmmss';

@@ -1050,7 +1050,7 @@ type
 
 function FourCharToLong(C1, C2, C3, C4: AnsiChar): Longint;
 function FMod(d1, d2: Double): Double;
-function Rect(Left, Top, Right, Bottom : Smallint):ERect;
+function Rect(Left, Top, Right, Bottom : Smallint): ERect;
 
 procedure dB2string(Value: Single; text: PAnsiChar);
 procedure dB2stringRound(Value: Single; text: PAnsiChar);

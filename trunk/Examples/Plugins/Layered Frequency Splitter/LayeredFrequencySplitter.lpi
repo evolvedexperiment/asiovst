@@ -65,8 +65,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="LayeredFreqSplitGUI"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="36" Y="3"/>
         <UsageCount Value="20"/>
