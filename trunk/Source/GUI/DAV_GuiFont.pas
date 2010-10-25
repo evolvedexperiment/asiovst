@@ -37,13 +37,13 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
   {$IFDEF Windows} Windows, {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
+  Graphics, Classes, SysUtils, DAV_Common, DAV_Classes, DAV_GuiCommon,
   DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
 
 {-$DEFINE UseShadowBuffer}
 
 type
-  TCustomGuiFont = class(TComponent)
+  TGuiCustomFont = class(TComponent)
   private
     FAntiAliasing : Boolean;
     FShadow       : TGuiShadow;
@@ -68,8 +68,9 @@ type
     property Antialiasing: Boolean read FAntiAliasing write SetAntialiasing;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
+  TGuiCustomFontClass = class of TGuiCustomFont;
 
-  TGuiCustomGDIFont = class(TCustomGuiFont)
+  TGuiCustomGDIFont = class(TGuiCustomFont)
   private
     FFont         : TFont;
     FBuffer       : TGuiByteMapDIB;
@@ -136,6 +137,9 @@ type
     property FontOversampling;
     property Shadow;
   end;
+
+var
+  FontClassList: TClassList;
 
 implementation
 
@@ -260,9 +264,9 @@ begin
 end;
 
 
-{ TCustomGuiFont }
+{ TGuiCustomFont }
 
-constructor TCustomGuiFont.Create(AOwner: TComponent);
+constructor TGuiCustomFont.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
  FShadow          := TGuiShadow.Create;
@@ -271,7 +275,7 @@ begin
  FShadowColor     := pxBlack32;
 end;
 
-destructor TCustomGuiFont.Destroy;
+destructor TGuiCustomFont.Destroy;
 begin
  FreeAndNil(FShadow);
  FreeAndNil(FBlurFilter);
@@ -284,18 +288,18 @@ begin
  inherited;
 end;
 
-procedure TCustomGuiFont.Changed;
+procedure TGuiCustomFont.Changed;
 begin
  if Assigned(FOnChange)
   then FOnChange(Self);
 end;
 
-procedure TCustomGuiFont.AntiAliasingChanged;
+procedure TGuiCustomFont.AntiAliasingChanged;
 begin
  Changed;
 end;
 
-procedure TCustomGuiFont.SetAntialiasing(const Value: Boolean);
+procedure TGuiCustomFont.SetAntialiasing(const Value: Boolean);
 begin
  if FAntiAliasing <> Value then
   begin
@@ -304,13 +308,13 @@ begin
   end;
 end;
 
-procedure TCustomGuiFont.SetShadow(const Value: TGuiShadow);
+procedure TGuiCustomFont.SetShadow(const Value: TGuiShadow);
 begin
  FShadow.Assign(Value);
  Changed;
 end;
 
-procedure TCustomGuiFont.ShadowChangedHandler(Sender: TObject);
+procedure TGuiCustomFont.ShadowChangedHandler(Sender: TObject);
 begin
  FShadowColor := ConvertColor(FShadow.Color);
  Changed;
@@ -709,5 +713,16 @@ begin
     end;
   end;
 end;
+
+procedure RegisterFontClass(FontClass: TGuiCustomFontClass);
+begin
+ if not Assigned(FontClassList) then FontClassList := TClassList.Create;
+ FontClassList.Add(FontClass);
+end;
+
+initialization
+  // register Font classes
+  RegisterFontClass(TGuiSimpleGDIFont);
+  RegisterFontClass(TGuiOversampledGDIFont);
 
 end.

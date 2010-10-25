@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Classes, Graphics, Forms, Messages, SysUtils, RTLConsts, Controls,
-  DAV_GuiBaseControl;
+  DAV_Classes, DAV_GuiBaseControl;
 
 type
   TCustomAxisFlag = (cafAutoGranularity, cafAutoExtendBounds);
@@ -990,14 +990,14 @@ procedure TGuiGraphXYSeriesCollectionItem.SetSeriesClassName(const Value: string
 var
   SeriesClass: TCustomGuiGraphXYSeriesClass;
 begin
-  if (Value <> '') and (FSeries.ClassName <> Value) and Assigned(SeriesClassList) then
+ if (Value <> '') and (FSeries.ClassName <> Value) and Assigned(SeriesClassList) then
   begin
-    SeriesClass := TCustomGuiGraphXYSeriesClass(SeriesClassList.Find(Value));
-    if Assigned(SeriesClass) then
+   SeriesClass := TCustomGuiGraphXYSeriesClass(SeriesClassList.Find(Value));
+   if Assigned(SeriesClass) then
     begin
-      FSeries.Free;
-      FSeries := SeriesClass.Create;
-      Changed;
+     FSeries.Free;
+     FSeries := SeriesClass.Create;
+     Changed;
     end;
   end;
 end;

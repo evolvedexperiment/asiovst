@@ -332,12 +332,6 @@ begin
    do BufferChanged;
 end;
 
-procedure TGuiCustomStitchedCollectionItem.SetWidth(const Value: Integer);
-begin
- if Value < 0 then Exit;
- FStitchedPixelMap.Width := Value;
-end;
-
 procedure TGuiCustomStitchedCollectionItem.SetDisplayName(const Value: string);
 begin
  if FDisplayName <> Value then
@@ -345,6 +339,12 @@ begin
    FDisplayName := Value;
    inherited;
   end;
+end;
+
+procedure TGuiCustomStitchedCollectionItem.SetWidth(const Value: Integer);
+begin
+ if Value < 0 then Exit;
+ FStitchedPixelMap.Width := Value;
 end;
 
 procedure TGuiCustomStitchedCollectionItem.SetHeight(const Value: Integer);

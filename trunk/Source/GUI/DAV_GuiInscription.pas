@@ -44,7 +44,7 @@ type
     FAlignment        : TAlignment;
     FCaption          : string;
     FTransparent      : Boolean;
-    FFont             : TCustomGuiFont;
+    FFont             : TGuiCustomFont;
     FBuffer           : TGuiCustomPixelMap;
     FBackBuffer       : TGuiCustomPixelMap;
     FUpdateBackBuffer : Boolean;
@@ -52,7 +52,7 @@ type
     procedure SetTransparent(Value: Boolean); virtual;
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
-    procedure SetFont(const Value: TCustomGuiFont);
+    procedure SetFont(const Value: TGuiCustomFont);
   protected
     procedure AlignmentChanged; virtual;
     procedure ColorChanged;
@@ -78,7 +78,7 @@ type
 
     property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
     property Caption: string read FCaption write SetCaption;
-    property Font: TCustomGuiFont read FFont write SetFont;
+    property Font: TGuiCustomFont read FFont write SetFont;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
@@ -282,6 +282,8 @@ begin
 end;
 
 procedure TCustomGuiInscription.UpdateBuffer;
+var
+  TextSize : TSize;
 begin
  FUpdateBuffer := False;
 
@@ -295,8 +297,17 @@ begin
  Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
    FBuffer.Width * SizeOf(TPixel32));
 
- if Assigned(FFont)
-  then FFont.TextOut(FCaption, FBuffer, 0, 0);
+ if Assigned(FFont) then
+  begin
+   TextSize := FFont.TextExtend(FCaption);
+   case FAlignment of
+    taLeftJustify  : TextSize.cx := 0;
+    taRightJustify : TextSize.cx := Width - TextSize.cx;
+    taCenter       : TextSize.cx := (Width - TextSize.cx) div 2;
+   end;
+  end;
+ TextSize.cy := 0;
+ FFont.TextOut(FCaption, FBuffer, TextSize.cx, TextSize.cy);
 end;
 
 procedure TCustomGuiInscription.Paint;
@@ -377,7 +388,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiInscription.SetFont(const Value: TCustomGuiFont);
+procedure TCustomGuiInscription.SetFont(const Value: TGuiCustomFont);
 begin
  if FFont <> Value then
   begin
