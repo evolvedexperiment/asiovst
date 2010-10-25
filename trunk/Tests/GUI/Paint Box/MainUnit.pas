@@ -1,10 +1,12 @@
 unit MainUnit;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  DAV_GuiGraphicControl, DAV_GuiCommon, DAV_GuiPixelMap;
+  DAV_GuiPaintBox, DAV_GuiCommon, DAV_GuiPixelMap;
 
 type
   TFmPaintBoxTest = class(TForm)
@@ -24,7 +26,11 @@ var
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 procedure TFmPaintBoxTest.FormCreate(Sender: TObject);
 begin
