@@ -171,7 +171,11 @@ var
 
 implementation
 
+{$IFDEF FPC}
 {$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Filectrl, Math, Registry, IniFiles, DAV_Approximations, SettingsUnit,

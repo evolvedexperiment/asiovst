@@ -89,17 +89,17 @@ asm
  fld   [eax].Single
  fmul  [edx].Single
  fstp  [eax].Single
- add eax, 4
- add edx, 4
+ add   eax, 4
+ add   edx, 4
 
  // Nyquist
  fld   [eax].Single
  fmul  [edx].Single
  fstp  [eax].Single
- add eax, 4
- add edx, 4
+ add   eax, 4
+ add   edx, 4
 
- dec ecx
+ dec   ecx
 @Start:
   fld   [eax    ].Single  // A.Re
   fld   [eax + 4].Single  // A.Im, A.Re
@@ -116,9 +116,9 @@ asm
   fxch  st(2)             // B.Im, A.Re, A.Im * B.Re
   fmulp                   // B.Im * A.Re, A.Im * B.Re
   faddp st(1), st(0)      // A.Im * B.Re + A.Re * B.Im
-  fstp [eax + 4].Single   // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 8
-  add edx, 8
+  fstp  [eax + 4].Single  // A.Im := A.Im * B.Re + A.Re * B.Im
+  add   eax, 8
+  add   edx, 8
  loop @Start
 
  // Nyquist
@@ -675,18 +675,38 @@ end;
 
 function FindMaximum(Data: PSingle; SampleCount: Integer): Integer;
 {$IFDEF PUREPASCAL}
-var i : Integer;
-    d : Double;
+var
+  i : Integer;
+  d : Double;
 begin
- result := 0;
+ Result := 0;
  Assert(SampleCount > 0);
- d := abs(Data^);
- for i:=1 to SampleCount-1 do
+ d := Abs(Data^);
+ for i := 1 to SampleCount - 1 do
   begin
-   if abs(Data^) > d then
+   if Abs(Data^) > d then
     begin
      Result := i;
-     d := abs(Data^);
+     d := Abs(Data^);
+    end;
+   Inc(Data);
+  end;
+end;
+{$ELSE}
+{$IFDEF CPUx86_64}
+var
+  i : Integer;
+  d : Double;
+begin
+ Result := 0;
+ Assert(SampleCount > 0);
+ d := Abs(Data^);
+ for i := 1 to SampleCount - 1 do
+  begin
+   if Abs(Data^) > d then
+    begin
+     Result := i;
+     d := Abs(Data^);
     end;
    Inc(Data);
   end;
@@ -724,6 +744,7 @@ asm
 
  @End:
 end;
+{$ENDIF}
 {$ENDIF}
 
 function FindMaximum(Data: PDouble; SampleCount: Integer): Integer;

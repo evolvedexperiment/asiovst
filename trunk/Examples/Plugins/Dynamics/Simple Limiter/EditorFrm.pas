@@ -35,22 +35,22 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule;
+  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Forms, Controls, StdCtrls, DAV_VSTModule;
 
 type
   TEditorForm = class(TForm)
-    LbThreshold: TLabel;
-    SBThreshold: TScrollBar;
-    LbThresholdValue: TLabel;
     LbAttack: TLabel;
     LbAttackValue: TLabel;
-    SBAttack: TScrollBar;
     LbRelease: TLabel;
     LbReleaseValue: TLabel;
+    LbThreshold: TLabel;
+    LbThresholdValue: TLabel;
+    SBAttack: TScrollBar;
     SBRelease: TScrollBar;
-    procedure SBThresholdChange(Sender: TObject);
+    SBThreshold: TScrollBar;
     procedure FormShow(Sender: TObject);
+    procedure SBThresholdChange(Sender: TObject);
     procedure SBAttackChange(Sender: TObject);
     procedure SBReleaseChange(Sender: TObject);
   public
@@ -61,7 +61,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   SimpleLimiterDM;

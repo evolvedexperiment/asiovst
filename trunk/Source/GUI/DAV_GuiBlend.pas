@@ -241,7 +241,11 @@ asm
   AND     EBX, $FF00FF00
   OR      EAX, EBX
 
+  {$IFDEF CPUx86_64}
+  MOV     ESI, [RDX]
+  {$ELSE}
   MOV     ESI, [EDX]
+  {$ENDIF}
   XOR     ECX, $000000FF
   MOV     EBX, ESI
   AND     ESI, $00FF00FF
@@ -258,7 +262,11 @@ asm
 
   ADD     EAX, EBX
   OR      EAX, $FF000000
+  {$IFDEF CPUx86_64}
+  MOV     [RDX], EAX
+  {$ELSE}
   MOV     [EDX], EAX
+  {$ENDIF}
 
   POP     ESI
   POP     EBX
@@ -266,7 +274,11 @@ asm
 
 @CopyPixel:
   OR      EAX, $FF000000
+  {$IFDEF CPUx86_64}
+  MOV     [RDX], EAX
+  {$ELSE}
   MOV     [EDX], EAX
+  {$ENDIF}
 
 @Done:
   RET
@@ -318,7 +330,11 @@ asm
 
 @LoopStart:
 
+  {$IFDEF CPUx86_64}
+  MOV     EDX, [RDI]
+  {$ELSE}
   MOV     EDX, [EDI]
+  {$ENDIF}
   MOV     EBX, EDX
   AND     EDX, $00FF00FF
   AND     EBX, $FF00FF00
@@ -335,7 +351,11 @@ asm
   ADD     EBX, EAX
 
   OR      EBX, $FF000000
+  {$IFDEF CPUx86_64}
+  MOV     [RDI], EBX
+  {$ELSE}
   MOV     [EDI], EBX
+  {$ENDIF}
 
 @NextPixel:
   ADD     EDI, 4
@@ -351,7 +371,11 @@ asm
   RET
 
 @CopyPixel:
+  {$IFDEF CPUx86_64}
+  MOV     [RDI], EAX
+  {$ELSE}
   MOV     [EDI], EAX
+  {$ENDIF}
   ADD     EDI, 4
 
   DEC     ECX
@@ -386,7 +410,11 @@ asm
   MOV     EDI, EDX
 
 @LoopStart:
+  {$IFDEF CPUx86_64}
+  MOV     EAX, [RSI]
+  {$ELSE}
   MOV     EAX, [ESI]
+  {$ENDIF}
   TEST    EAX, $FF000000
   JZ      @NextPixel
 
@@ -411,7 +439,11 @@ asm
   AND     EBX, $FF00FF00
   OR      EAX, EBX
 
+  {$IFDEF CPUx86_64}
+  MOV     EDX, [RDI]
+  {$ELSE}
   MOV     EDX, [EDI]
+  {$ENDIF}
   XOR     ECX, $000000FF
   MOV     EBX, EDX
   AND     EDX, $00FF00FF
@@ -429,7 +461,11 @@ asm
   ADD     EAX, EBX
 @CopyPixel:
   OR      EAX, $FF000000
+  {$IFDEF CPUx86_64}
+  MOV     [RDI], EAX
+  {$ELSE}
   MOV     [EDI], EAX
+  {$ENDIF}
   POP     ECX
 
 @NextPixel:
@@ -469,7 +505,12 @@ begin
   end;
 {$ELSE}
 asm
+  {$IFDEF CPUx86_64}
+  JRCXZ   @Copy
+  {$ELSE}
   JCXZ    @Copy
+  {$ENDIF}
+
   CMP     ECX, $FF
   JE      @Done
 
@@ -535,7 +576,12 @@ begin
   end;
 {$ELSE}
 asm
+  {$IFDEF CPUx86_64}
+  JRCXZ   @Done
+  {$ELSE}
   JCXZ    @Done
+  {$ENDIF}
+
   CMP     ECX, $FF
   JZ      @Copy
 
@@ -867,7 +913,12 @@ end;
 
 procedure CombinePixelInplaceMMX(F: TPixel32; var B: TPixel32; W: TPixel32);
 asm
+  {$IFDEF CPUx86_64}
+  JRCXZ     @Done
+  {$ELSE}
   JCXZ      @Done
+  {$ENDIF}
+
   CMP       ECX, $FF
   JZ        @Copy
 
@@ -1017,6 +1068,7 @@ end;
 
 { SSE2 }
 
+{$IFNDEF CPUx86_64}
 function BlendPixelSSE2(Foreground, Background: TPixel32): TPixel32;
 asm
   MOVD      XMM0, EAX
@@ -1125,6 +1177,7 @@ asm
 @Done:
   RET
 end;
+{$ENDIF}
 
 function CombinePixelSSE2(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
 asm
@@ -1153,7 +1206,12 @@ end;
 
 procedure CombinePixelInplaceSSE2(F: TPixel32; var B: TPixel32; W: TPixel32);
 asm
-  JCXZ      @Done
+  {$IFDEF CPUx86_64}
+  JRCXZ   @Done
+  {$ELSE}
+  JCXZ    @Done
+  {$ENDIF}
+
   CMP       ECX, $FF
   JZ        @Copy
 
@@ -1187,6 +1245,7 @@ asm
   MOV       [EDX], EAX
 end;
 
+{$IFNDEF CPUx86_64}
 procedure CombineLineSSE2(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
 asm
@@ -1287,6 +1346,7 @@ asm
 
 @Done:
 end;
+{$ENDIF}
 
 
 {$ENDIF}
@@ -1358,7 +1418,9 @@ begin
    Add(@BlendPixelNative);
    {$IFNDEF PUREPASCAL}
    Add(@BlendPixelMMX, [pfMMX]);
+   {$IFNDEF CPUx86_64}
    Add(@BlendPixelSSE2, [pfSSE2]);
+   {$ENDIF}
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1372,7 +1434,9 @@ begin
    Add(@BlendPixelInplaceNative);
    {$IFNDEF PUREPASCAL}
    Add(@BlendPixelInplaceMMX, [pfMMX]);
+   {$IFNDEF CPUx86_64}
    Add(@BlendPixelInplaceSSE2, [pfSSE2]);
+   {$ENDIF}
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1400,7 +1464,9 @@ begin
    Add(@BlendLineNative);
    {$IFNDEF PUREPASCAL}
    Add(@BlendLineMMX, [pfMMX]);
+   {$IFNDEF CPUx86_64}
    Add(@BlendLineSSE2, [pfSSE2]);
+   {$ENDIF}
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1456,7 +1522,9 @@ begin
    Add(@CombineLineNative);
    {$IFNDEF PUREPASCAL}
    Add(@CombineLineMMX, [pfMMX]);
+   {$IFNDEF CPUx86_64}
    Add(@CombineLineSSE2, [pfSSE2]);
+   {$ENDIF}
    {$ENDIF}
    RebindProcessorSpecific;
   end;
