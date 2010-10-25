@@ -161,7 +161,11 @@ type
     FGlyphIndex        : Integer;
     FDefaultGlyphIndex : Integer;
 
+    {$IFDEF FPC}
+    procedure CMColorchanged(var Message: TLMessage); message CM_COLORCHANGED;
+    {$ELSE}
     procedure CMColorchanged(var Message: TMessage); message CM_COLORCHANGED;
+    {$ENDIF}
 
     procedure BackBufferChanged; virtual;
     procedure BufferChanged; virtual;
@@ -454,6 +458,9 @@ begin
  FGlyphIndex        := 0;
  FDefaultGlyphIndex := 0;
  FStitchedItemIndex := -1;
+ {$IFDEF FPC}
+ DoubleBuffered     := True;
+ {$ENDIF}
 
  ControlStyle       := ControlStyle + [csOpaque];
 end;
@@ -762,7 +769,7 @@ begin
   then FOnChange(Self);
 end;
 
-procedure TGuiCustomStitchedControl.CMColorChanged(var Message: TMessage);
+procedure TGuiCustomStitchedControl.CMColorChanged(var Message: {$IFDEF FPC}TLMessage {$ELSE} TMessage{$ENDIF});
 begin
  ColorChanged;
 end;

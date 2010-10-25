@@ -1,5 +1,7 @@
 unit MainUnit;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses
@@ -32,7 +34,11 @@ var
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   DAV_GuiFileFormats, DAV_GuiPng;

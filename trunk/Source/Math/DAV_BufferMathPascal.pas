@@ -316,9 +316,10 @@ end;
 
 
 procedure AddArrays(const Input1: TDAVArrayOfSingleDynArray; const Input2: single; const Output: TDAVArrayOfSingleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
-  for i:=0 to dim1-1 do AddArrays(Input1[i], Input2, Output[i], dim2);
+  for i := 0 to dim1 - 1 do AddArrays(Input1[i], Input2, Output[i], dim2);
 end;
 
 

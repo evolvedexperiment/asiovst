@@ -35,7 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
+  {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Graphics, Forms, Messages, SysUtils, Controls,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiShadow;
 
 type
@@ -71,7 +72,11 @@ type
     procedure Resize; override;
     procedure Paint; override;
 
+    {$IFDEF FPC}
+    procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
+    {$ELSE}
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    {$ENDIF}
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
@@ -326,7 +331,6 @@ end;
 
 procedure TCustomGuiInscription.FontChanged;
 begin
- inherited;
  if Assigned(FFont)
   then FFont.OnChange := FontChangedHandler;
 
@@ -365,7 +369,8 @@ begin
  BackBufferChanged;
 end;
 
-procedure TCustomGuiInscription.CMColorchanged(var Message: TMessage);
+
+procedure TCustomGuiInscription.CMColorchanged(var Message: {$IFDEF FPC}TLMessage {$ELSE}TMessage {$ENDIF});
 begin
  ColorChanged;
 end;

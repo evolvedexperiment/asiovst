@@ -49,7 +49,11 @@ type
     FParentWinControl  : TWinControl;
     FColor             : TColor;
     FAmount            : Byte;
+    {$IFDEF FPC}
+    procedure NewParentWndProc(var Msg: TLMessage);
+    {$ELSE}
     procedure NewParentWndProc(var Msg: TMessage);
+    {$ENDIF}
     procedure SetActive(const Value: Boolean);
     procedure SetColor(const Value: TColor);
     procedure SetAmount(const Value: Byte);
