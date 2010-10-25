@@ -1,0 +1,11 @@
+object VOLDataModule: TVOLDataModule
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
+  Version = '1.0'
+  EffectName = 'VST Opcode Logger'
+  ProductName = 'DAV Tool Example'
+  VendorName = 'Delphi ASIO & VST Project'
+  PlugCategory = vpcEffect
+  SampleRate = 0
+end

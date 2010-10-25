@@ -75,7 +75,7 @@ type
     property OnProcess32Replacing: TProcessAudioEvent read FOnProcess32Replacing write SetOnProcess32Replacing;
     property OnProcess64Replacing: TProcessDoubleEvent read FOnProcess64Replacing write SetOnProcess64Replacing;
   published
-    property DspDirectProcessItem: TDAVProcessingComponent read fDspDirectProcessItem write SetDspDirectProcessItem default nil;
+    property DspDirectProcessItem: TDAVProcessingComponent read FDspDirectProcessItem write SetDspDirectProcessItem default nil;
   end;
 
 implementation

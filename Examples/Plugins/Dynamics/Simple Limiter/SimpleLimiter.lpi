@@ -5,15 +5,14 @@
     <PathDelim Value="\"/>
     <General>
       <Flags>
-        <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <Title Value="Simple Limiter"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -39,16 +38,14 @@
         <PackageName Value="DAV_VSTPlugin_Lazarus"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="6">
       <Unit0>
         <Filename Value="SimpleLimiter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="6"/>
+        <CursorPos X="1" Y="8"/>
         <UsageCount Value="21"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="SimpleLimiterDM.pas"/>
@@ -57,13 +54,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="SimpleLimiterDM"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="24"/>
         <CursorPos X="34" Y="38"/>
         <UsageCount Value="21"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="EditorFrm.pas"/>
@@ -72,76 +66,38 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EditorFrm"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="40"/>
-        <CursorPos X="49" Y="39"/>
+        <TopLine Value="24"/>
+        <CursorPos X="24" Y="38"/>
         <UsageCount Value="21"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\..\Source\VST\DAV_VSTModule.pas"/>
         <UnitName Value="DAV_VSTModule"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="45" Y="8"/>
+        <TopLine Value="103"/>
+        <CursorPos X="42" Y="117"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTParameters.pas"/>
+        <UnitName Value="DAV_VSTParameters"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="175"/>
+        <CursorPos X="63" Y="189"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <UnitName Value="DAV_VSTCustomModule"/>
+        <IsVisibleTab Value="True"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1387"/>
+        <CursorPos X="5" Y="1414"/>
+        <UsageCount Value="10"/>
+      </Unit5>
     </Units>
-    <JumpHistory Count="12" HistoryIndex="11">
-      <Position1>
-        <Filename Value="EditorFrm.pas"/>
-        <Caret Line="135" Column="8" TopLine="109"/>
-      </Position1>
-      <Position2>
-        <Filename Value="EditorFrm.pas"/>
-        <Caret Line="137" Column="5" TopLine="109"/>
-      </Position2>
-      <Position3>
-        <Filename Value="SimpleLimiterDM.pas"/>
-        <Caret Line="72" Column="6" TopLine="57"/>
-      </Position3>
-      <Position4>
-        <Filename Value="SimpleLimiterDM.pas"/>
-        <Caret Line="142" Column="5" TopLine="114"/>
-      </Position4>
-      <Position5>
-        <Filename Value="EditorFrm.pas"/>
-        <Caret Line="69" Column="1" TopLine="49"/>
-      </Position5>
-      <Position6>
-        <Filename Value="SimpleLimiterDM.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position6>
-      <Position7>
-        <Filename Value="EditorFrm.pas"/>
-        <Caret Line="38" Column="58" TopLine="34"/>
-      </Position7>
-      <Position8>
-        <Filename Value="SimpleLimiterDM.pas"/>
-        <Caret Line="38" Column="67" TopLine="30"/>
-      </Position8>
-      <Position9>
-        <Filename Value="SimpleLimiterDM.pas"/>
-        <Caret Line="39" Column="1" TopLine="30"/>
-      </Position9>
-      <Position10>
-        <Filename Value="SimpleLimiterDM.pas"/>
-        <Caret Line="38" Column="25" TopLine="24"/>
-      </Position10>
-      <Position11>
-        <Filename Value="SimpleLimiterDM.pas"/>
-        <Caret Line="48" Column="60" TopLine="34"/>
-      </Position11>
-      <Position12>
-        <Filename Value="EditorFrm.pas"/>
-        <Caret Line="38" Column="35" TopLine="29"/>
-      </Position12>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
@@ -165,9 +121,6 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

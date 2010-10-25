@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect,
-  DAV_VSTModule;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TVOLDataModule = class(TVSTModule)
@@ -61,7 +61,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   VOLGUI, DAV_VSTCustomModule;
@@ -146,7 +150,11 @@ begin
   effClose:
    begin
     FOpcodeLog.Add(Opcode2String(Opcode));
+    {$IFDEF FPC}
+    FormatSettings := DefaultFormatSettings;
+    {$ELSE}
     GetLocaleFormatSettings(SysLocale.DefaultLCID, FormatSettings);
+    {$ENDIF}
     FormatSettings.ShortDateFormat := 'yyyymmdd';
     FormatSettings.LongTimeFormat := 'yyyymmdd';
     FormatSettings.ShortTimeFormat := 'hhmmss';

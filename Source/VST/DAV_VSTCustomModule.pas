@@ -569,7 +569,7 @@ begin
    else
     begin
      if Assigned(FOnResume) then FOnResume(Self);
-     wantEvents(1);
+     WantEvents(1);
     end;
 
   Result := 0;
@@ -589,8 +589,8 @@ begin
 
      if Assigned(FEditorForm) then
       begin
-       FEditorRect.Bottom := FEditorForm.ClientHeight;
-       FEditorRect.Right := FEditorForm.ClientWidth;
+       FEditorRect.Bottom := Max(100, FEditorForm.ClientHeight);
+       FEditorRect.Right := Max(100, FEditorForm.ClientWidth);
        Result := 1;
       end;
     end;
@@ -614,7 +614,6 @@ begin
    // the below code is about to be removed soon!
    if Assigned(FOnEditOpen)
     then FOnEditOpen(Self, FEditorForm, THandle(ptr));
-
 
    if Assigned(FEditorForm) then
     try
@@ -1407,13 +1406,13 @@ begin
 end;
 
 function TCustomVSTModule.HostCallSetSpeakerArrangement(const Index: Integer;
-  const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+  const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
- result := 0;
+ Result := 0;
  if Assigned(ptr) and (Value <> 0) then
   begin
    SetSpeakerArrangement(PVstSpeakerArrangement(Value)^, PVstSpeakerArrangement(Ptr)^);
-   result := 1;
+   Result := 1;
   end;
 end;
 
