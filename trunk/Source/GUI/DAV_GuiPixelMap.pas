@@ -82,6 +82,7 @@ type
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
+    procedure MakeOpaque; virtual;
     procedure ResetAlpha; virtual;
 
     // simple Painting functions
@@ -512,6 +513,14 @@ begin
      end;
     end;
   end;
+end;
+
+procedure TGuiCustomPixelMap.MakeOpaque;
+var
+  Index : Integer;
+begin
+ for Index := 0 to FWidth * FHeight - 1
+  do FDataPointer^[Index].A := $FF;
 end;
 
 procedure TGuiCustomPixelMap.SaveToStream(Stream: TStream);

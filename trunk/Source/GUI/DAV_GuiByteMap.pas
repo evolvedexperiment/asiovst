@@ -152,7 +152,7 @@ begin
  inherited;
  FDataPointer := nil;
 
- GetMem(FBitmapInfo, SizeOf(TBitmapInfoHeader) + 256);
+ GetMem(FBitmapInfo, SizeOf(TBitmapInfoHeader) + 256 * SizeOf(TRGBQuad));
 
  // initialize header
  FillChar(FBitmapInfo^.bmiHeader, SizeOf(TBitmapInfoHeader), 0);
@@ -163,8 +163,9 @@ begin
    biPlanes := 1;
    biCompression := BI_RGB;
   end;
+
  for Index := 0 to 255 do
-  with FBitmapInfo.bmiColors[Index] do
+  with FBitmapInfo^.bmiColors[Index] do
    begin
     rgbBlue     := Index;
     rgbGreen    := Index;
@@ -771,6 +772,9 @@ end;
 constructor TGuiByteMapDIB.Create;
 begin
  inherited;
+ FDC            := 0;
+ FBitmapHandle  := 0;
+ FDeviceContext := 0;
 end;
 
 destructor TGuiByteMapDIB.Destroy;

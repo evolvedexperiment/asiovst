@@ -47,24 +47,6 @@ object FmCombo: TFmCombo
     SelectBoxColor = 4227200
     OnChange = SBModelChange
   end
-  object LbModel: TGuiLabel
-    Left = 8
-    Top = 8
-    Width = 67
-    Height = 25
-    Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
-    AutoSize = True
-    Caption = 'Model:'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
-    Font.Height = -21
-    Font.Name = 'Trebuchet MS'
-    Font.Style = [fsBold]
-    ParentFont = False
-    Transparent = True
-    Shadow.Color = clBlack
-  end
   object GuiLED: TGuiLED
     Left = 271
     Top = 8
@@ -75,26 +57,32 @@ object FmCombo: TFmCombo
     LEDColor = 192
     BorderWidth = 2.799999952316284000
     Uniformity_Percent = 44.000000000000000000
-    Transparent = False
+    Transparent = True
     OnClick = LbStereoClick
   end
-  object LbStereo: TGuiLabel
+  object LbModel: TGuiInscription
+    Left = 8
+    Top = 8
+    Width = 67
+    Height = 25
+    Margins.Bottom = 0
+    AutoSize = True
+    Caption = 'Model:'
+    Font = TopFont
+    ParentFont = False
+    Transparent = True
+  end
+  object LbStereo: TGuiInscription
     Left = 302
     Top = 8
     Width = 67
     Height = 25
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = 'Stereo'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
-    Font.Height = -21
-    Font.Name = 'Trebuchet MS'
-    Font.Style = [fsBold]
+    Font = TopFont
     ParentFont = False
     Transparent = True
-    Shadow.Color = clBlack
     OnClick = LbStereoClick
   end
   object PnControls: TGuiPanel
@@ -158,103 +146,72 @@ object FmCombo: TFmCombo
       Caption = '0.0'
       OnClick = DialDriveDblClick
     end
-    object LbDrive: TGuiLabel
+    object LbDrive: TGuiInscription
       Left = 8
       Top = 8
       Width = 64
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'Drive'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
-      Font.Height = -13
-      Font.Name = 'Trebuchet MS'
-      Font.Style = [fsUnderline]
+      Font = ParamNameText
       ParentFont = False
-      Shadow.Color = clBlack
     end
-    object LbBias: TGuiLabel
+    object LbBias: TGuiInscription
       Left = 78
       Top = 8
       Width = 64
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Bias'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
-      Font.Height = -13
-      Font.Name = 'Trebuchet MS'
-      Font.Style = [fsUnderline]
+      Font = ParamNameText
       ParentFont = False
-      Shadow.Color = clBlack
     end
-    object LbOutput: TGuiLabel
+    object LbOutput: TGuiInscription
       Left = 148
       Top = 8
       Width = 64
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Output'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
-      Font.Height = -13
-      Font.Name = 'Trebuchet MS'
-      Font.Style = [fsUnderline]
+      Font = ParamNameText
       ParentFont = False
-      Shadow.Color = clBlack
     end
-    object LbFrequency: TGuiLabel
+    object LbFrequency: TGuiInscription
       Left = 218
       Top = 8
       Width = 64
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
-      Font.Height = -13
-      Font.Name = 'Trebuchet MS'
-      Font.Style = [fsUnderline]
+      Font = ParamNameText
       ParentFont = False
-      Shadow.Color = clBlack
     end
-    object LbResonance: TGuiLabel
+    object LbResonance: TGuiInscription
       Left = 288
       Top = 8
       Width = 64
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Resonance'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
-      Font.Height = -13
-      Font.Name = 'Trebuchet MS'
-      Font.Style = [fsUnderline]
+      Font = ParamNameText
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object DialDrive: TGuiStitchedDial
       Left = 8
       Top = 35
       Width = 64
       Height = 64
-      LockCursor = False
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialDriveChange
       StitchedImageIndex = 0
-      StitchedImageList = DSIL
+      StitchedImageList = GSPL
       WheelStep = 1.000000000000000000
     end
     object DialBias: TGuiStitchedDial
@@ -262,12 +219,11 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
-      LockCursor = False
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialBiasChange
       StitchedImageIndex = 0
-      StitchedImageList = DSIL
+      StitchedImageList = GSPL
       WheelStep = 1.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
@@ -275,12 +231,11 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
-      LockCursor = False
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       OnChange = DialOutputChange
       StitchedImageIndex = 0
-      StitchedImageList = DSIL
+      StitchedImageList = GSPL
       WheelStep = 1.000000000000000000
     end
     object DialFrequency: TGuiStitchedDial
@@ -289,12 +244,11 @@ object FmCombo: TFmCombo
       Width = 64
       Height = 64
       CurveMapping = -1.750000000000000000
-      LockCursor = False
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
       OnChange = DialFreqChange
       StitchedImageIndex = 0
-      StitchedImageList = DSIL
+      StitchedImageList = GSPL
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -303,15 +257,14 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
-      LockCursor = False
       Max = 100.000000000000000000
       OnChange = DialResoChange
       StitchedImageIndex = 0
-      StitchedImageList = DSIL
+      StitchedImageList = GSPL
       WheelStep = 1.000000000000000000
     end
   end
-  object DSIL: TGuiStitchedPNGList
+  object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
       item
         PortableNetworkGraphic.Data = {
@@ -1698,7 +1651,31 @@ object FmCombo: TFmCombo
         Height = 64
         Width = 4160
       end>
-    Left = 40
-    Top = 24
+    Left = 104
+    Top = 80
+  end
+  object TopFont: TGuiOversampledGDIFont
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clMaroon
+    Font.Height = -21
+    Font.Name = 'Trebuchet MS'
+    Font.Style = []
+    FontOversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
+    Left = 256
+    Top = 80
+  end
+  object ParamNameText: TGuiOversampledGDIFont
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clMaroon
+    Font.Height = -13
+    Font.Name = 'Trebuchet MS'
+    Font.Style = []
+    FontOversampling = fo3x
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
+    Left = 184
+    Top = 80
   end
 end

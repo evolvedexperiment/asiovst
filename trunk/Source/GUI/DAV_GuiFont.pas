@@ -36,25 +36,28 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF Windows} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF Windows} Windows, {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
   DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
 
 {-$DEFINE UseShadowBuffer}
 
 type
-  TCustomGuiFont = class(TPersistent)
+  TCustomGuiFont = class(TComponent)
   private
     FAntiAliasing : Boolean;
     FShadow       : TGuiShadow;
+    FShadowColor  : TPixel32;
     FBlurFilter   : TGuiBlurFIRFilter;
+    FOnChange     : TNotifyEvent;
     procedure SetAntialiasing(const Value: Boolean);
     procedure SetShadow(const Value: TGuiShadow);
   protected
     procedure AntiAliasingChanged; virtual;
+    procedure ShadowChangedHandler(Sender: TObject); virtual;
+    procedure Changed; virtual;
   public
-    constructor Create; virtual;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     function TextExtend(Text: string): TSize; virtual; abstract;
@@ -63,6 +66,7 @@ type
 
     property Shadow: TGuiShadow read FShadow write SetShadow;
     property Antialiasing: Boolean read FAntiAliasing write SetAntialiasing;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   TGuiCustomGDIFont = class(TCustomGuiFont)
@@ -80,13 +84,13 @@ type
     procedure AntiAliasingChanged; override;
     procedure AssignByteMapFont; virtual; abstract;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     property Font: TFont read FFont write SetFont;
   end;
 
-  TGuiSimpleGDIFont = class(TGuiCustomGDIFont)
+  TGuiCustomSimpleGDIFont = class(TGuiCustomGDIFont)
   protected
     procedure FontChanged(Sender: TObject); override;
     procedure AssignByteMapFont; override;
@@ -98,7 +102,7 @@ type
 
   TFontOversampling = (foNone, fo2x, fo3x, fo4x, fo6x, fo8x);
 
-  TGuiOversampledGDIFont = class(TGuiCustomGDIFont)
+  TGuiCustomOversampledGDIFont = class(TGuiCustomGDIFont)
   private
     FScaledFont       : TFont;
     FOSFactor         : Integer;
@@ -110,7 +114,7 @@ type
     procedure UpdateScaledFont; virtual;
     procedure AssignByteMapFont; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     function TextExtend(Text: string): TSize; override;
@@ -118,6 +122,19 @@ type
       X: Integer = 0; Y: Integer = 0); override;
 
     property FontOversampling: TFontOversampling read FFontOversampling write SetFontOversampling;
+  end;
+
+  TGuiSimpleGDIFont = class(TGuiCustomSimpleGDIFont)
+  published
+    property Font;
+    property Shadow;
+  end;
+
+  TGuiOversampledGDIFont = class(TGuiCustomOversampledGDIFont)
+  published
+    property Font;
+    property FontOversampling;
+    property Shadow;
   end;
 
 implementation
@@ -245,11 +262,13 @@ end;
 
 { TCustomGuiFont }
 
-constructor TCustomGuiFont.Create;
+constructor TCustomGuiFont.Create(AOwner: TComponent);
 begin
- inherited;
- FShadow     := TGuiShadow.Create;
- FBlurFilter := TGuiBlurFIRFilter.Create;
+ inherited Create(AOwner);
+ FShadow          := TGuiShadow.Create;
+ FShadow.OnChange := ShadowChangedHandler;
+ FBlurFilter      := TGuiBlurFIRFilter.Create;
+ FShadowColor     := pxBlack32;
 end;
 
 destructor TCustomGuiFont.Destroy;
@@ -265,6 +284,17 @@ begin
  inherited;
 end;
 
+procedure TCustomGuiFont.Changed;
+begin
+ if Assigned(FOnChange)
+  then FOnChange(Self);
+end;
+
+procedure TCustomGuiFont.AntiAliasingChanged;
+begin
+ Changed;
+end;
+
 procedure TCustomGuiFont.SetAntialiasing(const Value: Boolean);
 begin
  if FAntiAliasing <> Value then
@@ -274,22 +304,24 @@ begin
   end;
 end;
 
-procedure TCustomGuiFont.AntiAliasingChanged;
-begin
- // nothing here yet
-end;
-
 procedure TCustomGuiFont.SetShadow(const Value: TGuiShadow);
 begin
  FShadow.Assign(Value);
+ Changed;
+end;
+
+procedure TCustomGuiFont.ShadowChangedHandler(Sender: TObject);
+begin
+ FShadowColor := ConvertColor(FShadow.Color);
+ Changed;
 end;
 
 
 { TGuiCustomGDIFont }
 
-constructor TGuiCustomGDIFont.Create;
+constructor TGuiCustomGDIFont.Create(AOwner: TComponent);
 begin
- inherited;
+ inherited Create(AOwner);
  FFont          := TFont.Create;
  FFont.OnChange := FontChanged;
  FBuffer        := TGuiByteMapDIB.Create;
@@ -307,6 +339,8 @@ end;
 
 procedure TGuiCustomGDIFont.AntiAliasingChanged;
 begin
+ inherited;
+
  if FAntiAliasing
   then SetFontAntialiasing(FFont, ANTIALIASED_QUALITY)
   else SetFontAntialiasing(FFont, NONANTIALIASED_QUALITY);
@@ -319,10 +353,11 @@ begin
 end;
 
 
-{ TGuiSimpleGDIFont }
+{ TGuiCustomSimpleGDIFont }
 
-procedure TGuiSimpleGDIFont.AssignByteMapFont;
+procedure TGuiCustomSimpleGDIFont.AssignByteMapFont;
 begin
+ Assert(FBuffer.Handle <> 0);
  if (FFontHandle = 0) then
   begin
    SelectObject(FBuffer.Handle, Font.Handle);
@@ -339,15 +374,17 @@ begin
   end;
 end;
 
-procedure TGuiSimpleGDIFont.FontChanged(Sender: TObject);
+procedure TGuiCustomSimpleGDIFont.FontChanged(Sender: TObject);
 begin
+ Assert(FBuffer.Handle <> 0);
  SelectObject(FBuffer.Handle, Font.Handle);
  SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
  SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
  FFontHandle := Font.Handle;
+ Changed;
 end;
 
-function TGuiSimpleGDIFont.TextExtend(Text: string): TSize;
+function TGuiCustomSimpleGDIFont.TextExtend(Text: string): TSize;
 begin
  Result.cx := 0;
  Result.cy := 0;
@@ -355,7 +392,7 @@ begin
   then GetTextExtentPoint32(FBuffer.Handle, PChar(Text), Length(Text), Result);
 end;
 
-procedure TGuiSimpleGDIFont.TextOut(Text: string; PixelMap: TGuiCustomPixelMap;
+procedure TGuiCustomSimpleGDIFont.TextOut(Text: string; PixelMap: TGuiCustomPixelMap;
   X, Y: Integer);
 var
   TextExtend : TSize;
@@ -401,7 +438,7 @@ begin
        FBlurFilter.Filter(FShadowBuffer);
 
        if PixelMap <> nil
-        then PixelMap.DrawByteMap(FShadowBuffer, pxBlack32,
+        then PixelMap.DrawByteMap(FShadowBuffer, FShadowColor,
           X + FShadow.FOffset.X - BlurOffset,
           Y + FShadow.FOffset.Y - BlurOffset);
        {$ELSE}
@@ -409,7 +446,7 @@ begin
        FBlurFilter.Filter(FBuffer);
 
        if PixelMap <> nil
-        then PixelMap.DrawByteMap(FBuffer, pxBlack32,
+        then PixelMap.DrawByteMap(FBuffer, FShadowColor,
           X + FShadow.Offset.X - BlurOffset,
           Y + FShadow.Offset.Y - BlurOffset);
 
@@ -445,23 +482,23 @@ begin
 end;
 
 
-{ TGuiOversampledGDIFont }
+{ TGuiCustomOversampledGDIFont }
 
-constructor TGuiOversampledGDIFont.Create;
+constructor TGuiCustomOversampledGDIFont.Create(AOwner: TComponent);
 begin
  FScaledFont := TFont.Create;
  FOSFactor := 1;
- inherited;
+ inherited Create(AOwner);
  FFontOversampling := foNone;
 end;
 
-destructor TGuiOversampledGDIFont.Destroy;
+destructor TGuiCustomOversampledGDIFont.Destroy;
 begin
  FreeAndNil(FScaledFont);
  inherited;
 end;
 
-procedure TGuiOversampledGDIFont.FontChanged(Sender: TObject);
+procedure TGuiCustomOversampledGDIFont.FontChanged(Sender: TObject);
 begin
  UpdateScaledFont;
 
@@ -469,9 +506,10 @@ begin
  SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
  SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
  FFontHandle := FScaledFont.Handle;
+ Changed;
 end;
 
-procedure TGuiOversampledGDIFont.FontOversamplingChanged;
+procedure TGuiCustomOversampledGDIFont.FontOversamplingChanged;
 begin
  case FFontOversampling of
   foNone : FOSFactor := 1;
@@ -483,15 +521,18 @@ begin
  end;
 
  UpdateScaledFont;
+ Changed;
 end;
 
-procedure TGuiOversampledGDIFont.UpdateScaledFont;
+procedure TGuiCustomOversampledGDIFont.UpdateScaledFont;
 begin
  FScaledFont.Assign(FFont);
  FScaledFont.Size := FOSFactor * FFont.Size;
+ FFontHandle := 0;
+ AssignByteMapFont;
 end;
 
-procedure TGuiOversampledGDIFont.AssignByteMapFont;
+procedure TGuiCustomOversampledGDIFont.AssignByteMapFont;
 begin
  if (FFontHandle = 0) then
   begin
@@ -509,7 +550,7 @@ begin
   end;
 end;
 
-procedure TGuiOversampledGDIFont.SetFontOversampling(
+procedure TGuiCustomOversampledGDIFont.SetFontOversampling(
   const Value: TFontOversampling);
 begin
  if FFontOversampling <> Value then
@@ -519,7 +560,7 @@ begin
   end;
 end;
 
-function TGuiOversampledGDIFont.TextExtend(Text: string): TSize;
+function TGuiCustomOversampledGDIFont.TextExtend(Text: string): TSize;
 begin
  Result.cx := 0;
  Result.cy := 0;
@@ -530,7 +571,7 @@ begin
  Result.cy := Result.cy div FOSFactor;
 end;
 
-procedure TGuiOversampledGDIFont.TextOut(Text: string;
+procedure TGuiCustomOversampledGDIFont.TextOut(Text: string;
   PixelMap: TGuiCustomPixelMap; X, Y: Integer);
 var
   TextExtend : TSize;
@@ -590,7 +631,7 @@ begin
        FBlurFilter.Filter(FShadowBuffer);
 
        if PixelMap <> nil
-        then PixelMap.DrawByteMap(FBuffer, pxBlack32, Rect(
+        then PixelMap.DrawByteMap(FBuffer, FShadowColor, Rect(
           X + FShadow.Offset.X - BlurOffset div FOSFactor,
           Y + FShadow.Offset.Y - BlurOffset div FOSFactor,
           X + FShadow.Offset.X - (BlurOffset + FBuffer.Width) div FOSFactor,
@@ -600,7 +641,7 @@ begin
        FBlurFilter.Filter(FBuffer);
 
        if PixelMap <> nil
-        then PixelMap.DrawByteMap(FBuffer, pxBlack32, Rect(
+        then PixelMap.DrawByteMap(FBuffer, FShadowColor, Rect(
           X + FShadow.Offset.X - BlurOffset div FOSFactor,
           Y + FShadow.Offset.Y - BlurOffset div FOSFactor,
           X + FShadow.Offset.X + (FBuffer.Width - BlurOffset) div FOSFactor,

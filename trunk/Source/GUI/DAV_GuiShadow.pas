@@ -44,11 +44,11 @@ type
   TGuiShadow = class(TPersistent)
   private
     FBlur         : Single;
+    FColor        : TColor;
     FOffset       : TPoint;
     FTransparency : Byte;
     FVisible      : Boolean;
     FOnChange     : TNotifyEvent;
-    FColor        : TColor;
     function GetOffsetX: Integer;
     function GetOffsetY: Integer;
     procedure SetBlur(const Value: Single);
@@ -70,6 +70,7 @@ type
     property OffsetY: Integer read GetOffsetY write SetOffsetY default 1;
     property Transparency: Byte read FTransparency write SetTransparency default $FF;
     property Visible: Boolean read FVisible write SetVisible default False;
+
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 

@@ -103,6 +103,8 @@ constructor TGuiCustomMap.Create;
 begin
  inherited;
  FDataSize := 0;
+ FWidth    := 0;
+ FHeight   := 0;
 end;
 
 procedure TGuiCustomMap.SaveToFile(const Filename: TFileName);
