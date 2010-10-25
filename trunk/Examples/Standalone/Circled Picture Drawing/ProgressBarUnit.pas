@@ -1,5 +1,7 @@
 unit ProgressBarUnit;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses
@@ -13,7 +15,7 @@ type
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
 end.
 

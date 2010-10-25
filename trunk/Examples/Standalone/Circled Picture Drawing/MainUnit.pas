@@ -1,5 +1,7 @@
 unit MainUnit;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses
@@ -169,7 +171,7 @@ var
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
 uses
   Filectrl, Math, Registry, IniFiles, DAV_Approximations, SettingsUnit,

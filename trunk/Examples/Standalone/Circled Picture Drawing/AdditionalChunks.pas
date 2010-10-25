@@ -1,5 +1,7 @@
 unit AdditionalChunks;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses

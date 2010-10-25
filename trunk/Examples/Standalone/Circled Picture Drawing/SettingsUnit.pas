@@ -1,5 +1,7 @@
 unit SettingsUnit;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses
@@ -55,7 +57,7 @@ type
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
 uses
   IniFiles, MainUnit;
