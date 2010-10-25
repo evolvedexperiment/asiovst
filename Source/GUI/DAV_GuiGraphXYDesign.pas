@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LazIDEIntf, PropEdits,{$ELSE} {$IFDEF DELPHI6_UP}
   DesignIntf, DesignEditors, {$ELSE} DsgnIntf, {$ENDIF} {$ENDIF}
-  Classes, TypInfo, DAV_GuiBaseControl, DAV_GuiDesign, DAV_GuiGraphXY;
+  Classes, TypInfo, DAV_Classes, DAV_GuiDesign, DAV_GuiGraphXY;
 
 type
   TSeriesClassProperty = class(TCustomClassProperty)

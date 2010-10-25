@@ -18,6 +18,24 @@ const
 type
   EDAV = Exception;
 
+  // TClassList, a class that maintains a list of classes.
+  TClassList = class(TList)
+  protected
+    function GetItems(Index: Integer): TClass;
+    procedure SetItems(Index: Integer; AClass: TClass);
+  public
+    function Add(AClass: TClass): Integer;
+    function Extract(Item: TClass): TClass;
+    function Remove(AClass: TClass): Integer;
+    function IndexOf(AClass: TClass): Integer;
+    function First: TClass;
+    function Last: TClass;
+    function Find(AClassName: string): TClass;
+    procedure GetClassNames(Strings: TStrings);
+    procedure Insert(Index: Integer; AClass: TClass);
+    property Items[Index: Integer]: TClass read GetItems write SetItems; default;
+  end;
+
   // TNotifiablePersistent
   TNotifiablePersistent = class(TInterfacedPersistent)
   private
@@ -177,6 +195,75 @@ resourcestring
   RCStrDspProcessorDuplicate = 'DSP Processor registered twice! (%s)';
   RCStrNoIDspProcessor32 = 'Class %s does not support IDspProcessor32';
   RCStrNoIDspProcessor64 = 'Class %s does not support IDspProcessor64';
+
+{ TClassList }
+
+function TClassList.Add(AClass: TClass): Integer;
+begin
+  Result := inherited Add(AClass);
+end;
+
+function TClassList.Extract(Item: TClass): TClass;
+begin
+  Result := TClass(inherited Extract(Item));
+end;
+
+function TClassList.Find(AClassName: string): TClass;
+var
+  I: Integer;
+begin
+  Result := nil;
+  for I := 0 to Count - 1 do
+    if TClass(List[I]).ClassName = AClassName then
+    begin
+      Result := TClass(List[I]);
+      Break;
+    end;
+end;
+
+function TClassList.First: TClass;
+begin
+  Result := TClass(inherited First);
+end;
+
+procedure TClassList.GetClassNames(Strings: TStrings);
+var
+  I: Integer;
+begin
+  for I := 0 to Count - 1 do
+    Strings.Add(TClass(List[I]).ClassName);
+end;
+
+function TClassList.GetItems(Index: Integer): TClass;
+begin
+  Result := TClass(inherited Items[Index]);
+end;
+
+function TClassList.IndexOf(AClass: TClass): Integer;
+begin
+  Result := inherited IndexOf(AClass);
+end;
+
+procedure TClassList.Insert(Index: Integer; AClass: TClass);
+begin
+  inherited Insert(Index, AClass);
+end;
+
+function TClassList.Last: TClass;
+begin
+  Result := TClass(inherited Last);
+end;
+
+function TClassList.Remove(AClass: TClass): Integer;
+begin
+  Result := inherited Remove(AClass);
+end;
+
+procedure TClassList.SetItems(Index: Integer; AClass: TClass);
+begin
+  inherited Items[Index] := AClass;
+end;
+
 
 { TNotifiablePersistent }
 

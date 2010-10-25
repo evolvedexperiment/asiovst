@@ -95,6 +95,7 @@ contains
   DAV_GuiVectorPixelCircle in '..\..\Source\GUI\DAV_GuiVectorPixelCircle.pas',
   DAV_GuiVectorPixelLine in '..\..\Source\GUI\DAV_GuiVectorPixelLine.pas',
   DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
-  DAV_GuiInscription in '..\..\Source\GUI\DAV_GuiInscription.pas';
+  DAV_GuiInscription in '..\..\Source\GUI\DAV_GuiInscription.pas',
+  DAV_GuiFontList in '..\..\Source\GUI\DAV_GuiFontList.pas';
 
 end.

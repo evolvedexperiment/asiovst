@@ -37,8 +37,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, SysUtils, Controls, Contnrs, DAV_GuiCommon,
-  DAV_GuiBaseControl, DAV_GuiDial;
+  Classes, Graphics, Forms, SysUtils, Controls, Contnrs, DAV_Classes,
+  DAV_GuiCommon, DAV_GuiBaseControl, DAV_GuiDial;
 
 type
   {$IFDEF DELPHI10_UP} {$region 'Dial Renderer'} {$ENDIF}
