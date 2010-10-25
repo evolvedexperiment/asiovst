@@ -12,8 +12,6 @@ uses
   ProgressBarUnit in 'ProgressBarUnit.pas' {FmProgressBar},
   AdditionalChunks in 'AdditionalChunks.pas';
 
-{$R *.res}
-
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;

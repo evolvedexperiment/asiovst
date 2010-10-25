@@ -200,6 +200,11 @@ begin
  Result := 2 * Random - 1;
 end;
 {$ELSE}
+{$IFDEF CPUx86_64}
+begin
+ Result := 2 * Random - 1;
+end;
+{$ELSE}
 asm
  IMUL  EDX, RandSeed, 08088405H
  INC   EDX
@@ -213,6 +218,7 @@ asm
  FLD1
  FSUBP ST, ST
 end;
+{$ENDIF}
 {$ENDIF}
 
 function RandomGauss: Extended;
@@ -280,35 +286,49 @@ begin
 end;
 
 {$IFNDEF FPC}
-procedure GetSinCos(const Frequency: Extended; out SinValue, CosValue : Extended);
+procedure GetSinCos(const Frequency: Extended; out SinValue, CosValue: Extended);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
  CosValue := Cos(Frequency);
 end;
 {$ELSE}
+{$IFDEF CPUx86_64}
+begin
+ SinValue := Sin(Frequency);
+ CosValue := Cos(Frequency);
+end;
+{$ELSE}
 asm
-  fld Frequency;
+  fld     Frequency;
   fsincos
   fstp    tbyte ptr [edx]    // Cos
   fstp    tbyte ptr [eax]    // Sin
 end;
 {$ENDIF}
 {$ENDIF}
+{$ENDIF}
 
-procedure GetSinCos(const Frequency: Double; out SinValue, CosValue : Double);
+procedure GetSinCos(const Frequency: Double; out SinValue, CosValue: Double);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
  CosValue := Cos(Frequency);
 end;
 {$ELSE}
-asm
- fld Frequency.Double;
- fsincos
- fstp [CosValue].Double;
- fstp [SinValue].Double;
+{$IFDEF CPUx86_64}
+begin
+ SinValue := Sin(Frequency);
+ CosValue := Cos(Frequency);
 end;
+{$ELSE}
+asm
+ fld     Frequency.Double;
+ fsincos
+ fstp    [CosValue].Double;
+ fstp    [SinValue].Double;
+end;
+{$ENDIF}
 {$ENDIF}
 
 procedure GetSinCos(const Frequency: Single; out SinValue, CosValue : Single);
@@ -318,12 +338,19 @@ begin
  CosValue := Cos(Frequency);
 end;
 {$ELSE}
-asm
- fld Frequency;
- fsincos
- fstp [CosValue].Single;
- fstp [SinValue].Single;
+{$IFDEF CPUx86_64}
+begin
+ SinValue := Sin(Frequency);
+ CosValue := Cos(Frequency);
 end;
+{$ELSE}
+asm
+ fld     Frequency;
+ fsincos
+ fstp    [CosValue].Single;
+ fstp    [SinValue].Single;
+end;
+{$ENDIF}
 {$ENDIF}
 
 function IsPowerOf2(const Value: Integer): Boolean;
@@ -341,9 +368,9 @@ begin
     Result := Result shl 1;
 {$ELSE}
 asm
- bsr ecx, eax
- shr eax, cl
- shl eax, cl
+ bsr     ecx, eax
+ shr     eax, cl
+ shl     eax, cl
 {$ENDIF}
 end;
 
@@ -356,14 +383,14 @@ begin
     Result := Result shl 1;
 {$ELSE}
 asm
- dec eax
- jle @1
- bsr ecx, eax
- mov eax, 2
- shl eax, cl
+ dec     eax
+ jle     @1
+ bsr     ecx, eax
+ mov     eax, 2
+ shl     eax, cl
  ret
 @1:
- mov eax, 1
+ mov     eax, 1
 {$ENDIF}
 end;
 
@@ -389,68 +416,80 @@ end;
 function TruncLog2(Value : Extended): Integer;
 {$IFDEF PUREPASCAL}
 begin
- result := round(log2(Value));
+ Result := Round(Log2(Value));
+end;
+{$ELSE}
+{$IFDEF CPUx86_64}
+begin
+ Result := Round(Log2(Value));
 end;
 {$ELSE}
 asm
- fld Value.Extended
+ fld     Value.Extended
  fxtract
- fstp st(0)
- fistp result.Integer
+ fstp    st(0)
+ fistp   Result.Integer
 end;
+{$ENDIF}
 {$ENDIF}
 
 function TruncLog2(Value : Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
- result := round(log2(Value));
+ Result := Round(Log2(Value));
 end;
 {$ELSE}
 var
   temp : Integer;
 asm
- mov temp, Value;
- fild temp.Integer
+ mov     temp, Value;
+ fild    temp.Integer
  fxtract
- fstp st(0)
- fistp result.Integer
+ fstp    st(0)
+ fistp   Result.Integer
 end;
 {$ENDIF}
 
 function CeilLog2(Value : Extended): Integer;
 {$IFDEF PUREPASCAL}
 begin
- result := round(log2(Value) + 1);
+ Result := Round(Log2(Value) + 1);
+end;
+{$ELSE}
+{$IFDEF CPUx86_64}
+begin
+ Result := Round(Log2(Value) + 1);
 end;
 {$ELSE}
 asm
- fld   Value.Extended
+ fld     Value.Extended
  fld1
- fsubp st, st
+ fsubp   st, st
  fxtract
- fstp  st(0)
+ fstp    st(0)
  fld1
- faddp st(1), st(0)
- fistp result.Integer
+ faddp   st(1), st(0)
+ fistp   Result.Integer
 end;
+{$ENDIF}
 {$ENDIF}
 
 function CeilLog2(Value : Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
- result := round(log2(Value) + 1);
+ Result := Round(Log2(Value) + 1);
 end;
 {$ELSE}
 var
   temp : Integer;
 asm
- dec Value
- mov temp, Value;
- fild temp.Integer
+ dec     Value
+ mov     temp, Value;
+ fild    temp.Integer
  fxtract
- fstp st(0)
- fistp result.Integer
- inc result
+ fstp    st(0)
+ fistp   Result.Integer
+ inc     Result
 end;
 {$ENDIF}
 
@@ -458,20 +497,27 @@ function Power2(const X: Extended): Extended;
 {$IFDEF PUREPASCAL}
 begin
  Result := Power(2, X);
+end;
+{$ELSE}
+{$IFDEF CPUx86_64}
+begin
+ Result := Power(2, X);
+end;
 {$ELSE}
 asm
  FLD     X
- FLD     ST(0)       { i := round(y);     }
+ FLD     ST(0)         // i := Round(y);
  FRNDINT
- FSUB    ST(1), ST   { f := y - i;        }
- FXCH    ST(1)       { z := 2**f          }
+ FSUB    ST(1), ST     // f := y - i;
+ FXCH    ST(1)         // z := 2**f
  F2XM1
  FLD1
- FADD
- FSCALE              { Result := z * 2**i }
+ FADDP
+ FSCALE                // Result := z * 2**i
  FSTP    ST(1)
- {$ENDIF}
 end;
+{$ENDIF}
+{$ENDIF}
 
 // IsNan
 

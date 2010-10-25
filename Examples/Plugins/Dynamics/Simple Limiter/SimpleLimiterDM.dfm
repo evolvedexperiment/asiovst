@@ -1,5 +1,4 @@
 object SimpleLimiterDataModule: TSimpleLimiterDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Limiter'
@@ -7,7 +6,6 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'SiGa'
@@ -19,7 +17,6 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -35,10 +32,9 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnParameterChange = SGDMThresholdChange
+      OnParameterChange = ParameterThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -57,7 +53,6 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       OnParameterChange = ParameterAttackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -78,7 +73,6 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange

@@ -10,7 +10,6 @@
         <MainUnitHasTitleStatement Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <Title Value="Circled Picture Drawing"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
     </General>
@@ -33,135 +32,88 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="1">
       <Item1>
-        <PackageName Value="DAV_GUI_Lazarus"/>
+        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
       </Item1>
-      <Item2>
-        <PackageName Value="DAV_Common_Lazarus"/>
-      </Item2>
-      <Item3>
-        <PackageName Value="LCL"/>
-      </Item3>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="8">
       <Unit0>
-        <Filename Value="CircledPictureDrawing.lpr"/>
+        <Filename Value="LayeredFrequencySplitter.lpr"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="16"/>
-        <UsageCount Value="25"/>
+        <CursorPos X="9" Y="6"/>
+        <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
-        <Filename Value="MainUnit.pas"/>
+        <Filename Value="LayeredFreqSplitDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="MainUnit"/>
+        <UnitName Value="LayeredFreqSplitDSP"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="5"/>
-        <UsageCount Value="25"/>
+        <TopLine Value="18"/>
+        <CursorPos X="3" Y="38"/>
+        <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="SettingsUnit.pas"/>
+        <Filename Value="LayeredFreqSplitGUI.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FmLayeredFreqSplit"/>
         <HasResources Value="True"/>
-        <UnitName Value="SettingsUnit"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="LayeredFreqSplitGUI"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="4"/>
-        <UsageCount Value="25"/>
+        <CursorPos X="36" Y="3"/>
+        <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
-        <Filename Value="ProgressBarUnit.pas"/>
+        <Filename Value="..\..\..\Source\DAV_WinAmp.pas"/>
         <IsPartOfProject Value="True"/>
-        <HasResources Value="True"/>
-        <UnitName Value="ProgressBarUnit"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="5"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
-        <Filename Value="AdditionalChunks.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="AdditionalChunks"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTEffect.pas"/>
+        <UnitName Value="DAV_VSTEffect"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="4"/>
-        <UsageCount Value="25"/>
+        <CursorPos X="1" Y="15"/>
+        <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
-        <Filename Value="..\..\..\Source\DAV_DifferentialEvolution.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UsageCount Value="25"/>
+        <Filename Value="..\..\..\Source\DAV_Types.pas"/>
+        <UnitName Value="DAV_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="9"/>
+        <CursorPos X="1" Y="33"/>
+        <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
-        <UnitName Value="DAV_GuiPngCoder"/>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspFilterLinkwitzRiley.pas"/>
+        <UnitName Value="DAV_DspFilterLinkwitzRiley"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="22"/>
-        <CursorPos X="16" Y="35"/>
-        <UsageCount Value="12"/>
+        <TopLine Value="19"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
-        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1191"/>
-        <CursorPos X="4" Y="1214"/>
-        <UsageCount Value="12"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="..\..\..\Source\DAV_Math.pas"/>
-        <UnitName Value="DAV_Math"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
+        <UnitName Value="DAV_VSTModule"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="12"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="..\..\..\Source\DAV_BlockProcessing.pas"/>
-        <UnitName Value="DAV_BlockProcessing"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="15"/>
-        <CursorPos X="1" Y="37"/>
+        <CursorPos X="46" Y="8"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiBlend.pas"/>
-        <UnitName Value="DAV_GuiBlend"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1511"/>
-        <CursorPos X="22" Y="1525"/>
-        <UsageCount Value="10"/>
-        <Bookmarks Count="3">
-          <Item0 X="1" Y="1215" ID="3"/>
-          <Item1 X="1" Y="579" ID="1"/>
-          <Item2 X="13" Y="1421" ID="2"/>
-        </Bookmarks>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="..\..\..\Source\DAV_MemoryUtils.pas"/>
-        <UnitName Value="DAV_MemoryUtils"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="158"/>
-        <CursorPos X="15" Y="172"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit11>
+      </Unit7>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
@@ -170,7 +122,8 @@
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>
-      <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\Gui;..\..\..\Source\FileFormats"/>
+      <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats;..\..\..\Source\Math;..\..\..\Source\VST"/>
+      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -187,9 +140,13 @@
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
+        <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

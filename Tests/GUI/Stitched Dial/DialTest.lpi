@@ -13,7 +13,6 @@
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -39,46 +38,36 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="3">
       <Unit0>
         <Filename Value="DialTest.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="11"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="MainUnit.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FmDialTest"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainUnit"/>
-        <EditorIndex Value="1"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="10" Y="10"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value=""/>
+        <UsageCount Value="10"/>
+      </Unit2>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="0">
-      <Position1>
-        <Filename Value="MainUnit.pas"/>
-        <Caret Line="68" Column="8" TopLine="50"/>
-      </Position1>
-      <Position2>
-        <Filename Value="MainUnit.pas"/>
-        <Caret Line="92" Column="5" TopLine="92"/>
-      </Position2>
-      <Position3>
-        <Filename Value="MainUnit.pas"/>
-        <Caret Line="10" Column="10" TopLine="1"/>
-      </Position3>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>

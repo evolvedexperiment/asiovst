@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, Messages, SysUtils, Controls,
+  Classes, Graphics, Forms, SysUtils, Controls,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiShadow;
 
 type

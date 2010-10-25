@@ -1,9 +1,12 @@
 unit LayeredFreqSplitGUI;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
+  DAV_Types, DAV_VSTModule;
 
 type
   TFmLayeredFreqSplit = class(TForm)
@@ -12,6 +15,10 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 end.
