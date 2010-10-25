@@ -317,7 +317,7 @@ function Fixed16Dot16Mul(A, B: Integer): Integer;
 var
   IntResult : Integer absolute Result;
 begin
-  IntResult := Round(A.Fixed * CFixed16Dot16ToFloat * B.Fixed);
+  IntResult := Round(A * CFixed16Dot16ToFloat * B);
 {$ELSE}
 asm
   IMUL    EDX
@@ -330,7 +330,7 @@ function Fixed24Dot8Mul(A, B: Integer): Integer;
 var
   IntResult : Integer absolute Result;
 begin
-  IntResult := Round(A.Fixed * CFixed24Dot8ToFloat * B.Fixed);
+  IntResult := Round(A * CFixed24Dot8ToFloat * B);
 {$ELSE}
 asm
   IMUL    EDX
