@@ -27,13 +27,14 @@ uses
   DAV_GuiModular, DAV_GuiBackgrounds,{$ENDIF} DAV_GuiADSRGraph,
   DAV_GuiAudioDataDisplay, DAV_GuiButton, DAV_GuiCorrelationMeter,
   DAV_GuiDial, DAV_GuiDialDesign, DAV_GuiDialRenderer, DAV_GuiDynamicWaveform,
-  DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiGraphXY, DAV_GuiGraphXYDesign,
-  DAV_GuiLabel, DAV_GuiLED, DAV_GuiMediaButton, DAV_GuiMidiKeys,
-  DAV_GuiPaintBox, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPixelMapDesign,
-  DAV_GuiPng, DAV_GuiPngDesign, DAV_GuiSelectBox, DAV_GuiSlider,
-  DAV_GuiStaticWaveform, DAV_GuiStitchedButton, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedDisplay, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
+  DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiFont, DAV_GuiInscription,
+  DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiLabel, DAV_GuiLED,
+  DAV_GuiMediaButton, DAV_GuiMidiKeys, DAV_GuiPaintBox, DAV_GuiPanel,
+  DAV_GuiPixelMap, DAV_GuiPixelMapDesign, DAV_GuiPng, DAV_GuiPngDesign,
+  DAV_GuiSelectBox, DAV_GuiSlider, DAV_GuiStaticWaveform,
+  DAV_GuiStitchedButton, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedDisplay, DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch,
+  DAV_GuiVUMeter;
 
 procedure Register;
 begin
@@ -41,8 +42,9 @@ begin
     TGuiADSRGraph, TGuiAudioDataDisplay, TGuiButton, TGuiCorrelationMeter,
     TGuiDial, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer,
     TGuiDialMetal, TGuiDynamicWaveform, TGuiEQGraph, TGuiEQSlide, TGuiGraphXY,
-    TGuiLabel, TGuiLED, TGuiMediaButton, TGuiMidiKeys, TGuiPaintBox, TGuiPanel,
-    TGuiSelectBox, TGuiSlider, TGuiStaticWaveform, TGuiStitchedButton,
+    TGuiInscription, TGuiLabel, TGuiLED, TGuiMediaButton, TGuiMidiKeys,
+    TGuiOversampledGDIFont, TGuiPaintBox, TGuiPanel, TGuiSelectBox,
+    TGuiSimpleGDIFont, TGuiSlider, TGuiStaticWaveform, TGuiStitchedButton,
     TGuiStitchedDial, TGuiStitchedDisplay, TGuiStitchedImageList,
     TGuiStitchedPNGList, TGuiStitchedSwitch, TGuiSwitch, TGuiVUMeter
     {$IFNDEF FPC}, TGuiGroupA, TGuiGroupB, TGuiGroup, TGuiLevelMeter,

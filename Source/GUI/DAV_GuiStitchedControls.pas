@@ -54,9 +54,11 @@ type
     property Items[Index: Integer]: TGuiCustomStitchedCollectionItem read GetItem write SetItem; default;
   public
     constructor Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
+
     function Add: TGuiCustomStitchedCollectionItem;
     function Insert(Index: Integer): TGuiCustomStitchedCollectionItem;
     procedure Delete(Index: Integer);
+
     property Count;
   end;
 

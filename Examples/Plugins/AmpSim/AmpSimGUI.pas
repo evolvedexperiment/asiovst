@@ -36,33 +36,35 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ExtCtrls, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiLED,
+  ExtCtrls, DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiLED,
   DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial, DAV_GuiPixelMap;
+  DAV_GuiStitchedDial, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiInscription;
 
 type
   TFmCombo = class(TForm)
     GuiLED: TGuiLED;
     PnControls: TGuiPanel;
-    LbBias: TGuiLabel;
     LbBiasValue: TLabel;
-    LbDrive: TGuiLabel;
     LbDriveValue: TLabel;
-    LbFrequency: TGuiLabel;
     LbFrequencyValue: TLabel;
-    LbModel: TGuiLabel;
-    LbOutput: TGuiLabel;
     LbOutputValue: TLabel;
-    LbResonance: TGuiLabel;
     LbResonanceValue: TLabel;
-    LbStereo: TGuiLabel;
     SBModel: TGuiSelectBox;
     DialDrive: TGuiStitchedDial;
     DialBias: TGuiStitchedDial;
     DialOutput: TGuiStitchedDial;
     DialFrequency: TGuiStitchedDial;
     DialResonance: TGuiStitchedDial;
-    DSIL: TGuiStitchedPNGList;
+    GSPL: TGuiStitchedPNGList;
+    LbModel: TGuiInscription;
+    LbStereo: TGuiInscription;
+    LbDrive: TGuiInscription;
+    LbBias: TGuiInscription;
+    LbOutput: TGuiInscription;
+    LbFrequency: TGuiInscription;
+    LbResonance: TGuiInscription;
+    TopFont: TGuiOversampledGDIFont;
+    ParamNameText: TGuiOversampledGDIFont;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
