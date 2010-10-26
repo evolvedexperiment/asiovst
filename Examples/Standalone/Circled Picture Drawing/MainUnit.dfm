@@ -76,6 +76,10 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
         Caption = 'Save &High Resolution...'
         OnClick = MiSaveHighResolutionClick
       end
+      object MiSaveFramed: TMenuItem
+        Caption = 'Save &Framed...'
+        OnClick = MiSaveFramedClick
+      end
       object MiSaveAnimation: TMenuItem
         Caption = 'Save &Animation...'
         OnClick = MiSaveAnimationClick
