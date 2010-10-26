@@ -45,6 +45,7 @@ type
   private
     FOnChange : TNotifyEvent;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure Changed; virtual;
   public
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -57,6 +58,7 @@ type
     procedure SetCenterX(const Value: TFixed24Dot8Point);
     procedure SetCenterY(const Value: TFixed24Dot8Point);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CenterXChanged; virtual;
     procedure CenterYChanged; virtual;
   public
@@ -69,6 +71,7 @@ type
     FRadius  : TFixed24Dot8Point;
     procedure SetRadius(const Value: TFixed24Dot8Point);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure RadiusChanged; virtual;
   public
     property Radius: TFixed24Dot8Point read FRadius write SetRadius;
@@ -82,6 +85,7 @@ type
     procedure SetRadiusX(const Value: TFixed24Dot8Point);
     procedure SetRadiusY(const Value: TFixed24Dot8Point);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure RadiusXChanged; virtual;
     procedure RadiusYChanged; virtual;
   public
@@ -92,15 +96,16 @@ type
 
   TGuiCustomRectangle = class(TGuiCustomGeometricShape)
   private
-    FRight: TFixed24Dot8Point;
-    FBottom: TFixed24Dot8Point;
-    FTop: TFixed24Dot8Point;
-    FLeft: TFixed24Dot8Point;
+    FRight  : TFixed24Dot8Point;
+    FBottom : TFixed24Dot8Point;
+    FTop    : TFixed24Dot8Point;
+    FLeft   : TFixed24Dot8Point;
     procedure SetBottom(const Value: TFixed24Dot8Point);
     procedure SetLeft(const Value: TFixed24Dot8Point);
     procedure SetRight(const Value: TFixed24Dot8Point);
     procedure SetTop(const Value: TFixed24Dot8Point);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BottomChanged; virtual;
     procedure LeftChanged; virtual;
     procedure RightChanged; virtual;
@@ -118,6 +123,7 @@ type
     FBorderRadius: TFixed24Dot8Point;
     procedure SetBorderRadius(const Value: TFixed24Dot8Point);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BorderRadiusChanged; virtual;
   public
     property BorderRadius: TFixed24Dot8Point read FBorderRadius write SetBorderRadius;
@@ -126,15 +132,16 @@ type
 
   TGuiCustomLine = class(TGuiCustomGeometricShape)
   private
-    FXB: TFixed24Dot8Point;
-    FYB: TFixed24Dot8Point;
     FXA: TFixed24Dot8Point;
     FYA: TFixed24Dot8Point;
+    FXB: TFixed24Dot8Point;
+    FYB: TFixed24Dot8Point;
     procedure SetXA(const Value: TFixed24Dot8Point);
     procedure SetXB(const Value: TFixed24Dot8Point);
     procedure SetYA(const Value: TFixed24Dot8Point);
     procedure SetYB(const Value: TFixed24Dot8Point);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure XAChanged; virtual;
     procedure YAChanged; virtual;
     procedure XBChanged; virtual;
@@ -150,6 +157,16 @@ type
 implementation
 
 { TGuiCustomGeometricShape }
+
+procedure TGuiCustomGeometricShape.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TGuiCustomGeometricShape then
+  with TGuiCustomGeometricShape(Dest) do
+   begin
+    FOnChange := Self.FOnChange;
+   end
+ else inherited;
+end;
 
 procedure TGuiCustomGeometricShape.Changed;
 begin
@@ -178,6 +195,18 @@ begin
   end;
 end;
 
+procedure TGuiCustomCenteredGeometricShape.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiCustomCenteredGeometricShape then
+  with TGuiCustomCenteredGeometricShape(Dest) do
+   begin
+    FCenterX := Self.FCenterX;
+    FCenterY := Self.FCenterY;
+   end;
+end;
+
 procedure TGuiCustomCenteredGeometricShape.CenterXChanged;
 begin
  Changed;
@@ -198,6 +227,17 @@ begin
    FRadius := Value;
    RadiusChanged;
   end;
+end;
+
+procedure TGuiCustomCircle.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiCustomCircle then
+  with TGuiCustomCircle(Dest) do
+   begin
+    FRadius := Self.FRadius;
+   end;
 end;
 
 procedure TGuiCustomCircle.RadiusChanged;
@@ -226,6 +266,18 @@ begin
   end;
 end;
 
+procedure TGuiCustomEllipse.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiCustomEllipse then
+  with TGuiCustomEllipse(Dest) do
+   begin
+    FRadiusX := Self.FRadiusX;
+    FRadiusY := Self.FRadiusY;
+   end;
+end;
+
 procedure TGuiCustomEllipse.RadiusXChanged;
 begin
  Changed;
@@ -238,6 +290,20 @@ end;
 
 
 { TGuiCustomRectangle }
+
+procedure TGuiCustomRectangle.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiCustomRectangle then
+  with TGuiCustomRectangle(Dest) do
+   begin
+    FRight  := Self.FRight;
+    FBottom := Self.FBottom;
+    FTop    := Self.FTop;
+    FLeft   := Self.FLeft;
+   end;
+end;
 
 procedure TGuiCustomRectangle.BottomChanged;
 begin
@@ -296,6 +362,35 @@ begin
 end;
 
 
+{ TGuiCustomRoundedRectangle }
+
+procedure TGuiCustomRoundedRectangle.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiCustomRoundedRectangle then
+  with TGuiCustomRoundedRectangle(Dest) do
+   begin
+    FBorderRadius := Self.FBorderRadius;
+   end;
+end;
+
+procedure TGuiCustomRoundedRectangle.BorderRadiusChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomRoundedRectangle.SetBorderRadius(
+  const Value: TFixed24Dot8Point);
+begin
+ if FBorderRadius.Fixed <> Value.Fixed then
+  begin
+   FBorderRadius := Value;
+   BorderRadiusChanged;
+  end;
+end;
+
+
 { TGuiCustomLine }
 
 procedure TGuiCustomLine.XAChanged;
@@ -316,6 +411,20 @@ end;
 procedure TGuiCustomLine.YBChanged;
 begin
  Changed;
+end;
+
+procedure TGuiCustomLine.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiCustomLine then
+  with TGuiCustomLine(Dest) do
+   begin
+    FXA := Self.FXA;
+    FYA := Self.FYA;
+    FXB := Self.FXB;
+    FYB := Self.FYB;
+   end;
 end;
 
 procedure TGuiCustomLine.SetXA(const Value: TFixed24Dot8Point);
@@ -351,23 +460,6 @@ begin
   begin
    FYB := Value;
    YBChanged;
-  end;
-end;
-
-{ TGuiCustomRoundedRectangle }
-
-procedure TGuiCustomRoundedRectangle.BorderRadiusChanged;
-begin
- Changed;
-end;
-
-procedure TGuiCustomRoundedRectangle.SetBorderRadius(
-  const Value: TFixed24Dot8Point);
-begin
- if FBorderRadius.Fixed <> Value.Fixed then
-  begin
-   FBorderRadius := Value;
-   BorderRadiusChanged;
   end;
 end;
 

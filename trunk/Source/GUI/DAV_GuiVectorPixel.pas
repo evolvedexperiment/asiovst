@@ -55,6 +55,7 @@ type
     procedure Changed; virtual;
     procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); virtual; abstract;
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); virtual; abstract;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
 
@@ -72,6 +73,7 @@ type
     procedure SetAlpha(const Value: Byte);
     procedure SetColor(const Value: TColor);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure AlphaChanged; virtual;
     procedure ColorChanged; virtual;
   public
@@ -84,6 +86,7 @@ type
     FWidth    : TFixed24Dot8Point;
     procedure SetWidth(const Value: TFixed24Dot8Point);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure WidthChanged; virtual;
   public
     property Width: TFixed24Dot8Point read FWidth write SetWidth;
@@ -92,6 +95,8 @@ type
   TCustomGuiPixelFillPrimitive = class(TCustomGuiPixelSimplePrimitive)
   private
     FOnGetFillColor : TGuiFillEvent;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     property OnGetFillColor: TGuiFillEvent read FOnGetFillColor write FOnGetFillColor;
   end;
@@ -144,6 +149,17 @@ uses
 
 { TCustomGuiPixelPrimitive }
 
+procedure TCustomGuiPixelPrimitive.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomGuiPixelPrimitive then
+  with TCustomGuiPixelPrimitive(Dest) do
+   begin
+    GeometricShape.Assign(Self.GeometricShape);
+    FOnChanged := Self.FOnChanged;
+   end
+ else inherited;
+end;
+
 procedure TCustomGuiPixelPrimitive.Changed;
 begin
  if Assigned(FOnChanged)
@@ -183,6 +199,18 @@ begin
  Changed;
 end;
 
+procedure TCustomGuiPixelSimplePrimitive.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TCustomGuiPixelSimplePrimitive then
+  with TCustomGuiPixelSimplePrimitive(Dest) do
+   begin
+    FColor := Self.Color;
+    FAlpha := Self.Alpha;
+   end;
+end;
+
 procedure TCustomGuiPixelSimplePrimitive.ColorChanged;
 begin
  Changed;
@@ -197,6 +225,17 @@ begin
  Changed;
 end;
 
+procedure TCustomGuiPixelFramePrimitive.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TCustomGuiPixelFramePrimitive then
+  with TCustomGuiPixelFramePrimitive(Dest) do
+   begin
+    FWidth := Self.FWidth;
+   end;
+end;
+
 procedure TCustomGuiPixelFramePrimitive.SetWidth(
   const Value: TFixed24Dot8Point);
 begin
@@ -205,6 +244,20 @@ begin
    FWidth.Fixed := Value.Fixed;
    WidthChanged;
   end;
+end;
+
+
+{ TCustomGuiPixelFillPrimitive }
+
+procedure TCustomGuiPixelFillPrimitive.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TCustomGuiPixelFillPrimitive then
+  with TCustomGuiPixelFillPrimitive(Dest) do
+   begin
+    FOnGetFillColor := Self.OnGetFillColor;
+   end;
 end;
 
 

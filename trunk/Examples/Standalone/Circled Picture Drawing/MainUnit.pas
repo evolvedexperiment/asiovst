@@ -54,6 +54,7 @@ type
     MiSavePopulation: TMenuItem;
     N5: TMenuItem;
     MiLoadPopulation: TMenuItem;
+    MiSaveFramed: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -70,6 +71,7 @@ type
     procedure MiOpenReferenceClick(Sender: TObject);
     procedure MiSaveAnimationClick(Sender: TObject);
     procedure MiSaveDrawingClick(Sender: TObject);
+    procedure MiSaveFramedClick(Sender: TObject);
     procedure MiSaveHighResolutionClick(Sender: TObject);
     procedure MiSavePopulationClick(Sender: TObject);
     procedure MiSaveResultClick(Sender: TObject);
@@ -129,6 +131,8 @@ type
     procedure LoadPopulationBackup(FileName: TFileName);
     procedure CalculateStaticCosts; virtual;
     procedure SaveDrawing(FileName: TFileName);
+    procedure SaveDrawingHR(FileName: TFileName);
+    procedure SaveDrawingFramed(FileName: TFileName);
     procedure SaveAnimation(FileName: TFileName; ScaleFactor: Single;
       AnimatedCircle: Boolean = False);
     procedure LoadDrawing(FileName: TFileName);
@@ -311,6 +315,7 @@ begin
 
    NumberOfCircles := ReadInteger('Settings', 'Number of Circles', FNumberOfCircles);
    LoadReference(ReadString('Recent', 'Reference', ''));
+   LoadDrawing(ReadString('Recent', 'Drawing', ''));
   finally
    Free;
   end;
@@ -381,8 +386,16 @@ procedure TFmCircledPictureDialog.MiOpenDrawingClick(Sender: TObject);
 begin
  with OpenDialogCircles do
   begin
-   if Execute
-    then LoadDrawing(FileName);
+   if Execute then
+    begin
+     LoadDrawing(FileName);
+     with TIniFile.Create(FIniFileName) do
+      try
+       WriteString('Recent', 'Drawing', OpenDialogCircles.FileName);
+      finally
+       Free;
+      end;
+    end;
   end;
 end;
 
@@ -390,8 +403,25 @@ procedure TFmCircledPictureDialog.MiSaveDrawingClick(Sender: TObject);
 begin
  with SaveDialogCircles do
   begin
+   if Execute then
+    begin
+     SaveDrawing(FileName);
+     with TIniFile.Create(FIniFileName) do
+      try
+       WriteString('Recent', 'Drawing', SaveDialogCircles.FileName);
+      finally
+       Free;
+      end;
+    end;
+  end;
+end;
+
+procedure TFmCircledPictureDialog.MiSaveFramedClick(Sender: TObject);
+begin
+ with SaveDialog do
+  begin
    if Execute
-    then SaveDrawing(FileName);
+    then SaveDrawingFramed(FileName);
   end;
 end;
 
@@ -405,40 +435,11 @@ begin
 end;
 
 procedure TFmCircledPictureDialog.MiSaveHighResolutionClick(Sender: TObject);
-var
-  DrawingHR : TGuiPixelMapMemory;
-  Index     : Integer;
 begin
  with SaveDialog do
   begin
-   if Execute then
-    try
-     DrawingHR := TGuiPixelMapMemory.Create;
-     DrawingHR.Width := 4 * FBestDrawing.Width;
-     DrawingHR.Height := 4 * FBestDrawing.Height;
-     DrawingHR.Clear;
-
-     for Index := 0 to Length(FCircles) - 1 do
-      if Assigned(FCircles[Index]) then
-       with FCircles[Index] do
-        begin
-         GeometricShape.Radius := FixedMul(GeometricShape.Radius, 4 shl 8);
-         GeometricShape.CenterX := FixedMul(GeometricShape.CenterX, 4 shl 8);
-         GeometricShape.CenterY := FixedMul(GeometricShape.CenterY, 4 shl 8);
-         Draw(DrawingHR);
-         GeometricShape.Radius := FixedDiv(GeometricShape.Radius, 4 shl 8);
-         GeometricShape.CenterX := FixedDiv(GeometricShape.CenterX, 4 shl 8);
-         GeometricShape.CenterY := FixedDiv(GeometricShape.CenterY, 4 shl 8);
-        end;
-
-     // make opaque
-     for Index := 0 to DrawingHR.Height * DrawingHR.Width - 1
-      do DrawingHR.DataPointer[Index].A := $FF;
-
-     DrawingHR.SaveToFile(FileName);
-    finally
-     if Assigned(DrawingHR) then FreeAndNil(DrawingHR);
-    end;
+   if Execute
+    then SaveDrawingHR(FileName);
   end;
 end;
 
@@ -1054,12 +1055,21 @@ end;
 procedure TFmCircledPictureDialog.SaveDrawingBackup;
 var
   OldFileName : TFileName;
+  NewFileName : TFileName;
 begin
  OldFileName := 'Backup' + IntToStr(FCurrentCircle) + '.circles';
  FCurrentCircle := FCurrentCircle + FNumberOfCircles;
- SaveDrawing('Backup' + IntToStr(FCurrentCircle) + '.circles');
+ NewFileName := 'Backup' + IntToStr(FCurrentCircle) + '.circles';
+ SaveDrawing(NewFileName);
  if FileExists(OldFileName) and (FCurrentCircle mod 128 <> 0)
   then DeleteFile(OldFileName);
+
+ with TIniFile.Create(FIniFileName) do
+  try
+   WriteString('Recent', 'Drawing', NewFileName);
+  finally
+   Free;
+  end;
 end;
 
 procedure TFmCircledPictureDialog.SavePopulationBackup(FileName: TFileName);
@@ -1257,6 +1267,8 @@ var
   Circles : TCircleChunkContainer;
   Index   : Integer;
 begin
+ if not FileExists(FileName) then Exit;
+
  try
   Circles := TCircleChunkContainer.Create;
   Circles.LoadFromFile(FileName);
@@ -1429,6 +1441,115 @@ begin
   Circles.SaveToFile(FileName);
  finally
   if Assigned(Circles) then FreeAndNil(Circles);
+ end;
+end;
+
+procedure TFmCircledPictureDialog.SaveDrawingHR(FileName: TFileName);
+var
+  DrawingHR : TGuiPixelMapMemory;
+  Circle    : TGuiPixelFilledCircle;
+  Index     : Integer;
+begin
+ try
+  DrawingHR := TGuiPixelMapMemory.Create;
+  DrawingHR.Width := 4 * FBestDrawing.Width;
+  DrawingHR.Height := 4 * FBestDrawing.Height;
+  DrawingHR.Clear;
+
+  Circle := TGuiPixelFilledCircle.Create;
+  try
+   for Index := 0 to Length(FCircles) - 1 do
+    if Assigned(FCircles[Index]) then
+     begin
+      Circle.Assign(FCircles[Index]);
+      with Circle do
+       begin
+        GeometricShape.Radius := FixedMul(GeometricShape.Radius, 4 shl 8);
+        GeometricShape.CenterX := FixedMul(GeometricShape.CenterX, 4 shl 8);
+        GeometricShape.CenterY := FixedMul(GeometricShape.CenterY, 4 shl 8);
+        Draw(DrawingHR);
+       end;
+     end;
+  finally
+   FreeAndNil(Circle);
+  end;
+
+  // make opaque
+  DrawingHR.MakeOpaque;
+  DrawingHR.SaveToFile(FileName);
+ finally
+  if Assigned(DrawingHR) then FreeAndNil(DrawingHR);
+ end;
+end;
+
+procedure TFmCircledPictureDialog.SaveDrawingFramed(FileName: TFileName);
+var
+  Drawing  : TGuiPixelMapMemory;
+  Circle   : TGuiPixelFilledCircle;
+  Index    : Integer;
+  TempRect : TRect;
+begin
+ try
+  Drawing := TGuiPixelMapMemory.Create;
+  Drawing.Width := 3 * FBestDrawing.Width;
+  Drawing.Height := 3 * FBestDrawing.Height;
+  Drawing.Clear;
+
+  Circle := TGuiPixelFilledCircle.Create;
+  try
+   for Index := 0 to Length(FCircles) - 1 do
+    if Assigned(FCircles[Index]) then
+     begin
+      Circle.Assign(FCircles[Index]);
+      with Circle do
+       begin
+        GeometricShape.Radius := FixedMul(GeometricShape.Radius, 2 shl 8);
+        GeometricShape.CenterX := FixedAdd(ConvertToFixed24Dot8Point(Drawing.Width div 6), FixedMul(GeometricShape.CenterX, 2 shl 8));
+        GeometricShape.CenterY := FixedAdd(ConvertToFixed24Dot8Point(Drawing.Height div 6), FixedMul(GeometricShape.CenterY, 2 shl 8));
+        Draw(Drawing);
+       end;
+     end;
+  finally
+   FreeAndNil(Circle);
+  end;
+
+  TempRect := Rect(0, 0, (Drawing.Width div 6) - 1, Drawing.Height);
+  Drawing.FillRect(TempRect, pxSemiBlack32);
+
+  TempRect := Rect(Drawing.Width - (Drawing.Width div 6) + 1, 0, Drawing.Width, Drawing.Height);
+  Drawing.FillRect(TempRect, pxSemiBlack32);
+
+  TempRect := Rect((Drawing.Width div 6) - 1, 0,
+    Drawing.Width - (Drawing.Width div 6) + 1, (Drawing.Height div 6) - 1);
+  Drawing.FillRect(TempRect, pxSemiBlack32);
+
+  TempRect := Rect((Drawing.Width div 6) - 1,
+    Drawing.Height - (Drawing.Height div 6) + 1,
+    Drawing.Width - (Drawing.Width div 6) + 1, Drawing.Height);
+  Drawing.FillRect(TempRect, pxSemiBlack32);
+
+  TempRect := Rect((Drawing.Width div 6), (Drawing.Height div 6),
+    (Drawing.Width - Drawing.Width div 6),
+    (Drawing.Height - Drawing.Height div 6));
+  Drawing.FrameRect(TempRect, pxSemiWhite32);
+
+  Dec(TempRect.Left);
+  Dec(TempRect.Top);
+  Inc(TempRect.Right);
+  Inc(TempRect.Bottom);
+  Drawing.FrameRect(TempRect, pxWhite32);
+
+  Dec(TempRect.Left);
+  Dec(TempRect.Top);
+  Inc(TempRect.Right);
+  Inc(TempRect.Bottom);
+  Drawing.FrameRect(TempRect, pxSemiWhite32);
+
+  // make opaque
+  Drawing.MakeOpaque;
+  Drawing.SaveToFile(FileName);
+ finally
+  if Assigned(Drawing) then FreeAndNil(Drawing);
  end;
 end;
 
