@@ -36,16 +36,18 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Dialogs,
-  DAV_Types, DAV_VSTModule, DAV_VstHost, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiSlider, DAV_GuiEQGraph, DAV_GuiPanel;
+  DAV_Types, DAV_VSTModule, DAV_VstHost, DAV_GuiLabel, DAV_GuiGraphXY,
+  DAV_GuiLED, DAV_GuiSlider, DAV_GuiEQGraph, DAV_GuiPanel, DAV_GuiBaseControl;
 
 type
   TFmSidechainCompressor = class(TForm)
     GuiEQGraph: TGuiEQGraph;
     GuiGraphXY: TGuiGraphXY;
+    GuiPanel1: TGuiPanel;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
     LbAutoMakeUpGain: TGuiLabel;
+    LbClear: TGuiLabel;
     LbHighcutFrequency: TGuiLabel;
     LbHighcutFrequencyValue: TGuiLabel;
     LbHighcutOrder: TGuiLabel;
@@ -60,6 +62,8 @@ type
     LbLowcutOrderValue: TGuiLabel;
     LbMakeUpGainValue: TGuiLabel;
     LbMakupGain: TGuiLabel;
+    LbMix: TGuiLabel;
+    LbMixValue: TGuiLabel;
     LbRatio: TGuiLabel;
     LbRatioValue: TGuiLabel;
     LbRelease: TGuiLabel;
@@ -70,7 +74,9 @@ type
     LbThreshold: TGuiLabel;
     LbThresholdValue: TGuiLabel;
     LbTitle: TGuiLabel;
+    LbVstPluginValue: TGuiLabel;
     LEDAutoGain: TGuiLED;
+    LEDSideChain: TGuiLED;
     LEDSoftClip: TGuiLED;
     LEDStereo: TGuiLED;
     PnTitle: TPanel;
@@ -82,16 +88,10 @@ type
     SliderLowcutFrequency: TGuiSlider;
     SliderLowcutOrder: TGuiSlider;
     SliderMakeUpGain: TGuiSlider;
+    SliderMix: TGuiSlider;
     SliderRatio: TGuiSlider;
     SliderRelease: TGuiSlider;
     SliderThreshold: TGuiSlider;
-    LbMix: TGuiLabel;
-    LbMixValue: TGuiLabel;
-    SliderMix: TGuiSlider;
-    LbClear: TGuiLabel;
-    LEDSideChain: TGuiLED;
-    GuiPanel1: TGuiPanel;
-    LbVstPluginValue: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     function GetFilterGain(Sender: TObject; const Frequency: Single): Single;

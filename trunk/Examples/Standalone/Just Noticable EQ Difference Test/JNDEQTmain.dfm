@@ -168,7 +168,7 @@ object FmJNDEQT: TFmJNDEQT
     Width = 84
     Height = 8
     Anchors = [akLeft, akTop, akRight]
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 8620693
     DefaultPosition = 3.000000000000000000
     Max = 3.000000000000000000
@@ -184,7 +184,6 @@ object FmJNDEQT: TFmJNDEQT
     Top = 4
     Width = 20
     Height = 20
-    AntiAlias = gaaLinear4x
     Transparent = True
     BorderRadius = 2
     ButtonColor = 10333885
@@ -199,6 +198,7 @@ object FmJNDEQT: TFmJNDEQT
     Width = 312
     Height = 82
     Anchors = [akLeft, akTop, akRight]
+    AntiAlias = gaaLinear3x
     Caption = 'EQ Peak Filter'
     Color = 8620693
     Offset = 3
@@ -392,7 +392,7 @@ object FmJNDEQT: TFmJNDEQT
       Width = 179
       Height = 8
       Anchors = [akLeft, akTop, akRight]
-      BorderRadius = 2
+      BorderRadius = 3
       Color = 8620693
       CurveMapping = 1.000000000000000000
       DefaultPosition = 3.000000000000000000
@@ -410,7 +410,7 @@ object FmJNDEQT: TFmJNDEQT
       Width = 179
       Height = 8
       Anchors = [akLeft, akTop, akRight]
-      BorderRadius = 2
+      BorderRadius = 3
       Color = 8620693
       CurveMapping = 2.000000000000000000
       DefaultPosition = 1000.000000000000000000
@@ -428,7 +428,7 @@ object FmJNDEQT: TFmJNDEQT
       Width = 179
       Height = 8
       Anchors = [akLeft, akTop, akRight]
-      BorderRadius = 2
+      BorderRadius = 3
       Color = 8620693
       DefaultPosition = 15.000000000000000000
       Max = 15.000000000000000000
@@ -533,9 +533,9 @@ object FmJNDEQT: TFmJNDEQT
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
     object LbSelectionX: TGuiLabel
-      Left = 29
+      Left = 25
       Top = 3
-      Width = 40
+      Width = 46
       Height = 80
       Alignment = taCenter
       Caption = 'X'

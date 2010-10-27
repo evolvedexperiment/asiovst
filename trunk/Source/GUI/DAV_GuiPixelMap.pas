@@ -86,7 +86,8 @@ type
     procedure ResetAlpha; virtual;
 
     // simple Painting functions
-    procedure FillRect(Rect: TRect; Color: TPixel32);
+    procedure FillRect(Rect: TRect; Color: TPixel32); overload;
+    procedure FillRect(Left, Top, Right, Bottom: Integer; Color: TPixel32); overload;
     procedure FrameRect(Rect: TRect; Color: TPixel32);
     procedure Line(FromX, FromY, ToX, ToY: Integer; Color: TPixel32);
     procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32);
@@ -607,6 +608,24 @@ begin
   try
    for Y := Rect.Top to Rect.Bottom - 1 do
     for X := Rect.Left to Rect.Right - 1
+     do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
+  finally
+   EMMS;
+  end;
+end;
+
+procedure TGuiCustomPixelMap.FillRect(Left, Top, Right, Bottom: Integer; Color: TPixel32);
+var
+  X, Y : Integer;
+begin
+ if Color.A = $FF then
+  for Y := Top to Bottom - 1 do
+   for X := Left to Right - 1
+    do FDataPointer[Y * Width + X] := Color
+ else
+  try
+   for Y := Top to Bottom - 1 do
+    for X := Left to Right - 1
      do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
   finally
    EMMS;

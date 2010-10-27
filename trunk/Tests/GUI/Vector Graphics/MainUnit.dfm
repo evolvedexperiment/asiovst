@@ -54,9 +54,11 @@ object FmVectorGraphicTest: TFmVectorGraphicTest
     OnChange = CbTestTypeChange
     Items.Strings = (
       'Filled Rectangle'
+      'Filled Rounded Rectangle'
       'Filled Circle'
       'Filled Ellipse'
       'Framed Rectangle'
+      'Framed Rounded Rectangle'
       'Framed Circle'
       'Thin Line'
       'Line')
