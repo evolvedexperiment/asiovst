@@ -36,40 +36,75 @@ interface
 
 uses
   Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls, StdCtrls,
-  DAV_GuiBaseControl, DAV_GuiPixelMap, DAV_GuiFont;
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiShadow;
 
 type
-  TCustomGuiLabel = class(TBufferedGraphicControl)
+  TCustomGuiLabel = class(TGraphicControl)
   private
-    FAntiAlias   : TGuiAntiAlias;
+    FGuiFont     : TGuiOversampledGDIFont;
     FAlignment   : TAlignment;
     FCaption     : string;
-    FOSFactor    : Integer;
     FTransparent : Boolean;
-    FShadow      : TGUIShadow;
     procedure SetTransparent(Value: Boolean); virtual;
-    procedure ShadowChangedHandler(Sender: TObject);
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    procedure SetOversampling(const Value: TFontOversampling);
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
     procedure SetShadow(const Value: TGUIShadow);
+    function GetOversampling: TFontOversampling;
+    function GetShadow: TGUIShadow;
   protected
-    procedure RenderLabelToBitmap(const Bitmap: TBitmap); virtual;
-    procedure UpdateBuffer; override;
+    FBuffer           : TGuiCustomPixelMap;
+    FBackBuffer       : TGuiCustomPixelMap;
+    FUpdateBackBuffer : Boolean;
+    FUpdateBuffer     : Boolean;
+    FOnPaint          : TNotifyEvent;
+
+    {$IFNDEF FPC}
+    {$IFNDEF COMPILER10_UP}
+    FOnMouseLeave     : TNotifyEvent;
+    FOnMouseEnter     : TNotifyEvent;
+
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    {$ENDIF}
+
+    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ELSE}
+    procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
+    procedure CMFontChanged(var Message: TLMessage); message CM_FONTCHANGED;
+    {$ENDIF}
+
+    procedure BufferChanged;
+    procedure BackBufferChanged;
+    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
+    procedure UpdateBackBuffer;
+    procedure UpdateBuffer;
+
     procedure AlignmentChanged; virtual;
-    procedure AntiAliasChanged; virtual;
     procedure CaptionChanged; virtual;
-    procedure ShadowChanged; virtual;
     procedure TransparentChanged; virtual;
-    procedure FontChanged; override;
+
+    procedure Loaded; override;
+    procedure Resize; override;
+
+    procedure Paint; override;
   public
-    constructor Create(AOwner: TComponent); overload; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+
+    property Oversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
     property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
     property Caption: string read FCaption write SetCaption;
-    property Shadow: TGUIShadow read FShadow write SetShadow;
+    property Shadow: TGUIShadow read GetShadow write SetShadow;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
+
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
+
+    {$IFNDEF COMPILER10_UP}
+    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    {$ENDIF}
   end;
 
   TGuiLabel = class(TCustomGuiLabel)
@@ -77,7 +112,6 @@ type
     property Align;
     property Alignment;
     property Anchors;
-    property AntiAlias;
     property AutoSize;
     property Caption;
     property Color;
@@ -87,12 +121,13 @@ type
     property DragMode;
     property Enabled;
     property Font;
+    property Oversampling;
     property ParentFont;
     property PopupMenu;
+    property Shadow;
     property ShowHint;
     property Visible;
     property Transparent;
-    property Shadow;
     {$IFNDEF FPC}
     property OnCanResize;
     {$ENDIF}
@@ -107,6 +142,8 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
+    property OnMouseEnter;
+    property OnMouseLeave;
     property OnMouseWheel;
     property OnMouseWheelDown;
     property OnMouseWheelUp;
@@ -114,8 +151,6 @@ type
     property OnStartDock;
     property OnStartDrag;
     property OnPaint;
-    property OnMouseEnter;
-    property OnMouseLeave;
   end;
 
 implementation
@@ -125,222 +160,249 @@ implementation
 constructor TCustomGuiLabel.Create(AOwner: TComponent);
 begin
  inherited;
- FAntiAlias   := gaaNone;
- FOSFactor    := 1;
- FAlignment   := taLeftJustify;
- FTransparent := False;
- FShadow      := TGuiShadow.Create;
- FShadow.OnChange := ShadowChangedHandler;
+ FGuiFont      := TGuiOversampledGDIFont.Create;
+ FAlignment    := taLeftJustify;
+ FBuffer       := TGuiPixelMapMemory.Create;
+ FBackBuffer   := TGuiPixelMapMemory.Create;
+ FUpdateBuffer := False;
+ ControlStyle  := ControlStyle + [csOpaque];
 end;
 
 destructor TCustomGuiLabel.Destroy;
 begin
- FreeAndNil(FShadow);
+ FreeAndNil(FGuiFont);
+ FreeAndNil(FBuffer);
+ FreeAndNil(FBackBuffer);
  inherited;
 end;
 
-procedure TCustomGuiLabel.FontChanged;
+type
+  TParentControl = class(TWinControl);
+
+procedure TCustomGuiLabel.CopyParentImage(PixelMap: TGuiCustomPixelMap);
+var
+  I         : Integer;
+  SubCount  : Integer;
+  SaveIndex : Integer;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
+  Bmp       : TBitmap;
 begin
- inherited;
- FBuffer.Canvas.Font.Assign(Self.Font);
+ if (Parent = nil) then Exit;
+ SubCount := Parent.ControlCount;
+
+ // set
+ {$IFDEF WIN32}
+ with Parent
+  do ControlState := ControlState + [csPaintCopy];
+ try
+ {$ENDIF}
+
+  SelfR := Bounds(Left, Top, Width, Height);
+  Pnt.X := -Left;
+  Pnt.Y := -Top;
+
+  {$IFNDEF FPC}
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Self.Width;
+    Height := Self.Height;
+    PixelFormat := pf32bit;
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+     with TParentControl(Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
+    end;
+
+    // Copy images of graphic controls
+    for I := 0 to SubCount - 1 do
+     begin
+      if Parent.Controls[I] = Self then Break else
+       if (Parent.Controls[I] <> nil) and
+          (Parent.Controls[I] is TGraphicControl)
+        then
+         with TGraphicControl(Parent.Controls[I]) do
+          begin
+           CtlR := Bounds(Left, Top, Width, Height);
+           if Boolean(IntersectRect(R, SelfR, CtlR)) and Visible then
+            begin
+             {$IFDEF WIN32}
+             ControlState := ControlState + [csPaintCopy];
+             {$ENDIF}
+             SaveIndex := SaveDC(Canvas.Handle);
+             try
+              SaveIndex := SaveDC(Canvas.Handle);
+              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
+              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
+              Perform(WM_PAINT, Canvas.Handle, 0);
+             finally
+              RestoreDC(Handle, SaveIndex);
+              {$IFDEF WIN32}
+              ControlState := ControlState - [csPaintCopy];
+              {$ENDIF}
+             end;
+            end;
+          end;
+     end;
+    PixelMap.Draw(Bmp);
+    PixelMap.MakeOpaque;
+   finally
+    Free;
+   end;
+  {$ENDIF}
+
+ {$IFDEF WIN32}
+ finally
+   with Parent do ControlState := ControlState - [csPaintCopy];
+ end;
+ {$ENDIF}
 end;
 
-procedure TCustomGuiLabel.ShadowChanged;
+procedure TCustomGuiLabel.Loaded;
 begin
+ inherited;
+ Resize;
+end;
+
+procedure TCustomGuiLabel.Resize;
+begin
+ if Assigned(FBuffer)
+  then FBuffer.SetSize(Width, Height);
+
+ if Assigned(FBackBuffer) then
+  begin
+   FBackBuffer.SetSize(Width, Height);
+   UpdateBackBuffer;
+  end;
+
+ inherited;
+end;
+
+procedure TCustomGuiLabel.Paint;
+begin
+ inherited;
+
+ if FUpdateBackBuffer
+  then UpdateBackBuffer;
+
+ if FUpdateBuffer
+  then UpdateBuffer;
+
+ if Assigned(FBuffer)
+  then FBuffer.PaintTo(Canvas);
+end;
+
+procedure TCustomGuiLabel.BufferChanged;
+begin
+ FUpdateBuffer := True;
  Invalidate;
 end;
 
-procedure TCustomGuiLabel.ShadowChangedHandler(Sender: TObject);
+procedure TCustomGuiLabel.BackBufferChanged;
 begin
- ShadowChanged;
+ FUpdateBackBuffer := True;
+ Invalidate;
+end;
+
+procedure TCustomGuiLabel.UpdateBackBuffer;
+var
+  PixelColor32 : TPixel32;
+begin
+ FUpdateBackBuffer := False;
+ if FTransparent then CopyParentImage(FBackBuffer) else
+  begin
+   PixelColor32 := ConvertColor(Color);
+   FBackBuffer.FillRect(ClientRect, PixelColor32);
+  end;
+
+ FUpdateBuffer := True;
 end;
 
 procedure TCustomGuiLabel.UpdateBuffer;
 var
-  Bmp : TBitmap;
-begin
- if [csReadingState] * ControlState <> [] then exit;
-
- // clear buffer
- with FBuffer.Canvas do
-  begin
-   Brush.Color := Self.Color;
-   Font.Assign(Self.Font);
-   Font.Size := FOSFactor * Self.Font.Size;
-  end;
-
- case FAntiAlias of
-  gaaNone     :
-   begin
-    if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else
-    FBuffer.Canvas.FillRect(FBuffer.Canvas.ClipRect);
-    RenderLabelToBitmap(FBuffer);
-   end;
-  gaaLinear2x:
-   begin
-    Bmp := TBitmap.Create;
-    with Bmp, Canvas do
-     try
-      PixelFormat := pf32bit;
-      Bmp.Width   := FOSFactor * FBuffer.Width;
-      Bmp.Height  := FOSFactor * FBuffer.Height;
-      Font.Assign(FBuffer.Canvas.Font);
-      Brush.Assign(FBuffer.Canvas.Brush);
-      Pen.Assign(FBuffer.Canvas.Pen);
-      if FTransparent then
-       begin
-        CopyParentImage(Self, Bmp.Canvas);
-        Upsample2xBitmap(Bmp);
-       end else
-      Canvas.FillRect(ClipRect);
-{
-      if FShadow.Visible then
-       begin
-        RenderLabelToBitmap(Bmp);
-       end
-      else
-}
-      RenderLabelToBitmap(Bmp);
-      Downsample2xBitmap(Bmp);
-      FBuffer.Canvas.Draw(0, 0, Bmp);
-     finally
-       FreeAndNil(Bmp);
-     end;
-   end;
-  gaaLinear3x:
-   begin
-    Bmp := TBitmap.Create;
-    with Bmp, Canvas do
-     try
-      PixelFormat := pf32bit;
-      Bmp.Width   := FOSFactor * FBuffer.Width;
-      Bmp.Height  := FOSFactor * FBuffer.Height;
-      Font.Assign(FBuffer.Canvas.Font);
-      Brush.Assign(FBuffer.Canvas.Brush);
-      Pen.Assign(FBuffer.Canvas.Pen);
-      if FTransparent then
-       begin
-        CopyParentImage(Self, Bmp.Canvas);
-        Upsample3xBitmap(Bmp);
-       end else
-      Canvas.FillRect(ClipRect);
-      RenderLabelToBitmap(Bmp);
-      Downsample3xBitmap(Bmp);
-      FBuffer.Canvas.Draw(0, 0, Bmp);
-     finally
-       FreeAndNil(Bmp);
-     end;
-   end;
-  gaaLinear4x :
-   begin
-    Bmp := TBitmap.Create;
-    with Bmp, Canvas do
-     try
-      PixelFormat := pf32bit;
-      Bmp.Width   := FOSFactor * FBuffer.Width;
-      Bmp.Height  := FOSFactor * FBuffer.Height;
-      Font.Assign(FBuffer.Canvas.Font);
-      Brush.Assign(FBuffer.Canvas.Brush);
-      Pen.Assign(FBuffer.Canvas.Pen);
-      if FTransparent then
-       begin
-        CopyParentImage(Self, Bmp.Canvas);
-//        DrawParentImage(Bmp.Canvas);
-        Upsample4xBitmap(Bmp);
-       end else
-      FillRect(ClipRect);
-      RenderLabelToBitmap(Bmp);
-      Downsample4xBitmap(Bmp);
-      FBuffer.Canvas.Draw(0, 0, Bmp);
-     finally
-      FreeAndNil(Bmp);
-     end;
-   end;
-  gaaLinear8x :
-   begin
-    Bmp := TBitmap.Create;
-    with Bmp do
-     try
-      PixelFormat := pf32bit;
-      Width       := FOSFactor * FBuffer.Width;
-      Height      := FOSFactor * FBuffer.Height;
-      Canvas.Font.Assign(FBuffer.Canvas.Font);
-      Canvas.Brush.Assign(FBuffer.Canvas.Brush);
-      Canvas.Pen.Assign(FBuffer.Canvas.Pen);
-      if FTransparent then
-       begin
-        CopyParentImage(Self, Bmp.Canvas);
-//        DrawParentImage(Bmp.Canvas);
-        Upsample4xBitmap(Bmp);
-        Upsample2xBitmap(Bmp);
-       end else
-      Bmp.Canvas.FillRect(Bmp.Canvas.ClipRect);
-      RenderLabelToBitmap(Bmp);
-      Downsample4xBitmap(Bmp);
-      Downsample2xBitmap(Bmp);
-      FBuffer.Canvas.Draw(0, 0, Bmp);
-     finally
-      FreeAndNil(Bmp);
-     end;
-   end;
-  gaaLinear16x :
-   begin
-    Bmp := TBitmap.Create;
-    with Bmp do
-     try
-      PixelFormat := pf32bit;
-      Width       := FOSFactor * FBuffer.Width;
-      Height      := FOSFactor * FBuffer.Height;
-      Canvas.Font.Assign(FBuffer.Canvas.Font);
-      Canvas.Brush.Assign(FBuffer.Canvas.Brush);
-      Canvas.Pen.Assign(FBuffer.Canvas.Pen);
-      if FTransparent then
-       begin
-        CopyParentImage(Self, Bmp.Canvas);
-//        DrawParentImage(Bmp.Canvas);
-        Upsample4xBitmap(Bmp);
-        Upsample4xBitmap(Bmp);
-       end else
-      Bmp.Canvas.FillRect(Bmp.Canvas.ClipRect);
-      RenderLabelToBitmap(Bmp);
-      Downsample4xBitmap(Bmp);
-      Downsample4xBitmap(Bmp);
-      FBuffer.Canvas.Draw(0, 0, Bmp);
-     finally
-      FreeAndNil(Bmp);
-     end;
-   end;
- end;
-
- inherited;
-end;
-
-procedure TCustomGuiLabel.RenderLabelToBitmap(const Bitmap: TBitmap);
-var
   TextSize : TSize;
 begin
- with Bitmap.Canvas do
+ FUpdateBuffer := False;
+
+ // check whether a buffer or a back buffer is assigned
+ if not Assigned(FBuffer) or not Assigned(FBackBuffer)
+  then Exit;
+
+ Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
+
+ // copy back buffer to buffer
+ Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
+   FBuffer.Width * SizeOf(TPixel32));
+
+ if Assigned(FGuiFont) then
   begin
-   TextSize := TextExtent(FCaption);
-   Brush.Style := bsClear;
-
-   if FShadow.Visible then
-    begin
-     Font.Color := FShadow.Color;
-     case FAlignment of
-       taLeftJustify : TextOut(FOSFactor * FShadow.Offset.X, FOSFactor * FShadow.Offset.Y, FCaption);
-      taRightJustify : TextOut(FOSFactor * FShadow.Offset.X + Bitmap.Width - TextSize.cx, FOSFactor * FShadow.Offset.Y, FCaption);
-            taCenter : TextOut(FOSFactor * FShadow.Offset.X + (Bitmap.Width - TextSize.cx) div 2, FOSFactor * FShadow.Offset.Y, FCaption);
-     end;
-     Font.Color := Self.Font.Color;
-    end;
-
+   TextSize := FGuiFont.TextExtend(FCaption);
    case FAlignment of
-     taLeftJustify : TextOut(0, 0, FCaption);
-    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, 0, FCaption);
-          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, 0, FCaption);
+    taLeftJustify  : TextSize.cx := 0;
+    taRightJustify : TextSize.cx := Width - TextSize.cx;
+    taCenter       : TextSize.cx := (Width - TextSize.cx) div 2;
    end;
+
+   TextSize.cy := 0;
+   FGuiFont.TextOut(FCaption, FBuffer, TextSize.cx, TextSize.cy);
   end;
+end;
+
+procedure TCustomGuiLabel.AlignmentChanged;
+begin
+ Invalidate;
+end;
+
+function TCustomGuiLabel.GetOversampling: TFontOversampling;
+begin
+ Result := FGuiFont.FontOversampling;
+end;
+
+function TCustomGuiLabel.GetShadow: TGUIShadow;
+begin
+ Result := FGuiFont.Shadow;
+end;
+
+procedure TCustomGuiLabel.CaptionChanged;
+begin
+ BufferChanged;
+end;
+
+{$IFNDEF FPC}
+{$IFNDEF COMPILER10_UP}
+procedure TCustomGuiLabel.CMMouseEnter(var Message: TMessage);
+begin
+ if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+end;
+
+procedure TCustomGuiLabel.CMMouseLeave(var Message: TMessage);
+begin
+ if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
+end;
+{$ENDIF}
+{$ENDIF}
+
+procedure TCustomGuiLabel.CMColorChanged(var Message: TMessage);
+begin
+ if not FTransparent
+  then BackBufferChanged;
+end;
+
+procedure TCustomGuiLabel.CMFontChanged(var Message: TMessage);
+begin
+ FGuiFont.Font.Assign(Font);
+ BufferChanged;
 end;
 
 procedure TCustomGuiLabel.SetAlignment(const Value: TAlignment);
@@ -352,33 +414,6 @@ begin
   end;
 end;
 
-procedure TCustomGuiLabel.AlignmentChanged;
-begin
- Invalidate;
-end;
-
-procedure TCustomGuiLabel.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   AntiAliasChanged;
-  end;
-end;
-
-procedure TCustomGuiLabel.AntiAliasChanged;
-begin
- case FAntiAlias of
-       gaaNone : FOSFactor :=  1;
-   gaaLinear2x : FOSFactor :=  2;
-   gaaLinear3x : FOSFactor :=  3;
-   gaaLinear4x : FOSFactor :=  4;
-   gaaLinear8x : FOSFactor :=  8;
-  gaaLinear16x : FOSFactor := 16;
- end;
- Invalidate;
-end;
-
 procedure TCustomGuiLabel.SetCaption(const Value: string);
 begin
  if FCaption <> Value then
@@ -388,14 +423,16 @@ begin
   end;
 end;
 
-procedure TCustomGuiLabel.SetShadow(const Value: TGUIShadow);
+procedure TCustomGuiLabel.SetOversampling(const Value: TFontOversampling);
 begin
- FShadow.Assign(Value);
+ FGuiFont.FontOversampling := Value;
+ BufferChanged;
 end;
 
-procedure TCustomGuiLabel.CaptionChanged;
+procedure TCustomGuiLabel.SetShadow(const Value: TGUIShadow);
 begin
- Invalidate;
+ FGuiFont.Shadow.Assign(Value);
+ BufferChanged;
 end;
 
 procedure TCustomGuiLabel.SetTransparent(Value: Boolean);
@@ -409,7 +446,7 @@ end;
 
 procedure TCustomGuiLabel.TransparentChanged;
 begin
- Invalidate;
+ BackBufferChanged;
 end;
 
 end.

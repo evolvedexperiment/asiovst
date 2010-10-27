@@ -7,7 +7,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
   ClientWidth = 247
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = 14277598
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
@@ -22,14 +22,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 52
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Speed'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbStages: TGuiLabel
@@ -38,14 +39,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 56
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Stages'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
@@ -54,14 +56,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 50
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Depth'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMix: TGuiLabel
@@ -70,14 +73,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 34
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Mix'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
@@ -86,13 +90,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Caption = '0,2 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbStagesValue: TGuiLabel
@@ -101,13 +107,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 32
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Caption = '2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
@@ -116,13 +124,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Caption = '50 %'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMixValue: TGuiLabel
@@ -131,13 +141,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Caption = '2 %'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAlgorithm: TGuiLabel
@@ -145,14 +157,15 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Top = 8
     Width = 85
     Height = 23
-    AntiAlias = gaaLinear4x
     Caption = 'Algorithm:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object SBAlgorithm: TGuiSelectBox
@@ -187,12 +200,11 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 36
     Height = 36
     CurveMapping = -1.799999952316284000
-    LockCursor = False
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialSpeedChange
-    StitchedImageIndex = 0
     StitchedImageList = DSIL
+    StitchedImageIndex = 0
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
   end
@@ -201,12 +213,11 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Top = 58
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 8.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialStagesChange
-    StitchedImageIndex = 0
     StitchedImageList = DSIL
+    StitchedImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -215,11 +226,10 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Top = 58
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 100.000000000000000000
     OnChange = DialDepthChange
-    StitchedImageIndex = 0
     StitchedImageList = DSIL
+    StitchedImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -228,11 +238,10 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Top = 58
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 100.000000000000000000
     OnChange = DialMixChange
-    StitchedImageIndex = 0
     StitchedImageList = DSIL
+    StitchedImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1330,7 +1339,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
         Height = 36
         Width = 2340
       end>
-    Left = 104
-    Top = 64
+    Left = 56
+    Top = 48
   end
 end

@@ -40,12 +40,13 @@ uses
 
 const
   GM_FontChanged = WM_USER + $F0;
+  GM_FontListChanged = WM_USER + $F1;
 
 type
   // forward declarations
   TGuiCustomFontCollectionItem = class;
 
-  TGuiFontMessage = (fmSet, fmUpdate);
+  TGuiFontMessage = (fmSet = 0, fmUpdate = 1);
 
   TGuiFontCollection = class(TOwnedCollection)
   protected
@@ -80,12 +81,13 @@ type
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
 
-    procedure LinkControl(Control: TControl);
-    procedure UnLinkControl(Control: TControl);
-    procedure UnLinkControls;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
+
+    procedure LinkControl(Control: TControl);
+    procedure UnLinkControl(Control: TControl);
+    procedure UnLinkControls;
 
     property DisplayName: string read GetDisplayName write SetDisplayName;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -109,9 +111,17 @@ type
     function GetItems(Index: Integer): TGuiCustomFontCollectionItem;
   protected
     FFontCollection : TGuiFontCollection;
+    FLinkedControls : TObjectList;
     function GetCount: Integer; virtual; abstract;
     property Items[Index: Integer]: TGuiCustomFontCollectionItem read GetItems; default;
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure LinkControl(Control: TControl);
+    procedure UnLinkControl(Control: TControl);
+    procedure UnLinkControls;
+
     property Count: Integer read GetCount;
   end;
 
@@ -165,17 +175,15 @@ end;
 
 procedure TGuiFontCollection.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
-(*
-var
-  LinkedControlIndex : Integer;
-*)
 begin
-(*
- if Action in [cnDeleting, cnExtracting] then
-  if Item is TGuiCustomFontCollectionItem
-   then TGuiCustomFontCollectionItem(Item).UnLinkControls;
-*)
  inherited;
+
+ if Item is TGuiCustomFontCollectionItem then
+  with TGuiCustomFontCollectionItem(Item) do
+   begin
+    if Action in [cnDeleting, cnExtracting]
+     then UnLinkControls;
+   end;
 end;
 
 procedure TGuiFontCollection.SetItem(Index: Integer;
@@ -196,7 +204,6 @@ end;
 
 destructor TGuiCustomFontCollectionItem.Destroy;
 begin
- UnLinkControls;
  FreeAndNil(FLinkedControls);
  if Assigned(FFont)
   then FreeAndNil(FFont);
@@ -206,6 +213,7 @@ end;
 procedure TGuiCustomFontCollectionItem.AssignTo(Dest: TPersistent);
 begin
  inherited;
+
  if Dest is TGuiCustomFontCollectionItem then
   with TGuiCustomFontCollectionItem(Dest) do
    begin
@@ -244,10 +252,10 @@ end;
 
 procedure TGuiCustomFontCollectionItem.UnLinkControl(Control: TControl);
 begin
- if Assigned(Font) then
+ if Assigned(Control) then
   begin
-   Control.Perform(GM_FontChanged, 0, 0);
-   FLinkedControls.Remove(Font);
+   if FLinkedControls.Remove(Control) <> 0
+    then Control.Perform(GM_FontChanged, 0, 0);
   end;
 end;
 
@@ -255,11 +263,18 @@ procedure TGuiCustomFontCollectionItem.UnLinkControls;
 var
   Index : Integer;
 begin
- Index := 0;
- while FLinkedControls.Count > Index do
-  with TControl(FLinkedControls[Index]) do
-   if Perform(GM_FontChanged, 0, 0) <> 1
-    then Inc(Index);
+ if Assigned(FLinkedControls) then
+  while FLinkedControls.Count > 0
+   do UnLinkControl(TControl(FLinkedControls[0]));
+
+(*
+Index := 0;
+ if Assigned(FLinkedControls) then
+  while FLinkedControls.Count > Index do
+   with TControl(FLinkedControls[Index]) do
+    if Perform(GM_FontChanged, 0, 0) <> 1
+     then Inc(Index);
+*)
 end;
 
 procedure TGuiCustomFontCollectionItem.SettingsChanged(Sender: TObject);
@@ -306,19 +321,20 @@ end;
 
 constructor TGuiFontList.Create(AOwner: TComponent);
 begin
-  inherited;
-  FFontCollection := TGuiFontCollection.Create(Self, TGuiFontCollectionItem);
+ inherited;
+ FFontCollection := TGuiFontCollection.Create(Self, TGuiFontCollectionItem);
 end;
 
 destructor TGuiFontList.Destroy;
 begin
-  FreeAndNil(FFontCollection);
-  inherited;
+ UnLinkControls;
+ FreeAndNil(FFontCollection);
+ inherited;
 end;
 
 function TGuiFontList.GetCount: Integer;
 begin
-  Result := FFontCollection.Count;
+ Result := FFontCollection.Count;
 end;
 
 function TGuiFontList.GetItems(Index: Integer): TGuiFontCollectionItem;
@@ -331,6 +347,18 @@ end;
 
 { TGuiCustomFontList }
 
+constructor TGuiCustomFontList.Create(AOwner: TComponent);
+begin
+ inherited;
+ FLinkedControls := TObjectList.Create(False);
+end;
+
+destructor TGuiCustomFontList.Destroy;
+begin
+ FreeAndNil(FLinkedControls);
+ inherited;
+end;
+
 function TGuiCustomFontList.GetItems(
   Index: Integer): TGuiCustomFontCollectionItem;
 begin
@@ -338,6 +366,30 @@ begin
  if (Index >= 0) and (Index < FFontCollection.Count)
   then Result := TGuiCustomFontCollectionItem(FFontCollection[Index])
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
+procedure TGuiCustomFontList.LinkControl(Control: TControl);
+begin
+ Assert(Assigned(FLinkedControls));
+ if FLinkedControls.IndexOf(Control) < 0 then
+  begin
+   FLinkedControls.Add(Control);
+   Control.Perform(GM_FontListChanged, 0, Integer(Self));
+  end;
+end;
+
+procedure TGuiCustomFontList.UnLinkControl(Control: TControl);
+begin
+ Assert(Assigned(FLinkedControls));
+ if Assigned(Control)
+  then FLinkedControls.Remove(Control);
+end;
+
+procedure TGuiCustomFontList.UnLinkControls;
+begin
+ Assert(Assigned(FLinkedControls));
+ while FLinkedControls.Count > 0
+  do TControl(FLinkedControls[0]).Perform(GM_FontListChanged, 0, 0);
 end;
 
 end.

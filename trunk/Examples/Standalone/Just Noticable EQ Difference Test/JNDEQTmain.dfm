@@ -30,7 +30,6 @@ object FmJNDEQT: TFmJNDEQT
     Width = 73
     Height = 15
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = 'Audio File:'
     Font.Charset = DEFAULT_CHARSET
@@ -38,10 +37,12 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object LbAudioFileValue: TGuiLabel
     Left = 113
@@ -50,7 +51,6 @@ object FmJNDEQT: TFmJNDEQT
     Height = 15
     Margins.Bottom = 0
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = 'Pink Noise (double click to change)'
     Font.Charset = DEFAULT_CHARSET
@@ -58,11 +58,13 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PuAudioFile
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
     OnDblClick = LbAudioFileValueDblClick
   end
   object LbVolume: TGuiLabel
@@ -71,7 +73,6 @@ object FmJNDEQT: TFmJNDEQT
     Width = 42
     Height = 11
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = 'Volume:'
     Font.Charset = DEFAULT_CHARSET
@@ -79,10 +80,12 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object LbVolumeValue: TGuiLabel
     Left = 146
@@ -92,7 +95,6 @@ object FmJNDEQT: TFmJNDEQT
     Margins.Bottom = 0
     Alignment = taCenter
     Anchors = [akTop, akRight]
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = '0 dB'
     Font.Charset = DEFAULT_CHARSET
@@ -100,20 +102,22 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object ClipLED: TGuiLED
     Left = 299
     Top = 293
     Width = 16
     Height = 16
-    BorderStrength_Percent = 80.000000000000000000
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 100.000000000000000000
     LEDColor = clRed
-    LineWidth = 1.799999952316284000
+    BorderWidth = 2.200000047683716000
     Uniformity_Percent = 30.000001907348630000
     Transparent = False
   end
@@ -123,7 +127,6 @@ object FmJNDEQT: TFmJNDEQT
     Width = 70
     Height = 11
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = 'Clip Indicator:'
     Font.Charset = DEFAULT_CHARSET
@@ -131,10 +134,12 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object LbInformation: TGuiLabel
     Left = 8
@@ -143,7 +148,6 @@ object FmJNDEQT: TFmJNDEQT
     Height = 11
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = 'Information'
     Font.Charset = DEFAULT_CHARSET
@@ -151,10 +155,12 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object SliderVolume: TGuiSlider
     Left = 56
@@ -193,7 +199,6 @@ object FmJNDEQT: TFmJNDEQT
     Width = 312
     Height = 82
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
     Caption = 'EQ Peak Filter'
     Color = 8620693
     Offset = 3
@@ -219,7 +224,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 55
       Height = 11
       Margins.Bottom = 0
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'Bandwidth:'
       Font.Charset = DEFAULT_CHARSET
@@ -227,10 +231,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
     end
     object LbBandwidthValue: TGuiLabel
       Left = 253
@@ -240,7 +246,6 @@ object FmJNDEQT: TFmJNDEQT
       Margins.Bottom = 0
       Alignment = taCenter
       Anchors = [akTop, akRight]
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = '1'
       Font.Charset = DEFAULT_CHARSET
@@ -248,10 +253,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
     end
     object LbFrequency: TGuiLabel
       Left = 7
@@ -259,7 +266,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 55
       Height = 11
       Margins.Bottom = 0
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'Frequency:'
       Font.Charset = DEFAULT_CHARSET
@@ -267,10 +273,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
     end
     object LbFrequencyValue: TGuiLabel
       Left = 253
@@ -280,7 +288,6 @@ object FmJNDEQT: TFmJNDEQT
       Margins.Bottom = 0
       Alignment = taCenter
       Anchors = [akTop, akRight]
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = '1 kHz'
       Font.Charset = DEFAULT_CHARSET
@@ -288,10 +295,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
     end
     object LbGain: TGuiLabel
       Left = 7
@@ -299,7 +308,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 26
       Height = 11
       Margins.Bottom = 0
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'Gain:'
       Font.Charset = DEFAULT_CHARSET
@@ -307,10 +315,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
     end
     object LbGainValue: TGuiLabel
       Left = 253
@@ -320,7 +330,6 @@ object FmJNDEQT: TFmJNDEQT
       Margins.Bottom = 0
       Alignment = taCenter
       Anchors = [akTop, akRight]
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = '0 dB'
       Font.Charset = DEFAULT_CHARSET
@@ -328,10 +337,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
     end
     object LbAutoVolumeAdj: TGuiLabel
       Left = 115
@@ -339,7 +350,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 149
       Height = 11
       Margins.Bottom = 0
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'Automatic Volume Adjustment:'
       Font.Charset = DEFAULT_CHARSET
@@ -347,10 +357,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
       OnClick = LbAutoVolumeAdjustmentClick
     end
     object LbAutoVolumeAdjValue: TGuiLabel
@@ -359,7 +371,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 18
       Height = 11
       Margins.Bottom = 0
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'Off'
       Font.Charset = DEFAULT_CHARSET
@@ -367,10 +378,12 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
       Shadow.Visible = True
+      Transparent = True
       OnClick = LbAutoVolumeAdjustmentClick
     end
     object SliderBandwidth: TGuiSlider
@@ -433,17 +446,12 @@ object FmJNDEQT: TFmJNDEQT
     Top = 31
     Width = 100
     Height = 100
-    AntiAlias = gaaLinear4x
     Caption = 'PnSelectorA'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 3
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
@@ -455,7 +463,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 48
       Height = 80
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'A'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -463,7 +470,9 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -75
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnMouseDown = LbSelectionMouseDown
@@ -476,17 +485,12 @@ object FmJNDEQT: TFmJNDEQT
     Top = 31
     Width = 100
     Height = 100
-    AntiAlias = gaaLinear4x
     Caption = 'GuiPanel1'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 4
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
@@ -498,7 +502,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 44
       Height = 80
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'B'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -506,7 +509,9 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -75
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnMouseDown = LbSelectionMouseDown
@@ -518,17 +523,12 @@ object FmJNDEQT: TFmJNDEQT
     Top = 31
     Width = 100
     Height = 100
-    AntiAlias = gaaLinear4x
     Caption = 'GuiPanel1'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 5
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
@@ -538,7 +538,6 @@ object FmJNDEQT: TFmJNDEQT
       Width = 40
       Height = 80
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'X'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -546,7 +545,9 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -75
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnMouseDown = LbSelectionMouseDown
@@ -557,17 +558,12 @@ object FmJNDEQT: TFmJNDEQT
     Top = 137
     Width = 100
     Height = 48
-    AntiAlias = gaaLinear4x
     Caption = 'PnXisA'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 6
     UseDockManager = True
     OnClick = LbXisAClick
@@ -581,7 +577,6 @@ object FmJNDEQT: TFmJNDEQT
       Height = 38
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'X is A'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -589,7 +584,9 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -32
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnClick = LbXisAClick
@@ -600,17 +597,12 @@ object FmJNDEQT: TFmJNDEQT
     Top = 137
     Width = 100
     Height = 48
-    AntiAlias = gaaLinear4x
     Caption = 'PnXisB'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 7
     UseDockManager = True
     OnClick = LbXisBClick
@@ -624,7 +616,6 @@ object FmJNDEQT: TFmJNDEQT
       Height = 38
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'X is B'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -632,7 +623,9 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -32
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnClick = LbXisBClick
@@ -643,16 +636,11 @@ object FmJNDEQT: TFmJNDEQT
     Top = 137
     Width = 100
     Height = 48
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 8
     UseDockManager = True
     OnClick = LbXisAClick
@@ -666,7 +654,6 @@ object FmJNDEQT: TFmJNDEQT
       Height = 38
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'Skip'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -674,7 +661,9 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -32
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnClick = LbSkipClick

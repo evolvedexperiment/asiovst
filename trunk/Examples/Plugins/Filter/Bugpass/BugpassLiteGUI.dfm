@@ -28,7 +28,7 @@ object FmBugpassLite: TFmBugpassLite
     Width = 60
     Height = 34
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Lite'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 3616034
@@ -45,7 +45,7 @@ object FmBugpassLite: TFmBugpassLite
     Width = 309
     Height = 78
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'BUGPASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 3616034
@@ -62,7 +62,7 @@ object FmBugpassLite: TFmBugpassLite
     Width = 309
     Height = 78
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'BUGPASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
@@ -80,7 +80,7 @@ object FmBugpassLite: TFmBugpassLite
     Height = 21
     Alignment = taCenter
     Anchors = [akLeft, akBottom]
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = '1 kHz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
@@ -108,7 +108,7 @@ object FmBugpassLite: TFmBugpassLite
     Width = 60
     Height = 34
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Lite'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
@@ -126,7 +126,7 @@ object FmBugpassLite: TFmBugpassLite
     Height = 21
     Alignment = taCenter
     Anchors = [akLeft, akBottom]
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = '1 kHz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
@@ -143,7 +143,7 @@ object FmBugpassLite: TFmBugpassLite
     Width = 61
     Height = 34
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'VST'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 3616034
@@ -160,7 +160,7 @@ object FmBugpassLite: TFmBugpassLite
     Width = 61
     Height = 34
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'VST'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147

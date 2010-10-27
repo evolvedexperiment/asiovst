@@ -39,7 +39,6 @@ object FmLA4029: TFmLA4029
       Width = 48
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Release'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -47,7 +46,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
@@ -56,7 +57,6 @@ object FmLA4029: TFmLA4029
       Width = 48
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Attack'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -64,7 +64,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbTitle: TGuiLabel
@@ -73,7 +75,6 @@ object FmLA4029: TFmLA4029
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'LA-4029'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -81,7 +82,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LEDOnOff: TGuiLED
@@ -105,7 +108,6 @@ object FmLA4029: TFmLA4029
       Width = 44
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'On/Off'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -113,7 +115,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = LEDOnOffClick
     end
@@ -123,7 +127,6 @@ object FmLA4029: TFmLA4029
       Width = 22
       Height = 12
       Alignment = taCenter
-      AntiAlias = gaaLinear2x
       Caption = 'slow'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -131,7 +134,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbFast: TGuiLabel
@@ -140,7 +145,6 @@ object FmLA4029: TFmLA4029
       Width = 19
       Height = 12
       Alignment = taCenter
-      AntiAlias = gaaLinear2x
       Caption = 'fast'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -148,7 +152,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object BtIn: TGuiButton
@@ -238,7 +244,6 @@ object FmLA4029: TFmLA4029
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Mix'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -246,7 +251,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLevelingAmplifier: TLabel
@@ -284,10 +291,10 @@ object FmLA4029: TFmLA4029
       Top = 142
       Width = 64
       Height = 17
+      Color = clBlack
       LineColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      ParentColor = True
       Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
@@ -318,8 +325,8 @@ object FmLA4029: TFmLA4029
       Min = -0.699000000953674300
       OnChange = DialAttackChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -333,8 +340,8 @@ object FmLA4029: TFmLA4029
       Min = 1.000000000000000000
       OnChange = DialReleaseChange
       ParentColor = False
-      StitchedImageIndex = 1
       StitchedImageList = GSPL
+      StitchedImageIndex = 1
       Transparent = True
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
@@ -348,8 +355,8 @@ object FmLA4029: TFmLA4029
       Max = 100.000000000000000000
       OnChange = DialMixChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -362,8 +369,8 @@ object FmLA4029: TFmLA4029
       DefaultGlyphIndex = 0
       GlyphIndex = 0
       PopupMenu = PopupVUMeterSpeed
-      StitchedImageIndex = 4
       StitchedImageList = GSPL
+      StitchedImageIndex = 4
     end
   end
   object PnA: TGuiPanel
@@ -385,7 +392,6 @@ object FmLA4029: TFmLA4029
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Input'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -393,7 +399,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOutput: TGuiLabel
@@ -402,7 +410,6 @@ object FmLA4029: TFmLA4029
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Output'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -410,7 +417,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbRatioX: TGuiLabel
@@ -419,7 +428,6 @@ object FmLA4029: TFmLA4029
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Ratio'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -427,7 +435,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbKnee: TGuiLabel
@@ -436,7 +446,6 @@ object FmLA4029: TFmLA4029
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Knee'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -444,7 +453,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object PnKnee: TGuiPanel
@@ -575,8 +586,8 @@ object FmLA4029: TFmLA4029
       Min = -24.000000000000000000
       OnChange = DialInputChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       WheelStep = 1.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
@@ -589,8 +600,8 @@ object FmLA4029: TFmLA4029
       Min = -24.000000000000000000
       OnChange = DialOutputChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       WheelStep = 1.000000000000000000
     end
     object DialRatio: TGuiStitchedDial
@@ -602,8 +613,8 @@ object FmLA4029: TFmLA4029
       Max = 2.000000000000000000
       OnChange = DialRatioChange
       ParentColor = False
-      StitchedImageIndex = 3
       StitchedImageList = GSPL
+      StitchedImageIndex = 3
       WheelStep = 1.000000000000000000
     end
     object DialKnee: TGuiStitchedDial
@@ -615,8 +626,8 @@ object FmLA4029: TFmLA4029
       Max = 10.000000000000000000
       OnChange = DialKneeChange
       ParentColor = False
-      StitchedImageIndex = 3
       StitchedImageList = GSPL
+      StitchedImageIndex = 3
       WheelStep = 1.000000000000000000
     end
   end

@@ -30,7 +30,7 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
@@ -44,7 +44,7 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     Caption = 'A'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -58,7 +58,7 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     Caption = 'D'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
@@ -72,7 +72,7 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     Caption = 'G'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
@@ -86,7 +86,7 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     Caption = 'H'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
@@ -100,7 +100,7 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
@@ -114,7 +114,7 @@ object FmTuner: TFmTuner
     Top = 68
     Width = 122
     Height = 23
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Guitar Tuning:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

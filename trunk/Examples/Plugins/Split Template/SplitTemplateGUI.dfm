@@ -46,7 +46,7 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       CircleColor = 6450289
       CurveMapping = -2.099999904632568000
       DefaultPosition = 100.000000000000000000
@@ -69,7 +69,7 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 59
       Height = 20
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       Caption = '1kHz'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -84,7 +84,7 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 8.000000000000000000
@@ -107,7 +107,7 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 39
       Height = 20
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       Caption = '4x'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -127,7 +127,7 @@ object FmSplitter: TFmSplitter
       Brightness_Percent = 20.000000000000000000
       BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 36.754447937011720000
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       LineColor = clLime
       OnClick = GuiLEDOversamplingClick
     end
@@ -136,7 +136,7 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 97
       Height = 20
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Oversampling:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -152,7 +152,7 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 33
       Height = 20
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       Caption = '4x'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -168,7 +168,7 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
@@ -192,7 +192,7 @@ object FmSplitter: TFmSplitter
       Top = 6
       Width = 65
       Height = 26
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Alignment = taCenter
       Caption = 'Low'
       Font.Charset = DEFAULT_CHARSET
@@ -212,7 +212,7 @@ object FmSplitter: TFmSplitter
       Top = 6
       Width = 65
       Height = 26
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Alignment = taCenter
       Caption = 'High'
       Font.Charset = DEFAULT_CHARSET
@@ -232,7 +232,7 @@ object FmSplitter: TFmSplitter
       Top = 6
       Width = 89
       Height = 26
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       ArrowColor = 6450289
       ButtonColor = 6450289
       Font.Charset = DEFAULT_CHARSET

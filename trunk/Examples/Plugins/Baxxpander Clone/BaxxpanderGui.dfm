@@ -23,7 +23,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
     Top = 8
     Width = 434
     Height = 168
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     Caption = 'PnControls'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
@@ -43,7 +43,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Top = 55
       Width = 73
       Height = 65
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       CircleColor = 2385582
       Color = 1644825
       DialImageIndex = -1
@@ -64,7 +64,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Width = 87
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear3x
+      Oversampling = fo3x
       Caption = 'Dry / Wet'
       Color = 1644825
       Font.Charset = DEFAULT_CHARSET
@@ -80,7 +80,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Top = 55
       Width = 73
       Height = 65
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       CircleColor = 2385582
       Color = 1644825
       DialImageIndex = -1
@@ -101,7 +101,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Width = 55
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear3x
+      Oversampling = fo3x
       Caption = 'Mixer'
       Color = 1644825
       Font.Charset = DEFAULT_CHARSET
@@ -117,7 +117,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Top = 80
       Width = 40
       Height = 40
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       CircleColor = clSilver
       Color = 1644825
       DialImageIndex = -1
@@ -137,7 +137,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Top = 80
       Width = 40
       Height = 40
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       CircleColor = clSilver
       Color = 1644825
       DialImageIndex = -1
@@ -158,7 +158,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Width = 40
       Height = 16
       Alignment = taCenter
-      AntiAlias = gaaLinear3x
+      Oversampling = fo3x
       Caption = 'Shape'
       Color = 1644825
       Font.Charset = DEFAULT_CHARSET
@@ -175,7 +175,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Width = 40
       Height = 16
       Alignment = taCenter
-      AntiAlias = gaaLinear3x
+      Oversampling = fo3x
       Caption = 'Limit'
       Color = 1644825
       Font.Charset = DEFAULT_CHARSET
@@ -192,7 +192,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Width = 68
       Height = 16
       Alignment = taCenter
-      AntiAlias = gaaLinear3x
+      Oversampling = fo3x
       Caption = 'Saturation'
       Color = 1644825
       Font.Charset = DEFAULT_CHARSET
@@ -213,7 +213,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
       Brightness_Percent = 100.000000000000000000
       BorderStrength_Percent = 70.000000000000000000
       Uniformity_Percent = 40.000000000000000000
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       LineColor = clRed
       ParentColor = False
     end

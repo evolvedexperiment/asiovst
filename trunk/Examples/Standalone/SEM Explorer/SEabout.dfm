@@ -16,35 +16,7 @@ object FmAbout: TFmAbout
   OnClick = FormClick
   PixelsPerInch = 96
   TextHeight = 13
-  object LbExplorerShadow: TGuiLabel
-    Left = 104
-    Top = 6
-    Width = 119
-    Height = 32
-    AntiAlias = gaaLinear4x
-    Caption = 'Explorer'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 1230806
-    Font.Height = -27
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    OnClick = FormClick
-  end
-  object LbSemShadow: TGuiLabel
-    Left = 47
-    Top = 8
-    Width = 60
-    Height = 32
-    AntiAlias = gaaLinear4x
-    Caption = 'SEM Explorer'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 1230806
-    Font.Height = -27
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    OnClick = FormClick
-  end
-  object ImSinthEdit: TImage
+  object ImSynthEdit: TImage
     Left = 8
     Top = 8
     Width = 32
@@ -707,20 +679,24 @@ object FmAbout: TFmAbout
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000}
-    OnClick = ImSinthEditClick
+    OnClick = ImSynthEditClick
   end
   object LbSem: TGuiLabel
     Left = 46
     Top = 7
     Width = 61
     Height = 33
-    AntiAlias = gaaLinear4x
     Caption = 'SEM'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -27
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = 53473
+    Shadow.Visible = True
     Transparent = True
     OnClick = FormClick
   end
@@ -749,20 +725,24 @@ object FmAbout: TFmAbout
     Height = 13
     Cursor = crHandPoint
     Caption = 'icon base on an acryl painting by Jacky Lee'
-    OnClick = ImSinthEditClick
+    OnClick = ImSynthEditClick
   end
   object LbExplorer: TGuiLabel
     Left = 106
     Top = 7
     Width = 117
     Height = 33
-    AntiAlias = gaaLinear4x
     Caption = 'Explorer'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -27
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = 53473
+    Shadow.Visible = True
     Transparent = True
     OnClick = FormClick
   end

@@ -21,7 +21,7 @@ object FmHumRemoval: TFmHumRemoval
     Top = 8
     Width = 379
     Height = 169
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     BorderColor = 14277598
     BorderRadius = 7
     BorderWidth = 2
@@ -55,7 +55,7 @@ object FmHumRemoval: TFmHumRemoval
     Top = 183
     Width = 172
     Height = 160
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Highpass'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -74,7 +74,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 85
       Height = 25
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Frequency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
@@ -102,7 +102,7 @@ object FmHumRemoval: TFmHumRemoval
       Top = 35
       Width = 111
       Height = 22
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       ArrowColor = 14606306
       ButtonColor = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -126,7 +126,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 51
       Height = 25
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Order'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
@@ -142,7 +142,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 69
       Height = 20
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -157,7 +157,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 59
       Height = 20
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -200,7 +200,7 @@ object FmHumRemoval: TFmHumRemoval
     Top = 182
     Width = 201
     Height = 160
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Notch Filters'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -219,7 +219,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 85
       Height = 25
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Frequency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
@@ -235,7 +235,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 84
       Height = 25
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Bandwidth'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
@@ -251,7 +251,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 85
       Height = 20
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -266,7 +266,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 84
       Height = 20
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -293,7 +293,7 @@ object FmHumRemoval: TFmHumRemoval
       Top = 34
       Width = 156
       Height = 22
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Capture Hum Profile'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598

@@ -39,7 +39,6 @@ object FmLA1701: TFmLA1701
       Width = 48
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Release'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -47,7 +46,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
@@ -56,7 +57,6 @@ object FmLA1701: TFmLA1701
       Width = 48
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Attack'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -64,7 +64,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbTitle: TGuiLabel
@@ -73,7 +75,6 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'LA-1701'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -81,7 +82,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = LbTitleClick
     end
@@ -106,7 +109,6 @@ object FmLA1701: TFmLA1701
       Width = 44
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'On/Off'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -114,7 +116,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = LEDOnOffClick
     end
@@ -124,7 +128,6 @@ object FmLA1701: TFmLA1701
       Width = 22
       Height = 12
       Alignment = taCenter
-      AntiAlias = gaaLinear2x
       Caption = 'slow'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -132,7 +135,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbFast: TGuiLabel
@@ -141,7 +146,6 @@ object FmLA1701: TFmLA1701
       Width = 19
       Height = 12
       Alignment = taCenter
-      AntiAlias = gaaLinear2x
       Caption = 'fast'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -149,7 +153,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object BtIn: TGuiButton
@@ -215,31 +221,12 @@ object FmLA1701: TFmLA1701
       Shadow.Color = clBlack
       OnClick = BtOutClick
     end
-    object LbVUMeterDisplay: TLabel
-      Left = 87
-      Top = 93
-      Width = 105
-      Height = 12
-      Alignment = taCenter
-      AutoSize = False
-      Caption = 'Input'
-      Color = 15461355
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGray
-      Font.Height = -9
-      Font.Name = 'Verdana'
-      Font.Style = []
-      ParentColor = False
-      ParentFont = False
-      Transparent = True
-    end
     object LbMix: TGuiLabel
       Left = 248
       Top = 46
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Mix'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -247,7 +234,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLevelingAmplifier: TLabel
@@ -280,6 +269,24 @@ object FmLA1701: TFmLA1701
       Height = 3
       Brush.Color = 3355443
     end
+    object LbVUMeterDisplay: TLabel
+      Left = 87
+      Top = 93
+      Width = 105
+      Height = 12
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Input'
+      Color = 15461355
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGray
+      Font.Height = -9
+      Font.Name = 'Verdana'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
     object DialAttack: TGuiStitchedDial
       Left = 8
       Top = 34
@@ -290,8 +297,8 @@ object FmLA1701: TFmLA1701
       Min = -0.699000000953674300
       OnChange = DialAttackChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -305,8 +312,8 @@ object FmLA1701: TFmLA1701
       Min = 1.000000000000000000
       OnChange = DialReleaseChange
       ParentColor = False
-      StitchedImageIndex = 1
       StitchedImageList = GSPL
+      StitchedImageIndex = 1
       Transparent = True
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
@@ -320,8 +327,8 @@ object FmLA1701: TFmLA1701
       Max = 100.000000000000000000
       OnChange = DialMixChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -330,10 +337,10 @@ object FmLA1701: TFmLA1701
       Top = 142
       Width = 64
       Height = 17
+      Color = clBlack
       LineColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      ParentColor = True
       Radius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
@@ -362,8 +369,8 @@ object FmLA1701: TFmLA1701
       DefaultGlyphIndex = 0
       GlyphIndex = 0
       PopupMenu = PopupVUMeterSpeed
-      StitchedImageIndex = 4
       StitchedImageList = GSPL
+      StitchedImageIndex = 4
       Transparent = True
     end
   end
@@ -386,7 +393,6 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Input'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -394,7 +400,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOutput: TGuiLabel
@@ -403,7 +411,6 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Output'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -411,7 +418,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbRatioX: TGuiLabel
@@ -420,7 +429,6 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Ratio'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -428,7 +436,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbKnee: TGuiLabel
@@ -437,7 +447,6 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Knee'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -445,7 +454,9 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialKnee: TGuiStitchedDial
@@ -457,8 +468,8 @@ object FmLA1701: TFmLA1701
       Max = 10.000000000000000000
       OnChange = DialKneeChange
       ParentColor = False
-      StitchedImageIndex = 3
       StitchedImageList = GSPL
+      StitchedImageIndex = 3
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -471,8 +482,8 @@ object FmLA1701: TFmLA1701
       Max = 2.000000000000000000
       OnChange = DialRatioChange
       ParentColor = False
-      StitchedImageIndex = 3
       StitchedImageList = GSPL
+      StitchedImageIndex = 3
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -486,8 +497,8 @@ object FmLA1701: TFmLA1701
       Min = -24.000000000000000000
       OnChange = DialOutputChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -501,8 +512,8 @@ object FmLA1701: TFmLA1701
       Min = -24.000000000000000000
       OnChange = DialInputChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       Transparent = True
       WheelStep = 1.000000000000000000
     end

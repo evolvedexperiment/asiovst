@@ -22,8 +22,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Speed'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbStages: TGuiLabel
@@ -32,8 +33,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 56
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Stages'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
@@ -42,8 +44,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Depth'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMix: TGuiLabel
@@ -52,40 +55,43 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Mix'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
-    Left = -3
+    Left = 3
     Top = 66
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '0,2 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbStagesValue: TGuiLabel
-    Left = 63
+    Left = 67
     Top = 66
-    Width = 60
+    Width = 52
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '4'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
@@ -94,14 +100,15 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '5 %'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMixValue: TGuiLabel
@@ -110,14 +117,15 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '50 %'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDrift: TGuiLabel
@@ -126,8 +134,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Drift'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDriftValue: TGuiLabel
@@ -136,13 +145,15 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Caption = '8 %'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object DialSpeed: TGuiStitchedDial
@@ -151,12 +162,11 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 36
     Height = 36
     CurveMapping = -1.799999952316284000
-    LockCursor = False
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialSpeedChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
   end
@@ -165,12 +175,11 @@ object FmSimpleChorus: TFmSimpleChorus
     Top = 32
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 8.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialStagesChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 4.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -180,11 +189,10 @@ object FmSimpleChorus: TFmSimpleChorus
     Top = 32
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 100.000000000000000000
     OnChange = DialDepthChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialMix: TGuiStitchedDial
@@ -192,11 +200,10 @@ object FmSimpleChorus: TFmSimpleChorus
     Top = 32
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 100.000000000000000000
     OnChange = DialMixChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -206,11 +213,10 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 36
     Height = 36
     CurveMapping = -1.000000000000000000
-    LockCursor = False
     Max = 100.000000000000000000
     OnChange = DialDriftChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 8.000000000000000000
     WheelStep = 1.000000000000000000
   end

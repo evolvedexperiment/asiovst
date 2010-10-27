@@ -36,18 +36,20 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Types,
-  DAV_VSTModule, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial;
+  DAV_VSTModule, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmFrequencyDomainPitchShifter = class(TForm)
-    DialSemitones: TGuiDial;
+    DialSemitones: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbSemitones: TGuiLabel;
     LbSemitoneValue: TGuiLabel;
     procedure DialSemitonesChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground3 : TBitmap;
   public
     procedure UpdateSemitones;
   end;
@@ -78,8 +80,8 @@ var
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackground := TBitmap.Create;
+ with FBackground do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -116,7 +118,7 @@ end;
 
 procedure TFmFrequencyDomainPitchShifter.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackground);
 end;
 
 procedure TFmFrequencyDomainPitchShifter.UpdateSemitones;

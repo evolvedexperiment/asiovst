@@ -55,7 +55,7 @@ object FmOversampler: TFmOversampler
       Brightness_Percent = 20.000000000000000000
       LineWidth = 2
       LEDColor = clLime
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       LineColor = clLime
       OnClick = GuiLEDOversamplingClick
     end
@@ -64,7 +64,7 @@ object FmOversampler: TFmOversampler
       Top = 4
       Width = 80
       Height = 16
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Oversampling:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -78,7 +78,7 @@ object FmOversampler: TFmOversampler
       Top = 4
       Width = 27
       Height = 16
-      AntiAlias = gaaLinear2x
+      Oversampling = fo2x
       Caption = '4x'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -92,7 +92,7 @@ object FmOversampler: TFmOversampler
       Top = 4
       Width = 16
       Height = 16
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000

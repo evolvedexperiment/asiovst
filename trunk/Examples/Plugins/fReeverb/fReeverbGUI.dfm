@@ -35,7 +35,6 @@ object FmReverb: TFmReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'dry'
       Color = clWhite
@@ -44,7 +43,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbWet: TGuiLabel
@@ -54,7 +55,6 @@ object FmReverb: TFmReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'wet'
       Color = clWhite
@@ -63,7 +63,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbWidth: TGuiLabel
@@ -73,7 +75,6 @@ object FmReverb: TFmReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'width'
       Color = clWhite
@@ -82,7 +83,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbSize: TGuiLabel
@@ -92,7 +95,6 @@ object FmReverb: TFmReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'size'
       Color = clWhite
@@ -101,7 +103,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbStretch: TGuiLabel
@@ -111,7 +115,6 @@ object FmReverb: TFmReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'stretch'
       Color = clWhite
@@ -120,7 +123,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDamp: TGuiLabel
@@ -130,7 +135,6 @@ object FmReverb: TFmReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'damp'
       Color = clWhite
@@ -139,7 +143,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
   end
@@ -167,7 +173,7 @@ object FmReverb: TFmReverb
       Width = 156
       Height = 19
       Alignment = taLeftJustify
-      AntiAlias = gaaLinear2x
+      AntiAlias = gaaLinear4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -188,7 +194,6 @@ object FmReverb: TFmReverb
       Width = 39
       Height = 17
       Margins.Bottom = 0
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'preset'
       Font.Charset = DEFAULT_CHARSET
@@ -196,7 +201,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object BtAB: TGuiButton
@@ -244,8 +251,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialDryChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialWet: TGuiStitchedDial
@@ -255,8 +262,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialWetChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialWidth: TGuiStitchedDial
@@ -266,8 +273,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialWidthChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDamp: TGuiStitchedDial
@@ -277,8 +284,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialDampChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialRoomSize: TGuiStitchedDial
@@ -288,8 +295,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialRoomSizeChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialStretch: TGuiStitchedDial
@@ -299,8 +306,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialStretchChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

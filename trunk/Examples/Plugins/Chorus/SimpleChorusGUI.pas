@@ -36,27 +36,27 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, DAV_GuiBaseControl, DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiLabel,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  Controls, DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiLabel, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmSimpleChorus = class(TForm)
+    DialDepth: TGuiStitchedDial;
+    DialDrift: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DialSpeed: TGuiStitchedDial;
+    DialStages: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbDepth: TGuiLabel;
     LbDepthValue: TGuiLabel;
+    LbDrift: TGuiLabel;
+    LbDriftValue: TGuiLabel;
     LbMix: TGuiLabel;
     LbMixValue: TGuiLabel;
     LbSpeed: TGuiLabel;
     LbSpeedValue: TGuiLabel;
     LbStages: TGuiLabel;
     LbStagesValue: TGuiLabel;
-    LbDrift: TGuiLabel;
-    LbDriftValue: TGuiLabel;
-    DialSpeed: TGuiStitchedDial;
-    DialStages: TGuiStitchedDial;
-    DialDepth: TGuiStitchedDial;
-    DialMix: TGuiStitchedDial;
-    DialDrift: TGuiStitchedDial;
-    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure DialSpeedChange(Sender: TObject);
     procedure DialStagesChange(Sender: TObject);

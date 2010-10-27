@@ -26,8 +26,8 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.700000047683716000
-    Uniformity_Percent = 44.000000000000000000
+    BorderWidth = 2.500000000000000000
+    Uniformity_Percent = 55.000000000000000000
     Transparent = False
   end
   object BtStartStop: TGuiButton
@@ -57,8 +57,8 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.700000047683716000
-    Uniformity_Percent = 44.000000000000000000
+    BorderWidth = 2.500000000000000000
+    Uniformity_Percent = 55.000000000000000000
     Transparent = False
   end
   object GuiLED3: TGuiLED
@@ -69,8 +69,8 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.700000047683716000
-    Uniformity_Percent = 44.000000000000000000
+    BorderWidth = 2.500000000000000000
+    Uniformity_Percent = 55.000000000000000000
     Transparent = False
   end
   object GuiLED4: TGuiLED
@@ -81,8 +81,8 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.700000047683716000
-    Uniformity_Percent = 44.000000000000000000
+    BorderWidth = 2.500000000000000000
+    Uniformity_Percent = 55.000000000000000000
     Transparent = False
   end
   object LbMic1: TGuiLabel
@@ -91,16 +91,17 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Width = 41
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Mic.1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object LbMic2: TGuiLabel
     Left = 207
@@ -108,16 +109,17 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Width = 41
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Mic.2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object LbMic3: TGuiLabel
     Left = 254
@@ -125,16 +127,17 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Width = 41
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Mic.3'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object LbMic4: TGuiLabel
     Left = 301
@@ -142,16 +145,17 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Width = 41
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Mic.4'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object BtSetup: TGuiButton
     Left = 348

@@ -35,21 +35,19 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_GuiBaseControl, DAV_GuiLabel, ExtCtrls;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, DAV_GuiLabel;
 
 type
   TFmAbout = class(TForm)
-    ImSinthEdit: TImage;
+    ImSynthEdit: TImage;
     LbSem: TGuiLabel;
     LbAbout: TLabel;
     LbDelphiASIOVST: TLabel;
     LbPainting: TLabel;
-    LbSemShadow: TGuiLabel;
     LbExplorer: TGuiLabel;
-    LbExplorerShadow: TGuiLabel;
     procedure FormClick(Sender: TObject);
-    procedure ImSinthEditClick(Sender: TObject);
+    procedure ImSynthEditClick(Sender: TObject);
     procedure LbDelphiASIOVSTClick(Sender: TObject);
     procedure LbAboutClick(Sender: TObject);
   end;
@@ -69,7 +67,7 @@ begin
  Close;
 end;
 
-procedure TFmAbout.ImSinthEditClick(Sender: TObject);
+procedure TFmAbout.ImSynthEditClick(Sender: TObject);
 begin
  ShellExecute(Handle, 'open', 'http://jacky.theprize.googlepages.com/paintings', nil, nil, SW_SHOW);
 end;

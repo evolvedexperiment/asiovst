@@ -35,10 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiGraphXY,
-  DAV_GuiLED, StdCtrls, DAV_GuiGroup, DAV_GuiLevelMeter,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiGraphXY, DAV_GuiBaseControl, DAV_GuiLED,
+  DAV_GuiGroup, DAV_GuiLevelMeter, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmLightweightDynamics = class(TForm)

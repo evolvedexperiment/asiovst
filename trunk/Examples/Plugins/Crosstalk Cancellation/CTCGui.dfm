@@ -224,16 +224,17 @@ object FmCTC: TFmCTC
     Width = 301
     Height = 30
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Crosstalk Cancellation'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -27
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object LbSwitches: TLabel
     Left = 183

@@ -28,10 +28,11 @@ object FmSetup: TFmSetup
     Width = 67
     Height = 13
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     Caption = 'ASIO Driver:'
-    Transparent = True
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object SbDrivers: TGuiSelectBox
     Left = 81
@@ -54,10 +55,11 @@ object FmSetup: TFmSetup
     Width = 92
     Height = 13
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     Caption = 'Output Channels:'
-    Transparent = True
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object SbChannels: TGuiSelectBox
     Left = 106
@@ -79,16 +81,11 @@ object FmSetup: TFmSetup
     Top = 8
     Width = 86
     Height = 22
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = LbControlPanelClick
@@ -102,7 +99,6 @@ object FmSetup: TFmSetup
       Height = 13
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'Control Panel'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -110,7 +106,9 @@ object FmSetup: TFmSetup
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnClick = LbControlPanelClick

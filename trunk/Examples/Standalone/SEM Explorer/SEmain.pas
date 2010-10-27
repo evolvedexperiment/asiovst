@@ -41,15 +41,15 @@ uses
 type
   TFmSEModuleExplorer = class(TForm)
     MainMenu: TMainMenu;
-    MIFile: TMenuItem;
-    MIOpen: TMenuItem;
-    MIExit: TMenuItem;
     Memo: TMemo;
-    N1: TMenuItem;
-    MISettings: TMenuItem;
-    MIEnableWrapper: TMenuItem;
-    MIHelp: TMenuItem;
     MIAbout: TMenuItem;
+    MIEnableWrapper: TMenuItem;
+    MIExit: TMenuItem;
+    MIFile: TMenuItem;
+    MIHelp: TMenuItem;
+    MIOpen: TMenuItem;
+    MISettings: TMenuItem;
+    N1: TMenuItem;
     procedure MIExitClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);

@@ -44,7 +44,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -52,7 +51,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbFreqValue: TGuiLabel
@@ -61,7 +62,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '1kHz'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -69,7 +69,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLowDist: TGuiLabel
@@ -78,7 +80,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Low Dist.'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -86,7 +87,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLowDistValue: TGuiLabel
@@ -95,7 +98,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50%'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -103,7 +105,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbHighDist: TGuiLabel
@@ -112,7 +116,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'High Dist.'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -120,7 +123,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbHighDistValue: TGuiLabel
@@ -129,7 +134,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50%'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -137,7 +141,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
@@ -146,7 +152,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '2'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -154,7 +159,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOrder: TGuiLabel
@@ -163,7 +170,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -171,7 +177,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialFreq: TGuiStitchedDial
@@ -181,13 +189,12 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Height = 64
       Color = 6908265
       CurveMapping = -2.099999904632568000
-      LockCursor = False
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialFreqChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -197,12 +204,11 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 64
       Color = 6908265
-      LockCursor = False
       Max = 100.000000000000000000
       OnChange = DialLowDistChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialHighDist: TGuiStitchedDial
@@ -211,12 +217,11 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 64
       Color = 6908265
-      LockCursor = False
       Max = 100.000000000000000000
       OnChange = DialHighDistChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
@@ -225,13 +230,12 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 64
       Color = 6908265
-      LockCursor = False
       Max = 16.000000000000000000
       Min = 2.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end

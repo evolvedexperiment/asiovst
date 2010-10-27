@@ -150,7 +150,7 @@ end;
 
 destructor TGuiStitchedPNGList.Destroy;
 begin
-// UnLinkStitchedControls;
+ UnLinkStitchedControls;
  FreeAndNil(FStitchedCollection);
  inherited;
 end;

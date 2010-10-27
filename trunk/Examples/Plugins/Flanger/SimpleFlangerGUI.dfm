@@ -22,8 +22,9 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Speed'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
@@ -32,8 +33,9 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Depth'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMix: TGuiLabel
@@ -42,8 +44,9 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Mix'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
@@ -52,13 +55,15 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
+    Caption = '0,2 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
@@ -67,13 +72,15 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
+    Caption = '5 %'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMixValue: TGuiLabel
@@ -82,13 +89,15 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
+    Caption = '50%'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object DialSpeed: TGuiStitchedDial
@@ -97,13 +106,12 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 36
     Height = 36
     CurveMapping = -1.799999952316284000
-    LockCursor = False
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialSpeedChange
+    StitchedImageList = GSPL
     StitchedImageIndex = 0
-    StitchedImageList = GuiStitchedPNGList
-    Value = 0.300000011920929000
+    Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
   end
   object DialDepth: TGuiStitchedDial
@@ -111,11 +119,10 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Top = 32
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 100.000000000000000000
     OnChange = DialDepthChange
+    StitchedImageList = GSPL
     StitchedImageIndex = 0
-    StitchedImageList = GuiStitchedPNGList
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -124,15 +131,14 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Top = 32
     Width = 36
     Height = 36
-    LockCursor = False
     Max = 100.000000000000000000
     OnChange = DialMixChange
+    StitchedImageList = GSPL
     StitchedImageIndex = 0
-    StitchedImageList = GuiStitchedPNGList
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
-  object GuiStitchedPNGList: TGuiStitchedPNGList
+  object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
       item
         PortableNetworkGraphic.Data = {

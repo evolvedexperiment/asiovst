@@ -60,7 +60,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     AutoSize = True
     Caption = 'Ratio'
     Font.Charset = DEFAULT_CHARSET
@@ -78,7 +78,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     AutoSize = True
     Caption = 'Attack'
     Font.Charset = DEFAULT_CHARSET
@@ -96,7 +96,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     AutoSize = True
     Caption = 'Release'
     Font.Charset = DEFAULT_CHARSET
@@ -114,7 +114,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     AutoSize = True
     Caption = 'Threshold'
     Font.Charset = DEFAULT_CHARSET
@@ -141,7 +141,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     AutoSize = True
     Caption = 'Makeup'
     Font.Charset = DEFAULT_CHARSET

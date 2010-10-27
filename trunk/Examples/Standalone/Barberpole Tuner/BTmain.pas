@@ -37,22 +37,22 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
   Dialogs, DAV_Types, DAV_DspLightweightDynamics, DAV_DspBarberpoleTuner,
-  DAV_DspFilterButterworth, DAV_ASIOHost, DAV_GuiBaseControl, DAV_GuiLabel;
+  DAV_DspFilterButterworth, DAV_ASIOHost, DAV_GuiLabel;
 
 type
   TGuitarString = (gtLowE, gtA, gtD, gtG, gtH, gtE);
   TFmBarberpoleTuner = class(TForm)
-    LbDisplay: TGuiLabel;
+    ASIOHost: TASIOHost;
     Barberpole: TPaintBox;
-    LbGuitarTuning: TGuiLabel;
-    LbLowE: TGuiLabel;
     LbA: TGuiLabel;
     LbD: TGuiLabel;
-    LbG: TGuiLabel;
-    LbH: TGuiLabel;
+    LbDisplay: TGuiLabel;
     LbE: TGuiLabel;
+    LbG: TGuiLabel;
+    LbGuitarTuning: TGuiLabel;
+    LbH: TGuiLabel;
+    LbLowE: TGuiLabel;
     Timer: TTimer;
-    ASIOHost: TASIOHost;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);

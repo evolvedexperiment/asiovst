@@ -41,6 +41,12 @@ uses
 
 type
   TFmBarberpoleFlanger = class(TForm)
+    DialDepth: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DialSpeed: TGuiStitchedDial;
+    DialStages: TGuiStitchedDial;
+    DSIL: TGuiStitchedPNGList;
+    LbAlgorithm: TGuiLabel;
     LbDepth: TGuiLabel;
     LbDepthValue: TGuiLabel;
     LbMix: TGuiLabel;
@@ -49,13 +55,7 @@ type
     LbSpeedValue: TGuiLabel;
     LbStages: TGuiLabel;
     LbStagesValue: TGuiLabel;
-    LbAlgorithm: TGuiLabel;
     SBAlgorithm: TGuiSelectBox;
-    DSIL: TGuiStitchedPNGList;
-    DialSpeed: TGuiStitchedDial;
-    DialStages: TGuiStitchedDial;
-    DialDepth: TGuiStitchedDial;
-    DialMix: TGuiStitchedDial;
     procedure FormShow(Sender: TObject);
     procedure DialSpeedChange(Sender: TObject);
     procedure DialStagesChange(Sender: TObject);

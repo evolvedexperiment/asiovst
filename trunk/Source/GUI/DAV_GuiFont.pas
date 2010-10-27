@@ -438,16 +438,22 @@ begin
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
 
-       FBlurFilter.Radius := FShadow.Blur;
-       FBlurFilter.Filter(FShadowBuffer);
+       if FShadow.Blur > 0 then
+        begin
+         FBlurFilter.Radius := FShadow.Blur;
+         FBlurFilter.Filter(FShadowBuffer);
+        end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FShadowBuffer, FShadowColor,
           X + FShadow.FOffset.X - BlurOffset,
           Y + FShadow.FOffset.Y - BlurOffset);
        {$ELSE}
-       FBlurFilter.Radius := FShadow.Blur;
-       FBlurFilter.Filter(FBuffer);
+       if FShadow.Blur > 0 then
+        begin
+         FBlurFilter.Radius := FShadow.Blur;
+         FBlurFilter.Filter(FBuffer);
+        end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, FShadowColor,
@@ -631,8 +637,11 @@ begin
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
 
-       FBlurFilter.Radius := FShadow.Blur;
-       FBlurFilter.Filter(FShadowBuffer);
+       if FShadow.Blur > 0 then
+        begin
+         FBlurFilter.Radius := FShadow.Blur;
+         FBlurFilter.Filter(FShadowBuffer);
+        end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, FShadowColor, Rect(
@@ -641,8 +650,11 @@ begin
           X + FShadow.Offset.X - (BlurOffset + FBuffer.Width) div FOSFactor,
           Y + FShadow.Offset.Y - (BlurOffset + FBuffer.Height) div FOSFactor));
        {$ELSE}
-       FBlurFilter.Radius := FShadow.Blur;
-       FBlurFilter.Filter(FBuffer);
+       if FShadow.Blur > 0 then
+        begin
+         FBlurFilter.Radius := FShadow.Blur;
+         FBlurFilter.Filter(FBuffer);
+        end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, FShadowColor, Rect(
@@ -724,5 +736,8 @@ initialization
   // register font classes
   RegisterFontClass(TGuiSimpleGDIFont);
   RegisterFontClass(TGuiOversampledGDIFont);
+
+finalization
+  FreeAndNil(FontClassList);
 
 end.

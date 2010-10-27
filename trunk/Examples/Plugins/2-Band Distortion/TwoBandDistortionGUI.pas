@@ -37,11 +37,16 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_VSTModule,
-  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPanel, DAV_GuiPixelMap,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmTwoBandDistortion = class(TForm)
+    DialFreq: TGuiStitchedDial;
+    DialHighDist: TGuiStitchedDial;
+    DialLowDist: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
+    DSIL: TGuiStitchedPNGList;
     LbFreq: TGuiLabel;
     LbFreqValue: TGuiLabel;
     LbHighDist: TGuiLabel;
@@ -51,20 +56,15 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControl: TGuiPanel;
-    DialFreq: TGuiStitchedDial;
-    DialLowDist: TGuiStitchedDial;
-    DialHighDist: TGuiStitchedDial;
-    DialOrder: TGuiStitchedDial;
-    DSIL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
     procedure DialLowDistChange(Sender: TObject);
     procedure DialHighDistChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    procedure FormResize(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
     FEdValue    : TEdit;

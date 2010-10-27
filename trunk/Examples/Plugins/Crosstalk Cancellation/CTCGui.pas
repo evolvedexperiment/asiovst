@@ -36,53 +36,52 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
-  DAV_GuiPixelMap, DAV_GuiPng;
+  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPixelMap, DAV_GuiPng;
 
 type
   TFmCTC = class(TForm)
+    CBAGC: TCheckBox;
+    CBBypass: TCheckBox;
+    Image1: TImage;
+    Image2: TImage;
     LbAttenuation: TLabel;
     LbAttenuationValue: TLabel;
+    LbFilterFrequency: TLabel;
+    LbFilterFrequencyValue: TLabel;
+    LbFilterGain: TLabel;
+    LbFilterGainValue: TLabel;
+    LbFilterType: TLabel;
+    LbFilterTypeValue: TLabel;
     LbListenerDistance: TLabel;
     LbListenerDistanceValue: TLabel;
+    LbOutputGain: TLabel;
+    LbOutputGainValue: TLabel;
     LbRecursionSteps: TLabel;
     LbRecursionStepsValue: TLabel;
     LbSpeakerDistance: TLabel;
     LbSpeakerDistanceValue: TLabel;
+    LbSwitches: TLabel;
+    LbTitle: TGuiLabel;
     SbAttenuation: TScrollBar;
+    SbFilterFrequency: TScrollBar;
+    SbFilterGain: TScrollBar;
     SbListenerDistance: TScrollBar;
+    SbOutputGain: TScrollBar;
     SbRecursionSteps: TScrollBar;
     SbSpeakerDistance: TScrollBar;
-    LbFilterType: TLabel;
-    LbFilterFrequencyValue: TLabel;
-    SbFilterFrequency: TScrollBar;
-    Image1: TImage;
-    Image2: TImage;
-    LbFilterTypeValue: TLabel;
-    LbFilterFrequency: TLabel;
-    LbFilterGainValue: TLabel;
-    SbFilterGain: TScrollBar;
-    LbFilterGain: TLabel;
-    LbOutputGain: TLabel;
-    LbOutputGainValue: TLabel;
-    SbOutputGain: TScrollBar;
-    LbTitle: TGuiLabel;
-    CBBypass: TCheckBox;
-    CBAGC: TCheckBox;
-    LbSwitches: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure SbRecursionStepsChange(Sender: TObject);
-    procedure SbAttenuationChange(Sender: TObject);
-    procedure SbListenerDistanceChange(Sender: TObject);
-    procedure SbSpeakerDistanceChange(Sender: TObject);
-    procedure SbOutputGainChange(Sender: TObject);
-    procedure SbFilterGainChange(Sender: TObject);
-    procedure SbFilterFrequencyChange(Sender: TObject);
     procedure CBBypassClick(Sender: TObject);
+    procedure SbAttenuationChange(Sender: TObject);
+    procedure SbFilterFrequencyChange(Sender: TObject);
+    procedure SbFilterGainChange(Sender: TObject);
+    procedure SbListenerDistanceChange(Sender: TObject);
+    procedure SbOutputGainChange(Sender: TObject);
+    procedure SbRecursionStepsChange(Sender: TObject);
+    procedure SbSpeakerDistanceChange(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   public

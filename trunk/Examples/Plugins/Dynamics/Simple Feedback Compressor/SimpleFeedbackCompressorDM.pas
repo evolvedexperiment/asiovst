@@ -101,9 +101,9 @@ begin
  // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
-   if DialThreshold.Position <> Round(Value) then
+   if DialThreshold.Value <> Round(Value) then
     begin
-     DialThreshold.Position := Round(Value);
+     DialThreshold.Value := Round(Value);
      UpdateThreshold;
     end;
 end;
@@ -120,9 +120,9 @@ begin
  // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
-   if DialRatio.Position <> Round(100 * Log10(Value)) then
+   if DialRatio.Value <> Round(100 * Log10(Value)) then
     begin
-     DialRatio.Position := Round(100 * Log10(Value));
+     DialRatio.Value := Round(100 * Log10(Value));
      UpdateRatio;
     end;
 end;
@@ -137,9 +137,9 @@ begin
  // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
-   if DialRelease.Position <> Round(Value) then
+   if DialRelease.Value <> Round(Value) then
     begin
-     DialRelease.Position := Round(1000 * Log10(Value));
+     DialRelease.Value := Round(1000 * Log10(Value));
      UpdateRelease;
     end;
 end;

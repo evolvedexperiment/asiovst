@@ -23,13 +23,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Width = 137
     Height = 17
     Alignment = taCenter
-    AntiAlias = gaaLinear3x
     Caption = 'Barberpole Tuner'
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsUnderline]
+    Oversampling = fo3x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
   end
   object Barberpole: TPaintBox
@@ -44,13 +47,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 63
     Width = 105
     Height = 23
-    AntiAlias = gaaLinear4x
     Caption = 'Guitar Tuning:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
   end
   object LbLowE: TGuiLabel
@@ -58,13 +64,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear4x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -73,13 +82,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'A'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo3x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -88,13 +100,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'D'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo3x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -103,13 +118,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'G'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo3x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -118,13 +136,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'H'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo3x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -133,13 +154,16 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo3x
+    ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end

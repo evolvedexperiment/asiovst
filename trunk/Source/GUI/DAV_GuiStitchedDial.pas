@@ -120,8 +120,8 @@ type
     property Min;
     property OnChange;
     property ParentColor;
-    property StitchedImageIndex;
     property StitchedImageList;
+    property StitchedImageIndex;
     property Transparent;
     property Value;
     property WheelStep;

@@ -22,7 +22,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 60
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Stages'
     Shadow.Color = clBlack
   end
@@ -32,7 +32,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
@@ -47,7 +47,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 91
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Semitones'
     Shadow.Color = clBlack
   end
@@ -57,7 +57,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 91
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
@@ -72,7 +72,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 91
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Granularity'
     Shadow.Color = clBlack
   end
@@ -82,7 +82,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 76
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16

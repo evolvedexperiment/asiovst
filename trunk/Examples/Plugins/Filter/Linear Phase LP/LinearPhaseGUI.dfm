@@ -22,7 +22,7 @@ object FmLinearPhase: TFmLinearPhase
     Width = 95
     Height = 21
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Frequency'
     Shadow.Color = clBlack
   end
@@ -32,7 +32,7 @@ object FmLinearPhase: TFmLinearPhase
     Width = 89
     Height = 22
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = '20 kHz'
     Shadow.Color = clBlack
     OnDblClick = DialFrequencyDblClick

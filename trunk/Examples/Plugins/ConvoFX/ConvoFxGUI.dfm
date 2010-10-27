@@ -22,14 +22,15 @@ object FmConvoFX: TFmConvoFX
     Width = 34
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'IR'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12560041
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo3x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbIRSelected: TGuiLabel
@@ -38,14 +39,15 @@ object FmConvoFX: TFmConvoFX
     Width = 72
     Height = 17
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12560041
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo3x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnMouseDown = LbIRSelectedMouseDown
   end
@@ -55,14 +57,15 @@ object FmConvoFX: TFmConvoFX
     Width = 52
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Gain'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12560041
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo3x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGainValue: TGuiLabel
@@ -71,14 +74,15 @@ object FmConvoFX: TFmConvoFX
     Width = 72
     Height = 17
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '-3 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12560041
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo3x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDamp: TGuiLabel
@@ -87,14 +91,15 @@ object FmConvoFX: TFmConvoFX
     Width = 64
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Damp'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12560041
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo3x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDampValue: TGuiLabel
@@ -103,14 +108,15 @@ object FmConvoFX: TFmConvoFX
     Width = 72
     Height = 17
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '500 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12560041
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo3x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object DialIR: TGuiStitchedDial
@@ -121,8 +127,8 @@ object FmConvoFX: TFmConvoFX
     Max = 40.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialIRChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -134,8 +140,8 @@ object FmConvoFX: TFmConvoFX
     Max = 6.000000000000000000
     Min = -60.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDamp: TGuiStitchedDial
@@ -147,8 +153,8 @@ object FmConvoFX: TFmConvoFX
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialDampChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end

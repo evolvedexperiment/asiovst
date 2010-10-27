@@ -36,21 +36,21 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList;
 
 type
   TFmConvoFXLite = class(TForm)
-    LbIR: TGuiLabel;
-    LbIRSelected: TGuiLabel;
-    LbGain: TGuiLabel;
-    LbGainValue: TGuiLabel;
+    DialDamp: TGuiStitchedDial;
+    DialGain: TGuiStitchedDial;
+    DialIR: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbDamp: TGuiLabel;
     LbDampValue: TGuiLabel;
-    DialIR: TGuiStitchedDial;
-    DialGain: TGuiStitchedDial;
-    DialDamp: TGuiStitchedDial;
-    GSPL: TGuiStitchedPNGList;
+    LbGain: TGuiLabel;
+    LbGainValue: TGuiLabel;
+    LbIR: TGuiLabel;
+    LbIRSelected: TGuiLabel;
     procedure FormShow(Sender: TObject);
     procedure DialIRChange(Sender: TObject);
     procedure DialGainChange(Sender: TObject);

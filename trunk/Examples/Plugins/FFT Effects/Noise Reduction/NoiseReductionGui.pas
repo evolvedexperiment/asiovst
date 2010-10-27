@@ -34,9 +34,9 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
-  DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiSelectBox, DAV_GuiLED, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiSelectBox,
+  DAV_GuiLED, DAV_GuiPng, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmNoiseReduction = class(TForm)

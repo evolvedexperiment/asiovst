@@ -36,11 +36,16 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiPixelMap, DAV_GuiLabel,
+  DAV_VSTModule, DAV_GuiPng, DAV_GuiPixelMap, DAV_GuiLabel,
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmHardKneeCompressor = class(TForm)
+    DialAttack: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbAttack: TGuiLabel;
     LbAttackValue: TLabel;
     LbRatio: TGuiLabel;
@@ -49,11 +54,6 @@ type
     LbReleaseValue: TLabel;
     LbThreshold: TGuiLabel;
     LbThresholdValue: TLabel;
-    DialThreshold: TGuiStitchedDial;
-    DialRatio: TGuiStitchedDial;
-    DialAttack: TGuiStitchedDial;
-    DialRelease: TGuiStitchedDial;
-    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);

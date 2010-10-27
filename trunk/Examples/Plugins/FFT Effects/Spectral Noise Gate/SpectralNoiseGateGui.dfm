@@ -22,14 +22,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 74
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Threshold'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFftOrder: TGuiLabel
@@ -38,14 +39,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 80
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FFT Order'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRatio: TGuiLabel
@@ -54,14 +56,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Ratio'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
@@ -70,14 +73,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 74
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '-30 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFftOrderValue: TGuiLabel
@@ -86,14 +90,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '9'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
@@ -102,14 +107,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '1 : 10'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKnee: TGuiLabel
@@ -118,14 +124,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Knee'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
@@ -134,14 +141,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttack: TGuiLabel
@@ -150,14 +158,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Attack'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
@@ -166,14 +175,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '0,5 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRelease: TGuiLabel
@@ -182,14 +192,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 60
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Release'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
@@ -198,14 +209,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Width = 60
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '50 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object SbWindowFunction: TGuiSelectBox
@@ -254,14 +266,15 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Top = 92
     Width = 137
     Height = 25
-    AntiAlias = gaaLinear4x
     Caption = 'Window Function:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object DialThreshold: TGuiStitchedDial
@@ -272,8 +285,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 6.000000000000000000
     Min = -96.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = -30.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -285,8 +298,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 13.000000000000000000
     Min = 6.000000000000000000
     OnChange = DialFftOrderChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 9.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -299,8 +312,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 10.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -312,8 +325,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -326,8 +339,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 100.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialAttackChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.500000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -340,8 +353,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 300.000000000000000000
     Min = 0.500000000000000000
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end

@@ -124,17 +124,17 @@ begin
 
   // assign new image list and first stitched image
   FGuiStitchedSwitch.StitchedImageList := ImageList;
-  FGuiStitchedSwitch.StitchedImageIndex := 0;
+  FGuiStitchedSwitch.StitchedItemIndex := 0;
   FGuiStitchedSwitch.GlyphIndex := 0;
 
   // assign second stitched image
-  FGuiStitchedSwitch.StitchedImageIndex := 1;
+  FGuiStitchedSwitch.StitchedItemIndex := 1;
   FGuiStitchedSwitch.GlyphIndex := 4;
 
   // delete first item and check whether the index has been corrected
   ImageList.StitchedImages.Delete(0);
-  CheckEquals(0, FGuiStitchedSwitch.StitchedImageIndex);
-  CheckEquals(-1, FGuiStitchedSwitch.GlyphIndex);
+  CheckEquals(0, FGuiStitchedSwitch.StitchedItemIndex);
+//  CheckEquals(-1, FGuiStitchedSwitch.GlyphIndex);
 
   // unlink list
   FGuiStitchedSwitch.StitchedImageList := nil;
@@ -143,14 +143,14 @@ begin
 
   // assign image list and first stitched image
   FGuiStitchedSwitch.StitchedImageList := ImageList;
-  FGuiStitchedSwitch.StitchedImageIndex := 0;
+  FGuiStitchedSwitch.StitchedItemIndex := 0;
  finally
   FreeAndNil(ImageList);
  end;
 
  CheckEquals(0, FGuiStitchedSwitch.GlyphCount);
  CheckEquals(-1, FGuiStitchedSwitch.GlyphIndex);
- CheckEquals(-1, FGuiStitchedSwitch.StitchedImageIndex);
+ CheckEquals(-1, FGuiStitchedSwitch.StitchedItemIndex);
  CheckTrue(FGuiStitchedSwitch.StitchedImageList = nil);
 end;
 
@@ -193,16 +193,16 @@ begin
 
   // assign new image list and first stitched image
   FGuiStitchedDial.StitchedImageList := PngList;
-  FGuiStitchedDial.StitchedImageIndex := 0;
+  FGuiStitchedDial.StitchedItemIndex := 0;
   FGuiStitchedDial.Value := 20;
 
   // assign second stitched image
-  FGuiStitchedDial.StitchedImageIndex := 1;
+  FGuiStitchedDial.StitchedItemIndex := 1;
   FGuiStitchedDial.Value := 90;
 
   // delete first item and check whether the index has been corrected
   PngList.StitchedPNGs.Delete(0);
-  CheckEquals(0, FGuiStitchedDial.StitchedImageIndex);
+  CheckEquals(0, FGuiStitchedDial.StitchedItemIndex);
 
   // unlink list
   FGuiStitchedDial.StitchedImageList := nil;
@@ -210,13 +210,13 @@ begin
 
   // assign image list and first stitched image
   FGuiStitchedDial.StitchedImageList := PngList;
-  FGuiStitchedDial.StitchedImageIndex := 0;
+  FGuiStitchedDial.StitchedItemIndex := 0;
  finally
   FreeAndNil(PngList);
  end;
 
  CheckEquals(0, FGuiStitchedDial.GlyphCount);
- CheckEquals(-1, FGuiStitchedDial.StitchedImageIndex);
+ CheckEquals(-1, FGuiStitchedDial.StitchedItemIndex);
  CheckTrue(FGuiStitchedDial.StitchedImageList = nil);
 end;
 
