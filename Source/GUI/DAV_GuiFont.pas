@@ -43,7 +43,7 @@ uses
 {-$DEFINE UseShadowBuffer}
 
 type
-  TGuiCustomFont = class(TComponent)
+  TGuiCustomFont = class(TPersistent)
   private
     FAntiAliasing : Boolean;
     FShadow       : TGuiShadow;
@@ -57,7 +57,7 @@ type
     procedure ShadowChangedHandler(Sender: TObject); virtual;
     procedure Changed; virtual;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; virtual;
     destructor Destroy; override;
 
     function TextExtend(Text: string): TSize; virtual; abstract;
@@ -85,7 +85,7 @@ type
     procedure AntiAliasingChanged; override;
     procedure AssignByteMapFont; virtual; abstract;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
 
     property Font: TFont read FFont write SetFont;
@@ -115,7 +115,7 @@ type
     procedure UpdateScaledFont; virtual;
     procedure AssignByteMapFont; override;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
 
     function TextExtend(Text: string): TSize; override;
@@ -266,9 +266,9 @@ end;
 
 { TGuiCustomFont }
 
-constructor TGuiCustomFont.Create(AOwner: TComponent);
+constructor TGuiCustomFont.Create;
 begin
- inherited Create(AOwner);
+ inherited;
  FShadow          := TGuiShadow.Create;
  FShadow.OnChange := ShadowChangedHandler;
  FBlurFilter      := TGuiBlurFIRFilter.Create;
@@ -323,9 +323,9 @@ end;
 
 { TGuiCustomGDIFont }
 
-constructor TGuiCustomGDIFont.Create(AOwner: TComponent);
+constructor TGuiCustomGDIFont.Create;
 begin
- inherited Create(AOwner);
+ inherited;
  FFont          := TFont.Create;
  FFont.OnChange := FontChanged;
  FBuffer        := TGuiByteMapDIB.Create;
@@ -488,11 +488,11 @@ end;
 
 { TGuiCustomOversampledGDIFont }
 
-constructor TGuiCustomOversampledGDIFont.Create(AOwner: TComponent);
+constructor TGuiCustomOversampledGDIFont.Create;
 begin
  FScaledFont := TFont.Create;
  FOSFactor := 1;
- inherited Create(AOwner);
+ inherited;
  FFontOversampling := foNone;
 end;
 
@@ -721,7 +721,7 @@ begin
 end;
 
 initialization
-  // register Font classes
+  // register font classes
   RegisterFontClass(TGuiSimpleGDIFont);
   RegisterFontClass(TGuiOversampledGDIFont);
 

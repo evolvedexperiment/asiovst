@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, SysUtils, Controls,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiShadow;
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiShadow, DAV_GuiFontList;
 
 type
   TCustomGuiInscription = class(TGraphicControl)
@@ -58,6 +58,7 @@ type
     procedure AlignmentChanged; virtual;
     procedure ColorChanged;
     procedure CaptionChanged; virtual;
+    procedure GuiFontChanged; virtual;
     procedure FontChanged; virtual;
     procedure TransparentChanged; virtual;
 
@@ -77,6 +78,7 @@ type
     {$ELSE}
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     {$ENDIF}
+    procedure GMFontChanged(var Message: TMessage); message GM_FontChanged;
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
@@ -338,6 +340,16 @@ begin
 end;
 
 procedure TCustomGuiInscription.FontChangedHandler(Sender: TObject);
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiInscription.GMFontChanged(var Message: TMessage);
+begin
+ //
+end;
+
+procedure TCustomGuiInscription.GuiFontChanged;
 begin
  BufferChanged;
 end;

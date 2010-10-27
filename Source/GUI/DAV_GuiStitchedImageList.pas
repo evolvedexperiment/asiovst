@@ -1,4 +1,4 @@
-unit DAV_GuiStitchedPngList;
+unit DAV_GuiStitchedImageList;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -38,18 +38,10 @@ uses
   Classes, SysUtils, DAV_GuiStitchedControls, DAV_GuiPng;
 
 type
-  TGuiStitchedPNGCollectionItem = class(TGuiCustomStitchedCollectionItem)
-  private
-    FPng : TPortableNetworkGraphicPixel32;
-    procedure SetPng(const Value: TPortableNetworkGraphicPixel32);
-  protected
-    procedure BuildPixelMap;
-  public
-    constructor Create(Collection: TCollection); override;
-    destructor Destroy; override;
+  TGuiStitchedImageCollectionItem = class(TGuiCustomStitchedCollectionItem)
   published
-    property PortableNetworkGraphic: TPortableNetworkGraphicPixel32 read FPng write SetPng;
     property DisplayName;
+    property StitchedPixelMap;
     property GlyphCount;
     property StitchKind;
     property OnChange;
@@ -57,127 +49,49 @@ type
     property Width;
   end;
 
-  TGuiStitchedPNGList = class(TGuiCustomStitchedList)
+  TGuiStitchedImageList = class(TGuiCustomStitchedList)
   private
-    function GetItems(Index: Integer): TGuiStitchedPNGCollectionItem;
+    function GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
   protected
     function GetCount: Integer; override;
-    procedure Loaded; override;
-    property Items[Index: Integer]: TGuiStitchedPNGCollectionItem read GetItems; default;
+    property Items[Index: Integer]: TGuiStitchedImageCollectionItem read GetItems; default;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property StitchedPNGs: TGuiStitchedImageCollection read FStitchedCollection write FStitchedCollection;
+    property StitchedImages: TGuiStitchedImageCollection read FStitchedCollection write FStitchedCollection;
   end;
 
-
 implementation
-
-uses
-  DAV_Common, DAV_GuiBlend;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
+{ TGuiStitchedImageList }
 
-{ TGuiStitchedPNGCollectionItem }
-
-constructor TGuiStitchedPNGCollectionItem.Create(Collection: TCollection);
+constructor TGuiStitchedImageList.Create(AOwner: TComponent);
 begin
- inherited;
- FPng := TPortableNetworkGraphicPixel32.Create;
+  inherited;
+  FStitchedCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedImageCollectionItem);
 end;
 
-destructor TGuiStitchedPNGCollectionItem.Destroy;
+destructor TGuiStitchedImageList.Destroy;
 begin
- FreeAndNil(FPng);
- inherited;
-end;
-
-procedure TGuiStitchedPNGCollectionItem.BuildPixelMap;
-begin
- if Assigned(FPng) and Assigned(FStitchedPixelMap) then
-  begin
-   FStitchedPixelMap.SetSize(FPng.Width, FPng.Height);
-   FPng.DrawToPixelMap(FStitchedPixelMap);
-  end;
-end;
-
-procedure TGuiStitchedPNGCollectionItem.SetPng(
-  const Value: TPortableNetworkGraphicPixel32);
-var
-  SizeModified : Boolean;
-begin
- FPng.Assign(Value);
-
- BuildPixelMap;
-
- SizeModified := False;
- if Width <> FPng.Width then
-  begin
-   Width := FPng.Width;
-   SizeModified := True;
-  end;
-
- if Height <> FPng.Height then
-  begin
-   Height := FPng.Height;
-   SizeModified := True;
-  end;
-
- if SizeModified and (Width > 1) and (Height > 1) then
-  if Width > Height then
-   begin
-    if Width mod Height = 0
-     then GlyphCount := Width div Height;
-   end
-  else
-   begin
-    if Height mod Width = 0
-     then GlyphCount := Height div Width;
-   end;
-end;
-
-
-{ TGuiStitchedPNGList }
-
-constructor TGuiStitchedPNGList.Create(AOwner: TComponent);
-begin
- inherited;
- FStitchedCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedPngCollectionItem);
-end;
-
-destructor TGuiStitchedPNGList.Destroy;
-begin
-// UnLinkStitchedControls;
+ UnLinkStitchedControls;
  FreeAndNil(FStitchedCollection);
  inherited;
 end;
 
-function TGuiStitchedPNGList.GetCount: Integer;
+function TGuiStitchedImageList.GetCount: Integer;
 begin
   Result := FStitchedCollection.Count;
 end;
 
-function TGuiStitchedPNGList.GetItems(
-  Index: Integer): TGuiStitchedPNGCollectionItem;
+function TGuiStitchedImageList.GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
 begin
  if (Index >= 0) and (Index < FStitchedCollection.Count)
-  then Result := TGuiStitchedPNGCollectionItem(FStitchedCollection[Index])
+  then Result := TGuiStitchedImageCollectionItem(FStitchedCollection[Index])
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
-end;
-
-procedure TGuiStitchedPNGList.Loaded;
-var
-  Index : Integer;
-begin
- inherited;
-
- if Assigned(FStitchedCollection) then
-  for Index := 0 to FStitchedCollection.Count - 1 do
-   if FStitchedCollection[Index] is TGuiStitchedPNGCollectionItem
-    then TGuiStitchedPNGCollectionItem(FStitchedCollection[Index]).BuildPixelMap;
 end;
 
 end.

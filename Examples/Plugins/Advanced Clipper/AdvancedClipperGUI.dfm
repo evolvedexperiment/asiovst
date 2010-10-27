@@ -125,7 +125,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LockCursor = False
       Max = 6.000000000000000000
       Min = -6.000000000000000000
       OnChange = DialInputGainChange
@@ -138,7 +137,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LockCursor = False
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOSFactor1Change
@@ -153,7 +151,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 48
       CurveMapping = -1.000000000000000000
-      LockCursor = False
       Max = 64.000000000000000000
       OnChange = DialFilterOrder1Change
       StitchedImageIndex = 0
@@ -282,7 +279,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LockCursor = False
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOSFactor2Change
@@ -297,7 +293,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 48
       CurveMapping = -1.000000000000000000
-      LockCursor = False
       Max = 64.000000000000000000
       OnChange = DialFilterOrder2Change
       StitchedImageIndex = 0
@@ -310,7 +305,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LockCursor = False
       Max = 6.000000000000000000
       Min = -6.000000000000000000
       OnChange = DialOutputGainChange

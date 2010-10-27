@@ -35,14 +35,19 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Graphics, Classes, SysUtils, Contnrs, DAV_Common, DAV_GuiCommon,
-  DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiFont;
+  Graphics, Classes, SysUtils, Controls, Contnrs, Messages, DAV_Common,
+  DAV_GuiCommon, DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiFont;
+
+const
+  GM_FontChanged = WM_USER + $F0;
 
 type
   // forward declarations
   TGuiCustomFontCollectionItem = class;
 
-  TGuiFontImageCollection = class(TOwnedCollection)
+  TGuiFontMessage = (fmSet, fmUpdate);
+
+  TGuiFontCollection = class(TOwnedCollection)
   protected
     function GetItem(Index: Integer): TGuiCustomFontCollectionItem; virtual;
     procedure SetItem(Index: Integer; const Value: TGuiCustomFontCollectionItem); virtual;
@@ -60,11 +65,11 @@ type
 
   TGuiCustomFontCollectionItem = class(TCollectionItem)
   private
-    FOnChange         : TNotifyEvent;
-    FDisplayName      : string;
-    FFont             : TGuiCustomFont;
-    FFontClassChanged : TNotifyEvent;
-    FLinkedControls   : TObjectList;
+    FOnChange           : TNotifyEvent;
+    FDisplayName        : string;
+    FFont               : TGuiCustomFont;
+    FOnFontClassChanged : TNotifyEvent;
+    FLinkedControls     : TObjectList;
     function GetFontClassName: string;
     procedure SetFont(const Value: TGuiCustomFont);
     procedure SetFontClassName(const Value: string);
@@ -75,11 +80,9 @@ type
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
 
-(*
-    procedure LinkFontControl(Font: TGuiCustomFontControl);
-    procedure UnLinkFontControl(Font: TGuiCustomFontControl);
-    procedure UnLinkFontControls;
-*)
+    procedure LinkControl(Control: TControl);
+    procedure UnLinkControl(Control: TControl);
+    procedure UnLinkControls;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
@@ -89,12 +92,15 @@ type
 
     property FontClassName: string read GetFontClassName write SetFontClassName;
     property Font: TGuiCustomFont read FFont write SetFont;
-    property FontClassChanged: TNotifyEvent read FFontClassChanged write FFontClassChanged;
+    property OnFontClassChanged: TNotifyEvent read FOnFontClassChanged write FOnFontClassChanged;
   end;
 
-  TGuiFontImageCollectionItem = class(TGuiCustomFontCollectionItem)
+  TGuiFontCollectionItem = class(TGuiCustomFontCollectionItem)
   published
     property DisplayName;
+    property FontClassName;
+    property Font;
+    property OnFontClassChanged;
     property OnChange;
   end;
 
@@ -102,24 +108,24 @@ type
   private
     function GetItems(Index: Integer): TGuiCustomFontCollectionItem;
   protected
-    FFontCollection : TGuiFontImageCollection;
+    FFontCollection : TGuiFontCollection;
     function GetCount: Integer; virtual; abstract;
     property Items[Index: Integer]: TGuiCustomFontCollectionItem read GetItems; default;
   public
     property Count: Integer read GetCount;
   end;
 
-  TGuiFontImageList = class(TGuiCustomFontList)
+  TGuiFontList = class(TGuiCustomFontList)
   private
-    function GetItems(Index: Integer): TGuiFontImageCollectionItem;
+    function GetItems(Index: Integer): TGuiFontCollectionItem;
   protected
     function GetCount: Integer; override;
-    property Items[Index: Integer]: TGuiFontImageCollectionItem read GetItems; default;
+    property Items[Index: Integer]: TGuiFontCollectionItem read GetItems; default;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property FontImages: TGuiFontImageCollection read FFontCollection write FFontCollection;
+    property Fonts: TGuiFontCollection read FFontCollection write FFontCollection;
   end;
 
 implementation
@@ -127,37 +133,37 @@ implementation
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
-{ TGuiFontImageCollection }
+{ TGuiFontCollection }
 
-constructor TGuiFontImageCollection.Create(AOwner: TPersistent;
+constructor TGuiFontCollection.Create(AOwner: TPersistent;
   ItemClass: TCollectionItemClass);
 begin
  inherited Create(AOwner, ItemClass);
 end;
 
-function TGuiFontImageCollection.Add: TGuiCustomFontCollectionItem;
+function TGuiFontCollection.Add: TGuiCustomFontCollectionItem;
 begin
  Result := TGuiCustomFontCollectionItem(inherited Add);
 end;
 
-procedure TGuiFontImageCollection.Delete(Index: Integer);
+procedure TGuiFontCollection.Delete(Index: Integer);
 begin
  inherited Delete(Index);
 end;
 
-function TGuiFontImageCollection.GetItem(
+function TGuiFontCollection.GetItem(
   Index: Integer): TGuiCustomFontCollectionItem;
 begin
  Result := TGuiCustomFontCollectionItem(inherited GetItem(Index));
 end;
 
-function TGuiFontImageCollection.Insert(
+function TGuiFontCollection.Insert(
   Index: Integer): TGuiCustomFontCollectionItem;
 begin
  Result:= TGuiCustomFontCollectionItem(inherited Insert(Index));
 end;
 
-procedure TGuiFontImageCollection.Notify(Item: TCollectionItem;
+procedure TGuiFontCollection.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
 (*
 var
@@ -167,12 +173,12 @@ begin
 (*
  if Action in [cnDeleting, cnExtracting] then
   if Item is TGuiCustomFontCollectionItem
-   then TGuiCustomFontCollectionItem(Item).UnLinkFontControls;
+   then TGuiCustomFontCollectionItem(Item).UnLinkControls;
 *)
  inherited;
 end;
 
-procedure TGuiFontImageCollection.SetItem(Index: Integer;
+procedure TGuiFontCollection.SetItem(Index: Integer;
   const Value: TGuiCustomFontCollectionItem);
 begin
  inherited SetItem(Index, Value);
@@ -185,12 +191,15 @@ constructor TGuiCustomFontCollectionItem.Create(Collection: TCollection);
 begin
  inherited;
  FLinkedControls := TObjectList.Create(False);
+ FFont := TGuiSimpleGDIFont.Create;
 end;
 
 destructor TGuiCustomFontCollectionItem.Destroy;
 begin
-// UnLinkFontControls;
+ UnLinkControls;
  FreeAndNil(FLinkedControls);
+ if Assigned(FFont)
+  then FreeAndNil(FFont);
  inherited;
 end;
 
@@ -202,14 +211,14 @@ begin
    begin
     FFont.Assign(Self.FFont);
     FDisplayName := Self.FDisplayName;
-    FFontClassChanged := Self.FFontClassChanged;
+    FOnFontClassChanged := Self.FOnFontClassChanged;
    end;
 end;
 
 procedure TGuiCustomFontCollectionItem.Changed;
 begin
- if Assigned(FFontClassChanged)
-  then FFontClassChanged(Self);
+ if Assigned(FOnFontClassChanged)
+  then FOnFontClassChanged(Self);
 end;
 
 function TGuiCustomFontCollectionItem.GetDisplayName: string;
@@ -224,50 +233,42 @@ begin
   else Result := '';
 end;
 
-(*
-procedure TGuiCustomFontCollectionItem.LinkFontControl(Font: TGuiCustomFontControl);
+procedure TGuiCustomFontCollectionItem.LinkControl(Control: TControl);
 begin
  if FLinkedControls.IndexOf(Font) < 0 then
   begin
    FLinkedControls.Add(Font);
-   case StitchKind of
-    skHorizontal :
-     begin
-      Font.Width  := Width div GlyphCount;
-      Font.Height := Height;
-     end;
-    skVertical :
-     begin
-      Font.Width  := Width;
-      Font.Height := Height div GlyphCount;
-     end;
-   end;
+   Control.Perform(GM_FontChanged, 0, Integer(Self));
   end;
 end;
 
-procedure TGuiCustomFontCollectionItem.UnLinkFontControl(Font: TGuiCustomFontControl);
+procedure TGuiCustomFontCollectionItem.UnLinkControl(Control: TControl);
 begin
- if Assigned(Font)
-  then FLinkedControls.Remove(Font);
+ if Assigned(Font) then
+  begin
+   Control.Perform(GM_FontChanged, 0, 0);
+   FLinkedControls.Remove(Font);
+  end;
 end;
 
-procedure TGuiCustomFontCollectionItem.UnLinkFontControls;
+procedure TGuiCustomFontCollectionItem.UnLinkControls;
+var
+  Index : Integer;
 begin
- while FLinkedControls.Count > 0 do
-  with TGuiCustomFontControl(FLinkedControls[0])
-   do FontImageIndex := -1;
+ Index := 0;
+ while FLinkedControls.Count > Index do
+  with TControl(FLinkedControls[Index]) do
+   if Perform(GM_FontChanged, 0, 0) <> 1
+    then Inc(Index);
 end;
-*)
 
 procedure TGuiCustomFontCollectionItem.SettingsChanged(Sender: TObject);
 var
   Index : Integer;
 begin
-(*
  for Index := 0 to FLinkedControls.Count - 1 do
-  with TGuiCustomFontControl(FLinkedControls[Index])
-   do BufferChanged;
-*)
+  with TControl(FLinkedControls[Index])
+   do Perform(GM_FontChanged, 1, Integer(Self));
 end;
 
 procedure TGuiCustomFontCollectionItem.SetDisplayName(const Value: string);
@@ -294,36 +295,36 @@ begin
    if Assigned(FontClass) then
     begin
      FFont.Free;
-     FFont := FontClass.Create(nil);
+     FFont := FontClass.Create;
      Changed;
     end;
   end;
 end;
 
 
-{ TGuiFontImageList }
+{ TGuiFontList }
 
-constructor TGuiFontImageList.Create(AOwner: TComponent);
+constructor TGuiFontList.Create(AOwner: TComponent);
 begin
   inherited;
-  FFontCollection := TGuiFontImageCollection.Create(Self, TGuiFontImageCollectionItem);
+  FFontCollection := TGuiFontCollection.Create(Self, TGuiFontCollectionItem);
 end;
 
-destructor TGuiFontImageList.Destroy;
+destructor TGuiFontList.Destroy;
 begin
   FreeAndNil(FFontCollection);
   inherited;
 end;
 
-function TGuiFontImageList.GetCount: Integer;
+function TGuiFontList.GetCount: Integer;
 begin
   Result := FFontCollection.Count;
 end;
 
-function TGuiFontImageList.GetItems(Index: Integer): TGuiFontImageCollectionItem;
+function TGuiFontList.GetItems(Index: Integer): TGuiFontCollectionItem;
 begin
  if (Index >= 0) and (Index < FFontCollection.Count)
-  then Result := TGuiFontImageCollectionItem(FFontCollection[Index])
+  then Result := TGuiFontCollectionItem(FFontCollection[Index])
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
