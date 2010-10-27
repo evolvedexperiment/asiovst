@@ -35,11 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF Windows} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
-  DAV_GuiFixedPoint, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixel;
+  Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon, DAV_GuiFixedPoint,
+  DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixel;
 
 type
   TGuiPixelThinLine = class(TCustomGuiPixelSimplePrimitive)

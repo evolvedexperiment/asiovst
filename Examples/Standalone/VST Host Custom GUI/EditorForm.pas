@@ -111,7 +111,7 @@ implementation
 
 uses
   Math, IniFiles, DAV_VSTEffect, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiSlider,
-  DAV_GuiBaseControl, EditorSetup;
+  DAV_GuiFont, DAV_GuiShadow, EditorSetup;
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -396,7 +396,7 @@ begin
        begin
         Parent := Control; Caption := string(ParameterName[i]) + ':'; Tag := i;
         Width := Canvas.TextWidth(Caption); Alignment := taCenter; Left := 4;
-        Height := 16; Top := 8 + i * (4 + Height); AntiAlias := gaaLinear3x;
+        Height := 16; Top := 8 + i * (4 + Height); Oversampling := fo3x;
         Transparent := True;
        end;
       with TGuiLabel(FGUIElements[FGUIElements.Add(TGuiLabel.Create(Control))]) do
@@ -406,7 +406,7 @@ begin
         Width := Canvas.TextWidth(Caption);
         Height  := 16; Left := Control.Width - Left - 72;
         Alignment := taCenter; Width := 65; Top := 8 + i * (4 + Height);
-        AntiAlias := gaaLinear3x; Transparent := True;
+        Oversampling := fo3x; Transparent := True;
        end;
 
       j := FGUIElements.Add(TGuiSlider.Create(Control));
@@ -419,7 +419,7 @@ begin
         Min := 0; Max := 1; TabOrder := 3 + i;
         Position := Parameter[i];
         BorderRadius := 5; BorderWidth := 2; 
-        AntiAlias := gaaLinear3x; Transparent := True;
+        Transparent := True;
         OnChange := ControlChangeList;
         ControlChangeList(FGUIElements[j]);
        end;

@@ -120,13 +120,12 @@ type
 
   TCustomGuiSliderGDI = class(TCustomGuiSlider)
   private
-    FBuffer       : TBitmap;
-    FAntiAlias    : TGuiAntiAlias;
-    FOSFactor     : Integer;
-    FTransparent  : Boolean;
-    FChartChanged : Boolean;
+    FBuffer           : TGuiCustomPixelMap;
+    FBackBuffer       : TGuiCustomPixelMap;
+    FUpdateBuffer     : Boolean;
+    FUpdateBackBuffer : Boolean;
+    FTransparent      : Boolean;
 
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetTransparent(const Value: Boolean);
   protected
     procedure AssignTo(Dest: TPersistent); override;
@@ -134,14 +133,9 @@ type
     procedure Resize; override;
     procedure Loaded; override;
 
-    procedure AntiAliasChanged; virtual;
     procedure ControlChanged; override;
-    procedure RenderBuffer; virtual;
     procedure TransparentChanged; virtual;
-    procedure DownsampleBitmap(Bitmap: TBitmap);
-    procedure UpsampleBitmap(Bitmap: TBitmap);
 
-    procedure RenderToBitmap(Bitmap: TBitmap); virtual;
     {$IFDEF FPC}
     procedure CMFontChanged(var Message: TLMessage); message CM_FONTCHANGED;
     {$ELSE}
@@ -149,8 +143,14 @@ type
     {$ENDIF}
 
     {$IFNDEF FPC}
-    procedure DrawParentImage(Dest: TCanvas); virtual;
+    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
     {$ENDIF}
+
+    procedure BackBufferChanged; virtual;
+    procedure UpdateBuffer; virtual;
+    procedure UpdateBackBuffer; virtual;
+
+    procedure RenderRoundedFrameRectangle(PixelMap: TGuiCustomPixelMap);
 
     // mouse input
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -159,7 +159,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
@@ -167,7 +166,6 @@ type
   published
     property Align;
     property Anchors;
-    property AntiAlias;
     property AutoColor;
     property BorderColor;
     property BorderRadius;
@@ -225,7 +223,8 @@ type
 implementation
 
 uses
-  Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_Approximations;
+  Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_GuiBlend,
+  DAV_Approximations;
 
 
 { TCustomGuiSlider }
@@ -536,21 +535,15 @@ constructor TCustomGuiSliderGDI.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
 
- FBuffer := TBitmap.Create;
- with FBuffer do
-  begin
-   Canvas.Brush.Color := Self.Color;
-   Width := Self.Width;
-   Height := Self.Height;
-  end;
-
- FOSFactor := 1;
+ FBuffer     := TGuiPixelMapMemory.Create;
+ FBackBuffer := TGuiPixelMapMemory.Create;
  FTransparent := False;
 end;
 
 destructor TCustomGuiSliderGDI.Destroy;
 begin
  FreeAndNil(FBuffer);
+ FreeAndNil(FBackBuffer);
  inherited Destroy;
 end;
 
@@ -560,18 +553,22 @@ begin
  if Dest is TCustomGuiSliderGDI then
   with TCustomGuiSliderGDI(Dest) do
    begin
-    FAntiAlias       := Self.FAntiAlias;
-    FOSFactor        := Self.FOSFactor;
     FTransparent     := Self.FTransparent;
-
     FBuffer.Assign(Self.FBuffer);
+    FBackBuffer.Assign(Self.FBackBuffer);
    end;
 end;
 
 procedure TCustomGuiSliderGDI.ControlChanged;
 begin
- FChartChanged := True;
+ FUpdateBuffer := True;
  inherited;
+end;
+
+procedure TCustomGuiSliderGDI.BackBufferChanged;
+begin
+ FUpdateBackBuffer := True;
+ ControlChanged;
 end;
 
 {$IFNDEF FPC}
@@ -581,7 +578,7 @@ procedure TCustomGuiSliderGDI.CMFontChanged(var Message: TLMessage);
 {$ENDIF}
 begin
  inherited;
- FBuffer.Canvas.Font.Assign(Font);
+ // nothing here yet
 end;
 
 
@@ -592,7 +589,7 @@ var
 begin
  if Button = mbLeft then
   begin
-   NormalizedPosition := X / (Width - (FOSFactor + 1) div 2);
+   NormalizedPosition := X / (Width - 1);
    Position := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
   end;
 
@@ -605,7 +602,7 @@ var
 begin
  if ssLeft in Shift then
   begin
-   NormalizedPosition := X / (Width - (FOSFactor + 1) div 2);
+   NormalizedPosition := X / (Width - 1);
    Position := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
   end;
 
@@ -615,215 +612,333 @@ end;
 
 // Drawing stuff
 
-procedure TCustomGuiSliderGDI.UpsampleBitmap(Bitmap: TBitmap);
-begin
- case FAntiAlias of
-   gaaLinear2x: Upsample2xBitmap32(Bitmap);
-   gaaLinear3x: Upsample3xBitmap32(Bitmap);
-   gaaLinear4x: Upsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample4xBitmap32(Bitmap);
-                end;
-  else raise Exception.Create('not yet supported');
- end;
-end;
-
-procedure TCustomGuiSliderGDI.DownsampleBitmap(Bitmap: TBitmap);
-begin
- case FAntiAlias of
-   gaaLinear2x: Downsample2xBitmap32(Bitmap);
-   gaaLinear3x: Downsample3xBitmap32(Bitmap);
-   gaaLinear4x: Downsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample4xBitmap32(Bitmap);
-                end;
-  else raise Exception.Create('not yet supported');
- end;
-end;
-
 {$IFNDEF FPC}
-procedure TCustomGuiSliderGDI.DrawParentImage(Dest: TCanvas);
+type
+  TParentControl = class(TWinControl);
+
+procedure TCustomGuiSliderGDI.CopyParentImage(PixelMap: TGuiCustomPixelMap);
 var
+  I         : Integer;
+  SubCount  : Integer;
   SaveIndex : Integer;
-  DC        : THandle;
-  Position  : TPoint;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
+  Bmp       : TBitmap;
 begin
-  if Parent = nil then Exit;
-  DC := Dest.Handle;
-  SaveIndex := SaveDC(DC);
-  GetViewportOrgEx(DC, Position);
-  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-  Parent.Perform(WM_PAINT, Longint(DC), 0);
-  RestoreDC(DC, SaveIndex);
+ if (Parent = nil) then Exit;
+ SubCount := Parent.ControlCount;
+ // set
+ {$IFDEF WIN32}
+ with Parent
+  do ControlState := ControlState + [csPaintCopy];
+ try
+ {$ENDIF}
+
+  SelfR := Bounds(Left, Top, Width, Height);
+  Pnt.X := -Left;
+  Pnt.Y := -Top;
+
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Self.Width;
+    Height := Self.Height;
+    PixelFormat := pf32bit;
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+     with TParentControl(Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
+    end;
+
+    // Copy images of graphic controls
+    for I := 0 to SubCount - 1 do
+     begin
+      if Parent.Controls[I] = Self then Break else
+       if (Parent.Controls[I] <> nil) and
+          (Parent.Controls[I] is TGraphicControl)
+        then
+         with TGraphicControl(Parent.Controls[I]) do
+          begin
+           CtlR := Bounds(Left, Top, Width, Height);
+           if Boolean(IntersectRect(R, SelfR, CtlR)) and Visible then
+            begin
+             {$IFDEF WIN32}
+             ControlState := ControlState + [csPaintCopy];
+             {$ENDIF}
+             SaveIndex := SaveDC(Canvas.Handle);
+             try
+              SaveIndex := SaveDC(Canvas.Handle);
+              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
+              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
+              Perform(WM_PAINT, Canvas.Handle, 0);
+             finally
+              RestoreDC(Handle, SaveIndex);
+              {$IFDEF WIN32}
+              ControlState := ControlState - [csPaintCopy];
+              {$ENDIF}
+             end;
+            end;
+          end;
+     end;
+    PixelMap.Draw(Bmp);
+   finally
+    Free;
+   end;
+
+ {$IFDEF WIN32}
+ finally
+   with Parent do ControlState := ControlState - [csPaintCopy];
+ end;
+ {$ENDIF}
 end;
 {$ENDIF}
 
 procedure TCustomGuiSliderGDI.Paint;
 begin
- if Assigned(FBuffer) then
-  begin
-   if FChartChanged then
-    begin
-     FChartChanged := False;
-     RenderBuffer;
-    end;
-   Canvas.Draw(0, 0, FBuffer);
-  end;
+ if FUpdateBackBuffer
+  then UpdateBackBuffer;
 
- inherited;
+ if FUpdateBuffer
+  then UpdateBuffer;
 
  if Assigned(FOnPaint)
   then FOnPaint(Self);
+
+ if Assigned(FBuffer)
+  then FBuffer.PaintTo(Canvas);
+
+ inherited;
 end;
 
-procedure TCustomGuiSliderGDI.SetAntiAlias(const Value: TGuiAntiAlias);
+procedure TCustomGuiSliderGDI.UpdateBackBuffer;
+var
+  PixelColor32 : TPixel32;
 begin
- if FAntiAlias <> Value then
+ if FTransparent then CopyParentImage(FBackBuffer) else
   begin
-   FAntiAlias := Value;
-   AntiAliasChanged;
+   PixelColor32 := ConvertColor(Color);
+   FBackBuffer.FillRect(ClientRect, PixelColor32);
   end;
+
+ FUpdateBuffer := True;
 end;
 
-procedure TCustomGuiSliderGDI.AntiAliasChanged;
-begin
- case FAntiAlias of
-       gaaNone : FOSFactor :=  1;
-   gaaLinear2x : FOSFactor :=  2;
-   gaaLinear3x : FOSFactor :=  3;
-   gaaLinear4x : FOSFactor :=  4;
-   gaaLinear8x : FOSFactor :=  8;
-  gaaLinear16x : FOSFactor := 16;
- end;
- ControlChanged;
-end;
-
-procedure TCustomGuiSliderGDI.RenderBuffer;
+procedure TCustomGuiSliderGDI.UpdateBuffer;
 var
-  Bmp: TBitmap;
+  DataPointer : PPixel32Array;
+  LineIndex   : Integer;
 begin
- if (Width > 0) and (Height > 0) then
-  with FBuffer.Canvas do
-   begin
-    Lock;
-    Brush.Assign(Canvas.Brush);
+ FUpdateBuffer := False;
 
-    case FAntiAlias of
-     gaaNone:
-      begin
-       // draw background
-       {$IFNDEF FPC}
-       if FTransparent
-        then DrawParentImage(FBuffer.Canvas)
-        else
-       {$ENDIF}
-        begin
-         Brush.Color := Self.Color;
-         FillRect(ClipRect);
-        end;
-       RenderToBitmap(FBuffer);
-      end;
-     else
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSFactor * FBuffer.Width;
-         Height      := FOSFactor * FBuffer.Height;
-         Canvas.Font.Assign(Font);
-         Canvas.Font.Size := FOSFactor * Font.Size;
-         {$IFNDEF FPC}
-         if FTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-//           DrawParentImage(Bmp.Canvas);
-           UpsampleBitmap(Bmp);
-          end
-         else
-         {$ENDIF}
-          with Canvas do
-           begin
-            Brush.Color := Self.Color;
-            FillRect(ClipRect);
-           end;
-         RenderToBitmap(Bmp);
-         DownsampleBitmap(Bmp);
-         FBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         Free;
-        end;
-      end;
-    end;
-    Unlock;
-   end;
+ inherited;
+
+ // check whether a buffer or a back buffer is assigned
+ if not Assigned(FBuffer) or not Assigned(FBackBuffer)
+  then Exit;
+
+ Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
+
+ // copy back buffer to buffer
+ Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
+   FBuffer.Width * SizeOf(TPixel32));
+
+ RenderRoundedFrameRectangle(FBuffer);
 end;
 
-procedure TCustomGuiSliderGDI.RenderToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiSliderGDI.RenderRoundedFrameRectangle(
+  PixelMap: TGuiCustomPixelMap);
 var
-  Offset   : Integer;
-  Scale    : Single;
-  Text     : string;
-  TextSize : TSize;
+  X, Y, XPos        : Integer;
+  ScnLne            : array [0..1] of PPixel32Array;
+  SliderColor       : TPixel32;
+  BackColor         : TPixel32;
+  BorderColor       : TPixel32;
+  CombColor         : TPixel32;
+  Radius            : Single;
+  XStart            : Single;
+  BorderWidth       : Single;
+  SqrRadMinusBorder : Single;
+  RadMinusBorderOne : Single;
+  SqrDist, SqrYDist : Single;
+  SqrRadMinusOne    : Single;
+  Temp              : Single;
 begin
- with Bitmap, Canvas do
+ with PixelMap do
   begin
-   Lock;
-   Offset := FOSFactor * FBorderWidth;
+   SliderColor := ConvertColor(FSlideColor);
+   BackColor := ConvertColor(Color);
+   if FBorderWidth > 0
+    then BorderColor := ConvertColor(FBorderColor)
+    else BorderColor := SliderColor;
 
-   Pen.Color := FSlideColor;
-   Brush.Color := FSlideColor;
-   Scale := (FPosition - FMin) / (FMax - FMin);
-   Scale := UnmapValue(Scale);
-   Rectangle(Offset, Offset, Round(Offset + Scale * (Width - 2 * Offset)), Height - Offset);
+   // draw circle
+   Radius := FBorderRadius;
+   if 0.5 * Width < Radius then Radius := 0.5 * Width;
+   if 0.5 * Height < Radius then Radius := 0.5 * Height;
+   BorderWidth := Math.Max(FBorderWidth, 1);
 
-   if ShowText then
+   XPos := Round(Width * UnmapValue((FPosition - FMin) / (FMax - FMin)));
+
+   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
+   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
+   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
+
+   for Y := 0 to Round(Radius) - 1  do
     begin
-     Text := FloatToStrF(FPosition, ffGeneral, 5, 5);
-     TextSize := TextExtent(Text);
-     Brush.Style := bsClear;
-     TextOut((Width - TextSize.cx) div 2, (Height - TextSize.cy) div 2, Text);
+     SqrYDist := Sqr(Y - (Radius - 1));
+     XStart := Sqr(Radius) - SqrYDist;
+     if XStart <= 0
+      then Continue
+      else XStart := Sqrt(XStart) - 0.5;
+     ScnLne[0] := Scanline[Y];
+     ScnLne[1] := Scanline[Height - 1 - Y];
+
+     for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
+      begin
+       // calculate squared distance
+       if X < (Radius - 1)
+        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
+
+       if X > (Width - 1) - (Radius - 1)
+        then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
+        else SqrDist := SqrYDist;
+
+       if SqrDist < SqrRadMinusBorder then
+        if X < XPos
+         then CombColor := SliderColor
+         else CombColor := BackColor
+        else
+       if SqrDist <= Sqr(RadMinusBorderOne) then
+        begin
+         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+         if X < XPos
+          then CombColor := CombinePixel(BorderColor, SliderColor, Round($FF - Temp * $FF))
+          else CombColor := CombinePixel(BorderColor, BackColor, Round($FF - Temp * $FF));
+        end else
+       if SqrDist < SqrRadMinusOne
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+         end;
+
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       BlendPixelInplace(CombColor, ScnLne[1][X]);
+       EMMS;
+      end;
     end;
 
-   if FBorderWidth > 0 then
+   for Y := Round(Radius) to Height - 1 - Round(Radius) do
     begin
-     Pen.Color := FBorderColor;
-     Pen.Width := FOSFactor * FBorderWidth;
-     Brush.Style := bsClear;
-     RoundRect((FOSFactor * FBorderWidth) div 2,
-       (FOSFactor * FBorderWidth) div 2,
-       Width - (FOSFactor * FBorderWidth) div 2,
-       Height - (FOSFactor * FBorderWidth) div 2,
-       FOSFactor * FBorderRadius, FOSFactor * FBorderRadius);
-    end;
+     ScnLne[0] := Scanline[Y];
+     for X := 0 to Width - 1 do
+      begin
+       // check whether position is a border
+       if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
 
-   Unlock;
+       // check whether position is an upper half border
+       if (Y < BorderWidth) then
+        begin
+         Temp := BorderWidth - Y;
+         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           if X < XPos
+            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+          end else
+         if (X > Width - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+           if X < XPos
+            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+          end else
+         if X < XPos
+          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end else
+
+       // check whether position is a lower half border
+       if (Y > Height - 1 - BorderWidth) then
+        begin
+         Temp := Y - (Height - 1 - BorderWidth);
+         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           if X < XPos
+            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF))
+          end else
+         if (X > Width - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+           if X < XPos
+            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+          end else
+         if X < XPos
+          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end else
+
+       if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
+       if (X < BorderWidth) then
+        begin
+         Temp := BorderWidth - X;
+         if X < XPos
+          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end else
+       if (X > Width - 1 - BorderWidth) then
+        begin
+         Temp := X - (Width - 1 - BorderWidth);
+         if X < XPos
+          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
+          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end
+       else
+        begin
+         if X < XPos
+          then CombColor := SliderColor
+          else CombColor := BackColor
+        end;
+
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       EMMS;
+      end;
+    end;
   end;
 end;
 
 procedure TCustomGuiSliderGDI.Resize;
 begin
  inherited;
- if Assigned(FBuffer) then
-  with FBuffer do
-   begin
-    Canvas.Brush.Color := Self.Color;
-    Width := Self.Width;
-    Height := Self.Height;
-   end;
- ControlChanged;
+
+ if Assigned(FBuffer)
+  then FBuffer.SetSize(Self.Width, Self.Height);
+
+ if Assigned(FBackBuffer)
+  then FBackBuffer.SetSize(Self.Width, Self.Height);
+
+ BackBufferChanged;
 end;
 
 procedure TCustomGuiSliderGDI.Loaded;

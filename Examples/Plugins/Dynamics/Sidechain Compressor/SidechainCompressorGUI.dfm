@@ -26,6 +26,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Attack:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -35,6 +36,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Release:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -44,6 +46,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Threshold:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -53,6 +56,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Knee:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -62,6 +66,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Ratio:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -71,6 +76,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Attack'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -80,6 +86,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Release'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -89,6 +96,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Threshold'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -98,6 +106,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Knee'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -107,6 +116,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Ratio'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -116,6 +126,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 102
     Height = 14
     Caption = 'Sidechain VST Plugin:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -125,6 +136,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Make-Up:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -134,6 +146,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Make-Up'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -143,6 +156,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 94
     Height = 13
     Caption = 'Auto Make-Up Gain'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LEDAutoGainClick
@@ -166,6 +180,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 45
     Height = 13
     Caption = 'Soft Clip'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LEDSoftClipClick
@@ -189,6 +204,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 35
     Height = 13
     Caption = 'Stereo'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LEDStereoClick
@@ -239,6 +255,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 63
     Height = 13
     Caption = 'Attack Delay:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -248,6 +265,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Hold'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -257,6 +275,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 74
     Height = 13
     Caption = 'Lowcut Freq.:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -266,6 +285,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 70
     Height = 13
     Caption = 'Highcut Freq.:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -275,6 +295,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 70
     Height = 13
     Caption = 'Highcut Slope:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -284,6 +305,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Frequency'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -293,6 +315,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Frequency'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -302,6 +325,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Order'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -311,6 +335,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 74
     Height = 13
     Caption = 'Lowcut Slope:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -320,6 +345,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Order'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -329,6 +355,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Mix:'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -338,6 +365,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 55
     Height = 13
     Caption = 'Mix'
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
   end
@@ -356,6 +384,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     Shadow.Visible = True
     OnDblClick = LbClearDblClick
@@ -397,17 +426,18 @@ object FmSidechainCompressor: TFmSidechainCompressor
       Width = 237
       Height = 25
       Anchors = [akTop]
-      Oversampling = fo4x
       Caption = 'Sidechain Compressor'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 9681911
       Font.Height = -19
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
-      Transparent = True
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       Shadow.Visible = True
+      Transparent = True
     end
   end
   object SliderAttack: TGuiSlider
@@ -415,9 +445,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 165
     Width = 140
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 10.000000000000000000
@@ -433,9 +462,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 184
     Width = 140
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 50.000000000000000000
@@ -451,9 +479,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 203
     Width = 140
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     DefaultPosition = -20.000000000000000000
     Max = 10.000000000000000000
@@ -469,9 +496,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     Hint = '100'
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     DefaultPosition = 1.000000000000000000
     Max = 10.000000000000000000
@@ -485,9 +511,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 241
     Width = 140
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     CurveMapping = 1.000000000000000000
     DefaultPosition = 50.000000000000000000
@@ -503,9 +528,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 260
     Width = 140
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     DefaultPosition = 50.000000000000000000
     Max = 90.000000000000000000
@@ -520,9 +544,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 146
     Width = 121
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 10.000000000000000000
@@ -538,9 +561,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 70
     Width = 121
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 10.000000000000000000
@@ -556,9 +578,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 108
     Width = 121
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     CurveMapping = 2.000000000000000000
     DefaultPosition = 50.000000000000000000
@@ -574,9 +595,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 127
     Width = 121
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     DefaultPosition = 16.000000000000000000
     Max = 16.000000000000000000
@@ -590,9 +610,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 89
     Width = 121
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     DefaultPosition = 16.000000000000000000
     Max = 16.000000000000000000
@@ -640,9 +659,8 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 279
     Width = 140
     Height = 11
-    Oversampling = fo3x
     BorderColor = 9681911
-    BorderRadius = 2
+    BorderRadius = 3
     Color = 5196083
     DefaultPosition = 50.000000000000000000
     Max = 100.000000000000000000
@@ -661,16 +679,16 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderWidth = 2.000000000000000000
     PanelColor = 4341035
     ParentColor = True
-    Radius = 2.000000000000000000
+    Radius = 3.000000000000000000
     TabOrder = 14
     UseDockManager = True
     DesignSize = (
       265
       20)
     object LbVstPluginValue: TGuiLabel
-      Left = 1
+      Left = 2
       Top = 3
-      Width = 263
+      Width = 261
       Height = 14
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
@@ -682,6 +700,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
       Font.Name = 'Tahoma'
       Font.Style = [fsItalic]
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       Shadow.Visible = True
       OnClick = LbVstPluginValueClick

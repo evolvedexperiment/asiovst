@@ -18,7 +18,7 @@ object FmSliderTest: TFmSliderTest
     Top = 8
     Width = 145
     Height = 17
-    BorderRadius = 2
+    BorderRadius = 5
     Color = clBtnFace
     CurveMapping = 2.000000000000000000
     DefaultPosition = 1000.000000000000000000
@@ -33,8 +33,7 @@ object FmSliderTest: TFmSliderTest
     Top = 31
     Width = 145
     Height = 17
-    AntiAlias = gaaLinear3x
-    BorderRadius = 2
+    BorderRadius = 5
     Color = clBtnFace
     CurveMapping = 2.000000000000000000
     DefaultPosition = 1000.000000000000000000
@@ -49,8 +48,7 @@ object FmSliderTest: TFmSliderTest
     Top = 8
     Width = 145
     Height = 17
-    AntiAlias = gaaLinear2x
-    BorderRadius = 2
+    BorderRadius = 5
     Color = clBtnFace
     CurveMapping = 2.000000000000000000
     DefaultPosition = 1000.000000000000000000
@@ -65,15 +63,12 @@ object FmSliderTest: TFmSliderTest
     Top = 31
     Width = 145
     Height = 17
-    AntiAlias = gaaLinear4x
-    BorderRadius = 2
+    BorderRadius = 5
     Color = clBtnFace
-    CurveMapping = 2.000000000000000000
-    DefaultPosition = 1000.000000000000000000
-    Max = 20000.000000000000000000
-    Min = 20.000000000000000000
+    DefaultPosition = 100.000000000000000000
+    Max = 100.000000000000000000
     ParentColor = False
-    Position = 1000.000000000000000000
+    Position = 50.000000000000000000
     SlideColor = 6316128
   end
 end

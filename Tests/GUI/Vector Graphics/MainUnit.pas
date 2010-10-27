@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls, SyncObjs, AppEvnts, DAV_GuiPixelMap, DAV_GuiVector,
   DAV_GuiFixedPoint, DAV_GuiVectorPixel, DAV_GuiVectorPixelLine,
-  DAV_GuiVectorPixelCircle;
+  DAV_GuiVectorPixelCircle, DAV_GuiVectorPixelRectangle;
 
 type
   TFmVectorGraphicTest = class(TForm)
@@ -17,6 +17,8 @@ type
     ApplicationEvents: TApplicationEvents;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
@@ -24,8 +26,6 @@ type
     procedure CbTestTypeChange(Sender: TObject);
     procedure CbDraftClick(Sender: TObject);
     procedure ApplicationEventsIdle(Sender: TObject; var Done: Boolean);
-    procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FPixelMap        : TGuiPixelMapMemory;
     FPrimitiveClass  : TCustomGuiPixelPrimitiveClass;
@@ -59,9 +59,14 @@ begin
 end;
 
 procedure TFmVectorGraphicTest.FormDestroy(Sender: TObject);
+var
+  Index : Integer;
 begin
  FreeAndNil(FPixelMap);
- FreeAndNil(FCriticalSection)
+ FreeAndNil(FCriticalSection);
+
+ for Index := 0 to Length(FPrimitives) - 1
+  do FreeAndNil(FPrimitives[Index]);
 end;
 
 procedure TFmVectorGraphicTest.FormPaint(Sender: TObject);
@@ -88,13 +93,15 @@ end;
 procedure TFmVectorGraphicTest.FormShow(Sender: TObject);
 begin
  with TIniFile.Create(FIniFileName) do
-  begin
+  try
    Left := ReadInteger('Layout', 'Left', Left);
    Top := ReadInteger('Layout', 'Top', Top);
    CbTestType.ItemIndex := CbTestType.Items.IndexOf(
      ReadString('Recent', 'Primitive', CbTestType.Text));
    CbTestTypeChange(Self);
    CbDraft.Checked := ReadBool('Recent', 'Draft', CbDraft.Checked);
+  finally
+   Free;
   end;
 end;
 
@@ -102,11 +109,13 @@ procedure TFmVectorGraphicTest.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
  with TIniFile.Create(FIniFileName) do
-  begin
+  try
    WriteInteger('Layout', 'Left', Left);
    WriteInteger('Layout', 'Top', Top);
    WriteString('Recent', 'Primitive', CbTestType.Text);
    WriteBool('Recent', 'Draft', CbDraft.Checked);
+  finally
+   Free;
   end;
 end;
 
@@ -131,9 +140,10 @@ end;
 
 procedure TFmVectorGraphicTest.CbTestTypeChange(Sender: TObject);
 const
-  CPrimitiveClasses : array [0..6] of TCustomGuiPixelPrimitiveClass = (
-    TGuiPixelFilledRectangle, TGuiPixelFilledCircle, TGuiPixelFilledEllipse,
-    TGuiPixelFrameRectangle, TGuiPixelFrameCircle, TGuiPixelThinLine,
+  CPrimitiveClasses : array [0..8] of TCustomGuiPixelPrimitiveClass = (
+    TGuiPixelFilledRectangle, TGuiPixelFilledRoundedRectangle,
+    TGuiPixelFilledCircle, TGuiPixelFilledEllipse, TGuiPixelFrameRectangle,
+    TGuiPixelFrameRoundedRectangle, TGuiPixelFrameCircle, TGuiPixelThinLine,
     TGuiPixelLine);
 begin
  Assert(CbTestType.Items.Count = Length(CPrimitiveClasses));

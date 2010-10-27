@@ -124,6 +124,7 @@ type
   TGuiCustomStitchedControl = class(TCustomControl)
   private
     function GetGlyphCount: Integer;
+    function GetStitchedImageIndex: Integer;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetStitchedIndex(Value: Integer);
     procedure SetStitchedList(const Value: TGuiCustomStitchedList);
@@ -131,7 +132,6 @@ type
     procedure SetGlyphIndex(Value: Integer);
     procedure SetDefaultGlyphIndex(Value: Integer);
     procedure SetStitchedItem(Value: TGuiCustomStitchedCollectionItem);
-    function GetStitchedImageIndex: Integer;
   protected
     FAutoSize          : Boolean;
     FTransparent       : Boolean;
