@@ -78,6 +78,7 @@ type
     procedure BufferChanged;
     procedure BackBufferChanged;
     procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
+    procedure FontChangedHandler(Sender: TObject); virtual;
     procedure UpdateBackBuffer;
     procedure UpdateBuffer;
 
@@ -160,12 +161,13 @@ implementation
 constructor TCustomGuiLabel.Create(AOwner: TComponent);
 begin
  inherited;
- FGuiFont      := TGuiOversampledGDIFont.Create;
- FAlignment    := taLeftJustify;
- FBuffer       := TGuiPixelMapMemory.Create;
- FBackBuffer   := TGuiPixelMapMemory.Create;
- FUpdateBuffer := False;
- ControlStyle  := ControlStyle + [csOpaque];
+ FGuiFont          := TGuiOversampledGDIFont.Create;
+ FGuiFont.OnChange := FontChangedHandler;
+ FAlignment        := taLeftJustify;
+ FBuffer           := TGuiPixelMapMemory.Create;
+ FBackBuffer       := TGuiPixelMapMemory.Create;
+ FUpdateBuffer     := False;
+ ControlStyle      := ControlStyle + [csOpaque];
 end;
 
 destructor TCustomGuiLabel.Destroy;
@@ -364,6 +366,11 @@ begin
  Invalidate;
 end;
 
+procedure TCustomGuiLabel.CaptionChanged;
+begin
+ BufferChanged;
+end;
+
 function TCustomGuiLabel.GetOversampling: TFontOversampling;
 begin
  Result := FGuiFont.FontOversampling;
@@ -374,7 +381,7 @@ begin
  Result := FGuiFont.Shadow;
 end;
 
-procedure TCustomGuiLabel.CaptionChanged;
+procedure TCustomGuiLabel.FontChangedHandler(Sender: TObject);
 begin
  BufferChanged;
 end;

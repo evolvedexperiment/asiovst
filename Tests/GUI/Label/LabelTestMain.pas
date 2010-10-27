@@ -51,6 +51,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
+    procedure LabelBClick(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   public
@@ -104,6 +105,11 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFmLabelTest.LabelBClick(Sender: TObject);
+begin
+ LabelB.Shadow.Visible := not LabelB.Shadow.Visible;
 end;
 
 procedure TFmLabelTest.FormPaint(Sender: TObject);
