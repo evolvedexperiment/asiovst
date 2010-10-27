@@ -42,12 +42,14 @@ uses
 type
   TCustomGuiStitchedSwitch = class(TGuiCustomStitchedControl)
   private
-    FReadOnly          : Boolean;
+    FReadOnly : Boolean;
   protected
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure UpdateBuffer; override;
   public
-    property ReadOnly: Boolean read FReadOnly write FReadOnly default false;
+    constructor Create(AOwner: TComponent); override;
+
+    property ReadOnly: Boolean read FReadOnly write FReadOnly default False;
   end;
 
   TGuiStitchedSwitch = class(TCustomGuiStitchedSwitch)
@@ -71,6 +73,12 @@ uses
   DAV_Common, DAV_GuiBlend;
 
 { TCustomGuiStitchedSwitch }
+
+constructor TCustomGuiStitchedSwitch.Create(AOwner: TComponent);
+begin
+ inherited;
+ FReadOnly := False;
+end;
 
 procedure TCustomGuiStitchedSwitch.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);

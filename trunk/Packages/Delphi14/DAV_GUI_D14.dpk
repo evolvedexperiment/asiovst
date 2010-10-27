@@ -96,6 +96,8 @@ contains
   DAV_GuiVectorPixelLine in '..\..\Source\GUI\DAV_GuiVectorPixelLine.pas',
   DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
   DAV_GuiInscription in '..\..\Source\GUI\DAV_GuiInscription.pas',
-  DAV_GuiFontList in '..\..\Source\GUI\DAV_GuiFontList.pas';
+  DAV_GuiFontList in '..\..\Source\GUI\DAV_GuiFontList.pas',
+  DAV_GuiFontDesign in '..\..\Source\GUI\DAV_GuiFontDesign.pas',
+  DAV_GuiDialRenderer in '..\..\Source\GUI\DAV_GuiDialRenderer.pas';
 
 end.

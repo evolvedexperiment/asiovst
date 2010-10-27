@@ -30,9 +30,6 @@
 			<Projects Include="DAV_VSTCloner_D14.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="..\..\..\..\..\Christian\Code\Unreleased\Examples\Plugins\Audiocation Compressor\Source\AudiocationCompressor.dproj">
-				<Dependencies/>
-			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -122,23 +119,14 @@
 		<Target Name="DAV_VSTCloner_D14:Make">
 			<MSBuild Targets="Make" Projects="DAV_VSTCloner_D14.dproj"/>
 		</Target>
-		<Target Name="AudiocationCompressor">
-			<MSBuild Projects="..\..\..\..\..\Christian\Code\Unreleased\Examples\Plugins\Audiocation Compressor\Source\AudiocationCompressor.dproj"/>
-		</Target>
-		<Target Name="AudiocationCompressor:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\..\..\Christian\Code\Unreleased\Examples\Plugins\Audiocation Compressor\Source\AudiocationCompressor.dproj"/>
-		</Target>
-		<Target Name="AudiocationCompressor:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\..\..\Christian\Code\Unreleased\Examples\Plugins\Audiocation Compressor\Source\AudiocationCompressor.dproj"/>
-		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="DAV_Common_D14;DAV_DSP_D14;DAV_ASIOHost_D14;DAV_SEHost_D14;DAV_VSTPlugin_D14;DAV_VSTHost_D14;DAV_Modular_D14;DAV_GUI_D14;DAV_VSTCloner_D14;AudiocationCompressor"/>
+			<CallTarget Targets="DAV_Common_D14;DAV_DSP_D14;DAV_ASIOHost_D14;DAV_SEHost_D14;DAV_VSTPlugin_D14;DAV_VSTHost_D14;DAV_Modular_D14;DAV_GUI_D14;DAV_VSTCloner_D14"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="DAV_Common_D14:Clean;DAV_DSP_D14:Clean;DAV_ASIOHost_D14:Clean;DAV_SEHost_D14:Clean;DAV_VSTPlugin_D14:Clean;DAV_VSTHost_D14:Clean;DAV_Modular_D14:Clean;DAV_GUI_D14:Clean;DAV_VSTCloner_D14:Clean;AudiocationCompressor:Clean"/>
+			<CallTarget Targets="DAV_Common_D14:Clean;DAV_DSP_D14:Clean;DAV_ASIOHost_D14:Clean;DAV_SEHost_D14:Clean;DAV_VSTPlugin_D14:Clean;DAV_VSTHost_D14:Clean;DAV_Modular_D14:Clean;DAV_GUI_D14:Clean;DAV_VSTCloner_D14:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="DAV_Common_D14:Make;DAV_DSP_D14:Make;DAV_ASIOHost_D14:Make;DAV_SEHost_D14:Make;DAV_VSTPlugin_D14:Make;DAV_VSTHost_D14:Make;DAV_Modular_D14:Make;DAV_GUI_D14:Make;DAV_VSTCloner_D14:Make;AudiocationCompressor:Make"/>
+			<CallTarget Targets="DAV_Common_D14:Make;DAV_DSP_D14:Make;DAV_ASIOHost_D14:Make;DAV_SEHost_D14:Make;DAV_VSTPlugin_D14:Make;DAV_VSTHost_D14:Make;DAV_Modular_D14:Make;DAV_GUI_D14:Make;DAV_VSTCloner_D14:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>
