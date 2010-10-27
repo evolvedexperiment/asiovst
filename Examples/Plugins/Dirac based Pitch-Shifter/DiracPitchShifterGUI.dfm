@@ -25,8 +25,9 @@ object FmDiracPitchShifter: TFmDiracPitchShifter
     Width = 115
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Semitones'
+    Oversampling = fo3x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbSemitoneValue: TGuiLabel
@@ -35,8 +36,9 @@ object FmDiracPitchShifter: TFmDiracPitchShifter
     Width = 115
     Height = 24
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '0'
+    Oversampling = fo3x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object DialSemitones: TGuiStitchedDial
@@ -47,8 +49,8 @@ object FmDiracPitchShifter: TFmDiracPitchShifter
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialSemitonesChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

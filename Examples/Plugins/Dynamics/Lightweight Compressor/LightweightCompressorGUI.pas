@@ -50,12 +50,12 @@ type
     DialThreshold: TGuiStitchedDial;
     GSPL: TGuiStitchedPNGList;
     GuiGraphXY: TGuiGraphXY;
-    GuiLabel2: TGuiLabel;
-    GuiLabel3: TGuiLabel;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
+    LbAutoGain: TGuiLabel;
     LbKnee: TGuiLabel;
     LbKneeValue: TGuiLabel;
+    LbLimit: TGuiLabel;
     LbMakeUpGain: TGuiLabel;
     LbMakeUpGainValue: TGuiLabel;
     LbOversample: TGuiLabel;

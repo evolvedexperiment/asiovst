@@ -36,9 +36,8 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPng,
-  DAV_GuiVUMeter, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiDial,
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPng, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
   DAV_GuiStitchedDisplay, DAV_GuiStitchedSwitch;
 
 type
@@ -52,37 +51,37 @@ type
     DialRelease: TGuiStitchedDial;
     DialThreshold: TGuiStitchedDial;
     GSPL: TGuiStitchedPNGList;
-    GuiLabel1: TGuiLabel;
-    GuiLabel2: TGuiLabel;
-    GuiLabel3: TGuiLabel;
-    GuiLabel4: TGuiLabel;
-    GuiLabel5: TGuiLabel;
-    GuiLabel6: TGuiLabel;
-    GuiLabel7: TGuiLabel;
-    GuiLabel8: TGuiLabel;
-    GuiLabel9: TGuiLabel;
     LbAttack: TGuiLabel;
+    LbAttackMax: TGuiLabel;
+    LbAttackMin: TGuiLabel;
     LbCharacteristic: TGuiLabel;
     LbExt: TGuiLabel;
     LbIn: TGuiLabel;
     LbIO: TGuiLabel;
     LbKnee: TGuiLabel;
     LbKneeMax: TGuiLabel;
+    LbKneeMid: TGuiLabel;
     LbKneeMin: TGuiLabel;
     LbMakeUpGain: TGuiLabel;
     LbMakeUpMax: TGuiLabel;
     LbMakeUpMid: TGuiLabel;
     LbMakeupMin: TGuiLabel;
     LbMix: TGuiLabel;
+    LbMixMax: TGuiLabel;
+    LbMixMin: TGuiLabel;
     LbPeakClip: TGuiLabel;
     LbRatio: TGuiLabel;
     LbRatioMax: TGuiLabel;
     LbRatioMed: TGuiLabel;
     LbRatioMin: TGuiLabel;
     LbRelease: TGuiLabel;
+    LbReleaseMax: TGuiLabel;
+    LbReleaseMin: TGuiLabel;
     LbSCHP: TGuiLabel;
     LbSCmin: TGuiLabel;
     LbSideChain: TGuiLabel;
+    LbSidechainMax: TGuiLabel;
+    LbSidechainMid: TGuiLabel;
     LbThreshold: TGuiLabel;
     LbThresholdMax: TGuiLabel;
     LbThresholdMid: TGuiLabel;
@@ -97,11 +96,11 @@ type
     Shape6: TShape;
     Shape7: TShape;
     Shape8: TShape;
+    SwLimit: TGuiStitchedSwitch;
+    SwOnOff: TGuiStitchedSwitch;
+    SwSideChain: TGuiStitchedSwitch;
     Timer: TTimer;
     VUMeter: TGuiStitchedDisplay;
-    SwOnOff: TGuiStitchedSwitch;
-    SwLimit: TGuiStitchedSwitch;
-    SwSideChain: TGuiStitchedSwitch;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);

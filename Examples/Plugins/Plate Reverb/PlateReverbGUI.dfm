@@ -35,7 +35,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'dry'
       Color = clWhite
@@ -44,7 +43,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbWet: TGuiLabel
@@ -54,7 +55,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'wet'
       Color = clWhite
@@ -63,7 +63,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbPreDelay: TGuiLabel
@@ -73,7 +75,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'delay'
       Color = clWhite
@@ -82,7 +83,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbInputDiffusion: TGuiLabel
@@ -92,7 +95,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'diff in'
       Color = clWhite
@@ -101,7 +103,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDecayDiffusion: TGuiLabel
@@ -111,7 +115,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'diff decay'
       Color = clWhite
@@ -120,7 +123,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDampingFrequency: TGuiLabel
@@ -130,7 +135,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'damp'
       Color = clWhite
@@ -139,7 +143,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDecay: TGuiLabel
@@ -149,7 +155,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'decay'
       Color = clWhite
@@ -158,7 +163,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbMod: TGuiLabel
@@ -168,7 +175,6 @@ object FmPlateReverb: TFmPlateReverb
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'mod'
       Color = clWhite
@@ -177,7 +183,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
   end
@@ -204,7 +212,7 @@ object FmPlateReverb: TFmPlateReverb
       Width = 156
       Height = 19
       Alignment = taLeftJustify
-      AntiAlias = gaaLinear2x
+      AntiAlias = gaaLinear4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -225,7 +233,6 @@ object FmPlateReverb: TFmPlateReverb
       Width = 39
       Height = 17
       Margins.Bottom = 0
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'preset'
       Font.Charset = DEFAULT_CHARSET
@@ -233,7 +240,9 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object BtAB: TGuiButton
@@ -281,8 +290,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDryChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialWet: TGuiStitchedDial
@@ -292,8 +301,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialWetChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialPreDelay: TGuiStitchedDial
@@ -303,8 +312,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialPreDelayChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDampingFrequency: TGuiStitchedDial
@@ -316,8 +325,8 @@ object FmPlateReverb: TFmPlateReverb
     Max = 13500.000000000000000000
     Min = 135.000000000000000000
     OnChange = DialDampingFrequencyChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 135.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -328,8 +337,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialInputDiffusionChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDecayDiffusion: TGuiStitchedDial
@@ -339,8 +348,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDecayDiffusionChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDecay: TGuiStitchedDial
@@ -350,8 +359,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDecayChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialModulation: TGuiStitchedDial
@@ -361,8 +370,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDecayDiffusionChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

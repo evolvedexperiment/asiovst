@@ -58,7 +58,6 @@ object FmRingModulator: TFmRingModulator
         Width = 105
         Height = 12
         Alignment = taCenter
-        AntiAlias = gaaLinear4x
         Caption = 'Ring Modulator'
         Color = 3226174
         Font.Charset = ANSI_CHARSET
@@ -66,7 +65,9 @@ object FmRingModulator: TFmRingModulator
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        Oversampling = fo4x
         ParentFont = False
+        Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack
       end
     end
@@ -79,8 +80,8 @@ object FmRingModulator: TFmRingModulator
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       OnChange = DialFrequencyChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 0.009999999776482582
       WheelStep = 1.000000000000000000
     end

@@ -589,8 +589,8 @@ begin
 
      if Assigned(FEditorForm) then
       begin
-       FEditorRect.Bottom := Max(100, FEditorForm.ClientHeight);
-       FEditorRect.Right := Max(100, FEditorForm.ClientWidth);
+       FEditorRect.Bottom := Max(128, FEditorForm.ClientHeight);
+       FEditorRect.Right := Max(64, FEditorForm.ClientWidth);
        Result := 1;
       end;
     end;

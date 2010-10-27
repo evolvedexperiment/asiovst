@@ -23,7 +23,7 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
@@ -40,7 +40,7 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Ripple'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
@@ -57,7 +57,7 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Order'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
@@ -74,7 +74,7 @@ object FmSchaebichef: TFmSchaebichef
     Width = 112
     Height = 31
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
@@ -90,7 +90,7 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 31
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Ripple'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203
@@ -106,7 +106,7 @@ object FmSchaebichef: TFmSchaebichef
     Width = 80
     Height = 31
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Order'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 1714203

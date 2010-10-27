@@ -35,13 +35,17 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPanel,
-  DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList;
+  Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, ExtCtrls,
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmExciter = class(TForm)
+    DialMix: TGuiStitchedDial;
+    DialOrder: TGuiStitchedDial;
+    DialShape: TGuiStitchedDial;
+    DialTune: TGuiStitchedDial;
+    DSPL: TGuiStitchedPNGList;
     LbFreq: TGuiLabel;
     LbFreqValue: TGuiLabel;
     LbMix: TGuiLabel;
@@ -51,20 +55,15 @@ type
     LbShape: TGuiLabel;
     LbShapeValue: TGuiLabel;
     PnControl: TGuiPanel;
-    DSPL: TGuiStitchedPNGList;
-    DialTune: TGuiStitchedDial;
-    DialShape: TGuiStitchedDial;
-    DialMix: TGuiStitchedDial;
-    DialOrder: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialTuneChange(Sender: TObject);
     procedure DialShapeChange(Sender: TObject);
     procedure DialMixChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    procedure FormResize(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   public

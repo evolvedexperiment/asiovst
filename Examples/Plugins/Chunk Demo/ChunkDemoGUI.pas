@@ -36,20 +36,20 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPixelMap,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiPixelMap, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmChunkDemo = class(TForm)
-    LbAlpha: TGuiLabel;
-    LbBeta: TGuiLabel;
-    LbGamma: TGuiLabel;
-    LbDelta: TGuiLabel;
     DialAlpha: TGuiStitchedDial;
     DialBeta: TGuiStitchedDial;
-    DialGamma: TGuiStitchedDial;
     DialDelta: TGuiStitchedDial;
+    DialGamma: TGuiStitchedDial;
     GSPL: TGuiStitchedPNGList;
+    LbAlpha: TGuiLabel;
+    LbBeta: TGuiLabel;
+    LbDelta: TGuiLabel;
+    LbGamma: TGuiLabel;
     procedure FormShow(Sender: TObject);
     procedure DialAlphaChange(Sender: TObject);
     procedure DialBetaChange(Sender: TObject);

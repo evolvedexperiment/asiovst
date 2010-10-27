@@ -25,16 +25,17 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Width = 137
     Height = 17
     Alignment = taCenter
-    AntiAlias = gaaLinear3x
     Caption = 'Barberpole Tuner'
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsUnderline]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object Barberpole: TPaintBox
     Left = 8
@@ -48,32 +49,34 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 63
     Width = 105
     Height = 23
-    AntiAlias = gaaLinear4x
     Caption = 'Guitar Tuning:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object LbLowE: TGuiLabel
     Left = 127
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear4x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
     OnClick = LbNoteClick
   end
   object LbA: TGuiLabel
@@ -81,16 +84,17 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'A'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
     OnClick = LbNoteClick
   end
   object LbD: TGuiLabel
@@ -98,16 +102,17 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'D'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
     OnClick = LbNoteClick
   end
   object LbG: TGuiLabel
@@ -115,16 +120,17 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'G'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
     OnClick = LbNoteClick
   end
   object LbH: TGuiLabel
@@ -132,16 +138,17 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'H'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
     OnClick = LbNoteClick
   end
   object LbE: TGuiLabel
@@ -149,16 +156,17 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Top = 60
     Width = 18
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
     OnClick = LbNoteClick
   end
   object Timer: TTimer

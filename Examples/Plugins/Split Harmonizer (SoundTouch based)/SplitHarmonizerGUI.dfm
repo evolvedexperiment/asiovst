@@ -25,8 +25,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Top = 120
     Width = 105
     Height = 24
-    AntiAlias = gaaLinear4x
     Caption = 'Encoding:'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object SwEncoding: TGuiSwitch
@@ -67,8 +68,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Detune'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDetuneAValue: TGuiLabel
@@ -77,14 +79,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Cent'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDelayA: TGuiLabel
@@ -93,8 +96,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Delay'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDelayAValue: TGuiLabel
@@ -103,14 +107,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '100 ms'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbMixA: TGuiLabel
@@ -119,8 +124,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 39
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Mix'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbMixAValue: TGuiLabel
@@ -129,14 +135,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '100 %'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLowpassA: TGuiLabel
@@ -145,8 +152,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 91
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Lowpass'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLowpassAValue: TGuiLabel
@@ -155,14 +163,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '8000 Hz'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialDetuneA: TGuiStitchedDial
@@ -173,8 +182,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       OnChange = DialDetuneAChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialDelayA: TGuiStitchedDial
@@ -186,8 +195,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       OnChange = DialDelayAChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -199,8 +208,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialMixAChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 100.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -213,8 +222,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialLowpassAChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -239,8 +248,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 79
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Detune'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDetuneBValue: TGuiLabel
@@ -249,14 +259,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Cent'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDelayB: TGuiLabel
@@ -265,8 +276,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 63
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Delay'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDelayBValue: TGuiLabel
@@ -275,14 +287,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '100 ms'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbMixB: TGuiLabel
@@ -291,8 +304,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 39
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Mix'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbMixBValue: TGuiLabel
@@ -301,14 +315,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '100 %'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLowpassBValue: TGuiLabel
@@ -317,14 +332,15 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 87
       Height = 18
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '8000 Hz'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15133420
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbLowpassB: TGuiLabel
@@ -333,8 +349,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Width = 91
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Lowpass'
+      Oversampling = fo4x
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialDetuneB: TGuiStitchedDial
@@ -345,8 +362,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       OnChange = DialDetuneBChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialDelayB: TGuiStitchedDial
@@ -358,8 +375,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       OnChange = DialDelayBChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -371,8 +388,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialMixBChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 100.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -385,8 +402,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialLowpassBChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
     end

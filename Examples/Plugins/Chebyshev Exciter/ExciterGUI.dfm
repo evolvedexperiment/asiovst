@@ -43,7 +43,6 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -51,8 +50,11 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object LbFreqValue: TGuiLabel
       Left = 16
@@ -60,7 +62,6 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '8 kHz'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -68,8 +69,11 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object LbShape: TGuiLabel
       Left = 156
@@ -77,7 +81,6 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Shape'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -85,8 +88,11 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object LbShapeValue: TGuiLabel
       Left = 156
@@ -94,7 +100,6 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50%'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -102,8 +107,11 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object LbMix: TGuiLabel
       Left = 226
@@ -111,7 +119,6 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Mix'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -119,8 +126,11 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object LbMixValue: TGuiLabel
       Left = 226
@@ -128,7 +138,6 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50%'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -136,16 +145,18 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object LbOrderValue: TGuiLabel
       Left = 86
-      Top = 86
+      Top = 88
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '4'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -153,8 +164,11 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object LbOrder: TGuiLabel
       Left = 86
@@ -162,7 +176,6 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 6908265
       Font.Charset = DEFAULT_CHARSET
@@ -170,8 +183,11 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo3x
       ParentFont = False
-      Shadow.Color = clBlack
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = 4144959
+      Shadow.Visible = True
     end
     object DialTune: TGuiStitchedDial
       Left = 16
@@ -184,8 +200,8 @@ object FmExciter: TFmExciter
       Min = 1000.000000000000000000
       OnChange = DialTuneChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSPL
+      StitchedImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -198,8 +214,8 @@ object FmExciter: TFmExciter
       Max = 100.000000000000000000
       OnChange = DialShapeChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSPL
+      StitchedImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -212,8 +228,8 @@ object FmExciter: TFmExciter
       Max = 100.000000000000000000
       OnChange = DialMixChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSPL
+      StitchedImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -228,8 +244,8 @@ object FmExciter: TFmExciter
       Min = 2.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = DSPL
+      StitchedImageIndex = 0
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
     end

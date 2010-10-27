@@ -29,14 +29,15 @@ object FmSpinBugLite: TFmSpinBugLite
     Width = 297
     Height = 76
     Anchors = [akLeft, akBottom]
-    AntiAlias = gaaLinear4x
     Caption = 'SPINBUG'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 13491454
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
@@ -45,23 +46,23 @@ object FmSpinBugLite: TFmSpinBugLite
     Width = 297
     Height = 76
     Anchors = [akLeft, akBottom]
-    AntiAlias = gaaLinear4x
     Caption = 'SPINBUG'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 216826
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object DialLFO: TGuiDial
     Left = 213
     Top = 8
     Width = 96
     Height = 96
-    AntiAlias = gaaLinear2x
     CircleColor = 216826
     CurveMapping = -0.920000016689300500
     DialImageIndex = -1
@@ -82,6 +83,7 @@ object FmSpinBugLite: TFmSpinBugLite
     Top = 8
     Width = 89
     Height = 25
+    AntiAlias = gaaLinear4x
     ArrowColor = clWhite
     ButtonColor = 271837
     Font.Charset = DEFAULT_CHARSET
@@ -125,6 +127,7 @@ object FmSpinBugLite: TFmSpinBugLite
     Top = 39
     Width = 108
     Height = 25
+    AntiAlias = gaaLinear4x
     ArrowColor = clWhite
     ButtonColor = 271837
     Font.Charset = DEFAULT_CHARSET

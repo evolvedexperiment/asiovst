@@ -49,14 +49,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbSlope: TGuiLabel
@@ -65,14 +66,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Slope'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbType: TGuiLabel
@@ -81,14 +83,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 52
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Type'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object PnDisplay: TGuiPanel
@@ -115,7 +118,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         Height = 12
         Alignment = taCenter
         Anchors = [akLeft, akTop, akRight]
-        AntiAlias = gaaLinear4x
         Caption = 'Value'
         Color = 3226174
         Font.Charset = ANSI_CHARSET
@@ -123,7 +125,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        Oversampling = fo4x
         ParentFont = False
+        Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack
       end
     end
@@ -136,8 +140,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialFrequencyChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -150,8 +154,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialSlopeChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -162,8 +166,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Height = 48
       Max = 1.000000000000000000
       OnChange = DialTypeChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
@@ -173,7 +177,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Width = 210
     Height = 105
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
     Caption = 'Frequency Response'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 7373965
@@ -191,6 +194,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 26
       Width = 187
       Height = 72
+      AntiAlias = gaaLinear4x
       BorderRadius = 5
       ColorChart = 3158064
       FilterSeries = <>

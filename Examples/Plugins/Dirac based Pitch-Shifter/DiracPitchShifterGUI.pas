@@ -36,21 +36,20 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiCommon, DAV_GuiBaseControl, DAV_GuiPng,
-  DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiCommon, DAV_GuiPng, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmDiracPitchShifter = class(TForm)
-    LbSemitones: TGuiLabel;
-    LbSemitoneValue: TGuiLabel;
     DialSemitones: TGuiStitchedDial;
     GSPL: TGuiStitchedPNGList;
-    procedure DialSemitonesChange(Sender: TObject);
+    LbSemitones: TGuiLabel;
+    LbSemitoneValue: TGuiLabel;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure DialSemitonesChange(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   public

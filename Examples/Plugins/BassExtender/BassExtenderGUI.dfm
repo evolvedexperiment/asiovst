@@ -37,14 +37,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbFrequencyValue: TGuiLabel
@@ -53,14 +54,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '70 Hz'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
@@ -69,14 +71,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '3'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOrder: TGuiLabel
@@ -85,14 +88,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Order'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDivideValue: TGuiLabel
@@ -101,14 +105,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50%'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDivide: TGuiLabel
@@ -117,14 +122,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Divide'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbShapeValue: TGuiLabel
@@ -133,14 +139,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50%'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbShape: TGuiLabel
@@ -149,14 +156,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Shape'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbBalanceValue: TGuiLabel
@@ -166,14 +174,15 @@ object FmBassExtender: TFmBassExtender
       Height = 17
       ParentCustomHint = False
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '0 %'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbBalance: TGuiLabel
@@ -182,14 +191,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Balance'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbThreshold: TGuiLabel
@@ -198,14 +208,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Threshold'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbThresholdValue: TGuiLabel
@@ -214,14 +225,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '-20 dB'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbRatioValue: TGuiLabel
@@ -230,14 +242,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '1 : 6'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbRatio: TGuiLabel
@@ -246,14 +259,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Ratio'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbAttackValue: TGuiLabel
@@ -262,14 +276,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50 ms'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
@@ -278,14 +293,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Attack'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbReleaseValue: TGuiLabel
@@ -294,14 +310,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50 ms'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbRelease: TGuiLabel
@@ -310,14 +327,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Release'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbCompressionValue: TGuiLabel
@@ -326,14 +344,15 @@ object FmBassExtender: TFmBassExtender
       Width = 85
       Height = 17
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = '50%'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbCompression: TGuiLabel
@@ -342,14 +361,15 @@ object FmBassExtender: TFmBassExtender
       Width = 105
       Height = 23
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Compression'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialFrequency: TGuiStitchedDial
@@ -363,8 +383,8 @@ object FmBassExtender: TFmBassExtender
       Min = 16.000000000000000000
       OnChange = DialFrequencyChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 70.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -379,8 +399,8 @@ object FmBassExtender: TFmBassExtender
       Min = 1.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 3.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -393,8 +413,8 @@ object FmBassExtender: TFmBassExtender
       Max = 100.000000000000000000
       OnChange = DialDivideChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -407,8 +427,8 @@ object FmBassExtender: TFmBassExtender
       Max = 100.000000000000000000
       OnChange = DialShapeChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -422,8 +442,8 @@ object FmBassExtender: TFmBassExtender
       Min = -100.000000000000000000
       OnChange = DialBalanceChange
       ParentColor = False
-      StitchedImageIndex = 1
       StitchedImageList = GSPL
+      StitchedImageIndex = 1
       WheelStep = 1.000000000000000000
     end
     object DialThreshold: TGuiStitchedDial
@@ -436,8 +456,8 @@ object FmBassExtender: TFmBassExtender
       Min = -80.000000000000000000
       OnChange = DialThresholdChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       Value = -20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -452,8 +472,8 @@ object FmBassExtender: TFmBassExtender
       Min = 1.000000000000000000
       OnChange = DialRatioChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 6.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -468,8 +488,8 @@ object FmBassExtender: TFmBassExtender
       Min = 10.000000000000000000
       OnChange = DialAttackChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -484,8 +504,8 @@ object FmBassExtender: TFmBassExtender
       Min = 20.000000000000000000
       OnChange = DialReleaseChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -498,8 +518,8 @@ object FmBassExtender: TFmBassExtender
       Max = 100.000000000000000000
       OnChange = DialCompressionChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

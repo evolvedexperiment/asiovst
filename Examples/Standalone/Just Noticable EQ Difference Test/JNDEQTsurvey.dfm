@@ -27,34 +27,36 @@ object FmSurvey: TFmSurvey
     Top = 13
     Width = 141
     Height = 15
-    AntiAlias = gaaLinear4x
     Caption = 'Speaker/Headphone Setup:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object LbGender: TGuiLabel
     Left = 8
     Top = 41
     Width = 44
     Height = 12
-    AntiAlias = gaaLinear4x
     Caption = 'Gender:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object LEDGenderMale: TGuiLED
     Left = 54
@@ -64,7 +66,7 @@ object FmSurvey: TFmSurvey
     BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = 10333885
-    LineWidth = 2.200000047683716000
+    BorderWidth = 2.500000000000000000
     Uniformity_Percent = 40.000000000000000000
     Transparent = True
     OnClick = LbGenderMaleClick
@@ -77,7 +79,7 @@ object FmSurvey: TFmSurvey
     BorderStrength_Percent = 70.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = 10333885
-    LineWidth = 2.200000047683716000
+    BorderWidth = 2.500000000000000000
     Uniformity_Percent = 40.000000000000000000
     Transparent = True
     OnClick = LbGenderFemaleClick
@@ -87,17 +89,18 @@ object FmSurvey: TFmSurvey
     Top = 41
     Width = 27
     Height = 12
-    AntiAlias = gaaLinear4x
     Caption = 'Male'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
     OnClick = LbGenderMaleClick
   end
   object LbGenderFemale: TGuiLabel
@@ -105,17 +108,18 @@ object FmSurvey: TFmSurvey
     Top = 41
     Width = 38
     Height = 12
-    AntiAlias = gaaLinear4x
     Caption = 'Female'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
     OnClick = LbGenderFemaleClick
   end
   object LbAge: TGuiLabel
@@ -123,17 +127,18 @@ object FmSurvey: TFmSurvey
     Top = 41
     Width = 25
     Height = 12
-    AntiAlias = gaaLinear4x
     Caption = 'Age:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
     Shadow.Visible = True
+    Transparent = True
   end
   object PnSetup: TGuiPanel
     Left = 155
@@ -141,16 +146,11 @@ object FmSurvey: TFmSurvey
     Width = 156
     Height = 22
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     DesignSize = (
@@ -179,16 +179,11 @@ object FmSurvey: TFmSurvey
     Width = 47
     Height = 22
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 4
+    Radius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     DesignSize = (
@@ -216,16 +211,11 @@ object FmSurvey: TFmSurvey
     Top = 36
     Width = 48
     Height = 22
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -64
-    Font.Name = 'Tahoma'
-    Font.Style = []
     LineColor = clBlack
+    BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 2
     UseDockManager = True
     OnClick = PnOKClick
@@ -239,7 +229,6 @@ object FmSurvey: TFmSurvey
       Height = 16
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'OK'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
@@ -247,7 +236,9 @@ object FmSurvey: TFmSurvey
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
       Shadow.Visible = True
       OnClick = PnOKClick

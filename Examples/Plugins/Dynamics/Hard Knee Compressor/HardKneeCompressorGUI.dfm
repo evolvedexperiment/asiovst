@@ -23,15 +23,18 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'THRESHOLD'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 11173988
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Transparency = 128
+    Shadow.Visible = True
   end
   object LbRatio: TGuiLabel
     Left = 72
@@ -40,15 +43,18 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'RATIO'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 11173988
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Transparency = 128
+    Shadow.Visible = True
   end
   object LbAttack: TGuiLabel
     Left = 136
@@ -57,15 +63,18 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'ATTACK'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 11173988
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Transparency = 128
+    Shadow.Visible = True
   end
   object LbRelease: TGuiLabel
     Left = 200
@@ -74,15 +83,18 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'RELEASE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 11173988
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Transparency = 128
+    Shadow.Visible = True
   end
   object LbAttackValue: TLabel
     Left = 136
@@ -153,8 +165,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Max = 100.000000000000000000
     Min = -96.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -166,8 +178,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Max = 3699.000000000000000000
     Min = 699.000000000000000000
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     Value = 699.000000000000000000
     WheelStep = 1.000000000000000000
@@ -180,8 +192,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Max = 300.000000000000000000
     Min = -200.000000000000000000
     OnChange = DialAttackChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -192,8 +204,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 64
     Max = 200.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end

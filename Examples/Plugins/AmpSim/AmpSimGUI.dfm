@@ -68,9 +68,8 @@ object FmCombo: TFmCombo
     Margins.Bottom = 0
     AutoSize = True
     Caption = 'Model:'
-    Font = TopFont
-    ParentFont = False
-    Transparent = True
+    FontList = GFL
+    FontIndex = 0
   end
   object LbStereo: TGuiInscription
     Left = 302
@@ -80,9 +79,8 @@ object FmCombo: TFmCombo
     Margins.Bottom = 0
     AutoSize = True
     Caption = 'Stereo'
-    Font = TopFont
-    ParentFont = False
-    Transparent = True
+    FontList = GFL
+    FontIndex = 0
     OnClick = LbStereoClick
   end
   object PnControls: TGuiPanel
@@ -155,8 +153,8 @@ object FmCombo: TFmCombo
       Alignment = taCenter
       AutoSize = True
       Caption = 'Drive'
-      Font = ParamNameText
-      ParentFont = False
+      FontList = GFL
+      FontIndex = 1
     end
     object LbBias: TGuiInscription
       Left = 78
@@ -166,8 +164,8 @@ object FmCombo: TFmCombo
       Margins.Bottom = 0
       Alignment = taCenter
       Caption = 'Bias'
-      Font = ParamNameText
-      ParentFont = False
+      FontList = GFL
+      FontIndex = 1
     end
     object LbOutput: TGuiInscription
       Left = 148
@@ -177,8 +175,8 @@ object FmCombo: TFmCombo
       Margins.Bottom = 0
       Alignment = taCenter
       Caption = 'Output'
-      Font = ParamNameText
-      ParentFont = False
+      FontList = GFL
+      FontIndex = 1
     end
     object LbFrequency: TGuiInscription
       Left = 218
@@ -188,8 +186,8 @@ object FmCombo: TFmCombo
       Margins.Bottom = 0
       Alignment = taCenter
       Caption = 'Frequency'
-      Font = ParamNameText
-      ParentFont = False
+      FontList = GFL
+      FontIndex = 1
     end
     object LbResonance: TGuiInscription
       Left = 288
@@ -199,8 +197,8 @@ object FmCombo: TFmCombo
       Margins.Bottom = 0
       Alignment = taCenter
       Caption = 'Resonance'
-      Font = ParamNameText
-      ParentFont = False
+      FontList = GFL
+      FontIndex = 1
     end
     object DialDrive: TGuiStitchedDial
       Left = 8
@@ -210,8 +208,8 @@ object FmCombo: TFmCombo
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialDriveChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialBias: TGuiStitchedDial
@@ -222,8 +220,8 @@ object FmCombo: TFmCombo
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialBiasChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
@@ -234,8 +232,8 @@ object FmCombo: TFmCombo
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       OnChange = DialOutputChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialFrequency: TGuiStitchedDial
@@ -247,8 +245,8 @@ object FmCombo: TFmCombo
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
       OnChange = DialFreqChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -259,8 +257,8 @@ object FmCombo: TFmCombo
       Height = 64
       Max = 100.000000000000000000
       OnChange = DialResoChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
@@ -1654,28 +1652,34 @@ object FmCombo: TFmCombo
     Left = 104
     Top = 80
   end
-  object TopFont: TGuiOversampledGDIFont
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
-    Font.Height = -21
-    Font.Name = 'Trebuchet MS'
-    Font.Style = []
-    FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
-    Left = 256
-    Top = 80
-  end
-  object ParamNameText: TGuiOversampledGDIFont
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
-    Font.Height = -13
-    Font.Name = 'Trebuchet MS'
-    Font.Style = []
-    FontOversampling = fo3x
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
-    Left = 184
+  object GFL: TGuiFontList
+    Fonts = <
+      item
+        DisplayName = 'Top Font'
+        FontClassName = 'TGuiOversampledGDIFont'
+        Font.Font.Charset = DEFAULT_CHARSET
+        Font.Font.Color = clMaroon
+        Font.Font.Height = -20
+        Font.Font.Name = 'Trebuchet MS'
+        Font.Font.Style = []
+        Font.FontOversampling = fo3x
+        Font.Shadow.Blur = 3.000000000000000000
+        Font.Shadow.Color = clBlack
+        Font.Shadow.Visible = True
+      end
+      item
+        DisplayName = 'Parameter Font'
+        FontClassName = 'TGuiOversampledGDIFont'
+        Font.Font.Charset = DEFAULT_CHARSET
+        Font.Font.Color = clMaroon
+        Font.Font.Height = -13
+        Font.Font.Name = 'Trebuchet MS'
+        Font.Font.Style = []
+        Font.FontOversampling = fo3x
+        Font.Shadow.Blur = 4.000000000000000000
+        Font.Shadow.Color = clBlack
+      end>
+    Left = 144
     Top = 80
   end
 end

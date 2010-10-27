@@ -23,7 +23,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Threshold'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2105376
@@ -40,7 +40,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Attack'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2105376
@@ -57,7 +57,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Release'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2105376
@@ -74,7 +74,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Soft Knee'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2105376
@@ -91,7 +91,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'dB'
     Shadow.Color = clBlack
   end
@@ -102,7 +102,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
@@ -112,7 +112,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Shadow.Color = clBlack
   end
   object LbSoftKneeValue: TGuiLabel
@@ -122,7 +122,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Shadow.Color = clBlack
   end
   object LbMakeUpValue: TGuiLabel
@@ -132,7 +132,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Shadow.Color = clBlack
   end
   object LbMakeUp: TGuiLabel
@@ -142,7 +142,7 @@ object EditorForm: TEditorForm
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
+    Oversampling = fo4x
     Caption = 'Makeup'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2105376

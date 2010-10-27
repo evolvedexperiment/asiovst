@@ -25,14 +25,15 @@ object FmButterworth: TFmButterworth
     Top = 11
     Width = 184
     Height = 26
-    AntiAlias = gaaLinear4x
     Caption = 'Butterworth LP'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2039615
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbButterworthFilterDemo: TGuiLabel
@@ -40,16 +41,17 @@ object FmButterworth: TFmButterworth
     Top = 8
     Width = 184
     Height = 26
-    AntiAlias = gaaLinear4x
     Caption = 'Butterworth LP'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Transparent = True
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = True
   end
   object PnControls: TGuiPanel
     Left = 8
@@ -73,7 +75,6 @@ object FmButterworth: TFmButterworth
       Width = 80
       Height = 19
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -81,7 +82,9 @@ object FmButterworth: TFmButterworth
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnDblClick = LbFrequencyValueDblClick
     end
@@ -92,7 +95,6 @@ object FmButterworth: TFmButterworth
       Height = 19
       Alignment = taCenter
       Anchors = [akTop, akRight]
-      AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -100,7 +102,9 @@ object FmButterworth: TFmButterworth
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnDblClick = LbOrderValueDblClick
     end
@@ -111,7 +115,6 @@ object FmButterworth: TFmButterworth
       Height = 19
       Alignment = taCenter
       Anchors = [akRight, akBottom]
-      AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -119,7 +122,9 @@ object FmButterworth: TFmButterworth
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = LbOrderValueDblClick
     end
@@ -130,7 +135,6 @@ object FmButterworth: TFmButterworth
       Height = 19
       Alignment = taCenter
       Anchors = [akLeft, akBottom]
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -138,7 +142,9 @@ object FmButterworth: TFmButterworth
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = LbFrequencyValueDblClick
     end
@@ -153,8 +159,8 @@ object FmButterworth: TFmButterworth
       Min = 20.000000000000000000
       OnChange = DialFrequencyChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -167,8 +173,8 @@ object FmButterworth: TFmButterworth
       Max = 16.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

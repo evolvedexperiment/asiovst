@@ -50,7 +50,7 @@ type
     DialSpeed: TGuiStitchedDial;
     DialDepth: TGuiStitchedDial;
     DialMix: TGuiStitchedDial;
-    GuiStitchedPNGList: TGuiStitchedPNGList;
+    GSPL: TGuiStitchedPNGList;
     procedure FormShow(Sender: TObject);
     procedure DialSpeedChange(Sender: TObject);
     procedure DialDepthChange(Sender: TObject);

@@ -24,14 +24,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Width = 52
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Input'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbInputValue: TGuiLabel
@@ -40,14 +41,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Width = 68
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '0 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnDblClick = DialInputDblClick
   end
@@ -57,14 +59,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Width = 72
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Output'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbOutputValue: TGuiLabel
@@ -73,14 +76,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Width = 72
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '0 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnDblClick = DialOutputDblClick
   end
@@ -90,14 +94,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Width = 68
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Release'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
@@ -106,14 +111,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Width = 76
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '75 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnDblClick = DialReleaseDblClick
   end
@@ -132,14 +138,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Width = 41
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Gain'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object Lb0dB: TGuiLabel
@@ -147,14 +154,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Top = 75
     Width = 24
     Height = 11
-    AntiAlias = gaaLinear4x
     Caption = '0 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object Lb15dB: TGuiLabel
@@ -162,14 +170,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Top = 31
     Width = 30
     Height = 11
-    AntiAlias = gaaLinear4x
     Caption = '15 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object Lb5dB: TGuiLabel
@@ -177,14 +186,15 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Top = 61
     Width = 30
     Height = 11
-    AntiAlias = gaaLinear4x
     Caption = '5 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object Lb10dB: TGuiLabel
@@ -192,37 +202,39 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Top = 46
     Width = 30
     Height = 11
-    AntiAlias = gaaLinear4x
     Caption = '10 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbProcessingMode: TGuiLabel
     Left = 8
     Top = 92
-    Width = 146
+    Width = 149
     Height = 25
-    AntiAlias = gaaLinear4x
     Caption = 'Processing Mode:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object SbProcessingType: TGuiSelectBox
-    Left = 160
+    Left = 163
     Top = 93
-    Width = 129
+    Width = 126
     Height = 23
-    AntiAlias = gaaLinear4x
+    AntiAlias = gaaLinear2x
     ArrowColor = 14606306
     ButtonColor = clBlack
     Font.Charset = DEFAULT_CHARSET
@@ -249,8 +261,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Max = 24.000000000000000000
     Min = -6.000000000000000000
     OnChange = DialInputChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialOutput: TGuiStitchedDial
@@ -262,8 +274,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Max = 6.000000000000000000
     Min = -24.000000000000000000
     OnChange = DialOutputChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = -0.009999999776482582
     WheelStep = 1.000000000000000000
   end
@@ -276,8 +288,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Max = 3000.000000000000000000
     Min = 0.003000000026077032
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
   end

@@ -36,9 +36,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ExtCtrls, DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiLED,
-  DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiInscription;
+  ExtCtrls, DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiLED, DAV_GuiPanel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
+  DAV_GuiPixelMap, DAV_GuiInscription, DAV_GuiFont, DAV_GuiFontList;
 
 type
   TFmCombo = class(TForm)
@@ -63,8 +63,7 @@ type
     LbOutput: TGuiInscription;
     LbFrequency: TGuiInscription;
     LbResonance: TGuiInscription;
-    TopFont: TGuiOversampledGDIFont;
-    ParamNameText: TGuiOversampledGDIFont;
+    GFL: TGuiFontList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -107,7 +106,6 @@ uses
 
 procedure TFmCombo.FormCreate(Sender: TObject);
 begin
- // Create Background Image
  FBackground := TGuiPixelMapMemory.Create;
 end;
 
@@ -128,6 +126,8 @@ begin
  UpdateReso;
  UpdateProcess;
  UpdateNoise;
+ LbModel.Transparent := True;
+ LbStereo.Transparent := True;
 end;
 
 procedure TFmCombo.FormPaint(Sender: TObject);

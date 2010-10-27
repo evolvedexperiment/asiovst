@@ -23,7 +23,6 @@ object FmSubBoost: TFmSubBoost
     Width = 137
     Height = 22
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = '-=SubBoost=-'
     Font.Charset = DEFAULT_CHARSET
@@ -31,7 +30,9 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsUnderline]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object SBType: TGuiSelectBox
@@ -64,7 +65,6 @@ object FmSubBoost: TFmSubBoost
     Width = 39
     Height = 18
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = 'Type:'
     Font.Charset = DEFAULT_CHARSET
@@ -72,7 +72,9 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
@@ -81,7 +83,6 @@ object FmSubBoost: TFmSubBoost
     Width = 137
     Height = 22
     Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
     AutoSize = True
     Caption = '-=SubBoost=-'
     Font.Charset = DEFAULT_CHARSET
@@ -89,7 +90,9 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsUnderline]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiPanel1: TGuiPanel
@@ -201,7 +204,6 @@ object FmSubBoost: TFmSubBoost
       Height = 22
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'level'
       Color = 2105376
@@ -210,7 +212,9 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbTune: TGuiLabel
@@ -220,7 +224,6 @@ object FmSubBoost: TFmSubBoost
       Height = 22
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'tune'
       Color = 2105376
@@ -229,7 +232,9 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbDryMix: TGuiLabel
@@ -239,7 +244,6 @@ object FmSubBoost: TFmSubBoost
       Height = 22
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'dry mix'
       Color = 2105376
@@ -248,7 +252,9 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbThreshold: TGuiLabel
@@ -258,7 +264,6 @@ object FmSubBoost: TFmSubBoost
       Height = 22
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'thres'
       Color = 2105376
@@ -267,7 +272,9 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialRelease: TGuiDial
@@ -298,7 +305,6 @@ object FmSubBoost: TFmSubBoost
       Height = 22
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'release'
       Color = 2105376
@@ -307,7 +313,9 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
   end
@@ -380,7 +388,6 @@ object FmSubBoost: TFmSubBoost
       Height = 22
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'freq'
       Color = 2105376
@@ -389,7 +396,9 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbFilterOrder: TGuiLabel
@@ -399,7 +408,6 @@ object FmSubBoost: TFmSubBoost
       Height = 22
       Margins.Bottom = 0
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'order'
       Color = 2105376
@@ -408,7 +416,9 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
   end

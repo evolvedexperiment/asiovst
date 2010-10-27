@@ -61,8 +61,8 @@ type
     property GlyphIndex;
     property PopupMenu;
     property ReadOnly;
-    property StitchedImageIndex;
     property StitchedImageList;
+    property StitchedImageIndex;
     property Transparent;
     property OnChange;
   end;
@@ -105,7 +105,7 @@ procedure TCustomGuiStitchedSwitch.UpdateBuffer;
 begin
  inherited;
 
- if not (Assigned(FStitchedList) and (FStitchedItemIndex >= 0)) then
+ if not (Assigned(FStitchedList) and (StitchedImageIndex >= 0)) then
   if Assigned(FBuffer) then
    if (FGlyphIndex = 0)
     then FBuffer.FillRect(ClientRect, pxLime32)

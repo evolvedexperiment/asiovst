@@ -23,8 +23,9 @@ object FmLightweightGate: TFmLightweightGate
     Width = 90
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Threshold'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
@@ -33,14 +34,15 @@ object FmLightweightGate: TFmLightweightGate
     Width = 72
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '-20 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttack: TGuiLabel
@@ -49,8 +51,9 @@ object FmLightweightGate: TFmLightweightGate
     Width = 52
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Attack'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
@@ -59,14 +62,15 @@ object FmLightweightGate: TFmLightweightGate
     Width = 72
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '15 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRelease: TGuiLabel
@@ -75,8 +79,9 @@ object FmLightweightGate: TFmLightweightGate
     Width = 68
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Release'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
@@ -85,14 +90,15 @@ object FmLightweightGate: TFmLightweightGate
     Width = 76
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '75 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRatio: TGuiLabel
@@ -101,8 +107,9 @@ object FmLightweightGate: TFmLightweightGate
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Ratio'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
@@ -111,14 +118,15 @@ object FmLightweightGate: TFmLightweightGate
     Width = 76
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '5 : 1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKnee: TGuiLabel
@@ -127,8 +135,9 @@ object FmLightweightGate: TFmLightweightGate
     Width = 82
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Soft Knee'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
@@ -137,14 +146,15 @@ object FmLightweightGate: TFmLightweightGate
     Width = 74
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '6 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
@@ -192,8 +202,8 @@ object FmLightweightGate: TFmLightweightGate
     Max = 10.000000000000000000
     Min = -90.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = -20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -206,8 +216,8 @@ object FmLightweightGate: TFmLightweightGate
     Max = 1000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialAttackChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 15.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -220,8 +230,8 @@ object FmLightweightGate: TFmLightweightGate
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -233,8 +243,8 @@ object FmLightweightGate: TFmLightweightGate
     CurveMapping = -0.800000011920929000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -245,8 +255,8 @@ object FmLightweightGate: TFmLightweightGate
     Height = 36
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 6.000000000000000000
     WheelStep = 1.000000000000000000
   end

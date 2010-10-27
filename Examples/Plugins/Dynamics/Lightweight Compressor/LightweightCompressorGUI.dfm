@@ -23,8 +23,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 90
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Threshold'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
@@ -33,14 +34,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 72
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '-10 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttack: TGuiLabel
@@ -49,8 +51,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 52
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Attack'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
@@ -59,14 +62,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 72
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '15 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRelease: TGuiLabel
@@ -75,8 +79,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 68
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Release'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
@@ -85,14 +90,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 76
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '75 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRatio: TGuiLabel
@@ -101,8 +107,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 50
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Ratio'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
@@ -111,14 +118,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 76
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '1: 5'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKnee: TGuiLabel
@@ -127,8 +135,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 82
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Soft Knee'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
@@ -137,14 +146,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 74
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '2 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
@@ -188,8 +198,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 72
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Make Up'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMakeUpGainValue: TGuiLabel
@@ -198,14 +209,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Width = 74
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = '6 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LEDStereo: TGuiLED
@@ -226,14 +238,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Top = 8
     Width = 46
     Height = 17
-    AntiAlias = gaaLinear4x
     Caption = 'Stereo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDStereoClick
   end
@@ -250,19 +263,20 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Transparent = False
     OnClick = LEDLimitClick
   end
-  object GuiLabel2: TGuiLabel
+  object LbLimit: TGuiLabel
     Left = 267
     Top = 29
     Width = 36
     Height = 17
-    AntiAlias = gaaLinear4x
     Caption = 'Limit'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDLimitClick
   end
@@ -279,19 +293,20 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Transparent = False
     OnClick = LEDAutoGainClick
   end
-  object GuiLabel3: TGuiLabel
+  object LbAutoGain: TGuiLabel
     Left = 267
     Top = 70
     Width = 54
     Height = 13
-    AntiAlias = gaaLinear4x
     Caption = 'Auto Gain'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
@@ -314,16 +329,17 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Top = 52
     Width = 61
     Height = 13
-    AntiAlias = gaaLinear4x
     Caption = 'Oversample'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
-    Visible = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Visible = False
     OnClick = LEDAutoGainClick
   end
   object DialThreshold: TGuiStitchedDial
@@ -335,8 +351,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Max = 10.000000000000000000
     Min = -90.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = -10.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -349,8 +365,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialAttackChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 15.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -363,8 +379,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -377,8 +393,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -390,8 +406,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     CurveMapping = -0.800000011920929000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -403,8 +419,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     CurveMapping = -0.800000011920929000
     Max = 60.000000000000000000
     OnChange = DialMakeUpGainChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 6.000000000000000000
     WheelStep = 1.000000000000000000
   end

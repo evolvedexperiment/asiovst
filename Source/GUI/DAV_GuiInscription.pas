@@ -45,21 +45,26 @@ type
     FAlignment        : TAlignment;
     FCaption          : string;
     FTransparent      : Boolean;
-    FFont             : TGuiCustomFont;
     FBuffer           : TGuiCustomPixelMap;
     FBackBuffer       : TGuiCustomPixelMap;
     FUpdateBackBuffer : Boolean;
     FUpdateBuffer     : Boolean;
-    procedure SetTransparent(Value: Boolean); virtual;
-    procedure SetCaption(const Value: string);
+    FFontList         : TGuiCustomFontList;
+    function GetFontIndex: Integer;
     procedure SetAlignment(const Value: TAlignment);
-    procedure SetFont(const Value: TGuiCustomFont);
+    procedure SetCaption(const Value: string);
+    procedure SetFontIndex(Value: Integer);
+    procedure SetFontList(const Value: TGuiCustomFontList);
+    procedure SetTransparent(Value: Boolean); virtual;
+    procedure SetFontItem(Value: TGuiCustomFontCollectionItem);
   protected
+    FFontItem      : TGuiCustomFontCollectionItem;
+    FFontItemIndex : Integer;
     procedure AlignmentChanged; virtual;
     procedure ColorChanged;
     procedure CaptionChanged; virtual;
-    procedure GuiFontChanged; virtual;
-    procedure FontChanged; virtual;
+    procedure FontIndexChanged; virtual;
+    procedure FontListChanged; virtual;
     procedure TransparentChanged; virtual;
 
     procedure BufferChanged; virtual;
@@ -79,13 +84,17 @@ type
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     {$ENDIF}
     procedure GMFontChanged(var Message: TMessage); message GM_FontChanged;
+    procedure GMFontListChanged(var Message: TMessage); message GM_FontListChanged;
+
+    property FontItem: TGuiCustomFontCollectionItem read FFontItem write SetFontItem;
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
 
     property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
     property Caption: string read FCaption write SetCaption;
-    property Font: TGuiCustomFont read FFont write SetFont;
+    property FontIndex: Integer read GetFontIndex write SetFontIndex;
+    property FontList: TGuiCustomFontList read FFontList write SetFontList;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
@@ -102,8 +111,8 @@ type
     property DragKind;
     property DragMode;
     property Enabled;
-    property Font;
-    property ParentFont;
+    property FontList;
+    property FontIndex;
     property PopupMenu;
     property ShowHint;
     property Visible;
@@ -145,7 +154,7 @@ begin
  FBuffer       := TGuiPixelMapMemory.Create;
  FBackBuffer   := TGuiPixelMapMemory.Create;
  FUpdateBuffer := False;
- ControlStyle := ControlStyle + [csOpaque];
+ ControlStyle  := ControlStyle + [csOpaque];
 end;
 
 destructor TCustomGuiInscription.Destroy;
@@ -159,6 +168,20 @@ procedure TCustomGuiInscription.Loaded;
 begin
  inherited;
  Resize;
+
+ if Assigned(FFontList) then
+  begin
+   if FFontItemIndex >= FFontList.Count then
+    begin
+     FontIndex := -1;
+     FFontItem := nil;
+     Exit;
+    end;
+
+   if FFontItemIndex >= 0
+    then FontItem := FFontList[FFontItemIndex];
+   FontIndexChanged;
+  end;
 end;
 
 procedure TCustomGuiInscription.Resize;
@@ -304,17 +327,18 @@ begin
  Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
    FBuffer.Width * SizeOf(TPixel32));
 
- if Assigned(FFont) then
+ if Assigned(FFontItem) and Assigned(FFontItem.Font) then
   begin
-   TextSize := FFont.TextExtend(FCaption);
+   TextSize := FFontItem.Font.TextExtend(FCaption);
    case FAlignment of
     taLeftJustify  : TextSize.cx := 0;
     taRightJustify : TextSize.cx := Width - TextSize.cx;
     taCenter       : TextSize.cx := (Width - TextSize.cx) div 2;
    end;
+
+   TextSize.cy := 0;
+   FFontItem.Font.TextOut(FCaption, FBuffer, TextSize.cx, TextSize.cy);
   end;
- TextSize.cy := 0;
- FFont.TextOut(FCaption, FBuffer, TextSize.cx, TextSize.cy);
 end;
 
 procedure TCustomGuiInscription.Paint;
@@ -331,27 +355,34 @@ begin
   then FBuffer.PaintTo(Canvas);
 end;
 
-procedure TCustomGuiInscription.FontChanged;
-begin
- if Assigned(FFont)
-  then FFont.OnChange := FontChangedHandler;
-
- BufferChanged;
-end;
-
 procedure TCustomGuiInscription.FontChangedHandler(Sender: TObject);
 begin
  BufferChanged;
 end;
 
-procedure TCustomGuiInscription.GMFontChanged(var Message: TMessage);
+function TCustomGuiInscription.GetFontIndex: Integer;
 begin
- //
+ if Assigned(FFontItem)
+  then Result := FFontItem.Index
+  else Result := -1;
 end;
 
-procedure TCustomGuiInscription.GuiFontChanged;
+procedure TCustomGuiInscription.GMFontChanged(var Message: TMessage);
 begin
+ case Message.WParam of
+  0 : if Message.LParam = 0
+       then FontIndex := -1
+ end;
  BufferChanged;
+end;
+
+procedure TCustomGuiInscription.GMFontListChanged(var Message: TMessage);
+begin
+ case Message.WParam of
+  0 : if Message.LParam = 0
+       then FontList := nil;
+  1 : BufferChanged;
+ end;
 end;
 
 procedure TCustomGuiInscription.AlignmentChanged;
@@ -376,11 +407,21 @@ begin
   then BackBufferChanged;
 end;
 
+procedure TCustomGuiInscription.FontIndexChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiInscription.FontListChanged;
+begin
+ FontItem := nil;
+ BufferChanged;
+end;
+
 procedure TCustomGuiInscription.TransparentChanged;
 begin
  BackBufferChanged;
 end;
-
 
 procedure TCustomGuiInscription.CMColorchanged(var Message: {$IFDEF FPC}TLMessage {$ELSE}TMessage {$ENDIF});
 begin
@@ -405,12 +446,74 @@ begin
   end;
 end;
 
-procedure TCustomGuiInscription.SetFont(const Value: TGuiCustomFont);
+procedure TCustomGuiInscription.SetFontIndex(Value: Integer);
 begin
- if FFont <> Value then
+ if csLoading in ComponentState then
   begin
-   FFont := Value;
-   FontChanged;
+   FFontItemIndex := Value;
+   Exit;
+  end;
+
+ // check if Font image list is available
+ if Assigned(FFontList) then
+  begin
+   // limit range to existing Font images (or -1 for nothing)
+   if Value < 0 then Value := -1 else
+   if Value >= FFontList.Count then Value := FFontList.Count - 1;
+
+   if FontIndex <> Value then
+    begin
+     FFontItemIndex := Value;
+
+     if Value > -1
+      then FontItem := FFontList[Value]
+      else FontItem := nil;
+
+     FontIndexChanged;
+    end;
+  end;
+end;
+
+procedure TCustomGuiInscription.SetFontItem(
+  Value: TGuiCustomFontCollectionItem);
+begin
+ if FFontItem <> Value then
+  begin
+   if not Assigned(Value) then
+    begin
+     Value := FFontItem;
+     FFontItem := nil;
+     Value.UnlinkControl(Self);
+    end
+   else
+    begin
+     if Assigned(FFontItem)
+      then FFontItem.UnLinkControl(Self);
+     FFontItem := Value;
+     FFontItem.LinkControl(Self);
+    end;
+  end;
+end;
+
+procedure TCustomGuiInscription.SetFontList(const Value: TGuiCustomFontList);
+begin
+ if FFontList <> Value then
+  begin
+   // check whether a list is linked at all
+   if not Assigned(Value) then
+    begin
+     Assert(Assigned(FFontList));
+     FontItem := nil;
+     FFontList.UnLinkControl(Self);
+     FFontList := nil;
+    end
+   else
+    begin
+     Assert(Assigned(Value));
+     FFontList := Value;
+     FFontList.LinkControl(Self);
+    end;
+   FontListChanged;
   end;
 end;
 

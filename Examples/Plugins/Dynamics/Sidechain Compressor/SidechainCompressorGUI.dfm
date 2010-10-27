@@ -397,7 +397,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
       Width = 237
       Height = 25
       Anchors = [akTop]
-      AntiAlias = gaaLinear4x
+      Oversampling = fo4x
       Caption = 'Sidechain Compressor'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 9681911
@@ -415,7 +415,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 165
     Width = 140
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -433,7 +433,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 184
     Width = 140
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -451,7 +451,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 203
     Width = 140
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -469,7 +469,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     Hint = '100'
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -485,7 +485,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 241
     Width = 140
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -503,7 +503,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 260
     Width = 140
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -520,7 +520,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 146
     Width = 121
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -538,7 +538,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 70
     Width = 121
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -556,7 +556,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 108
     Width = 121
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -574,7 +574,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 127
     Width = 121
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -590,7 +590,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 89
     Width = 121
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083
@@ -640,7 +640,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Top = 279
     Width = 140
     Height = 11
-    AntiAlias = gaaLinear3x
+    Oversampling = fo3x
     BorderColor = 9681911
     BorderRadius = 2
     Color = 5196083

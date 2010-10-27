@@ -23,8 +23,9 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 90
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Threshold'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
@@ -33,13 +34,14 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 72
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttack: TGuiLabel
@@ -48,8 +50,9 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 52
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Attack'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
@@ -58,13 +61,14 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 72
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRelease: TGuiLabel
@@ -73,8 +77,9 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 68
     Height = 19
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Release'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
@@ -83,13 +88,14 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 76
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKnee: TGuiLabel
@@ -98,8 +104,9 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 82
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Soft Knee'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
@@ -108,13 +115,14 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 74
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
@@ -159,8 +167,9 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 72
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Make Up'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbMakeUpGainValue: TGuiLabel
@@ -169,13 +178,14 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 74
     Height = 20
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LEDStereo: TGuiLED
@@ -196,14 +206,15 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 8
     Width = 46
     Height = 17
-    AntiAlias = gaaLinear4x
     Caption = 'Stereo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDStereoClick
   end
@@ -225,14 +236,15 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 29
     Width = 54
     Height = 17
-    AntiAlias = gaaLinear4x
     Caption = 'Soft Clip'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -12
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDLimitClick
   end
@@ -254,14 +266,15 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 70
     Width = 54
     Height = 13
-    AntiAlias = gaaLinear4x
     Caption = 'Auto Gain'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
@@ -280,8 +293,9 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 33
     Height = 25
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GR'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object Lb0dB: TGuiLabel
@@ -289,14 +303,15 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 163
     Width = 24
     Height = 11
-    AntiAlias = gaaLinear4x
     Caption = '0 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
@@ -305,14 +320,15 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 121
     Width = 30
     Height = 11
-    AntiAlias = gaaLinear4x
     Caption = '20 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
@@ -321,14 +337,15 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 142
     Width = 30
     Height = 11
-    AntiAlias = gaaLinear4x
     Caption = '10 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
@@ -341,8 +358,8 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Max = 10.000000000000000000
     Min = -90.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialAttack: TGuiStitchedDial
@@ -354,8 +371,8 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Max = 1000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialAttackChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -368,8 +385,8 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -381,8 +398,8 @@ object FmLightweightLimiter: TFmLightweightLimiter
     CurveMapping = -0.800000011920929000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialMakeUpGain: TGuiStitchedDial
@@ -393,8 +410,8 @@ object FmLightweightLimiter: TFmLightweightLimiter
     CurveMapping = -0.800000011920929000
     Max = 60.000000000000000000
     OnChange = DialMakeUpGainChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object Timer: TTimer

@@ -60,6 +60,7 @@ type
     procedure SetColor(const Value: TColor);
   protected
     procedure Changed; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
     property Offset: TPoint read FOffset write SetOffset;
@@ -88,6 +89,22 @@ begin
  FVisible      := False;
 end;
 
+procedure TGuiShadow.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TGuiShadow then
+  with TGuiShadow(Dest) do
+   begin
+    FBlur         := Self.FBlur;
+    FColor        := Self.FColor;
+    FOffset.X     := Self.FOffset.X;
+    FOffset.Y     := Self.FOffset.Y;
+    FTransparency := Self.FTransparency;
+    FVisible      := Self.FVisible;
+    FOnChange     := Self.FOnChange;
+   end
+ else inherited;
+end;
+
 procedure TGuiShadow.Changed;
 begin
  if Assigned(FOnChange)
@@ -106,7 +123,7 @@ end;
 
 procedure TGuiShadow.SetBlur(const Value: Single);
 begin
- if Value <= 0
+ if Value < 0
   then raise Exception.Create('Must be positive!');
 
  if FBlur <> Value then

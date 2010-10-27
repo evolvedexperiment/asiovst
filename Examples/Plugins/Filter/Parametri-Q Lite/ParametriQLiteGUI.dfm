@@ -188,8 +188,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreq2: TGuiLabel
@@ -199,8 +200,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreq3: TGuiLabel
@@ -210,8 +212,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreq4: TGuiLabel
@@ -221,8 +224,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreq7: TGuiLabel
@@ -232,8 +236,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreq6: TGuiLabel
@@ -243,8 +248,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreq5: TGuiLabel
@@ -254,8 +260,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreq8: TGuiLabel
@@ -265,8 +272,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 44
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'FREQ'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW1: TGuiLabel
@@ -276,8 +284,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW2: TGuiLabel
@@ -287,8 +296,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW3: TGuiLabel
@@ -298,8 +308,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW4: TGuiLabel
@@ -309,8 +320,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW8: TGuiLabel
@@ -320,8 +332,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW7: TGuiLabel
@@ -331,8 +344,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW6: TGuiLabel
@@ -342,8 +356,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBW5: TGuiLabel
@@ -353,8 +368,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 30
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BW'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain1: TGuiLabel
@@ -364,8 +380,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain2: TGuiLabel
@@ -375,8 +392,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain3: TGuiLabel
@@ -386,8 +404,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain4: TGuiLabel
@@ -397,8 +416,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain8: TGuiLabel
@@ -408,8 +428,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain7: TGuiLabel
@@ -419,8 +440,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain6: TGuiLabel
@@ -430,8 +452,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain5: TGuiLabel
@@ -441,8 +464,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue1: TGuiLabel
@@ -459,6 +483,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue2: TGuiLabel
@@ -475,6 +500,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue4: TGuiLabel
@@ -491,6 +517,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue3: TGuiLabel
@@ -507,6 +534,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue8: TGuiLabel
@@ -523,6 +551,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue7: TGuiLabel
@@ -539,6 +568,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue6: TGuiLabel
@@ -555,6 +585,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbFreqValue5: TGuiLabel
@@ -571,6 +602,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin1: TGuiLabel
@@ -586,6 +618,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin2: TGuiLabel
@@ -601,6 +634,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin4: TGuiLabel
@@ -616,6 +650,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin3: TGuiLabel
@@ -631,6 +666,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin8: TGuiLabel
@@ -646,6 +682,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin7: TGuiLabel
@@ -660,6 +697,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin6: TGuiLabel
@@ -675,6 +713,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMin5: TGuiLabel
@@ -689,6 +728,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax1: TGuiLabel
@@ -705,6 +745,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax2: TGuiLabel
@@ -720,6 +761,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax4: TGuiLabel
@@ -736,6 +778,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax3: TGuiLabel
@@ -752,6 +795,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax8: TGuiLabel
@@ -767,6 +811,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax7: TGuiLabel
@@ -782,6 +827,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax6: TGuiLabel
@@ -797,6 +843,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiMax5: TGuiLabel
@@ -812,6 +859,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object SeparatorA1: TShape
@@ -1037,8 +1085,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1049,8 +1098,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1061,8 +1111,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1073,8 +1124,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1085,8 +1137,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1097,8 +1150,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1109,8 +1163,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1121,8 +1176,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 40
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'TYPE'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1132,8 +1188,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 42
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'INPUT'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbOutput: TGuiLabel
@@ -1142,8 +1199,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 54
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'OUTPUT'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGain: TGuiLabel
@@ -1152,8 +1210,9 @@ object FmParametriQLite: TFmParametriQLite
     Width = 36
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'GAIN'
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object ShapeInputBottom: TShape
@@ -1194,9 +1253,10 @@ object FmParametriQLite: TFmParametriQLite
     Width = 109
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Parametri-Q LITE'
     Color = 1447701
+    Oversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbIn: TGuiLabel
@@ -1213,6 +1273,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbOut: TGuiLabel
@@ -1228,6 +1289,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbdB: TGuiLabel
@@ -1244,6 +1306,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbTypeValue1: TGuiLabel
@@ -1253,7 +1316,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1261,8 +1323,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1273,7 +1337,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1281,8 +1344,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1293,7 +1358,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1301,8 +1365,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1313,7 +1379,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1321,8 +1386,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1333,7 +1400,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1341,8 +1407,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1353,7 +1421,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1361,8 +1428,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1373,7 +1442,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1381,8 +1449,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1393,7 +1463,6 @@ object FmParametriQLite: TFmParametriQLite
     Width = 55
     Height = 14
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'BYPASS'
     Color = 2303010
     Font.Charset = DEFAULT_CHARSET
@@ -1401,8 +1470,10 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    Oversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
@@ -1450,8 +1521,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1465,8 +1536,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1479,8 +1550,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq2: TGuiStitchedDial
@@ -1493,8 +1564,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1508,8 +1579,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1522,8 +1593,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq3: TGuiStitchedDial
@@ -1536,8 +1607,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1551,8 +1622,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1565,8 +1636,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq4: TGuiStitchedDial
@@ -1579,8 +1650,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1594,8 +1665,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1608,8 +1679,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq5: TGuiStitchedDial
@@ -1622,8 +1693,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1637,8 +1708,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1651,8 +1722,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq6: TGuiStitchedDial
@@ -1665,8 +1736,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1680,8 +1751,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1694,8 +1765,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq7: TGuiStitchedDial
@@ -1708,8 +1779,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1723,8 +1794,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1737,8 +1808,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq8: TGuiStitchedDial
@@ -1751,8 +1822,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1766,8 +1837,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1780,8 +1851,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialInput: TGuiStitchedDial
@@ -1792,8 +1863,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialInputChange
-    StitchedImageIndex = 2
     StitchedImageList = GSPL
+    StitchedImageIndex = 2
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -1805,8 +1876,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialOutputChange
-    StitchedImageIndex = 2
     StitchedImageList = GSPL
+    StitchedImageIndex = 2
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -1817,8 +1888,8 @@ object FmParametriQLite: TFmParametriQLite
     Height = 40
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageIndex = 3
     StitchedImageList = GSPL
+    StitchedImageIndex = 3
   end
   object Switch: TGuiStitchedSwitch
     Left = 108
@@ -1827,8 +1898,8 @@ object FmParametriQLite: TFmParametriQLite
     Height = 12
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageIndex = 4
     StitchedImageList = GSPL
+    StitchedImageIndex = 4
     Transparent = True
   end
   object PopupFilter: TPopupMenu

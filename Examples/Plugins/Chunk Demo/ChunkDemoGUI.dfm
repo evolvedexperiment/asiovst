@@ -22,14 +22,15 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 40
     Alignment = taCenter
-    AntiAlias = gaaLinear3x
     Caption = 'a'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 3747121
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBeta: TGuiLabel
@@ -38,14 +39,15 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 47
     Alignment = taCenter
-    AntiAlias = gaaLinear3x
     Caption = 'b'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 3747121
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGamma: TGuiLabel
@@ -54,14 +56,15 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 47
     Alignment = taCenter
-    AntiAlias = gaaLinear3x
     Caption = 'g'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 3747121
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LbDelta: TGuiLabel
@@ -70,14 +73,15 @@ object FmChunkDemo: TFmChunkDemo
     Width = 56
     Height = 47
     Alignment = taCenter
-    AntiAlias = gaaLinear3x
     Caption = 'd'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 3747121
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object DialAlpha: TGuiStitchedDial
@@ -87,8 +91,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialAlphaChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -99,8 +103,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialBetaChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -111,8 +115,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialGammaChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -123,8 +127,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialDeltaChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end

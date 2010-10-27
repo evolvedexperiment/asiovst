@@ -54,13 +54,13 @@ type
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWindowFunctionChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure Parameter2DigitDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure Parameter2DigitDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterThresholdOffsetChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FCriticalSection : TCriticalSection;
     FSamplesCaptured : Integer;
@@ -112,6 +112,9 @@ begin
    Max := Length(GWindowFunctions) - 1;
    MaxInteger := Length(GWindowFunctions) - 1;
   end;
+
+ FEditorRect.Bottom := 147;
+ FEditorRect.Right := 348;
 
  Parameter[0] := 8;
  Parameter[1] := 9;
@@ -223,7 +226,7 @@ begin
 end;
 
 procedure TNoiseReductionModule.ParameterWindowFunctionDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
@@ -242,7 +245,7 @@ begin
 end;
 
 procedure TNoiseReductionModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1
   then PreDefined := FloatToStrF(Parameter[Index] * 1E3, ffGeneral, 3, 1)
@@ -250,7 +253,7 @@ begin
 end;
 
 procedure TNoiseReductionModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
 if Parameter[Index] < 1
   then PreDefined := 'µs'
@@ -263,7 +266,7 @@ begin
 end;
 
 procedure TNoiseReductionModule.Parameter2DigitDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 3, 1);
 end;
@@ -293,7 +296,7 @@ begin
 end;
 
 procedure TNoiseReductionModule.ParameterFftOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;

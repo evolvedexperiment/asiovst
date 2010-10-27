@@ -46,14 +46,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Input Gain'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOSFactor: TGuiLabel
@@ -62,14 +63,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'OS Factor'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbFilterOrder: TGuiLabel
@@ -78,14 +80,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 52
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Filter Order'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object PnDisplay: TGuiPanel
@@ -108,7 +111,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Width = 105
         Height = 13
         Alignment = taCenter
-        AntiAlias = gaaLinear4x
         Caption = 'Advanced Clipper'
         Color = 4938079
         Font.Charset = ANSI_CHARSET
@@ -116,7 +118,9 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        Oversampling = fo4x
         ParentFont = False
+        Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack
       end
     end
@@ -128,8 +132,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 6.000000000000000000
       Min = -6.000000000000000000
       OnChange = DialInputGainChange
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialOSFactor1: TGuiStitchedDial
@@ -140,8 +144,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOSFactor1Change
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -153,8 +157,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       CurveMapping = -1.000000000000000000
       Max = 64.000000000000000000
       OnChange = DialFilterOrder1Change
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -185,14 +189,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'OS Factor'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbFilterOrder2: TGuiLabel
@@ -201,14 +206,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 52
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Filter Order'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbOutputGain: TGuiLabel
@@ -217,14 +223,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 54
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Output Gain'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object PnHardClipping: TGuiPanel
@@ -246,7 +253,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Width = 68
         Height = 14
         Alignment = taCenter
-        AntiAlias = gaaLinear4x
         Caption = 'hard clip output'
         Color = 4938079
         Font.Charset = DEFAULT_CHARSET
@@ -254,7 +260,9 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        Oversampling = fo4x
         ParentFont = False
+        Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack
         OnClick = LbHardClipClick
       end
@@ -282,8 +290,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOSFactor2Change
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -295,8 +303,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       CurveMapping = -1.000000000000000000
       Max = 64.000000000000000000
       OnChange = DialFilterOrder2Change
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -308,8 +316,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 6.000000000000000000
       Min = -6.000000000000000000
       OnChange = DialOutputGainChange
-      StitchedImageIndex = 0
       StitchedImageList = DSIL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
@@ -331,14 +339,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Input'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbClipStage1: TGuiLabel
@@ -347,14 +356,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Stage 1'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbClipStage2: TGuiLabel
@@ -363,14 +373,15 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 15
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Stage 2'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object ClipLEDInput: TGuiLED

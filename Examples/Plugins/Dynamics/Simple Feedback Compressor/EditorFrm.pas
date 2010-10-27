@@ -36,15 +36,16 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiBaseControl,
-  DAV_GuiDial;
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPanel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TEditorForm = class(TForm)
-    DialAttack: TGuiDial;
-    DialRatio: TGuiDial;
-    DialRelease: TGuiDial;
-    DialThreshold: TGuiDial;
+    DialAttack: TGuiStitchedDial;
+    DialRatio: TGuiStitchedDial;
+    DialRelease: TGuiStitchedDial;
+    DialThreshold: TGuiStitchedDial;
+    GSPL: TGuiStitchedPNGList;
     LbAttack: TGuiLabel;
     LbAttackValue: TLabel;
     LbRatio: TGuiLabel;
@@ -58,7 +59,6 @@ type
     procedure DialRatioChange(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   public
     procedure UpdateThreshold;
@@ -74,21 +74,6 @@ implementation
 uses
   Math, SimpleFeedbackCompressorDM;
 
-procedure TEditorForm.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'SimpleFeedbackCompressor', 'BMP');
- try
-  DialThreshold.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialRatio.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
-  DialAttack.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
-  DialRelease.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
- finally
-  RS.Free;
- end;
-end;
-
 procedure TEditorForm.FormShow(Sender: TObject);
 begin
  UpdateThreshold;
@@ -99,7 +84,7 @@ end;
 
 procedure TEditorForm.UpdateThreshold;
 begin
- LbThresholdValue.Caption := FloatToStrF(DialThreshold.Position, ffFixed, 3, 1) + ' dB';
+ LbThresholdValue.Caption := FloatToStrF(DialThreshold.Value, ffFixed, 3, 1) + ' dB';
 end;
 
 procedure TEditorForm.UpdateRatio;
@@ -116,7 +101,7 @@ begin
   begin
    TempAttack := 100 * Log10(Parameter[2]);
    if Parameter[2] <> TempAttack
-    then DialAttack.Position := TempAttack;
+    then DialAttack.Value := TempAttack;
    if Parameter[2] < 1
     then LbAttackValue.Caption := FloatToStrF(1000 * Parameter[2], ffGeneral, 4, 2) + ' µs'
     else LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
@@ -135,7 +120,7 @@ procedure TEditorForm.DialThresholdChange(Sender: TObject);
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[0] := DialThreshold.Position;
+   Parameter[0] := DialThreshold.Value;
    UpdateThreshold;
   end;
 end;
@@ -144,7 +129,7 @@ procedure TEditorForm.DialRatioChange(Sender: TObject);
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[1] := Power(10, 0.01 * DialRatio.Position);
+   Parameter[1] := Power(10, 0.01 * DialRatio.Value);
    UpdateRatio;
   end;
 end;
@@ -153,7 +138,7 @@ procedure TEditorForm.DialAttackChange(Sender: TObject);
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[2] := Power(10, 0.01 * DialAttack.Position);
+   Parameter[2] := Power(10, 0.01 * DialAttack.Value);
    UpdateAttack;
   end;
 end;
@@ -162,7 +147,7 @@ procedure TEditorForm.DialReleaseChange(Sender: TObject);
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[3] := Power(10, 0.001 * DialRelease.Position);
+   Parameter[3] := Power(10, 0.001 * DialRelease.Value);
    UpdateRelease;
   end;
 end;

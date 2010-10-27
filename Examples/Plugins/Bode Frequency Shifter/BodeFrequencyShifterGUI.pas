@@ -42,15 +42,15 @@ uses
 
 type
   TFmBodeFrequencyShifter = class(TForm)
+    DialFrequency: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DSPL: TGuiStitchedPNGList;
     GpFrequency: TGuiGroup;
     GpMix: TGuiGroup;
     LbFrequencyValue: TGuiLabel;
     LbMixValue: TGuiLabel;
     PnDisplay: TGuiPanel;
     PnMix: TGuiPanel;
-    DialFrequency: TGuiStitchedDial;
-    DialMix: TGuiStitchedDial;
-    DSPL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);

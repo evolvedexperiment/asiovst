@@ -37,7 +37,7 @@ object FmAudioEditor: TFmAudioEditor
     Width = 647
     Height = 292
     Align = alClient
-    AntiAlias = gaaLinear2x
+    AntiAlias = gaaLinear4x
     AudioDataCollection = AudioDataCollection32
     DisplayChannels = <>
     LineColor = clMaroon

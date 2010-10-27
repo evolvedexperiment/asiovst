@@ -1,4 +1,4 @@
-unit BassExtenderGUI;
+﻿unit BassExtenderGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -36,9 +36,8 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiPanel, DAV_GuiLabel,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
-  DAV_GuiPng;
+  DAV_Types, DAV_VSTModule, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiPng, DAV_GuiPixelMap, DAV_GuiPanel, DAV_GuiLabel;
 
 type
   TFmBassExtender = class(TForm)
@@ -75,6 +74,8 @@ type
     LbThresholdValue: TGuiLabel;
     PnMain: TGuiPanel;
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
@@ -86,10 +87,8 @@ type
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
     procedure DialCompressionChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure FormResize(Sender: TObject);
   private
-    FBackground : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateAttack;
     procedure UpdateBalance;
@@ -112,7 +111,7 @@ uses
 
 procedure TFmBassExtender.FormCreate(Sender: TObject);
 begin
- FBackground := TBitmap.Create;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmBassExtender.DialAttackChange(Sender: TObject);
@@ -207,35 +206,36 @@ end;
 
 procedure TFmBassExtender.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackground);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmBassExtender.FormResize(Sender: TObject);
 var
-  RS     : TResourceStream;
   x, y   : Integer;
-  s      : array [0..1] of Single;
+  Filter : array [0..1] of Single;
   h, hr  : Single;
   ScnLn  : PPixel32Array;
 begin
  with FBackground do
   begin
    SetSize(ClientWidth, ClientHeight);
-   s[0] := 0;
-   s[1] := 0;
+   Filter[0] := 0;
+   Filter[1] := 0;
    hr := 1 / Height;
    for y := 0 to Height - 1 do
     begin
      ScnLn := Scanline[y];
-     h := 0.3 * (1 - sqr(2 * (y - Height div 2) * hr));
+     h := 0.3 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
+       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+       Filter[0] := Filter[1];
 
-       ScnLn[x].B := Round($30 - $24 * (s[1] - h));
-       ScnLn[x].G := Round($44 - $38 * (s[1] - h));
-       ScnLn[x].R := Round($4D - $40 * (s[1] - h));
+       ScnLn[x].B := Round($30 - $24 * (Filter[1] - h));
+       ScnLn[x].G := Round($44 - $38 * (Filter[1] - h));
+       ScnLn[x].R := Round($4D - $40 * (Filter[1] - h));
+       ScnLn[x].A := $FF;
       end;
     end;
   end;

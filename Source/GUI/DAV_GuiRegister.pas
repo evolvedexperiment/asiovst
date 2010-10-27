@@ -33,8 +33,8 @@ uses
   DAV_GuiPaintBox, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPixelMapDesign,
   DAV_GuiPng, DAV_GuiPngDesign, DAV_GuiSelectBox, DAV_GuiSlider,
   DAV_GuiStaticWaveform, DAV_GuiStitchedButton, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedDisplay, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
+  DAV_GuiStitchedDial, DAV_GuiStitchedDisplay, DAV_GuiStitchedImageList,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
 
 procedure Register;
 begin

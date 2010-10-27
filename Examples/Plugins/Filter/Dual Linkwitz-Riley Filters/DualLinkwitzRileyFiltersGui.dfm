@@ -25,17 +25,18 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Width = 220
     Height = 29
     Alignment = taCenter
-    AntiAlias = gaaLinear4x
     Caption = 'Show Frequency Plot'
     Font.Charset = ANSI_CHARSET
     Font.Color = 15659506
     Font.Height = -24
     Font.Name = 'Times New Roman'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
     Visible = False
     Transparent = True
-    Shadow.Color = clBlack
     OnClick = LbShowFrequencyPlotClick
   end
   object GpDualLiknwitzRiley: TGuiGroup
@@ -65,14 +66,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 13
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = GpDualLiknwitzRileyClick
     end
@@ -82,14 +84,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 13
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Slope'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = GpDualLiknwitzRileyClick
     end
@@ -99,15 +102,16 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 59
       Height = 24
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Highcut'
       Font.Charset = ANSI_CHARSET
       Font.Color = 15659506
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
       PopupMenu = PuPreset
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = LedHighCutClick
       OnMouseDown = LbMouseDown
@@ -118,15 +122,16 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 59
       Height = 21
       Alignment = taCenter
-      AntiAlias = gaaLinear4x
       Caption = 'Lowcut'
       Font.Charset = ANSI_CHARSET
       Font.Color = 15659506
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
       PopupMenu = PuPreset
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = LedLowCutClick
       OnMouseDown = LbMouseDown
@@ -185,7 +190,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         Height = 13
         Alignment = taCenter
         Anchors = [akLeft, akTop, akRight]
-        AntiAlias = gaaLinear4x
         Caption = 'Value'
         Color = 3226174
         Font.Charset = DEFAULT_CHARSET
@@ -193,7 +197,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        Oversampling = fo4x
         ParentFont = False
+        Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack
         OnClick = LbDisplayClick
       end
@@ -207,8 +213,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialLowpassFrequencyChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
@@ -224,8 +230,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialLowpassSlopeChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
@@ -241,8 +247,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialHighpassFrequencyChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
@@ -258,8 +264,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialHighpassSlopeChange
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown

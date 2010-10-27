@@ -59,7 +59,6 @@ object FmUniQuE: TFmUniQuE
       Top = 8
       Width = 48
       Height = 20
-      AntiAlias = gaaLinear8x
       Caption = 'on/off'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
@@ -67,7 +66,9 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = OnOffClick
     end
@@ -76,7 +77,6 @@ object FmUniQuE: TFmUniQuE
       Top = 8
       Width = 27
       Height = 20
-      AntiAlias = gaaLinear8x
       Caption = 'pad'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
@@ -84,7 +84,9 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = PadClick
     end
@@ -108,7 +110,6 @@ object FmUniQuE: TFmUniQuE
       Top = 8
       Width = 52
       Height = 20
-      AntiAlias = gaaLinear8x
       Caption = 'invert'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
@@ -116,7 +117,9 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = InvertClick
     end
@@ -141,7 +144,6 @@ object FmUniQuE: TFmUniQuE
       Width = 75
       Height = 22
       Alignment = taCenter
-      AntiAlias = gaaLinear8x
       Caption = 'Low'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
@@ -149,7 +151,9 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbMid: TGuiLabel
@@ -158,7 +162,6 @@ object FmUniQuE: TFmUniQuE
       Width = 75
       Height = 22
       Alignment = taCenter
-      AntiAlias = gaaLinear8x
       Caption = 'Mid'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
@@ -166,7 +169,9 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbPRes: TGuiLabel
@@ -175,7 +180,6 @@ object FmUniQuE: TFmUniQuE
       Width = 75
       Height = 22
       Alignment = taCenter
-      AntiAlias = gaaLinear8x
       Caption = 'Pres'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
@@ -183,7 +187,9 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object LbHigh: TGuiLabel
@@ -192,7 +198,6 @@ object FmUniQuE: TFmUniQuE
       Width = 75
       Height = 22
       Alignment = taCenter
-      AntiAlias = gaaLinear8x
       Caption = 'High'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
@@ -200,7 +205,9 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialLow: TGuiStitchedDial
@@ -213,8 +220,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialLowChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -228,8 +235,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialMidChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -243,8 +250,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialPresenceChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -258,8 +265,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialHighChange
       ParentColor = False
-      StitchedImageIndex = 0
       StitchedImageList = GSPL
+      StitchedImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end

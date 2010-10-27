@@ -65,7 +65,6 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         Height = 12
         Alignment = taCenter
         Anchors = [akLeft, akTop, akRight]
-        AntiAlias = gaaLinear4x
         Caption = 'Frequency'
         Color = 3226174
         Font.Charset = ANSI_CHARSET
@@ -73,7 +72,9 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        Oversampling = fo4x
         ParentFont = False
+        Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack
       end
     end
@@ -83,12 +84,11 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Width = 48
       Height = 48
       CurveMapping = -2.069999933242798000
-      LockCursor = False
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       OnChange = DialFrequencyChange
-      StitchedImageIndex = 0
       StitchedImageList = DSPL
+      StitchedImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -139,7 +139,6 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         Height = 12
         Alignment = taCenter
         Anchors = [akLeft, akTop, akRight]
-        AntiAlias = gaaLinear4x
         Caption = 'Mix'
         Color = 3226174
         Font.Charset = ANSI_CHARSET
@@ -147,7 +146,9 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        Oversampling = fo4x
         ParentFont = False
+        Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack
       end
     end
@@ -156,12 +157,11 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Top = 32
       Width = 48
       Height = 48
-      LockCursor = False
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialMixChange
-      StitchedImageIndex = 0
       StitchedImageList = DSPL
+      StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
