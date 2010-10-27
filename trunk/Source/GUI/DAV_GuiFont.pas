@@ -317,6 +317,7 @@ end;
 procedure TGuiCustomFont.ShadowChangedHandler(Sender: TObject);
 begin
  FShadowColor := ConvertColor(FShadow.Color);
+ FShadowColor.A := $FF - FShadow.Transparency;
  Changed;
 end;
 

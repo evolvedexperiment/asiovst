@@ -54,7 +54,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object LbFreqValue: TGuiLabel
       Left = 16
@@ -72,7 +74,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object LbLowDist: TGuiLabel
       Left = 156
@@ -90,7 +94,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object LbLowDistValue: TGuiLabel
       Left = 156
@@ -108,7 +114,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object LbHighDist: TGuiLabel
       Left = 226
@@ -126,7 +134,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object LbHighDistValue: TGuiLabel
       Left = 226
@@ -144,7 +154,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object LbOrderValue: TGuiLabel
       Left = 86
@@ -162,7 +174,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object LbOrder: TGuiLabel
       Left = 86
@@ -180,7 +194,9 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Oversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4144959
+      Shadow.Transparency = 128
+      Shadow.Visible = True
     end
     object DialFreq: TGuiStitchedDial
       Left = 16

@@ -29,6 +29,7 @@ object FmLabelTest: TFmLabelTest
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LabelC: TGuiLabel
@@ -36,14 +37,15 @@ object FmLabelTest: TFmLabelTest
     Top = 39
     Width = 57
     Height = 25
-    AntiAlias = gaaLinear3x
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo3x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object LabelB: TGuiLabel
@@ -51,29 +53,32 @@ object FmLabelTest: TFmLabelTest
     Top = 8
     Width = 57
     Height = 25
-    AntiAlias = gaaLinear2x
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clLime
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo2x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    OnClick = LabelBClick
   end
   object LabelD: TGuiLabel
     Left = 71
     Top = 39
     Width = 57
     Height = 25
-    AntiAlias = gaaLinear4x
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clYellow
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
+    Oversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
   object CbTransparent: TCheckBox
