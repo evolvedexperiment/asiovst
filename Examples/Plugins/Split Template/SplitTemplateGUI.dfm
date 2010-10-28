@@ -36,9 +36,8 @@ object FmSplitter: TFmSplitter
     Caption = 'PnControl'
     Color = 7701642
     LineColor = clBlack
-    Linewidth = 0
+    BorderWidth = 2.000000000000000000
     PanelColor = 7701642
-    Radius = 0
     TabOrder = 0
     UseDockManager = True
     object DialSplitFrequency: TGuiDial
@@ -46,12 +45,11 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      Oversampling = fo4x
+      AntiAlias = gaaLinear2x
       CircleColor = 6450289
       CurveMapping = -2.099999904632568000
       DefaultPosition = 100.000000000000000000
       DialImageIndex = -1
-      LineColor = clRed
       LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
@@ -69,14 +67,15 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 59
       Height = 20
-      Oversampling = fo2x
       Caption = '1kHz'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo2x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object DialSplitOrder: TGuiDial
@@ -84,12 +83,11 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      Oversampling = fo4x
+      AntiAlias = gaaLinear2x
       CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 8.000000000000000000
       DialImageIndex = -1
-      LineColor = clRed
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
@@ -107,14 +105,15 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 39
       Height = 20
-      Oversampling = fo2x
       Caption = '4x'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo2x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
     object GuiLEDOversampling: TGuiLED
@@ -122,13 +121,12 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      LineWidth = 2
-      LEDColor = clLime
+      BorderStrength_Percent = 50.000000000000000000
       Brightness_Percent = 20.000000000000000000
-      BorderStrength_Percent = 100.000000000000000000
+      LEDColor = clLime
+      BorderWidth = 2.400000095367432000
       Uniformity_Percent = 36.754447937011720000
-      Oversampling = fo4x
-      LineColor = clLime
+      Transparent = False
       OnClick = GuiLEDOversamplingClick
     end
     object LbOversampling: TGuiLabel
@@ -136,14 +134,15 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 97
       Height = 20
-      Oversampling = fo4x
       Caption = 'Oversampling:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnClick = GuiLEDOversamplingClick
     end
@@ -152,28 +151,28 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 33
       Height = 20
-      Oversampling = fo2x
       Caption = '4x'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      Oversampling = fo2x
       ParentFont = False
-      Visible = False
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
+      Visible = False
     end
     object DialOversampling: TGuiDial
       Left = 386
       Top = 9
       Width = 20
       Height = 20
-      Oversampling = fo4x
+      AntiAlias = gaaLinear2x
       CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
       DialImageIndex = -1
-      LineColor = clRed
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
@@ -187,52 +186,12 @@ object FmSplitter: TFmSplitter
       Visible = False
       WheelStep = 1.000000000000000000
     end
-    object BtLow: TGuiButton
-      Left = 447
-      Top = 6
-      Width = 65
-      Height = 26
-      Oversampling = fo4x
-      Alignment = taCenter
-      Caption = 'Low'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      LineColor = clBlack
-      LineWidth = 2
-      ButtonColor = 1625885
-      Radius = 4
-      Shadow.Color = clBlack
-      OnClick = BtLowClick
-    end
-    object BtHigh: TGuiButton
-      Left = 518
-      Top = 6
-      Width = 65
-      Height = 26
-      Oversampling = fo4x
-      Alignment = taCenter
-      Caption = 'High'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      LineColor = clBlack
-      LineWidth = 2
-      ButtonColor = 6450289
-      Radius = 4
-      Shadow.Color = clBlack
-      OnClick = BtHighClick
-    end
     object SBMode: TGuiSelectBox
       Left = 8
       Top = 6
       Width = 89
       Height = 26
-      Oversampling = fo4x
+      AntiAlias = gaaLinear4x
       ArrowColor = 6450289
       ButtonColor = 6450289
       Font.Charset = DEFAULT_CHARSET
@@ -259,6 +218,50 @@ object FmSplitter: TFmSplitter
       Radius = 4
       SelectBoxColor = 7701642
       OnChange = SBModeChange
+    end
+    object BtLow: TGuiButton
+      Left = 447
+      Top = 6
+      Width = 65
+      Height = 26
+      Alignment = taCenter
+      BorderColor = clBlack
+      BorderWidth = 1.500000000000000000
+      ButtonColor = 1625885
+      Caption = 'Low'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      FontOversampling = fo4x
+      Radius = 4.000000000000000000
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = clBlack
+      Transparent = False
+      OnClick = BtLowClick
+    end
+    object BtHigh: TGuiButton
+      Left = 518
+      Top = 6
+      Width = 65
+      Height = 26
+      Alignment = taCenter
+      BorderColor = clBlack
+      BorderWidth = 1.500000000000000000
+      ButtonColor = 6450289
+      Caption = 'High'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      FontOversampling = fo4x
+      Radius = 4.000000000000000000
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = clBlack
+      Transparent = False
+      OnClick = BtHighClick
     end
   end
   object PnGui: TPanel

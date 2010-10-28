@@ -13,8 +13,7 @@ type
     ButtonC: TGuiButton;
     ButtonD: TGuiButton;
     CbTransparent: TCheckBox;
-    TbLineWidth: TTrackBar;
-    LbLineWidth: TLabel;
+    TbBorderWidth: TTrackBar;
     TbRadius: TTrackBar;
     LbRadius: TLabel;
     procedure FormCreate(Sender: TObject);
@@ -22,7 +21,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
-    procedure TbLineWidthChange(Sender: TObject);
+    procedure TbBorderWidthChange(Sender: TObject);
     procedure TbRadiusChange(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
@@ -63,8 +62,7 @@ var
 begin
  with FBackground do
   begin
-   Width := Self.Width;
-   Height := Self.Height;
+   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
@@ -85,12 +83,12 @@ begin
   end;
 end;
 
-procedure TFmButton.TbLineWidthChange(Sender: TObject);
+procedure TFmButton.TbBorderWidthChange(Sender: TObject);
 begin
- ButtonA.LineWidth := TbLineWidth.Position;
- ButtonB.LineWidth := TbLineWidth.Position;
- ButtonC.LineWidth := TbLineWidth.Position;
- ButtonD.LineWidth := TbLineWidth.Position;
+ ButtonA.BorderWidth := 0.25 *(3 + TbBorderWidth.Position);
+ ButtonB.BorderWidth := 0.25 *(3 + TbBorderWidth.Position);
+ ButtonC.BorderWidth := 0.25 *(3 + TbBorderWidth.Position);
+ ButtonD.BorderWidth := 0.25 *(3 + TbBorderWidth.Position);
 end;
 
 procedure TFmButton.CbTransparentClick(Sender: TObject);
@@ -103,10 +101,10 @@ end;
 
 procedure TFmButton.TbRadiusChange(Sender: TObject);
 begin
- ButtonA.Radius := TbRadius.Position;
- ButtonB.Radius := TbRadius.Position;
- ButtonC.Radius := TbRadius.Position;
- ButtonD.Radius := TbRadius.Position;
+ ButtonA.Radius := 0.5 * TbRadius.Position;
+ ButtonB.Radius := 0.5 * TbRadius.Position;
+ ButtonC.Radius := 0.5 * TbRadius.Position;
+ ButtonD.Radius := 0.5 * TbRadius.Position;
 end;
 
 end.

@@ -1,5 +1,35 @@
 unit DAV_GuiButton;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -7,49 +37,88 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Controls, Graphics, DAV_GuiCommon, DAV_GuiBaseControl;
+  Classes, Controls, StdCtrls, Graphics, DAV_GuiCommon, DAV_GuiFont,
+  DAV_GuiShadow, DAV_GuiPixelMap;
 
 type
-  TCustomGuiButton = class(TCustomGuiBaseControl)
+  TCustomGuiButton = class(TButtonControl)
   private
-    FRoundRadius  : Integer;
-    FAlignment    : TAlignment;
-    FAntiAlias    : TGuiAntiAlias;
-    FCaption      : string;
-    FOSFactor     : Integer;
-    FButtonColor  : TColor;
-    FShadow       : TGUIShadow;
-    procedure SetRoundRadius(Value: Integer);
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    FAlignment   : TAlignment;
+    FBorderColor : TColor;
+    FBorderWidth : Single;
+    FButtonColor : TColor;
+    FCanvas      : TCanvas;
+    FCaption     : string;
+    FGuiFont     : TGuiOversampledGDIFont;
+    FRadius      : Single;
+    FTransparent : Boolean;
+    FOnPaint     : TNotifyEvent;
+    function GetShadow: TGUIShadow;
+    function GetOversampling: TFontOversampling;
+    procedure SetAlignment(const Value: TAlignment);
+    procedure SetBorderColor(const Value: TColor);
+    procedure SetBorderWidth(const Value: Single);
     procedure SetButtonColor(const Value: TColor);
     procedure SetCaption(const Value: string);
-    procedure SetAlignment(const Value: TAlignment);
+    procedure SetRadius(Value: Single);
     procedure SetShadow(const Value: TGUIShadow);
-    procedure DownsampleBitmap(Bitmap: TBitmap);
-    procedure UpsampleBitmap(Bitmap: TBitmap);
+    procedure SetTransparent(const Value: Boolean);
+    procedure SetOversampling(const Value: TFontOversampling);
   protected
-    procedure UpdateBuffer; override;
-    procedure AntiAliasChanged; virtual;
-    procedure RenderButtonToBitmap(const Bitmap: TBitmap);
+    FBuffer           : TGuiCustomPixelMap;
+    FBackBuffer       : TGuiCustomPixelMap;
+    FUpdateBackBuffer : Boolean;
+    FUpdateBuffer     : Boolean;
+
+    procedure Paint; virtual;
+    procedure BufferChanged; virtual;
+    procedure BackBufferChanged; virtual;
+    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
+    procedure RenderButton(PixelMap: TGuiCustomPixelMap);
+    procedure FontChangedHandler(Sender: TObject); virtual;
+    procedure UpdateBackBuffer; virtual;
+    procedure UpdateBuffer; virtual;
+
+    procedure Resize; override;
+    procedure Loaded; override;
+    procedure PaintWindow(DC: HDC); override;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+
+    procedure AlignmentChanged; virtual;
+    procedure BorderColorChanged; virtual;
+    procedure BorderWidthChanged; virtual;
+    procedure ButtonColorChanged; virtual;
+    procedure CaptionChanged; virtual;
+    procedure RadiusChanged; virtual;
+    procedure TransparentChanged; virtual;
+
+    property Canvas: TCanvas read FCanvas;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property Alignment: TAlignment read FAlignment write SetAlignment;
+    property BorderColor: TColor read FBorderColor write SetBorderColor default clBtnShadow;
+    property BorderWidth: Single read FBorderWidth write SetBorderWidth;
+    property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnFace;
     property Caption: string read FCaption write SetCaption;
-    property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnShadow;
-    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
-    property LineColor default clBtnHighlight;
-    property Shadow: TGUIShadow read FShadow write SetShadow;
+    property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
+    property Radius: Single read FRadius write SetRadius;
+    property Shadow: TGUIShadow read GetShadow write SetShadow;
+    property Transparent: Boolean read FTransparent write SetTransparent;
+
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
   end;
 
   TGuiButton = class(TCustomGuiButton)
   published
     property Align;
     property Anchors;
-    property AntiAlias;
     property Alignment;
+    property BorderColor;
+    property BorderWidth;
+    property ButtonColor;
     property Caption;
     property Color;
     property Constraints;
@@ -58,9 +127,7 @@ type
     property DragMode;
     property Enabled;
     property Font;
-    property LineColor;
-    property LineWidth;
-    property ButtonColor;
+    property FontOversampling;
     property PopupMenu;
     property Radius;
     property Shadow;
@@ -92,230 +159,440 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Math, DAV_Complex;
+  Math, SysUtils, DAV_GuiBlend, DAV_Math, DAV_Common, DAV_Complex,
+  DAV_Approximations;
 
 { TCustomGuiButton }
 
 constructor TCustomGuiButton.Create(AOwner: TComponent);
 begin
  inherited;
- ControlStyle  := ControlStyle + [csFramed, csOpaque, csReplicatable,
-                                  csAcceptsControls];
+ ControlStyle  := ControlStyle + [csOpaque, csReplicatable, csAcceptsControls];
 
- FShadow       := TGUIShadow.Create;
+ FCanvas := TControlCanvas.Create;
+ TControlCanvas(FCanvas).Control := Self;
 
- FAlignment    := taCenter;
- FCaption      := 'empty';
- FRoundRadius  := 2;
- FOSFactor     := 1;
- FLineColor    := clBtnHighlight;
- FButtonColor  := clBtnShadow;
+ FGuiFont := TGuiOversampledGDIFont.Create;
+ FGuiFont.OnChange := FontChangedHandler;
+
+ FBuffer      := TGuiPixelMapMemory.Create;
+ FBackBuffer  := TGuiPixelMapMemory.Create;
+
+ FAlignment   := taCenter;
+ FCaption     := 'empty';
+ FRadius      := 2;
+ FBorderWidth := 1;
+ FButtonColor := clBtnShadow;
 end;
 
 destructor TCustomGuiButton.Destroy;
 begin
- FreeAndNil(FShadow);
+ FreeAndNil(FCanvas);
+ FreeAndNil(FGuiFont);
+ FreeAndNil(FBuffer);
+ FreeAndNil(FBackBuffer);
  inherited;
 end;
 
-procedure TCustomGuiButton.RenderButtonToBitmap(const Bitmap: TBitmap);
-{$IFNDEF FPC}
-var
-  Val, Off : TComplexDouble;
-  Steps, i : Integer;
-  tmp      : Single;
-  rad      : Integer;
-  TextSize : TSize;
-  PtsArray : Array of TPoint;
+procedure TCustomGuiButton.FontChangedHandler(Sender: TObject);
 begin
- with Bitmap.Canvas do
-  begin
-   Lock;
-   Font.Assign(Self.Font);
-   Font.Size := FOSFactor * Font.Size;
+ BufferChanged;
+end;
 
-   Brush.Style := bsClear;
-   Brush.Color := FButtonColor;
-   Pen.Width   := FOSFactor * fLineWidth;
-   Pen.Color   := FLineColor;
-   
-   case FRoundRadius of
-    0, 1 : FillRect(ClipRect);
-       2 : begin
-            with ClipRect do
-             Polygon([Point(Left  + 1, Bottom - 2), Point(Left     , Bottom - 3),
-                      Point(Left     , Top    + 2), Point(Left  + 2, Top       ),
-                      Point(Right - 3, Top       ), Point(Right - 1, Top    + 2),
-                      Point(Right - 2, Top    + 1), Point(Right - 1, Top    + 2),
-                      Point(Right - 1, Bottom - 2), Point(Right - 3, Bottom - 1),
-                      Point(Left  + 2, Bottom - 1), Point(Left,      Bottom - 3)]);
-           end;
-    else
-     begin
-      rad := FOSFactor * FRoundRadius;
-      Steps := Round(2 / arcsin(1 / FRoundRadius)) + 1;
-      if Steps > 1 then
-       begin
-        SetLength(PtsArray, Steps + 4);
-        Val.Im := 0; Val.Re := -1;
-        Val.Re := Val.Re * rad; Val.Im := Val.Im * rad;
+procedure TCustomGuiButton.AlignmentChanged;
+begin
+ BufferChanged;
+end;
 
-        GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
-        PtsArray[0] := Point(Round(Linewidth div 2), Round(Linewidth div 2 + rad));
+procedure TCustomGuiButton.BackBufferChanged;
+begin
+ FUpdateBackBuffer := True;
+ Invalidate;
+end;
 
-        // upper left corner
-        for i := 1 to Steps div 4 - 1 do
-         begin
-          tmp := Val.Re * Off.Re - Val.Im * Off.Im;
-          Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
-          Val.Re := tmp;
-          PtsArray[i] := Point(Round(Linewidth div 2 + rad + Val.Re), Round(Linewidth div 2 + rad + Val.Im));
-         end;
-        PtsArray[Steps div 4] := Point(Linewidth div 2 + rad, Linewidth div 2 + 0);
+procedure TCustomGuiButton.BorderColorChanged;
+begin
+ BufferChanged;
+end;
 
-        // upper right corner
-        for i := Steps div 4 to Steps div 2 - 1 do
-         begin
-          tmp := Val.Re * Off.Re - Val.Im * Off.Im;
-          Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
-          Val.Re := tmp;
-          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (Linewidth + 1) div 2 + Val.Re), Round(Linewidth div 2 + rad + Val.Im));
-         end;
-        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (Linewidth + 1) div 2, Linewidth div 2 + rad);
+procedure TCustomGuiButton.BorderWidthChanged;
+begin
+ BufferChanged;
+end;
 
-        // lower right corner
-        for i := Steps div 2 to 3 * Steps div 4 - 1 do
-         begin
-          tmp := Val.Re * Off.Re - Val.Im * Off.Im;
-          Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
-          Val.Re := tmp;
-          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (Linewidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (Linewidth + 1) div 2 - rad + Val.Im));
-         end;
-        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (Linewidth + 1) div 2, ClipRect.Bottom - (Linewidth + 1) div 2);
+procedure TCustomGuiButton.BufferChanged;
+begin
+ FUpdateBuffer := True;
+ Invalidate;
+end;
 
-        // lower left corner
-        for i := 3 * Steps div 4 to Steps - 1 do
-         begin
-          tmp := Val.Re * Off.Re - Val.Im * Off.Im;
-          Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
-          Val.Re := tmp;
-          PtsArray[i + 3] := Point(Round(Linewidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (Linewidth + 1) div 2 - rad + Val.Im));
-         end;
-        PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
+procedure TCustomGuiButton.ButtonColorChanged;
+begin
+ BufferChanged;
+end;
 
-        PolyGon(PtsArray);
-        if FLineColor <> FButtonColor
-         then PolyLine(PtsArray);
-       end;
-     end;
-   end;
+procedure TCustomGuiButton.CaptionChanged;
+begin
+ BufferChanged;
+end;
 
-   TextSize := TextExtent(FCaption);
+type
+  TParentControl = class(TWinControl);
 
-   if FShadow.Visible then
-    begin
-     Font.Color := FShadow.Color;
-     case FAlignment of
-       taLeftJustify : TextOut(FOSFactor * FShadow.Offset.X, (Bitmap.Height - TextSize.cy) div 2 + FOSFactor * FShadow.Offset.Y, FCaption);
-      taRightJustify : TextOut(FOSFactor * FShadow.Offset.X + Bitmap.Width - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2 + FOSFactor * FShadow.Offset.Y, FCaption);
-            taCenter : TextOut(FOSFactor * FShadow.Offset.X + (Bitmap.Width - TextSize.cx) div 2, (Bitmap.Height - TextSize.cy) div 2 + FOSFactor * FShadow.Offset.Y, FCaption);
-     end;
-     Font.Color := Self.Font.Color;
+procedure TCustomGuiButton.CopyParentImage(PixelMap: TGuiCustomPixelMap);
+var
+  I         : Integer;
+  SubCount  : Integer;
+  SaveIndex : Integer;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
+  Bmp       : TBitmap;
+begin
+ if (Parent = nil) then Exit;
+ SubCount := Parent.ControlCount;
+
+ // set
+ {$IFDEF WIN32}
+ with Parent
+  do ControlState := ControlState + [csPaintCopy];
+ try
+ {$ENDIF}
+
+  SelfR := Bounds(Left, Top, Width, Height);
+  Pnt.X := -Left;
+  Pnt.Y := -Top;
+
+  {$IFNDEF FPC}
+  Bmp := TBitmap.Create;
+  with Bmp do
+   try
+    Width := Self.Width;
+    Height := Self.Height;
+    PixelFormat := pf32bit;
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+     with TParentControl(Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
     end;
 
-   case FAlignment of
-     taLeftJustify : TextOut(0, (Bitmap.Height - TextSize.cy) div 2, FCaption);
-    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2, FCaption);
-          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, (Bitmap.Height - TextSize.cy) div 2, FCaption);
+    // Copy images of graphic controls
+    for I := 0 to SubCount - 1 do
+     begin
+      if Parent.Controls[I] = Self then Break else
+       if (Parent.Controls[I] <> nil) and
+          (Parent.Controls[I] is TGraphicControl)
+        then
+         with TGraphicControl(Parent.Controls[I]) do
+          begin
+           CtlR := Bounds(Left, Top, Width, Height);
+           if Boolean(IntersectRect(R, SelfR, CtlR)) and Visible then
+            begin
+             {$IFDEF WIN32}
+             ControlState := ControlState + [csPaintCopy];
+             {$ENDIF}
+             SaveIndex := SaveDC(Canvas.Handle);
+             try
+              SaveIndex := SaveDC(Canvas.Handle);
+              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
+              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
+              Perform(WM_PAINT, Canvas.Handle, 0);
+             finally
+              RestoreDC(Handle, SaveIndex);
+              {$IFDEF WIN32}
+              ControlState := ControlState - [csPaintCopy];
+              {$ENDIF}
+             end;
+            end;
+          end;
+     end;
+    PixelMap.Draw(Bmp);
+    PixelMap.MakeOpaque;
+   finally
+    Free;
    end;
+  {$ENDIF}
 
-   Unlock;
+ {$IFDEF WIN32}
+ finally
+   with Parent do ControlState := ControlState - [csPaintCopy];
+ end;
+ {$ENDIF}
+end;
+
+procedure TCustomGuiButton.UpdateBackBuffer;
+var
+  PixelColor32 : TPixel32;
+begin
+ FUpdateBackBuffer := False;
+ if FTransparent then CopyParentImage(FBackBuffer) else
+  begin
+   PixelColor32 := ConvertColor(Color);
+   FBackBuffer.FillRect(ClientRect, PixelColor32);
   end;
-{$ELSE}
-begin
-{$ENDIF}
-end;
 
-procedure TCustomGuiButton.UpsampleBitmap(Bitmap: TBitmap);
-begin
- case FAntiAlias of
-   gaaLinear2x: Upsample2xBitmap32(Bitmap);
-   gaaLinear3x: Upsample3xBitmap32(Bitmap);
-   gaaLinear4x: Upsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample4xBitmap32(Bitmap);
-                end;
-  else raise Exception.Create('not yet supported');
- end;
-end;
-
-procedure TCustomGuiButton.DownsampleBitmap(Bitmap: TBitmap);
-begin
- case FAntiAlias of
-   gaaLinear2x : Downsample2xBitmap32(Bitmap);
-   gaaLinear3x : Downsample3xBitmap32(Bitmap);
-   gaaLinear4x : Downsample4xBitmap32(Bitmap);
-   gaaLinear8x : begin
-                  Downsample4xBitmap32(Bitmap);
-                  Downsample2xBitmap32(Bitmap);
-                 end;
-  gaaLinear16x : begin
-                  Downsample4xBitmap32(Bitmap);
-                  Downsample4xBitmap32(Bitmap);
-                 end;
-  else raise Exception.Create('not yet supported');
- end;
+ FUpdateBuffer := True;
 end;
 
 procedure TCustomGuiButton.UpdateBuffer;
 var
-  Bmp : TBitmap;
+  TextSize : TSize;
 begin
- if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
+ FUpdateBuffer := False;
+
+ // check whether a buffer or a back buffer is assigned
+ if not Assigned(FBuffer) or not Assigned(FBackBuffer)
+  then Exit;
+
+ Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
+
+ // copy back buffer to buffer
+ Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
+   FBuffer.Width * SizeOf(TPixel32));
+
+ RenderButton(FBuffer);
+
+ if Assigned(FGuiFont) then
   begin
-   Lock;
-   Brush.Style := bsSolid;
-   Brush.Color := Self.Color;
-   case FAntiAlias of
-    gaaNone     :
-     begin
-      {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
-      FillRect(ClipRect);
-      RenderButtonToBitmap(FBuffer);
-     end;
-    else
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := FOSFactor * FBuffer.Width;
-        Height := FOSFactor * FBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        {$IFNDEF FPC}
-        if FTransparent then
-         begin
-          CopyParentImage(Self, Bmp.Canvas);
-          UpsampleBitmap(Bmp);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        FillRect(ClipRect);
-        RenderButtonToBitmap(Bmp);
-        DownsampleBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
+   TextSize := FGuiFont.TextExtend(FCaption);
+   case FAlignment of
+    taLeftJustify  : TextSize.cx := 0;
+    taRightJustify : TextSize.cx := Width - TextSize.cx;
+    taCenter       : TextSize.cx := (Width - TextSize.cx) div 2;
    end;
+
+   TextSize.cy := (Height - TextSize.cy) div 2;
+   FGuiFont.TextOut(FCaption, FBuffer, TextSize.cx, TextSize.cy);
   end;
+end;
+
+procedure TCustomGuiButton.RadiusChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiButton.TransparentChanged;
+begin
+ BackBufferChanged;
+end;
+
+function TCustomGuiButton.GetOversampling: TFontOversampling;
+begin
+ Result := FGuiFont.FontOversampling;
+end;
+
+function TCustomGuiButton.GetShadow: TGUIShadow;
+begin
+ Result := FGuiFont.Shadow;
+end;
+
+procedure TCustomGuiButton.Loaded;
+begin
+ inherited;
+ Resize;
+end;
+
+procedure TCustomGuiButton.WMPaint(var Message: TWMPaint);
+begin
+ ControlState := ControlState + [csCustomPaint];
+ inherited;
+ ControlState := ControlState - [csCustomPaint];
+end;
+
+procedure TCustomGuiButton.PaintWindow(DC: HDC);
+begin
+ FCanvas.Lock;
+ try
+  FCanvas.Handle := DC;
+  try
+   TControlCanvas(FCanvas).UpdateTextFlags;
+   Paint;
+  finally
+   FCanvas.Handle := 0;
+  end;
+ finally
+  FCanvas.Unlock;
+ end;
+end;
+
+procedure TCustomGuiButton.Paint;
+begin
+ inherited;
+
+ if FUpdateBackBuffer
+  then UpdateBackBuffer;
+
+ if FUpdateBuffer
+  then UpdateBuffer;
+
+ if Assigned(FOnPaint)
+  then FOnPaint(Self);
+
+ if Assigned(FBuffer)
+  then FBuffer.PaintTo(Canvas);
+end;
+
+procedure TCustomGuiButton.RenderButton(PixelMap: TGuiCustomPixelMap);
+var
+  X, Y              : Integer;
+  ScnLne            : array [0..1] of PPixel32Array;
+  ButtonColor       : TPixel32;
+  BorderColor       : TPixel32;
+  CombColor         : TPixel32;
+  Radius            : Single;
+  XStart            : Single;
+  BorderWidth       : Single;
+  SqrRadMinusBorder : Single;
+  RadMinusBorderOne : Single;
+  SqrDist, SqrYDist : Single;
+  SqrRadMinusOne    : Single;
+  Temp              : Single;
+begin
+ with PixelMap do
+  begin
+   ButtonColor := ConvertColor(FButtonColor);
+   if FBorderWidth = 0
+    then BorderColor := ButtonColor
+    else BorderColor := ConvertColor(FBorderColor);
+
+   // draw circle
+   Radius := Min(Min(FRadius, 0.5 * Width), 0.5 * Height) + 1;
+   BorderWidth := Max(FBorderWidth, 1);
+
+   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
+   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
+   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
+
+   for Y := 0 to Round(Radius) - 1  do
+    begin
+     SqrYDist := Sqr(Y - (Radius - 1));
+     XStart := Sqr(Radius) - SqrYDist;
+     if XStart <= 0
+      then Continue
+      else XStart := Sqrt(XStart) - 0.5;
+     ScnLne[0] := Scanline[Y];
+     ScnLne[1] := Scanline[Height - 1 - Y];
+
+     for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
+      begin
+       // calculate squared distance
+       if X < (Radius - 1)
+        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
+
+       if X > (Width - 1) - (Radius - 1)
+        then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
+        else SqrDist := SqrYDist;
+
+       if SqrDist < SqrRadMinusBorder
+        then CombColor := ButtonColor
+        else
+       if SqrDist <= Sqr(RadMinusBorderOne) then
+        begin
+         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+         CombColor := CombinePixel(BorderColor, ButtonColor, Round($FF - Temp * $FF));
+        end else
+       if SqrDist < SqrRadMinusOne
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+         end;
+
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       BlendPixelInplace(CombColor, ScnLne[1][X]);
+       EMMS;
+      end;
+    end;
+
+   for Y := Round(Radius) to Height - 1 - Round(Radius) do
+    begin
+     ScnLne[0] := Scanline[Y];
+     for X := 0 to Width - 1 do
+      begin
+       // check whether position is a border
+       if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
+
+       // check whether position is an upper half border
+       if (Y < BorderWidth) then
+        begin
+         Temp := BorderWidth - Y;
+         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+          end else
+         if (X > Width - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+          end
+         else CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+        end else
+
+       // check whether position is a lower half border
+       if (Y > Height - 1 - BorderWidth) then
+        begin
+         Temp := Y - (Height - 1 - BorderWidth);
+         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+          end else
+         if (X > Width - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+          end
+         else CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+        end else
+
+       if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
+       if (X < BorderWidth) then
+        begin
+         Temp := BorderWidth - X;
+         CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+        end else
+       if (X > Width - 1 - BorderWidth) then
+        begin
+         Temp := X - (Width - 1 - BorderWidth);
+         CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
+        end
+       else CombColor := ButtonColor;
+
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       EMMS;
+      end;
+    end;
+  end;
+end;
+
+procedure TCustomGuiButton.Resize;
+begin
+ inherited;
+ FBuffer.SetSize(Width, Height);
+ FBackBuffer.SetSize(Width, Height);
+ UpdateBackBuffer;
+end;
+
+procedure TCustomGuiButton.CMFontChanged(var Message: TMessage);
+begin
+ FGuiFont.Font.Assign(Font);
 end;
 
 procedure TCustomGuiButton.SetAlignment(const Value: TAlignment);
@@ -323,30 +600,26 @@ begin
  if FAlignment <> Value then
   begin
    FAlignment := Value;
-   Invalidate;
+   AlignmentChanged;
   end;
 end;
 
-procedure TCustomGuiButton.SetAntiAlias(const Value: TGuiAntiAlias);
+procedure TCustomGuiButton.SetBorderColor(const Value: TColor);
 begin
- if FAntiAlias <> Value then
+ if FBorderColor <> Value then
   begin
-   FAntiAlias := Value;
-   AntiAliasChanged;
+   FBorderColor := Value;
+   BorderColorChanged;
   end;
 end;
 
-procedure TCustomGuiButton.AntiAliasChanged;
+procedure TCustomGuiButton.SetBorderWidth(const Value: Single);
 begin
- case FAntiAlias of
-       gaaNone : FOSFactor :=  1;
-   gaaLinear2x : FOSFactor :=  2;
-   gaaLinear3x : FOSFactor :=  3;
-   gaaLinear4x : FOSFactor :=  4;
-   gaaLinear8x : FOSFactor :=  8;
-  gaaLinear16x : FOSFactor := 16;
- end;
- Invalidate;
+ if FBorderWidth <> Value then
+  begin
+   FBorderWidth := Value;
+   BorderWidthChanged;
+  end;
 end;
 
 procedure TCustomGuiButton.SetButtonColor(const Value: TColor);
@@ -354,7 +627,7 @@ begin
  if FButtonColor <> Value then
   begin
    FButtonColor := Value;
-   Invalidate;
+   ButtonColorChanged;
   end;
 end;
 
@@ -363,23 +636,37 @@ begin
  if FCaption <> Value then
   begin
    FCaption := Value;
-   Invalidate;
+   CaptionChanged;
   end;
 end;
 
-procedure TCustomGuiButton.SetRoundRadius(Value: Integer);
+procedure TCustomGuiButton.SetOversampling(const Value: TFontOversampling);
+begin
+ FGuiFont.FontOversampling := Value;
+end;
+
+procedure TCustomGuiButton.SetRadius(Value: Single);
 begin
  if Value < 0 then Value := 0;
- if FRoundRadius <> Value then
+ if FRadius <> Value then
   begin
-   FRoundRadius := Value;
-   Invalidate;
+   FRadius := Value;
+   RadiusChanged;
   end;
 end;
 
 procedure TCustomGuiButton.SetShadow(const Value: TGUIShadow);
 begin
- FShadow.Assign(Value);
+ FGuiFont.Shadow.Assign(Value);
+end;
+
+procedure TCustomGuiButton.SetTransparent(const Value: Boolean);
+begin
+ if FTransparent <> Value then
+  begin
+   FTransparent := Value;
+   TransparentChanged;
+  end;
 end;
 
 end.

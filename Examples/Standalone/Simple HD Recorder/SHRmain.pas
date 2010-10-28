@@ -37,7 +37,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Dialogs,
   Graphics, DAV_Types, DAV_GuiLabel, DAV_GuiButton, DAV_GuiBaseControl,
-  DAV_GuiLED, DAV_ASIOHost;
+  DAV_GuiLED, DAV_ASIOHost, StdCtrls;
 
 type
   TStorageThread = class(TThread)

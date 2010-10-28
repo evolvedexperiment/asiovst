@@ -37,9 +37,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, StdCtrls,
   ExtCtrls, Menus, DAV_Types, DAV_VSTModule, DAV_GuiButton, DAV_GuiVUMeter,
-  DAV_GuiPixelMap, DAV_GuiLED, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPanel,
+  DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiLED, DAV_GuiLabel, DAV_GuiPanel,
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
-  DAV_GuiPng, DAV_GuiStitchedDisplay;
+  DAV_GuiStitchedDisplay;
 
 type
   TLevelState = (lsIn, lsGR, lsOut);

@@ -17,45 +17,6 @@ object FmButton: TFmButton
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object ButtonA: TGuiButton
-    Left = 8
-    Top = 8
-    Width = 64
-    Height = 24
-    Alignment = taCenter
-    Caption = 'Button A'
-    Shadow.Color = clBlack
-  end
-  object ButtonB: TGuiButton
-    Left = 78
-    Top = 8
-    Width = 64
-    Height = 24
-    AntiAlias = gaaLinear2x
-    Alignment = taCenter
-    Caption = 'Button B'
-    Shadow.Color = clBlack
-  end
-  object ButtonC: TGuiButton
-    Left = 8
-    Top = 38
-    Width = 64
-    Height = 24
-    AntiAlias = gaaLinear3x
-    Alignment = taCenter
-    Caption = 'Button C'
-    Shadow.Color = clBlack
-  end
-  object ButtonD: TGuiButton
-    Left = 78
-    Top = 38
-    Width = 64
-    Height = 24
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    Caption = 'Button D'
-    Shadow.Color = clBlack
-  end
   object LbLineWidth: TLabel
     Left = 8
     Top = 70
@@ -72,6 +33,58 @@ object FmButton: TFmButton
     Caption = 'Radius:'
     Transparent = True
   end
+  object ButtonA: TGuiButton
+    Left = 8
+    Top = 8
+    Width = 64
+    Height = 24
+    Alignment = taCenter
+    BorderColor = clBlack
+    ButtonColor = clBtnShadow
+    Caption = 'Button A'
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
+    Transparent = False
+  end
+  object ButtonB: TGuiButton
+    Left = 78
+    Top = 8
+    Width = 64
+    Height = 24
+    Alignment = taCenter
+    BorderColor = clBlack
+    ButtonColor = clBtnShadow
+    Caption = 'Button B'
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
+    Transparent = False
+  end
+  object ButtonC: TGuiButton
+    Left = 8
+    Top = 38
+    Width = 64
+    Height = 24
+    Alignment = taCenter
+    BorderColor = clBlack
+    ButtonColor = clBtnShadow
+    Caption = 'Button C'
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
+    Transparent = False
+  end
+  object ButtonD: TGuiButton
+    Left = 78
+    Top = 38
+    Width = 64
+    Height = 24
+    Alignment = taCenter
+    BorderColor = clBlack
+    ButtonColor = clBtnShadow
+    Caption = 'Button D'
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
+    Transparent = False
+  end
   object CbTransparent: TCheckBox
     Left = 32
     Top = 124
@@ -81,24 +94,24 @@ object FmButton: TFmButton
     TabOrder = 0
     OnClick = CbTransparentClick
   end
-  object TbLineWidth: TTrackBar
+  object TbBorderWidth: TTrackBar
     Left = 62
     Top = 68
     Width = 80
     Height = 22
-    Max = 9
+    Max = 16
     Min = 1
     Position = 1
     TabOrder = 1
     ThumbLength = 12
-    OnChange = TbLineWidthChange
+    OnChange = TbBorderWidthChange
   end
   object TbRadius: TTrackBar
     Left = 62
     Top = 96
     Width = 80
     Height = 22
-    Max = 9
+    Max = 16
     Min = 1
     Position = 1
     TabOrder = 2
