@@ -1,4 +1,5 @@
 object SplitTemplateDataModule: TSplitTemplateDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]

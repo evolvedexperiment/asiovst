@@ -157,69 +157,6 @@ object FmLA4029: TFmLA4029
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
-    object BtIn: TGuiButton
-      Left = 72
-      Top = 134
-      Width = 52
-      Height = 25
-      AntiAlias = gaaLinear4x
-      Alignment = taCenter
-      Caption = 'In'
-      Color = clBlack
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 14869218
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      LineColor = clSilver
-      LineWidth = 2
-      ButtonColor = 2105376
-      Radius = 5
-      Shadow.Color = clBlack
-      OnClick = BtInClick
-    end
-    object BtGR: TGuiButton
-      Left = 130
-      Top = 134
-      Width = 52
-      Height = 25
-      AntiAlias = gaaLinear4x
-      Alignment = taCenter
-      Caption = 'GR'
-      Color = clBlack
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGray
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      LineColor = 3355443
-      LineWidth = 2
-      ButtonColor = clBlack
-      Radius = 5
-      Shadow.Color = clBlack
-      OnClick = BtGRClick
-    end
-    object BtOut: TGuiButton
-      Left = 188
-      Top = 134
-      Width = 52
-      Height = 25
-      AntiAlias = gaaLinear4x
-      Alignment = taCenter
-      Caption = 'Out'
-      Color = clBlack
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGray
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      LineColor = 3355443
-      LineWidth = 2
-      ButtonColor = clBlack
-      Radius = 5
-      Shadow.Color = clBlack
-      OnClick = BtOutClick
-    end
     object LbVUMeterDisplay: TLabel
       Left = 87
       Top = 93
@@ -285,6 +222,75 @@ object FmLA4029: TFmLA4029
       Width = 241
       Height = 3
       Brush.Color = 3355443
+    end
+    object BtIn: TGuiButton
+      Left = 72
+      Top = 134
+      Width = 52
+      Height = 25
+      Alignment = taCenter
+      BorderColor = 3355443
+      BorderWidth = 2.000000000000000000
+      ButtonColor = 2105376
+      Caption = 'In'
+      Color = clBlack
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 14869218
+      Font.Height = -16
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      FontOversampling = fo4x
+      Radius = 5.000000000000000000
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = clBlack
+      Transparent = False
+      OnClick = BtInClick
+    end
+    object BtGR: TGuiButton
+      Left = 130
+      Top = 134
+      Width = 52
+      Height = 25
+      Alignment = taCenter
+      BorderColor = 3355443
+      BorderWidth = 2.000000000000000000
+      ButtonColor = clBlack
+      Caption = 'GR'
+      Color = clBlack
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGray
+      Font.Height = -16
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      FontOversampling = fo4x
+      Radius = 5.000000000000000000
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = clBlack
+      Transparent = False
+      OnClick = BtGRClick
+    end
+    object BtOut: TGuiButton
+      Left = 188
+      Top = 134
+      Width = 52
+      Height = 25
+      Alignment = taCenter
+      BorderColor = 3355443
+      BorderWidth = 2.000000000000000000
+      ButtonColor = clBlack
+      Caption = 'Out'
+      Color = clBlack
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGray
+      Font.Height = -16
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      FontOversampling = fo4x
+      Radius = 5.000000000000000000
+      Shadow.Blur = 4.000000000000000000
+      Shadow.Color = clBlack
+      Transparent = False
+      OnClick = BtOutClick
     end
     object PnMix: TGuiPanel
       Left = 248

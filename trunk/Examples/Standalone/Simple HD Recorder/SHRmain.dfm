@@ -30,25 +30,6 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Uniformity_Percent = 55.000000000000000000
     Transparent = False
   end
-  object BtStartStop: TGuiButton
-    Left = 8
-    Top = 8
-    Width = 146
-    Height = 59
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    Caption = 'Start'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -32
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    LineColor = 2105376
-    LineWidth = 3
-    Radius = 7
-    Shadow.Color = clBlack
-    OnClick = BtStartStopClick
-  end
   object GuiLED2: TGuiLED
     Left = 207
     Top = 8
@@ -157,23 +138,48 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Shadow.Color = clBlack
     Transparent = True
   end
+  object BtStartStop: TGuiButton
+    Left = 8
+    Top = 8
+    Width = 146
+    Height = 59
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.500000000000000000
+    ButtonColor = clBtnShadow
+    Caption = 'Start'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -32
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    Radius = 7.000000000000000000
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = clBlack
+    Transparent = False
+    OnClick = BtStartStopClick
+  end
   object BtSetup: TGuiButton
     Left = 348
     Top = 8
     Width = 69
     Height = 27
-    AntiAlias = gaaLinear4x
     Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.500000000000000000
+    ButtonColor = clBtnShadow
     Caption = 'Setup'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    LineColor = 2105376
-    LineWidth = 3
-    Radius = 5
+    FontOversampling = fo4x
+    Radius = 5.000000000000000000
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = False
     OnClick = BtSetupClick
   end
   object BtExit: TGuiButton
@@ -181,18 +187,21 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 40
     Width = 69
     Height = 27
-    AntiAlias = gaaLinear4x
     Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.500000000000000000
+    ButtonColor = clBtnShadow
     Caption = 'Exit'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    LineColor = 2105376
-    LineWidth = 3
-    Radius = 5
+    FontOversampling = fo4x
+    Radius = 5.000000000000000000
+    Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    Transparent = False
     OnClick = BtExitClick
   end
   object Timer: TTimer

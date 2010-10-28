@@ -355,7 +355,7 @@ begin
 
    // draw circle
    Radius := Min(Min(FRoundRadius, 0.5 * Width), 0.5 * Height) + 1;
-   BorderWidth := Max(FBorderWidth, 2);
+   BorderWidth := Max(FBorderWidth, 1);
 
    RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
    SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));

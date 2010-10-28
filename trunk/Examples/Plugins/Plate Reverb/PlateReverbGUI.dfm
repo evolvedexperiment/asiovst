@@ -250,36 +250,40 @@ object FmPlateReverb: TFmPlateReverb
       Top = 2
       Width = 61
       Height = 19
-      AntiAlias = gaaLinear4x
       Alignment = taCenter
+      BorderColor = 5855577
+      BorderWidth = 1.500000000000000000
+      ButtonColor = 14803425
       Caption = 'a <> b'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 5855577
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      LineColor = 5855577
-      ButtonColor = 14803425
-      Radius = 4
+      Radius = 4.000000000000000000
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
+      Transparent = False
     end
     object BtAbout: TGuiButton
       Left = 280
       Top = 2
       Width = 61
       Height = 19
-      AntiAlias = gaaLinear4x
       Alignment = taCenter
+      BorderColor = 5855577
+      BorderWidth = 1.500000000000000000
+      ButtonColor = 14803425
       Caption = 'about'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 5855577
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      LineColor = 5855577
-      ButtonColor = 14803425
-      Radius = 4
+      Radius = 4.000000000000000000
+      Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
+      Transparent = False
       OnClick = BtAboutClick
     end
   end
