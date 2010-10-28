@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList, DAV_GuiStitchedImageList;
 
 type
   TFmSwitchTest = class(TForm)

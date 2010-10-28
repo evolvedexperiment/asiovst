@@ -181,10 +181,10 @@ end;
 
 procedure TFmLEDTest.TbLineWidthChange(Sender: TObject);
 begin
- LED1.LineWidth := TbLineWidth.Position;
- LED2.LineWidth := TbLineWidth.Position;
- LED3.LineWidth := TbLineWidth.Position;
- LED4.LineWidth := TbLineWidth.Position;
+ LED1.BorderWidth := TbLineWidth.Position;
+ LED2.BorderWidth := TbLineWidth.Position;
+ LED3.BorderWidth := TbLineWidth.Position;
+ LED4.BorderWidth := TbLineWidth.Position;
 end;
 
 procedure TFmLEDTest.TbUniformityChange(Sender: TObject);

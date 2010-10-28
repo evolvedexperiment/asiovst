@@ -37,7 +37,7 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Types,
   DAV_VSTModule, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiPixelMap;
 
 type
   TFmFrequencyDomainPitchShifter = class(TForm)
@@ -48,8 +48,9 @@ type
     procedure DialSemitonesChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackground3 : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateSemitones;
   end;
@@ -57,68 +58,54 @@ type
 implementation
 
 uses
-  PngImage, FrequencyDomainPitchShifterDM, DAV_VSTModuleWithPrograms;
+  FrequencyDomainPitchShifterDM, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
+
+procedure TFmFrequencyDomainPitchShifter.FormCreate(Sender: TObject);
+begin
+ FBackground := TGuiCustomPixelMap.Create;
+end;
+
+procedure TFmFrequencyDomainPitchShifter.FormPaint(Sender: TObject);
+begin
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmFrequencyDomainPitchShifter.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  s      : array [0..1] of Single;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   s[0] := 0;
+   s[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
+       s[0] := s[1];
+       ScnLn[x].B := round($0F + $0E * s[1]);;
+       ScnLn[x].G := round($12 + $0E * s[1]);;
+       ScnLn[x].R := round($13 + $0E * s[1]);;
+      end;
+    end;
+  end;
+end;
 
 procedure TFmFrequencyDomainPitchShifter.DialSemitonesChange(Sender: TObject);
 begin
  with TFrequencyDomainPitchShifterModule(Owner) do
   begin
-   if Parameter[0] <> DialSemitones.Position
-    then Parameter[0] := DialSemitones.Position
+   if Parameter[0] <> DialSemitones.Value
+    then Parameter[0] := DialSemitones.Value
   end;
-end;
-
-procedure TFmFrequencyDomainPitchShifter.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  Line   : PRGB24Array;
-  PngBmp : TPngObject;
-
-begin
- // Create Background Image
- FBackground := TBitmap.Create;
- with FBackground do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       s[0] := s[1];
-       Line[x].B := round($0F + $0E * s[1]);;
-       Line[x].G := round($12 + $0E * s[1]);;
-       Line[x].R := round($13 + $0E * s[1]);;
-      end;
-    end;
-  end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'FrequencyDomainKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialSemitones.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
-
-procedure TFmFrequencyDomainPitchShifter.FormPaint(Sender: TObject);
-begin
- Canvas.Draw(0, 0, FBackground);
 end;
 
 procedure TFmFrequencyDomainPitchShifter.UpdateSemitones;
@@ -127,8 +114,8 @@ var
 begin
  with TFrequencyDomainPitchShifterModule(Owner) do
   begin
-   if DialSemitones.Position <> Parameter[0]
-    then DialSemitones.Position := Parameter[0];
+   if DialSemitones.Value <> Parameter[0]
+    then DialSemitones.Value := Parameter[0];
    SemiTones := round(Parameter[0]);
    LbSemitoneValue.Caption := IntToStr(SemiTones) + ' : ' +
      IntToStr(round(100 * (Parameter[0] - SemiTones)));

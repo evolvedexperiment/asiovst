@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_StitchedButton;
+  Dialogs, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedButton;
 
 type
   TFmStitchedButtonTest = class(TForm)
