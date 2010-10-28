@@ -17,7 +17,7 @@ object FmStitchedButtonTest: TFmStitchedButtonTest
     Left = 8
     Top = 8
     Width = 100
-    Height = 51
+    Height = 50
     AutoSize = True
     StitchedImageList = GuiStitchedPNGList
     StitchedImageIndex = 0
@@ -27,7 +27,7 @@ object FmStitchedButtonTest: TFmStitchedButtonTest
     Left = 114
     Top = 8
     Width = 100
-    Height = 51
+    Height = 50
     AutoSize = True
     StitchedImageList = GuiStitchedPNGList
     StitchedImageIndex = 0

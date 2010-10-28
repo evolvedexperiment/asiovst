@@ -26,54 +26,51 @@ object FmLEDTest: TFmLEDTest
     Top = 8
     Width = 64
     Height = 64
-    LineWidth = 2
-    LEDColor = clBlue
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 100.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clBlue
+    BorderWidth = 3.000000000000000000
     Uniformity_Percent = 50.000000000000000000
-    LineColor = clRed
+    Transparent = False
   end
   object LED2: TGuiLED
     Left = 78
     Top = 8
     Width = 64
     Height = 64
-    LineWidth = 2
-    LEDColor = clYellow
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 100.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clYellow
+    BorderWidth = 3.000000000000000000
     Uniformity_Percent = 50.000000000000000000
+    Transparent = False
     Anchors = [akTop, akRight]
-    AntiAlias = gaaLinear2x
-    LineColor = clRed
   end
   object LED3: TGuiLED
     Left = 8
     Top = 78
     Width = 64
     Height = 64
-    LineWidth = 2
-    LEDColor = clRed
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 100.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clRed
+    BorderWidth = 3.000000000000000000
     Uniformity_Percent = 50.000000000000000000
+    Transparent = False
     Anchors = [akLeft, akBottom]
-    AntiAlias = gaaLinear3x
-    LineColor = clRed
   end
   object LED4: TGuiLED
     Left = 78
     Top = 78
     Width = 64
     Height = 64
-    LineWidth = 2
-    LEDColor = clLime
+    BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 100.000000000000000000
-    BorderStrength_Percent = 100.000000000000000000
+    LEDColor = clLime
+    BorderWidth = 3.000000000000000000
     Uniformity_Percent = 50.000000000000000000
+    Transparent = False
     Anchors = [akRight, akBottom]
-    AntiAlias = gaaLinear4x
-    LineColor = clRed
   end
   object LbUniformiy: TLabel
     Left = 8

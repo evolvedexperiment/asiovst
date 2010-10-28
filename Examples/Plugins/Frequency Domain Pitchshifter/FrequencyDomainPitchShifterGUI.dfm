@@ -15,6 +15,7 @@ object FmFrequencyDomainPitchShifter: TFmFrequencyDomainPitchShifter
   Scaled = False
   OnCreate = FormCreate
   OnPaint = FormPaint
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 23
   object LbSemitones: TGuiLabel

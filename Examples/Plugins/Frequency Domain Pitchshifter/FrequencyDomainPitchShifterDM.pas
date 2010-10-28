@@ -73,7 +73,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to NumInputs - 1
-  do FPitchShifter[ch].Pitch := Power(2, Value / 12);
+  do FPitchShifter[ch].PitchFactor := Power(2, Value / 12);
  if EditorForm is TFmFrequencyDomainPitchShifter
   then TFmFrequencyDomainPitchShifter(EditorForm).UpdateSemitones;
 end;

@@ -105,6 +105,11 @@ type
     function ProcessSample32(Input: Single): Single; virtual;
   end;
 
+  TFrequencyDomainPitchShifter32 = class(TCustomFrequencyDomainPitchShifter32)
+  published
+    property PitchFactor;
+  end;
+
 implementation
 
 uses
