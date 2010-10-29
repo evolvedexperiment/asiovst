@@ -47,6 +47,7 @@ object FmLabelTest: TFmLabelTest
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    OnClick = LabelCClick
   end
   object LabelB: TGuiLabel
     Left = 71
@@ -63,7 +64,6 @@ object FmLabelTest: TFmLabelTest
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
-    OnClick = LabelBClick
   end
   object LabelD: TGuiLabel
     Left = 71
@@ -80,6 +80,7 @@ object FmLabelTest: TFmLabelTest
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
+    OnClick = LabelDClick
   end
   object CbTransparent: TCheckBox
     Left = 25
