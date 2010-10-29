@@ -37,7 +37,8 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
-  DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPixelMap;
+  DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPixelMap,
+  DAV_GuiGraphicControl;
 
 type
   TFmLabelTest = class(TForm)
@@ -51,11 +52,13 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
-    procedure LabelBClick(Sender: TObject);
+    procedure LabelDClick(Sender: TObject);
+    procedure LabelCClick(Sender: TObject);
   private
-    FBackground : TGuiCustomPixelMap;
+    FBackground      : TGuiCustomPixelMap;
+    FBackgroundColor : TPixel32;
   public
-    { Public-Deklarationen }
+    procedure RenderBackground;
   end;
 
 var
@@ -70,6 +73,11 @@ implementation
 procedure TFmLabelTest.FormCreate(Sender: TObject);
 begin
  FBackground := TGuiPixelMapMemory.Create;
+
+ FBackgroundColor.R := $8D;
+ FBackgroundColor.G := $84;
+ FBackgroundColor.B := $70;
+ FBackgroundColor.A := $FF;
 end;
 
 procedure TFmLabelTest.FormDestroy(Sender: TObject);
@@ -78,38 +86,58 @@ begin
 end;
 
 procedure TFmLabelTest.FormResize(Sender: TObject);
+begin
+ FBackground.SetSize(ClientWidth, ClientHeight);
+ RenderBackground;
+end;
+
+procedure TFmLabelTest.RenderBackground;
 var
   x, y  : Integer;
-  s     : array[0..1] of Single;
+  s     : array [0..1] of Single;
+  Scale : Single;
   h, hr : Single;
   ScnLn : PPixel32Array;
 begin
  with FBackground do
   begin
-   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
      ScnLn := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     h    := 0.5 * 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[1] := 0.97 * s[0] + 0.015 * Random;
        s[0] := s[1];
+       Scale := 1 - (s[1] - h);
 
-       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
-       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
-       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round(FBackgroundColor.B * Scale);
+       ScnLn[x].G := Round(FBackgroundColor.G * Scale);
+       ScnLn[x].R := Round(FBackgroundColor.R * Scale);
+       ScnLn[x].A := $FF;
       end;
     end;
   end;
 end;
 
-procedure TFmLabelTest.LabelBClick(Sender: TObject);
+procedure TFmLabelTest.LabelCClick(Sender: TObject);
 begin
+ FBackgroundColor.R := $40 + Random(100);
+ FBackgroundColor.G := $40 + Random(100);
+ FBackgroundColor.B := $40 + Random(100);
+ RenderBackground;
+ Invalidate;
+end;
+
+procedure TFmLabelTest.LabelDClick(Sender: TObject);
+begin
+ LabelA.Shadow.Visible := not LabelA.Shadow.Visible;
  LabelB.Shadow.Visible := not LabelB.Shadow.Visible;
+ LabelC.Shadow.Visible := not LabelC.Shadow.Visible;
+ LabelD.Shadow.Visible := not LabelD.Shadow.Visible;
 end;
 
 procedure TFmLabelTest.FormPaint(Sender: TObject);

@@ -40,21 +40,22 @@ type
     property Release: Single read FRelease write SetRelease;
   end;
 
-
   TGuiADSRGraph = class(TGuiBaseControl)
   private
     FADSRSettings    : TGuiADSRSettings;
     FMouseEdit       : TGuiADSRGraphMouseEdit;
-    FOnAttackChange  : TNotifyEvent;
-    FOnSustainChange : TNotifyEvent;
-    FOnDecayChange   : TNotifyEvent;
-    FOnReleaseChange : TNotifyEvent;
+
     FGridColor       : TColor;
     FGridWidth       : Integer;
     FGridStyle       : TPenStyle;
     FGridVPadding    : Integer;
     FEnvVPadding     : Integer;
     FEnvHPadding     : Integer;
+
+    FOnAttackChange  : TNotifyEvent;
+    FOnSustainChange : TNotifyEvent;
+    FOnDecayChange   : TNotifyEvent;
+    FOnReleaseChange : TNotifyEvent;
 
     procedure CalcIntValues;
     function GetAttack: Single;

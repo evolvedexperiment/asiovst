@@ -35,9 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
-  {$ELSE} Windows, {$ENDIF} Classes, Graphics, Forms, Messages, SysUtils,
-  Controls, DAV_GuiCommon, DAV_GuiPixelMap;
+  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiCommon, DAV_GuiPixelMap;
 
 type
   TParentControl = class(TWinControl);

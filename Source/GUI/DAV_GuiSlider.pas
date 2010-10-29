@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_GuiCommon,
-  DAV_GuiPixelMap, DAV_GuiBaseControl;
+  DAV_GuiPixelMap, DAV_GuiVectorPixelRectangle, DAV_GuiFixedPoint;
 
 type
   TSliderDirection = (sdLeftToRight);
@@ -45,8 +45,8 @@ type
   TCustomGuiSlider = class(TCustomControl)
   private
     FAutoColor       : Boolean;
-    FBorderRadius    : Integer;
-    FBorderWidth     : Integer;
+    FBorderRadius    : Single;
+    FBorderWidth     : Single;
     FBorderColor     : TColor;
     FSlideColor      : TColor;
     FMin, FMax       : Single;
@@ -60,8 +60,8 @@ type
     FShowText        : Boolean;
     procedure SetAutoColor(const Value: Boolean);
     procedure SetBorderColor(const Value: TColor);
-    procedure SetBorderRadius(const Value: Integer);
-    procedure SetBorderWidth(const Value: Integer);
+    procedure SetBorderRadius(const Value: Single);
+    procedure SetBorderWidth(const Value: Single);
     procedure SetCurveMapping(const Value: Single);
     procedure SetDefaultPosition(Value: Single);
     procedure SetMax(const Value: Single);
@@ -103,8 +103,8 @@ type
 
     property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
     property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
-    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
-    property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
+    property BorderRadius: Single read FBorderRadius write SetBorderRadius;
+    property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
     property Direction: TSliderDirection read FDirection write SetDirection default sdLeftToRight;
@@ -299,7 +299,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiSlider.SetBorderRadius(const Value: Integer);
+procedure TCustomGuiSlider.SetBorderRadius(const Value: Single);
 begin
  if FBorderRadius <> Value then
   begin
@@ -316,7 +316,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiSlider.SetBorderWidth(const Value: Integer);
+procedure TCustomGuiSlider.SetBorderWidth(const Value: Single);
 begin
  if FBorderWidth <> Value then
   begin
@@ -781,13 +781,43 @@ begin
     then BorderColor := ConvertColor(FBorderColor)
     else BorderColor := SliderColor;
 
+   XPos := Round(Width * UnmapValue((FPosition - FMin) / (FMax - FMin)));
+
    // draw circle
    Radius := FBorderRadius;
    if 0.5 * Width < Radius then Radius := 0.5 * Width;
    if 0.5 * Height < Radius then Radius := 0.5 * Height;
    BorderWidth := Math.Max(FBorderWidth, 1);
 
-   XPos := Round(Width * UnmapValue((FPosition - FMin) / (FMax - FMin)));
+   if Radius = 0 then
+    begin
+     // handle rectangle case!
+(*
+     with TGuiPixelFrameRectangle.Create do
+      try
+       GeometricShape.Left := ConvertToFixed24Dot8Point(0);
+       GeometricShape.Top := ConvertToFixed24Dot8Point(0);
+       GeometricShape.Right := ConvertToFixed24Dot8Point(Width);
+       GeometricShape.Bottom := ConvertToFixed24Dot8Point(Height);
+       Width := ConvertToFixed24Dot8Point(BorderWidth);
+       Draw(PixelMap);
+      finally
+       Free;
+      end;
+
+     with TGuiPixelFillRectangle.Create do
+      try
+       GeometricShape.Left := ConvertToFixed24Dot8Point(BorderWidth);
+       GeometricShape.Top := ConvertToFixed24Dot8Point(BorderWidth);
+       GeometricShape.Right := ConvertToFixed24Dot8Point(XPos);
+       GeometricShape.Bottom := ConvertToFixed24Dot8Point(Height - BorderWidth);
+       Draw(PixelMap);
+      finally
+       Free;
+      end;
+     Exit;
+*)
+    end;
 
    RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
    SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
