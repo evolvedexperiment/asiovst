@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_GuiCommon,
-  DAV_GuiBaseControl;
+  DAV_GuiBaseControl, DAV_GuiCustomControl;
 
 type
   TGuiEQSlide = class;

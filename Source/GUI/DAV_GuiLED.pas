@@ -36,7 +36,8 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiCommon, DAV_GuiPixelMap;
+  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiCommon, DAV_GuiPixelMap,
+  DAV_GuiGraphicControl;
 
 type
   TParentControl = class(TWinControl);

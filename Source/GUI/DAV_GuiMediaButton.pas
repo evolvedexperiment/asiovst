@@ -42,6 +42,7 @@ uses
 type
   TMediaButtonState = (mbsPlay, mbsPause, mbsStop, mbsRecord, mbsFastBackward,
     mbsFastForward, mbsPrevious, mbsNext);
+
   TCustomGuiMediaButton = class(TCustomControl)
   private
     FBorderRadius : Integer;

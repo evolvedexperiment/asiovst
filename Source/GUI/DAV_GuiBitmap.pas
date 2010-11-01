@@ -77,7 +77,6 @@ var
 begin
  with PixelMap do
   begin
-   // first stage
    for y := (Height div 2) - 1 downto 0 do
     begin
      PixelLine[0] := ScanLine[y];
@@ -102,7 +101,6 @@ var
 begin
  with PixelMap do
   begin
-   // first stage
    for y := 0 to (Height div 2) - 1 do
     begin
      PixelLine[0] := ScanLine[y];
