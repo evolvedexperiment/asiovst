@@ -173,9 +173,8 @@ begin
      Exit;
     end;
   end;
- {$ELSE}
- Dispose(P);
  {$ENDIF}
+ Dispose(P);
 end;
 
 

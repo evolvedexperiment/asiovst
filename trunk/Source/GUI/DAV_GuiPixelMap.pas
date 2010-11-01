@@ -754,7 +754,7 @@ end;
 
 destructor TGuiPixelMapMemory.Destroy;
 begin
- Dispose(FDataPointer);
+ FreeAlignedMemory(FDataPointer);
  inherited;
 end;
 
