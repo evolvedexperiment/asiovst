@@ -1,5 +1,6 @@
 package DAV_Gui_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -30,7 +31,9 @@ requires
   designide,
   DAV_Common_D7,
   DAV_DSP_D7,
-  DAV_VSTPlugin_D7;
+  DAV_VSTPlugin_D7,
+  vclactnband,
+  vclx;
 
 contains
   DAV_GuiRegister in '..\..\Source\GUI\DAV_GuiRegister.pas',
@@ -49,7 +52,6 @@ contains
   DAV_GuiDesign in '..\..\Source\GUI\DAV_GuiDesign.pas',
   DAV_GuiDial in '..\..\Source\GUI\DAV_GuiDial.pas',
   DAV_GuiDialDesign in '..\..\Source\GUI\DAV_GuiDialDesign.pas',
-  DAV_GuiDialNew in '..\..\Source\GUI\DAV_GuiDialNew.pas',
   DAV_GuiDynamicWaveform in '..\..\Source\GUI\DAV_GuiDynamicWaveform.pas',
   DAV_GuiEQGraph in '..\..\Source\GUI\DAV_GuiEQGraph.pas',
   DAV_GuiEQSlide in '..\..\Source\GUI\DAV_GuiEQSlide.pas',

@@ -146,14 +146,16 @@ type
     property OnEndDock;
     property OnEndDrag;
     property OnMouseDown;
-    property OnMouseEnter;
-    property OnMouseLeave;
     property OnMouseMove;
     property OnMouseUp;
     property OnPaint;
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
+    {$IFDEF DELPHI10_UP}
+    property OnMouseEnter;
+    property OnMouseLeave;
+    {$ENDIF}
   end;
 
 implementation
