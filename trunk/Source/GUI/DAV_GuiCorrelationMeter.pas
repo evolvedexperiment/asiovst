@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  SysUtils, Classes, Controls, Graphics;
+  SysUtils, Classes, Controls, Graphics, DAV_GuiCustomControl;
 
 type
   TCorrelationMeterDirection = (cmdHorizontal, cmdVertical);
@@ -27,6 +27,10 @@ type
     procedure Paint; override;
     procedure ResetPositions;
     procedure Resize; override;
+
+    procedure CorrelationChanged; virtual;
+    procedure DirectionChanged; virtual;
+    procedure MarginChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -60,6 +64,7 @@ type
     property OnStartDock;
     property OnStartDrag;
     property PopupMenu;
+
     property Correlation: Single read FCorrelation write SetCorrelation;
     property Margin: Integer read FMargin write SetMargin default 4;
     property Direction: TCorrelationMeterDirection read FDirection write SetDirection default cmdHorizontal;
@@ -98,68 +103,69 @@ var
   i : Integer;
 begin
   inherited;
-  if FDirection = cmdHorizontal then
-   with Canvas do
-    begin
-     Brush.Color := Color;
-     FillRect(rect(0, 0, Width, Height));
-     for i := 1 to 21 do
-      begin
-       MoveTo(round(i * FWidth22), FStart.Top + 16);
-       LineTo(round(i * FWidth22), FStart.Top + 22);
-       MoveTo(round(i * FWidth22), FStart.Bottom - 18);
-       LineTo(round(i * FWidth22), FStart.Bottom - 24);
-      end;
-     Canvas.Font := Self.Font;
-     TextOut(round(FWidth22 - 5), FStart.Top, '-1');
-     TextOut(round(6 * FWidth22 - 6.8), FStart.Top, '-.5');
-     TextOut(round(11 * FWidth22 - 2.8), FStart.Top, '0');
-     TextOut(round(16 * FWidth22 - 6.8), FStart.Top, '+.5');
-     TextOut(round(21 * FWidth22 - 5), FStart.Top, '+1');
 
-     TextOut(round(FWidth22 - 9.2), FStart.Bottom - 14, '180');
-     TextOut(round(6 * FWidth22 - 7.9), FStart.Bottom - 14, '135');
-     TextOut(round(11 * FWidth22 - 5.7), FStart.Bottom - 14, '90');
-     TextOut(round(16 * FWidth22 - 5.8), FStart.Bottom - 14, '45');
-     TextOut(round(21 * FWidth22 - 2.8), FStart.Bottom - 14, '0');
-     if FCorrelation > 0 then
-      begin
-       Brush.Color := clLime;
-       FillRect(Rect(FCenter.X, FStart.Top + 22,
-         round(FCenter.X + FCorrelation * (Width - FCenter.X)), FStart.Bottom - 24));
-      end else
-     if FCorrelation < 0 then
-      begin
-       Brush.Color := clRed;
-       FillRect(Rect(round(FCenter.X + FCorrelation * FCenter.X), FStart.Top + 22,
-         FCenter.X, FStart.Bottom - 24));
-      end;
-    end
-  else
-   with Canvas do
-    begin
-     Brush.Color := Color;
-     FillRect(rect(0, 0, Width, Height));
-     for i := 1 to 21 do
-      begin
-       MoveTo(FStart.Left + 16, round(i * FHeight22));
-       LineTo(FStart.Left + 22, round(i * FHeight22));
-       MoveTo(FStart.Right - 22, round(i * FHeight22));
-       LineTo(FStart.Right - 28, round(i * FHeight22));
-      end;
-     Canvas.Font := Self.Font;
-     TextOut(FStart.Left + 2, round(FHeight22 - 7), '-1');
-     TextOut(FStart.Left, round(6 * FHeight22 - 7), '-.5');
-     TextOut(FStart.Left + 4, round(11 * FHeight22 - 7), '0');
-     TextOut(FStart.Left, round(16 * FHeight22 - 7), '+.5');
-     TextOut(FStart.Left + 2, round(21 * FHeight22 - 7), '+1');
+ if FDirection = cmdHorizontal then
+  with Canvas do
+   begin
+    Brush.Color := Color;
+    FillRect(rect(0, 0, Width, Height));
+    for i := 1 to 21 do
+     begin
+      MoveTo(Round(i * FWidth22), FStart.Top + 16);
+      LineTo(Round(i * FWidth22), FStart.Top + 22);
+      MoveTo(Round(i * FWidth22), FStart.Bottom - 18);
+      LineTo(Round(i * FWidth22), FStart.Bottom - 24);
+     end;
+    Canvas.Font := Self.Font;
+    TextOut(Round(FWidth22 - 5), FStart.Top, '-1');
+    TextOut(Round(6 * FWidth22 - 6.8), FStart.Top, '-.5');
+    TextOut(Round(11 * FWidth22 - 2.8), FStart.Top, '0');
+    TextOut(Round(16 * FWidth22 - 6.8), FStart.Top, '+.5');
+    TextOut(Round(21 * FWidth22 - 5), FStart.Top, '+1');
 
-     TextOut(FStart.Right - 19, round(FHeight22 - 7), '180');
-     TextOut(FStart.Right - 19, round(6 * FHeight22 - 7), '135');
-     TextOut(FStart.Right - 16, round(11 * FHeight22 - 7), '90');
-     TextOut(FStart.Right - 16, round(16 * FHeight22 - 7), '45');
-     TextOut(FStart.Right - 14, round(21 * FHeight22 - 7), '0');
-    end
+    TextOut(Round(FWidth22 - 9.2), FStart.Bottom - 14, '180');
+    TextOut(Round(6 * FWidth22 - 7.9), FStart.Bottom - 14, '135');
+    TextOut(Round(11 * FWidth22 - 5.7), FStart.Bottom - 14, '90');
+    TextOut(Round(16 * FWidth22 - 5.8), FStart.Bottom - 14, '45');
+    TextOut(Round(21 * FWidth22 - 2.8), FStart.Bottom - 14, '0');
+    if FCorrelation > 0 then
+     begin
+      Brush.Color := clLime;
+      FillRect(Rect(FCenter.X, FStart.Top + 22,
+        Round(FCenter.X + FCorrelation * (Width - FCenter.X)), FStart.Bottom - 24));
+     end else
+    if FCorrelation < 0 then
+     begin
+      Brush.Color := clRed;
+      FillRect(Rect(Round(FCenter.X + FCorrelation * FCenter.X), FStart.Top + 22,
+        FCenter.X, FStart.Bottom - 24));
+     end;
+   end
+ else
+  with Canvas do
+   begin
+    Brush.Color := Color;
+    FillRect(rect(0, 0, Width, Height));
+    for i := 1 to 21 do
+     begin
+      MoveTo(FStart.Left + 16, Round(i * FHeight22));
+      LineTo(FStart.Left + 22, Round(i * FHeight22));
+      MoveTo(FStart.Right - 22, Round(i * FHeight22));
+      LineTo(FStart.Right - 28, Round(i * FHeight22));
+     end;
+    Canvas.Font := Self.Font;
+    TextOut(FStart.Left + 2, Round(FHeight22 - 7), '-1');
+    TextOut(FStart.Left, Round(6 * FHeight22 - 7), '-.5');
+    TextOut(FStart.Left + 4, Round(11 * FHeight22 - 7), '0');
+    TextOut(FStart.Left, Round(16 * FHeight22 - 7), '+.5');
+    TextOut(FStart.Left + 2, Round(21 * FHeight22 - 7), '+1');
+
+    TextOut(FStart.Right - 19, Round(FHeight22 - 7), '180');
+    TextOut(FStart.Right - 19, Round(6 * FHeight22 - 7), '135');
+    TextOut(FStart.Right - 16, Round(11 * FHeight22 - 7), '90');
+    TextOut(FStart.Right - 16, Round(16 * FHeight22 - 7), '45');
+    TextOut(FStart.Right - 14, Round(21 * FHeight22 - 7), '0');
+   end;
 end;
 
 procedure TGuiCorrelationMeter.ResetPositions;
@@ -187,21 +193,42 @@ begin
  if FCorrelation <> Value then
   begin
    FCorrelation := Value;
-   Invalidate;
+   CorrelationChanged;
   end;
 end;
 
 procedure TGuiCorrelationMeter.SetDirection(
   const Value: TCorrelationMeterDirection);
 begin
-  FDirection := Value;
-  Invalidate;
+ if FDirection <> Value then
+  begin
+   FDirection := Value;
+   DirectionChanged;
+  end;
 end;
 
 procedure TGuiCorrelationMeter.SetMargin(const Value: Integer);
 begin
-  FMargin := Value;
-  ResetPositions;
+ if FMargin <> Value then
+  begin
+   FMargin := Value;
+   MarginChanged;
+  end;
+end;
+
+procedure TGuiCorrelationMeter.CorrelationChanged;
+begin
+ Invalidate;
+end;
+
+procedure TGuiCorrelationMeter.DirectionChanged;
+begin
+ Invalidate;
+end;
+
+procedure TGuiCorrelationMeter.MarginChanged;
+begin
+ ResetPositions;
 end;
 
 end.

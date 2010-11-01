@@ -48,6 +48,8 @@ type
     procedure AssignTo(Dest: TPersistent); override;
     procedure Changed; virtual;
   public
+    constructor Create; virtual; abstract;
+
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -154,7 +156,46 @@ type
   end;
   TGuiLine = class(TGuiCustomLine);
 
+  TFixed24Dot8PointPoint = record
+    X, Y : TFixed24Dot8Point;
+  end;
+
+  TFixed16Dot16PointPoint = record
+    X, Y : TFixed16Dot16Point;
+  end;
+
+  TGuiCustomPolygon = class(TGuiCustomGeometricShape)
+  private
+    FData : array of TFixed24Dot8PointPoint;
+    function GetX(Index: Integer): TFixed24Dot8Point;
+    function GetY(Index: Integer): TFixed24Dot8Point;
+    procedure SetX(Index: Integer; const Value: TFixed24Dot8Point);
+    procedure SetY(Index: Integer; const Value: TFixed24Dot8Point);
+    function GetCount: Integer;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure AddPoint(X, Y: TFixed24Dot8Point); overload;
+    procedure AddPoint(Point: TFixed24Dot8PointPoint); overload;
+(*
+    procedure RemovePoint(X, Y: TFixed24Dot8Point); overload;
+    procedure RemovePoint(Point: TFixed24Dot8PointPoint); overload;
+*)
+    procedure RemovePoint(Index: Integer); overload;
+
+    property X[Index: Integer]: TFixed24Dot8Point read GetX write SetX;
+    property Y[Index: Integer]: TFixed24Dot8Point read GetY write SetY;
+    property Count: Integer read GetCount;
+  end;
+  TGuiPolygon = class(TGuiCustomPolygon);
+
 implementation
+
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds %d';
 
 { TGuiCustomGeometricShape }
 
@@ -461,6 +502,94 @@ begin
    FYB := Value;
    YBChanged;
   end;
+end;
+
+
+{ TGuiCustomPolygon }
+
+constructor TGuiCustomPolygon.Create;
+begin
+ inherited;
+end;
+
+destructor TGuiCustomPolygon.Destroy;
+begin
+ inherited;
+end;
+
+procedure TGuiCustomPolygon.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiCustomPolygon then
+  with TGuiCustomPolygon(Dest) do
+   begin
+    SetLength(FData, Length(Self.FData));
+    if Length(Self.FData) > 0
+     then Move(Self.FData[0], FData[0], Length(Self.FData) * SizeOf(TFixed24Dot8PointPoint));
+   end;
+end;
+
+procedure TGuiCustomPolygon.AddPoint(X, Y: TFixed24Dot8Point);
+begin
+ SetLength(FData, Length(FData) + 1);
+ FData[Length(FData) - 1].X := X;
+ FData[Length(FData) - 1].Y := Y;
+end;
+
+procedure TGuiCustomPolygon.AddPoint(Point: TFixed24Dot8PointPoint);
+begin
+ SetLength(FData, Length(FData) + 1);
+ FData[Length(FData) - 1].X := Point.X;
+ FData[Length(FData) - 1].Y := Point.Y;
+end;
+
+function TGuiCustomPolygon.GetCount: Integer;
+begin
+ Result := Length(FData);
+end;
+
+function TGuiCustomPolygon.GetX(Index: Integer): TFixed24Dot8Point;
+begin
+ if Index < Length(FData)
+  then Result := FData[Index].X
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
+function TGuiCustomPolygon.GetY(Index: Integer): TFixed24Dot8Point;
+begin
+ if Index < Length(FData)
+  then Result := FData[Index].Y
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
+procedure TGuiCustomPolygon.RemovePoint(Index: Integer);
+begin
+ if Index >= Length(FData)
+  then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
+  else
+   begin
+    if Index + 1 < Length(FData)
+     then Move(FData[Index + 1], FData[Index], (Length(FData) - Index - 1) *
+       SizeOf(TFixed24Dot8PointPoint));
+    SetLength(FData, Length(FData) - 1);
+   end;
+end;
+
+procedure TGuiCustomPolygon.SetX(Index: Integer;
+  const Value: TFixed24Dot8Point);
+begin
+ if Index < Length(FData)
+  then FData[Index].X := Value
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
+procedure TGuiCustomPolygon.SetY(Index: Integer;
+  const Value: TFixed24Dot8Point);
+begin
+ if Index < Length(FData)
+  then FData[Index].Y := Value
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 end.

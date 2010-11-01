@@ -100,6 +100,7 @@ contains
   DAV_GuiVectorPixel in '..\..\Source\GUI\DAV_GuiVectorPixel.pas',
   DAV_GuiVectorPixelCircle in '..\..\Source\GUI\DAV_GuiVectorPixelCircle.pas',
   DAV_GuiVectorPixelLine in '..\..\Source\GUI\DAV_GuiVectorPixelLine.pas',
-  DAV_GuiVectorPixelRectangle in '..\..\Source\GUI\DAV_GuiVectorPixelRectangle.pas';
+  DAV_GuiVectorPixelRectangle in '..\..\Source\GUI\DAV_GuiVectorPixelRectangle.pas',
+  DAV_GuiCustomControl in '..\..\Source\GUI\DAV_GuiCustomControl.pas';
 
 end.

@@ -37,52 +37,34 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, SysUtils, Controls,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiShadow, DAV_GuiFontList;
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiGraphicControl, DAV_GuiShadow,
+  DAV_GuiFont, DAV_GuiFontList;
 
 type
-  TCustomGuiInscription = class(TGraphicControl)
+  TCustomGuiInscription = class(TCustomGuiGraphicControl)
   private
     FAlignment        : TAlignment;
     FCaption          : string;
-    FTransparent      : Boolean;
-    FBuffer           : TGuiCustomPixelMap;
-    FBackBuffer       : TGuiCustomPixelMap;
-    FUpdateBackBuffer : Boolean;
-    FUpdateBuffer     : Boolean;
     FFontList         : TGuiCustomFontList;
     function GetFontIndex: Integer;
     procedure SetAlignment(const Value: TAlignment);
     procedure SetCaption(const Value: string);
     procedure SetFontIndex(Value: Integer);
     procedure SetFontList(const Value: TGuiCustomFontList);
-    procedure SetTransparent(Value: Boolean); virtual;
     procedure SetFontItem(Value: TGuiCustomFontCollectionItem);
   protected
     FFontItem      : TGuiCustomFontCollectionItem;
     FFontItemIndex : Integer;
     procedure AlignmentChanged; virtual;
-    procedure ColorChanged;
     procedure CaptionChanged; virtual;
     procedure FontIndexChanged; virtual;
     procedure FontListChanged; virtual;
-    procedure TransparentChanged; virtual;
 
-    procedure BufferChanged; virtual;
-    procedure BackBufferChanged; virtual;
-    procedure UpdateBuffer; virtual;
-    procedure UpdateBackBuffer; virtual;
+    procedure UpdateBuffer; override;
     procedure FontChangedHandler(Sender: TObject); virtual;
-    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
 
     procedure Loaded; override;
-    procedure Resize; override;
-    procedure Paint; override;
 
-    {$IFDEF FPC}
-    procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
-    {$ELSE}
-    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
-    {$ENDIF}
     procedure GMFontChanged(var Message: TMessage); message GM_FontChanged;
     procedure GMFontListChanged(var Message: TMessage); message GM_FontListChanged;
 
@@ -95,7 +77,6 @@ type
     property Caption: string read FCaption write SetCaption;
     property FontIndex: Integer read GetFontIndex write SetFontIndex;
     property FontList: TGuiCustomFontList read FFontList write SetFontList;
-    property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
   TGuiInscription = class(TCustomGuiInscription)
@@ -151,23 +132,16 @@ implementation
 constructor TCustomGuiInscription.Create(AOwner: TComponent);
 begin
  inherited;
- FBuffer       := TGuiPixelMapMemory.Create;
- FBackBuffer   := TGuiPixelMapMemory.Create;
- FUpdateBuffer := False;
- ControlStyle  := ControlStyle + [csOpaque];
 end;
 
 destructor TCustomGuiInscription.Destroy;
 begin
- FreeAndNil(FBackBuffer);
- FreeAndNil(FBuffer);
  inherited;
 end;
 
 procedure TCustomGuiInscription.Loaded;
 begin
  inherited;
- Resize;
 
  if Assigned(FFontList) then
   begin
@@ -184,148 +158,11 @@ begin
   end;
 end;
 
-procedure TCustomGuiInscription.Resize;
-begin
- if Assigned(FBuffer)
-  then FBuffer.SetSize(Width, Height);
-
- if Assigned(FBackBuffer) then
-  begin
-   FBackBuffer.SetSize(Width, Height);
-   UpdateBackBuffer;
-  end;
-
- inherited;
-end;
-
-type
-  TParentControl = class(TWinControl);
-
-procedure TCustomGuiInscription.CopyParentImage(
-  PixelMap: TGuiCustomPixelMap);
-var
-  I         : Integer;
-  SubCount  : Integer;
-  SaveIndex : Integer;
-  Pnt       : TPoint;
-  R, SelfR  : TRect;
-  CtlR      : TRect;
-  Bmp       : TBitmap;
-begin
- if (Parent = nil) then Exit;
- SubCount := Parent.ControlCount;
- // set
- {$IFDEF WIN32}
- with Parent
-  do ControlState := ControlState + [csPaintCopy];
- try
- {$ENDIF}
-
-  SelfR := Bounds(Left, Top, Width, Height);
-  Pnt.X := -Left;
-  Pnt.Y := -Top;
-
-  {$IFNDEF FPC}
-  Bmp := TBitmap.Create;
-  with Bmp do
-   try
-    Width := Self.Width;
-    Height := Self.Height;
-    PixelFormat := pf32bit;
-
-    // Copy parent control image
-    SaveIndex := SaveDC(Canvas.Handle);
-    try
-     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
-     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-     with TParentControl(Parent) do
-      begin
-       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
-       PaintWindow(Canvas.Handle);
-      end;
-    finally
-     RestoreDC(Canvas.Handle, SaveIndex);
-    end;
-
-    // Copy images of graphic controls
-    for I := 0 to SubCount - 1 do
-     begin
-      if Parent.Controls[I] = Self then Break else
-       if (Parent.Controls[I] <> nil) and
-          (Parent.Controls[I] is TGraphicControl)
-        then
-         with TGraphicControl(Parent.Controls[I]) do
-          begin
-           CtlR := Bounds(Left, Top, Width, Height);
-           if Boolean(IntersectRect(R, SelfR, CtlR)) and Visible then
-            begin
-             {$IFDEF WIN32}
-             ControlState := ControlState + [csPaintCopy];
-             {$ENDIF}
-             SaveIndex := SaveDC(Canvas.Handle);
-             try
-              SaveIndex := SaveDC(Canvas.Handle);
-              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
-              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
-              Perform(WM_PAINT, Canvas.Handle, 0);
-             finally
-              RestoreDC(Handle, SaveIndex);
-              {$IFDEF WIN32}
-              ControlState := ControlState - [csPaintCopy];
-              {$ENDIF}
-             end;
-            end;
-          end;
-     end;
-    PixelMap.Draw(Bmp);
-    PixelMap.MakeOpaque;
-   finally
-    Free;
-   end;
-  {$ENDIF}
-
- {$IFDEF WIN32}
- finally
-   with Parent do ControlState := ControlState - [csPaintCopy];
- end;
- {$ENDIF}
-end;
-
-procedure TCustomGuiInscription.BackBufferChanged;
-begin
- FUpdateBackBuffer := True;
- Invalidate;
-end;
-
-procedure TCustomGuiInscription.UpdateBackBuffer;
-var
-  PixelColor32 : TPixel32;
-begin
- FUpdateBackBuffer := False;
- if FTransparent then CopyParentImage(FBackBuffer) else
-  begin
-   PixelColor32 := ConvertColor(Color);
-   FBackBuffer.FillRect(ClientRect, PixelColor32);
-  end;
-
- FUpdateBuffer := True;
-end;
-
 procedure TCustomGuiInscription.UpdateBuffer;
 var
   TextSize : TSize;
 begin
- FUpdateBuffer := False;
-
- // check whether a buffer or a back buffer is assigned
- if not Assigned(FBuffer) or not Assigned(FBackBuffer)
-  then Exit;
-
- Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
-
- // copy back buffer to buffer
- Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
-   FBuffer.Width * SizeOf(TPixel32));
+ inherited;
 
  if Assigned(FFontItem) and Assigned(FFontItem.Font) then
   begin
@@ -339,20 +176,6 @@ begin
    TextSize.cy := 0;
    FFontItem.Font.TextOut(FCaption, FBuffer, TextSize.cx, TextSize.cy);
   end;
-end;
-
-procedure TCustomGuiInscription.Paint;
-begin
- inherited;
-
- if FUpdateBackBuffer
-  then UpdateBackBuffer;
-
- if FUpdateBuffer
-  then UpdateBuffer;
-
- if Assigned(FBuffer)
-  then FBuffer.PaintTo(Canvas);
 end;
 
 procedure TCustomGuiInscription.FontChangedHandler(Sender: TObject);
@@ -390,21 +213,9 @@ begin
  BufferChanged;
 end;
 
-procedure TCustomGuiInscription.BufferChanged;
-begin
- FUpdateBuffer := True;
- Invalidate;
-end;
-
 procedure TCustomGuiInscription.CaptionChanged;
 begin
  BufferChanged;
-end;
-
-procedure TCustomGuiInscription.ColorChanged;
-begin
- if not FTransparent
-  then BackBufferChanged;
 end;
 
 procedure TCustomGuiInscription.FontIndexChanged;
@@ -416,16 +227,6 @@ procedure TCustomGuiInscription.FontListChanged;
 begin
  FontItem := nil;
  BufferChanged;
-end;
-
-procedure TCustomGuiInscription.TransparentChanged;
-begin
- BackBufferChanged;
-end;
-
-procedure TCustomGuiInscription.CMColorchanged(var Message: {$IFDEF FPC}TLMessage {$ELSE}TMessage {$ENDIF});
-begin
- ColorChanged;
 end;
 
 procedure TCustomGuiInscription.SetAlignment(const Value: TAlignment);
@@ -514,15 +315,6 @@ begin
      FFontList.LinkControl(Self);
     end;
    FontListChanged;
-  end;
-end;
-
-procedure TCustomGuiInscription.SetTransparent(Value: Boolean);
-begin
- if FTransparent <> Value then
-  begin
-   FTransparent := Value;
-   TransparentChanged;
   end;
 end;
 
