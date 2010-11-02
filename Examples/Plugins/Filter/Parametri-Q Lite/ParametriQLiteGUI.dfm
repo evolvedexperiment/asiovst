@@ -189,7 +189,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -201,7 +201,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -213,7 +213,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -225,7 +225,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -237,7 +237,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -249,7 +249,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -261,7 +261,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -273,7 +273,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'FREQ'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -285,7 +285,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -297,7 +297,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -309,7 +309,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -321,7 +321,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -333,7 +333,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -345,7 +345,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -357,7 +357,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -369,7 +369,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'BW'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -381,7 +381,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -393,7 +393,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -405,7 +405,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -417,7 +417,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -429,7 +429,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -441,7 +441,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -453,7 +453,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -465,7 +465,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -1086,7 +1086,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1099,7 +1099,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1112,7 +1112,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1125,7 +1125,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1138,7 +1138,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1151,7 +1151,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1164,7 +1164,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1177,7 +1177,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'TYPE'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbTypeClick
@@ -1189,7 +1189,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'INPUT'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -1200,7 +1200,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'OUTPUT'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -1211,7 +1211,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taCenter
     Caption = 'GAIN'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -1255,7 +1255,7 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'Parametri-Q LITE'
     Color = 1447701
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -1323,7 +1323,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
@@ -1344,7 +1344,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
@@ -1365,7 +1365,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
@@ -1386,7 +1386,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
@@ -1407,7 +1407,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
@@ -1428,7 +1428,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
@@ -1449,7 +1449,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
@@ -1470,7 +1470,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000

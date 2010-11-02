@@ -37,7 +37,7 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -58,7 +58,7 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsItalic]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     PopupMenu = PuAudioFile
     Shadow.Blur = 4.000000000000000000
@@ -80,7 +80,7 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -102,7 +102,7 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -134,7 +134,7 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -155,7 +155,7 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -231,7 +231,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -253,7 +253,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -273,7 +273,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -295,7 +295,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -315,7 +315,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -337,7 +337,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -357,7 +357,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -378,7 +378,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 10333885
@@ -470,7 +470,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -75
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
@@ -509,7 +509,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -75
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
@@ -545,7 +545,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -75
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
@@ -584,7 +584,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -32
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
@@ -623,7 +623,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -32
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873
@@ -661,7 +661,7 @@ object FmJNDEQT: TFmJNDEQT
       Font.Height = -32
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873

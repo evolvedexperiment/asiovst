@@ -73,7 +73,7 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      Oversampling = fo2x
+      FontOversampling = fo2x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -111,12 +111,12 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      Oversampling = fo2x
+      FontOversampling = fo2x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
-    object GuiLEDOversampling: TGuiLED
+    object GuiLEDFontOversampling: TGuiLED
       Left = 257
       Top = 9
       Width = 20
@@ -127,26 +127,26 @@ object FmSplitter: TFmSplitter
       BorderWidth = 2.400000095367432000
       Uniformity_Percent = 36.754447937011720000
       Transparent = False
-      OnClick = GuiLEDOversamplingClick
+      OnClick = GuiLEDFontOversamplingClick
     end
-    object LbOversampling: TGuiLabel
+    object LbFontOversampling: TGuiLabel
       Left = 279
       Top = 9
       Width = 97
       Height = 20
-      Caption = 'Oversampling:'
+      Caption = 'FontOversampling:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
-      OnClick = GuiLEDOversamplingClick
+      OnClick = GuiLEDFontOversamplingClick
     end
-    object LbOversamplingFactor: TGuiLabel
+    object LbFontOversamplingFactor: TGuiLabel
       Left = 411
       Top = 9
       Width = 33
@@ -157,13 +157,13 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      Oversampling = fo2x
+      FontOversampling = fo2x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       Visible = False
     end
-    object DialOversampling: TGuiDial
+    object DialFontOversampling: TGuiDial
       Left = 386
       Top = 9
       Width = 20
@@ -176,7 +176,7 @@ object FmSplitter: TFmSplitter
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialOversamplingChange
+      OnChange = DialFontOversamplingChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -234,7 +234,7 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontOversampling = fo4x
+      FontFontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -256,7 +256,7 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontOversampling = fo4x
+      FontFontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

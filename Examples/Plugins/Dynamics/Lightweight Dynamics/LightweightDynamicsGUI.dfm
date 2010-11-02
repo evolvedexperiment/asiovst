@@ -22,7 +22,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 8
     Width = 457
     Height = 93
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Gate'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -46,7 +46,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -63,7 +63,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -80,7 +80,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -97,7 +97,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -114,7 +114,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -131,7 +131,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -148,7 +148,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -165,7 +165,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -182,7 +182,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -199,7 +199,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -236,7 +236,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -254,7 +254,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -335,7 +335,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 107
     Width = 273
     Height = 208
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Compressor'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -359,7 +359,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -376,7 +376,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -393,7 +393,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -410,7 +410,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -427,7 +427,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -444,7 +444,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -461,7 +461,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -478,7 +478,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -495,7 +495,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -512,7 +512,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -529,7 +529,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -546,7 +546,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -575,7 +575,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -669,7 +669,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 107
     Width = 178
     Height = 208
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Characteristic Plot'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -711,7 +711,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo2x
+      FontOversampling = fo2x
       LineColor = 5922921
       LineWidth = 2
     end
@@ -721,7 +721,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     Top = 321
     Width = 457
     Height = 93
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Limiter'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -745,7 +745,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -762,7 +762,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -779,7 +779,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -796,7 +796,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -813,7 +813,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -830,7 +830,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -847,7 +847,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -864,7 +864,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -880,7 +880,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

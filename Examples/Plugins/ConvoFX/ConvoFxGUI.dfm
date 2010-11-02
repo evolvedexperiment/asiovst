@@ -28,7 +28,7 @@ object FmConvoFX: TFmConvoFX
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -45,7 +45,7 @@ object FmConvoFX: TFmConvoFX
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -63,7 +63,7 @@ object FmConvoFX: TFmConvoFX
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -80,7 +80,7 @@ object FmConvoFX: TFmConvoFX
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -97,7 +97,7 @@ object FmConvoFX: TFmConvoFX
     Font.Height = -19
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -114,7 +114,7 @@ object FmConvoFX: TFmConvoFX
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

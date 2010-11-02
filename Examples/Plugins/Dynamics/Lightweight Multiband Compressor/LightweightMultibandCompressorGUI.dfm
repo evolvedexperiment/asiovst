@@ -44,7 +44,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -61,7 +61,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -77,7 +77,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -93,7 +93,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -109,7 +109,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -126,7 +126,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -143,7 +143,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -160,7 +160,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -176,7 +176,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -194,7 +194,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -212,7 +212,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -230,7 +230,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -248,7 +248,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -266,7 +266,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -284,7 +284,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -302,7 +302,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -320,7 +320,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -338,7 +338,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -356,7 +356,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -374,7 +374,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -407,7 +407,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -424,7 +424,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -441,7 +441,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -458,7 +458,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -475,7 +475,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -492,7 +492,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -509,7 +509,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -526,7 +526,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -543,7 +543,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -560,7 +560,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -608,7 +608,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -625,7 +625,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -654,7 +654,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -768,7 +768,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -786,7 +786,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -804,7 +804,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -822,7 +822,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -840,7 +840,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -858,7 +858,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -876,7 +876,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -894,7 +894,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -912,7 +912,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -930,7 +930,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -980,7 +980,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -998,7 +998,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1029,7 +1029,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1149,7 +1149,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1167,7 +1167,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1185,7 +1185,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1203,7 +1203,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1221,7 +1221,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1239,7 +1239,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1257,7 +1257,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1275,7 +1275,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1293,7 +1293,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1311,7 +1311,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1361,7 +1361,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1379,7 +1379,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1410,7 +1410,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1530,7 +1530,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1548,7 +1548,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1566,7 +1566,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1584,7 +1584,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1602,7 +1602,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1620,7 +1620,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1638,7 +1638,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1656,7 +1656,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1674,7 +1674,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1692,7 +1692,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1742,7 +1742,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1760,7 +1760,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -1791,7 +1791,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

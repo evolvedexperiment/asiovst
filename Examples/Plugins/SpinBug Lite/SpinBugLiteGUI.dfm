@@ -35,7 +35,7 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -52,7 +52,7 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

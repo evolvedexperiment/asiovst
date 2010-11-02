@@ -22,7 +22,7 @@ object FmModDelay2: TFmModDelay2
     Top = 40
     Width = 41
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Gain:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -35,7 +35,7 @@ object FmModDelay2: TFmModDelay2
     Top = 63
     Width = 41
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Mix:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -48,7 +48,7 @@ object FmModDelay2: TFmModDelay2
     Top = 86
     Width = 41
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'LPF:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -61,7 +61,7 @@ object FmModDelay2: TFmModDelay2
     Top = 109
     Width = 41
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Delay:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -74,7 +74,7 @@ object FmModDelay2: TFmModDelay2
     Top = 132
     Width = 46
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Depth:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -87,7 +87,7 @@ object FmModDelay2: TFmModDelay2
     Top = 155
     Width = 41
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Rate:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -100,7 +100,7 @@ object FmModDelay2: TFmModDelay2
     Top = 178
     Width = 69
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Feedback:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -113,7 +113,7 @@ object FmModDelay2: TFmModDelay2
     Top = 8
     Width = 52
     Height = 25
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'LEFT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -126,7 +126,7 @@ object FmModDelay2: TFmModDelay2
     Top = 8
     Width = 73
     Height = 25
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'RIGHT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -139,7 +139,7 @@ object FmModDelay2: TFmModDelay2
     Top = 207
     Width = 97
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Current Value:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite

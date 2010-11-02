@@ -23,7 +23,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 25
     Alignment = taCenter
     Caption = 'Speed'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -34,7 +34,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 25
     Alignment = taCenter
     Caption = 'Stages'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -45,7 +45,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 25
     Alignment = taCenter
     Caption = 'Depth'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -56,7 +56,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 25
     Alignment = taCenter
     Caption = 'Mix'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -72,7 +72,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -89,7 +89,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -106,7 +106,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -123,7 +123,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -135,7 +135,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 25
     Alignment = taCenter
     Caption = 'Drift'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -151,7 +151,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

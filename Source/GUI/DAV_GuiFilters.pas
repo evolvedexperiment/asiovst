@@ -72,7 +72,7 @@ type
     procedure Filter(PixelMap: TGuiCustomPixelMap); override;
   end;
 
-  TGuiBlurFIRFilter = class(TGuiCustomBlurFilter)
+  TGuiBlurFractionalFIRFilter = class(TGuiCustomBlurFilter)
   private
     FDelayLine : TDelayLineFractional32;
   protected
@@ -85,7 +85,45 @@ type
     procedure Filter(PixelMap: TGuiCustomPixelMap); override;
   end;
 
+  TGuiBlurFIRFilter = class(TGuiCustomBlurFilter)
+  private
+    FBuffer       : PByteArray;
+    FKernelSize   : Integer;
+  protected
+    procedure RadiusChanged; override;
+    procedure ResizeBuffer; virtual;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure FilterHorizontal(Data: PByteArray; Count: Integer); overload; virtual;
+    procedure FilterHorizontal(Data: PPixel32Array; Count: Integer); overload; virtual;
+
+    procedure Filter(ByteMap: TGuiCustomByteMap); override;
+    procedure Filter(PixelMap: TGuiCustomPixelMap); override;
+  end;
+
+  TGuiStackBlurFilter = class(TGuiCustomBlurFilter)
+  private
+    FKernelSize : Integer;
+  protected
+    procedure RadiusChanged; override;
+    procedure ResizeStack; virtual;
+
+    property KernelSize: Integer read FKernelSize;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure Filter(ByteMap: TGuiCustomByteMap); override;
+    procedure Filter(PixelMap: TGuiCustomPixelMap); override;
+  end;
+
 implementation
+
+uses
+  Math, DAV_Math;
+
 
 { TGuiCustomBlurFilter }
 
@@ -167,22 +205,22 @@ begin
 end;
 
 
-{ TGuiBlurFIRFilter }
+{ TGuiBlurFractionalFIRFilter }
 
-constructor TGuiBlurFIRFilter.Create;
+constructor TGuiBlurFractionalFIRFilter.Create;
 begin
  inherited;
  FDelayLine := TDelayLineFractional32.Create;
  FDelayLine.FractionalBufferSize := FRadius;
 end;
 
-destructor TGuiBlurFIRFilter.Destroy;
+destructor TGuiBlurFractionalFIRFilter.Destroy;
 begin
  FreeAndNil(FDelayLine);
  inherited;
 end;
 
-procedure TGuiBlurFIRFilter.Filter(ByteMap: TGuiCustomByteMap);
+procedure TGuiBlurFractionalFIRFilter.Filter(ByteMap: TGuiCustomByteMap);
 var
   X, Y    : Integer;
   Data    : PByteArray;
@@ -227,15 +265,293 @@ begin
   end;
 end;
 
-procedure TGuiBlurFIRFilter.Filter(PixelMap: TGuiCustomPixelMap);
+procedure TGuiBlurFractionalFIRFilter.Filter(PixelMap: TGuiCustomPixelMap);
 begin
  raise Exception.Create('not yet implemented');
+end;
+
+procedure TGuiBlurFractionalFIRFilter.RadiusChanged;
+begin
+ inherited;
+ FDelayLine.FractionalBufferSize := FRadius;
+end;
+
+
+{ TGuiBlurFIRFilter }
+
+constructor TGuiBlurFIRFilter.Create;
+begin
+ inherited;
+ FKernelSize := 1;
+ ResizeBuffer;
+end;
+
+destructor TGuiBlurFIRFilter.Destroy;
+begin
+ Dispose(FBuffer);
+ inherited;
+end;
+
+procedure TGuiBlurFIRFilter.Filter(ByteMap: TGuiCustomByteMap);
+var
+  X, Y    : Integer;
+  Pos     : Integer;
+  Data    : PByteArray;
+  Sum     : Integer;
+  Current : Byte;
+begin
+ if FKernelSize <= 1 then Exit;
+
+ with ByteMap do
+  begin
+   for Y := 0 to Height - 1
+    do FilterHorizontal(ScanLine[Y], Width);
+
+   Data := DataPointer;
+   for X := 0 to Width - 1 do
+    begin
+     FillChar(FBuffer^, FKernelSize, 0);
+     Pos := 0;
+     Sum := 0;
+     for Y := 0 to Height - 1 do
+      begin
+       Sum := Sum + Data^[Y * Width + X] - FBuffer^[Pos];
+       FBuffer^[Pos] := Data^[Y * Width + X];
+       Inc(Pos); if Pos >= FKernelSize then Pos := 0;
+       Assert(Sum >= 0);
+       Data^[Y * Width + X] := Sum div FKernelSize;
+      end;
+    end;
+  end;
+end;
+
+procedure TGuiBlurFIRFilter.Filter(PixelMap: TGuiCustomPixelMap);
+begin
+
+end;
+
+procedure TGuiBlurFIRFilter.FilterHorizontal(Data: PPixel32Array; Count: Integer);
+begin
+
+end;
+
+procedure TGuiBlurFIRFilter.FilterHorizontal(Data: PByteArray; Count: Integer);
+var
+  X   : Integer;
+  Pos : Integer;
+  Sum : Integer;
+begin
+ FillChar(FBuffer^, FKernelSize, 0);
+ Pos := 0;
+ Sum := 0;
+ for X := 0 to Count - 1 do
+  begin
+   Sum := Sum + Data^[X] - FBuffer^[Pos];
+   FBuffer^[Pos] := Data^[X];
+   Inc(Pos); if Pos >= FKernelSize then Pos := 0;
+   Data^[X] := Sum div FKernelSize;
+  end;
 end;
 
 procedure TGuiBlurFIRFilter.RadiusChanged;
 begin
  inherited;
- FDelayLine.FractionalBufferSize := FRadius;
+ FKernelSize := Round(Radius) + 1;
+ ResizeBuffer;
+end;
+
+procedure TGuiBlurFIRFilter.ResizeBuffer;
+begin
+ ReallocMem(FBuffer, FKernelSize);
+end;
+
+{ TGuiStackBlurFilter }
+
+constructor TGuiStackBlurFilter.Create;
+begin
+ inherited;
+ FKernelSize := Round(FRadius);
+ ResizeStack;
+end;
+
+destructor TGuiStackBlurFilter.Destroy;
+begin
+
+ inherited;
+end;
+
+procedure TGuiStackBlurFilter.Filter(ByteMap: TGuiCustomByteMap);
+type
+  TArrayOfInteger = array of Integer;
+var
+  Height, Width   : Integer;
+  HeightMinus1    : Integer;
+  WidthMinus1     : Integer;
+  RadiusWidth     : Integer;
+  I, X, Y         : Integer;
+  YIncrement      : Integer;
+  CurrentLine     : PByteArray;
+
+  ASumIn          : Integer;
+  ASumOut, ASum   : Integer;
+
+  KernelSizePlus1 : Integer;
+  CurrentData     : Byte;
+  Data            : PByteArray;
+
+  DivisionLUT     : TArrayOfInteger;
+  Divi, DivSum    : Integer;
+
+  StackStart      : Integer;
+  StackPos        : Integer;
+  Stack           : array of Byte;
+  VMin            : TArrayOfInteger;
+begin
+ // check whether blur needs to be calculated at all
+ if (FKernelSize < 1) then Exit;
+
+ // initialize local values
+ Width        := ByteMap.Width;
+ Height       := ByteMap.Height;
+ WidthMinus1  := Width - 1;
+ HeightMinus1 := Height - 1;
+ RadiusWidth  := FKernelSize * Width;
+
+ //
+ SetLength(VMin, Max(Width, Height));
+
+ Divi := 2 * FKernelSize + 1;
+
+ // set up division LUT
+ DivSum := (Divi + 1) shr 1;
+ DivSum := Sqr(DivSum);
+
+ SetLength(DivisionLUT, 256 * DivSum);
+ for I := 0 to High(DivisionLUT)
+  do DivisionLUT[I] := (I div DivSum);
+
+ SetLength(Stack, Divi);
+
+ KernelSizePlus1 := FKernelSize + 1;
+
+ for Y := 0 to HeightMinus1 do
+  begin
+   // initialize sum
+   ASumIn  := 0;
+   ASumOut := 0;
+   ASum    := 0;
+
+   CurrentLine := ByteMap.ScanLine[Y];
+
+   for I := -FKernelSize to FKernelSize do
+    begin
+     if I < 0 then CurrentData := CurrentLine^[0] else
+     if I > WidthMinus1 then CurrentData := CurrentLine^[WidthMinus1]
+      else CurrentData := CurrentLine^[I];
+
+     Stack[I + FKernelSize] := CurrentData;
+
+     ASum := ASum + CurrentData * (KernelSizePlus1 - Abs(I));
+     if I > 0
+      then Inc(ASumIn, CurrentData)
+      else Inc(ASumOut, CurrentData);
+    end;
+   StackPos := FKernelSize;
+
+   for X := 0 to WidthMinus1 do
+    begin
+     CurrentLine^[X] := DivisionLUT[ASum];
+
+     Dec(ASum, ASumOut);
+     StackStart := StackPos - FKernelSize + Divi;
+
+     CurrentData := Stack[StackStart mod Divi];
+     Dec(ASumOut, CurrentData);
+
+     if Y = 0 then VMin[X] := Min(X + KernelSizePlus1, WidthMinus1);
+
+     CurrentData := CurrentLine^[VMin[X]];
+     Stack[StackStart mod Divi] := CurrentData;
+     Inc(ASumIn, CurrentData);
+     Inc(ASum, ASumIn);
+
+     StackPos := (StackPos + 1) mod Divi;
+     CurrentData := Stack[StackPos];
+
+     Inc(ASumOut, CurrentData);
+     Dec(ASumIn, CurrentData);
+    end;
+  end;
+
+ Data := ByteMap.DataPointer;
+
+ for X := 0 to WidthMinus1 do
+  begin
+   // initialize sum
+   ASumIn := 0;
+   ASumOut := 0;
+   ASum := 0;
+
+   YIncrement := -RadiusWidth;
+
+   for I := -FKernelSize to FKernelSize do
+    begin
+     CurrentData := Data^[Max(0, YIncrement) + X];
+     Stack[I + FKernelSize] := CurrentData;
+
+     ASum := ASum + CurrentData * (KernelSizePlus1 - Abs(I));
+
+     if I > 0 then Inc(ASumIn, CurrentData) else
+      if I < HeightMinus1 then Inc(ASumOut, CurrentData);
+
+     if I < HeightMinus1
+      then Inc(YIncrement, Width);
+    end;
+
+   YIncrement := X;
+   StackPos := FKernelSize;
+
+   for Y := 0 to HeightMinus1 do
+    begin
+     Data^[YIncrement] := DivisionLUT[ASum];
+
+     Dec(ASum, ASumOut);
+     StackStart := StackPos - FKernelSize + Divi;
+
+     CurrentData := Stack[StackStart mod Divi];
+     Dec(ASumOut, CurrentData);
+
+     if X = 0 then VMin[Y] := Min(Y + KernelSizePlus1, HeightMinus1) * Width;
+
+     CurrentData := Data^[VMin[Y] + X];
+     Stack[StackStart mod Divi] := CurrentData;
+     Inc(ASumIn, CurrentData);
+     Inc(ASum, ASumIn);
+
+     StackPos := (StackPos + 1) mod Divi;
+     CurrentData := Stack[StackPos];
+
+     Inc(ASumOut, CurrentData);
+     Dec(ASumIn, CurrentData);
+     Inc(YIncrement, Width);
+   end;
+ end;
+end;
+
+procedure TGuiStackBlurFilter.Filter(PixelMap: TGuiCustomPixelMap);
+begin
+
+end;
+
+procedure TGuiStackBlurFilter.RadiusChanged;
+begin
+ inherited;
+ FKernelSize := Round(FRadius);
+ ResizeStack;
+end;
+
+procedure TGuiStackBlurFilter.ResizeStack;
+begin
 end;
 
 end.

@@ -26,7 +26,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Width = 105
     Height = 24
     Caption = 'Encoding:'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -69,7 +69,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Detune'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
@@ -85,7 +85,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -97,7 +97,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Delay'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
@@ -113,7 +113,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -125,7 +125,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Mix'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
@@ -141,7 +141,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -153,7 +153,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Lowpass'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
@@ -169,7 +169,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -249,7 +249,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Detune'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
@@ -265,7 +265,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -277,7 +277,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Delay'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
@@ -293,7 +293,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -305,7 +305,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Mix'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end
@@ -321,7 +321,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -338,7 +338,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -350,7 +350,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 24
       Alignment = taCenter
       Caption = 'Lowpass'
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
     end

@@ -55,7 +55,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -72,7 +72,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -89,7 +89,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -125,7 +125,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
-        Oversampling = fo4x
+        FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
         Shadow.Color = clBlack

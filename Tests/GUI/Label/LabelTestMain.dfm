@@ -2,7 +2,7 @@ object FmLabelTest: TFmLabelTest
   Left = 218
   Top = 77
   Caption = 'Label Test'
-  ClientHeight = 99
+  ClientHeight = 142
   ClientWidth = 135
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object FmLabelTest: TFmLabelTest
     Left = 8
     Top = 8
     Width = 57
-    Height = 25
+    Height = 29
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlue
@@ -34,9 +34,9 @@ object FmLabelTest: TFmLabelTest
   end
   object LabelC: TGuiLabel
     Left = 8
-    Top = 39
+    Top = 43
     Width = 57
-    Height = 25
+    Height = 29
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -53,7 +53,7 @@ object FmLabelTest: TFmLabelTest
     Left = 71
     Top = 8
     Width = 57
-    Height = 25
+    Height = 29
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clLime
@@ -67,9 +67,9 @@ object FmLabelTest: TFmLabelTest
   end
   object LabelD: TGuiLabel
     Left = 71
-    Top = 39
+    Top = 43
     Width = 57
-    Height = 25
+    Height = 29
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clYellow
@@ -84,7 +84,7 @@ object FmLabelTest: TFmLabelTest
   end
   object CbTransparent: TCheckBox
     Left = 25
-    Top = 70
+    Top = 79
     Width = 79
     Height = 17
     Caption = 'Transparent'
@@ -98,5 +98,35 @@ object FmLabelTest: TFmLabelTest
     ParentFont = False
     TabOrder = 0
     OnClick = CbTransparentClick
+  end
+  object SliderBlur: TGuiSlider
+    Left = 8
+    Top = 101
+    Width = 119
+    Height = 13
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373965
+    DefaultPosition = 8.000000000000000000
+    Max = 8.000000000000000000
+    OnChange = SliderBlurChange
+    ParentColor = False
+    Position = 4.000000000000000000
+    SlideColor = 5333094
+  end
+  object SliderOffset: TGuiSlider
+    Left = 8
+    Top = 120
+    Width = 119
+    Height = 13
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373965
+    DefaultPosition = 8.000000000000000000
+    Max = 8.000000000000000000
+    OnChange = SliderOffsetChange
+    ParentColor = False
+    Position = 4.000000000000000000
+    SlideColor = 5333094
   end
 end

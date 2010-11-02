@@ -24,7 +24,7 @@ object FmLightweightGate: TFmLightweightGate
     Height = 25
     Alignment = taCenter
     Caption = 'Threshold'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -40,7 +40,7 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -52,7 +52,7 @@ object FmLightweightGate: TFmLightweightGate
     Height = 19
     Alignment = taCenter
     Caption = 'Attack'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -68,7 +68,7 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -80,7 +80,7 @@ object FmLightweightGate: TFmLightweightGate
     Height = 19
     Alignment = taCenter
     Caption = 'Release'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -96,7 +96,7 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -108,7 +108,7 @@ object FmLightweightGate: TFmLightweightGate
     Height = 25
     Alignment = taCenter
     Caption = 'Ratio'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -124,7 +124,7 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -136,7 +136,7 @@ object FmLightweightGate: TFmLightweightGate
     Height = 25
     Alignment = taCenter
     Caption = 'Soft Knee'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -152,7 +152,7 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

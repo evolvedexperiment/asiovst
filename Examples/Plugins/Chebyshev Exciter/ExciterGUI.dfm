@@ -50,7 +50,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -69,7 +69,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -88,7 +88,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -107,7 +107,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -126,7 +126,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -145,7 +145,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -164,7 +164,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -183,7 +183,7 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo3x
+      FontOversampling = fo3x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959

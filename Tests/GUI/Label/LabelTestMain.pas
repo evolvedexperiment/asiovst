@@ -36,9 +36,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
-  DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPixelMap,
-  DAV_GuiGraphicControl;
+  SysUtils, Classes, Forms, StdCtrls, Controls, DAV_GuiCommon, DAV_GuiLabel,
+  DAV_GuiPixelMap, DAV_GuiGraphicControl, DAV_GuiSlider;
 
 type
   TFmLabelTest = class(TForm)
@@ -47,6 +46,8 @@ type
     LabelB: TGuiLabel;
     LabelD: TGuiLabel;
     CbTransparent: TCheckBox;
+    SliderBlur: TGuiSlider;
+    SliderOffset: TGuiSlider;
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -54,6 +55,8 @@ type
     procedure CbTransparentClick(Sender: TObject);
     procedure LabelDClick(Sender: TObject);
     procedure LabelCClick(Sender: TObject);
+    procedure SliderBlurChange(Sender: TObject);
+    procedure SliderOffsetChange(Sender: TObject);
   private
     FBackground      : TGuiCustomPixelMap;
     FBackgroundColor : TPixel32;
@@ -121,6 +124,25 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFmLabelTest.SliderBlurChange(Sender: TObject);
+begin
+ LabelA.Shadow.Blur := SliderBlur.Position;
+ LabelB.Shadow.Blur := SliderBlur.Position;
+ LabelC.Shadow.Blur := SliderBlur.Position;
+ LabelD.Shadow.Blur := SliderBlur.Position;
+end;
+
+procedure TFmLabelTest.SliderOffsetChange(Sender: TObject);
+var
+  NewOffset : TPoint;
+begin
+ NewOffset := Point(Round(SliderOffset.Position), Round(SliderOffset.Position));
+ LabelA.Shadow.Offset := NewOffset;
+ LabelB.Shadow.Offset := NewOffset;
+ LabelC.Shadow.Offset := NewOffset;
+ LabelD.Shadow.Offset := NewOffset;
 end;
 
 procedure TFmLabelTest.LabelCClick(Sender: TObject);

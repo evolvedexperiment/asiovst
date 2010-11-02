@@ -26,7 +26,7 @@ object FmDiracPitchShifter: TFmDiracPitchShifter
     Height = 24
     Alignment = taCenter
     Caption = 'Semitones'
-    Oversampling = fo3x
+    FontOversampling = fo3x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -37,7 +37,7 @@ object FmDiracPitchShifter: TFmDiracPitchShifter
     Height = 24
     Alignment = taCenter
     Caption = '0'
-    Oversampling = fo3x
+    FontOversampling = fo3x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end

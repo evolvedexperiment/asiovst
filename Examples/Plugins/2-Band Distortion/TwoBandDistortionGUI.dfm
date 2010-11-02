@@ -51,7 +51,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -71,7 +71,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -91,7 +91,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -111,7 +111,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -131,7 +131,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -151,7 +151,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -171,7 +171,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959
@@ -191,7 +191,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 4144959

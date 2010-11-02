@@ -22,7 +22,7 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 50
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Speed'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -38,7 +38,7 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 50
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Depth'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -54,7 +54,7 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 60
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '0.2 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -70,7 +70,7 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Width = 60
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598

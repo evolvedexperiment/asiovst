@@ -54,7 +54,7 @@ object LinearPhaseLinkwitzRileyDataModule: TLinearPhaseLinkwitzRileyDataModule
     end
     item
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Oversampling'
+      DisplayName = 'FontOversampling'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -65,7 +65,7 @@ object LinearPhaseLinkwitzRileyDataModule: TLinearPhaseLinkwitzRileyDataModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParameterOversamplingChange
+      OnParameterChange = ParameterFontOversamplingChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

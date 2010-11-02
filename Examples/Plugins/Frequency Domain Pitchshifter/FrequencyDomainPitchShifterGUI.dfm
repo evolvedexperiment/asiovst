@@ -25,7 +25,7 @@ object FmFrequencyDomainPitchShifter: TFmFrequencyDomainPitchShifter
     Height = 24
     Alignment = taCenter
     Caption = 'Semitones'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
@@ -36,7 +36,7 @@ object FmFrequencyDomainPitchShifter: TFmFrequencyDomainPitchShifter
     Height = 24
     Alignment = taCenter
     Caption = 'Semitones'
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
   end
