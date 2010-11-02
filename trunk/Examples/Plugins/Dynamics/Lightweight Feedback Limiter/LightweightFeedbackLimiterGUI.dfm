@@ -23,7 +23,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 90
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Threshold'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -39,7 +39,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 72
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '-10 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -55,7 +55,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 52
     Height = 19
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Attack'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -71,7 +71,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 72
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '15 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -87,7 +87,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 68
     Height = 19
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Release'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -103,7 +103,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 76
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '75 ms'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -119,7 +119,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 82
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Soft Knee'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -135,7 +135,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 74
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '2 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -171,7 +171,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     YAxis.Maximum = 10.000000000000000000
     YAxis.Lower = -90.000000000000000000
     YAxis.Upper = 10.000000000000000000
-    Oversampling = fo2x
+    FontOversampling = fo2x
     LineColor = 3948356
     LineWidth = 2
   end
@@ -181,7 +181,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 72
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Make Up'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -197,7 +197,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 74
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '6 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -225,7 +225,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Top = 8
     Width = 46
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Stereo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -254,7 +254,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Top = 29
     Width = 54
     Height = 17
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Soft Clip'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -283,7 +283,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Top = 70
     Width = 54
     Height = 13
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Auto Gain'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -309,7 +309,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Width = 33
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'GR'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -324,7 +324,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Top = 163
     Width = 24
     Height = 11
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '0 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -340,7 +340,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Top = 121
     Width = 30
     Height = 11
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '20 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -356,7 +356,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Top = 142
     Width = 30
     Height = 11
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '10 dB'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598

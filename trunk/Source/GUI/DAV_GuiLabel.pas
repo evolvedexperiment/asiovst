@@ -67,7 +67,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    property Oversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
+    property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
     property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
     property Caption: string read FCaption write SetCaption;
     property Shadow: TGUIShadow read GetShadow write SetShadow;
@@ -89,7 +89,7 @@ type
     property DragMode;
     property Enabled;
     property Font;
-    property Oversampling;
+    property FontOversampling;
     property ParentFont;
     property PopupMenu;
     property Shadow;

@@ -39,7 +39,7 @@ uses
   SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel,
   DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList;
+  DAV_GuiStitchedPngList, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmButterworth = class(TForm)
@@ -48,7 +48,6 @@ type
     GSPL: TGuiStitchedPNGList;
     GuiEQGraph: TGuiEQGraph;
     LbButterworthFilterDemo: TGuiLabel;
-    LbButterworthFilterDemoShaddow: TGuiLabel;
     LbFrequency: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
     LbOrder: TGuiLabel;
@@ -208,7 +207,7 @@ end;
 procedure TFmButterworth.EQGraphUpdateTimer(Sender: TObject);
 begin
  Timer.Enabled := False;
- GuiEQGraph.Invalidate;
+ GuiEQGraph.ChartChanged;
 end;
 
 procedure TFmButterworth.EQGraphUpdate;

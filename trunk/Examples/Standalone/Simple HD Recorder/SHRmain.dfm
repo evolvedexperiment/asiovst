@@ -78,7 +78,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -96,7 +96,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -114,7 +114,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -132,7 +132,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -153,7 +153,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -32
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    FontOversampling = fo4x
+    FontFontOversampling = fo4x
     Radius = 7.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -175,7 +175,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    FontOversampling = fo4x
+    FontFontOversampling = fo4x
     Radius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -197,7 +197,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    FontOversampling = fo4x
+    FontFontOversampling = fo4x
     Radius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

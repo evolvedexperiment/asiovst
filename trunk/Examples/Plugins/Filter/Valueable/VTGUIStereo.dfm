@@ -22,7 +22,7 @@ object FmVT: TFmVT
     Width = 37
     Height = 13
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -38,7 +38,7 @@ object FmVT: TFmVT
     Width = 37
     Height = 12
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -54,7 +54,7 @@ object FmVT: TFmVT
     Width = 179
     Height = 39
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Valueable'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -70,7 +70,7 @@ object FmVT: TFmVT
     Width = 64
     Height = 23
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'BASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -86,7 +86,7 @@ object FmVT: TFmVT
     Width = 94
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'TREBLE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -102,7 +102,7 @@ object FmVT: TFmVT
     Width = 121
     Height = 35
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '(stereo)'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -118,7 +118,7 @@ object FmVT: TFmVT
     Width = 74
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'DRIVE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -133,7 +133,7 @@ object FmVT: TFmVT
     Top = 139
     Width = 65
     Height = 18
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '- Rusty I'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -149,7 +149,7 @@ object FmVT: TFmVT
     Top = 114
     Width = 70
     Height = 18
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '- Rusty II'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -165,7 +165,7 @@ object FmVT: TFmVT
     Top = 166
     Width = 87
     Height = 18
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '- Steamin'#39' I'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -181,7 +181,7 @@ object FmVT: TFmVT
     Top = 191
     Width = 89
     Height = 19
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '- Steamin'#39' II'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -198,7 +198,7 @@ object FmVT: TFmVT
     Width = 37
     Height = 13
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -214,7 +214,7 @@ object FmVT: TFmVT
     Width = 94
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'TREBLE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -230,7 +230,7 @@ object FmVT: TFmVT
     Width = 37
     Height = 12
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -246,7 +246,7 @@ object FmVT: TFmVT
     Width = 64
     Height = 23
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'BASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -262,7 +262,7 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -278,7 +278,7 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -294,7 +294,7 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -310,7 +310,7 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -325,7 +325,7 @@ object FmVT: TFmVT
     Top = 141
     Width = 17
     Height = 13
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -340,7 +340,7 @@ object FmVT: TFmVT
     Top = 319
     Width = 17
     Height = 13
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -355,7 +355,7 @@ object FmVT: TFmVT
     Top = 319
     Width = 17
     Height = 13
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -370,7 +370,7 @@ object FmVT: TFmVT
     Top = 141
     Width = 17
     Height = 13
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
@@ -399,7 +399,7 @@ object FmVT: TFmVT
       Top = 16
       Width = 54
       Height = 17
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'GAIN:'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -415,7 +415,7 @@ object FmVT: TFmVT
       Top = 59
       Width = 95
       Height = 17
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'CHANNELS:'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -431,7 +431,7 @@ object FmVT: TFmVT
       Top = 16
       Width = 62
       Height = 16
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = '0 dB'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -448,7 +448,7 @@ object FmVT: TFmVT
       Width = 45
       Height = 10
       Alignment = taCenter
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'MID / SIDE'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -465,7 +465,7 @@ object FmVT: TFmVT
       Width = 66
       Height = 10
       Alignment = taCenter
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'LEFT / RIGHT'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET

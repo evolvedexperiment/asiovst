@@ -36,8 +36,9 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel,
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_Types, DAV_VSTModule, DAV_GuiCustomControl, DAV_GuiGraphicControl,
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
+  DAV_GuiStitchedPngList;
 
 type
   TFmChebyshev = class(TForm)
@@ -46,7 +47,6 @@ type
     DialRipple: TGuiStitchedDial;
     GSPL: TGuiStitchedPNGList;
     LbChebyshevFilterDemo: TGuiLabel;
-    LbChebyshevFilterDemoShaddow: TGuiLabel;
     LbFrequency: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
     LbOrder: TGuiLabel;

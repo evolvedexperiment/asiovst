@@ -230,7 +230,7 @@ object FmCTC: TFmCTC
     Font.Height = -27
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

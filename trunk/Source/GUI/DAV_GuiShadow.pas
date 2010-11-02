@@ -82,7 +82,7 @@ implementation
 constructor TGuiShadow.Create;
 begin
  inherited;
- FBlur         := 4;
+ FBlur         := 3;
  FOffset.X     := 1;
  FOffset.Y     := 1;
  FTransparency := $FF;

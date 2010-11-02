@@ -29,7 +29,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsUnderline]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -53,7 +53,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -70,7 +70,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -88,7 +88,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -106,7 +106,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -124,7 +124,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -142,7 +142,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -160,7 +160,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

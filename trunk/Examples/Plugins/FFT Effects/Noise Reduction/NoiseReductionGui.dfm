@@ -28,7 +28,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -45,7 +45,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -62,7 +62,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -79,7 +79,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -96,7 +96,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -113,7 +113,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -130,7 +130,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -147,7 +147,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -164,7 +164,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -181,7 +181,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -238,7 +238,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -254,7 +254,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -284,7 +284,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

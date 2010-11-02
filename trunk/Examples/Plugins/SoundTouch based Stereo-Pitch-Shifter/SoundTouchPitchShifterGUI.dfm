@@ -25,7 +25,7 @@ object FmSoundTouchPitchShifter: TFmSoundTouchPitchShifter
     Width = 115
     Height = 24
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Semitones'
     Shadow.Color = clBlack
   end
@@ -35,7 +35,7 @@ object FmSoundTouchPitchShifter: TFmSoundTouchPitchShifter
     Width = 115
     Height = 24
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Semitones'
     Shadow.Color = clBlack
   end

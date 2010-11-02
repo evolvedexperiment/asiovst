@@ -432,7 +432,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
       Font.Height = -19
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

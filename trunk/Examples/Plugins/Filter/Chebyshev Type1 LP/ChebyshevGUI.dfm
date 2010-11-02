@@ -26,7 +26,7 @@ object FmChebyshev: TFmChebyshev
     Top = 11
     Width = 273
     Height = 26
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Chebyshev Filter Demo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2039615
@@ -41,7 +41,7 @@ object FmChebyshev: TFmChebyshev
     Top = 8
     Width = 274
     Height = 26
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Chebyshev Filter Demo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
@@ -75,7 +75,7 @@ object FmChebyshev: TFmChebyshev
       Width = 80
       Height = 19
       Alignment = taCenter
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'Frequency'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -93,7 +93,7 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akTop]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'Ripple'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -111,7 +111,7 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akTop, akRight]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'Order'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -129,7 +129,7 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akRight, akBottom]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'Order'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -148,7 +148,7 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akBottom]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'Ripple'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -167,7 +167,7 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akLeft, akBottom]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Caption = 'Frequency'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET

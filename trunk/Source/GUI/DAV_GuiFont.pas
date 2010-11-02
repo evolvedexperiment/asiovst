@@ -40,7 +40,7 @@ uses
   Graphics, Classes, SysUtils, DAV_Common, DAV_Classes, DAV_GuiCommon,
   DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
 
-{-$DEFINE UseShadowBuffer}
+{$DEFINE UseShadowBuffer}
 
 type
   TGuiCustomFont = class(TPersistent)
@@ -48,7 +48,7 @@ type
     FAntiAliasing : Boolean;
     FShadow       : TGuiShadow;
     FShadowColor  : TPixel32;
-    FBlurFilter   : TGuiBlurFIRFilter;
+    FBlurFilter   : TGuiStackBlurFilter;
     FOnChange     : TNotifyEvent;
     procedure SetAntialiasing(const Value: Boolean);
     procedure SetShadow(const Value: TGuiShadow);
@@ -75,7 +75,7 @@ type
     FFont         : TFont;
     FBuffer       : TGuiByteMapDIB;
     {$IFDEF UseShadowBuffer}
-    FShadowBuffer : TGuiByteMapDIB;
+    FShadowBuffer : TGuiCustomByteMap;
     {$ENDIF}
     FOldHandle    : HDC;
     FFontHandle   : HFont;
@@ -101,19 +101,20 @@ type
       X: Integer = 0; Y: Integer = 0); override;
   end;
 
-  TFontOversampling = (foNone, fo2x, fo3x, fo4x, fo6x, fo8x);
+  TFontOversampling = (foNone, fo2x, fo3x, fo4x, fo6x, fo8x, fo12x, fo16x);
 
   TGuiCustomOversampledGDIFont = class(TGuiCustomGDIFont)
   private
-    FScaledFont       : TFont;
-    FOSFactor         : Integer;
     FFontOversampling : TFontOversampling;
+    FOSFactor         : Integer;
+    FScaledFont       : TFont;
     procedure SetFontOversampling(const Value: TFontOversampling);
   protected
+    procedure AssignByteMapFont; override;
+    procedure DownsampleByteMap(Buffer: TGuiCustomByteMap); virtual;
     procedure FontChanged(Sender: TObject); override;
     procedure FontOversamplingChanged; virtual;
     procedure UpdateScaledFont; virtual;
-    procedure AssignByteMapFont; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -271,7 +272,7 @@ begin
  inherited;
  FShadow          := TGuiShadow.Create;
  FShadow.OnChange := ShadowChangedHandler;
- FBlurFilter      := TGuiBlurFIRFilter.Create;
+ FBlurFilter      := TGuiStackBlurFilter.Create;
  FShadowColor     := pxBlack32;
 end;
 
@@ -279,11 +280,6 @@ destructor TGuiCustomFont.Destroy;
 begin
  FreeAndNil(FShadow);
  FreeAndNil(FBlurFilter);
-
- {$IFDEF UseShadowBuffer}
- if Assigned(FShadowBuffer)
-  then FreeAndNil(FShadowBuffer);
- {$ENDIF}
 
  inherited;
 end;
@@ -332,6 +328,7 @@ begin
  FBuffer        := TGuiByteMapDIB.Create;
  FBuffer.SetSize(8, 8);
  FOldHandle     := FBuffer.Handle;
+
  AssignByteMapFont;
 end;
 
@@ -339,6 +336,12 @@ destructor TGuiCustomGDIFont.Destroy;
 begin
  FreeAndNil(FFont);
  FreeAndNil(FBuffer);
+
+ {$IFDEF UseShadowBuffer}
+ if Assigned(FShadowBuffer)
+  then FreeAndNil(FShadowBuffer);
+ {$ENDIF}
+
  inherited;
 end;
 
@@ -415,7 +418,7 @@ begin
       begin
        {$IFDEF UseShadowBuffer}
        if not Assigned(FShadowBuffer)
-        then FShadowBuffer := TGuiByteMapDIB.Create;
+        then FShadowBuffer := TGuiByteMapMemory.Create;
        {$ENDIF}
 
        BlurOffset := Round(FShadow.Blur + 0.5);
@@ -447,8 +450,8 @@ begin
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FShadowBuffer, FShadowColor,
-          X + FShadow.FOffset.X - BlurOffset,
-          Y + FShadow.FOffset.Y - BlurOffset);
+          X + FShadow.Offset.X - BlurOffset,
+          Y + FShadow.Offset.Y - BlurOffset);
        {$ELSE}
        if FShadow.Blur > 0 then
         begin
@@ -509,6 +512,31 @@ begin
  inherited;
 end;
 
+procedure TGuiCustomOversampledGDIFont.DownsampleByteMap(Buffer: TGuiCustomByteMap);
+begin
+ case FFontOversampling of
+  fo2x : DownsampleByteMap2x(Buffer);
+  fo3x : DownsampleByteMap3x(Buffer);
+  fo4x : DownsampleByteMap4x(Buffer);
+  fo6x : begin
+          DownsampleByteMap3x(Buffer);
+          DownsampleByteMap2x(Buffer);
+         end;
+  fo8x : begin
+          DownsampleByteMap4x(Buffer);
+          DownsampleByteMap2x(Buffer);
+         end;
+  fo12x : begin
+          DownsampleByteMap4x(Buffer);
+          DownsampleByteMap3x(Buffer);
+         end;
+  fo16x : begin
+          DownsampleByteMap4x(Buffer);
+          DownsampleByteMap4x(Buffer);
+         end;
+ end;
+end;
+
 procedure TGuiCustomOversampledGDIFont.FontChanged(Sender: TObject);
 begin
  UpdateScaledFont;
@@ -529,6 +557,8 @@ begin
   fo4x   : FOSFactor := 4;
   fo6x   : FOSFactor := 6;
   fo8x   : FOSFactor := 8;
+  fo12x  : FOSFactor := 12;
+  fo16x  : FOSFactor := 16;
  end;
 
  UpdateScaledFont;
@@ -600,13 +630,14 @@ begin
       begin
        {$IFDEF UseShadowBuffer}
        if not Assigned(FShadowBuffer)
-        then FShadowBuffer := TGuiByteMapDIB.Create;
+        then FShadowBuffer := TGuiByteMapMemory.Create;
        {$ENDIF}
 
-       BlurOffset := Round(FOSFactor * FShadow.Blur + 0.5);
+       BlurOffset := FOSFactor * Round(0.5 * FShadow.Blur);
        TextExtend.cx := TextExtend.cx + 2 * BlurOffset;
        TextExtend.cy := TextExtend.cy + 2 * BlurOffset;
 
+       // align byte map size
        TextExtend.cx := (TextExtend.cx and $FFFFFFFC) + $4;
        TextExtend.cy := (TextExtend.cy and $FFFFFFFC) + $4;
 
@@ -621,41 +652,31 @@ begin
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
 
-       case FFontOversampling of
-        fo2x : DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-        fo3x : DownsampleByteMap3x(TGuiCustomByteMap(FBuffer));
-        fo4x : DownsampleByteMap4x(TGuiCustomByteMap(FBuffer));
-        fo6x : begin
-                DownsampleByteMap3x(TGuiCustomByteMap(FBuffer));
-                DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-               end;
-        fo8x : begin
-                DownsampleByteMap4x(TGuiCustomByteMap(FBuffer));
-                DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-               end;
-       end;
-
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
 
        if FShadow.Blur > 0 then
         begin
-         FBlurFilter.Radius := FShadow.Blur;
+         FBlurFilter.Radius := FOSFactor * FShadow.Blur;
          FBlurFilter.Filter(FShadowBuffer);
         end;
 
+       DownsampleByteMap(FShadowBuffer);
+
        if PixelMap <> nil
-        then PixelMap.DrawByteMap(FBuffer, FShadowColor, Rect(
+        then PixelMap.DrawByteMap(FShadowBuffer, FShadowColor, Rect(
           X + FShadow.Offset.X - BlurOffset div FOSFactor,
           Y + FShadow.Offset.Y - BlurOffset div FOSFactor,
-          X + FShadow.Offset.X - (BlurOffset + FBuffer.Width) div FOSFactor,
-          Y + FShadow.Offset.Y - (BlurOffset + FBuffer.Height) div FOSFactor));
+          X + FShadow.Offset.X + (FBuffer.Width - BlurOffset) div FOSFactor,
+          Y + FShadow.Offset.Y + (FBuffer.Height - BlurOffset) div FOSFactor));
        {$ELSE}
        if FShadow.Blur > 0 then
         begin
-         FBlurFilter.Radius := FShadow.Blur;
+         FBlurFilter.Radius := FOSFactor * FShadow.Blur;
          FBlurFilter.Filter(FBuffer);
         end;
+
+       DownsampleByteMap(FBuffer);
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, FShadowColor, Rect(
@@ -668,20 +689,9 @@ begin
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
 
-       case FFontOversampling of
-        fo2x : DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-        fo3x : DownsampleByteMap3x(TGuiCustomByteMap(FBuffer));
-        fo4x : DownsampleByteMap4x(TGuiCustomByteMap(FBuffer));
-        fo6x : begin
-                DownsampleByteMap3x(TGuiCustomByteMap(FBuffer));
-                DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-               end;
-        fo8x : begin
-                DownsampleByteMap4x(TGuiCustomByteMap(FBuffer));
-                DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-               end;
-       end;
        {$ENDIF}
+
+       DownsampleByteMap(FBuffer);
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color),
@@ -704,19 +714,7 @@ begin
 
        Windows.TextOut(FBuffer.Handle, 0, 0, PChar(Text), Length(Text));
 
-       case FFontOversampling of
-        fo2x : DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-        fo3x : DownsampleByteMap3x(TGuiCustomByteMap(FBuffer));
-        fo4x : DownsampleByteMap4x(TGuiCustomByteMap(FBuffer));
-        fo6x : begin
-                DownsampleByteMap3x(TGuiCustomByteMap(FBuffer));
-                DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-               end;
-        fo8x : begin
-                DownsampleByteMap4x(TGuiCustomByteMap(FBuffer));
-                DownsampleByteMap2x(TGuiCustomByteMap(FBuffer));
-               end;
-       end;
+       DownsampleByteMap(FBuffer);
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color),

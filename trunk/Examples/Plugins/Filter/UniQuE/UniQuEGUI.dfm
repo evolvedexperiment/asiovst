@@ -66,7 +66,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -84,7 +84,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -117,7 +117,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -151,7 +151,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -169,7 +169,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -187,7 +187,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -205,7 +205,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

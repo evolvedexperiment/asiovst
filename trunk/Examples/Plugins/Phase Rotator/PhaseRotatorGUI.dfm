@@ -24,7 +24,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 50
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Freq.'
     Shadow.Color = clBlack
   end
@@ -34,7 +34,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 56
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Stages'
     Shadow.Color = clBlack
   end
@@ -44,7 +44,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 50
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'BW'
     Shadow.Color = clBlack
   end
@@ -54,7 +54,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 66
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '200 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -71,7 +71,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 36
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -88,7 +88,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 66
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '1.4'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598

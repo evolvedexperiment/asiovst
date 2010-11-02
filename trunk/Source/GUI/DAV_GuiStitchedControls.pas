@@ -148,7 +148,7 @@ type
     procedure StitchedIndexChanged; virtual;
     procedure StitchedListChanged; virtual;
     procedure StitchedItemChanged; virtual;
-    procedure UpdateBuffer; virtual;
+    procedure UpdateBuffer; override;
 
     procedure Loaded; override;
 

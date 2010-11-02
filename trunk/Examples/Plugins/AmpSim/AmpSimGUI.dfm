@@ -1662,7 +1662,7 @@ object FmCombo: TFmCombo
         Font.Font.Height = -20
         Font.Font.Name = 'Trebuchet MS'
         Font.Font.Style = []
-        Font.FontOversampling = fo3x
+        Font.FontFontOversampling = fo3x
         Font.Shadow.Blur = 3.000000000000000000
         Font.Shadow.Color = clBlack
         Font.Shadow.Visible = True
@@ -1675,7 +1675,7 @@ object FmCombo: TFmCombo
         Font.Font.Height = -13
         Font.Font.Name = 'Trebuchet MS'
         Font.Font.Style = []
-        Font.FontOversampling = fo3x
+        Font.FontFontOversampling = fo3x
         Font.Shadow.Blur = 4.000000000000000000
         Font.Shadow.Color = clBlack
       end>

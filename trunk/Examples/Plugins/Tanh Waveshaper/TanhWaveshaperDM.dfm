@@ -17,7 +17,7 @@ object TanhWaveshaperModule: TTanhWaveshaperModule
   ParameterProperties = <
     item
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Oversampling'
+      DisplayName = 'FontOversampling'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -30,7 +30,7 @@ object TanhWaveshaperModule: TTanhWaveshaperModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParameterOversamplingChange
+      OnParameterChange = ParameterFontOversamplingChange
       OnCustomParameterDisplay = ParameterIntegerDisplay
     end
     item

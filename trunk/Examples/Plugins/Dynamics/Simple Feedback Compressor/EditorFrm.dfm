@@ -92,7 +92,7 @@ object EditorForm: TEditorForm
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold, fsUnderline]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
@@ -112,7 +112,7 @@ object EditorForm: TEditorForm
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold, fsUnderline]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
@@ -132,7 +132,7 @@ object EditorForm: TEditorForm
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold, fsUnderline]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
@@ -152,7 +152,7 @@ object EditorForm: TEditorForm
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold, fsUnderline]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack

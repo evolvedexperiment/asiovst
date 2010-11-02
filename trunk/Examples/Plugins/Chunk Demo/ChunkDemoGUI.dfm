@@ -28,7 +28,7 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -45,7 +45,7 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -62,7 +62,7 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -79,7 +79,7 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack

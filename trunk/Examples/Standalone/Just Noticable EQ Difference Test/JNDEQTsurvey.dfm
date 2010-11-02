@@ -33,7 +33,7 @@ object FmSurvey: TFmSurvey
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -51,7 +51,7 @@ object FmSurvey: TFmSurvey
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -95,7 +95,7 @@ object FmSurvey: TFmSurvey
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -114,7 +114,7 @@ object FmSurvey: TFmSurvey
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -133,7 +133,7 @@ object FmSurvey: TFmSurvey
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = 10333885
@@ -236,7 +236,7 @@ object FmSurvey: TFmSurvey
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = 5663873

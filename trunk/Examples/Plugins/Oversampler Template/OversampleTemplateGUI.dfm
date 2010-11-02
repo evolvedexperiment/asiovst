@@ -47,7 +47,7 @@ object FmOversampler: TFmOversampler
     Radius = 0
     TabOrder = 0
     UseDockManager = True
-    object GuiLEDOversampling: TGuiLED
+    object GuiLEDFontOversampling: TGuiLED
       Left = 4
       Top = 4
       Width = 16
@@ -55,30 +55,30 @@ object FmOversampler: TFmOversampler
       Brightness_Percent = 20.000000000000000000
       LineWidth = 2
       LEDColor = clLime
-      Oversampling = fo4x
+      FontOversampling = fo4x
       LineColor = clLime
-      OnClick = GuiLEDOversamplingClick
+      OnClick = GuiLEDFontOversamplingClick
     end
-    object LbOversampling: TGuiLabel
+    object LbFontOversampling: TGuiLabel
       Left = 26
       Top = 4
       Width = 80
       Height = 16
-      Oversampling = fo4x
-      Caption = 'Oversampling:'
+      FontOversampling = fo4x
+      Caption = 'FontOversampling:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      OnClick = GuiLEDOversamplingClick
+      OnClick = GuiLEDFontOversamplingClick
     end
-    object LbOversamplingFactor: TGuiLabel
+    object LbFontOversamplingFactor: TGuiLabel
       Left = 134
       Top = 4
       Width = 27
       Height = 16
-      Oversampling = fo2x
+      FontOversampling = fo2x
       Caption = '4x'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -87,12 +87,12 @@ object FmOversampler: TFmOversampler
       Font.Style = [fsBold]
       Visible = False
     end
-    object DialOversampling: TGuiDial
+    object DialFontOversampling: TGuiDial
       Left = 115
       Top = 4
       Width = 16
       Height = 16
-      Oversampling = fo4x
+      FontOversampling = fo4x
       CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
@@ -101,7 +101,7 @@ object FmOversampler: TFmOversampler
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialOversamplingChange
+      OnChange = DialFontOversamplingChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000

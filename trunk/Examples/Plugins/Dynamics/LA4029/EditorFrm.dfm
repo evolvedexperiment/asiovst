@@ -46,7 +46,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -64,7 +64,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -82,7 +82,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -115,7 +115,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -134,7 +134,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -152,7 +152,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -188,7 +188,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -239,7 +239,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontOversampling = fo4x
+      FontFontOversampling = fo4x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -262,7 +262,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontOversampling = fo4x
+      FontFontOversampling = fo4x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -285,7 +285,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontOversampling = fo4x
+      FontFontOversampling = fo4x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -405,7 +405,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -423,7 +423,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -441,7 +441,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -459,7 +459,7 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

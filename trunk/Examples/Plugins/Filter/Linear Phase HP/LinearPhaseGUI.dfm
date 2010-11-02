@@ -22,7 +22,7 @@ object FmLinearPhase: TFmLinearPhase
     Width = 89
     Height = 21
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Frequency'
     Shadow.Color = clBlack
   end
@@ -32,7 +32,7 @@ object FmLinearPhase: TFmLinearPhase
     Width = 89
     Height = 22
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '20 Hz'
     Shadow.Color = clBlack
   end

@@ -19,8 +19,8 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Oversampling'
-      DisplayName = 'Oversampling'
+      Category = 'FontOversampling'
+      DisplayName = 'FontOversampling'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -31,13 +31,13 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParamOversamplingChange
-      OnCustomParameterDisplay = ParamOversamplingDisplay
+      OnParameterChange = ParamFontOversamplingChange
+      OnCustomParameterDisplay = ParamFontOversamplingDisplay
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Oversampling'
+      Category = 'FontOversampling'
       DisplayName = 'OS Factor'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -162,7 +162,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     end>
   ParameterCategories = <
     item
-      DisplayName = 'Oversampling'
+      DisplayName = 'FontOversampling'
       VSTModule = Owner
     end
     item

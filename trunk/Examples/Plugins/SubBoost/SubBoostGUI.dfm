@@ -30,7 +30,7 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsUnderline]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -72,7 +72,7 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -90,7 +90,7 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsUnderline]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -212,7 +212,7 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -232,7 +232,7 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -252,7 +252,7 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -272,7 +272,7 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -313,7 +313,7 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -396,7 +396,7 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -416,7 +416,7 @@ object FmSubBoost: TFmSubBoost
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = []
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

@@ -20,22 +20,6 @@ object FmButterworth: TFmButterworth
     243)
   PixelsPerInch = 96
   TextHeight = 16
-  object LbButterworthFilterDemoShaddow: TGuiLabel
-    Left = 9
-    Top = 11
-    Width = 186
-    Height = 26
-    Caption = 'Butterworth HP'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2039615
-    Font.Height = -21
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold]
-    Oversampling = fo4x
-    ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
-  end
   object LbButterworthFilterDemo: TGuiLabel
     Left = 6
     Top = 8
@@ -47,10 +31,13 @@ object FmButterworth: TFmButterworth
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Color = 2039615
+    Shadow.OffsetX = 3
+    Shadow.OffsetY = 3
+    Shadow.Visible = True
     Transparent = True
   end
   object PnControls: TGuiPanel
@@ -82,10 +69,13 @@ object FmButterworth: TFmButterworth
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Blur = 2.000000000000000000
+      Shadow.Color = 657940
+      Shadow.OffsetX = 0
+      Shadow.OffsetY = 0
+      Shadow.Visible = True
       OnDblClick = LbFrequencyValueDblClick
     end
     object LbOrder: TGuiLabel
@@ -102,22 +92,25 @@ object FmButterworth: TFmButterworth
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
-      Oversampling = fo4x
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Blur = 2.000000000000000000
+      Shadow.Color = 657940
+      Shadow.OffsetX = 0
+      Shadow.OffsetY = 0
+      Shadow.Visible = True
       OnDblClick = LbOrderValueDblClick
     end
     object LbOrderValue: TGuiLabel
-      Left = 94
+      Left = 116
       Top = 103
-      Width = 80
+      Width = 41
       Height = 19
       Alignment = taCenter
       Anchors = [akRight, akBottom]
-      Caption = 'Order'
+      Caption = '4'
       Color = 1315880
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnDblClick = LbOrderValueDblClick
@@ -129,9 +122,9 @@ object FmButterworth: TFmButterworth
       Height = 19
       Alignment = taCenter
       Anchors = [akLeft, akBottom]
-      Caption = 'Frequency'
+      Caption = '20 Hz'
       Color = 1315880
-      Oversampling = fo4x
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       OnDblClick = LbFrequencyValueDblClick

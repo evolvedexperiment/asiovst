@@ -22,7 +22,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 50
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Speed'
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -33,7 +33,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 50
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Depth'
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -44,7 +44,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 50
     Height = 25
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Mix'
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -55,7 +55,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '0,2 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -72,7 +72,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '5 %'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -89,7 +89,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Width = 60
     Height = 20
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '50%'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598

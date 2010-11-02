@@ -22,7 +22,7 @@ object FmLinearPhaseLinkwitzRiley: TFmLinearPhaseLinkwitzRiley
     Width = 89
     Height = 21
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
@@ -38,7 +38,7 @@ object FmLinearPhaseLinkwitzRiley: TFmLinearPhaseLinkwitzRiley
     Width = 89
     Height = 22
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '20 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
@@ -54,7 +54,7 @@ object FmLinearPhaseLinkwitzRiley: TFmLinearPhaseLinkwitzRiley
     Width = 51
     Height = 21
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = 'Order'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
@@ -70,7 +70,7 @@ object FmLinearPhaseLinkwitzRiley: TFmLinearPhaseLinkwitzRiley
     Width = 97
     Height = 22
     Alignment = taCenter
-    Oversampling = fo4x
+    FontOversampling = fo4x
     Caption = '20 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
