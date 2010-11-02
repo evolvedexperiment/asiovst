@@ -32,8 +32,10 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
-    Shadow.Transparency = 128
+    Shadow.Color = 9408399
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 128
     Shadow.Visible = True
   end
   object LbRatio: TGuiLabel
@@ -52,8 +54,10 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
-    Shadow.Transparency = 128
+    Shadow.Color = 9408399
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 128
     Shadow.Visible = True
   end
   object LbAttack: TGuiLabel
@@ -72,8 +76,10 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
-    Shadow.Transparency = 128
+    Shadow.Color = 9408399
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 128
     Shadow.Visible = True
   end
   object LbRelease: TGuiLabel
@@ -92,8 +98,10 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
-    Shadow.Transparency = 128
+    Shadow.Color = 9408399
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 128
     Shadow.Visible = True
   end
   object LbAttackValue: TLabel

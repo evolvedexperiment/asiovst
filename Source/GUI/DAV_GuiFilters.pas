@@ -119,6 +119,23 @@ type
     procedure Filter(PixelMap: TGuiCustomPixelMap); override;
   end;
 
+  TGuiSaturationFilter = class(TGuiCustomFilter)
+  private
+    FLookUpTable : array [Byte] of Byte;
+    FValue: Single;
+    procedure SetValue(const Value: Single);
+  protected
+    procedure ValueChanged; virtual;
+    procedure CalculateLookUpTable; virtual;
+  public
+    constructor Create; override;
+
+    procedure Filter(ByteMap: TGuiCustomByteMap); override;
+    procedure Filter(PixelMap: TGuiCustomPixelMap); override;
+
+    property Value: Single read FValue write SetValue;
+  end;
+
 implementation
 
 uses
@@ -552,6 +569,65 @@ end;
 
 procedure TGuiStackBlurFilter.ResizeStack;
 begin
+end;
+
+
+{ TGuiSaturationFilter }
+
+constructor TGuiSaturationFilter.Create;
+begin
+ inherited;
+ FValue := 0;
+ CalculateLookUpTable;
+end;
+
+procedure TGuiSaturationFilter.Filter(ByteMap: TGuiCustomByteMap);
+var
+  Index : Integer;
+  Data  : PByteArray;
+begin
+ Data := ByteMap.DataPointer;
+ for Index := 0 to (ByteMap.Width * ByteMap.Height) - 1
+  do Data^[Index] := FLookUpTable[Data^[Index]];
+end;
+
+procedure TGuiSaturationFilter.Filter(PixelMap: TGuiCustomPixelMap);
+var
+  Index : Integer;
+  Data  : PPixel32Array;
+begin
+ Data := PixelMap.DataPointer;
+ for Index := 0 to (PixelMap.Width * PixelMap.Height) - 1 do
+  begin
+   Data^[Index].A := FLookUpTable[Data^[Index].A];
+   Data^[Index].R := FLookUpTable[Data^[Index].R];
+   Data^[Index].G := FLookUpTable[Data^[Index].G];
+   Data^[Index].B := FLookUpTable[Data^[Index].B];
+  end;
+end;
+
+procedure TGuiSaturationFilter.CalculateLookUpTable;
+var
+  Index  : Integer;
+  ExpPos : Double;
+begin
+ ExpPos := 1 - (2 * (1 + Abs(Value)) / ((1 + Abs(Value) + Value)));
+ for Index := 0 to Length(FLookUpTable) - 1
+  do FLookUpTable[Index] := Round(255 * Index / (Index + ExpPos * (Index - 255)));
+end;
+
+procedure TGuiSaturationFilter.ValueChanged;
+begin
+ CalculateLookupTable;
+end;
+
+procedure TGuiSaturationFilter.SetValue(const Value: Single);
+begin
+ if FValue <> Value then
+  begin
+   FValue := Value;
+   ValueChanged;
+  end;
 end;
 
 end.

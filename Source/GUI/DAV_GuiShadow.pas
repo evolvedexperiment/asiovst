@@ -46,18 +46,20 @@ type
     FBlur         : Single;
     FColor        : TColor;
     FOffset       : TPoint;
-    FTransparency : Byte;
+    FOpacity      : Byte;
     FVisible      : Boolean;
     FOnChange     : TNotifyEvent;
+    FSaturation   : Single;
     function GetOffsetX: Integer;
     function GetOffsetY: Integer;
     procedure SetBlur(const Value: Single);
     procedure SetOffsetX(const Value: Integer);
     procedure SetOffsetY(const Value: Integer);
-    procedure SetTransparency(const Value: Byte);
+    procedure SetOpacity(const Value: Byte);
     procedure SetVisible(const Value: Boolean);
     procedure SetOffset(const Value: TPoint);
     procedure SetColor(const Value: TColor);
+    procedure SetSaturation(const Value: Single);
   protected
     procedure Changed; virtual;
     procedure AssignTo(Dest: TPersistent); override;
@@ -69,7 +71,8 @@ type
     property Color: TColor read FColor write SetColor;
     property OffsetX: Integer read GetOffsetX write SetOffsetX default 1;
     property OffsetY: Integer read GetOffsetY write SetOffsetY default 1;
-    property Transparency: Byte read FTransparency write SetTransparency default $FF;
+    property Opacity: Byte read FOpacity write SetOpacity default $FF;
+    property Saturation: Single read FSaturation write SetSaturation;
     property Visible: Boolean read FVisible write SetVisible default False;
 
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -82,11 +85,10 @@ implementation
 constructor TGuiShadow.Create;
 begin
  inherited;
- FBlur         := 3;
- FOffset.X     := 1;
- FOffset.Y     := 1;
- FTransparency := $FF;
- FVisible      := False;
+ FOffset.X := 1;
+ FOffset.Y := 1;
+ FOpacity  := $FF;
+ FVisible  := False;
 end;
 
 procedure TGuiShadow.AssignTo(Dest: TPersistent);
@@ -94,13 +96,14 @@ begin
  if Dest is TGuiShadow then
   with TGuiShadow(Dest) do
    begin
-    FBlur         := Self.FBlur;
-    FColor        := Self.FColor;
-    FOffset.X     := Self.FOffset.X;
-    FOffset.Y     := Self.FOffset.Y;
-    FTransparency := Self.FTransparency;
-    FVisible      := Self.FVisible;
-    FOnChange     := Self.FOnChange;
+    FBlur       := Self.FBlur;
+    FColor      := Self.FColor;
+    FOffset.X   := Self.FOffset.X;
+    FOffset.Y   := Self.FOffset.Y;
+    FOpacity    := Self.FOpacity;
+    FSaturation := Self.FSaturation;
+    FVisible    := Self.FVisible;
+    FOnChange   := Self.FOnChange;
    end
  else inherited;
 end;
@@ -169,11 +172,20 @@ begin
   end;
 end;
 
-procedure TGuiShadow.SetTransparency(const Value: Byte);
+procedure TGuiShadow.SetOpacity(const Value: Byte);
 begin
- if FTransparency <> Value then
+ if FOpacity <> Value then
   begin
-   FTransparency := Value;
+   FOpacity := Value;
+   Changed;
+  end;
+end;
+
+procedure TGuiShadow.SetSaturation(const Value: Single);
+begin
+ if FSaturation <> Value then
+  begin
+   FSaturation := Value;
    Changed;
   end;
 end;

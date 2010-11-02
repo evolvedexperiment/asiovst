@@ -48,6 +48,7 @@ type
     FAntiAliasing : Boolean;
     FShadow       : TGuiShadow;
     FShadowColor  : TPixel32;
+    FSaturation   : TGuiSaturationFilter;
     FBlurFilter   : TGuiStackBlurFilter;
     FOnChange     : TNotifyEvent;
     procedure SetAntialiasing(const Value: Boolean);
@@ -143,6 +144,9 @@ var
   FontClassList: TClassList;
 
 implementation
+
+uses
+  DAV_Approximations;
 
 procedure SetFontAntialiasing(const Font: TFont; Quality: Cardinal);
 var
@@ -273,6 +277,7 @@ begin
  FShadow          := TGuiShadow.Create;
  FShadow.OnChange := ShadowChangedHandler;
  FBlurFilter      := TGuiStackBlurFilter.Create;
+ FSaturation      := TGuiSaturationFilter.Create;
  FShadowColor     := pxBlack32;
 end;
 
@@ -280,6 +285,7 @@ destructor TGuiCustomFont.Destroy;
 begin
  FreeAndNil(FShadow);
  FreeAndNil(FBlurFilter);
+ FreeAndNil(FSaturation);
 
  inherited;
 end;
@@ -313,7 +319,8 @@ end;
 procedure TGuiCustomFont.ShadowChangedHandler(Sender: TObject);
 begin
  FShadowColor := ConvertColor(FShadow.Color);
- FShadowColor.A := $FF - FShadow.Transparency;
+ FShadowColor.A := FShadow.Opacity;
+ FSaturation.Value := FShadow.Saturation;
  Changed;
 end;
 
@@ -659,6 +666,10 @@ begin
         begin
          FBlurFilter.Radius := FOSFactor * FShadow.Blur;
          FBlurFilter.Filter(FShadowBuffer);
+
+         // eventually apply saturation
+         if FShadow.Saturation <> 0
+          then FSaturation.Filter(FShadowBuffer);
         end;
 
        DownsampleByteMap(FShadowBuffer);
@@ -674,6 +685,10 @@ begin
         begin
          FBlurFilter.Radius := FOSFactor * FShadow.Blur;
          FBlurFilter.Filter(FBuffer);
+
+         // eventually apply saturation
+         if FShadow.Saturation <> 0
+          then FSaturation.Filter(FBuffer);
         end;
 
        DownsampleByteMap(FBuffer);

@@ -37,7 +37,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   Controls, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiLabel, DAV_GuiSelectBox,
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmGranularPitchShifter = class(TForm)

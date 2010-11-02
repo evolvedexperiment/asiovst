@@ -2,7 +2,7 @@ object FmLabelTest: TFmLabelTest
   Left = 218
   Top = 77
   Caption = 'Label Test'
-  ClientHeight = 142
+  ClientHeight = 158
   ClientWidth = 135
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
@@ -43,7 +43,7 @@ object FmLabelTest: TFmLabelTest
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo3x
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -60,7 +60,7 @@ object FmLabelTest: TFmLabelTest
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo2x
+    FontOversampling = fo2x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -76,7 +76,7 @@ object FmLabelTest: TFmLabelTest
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = []
-    Oversampling = fo4x
+    FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clBlack
@@ -125,6 +125,21 @@ object FmLabelTest: TFmLabelTest
     DefaultPosition = 8.000000000000000000
     Max = 8.000000000000000000
     OnChange = SliderOffsetChange
+    ParentColor = False
+    Position = 4.000000000000000000
+    SlideColor = 5333094
+  end
+  object SliderTransparency: TGuiSlider
+    Left = 8
+    Top = 139
+    Width = 119
+    Height = 13
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373965
+    DefaultPosition = 8.000000000000000000
+    Max = 255.000000000000000000
+    OnChange = SliderTransparencyChange
     ParentColor = False
     Position = 4.000000000000000000
     SlideColor = 5333094

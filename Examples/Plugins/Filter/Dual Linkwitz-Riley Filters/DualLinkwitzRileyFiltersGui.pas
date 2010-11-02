@@ -38,7 +38,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, StdCtrls, Menus, DAV_GuiPixelMap, DAV_GuiPanel,
   DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED,
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmLinkwitzRiley = class(TForm)

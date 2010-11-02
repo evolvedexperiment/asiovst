@@ -38,7 +38,7 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
   DAV_Types, DAV_VSTModule, DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiLabel,
   DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedSwitch;
+  DAV_GuiStitchedSwitch, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmVT = class(TForm)

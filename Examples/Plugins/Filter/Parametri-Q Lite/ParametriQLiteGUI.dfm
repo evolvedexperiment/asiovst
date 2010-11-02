@@ -190,8 +190,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreq2: TGuiLabel
     Tag = 2
@@ -202,8 +203,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreq3: TGuiLabel
     Tag = 3
@@ -214,8 +216,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreq4: TGuiLabel
     Tag = 4
@@ -226,8 +229,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreq7: TGuiLabel
     Tag = 7
@@ -238,8 +242,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreq6: TGuiLabel
     Tag = 6
@@ -250,8 +255,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreq5: TGuiLabel
     Tag = 5
@@ -262,8 +268,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreq8: TGuiLabel
     Tag = 8
@@ -274,8 +281,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'FREQ'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW1: TGuiLabel
     Tag = 1
@@ -286,8 +294,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW2: TGuiLabel
     Tag = 2
@@ -298,8 +307,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW3: TGuiLabel
     Tag = 3
@@ -310,8 +320,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW4: TGuiLabel
     Tag = 4
@@ -322,8 +333,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW8: TGuiLabel
     Tag = 8
@@ -334,8 +346,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW7: TGuiLabel
     Tag = 7
@@ -346,8 +359,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW6: TGuiLabel
     Tag = 6
@@ -358,8 +372,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbBW5: TGuiLabel
     Tag = 5
@@ -370,8 +385,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'BW'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain1: TGuiLabel
     Tag = 1
@@ -382,8 +398,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain2: TGuiLabel
     Tag = 2
@@ -394,8 +411,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain3: TGuiLabel
     Tag = 3
@@ -406,8 +424,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain4: TGuiLabel
     Tag = 4
@@ -418,8 +437,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain8: TGuiLabel
     Tag = 8
@@ -430,8 +450,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain7: TGuiLabel
     Tag = 7
@@ -442,8 +463,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain6: TGuiLabel
     Tag = 6
@@ -454,8 +476,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain5: TGuiLabel
     Tag = 5
@@ -466,8 +489,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbFreqValue1: TGuiLabel
     Tag = 1
@@ -1087,8 +1111,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbType7: TGuiLabel
@@ -1100,8 +1125,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbType6: TGuiLabel
@@ -1113,8 +1139,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbType5: TGuiLabel
@@ -1126,8 +1153,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbType4: TGuiLabel
@@ -1139,8 +1167,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbType3: TGuiLabel
@@ -1152,8 +1181,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbType2: TGuiLabel
@@ -1165,8 +1195,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbType1: TGuiLabel
@@ -1178,8 +1209,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'TYPE'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LbTypeClick
   end
   object LbInput: TGuiLabel
@@ -1190,8 +1222,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'INPUT'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbOutput: TGuiLabel
     Left = 142
@@ -1201,8 +1234,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'OUTPUT'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGain: TGuiLabel
     Left = 96
@@ -1212,8 +1246,9 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     Caption = 'GAIN'
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object ShapeInputBottom: TShape
     Left = 65
@@ -1256,8 +1291,9 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'Parametri-Q LITE'
     Color = 1447701
     FontOversampling = fo4x
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 2.000000000000000000
     Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbIn: TGuiLabel
     Left = 95
