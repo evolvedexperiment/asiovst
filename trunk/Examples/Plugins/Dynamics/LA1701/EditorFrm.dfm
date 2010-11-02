@@ -240,7 +240,7 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
+      FontOversampling = fo3x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -263,7 +263,7 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
+      FontOversampling = fo3x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -286,7 +286,7 @@ object FmLA1701: TFmLA1701
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
+      FontOversampling = fo3x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -320,7 +320,6 @@ object FmLA1701: TFmLA1701
       ParentColor = False
       StitchedImageList = GSPL
       StitchedImageIndex = 1
-      Transparent = True
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -335,7 +334,6 @@ object FmLA1701: TFmLA1701
       ParentColor = False
       StitchedImageList = GSPL
       StitchedImageIndex = 2
-      Transparent = True
       WheelStep = 1.000000000000000000
     end
     object PnMix: TGuiPanel
@@ -477,7 +475,6 @@ object FmLA1701: TFmLA1701
       ParentColor = False
       StitchedImageList = GSPL
       StitchedImageIndex = 3
-      Transparent = True
       WheelStep = 1.000000000000000000
     end
     object DialRatio: TGuiStitchedDial
@@ -491,7 +488,6 @@ object FmLA1701: TFmLA1701
       ParentColor = False
       StitchedImageList = GSPL
       StitchedImageIndex = 3
-      Transparent = True
       WheelStep = 1.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
@@ -506,7 +502,6 @@ object FmLA1701: TFmLA1701
       ParentColor = False
       StitchedImageList = GSPL
       StitchedImageIndex = 2
-      Transparent = True
       WheelStep = 1.000000000000000000
     end
     object DialInput: TGuiStitchedDial
@@ -521,7 +516,6 @@ object FmLA1701: TFmLA1701
       ParentColor = False
       StitchedImageList = GSPL
       StitchedImageIndex = 2
-      Transparent = True
       WheelStep = 1.000000000000000000
     end
     object PnKnee: TGuiPanel

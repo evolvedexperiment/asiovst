@@ -36,9 +36,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiGroup,
-  DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList;
+  DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiGroup, DAV_GuiLED,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmUniQuE = class(TForm)

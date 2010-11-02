@@ -228,9 +228,11 @@ procedure TGuiCustomPixelMap.DrawByteMap(ByteMap: TGuiCustomByteMap;
 var
   ClipRect : TRect;
   IX, IY   : Integer;
+  RGB      : Integer;
   NewColor : TPixel32;
   ScnLn    : PPixel32Array;
   ByteLine : PByteArray;
+  Alpha    : Byte;
 begin
  with ClipRect do
   begin
@@ -243,8 +245,9 @@ begin
    Bottom := Y + ByteMap.Height;
    if Bottom > Self.Height then Bottom := Self.Height;
 
-   // ignore alpha
-   Color.ARGB := Color.ARGB and $FFFFFF;
+   // split RGB and alpha
+   RGB := Color.ARGB and $FFFFFF;
+   Alpha := Color.A;
 
    // blend scanlines
    for IY := Top to Bottom - 1 do
@@ -253,7 +256,7 @@ begin
      ByteLine := ByteMap.ScanLine[IY - Y];
      for IX := Left to Right - 1 do
       begin
-       NewColor.ARGB := (ByteLine^[IX - X] shl 24) or Color.ARGB;
+       NewColor.ARGB := (((ByteLine^[IX - X] * Alpha) shl 16) and $FF000000) or RGB;
        MergePixelInplace(NewColor, ScnLn^[IX]);
       end;
     end;
@@ -266,9 +269,11 @@ procedure TGuiCustomPixelMap.DrawByteMap(ByteMap: TGuiCustomByteMap;
 var
   ClipRect : TRect;
   IX, IY   : Integer;
+  RGB      : Integer;
   NewColor : TPixel32;
   ScnLn    : PPixel32Array;
   ByteLine : PByteArray;
+  Alpha    : Byte;
 begin
  with ClipRect do
   begin
@@ -281,8 +286,9 @@ begin
    Bottom := Min(Rect.Top + ByteMap.Height, Rect.Bottom);
    if Bottom > Self.Height then Bottom := Self.Height;
 
-   // ignore alpha
-   Color.ARGB := Color.ARGB and $FFFFFF;
+   // split RGB and alpha
+   RGB := Color.ARGB and $FFFFFF;
+   Alpha := Color.A;
 
    // blend scanlines
    for IY := Top to Bottom - 1 do
@@ -291,7 +297,7 @@ begin
      ByteLine := ByteMap.ScanLine[IY - Rect.Top];
      for IX := Left to Right - 1 do
       begin
-       NewColor.ARGB := (ByteLine^[IX - Rect.Left] shl 24) or Color.ARGB;
+       NewColor.ARGB := (((ByteLine^[IX - Rect.Left] * Alpha) shl 16) and $FF000000) or RGB;
        MergePixelInplace(NewColor, ScnLn^[IX]);
       end;
     end;

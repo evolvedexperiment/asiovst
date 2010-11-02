@@ -260,6 +260,7 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
@@ -280,6 +281,7 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack

@@ -38,7 +38,8 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
   ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiBaseControl,
   DAV_GuiGroup, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiLED,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmAdvancedClipper = class(TForm)

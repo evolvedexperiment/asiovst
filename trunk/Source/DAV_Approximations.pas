@@ -592,14 +592,14 @@ end;
 function FastCos3Term(Value: Single): Single;
 begin
  // Get rid of values > 2 * pi
- Result := abs(FastMod(Value, CTwoPi32));
+ Result := Abs(FastMod(Value, CTwoPi32));
  Result := FastCosInBounds3Term(Result);
 end;
 
 function FastCos3Term(Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
- Result := FastCosInBounds3Term(abs(FastMod(Value, CTwoPi64)));
+ Result := FastCosInBounds3Term(Abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastSinInBounds3Term(Value: Single): Single;
@@ -710,14 +710,14 @@ end;
 function FastCos4Term(Value: Single): Single;
 begin
  // Get rid of values > 2 * pi
- Result := abs(FastMod(Value, CTwoPi32));
+ Result := Abs(FastMod(Value, CTwoPi32));
  Result := FastCosInBounds4Term(Result);
 end;
 
 function FastCos4Term(Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
- Result := FastCosInBounds4Term(abs(FastMod(Value, CTwoPi64)));
+ Result := FastCosInBounds4Term(Abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastSinPart4Term(Value: Single): Single;
@@ -844,14 +844,14 @@ end;
 function FastCos5Term(Value: Single): Single;
 begin
  // Get rid of values > 2 * pi
- Result := abs(FastMod(Value, CTwoPi32));
+ Result := Abs(FastMod(Value, CTwoPi32));
  Result := FastCosInBounds5Term(Result);
 end;
 
 function FastCos5Term(Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
- Result := FastCosInBounds5Term(abs(FastMod(Value, CTwoPi64)));
+ Result := FastCosInBounds5Term(Abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastSinInBounds5Term(Value: Single): Single;
@@ -983,13 +983,13 @@ end;
 
 function FastCos6Term(Value: Single): Single;
 begin
- Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
+ Result := Abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
  Result := FastCosInBounds6Term(Result);
 end;
 
 function FastCos6Term(Value: Double): Double;
 begin
- Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
+ Result := Abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
  Result := FastCosInBounds6Term(Result);
 end;
 
@@ -1060,7 +1060,7 @@ end;
 
 function FastCos7Term(Value: Single): Single; 
 begin
- Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
+ Result := Abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
  case round(Result * CTwoDivPi32 - CHalf32) of
   0 : Result :=  FastCosPart7Term(Result);
   1 : Result := -FastCosPart7Term(Pi - Result);
@@ -1072,7 +1072,7 @@ end;
 
 function FastCos7Term(Value: Double): Double;
 begin
- Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
+ Result := Abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
  case round(Result * CTwoDivPi64 - CHalf64) of
   0 : Result :=  FastCosPart7Term(Result);
   1 : Result := -FastCosPart7Term(Pi - Result);
@@ -1185,13 +1185,13 @@ end;
 
 function FastTan2Term(Value: Single): Single;
 begin
-  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
+  Result := Abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
   Result := FastTanInBounds2Term(Result);
 end;
 
 function FastTan2Term(Value: Double): Double;
 begin
-  Result := FastTanInBounds2Term(abs(FastMod(Value, CTwoPi64)));
+  Result := FastTanInBounds2Term(Abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastCotan2Term(Value: Single): Single;
@@ -1248,7 +1248,7 @@ end;
 
 function FastTanInBounds3Term(Value: Double): Double;
 begin
-  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
+  Result := Abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
   case round(Result * CFourDivPi64) of
     0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi64);
     1 : Result :=  FastTanPInv3Term((CPiHalf64 - Value)      * CFourDivPi64);
@@ -1279,14 +1279,14 @@ end;
 function FastTan3Term(Value: Single): Single;
 begin
   // Get rid of values > 2 * pi
-  Result := abs(FastMod(Value, CTwoPi32));
+  Result := Abs(FastMod(Value, CTwoPi32));
   Result := FastTanInBounds3Term(Result);
 end;
 
 function FastTan3Term(Value: Double): Double;
 begin
   // Get rid of values > 2 * pi
-  Result := FastTanInBounds3Term(abs(FastMod(Value, CTwoPi64)));
+  Result := FastTanInBounds3Term(Abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastCotan3Term(Value: Single): Single;
@@ -1376,13 +1376,13 @@ end;
 
 function FastTan4Term(Value: Single): Single;
 begin
-  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
+  Result := Abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
   Result := FastTanInBounds4Term(Result);
 end;
 
 function FastTan4Term(Value: Double): Double;
 begin
-  Result := FastTanInBounds4Term(abs(FastMod(Value, CTwoPi64))); // Get rid of values > 2 * pi
+  Result := FastTanInBounds4Term(Abs(FastMod(Value, CTwoPi64))); // Get rid of values > 2 * pi
 end;
 
 function FastCotan4Term(Value: Single): Single;
@@ -1472,13 +1472,13 @@ end;
 
 function FastTan6Term(Value: Single): Single;
 begin
-  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
+  Result := Abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
   Result := FastTanInBounds6Term(Result);
 end;
 
 function FastTan6Term(Value: Double): Double;
 begin
-  Result := FastTanInBounds6Term(abs(FastMod(Value, CTwoPi64)));
+  Result := FastTanInBounds6Term(Abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastCotan6Term(Value: Single): Single;
@@ -2646,7 +2646,7 @@ var
 asm
   fld     Exponent
   fld     st             // copy to st(1)
-  fabs                   // abs(exp)
+  fabs                   // Abs(exp)
   fld     Max
   fcompp                 // leave exp in st(0)
   fstsw   ax
@@ -2664,7 +2664,7 @@ asm
   cdq
   fld1                   // Result = 1
   xor     eax, edx
-  sub     eax, edx       // abs(exp)
+  sub     eax, edx       // Abs(exp)
   jz      @@Exit
   fld     Base
   jmp     @@Entry
@@ -2813,7 +2813,7 @@ function FastTanhOpt3Term(Input: Single): Single;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b := 1.26175667589988239 + a *
     (-0.54699348440059470 + a *
     ( 2.66559097474027817));
@@ -2824,7 +2824,7 @@ function FastTanhOpt4Term(Input: Single): Single;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  0.89690305801668457 + a *
      ( 1.89047619399687661 + a *
      (-1.35205169119085666 + a *
@@ -2836,7 +2836,7 @@ function FastTanhOpt5Term(Input: Single): Single;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  1.03971379878158321 + a *
      ( 0.54953758170495126 + a *
      ( 2.13184139104070569 + a *
@@ -2849,7 +2849,7 @@ function FastTanhOpt6Term(Input: Single): Single;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  0.98516470896867081 + a *
      ( 1.21020234045009012 + a *
      (-0.22720155259481389 + a *
@@ -2863,7 +2863,7 @@ function FastTanhOpt7Term(Input: Single): Single;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  1.00518193411912860 + a *
      ( 0.91005085146116016 + a *
      ( 1.14542500876429276 + a *
@@ -2878,7 +2878,7 @@ function FastTanhOpt3Term(Input: Double): Double;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b := 1.26175667589988239 + a *
     (-0.54699348440059470 + a *
     ( 2.66559097474027817));
@@ -2889,7 +2889,7 @@ function FastTanhOpt4Term(Input: Double): Double;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  0.89690305801668457 + a *
      ( 1.89047619399687661 + a *
      (-1.35205169119085666 + a *
@@ -2901,7 +2901,7 @@ function FastTanhOpt5Term(Input: Double): Double;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  1.03971379878158321 + a *
      ( 0.54953758170495126 + a *
      ( 2.13184139104070569 + a *
@@ -2914,7 +2914,7 @@ function FastTanhOpt6Term(Input: Double): Double;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  0.98516470896867081 + a *
      ( 1.21020234045009012 + a *
      (-0.22720155259481389 + a *
@@ -2928,7 +2928,7 @@ function FastTanhOpt7Term(Input: Double): Double;
 var
   a, b : Double;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b :=  1.00518193411912860 + a *
      ( 0.91005085146116016 + a *
      ( 1.14542500876429276 + a *
@@ -2948,8 +2948,8 @@ const
 asm
  fld Input.Single  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -2972,8 +2972,8 @@ const
 asm
  fld Input.Single  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -2999,8 +2999,8 @@ const
 asm
  fld Input.Single      // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3029,8 +3029,8 @@ const
 asm
  fld Input.Single  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3062,8 +3062,8 @@ const
 asm
  fld Input.Single  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3093,8 +3093,8 @@ const
 asm
  fld Input.Double  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3117,8 +3117,8 @@ const
 asm
  fld Input.Double      // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3144,8 +3144,8 @@ const
 asm
  fld Input.Double  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3174,8 +3174,8 @@ const
 asm
  fld Input.Double  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3207,8 +3207,8 @@ const
 asm
  fld Input.Double  // Load Input
  fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
+ fabs              // Stack: Abs(Input), Input
+ fld c0            // Load c0 as working value, Abs(Input) => a
  fmul st(0), st(1) // Stack: a * c0, a, Input
  fadd c1           // Stack: c1 + a * c0, a, Input
  fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
@@ -3235,7 +3235,7 @@ function FastTanh2Like4Term(Input: Single): Single;
 var
   a, b: Single;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b := 12 + a * (6 + a * (3 + a));
  Result := (Input * b) / (a * b + 24);
 end;
@@ -3244,7 +3244,7 @@ function FastTanh2Like3Term(Input: Single): Single;
 var
   a, b: Single;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b := (6 + a * (3 + a));
  Result := (Input * b) / (a * b + 12);
 end;
@@ -3254,7 +3254,7 @@ function FastTanh2Like2Term(Input: Single): Single;
 var
   a, b: Single;
 begin
- a := abs(Input);
+ a := Abs(Input);
  b := 3 + a;
  Result := (Input * b) / (a * b + 6);
 {$ELSE}
@@ -3278,7 +3278,7 @@ end;
 function FastTanh2Like1Term(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Result := Input / (abs(Input) + 3);
+ Result := Input / (Abs(Input) + 3);
 {$ELSE}
 const c3 : Single = 3;
 asm

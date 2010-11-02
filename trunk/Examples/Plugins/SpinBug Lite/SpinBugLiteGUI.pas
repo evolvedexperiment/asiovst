@@ -37,7 +37,8 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils,
   Classes, Forms, Controls, ExtCtrls, StdCtrls, Graphics, DAV_Types,
-  DAV_VSTModule, DAV_GuiSelectBox, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
+  DAV_VSTModule, DAV_GuiSelectBox, DAV_GuiBaseControl, DAV_GuiDial,
+  DAV_GuiLabel, DAV_GuiGraphicControl;
 
 type
   TFmSpinBugLite = class(TForm)
@@ -46,7 +47,6 @@ type
     LbLFOSpeed: TLabel;
     LbLFOSpeedValue: TLabel;
     LbTitle: TGuiLabel;
-    LbTitleShadow: TGuiLabel;
     LbType: TLabel;
     SelectColour: TGuiSelectBox;
     SelectType: TGuiSelectBox;
@@ -106,21 +106,8 @@ begin
 end;
 
 procedure TFmSpinBugLite.FormCreate(Sender : TObject);
-var
-  c : Integer;
 begin
  FBackground := TBitmap.Create;
- with FBackground do
-  begin
-   Width := Self.Width;
-   Height := Self.Height;
-   PixelFormat := pf24bit;
-   Canvas.Brush.Color := Self.Color;
-   Canvas.FillRect(ClientRect);
-   Canvas.Font.Color := $00021076;
-   for c := 0 to 128
-    do Canvas.TextOut(Random(Width), Random(Height), 'Lite' );
-  end;
 end;
 
 procedure TFmSpinBugLite.FormDestroy(Sender : TObject);
@@ -134,9 +121,22 @@ begin
 end;
 
 procedure TFmSpinBugLite.FormResize(Sender: TObject);
+var
+  c : Integer;
 begin
- FBackground.Width := Width;
- FBackground.Height := Height;
+ with FBackground do
+  begin
+   Width := ClientWidth;
+   Height := ClientHeight;
+   PixelFormat := pf24bit;
+   Canvas.Brush.Color := Self.Color;
+   Canvas.FillRect(ClientRect);
+   Canvas.Font.Color := $00021076;
+   for c := 0 to 255
+    do Canvas.TextOut(Random(Width), Random(Height), 'Lite' );
+   LbTitle.Transparent := False;
+   LbTitle.Transparent := True;
+  end;
 end;
 
 procedure TFmSpinBugLite.FormShow(Sender: TObject);

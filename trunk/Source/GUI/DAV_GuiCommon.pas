@@ -176,6 +176,7 @@ procedure Upsample4xBitmap32(var Bitmap: TBitmap);
 procedure Upsample4xBitmap24(var Bitmap: TBitmap);
 
 function ConvertColor(Color: TColor): TPixel32; overload;
+function ConvertColor(Color: TColor; Alpha: Byte): TPixel32; overload;
 function ConvertColor(Color: TPixel32): TColor; overload;
 procedure HLSToRGB(const H, L, S: Single; out R, G, B: Single); overload;
 function HLSToRGB(const H, L, S: Single): TColor; overload;
@@ -932,6 +933,12 @@ begin
    MOV    Result, EAX
   end;
 {$ENDIF}
+end;
+
+function ConvertColor(Color: TColor; Alpha: Byte): TPixel32;
+begin
+ Result := ConvertColor(Color);
+ Result.A := Alpha;
 end;
 
 function ConvertColor(Color: TPixel32): TColor;

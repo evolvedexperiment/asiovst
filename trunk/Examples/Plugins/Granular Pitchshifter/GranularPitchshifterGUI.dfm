@@ -22,8 +22,9 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 60
     Height = 24
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Stages'
+    FontOversampling = fo4x
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbStagesValue: TGuiLabel
@@ -32,13 +33,14 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 60
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbSemitones: TGuiLabel
@@ -47,9 +49,9 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 91
     Height = 24
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Semitones'
-    Shadow.Color = clBlack
+    FontOversampling = fo4x
+    Shadow.Color = clGray
   end
   object LbSemitonesValue: TGuiLabel
     Left = 8
@@ -57,13 +59,14 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 91
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGranularity: TGuiLabel
@@ -72,8 +75,9 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 91
     Height = 24
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Granularity'
+    FontOversampling = fo4x
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbGranularityValue: TGuiLabel
@@ -82,13 +86,14 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Width = 76
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object DialStages: TGuiStitchedDial
@@ -99,8 +104,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Max = 16.000000000000000000
     Min = 2.000000000000000000
     OnChange = DialStagesChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -112,8 +117,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialSemitonesChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 0.009999999776482582
     WheelStep = 1.000000000000000000
   end
@@ -126,8 +131,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Max = 1000.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialGranularityChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Value = 100.000000000000000000
     WheelStep = 1.000000000000000000
   end

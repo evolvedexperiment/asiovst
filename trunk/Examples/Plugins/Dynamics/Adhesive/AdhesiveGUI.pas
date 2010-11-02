@@ -38,7 +38,8 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
   DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPng, DAV_GuiPixelMap,
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
-  DAV_GuiStitchedDisplay, DAV_GuiStitchedSwitch;
+  DAV_GuiStitchedDisplay, DAV_GuiStitchedSwitch, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmAdhesive = class(TForm)

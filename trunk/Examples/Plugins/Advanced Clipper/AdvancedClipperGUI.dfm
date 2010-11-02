@@ -262,7 +262,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Font.Style = []
         FontOversampling = fo4x
         ParentFont = False
-        Shadow.Blur = 4.000000000000000000
+        Shadow.Blur = 2.000000000000000000
         Shadow.Color = clBlack
         OnClick = LbHardClipClick
       end

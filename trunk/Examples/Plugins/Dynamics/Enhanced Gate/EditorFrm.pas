@@ -38,7 +38,8 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
   Gauges, ExtCtrls, DAV_Types, DAV_GuiPixelMap, DAV_GuiPng, DAV_VSTModule,
   DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiGroup, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiGraphicControl,
+  DAV_GuiLabel, DAV_GuiCustomControl;
 
 type
   TEditorForm = class(TForm)
@@ -72,8 +73,6 @@ type
     GSPL: TGuiStitchedPNGList;
     LbAttack: TLabel;
     LbDecay: TLabel;
-    LbEnhancedAudioGate: TLabel;
-    LbEnhancedAudioGateShadow: TLabel;
     LBHighCut: TLabel;
     LbHold: TLabel;
     LbKnee: TLabel;
@@ -83,6 +82,7 @@ type
     LbSource: TLabel;
     LbThreshold: TLabel;
     VUTimer: TTimer;
+    LbEnhancedAudioGate: TGuiLabel;
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure CBOnOffClick(Sender: TObject);

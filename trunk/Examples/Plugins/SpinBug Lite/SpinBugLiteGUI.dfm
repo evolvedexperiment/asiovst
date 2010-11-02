@@ -23,28 +23,11 @@ object FmSpinBugLite: TFmSpinBugLite
     190)
   PixelsPerInch = 96
   TextHeight = 18
-  object LbTitleShadow: TGuiLabel
-    Left = 9
-    Top = 105
-    Width = 297
-    Height = 76
-    Anchors = [akLeft, akBottom]
-    Caption = 'SPINBUG'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 13491454
-    Font.Height = -64
-    Font.Name = 'Comic Sans MS'
-    Font.Style = [fsBold]
-    FontOversampling = fo4x
-    ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
-  end
   object LbTitle: TGuiLabel
     Left = 7
     Top = 103
-    Width = 297
-    Height = 76
+    Width = 299
+    Height = 78
     Anchors = [akLeft, akBottom]
     Caption = 'SPINBUG'
     Font.Charset = DEFAULT_CHARSET
@@ -54,8 +37,12 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Style = [fsBold]
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 3.000000000000000000
+    Shadow.Color = 13491454
+    Shadow.OffsetX = 2
+    Shadow.OffsetY = 2
+    Shadow.Saturation = 8.000000000000000000
+    Shadow.Visible = True
     Transparent = True
   end
   object DialLFO: TGuiDial

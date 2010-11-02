@@ -74,8 +74,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Blur = 2.000000000000000000
+      Shadow.Color = 3226174
+      Shadow.Visible = True
       OnClick = GpDualLiknwitzRileyClick
     end
     object LbSlope: TGuiLabel
@@ -92,8 +93,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Blur = 2.000000000000000000
+      Shadow.Color = 3226174
+      Shadow.Visible = True
       OnClick = GpDualLiknwitzRileyClick
     end
     object LbLowpass: TGuiLabel
@@ -111,8 +113,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       FontOversampling = fo4x
       ParentFont = False
       PopupMenu = PuPreset
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Blur = 2.000000000000000000
+      Shadow.Color = 3226174
+      Shadow.Visible = True
       OnClick = LedHighCutClick
       OnMouseDown = LbMouseDown
     end
@@ -131,8 +134,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       FontOversampling = fo4x
       ParentFont = False
       PopupMenu = PuPreset
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Blur = 2.000000000000000000
+      Shadow.Color = 3226174
+      Shadow.Visible = True
       OnClick = LedLowCutClick
       OnMouseDown = LbMouseDown
     end
@@ -141,7 +145,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 45
       Width = 19
       Height = 19
-      BorderStrength_Percent = 75.000000000000000000
+      BorderStrength_Percent = 60.000003814697270000
       Brightness_Percent = 90.000000000000000000
       LEDColor = 14870505
       BorderWidth = 2.299999952316284000
@@ -156,7 +160,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 116
       Width = 19
       Height = 19
-      BorderStrength_Percent = 75.000000000000000000
+      BorderStrength_Percent = 60.000003814697270000
       Brightness_Percent = 90.000000000000000000
       LEDColor = 14870505
       BorderWidth = 2.299999952316284000

@@ -68,8 +68,9 @@ object FmUniQuE: TFmUniQuE
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
+      Shadow.Visible = True
       OnClick = OnOffClick
     end
     object LbPad: TGuiLabel
@@ -86,8 +87,9 @@ object FmUniQuE: TFmUniQuE
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
+      Shadow.Visible = True
       OnClick = PadClick
     end
     object LEDPad: TGuiLED
@@ -119,8 +121,9 @@ object FmUniQuE: TFmUniQuE
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
+      Shadow.Visible = True
       OnClick = InvertClick
     end
     object LEDInvert: TGuiLED
@@ -153,8 +156,9 @@ object FmUniQuE: TFmUniQuE
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
+      Shadow.Visible = True
     end
     object LbMid: TGuiLabel
       Left = 92
@@ -171,8 +175,9 @@ object FmUniQuE: TFmUniQuE
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
+      Shadow.Visible = True
     end
     object LbPRes: TGuiLabel
       Left = 173
@@ -189,8 +194,9 @@ object FmUniQuE: TFmUniQuE
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
+      Shadow.Visible = True
     end
     object LbHigh: TGuiLabel
       Left = 254
@@ -207,8 +213,9 @@ object FmUniQuE: TFmUniQuE
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 2.000000000000000000
       Shadow.Color = clBlack
+      Shadow.Visible = True
     end
     object DialLow: TGuiStitchedDial
       Left = 11

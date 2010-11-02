@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_VSTModule,
   DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmTwoBandDistortion = class(TForm)

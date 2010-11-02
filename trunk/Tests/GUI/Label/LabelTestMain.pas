@@ -48,6 +48,7 @@ type
     CbTransparent: TCheckBox;
     SliderBlur: TGuiSlider;
     SliderOffset: TGuiSlider;
+    SliderTransparency: TGuiSlider;
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -57,6 +58,7 @@ type
     procedure LabelCClick(Sender: TObject);
     procedure SliderBlurChange(Sender: TObject);
     procedure SliderOffsetChange(Sender: TObject);
+    procedure SliderTransparencyChange(Sender: TObject);
   private
     FBackground      : TGuiCustomPixelMap;
     FBackgroundColor : TPixel32;
@@ -143,6 +145,14 @@ begin
  LabelB.Shadow.Offset := NewOffset;
  LabelC.Shadow.Offset := NewOffset;
  LabelD.Shadow.Offset := NewOffset;
+end;
+
+procedure TFmLabelTest.SliderTransparencyChange(Sender: TObject);
+begin
+ LabelA.Shadow.Transparency := Round(SliderTransparency.Position);
+ LabelB.Shadow.Transparency := Round(SliderTransparency.Position);
+ LabelC.Shadow.Transparency := Round(SliderTransparency.Position);
+ LabelD.Shadow.Transparency := Round(SliderTransparency.Position);
 end;
 
 procedure TFmLabelTest.LabelCClick(Sender: TObject);

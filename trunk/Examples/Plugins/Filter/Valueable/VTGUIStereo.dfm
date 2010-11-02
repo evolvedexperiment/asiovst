@@ -22,14 +22,15 @@ object FmVT: TFmVT
     Width = 37
     Height = 13
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBassFlatLeft: TGuiLabel
@@ -38,31 +39,36 @@ object FmVT: TFmVT
     Width = 37
     Height = 12
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
     Left = 156
     Top = 15
-    Width = 179
+    Width = 183
     Height = 39
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Valueable'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -32
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsItalic]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
+    Shadow.OffsetX = 2
+    Shadow.OffsetY = 2
+    Shadow.Visible = True
   end
   object LbBassLeft: TGuiLabel
     Left = 61
@@ -70,14 +76,15 @@ object FmVT: TFmVT
     Width = 64
     Height = 23
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'BASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbTrebleRight: TGuiLabel
@@ -86,31 +93,36 @@ object FmVT: TFmVT
     Width = 94
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'TREBLE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbSubTitle: TGuiLabel
     Left = 180
     Top = 51
-    Width = 121
+    Width = 128
     Height = 35
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '(stereo)'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -27
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsItalic]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
+    Shadow.OffsetX = 2
+    Shadow.OffsetY = 2
+    Shadow.Visible = True
   end
   object LbDrive: TGuiLabel
     Left = 197
@@ -118,14 +130,15 @@ object FmVT: TFmVT
     Width = 74
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'DRIVE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbRoasty1: TGuiLabel
@@ -133,14 +146,15 @@ object FmVT: TFmVT
     Top = 139
     Width = 65
     Height = 18
-    FontOversampling = fo4x
     Caption = '- Rusty I'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbRoasty1Click
   end
@@ -149,14 +163,15 @@ object FmVT: TFmVT
     Top = 114
     Width = 70
     Height = 18
-    FontOversampling = fo4x
     Caption = '- Rusty II'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbRoasty2Click
   end
@@ -165,14 +180,15 @@ object FmVT: TFmVT
     Top = 166
     Width = 87
     Height = 18
-    FontOversampling = fo4x
     Caption = '- Steamin'#39' I'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbSteamin1Click
   end
@@ -181,14 +197,15 @@ object FmVT: TFmVT
     Top = 191
     Width = 89
     Height = 19
-    FontOversampling = fo4x
     Caption = '- Steamin'#39' II'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
     OnClick = LbSteamin2Click
   end
@@ -198,14 +215,15 @@ object FmVT: TFmVT
     Width = 37
     Height = 13
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbTrebleLeft: TGuiLabel
@@ -214,14 +232,15 @@ object FmVT: TFmVT
     Width = 94
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'TREBLE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBassFlatRight: TGuiLabel
@@ -230,14 +249,15 @@ object FmVT: TFmVT
     Width = 37
     Height = 12
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBassRight: TGuiLabel
@@ -246,14 +266,15 @@ object FmVT: TFmVT
     Width = 64
     Height = 23
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'BASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbLowGainLeftLower: TGuiLabel
@@ -262,14 +283,15 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbHiGainLeftLower: TGuiLabel
@@ -278,14 +300,15 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbLowGainRightLower: TGuiLabel
@@ -294,14 +317,15 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbHiGainRightLower: TGuiLabel
@@ -310,14 +334,15 @@ object FmVT: TFmVT
     Width = 20
     Height = 13
     Alignment = taRightJustify
-    FontOversampling = fo4x
     Caption = '-12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbHiGainLeftUpper: TGuiLabel
@@ -325,14 +350,15 @@ object FmVT: TFmVT
     Top = 141
     Width = 17
     Height = 13
-    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBassLeftMax: TGuiLabel
@@ -340,14 +366,15 @@ object FmVT: TFmVT
     Top = 319
     Width = 17
     Height = 13
-    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbBassRightMax: TGuiLabel
@@ -355,14 +382,15 @@ object FmVT: TFmVT
     Top = 319
     Width = 17
     Height = 13
-    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object LbTrebleRightMax: TGuiLabel
@@ -370,14 +398,15 @@ object FmVT: TFmVT
     Top = 141
     Width = 17
     Height = 13
-    FontOversampling = fo4x
     Caption = '12'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 3.000000000000000000
     Shadow.Color = clBlack
   end
   object GuiPanel: TGuiPanel
@@ -399,7 +428,6 @@ object FmVT: TFmVT
       Top = 16
       Width = 54
       Height = 17
-      FontOversampling = fo4x
       Caption = 'GAIN:'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -407,7 +435,9 @@ object FmVT: TFmVT
       Font.Height = -16
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 3.000000000000000000
       Shadow.Color = clBlack
     end
     object LbChannel: TGuiLabel
@@ -415,7 +445,6 @@ object FmVT: TFmVT
       Top = 59
       Width = 95
       Height = 17
-      FontOversampling = fo4x
       Caption = 'CHANNELS:'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -423,7 +452,9 @@ object FmVT: TFmVT
       Font.Height = -16
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 3.000000000000000000
       Shadow.Color = clBlack
     end
     object LbGainValue: TGuiLabel
@@ -431,7 +462,6 @@ object FmVT: TFmVT
       Top = 16
       Width = 62
       Height = 16
-      FontOversampling = fo4x
       Caption = '0 dB'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -439,7 +469,9 @@ object FmVT: TFmVT
       Font.Height = -16
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 3.000000000000000000
       Shadow.Color = clBlack
     end
     object LbMono: TGuiLabel
@@ -448,7 +480,6 @@ object FmVT: TFmVT
       Width = 45
       Height = 10
       Alignment = taCenter
-      FontOversampling = fo4x
       Caption = 'MID / SIDE'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -456,7 +487,9 @@ object FmVT: TFmVT
       Font.Height = -9
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 3.000000000000000000
       Shadow.Color = clBlack
     end
     object LbStereo: TGuiLabel
@@ -465,7 +498,6 @@ object FmVT: TFmVT
       Width = 66
       Height = 10
       Alignment = taCenter
-      FontOversampling = fo4x
       Caption = 'LEFT / RIGHT'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
@@ -473,7 +505,9 @@ object FmVT: TFmVT
       Font.Height = -9
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
+      Shadow.Blur = 3.000000000000000000
       Shadow.Color = clBlack
     end
     object DialOutputGain: TGuiStitchedDial
@@ -486,8 +520,8 @@ object FmVT: TFmVT
       Min = -12.000000000000000000
       OnChange = DialOutputGainChange
       ParentColor = False
-      StitchedImageIndex = 2
       StitchedImageList = GSPL
+      StitchedImageIndex = 2
       WheelStep = 1.000000000000000000
     end
     object SwitchChannel: TGuiStitchedSwitch
@@ -498,8 +532,8 @@ object FmVT: TFmVT
       Color = 103128
       DefaultGlyphIndex = 0
       GlyphIndex = 0
-      StitchedImageIndex = 3
       StitchedImageList = GSPL
+      StitchedImageIndex = 3
       OnChange = SwitchChannelChange
     end
   end
@@ -511,8 +545,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialLowGainLeftChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -524,8 +558,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialHiGainRightChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -537,8 +571,8 @@ object FmVT: TFmVT
     Max = 4.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialSelectorChange
-    StitchedImageIndex = 1
     StitchedImageList = GSPL
+    StitchedImageIndex = 1
     Transparent = True
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
@@ -551,8 +585,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialHiGainLeftChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -564,8 +598,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialLowGainRightChange
-    StitchedImageIndex = 0
     StitchedImageList = GSPL
+    StitchedImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -576,8 +610,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageIndex = 3
     StitchedImageList = GSPL
+    StitchedImageIndex = 3
     OnChange = SwitchLowBypassLeftChange
   end
   object SwitchHiBypassRight: TGuiStitchedSwitch
@@ -587,8 +621,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageIndex = 3
     StitchedImageList = GSPL
+    StitchedImageIndex = 3
     OnChange = SwitchHiBypassRightChange
   end
   object SwitchHiBypassLeft: TGuiStitchedSwitch
@@ -598,8 +632,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageIndex = 3
     StitchedImageList = GSPL
+    StitchedImageIndex = 3
     OnChange = SwitchHiBypassLeftChange
   end
   object SwitchLowBypassRight: TGuiStitchedSwitch
@@ -609,8 +643,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageIndex = 3
     StitchedImageList = GSPL
+    StitchedImageIndex = 3
     OnChange = SwitchLowBypassRightChange
   end
   object GSPL: TGuiStitchedPNGList
