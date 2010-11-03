@@ -16,6 +16,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object GuiLED1: TGuiLED
@@ -28,7 +29,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     LEDColor = clRed
     BorderWidth = 2.500000000000000000
     Uniformity_Percent = 55.000000000000000000
-    Transparent = False
+    Transparent = True
   end
   object GuiLED2: TGuiLED
     Left = 207
@@ -40,7 +41,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     LEDColor = clRed
     BorderWidth = 2.500000000000000000
     Uniformity_Percent = 55.000000000000000000
-    Transparent = False
+    Transparent = True
   end
   object GuiLED3: TGuiLED
     Left = 254
@@ -52,7 +53,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     LEDColor = clRed
     BorderWidth = 2.500000000000000000
     Uniformity_Percent = 55.000000000000000000
-    Transparent = False
+    Transparent = True
   end
   object GuiLED4: TGuiLED
     Left = 301
@@ -64,7 +65,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     LEDColor = clRed
     BorderWidth = 2.500000000000000000
     Uniformity_Percent = 55.000000000000000000
-    Transparent = False
+    Transparent = True
   end
   object LbMic1: TGuiLabel
     Left = 160
@@ -81,7 +82,12 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Color = clWhite
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 64
+    Shadow.Saturation = 2.000000000000000000
+    Shadow.Visible = True
     Transparent = True
   end
   object LbMic2: TGuiLabel
@@ -99,7 +105,12 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Color = clWhite
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 64
+    Shadow.Saturation = 2.000000000000000000
+    Shadow.Visible = True
     Transparent = True
   end
   object LbMic3: TGuiLabel
@@ -117,7 +128,12 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Color = clWhite
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 64
+    Shadow.Saturation = 2.000000000000000000
+    Shadow.Visible = True
     Transparent = True
   end
   object LbMic4: TGuiLabel
@@ -135,7 +151,12 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Color = clWhite
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 64
+    Shadow.Saturation = 2.000000000000000000
+    Shadow.Visible = True
     Transparent = True
   end
   object BtStartStop: TGuiButton
@@ -153,10 +174,15 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -32
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    FontFontOversampling = fo4x
+    FontOversampling = fo4x
     Radius = 7.000000000000000000
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Color = clWhite
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 64
+    Shadow.Saturation = 2.000000000000000000
+    Shadow.Visible = True
     Transparent = False
     OnClick = BtStartStopClick
   end
@@ -175,10 +201,15 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    FontFontOversampling = fo4x
+    FontOversampling = fo4x
     Radius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Color = clWhite
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 64
+    Shadow.Saturation = 2.000000000000000000
+    Shadow.Visible = True
     Transparent = False
     OnClick = BtSetupClick
   end
@@ -197,10 +228,15 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    FontFontOversampling = fo4x
+    FontOversampling = fo4x
     Radius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Color = clWhite
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 64
+    Shadow.Saturation = 2.000000000000000000
+    Shadow.Visible = True
     Transparent = False
     OnClick = BtExitClick
   end

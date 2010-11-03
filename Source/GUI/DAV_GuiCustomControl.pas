@@ -59,8 +59,10 @@ type
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     {$ENDIF}
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure CMParentColorChanged(var Message: TMessage); message CM_PARENTCOLORCHANGED;
     {$ELSE}
     procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
+    procedure CMParentColorChanged(var Message: TLMessage); message CM_PARENTCOLORCHANGED;
     {$ENDIF}
 
     procedure BufferChanged;
@@ -121,6 +123,14 @@ end;
 
 procedure TGuiCustomControl.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
+ inherited;
+ if not FTransparent
+  then BackBufferChanged;
+end;
+
+procedure TGuiCustomControl.CMParentColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+begin
+ inherited;
  if not FTransparent
   then BackBufferChanged;
 end;
@@ -139,7 +149,7 @@ begin
  if Assigned(FBackBuffer) then
   begin
    FBackBuffer.SetSize(Width, Height);
-   UpdateBackBuffer;
+   BackBufferChanged;
   end;
 
  inherited;

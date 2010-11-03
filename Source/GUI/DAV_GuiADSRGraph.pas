@@ -6,8 +6,8 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
-  {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, Controls, DAV_GuiCustomControl;
+  {$ELSE} Windows, Messages, {$ENDIF} Classes, Graphics, Forms, Controls,
+  DAV_Common, DAV_GuiCommon, DAV_GuiCustomControl;
 
 type
   TGuiADSRGraphMouseEdit = (meNone, meAttack, meDecay, meSustain, meRelease);
@@ -40,22 +40,25 @@ type
     property Release: Single read FRelease write SetRelease;
   end;
 
+  TGuiLineStyle = (lsClear, lsSolid, lsDash, lsDot);
   TGuiADSRGraph = class(TGuiCustomControl)
   private
     FADSRSettings    : TGuiADSRSettings;
     FMouseEdit       : TGuiADSRGraphMouseEdit;
 
     FGridColor       : TColor;
-    FGridStyle       : TPenStyle;
+    FGridStyle       : TGuiLineStyle;
     FGridWidth       : Integer;
-    FGridVPadding    : Integer;
-    FEnvVPadding     : Integer;
-    FEnvHPadding     : Integer;
 
     FOnAttackChange  : TNotifyEvent;
     FOnSustainChange : TNotifyEvent;
     FOnDecayChange   : TNotifyEvent;
     FOnReleaseChange : TNotifyEvent;
+    FLineWidth       : Integer;
+    FLineColor       : TColor;
+
+    FGridColor32     : TPixel32;
+    FLineColor32     : TPixel32;
 
     procedure CalcIntValues;
     function GetAttack: Single;
@@ -69,23 +72,23 @@ type
 
     procedure SetGridColor(const Value: TColor);
     procedure SetGridWidth(const Value: Integer);
-    procedure SetGridStyle(const Value: TPenStyle);
-    procedure SetGridVPadding(const Value: Integer);
-    procedure SetEnvVPadding(const Value: Integer);
-    procedure SetEnvHPadding(const Value: Integer);
+    procedure SetGridStyle(const Value: TGuiLineStyle);
+    procedure SetLineColor(const Value: TColor);
+    procedure SetLineWidth(const Value: Integer);
   protected
     FA, FD, FS, FR : Integer;
     FCursorADR     : TCursor;
     FCursorS       : TCursor;
     FCursorDefault : TCursor;
-    procedure EnvHorPaddingChanged; virtual;
-    procedure EnvVertPaddingChanged; virtual;
-    procedure GridVertPadding; virtual;
     procedure GridStyleChanged; virtual;
     procedure GridWidthChanged; virtual;
     procedure GridColorChanged; virtual;
+    procedure LineColorChanged; virtual;
+    procedure LineWidthChanged; virtual;
+
     procedure UpdateBuffer; override;
     procedure Resize; override;
+
 //    procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -105,25 +108,22 @@ type
     {$IFNDEF FPC}
     property Transparent;
     {$ENDIF}
-(*
-    property LineWidth;
-    property LineColor;
-*)
+
     property Color;
-    
+    property ParentColor;
+
     property ADSRSettings: TGuiADSRSettings read FADSRSettings write FADSRSettings;
     property OnAttackChange : TNotifyEvent read FOnAttackChange write FOnAttackChange;
     property OnDecayChange : TNotifyEvent read FOnDecayChange write FOnDecayChange;
     property OnSustainChange : TNotifyEvent read FOnSustainChange write FOnSustainChange;
     property OnReleaseChange : TNotifyEvent read FOnReleaseChange write FOnReleaseChange;
 
+    property LineColor: TColor read FLineColor write SetLineColor default clBlack;
+    property LineWidth: Integer read FLineWidth write SetLineWidth default 1;
+
     property GridColor: TColor read FGridColor write SetGridColor default clSilver;
     property GridWidth: Integer read FGridWidth write SetGridWidth default 1;
-    property GridStyle: TPenStyle read FGridStyle write SetGridStyle default psSolid;
-    property GridVPadding: Integer read FGridVPadding write SetGridVPadding default 0;
-
-    property EnvVPadding: Integer read FEnvVPadding write SetEnvVPadding default 0;
-    property EnvHPadding: Integer read FEnvHPadding write SetEnvHPadding default 0;
+    property GridStyle: TGuiLineStyle read FGridStyle write SetGridStyle default lsSolid;
 
     property CursorDefault: TCursor read FCursorDefault write FCursorDefault default crDefault;
     property CursorADR: TCursor read FCursorADR write FCursorADR default crSizeWE;
@@ -133,7 +133,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_GuiBlend, DAV_GuiCommon;
+  SysUtils, Math, DAV_GuiBlend;
 
 constructor TGuiADSRSettings.Create;
 begin
@@ -170,7 +170,7 @@ end;
 
 procedure TGuiADSRSettings.SetAttack(Value: Single);
 begin
- if Value < 0 then Value := 0 else if Value > 1 then Value := 1;
+ Value := Limit(Value, 0, 1);
 
  if (FAttack <> Value) then
   begin
@@ -181,8 +181,7 @@ end;
 
 procedure TGuiADSRSettings.SetDecay(Value: Single);
 begin
- if Value < 0 then Value := 0 else
- if Value > 1 then Value := 1;
+ Value := Limit(Value, 0, 1);
 
  if (FDecay <> Value) then
   begin
@@ -193,8 +192,7 @@ end;
 
 procedure TGuiADSRSettings.SetSustain(Value: Single);
 begin
- if Value < 0 then Value := 0 else
- if Value > 1 then Value := 1;
+ Value := Limit(Value, 0, 1);
 
  if (FSustain <> Value) then
   begin
@@ -205,8 +203,7 @@ end;
 
 procedure TGuiADSRSettings.SetRelease(Value: Single);
 begin
- if Value < 0 then Value := 0 else
- if Value > 1 then Value := 1;
+ Value := Limit(Value, 0, 1);
 
  if (FRelease <> Value) then
   begin
@@ -224,14 +221,14 @@ begin
  FADSRSettings := TGuiADSRSettings.Create;
  FADSRSettings.OnChange := SettingsChanged;
 
- FGridColor := clSilver;
- FGridWidth := 1;
- FGridStyle := psSolid;
- FGridVPadding := 0;  
- FEnvVPadding := 0;
- FEnvHPadding := 0;
- FCursorADR := crSizeWE;
- FCursorS := crSizeNS;
+ FGridColor     := clSilver;
+ FGridColor32   := ConvertColor(FGridColor);
+ FGridWidth     := 1;
+ FGridStyle     := lsSolid;
+ FLineColor     := clBlack;
+ FLineColor32   := ConvertColor(FLineColor);
+ FCursorADR     := crSizeWE;
+ FCursorS       := crSizeNS;
  FCursorDefault := crDefault;
 end;
 
@@ -248,7 +245,7 @@ begin
  if (EditType = meDecay)   and Assigned(FOnDecayChange)   then FOnDecayChange(self);
  if (EditType = meSustain) and Assigned(FOnSustainChange) then FOnSustainChange(self);
  if (EditType = meRelease) and Assigned(FOnReleaseChange) then FOnReleaseChange(self);
- Invalidate;
+ BufferChanged;
 end;
 
 function TGuiADSRGraph.GetAttack: Single;  begin Result := ADSRSettings.Attack; end;
@@ -270,11 +267,6 @@ begin
   end;
 end;
 
-procedure TGuiADSRGraph.GridColorChanged;
-begin
- Invalidate;
-end;
-
 procedure TGuiADSRGraph.SetGridWidth(const Value: Integer);
 begin
  if FGridWidth <> Value then
@@ -284,12 +276,25 @@ begin
   end;
 end;
 
-procedure TGuiADSRGraph.GridWidthChanged;
+procedure TGuiADSRGraph.SetLineColor(const Value: TColor);
 begin
- Invalidate;
+ if FLineColor <> Value then
+  begin
+   FLineColor := Value;
+   LineColorChanged;
+  end;
 end;
 
-procedure TGuiADSRGraph.SetGridStyle(const Value: TPenStyle);
+procedure TGuiADSRGraph.SetLineWidth(const Value: Integer);
+begin
+ if FLineWidth <> Value then
+  begin
+   FLineWidth := Value;
+   LineWidthChanged;
+  end;
+end;
+
+procedure TGuiADSRGraph.SetGridStyle(const Value: TGuiLineStyle);
 begin
  if FGridStyle <> Value then
   begin
@@ -298,90 +303,64 @@ begin
   end;
 end;
 
+procedure TGuiADSRGraph.GridWidthChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TGuiADSRGraph.GridColorChanged;
+begin
+ FGridColor32 := ConvertColor(FGridColor);
+ BufferChanged;
+end;
+
+procedure TGuiADSRGraph.LineColorChanged;
+begin
+ FLineColor32 := ConvertColor(FLineColor);
+ BufferChanged;
+end;
+
+procedure TGuiADSRGraph.LineWidthChanged;
+begin
+ BufferChanged;
+end;
+
 procedure TGuiADSRGraph.GridStyleChanged;
 begin
- Invalidate;
-end;
-
-procedure TGuiADSRGraph.SetGridVPadding(const Value: Integer);
-begin
- if FGridVPadding <> Value then
-  begin
-   FGridVPadding := Value;
-   GridVertPadding;
-  end;
-end;
-
-procedure TGuiADSRGraph.GridVertPadding;
-begin
- Invalidate;
-end;
-
-procedure TGuiADSRGraph.SetEnvVPadding(const Value: Integer);
-begin
- if FEnvVPadding <> Value then
-  begin
-   FEnvVPadding := Value;
-   EnvVertPaddingChanged;
-  end;
-end;
-
-procedure TGuiADSRGraph.EnvVertPaddingChanged;
-begin
- Invalidate;
-end;
-
-procedure TGuiADSRGraph.SetEnvHPadding(const Value: Integer);
-begin
- if FEnvHPadding <> Value then
-  begin
-   FEnvHPadding := Value;
-   EnvHorPaddingChanged;
-  end;
-end;
-
-procedure TGuiADSRGraph.EnvHorPaddingChanged;
-begin
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TGuiADSRGraph.UpdateBuffer;
 var
-  GridColor : TPixel32;
+  LineIndex : Integer;
+  Offset    : Integer;
 begin
+ inherited;
+
  if (Width > 0) and (Height > 0) then
   with FBuffer do
    begin
     // TODO: handle pen style!!!
     // TODO: handle pen width!!!
-    GridColor := ConvertColor(FGridColor);
-    VerticalLine(FA, FGridVPadding, Height - FGridVPadding, GridColor);
-    VerticalLine(FD, FGridVPadding, Height - FGridVPadding, GridColor);
-    VerticalLine(FR, FGridVPadding, Height - FGridVPadding, GridColor);
-(*
-    Brush.Color := Self.Color;
+    case FGridStyle of
+     lsSolid :
+      begin
+       for LineIndex := 0 to FGridWidth - 1 do
+        begin
+         Offset := LineIndex - FGridWidth div 2;
+         if FA + Offset > 0
+          then VerticalLine(FA + Offset, 0, Height - 1, FGridColor32);
+         VerticalLine(FD + Offset, 0, Height - 1, FGridColor32);
+         if FR + Offset < Width
+          then VerticalLine(FR + Offset, 0, Height - 1, FGridColor32);
+        end;
+      end;
+    end;
 
-    if FGridStyle <> psClear then
-     begin
-      Pen.Width := FGridWidth;
-      Pen.Style := FGridStyle;
-      Pen.Color := FGridColor;
-
-      MoveTo(FA, FGridVPadding); LineTo(FA, Height - FGridVPadding);
-      MoveTo(FD, FGridVPadding); LineTo(FD, Height - FGridVPadding);
-      MoveTo(FR, FGridVPadding); LineTo(FR, Height - FGridVPadding);
-     end;
-
-    Pen.Color := FLineColor;
-    Pen.Style := psSolid;
-    Pen.Width := FLinewidth;
-
-    MoveTo(FEnvHPadding, Height - FEnvVPadding - 1);
-    LineTo(FA, FEnvVPadding);
-    LineTo(FD, FS);
-    LineTo(FR, FS);
-    LineTo(Width - FEnvHPadding - 1, Height - FEnvVPadding - 1);
-*)
+    Line(0, Height - 1, FA, 0, FLineColor32);
+    Line(FA, 0, FD, FS, FLineColor32);
+    Line(FD, FS, FR, FS, FLineColor32);
+    Line(FR, FS, Width - 1, Height - 1, FLineColor32);
    end;
 end;
 
@@ -390,8 +369,8 @@ var
   IntWidth  : Integer;
   IntHeight : Integer;
 begin
- IntWidth := Width - 2 * FEnvHPadding - 1;
- IntHeight := Height - 2 * FEnvVPadding - 1;
+ IntWidth := Width - 1;
+ IntHeight := Height - 1;
 
  with FADSRSettings do
   begin
@@ -400,27 +379,23 @@ begin
    FS := Round(IntHeight * (1 - Sustain));
    FR := IntWidth - Round(0.25 * IntWidth * Release);
   end;
-
- FA := FA + FEnvHPadding;
- FD := FD + FEnvHPadding;
- FS := FS + FEnvVPadding;
- FR := FR + FEnvHPadding;
 end;
 
 function TGuiADSRGraph.CheckForMouseFunc(x,y: Integer): TGuiADSRGraphMouseEdit;
+var
+  Range : Integer;
 begin
-(*
  Result := meNone;
- if (x < FEnvHPadding) or (x > Width  - FEnvHPadding) or
-    (y < FEnvVPadding) or (y > Height - FEnvVPadding) then Exit;
+ if (x < 0) or (x > Width) or
+    (y < 0) or (y > Height) then Exit;
 
- if (x > FA - 5) and (x < FA + FLinewidth) then Result := meAttack else
- if (x > FD - FLinewidth) and (x < FD + 5) then Result := meDecay else
- if (x > FR - FLinewidth) and (x < FR + 5) then Result := meRelease else
- if (y > FS - 5) and (y < FS + 5) and (x >= FD + 5) and (x <= FR - 5)
+ Range := Max(5, FLinewidth);
+ if (x > FA - Range) and (x < FA + Range) then Result := meAttack else
+ if (x > FD - Range) and (x < FD + Range) then Result := meDecay else
+ if (x > FR - Range) and (x < FR + Range) then Result := meRelease else
+ if (y > FS - Range) and (y < FS + Range) and (x >= FD + Range) and (x <= FR - Range)
   then Result := meSustain
   else Result := meNone;
-*)
 end;
 
 procedure TGuiADSRGraph.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -434,29 +409,6 @@ begin
  inherited;
 end;
 
-
-(*
-procedure TGuiADSRGraph.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
-var
-  IntWidth  : Integer;
-  IntHeight : Integer;
-begin
- IntWidth := Width - 2 * FEnvHPadding - 1;
- IntHeight := Height - 2 * FEnvVPadding - 1;
- x := x - FEnvHPadding;
- y := y - FEnvVPadding;
- if not (ssLeft in Shift) then FMouseEdit := meNone else
- case FMouseEdit of
-  meAttack   : FADSRSettings.Attack := 4 * x / IntWidth;
-  meDecay    : FADSRSettings.Decay := 4 * (x - FA + FEnvHPadding) / IntWidth;
-  meSustain  : FADSRSettings.Sustain := 1 - y / IntHeight;
-  meRelease  : FADSRSettings.Release := 4 * (IntWidth - x) / IntWidth;
- end;
-
- inherited;
-end;
-*)
-
 procedure TGuiADSRGraph.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
  if Enabled then FMouseEdit := meNone;
@@ -465,12 +417,25 @@ begin
 end;
 
 procedure TGuiADSRGraph.MouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  IntWidth  : Integer;
+  IntHeight : Integer;
 begin
  if Enabled then
   case CheckForMouseFunc(x,y) of
       meNone : Cursor := FCursorDefault;
    meSustain : Cursor := FCursorS;
    else Cursor := FCursorADR;
+  end;
+
+ IntWidth := Width - 1;
+ IntHeight := Height - 1;
+ if not (ssLeft in Shift) then FMouseEdit := meNone else
+  case FMouseEdit of
+   meAttack   : FADSRSettings.Attack := 4 * x / IntWidth;
+   meDecay    : FADSRSettings.Decay := 4 * (x - FA) / IntWidth;
+   meSustain  : FADSRSettings.Sustain := 1 - y / IntHeight;
+   meRelease  : FADSRSettings.Release := 4 * (IntWidth - x) / IntWidth;
   end;
 
  inherited;

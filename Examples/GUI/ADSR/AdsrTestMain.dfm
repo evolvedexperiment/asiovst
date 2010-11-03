@@ -4,13 +4,14 @@ object FmAdsrTest: TFmAdsrTest
   Caption = 'ADSR Test'
   ClientHeight = 168
   ClientWidth = 188
-  Color = clBtnFace
+  Color = 7373965
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClick = FormClick
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
@@ -26,5 +27,6 @@ object FmAdsrTest: TFmAdsrTest
     ADSRSettings.Decay = 0.500000000000000000
     ADSRSettings.Sustain = 0.500000000000000000
     ADSRSettings.Release = 0.500000000000000000
+    GridWidth = 3
   end
 end

@@ -1,10 +1,10 @@
-object Form1: TForm1
+object FmSelectBox: TFmSelectBox
   Left = 218
   Top = 77
   Caption = 'Test Select Box'
   ClientHeight = 140
   ClientWidth = 219
-  Color = 8160397
+  Color = 7373965
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -22,11 +22,13 @@ object Form1: TForm1
     Top = 8
     Width = 100
     Height = 25
+    ButtonColor = 7373965
     ItemIndex = -1
     Items.Strings = (
       'Test 1'
       'Test 2'
       'Test 3')
+    SelectBoxColor = 7373965
   end
   object SelectBoxB: TGuiSelectBox
     Left = 114
@@ -34,11 +36,13 @@ object Form1: TForm1
     Width = 100
     Height = 25
     AntiAlias = gaaLinear2x
+    ButtonColor = 7373965
     ItemIndex = -1
     Items.Strings = (
       'Test 1'
       'Test 2'
       'Test 3')
+    SelectBoxColor = 7373965
   end
   object SelectBoxC: TGuiSelectBox
     Left = 8
@@ -46,12 +50,14 @@ object Form1: TForm1
     Width = 100
     Height = 25
     AntiAlias = gaaLinear3x
+    ButtonColor = 7373965
     ItemIndex = -1
     Items.Strings = (
       'Test A'
       'Test B'
       'Test C'
       'Test D')
+    SelectBoxColor = 7373965
   end
   object SelectBoxD: TGuiSelectBox
     Left = 114
@@ -59,14 +65,16 @@ object Form1: TForm1
     Width = 100
     Height = 25
     AntiAlias = gaaLinear4x
+    ButtonColor = 7373965
     ItemIndex = -1
     Items.Strings = (
       'Test 1'
       'Test 2'
       'Test 3'
       'Test 4')
+    SelectBoxColor = 7373965
   end
-  object Label1: TLabel
+  object LbRoundRadius: TLabel
     Left = 8
     Top = 72
     Width = 70
@@ -74,7 +82,7 @@ object Form1: TForm1
     Caption = 'Round Radius:'
     Transparent = True
   end
-  object Label2: TLabel
+  object LbArrowWidth: TLabel
     Left = 8
     Top = 95
     Width = 64
@@ -82,39 +90,67 @@ object Form1: TForm1
     Caption = 'Arrow Width:'
     Transparent = True
   end
-  object TbRoundRadius: TTrackBar
-    Left = 84
-    Top = 70
-    Width = 130
-    Height = 19
-    Max = 19
-    Min = 1
-    Position = 1
-    TabOrder = 0
-    ThumbLength = 12
-    OnChange = TbRoundRadiusChange
-  end
   object CbTransparent: TCheckBox
     Left = 8
     Top = 118
     Width = 97
     Height = 17
     Caption = 'Transparent'
-    Color = 8160397
+    Color = 7373965
     ParentColor = False
-    TabOrder = 1
+    TabOrder = 0
     OnClick = CbTransparentClick
   end
-  object TbArrowWidth: TTrackBar
+  object TbRoundRadius: TGuiSlider
+    Left = 84
+    Top = 70
+    Width = 130
+    Height = 19
+    BorderColor = clBtnHighlight
+    BorderRadius = 8.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373965
+    DefaultValue = 19.000000000000000000
+    Digits = 2
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 7373965
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 4.000000000000000000
+    FontShadow.Visible = True
+    Max = 19.000000000000000000
+    Min = 1.000000000000000000
+    ParentColor = False
+    Value = 1.000000000000000000
+    ShowText = True
+    SlideColor = 4872286
+    Transparent = True
+    OnChange = TbRoundRadiusChange
+  end
+  object TbArrowWidth: TGuiSlider
     Left = 84
     Top = 93
     Width = 130
     Height = 19
-    Max = 5
-    Min = 1
-    Position = 1
-    TabOrder = 2
-    ThumbLength = 12
+    BorderColor = clBtnHighlight
+    BorderRadius = 8.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373965
+    DefaultValue = 5.000000000000000000
+    Digits = 2
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 7373965
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 4.000000000000000000
+    FontShadow.Visible = True
+    Max = 5.000000000000000000
+    Min = 1.000000000000000000
+    ParentColor = False
+    Value = 1.000000000000000000
+    ShowText = True
+    SlideColor = 4872286
+    Transparent = True
     OnChange = TbArrowWidthChange
   end
 end

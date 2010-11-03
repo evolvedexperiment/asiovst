@@ -127,6 +127,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelLine.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPixelRectangle.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiCustomControl.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiRadioButton.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -179,7 +180,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-11-03 01:27</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-11-03 13:19</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

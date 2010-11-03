@@ -122,6 +122,7 @@ end;
 
 procedure TCustomGuiGraphicControl.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
+ inherited;
  if not FTransparent
   then BackBufferChanged;
 end;
@@ -140,7 +141,7 @@ begin
  if Assigned(FBackBuffer) then
   begin
    FBackBuffer.SetSize(Width, Height);
-   UpdateBackBuffer;
+   BackBufferChanged;
   end;
 
  inherited;

@@ -50,10 +50,10 @@ type
     SliderOffset: TGuiSlider;
     SliderOpacity: TGuiSlider;
     SliderSaturation: TGuiSlider;
-    procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormResize(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
     procedure LabelDClick(Sender: TObject);
     procedure LabelCClick(Sender: TObject);
@@ -135,17 +135,17 @@ end;
 
 procedure TFmLabelTest.SliderBlurChange(Sender: TObject);
 begin
- LabelA.Shadow.Blur := SliderBlur.Position;
- LabelB.Shadow.Blur := SliderBlur.Position;
- LabelC.Shadow.Blur := SliderBlur.Position;
- LabelD.Shadow.Blur := SliderBlur.Position;
+ LabelA.Shadow.Blur := SliderBlur.Value;
+ LabelB.Shadow.Blur := SliderBlur.Value;
+ LabelC.Shadow.Blur := SliderBlur.Value;
+ LabelD.Shadow.Blur := SliderBlur.Value;
 end;
 
 procedure TFmLabelTest.SliderOffsetChange(Sender: TObject);
 var
   NewOffset : TPoint;
 begin
- NewOffset := Point(Round(SliderOffset.Position), Round(SliderOffset.Position));
+ NewOffset := Point(Round(SliderOffset.Value), Round(SliderOffset.Value));
  LabelA.Shadow.Offset := NewOffset;
  LabelB.Shadow.Offset := NewOffset;
  LabelC.Shadow.Offset := NewOffset;
@@ -154,20 +154,20 @@ end;
 
 procedure TFmLabelTest.SliderOpacityChange(Sender: TObject);
 begin
- LabelA.Shadow.Opacity := Round(SliderOpacity.Position);
- LabelB.Shadow.Opacity := Round(SliderOpacity.Position);
- LabelC.Shadow.Opacity := Round(SliderOpacity.Position);
- LabelD.Shadow.Opacity := Round(SliderOpacity.Position);
+ LabelA.Shadow.Opacity := Round(SliderOpacity.Value);
+ LabelB.Shadow.Opacity := Round(SliderOpacity.Value);
+ LabelC.Shadow.Opacity := Round(SliderOpacity.Value);
+ LabelD.Shadow.Opacity := Round(SliderOpacity.Value);
 end;
 
 procedure TFmLabelTest.SliderSaturationChange(Sender: TObject);
 var
   Saturation : Integer;
 begin
- LabelA.Shadow.Saturation := SliderSaturation.Position;
- LabelB.Shadow.Saturation := SliderSaturation.Position;
- LabelC.Shadow.Saturation := SliderSaturation.Position;
- LabelD.Shadow.Saturation := SliderSaturation.Position;
+ LabelA.Shadow.Saturation := SliderSaturation.Value;
+ LabelB.Shadow.Saturation := SliderSaturation.Value;
+ LabelC.Shadow.Saturation := SliderSaturation.Value;
+ LabelD.Shadow.Saturation := SliderSaturation.Value;
 end;
 
 procedure TFmLabelTest.LabelCClick(Sender: TObject);

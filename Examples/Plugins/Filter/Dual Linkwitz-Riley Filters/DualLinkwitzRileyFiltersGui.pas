@@ -112,6 +112,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     function GuiEQGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure DialDblClick(Sender: TObject);
     procedure DialHighpassFrequencyChange(Sender: TObject);
@@ -138,13 +139,12 @@ type
     procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
     procedure PuPresetPopup(Sender: TObject);
-    procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TGuiPixelMapMemory;
-    FCurrentDial     : TGuiStitchedDial;
-    FIsLow           : Boolean;
-    FDirectUpdate    : Boolean;
-    FEdValue         : TEdit;
+    FBackground   : TGuiCustomPixelMap;
+    FCurrentDial  : TGuiStitchedDial;
+    FIsLow        : Boolean;
+    FDirectUpdate : Boolean;
+    FEdValue      : TEdit;
   public
     procedure UpdateLowpassFrequency;
     procedure UpdateLowpassSlope;
@@ -167,18 +167,18 @@ resourcestring
 
 procedure TFmLinkwitzRiley.FormCreate(Sender: TObject);
 begin
- FBackgrounBitmap := TGuiPixelMapMemory.Create;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmLinkwitzRiley.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmLinkwitzRiley.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackgrounBitmap)
-  then FBackgrounBitmap.PaintTo(Canvas);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmLinkwitzRiley.FormResize(Sender: TObject);
@@ -188,7 +188,7 @@ var
   h, hr  : Single;
   ScnLn  : PPixel32Array;
 begin
- with FBackgrounBitmap do
+ with FBackground do
   begin
    SetSize(ClientWidth, ClientHeight);
    s[0] := 0;

@@ -34,7 +34,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     Transparent = True
     OnClick = LbShowFrequencyPlotClick
@@ -204,7 +203,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
-        Shadow.Color = clBlack
         OnClick = LbDisplayClick
       end
     end
@@ -223,6 +221,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassFrequencyMouseEnter
+      DefaultValue = 0.000000000000000000
     end
     object DialLowpassSlope: TGuiStitchedDial
       Tag = 1
@@ -240,6 +239,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassSlopeMouseEnter
+      DefaultValue = 0.000000000000000000
     end
     object DialHighpassFrequency: TGuiStitchedDial
       Tag = 2
@@ -257,6 +257,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassFrequencyMouseEnter
+      DefaultValue = 0.000000000000000000
     end
     object DialHighpassSlope: TGuiStitchedDial
       Tag = 3
@@ -274,6 +275,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassSlopeMouseEnter
+      DefaultValue = 0.000000000000000000
     end
   end
   object GuiEQGraph: TGuiEQGraph

@@ -5,7 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Controls, Graphics, Menus, DAV_GuiBaseControl;
+  Windows, Classes, Controls, Graphics, Menus, DAV_GuiBaseControl,
+  DAV_GuiCustomControl;
 
 type
   TCustomGuiSelectBox = class(TCustomGuiBaseAntialiasedControl)

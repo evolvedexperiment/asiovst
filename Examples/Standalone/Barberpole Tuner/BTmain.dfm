@@ -14,6 +14,7 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -32,7 +33,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
   end
   object Barberpole: TPaintBox
@@ -56,7 +56,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
   end
   object LbLowE: TGuiLabel
@@ -73,7 +72,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -91,7 +89,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -109,7 +106,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -127,7 +123,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -145,7 +140,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end
@@ -163,7 +157,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
     OnClick = LbNoteClick
   end

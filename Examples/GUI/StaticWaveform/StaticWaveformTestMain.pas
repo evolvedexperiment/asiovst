@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_Common, DAV_GuiBaseControl, DAV_GuiStaticWaveform;
+  Dialogs, StdCtrls, DAV_Common, DAV_Types, DAV_GuiBaseControl,
+  DAV_GuiStaticWaveform;
 
 type
   TFmStaticWaveformTest = class(TForm)
