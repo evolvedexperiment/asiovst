@@ -65,7 +65,7 @@ type
     procedure PerformBitmapOperation; override;
   end;
 
-  TSEGFXInvertGui = class(TSEGFXAmountGui)
+  TSEGFXInvertGui = class(TSEGFXBaseGui)
   public
     procedure PerformBitmapOperation; override;
   end;

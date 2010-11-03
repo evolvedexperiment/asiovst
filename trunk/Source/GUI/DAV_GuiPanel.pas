@@ -76,7 +76,6 @@ type
     procedure TransparentChanged; virtual;
 
     procedure RenderPanel(PixelMap: TGuiCustomPixelMap);
-    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -306,7 +305,9 @@ begin
  if (Width > 0) and (Height > 0) then
   with FBuffer do
    begin
-    {$IFNDEF FPC}if FTransparent then CopyParentImage(FBuffer) else {$ENDIF}
+    {$IFNDEF FPC}
+    if FTransparent then FBuffer.CopyParentImage(Self) else
+    {$ENDIF}
     Clear(Color);
     RenderPanel(FBuffer);
    end;
@@ -502,95 +503,6 @@ begin
  if FOwnerDraw
   then FBufferChanged := True;
  Invalidate;
-end;
-
-type
-  TParentControl = class(TWinControl);
-
-procedure TCustomGuiPanel.CopyParentImage(PixelMap: TGuiCustomPixelMap);
-var
-  I         : Integer;
-  SubCount  : Integer;
-  SaveIndex : Integer;
-  Pnt       : TPoint;
-  R, SelfR  : TRect;
-  CtlR      : TRect;
-  Bmp       : TBitmap;
-begin
- if (Parent = nil) then Exit;
- SubCount := Parent.ControlCount;
- // set
- {$IFDEF WIN32}
- with Parent
-  do ControlState := ControlState + [csPaintCopy];
- try
- {$ENDIF}
-
-  SelfR := Bounds(Left, Top, Width, Height);
-  Pnt.X := -Left;
-  Pnt.Y := -Top;
-
-  Bmp := TBitmap.Create;
-  with Bmp do
-   try
-    Width := Self.Width;
-    Height := Self.Height;
-    PixelFormat := pf32bit;
-
-    // Copy parent control image
-    SaveIndex := SaveDC(Canvas.Handle);
-    try
-     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
-     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-     with TParentControl(Parent) do
-      begin
-       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
-       PaintWindow(Canvas.Handle);
-      end;
-    finally
-     RestoreDC(Canvas.Handle, SaveIndex);
-    end;
-
-    // Copy images of graphic controls
-    for I := 0 to SubCount - 1 do
-     begin
-      if Parent.Controls[I] = Self then Break else
-       if (Parent.Controls[I] <> nil) and
-          (Parent.Controls[I] is TGraphicControl)
-        then
-         with TGraphicControl(Parent.Controls[I]) do
-          begin
-           CtlR := Bounds(Left, Top, Width, Height);
-           if Boolean(IntersectRect(R, SelfR, CtlR)) and Visible then
-            begin
-             {$IFDEF WIN32}
-             ControlState := ControlState + [csPaintCopy];
-             {$ENDIF}
-             SaveIndex := SaveDC(Canvas.Handle);
-             try
-              SaveIndex := SaveDC(Canvas.Handle);
-              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
-              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
-              Perform(WM_PAINT, Canvas.Handle, 0);
-             finally
-              RestoreDC(Handle, SaveIndex);
-              {$IFDEF WIN32}
-              ControlState := ControlState - [csPaintCopy];
-              {$ENDIF}
-             end;
-            end;
-          end;
-     end;
-    PixelMap.Draw(Bmp);
-   finally
-    Free;
-   end;
-
- {$IFDEF WIN32}
- finally
-   with Parent do ControlState := ControlState - [csPaintCopy];
- end;
- {$ENDIF}
 end;
 
 end.

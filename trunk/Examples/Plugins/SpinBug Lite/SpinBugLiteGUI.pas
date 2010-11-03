@@ -43,11 +43,11 @@ uses
 type
   TFmSpinBugLite = class(TForm)
     DialLFO: TGuiDial;
-    Label1: TLabel;
-    LbLFOSpeed: TLabel;
-    LbLFOSpeedValue: TLabel;
+    LbColour: TGuiLabel;
+    LbLFOSpeed: TGuiLabel;
+    LbLFOSpeedValue: TGuiLabel;
     LbTitle: TGuiLabel;
-    LbType: TLabel;
+    LbType: TGuiLabel;
     SelectColour: TGuiSelectBox;
     SelectType: TGuiSelectBox;
     procedure FormCreate(Sender : TObject);

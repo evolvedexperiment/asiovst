@@ -320,7 +320,7 @@ procedure TGuiCustomFont.ShadowChangedHandler(Sender: TObject);
 begin
  FShadowColor := ConvertColor(FShadow.Color);
  FShadowColor.A := FShadow.Opacity;
- FSaturation.Value := FShadow.Saturation;
+ FSaturation.Value := FastPower2(FShadow.Saturation);
  Changed;
 end;
 
@@ -640,7 +640,7 @@ begin
         then FShadowBuffer := TGuiByteMapMemory.Create;
        {$ENDIF}
 
-       BlurOffset := FOSFactor * Round(0.5 * FShadow.Blur);
+       BlurOffset := FOSFactor * Round(FShadow.Blur);
        TextExtend.cx := TextExtend.cx + 2 * BlurOffset;
        TextExtend.cy := TextExtend.cy + 2 * BlurOffset;
 
@@ -713,6 +713,7 @@ begin
           Rect(X - BlurOffset div FOSFactor, Y - BlurOffset div FOSFactor,
             X + (FBuffer.Width - BlurOffset) div FOSFactor,
             Y + (FBuffer.Height - BlurOffset) div FOSFactor));
+
       end
      else
       begin
