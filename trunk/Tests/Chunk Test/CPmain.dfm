@@ -18,7 +18,6 @@ object FmChunkParser: TFmChunkParser
     Left = 145
     Top = 0
     Height = 266
-    ExplicitLeft = 151
   end
   object TreeView: TTreeView
     Left = 0

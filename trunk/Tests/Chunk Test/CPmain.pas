@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, StdCtrls, ExtCtrls, ComCtrls, DAV_Common, DAV_ChunkClasses;
+  Menus, StdCtrls, ExtCtrls, ComCtrls, DAV_Common, DAV_Types, DAV_ChunkClasses;
 
 type
   TFmChunkParser = class(TForm)
@@ -147,7 +147,7 @@ begin
      Read(ChunkSize, 4);
 
      if ChunkName = 'FORM'
-      then FlipLong(ChunkSize);
+      then Flip32(ChunkSize);
 
      if (ChunkName[1] = 'W') and (ChunkName[2] = 'S')
       then ChunkSize := ChunkSize - 8;
