@@ -51,7 +51,7 @@ begin
     then Exit;
 
    // copy file
-   CopyFile(PAnsiChar(EdInputFile.Text), PAnsiChar(EdOutputFile.Text), False);
+   CopyFile(PChar(EdInputFile.Text), PChar(EdOutputFile.Text), False);
 
    // encrypt stream
    FS := TFileStream.Create(EdInputFile.Text, fmOpenReadWrite);
