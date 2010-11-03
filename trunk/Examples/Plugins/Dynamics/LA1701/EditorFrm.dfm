@@ -49,7 +49,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
       Left = 8
@@ -67,7 +66,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbTitle: TGuiLabel
       Left = 149
@@ -85,7 +83,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LbTitleClick
     end
     object LEDOnOff: TGuiLED
@@ -119,7 +116,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LEDOnOffClick
     end
     object LbSlow: TGuiLabel
@@ -138,7 +134,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbFast: TGuiLabel
       Left = 8
@@ -156,7 +151,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbMix: TGuiLabel
       Left = 248
@@ -174,7 +168,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLevelingAmplifier: TLabel
       Left = 219
@@ -243,7 +236,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo3x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtInClick
     end
@@ -266,7 +258,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo3x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtGRClick
     end
@@ -289,7 +280,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo3x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtOutClick
     end
@@ -307,6 +297,8 @@ object FmLA1701: TFmLA1701
       StitchedImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialRelease: TGuiStitchedDial
       Left = 8
@@ -322,6 +314,7 @@ object FmLA1701: TFmLA1701
       StitchedImageIndex = 1
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      DefaultValue = 0.000000000000000000
     end
     object DialMix: TGuiStitchedDial
       Left = 248
@@ -335,6 +328,8 @@ object FmLA1701: TFmLA1701
       StitchedImageList = GSPL
       StitchedImageIndex = 2
       WheelStep = 1.000000000000000000
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object PnMix: TGuiPanel
       Left = 248
@@ -408,7 +403,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbOutput: TGuiLabel
       Left = 88
@@ -426,7 +420,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbRatioX: TGuiLabel
       Left = 168
@@ -444,7 +437,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbKnee: TGuiLabel
       Left = 248
@@ -462,7 +454,6 @@ object FmLA1701: TFmLA1701
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object DialKnee: TGuiStitchedDial
       Left = 248
@@ -476,6 +467,8 @@ object FmLA1701: TFmLA1701
       StitchedImageList = GSPL
       StitchedImageIndex = 3
       WheelStep = 1.000000000000000000
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialRatio: TGuiStitchedDial
       Left = 168
@@ -489,6 +482,8 @@ object FmLA1701: TFmLA1701
       StitchedImageList = GSPL
       StitchedImageIndex = 3
       WheelStep = 1.000000000000000000
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
       Left = 88
@@ -503,6 +498,8 @@ object FmLA1701: TFmLA1701
       StitchedImageList = GSPL
       StitchedImageIndex = 2
       WheelStep = 1.000000000000000000
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialInput: TGuiStitchedDial
       Left = 8
@@ -517,6 +514,8 @@ object FmLA1701: TFmLA1701
       StitchedImageList = GSPL
       StitchedImageIndex = 2
       WheelStep = 1.000000000000000000
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object PnKnee: TGuiPanel
       Left = 248

@@ -14,7 +14,9 @@ object FmModDelay2: TFmModDelay2
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object LbGain: TGuiLabel
@@ -22,241 +24,433 @@ object FmModDelay2: TFmModDelay2
     Top = 40
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Gain:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbMix: TGuiLabel
     Left = 8
     Top = 63
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Mix:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbLpf: TGuiLabel
     Left = 8
     Top = 86
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'LPF:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbDelay: TGuiLabel
     Left = 8
     Top = 109
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Delay:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbDepth: TGuiLabel
     Left = 8
     Top = 132
     Width = 46
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Depth:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbRate: TGuiLabel
     Left = 8
     Top = 155
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Rate:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbFeedback: TGuiLabel
     Left = 8
     Top = 178
     Width = 69
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Feedback:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbLeft: TGuiLabel
     Left = 117
     Top = 8
     Width = 52
     Height = 25
-    FontOversampling = fo4x
     Caption = 'LEFT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbRight: TGuiLabel
     Left = 248
     Top = 8
     Width = 73
     Height = 25
-    FontOversampling = fo4x
     Caption = 'RIGHT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object LbCurrentValue: TGuiLabel
     Left = 83
     Top = 207
     Width = 97
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Current Value:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
   end
-  object SBGainLeft: TScrollBar
+  object SBGainLeft: TGuiSlider
     Left = 83
     Top = 40
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 0
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBMixLeft: TScrollBar
+  object SBMixLeft: TGuiSlider
     Left = 83
     Top = 63
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 1
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBLPFLeft: TScrollBar
+  object SBLPFLeft: TGuiSlider
     Left = 83
     Top = 86
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 2
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBDelayLeft: TScrollBar
+  object SBDelayLeft: TGuiSlider
     Left = 83
     Top = 109
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 3
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SbDepthLeft: TScrollBar
+  object SbDepthLeft: TGuiSlider
     Left = 83
     Top = 132
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 4
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBRateLeft: TScrollBar
+  object SBRateLeft: TGuiSlider
     Left = 83
     Top = 155
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 5
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBFeedbackLeft: TScrollBar
+  object SBFeedbackLeft: TGuiSlider
     Left = 83
     Top = 178
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 6
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBGainRight: TScrollBar
+  object SBGainRight: TGuiSlider
     Left = 213
     Top = 40
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 7
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBMixRight: TScrollBar
+  object SBMixRight: TGuiSlider
     Left = 213
     Top = 63
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 8
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBLpfRight: TScrollBar
+  object SBLpfRight: TGuiSlider
     Left = 213
     Top = 86
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 9
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBdelayRight: TScrollBar
+  object SBdelayRight: TGuiSlider
     Left = 213
     Top = 109
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 10
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBDepthRight: TScrollBar
+  object SBDepthRight: TGuiSlider
     Left = 213
     Top = 132
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 11
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBRateRight: TScrollBar
+  object SBRateRight: TGuiSlider
     Left = 213
     Top = 155
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 12
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
-  object SBFeedbackRight: TScrollBar
+  object SBFeedbackRight: TGuiSlider
     Left = 213
     Top = 178
     Width = 124
     Height = 17
-    PageSize = 0
-    TabOrder = 13
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373964
+    DefaultValue = 50.000000000000000000
+    FontShadow.Blur = 2.000000000000000000
+    FontShadow.Color = 7373964
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 3.000000000000000000
+    FontShadow.Visible = True
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    ShowText = True
+    SlideColor = 3489602
   end
 end

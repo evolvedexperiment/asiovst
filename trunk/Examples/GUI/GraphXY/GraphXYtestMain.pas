@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiBaseControl, DAV_GuiGraphXY;
+  Dialogs, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiPixelMap;
 
 type
   TFmGraphXY = class(TForm)
@@ -17,7 +17,7 @@ type
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     function SimpleFunctionEvaluate(Sender: TObject; X: Double): Double;
   end;
@@ -34,7 +34,7 @@ uses
 
 procedure TFmGraphXY.FormCreate(Sender: TObject);
 begin
- FBackgrounBitmap := TBitmap.Create;
+ FBackground := TGuiPixelMapMemory.Create;
  TGuiGraphXYFunctionSeries(GraphXYA[0].Series).OnEvaluate := SimpleFunctionEvaluate;
  TGuiGraphXYFunctionSeries(GraphXYB[0].Series).OnEvaluate := SimpleFunctionEvaluate;
  TGuiGraphXYFunctionSeries(GraphXYC[0].Series).OnEvaluate := SimpleFunctionEvaluate;
@@ -43,41 +43,40 @@ end;
 
 procedure TFmGraphXY.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmGraphXY.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmGraphXY.FormResize(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array[0..1] of Single;
+  Filter : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
 begin
- with FBackgrounBitmap do
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
+       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+       Filter[0] := Filter[1];
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
       end;
     end;
   end;

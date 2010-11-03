@@ -2,7 +2,7 @@ object FmGraphXY: TFmGraphXY
   Left = 218
   Top = 77
   Caption = 'GraphXY Test'
-  ClientHeight = 430
+  ClientHeight = 416
   ClientWidth = 414
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET

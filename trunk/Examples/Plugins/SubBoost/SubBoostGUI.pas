@@ -36,8 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox, ExtCtrls,
-  DAV_GuiPanel;
+  ExtCtrls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox,
+  DAV_GuiPanel, DAV_GuiGraphicControl, DAV_GuiPixelMap;
 
 type
   TFmSubBoost = class(TForm)
@@ -48,7 +48,7 @@ type
     DialRelease: TGuiDial;
     DialThreshold: TGuiDial;
     DialTune: TGuiDial;
-    GuiLabel2: TGuiLabel;
+    LbFreq: TGuiLabel;
     GuiPanel1: TGuiPanel;
     GuiPanel2: TGuiPanel;
     LbDryMix: TGuiLabel;
@@ -71,8 +71,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialFilterOrderChange(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateType;
     procedure UpdateLevel;
@@ -95,37 +96,10 @@ uses
 procedure TFmSubBoost.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  b      : ShortInt;
-  Line   : PRGB32Array;
   PngBmp : TPngObject;
-
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf32bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.9 * s[0] + 0.1 * random;
-       b := round($3F * s[1]);
-       s[0] := s[1];
-       Line[x].B := b;
-       Line[x].G := b;
-       Line[x].R := b;
-       Line[x].A := 0;
-      end;
-    end;
-  end;
+ FBackground := TGuiPixelMapMemory.Create;
 
  PngBmp := TPngObject.Create;
  try
@@ -147,7 +121,37 @@ end;
 
 procedure TFmSubBoost.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmSubBoost.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  Filter : array [0..1] of Single;
+  b      : ShortInt;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
+       b := Round($3F * Filter[1]);
+       Filter[0] := Filter[1];
+       ScnLn[x].B := b;
+       ScnLn[x].G := b;
+       ScnLn[x].R := b;
+       ScnLn[x].A := 0;
+      end;
+    end;
+  end;
 end;
 
 procedure TFmSubBoost.FormShow(Sender: TObject);

@@ -112,7 +112,7 @@ type
     procedure PopupVUMeterSpeedPopup(Sender: TObject);
     procedure VUMeterTimerTimer(Sender: TObject);
   private
-    FBackgrounBitmap : TGuiCustomPixelMap;
+    FBackground : TGuiCustomPixelMap;
     procedure SetLevelState(const Value: TLevelState);
     function GetLevelState: TLevelState;
     function VUMeterValueToPos(Value: Double): Integer;
@@ -139,18 +139,18 @@ uses
 
 procedure TFmLA1701.FormCreate(Sender: TObject);
 begin
- FBackgrounBitmap := TGuiPixelMapMemory.Create;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmLA1701.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmLA1701.FormPaint(Sender: TObject);
 begin
- if Assigned(FBackgrounBitmap)
-  then FBackgrounBitmap.PaintTo(Canvas);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmLA1701.FormResize(Sender: TObject);
@@ -161,7 +161,7 @@ var
   ScnLn       : PPixel32Array;
 begin
  ClrBt := $F + Random($40);
- with FBackgrounBitmap do
+ with FBackground do
   begin
    SetSize(ClientWidth, ClientHeight);
    FilterState[0] := 0;
