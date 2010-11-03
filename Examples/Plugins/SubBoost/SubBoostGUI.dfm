@@ -14,6 +14,7 @@ object FmSubBoost: TFmSubBoost
   OldCreateOrder = False
   OnCreate = FormCreate
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -33,7 +34,6 @@ object FmSubBoost: TFmSubBoost
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object SBType: TGuiSelectBox
     Left = 205
@@ -75,7 +75,6 @@ object FmSubBoost: TFmSubBoost
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
     Left = 8
@@ -93,7 +92,6 @@ object FmSubBoost: TFmSubBoost
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiPanel1: TGuiPanel
     Left = 8
@@ -215,7 +213,6 @@ object FmSubBoost: TFmSubBoost
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbTune: TGuiLabel
       Left = 69
@@ -235,7 +232,6 @@ object FmSubBoost: TFmSubBoost
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDryMix: TGuiLabel
       Left = 123
@@ -255,7 +251,6 @@ object FmSubBoost: TFmSubBoost
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbThreshold: TGuiLabel
       Left = 193
@@ -275,7 +270,6 @@ object FmSubBoost: TFmSubBoost
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object DialRelease: TGuiDial
       Left = 257
@@ -316,7 +310,6 @@ object FmSubBoost: TFmSubBoost
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
   end
   object GuiPanel2: TGuiPanel
@@ -381,7 +374,7 @@ object FmSubBoost: TFmSubBoost
       StitchKind = skHorizontal
       WheelStep = 1.000000000000000000
     end
-    object GuiLabel2: TGuiLabel
+    object LbFreq: TGuiLabel
       Left = 7
       Top = 54
       Width = 48
@@ -399,7 +392,6 @@ object FmSubBoost: TFmSubBoost
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbFilterOrder: TGuiLabel
       Left = 61
@@ -419,7 +411,6 @@ object FmSubBoost: TFmSubBoost
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
   end
 end

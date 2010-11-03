@@ -36,7 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel;
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiSlider, DAV_GuiGraphicControl,
+  DAV_GuiPixelMap;
 
 type
   TFmModDelay2 = class(TForm)
@@ -50,24 +51,26 @@ type
     LbMix: TGuiLabel;
     LbRate: TGuiLabel;
     LbRight: TGuiLabel;
-    SBDelayLeft: TScrollBar;
-    SBdelayRight: TScrollBar;
-    SbDepthLeft: TScrollBar;
-    SBDepthRight: TScrollBar;
-    SBFeedbackLeft: TScrollBar;
-    SBFeedbackRight: TScrollBar;
-    SBGainLeft: TScrollBar;
-    SBGainRight: TScrollBar;
-    SBLPFLeft: TScrollBar;
-    SBLpfRight: TScrollBar;
-    SBMixLeft: TScrollBar;
-    SBMixRight: TScrollBar;
-    SBRateLeft: TScrollBar;
-    SBRateRight: TScrollBar;
+    SBGainLeft: TGuiSlider;
+    SBMixLeft: TGuiSlider;
+    SBLPFLeft: TGuiSlider;
+    SBDelayLeft: TGuiSlider;
+    SbDepthLeft: TGuiSlider;
+    SBRateLeft: TGuiSlider;
+    SBFeedbackLeft: TGuiSlider;
+    SBGainRight: TGuiSlider;
+    SBMixRight: TGuiSlider;
+    SBLpfRight: TGuiSlider;
+    SBdelayRight: TGuiSlider;
+    SBDepthRight: TGuiSlider;
+    SBRateRight: TGuiSlider;
+    SBFeedbackRight: TGuiSlider;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   end;
 
 implementation
@@ -78,42 +81,49 @@ uses
 {$R *.DFM}
 
 procedure TFmModDelay2.FormCreate(Sender: TObject);
-var
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  h, hr  : Single;
-  Line   : PRGB24Array;
 begin
- // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
+ FBackground := TGuiCustomPixelMap.Create;
+end;
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
-      end;
-    end;
-  end;
+procedure TFmModDelay2.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmModDelay2.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmModDelay2.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  Filter : array [0..1] of Single;
+  h, hr  : Single;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+       Filter[0] := Filter[1];
+
+       ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
+      end;
+    end;
+  end;
 end;
 
 end.

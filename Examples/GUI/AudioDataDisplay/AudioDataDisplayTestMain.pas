@@ -5,22 +5,22 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, DAV_Classes, DAV_AudioData,
-  DAV_GuiAudioDataDisplay;
+  DAV_GuiAudioDataDisplay, DAV_GuiPixelMap;
 
 type
   TFmAudioDataDisplay = class(TForm)
     ADC: TAudioDataCollection32;
-    PC: TPageControl;
-    TsBasic: TTabSheet;
     ADD1: TGuiAudioDataDisplay;
-    TbLineWidth: TTrackBar;
-    CbTransparent: TCheckBox;
-    ADD4: TGuiAudioDataDisplay;
-    ADD3: TGuiAudioDataDisplay;
     ADD2: TGuiAudioDataDisplay;
-    LbLineWidth: TLabel;
+    ADD3: TGuiAudioDataDisplay;
+    ADD4: TGuiAudioDataDisplay;
     Axis: TTabSheet;
+    CbTransparent: TCheckBox;
     GuiAudioDataDisplay1: TGuiAudioDataDisplay;
+    LbLineWidth: TLabel;
+    PC: TPageControl;
+    TbLineWidth: TTrackBar;
+    TsBasic: TTabSheet;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -28,7 +28,7 @@ type
     procedure CbTransparentClick(Sender: TObject);
     procedure TbLineWidthChange(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   end;
 
 var
@@ -51,22 +51,24 @@ end;
 
 procedure TFmAudioDataDisplay.FormCreate(Sender: TObject);
 begin
+ FBackground := TGuiPixelMapMemory.Create;
+
  ADC.GenerateWhiteNoise(1);
  ADD1.Transparent := True;
  ADD2.Transparent := True;
  ADD3.Transparent := True;
  ADD4.Transparent := True;
- FBackgrounBitmap := TBitmap.Create;
 end;
 
 procedure TFmAudioDataDisplay.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmAudioDataDisplay.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
 end;
 
 procedure TFmAudioDataDisplay.FormResize(Sender: TObject);
@@ -74,28 +76,26 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
 begin
- with FBackgrounBitmap do
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
+   SetSize(ClientWidth, ClientHeight);
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[1] := 0.97 * s[0] + 0.03 * Random;
        s[0] := s[1];
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (s[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (s[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (s[1] - h));
       end;
     end;
   end;
