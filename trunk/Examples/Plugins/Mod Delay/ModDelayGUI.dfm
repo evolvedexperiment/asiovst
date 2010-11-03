@@ -14,7 +14,9 @@ object FmModDelay: TFmModDelay
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -23,13 +25,13 @@ object FmModDelay: TFmModDelay
     Top = 8
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Gain:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbMix: TGuiLabel
@@ -37,13 +39,13 @@ object FmModDelay: TFmModDelay
     Top = 31
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Mix:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbLpf: TGuiLabel
@@ -51,13 +53,13 @@ object FmModDelay: TFmModDelay
     Top = 54
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'LPF:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbDelay: TGuiLabel
@@ -65,13 +67,13 @@ object FmModDelay: TFmModDelay
     Top = 77
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Delay:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbDepth: TGuiLabel
@@ -79,13 +81,13 @@ object FmModDelay: TFmModDelay
     Top = 100
     Width = 46
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Depth:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbRate: TGuiLabel
@@ -93,13 +95,13 @@ object FmModDelay: TFmModDelay
     Top = 123
     Width = 41
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Rate:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbFeedback: TGuiLabel
@@ -107,13 +109,13 @@ object FmModDelay: TFmModDelay
     Top = 146
     Width = 69
     Height = 17
-    FontOversampling = fo4x
     Caption = 'Feedback:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbGainValue: TGuiLabel
@@ -122,13 +124,13 @@ object FmModDelay: TFmModDelay
     Width = 100
     Height = 17
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '-'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbMixValue: TGuiLabel
@@ -137,13 +139,13 @@ object FmModDelay: TFmModDelay
     Width = 100
     Height = 17
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '-'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbLpfValue: TGuiLabel
@@ -152,13 +154,13 @@ object FmModDelay: TFmModDelay
     Width = 100
     Height = 17
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '-'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbDelayValue: TGuiLabel
@@ -167,13 +169,13 @@ object FmModDelay: TFmModDelay
     Width = 100
     Height = 17
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '-'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbDepthValue: TGuiLabel
@@ -182,13 +184,13 @@ object FmModDelay: TFmModDelay
     Width = 100
     Height = 17
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '-'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbRateValue: TGuiLabel
@@ -197,13 +199,13 @@ object FmModDelay: TFmModDelay
     Width = 100
     Height = 17
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '-'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object LbFeedbackValue: TGuiLabel
@@ -212,13 +214,13 @@ object FmModDelay: TFmModDelay
     Width = 100
     Height = 17
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '-'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
   end
   object SbGain: TScrollBar

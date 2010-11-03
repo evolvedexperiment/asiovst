@@ -27,7 +27,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Attack:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbRelease: TGuiLabel
@@ -37,7 +36,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Release:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbThreshold: TGuiLabel
@@ -47,7 +45,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Threshold:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbKnee: TGuiLabel
@@ -57,7 +54,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Knee:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbRatio: TGuiLabel
@@ -67,7 +63,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Ratio:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbAttackValue: TGuiLabel
@@ -77,7 +72,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Attack'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbReleaseValue: TGuiLabel
@@ -87,7 +81,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Release'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbThresholdValue: TGuiLabel
@@ -97,7 +90,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Threshold'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbKneeValue: TGuiLabel
@@ -107,7 +99,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Knee'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbRatioValue: TGuiLabel
@@ -117,7 +108,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Ratio'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbSidechainVstPlugin: TGuiLabel
@@ -127,7 +117,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 14
     Caption = 'Sidechain VST Plugin:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbMakupGain: TGuiLabel
@@ -137,7 +126,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Make-Up:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbMakeUpGainValue: TGuiLabel
@@ -147,7 +135,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Make-Up'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbAutoMakeUpGain: TGuiLabel
@@ -157,7 +144,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Auto Make-Up Gain'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LEDAutoGainClick
   end
@@ -181,7 +167,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Soft Clip'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LEDSoftClipClick
   end
@@ -205,7 +190,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Stereo'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LEDStereoClick
   end
@@ -256,7 +240,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Attack Delay:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbHoldValue: TGuiLabel
@@ -266,7 +249,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Hold'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbLowcutFrequency: TGuiLabel
@@ -276,7 +258,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Lowcut Freq.:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbHighcutFrequency: TGuiLabel
@@ -286,7 +267,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Highcut Freq.:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbHighcutOrder: TGuiLabel
@@ -296,7 +276,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Highcut Slope:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbLowcutFrequencyValue: TGuiLabel
@@ -306,7 +285,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Frequency'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbHighcutFrequencyValue: TGuiLabel
@@ -316,7 +294,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Frequency'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbHighcutOrderValue: TGuiLabel
@@ -326,7 +303,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Order'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbLowcutOrder: TGuiLabel
@@ -336,7 +312,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Lowcut Slope:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbLowcutOrderValue: TGuiLabel
@@ -346,7 +321,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Order'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbMix: TGuiLabel
@@ -356,7 +330,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Mix:'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbMixValue: TGuiLabel
@@ -366,7 +339,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 13
     Caption = 'Mix'
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbClear: TGuiLabel
@@ -385,7 +357,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnDblClick = LbClearDblClick
   end
@@ -435,7 +406,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Shadow.Visible = True
       Transparent = True
     end
@@ -446,16 +416,29 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
     CurveMapping = 2.000000000000000000
-    DefaultPosition = 10.000000000000000000
+    DefaultValue = 10.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
-    OnChange = SliderAttackChange
     ParentColor = False
-    Position = 10.000000000000000000
+    Value = 10.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderAttackChange
   end
   object SliderRelease: TGuiSlider
     Left = 69
@@ -463,16 +446,29 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
     CurveMapping = 2.000000000000000000
-    DefaultPosition = 50.000000000000000000
+    DefaultValue = 50.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 5000.000000000000000000
     Min = 0.050000000745058060
-    OnChange = SliderReleaseChange
     ParentColor = False
-    Position = 50.000000000000000000
+    Value = 50.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderReleaseChange
   end
   object SliderThreshold: TGuiSlider
     Left = 69
@@ -480,15 +476,28 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
-    DefaultPosition = -20.000000000000000000
+    DefaultValue = -20.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 10.000000000000000000
     Min = -90.000000000000000000
-    OnChange = SliderThresholdChange
     ParentColor = False
-    Position = -20.000000000000000000
+    Value = -20.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderThresholdChange
   end
   object SliderKnee: TGuiSlider
     Left = 69
@@ -497,14 +506,27 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 11
     Hint = '100'
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
-    DefaultPosition = 1.000000000000000000
+    DefaultValue = 1.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 10.000000000000000000
-    OnChange = SliderKneeChange
     ParentColor = False
-    Position = 1.000000000000000000
+    Value = 1.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderKneeChange
   end
   object SliderRatio: TGuiSlider
     Left = 69
@@ -512,16 +534,29 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
     CurveMapping = 1.000000000000000000
-    DefaultPosition = 50.000000000000000000
+    DefaultValue = 50.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 100.000000000000000000
     Min = 1.000000000000000000
-    OnChange = SliderRatioChange
     ParentColor = False
-    Position = 10.000000000000000000
+    Value = 10.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderRatioChange
   end
   object SliderMakeUpGain: TGuiSlider
     Left = 69
@@ -529,15 +564,28 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
-    DefaultPosition = 50.000000000000000000
+    DefaultValue = 50.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 90.000000000000000000
     Min = -10.000000000000000000
-    OnChange = SliderMakeUpGainChange
     ParentColor = False
-    Position = 10.000000000000000000
+    Value = 10.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderMakeUpGainChange
   end
   object SliderHold: TGuiSlider
     Left = 88
@@ -545,16 +593,29 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 121
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
     CurveMapping = 2.000000000000000000
-    DefaultPosition = 10.000000000000000000
+    DefaultValue = 10.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
-    OnChange = SliderHoldChange
     ParentColor = False
-    Position = 10.000000000000000000
+    Value = 10.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderHoldChange
   end
   object SliderLowcutFrequency: TGuiSlider
     Left = 88
@@ -562,16 +623,29 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 121
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
     CurveMapping = 2.000000000000000000
-    DefaultPosition = 10.000000000000000000
+    DefaultValue = 10.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = SliderLowcutFrequencyChange
     ParentColor = False
-    Position = 20.000000000000000000
+    Value = 20.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderLowcutFrequencyChange
   end
   object SliderHighcutFrequency: TGuiSlider
     Left = 88
@@ -579,16 +653,29 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 121
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
     CurveMapping = 2.000000000000000000
-    DefaultPosition = 50.000000000000000000
+    DefaultValue = 50.000000000000000000
+    Digits = 5
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = SliderHighcutFrequencyChange
     ParentColor = False
-    Position = 20000.000000000000000000
+    Value = 20000.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderHighcutFrequencyChange
   end
   object SliderHighcutOrder: TGuiSlider
     Left = 88
@@ -596,14 +683,27 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 121
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
-    DefaultPosition = 16.000000000000000000
+    DefaultValue = 16.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 16.000000000000000000
-    OnChange = SliderHighcutOrderChange
     ParentColor = False
-    Position = 2.000000000000000000
+    Value = 2.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderHighcutOrderChange
   end
   object SliderLowcutOrder: TGuiSlider
     Left = 88
@@ -611,14 +711,27 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 121
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
-    DefaultPosition = 16.000000000000000000
+    DefaultValue = 16.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 16.000000000000000000
-    OnChange = SliderLowcutOrderChange
     ParentColor = False
-    Position = 2.000000000000000000
+    Value = 2.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderLowcutOrderChange
   end
   object GuiEQGraph: TGuiEQGraph
     Left = 276
@@ -660,14 +773,27 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 140
     Height = 11
     BorderColor = 9681911
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 5196083
-    DefaultPosition = 50.000000000000000000
+    DefaultValue = 50.000000000000000000
+    Digits = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 9681911
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    FontShadow.Blur = 1.000000000000000000
+    FontShadow.Color = 5196083
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 8.000000000000000000
+    FontShadow.Visible = True
     Max = 100.000000000000000000
-    OnChange = SliderMixChange
     ParentColor = False
-    Position = 10.000000000000000000
+    Value = 10.000000000000000000
     SlideColor = 6322591
+    OnChange = SliderMixChange
   end
   object GuiPanel1: TGuiPanel
     Left = 135
@@ -701,7 +827,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
       Font.Style = [fsItalic]
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Shadow.Visible = True
       OnClick = LbVstPluginValueClick
       OnDblClick = LbVstPluginValueDblClick

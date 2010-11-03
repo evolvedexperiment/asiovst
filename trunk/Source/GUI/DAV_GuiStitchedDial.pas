@@ -73,6 +73,10 @@ type
     procedure SetCurveMapping(const Value: Single);
     procedure ReadMaxProperty(Reader: TReader);
     procedure WriteMaxProperty(Writer: TWriter);
+    procedure ReadDefaultValueProperty(Reader: TReader);
+    procedure WriteDefaultValueProperty(Writer: TWriter);
+    procedure ReadValueProperty(Reader: TReader);
+    procedure WriteValueProperty(Writer: TWriter);
   protected
     FOldMousePos : TPoint;
 
@@ -167,9 +171,24 @@ begin
  CalculateRange;
 end;
 
+procedure TCustomGuiStitchedDial.ReadDefaultValueProperty(Reader: TReader);
+begin
+ FDefaultValue := Reader.ReadFloat;
+end;
+
 procedure TCustomGuiStitchedDial.ReadMaxProperty(Reader: TReader);
 begin
  FMax := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiStitchedDial.ReadValueProperty(Reader: TReader);
+begin
+ FValue := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiStitchedDial.WriteDefaultValueProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FDefaultValue);
 end;
 
 procedure TCustomGuiStitchedDial.WriteMaxProperty(Writer: TWriter);
@@ -177,11 +196,20 @@ begin
  Writer.WriteFloat(FMax);
 end;
 
+procedure TCustomGuiStitchedDial.WriteValueProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FValue);
+end;
+
 procedure TCustomGuiStitchedDial.DefineProperties(Filer: TFiler);
 begin
  inherited DefineProperties(Filer);
  Filer.DefineProperty('Max', ReadMaxProperty,
    WriteMaxProperty, Max = 0);
+ Filer.DefineProperty('DefaultValue', ReadDefaultValueProperty,
+   WriteDefaultValueProperty, DefaultValue = 0);
+ Filer.DefineProperty('Value', ReadValueProperty,
+   WriteValueProperty, Value = 0);
 end;
 
 procedure TCustomGuiStitchedDial.CalculateExponentialCurveMapping;

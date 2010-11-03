@@ -37,55 +37,64 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_GuiCommon,
-  DAV_GuiPixelMap, DAV_GuiVectorPixelRectangle, DAV_GuiFixedPoint;
+  DAV_GuiPixelMap, DAV_GuiVectorPixelRectangle, DAV_GuiFixedPoint,
+  DAV_GuiFont, DAV_GuiShadow;
 
 type
   TSliderDirection = (sdLeftToRight);
+  TSliderGetTextEvent = procedure(Sender: TObject; var Text: string) of object;
 
   TCustomGuiSlider = class(TCustomControl)
   private
     FAutoColor       : Boolean;
+    FBorderColor     : TColor;
     FBorderRadius    : Single;
     FBorderWidth     : Single;
-    FBorderColor     : TColor;
-    FSlideColor      : TColor;
-    FMin, FMax       : Single;
-    FDefaultPosition : Single;
     FCurveMapping    : Single;
     FCurveMappingExp : Single;
-    FPosition        : Single;
+    FDefaultValue    : Single;
+    FDigits          : Integer;
     FDirection       : TSliderDirection;
+    FMin, FMax       : Single;
+    FShowText        : Boolean;
+    FSlideColor      : TColor;
+    FValue           : Single;
+    FCaption         : TCaption;
+    FOnGetText       : TSliderGetTextEvent;
     FOnChange        : TNotifyEvent;
     FOnPaint         : TNotifyEvent;
-    FShowText        : Boolean;
     procedure SetAutoColor(const Value: Boolean);
     procedure SetBorderColor(const Value: TColor);
     procedure SetBorderRadius(const Value: Single);
     procedure SetBorderWidth(const Value: Single);
+    procedure SetCaption(const Value: TCaption);
     procedure SetCurveMapping(const Value: Single);
-    procedure SetDefaultPosition(Value: Single);
+    procedure SetDefaultValue(Value: Single);
+    procedure SetDigits(const Value: Integer);
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
-    procedure SetPosition(Value: Single);
+    procedure SetValue(Value: Single);
     procedure SetSlideColor(const Value: TColor);
     procedure SetDirection(const Value: TSliderDirection);
     procedure SetShowText(const Value: Boolean);
 
     // floating point storage filer
-    procedure ReadDefaultPositionProperty(Reader: TReader);
-    procedure WriteDefaultPositionProperty(Writer: TWriter);
+    procedure ReadDefaultValueProperty(Reader: TReader);
+    procedure WriteDefaultValueProperty(Writer: TWriter);
     procedure ReadMaxProperty(Reader: TReader);
     procedure WriteMaxProperty(Writer: TWriter);
-    procedure ReadPositionProperty(Reader: TReader);
-    procedure WritePositionProperty(Writer: TWriter);
+    procedure ReadValueProperty(Reader: TReader);
+    procedure WriteValueProperty(Writer: TWriter);
   protected
     function MapValue(Value: Double): Double;
     function UnmapValue(Value: Double): Double;
 
     procedure AssignTo(Dest: TPersistent); override;
     procedure AutoColorChanged; virtual;
+    procedure CaptionChanged; virtual;
     procedure CurveMappingChanged; virtual;
     procedure DirectionChanged; virtual;
+    procedure DigitsChanged; virtual;
     procedure PositionChanged; virtual;
     procedure MaximumChanged; virtual;
     procedure MinimumChanged; virtual;
@@ -99,34 +108,41 @@ type
     procedure DefineProperties(Filer: TFiler); override;
   public
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
 
     property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
     property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
     property BorderRadius: Single read FBorderRadius write SetBorderRadius;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
+    property Caption: TCaption read FCaption write SetCaption;
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
-    property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
+    property DefaultValue: Single read FDefaultValue write SetDefaultValue;
+    property Digits: Integer read FDigits write SetDigits default 4;
     property Direction: TSliderDirection read FDirection write SetDirection default sdLeftToRight;
     property Max: Single read FMax write SetMax;
     property Min: Single read FMin write SetMin;
-    property Position: Single read FPosition write SetPosition;
+    property Value: Single read FValue write SetValue;
     property SlideColor: TColor read FSlideColor write SetSlideColor default $303030;
     property ShowText: Boolean read FShowText write SetShowText default False;
 
-    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
+    property OnGetText: TSliderGetTextEvent read FOnGetText write FOnGetText;
   end;
 
   TCustomGuiSliderGDI = class(TCustomGuiSlider)
   private
     FBuffer           : TGuiCustomPixelMap;
     FBackBuffer       : TGuiCustomPixelMap;
+    FGuiFont          : TGuiOversampledGDIFont;
     FUpdateBuffer     : Boolean;
     FUpdateBackBuffer : Boolean;
     FTransparent      : Boolean;
 
+    function GetFontShadow: TGUIShadow;
+    function GetOversampling: TFontOversampling;
     procedure SetTransparent(const Value: Boolean);
+    procedure SetFontShadow(const Value: TGUIShadow);
+    procedure SetOversampling(const Value: TFontOversampling);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure Paint; override;
@@ -141,6 +157,7 @@ type
     {$ELSE}
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
+    procedure FontChangedHandler(Sender: TObject);
 
     procedure BackBufferChanged; virtual;
     procedure UpdateBuffer; virtual;
@@ -155,6 +172,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
+    property FontShadow: TGUIShadow read GetFontShadow write SetFontShadow;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
@@ -166,17 +185,34 @@ type
     property BorderColor;
     property BorderRadius;
     property BorderWidth;
+    property Caption;
     property Color;
     property Constraints;
     property CurveMapping;
-    property DefaultPosition;
+    property DefaultValue;
+    property Digits;
     property Direction;
     property DragCursor;
     property DragKind;
     property DragMode;
     property Font;
+    property FontOversampling;
+    property FontShadow;
     property Max;
     property Min;
+    property ParentColor;
+    property ParentShowHint;
+    property PopupMenu;
+    property Value;
+    property ShowHint;
+    property ShowText;
+    property SlideColor;
+    property Transparent;
+    property Visible;
+    {$IFNDEF FPC}
+    property BiDiMode;
+    property OnCanResize;
+    {$ENDIF}
     property OnChange;
     property OnClick;
     property OnConstrainedResize;
@@ -199,19 +235,7 @@ type
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
-    property ParentColor;
-    property ParentShowHint;
-    property PopupMenu;
-    property Position;
-    property ShowHint;
-    property ShowText;
-    property SlideColor;
-    property Transparent;
-    property Visible;
-    {$IFNDEF FPC}
-    property BiDiMode;
-    property OnCanResize;
-    {$ENDIF}
+    property OnGetText;
   end;
 
   TGuiSlider = class(TGuiSliderGDI);
@@ -228,29 +252,25 @@ uses
 constructor TCustomGuiSlider.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
- ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
-   csDoubleClicks, csReplicatable, csOpaque];
- TabStop := False; // Ensure we're not a tab-stop
- Color := clBtnFace;
+ ControlStyle  := ControlStyle + [csOpaque];
+ TabStop       := False; // Ensure we're not a tab-stop
+ Color         := clBtnFace;
 
- FAutoColor       := False;
- FSlideColor      := $606060;
- FBorderColor     := $202020;
- FBorderWidth     := 1;
- FDirection       := sdLeftToRight;
- FShowText        := False;
+ FAutoColor    := False;
+ FSlideColor   := $606060;
+ FBorderColor  := $202020;
+ FBorderWidth  := 1;
+ FDigits       := 4;
+ FDirection    := sdLeftToRight;
+ FShowText     := False;
 
- FMin             :=   0;
- FMax             := 100;
- FDefaultPosition :=  50;
- FCurveMapping    :=   0;
- FCurveMappingExp :=   1;
- FPosition        :=  50;
-end;
+ FMin          :=   0;
+ FMax          := 100;
+ FValue        :=  50;
+ FDefaultValue :=  50;
 
-destructor TCustomGuiSlider.Destroy;
-begin
- inherited;
+ FCurveMapping     :=   0;
+ FCurveMappingExp  :=   1;
 end;
 
 procedure TCustomGuiSlider.AssignTo(Dest: TPersistent);
@@ -260,16 +280,17 @@ begin
   with TCustomGuiSlider(Dest) do
    begin
     FAutoColor       := Self.FAutoColor;
+    FBorderColor     := Self.FBorderColor;
     FBorderRadius    := Self.FBorderRadius;
     FBorderWidth     := Self.FBorderWidth;
-    FBorderColor     := Self.FBorderColor;
-    FSlideColor      := Self.FSlideColor;
-    FMin             := Self.FMin;
-    FMax             := Self.FMax;
-    FDefaultPosition := Self.FDefaultPosition;
+    FCaption         := Self.FCaption;
     FCurveMapping    := Self.FCurveMapping;
     FCurveMappingExp := Self.FCurveMappingExp;
-    FPosition        := Self.FPosition;
+    FDefaultValue    := Self.FDefaultValue;
+    FMax             := Self.FMax;
+    FMin             := Self.FMin;
+    FSlideColor      := Self.FSlideColor;
+    FValue           := Self.FValue;
     FOnPaint         := Self.FOnPaint;
     FOnChange        := Self.FOnChange;
    end;
@@ -278,10 +299,10 @@ end;
 procedure TCustomGuiSlider.DefineProperties(Filer: TFiler);
 begin
   inherited DefineProperties(Filer);
-  Filer.DefineProperty('Position', ReadPositionProperty,
-    WritePositionProperty, Position = 0);
-  Filer.DefineProperty('DefaultPosition', ReadDefaultPositionProperty,
-    WriteDefaultPositionProperty, DefaultPosition = 0);
+  Filer.DefineProperty('Value', ReadValueProperty,
+    WriteValueProperty, Value = 0);
+  Filer.DefineProperty('DefaultValue', ReadDefaultValueProperty,
+    WriteDefaultValueProperty, DefaultValue = 0);
   Filer.DefineProperty('Max', ReadMaxProperty,
     WriteMaxProperty, Max = 0);
 end;
@@ -321,6 +342,15 @@ begin
   end;
 end;
 
+procedure TCustomGuiSlider.SetCaption(const Value: TCaption);
+begin
+ if FCaption <> Value then
+  begin
+   FCaption := Value;
+   CaptionChanged;
+  end;
+end;
+
 procedure TCustomGuiSlider.SetCurveMapping(const Value: Single);
 begin
  if FCurveMapping <> Value then
@@ -336,7 +366,7 @@ begin
  ControlChanged;
 end;
 
-procedure TCustomGuiSlider.SetDefaultPosition(Value: Single);
+procedure TCustomGuiSlider.SetDefaultValue(Value: Single);
 begin
  if not (csLoading in ComponentState) then
   begin
@@ -344,7 +374,16 @@ begin
    if Value > FMax then Value := FMax;
   end;
 
- FDefaultPosition := Value;
+ FDefaultValue := Value;
+end;
+
+procedure TCustomGuiSlider.SetDigits(const Value: Integer);
+begin
+ if FDigits <> Value then
+  begin
+   FDigits := Value;
+   DigitsChanged;
+  end;
 end;
 
 procedure TCustomGuiSlider.SetDirection(const Value: TSliderDirection);
@@ -354,6 +393,12 @@ begin
    FDirection := Value;
    DirectionChanged;
   end;
+end;
+
+procedure TCustomGuiSlider.DigitsChanged;
+begin
+ if ShowText
+  then ControlChanged;
 end;
 
 procedure TCustomGuiSlider.DirectionChanged;
@@ -390,26 +435,26 @@ end;
 
 procedure TCustomGuiSlider.MaximumChanged;
 begin
- if FPosition > FMax then FPosition := FMax;
- if FDefaultPosition > FMax then FDefaultPosition := FMax;
+ if FValue > FMax then FValue := FMax;
+ if FDefaultValue > FMax then FDefaultValue := FMax;
  ControlChanged;
 end;
 
 procedure TCustomGuiSlider.MinimumChanged;
 begin
- if FPosition < FMin then FPosition := FMin;
- if FDefaultPosition < FMin then FDefaultPosition := FMin;
+ if FValue < FMin then FValue := FMin;
+ if FDefaultValue < FMin then FDefaultValue := FMin;
  ControlChanged;
 end;
 
-procedure TCustomGuiSlider.SetPosition(Value: Single);
+procedure TCustomGuiSlider.SetValue(Value: Single);
 begin
   if Value < FMin then Value := FMin else
   if Value > FMax then Value := FMax;
 
-  if FPosition <> Value then
+  if FValue <> Value then
    begin
-    FPosition := Value;
+    FValue := Value;
     PositionChanged;
    end;
 end;
@@ -420,9 +465,9 @@ begin
  ControlChanged;
 end;
 
-procedure TCustomGuiSlider.ReadDefaultPositionProperty(Reader: TReader);
+procedure TCustomGuiSlider.ReadDefaultValueProperty(Reader: TReader);
 begin
- FDefaultPosition := Reader.ReadFloat;
+ FDefaultValue := Reader.ReadFloat;
 end;
 
 procedure TCustomGuiSlider.ReadMaxProperty(Reader: TReader);
@@ -430,9 +475,9 @@ begin
  FMax := Reader.ReadFloat;
 end;
 
-procedure TCustomGuiSlider.ReadPositionProperty(Reader: TReader);
+procedure TCustomGuiSlider.ReadValueProperty(Reader: TReader);
 begin
- FPosition := Reader.ReadFloat;
+ FValue := Reader.ReadFloat;
 end;
 
 procedure TCustomGuiSlider.SetShowText(const Value: Boolean);
@@ -475,6 +520,12 @@ begin
  ControlChanged;
 end;
 
+procedure TCustomGuiSlider.CaptionChanged;
+begin
+ if FShowText
+  then ControlChanged;
+end;
+
 procedure TCustomGuiSlider.ControlChanged;
 begin
  Invalidate;
@@ -509,9 +560,9 @@ begin
   else Result :=  Power(Abs(Value), 1 / FCurveMappingExp)
 end;
 
-procedure TCustomGuiSlider.WriteDefaultPositionProperty(Writer: TWriter);
+procedure TCustomGuiSlider.WriteDefaultValueProperty(Writer: TWriter);
 begin
- Writer.WriteFloat(FDefaultPosition);
+ Writer.WriteFloat(FDefaultValue);
 end;
 
 procedure TCustomGuiSlider.WriteMaxProperty(Writer: TWriter);
@@ -519,9 +570,9 @@ begin
  Writer.WriteFloat(FMax);
 end;
 
-procedure TCustomGuiSlider.WritePositionProperty(Writer: TWriter);
+procedure TCustomGuiSlider.WriteValueProperty(Writer: TWriter);
 begin
- Writer.WriteFloat(FPosition);
+ Writer.WriteFloat(FValue);
 end;
 
 
@@ -531,16 +582,35 @@ constructor TCustomGuiSliderGDI.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
 
- FBuffer     := TGuiPixelMapMemory.Create;
- FBackBuffer := TGuiPixelMapMemory.Create;
- FTransparent := False;
+ FGuiFont          := TGuiOversampledGDIFont.Create;
+ FGuiFont.OnChange := FontChangedHandler;
+
+ FBuffer           := TGuiPixelMapMemory.Create;
+ FBackBuffer       := TGuiPixelMapMemory.Create;
+ FTransparent      := False;
 end;
 
 destructor TCustomGuiSliderGDI.Destroy;
 begin
+ FreeAndNil(FGuiFont);
  FreeAndNil(FBuffer);
  FreeAndNil(FBackBuffer);
  inherited Destroy;
+end;
+
+procedure TCustomGuiSliderGDI.FontChangedHandler(Sender: TObject);
+begin
+ ControlChanged;
+end;
+
+function TCustomGuiSliderGDI.GetFontShadow: TGUIShadow;
+begin
+ Result := FGuiFont.Shadow;
+end;
+
+function TCustomGuiSliderGDI.GetOversampling: TFontOversampling;
+begin
+ Result := FGuiFont.FontOversampling;
 end;
 
 procedure TCustomGuiSliderGDI.AssignTo(Dest: TPersistent);
@@ -574,7 +644,7 @@ procedure TCustomGuiSliderGDI.CMFontChanged(var Message: TLMessage);
 {$ENDIF}
 begin
  inherited;
- // nothing here yet
+ FGuiFont.Font.Assign(Font);
 end;
 
 
@@ -586,7 +656,7 @@ begin
  if Button = mbLeft then
   begin
    NormalizedPosition := X / (Width - 1);
-   Position := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
+   Value := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
   end;
 
  inherited;
@@ -599,7 +669,7 @@ begin
  if ssLeft in Shift then
   begin
    NormalizedPosition := X / (Width - 1);
-   Position := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
+   Value := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
   end;
 
  inherited;
@@ -629,6 +699,8 @@ procedure TCustomGuiSliderGDI.UpdateBackBuffer;
 var
   PixelColor32 : TPixel32;
 begin
+ FUpdateBackBuffer := False;
+
  {$IFNDEF FPC}
  if FTransparent then FBackBuffer.CopyParentImage(Self) else
  {$ENDIF}
@@ -642,8 +714,8 @@ end;
 
 procedure TCustomGuiSliderGDI.UpdateBuffer;
 var
-  DataPointer : PPixel32Array;
-  LineIndex   : Integer;
+  CurrentText : string;
+  TextSize    : TSize;
 begin
  FUpdateBuffer := False;
 
@@ -660,6 +732,20 @@ begin
    FBuffer.Width * SizeOf(TPixel32));
 
  RenderRoundedFrameRectangle(FBuffer);
+
+ if FShowText and Assigned(FGuiFont) then
+  begin
+   CurrentText := FloatToStrF(FValue, ffGeneral, FDigits, FDigits);
+   if FCaption <> ''
+    then CurrentText := FCaption + ': ' + CurrentText;
+
+   if Assigned(FOnGetText)
+    then FOnGetText(Self, CurrentText);
+
+   TextSize := FGuiFont.TextExtend(CurrentText);
+   FGuiFont.TextOut(CurrentText, FBuffer, (Width - TextSize.cx) div 2,
+     (Height - TextSize.cy) div 2);
+  end;
 end;
 
 procedure TCustomGuiSliderGDI.RenderRoundedFrameRectangle(
@@ -688,7 +774,7 @@ begin
     then BorderColor := ConvertColor(FBorderColor)
     else BorderColor := SliderColor;
 
-   XPos := Round(Width * UnmapValue((FPosition - FMin) / (FMax - FMin)));
+   XPos := Round(Width * UnmapValue((FValue - FMin) / (FMax - FMin)));
 
    // draw circle
    Radius := FBorderRadius;
@@ -781,11 +867,11 @@ begin
      ScnLne[0] := Scanline[Y];
      for X := 0 to Width - 1 do
       begin
-       // check whether position is a border
+       // check whether Value is a border
        if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
         then CombColor := BorderColor else
 
-       // check whether position is an upper half border
+       // check whether Value is an upper half border
        if (Y < BorderWidth) then
         begin
          Temp := BorderWidth - Y;
@@ -810,7 +896,7 @@ begin
           else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
         end else
 
-       // check whether position is a lower half border
+       // check whether Value is a lower half border
        if (Y > Height - 1 - BorderWidth) then
         begin
          Temp := Y - (Height - 1 - BorderWidth);
@@ -882,6 +968,16 @@ procedure TCustomGuiSliderGDI.Loaded;
 begin
  inherited;
  Resize;
+end;
+
+procedure TCustomGuiSliderGDI.SetFontShadow(const Value: TGUIShadow);
+begin
+ FGuiFont.Shadow.Assign(Value);
+end;
+
+procedure TCustomGuiSliderGDI.SetOversampling(const Value: TFontOversampling);
+begin
+ FGuiFont.FontOversampling := Value;
 end;
 
 procedure TCustomGuiSliderGDI.SetTransparent(const Value: Boolean);

@@ -124,12 +124,15 @@ type
   end;
 
   TGuiPixelMapDIB = class(TGuiCustomPixelMap)
+  private
+    function GetCanvas: TCanvas;
   protected
-    FDC            : HDC;
-    FBitmapHandle  : HBITMAP;
-    FDeviceContext : HDC;
+    FBitmapHandle : HBITMAP;
+    FCanvas       : TCanvas;
+    FDC           : HDC;
     procedure AllocateDeviceIndependentBitmap;
     procedure DisposeDeviceIndependentBitmap;
+    procedure CanvasChanged(Sender: TObject); virtual;
     procedure HeightChanged(UpdateBitmap: Boolean = True); override;
     procedure WidthChanged(UpdateBitmap: Boolean = True); override;
     procedure SizeChangedAtOnce; override;
@@ -141,6 +144,7 @@ type
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
 
+    property Canvas: TCanvas read GetCanvas;
     property Handle: HDC read FDC;
   published
     property Width;
@@ -424,6 +428,8 @@ end;
 type
   TParentControl = class(TWinControl);
 
+{-$DEFINE UsePixelMap}
+
 procedure TGuiCustomPixelMap.CopyParentImage(Control: TControl);
 var
   I         : Integer;
@@ -432,11 +438,15 @@ var
   Pnt       : TPoint;
   R, SelfR  : TRect;
   CtlR      : TRect;
+  {$IFDEF UsePixelMap}
+  Bmp       : TGuiPixelMapDIB;
+  {$ELSE}
   Bmp       : TBitmap;
+  {$ENDIF}
 begin
  if (Control.Parent = nil) then Exit;
  SubCount := Control.Parent.ControlCount;
- // set
+
  {$IFDEF WIN32}
  with Control.Parent
   do Control.ControlState := Control.ControlState + [csPaintCopy];
@@ -447,9 +457,34 @@ begin
   Pnt.X := -Control.Left;
   Pnt.Y := -Control.Top;
 
+  {$IFDEF UsePixelMap}
+  Bmp := TGuiPixelMapDIB.Create;
+  {$ELSE}
   Bmp := TBitmap.Create;
+  {$ENDIF}
   with Bmp do
    try
+    {$IFDEF UsePixelMap}
+    SetSize(Self.Width, Self.Height);
+
+    // Copy parent control image
+    SaveIndex := SaveDC(Canvas.Handle);
+    try
+     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
+     IntersectClipRect(Canvas.Handle, 0, 0, Control.Parent.ClientWidth, Control.Parent.ClientHeight);
+     with TParentControl(Control.Parent) do
+      begin
+       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
+       PaintWindow(Canvas.Handle);
+      end;
+    finally
+     RestoreDC(Canvas.Handle, SaveIndex);
+    end;
+
+    MakeOpaque;
+
+    {$ELSE}
+
     Width := Self.Width;
     Height := Self.Height;
     PixelFormat := pf32bit;
@@ -467,6 +502,7 @@ begin
     finally
      RestoreDC(Canvas.Handle, SaveIndex);
     end;
+    {$ENDIF}
 
     // Copy images of graphic controls
     for I := 0 to SubCount - 1 do
@@ -498,7 +534,8 @@ begin
             end;
           end;
      end;
-    Draw(Bmp);
+
+    Self.Draw(Bmp);
    finally
     Free;
    end;
@@ -860,29 +897,55 @@ begin
 end;
 
 procedure TGuiPixelMapMemory.Draw(Bitmap: TBitmap; X, Y: Integer);
+var
+  IndexX : Integer;
+  IndexY : Integer;
+  Data24 : PRGB24Array;
 begin
  if (Bitmap.Height <> 0) and (FDataPointer <> nil) then
   begin
-   if GetDIBits(Bitmap.Canvas.Handle, Bitmap.Handle, 0, Bitmap.Height,
-     FDataPointer, FBitmapInfo, DIB_RGB_COLORS) = 0
-    then raise Exception.Create('Error');
-  end;
+   case Bitmap.PixelFormat of
+    pf32bit :
+      for IndexY := 0 to Bitmap.Height - 1 do
+       begin
+        Move(Bitmap.ScanLine[IndexY]^, FDataPointer^[X + (Y + IndexY) * Width],
+          Bitmap.Width * SizeOf(TPixel32));
+       end;
 
+    pf24bit :
+      for IndexY := 0 to Bitmap.Height - 1 do
+       begin
+        Data24 := Bitmap.ScanLine[IndexY];
+
+        for IndexX := 0 to Bitmap.Width - 1 do
+         begin
+          FDataPointer^[X + IndexX + (Y + IndexY) * Width].R := Data24^[IndexX].R;
+          FDataPointer^[X + IndexX + (Y + IndexY) * Width].G := Data24^[IndexX].G;
+          FDataPointer^[X + IndexX + (Y + IndexY) * Width].B := Data24^[IndexX].B;
+          FDataPointer^[X + IndexX + (Y + IndexY) * Width].A := $FF;
+         end;
+       end;
+    else
+     if GetDIBits(Bitmap.Canvas.Handle, Bitmap.Handle, 0, Bitmap.Height,
+       @FDataPointer^[X + Y * Width], FBitmapInfo, DIB_RGB_COLORS) = 0
+      then raise Exception.Create('Error');
+   end;
+  end;
 (*
 var
   CompDC     : HDC;
   CompBitmap : HBITMAP;
-
- CompDC := CreateCompatibleDC(Canvas.Handle);
+begin
+ CompDC := CreateCompatibleDC(Bitmap.Canvas.Handle);
  try
   CompBitmap := CreateCompatibleBitmap(CompDC, Width, Height);
   SelectObject(CompDC, CompBitmap);
   if CompBitmap <> 0 then
    try
-    BitBlt(CompDC, 0, 0, Width, Height, Canvas.Handle, 0, 0, SRCCOPY);
+    BitBlt(CompDC, 0, 0, Width, Height, Bitmap.Canvas.Handle, 0, 0, SRCCOPY);
 
-    if GetDIBits(Canvas.Handle, CompBitmap, 0, Height, FDataPointer, FBitmapInfo,
-      DIB_RGB_COLORS) = 0
+    if GetDIBits(Bitmap.Canvas.Handle, CompBitmap, 0, Height, FDataPointer,
+      FBitmapInfo, DIB_RGB_COLORS) = 0
       then raise Exception.Create('Error');
    finally
     DeleteObject(CompBitmap);
@@ -1002,6 +1065,65 @@ begin
 end;
 
 
+{ TBitmapCanvas }
+
+type
+  TGuiPixelMapCanvas = class(TCanvas)
+  private
+    FPixelMap   : TGuiPixelMapDIB;
+    FOldBitmap  : HBITMAP;
+    FOldPalette : HPALETTE;
+    procedure FreeContext;
+  protected
+    procedure CreateHandle; override;
+  public
+    constructor Create(PixelMap: TGuiPixelMapDIB);
+    destructor Destroy; override;
+  end;
+
+{ TGuiPixelMapCanvas }
+
+constructor TGuiPixelMapCanvas.Create(PixelMap: TGuiPixelMapDIB);
+begin
+ inherited Create;
+ FPixelMap := PixelMap;
+end;
+
+destructor TGuiPixelMapCanvas.Destroy;
+begin
+ FreeContext;
+ inherited Destroy;
+end;
+
+procedure TGuiPixelMapCanvas.FreeContext;
+var
+  H : HBITMAP;
+begin
+ if Handle <> 0 then
+  begin
+   if FOldBitmap <> 0
+    then SelectObject(Handle, FOldBitmap);
+   H := Handle;
+   Handle := 0;
+   DeleteDC(H);
+  end;
+end;
+
+procedure TGuiPixelMapCanvas.CreateHandle;
+var
+  H: HBITMAP;
+begin
+ if FPixelMap <> nil then
+  begin
+   H := CreateCompatibleDC(0);
+   if FPixelMap.Handle <> 0
+    then FOldBitmap := SelectObject(H, FPixelMap.Handle)
+    else FOldBitmap := 0;
+   Handle := H;
+  end;
+end;
+
+
 { TGuiPixelMapDIB }
 
 constructor TGuiPixelMapDIB.Create;
@@ -1065,6 +1187,11 @@ begin
  FDataPointer := nil;
 end;
 
+procedure TGuiPixelMapDIB.CanvasChanged(Sender: TObject);
+begin
+ if Assigned(FOnChange) then FOnChange(Self);
+end;
+
 procedure TGuiPixelMapDIB.Draw(Bitmap: TBitmap; X, Y: Integer);
 (*
 var
@@ -1081,6 +1208,16 @@ begin
    DeleteObject(CompBitmap);
   end;
 *)
+end;
+
+function TGuiPixelMapDIB.GetCanvas: TCanvas;
+begin
+ if FCanvas = nil then
+  begin
+   FCanvas := TGuiPixelMapCanvas.Create(Self);
+   FCanvas.OnChange := CanvasChanged;
+  end;
+ Result := FCanvas;
 end;
 
 procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; X, Y: Integer);

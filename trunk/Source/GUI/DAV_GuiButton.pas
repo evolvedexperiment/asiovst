@@ -168,7 +168,7 @@ uses
 constructor TCustomGuiButton.Create(AOwner: TComponent);
 begin
  inherited;
- ControlStyle  := ControlStyle + [csOpaque, csReplicatable, csAcceptsControls];
+ ControlStyle  := ControlStyle + [csOpaque, csReplicatable];
 
  FCanvas := TControlCanvas.Create;
  TControlCanvas(FCanvas).Control := Self;

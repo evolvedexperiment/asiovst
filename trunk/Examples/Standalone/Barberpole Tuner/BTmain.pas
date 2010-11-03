@@ -37,7 +37,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
   Dialogs, DAV_Types, DAV_DspLightweightDynamics, DAV_DspBarberpoleTuner,
-  DAV_DspFilterButterworth, DAV_ASIOHost, DAV_GuiLabel;
+  DAV_DspFilterButterworth, DAV_ASIOHost, DAV_GuiPixelMap, DAV_GuiLabel,
+  DAV_GuiGraphicControl;
 
 type
   TGuitarString = (gtLowE, gtA, gtD, gtG, gtH, gtE);
@@ -57,14 +58,15 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure ASIOHostBufferSwitch32(Sender: TObject;
+      const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure ASIOHostSampleRateChanged(Sender: TObject);
+    procedure BarberpolePaint(Sender: TObject);
     procedure LbNoteClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
-    procedure BarberpolePaint(Sender: TObject);
-    procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-      OutBuffer: TDAVArrayOfSingleFixedArray);
   private
-    FBackgrounBitmap  : TBitmap;
+    FBackground       : TGuiCustomPixelMap;
     FLowpass          : TButterworthLowPassFilter;
     FLimiter          : array [0..1] of TLightweightSoftKneeLimiter;
     FBarberpoleFilter : TBarberpoleFilter;
@@ -104,10 +106,6 @@ end;
 
 procedure TFmBarberpoleTuner.FormCreate(Sender: TObject);
 var
-  x, y    : Integer;
-  s       : array [0..1] of Single;
-  h, hr   : Single;
-  Line    : PRGB24Array;
   DrvIndx : Integer;
 begin
  // create and setup initial lowpass filter
@@ -149,31 +147,9 @@ begin
  GetMem(FLinearBuffer, 256 * SizeOf(Single));
 
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
-
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
-      end;
-    end;
-  end;
+ FBackground := TGuiPixelMapMemory.Create;
  Barberpole.ControlStyle := Barberpole.ControlStyle + [csOpaque];
+ FormResize(Sender);
 
  try
   DrvIndx := ASIOHost.DriverList.IndexOf('ASIO4ALL v2');
@@ -191,6 +167,7 @@ begin
  ASIOHost.Active := False;
 
  FreeAndNil(FBarberpoleFilter);
+ FreeAndNil(FBackground);
  FreeAndNil(FLowpass);
  FreeAndNil(FLimiter[0]);
  FreeAndNil(FLimiter[1]);
@@ -212,15 +189,46 @@ end;
 
 procedure TFmBarberpoleTuner.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmBarberpoleTuner.FormResize(Sender: TObject);
+var
+  x, y    : Integer;
+  Filter  : array [0..1] of Single;
+  h, hr   : Single;
+  ScnLn   : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+       Filter[0] := Filter[1];
+
+       ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
+      end;
+    end;
+  end;
 end;
 
 procedure TFmBarberpoleTuner.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if assigned(FBarberpoleFilter) then FBarberpoleFilter.SampleRate := ASIOHost.SampleRate;
- if assigned(FLowpass) then FLowpass.SampleRate := ASIOHost.SampleRate;
- if assigned(FLimiter[0]) then FLimiter[0].SampleRate := ASIOHost.SampleRate;
- if assigned(FLimiter[1]) then FLimiter[1].SampleRate := ASIOHost.SampleRate;
+ if Assigned(FBarberpoleFilter) then FBarberpoleFilter.SampleRate := ASIOHost.SampleRate;
+ if Assigned(FLowpass) then FLowpass.SampleRate := ASIOHost.SampleRate;
+ if Assigned(FLimiter[0]) then FLimiter[0].SampleRate := ASIOHost.SampleRate;
+ if Assigned(FLimiter[1]) then FLimiter[1].SampleRate := ASIOHost.SampleRate;
 end;
 
 procedure TFmBarberpoleTuner.BarberpolePaint(Sender: TObject);
@@ -236,12 +244,13 @@ begin
    FrameRect(Barberpole.ClientRect);
   end;
 
- if assigned(BufferPointer) then
+ if Assigned(BufferPointer) then
   for Column := 0 to Barberpole.Width - 3 do
    begin
-    Barberpole.Canvas.Pen.Color := round($70 - $34 * BufferPointer^[Column]) shl 16 +
-                                   round($84 - $48 * BufferPointer^[Column]) shl  8 +
-                                   round($8D - $50 * BufferPointer^[Column]);
+    Barberpole.Canvas.Pen.Color :=
+      Round($70 - $34 * BufferPointer^[Column]) shl 16 +
+      Round($84 - $48 * BufferPointer^[Column]) shl  8 +
+      Round($8D - $50 * BufferPointer^[Column]);
     Barberpole.Canvas.MoveTo(Column + 1, 1);
     Barberpole.Canvas.LineTo(Column + 1, Barberpole.Height - 1);
    end;
@@ -280,9 +289,9 @@ begin
   else raise Exception.Create('Current Frequency doesn''t exist');
  end;
 
- if assigned(FBarberpoleFilter)
+ if Assigned(FBarberpoleFilter)
   then FBarberpoleFilter.Frequency := CenterFrequency;
- if assigned(FLowpass)
+ if Assigned(FLowpass)
   then FLowpass.Frequency := 4 * CenterFrequency; 
 end;
 
@@ -310,7 +319,7 @@ begin
     end;
 
    // advance downsample position
-   inc(FDownSamplePos);
+   Inc(FDownSamplePos);
    if FDownSamplePos >= FDownSampleCount
     then FDownSamplePos := 0;
   end;

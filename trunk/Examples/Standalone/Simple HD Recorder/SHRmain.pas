@@ -36,8 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Dialogs,
-  Graphics, DAV_Types, DAV_GuiLabel, DAV_GuiButton, DAV_GuiBaseControl,
-  DAV_GuiLED, DAV_ASIOHost, StdCtrls;
+  Graphics, StdCtrls, DAV_Types, DAV_ASIOHost, DAV_GuiPixelMap, DAV_GuiCommon,
+  DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiButton, DAV_GuiLED;
 
 type
   TStorageThread = class(TThread)
@@ -50,8 +50,11 @@ type
   end;
 
   TFmSimpleHDRecorder = class(TForm)
-    GuiLED1: TGuiLED;
+    ASIOHost: TASIOHost;
+    BtExit: TGuiButton;
+    BtSetup: TGuiButton;
     BtStartStop: TGuiButton;
+    GuiLED1: TGuiLED;
     GuiLED2: TGuiLED;
     GuiLED3: TGuiLED;
     GuiLED4: TGuiLED;
@@ -59,24 +62,22 @@ type
     LbMic2: TGuiLabel;
     LbMic3: TGuiLabel;
     LbMic4: TGuiLabel;
-    BtSetup: TGuiButton;
-    BtExit: TGuiButton;
     Timer: TTimer;
-    ASIOHost: TASIOHost;
-    procedure TimerTimer(Sender: TObject);
-    procedure BtExitClick(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure BtSetupClick(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostBufferSwitch32Recording(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure BtExitClick(Sender: TObject);
+    procedure BtSetupClick(Sender: TObject);
+    procedure BtStartStopClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
-    FChannelOffsets  : Array [0..1] of Integer;
-    FPeaks           : Array [0..3] of Single;
-    FDataBuffers     : Array [0..1, 0..3] of PDAVSingleFixedArray;
+    FBackground      : TGuiCustomPixelMap;
+    FChannelOffsets  : array [0..1] of Integer;
+    FPeaks           : array [0..3] of Single;
+    FDataBuffers     : array [0..1, 0..3] of PDAVSingleFixedArray;
     FDataBufferIndex : Integer;
     FDataBufferPos   : Integer;
     FDataBufferSize  : Integer;
@@ -99,7 +100,7 @@ implementation
 
 uses
   Math, IniFiles, DAV_AudioData, DAV_AudioFileWAV, DAV_AudioFileAIFF,
-  DAV_AudioFileAU, DAV_GuiCommon, WaveIOX, SHRSetup;
+  DAV_AudioFileAU, WaveIOX, SHRSetup;
 
 {$R *.dfm}
 
@@ -124,7 +125,7 @@ begin
       Suspend;
      end;
     end;
-   sleep(10);
+   Sleep(10);
   end;
 end;
 
@@ -142,8 +143,8 @@ begin
     begin
      AsioChannel := (FChannelOffsets[0] + Channel) mod ASIOHost.InputChannelCount;
      FPeaks[Channel] := 0.999 * FPeaks[Channel];
-     if abs(InBuffer[AsioChannel, Sample]) > FPeaks[Channel]
-      then FPeaks[Channel] := abs(InBuffer[AsioChannel, Sample]);
+     if Abs(InBuffer[AsioChannel, Sample]) > FPeaks[Channel]
+      then FPeaks[Channel] := Abs(InBuffer[AsioChannel, Sample]);
      FDataBuffers[FDataBufferIndex, Channel]^[FDataBufferPos] := InBuffer[AsioChannel, Sample];
     end;
    Inc(FDataBufferPos);
@@ -161,8 +162,8 @@ begin
    begin
     AsioChannel := (FChannelOffsets[0] + Channel) mod ASIOHost.InputChannelCount;
     FPeaks[Channel] := 0.999 * FPeaks[Channel];
-    if abs(InBuffer[AsioChannel, sample]) > FPeaks[Channel]
-     then FPeaks[Channel] := abs(InBuffer[AsioChannel, sample]);
+    if abs(InBuffer[AsioChannel, Sample]) > FPeaks[Channel]
+     then FPeaks[Channel] := Abs(InBuffer[AsioChannel, Sample]);
    end;
 end;
 
@@ -195,38 +196,9 @@ begin
 end;
 
 procedure TFmSimpleHDRecorder.FormCreate(Sender: TObject);
-var
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  b      : ShortInt;
-  Line   : PRGB24Array;
-  h, hr  : Single;
 begin
- // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
- with fBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width       := Self.Width;
-   Height      := Self.Height;
-   hr          := 1 / Height;
-   s[0]        := 0;
-   s[1]        := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.6 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       b := round($3F + $8 * (h + s[1]));
-       s[0] := s[1];
-       Line[x].B := b;
-       Line[x].G := b;
-       Line[x].R := b;
-      end;
-    end;
-  end;
+ FBackground := TGuiPixelMapMemory.Create;
+ FormResize(Sender);
 
  FPeaks[0] := 0; // reset peaks
  FPeaks[1] := 0; // reset peaks
@@ -236,7 +208,7 @@ end;
 
 procedure TFmSimpleHDRecorder.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(fBackgrounBitmap);
+ FreeAndNil(FBackground);
  if assigned(FStorageThread) then
   begin
    if FStorageThread.Suspended then FStorageThread.Resume;
@@ -256,7 +228,39 @@ end;
 
 procedure TFmSimpleHDRecorder.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, fBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmSimpleHDRecorder.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  s      : array [0..1] of Single;
+  b      : ShortInt;
+  ScnLn  : PPixel32Array;
+  h, hr  : Single;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   hr   := 1 / Height;
+   s[0] := 0;
+   s[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h    := 0.6 * (1 - sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * (2 * Random - 1);
+       b := Round($3F + $18 * (h + s[1]));
+       s[0] := s[1];
+       ScnLn[x].B := b;
+       ScnLn[x].G := b;
+       ScnLn[x].R := b;
+      end;
+    end;
+  end;
 end;
 
 procedure TFmSimpleHDRecorder.PrepareRecording;

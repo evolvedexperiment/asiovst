@@ -16,62 +16,35 @@ object FmBugpassLite: TFmBugpassLite
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnResize = FormResize
   OnShow = FormShow
   DesignSize = (
     325
     173)
   PixelsPerInch = 96
   TextHeight = 13
-  object LbSubtitleShadow: TGuiLabel
-    Left = 258
-    Top = 87
-    Width = 60
-    Height = 34
-    Alignment = taCenter
-    FontOversampling = fo4x
-    Caption = 'Lite'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 3616034
-    Font.Height = -27
-    Font.Name = 'Comic Sans MS'
-    Font.Style = [fsBold]
-    ParentFont = False
-    Transparent = True
-    Shadow.Color = clBlack
-  end
-  object LbTitleShadow: TGuiLabel
-    Left = 10
-    Top = 10
-    Width = 309
-    Height = 78
-    Alignment = taCenter
-    FontOversampling = fo4x
-    Caption = 'BUGPASS'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 3616034
-    Font.Height = -64
-    Font.Name = 'Comic Sans MS'
-    Font.Style = [fsBold]
-    ParentFont = False
-    Transparent = True
-    Shadow.Color = clBlack
-  end
   object LbTitle: TGuiLabel
     Left = 8
     Top = 8
     Width = 309
     Height = 78
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'BUGPASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 2.000000000000000000
+    Shadow.Color = 3616034
+    Shadow.OffsetX = 2
+    Shadow.OffsetY = 2
+    Shadow.Opacity = 220
+    Shadow.Saturation = 3.000000000000000000
+    Shadow.Visible = True
     Transparent = True
-    Shadow.Color = clBlack
   end
   object LbFreqLowValue: TGuiLabel
     Left = 8
@@ -80,16 +53,15 @@ object FmBugpassLite: TFmBugpassLite
     Height = 21
     Alignment = taCenter
     Anchors = [akLeft, akBottom]
-    FontOversampling = fo4x
     Caption = '1 kHz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
     Transparent = True
-    Shadow.Color = clBlack
   end
   object FrequencyBar: TPaintBox
     Left = 8
@@ -105,19 +77,23 @@ object FmBugpassLite: TFmBugpassLite
   object LbSubTitle: TGuiLabel
     Left = 257
     Top = 86
-    Width = 60
+    Width = 59
     Height = 34
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Lite'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
     Font.Height = -27
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 2.000000000000000000
+    Shadow.Color = 3616034
+    Shadow.Opacity = 220
+    Shadow.Saturation = 3.000000000000000000
+    Shadow.Visible = True
     Transparent = True
-    Shadow.Color = clBlack
   end
   object LbFreqHighValue: TGuiLabel
     Left = 236
@@ -126,49 +102,35 @@ object FmBugpassLite: TFmBugpassLite
     Height = 21
     Alignment = taCenter
     Anchors = [akLeft, akBottom]
-    FontOversampling = fo4x
     Caption = '1 kHz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    ParentFont = False
-    Transparent = True
-    Shadow.Color = clBlack
-  end
-  object GuiLabel1: TGuiLabel
-    Left = 8
-    Top = 87
-    Width = 61
-    Height = 34
-    Alignment = taCenter
     FontOversampling = fo4x
-    Caption = 'VST'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 3616034
-    Font.Height = -27
-    Font.Name = 'Comic Sans MS'
-    Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
-    Shadow.Color = clBlack
   end
-  object GuiLabel2: TGuiLabel
+  object LbVST: TGuiLabel
     Left = 7
     Top = 86
     Width = 61
     Height = 34
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'VST'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12693147
     Font.Height = -27
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 2.000000000000000000
+    Shadow.Color = 3616034
+    Shadow.Opacity = 220
+    Shadow.Saturation = 3.000000000000000000
+    Shadow.Visible = True
     Transparent = True
-    Shadow.Color = clBlack
   end
 end

@@ -36,7 +36,8 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiCommon, DAV_GuiBaseControl;
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiCommon, DAV_GuiPixelMap,
+  DAV_GuiGraphicControl;
 
 type
   TMouseEdit = (meNone, meLow, meHigh);
@@ -44,12 +45,9 @@ type
     LbTitle: TGuiLabel;
     LbFreqLowValue: TGuiLabel;
     FrequencyBar: TPaintBox;
-    LbTitleShadow: TGuiLabel;
     LbSubTitle: TGuiLabel;
-    LbSubtitleShadow: TGuiLabel;
     LbFreqHighValue: TGuiLabel;
-    GuiLabel1: TGuiLabel;
-    GuiLabel2: TGuiLabel;
+    LbVST: TGuiLabel;
     procedure DialFrequencyChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -59,9 +57,10 @@ type
     procedure FrequencyBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FrequencyBarMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormShow(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
-    FMouseEdit       : TMouseEdit;
+    FBackground : TGuiCustomPixelMap;
+    FMouseEdit  : TMouseEdit;
   public
     procedure UpdateFrequencyBar;
   end;
@@ -74,41 +73,15 @@ uses
   BugpassLiteDM, DAV_Common, DAV_VSTModuleWithPrograms;
 
 procedure TFmBugpassLite.FormCreate(Sender: TObject);
-var
-  x, y : Integer;
-  s    : array [0..1] of Single;
-  amt  : Shortint;
-  Line : PRGB24Array;
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.9 * s[0] + 0.1 * random;
-       amt  := round($E * (2 * s[1] - 1));
-       Line[x].B := $E0 + amt;
-       Line[x].G := $D0 + amt;
-       Line[x].R := $B6 + amt;
-       s[0] := s[1];
-      end;
-    end;
-  end;
+ FBackground := TGuiPixelMapMemory.Create;
  FrequencyBar.ControlStyle := FrequencyBar.ControlStyle + [csOpaque];
 end;
 
 procedure TFmBugpassLite.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmBugpassLite.FormShow(Sender: TObject);
@@ -118,7 +91,36 @@ end;
 
 procedure TFmBugpassLite.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmBugpassLite.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  Filter : array [0..1] of Single;
+  amt    : Shortint;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       Filter[1] := 0.9 * Filter[0] + 0.1 * Random;
+       amt := Round($E * (2 * Filter[1] - 1));
+       ScnLn[x].B := $E0 + amt;
+       ScnLn[x].G := $D0 + amt;
+       ScnLn[x].R := $B6 + amt;
+       Filter[0] := Filter[1];
+      end;
+    end;
+  end;
 end;
 
 procedure TFmBugpassLite.FrequencyBarMouseDown(Sender: TObject;

@@ -1,6 +1,7 @@
 program AdsrTest;
 
 uses
+  FastMM4,
   Forms,
   AdsrTestMain in 'AdsrTestMain.pas' {FmAdsrTest};
 

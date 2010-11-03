@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Graphics, DAV_Types,
-  DAV_VSTModule, Controls, DAV_GuiBaseControl, DAV_GuiLabel, StdCtrls;
+  Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
+  DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiGraphicControl,
+  DAV_GuiLabel;
 
 type
   TFmModDelay = class(TForm)
@@ -65,8 +66,10 @@ type
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SbGainChange(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
   public
     procedure UpdateGain;
     procedure UpdateMix;
@@ -85,38 +88,14 @@ uses
 {$R *.DFM}
 
 procedure TFmModDelay.FormCreate(Sender: TObject);
-var
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  h, hr  : Single;
-  Line   : PRGB24Array;
-
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
+ FBackground := TGuiPixelMapMemory.Create;
+end;
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
-      end;
-    end;
-  end;
+procedure TFmModDelay.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmModDelay.FormShow(Sender: TObject);
@@ -132,7 +111,38 @@ end;
 
 procedure TFmModDelay.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmModDelay.FormResize(Sender: TObject);
+var
+  x, y   : Integer;
+  Filter : array [0..1] of Single;
+  h, hr  : Single;
+  ScnLn  : PPixel32Array;
+begin
+ with FBackground do
+  begin
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLn := Scanline[y];
+     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       Filter[1] := 0.97 * Filter[0] + 0.03 * random;
+       Filter[0] := Filter[1];
+
+       ScnLn[x].B := round($70 - $34 * (Filter[1] - h));
+       ScnLn[x].G := round($84 - $48 * (Filter[1] - h));
+       ScnLn[x].R := round($8D - $50 * (Filter[1] - h));
+      end;
+    end;
+  end;
 end;
 
 procedure TFmModDelay.SbGainChange(Sender: TObject);

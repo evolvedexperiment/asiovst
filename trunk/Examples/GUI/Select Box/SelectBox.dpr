@@ -2,12 +2,12 @@ program SelectBox;
 
 uses
   Forms,
-  SelectBoxTest in 'SelectBoxTest.pas' {Form1};
+  SelectBoxTest in 'SelectBoxTest.pas' {FmSelectBox};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFmSelectBox, FmSelectBox);
   Application.Run;
 end.

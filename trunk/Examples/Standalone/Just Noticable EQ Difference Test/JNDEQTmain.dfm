@@ -170,12 +170,12 @@ object FmJNDEQT: TFmJNDEQT
     Anchors = [akLeft, akTop, akRight]
     BorderRadius = 3
     Color = 8620693
-    DefaultPosition = 3.000000000000000000
+    DefaultValue = 3.000000000000000000
     Max = 3.000000000000000000
     Min = -30.000000000000000000
     OnChange = SliderVolumeChange
     ParentColor = False
-    Position = 3.000000000000000000
+    Value = 3.000000000000000000
     SlideColor = clBlack
     Transparent = True
   end
@@ -395,12 +395,12 @@ object FmJNDEQT: TFmJNDEQT
       BorderRadius = 3
       Color = 8620693
       CurveMapping = 1.000000000000000000
-      DefaultPosition = 3.000000000000000000
+      DefaultValue = 3.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
       OnChange = SliderBandwidthChange
       ParentColor = False
-      Position = 3.000000000000000000
+      Value = 3.000000000000000000
       SlideColor = clBlack
       Transparent = True
     end
@@ -413,12 +413,12 @@ object FmJNDEQT: TFmJNDEQT
       BorderRadius = 3
       Color = 8620693
       CurveMapping = 2.000000000000000000
-      DefaultPosition = 1000.000000000000000000
+      DefaultValue = 1000.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = SliderFrequencyChange
       ParentColor = False
-      Position = 1000.000000000000000000
+      Value = 1000.000000000000000000
       SlideColor = clBlack
       Transparent = True
     end
@@ -430,12 +430,12 @@ object FmJNDEQT: TFmJNDEQT
       Anchors = [akLeft, akTop, akRight]
       BorderRadius = 3
       Color = 8620693
-      DefaultPosition = 15.000000000000000000
+      DefaultValue = 15.000000000000000000
       Max = 15.000000000000000000
       Min = -15.000000000000000000
       OnChange = SliderGainChange
       ParentColor = False
-      Position = 15.000000000000000000
+      Value = 15.000000000000000000
       SlideColor = clBlack
       Transparent = True
     end
