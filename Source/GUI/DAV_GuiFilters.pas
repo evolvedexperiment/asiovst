@@ -122,7 +122,7 @@ type
   TGuiSaturationFilter = class(TGuiCustomFilter)
   private
     FLookUpTable : array [Byte] of Byte;
-    FValue: Single;
+    FValue       : Single;
     procedure SetValue(const Value: Single);
   protected
     procedure ValueChanged; virtual;
@@ -134,6 +134,18 @@ type
     procedure Filter(PixelMap: TGuiCustomPixelMap); override;
 
     property Value: Single read FValue write SetValue;
+  end;
+
+  TGuiEmbossFilter = class(TGuiCustomFilter)
+  public
+    procedure Filter(ByteMap: TGuiCustomByteMap); override;
+    procedure Filter(PixelMap: TGuiCustomPixelMap); override;
+  end;
+
+  TGuiInvertFilter = class(TGuiCustomFilter)
+  public
+    procedure Filter(ByteMap: TGuiCustomByteMap); override;
+    procedure Filter(PixelMap: TGuiCustomPixelMap); override;
   end;
 
 implementation
@@ -608,12 +620,12 @@ end;
 
 procedure TGuiSaturationFilter.CalculateLookUpTable;
 var
-  Index  : Integer;
   ExpPos : Double;
+  Index  : Integer;
 begin
  ExpPos := 1 - (2 * (1 + Abs(Value)) / ((1 + Abs(Value) + Value)));
  for Index := 0 to Length(FLookUpTable) - 1
-  do FLookUpTable[Index] := Round(255 * Index / (Index + ExpPos * (Index - 255)));
+  do FLookUpTable[Index] := Round($FF * Index / (Index - ExpPos * (Index xor $FF)));
 end;
 
 procedure TGuiSaturationFilter.ValueChanged;
@@ -628,6 +640,63 @@ begin
    FValue := Value;
    ValueChanged;
   end;
+end;
+
+{ TGuiEmbossFilter }
+
+procedure TGuiEmbossFilter.Filter(ByteMap: TGuiCustomByteMap);
+var
+  x, y   : Integer;
+  p1, p2 : PByteArray;
+begin
+ for y := 0 to ByteMap.Height - 2 do
+  begin
+   p1 := ByteMap.Scanline[y];
+   p2 := ByteMap.Scanline[y + 1];
+   for x := 0 to ByteMap.Width - 2
+    do p1[x] := (p1[x] + (p2[(x + 1)] xor $FF)) shr 1;
+  end;
+end;
+
+procedure TGuiEmbossFilter.Filter(PixelMap: TGuiCustomPixelMap);
+var
+  x, y   : Integer;
+  p1, p2 : PPixel32Array;
+begin
+ for y := 0 to PixelMap.Height - 2 do
+  begin
+   p1 := PixelMap.Scanline[y];
+   p2 := PixelMap.Scanline[y + 1];
+   for x := 0 to PixelMap.Width - 2 do
+    begin
+     p1[x].R := (p1[x].R + (p2[x + 1].R xor $FF)) shr 1;
+     p1[x].G := (p1[x].G + (p2[x + 1].G xor $FF)) shr 1;
+     p1[x].B := (p1[x].B + (p2[x + 1].B xor $FF)) shr 1;
+    end;
+  end;
+end;
+
+
+{ TGuiInvertFilter }
+
+procedure TGuiInvertFilter.Filter(ByteMap: TGuiCustomByteMap);
+var
+  Index : Integer;
+  Data  : PByteArray;
+begin
+ Data := ByteMap.DataPointer;
+ for Index := 0 to ByteMap.Width * ByteMap.Height - 1
+  do Data^[Index] := not Data^[Index];
+end;
+
+procedure TGuiInvertFilter.Filter(PixelMap: TGuiCustomPixelMap);
+var
+  Index : Integer;
+  Data  : PPixel32Array;
+begin
+ Data := PixelMap.DataPointer;
+ for Index := 0 to PixelMap.Width * PixelMap.Height - 1
+  do Data^[Index].ARGB := not Data^[Index].ARGB;
 end;
 
 end.

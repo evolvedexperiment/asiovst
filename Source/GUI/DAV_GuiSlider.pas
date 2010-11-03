@@ -142,10 +142,6 @@ type
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
 
-    {$IFNDEF FPC}
-    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
-    {$ENDIF}
-
     procedure BackBufferChanged; virtual;
     procedure UpdateBuffer; virtual;
     procedure UpdateBackBuffer; virtual;
@@ -254,7 +250,7 @@ end;
 
 destructor TCustomGuiSlider.Destroy;
 begin
- inherited Destroy;
+ inherited;
 end;
 
 procedure TCustomGuiSlider.AssignTo(Dest: TPersistent);
@@ -502,15 +498,15 @@ end;
 function TCustomGuiSlider.MapValue(Value: Double): Double;
 begin
  if Value < 0
-  then Result := -Power(abs(Value), FCurveMappingExp)
-  else Result :=  Power(abs(Value), FCurveMappingExp);
+  then Result := -Power(Abs(Value), FCurveMappingExp)
+  else Result :=  Power(Abs(Value), FCurveMappingExp);
 end;
 
 function TCustomGuiSlider.UnmapValue(Value: Double): Double;
 begin
  if Value < 0
-  then Result := -Power(abs(Value), 1 / FCurveMappingExp)
-  else Result :=  Power(abs(Value), 1 / FCurveMappingExp)
+  then Result := -Power(Abs(Value), 1 / FCurveMappingExp)
+  else Result :=  Power(Abs(Value), 1 / FCurveMappingExp)
 end;
 
 procedure TCustomGuiSlider.WriteDefaultPositionProperty(Writer: TWriter);
@@ -612,97 +608,6 @@ end;
 
 // Drawing stuff
 
-{$IFNDEF FPC}
-type
-  TParentControl = class(TWinControl);
-
-procedure TCustomGuiSliderGDI.CopyParentImage(PixelMap: TGuiCustomPixelMap);
-var
-  I         : Integer;
-  SubCount  : Integer;
-  SaveIndex : Integer;
-  Pnt       : TPoint;
-  R, SelfR  : TRect;
-  CtlR      : TRect;
-  Bmp       : TBitmap;
-begin
- if (Parent = nil) then Exit;
- SubCount := Parent.ControlCount;
- // set
- {$IFDEF WIN32}
- with Parent
-  do ControlState := ControlState + [csPaintCopy];
- try
- {$ENDIF}
-
-  SelfR := Bounds(Left, Top, Width, Height);
-  Pnt.X := -Left;
-  Pnt.Y := -Top;
-
-  Bmp := TBitmap.Create;
-  with Bmp do
-   try
-    Width := Self.Width;
-    Height := Self.Height;
-    PixelFormat := pf32bit;
-
-    // Copy parent control image
-    SaveIndex := SaveDC(Canvas.Handle);
-    try
-     SetViewportOrgEx(Canvas.Handle, Pnt.X, Pnt.Y, nil);
-     IntersectClipRect(Canvas.Handle, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-     with TParentControl(Parent) do
-      begin
-       Perform(WM_ERASEBKGND, Canvas.Handle, 0);
-       PaintWindow(Canvas.Handle);
-      end;
-    finally
-     RestoreDC(Canvas.Handle, SaveIndex);
-    end;
-
-    // Copy images of graphic controls
-    for I := 0 to SubCount - 1 do
-     begin
-      if Parent.Controls[I] = Self then Break else
-       if (Parent.Controls[I] <> nil) and
-          (Parent.Controls[I] is TGraphicControl)
-        then
-         with TGraphicControl(Parent.Controls[I]) do
-          begin
-           CtlR := Bounds(Left, Top, Width, Height);
-           if Boolean(IntersectRect(R, SelfR, CtlR)) and Visible then
-            begin
-             {$IFDEF WIN32}
-             ControlState := ControlState + [csPaintCopy];
-             {$ENDIF}
-             SaveIndex := SaveDC(Canvas.Handle);
-             try
-              SaveIndex := SaveDC(Canvas.Handle);
-              SetViewportOrgEx(Canvas.Handle, Left + Pnt.X, Top + Pnt.Y, nil);
-              IntersectClipRect(Canvas.Handle, 0, 0, Width, Height);
-              Perform(WM_PAINT, Canvas.Handle, 0);
-             finally
-              RestoreDC(Handle, SaveIndex);
-              {$IFDEF WIN32}
-              ControlState := ControlState - [csPaintCopy];
-              {$ENDIF}
-             end;
-            end;
-          end;
-     end;
-    PixelMap.Draw(Bmp);
-   finally
-    Free;
-   end;
-
- {$IFDEF WIN32}
- finally
-   with Parent do ControlState := ControlState - [csPaintCopy];
- end;
- {$ENDIF}
-end;
-{$ENDIF}
-
 procedure TCustomGuiSliderGDI.Paint;
 begin
  if FUpdateBackBuffer
@@ -724,7 +629,9 @@ procedure TCustomGuiSliderGDI.UpdateBackBuffer;
 var
   PixelColor32 : TPixel32;
 begin
- if FTransparent then CopyParentImage(FBackBuffer) else
+ {$IFNDEF FPC}
+ if FTransparent then FBackBuffer.CopyParentImage(Self) else
+ {$ENDIF}
   begin
    PixelColor32 := ConvertColor(Color);
    FBackBuffer.FillRect(ClientRect, PixelColor32);

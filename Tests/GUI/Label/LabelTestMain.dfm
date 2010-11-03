@@ -2,7 +2,7 @@ object FmLabelTest: TFmLabelTest
   Left = 218
   Top = 77
   Caption = 'Label Test'
-  ClientHeight = 158
+  ClientHeight = 176
   ClientWidth = 135
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
@@ -22,6 +22,7 @@ object FmLabelTest: TFmLabelTest
     Top = 8
     Width = 57
     Height = 29
+    Alignment = taCenter
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlue
@@ -30,13 +31,14 @@ object FmLabelTest: TFmLabelTest
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LabelC: TGuiLabel
     Left = 8
     Top = 43
     Width = 57
     Height = 29
+    Alignment = taCenter
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -46,7 +48,7 @@ object FmLabelTest: TFmLabelTest
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LabelCClick
   end
   object LabelB: TGuiLabel
@@ -54,6 +56,7 @@ object FmLabelTest: TFmLabelTest
     Top = 8
     Width = 57
     Height = 29
+    Alignment = taCenter
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clLime
@@ -63,13 +66,14 @@ object FmLabelTest: TFmLabelTest
     FontOversampling = fo2x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LabelD: TGuiLabel
     Left = 71
     Top = 43
     Width = 57
     Height = 29
+    Alignment = taCenter
     Caption = 'Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clYellow
@@ -79,7 +83,7 @@ object FmLabelTest: TFmLabelTest
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
     OnClick = LabelDClick
   end
   object CbTransparent: TCheckBox
@@ -104,7 +108,7 @@ object FmLabelTest: TFmLabelTest
     Top = 101
     Width = 119
     Height = 13
-    BorderRadius = 3.000000000000000000
+    BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
     Color = 7373965
     DefaultPosition = 8.000000000000000000
@@ -113,13 +117,14 @@ object FmLabelTest: TFmLabelTest
     ParentColor = False
     Position = 4.000000000000000000
     SlideColor = 5333094
+    Transparent = True
   end
   object SliderOffset: TGuiSlider
     Left = 8
     Top = 120
     Width = 119
     Height = 13
-    BorderRadius = 3.000000000000000000
+    BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
     Color = 7373965
     DefaultPosition = 8.000000000000000000
@@ -128,20 +133,39 @@ object FmLabelTest: TFmLabelTest
     ParentColor = False
     Position = 4.000000000000000000
     SlideColor = 5333094
+    Transparent = True
   end
-  object SliderTransparency: TGuiSlider
+  object SliderOpacity: TGuiSlider
     Left = 8
     Top = 139
     Width = 119
     Height = 13
-    BorderRadius = 3.000000000000000000
+    BorderRadius = 4.000000000000000000
     BorderWidth = 1.000000000000000000
     Color = 7373965
     DefaultPosition = 8.000000000000000000
     Max = 255.000000000000000000
-    OnChange = SliderTransparencyChange
+    OnChange = SliderOpacityChange
     ParentColor = False
-    Position = 4.000000000000000000
+    Position = 255.000000000000000000
     SlideColor = 5333094
+    Transparent = True
+  end
+  object SliderSaturation: TGuiSlider
+    Left = 8
+    Top = 158
+    Width = 119
+    Height = 13
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 7373965
+    DefaultPosition = 8.000000000000000000
+    Max = 8.000000000000000000
+    Min = -8.000000000000000000
+    OnChange = SliderSaturationChange
+    ParentColor = False
+    SlideColor = 5333094
+    Transparent = True
+    Position = 0.000000000000000000
   end
 end

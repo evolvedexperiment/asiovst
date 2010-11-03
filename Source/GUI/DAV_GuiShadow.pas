@@ -68,7 +68,7 @@ type
     property Offset: TPoint read FOffset write SetOffset;
   published
     property Blur: Single read FBlur write SetBlur;
-    property Color: TColor read FColor write SetColor;
+    property Color: TColor read FColor write SetColor default clBlack;
     property OffsetX: Integer read GetOffsetX write SetOffsetX default 1;
     property OffsetY: Integer read GetOffsetY write SetOffsetY default 1;
     property Opacity: Byte read FOpacity write SetOpacity default $FF;

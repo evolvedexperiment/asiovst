@@ -41,7 +41,7 @@ object FmSpinBugLite: TFmSpinBugLite
     Shadow.Color = 13491454
     Shadow.OffsetX = 2
     Shadow.OffsetY = 2
-    Shadow.Saturation = 8.000000000000000000
+    Shadow.Saturation = 4.000000000000000000
     Shadow.Visible = True
     Transparent = True
   end
@@ -96,19 +96,6 @@ object FmSpinBugLite: TFmSpinBugLite
     SelectBoxColor = 271837
     OnChange = SelectTypeChange
   end
-  object LbType: TLabel
-    Left = 8
-    Top = 12
-    Width = 31
-    Height = 16
-    Caption = 'type:'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
   object SelectColour: TGuiSelectBox
     Left = 58
     Top = 39
@@ -135,43 +122,84 @@ object FmSpinBugLite: TFmSpinBugLite
     SelectBoxColor = 271837
     OnChange = SelectColourChange
   end
-  object Label1: TLabel
+  object LbType: TGuiLabel
+    Left = 8
+    Top = 12
+    Width = 31
+    Height = 18
+    Margins.Bottom = 0
+    AutoSize = True
+    Caption = 'type:'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Color = 216826
+    Shadow.Saturation = 1.000000000000000000
+    Shadow.Visible = True
+  end
+  object LbColour: TGuiLabel
     Left = 8
     Top = 43
     Width = 44
-    Height = 16
+    Height = 18
+    Margins.Bottom = 0
+    AutoSize = True
     Caption = 'colour:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Color = 216826
+    Shadow.Saturation = 1.000000000000000000
+    Shadow.Visible = True
   end
-  object LbLFOSpeed: TLabel
-    Left = 95
+  object LbLFOSpeed: TGuiLabel
+    Left = 84
     Top = 88
     Width = 66
-    Height = 16
+    Height = 18
+    Margins.Bottom = 0
+    AutoSize = True
     Caption = 'lfo speed: '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Color = 216826
+    Shadow.Saturation = 1.000000000000000000
+    Shadow.Visible = True
   end
-  object LbLFOSpeedValue: TLabel
-    Left = 164
+  object LbLFOSpeedValue: TGuiLabel
+    Left = 156
     Top = 88
-    Width = 34
-    Height = 16
+    Width = 51
+    Height = 18
+    Margins.Bottom = 0
+    AutoSize = True
     Caption = '10 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Color = 216826
+    Shadow.Saturation = 1.000000000000000000
+    Shadow.Visible = True
   end
 end

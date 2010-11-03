@@ -45,8 +45,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbWet: TGuiLabel
       Left = 58
@@ -65,8 +63,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbPreDelay: TGuiLabel
       Left = 112
@@ -85,8 +81,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbInputDiffusion: TGuiLabel
       Left = 279
@@ -105,8 +99,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDecayDiffusion: TGuiLabel
       Left = 321
@@ -125,8 +117,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDampingFrequency: TGuiLabel
       Left = 220
@@ -145,8 +135,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDecay: TGuiLabel
       Left = 166
@@ -165,8 +153,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbMod: TGuiLabel
       Left = 390
@@ -185,8 +171,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
   end
   object CBFreeze: TCheckBox
@@ -242,8 +226,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object BtAB: TGuiButton
       Left = 213
@@ -263,7 +245,6 @@ object FmPlateReverb: TFmPlateReverb
       FontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
     end
     object BtAbout: TGuiButton
@@ -284,7 +265,6 @@ object FmPlateReverb: TFmPlateReverb
       FontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtAboutClick
     end

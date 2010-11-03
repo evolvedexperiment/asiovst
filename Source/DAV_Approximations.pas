@@ -2712,7 +2712,7 @@ function FastPower2(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := ((($7F + round(Value)) shl 23) and $FF800000);
+ IntCast := ((($7F + Round(Value)) shl 23) and $FF800000);
 end;
 
 function FastExp(Value: Single): Single;

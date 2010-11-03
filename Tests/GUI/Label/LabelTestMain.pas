@@ -48,7 +48,8 @@ type
     CbTransparent: TCheckBox;
     SliderBlur: TGuiSlider;
     SliderOffset: TGuiSlider;
-    SliderTransparency: TGuiSlider;
+    SliderOpacity: TGuiSlider;
+    SliderSaturation: TGuiSlider;
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -58,7 +59,8 @@ type
     procedure LabelCClick(Sender: TObject);
     procedure SliderBlurChange(Sender: TObject);
     procedure SliderOffsetChange(Sender: TObject);
-    procedure SliderTransparencyChange(Sender: TObject);
+    procedure SliderOpacityChange(Sender: TObject);
+    procedure SliderSaturationChange(Sender: TObject);
   private
     FBackground      : TGuiCustomPixelMap;
     FBackgroundColor : TPixel32;
@@ -74,6 +76,9 @@ implementation
 {$IFNDEF FPC}
 {$R *.dfm}
 {$ENDIF}
+
+uses
+  Math;
 
 procedure TFmLabelTest.FormCreate(Sender: TObject);
 begin
@@ -147,12 +152,22 @@ begin
  LabelD.Shadow.Offset := NewOffset;
 end;
 
-procedure TFmLabelTest.SliderTransparencyChange(Sender: TObject);
+procedure TFmLabelTest.SliderOpacityChange(Sender: TObject);
 begin
- LabelA.Shadow.Transparency := Round(SliderTransparency.Position);
- LabelB.Shadow.Transparency := Round(SliderTransparency.Position);
- LabelC.Shadow.Transparency := Round(SliderTransparency.Position);
- LabelD.Shadow.Transparency := Round(SliderTransparency.Position);
+ LabelA.Shadow.Opacity := Round(SliderOpacity.Position);
+ LabelB.Shadow.Opacity := Round(SliderOpacity.Position);
+ LabelC.Shadow.Opacity := Round(SliderOpacity.Position);
+ LabelD.Shadow.Opacity := Round(SliderOpacity.Position);
+end;
+
+procedure TFmLabelTest.SliderSaturationChange(Sender: TObject);
+var
+  Saturation : Integer;
+begin
+ LabelA.Shadow.Saturation := SliderSaturation.Position;
+ LabelB.Shadow.Saturation := SliderSaturation.Position;
+ LabelC.Shadow.Saturation := SliderSaturation.Position;
+ LabelD.Shadow.Saturation := SliderSaturation.Position;
 end;
 
 procedure TFmLabelTest.LabelCClick(Sender: TObject);
