@@ -35,8 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF Windows} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$IFDEF Windows} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, Controls, SysUtils, DAV_Common, DAV_MemoryUtils,
   DAV_GuiCommon, DAV_GuiCustomMap, DAV_GuiByteMap, DAV_GuiBlend;
@@ -904,6 +903,7 @@ var
 begin
  if (Bitmap.Height <> 0) and (FDataPointer <> nil) then
   begin
+   {$IFNDEF FPC}
    case Bitmap.PixelFormat of
     pf32bit :
       for IndexY := 0 to Bitmap.Height - 1 do
@@ -926,6 +926,9 @@ begin
          end;
        end;
     else
+    {$ELSE}
+   begin
+    {$ENDIF}
      if GetDIBits(Bitmap.Canvas.Handle, Bitmap.Handle, 0, Bitmap.Height,
        @FDataPointer^[X + Y * Width], FBitmapInfo, DIB_RGB_COLORS) = 0
       then raise Exception.Create('Error');

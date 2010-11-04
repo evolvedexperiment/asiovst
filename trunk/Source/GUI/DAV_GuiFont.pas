@@ -35,10 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF Windows} Windows, {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_Classes, DAV_GuiCommon,
-  DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
+  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$IFDEF Windows} Windows, {$ENDIF}
+  {$ELSE} Windows, Messages, {$ENDIF} Graphics, Classes, SysUtils,
+  DAV_Common, DAV_Classes, DAV_GuiCommon, DAV_GuiBlend, DAV_GuiPixelMap,
+  DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
 
 {$DEFINE UseShadowBuffer}
 

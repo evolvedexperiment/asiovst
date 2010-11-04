@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiCommon, DAV_GuiPixelMap;
 
 type
@@ -76,6 +76,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
+    procedure Update; override;
 
     property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
@@ -165,14 +167,23 @@ procedure TCustomGuiGraphicControl.Paint;
 begin
  inherited;
 
+ // check whether the buffer exists
+ if not Assigned(FBuffer) then Exit;
+
+ // eventually update the back buffer
  if FUpdateBackBuffer
   then UpdateBackBuffer;
 
+ // eventuall update the buffer
  if FUpdateBuffer
   then UpdateBuffer;
 
- if Assigned(FBuffer)
-  then FBuffer.PaintTo(Canvas);
+ // eventuall call the OnPaint event
+ if Assigned(FOnPaint)
+  then FOnPaint(Self);
+
+ // draw buffer to canvas
+ FBuffer.PaintTo(Canvas);
 end;
 
 procedure TCustomGuiGraphicControl.BufferChanged;
@@ -185,6 +196,12 @@ procedure TCustomGuiGraphicControl.BackBufferChanged;
 begin
  FUpdateBackBuffer := True;
  Invalidate;
+end;
+
+procedure TCustomGuiGraphicControl.Update;
+begin
+  inherited;
+
 end;
 
 procedure TCustomGuiGraphicControl.UpdateBackBuffer;

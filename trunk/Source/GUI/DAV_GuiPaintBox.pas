@@ -35,75 +35,31 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiCommon, DAV_GuiPixelMap;
+  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiCommon,
+  DAV_GuiGraphicControl, DAV_GuiPixelMap;
 
 type
-  TGuiCustomPaintBox = class(TGraphicControl)
-  private
-    FPixelMap: TGuiCustomPixelMap;
-    FTransparent: Boolean;
-    procedure SetPixelMap(const Value: TGuiCustomPixelMap);
-    procedure SetTransparent(const Value: Boolean);
-  protected
-    procedure Paint; override;
-    procedure TransparentChanged; virtual;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
-    property PixelMap: TGuiCustomPixelMap read FPixelMap write SetPixelMap;
-    property Transparent: Boolean read FTransparent write SetTransparent;
-  end;
+  TGuiCustomPaintBox = class(TCustomGuiGraphicControl);
 
   TGuiPaintBox = class(TGuiCustomPaintBox)
+  public
+    procedure BufferChanged; reintroduce;
+    property Buffer: TGuiCustomPixelMap read FBuffer;
   published
     property Anchors;
     property Align;
-    property PixelMap;
+    property Transparent;
     property OnClick;
+    property OnPaint;
   end;
 
 implementation
 
-{ TGuiCustomPaintBox }
+{ TGuiPaintBox }
 
-constructor TGuiCustomPaintBox.Create(AOwner: TComponent);
+procedure TGuiPaintBox.BufferChanged;
 begin
- inherited;
- ControlStyle := ControlStyle + [csOpaque];
- FPixelMap := TGuiPixelMapMemory.Create;
-end;
-
-destructor TGuiCustomPaintBox.Destroy;
-begin
- FreeAndNil(FPixelMap);
- inherited;
-end;
-
-procedure TGuiCustomPaintBox.Paint;
-begin
- inherited;
- FPixelMap.PaintTo(Canvas);
-end;
-
-procedure TGuiCustomPaintBox.SetPixelMap(const Value: TGuiCustomPixelMap);
-begin
- FPixelMap.Assign(Value);
- Invalidate;
-end;
-
-procedure TGuiCustomPaintBox.SetTransparent(const Value: Boolean);
-begin
- if FTransparent <> Value then
-  begin
-   FTransparent := Value;
-   TransparentChanged;
-  end;
-end;
-
-procedure TGuiCustomPaintBox.TransparentChanged;
-begin
- Invalidate;
+ inherited BufferChanged;
 end;
 
 end.

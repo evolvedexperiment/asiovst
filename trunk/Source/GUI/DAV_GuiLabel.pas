@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, SysUtils, Controls, StdCtrls, DAV_GuiCommon,
   DAV_GuiGraphicControl, DAV_GuiPixelMap, DAV_GuiFont, DAV_GuiShadow;
 
@@ -184,7 +184,7 @@ begin
  BufferChanged;
 end;
 
-procedure TCustomGuiLabel.CMFontChanged(var Message: TMessage);
+procedure TCustomGuiLabel.CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FGuiFont.Font.Assign(Font);
  BufferChanged;
