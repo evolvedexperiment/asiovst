@@ -158,7 +158,7 @@ end;
 
 procedure TCustomVstProgram.SetParameter(AIndex: Integer; AValue: Single);
 begin
- assert(FVSTModule is TVSTModuleWithPrograms);
+ Assert(FVSTModule is TVSTModuleWithPrograms);
  with TVSTModuleWithPrograms(FVSTModule) do
   begin
    if effFlagsProgramChunks in Flags then exit;

@@ -166,6 +166,8 @@ procedure TFmVectorGraphicTest.BuildRandomPrimitives;
 var
   Index : Integer;
 begin
+ if not Assigned(FPixelMap.DataPointer) then Exit;
+
  for Index := 0 to Length(FPrimitives) - 1 do
   if Assigned(FPrimitives[Index])
    then FreeAndNil(FPrimitives[Index]);
@@ -213,8 +215,12 @@ begin
       begin
        XA := ConvertToFixed24Dot8Point(Random(2 * (Width - 1)) - Width div 2 + Random);
        YA := ConvertToFixed24Dot8Point(Random(2 * (Height - 1)) - Height div 2 + Random);
-       XB := ConvertToFixed24Dot8Point(Random(2 * (Width - 1)) - Width div 2 + Random);
-       YB := ConvertToFixed24Dot8Point(Random(2 * (Height - 1)) - Height div 2 + Random);
+       if Index = 0
+        then XB := XA
+        else XB := ConvertToFixed24Dot8Point(Random(2 * (Width - 1)) - Width div 2 + Random);
+       if Index = 1
+        then YB := YA
+        else YB := ConvertToFixed24Dot8Point(Random(2 * (Height - 1)) - Height div 2 + Random);
       end;
   end;
 end;

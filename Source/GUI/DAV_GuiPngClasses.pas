@@ -154,7 +154,7 @@ begin
     ZStreamRecord.next_out := TempBuffer;
     ZStreamRecord.avail_out := CBufferSize;
 
-    ZResult := deflate(ZStreamRecord, Z_NO_FLUSH);
+    deflate(ZStreamRecord, Z_NO_FLUSH);
 
     Output.Write(TempBuffer^, CBufferSize - ZStreamRecord.avail_out);
    end;
@@ -218,7 +218,7 @@ begin
     ZStreamRecord.next_out := TempBuffer;
     ZStreamRecord.avail_out := CBufferSize;
 
-    ZResult := inflate(ZStreamRecord, Z_NO_FLUSH);
+    inflate(ZStreamRecord, Z_NO_FLUSH);
 
     Output.Write(TempBuffer^, CBufferSize - ZStreamRecord.avail_out);
    end;

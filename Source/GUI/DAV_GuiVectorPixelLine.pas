@@ -92,7 +92,7 @@ end;
 
 procedure TGuiPixelThinLine.DrawDraftShape(PixelMap: TGuiCustomPixelMap);
 var
-  x, y, x2, y2 : Integer;
+  X, Y         : array [0..1] of Integer;
   t, dx, dy    : Integer;
   incx, incy   : Integer;
   pdx, pdy     : Integer;
@@ -103,10 +103,10 @@ var
 begin
  with GeometricShape do
   begin
-   x := ConvertFromFixed24Dot8PointToInteger(XA);
-   y := ConvertFromFixed24Dot8PointToInteger(YA);
-   x2 := ConvertFromFixed24Dot8PointToInteger(XB);
-   y2 := ConvertFromFixed24Dot8PointToInteger(YB);
+   X[0] := ConvertFromFixed24Dot8PointToInteger(XA);
+   Y[0] := ConvertFromFixed24Dot8PointToInteger(YA);
+   X[1] := ConvertFromFixed24Dot8PointToInteger(XB);
+   Y[1] := ConvertFromFixed24Dot8PointToInteger(YB);
   end;
 
  PixelColor32 := ConvertColor(Color);
@@ -114,148 +114,148 @@ begin
  DataPointer := PixelMap.DataPointer;
 
  // ensure the line goes always from left to right
- if x2 > x then
+ if X[0] > X[1] then
   begin
-   Exchange32(x, x2);
-   Exchange32(y, y2);
+   Exchange32(X[0], X[1]);
+   Exchange32(Y[0], Y[1]);
   end;
 
- if y = y2 then
+ if Y[0] = Y[1] then
   begin
-   // check whether the y-coordinate is outside the pixel map
-   if (y < 0) or (y >= PixelMap.Height) then Exit;
+   // check whether the Y[0]-coordinate is outside the pixel map
+   if (Y[0] < 0) or (Y[0] >= PixelMap.Height) then Exit;
 
-   // limit x-coordinate to values inside the pixel map
-   x := Limit(x, 0, PixelMap.Width - 1);
-   x2 := Limit(x2, 0, PixelMap.Width - 1);
+   // limit X[0]-coordinate to values inside the pixel map
+   X[0] := Limit(X[0], 0, PixelMap.Width - 1);
+   X[1] := Limit(X[1], 0, PixelMap.Width - 1);
 
    // check if all coordinates are equal
-   if x = x2 then
+   if X[0] = X[1] then
     try
-     BlendPixelInplace(PixelColor32, DataPointer[y2 * PixelMap.Width + x2]);
+     BlendPixelInplace(PixelColor32, DataPointer[Y[1] * PixelMap.Width + X[1]]);
      Exit;
     finally
      EMMS;
     end;
 
    // draw horizontal line
-   BlendPixelLine(PixelColor32, @DataPointer[y2 * PixelMap.Width + x], x2 - x)
+   BlendPixelLine(PixelColor32, @DataPointer[Y[1] * PixelMap.Width + X[0]], X[1] - X[0])
   end else
- if x = x2 then
+ if X[0] = X[1] then
   begin
-   // check whether the x-coordinate is outside the pixel map
-   if (x < 0) or (x >= PixelMap.Width) then Exit;
+   // check whether the X[0]-coordinate is outside the pixel map
+   if (X[0] < 0) or (X[0] >= PixelMap.Width) then Exit;
 
-   // limit y-coordinate to values inside the pixel map
-   y := Limit(y, 0, PixelMap.Height - 1);
-   y2 := Limit(y2, 0, PixelMap.Height - 1);
+   // limit Y[0]-coordinate to values inside the pixel map
+   Y[0] := Limit(Y[0], 0, PixelMap.Height - 1);
+   Y[1] := Limit(Y[1], 0, PixelMap.Height - 1);
 
    // check if all coordinates are equal
-   if y = y2 then
+   if Y[0] = Y[1] then
     try
-     BlendPixelInplace(PixelColor32, DataPointer[y2 * PixelMap.Width + x2]);
+     BlendPixelInplace(PixelColor32, DataPointer[Y[1] * PixelMap.Width + X[1]]);
      Exit;
     finally
      EMMS;
     end;
 
    // draw vertical line
-   PixelMap.VerticalLine(x, y, y2, PixelColor32);
+   PixelMap.VerticalLine(X[0], Y[0], Y[1], PixelColor32);
   end
  else
   try
-   // calculate length in x and y coordinates
-   dx := x2 - x;
-   dy := y2 - y;
+   // calculate length in X[0] and Y[0] coordinates
+   dx := X[1] - X[0];
+   dy := Y[1] - Y[0];
 
-   // check whether x-coordinate is outside the pixel map
-   if (x < 0) then
+   // check whether X[0]-coordinate is outside the pixel map
+   if (X[0] < 0) then
     begin
      // check if line needs to be drawn at all
-     if x2 < 0 then Exit;
+     if X[1] < 0 then Exit;
 
      // calculate new left offset
-     y := Round(y + (-x / dx) * dy);
-     x := 0;
+     Y[0] := Round(Y[0] + (-X[0] / dx) * dy);
+     X[0] := 0;
 
-     // recalculate length in x and y coordinates
-     dx := x2;
-     dy := y2 - y;
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1];
+     dy := Y[1] - Y[0];
     end else
-   if (x >= PixelMap.Width) then
+   if (X[0] >= PixelMap.Width) then
     begin
      // check if line needs to be drawn at all
-     if x2 >= PixelMap.Width then Exit;
+     if X[1] >= PixelMap.Width then Exit;
 
      // calculate new left offset
-     y := Round(y + ((PixelMap.Width - 1 - x) / dx) * dy);
-     x := PixelMap.Width - 1;
+     Y[0] := Round(Y[0] + ((PixelMap.Width - 1 - X[0]) / dx) * dy);
+     X[0] := PixelMap.Width - 1;
 
-     // recalculate length in x and y coordinates
-     dx := x2 - x;
-     dy := y2 - y;
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1] - Y[0];
     end;
 
-   if (x2 < 0) then
+   if (X[1] < 0) then
     begin
      // calculate new left offset
-     y2 := Round(y2 + (-x2 / dx) * dy);
-     x2 := 0;
+     Y[1] := Round(Y[1] + (-X[1] / dx) * dy);
+     X[1] := 0;
 
-     // recalculate length in x and y coordinates
-     dx :=    - x;
-     dy := y2 - y;
+     // recalculate length in X[0] and Y[0] coordinates
+     dx :=    - X[0];
+     dy := Y[1] - Y[0];
     end else
-   if (x2 >= PixelMap.Width) then
+   if (X[1] >= PixelMap.Width) then
     begin
      // calculate new left offset
-     y2 := Round(y2 + ((PixelMap.Width - 1 - x2) / dx) * dy);
-     x2 := PixelMap.Width - 1;
+     Y[1] := Round(Y[1] + ((PixelMap.Width - 1 - X[1]) / dx) * dy);
+     X[1] := PixelMap.Width - 1;
 
-     // recalculate length in x and y coordinates
-     dx := x2 - x;
-     dy := y2 - y;
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1] - Y[0];
     end;
 
-   // check whether y-coordinate is outside the pixel map
-   if (y < 0) then
+   // check whether Y[0]-coordinate is outside the pixel map
+   if (Y[0] < 0) then
     begin
      // check if line needs to be drawn at all
-     if y2 < 0 then Exit;
+     if Y[1] < 0 then Exit;
 
      // calculate new left offset
-     x := Round(x + (-y / dy) * dx);
-     y := 0;
+     X[0] := Round(X[0] + (-Y[0] / dy) * dx);
+     Y[0] := 0;
 
-     // recalculate length in x and y coordinates
-     dx := x2 - x;
-     dy := y2;
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1];
     end else
-   if (y >= PixelMap.Height) then
+   if (Y[0] >= PixelMap.Height) then
     begin
      // check if line needs to be drawn at all
-     if y2 >= PixelMap.Height then Exit;
+     if Y[1] >= PixelMap.Height then Exit;
 
      // calculate new left offset
-     x := Round(x + ((PixelMap.Height - 1 - y) / dy) * dx);
-     y := PixelMap.Height - 1;
+     X[0] := Round(X[0] + ((PixelMap.Height - 1 - Y[0]) / dy) * dx);
+     Y[0] := PixelMap.Height - 1;
 
-     // recalculate length in x and y coordinates
-     dx := x2 - x;
-     dy := y2 - y;
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1] - Y[0];
     end;
 
-   if (y2 < 0) then
+   if (Y[1] < 0) then
     begin
-     // recalculate new length in x and y coordinates
-     dx := Round(x2 + (-y2 / dy) * dx) - x;
-     dy :=                               - y;
+     // recalculate new length in X[0] and Y[0] coordinates
+     dx := Round(X[1] + (-Y[1] / dy) * dx) - X[0];
+     dy :=                               - Y[0];
     end else
-   if (y2 >= PixelMap.Height) then
+   if (Y[1] >= PixelMap.Height) then
     begin
-     // recalculate new length in x and y coordinates
-     dx := Round(x2 + ((PixelMap.Height - 1 - y2) / dy) * dx) - x;
-     dy := (PixelMap.Height - 1) - y;
+     // recalculate new length in X[0] and Y[0] coordinates
+     dx := Round(X[1] + ((PixelMap.Height - 1 - Y[1]) / dy) * dx) - X[0];
+     dy := (PixelMap.Height - 1) - Y[0];
     end;
 
    incx := Sign(dx);
@@ -283,7 +283,7 @@ begin
     end;
 
    err := el shr 1;
-   BlendPixelInplace(PixelColor32, DataPointer[Y * PixelMap.Width + x]);
+   BlendPixelInplace(PixelColor32, DataPointer[Y[0] * PixelMap.Width + X[0]]);
 
    for t := 1 to el - 1 do
     begin
@@ -291,15 +291,15 @@ begin
      if (err < 0) then
       begin
        err := err + el;
-       x := x + ddx;
-       y := y + ddy;
+       X[0] := X[0] + ddx;
+       Y[0] := Y[0] + ddy;
       end
      else
       begin
-       x := x + pdx;
-       y := y + pdy;
+       X[0] := X[0] + pdx;
+       Y[0] := Y[0] + pdy;
       end;
-     BlendPixelInplace(PixelColor32, DataPointer[Y * PixelMap.Width + x]);
+     BlendPixelInplace(PixelColor32, DataPointer[Y[0] * PixelMap.Width + X[0]]);
     end;
   finally
    EMMS;
@@ -477,8 +477,190 @@ begin
 end;
 
 procedure TGuiPixelLine.DrawDraftShape(PixelMap: TGuiCustomPixelMap);
+var
+  X, Y          : array [0..1] of Integer;
+  LineWidth     : Integer;
+  dx, dy        : Integer;
+  Index         : Integer;
+  DataPointer   : PPixel32Array;
+  PixelColor32  : TPixel32;
+  Gradient      : Single;
+  ScanLineRange : array [0..1] of Integer;
 begin
+ with GeometricShape do
+  begin
+   X[0] := ConvertFromFixed24Dot8PointToInteger(XA);
+   Y[0] := ConvertFromFixed24Dot8PointToInteger(YA);
+   X[1] := ConvertFromFixed24Dot8PointToInteger(XB);
+   Y[1] := ConvertFromFixed24Dot8PointToInteger(YB);
+   LineWidth := 3; //ConvertFromFixed24Dot8PointToInteger(Width);
+  end;
 
+ PixelColor32 := ConvertColor(Color);
+ PixelColor32.A := Alpha;
+
+ DataPointer := PixelMap.DataPointer;
+
+  // ensure the line goes always from left to right
+ if X[0] > X[1] then
+  begin
+   Exchange32(X[0], X[1]);
+   Exchange32(Y[0], Y[1]);
+  end;
+
+ if Y[0] = Y[1] then
+  begin
+   // check whether the Y[0]-coordinate is outside the pixel map
+   if (Y[0] < 0) or (Y[0] >= PixelMap.Height) then Exit;
+
+   // limit X[0]-coordinate to values inside the pixel map
+   X[0] := Limit(X[0], 0, PixelMap.Width - 1);
+   X[1] := Limit(X[1], 0, PixelMap.Width - 1);
+
+   // check if all coordinates are equal
+   if X[0] = X[1] then
+    try
+     BlendPixelInplace(PixelColor32, DataPointer[(Y[1] + Index - LineWidth div 2) * PixelMap.Width + X[1]]);
+     Exit;
+    finally
+     EMMS;
+    end;
+
+   // draw horizontal line
+//   for Index := 0 to LineWidth - 1 do
+   BlendPixelLine(PixelColor32, @DataPointer[Y[1] * PixelMap.Width + X[0]], X[1] - X[0])
+  end else
+ if X[0] = X[1] then
+  begin
+   // check whether the X[0]-coordinate is outside the pixel map
+   if (X[0] < 0) or (X[0] >= PixelMap.Width) then Exit;
+
+   // limit Y[0]-coordinate to values inside the pixel map
+   Y[0] := Limit(Y[0], 0, PixelMap.Height - 1);
+   Y[1] := Limit(Y[1], 0, PixelMap.Height - 1);
+
+   // check if all coordinates are equal
+   if Y[0] = Y[1] then
+    try
+     BlendPixelInplace(PixelColor32, DataPointer[Y[1] * PixelMap.Width + X[1]]);
+     Exit;
+    finally
+     EMMS;
+    end;
+
+   // draw vertical line
+   PixelMap.VerticalLine(X[0], Y[0], Y[1], PixelColor32);
+  end
+ else
+  try
+   // calculate length in X[0] and Y[0] coordinates
+   dx := X[1] - X[0];
+   dy := Y[1] - Y[0];
+
+   // check whether X[0]-coordinate is outside the pixel map
+   if (X[0] < 0) then
+    begin
+     // check if line needs to be drawn at all
+     if X[1] < 0 then Exit;
+
+     // calculate new left offset
+     Y[0] := Round(Y[0] + (-X[0] / dx) * dy);
+     X[0] := 0;
+
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1];
+     dy := Y[1] - Y[0];
+    end else
+   if (X[0] >= PixelMap.Width) then
+    begin
+     // check if line needs to be drawn at all
+     if X[1] >= PixelMap.Width then Exit;
+
+     // calculate new left offset
+     Y[0] := Round(Y[0] + ((PixelMap.Width - 1 - X[0]) / dx) * dy);
+     X[0] := PixelMap.Width - 1;
+
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1] - Y[0];
+    end;
+
+   if (X[1] < 0) then
+    begin
+     // calculate new left offset
+     Y[1] := Round(Y[1] + (-X[1] / dx) * dy);
+     X[1] := 0;
+
+     // recalculate length in X[0] and Y[0] coordinates
+     dx :=    - X[0];
+     dy := Y[1] - Y[0];
+    end else
+   if (X[1] >= PixelMap.Width) then
+    begin
+     // calculate new left offset
+     Y[1] := Round(Y[1] + ((PixelMap.Width - 1 - X[1]) / dx) * dy);
+     X[1] := PixelMap.Width - 1;
+
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1] - Y[0];
+    end;
+
+   // check whether Y[0]-coordinate is outside the pixel map
+   if (Y[0] < 0) then
+    begin
+     // check if line needs to be drawn at all
+     if Y[1] < 0 then Exit;
+
+     // calculate new left offset
+     X[0] := Round(X[0] + (-Y[0] / dy) * dx);
+     Y[0] := 0;
+
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1];
+    end else
+   if (Y[0] >= PixelMap.Height) then
+    begin
+     // check if line needs to be drawn at all
+     if Y[1] >= PixelMap.Height then Exit;
+
+     // calculate new left offset
+     X[0] := Round(X[0] + ((PixelMap.Height - 1 - Y[0]) / dy) * dx);
+     Y[0] := PixelMap.Height - 1;
+
+     // recalculate length in X[0] and Y[0] coordinates
+     dx := X[1] - X[0];
+     dy := Y[1] - Y[0];
+    end;
+
+   if (Y[1] < 0) then
+    begin
+     // recalculate new length in X[0] and Y[0] coordinates
+     dx := Round(X[1] + (-Y[1] / dy) * dx) - X[0];
+     dy :=                               - Y[0];
+    end else
+   if (Y[1] >= PixelMap.Height) then
+    begin
+     // recalculate new length in X[0] and Y[0] coordinates
+     dx := Round(X[1] + ((PixelMap.Height - 1 - Y[1]) / dy) * dx) - X[0];
+     dy := (PixelMap.Height - 1) - Y[0];
+    end;
+
+(*
+   if dy > dx then
+    begin
+     if Y[0] < Y[1] then
+      begin
+       ScanLineRange[0] := Y[0] - LineWidth;
+       ScanLineRange[1] := Y[1] + LineWidth;
+      end;
+    end;
+*)
+
+  finally
+   EMMS;
+  end;
 end;
 
 procedure TGuiPixelLine.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);

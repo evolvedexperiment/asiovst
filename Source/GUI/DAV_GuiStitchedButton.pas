@@ -59,6 +59,8 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,
       Y: Integer); override;
     procedure Click; override;
+  public
+    property GlyphIndex read FGlyphIndex;
   end;
 
   TGuiStitchedButton = class(TCustomGuiStitchedButton)

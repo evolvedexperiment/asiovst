@@ -229,6 +229,7 @@ type
   TCustomGuiEQGraph = class(TCustomControl)
   private
     FAutoColor        : Boolean;
+    FShowGrid         : Boolean;
     FChartColor       : TColor;
     FBorderRadius     : Integer;
     FBorderWidth      : Integer;
@@ -252,6 +253,7 @@ type
     procedure SetFilterSeries(const Value: TGuiEQGraphSeriesCollection);
     procedure SetXAxis(const Value: TGuiEQGraphXAxis);
     procedure SetYAxis(const Value: TGuiEQGraphYAxis);
+    procedure SetShowGrid(const Value: Boolean);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure AutoColorChanged; virtual;
@@ -259,6 +261,7 @@ type
     procedure BorderWidthChanged; virtual;
     procedure BorderColorChanged; virtual;
     procedure ChartColorChanged; virtual;
+    procedure ShowGridChanged; virtual;
     procedure GraphColorDarkChanged; virtual;
     procedure GraphColorLightChanged; virtual;
   public
@@ -274,6 +277,7 @@ type
     property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
     property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
     property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
+    property ShowGrid: Boolean read FShowGrid write SetShowGrid default True;
 
     property FilterSeries: TGuiEQGraphSeriesCollection read FFilterSeries write SetFilterSeries;
     property YAxis: TGuiEQGraphYAxis read FYAxis write SetYAxis;
@@ -331,6 +335,7 @@ type
     property FilterSeries;
     property GraphColorDark;
     property GraphColorLight;
+    property ShowGrid;
     property XAxis;
     property YAxis;
 
@@ -901,6 +906,7 @@ begin
  FGraphColorDark  := $303030;
  FBorderColor     := $202020;
  FBorderWidth     := 1;
+ FShowGrid        := True;
 end;
 
 destructor TCustomGuiEQGraph.Destroy;
@@ -999,6 +1005,15 @@ begin
   end;
 end;
 
+procedure TCustomGuiEQGraph.SetShowGrid(const Value: Boolean);
+begin
+ if FShowGrid <> Value then
+  begin
+   FShowGrid := Value;
+   ShowGridChanged;
+  end;
+end;
+
 procedure TCustomGuiEQGraph.AutoColorChanged;
 begin
  if FAutoColor then
@@ -1024,6 +1039,11 @@ end;
 procedure TCustomGuiEQGraph.SetYAxis(const Value: TGuiEQGraphYAxis);
 begin
  FYAxis.Assign(Value);
+end;
+
+procedure TCustomGuiEQGraph.ShowGridChanged;
+begin
+ ChartChanged;
 end;
 
 procedure TCustomGuiEQGraph.ChartChanged;
@@ -1232,7 +1252,7 @@ begin
          Brush.Color := FChartColor;
          FillRect(ClipRect);
         end;
-       RenderGridToBitmap(FBuffer);
+       if FShowGrid then RenderGridToBitmap(FBuffer);
        RenderToBitmap(FBuffer);
       end;
      else
@@ -1259,7 +1279,7 @@ begin
             Brush.Color := FChartColor;
             FillRect(ClipRect);
            end;
-         RenderGridToBitmap(Bmp);
+         if FShowGrid then RenderGridToBitmap(Bmp);
          RenderToBitmap(Bmp);
          DownsampleBitmap(Bmp);
          FBuffer.Canvas.Draw(0, 0, Bmp);
