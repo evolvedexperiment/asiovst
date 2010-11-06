@@ -99,7 +99,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   Math, DAV_Common, DAV_GuiCommon, AdvancedClipperDM;
