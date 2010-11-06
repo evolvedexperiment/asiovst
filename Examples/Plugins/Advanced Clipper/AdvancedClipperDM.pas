@@ -76,7 +76,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   AdvancedClipperGUI, DAV_Common, DAV_VSTModuleWithPrograms;
