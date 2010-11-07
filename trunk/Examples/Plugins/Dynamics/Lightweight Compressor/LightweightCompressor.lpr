@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library BarberpoleFlanger;
+library LightweightCompressor;
 
 {$I DAV_Compiler.inc}
 
@@ -9,17 +9,17 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  BarberpoleFlangerDM in 'BarberpoleFlangerDM.pas' {BarberpoleFlangerModule: TVSTModule},
-  BarberpoleFlangerGUI in 'BarberpoleFlangerGUI.pas' {FmBarberpoleFlanger};
+  LightweightCompressorDM in 'LightweightCompressorDM.pas' {LightweightCompressorDataModule: TVSTModule},
+  LightweightCompressorGUI in 'LightweightCompressorGUI.pas' {FmLightweightCompressor};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TBarberpoleFlangerModule);
+ Result := VstModuleMain(AudioMasterCallback, TLightweightCompressorDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TBarberpoleFlangerModule);
+ Result := WinampDSPModuleHeader(TLightweightCompressorDataModule);
 end;
 
 exports
@@ -28,5 +28,4 @@ exports
   WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
- Application.Initialize;
 end.
