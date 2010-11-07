@@ -59,7 +59,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -115,10 +117,5 @@ begin
    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i SimpleVibratoGUI.lrs}
-{$ENDIF}
 
 end.

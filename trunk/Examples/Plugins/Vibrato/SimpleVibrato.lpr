@@ -3,11 +3,6 @@ library SimpleVibrato;
 
 {$I DAV_Compiler.inc}
 
-// if the file below is missing please execute the batch file in this
-// directory first to compile the resource file
-
-{$R 'Vibrato.res' 'Vibrato.rc'}
-
 uses
   Interfaces,
   Forms,
