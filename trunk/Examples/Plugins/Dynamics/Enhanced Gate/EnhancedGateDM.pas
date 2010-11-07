@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspDynamics;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
 const
   CNrChannels = 2;
@@ -73,9 +73,14 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
-uses Math, EditorFrm;
+uses
+  Math, EditorFrm;
 
 procedure TEnhancedGateDataModule.VSTModuleOpen(Sender: TObject);
 var

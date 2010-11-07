@@ -1,12 +1,7 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library ConvoFx;
+library Adhesive;
 
 {$I DAV_Compiler.inc}
-
-// if the file below is missing please execute the batch file in this
-// directory first to compile the resource file
-
-{$R 'Resources\IRs.res' 'Resources\IRs.rc'}
 
 uses
   Interfaces,
@@ -14,25 +9,23 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ConvoFxDM in 'ConvoFxDM.pas' {ConvoFxDataModule: TVSTModule},
-  ConvoFxGUI in 'ConvoFxGUI.pas' {FmConvoFx};
+  AdhesiveDM in 'AdhesiveDM.pas' {AdhesiveDataModule: TVSTModule},
+  AdhesiveGUI in 'AdhesiveGUI.pas' {FmAdhesive};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TConvoFxDataModule);
+ Result := VstModuleMain(AudioMasterCallback, TAdhesiveDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TConvoFxDataModule);
+ Result := WinampDSPModuleHeader(TAdhesiveDataModule);
 end;
 
 exports
   VstPluginMain name 'main',
   VstPluginMain name 'VSTPluginMain',
   WinampDSPGetHeader name 'winampDSPGetHeader2';
-
-{$R *.res}
 
 begin
  Application.Initialize;
