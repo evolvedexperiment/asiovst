@@ -35,11 +35,12 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
-  Gauges, ExtCtrls, DAV_Types, DAV_GuiPixelMap, DAV_GuiPng, DAV_VSTModule,
-  DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiGroup, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiGraphicControl,
-  DAV_GuiLabel, DAV_GuiCustomControl;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, StdCtrls, Graphics, ExtCtrls, DAV_Types,
+  DAV_GuiPixelMap, DAV_GuiPng, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLED,
+  DAV_GuiGroup, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiGraphicControl, DAV_GuiLabel,
+  DAV_GuiCustomControl;
 
 type
   TEditorForm = class(TForm)
@@ -83,6 +84,9 @@ type
     LbThreshold: TLabel;
     VUTimer: TTimer;
     LbEnhancedAudioGate: TGuiLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure CBOnOffClick(Sender: TObject);
@@ -99,9 +103,6 @@ type
     procedure DialKneeChange(Sender: TObject);
     procedure DialRangeChange(Sender: TObject);
     procedure VUTimerTimer(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure FormResize(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   public
@@ -118,7 +119,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_GUICommon, EnhancedGateDM;
