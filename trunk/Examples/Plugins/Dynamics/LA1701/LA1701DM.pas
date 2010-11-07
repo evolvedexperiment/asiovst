@@ -1,4 +1,4 @@
-﻿unit LA1701DM;
+unit LA1701DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspDynamics, DAV_DspLevelingAmplifier, DAV_DspFilterButterworth;
 
 type

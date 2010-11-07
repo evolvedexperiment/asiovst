@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
-  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, ExtCtrls, StdCtrls, Graphics, DAV_Types, DAV_VSTModule,
+  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap,
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
@@ -66,7 +66,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   DAV_GuiCommon, DAV_VSTModuleWithPrograms, BarberpoleShifterDM;

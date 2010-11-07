@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
   DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiCommon, DAV_GuiPixelMap,
   DAV_GuiGraphicControl;
 

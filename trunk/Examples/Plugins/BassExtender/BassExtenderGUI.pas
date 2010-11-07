@@ -1,4 +1,4 @@
-﻿unit BassExtenderGUI;
+unit BassExtenderGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, ExtCtrls,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Graphics, Controls, ExtCtrls,
   DAV_Types, DAV_VSTModule, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
   DAV_GuiStitchedDial, DAV_GuiPng, DAV_GuiPixelMap, DAV_GuiPanel, DAV_GuiLabel;
 

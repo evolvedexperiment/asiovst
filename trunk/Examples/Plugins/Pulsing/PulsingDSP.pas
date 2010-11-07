@@ -3,7 +3,7 @@ unit PulsingDSP;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_DspPulsing,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_DspPulsing,
   DAV_VSTModule;
 
 type

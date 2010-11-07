@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
   ActnList, ComCtrls, ToolWin, Dialogs, DAV_Types, DAV_VSTModule, SynEdit,
   SynEditHighlighter, SynHighlighterPas, uPSCompiler, uPSUtils;
 

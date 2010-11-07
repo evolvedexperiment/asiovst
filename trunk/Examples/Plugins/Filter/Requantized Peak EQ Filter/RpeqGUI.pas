@@ -3,7 +3,7 @@ unit RpeqGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
 
 type
   TFmRpeq = class(TForm)

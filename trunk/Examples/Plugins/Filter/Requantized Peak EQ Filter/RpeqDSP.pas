@@ -3,7 +3,7 @@ unit RpeqDSP;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, 
   DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterBasics;
 
 type

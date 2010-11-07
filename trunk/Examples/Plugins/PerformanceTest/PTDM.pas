@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  FastMove, Windows, Messages, SysUtils, Classes, Forms, DAV_Types,
+  FastMove, {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types,
   DAV_VSTEffect, DAV_VSTModule;
 
 type

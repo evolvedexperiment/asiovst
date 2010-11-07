@@ -36,7 +36,7 @@ interface
 {-$DEFINE Use_IPPS}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
   DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_VSTModule,
   DAV_AudioData;

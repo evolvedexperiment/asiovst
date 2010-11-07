@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPixelMap, DAV_GuiPng;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, StdCtrls, ExtCtrls, Graphics, DAV_Types, DAV_VSTModule, 
+  DAV_GuiLabel, DAV_GuiPixelMap, DAV_GuiPng;
 
 type
   TFmCTC = class(TForm)
