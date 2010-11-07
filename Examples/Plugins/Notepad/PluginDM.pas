@@ -3,7 +3,7 @@ unit PluginDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_ChunkClasses, DAV_Types,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_ChunkClasses, DAV_Types,
   DAV_VSTModule;
 
 type

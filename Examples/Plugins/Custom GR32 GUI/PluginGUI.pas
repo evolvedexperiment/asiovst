@@ -3,7 +3,7 @@ unit PluginGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Graphics, Menus, Controls,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Graphics, Menus, Controls,
   Dialogs, ExtDlgs, Registry, DAV_Types, DAV_VSTModule, GR32, GR32_Image,
   GR32_Blend, GR32_Layers, GuiLayers;
 

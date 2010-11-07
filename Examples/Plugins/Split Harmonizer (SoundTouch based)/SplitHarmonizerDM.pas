@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
   DAV_VSTModule, DAV_DspDelayLines, DAV_DspFilter, DAV_DspFilterButterworth,  
   DAV_SoundTouchDLLResource; //DAV_SoundTouch;
 

@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspBarberpoleTuner, DAV_DspFilterButterworth;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspBarberpoleTuner, DAV_DspFilterButterworth;
 
 type
   TBarberpoleTunerDataModule = class(TVSTModule)

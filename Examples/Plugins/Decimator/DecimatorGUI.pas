@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, Gauges, 
-  StdCtrls, Graphics, DAV_Types, DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, ExtCtrls, Controls, Gauges, StdCtrls, Graphics, DAV_Types, 
+  DAV_VSTModule;
 
 type
   TMouseContext = (mcNone, mcSHRate, mcBits, mcCut, mcRes, mcMix, mcVol);

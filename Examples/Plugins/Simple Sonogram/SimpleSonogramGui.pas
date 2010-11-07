@@ -33,7 +33,7 @@ unit SimpleSonogramGui;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Graphics,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, ExtCtrls, Graphics,
   StdCtrls, Menus, DAV_Types, DAV_VSTModule, DAV_GuiPixelMap;
 
 type

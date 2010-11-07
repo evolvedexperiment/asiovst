@@ -3,7 +3,7 @@ unit PhaseRotatorGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, StdCtrls, DAV_Types,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, StdCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel, Controls, DAV_GuiBaseControl,
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 

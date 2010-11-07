@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspConvolution, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
-  DAV_AudioData;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspConvolution, DAV_AudioFileWAV, 
+  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
 
 type
   TConvolutionDataModule = class(TVSTModule)

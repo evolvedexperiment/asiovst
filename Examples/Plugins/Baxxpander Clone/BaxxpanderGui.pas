@@ -33,7 +33,7 @@ unit BaxxpanderGui;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   Controls, Graphics, DAV_GuiBaseControl, DAV_GuiDial, ExtCtrls, DAV_GuiPanel,
   DAV_GuiLabel, DAV_GuiLED;
 

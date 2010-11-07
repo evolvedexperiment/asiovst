@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_DspFilter,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_DspFilter,
   DAV_DspFilterButterworth, DAV_DspFilterBasics, DAV_DspDynamics,
   DAV_DspLightweightDynamics, Dav_DspPsychoacousticBassEnhancer, DAV_VSTModule;
 
