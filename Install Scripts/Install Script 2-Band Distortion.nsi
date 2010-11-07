@@ -8,7 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
-
+  !include "x64.nsh"
 
 ;--------------------------------
 ;General
@@ -33,7 +33,6 @@ SetCompressor lzma
 ;Variables
 
   Var BugReportState
-
 
 ;--------------------------------
 ;Interface Settings
@@ -65,8 +64,8 @@ SetCompressor lzma
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -112,7 +111,11 @@ Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\TwoBandDistortion.dll" "..\Bin\2-Band Distortion.dll"'  
+  !system 'copy "..\Bin\x86_64-win64\TwoBandDistortion.dll" "..\Bin\2-Band Distortion (x64).dll"'  
 
+  ${If} ${RunningX64}
+  File "..\Bin\2-Band Distortion (x64).dll"
+  ${Else}
   ;ADD YOUR OWN FILES HERE...
   File "..\Bin\2-Band Distortion.dll"
 
@@ -130,6 +133,7 @@ Section "VST-Plugin" SecVstPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -142,7 +146,7 @@ Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\2-Band Distortion Manual.pdf"
+  File "..\Bin\2-Band Distortion.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -192,8 +196,12 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
+  ${If} ${RunningX64}
+  Delete "$INSTDIR\2-Band Distortion (x64).dll"
+  ${Else}
   Delete "$INSTDIR\2-Band Distortion.dll"
-  Delete "$INSTDIR\2-Band Distortion Manual.pdf"
+  ${Endif}
+  Delete "$INSTDIR\2-Band Distortion.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

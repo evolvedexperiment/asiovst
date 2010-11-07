@@ -108,7 +108,7 @@ type
 
 
 {$IFDEF FPC}
-function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boolean;
+//function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boolean;
 {$ENDIF}
 
 implementation
@@ -171,6 +171,7 @@ begin
 end;
 
 {$IFDEF FPC}
+(*
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
 begin
  Result := InitLazResourceComponent(Instance, RootAncestor);
@@ -179,6 +180,7 @@ end;
 initialization
 //  Set8087CW(Default8087CW or $3F);
   RegisterInitComponentHandler(TVSTModule, @InitResourceComponent);
+*)
 {$ENDIF}
 
 end.

@@ -55,7 +55,7 @@
         <PackageName Value="LCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="12">
       <Unit0>
         <Filename Value="TwoBandDistortion.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -71,13 +71,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TwoBandDistortionDM"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
-        <CursorPos X="80" Y="74"/>
+        <CursorPos X="40" Y="67"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="TwoBandDistortionGUI.pas"/>
@@ -86,7 +86,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TwoBandDistortionGUI"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
         <CursorPos X="12" Y="38"/>
@@ -132,7 +132,7 @@
       <Unit8>
         <Filename Value="..\..\..\Source\DAV_Approximations.pas"/>
         <UnitName Value="DAV_Approximations"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -155,8 +155,19 @@
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="..\..\..\Source\GUI\DAV_GuiPng.pas"/>
+        <UnitName Value="DAV_GuiPng"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1667"/>
+        <CursorPos X="17" Y="1681"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit11>
     </Units>
-    <JumpHistory Count="6" HistoryIndex="5">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="TwoBandDistortionDM.pas"/>
         <Caret Line="235" Column="25" TopLine="222"/>
@@ -181,6 +192,10 @@
         <Filename Value="TwoBandDistortionDM.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position6>
+      <Position7>
+        <Filename Value="..\..\..\Source\GUI\DAV_GuiPng.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -188,7 +203,7 @@
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>
-      <OtherUnitFiles Value="..\..\..\Packages\Lazarus;..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI"/>
+      <OtherUnitFiles Value="..\..\..\Packages\Lazarus;..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
       <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
@@ -204,7 +219,8 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="True"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
