@@ -212,8 +212,6 @@ begin
 end;
 
 procedure TGuiCustomControl.UpdateBuffer;
-var
-  TextSize : TSize;
 begin
  FUpdateBuffer := False;
 

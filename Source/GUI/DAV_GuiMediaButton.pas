@@ -101,10 +101,6 @@ type
     procedure RenderButton(PixelMap: TGuiCustomPixelMap);
     procedure RenderGlyph(PixelMap: TGuiCustomPixelMap);
     procedure TransparentChanged; virtual;
-
-    {$IFNDEF FPC}
-    procedure CopyParentImage(PixelMap: TGuiCustomPixelMap); virtual;
-    {$ENDIF}
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -436,7 +432,7 @@ procedure TGuiMediaButton.UpdateBackBuffer;
 var
   PixelColor32 : TPixel32;
 begin
- if FTransparent then CopyParentImage(FBackBuffer) else
+ if FTransparent then FBackBuffer.CopyParentImage(Self) else
   begin
    PixelColor32 := ConvertColor(Color);
    FBackBuffer.FillRect(ClientRect, PixelColor32);

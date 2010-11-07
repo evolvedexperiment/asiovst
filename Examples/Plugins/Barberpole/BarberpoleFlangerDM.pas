@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspBarberpole;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspBarberpole;
 
 type
   TBarberpoleFlangerModule = class(TVSTModule)
@@ -54,7 +54,7 @@ type
     procedure ParameterAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterAlgorithmChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FBarberpole : Array [0..1] of TDspBarberpole32;
+    FBarberpole      : array [0..1] of TDspBarberpole32;
     FCriticalSection : TCriticalSection;
     function GetBarberpole(Index: Integer): TDspBarberpole32;
   public
@@ -63,7 +63,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   DAV_Approximations, DAV_VSTCustomModule, BarberpoleFlangerGUI;
@@ -259,9 +263,13 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to 1 do
+  for Channel := 0 to Length(FBarberpole) - 1 do
    for Sample := 0 to SampleFrames - 1
+  {$IFDEF FPC}
+    do Outputs[Channel, Sample] := FastTanhOpt5Term(FBarberpole[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  {$ELSE}
     do Outputs[Channel, Sample] := FastTanhOpt5TermFPU(FBarberpole[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  {$ENDIF}
  finally
   FCriticalSection.Leave;
  end;

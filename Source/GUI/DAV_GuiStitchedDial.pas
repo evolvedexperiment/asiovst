@@ -115,20 +115,27 @@ type
 
   TGuiStitchedDial  = class(TCustomGuiStitchedDial)
   published
+    property PopupMenu;
+    property Anchors;
     property AutoSize;
     property Color;
     property CurveMapping;
     property DefaultValue;
+    property Enabled;
     property LockCursor;
     property Max;
     property Min;
-    property OnChange;
     property ParentColor;
     property StitchedImageList;
     property StitchedImageIndex;
     property Transparent;
     property Value;
     property WheelStep;
+
+    property OnChange;
+    property OnKeyUp;
+    property OnKeyPress;
+    property OnKeyDown;
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;

@@ -55,6 +55,12 @@ type
     procedure CalculateCoefficients; override;
   end;
 
+  TBasicPeakAFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
+  protected
+    procedure CalculateCoefficients; override;
+  end;
+
   TBasicOrfanidisPeakFilter = class(TBiquadIIRFilter, IDspProcessor32,
     IDspProcessor64)
   protected
@@ -193,6 +199,21 @@ begin
  FNominator[1] := FDenominator[1];
  FNominator[0] := (FGainFactor + FAlpha * Sqr(FGainFactor)) * t;
  FNominator[2] := (FGainFactor - FAlpha * Sqr(FGainFactor)) * t;
+end;
+
+
+{ TBasicPeakAFilter }
+
+procedure TBasicPeakAFilter.CalculateCoefficients;
+var
+  t : Double;
+begin
+ t := 1 / (1 + FAlpha);
+ FDenominator[2] := (1 - FAlpha) * t;
+ FDenominator[1] := -2 * ExpW0.Re * t;
+ FNominator[1] := FDenominator[1];
+ FNominator[0] := (1 + FAlpha * Sqr(FGainFactor)) * t;
+ FNominator[2] := (1 - FAlpha * Sqr(FGainFactor)) * t;
 end;
 
 
@@ -399,7 +420,7 @@ var
   cn, sA    : Double;
 begin
  cn := ExpW0.Re;
- sA := 2 * sqrt(FGainFactor) * FAlpha;
+ sA := 2 * Sqrt(FGainFactor) * FAlpha;
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
  t  := 1 / (A1 - (A2 * cn) + sA);

@@ -24,9 +24,9 @@ implementation
 
 uses
   {$IFDEF FPC} LResources, {$ELSE} DAV_GuiGroup, DAV_GuiLevelMeter,
-  DAV_GuiModular, DAV_GuiBackgrounds,{$ENDIF} DAV_GuiADSRGraph,
+  DAV_GuiModular, DAV_GuiBackgrounds, DAV_GuiDialNew, {$ENDIF} DAV_GuiADSRGraph,
   DAV_GuiAudioDataDisplay, DAV_GuiButton, DAV_GuiCorrelationMeter,
-  DAV_GuiDial, DAV_GuiDialNew, DAV_GuiDialDesign, DAV_GuiDialRenderer, DAV_GuiDynamicWaveform,
+  DAV_GuiDial, DAV_GuiDialDesign, DAV_GuiDialRenderer, DAV_GuiDynamicWaveform,
   DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiFont, DAV_GuiFontList,
   DAV_GuiFontDesign, DAV_GuiInscription, DAV_GuiGraphXY, DAV_GuiGraphXYDesign,
   DAV_GuiLabel, DAV_GuiLED, DAV_GuiMediaButton, DAV_GuiMidiKeys,
@@ -40,15 +40,15 @@ procedure Register;
 begin
   RegisterComponents('ASIO/VST GUI', [
     TGuiADSRGraph, TGuiAudioDataDisplay, TGuiButton, TGuiCorrelationMeter,
-    TGuiDial, TGuiSimpleDial, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer,
+    TGuiDial, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer,
     TGuiDialMetal, TGuiDynamicWaveform, TGuiEQGraph, TGuiEQSlide, TGuiFontList,
     TGuiGraphXY, TGuiInscription, TGuiLabel, TGuiLED, TGuiMediaButton,
     TGuiMidiKeys, TGuiPaintBox, TGuiPanel, TGuiSelectBox, TGuiSlider,
     TGuiStaticWaveform, TGuiStitchedButton, TGuiStitchedDial,
     TGuiStitchedDisplay, TGuiStitchedImageList, TGuiStitchedPNGList,
-    TGuiStitchedSwitch, TGuiSwitch, TGuiVUMeter {$IFNDEF FPC}, TGuiGroupA,
-    TGuiGroupB, TGuiGroup, TGuiLevelMeter, TGuiColorLevelMeter, TGuiModular,
-    TGuiBackground {$ENDIF}]);
+    TGuiStitchedSwitch, TGuiSwitch, TGuiVUMeter {$IFNDEF FPC}, TGuiSimpleDial,
+    TGuiGroupA, TGuiGroupB, TGuiGroup, TGuiLevelMeter, TGuiColorLevelMeter,
+    TGuiModular, TGuiBackground {$ENDIF}]);
 
   RegisterPropertyEditor(TypeInfo(TGuiCustomPixelMap), nil, '', TPixelMapProperty);
   RegisterPropertyEditor(TypeInfo(TPortableNetworkGraphicPixel32), nil, '', TPngProperty);

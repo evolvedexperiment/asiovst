@@ -1117,12 +1117,17 @@ begin
   with TCustomBiquadIIRFilter(Dest) do
    begin
     inherited;
-    FDenominator  := Self.FDenominator;
-    FNominator    := Self.FNominator;
-    FPoles        := Self.FPoles;
-    FZeros        := Self.FZeros;
-    FState        := Self.FState;
-    FStateStack   := Self.FStateStack;
+
+    // eventually copy internal coefficients & states
+    if Dest.ClassType = Self.ClassType then
+     begin
+      FDenominator  := Self.FDenominator;
+      FNominator    := Self.FNominator;
+      FPoles        := Self.FPoles;
+      FZeros        := Self.FZeros;
+      FState        := Self.FState;
+      FStateStack   := Self.FStateStack;
+     end;
    end
   else inherited;
 end;
