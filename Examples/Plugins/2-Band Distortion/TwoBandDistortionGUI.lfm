@@ -11,18 +11,12 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
-  Scaled = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow
-  DesignSize = (
-    319
-    129)
   PixelsPerInch = 96
-  TextHeight = 13
   object PnControl: TGuiPanel
     Left = 8
     Top = 8
@@ -37,7 +31,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
     Radius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
-    Transparent = True
     object LbFreq: TGuiLabel
       Left = 16
       Top = 6

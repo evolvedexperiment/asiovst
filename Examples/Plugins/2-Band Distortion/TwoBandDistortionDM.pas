@@ -71,7 +71,7 @@ implementation
 {$ENDIF}
 
 uses
-  AnsiStrings, TwoBandDistortionGUI, DAV_Approximations;
+  {$IFNDEF FPC} AnsiStrings, {$ENDIF} TwoBandDistortionGUI, DAV_Approximations;
 
 procedure TTwoBandDistortionDataModule.VSTModuleOpen(Sender: TObject);
 var

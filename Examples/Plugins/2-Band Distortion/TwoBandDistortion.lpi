@@ -7,11 +7,11 @@
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
-        <Runnable Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <Title Value="2-Band Distortion"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
@@ -55,7 +55,7 @@
         <PackageName Value="LCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="TwoBandDistortion.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -71,10 +71,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TwoBandDistortionDM"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="31"/>
-        <CursorPos X="28" Y="49"/>
+        <TopLine Value="49"/>
+        <CursorPos X="80" Y="74"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -85,13 +86,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TwoBandDistortionGUI"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
-        <CursorPos X="16" Y="33"/>
+        <CursorPos X="12" Y="38"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\GUI\DAV_GuiBaseControl.pas"/>
@@ -131,9 +132,12 @@
       <Unit8>
         <Filename Value="..\..\..\Source\DAV_Approximations.pas"/>
         <UnitName Value="DAV_Approximations"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\Source\DSP\DAV_DspFilterLinkwitzRiley.pas"/>
@@ -143,8 +147,16 @@
         <CursorPos X="50" Y="38"/>
         <UsageCount Value="10"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="TwoBandDistortionGUI.lfm"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="20" Y="2"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit10>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="6" HistoryIndex="5">
       <Position1>
         <Filename Value="TwoBandDistortionDM.pas"/>
         <Caret Line="235" Column="25" TopLine="222"/>
@@ -157,6 +169,18 @@
         <Filename Value="TwoBandDistortionDM.pas"/>
         <Caret Line="250" Column="1" TopLine="222"/>
       </Position3>
+      <Position4>
+        <Filename Value="..\..\..\Source\DAV_Approximations.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <Caret Line="49" Column="28" TopLine="31"/>
+      </Position5>
+      <Position6>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position6>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -191,6 +215,9 @@
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
