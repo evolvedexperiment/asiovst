@@ -64,7 +64,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -233,10 +235,5 @@ begin
   FCriticalSection.Leave;
  end;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i SimpleVibratoDM.lrs}
-{$ENDIF}
 
 end.

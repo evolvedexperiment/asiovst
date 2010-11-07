@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspGranularPitchshifter,
-  DAV_DspLightweightDynamics, DAV_DspFilterButterworth;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilterLinkwitzRiley, DAV_DspDynamics,
+  DAV_DspGranularPitchshifter, DAV_DspLightweightDynamics,
+  DAV_DspFilterButterworth;
 
 const
   CNumChannels = 2;
@@ -68,7 +69,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   ChunkDemoGUI, DAV_VSTCustomModule;
