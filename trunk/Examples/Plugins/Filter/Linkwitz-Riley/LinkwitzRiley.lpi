@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
-    <Version Value="7"/>
     <General>
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
@@ -11,14 +11,17 @@
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <TargetFileExt Value=".exe"/>
       <Title Value="Linkwitz Riley"/>
       <UseAppBundle Value="False"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ResourceType Value="res"/>
+      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
-      <ProjectVersion Value=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -42,11 +45,13 @@
       <Unit0>
         <Filename Value="LinkwitzRiley.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="6"/>
-        <TopLine Value="2"/>
         <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2"/>
+        <CursorPos X="48" Y="15"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="LinkwitzRileyDM.pas"/>
@@ -55,42 +60,45 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="LinkwitzRileyDM"/>
-        <CursorPos X="59" Y="48"/>
-        <TopLine Value="37"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\..\Source\DAV_Common.pas"/>
         <UnitName Value="DAV_Common"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\..\Source\VST\DAV_VSTOfflineTask.pas"/>
         <UnitName Value="DAV_VSTOfflineTask"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
         <UnitName Value="DAV_DspButterworthFilter"/>
-        <CursorPos X="19" Y="661"/>
         <TopLine Value="651"/>
+        <CursorPos X="19" Y="661"/>
         <UsageCount Value="10"/>
       </Unit4>
       <Unit5>
         <Filename Value="LinkwitzRiley.lpi"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="140"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="XML"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
       </Unit5>
     </Units>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="11" HistoryIndex="10">
       <Position1>
         <Filename Value="LinkwitzRiley.lpr"/>
         <Caret Line="4" Column="21" TopLine="1"/>
@@ -123,17 +131,26 @@
         <Filename Value="LinkwitzRiley.lpr"/>
         <Caret Line="31" Column="25" TopLine="20"/>
       </Position8>
+      <Position9>
+        <Filename Value="LinkwitzRileyDM.pas"/>
+        <Caret Line="55" Column="62" TopLine="41"/>
+      </Position9>
+      <Position10>
+        <Filename Value="LinkwitzRileyDM.pas"/>
+        <Caret Line="61" Column="8" TopLine="43"/>
+      </Position10>
+      <Position11>
+        <Filename Value="LinkwitzRileyDM.pas"/>
+        <Caret Line="161" Column="1" TopLine="133"/>
+      </Position11>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
-    <Target>
-      <Filename Value="LinkwitzRiley"/>
-    </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\..\..\Source\;$(ProjOutDir)\"/>
-      <OtherUnitFiles Value="..\..\..\..\Source\;..\..\..\..\Source\VST\;..\..\..\..\Source\DSP\;..\..\..\..\Source\Math\"/>
+      <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\DSP;..\..\..\..\Source\Math"/>
       <UnitOutputDirectory Value="..\..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
@@ -141,6 +158,7 @@
         <CStyleOperator Value="False"/>
         <IncludeAssertionCode Value="True"/>
         <CPPInline Value="False"/>
+        <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
@@ -152,16 +170,20 @@
     <Linking>
       <Debugging>
         <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
-        <LinkerOptions Value="-framework carbon"/>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
+        <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

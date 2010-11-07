@@ -67,9 +67,7 @@ type
     procedure Clear(Color: TColor); reintroduce; overload; virtual;
     procedure Clear(Color: TPixel32); reintroduce; overload; virtual;
 
-    {$IFNDEF FPC}
     procedure CopyParentImage(Control: TControl);
-    {$ENDIF}
 
     procedure Draw(Bitmap: TBitmap); overload; virtual;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); overload; virtual; abstract;
@@ -426,10 +424,15 @@ end;
 {$IFNDEF FPC}
 type
   TParentControl = class(TWinControl);
+{$ENDIF}
 
 {-$DEFINE UsePixelMap}
 
 procedure TGuiCustomPixelMap.CopyParentImage(Control: TControl);
+{$IFDEF FPC}
+begin
+end;
+{$ELSE}
 var
   I         : Integer;
   SubCount  : Integer;

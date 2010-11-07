@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
+  DAV_GuiSelectBox, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmBarberpoleFlanger = class(TForm)
@@ -72,7 +73,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   Math, DAV_VSTModuleWithPrograms, BarberpoleFlangerDM;

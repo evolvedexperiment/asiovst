@@ -65,8 +65,13 @@ type
 
     procedure Loaded; override;
 
+    {$IFDEF FPC}
+    procedure GMFontChanged(var Message: TLMessage); message GM_FontChanged;
+    procedure GMFontListChanged(var Message: TLMessage); message GM_FontListChanged;
+    {$ELSE}
     procedure GMFontChanged(var Message: TMessage); message GM_FontChanged;
     procedure GMFontListChanged(var Message: TMessage); message GM_FontListChanged;
+    {$ENDIF}
 
     property FontItem: TGuiCustomFontCollectionItem read FFontItem write SetFontItem;
   public
@@ -190,7 +195,7 @@ begin
   else Result := -1;
 end;
 
-procedure TCustomGuiInscription.GMFontChanged(var Message: TMessage);
+procedure TCustomGuiInscription.GMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  case Message.WParam of
   0 : if Message.LParam = 0
@@ -199,7 +204,7 @@ begin
  BufferChanged;
 end;
 
-procedure TCustomGuiInscription.GMFontListChanged(var Message: TMessage);
+procedure TCustomGuiInscription.GMFontListChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  case Message.WParam of
   0 : if Message.LParam = 0

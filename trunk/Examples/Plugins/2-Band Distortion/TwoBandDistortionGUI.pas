@@ -78,7 +78,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -235,11 +237,5 @@ begin
     then DialOrder.Value := Order;
   end;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i TwoBandDistortionGUI.lrs}
-  {$i TwoBandDistortionPNG.lrs}
-{$ENDIF}
 
 end.

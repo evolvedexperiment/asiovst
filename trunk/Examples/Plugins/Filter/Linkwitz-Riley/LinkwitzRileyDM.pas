@@ -57,7 +57,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -155,10 +157,5 @@ begin
    do FLinkwitzRiley[Channel].ProcessSample(Inputs[Channel, Sample],
         Outputs[2 * Channel, Sample], Outputs[2 * Channel + 1, Sample])
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i LinkwitzRileyDM.lrs}
-{$ENDIF}
 
 end.

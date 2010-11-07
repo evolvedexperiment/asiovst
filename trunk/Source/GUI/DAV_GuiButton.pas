@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages,
-  {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$IFDEF MSWINDOWS} Windows,
+  {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Controls, StdCtrls, Graphics, DAV_GuiCommon, DAV_GuiFont,
   DAV_GuiShadow, DAV_GuiPixelMap;
 
@@ -324,7 +324,9 @@ begin
  try
   FCanvas.Handle := DC;
   try
+   {$IFNDEF FPC}
    TControlCanvas(FCanvas).UpdateTextFlags;
+   {$ENDIF}
    Paint;
   finally
    FCanvas.Handle := 0;

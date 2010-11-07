@@ -64,7 +64,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -246,10 +248,5 @@ begin
   with TFmTwoBandDistortion(EditorForm)
    do UpdateFrequency;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i TwoBandDistortionDM.lrs}
-{$ENDIF}
 
 end.

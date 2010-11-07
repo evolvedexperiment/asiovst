@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ExtCtrls, DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiLED, DAV_GuiPanel,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Graphics, Controls, Forms, StdCtrls, ExtCtrls,
+  DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiLED, DAV_GuiPanel,
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
   DAV_GuiPixelMap, DAV_GuiInscription, DAV_GuiFont, DAV_GuiFontList;
 
@@ -99,7 +100,11 @@ var
 
 implementation
 
-{$R *.dfm}
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
+{$R *.DFM}
+{$ENDIF}
 
 uses
   DAV_GuiCommon, AmpSimDM;

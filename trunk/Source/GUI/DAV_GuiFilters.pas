@@ -327,7 +327,6 @@ var
   Pos     : Integer;
   Data    : PByteArray;
   Sum     : Integer;
-  Current : Byte;
 begin
  if FKernelSize <= 1 then Exit;
 
