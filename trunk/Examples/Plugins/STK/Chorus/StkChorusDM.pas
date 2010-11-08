@@ -160,6 +160,8 @@ begin
  finally
   dec(FSemaphore);
  end;
+
+ // update GUI
  if EditorForm is TFmStkChorus
   then TFmStkChorus(EditorForm).UpdateModDepth;
 end;
@@ -174,6 +176,8 @@ begin
  finally
   dec(FSemaphore);
  end;
+
+ // update GUI
  if EditorForm is TFmStkChorus
   then TFmStkChorus(EditorForm).UpdateModFreq;
 end;
@@ -183,6 +187,7 @@ procedure TStkChorusModule.ParamMixChange(
 begin
  FChorus.EffectMix := 0.01 * Value;
 
+ // update GUI
  if EditorForm is TFmStkChorus
   then TFmStkChorus(EditorForm).UpdateEffectMix;
 end;

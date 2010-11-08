@@ -150,6 +150,8 @@ begin
  finally
   dec(FSemaphore);
  end;
+
+ // update GUI
  if EditorForm is TFmStkEcho
   then TFmStkEcho(EditorForm).UpdateDelay;
 end;
@@ -160,6 +162,7 @@ begin
  FEcho[0].EffectMix := 0.01 * Value;
  FEcho[1].EffectMix := 0.01 * Value;
 
+ // update GUI
  if EditorForm is TFmStkEcho
   then TFmStkEcho(EditorForm).UpdateEffectMix;
 end;

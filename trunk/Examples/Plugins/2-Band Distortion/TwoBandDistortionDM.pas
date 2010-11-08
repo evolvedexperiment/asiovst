@@ -45,7 +45,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -73,6 +72,16 @@ implementation
 uses
   {$IFNDEF FPC} AnsiStrings, {$ENDIF} TwoBandDistortionGUI, DAV_Approximations;
 
+procedure TTwoBandDistortionDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TTwoBandDistortionDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TTwoBandDistortionDataModule.VSTModuleOpen(Sender: TObject);
 var
   ChannelIndex : Integer;
@@ -80,12 +89,16 @@ begin
  for ChannelIndex := 0 to numInputs - 1
   do FLinkwitzRiley[ChannelIndex] := TLinkwitzRiley.Create;
 
- // Initial Parameters
+ // define editor class
+ EditorFormClass := TFmTwoBandDistortion;
+
+ // initial parameters
  Parameter[0] := 1000;
  Parameter[1] := 2;
  Parameter[2] := 10;
  Parameter[3] := 10;
 
+ // build two presets based on the initial parameters
  Programs[1].CopyParameters(0);
  Programs[2].CopyParameters(0);
 end;
@@ -94,21 +107,6 @@ procedure TTwoBandDistortionDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FLinkwitzRiley[0]);
  FreeAndNil(FLinkwitzRiley[1]);
-end;
-
-procedure TTwoBandDistortionDataModule.VSTModuleCreate(Sender: TObject);
-begin
- FCriticalSection := TCriticalSection.Create; 
-end;
-
-procedure TTwoBandDistortionDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- FreeAndNil(FCriticalSection);
-end;
-
-procedure TTwoBandDistortionDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmTwoBandDistortion.Create(Self);
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleProcess(const Inputs,
@@ -121,7 +119,7 @@ begin
  FCriticalSection.Enter;
  try
   for SampleIndex := 0 to SampleFrames - 1 do
-   for ChannelIndex := 0 to 1 do
+   for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
     begin
      // using Linkwitz-Riley TwoBand filters
      FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
@@ -151,9 +149,9 @@ begin
  FCriticalSection.Enter;
  try
   for SampleIndex := 0 to SampleFrames - 1 do
-   for ChannelIndex := 0 to 1 do
+   for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
     begin
-     // using Linkwitz-Riley TwoBand filters
+     // using Linkwitz-Riley filters
      FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
 
      {$IFDEF FPC}
@@ -185,14 +183,14 @@ end;
 procedure TTwoBandDistortionDataModule.ParameterFrequencyLabel(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] >= 1000
+ if Parameter[Index] > 1000
   then PreDefined := 'kHz';
 end;
 
 procedure TTwoBandDistortionDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] >= 1000
+ if Parameter[Index] > 1000
   then PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4))
   else PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4));
 end;
@@ -200,8 +198,13 @@ end;
 procedure TTwoBandDistortionDataModule.ParamHighDistChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighMix[1] := 0.01 * Value;
- FHighMix[0] := 1 - FHighMix[1];
+ FCriticalSection.Enter;
+ try
+  FHighMix[1] := 0.01 * Value;
+  FHighMix[0] := 1 - FHighMix[1];
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmTwoBandDistortion then

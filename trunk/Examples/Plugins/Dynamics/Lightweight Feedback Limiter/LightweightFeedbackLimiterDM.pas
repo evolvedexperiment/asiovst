@@ -177,6 +177,8 @@ procedure TLightweightFeedbackLimiterDataModule.ParameterMakeUpGainChange(
 begin
  FLightweightFeedbackLimiter[0].MakeUpGain_dB := Value;
  FLightweightFeedbackLimiter[1].MakeUpGain_dB := FLightweightFeedbackLimiter[0].MakeUpGain_dB;
+
+ // update GUI
  if EditorForm is TFmLightweightFeedbackLimiter
   then TFmLightweightFeedbackLimiter(EditorForm).UpdateMakeUp;
 end;
@@ -212,6 +214,8 @@ procedure TLightweightFeedbackLimiterDataModule.ParameterStereoChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
+
+ // update GUI
  if EditorForm is TFmLightweightFeedbackLimiter
   then TFmLightweightFeedbackLimiter(EditorForm).UpdateStereo;
 end;
@@ -244,6 +248,8 @@ procedure TLightweightFeedbackLimiterDataModule.ParameterAutoMakeUpGainChange(
 begin
  FLightweightFeedbackLimiter[0].AutoMakeUp := Boolean(round(Value));
  FLightweightFeedbackLimiter[1].AutoMakeUp := FLightweightFeedbackLimiter[0].AutoMakeUp;
+ 
+ // update GUI
  if EditorForm is TFmLightweightFeedbackLimiter
   then TFmLightweightFeedbackLimiter(EditorForm).UpdateAutoMakeUpGain;
 end;
@@ -260,6 +266,8 @@ procedure TLightweightFeedbackLimiterDataModule.ParameterAttackChange(
 begin
  FLightweightFeedbackLimiter[0].Attack := Value;
  FLightweightFeedbackLimiter[1].Attack := FLightweightFeedbackLimiter[0].Attack;
+
+ // update GUI
  if EditorForm is TFmLightweightFeedbackLimiter
   then TFmLightweightFeedbackLimiter(EditorForm).UpdateAttack;
 end;
@@ -269,6 +277,8 @@ procedure TLightweightFeedbackLimiterDataModule.ParameterReleaseChange(
 begin
  FLightweightFeedbackLimiter[0].Release := Value;
  FLightweightFeedbackLimiter[1].Release := FLightweightFeedbackLimiter[0].Release;
+
+ // update GUI
  if EditorForm is TFmLightweightFeedbackLimiter
   then TFmLightweightFeedbackLimiter(EditorForm).UpdateRelease;
 end;
@@ -278,6 +288,8 @@ procedure TLightweightFeedbackLimiterDataModule.ParameterThresholdChange(
 begin
  FLightweightFeedbackLimiter[0].Threshold_dB := Value;
  FLightweightFeedbackLimiter[1].Threshold_dB := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightFeedbackLimiter
   then TFmLightweightFeedbackLimiter(EditorForm).UpdateThreshold;
 end;
@@ -287,6 +299,8 @@ procedure TLightweightFeedbackLimiterDataModule.ParameterKneeChange(
 begin
  FLightweightFeedbackLimiter[0].Knee_dB := Value;
  FLightweightFeedbackLimiter[1].Knee_dB := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightFeedbackLimiter
   then TFmLightweightFeedbackLimiter(EditorForm).UpdateKnee;
 end;

@@ -55,8 +55,8 @@ type
     procedure ParamOutputGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamBW2Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamBW1Change(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamRoundDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamHardClipDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamRoundDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamHardClipDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamHardClipChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FUpDownSampling  : array [0..1, 0..1] of TDAVUpDownsampling;
@@ -281,13 +281,13 @@ begin
 end;
 
 procedure TAdvancedClipperDataModule.ParamRoundDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 procedure TAdvancedClipperDataModule.ParamHardClipDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Boolean(Round(Parameter[Index]))
   then PreDefined := 'On'

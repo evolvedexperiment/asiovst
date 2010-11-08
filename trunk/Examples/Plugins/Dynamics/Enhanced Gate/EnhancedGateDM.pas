@@ -279,6 +279,7 @@ end;
 
 procedure TEnhancedGateDataModule.EAGDuckChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
+ // update GUI
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if CBDuck.Checked <> Boolean(Round(Value))
@@ -287,6 +288,7 @@ end;
 
 procedure TEnhancedGateDataModule.EAGStereoLinkChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
+ // update GUI
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if CBStereoLink.Checked <> Boolean(Round(Value))
