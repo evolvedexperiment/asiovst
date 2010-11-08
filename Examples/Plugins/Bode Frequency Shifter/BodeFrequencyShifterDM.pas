@@ -35,13 +35,15 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspFrequencyShifter;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspFrequencyShifter;
 
 type
   TBodeFrequencyShifterDataModule = class(TVSTModule)
-    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -50,12 +52,8 @@ type
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTransitionBWChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure ParameterFrequencyDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure ParameterFrequencyLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFreqShifter     : array of TBodeFrequencyShifter32;
     FUpMix, FDownMix : Single;
@@ -66,7 +64,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Registry, BodeFrequencyShifterGUI;
