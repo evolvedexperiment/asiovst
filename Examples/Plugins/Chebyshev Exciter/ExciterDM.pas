@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFilterButterworth, DAV_DspWaveshaper;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilterButterworth, DAV_DspWaveshaper;
 
 type
   TExciterDataModule = class(TVSTModule)
@@ -70,16 +70,18 @@ uses
 
 procedure TExciterDataModule.VSTModuleOpen(Sender: TObject);
 var
-  ch, i : Integer;
+  ChannelIndex, BandIndex : Integer;
 begin
- for ch := 0 to numInputs - 1 do
-  for i := 0 to 1 do
+ for ChannelIndex := 0 to numInputs - 1 do
+  for BandIndex := 0 to 1 do
    begin
-    FSourceLowpassFilter[ch, i]    := TButterworthLowPassFilter.Create;
-    FSourceHighpassFilter[ch, i]   := TButterworthHighPassFilter.Create;
-    FSplitterHighpassFilter[ch, i] := TButterworthHighPassFilter.Create;
+    FSourceLowpassFilter[ChannelIndex, BandIndex]    := TButterworthLowPassFilter.Create;
+    FSourceHighpassFilter[ChannelIndex, BandIndex]   := TButterworthHighPassFilter.Create;
+    FSplitterHighpassFilter[ChannelIndex, BandIndex] := TButterworthHighPassFilter.Create;
    end;
  FChebyshevWaveshaper := TChebyshevWaveshaperSquarelShape.Create;
+
+ EditorFormClass := TFmExciter;
 
  Parameter[0] := 8000;
  Parameter[1] := 4;
@@ -104,21 +106,20 @@ end;
 
 procedure TExciterDataModule.VSTModuleClose(Sender: TObject);
 var
-  ch, i : Integer;
+  ChannelIndex, BandIndex : Integer;
 begin
- for ch := 0 to numInputs - 1 do
-  for i := 0 to 1 do
+ for ChannelIndex := 0 to numInputs - 1 do
+  for BandIndex := 0 to 1 do
    begin
-    FreeAndNil(FSourceLowpassFilter[ch, i]);
-    FreeAndNil(FSourceHighpassFilter[ch, i]);
-    FreeAndNil(FSplitterHighpassFilter[ch, i]);
+    FreeAndNil(FSourceLowpassFilter[ChannelIndex, BandIndex]);
+    FreeAndNil(FSourceHighpassFilter[ChannelIndex, BandIndex]);
+    FreeAndNil(FSplitterHighpassFilter[ChannelIndex, BandIndex]);
    end;
  FreeAndNil(FChebyshevWaveshaper);
 end;
 
 procedure TExciterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
- GUI := TFmExciter.Create(Self);
 end;
 
 procedure TExciterDataModule.InvertMix;

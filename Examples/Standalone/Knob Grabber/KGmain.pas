@@ -182,7 +182,7 @@ begin
 
      // find rect
      Bmp[2].PixelFormat := pf32bit;
-     result := Rect(Bmp[2].Width, Bmp[2].Height, 0, 0);
+     Result := Rect(Bmp[2].Width, Bmp[2].Height, 0, 0);
      for y := 0 to Bmp[2].Height - 1 do
       begin
        Scln := PIntegerArray(Bmp[2].ScanLine[y]);
@@ -196,13 +196,13 @@ begin
          end;
       end;
 
-     result.Right := result.Right + 1;
-     result.Bottom := result.Bottom + 1;
+     Result.Right := Result.Right + 1;
+     Result.Bottom := Result.Bottom + 1;
 
 (*
      // draw rect
      Bmp[2].Canvas.Brush.Color := clWhite;
-     Bmp[2].Canvas.FrameRect(result);
+     Bmp[2].Canvas.FrameRect(Result);
 *)
     finally
      // dispose temp bitmaps
@@ -210,7 +210,7 @@ begin
      FreeAndNil(Bmp[1]);
      FreeAndNil(Bmp[2]);
     end;
-   end else result := Rect(0, 0, 0, 0);
+   end else Result := Rect(0, 0, 0, 0);
 end;
 
 procedure TFmKnobGrabber.GrabKnob(ParameterNo: Integer; rct: TRect; FileName: string);

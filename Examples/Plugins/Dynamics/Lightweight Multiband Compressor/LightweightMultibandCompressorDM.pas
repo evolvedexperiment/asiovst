@@ -245,6 +245,8 @@ begin
   begin
    if Assigned(FLightweightMultibandCompressor[Index])
     then FLightweightMultibandCompressor[Index].AutoMakeUp := Value;
+
+   // update GUI
    if EditorForm is TFmLightweightMultibandCompressor then
     with TFmLightweightMultibandCompressor(EditorForm) do
      case Index of
@@ -310,6 +312,8 @@ begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
   if Assigned(FLinkwitzRiley[Channel, 0])
    then FLinkwitzRiley[Channel, 0].Frequency := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateLowFrequency;
 end;
@@ -322,6 +326,8 @@ begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
   if Assigned(FLinkwitzRiley[Channel, 1])
    then FLinkwitzRiley[Channel, 1].Frequency := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateMidFrequency;
 end;
@@ -334,6 +340,8 @@ begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
   if Assigned(FLinkwitzRiley[Channel, 2])
    then FLinkwitzRiley[Channel, 2].Frequency := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateHighFrequency;
 end;
@@ -342,6 +350,8 @@ procedure TLightweightMultibandCompressorDataModule.ParameterLimitChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor
   then TFmLightweightMultibandCompressor(EditorForm).UpdateLimit;
 end;

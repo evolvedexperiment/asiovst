@@ -1,4 +1,5 @@
 object AdvancedClipperDataModule: TAdvancedClipperDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -71,7 +72,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       CurveFactor = 1.000000000000000000
       Category = 'Stage 1'
-      DisplayName = 'Stage 1: FontOversampling Factor'
+      DisplayName = 'Stage 1: Oversampling Factor'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -122,7 +123,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       CurveFactor = 1.000000000000000000
       Category = 'Stage 2'
-      DisplayName = 'Stage 2: FontOversampling Factor'
+      DisplayName = 'Stage 2: Oversampling Factor'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2

@@ -1,17 +1,14 @@
-object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
-  OldCreateOrder = True
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
+object ExciterDataModule: TExciterDataModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'TwoBand Distortion'
+  EffectName = 'Exciter'
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'CODI'
+  UniqueID = 'eXtR'
   ShellPlugins = <>
   Programs = <
     item
@@ -19,42 +16,33 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       VSTModule = Owner
     end
     item
-      DisplayName = 'Preset 1'
-      VSTModule = Owner
-    end
-    item
-      DisplayName = 'Preset 2'
+      DisplayName = 'High Life'
       VSTModule = Owner
     end>
   ParameterProperties = <
     item
       Curve = ctLogarithmic
-      CurveFactor = 1000.000000000000000000
-      Category = 'Crossover'
-      DisplayName = 'Frequency'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      CurveFactor = 200.000000000000000000
+      DisplayName = 'Tune'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = 20000.000000000000000000
-      MaxInteger = 20000
-      Min = 20.000000000000000000
-      MinInteger = 20
+      Max = 16000.000000000000000000
+      MaxInteger = 16000
+      Min = 1000.000000000000000000
+      MinInteger = 1000
       ReportVST2Properties = True
-      ShortLabel = 'Freq.'
+      ShortLabel = 'Tune'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
-      OnCustomParameterLabel = ParameterFrequencyLabel
-      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
       CurveFactor = 1.000000000000000000
-      Category = 'Crossover'
       DisplayName = 'Order'
-      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -70,9 +58,22 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
     end
     item
       CurveFactor = 1.000000000000000000
-      Category = 'Distortion'
-      DisplayName = 'Low Distortion'
-      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      DisplayName = 'Shape'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      ReportVST2Properties = True
+      ShortLabel = 'Shape'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParamShapeChange
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mix'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -81,43 +82,19 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
-      OnParameterChange = ParamLowDistChange
-    end
-    item
-      CurveFactor = 1.000000000000000000
-      Category = 'Distortion'
-      DisplayName = 'High Distortion'
-      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
-      LargeStepFloat = 2.000000000000000000
-      LargeStepInteger = 2
-      Max = 100.000000000000000000
-      ReportVST2Properties = True
-      ShortLabel = 'HiDist'
-      SmallStepFloat = 0.500000000000000000
-      StepFloat = 1.000000000000000000
-      Units = '%'
-      UseDefaultString2ParameterHandler = True
-      VSTModule = Owner
-      OnParameterChange = ParamHighDistChange
+      OnParameterChange = ParamMixChange
     end>
-  ParameterCategories = <
-    item
-      DisplayName = 'Crossover'
-      VSTModule = Owner
-    end
-    item
-      DisplayName = 'Distortion'
-      VSTModule = Owner
-    end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
-  Top = 81
+  Top = 84
   Height = 150
   Width = 215
 end

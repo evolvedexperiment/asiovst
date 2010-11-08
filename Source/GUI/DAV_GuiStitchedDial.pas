@@ -108,6 +108,7 @@ type
     property Min: Single read FMin write SetMin;
     property Value: Single read FValue write SetValue;
     property DefaultValue: Single read FDefaultValue write SetDefaultValue;
+    property ScrollRange: Single read FScrollRange write FScrollRange;
     property WheelStep: Single read FWheelStep write FWheelStep;
 
     property OnQuantizeValue: TQuantizeValueEvent read FOnQuantizeValue write FOnQuantizeValue;
@@ -126,6 +127,7 @@ type
     property Max;
     property Min;
     property ParentColor;
+    property ScrollRange;
     property StitchedImageList;
     property StitchedImageIndex;
     property Transparent;
