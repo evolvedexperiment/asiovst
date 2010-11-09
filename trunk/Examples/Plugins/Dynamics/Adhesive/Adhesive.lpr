@@ -6,7 +6,9 @@ library Adhesive;
 uses
   Interfaces,
   Forms,
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
+  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   AdhesiveDM in 'AdhesiveDM.pas' {AdhesiveDataModule: TVSTModule},

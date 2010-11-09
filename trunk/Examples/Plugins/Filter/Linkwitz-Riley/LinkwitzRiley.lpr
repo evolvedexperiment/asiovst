@@ -6,7 +6,7 @@ library LinkwitzRiley;
 uses
   Interfaces,
   Forms,
-  {$IFNDEF DARWIN}
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
   {$ENDIF}
   DAV_VSTEffect,
@@ -18,7 +18,7 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TLinkwitzRileyModule);
 end;
 
-{$IFNDEF DARWIN}
+{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
  Result := WinampDSPModuleHeader(TLinkwitzRileyModule);
@@ -34,7 +34,9 @@ exports
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
   VSTPluginMain name 'VSTPluginMain',
+{$IFDEF MSWINDOWS}
   WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 {$ENDIF}
 
 begin

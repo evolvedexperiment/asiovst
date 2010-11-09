@@ -1,20 +1,16 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library ButterworthLP;
 
-{$MODE Delphi}
-
-{$R 'Butterworth.res' 'Butterworth.rc'}
+{$I DAV_Compiler.inc}
 
 uses
-  {FastMM4,  // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
-  madExcept,// either download madExcept or remove mad* if there is an error here
-  madLinkDisAsm,
-  madListProcesses,
-  madListModules,
+  Interfaces,
+  Forms,
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
+  {$ENDIF}
   DAV_VSTEffect,
-  DAV_VSTBasicModule,}
+  DAV_VSTBasicModule,
   ButterworthDM in 'ButterworthDM.pas' {ButterworthLPModule: TVSTModule},
   ButterworthGUI in 'ButterworthGUI.pas' {FmButterworth};
 
@@ -23,14 +19,24 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TButterworthLPModule);
 end;
 
+{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TButterworthLPModule);
+  Result := WinampDSPModuleHeader(TButterworthLPModule);
 end;
+{$ENDIF}
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
-exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+exports
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main',
+  VSTPluginMain name 'main_plugin',
+  VSTPluginMain name 'VSTPluginMain',
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 
 begin
 end.

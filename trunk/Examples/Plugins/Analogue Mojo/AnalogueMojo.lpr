@@ -1,8 +1,11 @@
 library AnalogueMojo;
 
+{$I DAV_Compiler.inc}
+
 uses
   Interfaces,
-  {$IFNDEF DARWIN}
+  Forms,
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
   {$ENDIF}
   DAV_VSTEffect,
@@ -14,7 +17,7 @@ begin
   Result := VstModuleMain(AudioMasterCallback, TAnalogueMojoDM);
 end;
 
-{$IFNDEF DARWIN}
+{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
   Result := WinampDSPModuleHeader(TAnalogueMojoDM);
@@ -30,8 +33,11 @@ exports
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
   VSTPluginMain name 'VSTPluginMain',
+{$IFDEF MSWINDOWS}  
   WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 {$ENDIF}
 
 begin
+ Application.Initialization;
 end.

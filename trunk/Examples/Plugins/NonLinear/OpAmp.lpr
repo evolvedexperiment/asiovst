@@ -6,12 +6,15 @@ library OpAmp;
 uses
   Interfaces,
   Forms,
-  DAV_VSTModule,
+  {$IFDEF MSWINDOWS}
+  DAV_WinAmp,
+  {$ENDIF}
   DAV_VSTEffect,
+  DAV_VSTBasicModule,
   DAV_Common,
+  DAV_VSTPlugin_Lazarus,
   OpAmpModule in 'OpAmpModule.pas' {VSTOpAmp: TVSTModule},
-  OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI},
-  DAV_VSTPlugin_Lazarus;
+  OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
@@ -30,9 +33,16 @@ begin
  end;
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main',
+  VSTPluginMain name 'main_plugin',
+  VSTPluginMain name 'VSTPluginMain',
+{$ENDIF}
 
 begin
 end.
-
