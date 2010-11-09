@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Forms,
+  DAV_Types, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TDecimatorFilterType = (dftLowpass, dftHighpass);
@@ -77,7 +78,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_Common, DecimatorGUI;

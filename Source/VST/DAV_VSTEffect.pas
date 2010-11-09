@@ -313,7 +313,7 @@ type
     Version            : LongInt;              // (example 1100 for version 1.1.0.0)
     Process32Replacing : TProcessProc;
     Process64Replacing : TProcessDoubleProc;
-    Future             : array[0..55] of Byte; // pls zero
+    Future             : array [0..55] of Byte; // pls zero
   end;
 
   TProcessPrecision = (
@@ -336,14 +336,14 @@ type
     ByteSize    : LongInt;       // of this event, excl. type and ByteSize
     DeltaFrames : LongInt;       // sample frames related to the current block start sample position
     Flags       : LongInt;       // generic flags, none defined yet (0)
-    Data        : array[0..15] of Byte;  // size may vary but is usually 16
+    Data        : array [0..15] of Byte;  // size may vary but is usually 16
   end;
 
   PVstEvents = ^TVstEvents;
   TVstEvents = record  // a block of events for the current audio block
     NumEvents : LongInt;
     Reserved  : TVstIntPtr;                  // zero
-    Events    : array[0..2047] of PVstEvent; // variable
+    Events    : array [0..2047] of PVstEvent; // variable
   end;
 
   // VstMidiEventFlag //////////////////////////////////////////////////////////
@@ -359,7 +359,7 @@ type
     Flags           : TVstMidiEventFlags;   // see above
     NoteLength      : LongInt;              // (in sample frames) of entire note, if available, else 0
     NoteOffset      : LongInt;              // offset into note from note start if available, else 0
-    MidiData        : array[0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
+    MidiData        : array [0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
     Detune          : Byte;                 // -64 to +63 cents; for scales other than 'well-tempered' ('microtuning')
     NoteOffVelocity : Byte;
     Reserved1       : Byte;                 // zero
@@ -529,11 +529,11 @@ type
 
   PVstPinProperties = ^TVstPinProperties;
   TVstPinProperties = record
-    Caption         : array[0..63] of AnsiChar;
+    Caption         : array [0..63] of AnsiChar;
     Flags           : TVstPinPropertiesFlags;  // see pin properties flags
     ArrangementType : TVstSpeakerArrangementType;
-    ShortLabel      : array[0..7] of AnsiChar; // recommended: 6 + delimiter
-    Future          : array[0..47] of Byte;
+    ShortLabel      : array [0..7] of AnsiChar; // recommended: 6 + delimiter
+    Future          : array [0..47] of Byte;
   end;
 
   TVstPluginCategory = (
@@ -555,30 +555,30 @@ type
   TMidiProgramNameFlags = set of TMidiProgramNameFlag;
 
   PMidiProgramName = ^TMidiProgramName;
-  TMidiProgramName = packed record
+  TMidiProgramName = record
     ThisProgramIndex      : LongInt;  // >= 0. fill struct for this program index.
-    Name                  : array[0..63] of AnsiChar;
-    MidiProgram           : shortint;  // -1:off, 0-127
-    MidiBankMsb           : shortint;  // -1:off, 0-127
-    MidiBankLsb           : shortint;  // -1:off, 0-127
+    Name                  : array [0..63] of AnsiChar;
+    MidiProgram           : ShortInt;  // -1:off, 0-127
+    MidiBankMsb           : ShortInt;  // -1:off, 0-127
+    MidiBankLsb           : ShortInt;  // -1:off, 0-127
     Reserved              : Byte;     // zero
     ParentCategoryIndex   : LongInt;  // -1:no parent category
     Flags                 : TMidiProgramNameFlags;  // omni etc, see below
   end;
 
   PMidiProgramCategory = ^TMidiProgramCategory;
-  TMidiProgramCategory = packed record
+  TMidiProgramCategory = record
     ThisCategoryIndex   : LongInt;      // >= 0. fill struct for this category index.
-    Name                : array[0..63] of AnsiChar;
+    Name                : array [0..63] of AnsiChar;
     ParentCategoryIndex : LongInt;      // -1:no parent category
     Flags               : LongInt;      // reserved, none defined yet, zero.
   end;
 
   PMidiKeyName = ^TMidiKeyName;
-  TMidiKeyName = packed record
+  TMidiKeyName = record
     ThisProgramIndex : LongInt;    // >= 0. fill struct for this program index.
     ThisKeyNumber    : LongInt;    // 0 - 127. fill struct for this key number.
-    KeyName          : array[0..63] of AnsiChar;
+    KeyName          : array [0..63] of AnsiChar;
     Reserved         : LongInt;    // zero
     Flags            : LongInt;    // reserved, none defined yet, zero.
   end;
@@ -653,9 +653,9 @@ type
     Elevation : Single;                   // rad      -PI/2...PI/2  10.f for LFE channel
     Radius    : Single;                   // meter                   0.f for LFE channel
     Reserved  : Single;                   // 0.
-    Name      : array[0..63] of AnsiChar; // for new setups, new names should be given (L/R/C... won't do)
+    Name      : array [0..63] of AnsiChar; // for new setups, new names should be given (L/R/C... won't do)
     vType     : TVstSpeakerType;          // speaker type
-    Future    : array[0..27] of Byte;
+    Future    : array [0..27] of Byte;
   end;
 
   // note: the origin for azimuth is right (as by math conventions dealing with radians);
@@ -670,7 +670,7 @@ type
   TVstSpeakerArrangement = record
     ArrangementType : TVstSpeakerArrangementType;           // (was float lfeGain) LFE channel gain is adjusted [dB] higher than other channels)
     numChannels     : LongInt;                              // number of channels in this speaker arrangement
-    Speakers        : array[0..7] of TVstSpeakerProperties; // variable
+    Speakers        : array [0..7] of TVstSpeakerProperties; // variable
   end;
 
   TVstOfflineTaskFlag = (
@@ -695,8 +695,8 @@ type
   TVstOfflineTaskFlags = set of TVstOfflineTaskFlag;
 
   PVstOfflineTaskRecord = ^TVstOfflineTaskRecord;
-  TVstOfflineTaskRecord = packed record
-    ProcessName            : array[0..95] of AnsiChar;  // set by plug
+  TVstOfflineTaskRecord = record
+    ProcessName            : array [0..95] of AnsiChar;  // set by plug
 
                                                         // audio access
     ReadPosition           : Double;                    // set by plug/host
@@ -724,19 +724,19 @@ type
     NumDestinationChannels : LongInt;                   // set by host or plug
     SourceFormat           : LongInt;                   // set by host
     DestinationFormat      : LongInt;                   // set by plug
-    OutputText             : array[0..511] of AnsiChar; // set by plug or host
+    OutputText             : array [0..511] of AnsiChar; // set by plug or host
 
                                                         // progress notification
     Progress               : Double;                    // set by plug
     ProgressMode           : LongInt;                   // reserved for future
-    ProgressText           : array[0..99] of AnsiChar;  // set by plug
+    ProgressText           : array [0..99] of AnsiChar;  // set by plug
 
     Flags                  : TVstOfflineTaskFlags;      // set by host and plug; see TVstOfflineTaskFlags
     ReturnValue            : LongInt;                   // reserved for future
     HostOwned              : Pointer;                   // set by host
     PlugOwned              : Pointer;                   // set by plug
 
-    Future                 : array[0..1023] of Byte;
+    Future                 : array [0..1023] of Byte;
   end;
 
   TVstOfflineOption = (
@@ -774,11 +774,11 @@ type
   TVstAudioFileFlags = set of TVstAudioFileFlag;
 
   PVstAudioFile = ^TVstAudioFile;
-  TVstAudioFile = packed record
+  TVstAudioFile = record
     Flags                : TVstAudioFileFlags;       // see enum TVstAudioFileFlags
     HostOwned            : Pointer;                  // any data private to host
     PlugOwned            : Pointer;                  // any data private to plugin
-    Name                 : array[0..99] of AnsiChar; // file title
+    Name                 : array [0..99] of AnsiChar; // file title
     UniqueId             : TChunkName;               // uniquely identify a file during a session
     SampleRate           : Double;                   // file sample rate
     NumChannels          : LongInt;                  // number of channels (1 for mono, 2 for stereo...)
@@ -796,21 +796,21 @@ type
     TimeSigDenominator   : LongInt;                  // time signature denominator
     TicksPerBlackNote    : LongInt;                  // resolution
     SmpteFrameRate       : LongInt;                  // smpte rate (set as in TVstTimeInfo)
-    Future               : array[0..63] of Byte;
+    Future               : array [0..63] of Byte;
   end;
 
   PVstAudioFileMarker = ^TVstAudioFileMarker;
-  TVstAudioFileMarker = packed record
+  TVstAudioFileMarker = record
     Position : Double;
-    Name     : array[0..31] of AnsiChar;
+    Name     : array [0..31] of AnsiChar;
     vType    : LongInt;
     ID       : LongInt;
     Reserved : LongInt;
   end;
 
   PVstWindow = ^TVstWindow;
-  TVstWindow = packed record
-    Title      : array[0..127] of AnsiChar; // Title
+  TVstWindow = record
+    Title      : array [0..127] of AnsiChar; // Title
     xPos       : SmallInt;                  // Position and Size
     yPos       : SmallInt;
     Width      : SmallInt;
@@ -821,11 +821,11 @@ type
     userHandle : Pointer;               // Reserved
     winHandle  : Pointer;               // Reserved
 
-    Future     : array[0..103] of Byte;
+    Future     : array [0..103] of Byte;
   end;
 
   PVstKeyCode = ^TVstKeyCode;
-  TVstKeyCode = packed record
+  TVstKeyCode = record
     Character : LongInt;
     Virt      : Byte;     // see enum TVstVirtualKey
     Modifier  : Byte;     // see enum TVstModifierKey
@@ -905,13 +905,13 @@ type
 
   // Used by amOpenFileSelector
   PVstFileType = ^TVstFileType;
-  TVstFileType = packed record
-    name      : array[0..127] of AnsiChar;
-    macType   : array[0..7] of AnsiChar;
-    dosType   : array[0..7] of AnsiChar;
-    unixType  : array[0..7] of AnsiChar;
-    mimeType1 : array[0..127] of AnsiChar;
-    mimeType2 : array[0..127] of AnsiChar;
+  TVstFileType = record
+    name      : array [0..127] of AnsiChar;
+    macType   : array [0..7] of AnsiChar;
+    dosType   : array [0..7] of AnsiChar;
+    unixType  : array [0..7] of AnsiChar;
+    mimeType1 : array [0..127] of AnsiChar;
+    mimeType2 : array [0..127] of AnsiChar;
   end;
 
   TVstFileCommand = (
@@ -924,13 +924,13 @@ type
   TVstFileTypeType = (kVstFileType);
 
   PVstFileSelect = ^TVstFileSelect;
-  TVstFileSelect = packed record
+  TVstFileSelect = record
     Command              : TVstFileCommand;  // see enum kVstFileLoad....
     vType                : TVstFileTypeType; // see enum kVstFileType...
     MacCreator           : LongInt;          // optional: 0 = no creator
     nbFileTypes          : LongInt;          // nb of fileTypes to used
     FileTypes            : PVstFileType;     // list of fileTypes
-    Title                : array[0..1023] of AnsiChar; // text display in the file selector's title
+    Title                : array [0..1023] of AnsiChar; // text display in the file selector's title
     InitialPath          : PAnsiChar;  // initial path
     ReturnPath           : PAnsiChar;  // use with kVstFileLoad and kVstDirectorySelect
                                        // if null is passed, the host will allocated memory
@@ -940,16 +940,16 @@ type
                                        // the host allocates this array. The plugin should then called closeOpenFileSelector for freeing memory
     nbReturnPath         : LongInt;    // number of selected paths
     Reserved             : TVstIntPtr; // reserved for host application
-    Future               : array[0..115] of Byte;   // future use
+    Future               : array [0..115] of Byte;   // future use
   end;
 
   PVstPatchChunkInfo = ^TVstPatchChunkInfo;
-  TVstPatchChunkInfo = packed record
+  TVstPatchChunkInfo = record
     Version        : LongInt;               // Format Version (should be 1)
     PluginUniqueID : TChunkName;            // UniqueID of the plugin
     PluginVersion  : LongInt;               // Plugin Version
     numElements    : LongInt;               // Number of Programs (Bank) or Parameters (Program)
-    future         : array[0..47] of AnsiChar;
+    future         : array [0..47] of AnsiChar;
   end;
 
   TVstPanLawType = (
@@ -969,7 +969,7 @@ type
   //--------------------------------------------------------------------
   // For Preset (Program) (.fxp) without chunk (magic = 'FxCk')
   //--------------------------------------------------------------------
-  TFXPreset = packed record
+  TFXPreset = record
     ChunkMagic : TChunkName; // 'CcnK'
     ByteSize   : LongInt;    // of this chunk, excl. ChunkMagic + ByteSize
 
@@ -979,14 +979,14 @@ type
     FXVersion  : LongInt;
 
     NumParams  : LongInt;
-    PrgName    : array[0..27] of AnsiChar;
+    PrgName    : array [0..27] of AnsiChar;
     Params     : PSingle;    // variable no. of parameters
   end;
 
   //--------------------------------------------------------------------
   // For Preset (Program) (.fxp) with chunk (magic = 'FPCh')
   //--------------------------------------------------------------------
-  TFXChunkSet = packed record
+  TFXChunkSet = record
     ChunkMagic  : TChunkName;  // 'CcnK'
     ByteSize    : LongInt;     // of this chunk, excl. ChunkMagic + ByteSize
 
@@ -996,7 +996,7 @@ type
     FXVersion   : LongInt;
 
     NumPrograms : LongInt;
-    PrgName     : array[0..27] of AnsiChar;
+    PrgName     : array [0..27] of AnsiChar;
 
     ChunkSize   : LongInt;
     Chunk       : Pointer;     // variable
@@ -1005,7 +1005,7 @@ type
   //--------------------------------------------------------------------
   // For Bank (.fxb) without chunk (magic = 'FxBk')
   //--------------------------------------------------------------------
-  TFXSet = packed record
+  TFXSet = record
     chunkMagic  : TChunkName; // 'CcnK'
     ByteSize    : LongInt;    // of this chunk, excl. magic + ByteSize
 
@@ -1024,7 +1024,7 @@ type
   //--------------------------------------------------------------------
   // For Bank (.fxb) with chunk (magic = 'FBCh')
   //--------------------------------------------------------------------
-  TFXChunkBank = packed record
+  TFXChunkBank = record
     chunkMagic  : TChunkName; // 'CcnK'
     ByteSize    : LongInt;    // of this chunk, excl. magic + ByteSize
 
@@ -1034,7 +1034,7 @@ type
     fxVersion   : LongInt;
 
     numPrograms : LongInt;
-    future      : array[0..127] of Byte;
+    future      : array [0..127] of Byte;
 
     chunkSize   : LongInt;
     chunk       : Pointer;    // variable

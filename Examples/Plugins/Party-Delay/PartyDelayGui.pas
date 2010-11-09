@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  ComCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Graphics, Controls, StdCtrls, ComCtrls, DAV_Types, DAV_VSTModule,
+  DAV_GuiBaseControl, DAV_GuiDial;
 
 type
   TFmPartyDelay = class(TForm)
@@ -109,7 +110,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_Common, PartyDelayDM;

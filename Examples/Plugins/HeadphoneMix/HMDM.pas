@@ -56,7 +56,11 @@ type
 implementation
 
 {$IFDEF UseDelphi}
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 {$ENDIF}
 
 uses

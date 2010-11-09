@@ -32,11 +32,12 @@ unit WeMain;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, StdCtrls, Buttons, ExtCtrls, DAV_MidiIO;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Graphics, Controls, Forms, Dialogs, Menus, StdCtrls, Buttons, ExtCtrls,
+  DAV_MidiIO;
 
 type
   TTestkind = (tkMelodicIntervals, tkHarmonicIntervals, tkMelody,
@@ -180,7 +181,11 @@ implementation
 uses
   WeHelp, WeEndOfTest, WeRetry;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmWinEar.FormCreate(Sender: TObject);
 begin
