@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library LinearPhaseCrossover;
+library AudioAmelioration;
 
 {$I DAV_Compiler.inc}
 
@@ -11,17 +11,18 @@ uses
   {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  LinearPhaseCrossoverDM in 'LinearPhaseCrossoverDM.pas' {LinearPhaseCrossoverModule: TVSTModule};
+  AudioAmeliorationDM in 'AudioAmeliorationDM.pas' {AudioAmeliorationModule: TVSTModule},
+  AudioAmeliorationGUI in 'AudioAmeliorationGUI.pas' {FmAudioAmelioration};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TLinearPhaseCrossoverModule);
+  Result := VstModuleMain(AudioMasterCallback, TAudioAmeliorationModule);
 end;
 
 {$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
-  Result := WinampDSPModuleHeader(TLinearPhaseCrossoverModule);
+  Result := WinampDSPModuleHeader(TAudioAmeliorationModule);
 end;
 {$ENDIF}
 

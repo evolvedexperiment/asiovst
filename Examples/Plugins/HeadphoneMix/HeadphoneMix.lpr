@@ -7,7 +7,7 @@ uses
   Interfaces,
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   HMDM in 'HMDM.pas' {HMModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
@@ -110,8 +110,15 @@ begin
 end;
 
 exports
-  Main name 'main',
-  Main name 'VSTPluginMain';
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main',
+  VSTPluginMain name 'main_plugin',
+  VSTPluginMain name 'VSTPluginMain',
+{$ENDIF}
 
 begin
   Application.Initialize;

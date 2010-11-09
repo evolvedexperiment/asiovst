@@ -6,7 +6,9 @@ library EnhancedGate;
 uses
   Interfaces,
   Forms,
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
+  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   EnhancedGateDM in 'EnhancedGateDM.pas' {EnhancedGateDataModule: TVSTModule},
@@ -17,15 +19,26 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TEnhancedGateDataModule);
 end;
 
+{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TEnhancedGateDataModule);
+  Result := WinampDSPModuleHeader(TEnhancedGateDataModule);
 end;
+{$ENDIF}
 
 exports
-  VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main',
+  VSTPluginMain name 'main_plugin',
+  VSTPluginMain name 'VSTPluginMain',
+{$IFDEF MSWINDOWS}
   WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
+{$ENDIF}
 
 begin
  Application.Initialize;

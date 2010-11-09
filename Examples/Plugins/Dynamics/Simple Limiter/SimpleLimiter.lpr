@@ -3,14 +3,12 @@ library SimpleLimiter;
 
 {$I DAV_Compiler.inc}
 
-{$R *.res}
-
 uses
-  {$IFDEF FPC}
   Interfaces,
   Forms,
-  {$ENDIF}
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
+  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   SimpleLimiterDM in 'SimpleLimiterDM.pas' {SimpleLimiterDataModule: TVSTModule},
@@ -18,20 +16,29 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- {$IFDEF FPC}
- Application.Initialize;
- {$ENDIF}
  Result := VstModuleMain(AudioMasterCallback, TSimpleLimiterDataModule);
 end;
 
+{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSimpleLimiterDataModule);
+  Result := WinampDSPModuleHeader(TSimpleLimiterDataModule);
 end;
+{$ENDIF}
 
-exports 
-  VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
+exports
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main',
+  VSTPluginMain name 'main_plugin',
+  VSTPluginMain name 'VSTPluginMain',
   WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 
+
+begin
+ Application.Initialize;
 end.

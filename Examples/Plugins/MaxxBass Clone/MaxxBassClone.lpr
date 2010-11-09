@@ -3,7 +3,9 @@ library MaxxBassClone;
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFNDEF DARWIN}
+  Interfaces,
+  Forms,
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
   {$ENDIF}
   DAV_VSTEffect,
@@ -16,10 +18,10 @@ begin
  Result := VstModuleMain(AudioMasterCallback, THarmonicBassModule);
 end;
 
-{$IFNDEF DARWIN}
+{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TLinkwitzRileyModule);
+ Result := WinampDSPModuleHeader(THarmonicBassModule);
 end;
 {$ENDIF}
 
@@ -32,8 +34,11 @@ exports
   VSTPluginMain name 'main';
   VSTPluginMain name 'main_plugin';
   VSTPluginMain name 'VSTPluginMain';
+{$IFDEF MSWINDOWS}
   WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 {$ENDIF}
 
 begin
+ Application.Initialize;
 end.

@@ -10,7 +10,7 @@ uses
   DAV_VSTBasicModule,
   DAV_VSTEffect,
   ImagesForLazarus,
-  {$IFNDEF DARWIN}
+  {$IFDEF MSWINDOWS}
   DAV_WinAmp,
   {$ENDIF}
   TwoBandDistortionDM in 'TwoBandDistortionDM.pas' {TwoBandDistortionDataModule: TVSTModule},
@@ -21,7 +21,7 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TTwoBandDistortionDataModule);
 end;
 
-{$IFNDEF DARWIN}
+{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
  Result := WinampDSPModuleHeader(TTwoBandDistortionDataModule);
@@ -37,7 +37,9 @@ exports
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
   VSTPluginMain name 'VSTPluginMain',
+{$IFDEF MSWINDOWS}
   WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 {$ENDIF}
 
 begin
