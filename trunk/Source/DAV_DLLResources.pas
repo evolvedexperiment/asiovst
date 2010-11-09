@@ -5,7 +5,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Classes, SysUtils, ConTnrs, ImageHlp;
+  {$IFDEF FPC} LCLIntf, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$ELSE} Windows, {$ENDIF} Classes, SysUtils, ConTnrs, ImageHlp;
 
 type
   TPEModule = class;

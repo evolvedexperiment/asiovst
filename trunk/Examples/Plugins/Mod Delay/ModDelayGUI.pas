@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiGraphicControl,
-  DAV_GuiLabel;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Graphics, Controls, StdCtrls, DAV_Types, DAV_VSTModule,
+  DAV_GuiPixelMap, DAV_GuiGraphicControl, DAV_GuiLabel;
 
 type
   TFmModDelay = class(TForm)
@@ -48,13 +48,6 @@ type
     LbDepth: TGuiLabel;
     LbRate: TGuiLabel;
     LbFeedback: TGuiLabel;
-    SbGain: TScrollBar;
-    ScrollBar2: TScrollBar;
-    ScrollBar3: TScrollBar;
-    ScrollBar4: TScrollBar;
-    ScrollBar5: TScrollBar;
-    ScrollBar6: TScrollBar;
-    ScrollBar7: TScrollBar;
     LbGainValue: TGuiLabel;
     LbMixValue: TGuiLabel;
     LbLpfValue: TGuiLabel;
@@ -62,6 +55,13 @@ type
     LbDepthValue: TGuiLabel;
     LbRateValue: TGuiLabel;
     LbFeedbackValue: TGuiLabel;
+    SbGain: TScrollBar;
+    ScrollBar2: TScrollBar;
+    ScrollBar3: TScrollBar;
+    ScrollBar4: TScrollBar;
+    ScrollBar5: TScrollBar;
+    ScrollBar6: TScrollBar;
+    ScrollBar7: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -85,7 +85,11 @@ implementation
 uses
   DAV_GuiCommon, ModDelayDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmModDelay.FormCreate(Sender: TObject);
 begin

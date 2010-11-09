@@ -256,7 +256,7 @@ type
     function GetParamDisplay(index: Integer): AnsiString;
     function GetParameter(index: Integer): Single;
     function GetParameterProperties(const Index: Integer;
-      var ParameterProperties: TVstParameterPropertyRecord): Boolean;
+      out ParameterProperties: TVstParameterPropertyRecord): Boolean;
     function GetParamLabel(Index: Integer): AnsiString;
     function GetParamName(Index: Integer): AnsiString;
     function GetPlugCategory: TVstPluginCategory;
@@ -869,6 +869,8 @@ var
   PlugIndex : Integer;
   {$ENDIF}
 begin
+ Plugin := nil;
+ Host := nil;
  Result := 0;
 
  {$IFDEF Debug64}
@@ -1049,7 +1051,7 @@ begin
    amGetProductString            : try
                                     Result := 1;
                                     {$IFDEF FPC}
-                                    if Assigned(Host)
+                                    if Assigned(Host) and Assigned(ptr)
                                      then Move(Host.ProductString[1], ptr^, Length(Host.ProductString))
                                      else Result := 0;
                                     {$ELSE}
@@ -1972,6 +1974,7 @@ begin
   if vcdBypass in FVSTCanDos
    then SetBypass(False);
 
+  tmp := '';
   FPlugCategory := GetPlugCategory;
   FVstVersion   := GetVstVersion;
 
@@ -2289,17 +2292,14 @@ end;
 
 function TCustomVstPlugIn.EditGetRect: ERect;
 var
-  temp: PPERect;
+  temp: PERect;
 begin
- GetMem(temp, SizeOf(PPERect));
- try
-  if FActive then VstDispatch(effEditGetRect, 0, 0, temp);
-  if Assigned(temp) then
-   if Assigned(temp^)
-    then Result := temp^^;
- finally
-  Dispose(temp);
- end;
+ if FActive then
+  begin
+   temp := nil;
+   VstDispatch(effEditGetRect, 0, 0, @temp);
+   if Assigned(temp) then Result := temp^;
+  end;
 end;
 
 function TCustomVstPlugIn.EditOpen(const Handle: THandle): Integer;
@@ -2833,7 +2833,7 @@ end;
 
 function TCustomVstPlugIn.GetInputProperties(const InputNr: Integer): TVstPinProperties;
 begin
- FillChar(Result, SizeOf(TVstPinProperties), 0);
+FillChar(Result, SizeOf(TVstPinProperties), 0);
  if FActive
   then VstDispatch(effGetInputProperties, InputNr, 0, @Result);
 end;
@@ -3023,14 +3023,14 @@ function TCustomVstPlugIn.GetProductString: AnsiString;
 var
   Temp : PAnsiChar;
 const
-  Lngth = 256;
+  CStringLength = 256;
 begin
  Result := '';
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
- GetMem(Temp, Lngth);
+ GetMem(Temp, CStringLength);
  try
-  FillChar(Temp^, Lngth, 0);
+  FillChar(Temp^, CStringLength, 0);
   if FActive then
    if VstDispatch(effGetProductString, 0, 0, Temp) <> 0 // not sure here!
     then Result := StrPas(Temp);
@@ -3144,7 +3144,7 @@ begin
 end;
 
 function TCustomVstPlugIn.GetParameterProperties(const Index: Integer;
-  var ParameterProperties: TVstParameterPropertyRecord): Boolean;
+  out ParameterProperties: TVstParameterPropertyRecord): Boolean;
 begin
  if FActive
   then Result := VstDispatch(effGetParameterProperties, Index, 0, @ParameterProperties) <> 0
@@ -3539,8 +3539,8 @@ begin
  FVstEffect.ReservedForHost := Self;
  {$IFDEF DELPHI6_UP}
  if Assigned(Collection)
-  then FVstEffect.Resvd2    := Collection.Owner
-  else FVstEffect.Resvd2    := nil;
+  then FVstEffect.Resvd2 := Collection.Owner
+  else FVstEffect.Resvd2 := nil;
  {$ENDIF}
 
  DontRaiseExceptionsAndSetFPUcodeword;
@@ -4053,7 +4053,8 @@ begin
 
     ChunkDataSize := GetChunk(@ChunkData, False);
     ChunkSize     := ChunkDataSize;
-    ByteSize      := SizeOf(FXChunkBank) - SizeOf(LongInt) * 3 + chunkSize + 8;
+    ByteSize      := SizeOf(FXChunkBank) + chunkSize - SizeOf(Pointer) -
+      SizeOf(TChunkName) - SizeOf(LongInt);
 
     // swap-o-matic
     Flip32(version);
@@ -4076,7 +4077,9 @@ begin
     fxID          := FVstEffect^.UniqueID;
     fxVersion     := FVstEffect^.version;
     numPrograms   := FVstEffect^.numPrograms;
-    ByteSize      := SizeOf(FXSet) - SizeOf(LongInt) + (SizeOf(TFXPreset) + (numParams - 1) * SizeOf(Single)) * numPrograms - 8;
+    ByteSize      := SizeOf(FXSet) - SizeOf(Pointer) - SizeOf(TChunkName) -
+      SizeOf(LongInt) + (SizeOf(TFXPreset) - SizeOf(PSingle) +
+      numParams * SizeOf(Single)) * numPrograms;
 
     // swap-o-matic
     Flip32(version);
@@ -4085,12 +4088,12 @@ begin
     Flip32(numPrograms);
     Flip32(ByteSize);
 
-    Stream.WriteBuffer(FXSet, SizeOf(FXSet) - SizeOf(Single));
+    Stream.WriteBuffer(FXSet, SizeOf(FXSet) - SizeOf(Pointer));
     for PrgNo := 0 to Self.numPrograms - 1 do
      begin
       FXPreset := GetPreset(PrgNo);
       try
-       Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
+       Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Pointer));
        Stream.WriteBuffer(FXPreset.Params^, SizeOf(Single) * numParams);
       finally
        Dispose(FXPreset.params);

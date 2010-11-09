@@ -32,12 +32,13 @@ unit HumRemovalDSP;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspFilterButterworth, DAV_DspFilterChebyshevType1,
-  DAV_DspFilterChebyshevType2, DAV_DspHumRemoval, DAV_DspGoertzel;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspFilterButterworth,
+  DAV_DspFilterChebyshevType1, DAV_DspFilterChebyshevType2, DAV_DspHumRemoval,
+  DAV_DspGoertzel;
 
 type
   THumRemovalModule = class(TVSTModule)
@@ -71,7 +72,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   HumRemovalGUI;

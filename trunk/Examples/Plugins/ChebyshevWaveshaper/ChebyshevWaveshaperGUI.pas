@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, Graphics, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList, DAV_GuiPng, DAV_GuiFont;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, Graphics, DAV_Types, DAV_VSTModule, DAV_GuiLabel,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiPng, DAV_GuiFont;
 
 type
   TFmChebyshevWaveshaper = class(TForm)
@@ -54,7 +55,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, ChebyshevWaveshaperDM, DAV_VSTModuleWithPrograms;
@@ -92,23 +97,22 @@ begin
      FLabels[i] := TGuiLabel.Create(Self);
      with FLabels[i] do
       begin
-       Parent       := Self;
-       Anchors      := [];
-       Width        := 48;
-       Height       := 16;
-       Left         := 8 + (i mod 6 * (Width + 8));
-       Top          := 56 + (i div 6) * 72;
-       Alignment    := taCenter;
-       Oversampling := fo3x;
+       Parent           := Self;
+       Anchors          := [];
+       Width            := 48;
+       Height           := 16;
+       Left             := 8 + (i mod 6 * (Width + 8));
+       Top              := 56 + (i div 6) * 72;
+       Alignment        := taCenter;
+       FontOversampling := fo3x;
        if i = 0
-        then Caption := 'Fun.'
-        else Caption := 'H' + IntToStr(i + 1);
-       Font.Charset := DEFAULT_CHARSET;
-       Font.Color   := 13877402;
-       Font.Height  := -13;
-       Font.Name    := 'Verdana';
-       Font.Style   := [fsBold];
-       Tag          := i;
+        then Caption    := 'Fun.'
+        else Caption    := 'H' + IntToStr(i + 1);
+       Font.Color       := 13877402;
+       Font.Height      := -13;
+       Font.Name        := 'Verdana';
+       Font.Style       := [fsBold];
+       Tag              := i;
       end;
     end;
   end;

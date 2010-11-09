@@ -32,13 +32,14 @@ unit HumRemovalGUI;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, DAV_Types, 
-  DAV_VSTModule, DAV_GuiLED, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiLabel,
-  DAV_GuiSelectBox, StdCtrls, DAV_GuiGroup, DAV_GuiEQGraph,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLED, DAV_GuiPng,
+  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiGroup,
+  DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmHumRemoval = class(TForm)
@@ -83,7 +84,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_Common, DAV_VSTModuleWithPrograms, HumRemovalDSP;

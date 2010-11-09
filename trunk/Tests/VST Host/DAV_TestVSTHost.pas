@@ -1,21 +1,45 @@
 unit DAV_TestVSTHost;
-{
 
-  Delphi DUnit Testfall
-  ----------------------
-  Diese Unit enthält ein Codegerüst einer Testfallklasse, das vom Testfall-Experten
-  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der
-  getesteten Unit korrekt eingerichtet und aufgerufen werden.
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
-}
-                                                                                          
 interface
+
+{$I DAV_Compiler.inc}
 
 {$DEFINE NoInvalidOpcodes}
 
 uses
-  TestFramework, Graphics, Registry, Classes, Contnrs, Windows, SysUtils,
-  Messages, Dialogs, DAV_Types, DAV_VSTHost;
+  {$IFDEF FPC}fpcunit, testutils, testregistry, {$ELSE} TestFramework, {$ENDIF}
+  Graphics, Registry, Classes, Contnrs, Windows, SysUtils, Messages, Dialogs,
+  DAV_Types, DAV_VSTHost;
 
 type
   TTestVstSuite = class(TTestSuite)
@@ -23,7 +47,11 @@ type
     FVstPluginName : TFileName;
     procedure SetVstPluginName(const Value: TFileName);
   public
+    {$IFDEF FPC}
+    procedure AddTestSuiteFromClass(ATestClass: TClass); override;
+    {$ELSE}
     procedure AddTests(testClass: TTestCaseClass); override;
+    {$ENDIF}
   published
     property VstPluginName: TFileName read FVstPluginName write SetVstPluginName;
   end;
@@ -36,12 +64,17 @@ type
     procedure SetVstPluginName(const Value: TFileName);
   protected
     FVstHost : TVstHost;
-    function GetProductString: string; virtual;
-    function GetVendorString: string; virtual;
+    function GetProductString: AnsiString; virtual;
+    function GetVendorString: AnsiString; virtual;
   public
     procedure SetUp; override;
     procedure TearDown; override;
+    {$IFDEF FPC}
+    constructor Create; override;
+    constructor CreateWithName(const AName: string); override;
+    {$ELSE}
     constructor Create(MethodName: string); override;
+    {$ENDIF}
     destructor Destroy; override;
   published
     property VstPluginName: TFileName read FVstPluginName write SetVstPluginName;
@@ -50,7 +83,11 @@ type
   // Basic test methods for VST Plugins
   TVstPluginBasicTests = class(TCustomTestVstPlugin)
   public
+    {$IFDEF FPC}
+    constructor CreateWithName(const AName: string); override;
+    {$ELSE}
     constructor Create(MethodName: string); override;
+    {$ENDIF}
   published
     procedure TestMultipleInstances;
     procedure TestActiveParameterSweeps;
@@ -64,7 +101,9 @@ type
   TVstPluginPerverseTests = class(TCustomTestVstPlugin)
   published
     procedure TestMultipleOpenCloseCycles;
+    {$IFNDEF FPC}
     procedure TestLoadVSTPluginFromResource;
+    {$ENDIF}
     procedure TestInactiveParameterSweeps;
     procedure TestInactiveSamplerateChanges;
     procedure TestInactiveBlocksizeChanges;
@@ -80,8 +119,8 @@ type
   // Test methods for VST Plugins for various hosts
   TVstPluginHostTests = class(TCustomTestVstPlugin)
   protected
-    function GetProductString: string; override;
-    function GetVendorString: string; override;
+    function GetProductString: AnsiString; override;
+    function GetVendorString: AnsiString; override;
   published
     procedure TestAbletonLiveScan;
     procedure TestAbletonLive;
@@ -112,7 +151,11 @@ type
     procedure SetBlockSize(const Value: Integer);
     procedure SetupBuffers;
   public
+    {$IFDEF FPC}
+    constructor CreateWithName(const AName: string); override;
+    {$ELSE}
     constructor Create(MethodName: string); override;
+    {$ENDIF}
     procedure SetUp; override;
     procedure TearDown; override;
   published
@@ -153,7 +196,11 @@ type
     FBlockSize        : Integer;
     procedure SetBlockSize(const Value: Integer);
   public
+    {$IFDEF FPC}
+    constructor CreateWithName(const AName: string); override;
+    {$ELSE}
     constructor Create(MethodName: string); override;
+    {$ENDIF}
     procedure SetUp; override;
     procedure TearDown; override;
   published
@@ -175,6 +222,10 @@ resourcestring
   RCStrWrongCategory = 'Plugin has the wrong category for this test';
   RCStrPluginNoOutput = 'Plugin produces no output, the test will not work';
   RCStrTimeVariantOutput = 'The output is too time variant for testing';
+  RCStrVSTPluginNotFound = 'VST Plugin not found: %s';
+  RCStrVSTPluginDoesNotExists = 'Specified VST plugin does not exist: %s';
+  RCStrErrorOpeningPlugin = 'Error opening plugin: %d';
+  RCStrVendorProduct = 'Delphi ASIO & VST Project';
 
 function RemoveFileExt(const FileName: string): string;
 var
@@ -189,12 +240,27 @@ end;
 
 { TCustomTestVstPlugin }
 
+{$IFDEF FPC}
+constructor TCustomTestVstPlugin.Create;
+begin
+ inherited Create;
+ FVstHost := TVstHost.Create(nil);
+
+ if ParamStr(1) <> '' then FVstPluginName := ParamStr(1);
+end;
+
+constructor TCustomTestVstPlugin.CreateWithName(const AName: string);
+begin
+ inherited CreateWithName(AName);
+end;
+{$ELSE}
 constructor TCustomTestVstPlugin.Create(MethodName: string);
 begin
  inherited Create(MethodName);
  FVstHost := TVstHost.Create(nil);
  if ParamStr(1) <> '' then FVstPluginName := ParamStr(1);
 end;
+{$ENDIF}
 
 destructor TCustomTestVstPlugin.Destroy;
 begin
@@ -202,34 +268,36 @@ begin
  inherited;
 end;
 
-function TCustomTestVstPlugin.GetProductString: string;
+function TCustomTestVstPlugin.GetProductString: AnsiString;
 begin
- Result := 'Delphi ASIO & VST Project';
+ Result := RCStrVendorProduct;
 end;
 
-function TCustomTestVstPlugin.GetVendorString: string;
+function TCustomTestVstPlugin.GetVendorString: AnsiString;
 begin
- Result := 'Delphi ASIO & VST Project';
+ Result := RCStrVendorProduct;
 end;
 
 procedure TCustomTestVstPlugin.SetUp;
 begin
  with FVstHost do
-  begin
+  try
    VendorString := GetVendorString;
    ProductString := GetProductString;
 
    with VstPlugIns.Add do
     if FileExists(FVstPluginName)
      then LoadFromFile(FVstPluginName)
-     else raise Exception.Create('VST Plugin not found: ' + FVstPluginName);
+     else raise Exception.CreateFmt(RCStrVSTPluginNotFound, [FVstPluginName]);
+  except
+   on E: Exception do Fail(E.Message);
   end;
 end;
 
 procedure TCustomTestVstPlugin.SetVstPluginName(const Value: TFileName);
 begin
  if not FileExists(Value)
-  then raise Exception.Create('Specified VST plugin does not exist: ' + Value);
+  then raise Exception.CreateFmt(RCStrVSTPluginDoesNotExists, [Value]);
  if FVstPluginName <> Value then FVstPluginName := Value;
 end;
 
@@ -294,8 +362,13 @@ begin
  with FVstHost[0] do
   begin
    Active := True;
+
    if numPrograms > 0 then
+    {$IFDEF FPC}
+    for ProgIndex := 0 to 99 do
+    {$ELSE}
     for ProgIndex := 0 to 999 do
+    {$ENDIF}
      begin
       CurrentProgram := Random(numPrograms);
       if numParams > 0 then
@@ -347,7 +420,7 @@ begin
       LoadFromFile(FVstHost[0].DLLFileName);
       Open;
      except
-      Fail('Error opening plugin : ' + IntToStr(InstanceIndex));
+      Fail(Format(RCStrErrorOpeningPlugin, [InstanceIndex]));
      end;
 
    // close and delete random instances
@@ -415,6 +488,12 @@ begin
   end;
 end;
 
+{$IFDEF FPC}
+constructor TVstPluginBasicTests.CreateWithName(const AName: string);
+begin
+ inherited CreateWithName(AName);
+end;
+{$ELSE}
 constructor TVstPluginBasicTests.Create(MethodName: string);
 begin
  inherited;
@@ -422,6 +501,7 @@ begin
  FailsOnMemoryLeak := True;
  {$ENDIF}
 end;
+{$ENDIF}
 
 procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;
 var
@@ -531,8 +611,10 @@ begin
     VstDispatch(effBeginLoadBank);
     VstDispatch(effGetParameterProperties);
     VstDispatch(effOpen);
+    {$IFNDEF FPC}
     CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
       'effIdentify didn''t return NvEf');
+    {$ENDIF}
    end;
 
 {$IFNDEF NoInvalidOpcodes}
@@ -553,9 +635,11 @@ var
 begin
  for i := 0 to 9 do
   with FVstHost[0] do
-   begin
+   try
     Active := True;
     Active := False;
+   except
+    on E: Exception do Fail(E.Message)
    end;
 end;
 
@@ -592,8 +676,8 @@ begin
        // change value to something different
        if (TrialNo < 1000) and String2Parameter(ParameterIndex, ParameterString)
         then CheckEquals(ParameterString, ParameterDisplay[ParameterIndex] + ' ' +
-          ParameterLabel[ParameterIndex], 'Error at parameter ' +
-          IntToStr(ParameterIndex + 1));
+          ParameterLabel[ParameterIndex], Format('Error at parameter %d',
+            [ParameterIndex + 1]));
       end;
     end;
    Active := False;
@@ -866,7 +950,7 @@ begin
   end;
 end;
 
-
+{$IFNDEF FPC}
 procedure TVstPluginPerverseTests.TestLoadVSTPluginFromResource;
 var
   FileName   : TFileName;
@@ -888,58 +972,62 @@ begin
    Fail('Error: Failed to load DLL file, probably in use');
   end;
 end;
+{$ENDIF}
+
 
 { TVstPluginHostTests }
 
-function TVstPluginHostTests.GetProductString: string;
+function TVstPluginHostTests.GetProductString: AnsiString;
 begin
- if GetName = 'TestAbletonLiveScan' then Result := 'Live' else
- if GetName = 'TestAbletonLive' then Result := 'Live' else
- if GetName = 'TestCantabile' then Result := 'Cantabile' else
- if GetName = 'TestCubaseScan' then Result := 'Cubase VST' else
- if GetName = 'TestCubase' then Result := 'Cubase VST' else
- if GetName = 'TestCubaseReloadPlugin' then Result := 'Cubase VST' else
- if GetName = 'TestEnergyXT' then Result := 'energyXT' else
- if GetName = 'TestEnergyXTBug' then Result := 'energyXT' else
- if GetName = 'TestFL8FastScan' then Result := 'Fruity Wrapper' else
- if GetName = 'TestFL8' then Result := 'Fruity Wrapper' else
- if GetName = 'TestMULAB' then Result := 'MU.LAB' else
- if GetName = 'TestReaper' then Result := 'REAPER' else
- if GetName = 'TestSamplitude' then Result := 'Samplitude' else
- if GetName = 'TestSoundForge10Scan' then Result := 'Sound Forge Pro 10.0' else
- if GetName = 'TestSoundForge10' then Result := 'Sound Forge Pro 10.0' else
- if GetName = 'TestSoundForge10Bug' then Result := 'Sound Forge Pro 10.0' else
- if GetName = 'TestTracktion2' then Result := 'Tracktion 2' else
- if GetName = 'TestTracktion2Scan' then Result := 'Tracktion 2'
+ Result := {$IFDEF FPC} TestName; {$ELSE} GetName; {$ENDIF}
+ if Result = 'TestAbletonLiveScan' then Result := 'Live' else
+ if Result = 'TestAbletonLive' then Result := 'Live' else
+ if Result = 'TestCantabile' then Result := 'Cantabile' else
+ if Result = 'TestCubaseScan' then Result := 'Cubase VST' else
+ if Result = 'TestCubase' then Result := 'Cubase VST' else
+ if Result = 'TestCubaseReloadPlugin' then Result := 'Cubase VST' else
+ if Result = 'TestEnergyXT' then Result := 'energyXT' else
+ if Result = 'TestEnergyXTBug' then Result := 'energyXT' else
+ if Result = 'TestFL8FastScan' then Result := 'Fruity Wrapper' else
+ if Result = 'TestFL8' then Result := 'Fruity Wrapper' else
+ if Result = 'TestMULAB' then Result := 'MU.LAB' else
+ if Result = 'TestReaper' then Result := 'REAPER' else
+ if Result = 'TestSamplitude' then Result := 'Samplitude' else
+ if Result = 'TestSoundForge10Scan' then Result := 'Sound Forge Pro 10.0' else
+ if Result = 'TestSoundForge10' then Result := 'Sound Forge Pro 10.0' else
+ if Result = 'TestSoundForge10Bug' then Result := 'Sound Forge Pro 10.0' else
+ if Result = 'TestTracktion2' then Result := 'Tracktion 2' else
+ if Result = 'TestTracktion2Scan' then Result := 'Tracktion 2'
   else Result := inherited GetProductString;
 end;
 
-function TVstPluginHostTests.GetVendorString: string;
+function TVstPluginHostTests.GetVendorString: AnsiString;
 begin
- if GetName = 'TestAbletonLiveScan' then Result := 'Live' else
- if GetName = 'TestAbletonLive' then Result := 'Live' else
- if GetName = 'TestCantabile' then Result := 'Cantabile' else
- if GetName = 'TestCubaseScan' then Result := 'Steinberg' else
- if GetName = 'TestCubase' then Result := 'Steinberg' else
- if GetName = 'TestCubaseReloadPlugin' then Result := 'Steinberg' else
- if GetName = 'TestEnergyXT' then Result := 'XT Software' else
- if GetName = 'TestEnergyXTBug' then Result := 'XT Software' else
- if GetName = 'TestFL8FastScan' then Result := 'Fruity Wrapper' else
- if GetName = 'TestFL8' then Result := 'Fruity Wrapper' else
- if GetName = 'TestMULAB' then Result := 'MUTOOLS.com' else
- if GetName = 'TestReaper' then Result := 'Cockos' else
- if GetName = 'TestSamplitude' then Result := 'MAGIX' else
- if GetName = 'TestSoundForge10Scan' then Result := 'Sony Creative Software' else
- if GetName = 'TestSoundForge10' then Result := 'Sony Creative Software' else
- if GetName = 'TestSoundForge10Bug' then Result := 'Sony Creative Software' else
- if GetName = 'TestTracktion2' then Result := '' else
- if GetName = 'TestTracktion2Scan' then Result := ''
+ Result := {$IFDEF FPC} TestName; {$ELSE} GetName; {$ENDIF}
+ if Result = 'TestAbletonLiveScan' then Result := 'Live' else
+ if Result = 'TestAbletonLive' then Result := 'Live' else
+ if Result = 'TestCantabile' then Result := 'Cantabile' else
+ if Result = 'TestCubaseScan' then Result := 'Steinberg' else
+ if Result = 'TestCubase' then Result := 'Steinberg' else
+ if Result = 'TestCubaseReloadPlugin' then Result := 'Steinberg' else
+ if Result = 'TestEnergyXT' then Result := 'XT Software' else
+ if Result = 'TestEnergyXTBug' then Result := 'XT Software' else
+ if Result = 'TestFL8FastScan' then Result := 'Fruity Wrapper' else
+ if Result = 'TestFL8' then Result := 'Fruity Wrapper' else
+ if Result = 'TestMULAB' then Result := 'MUTOOLS.com' else
+ if Result = 'TestReaper' then Result := 'Cockos' else
+ if Result = 'TestSamplitude' then Result := 'MAGIX' else
+ if Result = 'TestSoundForge10Scan' then Result := 'Sony Creative Software' else
+ if Result = 'TestSoundForge10' then Result := 'Sony Creative Software' else
+ if Result = 'TestSoundForge10Bug' then Result := 'Sony Creative Software' else
+ if Result = 'TestTracktion2' then Result := '' else
+ if Result = 'TestTracktion2Scan' then Result := ''
   else Result := inherited GetVendorString;
 end;
 
 procedure TVstPluginHostTests.TestFL8FastScan;
 var
-  Data : PChar;
+  Data : PAnsiChar;
 begin
  FVstHost.VendorString := 'Image-Line';
  FVstHost.ProductString := 'Fruity Wrapper';
@@ -949,6 +1037,7 @@ begin
    // open
    VstDispatch(effOpen);
 
+   Data := nil;
    GetMem(Data, 1024);
    try
     // get plugin category
@@ -972,9 +1061,8 @@ end;
 procedure TVstPluginHostTests.TestFL8;
 var
   i    : Integer;
-  Data : PChar;
-  rct  : TRect;
-  prct : PRect;
+  Data : PAnsiChar;
+  prct : PERect;
   pp   : TVstPinProperties;
   ve   : TVstEvents;
 begin
@@ -1001,6 +1089,7 @@ begin
    // switch on
    VstDispatch(effMainsChanged, 0, 1);
 
+   Data := nil;
    GetMem(Data, 1024);
    try
     // get vendor string
@@ -1038,7 +1127,7 @@ begin
     VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
 
     // CanDo receiveVstMidiEvent
-    VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
     // switch off
     VstDispatch(effMainsChanged, 0, 0);
@@ -1050,10 +1139,10 @@ begin
     VstDispatch(effMainsChanged, 0, 1);
 
     // Get Program Name Indexed
-    VstDispatch(effGetProgramNameIndexed, 0, -1);
+    VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
 
     // Get Program Name Indexed
-    VstDispatch(effGetProgramNameIndexed, 1, -1);
+    VstDispatch(effGetProgramNameIndexed, 1, -1, Data);
 
     // get vendor string
     VstDispatch(effGetVendorString, 0, 0, Data);
@@ -1064,11 +1153,12 @@ begin
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
       // Get Editor Rect
-      prct := @rct;
       VstDispatch(effEditGetRect, 0, 0, @prct);
 
       // set bounds
-      SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+      if Assigned(prct)
+       then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+         prct^.Bottom - prct^.Top);
 
       // repaint
       Repaint;
@@ -1113,8 +1203,7 @@ end;
 
 procedure TVstPluginHostTests.TestMULAB;
 var
-  rct     : TRect;
-  prct    : PRect;
+  prct    : PERect;
   pp      : TVstPinProperties;
   ve      : TVstEvents;
   Channel : Integer;
@@ -1125,8 +1214,10 @@ begin
  with FVstHost[0] do
   begin
    // check identify is fEvN
+   {$IFNDEF FPC}
    CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
      'effIdentify didn''t return NvEf');
+   {$ENDIF}
 
    // get vst version
    VstDispatch(effGetVstVersion);
@@ -1190,11 +1281,12 @@ begin
      VstDispatch(effProcessEvents, 0, 0, @ve);
 
      // Get Editor Rect
-     prct := @rct;
      VstDispatch(effEditGetRect, 0, 0, @prct);
 
      // set bounds
-     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+     if Assigned(prct)
+      then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+        prct^.Bottom - prct^.Top);
 
      // repaint
      Repaint;
@@ -1229,9 +1321,8 @@ end;
 procedure TVstPluginHostTests.TestReaper;
 var
   i    : Integer;
-  Data : PChar;
-  rct  : TRect;
-  prct : PRect;
+  Data : PAnsiChar;
+  prct : PERect;
 begin
  FVstHost.VendorString := 'Cockos';
  FVstHost.ProductString := 'REAPER';
@@ -1247,6 +1338,7 @@ begin
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 1024);
 
+   Data := nil;
    GetMem(Data, 1024);
    try
     // get vendor string
@@ -1260,7 +1352,7 @@ begin
    end;
 
    // CanDo hasCockosExtensions
-   VstDispatch(effCanDo, 0, 0, PChar('hasCockosExtensions'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('hasCockosExtensions'));
 
    // switch on
    VstDispatch(effMainsChanged, 0, 1);
@@ -1269,16 +1361,16 @@ begin
    VstDispatch(effStartProcess);
 
    // CanDo receiveVstEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstEvent'));
 
    // CanDo receiveVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
    // get plugin category
    VstDispatch(effGetPlugCategory);
 
    // CanDo sendVstEvents
-   VstDispatch(effCanDo, 0, 0, PChar('sendVstEvents'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstEvents'));
 
    // Idle
    VstDispatch(effIdle);
@@ -1289,6 +1381,7 @@ begin
    // Get Program
    VstDispatch(effGetProgram, 0, -1);
 
+   Data := nil;
    GetMem(Data, 1024);
    try
     // Get Program Name Indexed
@@ -1299,7 +1392,6 @@ begin
    end;
 
    // Get Editor Rect
-   prct := @rct;
    VstDispatch(effEditGetRect, 0, 0, @prct);
 
    // Open Editor
@@ -1311,7 +1403,9 @@ begin
      VstDispatch(effEditGetRect, 0, 0, @prct);
 
      // set bounds
-     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+     if Assigned(prct)
+      then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+        prct^.Bottom - prct^.Top);
 
      // repaint
      Repaint;
@@ -1352,9 +1446,8 @@ end;
 procedure TVstPluginHostTests.TestSamplitude;
 var
   i    : Integer;
-  prct : PRect;
-  rct  : TRect;
-  Data : PChar;
+  prct : PERect;
+  Data : PAnsiChar;
 begin
  FVstHost.VendorString := 'MAGIX';
  FVstHost.ProductString := 'Samplitude';
@@ -1373,6 +1466,7 @@ begin
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 4096);
 
+   Data := nil;
    GetMem(Data, 1024);
    try
     // get vendor string
@@ -1382,7 +1476,7 @@ begin
     VstDispatch(effGetVstVersion);
 
     // CanDo receiveVstMidiEvent
-    VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
     // set program
     VstDispatch(effSetProgram);
@@ -1406,7 +1500,6 @@ begin
    VstDispatch(effSetEditKnobMode);
 
    // Get Editor Rect
-   prct := @rct;
    VstDispatch(effEditGetRect, 0, 0, @prct);
 
    with TForm.Create(nil) do
@@ -1416,6 +1509,7 @@ begin
      // edit top
      VstDispatch(effEditTop);
 
+     Data := nil;
      GetMem(Data, 1024);
      try
       // get parameter name
@@ -1472,7 +1566,7 @@ end;
 
 procedure TVstPluginHostTests.TestSoundForge10Scan;
 var
-  Data : PChar;
+  Data : PAnsiChar;
 begin
  FVstHost.VendorString := 'Sony Creative Software';
  FVstHost.ProductString := 'Sound Forge Pro 10.0';
@@ -1512,10 +1606,9 @@ end;
 
 procedure TVstPluginHostTests.TestSoundForge10;
 var
-  Data : PChar;
+  Data : PAnsiChar;
   i, j : Integer;
-  rct  : TRect;
-  prct : PRect;
+  prct : PERect;
 begin
  FVstHost.VendorString := 'Sony Creative Software';
  FVstHost.ProductString := 'Sound Forge Pro 10.0';
@@ -1590,7 +1683,6 @@ begin
       VstDispatch(effSetEditKnobMode, 0, 2);
 
       // get editor rect
-      prct := @rct;
       VstDispatch(effEditGetRect, 0, 0, @prct);
 
       // get program
@@ -1680,17 +1772,18 @@ var
   i, j : Integer;
   pp   : TVstPinProperties;
   ve   : TVstEvents;
-  Data : PChar;
-  prct : PRect;
-  rct  : TRect;
+  Data : PAnsiChar;
+  prct : PERect;
 begin
  FVstHost.VendorString := '';
  FVstHost.ProductString := 'Tracktion 2';
 
  with FVstHost[0] do
   begin
+   {$IFNDEF FPC}
    CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
      'effIdentify didn''t return NvEf');
+   {$ENDIF}
 
    // set samplerate
    VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
@@ -1784,7 +1877,7 @@ begin
    end;
 
    // CanDo receiveVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
    // get plugin category
    VstDispatch(effGetPlugCategory);
@@ -1797,7 +1890,6 @@ begin
     do VstDispatch(effGetProgram);
 
    // get editor rect
-   prct := @rct;
    VstDispatch(effEditGetRect, 0, 0, @prct);
 
    with TForm.Create(nil) do
@@ -1809,7 +1901,9 @@ begin
      VstDispatch(effEditGetRect, 0, 0, @prct);
 
      // set bounds
-     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+     if Assigned(prct)
+      then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+        prct^.Bottom - prct^.Top);
 
      // repaint
      Repaint;
@@ -1880,8 +1974,10 @@ begin
  with FVstHost[0] do
   begin
    VstDispatch(effGetPlugCategory);
+   {$IFNDEF FPC}
    CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
      'effIdentify didn''t return NvEf');
+   {$ENDIF}
    VstDispatch(effOpen);
    VstDispatch(effClose);
   end;
@@ -1889,7 +1985,7 @@ end;
 
 procedure TVstPluginHostTests.TestCubaseScan;
 var
-  Data : PChar;
+  Data : PAnsiChar;
 begin
  FVstHost.VendorString := 'Steinberg';
  FVstHost.ProductString := 'Cubase VST';
@@ -1912,10 +2008,10 @@ begin
    VstDispatch(effOpen);
 
    // CanDo receiveVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
    // CanDo sendVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvent'));
 
    GetMem(Data, 1024);
    try
@@ -1943,9 +2039,8 @@ procedure TVstPluginHostTests.TestEnergyXT;
 var
   i    : Integer;
   pp   : TVstPinProperties;
-  Data : PChar;
-  prct : PRect;
-  rct  : TRect;
+  Data : PAnsiChar;
+  prct : PERect;
 begin
  FVstHost.VendorString := 'XT Software';
  FVstHost.ProductString := 'energyXT';
@@ -1956,7 +2051,7 @@ begin
    VstDispatch(effOpen);
 
    // CanDo sendVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvent'));
 
    // set program
    VstDispatch(effSetProgram);
@@ -2003,7 +2098,6 @@ begin
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
       // get editor rect
-      prct := @rct;
       VstDispatch(effEditGetRect, 0, 0, @prct);
 
       // Get Program Name Indexed
@@ -2043,9 +2137,8 @@ procedure TVstPluginHostTests.TestAbletonLive;
 var
   i, j : Integer;
   pp   : TVstPinProperties;
-  Data : PChar;
-  prct : PRect;
-  rct  : TRect;
+  Data : PAnsiChar;
+  prct : PERect;
 begin
  FVstHost.VendorString := 'Ableton';
  FVstHost.ProductString := 'Live';
@@ -2071,13 +2164,13 @@ begin
    VstDispatch(effSetBlockSize, 0, 128);
 
    // CanDo sendVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvent'));
 
    // CanDo receiveVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
    // CanDo midiProgramNames
-   VstDispatch(effCanDo, 0, 0, PChar('midiProgramNames'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('midiProgramNames'));
 
    // get input properties
    for i := 0 to numInputs - 1 do
@@ -2167,7 +2260,6 @@ begin
       VstDispatch(effSetEditKnobMode, 0, 2);
 
       // get editor rect
-      prct := @rct;
       VstDispatch(effEditGetRect, 0, 0, @prct);
 
       // get program
@@ -2248,10 +2340,9 @@ end;
 
 procedure TVstPluginHostTests.TestCantabile;
 var
-  Data : PChar;
+  Data : PAnsiChar;
   i    : Integer;
-  rct  : TRect;
-  prct : PRect;
+  prct : PERect;
 begin
  FVstHost.VendorString := 'Topten Software';
  FVstHost.ProductString := 'Cantabile';
@@ -2277,13 +2368,13 @@ begin
    VstDispatch(effGetVstVersion);
 
    // CanDo receiveVstEvents
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstEvents'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstEvents'));
 
    // CanDo receiveVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
    // CanDo sendVstMidiEvents
-   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvents'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvents'));
 
    GetMem(Data, 1024);
    try
@@ -2340,11 +2431,12 @@ begin
       VstDispatch(effSetEditKnobMode, 0, 2);
 
       // get edit rect
-      prct := @rct;
       VstDispatch(effEditGetRect, 0, 0, @prct);
 
       // set bounds
-      SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+      if Assigned(prct)
+       then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+         prct^.Bottom - prct^.Top);
 
       // repaint
       Repaint;
@@ -2400,11 +2492,10 @@ end;
 
 procedure TVstPluginHostTests.TestCubase;
 var
-  Data : PChar;
+  Data : PAnsiChar;
   i, j : Integer;
   ChNm : TChunkName;
-  rct  : TRect;
-  prct : PRect;
+  prct : PERect;
 begin
  FVstHost.VendorString := 'Steinberg';
  FVstHost.ProductString := 'Cubase VST';
@@ -2430,21 +2521,22 @@ begin
    VstDispatch(effMainsChanged, 0, 1);
 
    // cando 'bypass'
-   VstDispatch(effCanDo, 0, 0, PChar('bypass'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
 
    // switch off
    VstDispatch(effMainsChanged, 0, 0);
 
    // CanDo receiveVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
    // CanDo sendVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvent'));
 
    // CanDo midiProgramNames
-   VstDispatch(effCanDo, 0, 0, PChar('midiProgramNames'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('midiProgramNames'));
 
    // program scanning
+   Data := nil;
    GetMem(Data, 1024);
    try
     for i := 0 to numPrograms - 1 do
@@ -2482,6 +2574,7 @@ begin
 
    finally
     Dispose(Data);
+    Data := nil;
    end;
 
    // set process precision (32 bit)
@@ -2490,9 +2583,9 @@ begin
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 2048);
 
-(*
+{
    effSetSpeakerArrangement Index: 0 Value: 280560528 Pointer: 280561440 Single: 0
-*)
+}
 
    // effVendorSpecific Chunkname: aCts Value: 1164857154 Pointer: 0 Single: 0
    ChNm := 'aCts';
@@ -2504,7 +2597,7 @@ begin
    VstDispatch(effMainsChanged, 0, 1);
 
    // cando 'bypass'
-   VstDispatch(effCanDo, 0, 0, PChar('bypass'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
 
    // start process
    VstDispatch(effStartProcess);
@@ -2516,7 +2609,6 @@ begin
    VstDispatch(effSetEditKnobMode, 0, 2);
 
    // get edit rect
-   prct := @rct;
    VstDispatch(effEditGetRect, 0, 0, @prct);
 
    with TForm.Create(nil) do
@@ -2528,7 +2620,9 @@ begin
      VstDispatch(effEditGetRect, 0, 0, @prct);
 
      // set bounds
-     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+     if Assigned(prct)
+      then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+        prct^.Bottom - prct^.Top);
 
      // repaint
      Repaint;
@@ -2590,6 +2684,7 @@ begin
 
      finally
       Dispose(Data);
+      Data := nil;
      end;
 
      // get program
@@ -2617,10 +2712,9 @@ end;
 
 procedure TVstPluginHostTests.TestCubaseReloadPlugin;
 var
-  Data : PChar;
+  Data : PAnsiChar;
   i, j : Integer;
-  rct  : TRect;
-  prct : PRect;
+  prct : PERect;
   ChNm : TChunkName;
 begin
  FVstHost.VendorString := 'Steinberg';
@@ -2647,19 +2741,19 @@ begin
    VstDispatch(effMainsChanged, 0, 1);
 
    // cando 'bypass'
-   VstDispatch(effCanDo, 0, 0, PChar('bypass'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
 
    // switch off
    VstDispatch(effMainsChanged, 0, 0);
 
    // CanDo receiveVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
 
    // CanDo sendVstMidiEvent
-   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvent'));
 
    // CanDo midiProgramNames
-   VstDispatch(effCanDo, 0, 0, PChar('midiProgramNames'));
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('midiProgramNames'));
 
    // program scanning
    GetMem(Data, 1024);
@@ -2741,7 +2835,7 @@ begin
     for i := 0 to 3 do
      begin
       // cando 'bypass'
-      VstDispatch(effCanDo, 0, 0, PChar('bypass'));
+      VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
 
       // switch off
       VstDispatch(effMainsChanged, 0, 0);
@@ -2751,7 +2845,7 @@ begin
      end;
 
     // cando 'bypass'
-    VstDispatch(effCanDo, 0, 0, PChar('bypass'));
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
 
     // start process
     VstDispatch(effStartProcess);
@@ -2760,7 +2854,6 @@ begin
     VstDispatch(effSetEditKnobMode, 0, 2);
 
     // get edit rect
-    prct := @rct;
     VstDispatch(effEditGetRect, 0, 0, @prct);
 
     with TForm.Create(nil) do
@@ -2772,7 +2865,9 @@ begin
       VstDispatch(effEditGetRect, 0, 0, @prct);
 
       // set bounds
-      SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+      if Assigned(prct)
+       then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+         prct^.Bottom - prct^.Top);
 
       // repaint
       Repaint;
@@ -2876,7 +2971,11 @@ begin
  result := (IntCast and $7F800000 = 0) and (IntCast and $007FFFFF <> 0);
 end;
 
+{$IFDEF FPC}
+constructor TVstPluginIOTests.CreateWithName(const AName: string);
+{$ELSE}
 constructor TVstPluginIOTests.Create(MethodName: string);
+{$ENDIF}
 begin
  FBlockSize := 8192;
  inherited;
@@ -2921,8 +3020,8 @@ begin
  inherited;
  SetupBuffers;
 
- FVstHost.VendorString := 'Delphi ASIO & VST Project';
- FVstHost.ProductString := 'Delphi ASIO & VST Project';
+ FVstHost.VendorString := RCStrVendorProduct;
+ FVstHost.ProductString := RCStrVendorProduct;
  with FVstHost[0] do
   begin
    Active := True;
@@ -3179,13 +3278,15 @@ begin
      if Peak < 1E-2
       then Fail('The plugin seems to be samplerate dependent');
 
+     {$IFNDEF FPC}
      if ElapsedTestTime < 300 then
       begin
        // get random parameters
        for Param := 0 to numParams - 1
         do Parameter[Param] := random;
       end;
-    until ElapsedTestTime > 300;
+     {$ENDIF}
+    until {$IFNDEF FPC} ElapsedTestTime > 300; {$ELSE} False; {$ENDIF}
    finally
     Dispose(Buffer[0]);
     Dispose(Buffer[1]);
@@ -3271,7 +3372,11 @@ end;
 
 { TVstPluginIOThreadTests }
 
+{$IFDEF FPC}
+constructor TVstPluginIOThreadTests.CreateWithName(const AName: string);
+{$ELSE}
 constructor TVstPluginIOThreadTests.Create(MethodName: string);
+{$ENDIF}
 begin
  inherited;
  FBlockSize := 8192;
@@ -3293,8 +3398,8 @@ begin
  FVstProcessThread := TVSTProcessThread.Create(FVstHost[0]);
  FVstProcessThread.BlockSize := FBlockSize;
 
- FVstHost.VendorString := 'Delphi ASIO & VST Project';
- FVstHost.ProductString := 'Delphi ASIO & VST Project';
+ FVstHost.VendorString := RCStrVendorProduct;
+ FVstHost.ProductString := RCStrVendorProduct;
 
  with FVstHost[0] do
   begin
@@ -3366,6 +3471,30 @@ begin
   end;
 end;
 
+{$IFDEF FPC}
+procedure TTestVstSuite.AddTestSuiteFromClass(ATestClass: TClass);
+var
+  MethodList   : TStringList;
+  MethodIter   : Integer;
+  TestCase     : TTestCase;
+begin
+ MethodList := TStringList.Create;
+ try
+  GetMethodList(ATestClass, MethodList);
+  { make sure we add each test case to the list of tests }
+  for MethodIter := 0 to MethodList.Count - 1 do
+   begin
+    TestCase := TTestCaseClass(ATestClass).CreateWithName(MethodList[MethodIter]);
+    (TestCase as TCustomTestVstPlugin).VstPluginName := FVstPluginName;
+    Self.AddTest(TestCase);
+   end;
+ finally
+  FreeAndNil(MethodList);
+ end;
+end;
+
+{$ELSE}
+
 procedure TTestVstSuite.AddTests(testClass: TTestCaseClass);
 var
   MethodIter       : Integer;
@@ -3378,18 +3507,19 @@ begin
   MethodEnumerator := nil;
   try
     MethodEnumerator := TMethodEnumerator.Create(testClass);
-    { make sure we add each test case  to the list of tests }
-    for MethodIter := 0 to MethodEnumerator.Methodcount-1 do
+    { make sure we add each test case to the list of tests }
+    for MethodIter := 0 to MethodEnumerator.Methodcount - 1 do
       begin
         NameOfMethod := MethodEnumerator.nameOfMethod[MethodIter];
         TestCase := testClass.Create(NameOfMethod);
         (TestCase as TCustomTestVstPlugin).VstPluginName := FVstPluginName;
-        self.addTest(TestCase as ITest);
+        Self.AddTest(TestCase as ITest);
       end;
   finally
-    MethodEnumerator.free;
+    MethodEnumerator.Free;
   end;
 end;
+{$ENDIF}
 
 {$IFNDEF CONSOLE_TESTRUNNER}
 procedure EnumerateVstPlugins;
@@ -3421,12 +3551,20 @@ begin
           Log.SaveToFile('scan.log');
           TS := TTestVstSuite.Create(SR.Name);
           TS.VstPluginName := SR.Name;
+          {$IFDEF FPC}
+          TS.AddTestSuiteFromClass(TVstPluginBasicTests);
+          TS.AddTestSuiteFromClass(TVstPluginPerverseTests);
+          TS.AddTestSuiteFromClass(TVstPluginHostTests);
+          TS.AddTestSuiteFromClass(TVstPluginIOTests);
+          TS.AddTestSuiteFromClass(TVstPluginIOThreadTests);
+          {$ELSE}
           TS.AddTests(TVstPluginBasicTests);
           TS.AddTests(TVstPluginPerverseTests);
           TS.AddTests(TVstPluginHostTests);
           TS.AddTests(TVstPluginIOTests);
           TS.AddTests(TVstPluginIOThreadTests);
           RegisterTest(TS);
+          {$ENDIF}
           Inc(PlugCnt);
           if PlugCnt > 20 then Break; // only 20 plugins allowed
          end;
@@ -3450,11 +3588,19 @@ end;
 initialization
   if ParamStr(1) <> '' then
    begin
+    {$IFDEF FPC}
+    RegisterTest(TVstPluginBasicTests);
+    RegisterTest(TVstPluginPerverseTests);
+    RegisterTest(TVstPluginHostTests);
+    RegisterTest(TVstPluginIOTests);
+    RegisterTest(TVstPluginIOThreadTests);
+    {$ELSE}
     RegisterTest(TVstPluginBasicTests.Suite);
     RegisterTest(TVstPluginPerverseTests.Suite);
     RegisterTest(TVstPluginHostTests.Suite);
     RegisterTest(TVstPluginIOTests.Suite);
     RegisterTest(TVstPluginIOThreadTests.Suite);
+    {$ENDIF}
    end else
 {$IFNDEF CONSOLE_TESTRUNNER}
   EnumerateVstPlugins;
