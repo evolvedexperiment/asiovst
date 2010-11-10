@@ -35,10 +35,11 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiPng, DAV_GuiPixelMap, DAV_GuiLabel,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
-  DAV_GuiCustomControl, DAV_GuiGraphicControl;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng, 
+  DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiStitchedControls, 
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiCustomControl, 
+  DAV_GuiGraphicControl;
 
 type
   TFmHardKneeCompressor = class(TForm)

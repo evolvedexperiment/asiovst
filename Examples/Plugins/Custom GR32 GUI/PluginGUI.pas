@@ -3,9 +3,9 @@ unit PluginGUI;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Graphics, Menus, Controls,
-  Dialogs, ExtDlgs, Registry, DAV_Types, DAV_VSTModule, GR32, GR32_Image,
-  GR32_Blend, GR32_Layers, GuiLayers;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Graphics, Menus, Controls, Dialogs, ExtDlgs, Registry, DAV_Types, 
+  DAV_VSTModule, GR32, GR32_Image, GR32_Blend, GR32_Layers, GuiLayers;
 
 type
   TExtraData = class

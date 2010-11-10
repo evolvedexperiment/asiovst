@@ -33,9 +33,9 @@ unit BaxxpanderGui;
 interface
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, Graphics, DAV_GuiBaseControl, DAV_GuiDial, ExtCtrls, DAV_GuiPanel,
-  DAV_GuiLabel, DAV_GuiLED;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiDial, 
+  DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiLED;
 
 type
   TFmBaxxpanderGui = class(TForm)

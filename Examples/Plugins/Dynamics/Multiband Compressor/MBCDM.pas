@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFilter, DAV_DspFilterLinkwitzRiley, DAV_DspDynamics,
-  DAV_DspLightweightDynamics;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterLinkwitzRiley, 
+  DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
   TBandState = (bsNone, bsMute, bsBypass); 

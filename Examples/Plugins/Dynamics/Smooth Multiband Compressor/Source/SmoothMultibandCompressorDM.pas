@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_DspFilterLinkwitzRiley,
-  DAV_DspFilterButterworth, DAV_DspFilterLinearPhaseCrossover;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics, DAV_DspLightweightDynamics, 
+  DAV_DspFilterLinkwitzRiley, DAV_DspFilterButterworth, 
+  DAV_DspFilterLinearPhaseCrossover;
 
 type
   TBandState = (bsBypass, bsMute, bsSmooth, bsClipped);

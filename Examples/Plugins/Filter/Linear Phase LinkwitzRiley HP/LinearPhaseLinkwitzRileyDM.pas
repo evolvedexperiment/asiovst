@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_DspFilterButterworth, DAV_DspConvolution, DAV_DspPolyphaseDownsampler,
-  DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, SyncObjs, DAV_Types, DAV_DspFilterButterworth, DAV_DspConvolution, 
+  DAV_DspPolyphaseDownsampler, DAV_VSTModule;
 
 type
   TLinearPhaseLinkwitzRileyDataModule = class(TVSTModule)

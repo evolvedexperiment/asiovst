@@ -35,10 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiCustomControl, DAV_GuiGraphicControl,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, ExtCtrls, Controls, StdCtrls, DAV_Types, DAV_VSTModule, 
+  DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiPanel, 
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmChebyshev = class(TForm)

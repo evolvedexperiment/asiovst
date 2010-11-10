@@ -3,8 +3,8 @@ unit SKLDM;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspDynamics;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
 type
   TSoftKneeLimiterDataModule = class(TVSTModule)

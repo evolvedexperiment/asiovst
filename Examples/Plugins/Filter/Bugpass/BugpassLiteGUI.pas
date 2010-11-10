@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiCommon, DAV_GuiPixelMap,
-  DAV_GuiGraphicControl;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiGraphicControl;
 
 type
   TMouseEdit = (meNone, meLow, meHigh);

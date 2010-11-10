@@ -33,10 +33,10 @@ unit SpectralNoiseGateGui;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, DAV_Types,
-  DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiSelectBox, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel, 
+  DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiStitchedControls, 
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
 
 type
   TFmSpectralNoiseGate = class(TForm)
