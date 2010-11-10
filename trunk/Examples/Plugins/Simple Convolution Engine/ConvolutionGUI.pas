@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, StdCtrls;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, 
+  DAV_GuiLabel, DAV_GuiDial;
 
 type
   TFmConvolution = class(TForm)

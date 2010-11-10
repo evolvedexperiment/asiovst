@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.Inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFilterChebyshevType1;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilterChebyshevType1;
 
 const
   CNumFrequencies = 32;

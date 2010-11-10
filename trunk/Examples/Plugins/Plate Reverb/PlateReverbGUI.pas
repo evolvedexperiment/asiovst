@@ -35,11 +35,11 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiLabel,
-  DAV_GuiPanel, DAV_GuiSelectBox, DAV_GuiButton, DAV_GuiStitchedControls,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng, 
+  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiStitchedControls,
   DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiCustomControl,
-  DAV_GuiGraphicControl;
+  DAV_GuiSelectBox, DAV_GuiButton, DAV_GuiGraphicControl;
 
 type
 

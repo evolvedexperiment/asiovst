@@ -44,11 +44,10 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterFftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterfftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterfftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FLinearPhaseSplitter : array of TArbitraryLinearPhaseBandSplitter;
     FCriticalSection     : TCriticalSection;
@@ -85,6 +84,11 @@ begin
 
  for Channel := 0 to Length(FLinearPhaseSplitter) - 1
   do FLinearPhaseSplitter[Channel] := TArbitraryLinearPhaseBandSplitter.Create;
+
+ // set editor class
+ // EditorFormClass := TFmLinearPhaseFilterFFT;
+
+ // set initial parameters
  Parameter[0] := SampleRate / 4;
  Parameter[1] := 10;
  Parameter[2] := 17;
@@ -96,11 +100,6 @@ var
 begin
  for Channel := 0 to Length(FLinearPhaseSplitter) - 1
   do FreeAndNil(FLinearPhaseSplitter[Channel]);
-end;
-
-procedure TLinearPhaseFilterFFTDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-// GUI := TFmLinearPhaseFilterFFT.Create(Self);
 end;
 
 procedure TLinearPhaseFilterFFTDataModule.ParameterFrequencyChange(
@@ -117,7 +116,7 @@ begin
 end;
 
 procedure TLinearPhaseFilterFFTDataModule.ParameterfftOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  Predefined := IntToStr(Round(Parameter[Index]));
 end;
@@ -129,8 +128,11 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FLinearPhaseSplitter) - 1
-   do FLinearPhaseSplitter[Channel].FFTOrder := Round(Value);
+  for Channel := 0 to Length(FLinearPhaseSplitter) - 1 do
+   if Assigned(FLinearPhaseSplitter[Channel])
+    then FLinearPhaseSplitter[Channel].FFTOrder := Round(Value);
+
+  InitialDelay := FLinearPhaseSplitter[0].Latency;
  finally
   FCriticalSection.Leave;
  end;

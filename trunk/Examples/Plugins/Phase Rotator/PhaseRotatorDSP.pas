@@ -3,8 +3,9 @@ unit PhaseRotatorDSP;
 interface
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_DspFilter, DAV_DspFilterBasics, DAV_VSTModule, DAV_VSTEffect;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, SyncObjs, DAV_Types, DAV_DspFilter, DAV_DspFilterBasics, DAV_VSTModule, 
+  DAV_VSTEffect;
 
 type
   TPhaseRotatorModule = class(TVSTModule)

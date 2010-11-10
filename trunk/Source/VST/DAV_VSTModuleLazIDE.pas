@@ -1,6 +1,6 @@
 unit DAV_VSTModuleLazIDE;
 
-{$mode objfpc}{$H+}
+{$I ..\DAV_Compiler.inc}
 
 interface
 
@@ -80,29 +80,43 @@ begin
   le := LineEnding;
   NewSource := 'library VSTPlugin1;' + le
     + le
-    + '{$mode objfpc}{$H+}' + le
+    + '{$I DAV_Compiler.inc}' + le
     + le
     + 'uses' + le
     + '  DAV_VSTEffect,' + le
+    + '  {$IFDEF MSWINDOWS}' + le
+    + '  DAV_WinAmp,' + le
+    + '  {$ENDIF}' + le
     + '  DAV_VSTModule;' + le
     + le
-    + 'function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;' + le
-    + 'var VSTModule1 : TVSTModule1;' + le
+    + 'function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;' + le
     + 'begin' + le
-    + ' try' + le
-    + '  VSTModule1 := TVSTModule1.Create(nil);' + le
-    + '  VSTModule1.Effect^.user := VSTModule1;' + le
-    + '  VSTModule1.AudioMaster := audioMaster;' + le
-    + '  Result := VSTModule1.Effect;' + le
-    + ' except' + le
-    + '  Result := nil;' + le
-    + ' end;' + le
+    + '  Result := VstModuleMain(AudioMasterCallback, TVSTModule1);' + le
     + 'end;' + le
     + le
-    + 'exports Main name ''main'';' + le
-    + 'exports Main name ''VSTPluginMain'';' + le
+    + '{$IFDEF MSWINDOWS}' + le
+    + 'function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;' + le
+    + 'begin' + le
+    + '  Result := WinampDSPModuleHeader(TSimpleFlangerModule);' + le
+    + 'end;' + le
+    + '{$ENDIF}' + le
+    + le
+    + 'exports' + le
+    + '{$IFDEF DARWIN}  {OS X entry points}' + le
+    + '  VSTPluginMain name ''_main'',' + le
+    + '  VSTPluginMain name ''_main_macho'',' + le
+    + '  VSTPluginMain name ''_VSTPluginMain'';' + le
+    + '{$ELSE}' + le
+    + '  VSTPluginMain name ''main'',' + le
+    + '  VSTPluginMain name ''main_plugin'',' + le
+    + '  VSTPluginMain name ''VSTPluginMain'',' + le
+    + '{$IFDEF MSWINDOWS}' + le
+    + '  WinampDSPGetHeader name ''winampDSPGetHeader2'';' + le
+    + '{$ENDIF}' + le
+    + '{$ENDIF}' + le
     + le
     + 'begin' + le
+    + ' Application.Initialize;' + le
     + 'end.';
   AProject.MainFile.SetSourceText(NewSource);
 
@@ -113,6 +127,9 @@ begin
   // compiler options
   AProject.LazCompilerOptions.Win32GraphicApp := True;
   AProject.LazCompilerOptions.ExecutableType := cetLibrary;
+  AProject.LazCompilerOptions.StripSymbols := True;
+  AProject.LazCompilerOptions.SmartLinkUnit := True;
+  AProject.Title := 'VST Plugin';
   Result :=  mrOK;
 end;
 

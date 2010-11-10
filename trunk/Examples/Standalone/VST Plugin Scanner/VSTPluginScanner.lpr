@@ -9,7 +9,7 @@ uses
 
 {$R *.res}
 
-{$IFDEF WINDOWS}{$R VSTPluginScanner.rc}{$ENDIF}
+{$IFDEF WINDOWS}{-$R VSTPluginScanner.rc}{$ENDIF}
 
 begin
   Application.Initialize;

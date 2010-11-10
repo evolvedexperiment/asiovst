@@ -3,8 +3,8 @@ unit PulsingDSP;
 interface
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_DspPulsing,
-  DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_DspPulsing, DAV_VSTModule;
 
 type
   TPulsingDataModule = class(TVSTModule)

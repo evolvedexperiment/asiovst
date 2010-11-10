@@ -1,5 +1,7 @@
 unit PluginDSP;
 
+{$MODE Delphi}
+
 interface
 
 uses

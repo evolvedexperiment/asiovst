@@ -8,10 +8,11 @@ object FmVSTPluginScanner: TFmVSTPluginScanner
   ClientWidth = 831
   Font.Height = -11
   Font.Name = 'Tahoma'
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.29'
   object BtScan: TButton
     Left = 786
     Height = 21
@@ -93,14 +94,17 @@ object FmVSTPluginScanner: TFmVSTPluginScanner
       item
         AutoSize = True
         Caption = 'Effect Name'
+        Width = 192
       end    
       item
         AutoSize = True
         Caption = 'Product Name'
+        Width = 79
       end    
       item
         AutoSize = True
         Caption = 'Vendor Name'
+        Width = 76
       end    
       item
         Caption = 'Load Time [ms]'

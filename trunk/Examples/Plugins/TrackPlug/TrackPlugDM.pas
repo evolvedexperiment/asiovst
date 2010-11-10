@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_DspFilter,
-  DAV_DspFilterButterworth, DAV_DspFilterBasics, DAV_DspDynamics,
-  DAV_DspLightweightDynamics, Dav_DspPsychoacousticBassEnhancer, DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_DspFilter, DAV_DspFilterButterworth, 
+  DAV_DspFilterBasics, DAV_DspDynamics, DAV_DspLightweightDynamics, 
+  Dav_DspPsychoacousticBassEnhancer, DAV_VSTModule;
 
 type
   TTrackPlugModule = class(TVSTModule)

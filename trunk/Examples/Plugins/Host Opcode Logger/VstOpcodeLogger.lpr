@@ -22,7 +22,7 @@ end;
 {$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
-  Result := WinampDSPModuleHeader(TBodeFrequencyShifterDataModule);
+  Result := WinampDSPModuleHeader(TVOLDataModule);
 end;
 {$ENDIF}
 

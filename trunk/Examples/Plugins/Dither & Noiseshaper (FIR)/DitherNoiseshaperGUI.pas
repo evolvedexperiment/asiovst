@@ -30,6 +30,8 @@ unit DitherNoiseshaperGUI;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses

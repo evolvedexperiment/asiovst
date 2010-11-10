@@ -33,8 +33,9 @@ unit SimpleSonogramGui;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, ExtCtrls, Graphics,
-  StdCtrls, Menus, DAV_Types, DAV_VSTModule, DAV_GuiPixelMap;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, ExtCtrls, Graphics, StdCtrls, Menus, DAV_Types, 
+  DAV_VSTModule, DAV_GuiPixelMap;
 
 type
   TFmSonogram = class(TForm)

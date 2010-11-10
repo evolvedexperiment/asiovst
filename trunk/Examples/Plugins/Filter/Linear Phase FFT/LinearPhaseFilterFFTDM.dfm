@@ -1,5 +1,5 @@
 object LinearPhaseFilterFFTDataModule: TLinearPhaseFilterFFTDataModule
-  OldCreateOrder = False
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'
@@ -10,7 +10,6 @@ object LinearPhaseFilterFFTDataModule: TLinearPhaseFilterFFTDataModule
   SampleRate = 44100.000000000000000000
   BlockSize = 8192
   numInputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   BlockModeSize = 8192
   InitialDelay = 1024
@@ -40,7 +39,6 @@ object LinearPhaseFilterFFTDataModule: TLinearPhaseFilterFFTDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FFT Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -60,7 +58,6 @@ object LinearPhaseFilterFFTDataModule: TLinearPhaseFilterFFTDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 191
