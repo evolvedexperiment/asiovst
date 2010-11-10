@@ -75,7 +75,9 @@ implementation
 uses
   Math, DAV_DspWindowing;
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -338,10 +340,5 @@ procedure TLinearPhaseCrossoverModule.VSTModuleSampleRateChange(Sender: TObject;
 begin
  CalculateFilterKernel;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$I LinearPhaseCrossoverDM.lrs}
-{$ENDIF}
 
 end.

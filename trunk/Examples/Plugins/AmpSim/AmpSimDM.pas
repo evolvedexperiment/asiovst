@@ -586,13 +586,13 @@ end;
 procedure TComboDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  InP, OutP    : Array [0..1] of Double;
+  InP, OutP    : array [0..1] of Double;
   trm, clp     : Double;
   LPF, bi      : Double;
   HPF, drv     : Double;
-  FilterState  : Array [0..1, 0..4] of Double;
-  d            : Array [0..1] of Integer;
-  m            : Array [0..1] of Single;
+  FilterState  : array [0..1, 0..4] of Double;
+  d            : array [0..1] of Integer;
+  m            : array [0..1] of Single;
   bp, Sample   : Integer;
 begin
  m[0] := FMix[0];

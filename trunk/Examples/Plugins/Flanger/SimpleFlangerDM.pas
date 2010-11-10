@@ -62,7 +62,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   SimpleFlangerGUI, DAV_VSTCustomModule, DAV_Approximations;

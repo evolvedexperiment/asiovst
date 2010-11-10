@@ -35,10 +35,11 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
-  DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Graphics, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_VSTModule, 
+  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, 
+  DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedDial, 
+  DAV_GuiStitchedPngList;
 
 type
   TFmRingModulator = class(TForm)
@@ -60,8 +61,10 @@ type
 
 implementation
 
-{$IFNDEF FPC}
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
 {$ENDIF}
 
 uses
@@ -133,10 +136,5 @@ begin
    LbDisplay.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
-
-{$IFDEF FPC}
-initialization
-
-{$ENDIF}
 
 end.

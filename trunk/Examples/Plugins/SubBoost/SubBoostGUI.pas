@@ -88,7 +88,11 @@ var
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   PngImage, DAV_GUICommon, SubBoostDM;

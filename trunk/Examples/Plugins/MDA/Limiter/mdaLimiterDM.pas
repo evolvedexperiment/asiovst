@@ -66,7 +66,11 @@ implementation
 uses
   Math, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TmdaLimiterDataModule.ThresholdChange(Sender: TObject;
   const Index: Integer; var Value: Single);

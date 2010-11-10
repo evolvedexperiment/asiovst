@@ -63,7 +63,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -164,7 +166,7 @@ end;
 function TLinkwitzRileySeparatedModule.GetLinkwitzRiley(Index: Integer): TLinkwitzRiley;
 begin
  if (Index >= 0)  or (Index < Length(FLinkwitzRiley))
-  then result := FLinkwitzRiley[Index]
+  then Result := FLinkwitzRiley[Index]
   else raise Exception.CreateFmt('Index out of bounds %d', [Index]);
 end;
 
@@ -174,7 +176,7 @@ var
   Channel: Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FLinkwitzRiley[Channel])
+  if Assigned(FLinkwitzRiley[Channel])
    then FLinkwitzRiley[Channel].Frequency := Value;
 
  // update GUI
@@ -188,7 +190,7 @@ var
   Channel: Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FLinkwitzRiley[Channel])
+  if Assigned(FLinkwitzRiley[Channel])
    then FLinkwitzRiley[Channel].Order := round(Value);
 
  // update GUI
@@ -202,13 +204,8 @@ var
   Channel: Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FLinkwitzRiley[Channel])
+  if Assigned(FLinkwitzRiley[Channel])
    then FLinkwitzRiley[Channel].SampleRate := SampleRate;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i LinkwitzRileySeparatedDM.lrs}
-{$ENDIF}
 
 end.

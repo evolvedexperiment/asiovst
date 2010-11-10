@@ -57,7 +57,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -157,10 +159,5 @@ begin
   if assigned(FButterworthSplitter[Channel])
    then FButterworthSplitter[Channel].SampleRate := SampleRate;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i ButterworthSplitterDM.lrs}
-{$ENDIF}
 
 end.

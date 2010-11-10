@@ -118,7 +118,11 @@ var WADSPHeader  : TWinAmpDSPheader =
     FmWinAmpVST : TFmWinAmpVST  = nil;
     CriticalSection : TCriticalSection;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 exports winampDSPGetHeader2;
 

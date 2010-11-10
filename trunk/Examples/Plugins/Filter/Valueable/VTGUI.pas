@@ -98,7 +98,11 @@ implementation
 uses
   Math, VTModule;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmVT.DialLowGainChange(Sender: TObject);
 begin

@@ -74,7 +74,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   DAV_GuiCommon, DAV_VSTModuleWithPrograms, LinkwitzRileySeparatedDM;

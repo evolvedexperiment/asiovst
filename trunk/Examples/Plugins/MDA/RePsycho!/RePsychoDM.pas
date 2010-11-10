@@ -63,8 +63,8 @@ type
     FEnvelope  : Single;
     FHold      : Single;
     FSize      : Integer;
-    FBuffer    : Array [0..1] of PDAVSingleFixedArray;
-    FState     : Array [0..1] of Single;
+    FBuffer    : array [0..1] of PDAVSingleFixedArray;
+    FState     : array [0..1] of Single;
     FDelayTime : Integer;
     FGain      : Single;
     FThreshold : Single;
@@ -87,7 +87,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_VSTCustomModule;

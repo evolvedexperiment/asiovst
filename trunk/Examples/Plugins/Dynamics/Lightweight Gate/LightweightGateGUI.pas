@@ -79,7 +79,11 @@ implementation
 uses
   LightweightGateDM, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLightweightGate.FormCreate(Sender: TObject);
 begin

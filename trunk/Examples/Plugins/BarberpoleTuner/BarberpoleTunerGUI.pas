@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
-  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel,
-  DAV_GuiPixelMap;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Controls, StdCtrls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule,
+  DAV_GuiLabel, DAV_GuiPixelMap;
 
 type
   TFmBarberpoleTuner = class(TForm)
@@ -67,7 +67,11 @@ implementation
 uses
   DAV_GuiCommon, BarberpoleTunerDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmBarberpoleTuner.FormCreate(Sender: TObject);
 begin

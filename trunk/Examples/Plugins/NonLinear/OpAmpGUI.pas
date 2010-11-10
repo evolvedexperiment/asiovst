@@ -52,7 +52,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -109,10 +111,5 @@ begin
     then Parameter[0] := SBGain.Position * 0.1;
   end;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i OpAmpGUI.lrs}
-{$ENDIF}
 
 end.

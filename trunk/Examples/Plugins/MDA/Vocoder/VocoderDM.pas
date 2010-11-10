@@ -58,13 +58,17 @@ type
     FNumBands : Integer;
     FKOut     : Single;
     FKVal     : Integer;
-    FFreq     : Array [0..15, 0..12] of Single;
+    FFreq     : array [0..15, 0..12] of Single;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;

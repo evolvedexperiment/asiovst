@@ -49,7 +49,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -70,7 +72,7 @@ end;
 procedure TTetrisModule.VSTModuleEditorKeyDown(Sender: TObject;
   var keyCode: TVstKeyCode);
 begin
- if assigned(EditorForm) then
+ if Assigned(EditorForm) then
   with (EditorForm As TFmTetris) do
    begin
     case keyCode.Character of

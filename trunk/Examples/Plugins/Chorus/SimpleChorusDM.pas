@@ -54,7 +54,7 @@ type
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriftChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FChorus          : Array [0..1] of TDspChorus32;
+    FChorus          : array [0..1] of TDspChorus32;
     FCriticalSection : TCriticalSection;
     function GetChorus(Index: Integer): TDspChorus32;
   public

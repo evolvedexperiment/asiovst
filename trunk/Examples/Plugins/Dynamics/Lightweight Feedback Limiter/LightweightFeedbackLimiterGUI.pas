@@ -99,7 +99,11 @@ implementation
 uses
   DAV_VSTModuleWithPrograms, LightweightFeedbackLimiterDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLightweightFeedbackLimiter.FormCreate(Sender: TObject);
 begin

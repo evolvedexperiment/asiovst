@@ -53,13 +53,13 @@ type
     FRatF      : Single;
     FRati      : Integer;
     FRatio     : Single;
-    FDepth     : Array [0..1] of Single;
+    FDepth     : array [0..1] of Single;
     FVelSens   : Single;
     FVibrato   : Single;
     FCAtt      : Single;
     FCDec      : Single;
     FCRel      : Single;
-    FLFO       : Array [0..1] of Single;
+    FLFO       : array [0..1] of Single;
     FMDec      : Single;
     FMRel      : Single;
     FRich      : Single;
@@ -76,7 +76,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;

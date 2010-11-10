@@ -156,7 +156,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   Math, Registry, DAV_GuiCommon, DAV_VSTModuleWithPrograms, 

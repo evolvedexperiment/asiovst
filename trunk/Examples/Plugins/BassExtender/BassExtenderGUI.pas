@@ -107,7 +107,11 @@ implementation
 uses
   Math, DAV_GuiCommon, BassExtenderDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmBassExtender.FormCreate(Sender: TObject);
 begin

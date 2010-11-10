@@ -224,7 +224,11 @@ implementation
 uses
   DAV_Common, DAV_VSTModuleWithPrograms, LightweightMultibandCompressorDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLightweightMultibandCompressor.FormCreate(Sender: TObject);
 begin

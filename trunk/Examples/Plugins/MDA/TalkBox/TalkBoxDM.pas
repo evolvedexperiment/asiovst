@@ -66,7 +66,7 @@ type
     FPos       : Integer;
     FSwap      : Integer;
     FK, FO     : Integer;
-    FD, FU     : Array [0..4] of Single;
+    FD, FU     : array [0..4] of Single;
     procedure LPC(buf, car: PDAVSingleFixedArray; n, o: Integer);
     procedure LPCDurbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
     procedure ResetStates;
@@ -75,7 +75,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   DAV_Common;

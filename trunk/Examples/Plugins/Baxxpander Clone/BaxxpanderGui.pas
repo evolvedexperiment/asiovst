@@ -62,7 +62,11 @@ implementation
 uses
   DAV_GuiCommon;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmBaxxpanderGui.FormCreate(Sender: TObject);
 var

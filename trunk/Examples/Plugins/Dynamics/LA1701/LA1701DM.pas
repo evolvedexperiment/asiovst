@@ -93,7 +93,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Dialogs, Math, EditorFrm, DAV_Common, DAV_Math, DAV_DspFilter;

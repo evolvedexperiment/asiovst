@@ -59,7 +59,11 @@ implementation
 uses
   Math, DAV_VSTModuleWithPrograms, StkPitchShiftDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmStkPitchShift.FormShow(Sender: TObject);
 begin

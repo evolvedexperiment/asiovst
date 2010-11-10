@@ -99,7 +99,11 @@ implementation
 uses
   DAV_VSTModuleWithPrograms, LightweightUpwardCompressorDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLightweightUpwardCompressor.FormCreate(Sender: TObject);
 begin

@@ -71,20 +71,24 @@ type
     procedure ParamModeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FLowpass       : Array [0..1, 0..1] of TButterworthLowpassFilter;
-    FHighpass      : Array [0..1, 0..1] of TButterworthHighpassFilter;
+    FLowpass       : array [0..1, 0..1] of TButterworthLowpassFilter;
+    FHighpass      : array [0..1, 0..1] of TButterworthHighpassFilter;
     FSign          : Single;
-    FDivideMix     : Array [0..1] of Single;
-    FCompressorMix : Array [0..1] of Single;
-    FBalance       : Array [0..1] of Single;
-    FCompressor    : Array [0..1] of TSimpleCompressor;
-    FOctaveDivider : Array [0..1] of TOcatveDivider;
+    FDivideMix     : array [0..1] of Single;
+    FCompressorMix : array [0..1] of Single;
+    FBalance       : array [0..1] of Single;
+    FCompressor    : array [0..1] of TSimpleCompressor;
+    FOctaveDivider : array [0..1] of TOcatveDivider;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   DAV_Common, DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, BassExtenderGUI;

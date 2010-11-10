@@ -62,7 +62,11 @@ implementation
 uses
   SampleDelayDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmSampleDelay.CbLinkClick(Sender: TObject);
 begin

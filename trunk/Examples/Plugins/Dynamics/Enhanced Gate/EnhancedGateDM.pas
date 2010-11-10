@@ -64,8 +64,8 @@ type
     procedure EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGRangeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FEnhancedGates : Array [0..CNrChannels - 1] of TAdvancedGate;
-    FLevels        : Array [0..CNrChannels - 1] of Single;
+    FEnhancedGates : array [0..CNrChannels - 1] of TAdvancedGate;
+    FLevels        : array [0..CNrChannels - 1] of Single;
   public
     property LevelLeft: Single read FLevels[0];
     property LevelRight: Single read FLevels[1];

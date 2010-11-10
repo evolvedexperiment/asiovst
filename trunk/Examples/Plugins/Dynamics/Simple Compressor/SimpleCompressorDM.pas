@@ -50,13 +50,17 @@ type
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSimpleCompressors : Array [0..1] of TSimpleCompressor;
+    FSimpleCompressors : array [0..1] of TSimpleCompressor;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, EditorFrm;

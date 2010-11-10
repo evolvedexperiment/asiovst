@@ -52,13 +52,17 @@ type
     FRelease   : Single;
     FFilter    : Single;
     FGain      : Single;
-    FBuffer    : Array [0..1] of Single;
+    FBuffer    : array [0..1] of Single;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;
@@ -102,7 +106,7 @@ procedure TDeessDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
-  f           : Array [0..1] of Single;
+  f           : array [0..1] of Single;
   tmp, fi, fo : Single;
   en, g       : Single;
 begin
@@ -138,7 +142,7 @@ procedure TDeessDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
-  f           : Array [0..1] of Double;
+  f           : array [0..1] of Double;
   tmp, fi, fo : Double;
   en, g       : Double;
 begin

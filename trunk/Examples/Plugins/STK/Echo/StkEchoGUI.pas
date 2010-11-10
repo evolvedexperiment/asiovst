@@ -59,7 +59,11 @@ implementation
 uses
   Math, DAV_VSTModuleWithPrograms, StkEchoDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmStkEcho.FormShow(Sender: TObject);
 begin

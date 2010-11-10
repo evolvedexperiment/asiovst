@@ -48,13 +48,17 @@ type
     procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
   private
-    FEQs : Array [0..1, 0..10] of TBasicPeakFilter;
+    FEQs : array [0..1, 0..10] of TBasicPeakFilter;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   EditorFrm;
@@ -63,7 +67,7 @@ procedure TPluginDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel, Band : Integer;
 const
-  CDefaultFrequencies : Array [0..10] of Single = (20, 40, 80, 160, 320, 640,
+  CDefaultFrequencies : array [0..10] of Single = (20, 40, 80, 160, 320, 640,
     1250, 2500, 5000, 10000, 20000);   
 begin
  for Channel := 0 to Length(FEQs) - 1 do

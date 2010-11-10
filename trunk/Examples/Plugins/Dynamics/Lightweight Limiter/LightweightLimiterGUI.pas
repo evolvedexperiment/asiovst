@@ -99,7 +99,11 @@ implementation
 uses
   DAV_VSTModuleWithPrograms, LightweightLimiterDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLightweightLimiter.FormCreate(Sender: TObject);
 begin

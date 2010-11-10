@@ -60,7 +60,11 @@ implementation
 uses
   FrequencyDomainPitchShifterDM, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmFrequencyDomainPitchShifter.FormCreate(Sender: TObject);
 begin

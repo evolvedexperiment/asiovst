@@ -62,8 +62,10 @@ type
 
 implementation
 
-{$IFNDEF FPC}
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
 {$ENDIF}
 
 uses
@@ -265,10 +267,5 @@ begin
   for SampleIndex := 0 to SampleFrames - 1
    do Outputs[ChannelIndex, SampleIndex] := FFilter[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
 end;
-
-{$IFDEF FPC}
-initialization
-  {$I ButterworthDM.lrs}
-{$ENDIF}
 
 end.

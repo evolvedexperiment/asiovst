@@ -61,7 +61,11 @@ implementation
 uses
   DiracPitchShifterDM, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmDiracPitchShifter.FormCreate(Sender: TObject);
 begin

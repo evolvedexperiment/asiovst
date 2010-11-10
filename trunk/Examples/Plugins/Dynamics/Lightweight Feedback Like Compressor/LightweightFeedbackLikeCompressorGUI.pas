@@ -98,7 +98,11 @@ implementation
 uses
   Math, DAV_VSTModuleWithPrograms, LightweightFeedbackLikeCompressorDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLightweightFeedbackLikeCompressor.FormCreate(Sender: TObject);
 begin

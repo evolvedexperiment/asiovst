@@ -100,24 +100,29 @@ implementation
 
 uses Math, SyncObjs, DAV_Types, DAV_VSTEffect;
 
-var WADSPHeader  : TWinAmpDSPheader =
-                   (Version : $20;
-                    Description : 'NonLinear for WinAmp';
-                    GetModule : GetModule);
+var 
+  WADSPHeader  : TWinAmpDSPheader =
+                 (Version : $20;
+                  Description : 'NonLinear for WinAmp';
+                  GetModule : GetModule);
 
-    WADSPModule : TWinAmpDSPModule =
-                   (Description : 'NonLinear for WinAmp';
-                    HwndParent : 0;
-                    hDLLinstance : 0;
-                    Config : Config;
-                    Init : Init;
-                    ModifySamples : ModifySamples;
-                    Quit : Quit;
-                    UserData : nil);
-    FmWinAmpVST : TFmWinAmpVST  = nil;
-    CriticalSection : TCriticalSection;
+  WADSPModule : TWinAmpDSPModule =
+                 (Description : 'NonLinear for WinAmp';
+                  HwndParent : 0;
+                  hDLLinstance : 0;
+                  Config : Config;
+                  Init : Init;
+                  ModifySamples : ModifySamples;
+                  Quit : Quit;
+                  UserData : nil);
+  FmWinAmpVST : TFmWinAmpVST  = nil;
+  CriticalSection : TCriticalSection;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 exports winampDSPGetHeader2;
 

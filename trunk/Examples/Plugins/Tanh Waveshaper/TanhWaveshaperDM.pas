@@ -96,7 +96,11 @@ implementation
 uses
   Math, DAV_Common, DAV_Math, DAV_Approximations;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TTanhWaveshaperModule.VSTModuleOpen(Sender: TObject);
 var

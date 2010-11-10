@@ -87,7 +87,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Dialogs, DAV_Common, DAV_DspDFT, DAV_VSTCustomModule,

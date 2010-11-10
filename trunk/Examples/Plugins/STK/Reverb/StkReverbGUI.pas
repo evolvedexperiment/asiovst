@@ -53,7 +53,11 @@ implementation
 uses
   Math, DAV_VSTModuleWithPrograms, StkReverbDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmStkReverb.SBT60Change(Sender: TObject);
 begin

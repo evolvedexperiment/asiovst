@@ -56,7 +56,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TWavedisplayGUI.ddProcessingChange(Sender: TObject);
 begin

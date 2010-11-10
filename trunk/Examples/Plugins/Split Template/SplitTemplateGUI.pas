@@ -81,7 +81,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   DAV_Common, DAV_VSTModuleWithPrograms, SplitTemplateDM;

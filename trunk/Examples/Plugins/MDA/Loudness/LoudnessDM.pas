@@ -50,20 +50,24 @@ type
     FGain    : Single;
     FIGain   : Single;
     FOGain   : Single;
-    FCoeffs  : Array [0..2] of Single;
-    FState   : Array [0..1, 0..1] of Single;
+    FCoeffs  : array [0..2] of Single;
+    FState   : array [0..1, 0..1] of Single;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;
 
 const
-  cLoudness : Array [0..13, 0..2] of Single =
+  cLoudness : array [0..13, 0..2] of Single =
     ( (402,  0.0025,  0.00),  //-60dB
       (334,  0.0121,  0.00),
       (256,  0.0353,  0.00),

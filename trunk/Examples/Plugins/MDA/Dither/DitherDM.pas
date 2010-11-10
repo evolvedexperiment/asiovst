@@ -50,14 +50,18 @@ type
     FOffset     : Single;
     FDither     : Single;
     FShaper     : Single;
-    FRandom     : Array [0..1] of Integer;
-    FShapeState : Array [0..3] of Single;
+    FRandom     : array [0..1] of Integer;
+    FShapeState : array [0..3] of Single;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;

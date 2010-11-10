@@ -142,7 +142,11 @@ implementation
 uses
   AdhesiveDM, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmAdhesive.FormCreate(Sender: TObject);
 begin

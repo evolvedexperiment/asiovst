@@ -72,7 +72,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_Approximations, SpinBugLiteGUI;

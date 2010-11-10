@@ -68,7 +68,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   SysUtils, Math, SpectralNoiseGateGui, DAV_VSTModuleWithPrograms,

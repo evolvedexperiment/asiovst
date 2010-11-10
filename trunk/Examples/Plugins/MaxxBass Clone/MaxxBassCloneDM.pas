@@ -72,7 +72,11 @@ implementation
 uses
   Math, DAV_Common, DAV_Approximations, MaxxBassCloneGUI;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure THarmonicBassModule.VSTModuleCreate(Sender: TObject);
 begin

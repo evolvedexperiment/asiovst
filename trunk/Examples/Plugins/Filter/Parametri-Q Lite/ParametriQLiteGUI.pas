@@ -241,7 +241,11 @@ uses
   DAV_Common, DAV_GuiCommon, DAV_Approximations, DAV_VSTModuleWithPrograms,
   ParametriQLiteDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmParametriQLite.FormCreate(Sender: TObject);
 begin

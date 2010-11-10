@@ -49,7 +49,7 @@ type
     procedure ParameterLFORateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTriggerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    FBuffer           : Array [0..2] of Single;
+    FBuffer           : array [0..2] of Single;
     FFrequency        : Single;
     FQuality, FGain   : Single;
     FFreqMax          : Single;
@@ -67,7 +67,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;

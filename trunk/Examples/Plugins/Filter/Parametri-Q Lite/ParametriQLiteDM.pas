@@ -78,7 +78,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   ParametriQLiteGUI, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms;

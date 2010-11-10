@@ -94,7 +94,7 @@ type
     FBandReserve        : Double;
     FUseDownsampling    : Boolean;
 
-    FFilterArray        : Array [0..CNumFrequencies - 1] of TDownsampleFilterRecord;
+    FFilterArray        : array [0..CNumFrequencies - 1] of TDownsampleFilterRecord;
     FFSGain             : Single;
     FSpeedConst         : array [0..1] of Single;
 
@@ -124,7 +124,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_Common, DAV_DspDynamics, DAV_Approximations, AudioAmeliorationGUI;
