@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DDSPBase, DVSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DDSPBase, DVSTModule;
 
 type
   TFmHMEditor = class(TForm)

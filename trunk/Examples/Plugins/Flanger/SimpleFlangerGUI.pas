@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPng,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, 
+  DAV_GuiPng, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, 
+  DAV_GuiStitchedDial;
 
 type
   TFmSimpleFlanger = class(TForm)

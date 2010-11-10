@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspConvolution, DAV_DspFilterButterworth;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspConvolution,
+  DAV_DspFilterButterworth;
 
 const
   CNumChannels = 2;
@@ -101,7 +102,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math, DAV_HalfFloat, DAV_DspInterpolation, DAV_VSTCustomModule,
+  Math, DAV_Common, DAV_Math, DAV_HalfFloat, DAV_DspInterpolation,
   ConvoFXLiteGUI;
 
 { TImpulseResponseUpdateThread }
@@ -156,6 +157,8 @@ begin
  FTempIR[0] := nil;
  FTempIR[1] := nil;
 
+ EditorFormClass := TFmConvoFXLite;
+
  FDampingFilter := TButterworthLowpassFilter.Create(1);
  FIRUpdateThread := TImpulseResponseUpdateThread.Create(Self);
 
@@ -190,7 +193,6 @@ end;
 
 procedure TConvoFXLiteDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
- GUI := TFmConvoFXLite.Create(Self);
 end;
 
 procedure TConvoFXLiteDataModule.ParameterMaximumIROrderChange(

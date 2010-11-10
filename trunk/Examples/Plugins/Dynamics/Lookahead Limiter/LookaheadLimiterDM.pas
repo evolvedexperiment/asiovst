@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspDynamicLookaheadLimiter, DAV_DspDelayLines;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDynamicLookaheadLimiter, 
+  DAV_DspDelayLines;
 
 type
   TLookaheadLimiterDataModule = class(TVSTModule)

@@ -35,10 +35,11 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
-  Menus, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLED,
-  DAV_GuiLevelMeter, DAV_GuiSelectBox, DAV_GuiLabel, DAV_GuiStitchedControls,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, ExtCtrls, StdCtrls, Menus, DAV_Types, DAV_VSTModule, 
+  DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiLevelMeter, DAV_GuiSelectBox, 
+  DAV_GuiLabel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, 
+  DAV_GuiStitchedDial;
 
 type
   TFmLookaheadLimiter = class(TForm)

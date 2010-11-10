@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_AudioData, DAV_DspConvolution, DAV_Semaphore, DAV_AudioFileWAV,
-  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_DspHrtf;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_AudioData, DAV_DspConvolution, 
+  DAV_Semaphore, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, 
+  DAV_DspHrtf;
 
 type
   THrtfConvolverDataModule = class(TVSTModule)

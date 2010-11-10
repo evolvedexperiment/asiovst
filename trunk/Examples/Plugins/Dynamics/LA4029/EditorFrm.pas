@@ -35,11 +35,11 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, Graphics, StdCtrls,
-  ExtCtrls, Menus, DAV_Types, DAV_VSTModule, DAV_GuiButton, DAV_GuiVUMeter,
-  DAV_GuiLED, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPng,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDisplay,
-  DAV_GuiStitchedDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, Graphics, StdCtrls, ExtCtrls, Menus, DAV_Types, 
+  DAV_VSTModule, DAV_GuiButton, DAV_GuiVUMeter, DAV_GuiLED, DAV_GuiLabel, 
+  DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiStitchedControls, 
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDisplay, DAV_GuiStitchedDial;
 
 type
   TLevelState = (lsIn, lsGR, lsOut);

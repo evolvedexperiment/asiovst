@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Graphics, Controls, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial, DAV_GuiPng, DAV_GuiPixelMap, DAV_GuiPanel, DAV_GuiLabel;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Graphics, Controls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng,  
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial, 
+  DAV_GuiPixelMap, DAV_GuiPanel, DAV_GuiLabel;
 
 type
   TFmBassExtender = class(TForm)

@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFilter, DAV_DspFilterBasics;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterBasics;
 
 const
   CGainRange = 15;

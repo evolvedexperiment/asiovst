@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Types, Controls, ExtCtrls, GR32,
-  GR32_Image, Graphics, GraphicEx, DAV_Types, DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Types, Controls, ExtCtrls, GR32, GR32_Image, Graphics, GraphicEx, 
+  DAV_Types, DAV_VSTModule;
 
 const
   cSweepRange = 10;

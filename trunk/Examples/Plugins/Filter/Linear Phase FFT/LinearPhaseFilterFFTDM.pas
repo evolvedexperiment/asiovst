@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspFilterLinearPhase;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspFilterLinearPhase;
 
 type
   TLinearPhaseFilterFFTDataModule = class(TVSTModule)
