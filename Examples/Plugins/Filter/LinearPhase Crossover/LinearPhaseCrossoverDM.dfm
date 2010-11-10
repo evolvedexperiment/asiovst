@@ -1,5 +1,7 @@
 object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'LinearPhaseCrossover'
   ProductName = 'DAV Filter Examples'

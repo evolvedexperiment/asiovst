@@ -35,12 +35,13 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Spin, ComCtrls, ExtCtrls, Buttons, SyncObjs, DAV_Types,
-  DAV_GuiBaseControl, DAV_GuiAudioDataDisplay, DAV_GuiLED, DAV_ASIOHost,
-  DAV_DspPinkNoiseGenerator, DAV_DspSimpleOscillator, DAV_DspSweepOscillator,
-  DAV_AudioData, DAV_AudioFile, DAV_AudioFileWav, DAV_AudioFileAiff,
-  DAV_AudioFileAu, DAV_DspBufferedAudioFilePlayer, DAV_Classes;
+  {$IFDEF FPC}LCLIntf, LMessages, {$ELSE}Windows, Messages, {$ENDIF} SysUtils,
+  Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Spin, ComCtrls,
+  ExtCtrls, Buttons, SyncObjs, DAV_Types, DAV_Classes, DAV_GuiBaseControl,
+  DAV_GuiAudioDataDisplay, DAV_GuiLED, DAV_ASIOHost, DAV_DspPinkNoiseGenerator,
+  DAV_DspSimpleOscillator, DAV_DspSweepOscillator, DAV_AudioData, DAV_AudioFile,
+  DAV_AudioFileWav, DAV_AudioFileAiff, DAV_AudioFileAu,
+  DAV_DspBufferedAudioFilePlayer;
 
 type
   TFadeDirection = (fdNone, fdUp, fdDown);
@@ -188,7 +189,11 @@ implementation
 uses
   Math, IniFiles, DAV_Common;
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$IFDEF FPC}
 {$R *.dfm}
+{$ENDIF}
 
 procedure TFmGenerator.FormCreate(Sender: TObject);
 begin

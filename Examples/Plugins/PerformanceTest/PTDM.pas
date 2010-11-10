@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  FastMove, {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types,
-  DAV_VSTEffect, DAV_VSTModule;
+  FastMove, {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, 
+  Classes, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TPerformanceTestModule = class(TVSTModule)

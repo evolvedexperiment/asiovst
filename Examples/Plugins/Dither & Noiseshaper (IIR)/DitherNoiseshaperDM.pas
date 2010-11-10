@@ -30,11 +30,13 @@ unit DitherNoiseshaperDM;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDitherNoiseshaper;
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDitherNoiseShaper;
 
 type
   TDitherNoiseshaperModule = class(TVSTModule)

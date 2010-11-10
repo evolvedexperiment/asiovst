@@ -32,7 +32,7 @@ unit VPSmain;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
@@ -67,12 +67,15 @@ type
   end;
   {$ENDIF}
 
+  { TFmVSTPluginScanner }
+
   TFmVSTPluginScanner = class(TForm)
     EdDirectory: TEdit;
     BtDirectorySelect: TButton;
     ListView: TListView;
     BtScan: TButton;
     StatusBar: TStatusBar;
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -108,7 +111,9 @@ implementation
 uses
   Registry, FileCtrl;
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -227,6 +232,7 @@ begin
 end;
 {$ENDIF}
 
+
 { TFmVSTPluginScanner }
 
 procedure TFmVSTPluginScanner.FormCreate(Sender: TObject);
@@ -242,16 +248,32 @@ begin
   finally
    Free;
   end;
+
  {$IFNDEF UseThreads}
  FVstHost := TVstHost.Create(Self);
  FVstHost.VstPlugins.Add;
  {$ENDIF}
 end;
 
+procedure TFmVSTPluginScanner.FormClose(Sender: TObject;
+    var CloseAction: TCloseAction);
+begin
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_LOCAL_MACHINE;
+   OpenKey('SOFTWARE\Vst', True);
+
+   WriteString('VstPluginsPath', EdDirectory.Text);
+   CloseKey;
+  finally
+   Free;
+  end;
+end;
+
 procedure TFmVSTPluginScanner.FormDestroy(Sender: TObject);
 begin
  {$IFDEF UseThreads}
- if assigned(FFilesToScan)
+ if Assigned(FFilesToScan)
   then FreeAndNil(FFilesToScan);
 
  // free existing threads
@@ -424,10 +446,5 @@ procedure TFmVSTPluginScanner.EdDirectoryClick(Sender: TObject);
 begin
  EdDirectory.SelectAll;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i VPSmain.lrs}
-{$ENDIF}
 
 end.

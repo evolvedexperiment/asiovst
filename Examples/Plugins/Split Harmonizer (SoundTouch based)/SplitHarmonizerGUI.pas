@@ -35,10 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiCommon, 
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls, 
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmSplitHarmonizer = class(TForm)

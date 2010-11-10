@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  ExtCtrls, TeEngine, Series, Controls, TeeProcs, Chart, StdCtrls, Spin;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, ExtCtrls, TeEngine, Series, Controls, TeeProcs, Chart, StdCtrls, Spin, 
+  DAV_Types, DAV_VSTModule;
 
 type
   TFmThirdOctaveAnalyser = class(TForm)

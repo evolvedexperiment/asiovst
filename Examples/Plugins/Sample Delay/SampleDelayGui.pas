@@ -33,8 +33,8 @@ unit SampleDelayGui;
 interface
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms, Controls, StdCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiBackgrounds;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBackgrounds;
 
 type
   TFmSampleDelay = class(TForm)
