@@ -46,7 +46,7 @@ type
     procedure ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FBuffer  : Array [0..1] of PDAVSingleFixedArray;
+    FBuffer  : array [0..1] of PDAVSingleFixedArray;
     FSize    : Integer;
     FPhi     : Single;
     FDPhi    : Single;
@@ -55,7 +55,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TRoundPanDataModule.ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin

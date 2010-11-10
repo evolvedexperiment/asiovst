@@ -57,8 +57,8 @@ type
     FBuffer : PDAVSingleFixedArray;
     FBufLen : Integer;
     FBufRes : Double;
-    FPos    : Array [0..2] of Integer;
-    FDPos   : Array [0..1] of Integer;
+    FPos    : array [0..2] of Integer;
+    FDPos   : array [0..1] of Integer;
     FWin    : PDAVSingleFixedArray;
     FSemi   : Double;
     FDPs    : array [0..1] of Double;
@@ -71,7 +71,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;

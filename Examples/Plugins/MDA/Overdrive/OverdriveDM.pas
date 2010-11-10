@@ -48,13 +48,17 @@ type
     FDrive  : Single;
     FGain   : Single;
     FFilter : Single;
-    FState  : Array [0..1] of Double;
+    FState  : array [0..1] of Double;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;
@@ -85,9 +89,9 @@ procedure TOverdriveDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
-  State  : Array [0..1] of Double;
-  Inp    : Array [0..1] of Double;
-  Outp   : Array [0..1] of Double;
+  State  : array [0..1] of Double;
+  Inp    : array [0..1] of Double;
+  Outp   : array [0..1] of Double;
 begin
  State[0] := FState[0];
  State[1] := FState[1];

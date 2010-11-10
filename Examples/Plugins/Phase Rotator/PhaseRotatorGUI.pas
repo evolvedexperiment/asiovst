@@ -39,7 +39,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   PhaseRotatorDSP, DAV_VSTModuleWithPrograms;

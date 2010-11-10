@@ -111,7 +111,11 @@ implementation
 uses
   DAV_Approximations, DAV_VSTModuleWithPrograms, LookaheadLimiterDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLookaheadLimiter.FormDestroy(Sender: TObject);
 begin

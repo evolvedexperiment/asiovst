@@ -152,7 +152,11 @@ implementation
 uses
   LightweightDynamicsDM, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmLightweightDynamics.FormCreate(Sender: TObject);
 begin

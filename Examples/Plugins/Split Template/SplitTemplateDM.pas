@@ -165,7 +165,11 @@ function ConvertOrderToString(Order: Integer): string;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, Dialogs, Controls, Types, DAV_Common, DAV_VSTPrograms,

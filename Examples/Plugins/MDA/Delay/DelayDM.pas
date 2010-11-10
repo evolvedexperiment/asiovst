@@ -61,7 +61,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TDelayDataModule.VSTModuleOpen(Sender: TObject);
 begin

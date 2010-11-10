@@ -85,7 +85,9 @@ const
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -489,10 +491,5 @@ begin
       FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]))));
    end;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i DualLinkwitzRileyFiltersDM.lrs}
-{$ENDIF}
 
 end.

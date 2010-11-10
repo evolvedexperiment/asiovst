@@ -118,7 +118,11 @@ implementation
 uses
   Math, VTModuleStereo;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmVT.DialLowGainLeftChange(Sender: TObject);
 begin

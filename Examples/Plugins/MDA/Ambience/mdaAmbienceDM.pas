@@ -53,7 +53,7 @@ type
     procedure ParamOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleClose(Sender: TObject);
   private
-    FBuffers      : Array [0..3] of PDAVSingleFixedArray;
+    FBuffers      : array [0..3] of PDAVSingleFixedArray;
     FPos          : Integer;
     FHfDampState  : Single;
     FDamp         : Single;
@@ -67,7 +67,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;
@@ -150,7 +154,7 @@ var
   dmp,
   y, w : Double;
   i, p : Integer;
-  d    : Array [0..3] of Integer;
+  d    : array [0..3] of Integer;
 begin
  f   := FHfDampState;
  dmp := FDamp;
@@ -225,7 +229,7 @@ var
   dmp,
   y, w : Double;
   i, p : Integer;
-  d    : Array [0..3] of Integer;
+  d    : array [0..3] of Integer;
 begin
  f   := FHfDampState;
  dmp := FDamp;

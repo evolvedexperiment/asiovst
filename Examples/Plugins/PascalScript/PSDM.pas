@@ -62,7 +62,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   PSGUI, DAV_VSTCustomModule;
@@ -79,7 +83,7 @@ end;
 
 procedure TPascalScriptDataModule.VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
 var
-  AtomName : Array [0..3] of Char;
+  AtomName : array [0..3] of Char;
   AtomSize : Integer;
 begin
  with (Sender as TVstProgram).Chunk do
@@ -101,7 +105,7 @@ end;
 
 procedure TPascalScriptDataModule.VPSStoreChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
 var
-  AtomName : Array [0..3] of Char;
+  AtomName : array [0..3] of Char;
   AtomSize : Integer;
 begin
  with (Sender as TVstProgram).Chunk do

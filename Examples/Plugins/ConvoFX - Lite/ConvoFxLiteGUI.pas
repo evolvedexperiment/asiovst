@@ -65,7 +65,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Dialogs, Math, ConvoFXLiteDM, DAV_VSTModuleWithPrograms;

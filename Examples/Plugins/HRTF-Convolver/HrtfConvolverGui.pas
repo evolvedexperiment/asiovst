@@ -85,7 +85,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, VectorGeometry, MeshUtils, Jpeg, TGA, GLFile3DS, GLFileObj,

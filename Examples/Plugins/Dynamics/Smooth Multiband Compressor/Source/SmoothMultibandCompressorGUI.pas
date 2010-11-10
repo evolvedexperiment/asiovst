@@ -75,7 +75,7 @@ type
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure TimerTimer(Sender: TObject);
   private
-    FBackground   : Array [0..1] of TBitmap32;
+    FBackground   : array [0..1] of TBitmap32;
 
     FStage        : Integer;
     FTimer        : TTimer;
@@ -134,8 +134,8 @@ var
   GKnob         : TVerticallyStitchedBitmap32;
   GSoftClip     : TVerticallyStitchedBitmap32;
   GAutoGain     : TVerticallyStitchedBitmap32;
-  GRectStage    : Array [0..2, 0..8] of TRect;
-  GRectTop      : Array [0..3] of TRect;
+  GRectStage    : array [0..2, 0..8] of TRect;
+  GRectTop      : array [0..3] of TRect;
 
 implementation
 

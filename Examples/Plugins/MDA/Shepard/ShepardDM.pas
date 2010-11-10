@@ -48,7 +48,7 @@ type
     procedure ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FMax    : Integer;
-    FBuffer : Array [0..1] of PDAVSingleFixedArray;
+    FBuffer : array [0..1] of PDAVSingleFixedArray;
     FOut    : Single;
     FPos    : Single;
     FRate   : Single;
@@ -59,7 +59,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;

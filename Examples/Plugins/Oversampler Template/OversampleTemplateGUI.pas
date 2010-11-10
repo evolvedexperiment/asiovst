@@ -71,7 +71,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   OversampleTemplateDM, DAV_GuiCommon, DAV_VSTModuleWithPrograms;

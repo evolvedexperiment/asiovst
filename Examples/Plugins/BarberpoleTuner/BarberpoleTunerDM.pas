@@ -36,7 +36,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspBarberpoleTuner, DAV_DspFilterButterworth;
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspBarberpoleTuner,
+  DAV_DspFilterButterworth;
 
 type
   TBarberpoleTunerDataModule = class(TVSTModule)
@@ -58,7 +59,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   DAV_Common, BarberpoleTunerGUI;

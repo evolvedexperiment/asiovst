@@ -58,7 +58,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -114,10 +116,5 @@ begin
   FormPaint(nil);
   TetrisTimer.Interval:=TrimInt(1000 - fTetris.lines*10,100,1000);
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i TetrisEditor.lrs}
-{$ENDIF}
 
 end.

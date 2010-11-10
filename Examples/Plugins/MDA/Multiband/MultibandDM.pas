@@ -61,15 +61,19 @@ type
     FGainL     : Single;
     FGainM     : Single;
     FGainH     : Single;
-    FFeedback  : Array [0..2] of Single;
-    FFi        : Array [0..1, 0..1] of Single;
+    FFeedback  : array [0..2] of Single;
+    FFi        : array [0..1, 0..1] of Single;
     FMSwap     : Boolean;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;

@@ -76,7 +76,11 @@ implementation
 uses
   Math, DAV_GuiCommon, SimpleSonogramDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmSonogram.FormCreate(Sender: TObject);
 begin

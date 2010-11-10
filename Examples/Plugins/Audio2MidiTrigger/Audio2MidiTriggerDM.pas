@@ -60,8 +60,10 @@ type
 
 implementation
 
-{$IFNDEF FPC}
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
 {$ENDIF}
 
 uses
@@ -160,10 +162,5 @@ begin
   do Outputs[0, Sample] := FAudio2MidiTrigger.ProcessSample32(Inputs[0, Sample]);
  SendVstEventsToHost(FMidiEvent);
 end;
-
-{$IFDEF FPC}
-initialization
-  {$I Audio2MidiTriggerDM.lrs}
-{$ENDIF}
 
 end.

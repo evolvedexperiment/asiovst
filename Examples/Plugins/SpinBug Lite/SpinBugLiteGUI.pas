@@ -71,7 +71,11 @@ function GetColourCaption(Nr: Integer) : string;
 
 implementation
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 uses
   SpinBugLiteModule, Math, Types, DAV_VSTModuleWithPrograms;

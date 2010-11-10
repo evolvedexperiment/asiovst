@@ -62,7 +62,11 @@ implementation
 uses
   SoundTouchPitchShifterDM, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmSoundTouchPitchShifter.FormCreate(Sender: TObject);
 begin

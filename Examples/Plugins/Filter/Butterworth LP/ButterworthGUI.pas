@@ -74,7 +74,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -214,10 +216,5 @@ procedure TFmButterworth.EQGraphUpdate;
 begin
  Timer.Enabled := True;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i ButterworthGUI.lrs}
-{$ENDIF}
 
 end.

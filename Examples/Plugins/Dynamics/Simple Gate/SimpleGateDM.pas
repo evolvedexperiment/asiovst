@@ -47,13 +47,17 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
   private
-    FSimpleGates : Array [0..1] of TClassicGate;
+    FSimpleGates : array [0..1] of TClassicGate;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   EditorFrm;

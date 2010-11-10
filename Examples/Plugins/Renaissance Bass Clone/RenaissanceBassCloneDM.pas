@@ -65,7 +65,11 @@ implementation
 uses
   Math, DAV_Common, DAV_Approximations, RenaissanceBassCloneGUI;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TResurrectionBassCloneModule.VSTModuleCreate(Sender: TObject);
 begin

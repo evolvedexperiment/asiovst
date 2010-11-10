@@ -67,7 +67,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   BugpassLiteDM, DAV_Common, DAV_VSTModuleWithPrograms;

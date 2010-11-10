@@ -71,14 +71,18 @@ type
     FIntRelease        : Single;
     FGateAttack        : Single;
     FDry               : Single;
-    FEnv               : Array [0..2] of Single;
+    FEnv               : array [0..2] of Single;
     procedure CheckProcessChanged;
   public
   end;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math;
@@ -237,7 +241,7 @@ procedure TDynamicsDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
-  env    : Array [0..2] of Single;
+  env    : array [0..2] of Single;
   i, g, ra, re, at, ga : Single;
   tr, th, lth, xth, gr, y : Single;
 begin

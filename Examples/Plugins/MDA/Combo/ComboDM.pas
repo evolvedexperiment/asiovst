@@ -81,7 +81,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_VSTEffect, ComboGUI;
@@ -363,14 +367,14 @@ end;
 
 procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
- InP, OutP    : Array [0..1] of Double;
+ InP, OutP    : array [0..1] of Double;
  trm, clp     : Single;
  LPF, bi      : Single;
  HPF, drv     : Single;
- FilterState  : Array [0..1, 0..4] of Double;
- d            : Array [0..1] of Integer;
- h            : Array [0..1] of Double;
- m            : Array [0..1] of Single;
+ FilterState  : array [0..1, 0..4] of Double;
+ d            : array [0..1] of Integer;
+ h            : array [0..1] of Double;
+ m            : array [0..1] of Single;
  hf, hq       : Single;
  bp, Sample   : Integer;
 begin
@@ -542,14 +546,14 @@ end;
 procedure TComboDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
- InP, OutP    : Array [0..1] of Double;
+ InP, OutP    : array [0..1] of Double;
  trm, clp     : Double;
  LPF, bi      : Double;
  HPF, drv     : Double;
- FilterState  : Array [0..1, 0..4] of Double;
- d            : Array [0..1] of Integer;
- h            : Array [0..1] of Double;
- m            : Array [0..1] of Single;
+ FilterState  : array [0..1, 0..4] of Double;
+ d            : array [0..1] of Integer;
+ h            : array [0..1] of Double;
+ m            : array [0..1] of Single;
  hf, hq       : Double;
  bp, Sample   : Integer;
 begin

@@ -54,7 +54,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -125,10 +127,5 @@ begin
  if FEditorForm is TVSTGUI
   then TVSTGUI(FEditorForm).UpdateGain;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i OpAmpModule.lrs}
-{$ENDIF}
 
 end.

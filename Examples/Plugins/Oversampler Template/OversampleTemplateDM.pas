@@ -132,7 +132,11 @@ function ConvertOrderToString(Order: Integer): string;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms,

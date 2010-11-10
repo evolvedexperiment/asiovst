@@ -75,7 +75,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Inifiles, GraphicEx, DAV_VSTModuleWithPrograms, DAV_VSTParameters;

@@ -88,7 +88,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   AudioAmeliorationDM, DAV_VSTModuleWithPrograms;

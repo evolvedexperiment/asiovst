@@ -141,7 +141,11 @@ implementation
 uses
   SidechainCompressorDM, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmSidechainCompressor.FormCreate(Sender: TObject);
 begin

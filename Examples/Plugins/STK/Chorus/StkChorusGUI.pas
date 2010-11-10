@@ -64,7 +64,11 @@ implementation
 uses
   Math, DAV_VSTModuleWithPrograms, StkChorusDM;
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmStkChorus.FormShow(Sender: TObject);
 begin

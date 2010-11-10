@@ -103,7 +103,11 @@ uses
 resourcestring
   RCStrChannelInvalid = 'Channel invalid (%d)';
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmSplitHarmonizer.FormCreate(Sender: TObject);
 begin

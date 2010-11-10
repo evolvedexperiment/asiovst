@@ -51,7 +51,7 @@ type
     procedure ParameterOutputGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FIntParam  : Array [0..1, 0..1] of Single;
+    FIntParam  : array [0..1, 0..1] of Single;
     FPan       : Single;
     FWidth     : Single;
     FDepth     : Single;
@@ -81,7 +81,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TImageDataModule.ParamModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);

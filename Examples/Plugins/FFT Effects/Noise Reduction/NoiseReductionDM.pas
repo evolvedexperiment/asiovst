@@ -74,7 +74,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   SysUtils, Math, NoiseReductionGui, DAV_VSTModuleWithPrograms,

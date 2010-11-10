@@ -86,9 +86,14 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
-uses PluginDM;
+uses 
+  PluginDM;
 
 procedure TEditorForm.LbLMClick(Sender: TObject);
 begin

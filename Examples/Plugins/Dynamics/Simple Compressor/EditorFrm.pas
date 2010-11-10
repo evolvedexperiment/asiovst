@@ -66,9 +66,14 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
-uses Math, SimpleCompressorDM;
+uses 
+  Math, SimpleCompressorDM;
 
 procedure TEditorForm.FormShow(Sender: TObject);
 begin
