@@ -181,9 +181,11 @@ function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 function MakeGoodFileName(s: string): string;
 {$ENDIF}
 
+{$IFDEF MSWINDOWS}
 {$IFDEF CPU386}
 function MethodToProcedure(Self: TObject; MethodAddr: Pointer): Pointer; overload;
 function MethodToProcedure(Method: TMethod): Pointer; overload;
+{$ENDIF}
 {$ENDIF}
 
 const
@@ -1372,6 +1374,7 @@ end;
 
 { Object oriented code conversions }
 
+{$IFDEF MSWINDOWS}
 {$IFDEF CPU386}
 function MethodToProcedure(Self: TObject; MethodAddr: Pointer): Pointer;
 type
@@ -1410,7 +1413,7 @@ function MethodToProcedure(Method: TMethod): Pointer;
 begin
  Result := MethodToProcedure(TObject(Method.data), Method.code);
 end;
-
+{$ENDIF}
 {$ENDIF}
 
-end.
+end.                                                                                                                
