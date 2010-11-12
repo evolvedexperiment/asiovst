@@ -97,7 +97,7 @@ begin
    ReallocMem(P, Size + $F);
 
    // check if memory is still unaligned
-   if (Cardinal(P) and $F) <> 0 then
+//   if (Cardinal(P) and $F) <> 0 then
     begin
      // add unaligned pointer to the unaligned memory list
      UnalignedMemoryList.Add(P);

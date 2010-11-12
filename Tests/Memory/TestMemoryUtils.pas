@@ -41,7 +41,9 @@ uses
 type
   TTestMemoryUtils = class(TTestCase)
   public
+    {$IFNDEF FPC}
     constructor Create(MethodName: string); override;
+    {$ENDIF}
   published
     procedure TestGetAlignedMemory;
     procedure TestReallocateAlignedMemory;
@@ -52,12 +54,14 @@ implementation
 uses
   SysUtils, DAV_MemoryUtils;
 
+{$IFNDEF FPC}
 constructor TTestMemoryUtils.Create(MethodName: string);
 begin
  inherited;
  FailsOnMemoryLeak := True;
  FailsOnMemoryRecovery := True;
 end;
+{$ENDIF}
 
 procedure TTestMemoryUtils.TestGetAlignedMemory;
 var
@@ -77,6 +81,7 @@ var
   Index : Integer;
   Data  : Pointer;
 begin
+ Data := nil;
  ReallocateAlignedMemory(Data, $A);
  for Index := 0 to $1FF do
   begin
@@ -88,6 +93,10 @@ end;
 
 initialization
   // Alle Testfälle beim Test-Runner registrieren
+  {$IFDEF FPC}
+  RegisterTest(TTestMemoryUtils);
+  {$ELSE}
   RegisterTest(TTestMemoryUtils.Suite);
+  {$ENDIF}
 
 end.
