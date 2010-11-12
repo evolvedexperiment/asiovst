@@ -33,6 +33,9 @@ unit DAV_MemoryUtils;
 interface
 
 {$I DAV_Compiler.inc}
+{$IFDEF DELPHI10_UP}
+{-$DEFINE MemoryAlreadyAligned}
+{$ENDIF}
 
 uses
   Classes, SysUtils;
@@ -51,6 +54,7 @@ var
   Index : Integer;
 begin
  Result := nil;
+
  for Index := 0 to UnalignedMemoryList.Count - 1 do
   if P = Pointer(Cardinal(UnalignedMemoryList.Items[Index]) and (not $F)) then
    begin
@@ -64,6 +68,7 @@ var
   Index : Integer;
 begin
  Result := -1;
+
  for Index := 0 to UnalignedMemoryList.Count - 1 do
   if P = Pointer(Cardinal(UnalignedMemoryList.Items[Index]) and (not $F)) then
    begin
@@ -81,14 +86,25 @@ begin
    Exit;
   end;
 
+ // initially allocate memory
  GetMem(P, Size);
 
- {$IFNDEF DELPHI10_UP}
+ {$IFNDEF MemoryAlreadyAligned}
+ // check if memory is unaligned
  if (Cardinal(P) and $F) <> 0 then
   begin
+   // reallocate slightly larger memory
    ReallocMem(P, Size + $F);
-   UnalignedMemoryList.Add(P);
-   P := Pointer(Cardinal(P) and (not $F));
+
+   // check if memory is still unaligned
+   if (Cardinal(P) and $F) <> 0 then
+    begin
+     // add unaligned pointer to the unaligned memory list
+     UnalignedMemoryList.Add(P);
+
+     // assign aligned pointer
+     P := Pointer(Cardinal(P) and (not $F));
+    end;
   end;
  {$ENDIF}
 
@@ -96,7 +112,7 @@ begin
 end;
 
 procedure ReallocateAlignedMemory(var P: Pointer; Size: Integer);
-{$IFNDEF DELPHI10_UP}
+{$IFNDEF MemoryAlreadyAligned}
 var
   Index : Integer;
 {$ENDIF}
@@ -116,13 +132,13 @@ begin
    Exit;
   end;
 
- {$IFNDEF DELPHI10_UP}
+ {$IFNDEF MemoryAlreadyAligned}
  Index := GetUnalignedPointerIndex(P);
  {$ENDIF}
 
  ReallocMem(P, Size);
 
- {$IFNDEF DELPHI10_UP}
+ {$IFNDEF MemoryAlreadyAligned}
  if (Cardinal(P) and $F) <> 0 then
   begin
    ReallocMem(P, Size + $F);
@@ -140,12 +156,12 @@ begin
 end;
 
 procedure FreeAlignedMemory(P: Pointer);
-{$IFNDEF DELPHI10_UP}
+{$IFNDEF MemoryAlreadyAligned}
 var
   Index : Integer;
 {$ENDIF}
 begin
- {$IFNDEF DELPHI10_UP}
+ {$IFNDEF MemoryAlreadyAligned}
  for Index := 0 to UnalignedMemoryList.Count - 1 do
   begin
    // check if P is alread the unaligned pointer

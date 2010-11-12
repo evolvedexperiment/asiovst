@@ -49,6 +49,7 @@ type
     TbBorderWidth: TTrackBar;
     TbRadius: TTrackBar;
     LbRadius: TLabel;
+    procedure ButtonAClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -68,11 +69,20 @@ implementation
 uses
   DAV_GuiCommon;
 
+{$IFDEF FPC}
 {$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmButton.FormCreate(Sender: TObject);
 begin
  FBackground := TGuiPixelMapMemory.Create;
+end;
+
+procedure TFmButton.ButtonAClick(Sender: TObject);
+begin
+ CbTransparent.Checked := not CbTransparent.Checked;
 end;
 
 procedure TFmButton.FormDestroy(Sender: TObject);
@@ -89,15 +99,15 @@ end;
 procedure TFmButton.FormResize(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array [0..1] of Single;
+  Filter : array [0..1] of Single;
   h, hr  : Single;
   ScnLne : PPixel32Array;
 begin
  with FBackground do
   begin
    SetSize(ClientWidth, ClientHeight);
-   s[0] := 0;
-   s[1] := 0;
+   Filter[0] := 0;
+   Filter[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
@@ -105,12 +115,12 @@ begin
      h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * Random;
-       s[0] := s[1];
+       Filter[1] := 0.97 * Filter[0] + 0.03 * Random;
+       Filter[0] := Filter[1];
 
-       ScnLne[x].B := Round($70 - $34 * (s[1] - h));
-       ScnLne[x].G := Round($84 - $48 * (s[1] - h));
-       ScnLne[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLne[x].B := Round($70 - $34 * (Filter[1] - h));
+       ScnLne[x].G := Round($84 - $48 * (Filter[1] - h));
+       ScnLne[x].R := Round($8D - $50 * (Filter[1] - h));
       end;
     end;
   end;

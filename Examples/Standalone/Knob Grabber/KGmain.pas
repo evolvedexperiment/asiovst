@@ -32,11 +32,11 @@ unit KGmain;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, ExtCtrls, DAV_VSTHost;
+  {$IFDEF FPC} LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF} SysUtils,
+  Classes, Graphics, Controls, Forms, Dialogs, Menus, ExtCtrls, DAV_VSTHost;
 
 type
   TStitchType = (stHorizontal, stVertical);
@@ -97,9 +97,9 @@ var
   Prs : Integer;
   PNm : string;
 begin
-(*
  Dir := ExtractFileDir(FFileName);
  SelectDirectory('Select a directory', '', Dir);
+(*
 *)
  PNm := ExtractFileName(FFileName);
  if Pos('.', PNm) > 0
