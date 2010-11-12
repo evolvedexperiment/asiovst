@@ -185,20 +185,22 @@ end;
 
 procedure TCustomGuiPanel.AssignTo(Dest: TPersistent);
 begin
- if Dest is TBitmap
-  then (Dest as TBitmap).Canvas.Assign(Canvas)
-  else inherited;
+ if Dest is TBitmap then
+  begin
+   (Dest as TBitmap).Canvas.Assign(Canvas)
+(*
+  end else
+ if Dest is TCustomGuiPanel then
+  begin
+   (Dest as TCustomGuiPanel).
+*)
+  end else inherited;
 end;
 
 procedure TCustomGuiPanel.Loaded;
 begin
  inherited;
- if Assigned(FBuffer) then
-  begin
-   FBuffer.Width  := Width;
-   FBuffer.Height := Height;
-  end;
- FBufferChanged := True;
+ Resize;
 end;
 
 procedure TCustomGuiPanel.SetOwnerDraw(const Value: Boolean);

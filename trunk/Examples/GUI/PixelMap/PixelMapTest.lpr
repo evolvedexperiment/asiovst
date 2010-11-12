@@ -10,8 +10,6 @@ uses
   DAV_GuiBlend in '..\..\..\Source\GUI\DAV_GuiBlend.pas',
   DAV_MemoryUtils in '..\..\..\Source\DAV_MemoryUtils.pas';
 
-{$R *.res}
-
 begin
   Application.Initialize;
   Application.CreateForm(TFmPixelMapTest, FmPixelMapTest);

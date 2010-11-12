@@ -39,12 +39,14 @@ object FmButton: TFmButton
     Width = 64
     Height = 24
     Alignment = taCenter
-    BorderColor = clBlack
+    BorderColor = clBlue
+    BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button A'
+    Radius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = False
+    OnClick = ButtonAClick
   end
   object ButtonB: TGuiButton
     Left = 78
@@ -52,11 +54,12 @@ object FmButton: TFmButton
     Width = 64
     Height = 24
     Alignment = taCenter
-    BorderColor = clBlack
+    BorderColor = clRed
+    BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button B'
+    Radius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = False
   end
   object ButtonC: TGuiButton
@@ -65,11 +68,12 @@ object FmButton: TFmButton
     Width = 64
     Height = 24
     Alignment = taCenter
-    BorderColor = clBlack
+    BorderColor = clGreen
+    BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button C'
+    Radius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = False
   end
   object ButtonD: TGuiButton
@@ -78,11 +82,12 @@ object FmButton: TFmButton
     Width = 64
     Height = 24
     Alignment = taCenter
-    BorderColor = clBlack
+    BorderColor = clYellow
+    BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button D'
+    Radius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = False
   end
   object CbTransparent: TCheckBox

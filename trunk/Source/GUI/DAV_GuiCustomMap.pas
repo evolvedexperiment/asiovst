@@ -105,6 +105,8 @@ begin
  FDataSize := 0;
  FWidth    := 0;
  FHeight   := 0;
+ FOnChange := nil;
+ FOnResize := nil;
 end;
 
 procedure TGuiCustomMap.SaveToFile(const Filename: TFileName);

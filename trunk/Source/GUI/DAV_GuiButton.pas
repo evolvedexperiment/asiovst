@@ -131,9 +131,9 @@ type
     property Radius;
     property Shadow;
     property ShowHint;
+    property Transparent;
     property Visible;
     {$IFNDEF FPC}
-    property Transparent;
     property OnCanResize;
     {$ENDIF}
     property OnClick;
@@ -242,9 +242,7 @@ var
   PixelColor32 : TPixel32;
 begin
  FUpdateBackBuffer := False;
- {$IFNDEF FPC}
  if FTransparent then FBackBuffer.CopyParentImage(Self) else
- {$ENDIF}
   begin
    PixelColor32 := ConvertColor(Color);
    FBackBuffer.FillRect(ClientRect, PixelColor32);
