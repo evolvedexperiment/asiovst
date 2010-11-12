@@ -61,12 +61,12 @@ type
   protected
     class function GetInputChannelClass: TAsioChannelInputClass; override;
     class function GetOutputChannelClass: TAsioChannelOutputClass; override;
-    procedure BufferSizeChange; virtual;
-    procedure BufferSwitch(Index: Integer); virtual;
-    procedure BufferSwitchTimeInfo(Index: Integer; const Params: TAsioTime); virtual;
-    procedure ClearBuffers; virtual;
+    procedure BufferSizeChange; override;
+    procedure BufferSwitch(Index: Integer); override;
+    procedure BufferSwitchTimeInfo(Index: Integer; const Params: TAsioTime); override;
+    procedure ClearBuffers; override;
   public
-    constructor Create(ID: TGUID); virtual;
+    constructor Create(ID: TGUID); override;
     destructor Destroy; override;
   end;
 

@@ -50,13 +50,15 @@ type
     class function CanLoad(Stream: TStream): Boolean; overload; override;
     class function CanHandleExtension(const FileName: TFileName): Boolean; override;
 
-    procedure LoadFromStream(Stream: TStream); override;
-    procedure SaveToStream(Stream: TStream); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
+
     procedure Assign(Source: TPersistent); override;
+
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
   end;
 
 implementation
@@ -75,15 +77,18 @@ var
 begin
  with TBitmap.Create do
   try
-   OldStreamPosition := Stream.Position;
    try
-    LoadFromStream(Stream);
-    Result := True;
-   except
-    Result := False;
+    OldStreamPosition := Stream.Position;
+    try
+     LoadFromStream(Stream);
+     Result := True;
+    except
+     Result := False;
+    end;
+   finally
+    Stream.Position := OldStreamPosition;
    end;
   finally
-   Stream.Position := OldStreamPosition;
    Free;
   end;
 end;

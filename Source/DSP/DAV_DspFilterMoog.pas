@@ -216,9 +216,11 @@ end;
 { TCustomImprovedClassicMoogFilter }
 
 procedure TCustomImprovedClassicMoogFilter.CalculateCoefficients;
+(*
 var
   Fc  : Double;
   Fcr : Double;
+*)
 begin
  inherited;
  // FExpW0.Re

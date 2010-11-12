@@ -102,7 +102,7 @@ begin
  Result := Code;
 
  if Code < 0
-  then raise Exception.Create(CZErrorMessages[2 - Code]);
+  then raise Exception.Create(string(CZErrorMessages[2 - Code]));
 end;
 
 

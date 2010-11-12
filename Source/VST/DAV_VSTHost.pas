@@ -869,8 +869,6 @@ var
   PlugIndex : Integer;
   {$ENDIF}
 begin
- Plugin := nil;
- Host := nil;
  Result := 0;
 
  {$IFDEF Debug64}
@@ -885,12 +883,7 @@ begin
   if Assigned(Effect) then
    begin
     Plugin := Effect.ReservedForHost;
-    {$IFDEF DELPHI6_UP}
     Host := Effect.Resvd2;
-    {$ELSE}
-    if Assigned(Plugin) and Assigned(Plugin.Collection) and Assigned(Plugin.Collection.Owner)
-     then Host := TCustomVstHost(Plugin.Collection.Owner);
-    {$ENDIF}
 
     if (Host = nil) then
      begin
@@ -3537,11 +3530,9 @@ begin
 
  // set host related variables
  FVstEffect.ReservedForHost := Self;
- {$IFDEF DELPHI6_UP}
  if Assigned(Collection)
   then FVstEffect.Resvd2 := Collection.Owner
   else FVstEffect.Resvd2 := nil;
- {$ENDIF}
 
  DontRaiseExceptionsAndSetFPUcodeword;
  if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);

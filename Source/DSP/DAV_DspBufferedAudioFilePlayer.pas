@@ -175,7 +175,7 @@ begin
      then IdleLoops := 20;
     Dec(IdleLoops);
     if FAllowSuspend and (IdleLoops <= 0)
-     then Suspend
+     then Suspended := True
      else Sleep(FTimeOut);
    end;
 end;
@@ -214,7 +214,7 @@ begin
  with FBufferThread do
   begin
    if Suspended
-    then Resume;
+    then Suspended := False;
    Terminate;
    WaitFor;
   end;

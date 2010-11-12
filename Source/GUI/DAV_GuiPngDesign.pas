@@ -129,8 +129,6 @@ begin
 end;
 
 procedure TFmPngDialog.MiLoadPngClick(Sender: TObject);
-var
-  FileFormatClass  : TGuiCustomFileFormatClass;
 begin
  with OpenDialog do
   if Execute then
@@ -166,7 +164,6 @@ begin
    if Assigned(FBuffer) then
     begin
      FBuffer.SetSize(FPixelMap.Width, FPixelMap.Height);
-     XIndex := 0;
      YIndex := 0;
 
      for Y := 0 to FPixelMap.Height - 1 do

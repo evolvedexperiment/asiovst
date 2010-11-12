@@ -144,7 +144,7 @@ type
   private
     FRatio               : Single;
     FAllowSuspend        : Boolean;
-    FFractalPos          : Single;
+//    FFractalPos          : Single;
     FInterpolation       : TBufferInterpolation;
     FPitch               : Single;
     FPitchFactor         : Single;
@@ -414,7 +414,7 @@ begin
 
    Dec(IdleLoops);
    if FAllowSuspend and (IdleLoops <= 0)
-    then Suspend
+    then Suspended := True
     else Sleep(FTimeOut);
   end;
 end;
@@ -514,7 +514,7 @@ begin
 
    Dec(IdleLoops);
    if FAllowSuspend and (IdleLoops <= 0)
-    then Suspend
+    then Suspended := True
     else Sleep(FTimeOut);
   end;
 end;
@@ -613,7 +613,7 @@ begin
 
    Dec(IdleLoops);
    if FAllowSuspend and (IdleLoops <= 0)
-    then Suspend
+    then Suspended := True
     else Sleep(FTimeOut);
   end;
 end;
@@ -667,7 +667,7 @@ begin
  with FBufferThread do
   begin
    if Suspended
-    then Resume;
+    then Suspended := False;
    Terminate;
    WaitFor;
   end;
@@ -782,11 +782,13 @@ end;
 
 procedure TCustomBufferedAudioRecorder.PutSamples(Data: PDAVSingleFixedArray;
   SampleFrames: Integer);
+(*
 var
-  Sample : Integer;  
+  Sample : Integer;
+*)
 begin
  // eventually reactivate thread
- if FAllowSuspend and FBufferThread.Suspended then FBufferThread.Resume;
+ if FAllowSuspend and FBufferThread.Suspended then FBufferThread.Suspended := False;
  if FRatio = 1
   then FBufferThread.PutSamples(Data, SampleFrames)
   else raise Exception.Create('not yet implemented');
@@ -882,7 +884,7 @@ begin
   begin
    OpenFile(FFileName);
    CalculateSampleRateRatio;
-   Resume;
+   Suspended := False;
   end;
 end;
 
@@ -909,7 +911,7 @@ begin
   begin
    OpenStream(FStream);
    CalculateSampleRateRatio;
-   Resume;
+   Suspended := False;
   end;
 end;
 

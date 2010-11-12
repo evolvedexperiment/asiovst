@@ -126,7 +126,6 @@ var
   x, y      : Integer;
   s         : array [0..1] of Single;
   hr, h     : Single;
-  ByteValue : ShortInt;
   ScnLn     : PPixel32Array;
 begin
  s[0] := 0;

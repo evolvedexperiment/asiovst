@@ -56,3 +56,4 @@ contains
   DAV_AsioCore32 in '..\..\Source\ASIO\DAV_AsioCore32.pas';
 
 end.
+

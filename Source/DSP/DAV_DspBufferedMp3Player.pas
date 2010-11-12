@@ -217,7 +217,7 @@ begin
 
    Dec(IdleLoops);
    if FAllowSuspend and (IdleLoops <= 0)
-    then Suspend
+    then Suspended := True
     else Sleep(FTimeOut);
   end;
 end;
@@ -358,7 +358,7 @@ begin
  with FBufferThread do
   begin
    if Suspended
-    then Resume;
+    then Suspended := False;
    Terminate;
    WaitFor;
   end;
@@ -490,7 +490,9 @@ var
   Sample : Integer;
 begin
  // eventually reactivate thread
- if FAllowSuspend and FBufferThread.Suspended then FBufferThread.Resume;
+ if FAllowSuspend and FBufferThread.Suspended
+  then FBufferThread.Suspended := False;
+
  if FRatio = 1
   then FBufferThread.GetSamples(Left, Right, SampleFrames)
   else
@@ -584,7 +586,7 @@ begin
   begin
    LoadFromFile(FFileName);
    CalculateSampleRateRatio;
-   Resume;
+   Suspended := False;
   end;
 end;
 
@@ -611,7 +613,7 @@ begin
   begin
    LoadFromStream(FStream);
    CalculateSampleRateRatio;
-   Resume;
+   Suspended := False;
   end;
 end;
 
