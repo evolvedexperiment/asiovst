@@ -351,9 +351,6 @@ begin
 end;
 
 procedure TGuiMediaButton.UpdateBuffer;
-var
-  DataPointer : PPixel32Array;
-  LineIndex   : Integer;
 begin
  FUpdateBuffer := False;
 

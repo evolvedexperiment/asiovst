@@ -1482,9 +1482,11 @@ end;
 function TCustomCircularReserveMultiBuffer32.ReadReserveBuffer(
   const Data: TDAVArrayOfSingleFixedArray;
   const SampleFrames: Cardinal): Cardinal;
+(*
 var
   Channel        : Integer;
   PartialSamples : Cardinal;
+*)
 begin
  Assert(Length(Data) >= ChannelCount);
 

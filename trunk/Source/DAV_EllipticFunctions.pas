@@ -143,10 +143,10 @@ const
   MaxNum: Double =  1.79769313486231570815E308;    // 2^1024 * (1 - CMachEP)
   PiO2: Double   =  1.57079632679489661923;        // Pi / 2
   PiO4: Double   =  7.85398163397448309616E-1;     // Pi / 4
-  Sqrt2: Double  =  1.41421356237309504880;        // sqrt(2)
-  SqrtH: Double  =  7.07106781186547524401E-1;     // sqrt(2) / 2
+  Sqrt2: Double  =  1.41421356237309504880;        // Sqrt(2)
+  SqrtH: Double  =  7.07106781186547524401E-1;     // Sqrt(2) / 2
   Log2E: Double  =  1.4426950408889634073599;      // 1 / log(2)
-  Sq2OPi: Double =  7.9788456080286535587989E-1;   // sqrt(2 / Pi)
+  Sq2OPi: Double =  7.9788456080286535587989E-1;   // Sqrt(2 / Pi)
   LogE2: Double  =  6.93147180559945309417E-1;     // log(2)
   LogSQ2: Double =  3.46573590279972654709E-1;     // log(2) / 2
   ThPiO4: Double =  2.35619449019234492885;        // 3 * Pi / 4
@@ -203,7 +203,7 @@ begin
  GetSinCos(Scale * Phi, Cmplx.Im, Cmplx.Re);
  for i := 0 to Steps do
   begin
-   Result := Result + Scale / sqrt(1 - Sqr(k * Pos.Im));
+   Result := Result + Scale / Sqrt(1 - Sqr(k * Pos.Im));
 
    ComplexMultiplyInplace64(Pos, Cmplx);
   end;
@@ -226,7 +226,7 @@ begin
  GetSinCos(Scale * Phi, Cmplx.Im, Cmplx.Re);
  for i := 0 to Steps do
   begin
-   Result := Result + Scale * sqrt(1 - Sqr(k * Pos.Im));
+   Result := Result + Scale * Sqrt(1 - Sqr(k * Pos.Im));
 
    ComplexMultiplyInplace64(Pos, Cmplx);
   end;
@@ -249,7 +249,7 @@ begin
  GetSinCos(Scale * Phi, Cmplx.Im, Cmplx.Re);
  for i := 0 to Steps do
   begin
-   Result := Result + Scale / ((1 - n * Sqr(Pos.Im)) * sqrt(1 - Sqr(k * Pos.Im)));
+   Result := Result + Scale / ((1 - n * Sqr(Pos.Im)) * Sqrt(1 - Sqr(k * Pos.Im)));
 
    ComplexMultiplyInplace64(Pos, Cmplx);
   end;
@@ -351,7 +351,7 @@ begin
  GetSinCos(Scale * 0.5 * Pi, Cmplx.Im, Cmplx.Re);
  for i := 0 to Steps do
   begin
-   Result := Result + Scale * sqrt(1 - Sqr(k * Pos.Im));
+   Result := Result + Scale * Sqrt(1 - Sqr(k * Pos.Im));
 
    ComplexMultiplyInplace64(Pos, Cmplx);
   end;
@@ -373,7 +373,7 @@ begin
  GetSinCos(Scale * 0.5 * Pi, Cmplx.Im, Cmplx.Re);
  for i := 0 to Steps do
   begin
-   Result := Result + Scale / ((1 - n * Sqr(Pos.Im)) * sqrt(1 - Sqr(k * Pos.Im)));
+   Result := Result + Scale / ((1 - n * Sqr(Pos.Im)) * Sqrt(1 - Sqr(k * Pos.Im)));
 
    ComplexMultiplyInplace64(Pos, Cmplx);
   end;
@@ -387,7 +387,7 @@ function NomeQk(k: Double): Double;
 begin
  Assert(k <= 1);
  Assert(k >= 0);
- Result := exp(-Pi * CompleteEllipticIntegral1stKind(sqrt(1 - Sqr(k))) /
+ Result := exp(-Pi * CompleteEllipticIntegral1stKind(Sqrt(1 - Sqr(k))) /
                      CompleteEllipticIntegral1stKind(k));
 end;
 
@@ -400,7 +400,7 @@ function NomeQk(k: TComplexDouble): TComplexDouble; overload;
 begin
  raise Exception.Create('Yet todo!');
 (*
- Result := Pi * CompleteEllipticIntegral1stKind(sqrt(1 - Sqr(k.Re))) / CompleteEllipticIntegral1stKind(k.Re));
+ Result := Pi * CompleteEllipticIntegral1stKind(Sqrt(1 - Sqr(k.Re))) / CompleteEllipticIntegral1stKind(k.Re));
 
  Result.Re := Pi * Result.Re;
  Result.Im := Pi * Result.Im;
@@ -1099,7 +1099,7 @@ end;
 //               Pi/2                                                         //
 //                -                                                           //
 //               | |                 2                                        //
-//    E(m)  =    |    sqrt( 1 - m sin t ) dt                                  //
+//    E(m)  =    |    Sqrt( 1 - m sin t ) dt                                  //
 //             | |                                                            //
 //              -                                                             //
 //               0                                                            //
@@ -1170,7 +1170,7 @@ end;
 //                     -                                                      //
 //                    | |                                                     //
 //                    |                   2                                   //
-//    E(phi | m)  =   |    sqrt( 1 - m sin t ) dt                             //
+//    E(phi | m)  =   |    Sqrt( 1 - m sin t ) dt                             //
 //                    |                                                       //
 //                  | |                                                       //
 //                   -                                                        //
@@ -1199,9 +1199,13 @@ var
 label
   done;  
 begin
- if m = 0 then Result := phi;
+ if m = 0 then
+  begin
+   Result := phi;
+   Exit;
+  end;
  lphi := phi;
- npio2 := floor(lphi / PiO2);
+ npio2 := Floor(lphi / PiO2);
 
  if (npio2 and 1) <> 0 then npio2 := npio2 + 1;
  lphi := lphi - npio2 * PiO2;
@@ -1221,7 +1225,7 @@ begin
    goto done;
   end;
  t := tan(lphi);
- b := sqrt(a);
+ b := Sqrt(a);
 
  (* Thanks to Brian Fitzgerald <fitzgb@mml0.meche.rpi.edu>
     for pointing out an instability near odd multiples of Pi/2.  *)
@@ -1250,7 +1254,7 @@ begin
    md := round ((lphi + PiO2) / Pi);
    t := t * (1 + Result) / (1 - Result * sqr(t));
    c := (a - b) * 0.5;
-   Result := sqrt(a * b);
+   Result := Sqrt(a * b);
    a := (a + b) * 0.5;
    b := Result;
    d:= d + d;
@@ -1285,7 +1289,7 @@ end;
 //                   |           dt                                           //
 //    F(phi_\m)  =   |    ------------------                                  //
 //                   |                   2                                    //
-//                 | |    sqrt( 1 - m sin t )                                 //
+//                 | |    Sqrt( 1 - m sin t )                                 //
 //                  -                                                         //
 //                  0                                                         //
 //                                                                            //
@@ -1312,6 +1316,7 @@ label
   done;  
 begin
  if m = 0 then Result := (phi);
+
  a := 1 - m;
  if a = 0 then
   begin
@@ -1319,8 +1324,10 @@ begin
     begin
 //     mtherr('IncompleteEllipticIntegral1stKind', SING);
      Result := (MaxNum);
+     Exit;
     end;
    Result:= log10(tan((PiO2 + phi) * 0.5));
+   Exit;
   end;
  npio2 := floor(phi / PiO2);
 
@@ -1341,7 +1348,7 @@ begin
   end
  else sign := 0;
 
- b := sqrt(a);
+ b := Sqrt(a);
  t := tan(phi);
  if abs(t) > 10 then
   begin
@@ -1359,7 +1366,7 @@ begin
   end;
 
  a := 1.0;
- c := sqrt(m);
+ c := Sqrt(m);
  d := 1;
  md := 0;
 
@@ -1370,7 +1377,7 @@ begin
    md := round((phi + PiO2) / Pi);
    t := t * (1.0 + Result) / (1.0 - Result * sqr(t));
    c := (a - b) * 0.5;
-   Result := sqrt(a * b);
+   Result := Sqrt(a * b);
    a := (a + b) * 0.5;
    b := Result;
    d:= d + d;
@@ -1402,7 +1409,7 @@ end;
 //               |          dt                                                //
 //    K(m)  =    |   ------------------                                       //
 //               |                  2                                         //
-//             | |   sqrt( 1 - m sin t )                                      //
+//             | |   Sqrt( 1 - m sin t )                                      //
 //              -                                                             //
 //              0                                                             //
 //                                                                            //
@@ -1453,6 +1460,7 @@ begin
   begin
 //   mtherr( 'CompleteEllipticIntegral1stKind', DOMAIN );
    Result := 0;
+   Exit;
   end;
 
  if (x > CMachEP)
@@ -1536,6 +1544,7 @@ begin
    ph := 0.0;
    dn := 0.0;
    Result := -1;
+   Exit;
   end;
  if (m < 1.0E-9) then
   begin
@@ -1566,8 +1575,8 @@ begin
 
  (*  A. G. M. scale  *)
  a[0] := 1;
- b    := sqrt(1 - m);
- c[0] := sqrt(m);
+ b    := Sqrt(1 - m);
+ c[0] := Sqrt(m);
  twon := 1;
  i    := 0;
 
@@ -1581,7 +1590,7 @@ begin
    ai := a[i];
    inc(i);
    c[i] := (ai - b) * 0.5;
-   t := sqrt(ai * b);
+   t := Sqrt(ai * b);
    a[i] := (ai + b) * 0.5;
    b := t;
    twon:= twon * 2.0;
@@ -1700,7 +1709,7 @@ begin
        (2 * i + 2 * j + 1);
     end;
   end;
- Result := CompleteEllipticIntegral1stKind(sqrt(m)) - Result;
+ Result := CompleteEllipticIntegral1stKind(Sqrt(m)) - Result;
 
 (*
  assert(abs(m) < 1);
@@ -1711,7 +1720,7 @@ begin
    for j := 1 to i
     do Inner := Inner + Factorial(j - 1) * Power(z, 2 * j) / Pochhammer(0.5, j);
 
-   Inner := (arccos(z) + sqrt(1 - sqr(z)) / (2 * z) * Inner) * Power(m, i);
+   Inner := (arccos(z) + Sqrt(1 - sqr(z)) / (2 * z) * Inner) * Power(m, i);
 
    Result := Result + sqr(Pochhammer(0.5, i) / Factorial(i)) * Inner;
   end;
@@ -1740,19 +1749,19 @@ var
 begin
  case Order of
   1 : Result := Selectivity;
-  2 : Result := sqr(Selectivity + sqrt(sqr(Selectivity) + 1));
+  2 : Result := sqr(Selectivity + Sqrt(sqr(Selectivity) + 1));
   3 : begin
-       t[0] := sqrt(1 - sqr(1 / Selectivity));
+       t[0] := Sqrt(1 - sqr(1 / Selectivity));
        t[1] := Power(2 * t[0] * (1 - 2 * t[0]), 1 / 3);
-       t[0] := 0.5 * (- (1 - 2 * t[0]) / sqrt(1 + t[1] + sqr(t[1])) - 1 +
-         sqrt(2 + t[1] + 2 * sqrt(1 + t[1] + sqr(t[1]))));
+       t[0] := 0.5 * (- (1 - 2 * t[0]) / Sqrt(1 + t[1] + sqr(t[1])) - 1 +
+         Sqrt(2 + t[1] + 2 * Sqrt(1 + t[1] + sqr(t[1]))));
        Result := sqr(1 + t[0]) * Selectivity * (sqr(Selectivity) -
          ((1 + 2 * t[0]) / sqr(1 + t[0]))) / ((sqr(t[0]) - 1) * sqr(Selectivity) + 1); 
       end;
-  4 : Result := sqr(sqr(sqrt(Selectivity) + Power(sqr(Selectivity) - 1, 0.25))) * sqr(Selectivity + Sqrt(Sqr(Selectivity) - 1));    
-//  4 : Result := sqr(Selectivity + sqrt(sqr(Selectivity) + 1));
+  4 : Result := sqr(sqr(Sqrt(Selectivity) + Power(sqr(Selectivity) - 1, 0.25))) * sqr(Selectivity + Sqrt(Sqr(Selectivity) - 1));
+//  4 : Result := sqr(Selectivity + Sqrt(sqr(Selectivity) + 1));
 //  3 : Result :=
-//       Temp := sqrt(1 - sqr(1 / Selectivity));
+//       Temp := Sqrt(1 - sqr(1 / Selectivity));
   else raise Exception.Create('not implemented yet!');
  end;
 end;
