@@ -269,8 +269,12 @@ begin
  FValue        :=  50;
  FDefaultValue :=  50;
 
- FCurveMapping     :=   0;
- FCurveMappingExp  :=   1;
+ FCurveMapping     :=  0;
+ FCurveMappingExp  :=  1;
+
+ {$IFDEF FPC}
+ DoubleBuffered := True;
+ {$ENDIF}
 end;
 
 procedure TCustomGuiSlider.AssignTo(Dest: TPersistent);

@@ -187,14 +187,21 @@ procedure TCustomGuiPanel.AssignTo(Dest: TPersistent);
 begin
  if Dest is TBitmap then
   begin
-   (Dest as TBitmap).Canvas.Assign(Canvas)
-(*
+   (Dest as TBitmap).Canvas.Assign(Canvas);
   end else
  if Dest is TCustomGuiPanel then
-  begin
-   (Dest as TCustomGuiPanel).
-*)
-  end else inherited;
+  with TCustomGuiPanel(Dest) do
+   begin
+    FBorderVisible := Self.FBorderVisible;
+    FPanelColor    := Self.FPanelColor;
+    FOwnerDraw     := Self.FOwnerDraw;
+    FRoundRadius   := Self.FRoundRadius;
+    FTransparent   := Self.FTransparent;
+    FBorderWidth   := Self.FBorderWidth;
+    FLineColor     := Self.FLineColor;
+    FBuffer        := Self.FBuffer;
+    FBufferChanged := Self.FBufferChanged;
+   end else inherited;
 end;
 
 procedure TCustomGuiPanel.Loaded;
@@ -308,7 +315,8 @@ begin
   with FBuffer do
    begin
     {$IFNDEF FPC}
-    if FTransparent then FBuffer.CopyParentImage(Self) else
+    if FTransparent
+     then FBuffer.CopyParentImage(Self) else
     {$ENDIF}
     Clear(Color);
     RenderPanel(FBuffer);
