@@ -93,7 +93,7 @@ function TVSTModuleWithMidi.HostCallProcessEvents(const Index: Integer; const Va
 begin
  {$IFDEF DebugLog} AddLogMessage('HostCallProcessEvents'); {$ENDIF}
  Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
- if assigned(ptr)
+ if Assigned(ptr)
   then ProcessEvents(PVstEvents(ptr)^);
 end;
 
@@ -147,6 +147,7 @@ end;
 procedure TVSTModuleWithMidi.HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 begin
  inherited;
+
  if FMidiEvent.numEvents > 0 then
   begin
    {$IFDEF DebugLog} AddLogMessage('HostCallProcess32Replacing - MIDI Processing'); {$ENDIF}

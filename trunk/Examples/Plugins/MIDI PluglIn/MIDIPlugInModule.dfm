@@ -1,5 +1,4 @@
 object MIDIModule: TMIDIModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'MIDI Plugin'
@@ -14,7 +13,6 @@ object MIDIModule: TMIDIModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transpose'
       LargeStepFloat = 2.000000000000000000
@@ -30,6 +28,7 @@ object MIDIModule: TMIDIModule
       VSTModule = Owner
       OnParameterChange = ParamTransposeChange
     end>
+  ParameterCategories = <>
   OnEditOpen = VSTModuleEditOpen
   OnProcessMidi = VSTModuleProcessMidi
   Left = 243

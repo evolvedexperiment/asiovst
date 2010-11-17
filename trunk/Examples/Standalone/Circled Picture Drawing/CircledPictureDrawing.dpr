@@ -1,5 +1,7 @@
 program CircledPictureDrawing;
 
+{$I DAV_Compiler.inc}
+
 uses
   FastMM4,
   FastMove,
@@ -14,7 +16,9 @@ uses
 
 begin
   Application.Initialize;
+  {$IFDEF DELPHI10_UP}
   Application.MainFormOnTaskbar := True;
+  {$ENDIF}
   Application.Title := 'Circled Picture Optimizer';
   Application.CreateForm(TFmCircledPictureDialog, FmCircledPictureDialog);
   Application.Run;

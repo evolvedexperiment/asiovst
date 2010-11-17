@@ -28,7 +28,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Caption = 'Encoding:'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object SwEncoding: TGuiSwitch
     Left = 196
@@ -71,7 +70,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Detune'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDetuneAValue: TGuiLabel
       Left = 16
@@ -88,7 +86,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDelayA: TGuiLabel
       Left = 109
@@ -99,7 +96,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Delay'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDelayAValue: TGuiLabel
       Left = 109
@@ -116,7 +112,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbMixA: TGuiLabel
       Left = 318
@@ -127,7 +122,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Mix'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbMixAValue: TGuiLabel
       Left = 295
@@ -144,7 +138,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowpassA: TGuiLabel
       Left = 204
@@ -155,7 +148,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Lowpass'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowpassAValue: TGuiLabel
       Left = 206
@@ -172,7 +164,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object DialDetuneA: TGuiStitchedDial
       Left = 41
@@ -181,24 +172,29 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 36
       Max = 20.000000000000000000
       Min = -20.000000000000000000
-      OnChange = DialDetuneAChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialDetuneAChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialDelayA: TGuiStitchedDial
       Left = 134
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.699999988079071000
+      CurveMapping = -0.699999988079071100
       Max = 80.000000000000000000
       Min = 0.001000000047497451
-      OnChange = DialDelayAChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialDelayAChange
+      DefaultValue = 0.000000000000000000
     end
     object DialMixA: TGuiStitchedDial
       Left = 320
@@ -207,25 +203,29 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 36
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      OnChange = DialMixAChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       Value = 100.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialMixAChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowpassA: TGuiStitchedDial
       Left = 231
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.400000005960464500
+      CurveMapping = -0.400000005960464400
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialLowpassAChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialLowpassAChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object PnStageB: TGuiPanel
@@ -251,7 +251,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Detune'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDetuneBValue: TGuiLabel
       Left = 16
@@ -268,7 +267,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDelayB: TGuiLabel
       Left = 121
@@ -279,7 +277,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Delay'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDelayBValue: TGuiLabel
       Left = 109
@@ -296,7 +293,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbMixB: TGuiLabel
       Left = 318
@@ -307,7 +303,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Mix'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbMixBValue: TGuiLabel
       Left = 295
@@ -324,7 +319,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowpassBValue: TGuiLabel
       Left = 206
@@ -341,7 +335,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowpassB: TGuiLabel
       Left = 204
@@ -352,7 +345,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Caption = 'Lowpass'
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object DialDetuneB: TGuiStitchedDial
       Left = 41
@@ -361,24 +353,29 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 36
       Max = 20.000000000000000000
       Min = -20.000000000000000000
-      OnChange = DialDetuneBChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialDetuneBChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialDelayB: TGuiStitchedDial
       Left = 134
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.699999988079071000
+      CurveMapping = -0.699999988079071100
       Max = 80.000000000000000000
       Min = 0.001000000047497451
-      OnChange = DialDelayBChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialDelayBChange
+      DefaultValue = 0.000000000000000000
     end
     object DialMixB: TGuiStitchedDial
       Left = 320
@@ -387,25 +384,29 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Height = 36
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      OnChange = DialMixBChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       Value = 100.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialMixBChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowpassB: TGuiStitchedDial
       Left = 231
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.400000005960464500
+      CurveMapping = -0.400000005960464400
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialLowpassBChange
+      ScrollRange = 400.000000000000000000
       StitchedImageList = GSPL
       StitchedImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialLowpassBChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList

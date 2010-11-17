@@ -1,64 +1,57 @@
-object FmBitmapTest: TFmBitmapTest
+object FmPixelMapTest: TFmPixelMapTest
   Left = 504
+  Height = 244
   Top = 147
+  Width = 384
   Caption = 'Bitmap Test'
   ClientHeight = 244
   ClientWidth = 384
-  Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    384
-    244)
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '0.9.29'
   object PaintBox: TPaintBox
     Left = 8
+    Height = 197
     Top = 39
     Width = 368
-    Height = 197
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    Anchors = [akTop, akLeft, akRight, akBottom]
     OnPaint = PaintBoxPaint
   end
   object BtCountTest: TButton
     Left = 89
+    Height = 25
     Top = 8
     Width = 75
-    Height = 25
     Caption = '&Count Test'
-    TabOrder = 0
     OnClick = BtCountTestClick
+    TabOrder = 0
   end
   object BtSimpleTest: TButton
     Left = 8
+    Height = 25
     Top = 8
     Width = 75
-    Height = 25
     Caption = '&Simple Test'
     TabOrder = 1
   end
   object BtPaintTest: TButton
     Left = 170
+    Height = 25
     Top = 8
     Width = 75
-    Height = 25
     Caption = '&Paint Test'
-    TabOrder = 2
     OnClick = BtPaintTestClick
+    TabOrder = 2
   end
   object BtSave: TButton
     Left = 251
+    Height = 25
     Top = 8
     Width = 75
-    Height = 25
     Caption = '&Save Test'
-    TabOrder = 3
     OnClick = BtSaveClick
+    TabOrder = 3
   end
 end

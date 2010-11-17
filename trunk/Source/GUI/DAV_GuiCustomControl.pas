@@ -94,10 +94,13 @@ implementation
 constructor TGuiCustomControl.Create(AOwner: TComponent);
 begin
  inherited;
- FBuffer           := TGuiPixelMapMemory.Create;
- FBackBuffer       := TGuiPixelMapMemory.Create;
- FUpdateBuffer     := False;
- ControlStyle      := ControlStyle + [csOpaque];
+ FBuffer        := TGuiPixelMapMemory.Create;
+ FBackBuffer    := TGuiPixelMapMemory.Create;
+ FUpdateBuffer  := False;
+ ControlStyle   := ControlStyle + [csOpaque];
+ {$IFDEF FPC}
+ DoubleBuffered := True;
+ {$ENDIF}
 end;
 
 destructor TGuiCustomControl.Destroy;

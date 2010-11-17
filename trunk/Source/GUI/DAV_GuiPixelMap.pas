@@ -35,10 +35,11 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$IFDEF Windows} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, Controls, SysUtils, DAV_Common, DAV_MemoryUtils,
-  DAV_GuiCommon, DAV_GuiCustomMap, DAV_GuiByteMap, DAV_GuiBlend;
+  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$IFDEF DARWIN} MacOSAll, Carbon, CarbonCanvas, CarbonPrivate, {$ENDIF}
+  {$ELSE} Windows, Messages, {$ENDIF} Graphics, Classes, Controls, SysUtils,
+  DAV_Common, DAV_MemoryUtils, DAV_GuiCommon, DAV_GuiCustomMap, DAV_GuiByteMap,
+  DAV_GuiBlend;
 
 type
   TGuiCustomPixelMap = class(TGuiCustomMap)
@@ -84,9 +85,9 @@ type
     procedure SaveToStream(Stream: TStream); override;
 
     procedure MakeOpaque; virtual;
-    procedure ResetAlpha; virtual;
+    procedure ResetAlpha(Value: Byte = 0); virtual;
 
-    // simple Painting functions
+    // simple painting functions
     procedure FillRect(Rect: TRect; Color: TPixel32); overload;
     procedure FillRect(Left, Top, Right, Bottom: Integer; Color: TPixel32); overload;
     procedure FrameRect(Rect: TRect; Color: TPixel32);
@@ -124,9 +125,17 @@ type
   private
     function GetCanvas: TCanvas;
   protected
+    {$IFDEF MSWINDOWS}
     FBitmapHandle : HBITMAP;
-    FCanvas       : TCanvas;
     FDC           : HDC;
+    {$ENDIF}
+    {$IFDEF Darwin}
+    FProfile      : CMProfileRef;
+    FColorSpace   : CGColorSpaceRef;
+    FContext      : CGContextRef;
+    FCanvasHandle : TCarbonDeviceContext;
+    {$ENDIF}
+    FCanvas       : TCanvas;
     procedure AllocateDeviceIndependentBitmap;
     procedure DisposeDeviceIndependentBitmap;
     procedure CanvasChanged(Sender: TObject); virtual;
@@ -138,11 +147,13 @@ type
     destructor Destroy; override;
 
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); override;
-    procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
+    procedure PaintTo(Canvas: TCanvas; LRect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
 
     property Canvas: TCanvas read GetCanvas;
+    {$IFDEF MSWINDOWS}
     property Handle: HDC read FDC;
+    {$ENDIF}
   published
     property Width;
     property Height;
@@ -155,12 +166,19 @@ implementation
 uses
   Math, DAV_GuiFileFormats;
 
+{$IFDEF Darwin}
+resourcestring
+  RCStrCouldntCreateGenericProfile = 'Couldn''t create the generic profile';
+  RCStrCouldntCreateGenericColorSpace = 'Couldn''t create the generic RGB color space';
+{$ENDIF}
+
 { TGuiCustomPixelMap }
 
 constructor TGuiCustomPixelMap.Create;
 begin
  inherited;
  FDataPointer := nil;
+ FDataSize := 0;
 
  // initialize header
  FillChar(FBitmapInfo.bmiHeader, SizeOf(TBitmapInfoHeader), 0);
@@ -233,7 +251,7 @@ procedure TGuiCustomPixelMap.DrawByteMap(ByteMap: TGuiCustomByteMap;
 var
   ClipRect : TRect;
   IX, IY   : Integer;
-  RGB      : Integer;
+  RGB      : Cardinal;
   NewColor : TPixel32;
   ScnLn    : PPixel32Array;
   ByteLine : PByteArray;
@@ -274,7 +292,7 @@ procedure TGuiCustomPixelMap.DrawByteMap(ByteMap: TGuiCustomByteMap;
 var
   ClipRect : TRect;
   IX, IY   : Integer;
-  RGB      : Integer;
+  RGB      : Cardinal;
   NewColor : TPixel32;
   ScnLn    : PPixel32Array;
   ByteLine : PByteArray;
@@ -429,10 +447,7 @@ type
 {-$DEFINE UsePixelMap}
 
 procedure TGuiCustomPixelMap.CopyParentImage(Control: TControl);
-{$IFDEF FPC}
-begin
-end;
-{$ELSE}
+{$IFNDEF FPC}
 var
   I         : Integer;
   SubCount  : Integer;
@@ -445,7 +460,9 @@ var
   {$ELSE}
   Bmp       : TBitmap;
   {$ENDIF}
+{$ENDIF}
 begin
+{$IFNDEF FPC}
  if (Control.Parent = nil) then Exit;
  SubCount := Control.Parent.ControlCount;
 
@@ -547,8 +564,8 @@ begin
    with Control.Parent do Control.ControlState := Control.ControlState - [csPaintCopy];
  end;
  {$ENDIF}
-end;
 {$ENDIF}
+end;
 
 procedure TGuiCustomPixelMap.Clear;
 begin
@@ -657,11 +674,8 @@ begin
 end;
 
 procedure TGuiCustomPixelMap.MakeOpaque;
-var
-  Index : Integer;
 begin
- for Index := 0 to FWidth * FHeight - 1
-  do FDataPointer^[Index].A := $FF;
+ ResetAlpha($FF);
 end;
 
 procedure TGuiCustomPixelMap.SaveToStream(Stream: TStream);
@@ -881,12 +895,12 @@ begin
   end;
 end;
 
-procedure TGuiCustomPixelMap.ResetAlpha;
+procedure TGuiCustomPixelMap.ResetAlpha(Value: Byte = 0);
 var
   Index : Integer;
 begin
  for Index := 0 to FWidth * FHeight - 1
-  do FDataPointer^[Index].A := $FF;
+  do FDataPointer^[Index].A := Value;
 end;
 
 
@@ -962,6 +976,58 @@ begin
 *)
 end;
 
+{$IFDEF DARWIN}
+procedure TGuiPixelMapMemory.PaintTo(Canvas: TCanvas; X, Y: Integer);
+var
+  pm                : PixMapHandle;
+  port              : CGrafPtr;
+  src_rect          : Carbon.Rect;
+  dest_rect         : Carbon.Rect;
+  image_description : ImageDescriptionHandle;
+begin
+(*
+  HIViewDrawCGImage(
+    TCarbonDeviceContext(Canvas.Handle).CGContext,
+    GetCGRect(0, 0, FWidth, FHeight),
+    CGBitmapContextCreateImage(FContext));
+*)
+
+(*
+procedure pixel_map.draw(window : WindowRef; device_rect : RectPtr = NIL; bmp_rect : RectPtr = NIL );
+begin
+ if (m_pmap = NIL ) or (m_buf = NIL )
+  then exit;
+
+ pm := GetGWorldPixMap(GrafPtr(m_pmap));
+ port := GetWindowPort(window);
+
+ // Again, I used the Quicktime version.
+ // Good old 'CopyBits' does better interpolation when scaling
+ // but does not support all pixel depths.
+ SetRect(dest_rect, 0, 0, _width, _height);
+
+ MakeImageDescriptionForPixMap(ImageCompression.PixMapHandle(pm),
+   image_description);
+
+ if image_description <> NIL then
+  begin
+   SetRect(src_rect, 0, 0, image_description^.width, image_description^.height);
+
+   DecompressImage(
+     GetPixBaseAddr(pm),
+     image_description,
+     ImageCompression.PixMapHandle(GetPortPixMap(port)),
+     ImageCompression.Rect(src_rect),
+     ImageCompression.Rect(dest_rect),
+     ditherCopy, NIL);
+   DisposeHandle(Handle(image_description ) );
+  end;
+end;
+*)
+end;
+{$ENDIF}
+
+{$IFDEF MSWINDOWS}
 procedure TGuiPixelMapMemory.PaintTo(Canvas: TCanvas; X, Y: Integer);
 var
   Bitmap        : HBITMAP;
@@ -976,8 +1042,8 @@ begin
    DeviceContext := CreateCompatibleDC(Canvas.Handle);
    if DeviceContext <> 0 then
     try
-     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo,
-       DIB_RGB_COLORS, Buffer, 0, 0);
+     Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS,
+       Buffer, 0, 0);
 
      if Bitmap <> 0 then
       begin
@@ -997,6 +1063,7 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 procedure TGuiPixelMapMemory.PaintTo(Canvas: TCanvas; Rect: TRect;
   X: Integer = 0; Y: Integer = 0);
@@ -1007,6 +1074,7 @@ var
   OldObject     : HGDIOBJ;
   H, W          : Integer;
 begin
+ {$IFDEF MSWINDOWS}
  W := Min(Width, Rect.Right - Rect.Left);
  H := Min(Height, Rect.Bottom - Rect.Top);
  if SetDIBitsToDevice(Canvas.Handle, X, Y, W, H, Rect.Left, Rect.Top, 0, Height,
@@ -1036,6 +1104,7 @@ begin
      DeleteDC(DeviceContext);
     end;
   end;
+ {$ENDIF}
 end;
 
 procedure TGuiPixelMapMemory.HeightChanged(UpdateBitmap: Boolean);
@@ -1076,9 +1145,8 @@ end;
 type
   TGuiPixelMapCanvas = class(TCanvas)
   private
-    FPixelMap   : TGuiPixelMapDIB;
-    FOldBitmap  : HBITMAP;
-    FOldPalette : HPALETTE;
+    FPixelMap  : TGuiPixelMapDIB;
+    FOldBitmap : HBITMAP;
     procedure FreeContext;
   protected
     procedure CreateHandle; override;
@@ -1133,12 +1201,39 @@ end;
 { TGuiPixelMapDIB }
 
 constructor TGuiPixelMapDIB.Create;
+{$IFDEF Darwin}
+var
+  ProfileLocation : CMProfileLocation;
+  Status          : OSStatus;
+{$ENDIF}
 begin
  inherited;
+ {$IFDEF Darwin}
+
+ // Creates a generic color profile
+ ProfileLocation.locType := cmPathBasedProfile;
+ ProfileLocation.u.pathLoc.path := STR_GenericRGBProfilePath;
+
+ Status := CMOpenProfile(FProfile, ProfileLocation);
+
+ if Status <> noErr
+  then raise Exception.Create(RCStrCouldntCreateGenericProfile);
+
+ // Creates a generic color space
+ FColorSpace := CGColorSpaceCreateWithPlatformColorSpace(FProfile);
+
+ if FColorSpace = nil
+  then raise Exception.Create(RCStrCouldntCreateGenericColorSpace);
+ {$ENDIF}
 end;
 
 destructor TGuiPixelMapDIB.Destroy;
 begin
+ {$IFDEF Darwin}
+ // Closes the profile
+ CMCloseProfile(FProfile);
+ {$ENDIF}
+
  DisposeDeviceIndependentBitmap;
  inherited;
 end;
@@ -1153,6 +1248,7 @@ begin
    FDataSize := NewDataSize;
    Assert(FDataSize >= 0);
 
+   {$IFDEF MSWINDOWS}
    FBitmapHandle := CreateDIBSection(0, FBitmapInfo, DIB_RGB_COLORS,
      Pointer(FDataPointer), 0, 0);
 
@@ -1179,19 +1275,73 @@ begin
      FDataSize := 0;
      raise Exception.Create(RCStrNoSelectedDC);
     end;
+   {$ENDIF}
+
+   {$IFDEF Darwin}
+   // allocate memory
+   FDataPointer := GetMem(FDataSize);
+
+   // Creates a device context for our raw image area
+   FContext := CGBitmapContextCreate(FBits,
+     FWidth, FHeight, 8, 4 * FWidth, FColorSpace,
+     kCGImageAlphaNoneSkipFirst or kCGBitmapByteOrder32Little);
+
+   if FContext = nil
+    then raise Exception.Create('Context not initialized');
+
+   // flip and offset CTM to upper left corner
+   CGContextTranslateCTM(FContext, 0, FHeight);
+   CGContextScaleCTM(FContext, 1, -1);
+   {$ENDIF}
   end;
 end;
 
 procedure TGuiPixelMapDIB.DisposeDeviceIndependentBitmap;
 begin
+ {$IFDEF MSWINDOWS}
  if FDC <> 0 then DeleteDC(FDC);
  FDC := 0;
  if FBitmapHandle <> 0
   then DeleteObject(FBitmapHandle);
  FBitmapHandle := 0;
+ {$ENDIF}
+
+ {$IFDEF Darwin}
+ if Assigned(FDataPointer)
+  then FreeAndNil(FDataPointer);
+
+ if Assigned(FContext)
+  then CGContextRelease(FContext);
+ {$ENDIF}
 
  FDataPointer := nil;
 end;
+
+{$IFDEF Darwin}
+function GetCarbonRect(Left, Top, Width, Height: Integer): MacOSAll.Rect;
+begin
+  Result.Left := Left;
+  Result.Top := Top;
+  Result.Right := Left + Width;
+  Result.Bottom := Top + Height;
+end;
+
+function GetCGRect(Left, Top, Width, Height: Integer): MacOSAll.CGRect;
+begin
+  Result.Origin.X := Left;
+  Result.Origin.Y := Top;
+  Result.Size.Width := Width;
+  Result.Size.Height := Height;
+end;
+
+function GetCGRect(SrcRect: TRect): MacOSAll.CGRect;
+begin
+  Result.Origin.X := SrcRect.Left;
+  Result.Origin.Y := SrcRect.Top;
+  Result.Size.Width := SrcRect.Right - SrcRect.Left;
+  Result.Size.Height := SrcRect.Bottom - SrcRect.Top;
+end;
+{$ENDIF}
 
 procedure TGuiPixelMapDIB.CanvasChanged(Sender: TObject);
 begin
@@ -1218,24 +1368,116 @@ end;
 
 function TGuiPixelMapDIB.GetCanvas: TCanvas;
 begin
+ {$IFDEF MSWindows}
  if FCanvas = nil then
   begin
    FCanvas := TGuiPixelMapCanvas.Create(Self);
    FCanvas.OnChange := CanvasChanged;
   end;
+ {$ENDIF}
+
+ {$IFDEF Darwin}
+ if FCanvas = nil then
+  begin
+   FCanvas := TCanvas.Create;
+
+   FCanvasHandle := TCarbonDeviceContext.Create;
+   FCanvasHandle.CGContext := FContext;
+
+   FCanvas.Handle := HDC(FCanvasHandle);
+   FCanvas.OnChange := FOnCanvasChange;
+  end;
+ {$ENDIF}
+
  Result := FCanvas;
 end;
 
 procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; X, Y: Integer);
+{$IFDEF DARWIN}
+var
+  Original, Subsection : CGImageRef;
+  CGDstRect, CGSrcRect : CGRect;
+  ExternalContext      : CGContextRef;
+{$ENDIF}
 begin
+ {$IFDEF MSWINDOWS}
  BitBlt(Canvas.Handle, X, Y, Width, Height, FDC, X, Y, SRCCOPY);
+ {$ENDIF}
+
+ {$IFDEF Darwin}
+ // Gets the external context
+ if (Canvas.Handle = 0) then Exit;
+ ExternalContext := TCarbonDeviceContext(Canvas.Handle).CGContext;
+
+ // Converts the rectangles to CoreGraphics rectangles
+ CGDstRect := GetCGRect(Rect(X, Y, X + Width, Y + Height));
+ CGSrcRect := GetCGRect(Rect(0, 0, Width, Height));
+
+ // Gets an image handle that represents the subsection
+ Original := CGBitmapContextCreateImage(FContext);
+ Subsection := CGImageCreateWithImageInRect(Original, CGSrcRect);
+ CGImageRelease(Original);
+
+ // We need to make adjustments to the CTM so the painting is done correctly
+ CGContextSaveGState(ExternalContext);
+ try
+  CGContextTranslateCTM(ExternalContext, 0, FOwner.Height);
+  CGContextScaleCTM(ExternalContext, 1, -1);
+  CGContextTranslateCTM(ExternalContext, 0, -CGDstRect.origin.y);
+  CGDstRect.origin.y := 0;
+
+  // Draw the subsection
+  CGContextDrawImage(ExternalContext, CGDstRect, Subsection);
+ finally
+  // reset the CTM to the old values
+  CGContextRestoreGState(ExternalContext);
+ end;
+
+ // Release the subsection
+ CGImageRelease(Subsection);
+ {$ENDIF}
 end;
 
-procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0;
+procedure TGuiPixelMapDIB.PaintTo(Canvas: TCanvas; LRect: TRect; X: Integer = 0;
   Y: Integer = 0);
 begin
- BitBlt(Canvas.Handle, X, Y, Min(Width, Rect.Right - Rect.Left),
-   Min(Height, Rect.Bottom - Rect.Top), FDC, Rect.Left, Rect.Top, SRCCOPY);
+ {$IFDEF MSWINDOWS}
+ BitBlt(Canvas.Handle, X, Y, Min(Width, LRect.Right - LRect.Left),
+   Min(Height, LRect.Bottom - LRect.Top), FDC, LRect.Left, LRect.Top, SRCCOPY);
+ {$ENDIF}
+
+ {$IFDEF Darwin}
+ // Gets the external context
+ if (Canvas.Handle = 0) then Exit;
+ ExternalContext := TCarbonDeviceContext(Canvas.Handle).CGContext;
+
+ // Converts the rectangles to CoreGraphics rectangles
+ CGDstRect := GetCGRect(Rect(X, Y, X + Width, Y + Height));
+ CGSrcRect := GetCGRect(Rect(0, 0, Width, Height));
+
+ // Gets an image handle that represents the subsection
+ Original := CGBitmapContextCreateImage(FContext);
+ Subsection := CGImageCreateWithImageInRect(Original, CGSrcRect);
+ CGImageRelease(Original);
+
+ // We need to make adjustments to the CTM so the painting is done correctly
+ CGContextSaveGState(ExternalContext);
+ try
+  CGContextTranslateCTM(ExternalContext, 0, FOwner.Height);
+  CGContextScaleCTM(ExternalContext, 1, -1);
+  CGContextTranslateCTM(ExternalContext, 0, -CGDstRect.origin.y);
+  CGDstRect.origin.y := 0;
+
+  // Draw the subsection
+  CGContextDrawImage(ExternalContext, CGDstRect, Subsection);
+ finally
+  // reset the CTM to the old values
+  CGContextRestoreGState(ExternalContext);
+ end;
+
+ // Release the subsection
+ CGImageRelease(Subsection);
+ {$ENDIF}
 end;
 
 procedure TGuiPixelMapDIB.SizeChangedAtOnce;

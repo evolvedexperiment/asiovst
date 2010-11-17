@@ -101,7 +101,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to NumInputs - 1
-  do FPitchShifter[ch].ProcessSamples(@Inputs[ch, 0], @Outputs[ch, 0], SampleFrames);
+  do FPitchShifter[ch].ProcessBlock(@Inputs[ch, 0], @Outputs[ch, 0], SampleFrames);
 end;
 
 procedure TFrequencyDomainPitchShifterModule.VSTModuleSampleRateChange(Sender: TObject;

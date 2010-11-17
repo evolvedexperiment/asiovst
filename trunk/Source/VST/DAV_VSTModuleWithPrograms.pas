@@ -171,11 +171,11 @@ end;
 {$IFDEF UseDelphi}
 procedure TVSTModuleWithPrograms.ReadState(Reader: TReader);
 var
-  i : Integer;
+  ProgramIndex : Integer;
 begin
- for i := 0 to numPrograms - 1 do
-  if Assigned(Programs[i].OnInitialize)
-   then Programs[i].OnInitialize(Programs[i]);
+ for ProgramIndex := 0 to numPrograms - 1 do
+  if Assigned(Programs[ProgramIndex].OnInitialize)
+   then Programs[ProgramIndex].OnInitialize(Programs[ProgramIndex]);
 
  if numPrograms < 0
   then FCurProgram := -1
@@ -244,6 +244,11 @@ end;
 
 procedure TVSTModuleWithPrograms.HostCallSetParameter(const Index: Integer; const Value: Single);
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('HostCallSetParameter: Index = ' + IntToStr(Index) +
+   ' Value = ' + FloatToStr(Value));
+ {$ENDIF}
+
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count)) then
   if Assigned(FOnParameterSizeFailed)
    then FOnParameterSizeFailed(Self) else
@@ -447,6 +452,10 @@ var
   Indxes  : array [0..1] of Integer;
   Mult    : Single;
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('StringToParameter');
+ {$ENDIF}
+
  if (Index < 0) or (Index >= numParams)
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 
@@ -595,24 +604,24 @@ function TVSTModuleWithPrograms.HostCallGetParameterProperties(const Index: Inte
 var
   str : AnsiString;
 begin
- if (Index < 0) or (Index >= ParameterProperties.Count) then
-  begin
-   Result := 0;
-   Exit;
-  end;
+ Result := 0;
+ if (Index < 0) or (Index >= ParameterProperties.Count)
+  then Exit;
 
- Result := Integer(ParameterProperties[Index].ReportVST2Properties);
+ if ParameterProperties[Index].ReportVST2Properties
+  then Result := 1;
+
  if (Result > 0) and Assigned(ptr) then
   with PVstParameterPropertyRecord(ptr)^ do
    begin
     // copy display name
-    str := AnsiString(ParameterProperties[Index].DisplayName) + #0;
-    FillChar(Caption, SizeOf(Caption), 0);
-    if Length(Str) > 64 then SetLength(str, 64);
-    StrPCopy(@Caption[0], str);
+    Str := AnsiString(ParameterProperties[Index].DisplayName) + #0;
+    FillChar(ParamLabel, SizeOf(ParamLabel), 0);
+    if Length(Str) > 64 then SetLength(Str, 64);
+    StrPCopy(@ParamLabel[0], str);
 
     // copy short label
-    str := ParameterProperties[Index].ShortLabel + #0;
+    Str := ParameterProperties[Index].ShortLabel + #0;
     FillChar(shortLabel, SizeOf(shortLabel), 0);
     if Length(Str) > 8 then SetLength(str, 8);
     StrPCopy(@shortLabel[0], str);
@@ -628,6 +637,11 @@ begin
      begin
       minInteger := ParameterProperties[Index].MinInteger;
       maxInteger := ParameterProperties[Index].MaxInteger;
+     end
+    else
+     begin
+      minInteger := 0;
+      maxInteger := 0;
      end;
 
     // use integer steps
@@ -635,6 +649,11 @@ begin
      begin
       stepInteger      := ParameterProperties[Index].StepInteger;
       largeStepInteger := ParameterProperties[Index].LargeStepInteger;
+     end
+    else
+     begin
+      stepInteger := 1;
+      largeStepInteger := 2;
      end;
 
     // use float steps
@@ -643,11 +662,18 @@ begin
       stepFloat        := ParameterProperties[Index].StepFloat;
       largeStepFloat   := ParameterProperties[Index].LargeStepFloat;
       smallStepFloat   := ParameterProperties[Index].SmallStepFloat;
+     end
+    else
+     begin
+      stepFloat := 1;
+      largeStepFloat := 5;
+      smallStepFloat := 0.2;
      end;
 
     // assign display index
     if ppfParameterSupportsDisplayIndex in Flags
-     then displayIndex := Index;
+     then DisplayIndex := Index
+     else DisplayIndex := 0;
 
     // copy category label
     if ppfParameterSupportsDisplayCategory in Flags then
@@ -762,6 +788,10 @@ procedure TVSTModuleWithPrograms.SetProgramParameters(
 var
   i : Integer;
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('SetProgramParameters');
+ {$ENDIF}
+
  if Length(Parameters) > numParams
   then raise Exception.CreateFmt(RCStrParameterMismatch, [Length(Parameters)]);
  with Programs[ProgramIndex] do
@@ -794,6 +824,9 @@ end;
 
 procedure TVSTModuleWithPrograms.SetParameterCount(const Value: Integer);
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('SetParameterCount');
+ {$ENDIF}
  SetLength(FParameter, Value);
 end;
 
@@ -820,20 +853,61 @@ end;
 
 function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('Parameter2VSTParameter: Index = ' + IntToStr(Index) +
+   ' Value = ' + FloatToStr(Value));
+ {$ENDIF}
+
  Result := 0;
- if Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count)
-  then Result := FParameterProperties[Index].Parameter2VSTParameter(Value);
+ if Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count) then
+  with FParameterProperties[Index] do
+   begin
+    {$IFDEF DebugLog}
+    case Curve of
+     ctLinear         : AddLogMessage('Parameter2VSTParameter: Linear');
+     ctLogarithmic    : AddLogMessage('Parameter2VSTParameter: Logarithmic');
+     ctExponential    : AddLogMessage('Parameter2VSTParameter: Exponential');
+     ctFrequencyScale : AddLogMessage('Parameter2VSTParameter: FrequencyScale');
+     else AddLogMessage('Parameter2VSTParameter: Other');
+    end;
+
+    if Curve in [ctLogarithmic, ctExponential]
+     then AddLogMessage('Parameter2VSTParameter: CurveFactor = ' + FloatToStr(CurveFactor));
+
+    AddLogMessage('Parameter2VSTParameter: Min = ' + FloatToStr(Min) +
+      ' Max = ' + FloatToStr(Max));
+    {$ENDIF}
+
+    Result := Parameter2VSTParameter(Value);
+   end;
+
+ {$IFDEF DebugLog}
+ AddLogMessage('Parameter2VSTParameter: Result = ' + FloatToStr(Result));
+ {$ENDIF}
 end;
 
 function TVSTModuleWithPrograms.VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('VSTParameter2Parameter: Index = ' + IntToStr(Index) +
+   ' Value = ' + FloatToStr(Value));
+ {$ENDIF}
+
  Result := 0;
  if Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count)
   then Result := FParameterProperties[Index].VSTParameter2Parameter(Value);
+
+ {$IFDEF DebugLog}
+ AddLogMessage('VSTParameter2Parameter: Result = ' + FloatToStr(Result));
+ {$ENDIF}
 end;
 
 function TVSTModuleWithPrograms.TranslateParameterNameToIndex(ParameterName: AnsiString): Integer;
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('TranslateParameterNameToIndex');
+ {$ENDIF}
+
  if not Assigned(FParameterProperties) or (FParameterProperties.Count = 0)
   then raise Exception.Create(RStrNoParameterAvailable);
  Result := 0;
@@ -847,6 +921,10 @@ end;
 
 function TVSTModuleWithPrograms.TranslateProgramNameToIndex(ProgramName: AnsiString): Integer;
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('TranslateProgramNameToIndex');
+ {$ENDIF}
+
  if FVstPrograms.Count = 0
   then raise Exception.Create(RStrNoProgramAvailable);
  Result := 0;
@@ -860,11 +938,19 @@ end;
 
 procedure TVSTModuleWithPrograms.SetParameterByName(ParameterName: AnsiString; const Value: Single);
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('SetParameterByName');
+ {$ENDIF}
+
  Parameter[TranslateParameterNameToIndex(ParameterName)] := Value;
 end;
 
 procedure TVSTModuleWithPrograms.SetVSTParameter(Index: Integer; const Value: Single);
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('SetVSTParameter');
+ {$ENDIF}
+
  // check parameter index is valid
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
   then Exit;
@@ -879,6 +965,10 @@ end;
 
 procedure TVSTModuleWithPrograms.SetParameter(Index: Integer; const Value: Single);
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('SetParameter');
+ {$ENDIF}
+
  // check parameter index is valid
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
   then Exit;
@@ -893,6 +983,11 @@ end;
 
 procedure TVSTModuleWithPrograms.SetParameterDirect(const Index: Integer; Value: Single);
 begin
+ {$IFDEF DebugLog}
+ AddLogMessage('SetParameterDirect: Index = ' + IntToStr(Index) +
+   '; Value = ' + FloatToStr(Value));
+ {$ENDIF}
+
  // check parameter index is valid
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
@@ -929,6 +1024,11 @@ begin
         then OnParameterChange(Self, Index, FParameter[Index]);
       end
    end;
+
+ {$IFDEF DebugLog}
+ AddLogMessage('SetParameterDirect - done');
+ {$ENDIF}
+
  FEditorNeedUpdate := True;
 end;
 

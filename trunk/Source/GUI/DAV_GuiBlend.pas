@@ -486,8 +486,6 @@ end;
 
 function CombinePixelNative(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
 {$IFDEF PUREPASCAL}
-var
-  Temp            : TPixel32;
 begin
  if Weight = 0 then Result := Background else
  if Weight >= $FF then Result := ForeGround else
@@ -557,8 +555,6 @@ end;
 
 procedure CombinePixelInplaceNative(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
 {$IFDEF PUREPASCAL}
-var
-  Temp            : TPixel32;
 begin
  if Weight = 0 then Exit else
  if Weight >= $FF then Background := ForeGround else

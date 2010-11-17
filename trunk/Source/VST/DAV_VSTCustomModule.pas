@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls,
-  {$IFDEF Windows} Windows, {$ENDIF} {$IFDEF DARWIN} MacOSAll,{$ENDIF}
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF} {$IFDEF DARWIN} MacOSAll,{$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF} Classes, Forms,
   DAV_Types, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTBasicModule,
   DAV_VSTShellPlugins, DAV_VSTOfflineTask;
@@ -19,7 +19,7 @@ type
   TGetVUEvent              = procedure(var VU: Single) of object;
   TBlockSizeChangeEvent    = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent   = procedure(Sender: TObject; const SampleRate: Single) of object;
-  TOnDispatcherEvent       = procedure(Sender: TObject; const opCode: TDispatcherOpcode) of object;
+  TOnDispatcherEvent       = procedure(Sender: TObject; const OpCode: TDispatcherOpcode) of object;
   TOfflineNotifyEvent      = procedure(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean) of object;
   TOfflinePrepareEvent     = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
   TOfflineRunEvent         = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
@@ -35,6 +35,7 @@ type
   TOnCanDoEvent            = function(Sender: TObject; const CanDoText: AnsiString): Integer of object;
   TOnCheckKey              = function(Sender: TObject; Key: Char): Boolean of object;
   TOnEditClose             = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
+  TOnEditGetSize           = procedure(Sender: TObject; out Width, Height: SmallInt) of object;
 
   TOnGetChannelPropertiesEvent = function(Sender: TObject; const Index: Integer; var VstPinProperties: TVstPinProperties): Boolean of object;
 
@@ -113,10 +114,11 @@ type
     FNumCategories          : Integer;
     FOnClose                : TNotifyEvent;
     FOnEditOpen             : TGetEditorEvent;
+    FOnEditGetSize          : TOnEditGetSize;
     FOnOpen                 : TNotifyEvent;
-    FOnProcess64ReplacingEx     : TProcessDoubleEvent;
+    FOnProcess64ReplacingEx : TProcessDoubleEvent;
     FOnProcessEx            : TProcessAudioEvent;
-    FOnProcess32ReplacingEx   : TProcessAudioEvent;
+    FOnProcess32ReplacingEx : TProcessAudioEvent;
     FProductName            : AnsiString;
     FSampleRate             : Single;
 
@@ -157,7 +159,7 @@ type
     procedure OnProcess32ReplacingExChanged; virtual;
     procedure InitialDelayChanged; virtual;
 
-    function HostCallDispatchEffect(const opcode : TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallDispatchEffect(const Opcode : TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
@@ -217,8 +219,8 @@ type
     procedure SetSpeakerArrangement(const Input, Output: TVstSpeakerArrangement);
   public
     constructor Create(AOwner: TComponent); override;
-    destructor  Destroy; override;
-    procedure   EditorPostUpdate; virtual;
+    destructor Destroy; override;
+    procedure EditorPostUpdate; virtual;
 
     function UpdateSampleRate: Double; override;
     function UpdateBlockSize: Integer; override;
@@ -270,6 +272,7 @@ type
     property OnEditIdle: TNotifyEvent read FOnEditIdle write FOnEditIdle;
     property OnEditTop: TNotifyEvent read FOnEditTop write FOnEditTop;
     property OnEditSleep: TNotifyEvent read FOnEditSleep write FOnEditSleep;
+    property OnEditGetSize: TOnEditGetSize read FOnEditGetSize write FOnEditGetSize;
     property OnSampleRateChange: TSampleRateChangeEvent read fSampleRateChangeEvent write fSampleRateChangeEvent;
     property OnGetVU: TGetVUEvent read FOnGetVUEvent write FOnGetVUEvent;
     property OnInitialize: TNotifyEvent read FOnInitialize write FOnInitialize;
@@ -385,7 +388,7 @@ var
   Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
   Outs : TDAVArrayOfSingleDynArray absolute Outputs;
 begin
- {$IFDEF DebugLog} AddLogMessage('HostCallProcess32Replacing'); {$ENDIF}
+// {$IFDEF DebugLog} AddLogMessage('HostCallProcess32Replacing'); {$ENDIF}
  if Assigned(FOnProcess32ReplacingEx)
   then FOnProcess32ReplacingEx(Ins, Outs, SampleFrames);
 end;
@@ -513,6 +516,11 @@ begin
   then AddLogMessage(' Opcode: ' + Opcode2String(Opcode) +
                      ' Index: ' + IntToStr(Index) +
                      ' Value: ' + IntToStr(Value) +
+                     {$IFDEF CPU64}
+                     ' Pointer: ' + IntToStr(Int64(Ptr)) +
+                     {$ELSE}
+                     ' Pointer: ' + IntToStr(Integer(Ptr)) +
+                     {$ENDIF}
                      ' Single: ' + FloatToStr(opt));
  {$ENDIF}
 end;
@@ -587,10 +595,18 @@ begin
      FEditorRect.Top := 0;
      FEditorRect.Left := 0;
 
+     if Assigned(FOnEditGetSize)
+      then FOnEditGetSize(Self, FEditorRect.Right, FEditorRect.Bottom)
+      else
+       begin
+        FEditorRect.Bottom := 32;
+        FEditorRect.Right := 64;
+       end;
+
      if Assigned(FEditorForm) then
       begin
-       FEditorRect.Bottom := Max(128, FEditorForm.ClientHeight);
-       FEditorRect.Right := Max(64, FEditorForm.ClientWidth);
+       FEditorRect.Bottom := Max(FEditorRect.Bottom, FEditorForm.ClientHeight);
+       FEditorRect.Right := Max(FEditorRect.Right, FEditorForm.ClientWidth);
        Result := 1;
       end;
     end;
@@ -1331,7 +1347,7 @@ end;
 
 function TCustomVSTModule.AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean;
 var
-  size : Integer;
+  Size : Integer;
 begin
  if Assigned(Arrangement) then
   begin
@@ -1339,7 +1355,7 @@ begin
    Arrangement := nil;
   end;
 
- size := SizeOf(Integer) + SizeOf(Integer) + (nbChannels) * SizeOf(TVstSpeakerProperties);
+ Size := SizeOf(Integer) + SizeOf(Integer) + (nbChannels) * SizeOf(TVstSpeakerProperties);
  GetMem(Arrangement, size);
  if not Assigned(Arrangement) then
   begin

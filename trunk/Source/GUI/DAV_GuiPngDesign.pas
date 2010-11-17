@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLClasses, LCLType, LResources, LMessages, RtlConsts,
   LazIDEIntf, PropEdits, ComponentEditors, FormEditingIntf,
-  {$IFDEF Windows} Windows, {$ENDIF}
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, DesignIntf, DesignEditors, VCLEditors, Registry,
   Clipbrd, Consts,{$ENDIF}
   Forms, Graphics, Classes, SysUtils, Dialogs, StdCtrls, Controls, ExtCtrls,

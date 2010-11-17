@@ -58,6 +58,7 @@ type
     property OnEditClose;
     property OnEditIdle;
     property OnEditTop;
+    property OnEditGetSize;
     property OnEditSleep;
     property OnEditorKeyUp;
     property OnEditorKeyDown;

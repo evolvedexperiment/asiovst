@@ -293,7 +293,8 @@ type
     function String2Parameter(const Index: Integer; ValueString: AnsiString): Boolean;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
     function VstCanDo(const CanDoString: AnsiString): Integer;
-    function VstDispatch(const Opcode: TDispatcherOpcode; const Index: Integer = 0; const Value: TVstIntPtr = 0; const pntr: Pointer = nil; const opt: Single = 0): TVstIntPtr; {overload;} //virtual;
+    function VstDispatch(const Opcode: TDispatcherOpcode; const Index: Integer = 0;
+      const Value: TVstIntPtr = 0; const pntr: Pointer = nil; const opt: Single = 0): TVstIntPtr; {overload;} //virtual;
 
     // load plugin
     function CheckValidPlugin(const FileName: TFilename): Boolean;
@@ -325,7 +326,7 @@ type
     procedure SavePreset(Stream: TStream); overload;
     procedure SetBlockSize(const Value: Integer);
     procedure SetPanLaw(const PanLaw: TVstPanLawType; const Gain: Single);
-    procedure SetParameter(index: Integer; parameter: Single); virtual;
+    procedure SetParameter(Index: Integer; Parameter: Single); virtual;
     procedure SetCurrentProgram(const lValue: Integer);
     procedure SetProgramName(const newName: AnsiString);
     procedure SetSampleRate(const Value: Single);
@@ -2140,15 +2141,14 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamLabel, index, 0, Temp) = 0 // check is not part of the specification
+   if VstDispatch(effGetParamLabel, Index, 0, Temp) = 0 // check is not part of the specification
     then Result := StrPas(Temp);
 
-  // check whether the Result string accords to the specs
+  // check whether the result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(Result) > 8)
     then raise Exception.Create('String too short');
  finally
-
   // dispose memory
   Dispose(Temp);
  end;

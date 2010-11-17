@@ -65,7 +65,11 @@ begin
    Height := PaintBox.Height;
   end;
 
- PaintBox.ControlStyle := PaintBox.ControlStyle +[csOpaque];
+ PaintBox.ControlStyle := PaintBox.ControlStyle + [csOpaque];
+ {$IFDEF FPC}
+ ControlStyle := ControlStyle + [csOpaque];
+ DoubleBuffered := True;
+ {$ENDIF}
 end;
 
 procedure TFmPixelMapTest.FormDestroy(Sender: TObject);
@@ -75,7 +79,8 @@ end;
 
 procedure TFmPixelMapTest.PaintBoxPaint(Sender: TObject);
 begin
- FGuiBitmap.PaintTo(PaintBox.Canvas);
+ if Assigned(FGuiBitmap)
+  then FGuiBitmap.PaintTo(PaintBox.Canvas);
 end;
 
 procedure TFmPixelMapTest.RenderFillRectBitmap;

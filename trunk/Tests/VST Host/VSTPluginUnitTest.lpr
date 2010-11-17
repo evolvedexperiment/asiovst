@@ -14,6 +14,7 @@ uses
 begin
   Application.Title := 'VST Plugin Unit Test';
   Application.Initialize;
+  InitializeVstPluginTests;
   Application.CreateForm(TGuiTestRunner, TestRunner);
   Application.Run;
 end.

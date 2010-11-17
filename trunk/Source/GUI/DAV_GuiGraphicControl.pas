@@ -95,10 +95,13 @@ implementation
 constructor TCustomGuiGraphicControl.Create(AOwner: TComponent);
 begin
  inherited;
- FBuffer           := TGuiPixelMapMemory.Create;
- FBackBuffer       := TGuiPixelMapMemory.Create;
- FUpdateBuffer     := False;
- ControlStyle      := ControlStyle + [csOpaque];
+ FBuffer        := TGuiPixelMapMemory.Create;
+ FBackBuffer    := TGuiPixelMapMemory.Create;
+ FUpdateBuffer  := False;
+ ControlStyle   := ControlStyle + [csOpaque];
+ {$IFDEF FPC}
+// DoubleBuffered := True;
+ {$ENDIF}
 end;
 
 destructor TCustomGuiGraphicControl.Destroy;
@@ -222,8 +225,6 @@ begin
 end;
 
 procedure TCustomGuiGraphicControl.UpdateBuffer;
-var
-  TextSize : TSize;
 begin
  FUpdateBuffer := False;
 

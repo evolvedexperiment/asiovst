@@ -83,11 +83,11 @@ type
     FCategoryString      : AnsiString;
     FUseDefaultStr2Param : Boolean;
 
-    FVSTModule        : TBasicVSTModule;
-    FOnParamChange    : TParameterChangeEvent;
-    FOnCParamLabel    : TCustomParameterLabelEvent;
-    FOnCParamDisp     : TCustomParameterDisplayEvent;
-    FOnStr2Param      : TString2ParameterEvent;
+    FVSTModule     : TBasicVSTModule;
+    FOnParamChange : TParameterChangeEvent;
+    FOnCParamLabel : TCustomParameterLabelEvent;
+    FOnCParamDisp  : TCustomParameterDisplayEvent;
+    FOnStr2Param   : TString2ParameterEvent;
 
     function GetCategoryIndex: Integer;
     procedure SetShortLabel(const Value: AnsiString);
@@ -228,7 +228,10 @@ procedure TCustomVstParameterCategory.SetDisplayName(const AValue: string);
 var
   NewDisplayName : string;
 begin
- NewDisplayName := Copy(AValue, 1, Math.Min(24, Length(AValue)));
+ NewDisplayName := AValue;
+ if Length(NewDisplayName) > 24
+  then SetLength(NewDisplayName, 24);
+
  if NewDisplayName <> FDisplayName then
   begin
    FDisplayName := NewDisplayName;
@@ -419,11 +422,11 @@ end;
 
 function TCustomVstParameterProperty.VSTParameter2Parameter(const Value: Single): Single;
 begin
- Result := Value;
+ Result := Limit(Value, 0, 1);
  case Curve of
-  ctLogarithmic: Result := (exp(Result * ln(FCurveFactor + 1)) - 1) * FInvCurveFactor;
-  ctExponential: Result := log2(FCurveFactor * Result + 1) / log2(FCurveFactor + 1);
-  ctFrequencyScale: Result := (exp(Result * ln((Max / Min) + 1)) - 1) / (Max / Min);
+  ctLogarithmic: Result := (Exp(Result * Ln(FCurveFactor + 1)) - 1) * FInvCurveFactor;
+  ctExponential: Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
+  ctFrequencyScale: Result := (Exp(Result * Ln((Max / Min) + 1)) - 1) / (Max / Min);
  else
  end;
  Result := Smooth(Result * (Max - Min) + Min);
@@ -487,11 +490,11 @@ function TCustomVstParameterProperty.Parameter2VSTParameter(const Value: Single)
 begin
  Result := (Value - Min) / (Max - Min);
  case Curve of
-  ctLogarithmic: Result := log2(FCurveFactor * Result + 1) / log2(FCurveFactor + 1);
-  ctExponential: Result := exp(Result * ln(FCurveFactor + 1)) - 1;
+  ctLogarithmic: Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
+  ctExponential: Result := Exp(Result * ln(FCurveFactor + 1)) - 1;
   ctFrequencyScale: if min <> 0
-                     then Result := log2(Max / Min * Result + 1) / log2(Max / Min)
-                     else Result := log2(Max * Result + 1) / log2(Max);
+                     then Result := Log2(Max / Min * Result + 1) / Log2(Max / Min)
+                     else Result := Log2(Max * Result + 1) / Log2(Max);
   else
  end;
  Result := Limit(Result, 0, 1);
@@ -742,9 +745,12 @@ var
 begin
   {$IFNDEF FPC}
   GetMem(b, 255);
-  GetModuleFileNameA(Application.Handle, b, 255);
-  FreeMem(b);
-  s := b;
+  try
+   GetModuleFileNameA(Application.Handle, b, 255);
+   s := b;
+  finally
+   FreeMem(b);
+  end;
   WriteVSTXML(Copy(string(s), 1, Pos('.dll', string(s)) - 1) + '.VSTXML');
   {$ENDIF}
 end;
@@ -758,8 +764,8 @@ begin
     SaveToFile(FileName);
     Add('<!-- =========================================================== -->');
     Add('<!-- XML definition of VST parameters ========================== -->');
-    Add('<!-- Draft 0.1================================================== -->');
-    Add('<!-- Date: '+DateToStr(Now)+'=========================================== -->');
+    Add('<!-- Draft 0.1 ================================================= -->');
+    Add('<!-- Date: ' + DateToStr(Now) + ' ========================================== -->');
     Add('<!-- =========================================================== -->');
     Add('<VSTPluginProperties>');
     Add('');

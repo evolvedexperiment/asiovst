@@ -5,12 +5,15 @@
     <PathDelim Value="\"/>
     <General>
       <Flags>
+        <AlwaysBuild Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <Title Value="VST Plugin Unit Test"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -29,7 +32,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="TwoBandDistortion.dll"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -43,14 +45,14 @@
         <PackageName Value="FPCUnitTestRunner"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="25">
       <Unit0>
         <Filename Value="VSTPluginUnitTest.lpr"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="5"/>
-        <CursorPos X="23" Y="20"/>
-        <UsageCount Value="28"/>
+        <TopLine Value="1"/>
+        <CursorPos X="28" Y="17"/>
+        <UsageCount Value="54"/>
       </Unit0>
       <Unit1>
         <Filename Value="SplashScreen.pas"/>
@@ -60,22 +62,25 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SplashScreen"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="74"/>
-        <CursorPos X="17" Y="93"/>
-        <UsageCount Value="28"/>
+        <TopLine Value="13"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="54"/>
       </Unit1>
       <Unit2>
         <Filename Value="DAV_TestVSTHost.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="DAV_TestVSTHost"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="29"/>
-        <CursorPos X="1" Y="33"/>
-        <UsageCount Value="28"/>
+        <TopLine Value="3746"/>
+        <CursorPos X="61" Y="3770"/>
+        <UsageCount Value="54"/>
         <Bookmarks Count="2">
-          <Item0 X="30" Y="1212" ID="1"/>
-          <Item1 X="41" Y="1145" ID="2"/>
+          <Item0 X="30" Y="1283" ID="1"/>
+          <Item1 X="1" Y="3715" ID="3"/>
         </Bookmarks>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\Examples\Standalone\WinEar\WeMain.pas"/>
@@ -83,7 +88,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="117"/>
         <CursorPos X="29" Y="137"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\Lazarus\fpc\2.4.3\source\packages\fcl-fpcunit\src\testregistry.pp"/>
@@ -97,33 +102,35 @@
         <Filename Value="C:\Lazarus\fpc\2.4.3\source\packages\fcl-fpcunit\src\fpcunit.pp"/>
         <UnitName Value="fpcunit"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="756"/>
-        <CursorPos X="3" Y="758"/>
+        <TopLine Value="334"/>
+        <CursorPos X="49" Y="364"/>
         <UsageCount Value="10"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\Source\VST\DAV_VSTHost.pas"/>
         <UnitName Value="DAV_VSTHost"/>
-        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="38"/>
-        <CursorPos X="4" Y="61"/>
-        <UsageCount Value="12"/>
+        <TopLine Value="1041"/>
+        <CursorPos X="9" Y="1059"/>
+        <UsageCount Value="11"/>
+        <Bookmarks Count="1">
+          <Item0 X="1" Y="873" ID="2"/>
+        </Bookmarks>
       </Unit6>
       <Unit7>
         <Filename Value="C:\Lazarus\fpc\2.4.3\source\packages\fcl-fpcunit\src\DUnitCompatibleInterface.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="21" Y="11"/>
+        <UsageCount Value="8"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\Source\DAV_Types.pas"/>
         <UnitName Value="DAV_Types"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="13"/>
+        <TopLine Value="42"/>
+        <CursorPos X="27" Y="61"/>
+        <UsageCount Value="11"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\Lazarus\fpc\2.4.3\source\packages\fcl-fpcunit\src\testutils.pp"/>
@@ -131,7 +138,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="23"/>
         <CursorPos X="11" Y="37"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\Lazarus\components\fpcunit\guitestrunner.pas"/>
@@ -140,8 +147,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="GuiTestRunner"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="119"/>
-        <CursorPos X="3" Y="40"/>
+        <TopLine Value="396"/>
+        <CursorPos X="49" Y="419"/>
         <UsageCount Value="10"/>
       </Unit10>
       <Unit11>
@@ -149,43 +156,151 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="28" Y="10"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\..\Source\DAV_CompilerSwitches.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="77"/>
         <CursorPos X="3" Y="104"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\..\Source\VST\DAV_VSTEffect.pas"/>
         <UnitName Value="DAV_VSTEffect"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="996"/>
-        <CursorPos X="5" Y="1010"/>
-        <UsageCount Value="12"/>
+        <TopLine Value="522"/>
+        <CursorPos X="5" Y="540"/>
+        <UsageCount Value="23"/>
       </Unit13>
       <Unit14>
         <Filename Value="C:\Lazarus\fpc\2.4.3\source\rtl\win\wininc\struct.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="220"/>
         <CursorPos X="20" Y="222"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit14>
       <Unit15>
         <Filename Value="C:\Lazarus\fpc\2.4.3\source\rtl\inc\objpash.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="174"/>
         <CursorPos X="18" Y="177"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="C:\Lazarus\fpc\2.4.3\source\rtl\objpas\objpas.pp"/>
+        <UnitName Value="objpas"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="10"/>
+        <CursorPos X="21" Y="28"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="C:\Lazarus\fpc\2.4.3\source\rtl\objpas\sysutils\sysutilh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="54"/>
+        <CursorPos X="19" Y="72"/>
+        <UsageCount Value="11"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="C:\Lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1662"/>
+        <CursorPos X="22" Y="1691"/>
+        <UsageCount Value="11"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="C:\Lazarus\lcl\include\wincontrol.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="6262"/>
+        <CursorPos X="1" Y="6282"/>
+        <UsageCount Value="11"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="C:\Lazarus\lcl\utrace.pp"/>
+        <UnitName Value="UTrace"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="46"/>
+        <CursorPos X="5" Y="47"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="C:\Lazarus\fpc\2.4.3\source\rtl\objpas\sysutils\syspchh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="26"/>
+        <CursorPos X="10" Y="44"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="C:\Lazarus\lcl\interfaces\win32\win32wscontrols.pp"/>
+        <UnitName Value="Win32WSControls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="249"/>
+        <CursorPos X="1" Y="267"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="C:\Lazarus\lcl\dialogs.pp"/>
+        <UnitName Value="Dialogs"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="490"/>
+        <CursorPos X="11" Y="508"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="C:\Lazarus\lcl\include\messagedialogs.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="228"/>
+        <CursorPos X="3" Y="230"/>
+        <UsageCount Value="10"/>
+      </Unit24>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="9" HistoryIndex="8">
+      <Position1>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="3716" Column="24" TopLine="3696"/>
+      </Position1>
+      <Position2>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="45" Column="28" TopLine="36"/>
+      </Position2>
+      <Position3>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="45" Column="28" TopLine="36"/>
+      </Position3>
+      <Position4>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="3779" Column="5" TopLine="3744"/>
+      </Position4>
+      <Position5>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="36" Column="1" TopLine="36"/>
+      </Position5>
+      <Position6>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="3763" Column="59" TopLine="3749"/>
+      </Position6>
+      <Position7>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="3764" Column="44" TopLine="3738"/>
+      </Position7>
+      <Position8>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="DAV_TestVSTHost.pas"/>
+        <Caret Line="1040" Column="23" TopLine="1010"/>
+      </Position9>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\Bin\VSTPluginUnitTest_x64.exe"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\Source"/>
       <OtherUnitFiles Value="..\..\Source;..\..\Source\VST;..\..\Source\Math;..\..\Source\DSP;..\..\Source\GUI;..\..\Source\FileFormats"/>
@@ -193,11 +308,15 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <UseAnsiStrings Value="False"/>
+        <IncludeAssertionCode Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <Optimizations>
+        <VariablesInRegisters Value="True"/>
+        <OptimizationLevel Value="3"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -212,10 +331,31 @@
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="4">
+      <Item1>
+        <Source Value="DAV_TestVSTHost.pas"/>
+        <Line Value="2379"/>
+      </Item1>
+      <Item2>
+        <Source Value="..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Line Value="2022"/>
+      </Item2>
+      <Item3>
+        <Source Value="..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Line Value="873"/>
+      </Item3>
+      <Item4>
+        <Source Value="DAV_TestVSTHost.pas"/>
+        <Line Value="3690"/>
+      </Item4>
+    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

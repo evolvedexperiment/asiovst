@@ -208,35 +208,35 @@ begin
   Config.EditorUnitName := edtEditorUnitName.Text;
   Config.EditorFormName := edtEditorFormName.Text;
   Config.UseEditor      := chkUseEditor.Checked;
-  Config.UniqueID       := edtUniqueID.Text;
-  Config.EffectName     := edtEffectName.Text;
+  Config.UniqueID       := AnsiString(edtUniqueID.Text);
+  Config.EffectName     := AnsiString(edtEffectName.Text);
   Config.IsSynth        := optPluginTypeSynth.Checked;
   Config.VersionMajor   := StrToInt(edtVersionMajor.Text);
   Config.VersionMinor   := StrToInt(edtVersionMinor.Text);
   Config.VersionRelease := StrToInt(edtVersionRelease.Text);
-  Config.VendorName     := edtVendorName.Text;
-  Config.ProductName    := edtProductName.Text;
+  Config.VendorName     := AnsiString(edtVendorName.Text);
+  Config.ProductName    := AnsiString(edtProductName.Text);
   Config.SaveWhenDone   := chkSaveWhenFinished.Checked;
 end;
 
 procedure TVSTPluginWizardForm.InitFormFromConfig(Config: TConfig);
 begin
-  edtProjectPath.Text    := Config.ProjectPath;
-  edtProjectName.Text    := Config.ProjectName;
-  edtPluginUnitName.Text := Config.PluginUnitName;
-  edtPluginFormName.Text := Config.PluginFormName;
-  edtEditorUnitName.Text := Config.EditorUnitName;
-  edtEditorFormName.Text := Config.EditorFormName;
-  chkUseEditor.Checked   := Config.UseEditor;
-  edtUniqueID.Text       := Config.UniqueID;
-  edtEffectName.Text     := Config.EffectName;
+  edtProjectPath.Text         := Config.ProjectPath;
+  edtProjectName.Text         := Config.ProjectName;
+  edtPluginUnitName.Text      := Config.PluginUnitName;
+  edtPluginFormName.Text      := Config.PluginFormName;
+  edtEditorUnitName.Text      := Config.EditorUnitName;
+  edtEditorFormName.Text      := Config.EditorFormName;
+  chkUseEditor.Checked        := Config.UseEditor;
+  edtUniqueID.Text            := string(Config.UniqueID);
+  edtEffectName.Text          := string(Config.EffectName);
   optPluginTypeEffect.Checked := not Config.IsSynth;
   optPluginTypeSynth.Checked  := Config.IsSynth;
-  edtVersionMajor.Text   := IntToStr(Config.VersionMajor);
-  edtVersionMinor.Text   := IntToStr(Config.VersionMinor);
-  edtVersionRelease.Text := IntToStr(Config.VersionRelease);
-  edtVendorName.Text     := Config.VendorName;
-  edtProductName.Text    := Config.ProductName;
+  edtVersionMajor.Text        := IntToStr(Config.VersionMajor);
+  edtVersionMinor.Text        := IntToStr(Config.VersionMinor);
+  edtVersionRelease.Text      := IntToStr(Config.VersionRelease);
+  edtVendorName.Text          := string(Config.VendorName);
+  edtProductName.Text         := string(Config.ProductName);
   chkSaveWhenFinished.Checked := Config.SaveWhenDone;
 end;
 
@@ -259,7 +259,11 @@ end;
 procedure TVSTPluginWizardForm.edtVersionMajorKeyPress(Sender: TObject;
   var Key: Char);
 begin
+ {$IFDEF DELPHI10_UP}
+ if CharInSet(AnsiChar(Key), [#8, '0'..'9'])
+ {$ELSE}
  if not (Key in [#8, '0'..'9'])
+ {$ENDIF}
   then Key := #0;
 end;
 
