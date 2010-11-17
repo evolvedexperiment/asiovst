@@ -270,7 +270,8 @@ var
    n : Integer;
  begin
   Result := 1;
-  for n := 1 to Step do Result := Result * ((n - 0.5) / n);
+  for n := 1 to Step
+   do Result := Result * ((n - 0.5) / n);
   Result := Sqr(Result);
  end;
 

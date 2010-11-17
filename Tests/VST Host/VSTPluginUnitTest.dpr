@@ -26,6 +26,8 @@ uses
 {$ENDIF}
   DAV_TestVSTHost in 'DAV_TestVSTHost.pas';
 
+{*.res}
+
 begin
   Application.Initialize;
   Application.Title := 'VST Plugin Unit Test';

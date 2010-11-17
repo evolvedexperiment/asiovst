@@ -12,15 +12,14 @@ const
 
 type
   {$ALIGN ON}
-  {$IFDEF CPUx86_64}
+  {$Z4}
+  {$IFDEF CPU64}
   TVstIntPtr = Int64;
   {$IFDEF FPC}
-  {$Z4}
   {$PackRecords 8}
   {$ENDIF}
   {$ELSE}
   TVstIntPtr = Integer;
-  {$Z4}
   {$ENDIF}
   PPSingle = ^PSingle;
   PPDouble = ^PDouble;
@@ -173,16 +172,16 @@ type
     amCurrentId,     //  2: returns the unique id of a plug that's currently loading
     amIdle,          //  3: call application idle routine (this will call effEditIdle for all open editors too)
     amPinConnected,  //  4: inquire if an input or output is beeing connected;
-                              //     index enumerates input or output counting from zero,
-                              //     Value is 0 for input and != 0 otherwise. note: the
-                              //     return Value is 0 for <true> such that older versions
+                     //     index enumerates input or output counting from zero,
+                     //     Value is 0 for input and != 0 otherwise. note: the
+                     //     return Value is 0 for <true> such that older versions
     amUnused,        //  5: placeholder
 
     // VstEvents + VstTimeInfo
     amWantMidi,      //  6: <Value> is a filter which is currently ignored
     amGetTime,       //  7: returns const VstTimeInfo* (or 0 if not supported)
-                              //     <Value> should contain a mask indicating which fields are required
-                              //     (see valid masks above), as some items may require extensive conversions
+                     //     <Value> should contain a mask indicating which fields are required
+                     //     (see valid masks above), as some items may require extensive conversions
     amProcessEvents, //  8: VstEvents* in <ptr>
     amSetTime,       //  9: NOT USED IN 2.4 - VstTimenfo* in <ptr>, filter in <Value>, not supported
     amTempoAt,       // 10: NOT USED IN 2.4 - returns tempo (in bpm * 10000) at sample frame location passed in <Value>
@@ -204,11 +203,11 @@ type
     // realtime info
     amWillReplaceOrAccumulate,     // 22: NOT USED IN 2.4 - returns: 0: not supported, 1: replace, 2: accumulate
     amGetCurrentProcessLevel,      // 23: returns: 0: not supported,
-                                            //         1: currently in user thread (gui)
-                                            //         2: currently in audio thread (where process is called)
-                                            //         3: currently in 'sequencer' thread (midi, timer etc)
-                                            //         4: currently offline processing and thus in user thread
-                                            //     other: not defined, but probably pre-empting user thread.
+                                   //         1: currently in user thread (gui)
+                                   //         2: currently in audio thread (where process is called)
+                                   //         3: currently in 'sequencer' thread (midi, timer etc)
+                                   //         4: currently offline processing and thus in user thread
+                                   //     other: not defined, but probably pre-empting user thread.
     amGetAutomationState,          // 24: returns 0: not supported, 1: off, 2:read, 3:write, 4:read/write
 
     // offline
@@ -242,9 +241,9 @@ type
     amCloseFileSelector,           // 46: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !
     amEditFile,                    // 47: NOT USED IN 2.4 - open an editor for audio (defined by XML text in ptr)
     amGetChunkFile,                // 48: NOT USED IN 2.4 - get the native path of currently loading bank or project
-                                            //     (called from writeChunk) void* in <ptr> (char[2048], or sizeof(FSSpec))
+                                   //     (called from writeChunk) void* in <ptr> (char[2048], or sizeof(FSSpec))
     amGetInputSpeakerArrangement); // 49: NOT USED IN 2.4 - result a VstSpeakerArrangement in ret
-                                            //     will always return true.
+                                   //     will always return true.
 
   TAudioMasterCallbackFunc = function(const Effect: PVSTEffect; const Opcode: TAudioMasterOpcode; const Index: Integer; const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
   TDispatcherFunc = function(const Effect: PVSTEffect; const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
@@ -342,7 +341,7 @@ type
   PVstEvents = ^TVstEvents;
   TVstEvents = record  // a block of events for the current audio block
     NumEvents : LongInt;
-    Reserved  : TVstIntPtr;                  // zero
+    Reserved  : TVstIntPtr;                   // zero
     Events    : array [0..2047] of PVstEvent; // variable
   end;
 
@@ -460,7 +459,7 @@ type
     StepFloat        : Single;
     SmallStepFloat   : Single;
     LargeStepFloat   : Single;
-    Caption          : array [0..63] of AnsiChar;
+    ParamLabel       : array [0..63] of AnsiChar;
     Flags            : TVstParameterPropertiesFlags;
     MinInteger       : LongInt;
     MaxInteger       : LongInt;

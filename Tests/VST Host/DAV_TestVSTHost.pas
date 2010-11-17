@@ -81,11 +81,12 @@ type
   end;
 
   // Basic test methods for VST Plugins
+
+  { TVstPluginBasicTests }
+
   TVstPluginBasicTests = class(TCustomTestVstPlugin)
   public
-    {$IFDEF FPC}
-    constructor CreateWithName(const AName: string); override;
-    {$ELSE}
+    {$IFNDEF FPC}
     constructor Create(MethodName: string); override;
     {$ENDIF}
   published
@@ -143,6 +144,9 @@ type
   end;
 
   // I/O test methods for VST Plugins
+
+  { TVstPluginIOTests }
+
   TVstPluginIOTests = class(TCustomTestVstPlugin)
   private
     FInput     : array of PDavSingleFixedArray;
@@ -152,7 +156,7 @@ type
     procedure SetupBuffers;
   public
     {$IFDEF FPC}
-    constructor CreateWithName(const AName: string); override;
+    constructor Create; override;
     {$ELSE}
     constructor Create(MethodName: string); override;
     {$ENDIF}
@@ -197,7 +201,7 @@ type
     procedure SetBlockSize(const Value: Integer);
   public
     {$IFDEF FPC}
-    constructor CreateWithName(const AName: string); override;
+    constructor Create; override;
     {$ELSE}
     constructor Create(MethodName: string); override;
     {$ENDIF}
@@ -211,6 +215,9 @@ type
     procedure TestProcessCallWhileProcessing;
   end;
 
+{$IFDEF FPC}
+procedure InitializeVstPluginTests;
+{$ENDIF}
 
 implementation
 
@@ -375,7 +382,6 @@ begin
        begin
         ParamIndex := Random(numParams);
         Parameter[ParamIndex] := Random;
-        GetParamName(ParamIndex);
         Str := GetParamDisplay(ParamIndex);
         Str := Str + ' ' + GetParamLabel(ParamIndex);
         String2Parameter(ParamIndex, Str);
@@ -443,6 +449,7 @@ var
   Param : Integer;
   Value : Single;
   PP    : TVstParameterPropertyRecord;
+  Str   : AnsiString;
 begin
  with FVstHost[0] do
   begin
@@ -457,15 +464,45 @@ begin
      until Value > 1;
      Parameter[Param] := 1;
 
-     // get invalid parameter properties
+     Str := ParameterName[Param];
+     CheckTrue(Length(Str) < 64, 'ParameterName too long!');
+
+     Str := ParameterDisplay[Param];
+     CheckTrue(Length(Str) < 64, 'ParameterDisplay too long!');
+
+     Str := ParameterLabel[Param];
+     CheckTrue(Length(Str) < 64, 'ParameterLabel too long!');
+
+     // clear parameter property
+     FillChar(PP, SizeOf(TVstParameterPropertyRecord), 0);
+
+     // check for invalid parameter properties
      if GetParameterProperties(Param, PP) then
       begin
-       CheckTrue(PP.MaxInteger >= PP.MinInteger, 'Parameter ' +
-         IntToStr(Param) + ': MaxInteger < MinInteger!');
-       CheckTrue(PP.LargeStepFloat >= PP.SmallStepFloat, 'Parameter ' +
-         IntToStr(Param) + ': LargeStepFloat < SmallStepFloat!');
-       CheckTrue(PP.LargeStepInteger >= PP.StepInteger, 'Parameter ' +
-         IntToStr(Param) + ': LargeStepInteger < StepInteger!');
+       // check float steps
+       if ppfParameterUsesFloatStep in PP.Flags then
+         CheckTrue(PP.LargeStepFloat >= PP.SmallStepFloat,
+           'LargeStepFloat < SmallStepFloat! Parameter ' + IntToStr(Param) +
+           ' (' + PP.ParamLabel + ', ' + PP.ShortLabel + ') SmallStepFloat: ' +
+           FloatToStr(PP.SmallStepFloat) + ' LargeStepFloat: ' +
+           FloatToStr(PP.LargeStepFloat));
+
+       // check integer steps
+       if ppfParameterUsesIntStep in PP.Flags then
+         CheckTrue(PP.LargeStepInteger >= PP.StepInteger,
+           'LargeStepInteger < StepInteger! Parameter ' + IntToStr(Param) +
+           ' (' + PP.ParamLabel + ', ' + PP.ShortLabel + ') StepInteger: ' +
+           IntToStr(PP.StepInteger) + ' LargeStepInteger: ' +
+           IntToStr(PP.LargeStepInteger));
+
+       // check integer min/max
+       if ppfParameterUsesIntegerMinMax in PP.Flags then
+         CheckTrue(PP.MaxInteger >= PP.MinInteger, 'MaxInteger < MinInteger!' +
+           ' Parameter ' + IntToStr(Param) + ' (' + PP.ParamLabel +
+           ', ' + PP.ShortLabel + ') MinInteger: ' + IntToStr(PP.MaxInteger) +
+           ' MaxInteger: ' + IntToStr(PP.MinInteger));
+
+       // check future equals zero
        CheckTrue(PP.Future[0] = #0, 'Parameter ' +
          IntToStr(Param) + ': Future character value <> 0!');
       end;
@@ -488,12 +525,7 @@ begin
   end;
 end;
 
-{$IFDEF FPC}
-constructor TVstPluginBasicTests.CreateWithName(const AName: string);
-begin
- inherited CreateWithName(AName);
-end;
-{$ELSE}
+{$IFNDEF FPC}
 constructor TVstPluginBasicTests.Create(MethodName: string);
 begin
  inherited;
@@ -505,20 +537,20 @@ end;
 
 procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;
 var
-  i : Integer;
+  BlockSizeIndex : Integer;
 begin
  with FVstHost[0] do
   begin
    Active := True;
 
    // small block sizes
-   for i := 0 to 64 do SetBlockSize(i);
+   for BlockSizeIndex := 0 to 64 do SetBlockSize(BlockSizeIndex);
 
    // medium odd block sizes
-   for i := 1 to 64 do SetBlockSize(19 * i);
+   for BlockSizeIndex := 1 to 64 do SetBlockSize(19 * BlockSizeIndex);
 
    // large odd block sizes
-   for i := 1 to 64 do SetBlockSize(1025 * i);
+   for BlockSizeIndex := 1 to 64 do SetBlockSize(1025 * BlockSizeIndex);
   end;
 end;
 
@@ -582,7 +614,7 @@ var
 begin
  with FVstHost[0] do
   for i := 0 to 1 do
-   begin
+   try
     VstDispatch(effSetEditKnobMode, 0, 3);
     VstDispatch(effSetViewPosition, 249824962, 300013512);
     VstDispatch(effSetSpeakerArrangement);
@@ -615,6 +647,8 @@ begin
     CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
       'effIdentify didn''t return NvEf');
     {$ENDIF}
+   except
+    on E: Exception do Fail(E.Message);
    end;
 
 {$IFNDEF NoInvalidOpcodes}
@@ -761,7 +795,7 @@ begin
    SetLength(Input, numInputs);
    for Channel := 0 to numInputs - 1 do
     begin
-     ReallocMem(Input[Channel], CBlockSize * SizeOf(Single));
+     GetMem(Input[Channel], CBlockSize * SizeOf(Single));
      FillChar(Input[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
@@ -769,7 +803,7 @@ begin
    SetLength(Output, numOutputs);
    for Channel := 0 to numOutputs - 1 do
     begin
-     ReallocMem(Output[Channel], CBlockSize * SizeOf(Single));
+     GetMem(Output[Channel], CBlockSize * SizeOf(Single));
      FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
@@ -902,51 +936,84 @@ end;
 
 procedure TVstPluginPerverseTests.TestInvalidParameters;
 var
-  PP : TVstParameterPropertyRecord;
+  PP  : TVstParameterPropertyRecord;
+  Err : string;
+const
+  CErrorMsg : array [0..13] of string =
+    ('GetParameter(numParams)',
+     'GetParameter(numParams + Random(MaxInt - numParams))',
+     'SetParameter(0, 10)',
+     'SetParameter(numParams, 10)',
+     'SetParameter(numParams + Random(MaxInt - numParams), 10)',
+     'SetParameter(numParams + Random(MaxInt - numParams), MinSingle)',
+     'GetParamDisplay(numParams)',
+     'GetParamDisplay(numParams + Random(MaxInt - numParams))',
+     'GetParamLabel(numParams)',
+     'GetParamLabel(numParams + Random(MaxInt - numParams))',
+     'GetParamName(numParams)',
+     'GetParamName(numParams + Random(MaxInt - numParams))',
+     'GetParameterProperties(numParams, PP)',
+     'GetParameterProperties(numParams + Random(MaxInt - numParams), PP)');
 begin
  with FVstHost[0] do
-  begin
+  try
    // get invalid parameter
+   Err := CErrorMsg[0];
    GetParameter(numParams);
 
    // get completely invalid parameter
-   GetParameter(numParams + random(MaxInt - numParams));
+   Err := CErrorMsg[1];
+   GetParameter(numParams + Random(MaxInt - numParams));
 
    // set invalid value
+   Err := CErrorMsg[2];
    SetParameter(0, 10);
 
    // set invalid parameter and invalid value
+   Err := CErrorMsg[3];
    SetParameter(numParams, 10);
 
    // set completely invalid parameter and invalid value
-   SetParameter(numParams + random(MaxInt - numParams), 10);
+   Err := CErrorMsg[4];
+   SetParameter(numParams + Random(MaxInt - numParams), 10);
 
    // set completely invalid parameter and denormal value
-   SetParameter(numParams + random(MaxInt - numParams), MinSingle);
+   Err := CErrorMsg[5];
+   SetParameter(numParams + Random(MaxInt - numParams), MinSingle);
 
    // get invalid parameter display
+   Err := CErrorMsg[6];
    GetParamDisplay(numParams);
 
    // get completely invalid parameter display
-   GetParamDisplay(numParams + random(MaxInt - numParams));
+   Err := CErrorMsg[7];
+   GetParamDisplay(numParams + Random(MaxInt - numParams));
 
    // get invalid parameter label
+   Err := CErrorMsg[8];
    GetParamLabel(numParams);
 
    // get completely invalid parameter label
-   GetParamLabel(numParams + random(MaxInt - numParams));
+   Err := CErrorMsg[9];
+   GetParamLabel(numParams + Random(MaxInt - numParams));
 
    // get invalid parameter name
+   Err := CErrorMsg[10];
    GetParamName(numParams);
 
    // get completely invalid parameter name
-   GetParamName(numParams + random(MaxInt - numParams));
+   Err := CErrorMsg[11];
+   GetParamName(numParams + Random(MaxInt - numParams));
 
    // get invalid parameter properties
+   Err := CErrorMsg[12];
    GetParameterProperties(numParams, PP);
 
    // get completely invalid parameter properties
-   GetParameterProperties(numParams + random(MaxInt - numParams), PP);
+   Err := CErrorMsg[13];
+   GetParameterProperties(numParams + Random(MaxInt - numParams), PP);
+  except
+   on E: Exception do Fail(Err +' (' + E.Message + ')');
   end;
 end;
 
@@ -1039,6 +1106,7 @@ begin
 
    Data := nil;
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get plugin category
     VstDispatch(effGetPlugCategory);
@@ -1091,6 +1159,7 @@ begin
 
    Data := nil;
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get vendor string
     VstDispatch(effGetEffectName, 0, 0, Data);
@@ -1150,6 +1219,11 @@ begin
     // Open Editor
     with TForm.Create(nil) do
      try
+      // set initial form size
+      Width := 400;
+      Height := 300;
+
+      // open editor
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
       // Get Editor Rect
@@ -1275,6 +1349,11 @@ begin
    // edit open
    with TForm.Create(nil) do
     try
+     // set initial form size
+     Width := 400;
+     Height := 300;
+
+     // open editor
      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
      // process events
@@ -1340,6 +1419,7 @@ begin
 
    Data := nil;
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get vendor string
     VstDispatch(effGetEffectName, 0, 0, Data);
@@ -1383,6 +1463,7 @@ begin
 
    Data := nil;
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // Get Program Name Indexed
     for i := 0 to numPrograms - 1
@@ -1397,6 +1478,11 @@ begin
    // Open Editor
    with TForm.Create(nil) do
     try
+     // set initial form size
+     Width := 400;
+     Height := 300;
+
+     // open editor
      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
      // Get Editor Rect
@@ -1468,6 +1554,7 @@ begin
 
    Data := nil;
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get vendor string
     VstDispatch(effGetVendorString, 0, 0, Data);
@@ -1504,6 +1591,11 @@ begin
 
    with TForm.Create(nil) do
     try
+     // set initial form size
+     Width := 400;
+     Height := 300;
+
+     // open editor
      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
      // edit top
@@ -1511,6 +1603,7 @@ begin
 
      Data := nil;
      GetMem(Data, 1024);
+     FillChar(Data^, 1024, 0);
      try
       // get parameter name
       for i := 0 to numParams - 1
@@ -1580,6 +1673,7 @@ begin
    VstDispatch(effOpen);
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get plugin category
     VstDispatch(effGetPlugCategory);
@@ -1625,6 +1719,7 @@ begin
    VstDispatch(effGetVendorVersion);
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     for i := 0 to numParams - 1 do
      begin
@@ -1652,6 +1747,10 @@ begin
 
     with TForm.Create(nil) do
      try
+      // set initial form size
+      Width := 400;
+      Height := 300;
+
       // open editor
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
@@ -1676,6 +1775,10 @@ begin
 
     with TForm.Create(nil) do
      try
+      // set initial form size
+      Width := 400;
+      Height := 300;
+
       // open editor
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
@@ -1820,6 +1923,7 @@ begin
     end;
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     for i := 0 to numParams - 1 do
      begin
@@ -1836,6 +1940,7 @@ begin
    end;
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get program name indexed
     VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
@@ -1894,6 +1999,10 @@ begin
 
    with TForm.Create(nil) do
     try
+     // set initial form size
+     Width := 400;
+     Height := 300;
+
      // open editor
      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
@@ -1941,6 +2050,7 @@ begin
      VstDispatch(effGetProgram);
 
      GetMem(Data, 1024);
+     FillChar(Data^, 1024, 0);
      try
       // get program name
       VstDispatch(effGetProgramName, 0, 0, Data);
@@ -2014,6 +2124,7 @@ begin
    VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvent'));
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get vendor string
     VstDispatch(effGetVendorString, 0, 0, Data);
@@ -2091,10 +2202,15 @@ begin
    VstDispatch(effIdle);
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     with TForm.Create(nil) do
      try
-      // get edit open
+      // set initial form size
+      Width := 400;
+      Height := 300;
+
+      // open editor
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
       // get editor rect
@@ -2224,6 +2340,7 @@ begin
    VstDispatch(effGetProgram);
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
 
     // get program name indexed
@@ -2253,7 +2370,12 @@ begin
 
     with TForm.Create(nil) do
      try
-      // get program
+      // set initial form size
+      Width := 400;
+      Height := 300;
+
+      // open editor
+      Assert(Handle <> 0);
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
       // set edit knob mode
@@ -2377,6 +2499,7 @@ begin
    VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvents'));
 
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     for i := 0 to numParams - 1 do
      begin
@@ -2410,6 +2533,7 @@ begin
 
    // program scanning
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     // get program name indexed
     VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
@@ -2425,6 +2549,11 @@ begin
 
     with TForm.Create(nil) do
      try
+      // set initial form size
+      Width := 400;
+      Height := 300;
+
+      // open editor
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
       // set edit knob
@@ -2538,6 +2667,7 @@ begin
    // program scanning
    Data := nil;
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     for i := 0 to numPrograms - 1 do
      begin
@@ -2613,7 +2743,11 @@ begin
 
    with TForm.Create(nil) do
     try
-     // open edit
+     // set initial form size
+     Width := 400;
+     Height := 300;
+
+     // open editor
      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
      // get edit rect
@@ -2636,6 +2770,7 @@ begin
 
      // program scanning
      GetMem(Data, 1024);
+     FillChar(Data^, 1024, 0);
      try
       // get program
       VstDispatch(effGetProgram);
@@ -2757,6 +2892,7 @@ begin
 
    // program scanning
    GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
    try
     for i := 0 to numPrograms - 1 do
      begin
@@ -2858,7 +2994,11 @@ begin
 
     with TForm.Create(nil) do
      try
-      // open edit
+      // set initial form size
+      Width := 400;
+      Height := 300;
+
+      // open editor
       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
       // get edit rect
@@ -2966,13 +3106,13 @@ end;
 
 function IsDenormal(const Value: Single): Boolean;
 var
-  IntCast     : Integer absolute Value;
+  IntCast : Integer absolute Value;
 begin
- result := (IntCast and $7F800000 = 0) and (IntCast and $007FFFFF <> 0);
+ Result := (IntCast and $7F800000 = 0) and (IntCast and $007FFFFF <> 0);
 end;
 
 {$IFDEF FPC}
-constructor TVstPluginIOTests.CreateWithName(const AName: string);
+constructor TVstPluginIOTests.Create;
 {$ELSE}
 constructor TVstPluginIOTests.Create(MethodName: string);
 {$ENDIF}
@@ -3001,16 +3141,16 @@ begin
    SetLength(FInput, numInputs);
    for Channel := 0 to numInputs - 1 do
     begin
-     ReallocMem(FInput[Channel], FBlocksize * SizeOf(Single));
-     FillChar(FInput[Channel]^, FBlocksize * SizeOf(Single), 0);
+     GetMem(FInput[Channel], FBlocksize * SizeOf(Single));
+     FillChar(FInput[Channel]^[0], FBlocksize * SizeOf(Single), 0);
     end;
 
    // setup outputs
    SetLength(FOutput, numOutputs);
    for Channel := 0 to numOutputs - 1 do
     begin
-     ReallocMem(FOutput[Channel], FBlocksize * SizeOf(Single));
-     FillChar(FOutput[Channel]^, FBlocksize * SizeOf(Single), 0);
+     GetMem(FOutput[Channel], FBlocksize * SizeOf(Single));
+     FillChar(FOutput[Channel]^[0], FBlocksize * SizeOf(Single), 0);
     end;
   end;
 end;
@@ -3054,40 +3194,51 @@ end;
 
 procedure TVstPluginIOTests.TestDenormals;
 var
-  Count   : Integer;
-  Channel : Integer;
-  Sample  : Integer;
-  IsDen   : Boolean;
-  Cnt     : Integer;
+  Count        : Integer;
+  ChannelIndex : Integer;
+  Sample       : Integer;
+  IsDen        : Boolean;
+  Cnt          : Integer;
 begin
  with FVstHost[0] do
-  begin
+  try
    // build impulse
-   for Channel := 0 to numInputs - 1 do FInput[Channel, 0] := 1E-6;
+   for ChannelIndex := 0 to Length(FInput) - 1
+    do FInput[ChannelIndex, 0] := 1E-6;
 
    Cnt := 0;
+   IsDen := False;
    repeat
-    // search and test for denormals
-    IsDen := False;
     for Count := 0 to 8 do
      begin
+      // call process replacing
       Process32Replacing(@FInput[0], @FOutput[0], FBlocksize);
-      for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 0;
-      for Channel := 0 to Length(FOutput) - 1 do
+
+      // search and test for denormals
+      for ChannelIndex := 0 to Length(FInput) - 1 do FInput[ChannelIndex, 0] := 0;
+      for ChannelIndex := 0 to Length(FOutput) - 1 do
        begin
         for Sample := 0 to FBlocksize - 1 do
-         if IsDenormal(FOutput[Channel, Sample])
-          then IsDen := True;
+         if IsDenormal(FOutput[ChannelIndex, Sample]) then
+          begin
+           IsDen := True;
+           Break;
+          end;
        end;
-      if IsDen then break;
+      if IsDen then Break;
      end;
+
+    // check if a denormal has been found
     CheckFalse(IsDen, 'Denormal found! (in program ' + IntToStr(CurrentProgram));
+
     if numPrograms > 0
-     then CurrentProgram := random(numPrograms)
-     else break;
-    inc(Cnt);
-    for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 1E-6;
+     then CurrentProgram := Random(numPrograms)
+     else Break;
+    Inc(Cnt);
+    for ChannelIndex := 0 to Length(FInput) - 1 do FInput[ChannelIndex, 0] := 1E-6;
    until Cnt >= 4;
+  except
+   on E: Exception do Fail(E.Message);
   end;
 end;
 
@@ -3161,7 +3312,7 @@ var
   Sample  : Integer;
 begin
  with FVstHost[0] do
-  begin
+  try
    // build impulse
    for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := NaN;
 
@@ -3175,12 +3326,16 @@ begin
         Fail('NaN error propagation found!!!');
         Break;
        end;
+
      if IsNaN(FOutput[Channel, 0]) then
       begin
        Fail('NaN not handled at all!');
        Break;
       end;
     end;
+
+  except
+   on E: Exception do Fail(E.Message);
   end;
 end;
 
@@ -3373,7 +3528,7 @@ end;
 { TVstPluginIOThreadTests }
 
 {$IFDEF FPC}
-constructor TVstPluginIOThreadTests.CreateWithName(const AName: string);
+constructor TVstPluginIOThreadTests.Create;
 {$ELSE}
 constructor TVstPluginIOThreadTests.Create(MethodName: string);
 {$ENDIF}
@@ -3585,31 +3740,42 @@ begin
 end;
 {$ENDIF}
 
-initialization
-  if ParamStr(1) <> '' then
-   begin
-    {$IFDEF FPC}
-    RegisterTest(TVstPluginBasicTests);
-    RegisterTest(TVstPluginPerverseTests);
-    RegisterTest(TVstPluginHostTests);
-    RegisterTest(TVstPluginIOTests);
-    RegisterTest(TVstPluginIOThreadTests);
-    {$ELSE}
-    RegisterTest(TVstPluginBasicTests.Suite);
-    RegisterTest(TVstPluginPerverseTests.Suite);
-    RegisterTest(TVstPluginHostTests.Suite);
-    RegisterTest(TVstPluginIOTests.Suite);
-    RegisterTest(TVstPluginIOThreadTests.Suite);
-    {$ENDIF}
-   end else
-{$IFNDEF CONSOLE_TESTRUNNER}
-  EnumerateVstPlugins;
-{$ELSE}
+procedure InitializeVstPluginTests;
+begin
+ if ParamStr(1) <> '' then
   begin
-   WriteLn('Please specify a VST plugin DLL!');
-   WriteLn('');
-   WriteLn('Usage: ' + ExtractFileName(ParamStr(0)) + ' filename');
-  end;
+   {$IFDEF FPC}
+   RegisterTest(TVstPluginBasicTests);
+   RegisterTest(TVstPluginPerverseTests);
+   RegisterTest(TVstPluginHostTests);
+   RegisterTest(TVstPluginIOTests);
+   RegisterTest(TVstPluginIOThreadTests);
+   {$ELSE}
+   RegisterTest(TVstPluginBasicTests.Suite);
+   RegisterTest(TVstPluginPerverseTests.Suite);
+   RegisterTest(TVstPluginHostTests.Suite);
+   RegisterTest(TVstPluginIOTests.Suite);
+   RegisterTest(TVstPluginIOThreadTests.Suite);
+   {$ENDIF}
+  end else
+ {$IFNDEF CONSOLE_TESTRUNNER}
+  {$IFDEF FPC}
+  ShowMessage('Please supply a VST plugin as parameter!');
+  {$ELSE}
+  EnumerateVstPlugins;
+  {$ENDIF}
+ {$ELSE}
+ begin
+  WriteLn('Please specify a VST plugin DLL!');
+  WriteLn('');
+  WriteLn('Usage: ' + ExtractFileName(ParamStr(0)) + ' filename');
+ end;
+ {$ENDIF}
+end;
+
+{$IFNDEF FPC}
+initialization
+  InitializeVstPluginTests;
 {$ENDIF}
 
 end.

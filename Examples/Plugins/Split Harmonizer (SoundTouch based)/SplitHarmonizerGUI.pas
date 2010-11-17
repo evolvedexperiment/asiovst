@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiCommon, 
   DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedDial, DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList,
+  DAV_GuiCustomControl, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphicControl;
 
 type
   TFmSplitHarmonizer = class(TForm)

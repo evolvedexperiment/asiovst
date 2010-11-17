@@ -4,19 +4,23 @@
     <PathDelim Value="\"/>
     <Name Value="DAV_Common_Lazarus"/>
     <CompilerOptions>
-      <Version Value="8"/>
+      <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\..\Resources\"/>
-        <OtherUnitFiles Value="..\..\Source\;..\..\Source\FileFormats\;..\..\Resources\"/>
+        <IncludeFiles Value="..\..\Resources"/>
+        <OtherUnitFiles Value="..\..\Source;..\..\Source\FileFormats;..\..\Resources"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
           <CStyleOperator Value="False"/>
           <CPPInline Value="False"/>
+          <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+      </CodeGeneration>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>

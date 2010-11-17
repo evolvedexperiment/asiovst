@@ -376,7 +376,7 @@ var
   Channel       : Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
- SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
+ SetLength(ProcessBuffer, Max(numOutputs, numInputs), SampleFrames);
  for Channel := 0 to numInputs - 1 do Move(Inputs[Channel, 0], ProcessBuffer[Channel, 0], SampleFrames * SizeOf(Single));
   if assigned(FDspDirectProcessItem) then
    FDspDirectProcessItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
@@ -389,7 +389,7 @@ var
   Channel       : Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
- SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
+ SetLength(ProcessBuffer, Max(numOutputs, numInputs), SampleFrames);
  for Channel := 0 to numInputs - 1 do Move(Inputs[Channel, 0], ProcessBuffer[Channel, 0], SampleFrames * SizeOf(Double));
  if assigned(FDspDirectProcessItem) then
    FDspDirectProcessItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);

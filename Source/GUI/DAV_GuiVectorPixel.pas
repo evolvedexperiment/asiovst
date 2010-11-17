@@ -36,8 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF Windows} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
   DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiFixedPoint;
 

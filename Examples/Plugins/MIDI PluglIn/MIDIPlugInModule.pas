@@ -90,7 +90,7 @@ begin
    begin
   // data1 contains note number
   // data2 contains note velocity
-    newnote := round(f_limit(data1 + Parameter[0], 0, 120));
+    newnote := Round(Limit(data1 + Parameter[0], 0, 120));
     MIDI_NoteOn(channel, newnote, data2, time);
    end
   else if ((status = $90) and (data2 = 0)) or (status = $80) then
@@ -99,7 +99,7 @@ begin
   // data1 contains note number
   // data2 contains note off velocity
   // send "Note Off" back to host (MIDI thru)
-    newnote := round(f_limit(data1 + Parameter[0], 0, 120));
+    newnote := Round(Limit(data1 + Parameter[0], 0, 120));
     MIDI_NoteOff(channel, newnote, data2, time);
    end
   else if (status = $A0) then // "Polyphonic Aftertouch" ?

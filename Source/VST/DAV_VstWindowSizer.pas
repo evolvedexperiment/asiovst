@@ -58,7 +58,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LCLType, LMessages, {$IFDEF Windows} Windows, {$ENDIF}
+  {$IFDEF FPC}LCLIntf, LCLType, LMessages, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF} Controls, Types, Contnrs,
   DAV_VSTCustomModule;
 
@@ -1426,4 +1426,4 @@ finalization
   FreeAndNil(GFramesTrack);
   FreeAndNil(GEditors);
 
-end.
+end.

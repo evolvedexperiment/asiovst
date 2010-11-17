@@ -42,6 +42,11 @@ interface
 uses
   Classes, Forms, Sysutils, DAV_Types, DAV_VSTEffect, DAV_WinAmp;
 
+{$IFDEF DebugLog}
+const
+  CDebugLogFile : string = 'C:\DebugAch.log';
+{$ENDIF}
+
 type
   TBasicVSTModuleClass = class of TBasicVSTModule;
 
@@ -266,7 +271,7 @@ type
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     {$ENDIF}
 
-    {$IFDEF DebugLog} property DebugLog: TStringList read fLog; {$ENDIF}
+    {$IFDEF DebugLog} property DebugLog: TStringList read FLog; {$ENDIF}
   end;
 
   EVstError = class(Exception);
@@ -340,7 +345,7 @@ function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
 implementation
 
 uses
-  DAV_Common, Math, Contnrs;
+  Math, Contnrs, DAV_Common;
 
 var
   GVstInstanceList : TObjectList;
@@ -429,7 +434,7 @@ begin
  FLog.Add('Create: ' + TimeToStr(FTmStmp));
  if not (csDesigning in ComponentState) then
   try
-   FLog.SaveToFile('Debug.log');
+   FLog.SaveToFile(CDebugLogFile);
   except
   end;
  {$ENDIF}
@@ -482,15 +487,18 @@ end;
 
 destructor TBasicVSTModule.Destroy;
 var
-  i : Integer;
+  Index : Integer;
 begin
  try
-  {$IFDEF DebugLog} if Assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
-  for i := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[i]);
-  for i := 0 to Length(FWinAmpOutputBuffer) - 1 do Dispose(FWinAmpOutputBuffer[i]);
+  {$IFDEF DebugLog}
+  AddLogMessage('Destroy');
+  if Assigned(FLog) then FLog.SaveToFile(CDebugLogFile);
+  {$ENDIF}
+  for Index := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[Index]);
+  for Index := 0 to Length(FWinAmpOutputBuffer) - 1 do Dispose(FWinAmpOutputBuffer[Index]);
  finally
-  {$IFDEF DebugLog} if Assigned(FLog) then FLog.Free; {$ENDIF}
   inherited;
+  {$IFDEF DebugLog} if Assigned(FLog) then FreeAndNil(FLog); {$ENDIF}
  end;
 end;
 
@@ -500,8 +508,14 @@ begin
  if Assigned(FLog) then
   try
    FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
-   if not (csDesigning in ComponentState)
-    then FLog.SaveToFile('Debug.log');
+   if not (csDesigning in ComponentState) then
+    begin
+     if FileExists(CDebugLogFile + '.bak')
+      then DeleteFile(CDebugLogFile + '.bak');
+     if FileExists(CDebugLogFile)
+      then RenameFile(CDebugLogFile, CDebugLogFile + '.bak');
+     FLog.SaveToFile(CDebugLogFile);
+    end;
   except
   end;
 end;
@@ -555,13 +569,10 @@ function TBasicVSTModule.CallAudioMaster(const Opcode: TAudioMasterOpcode;
   const Index: Integer = 0; const Value: TVstIntPtr = 0;
   const Ptr: Pointer = nil; const Opt: Single = 0): TVstIntPtr;
 begin
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster, Opcode:' + IntToStr(Integer(Opcode))); {$ENDIF}
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(PVstEffect)' + IntToStr(SizeOf(PVstEffect))); {$ENDIF}
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(TAudioMasterOpcode)' + IntToStr(SizeOf(TAudioMasterOpcode))); {$ENDIF}
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Index)' + IntToStr(SizeOf(Index))); {$ENDIF}
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Value)' + IntToStr(SizeOf(Value))); {$ENDIF}
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Ptr)' + IntToStr(SizeOf(Ptr))); {$ENDIF}
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Result)' + IntToStr(SizeOf(Result))); {$ENDIF}
+ {$IFDEF DebugLog}
+ AddLogMessage('TBasicVSTModule.CallAudioMaster, Opcode: ' +
+   IntToStr(Integer(Opcode)));
+ {$ENDIF}
 
  if Assigned(FAudioMaster)
   then Result := FAudioMaster(@FEffect, Opcode, Index, Value, Ptr, Opt)
@@ -963,7 +974,7 @@ var
   Interleaved     : PDAVSingleFixedArray absolute Data;
   Channel, Sample : Integer;
 begin
- for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+ for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
   for Sample := 0 to SampleFrames - 1
    do FWinAmpInputBuffer[Channel]^[Sample] := Interleaved^[Sample * ChannelCount + Channel];
 end;
@@ -976,7 +987,7 @@ var
 const
   DivFak8 : Single = 1 / $80;
 begin
- for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+ for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
   for Sample := 0 to SampleFrames - 1
    do FWinAmpInputBuffer[Channel]^[Sample] := I8^[Sample * ChannelCount + Channel] * DivFak8;
 end;
@@ -989,7 +1000,7 @@ var
 const
   DivFak16 : Single = 1 / $8000;
 begin
- for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+ for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
   for Sample := 0 to SampleFrames - 1
    do FWinAmpInputBuffer[Channel]^[Sample] := I16^[Sample * ChannelCount + Channel] * DivFak16;
 end;
@@ -1003,7 +1014,7 @@ var
 const
   DivFak24 : Single = 1 / $800000;
 begin
- for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+ for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
   for Sample := 0 to SampleFrames - 1 do
    begin
     TempData := (ShortInt(I24^[Sample * ChannelCount + Channel][2]) shl 16) +
@@ -1019,7 +1030,7 @@ var
   Interleaved     : PDAVSingleFixedArray absolute Data;
   Channel, Sample : Integer;
 begin
- for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+ for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
   for Sample := 0 to SampleFrames - 1
    do FWinAmpInputBuffer[Channel]^[Sample] := Interleaved^[Sample * ChannelCount + Channel];
 end;

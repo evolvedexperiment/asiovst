@@ -68,14 +68,14 @@ begin
   EditorUnitName := RCDefaultEditorUnitName;
   EditorFormName := RCDefaultEditorFormName;
   UseEditor      := CDefaultUseEditor;
-  UniqueID       := RandomUniqueID;
-  EffectName     := RCDefaultEffectName;
+  UniqueID       := AnsiString(RandomUniqueID);
+  EffectName     := AnsiString(RCDefaultEffectName);
   IsSynth        := CDefaultIsSynth;
   VersionMajor   := CDefaultVersionMajor;
   VersionMinor   := CDefaultVersionMinor;
   VersionRelease := CDefaultVersionRelease;
-  VendorName     := RCDefaultVendorName;
-  ProductName    := RCDefaultProductName;
+  VendorName     := AnsiString(RCDefaultVendorName);
+  ProductName    := AnsiString(RCDefaultProductName);
 end;
 
 function TConfig.RandomLetter: Char;

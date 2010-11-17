@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  DAV_GuiPaintBox, DAV_GuiCommon, DAV_GuiPixelMap;
+  DAV_GuiPaintBox, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiGraphicControl;
 
 type
   TFmPaintBoxTest = class(TForm)
@@ -51,16 +51,15 @@ end;
 procedure TFmPaintBoxTest.FormResize(Sender: TObject);
 var
   x, y   : Integer;
-  s      : array [0..1] of Single;
+  Filter : array [0..1] of Single;
   h, hr  : Single;
   ScnLne : PPixel32Array;
 begin
  with FBackground do
   begin
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
+   SetSize(ClientWidth, ClientHeight);
+   Filter[0] := 0;
+   Filter[1] := 0;
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
@@ -68,12 +67,12 @@ begin
      h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
+       Filter[1] := 0.97 * Filter[0] + 0.03 * random;
+       Filter[0] := Filter[1];
 
-       ScnLne[x].B := Round($70 - $34 * (s[1] - h));
-       ScnLne[x].G := Round($84 - $48 * (s[1] - h));
-       ScnLne[x].R := Round($8D - $50 * (s[1] - h));
+       ScnLne[x].B := Round($70 - $34 * (Filter[1] - h));
+       ScnLne[x].G := Round($84 - $48 * (Filter[1] - h));
+       ScnLne[x].R := Round($8D - $50 * (Filter[1] - h));
       end;
     end;
   end;

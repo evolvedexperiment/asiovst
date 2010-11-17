@@ -136,10 +136,10 @@ const
 
 {$IFDEF HandleDenormals}
 var
-  DenormRandom   : Single;
+  DenormRandom : Single;
 const
-  CDenorm32      : Single = 1E-24;
-  CDenorm64      : Double = 1E-34;
+  CDenorm32    : Single = 1E-24;
+  CDenorm64    : Double = 1E-34;
 {$ENDIF}
 
 { TCustomChebyshev2Filter }

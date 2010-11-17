@@ -14,6 +14,7 @@ type
   TestTGuiCustomPixelMap = class(TTestCase)
   protected
     FGuiPixelMap : TGuiCustomPixelMap;
+    procedure TestAssign; virtual; abstract;
   public
     procedure TearDown; override;
   published
@@ -25,11 +26,15 @@ type
   TestTGuiPixelMapMemory = class(TestTGuiCustomPixelMap)
   public
     procedure SetUp; override;
+  published
+    procedure TestAssign; override;
   end;
 
   TestTGuiPixelMapDIB = class(TestTGuiCustomPixelMap)
   public
     procedure SetUp; override;
+  published
+    procedure TestAssign; override;
   end;
 
 implementation
@@ -97,12 +102,30 @@ begin
  FGuiPixelMap := TGuiPixelMapMemory.Create;
 end;
 
+procedure TestTGuiPixelMapMemory.TestAssign;
+var
+  PixelMap : TGuiPixelMapMemory;
+begin
+ inherited;
+ PixelMap := TGuiPixelMapMemory.Create;
+ PixelMap.Assign(FGuiPixelMap);
+end;
+
 
 { TestTGuiPixelMapDIB }
 
 procedure TestTGuiPixelMapDIB.SetUp;
 begin
  FGuiPixelMap := TGuiPixelMapDIB.Create;
+end;
+
+procedure TestTGuiPixelMapDIB.TestAssign;
+var
+  PixelMap : TGuiPixelMapDIB;
+begin
+ inherited;
+ PixelMap := TGuiPixelMapDIB.Create;
+ PixelMap.Assign(FGuiPixelMap);
 end;
 
 

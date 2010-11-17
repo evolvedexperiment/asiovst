@@ -4,19 +4,24 @@
     <PathDelim Value="\"/>
     <Name Value="DAV_DSP_Lazarus"/>
     <CompilerOptions>
-      <Version Value="8"/>
+      <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\..\Resources\"/>
-        <OtherUnitFiles Value="..\..\Source\;..\..\Source\ASIO\;..\..\Source\DSP\;..\..\Resources\"/>
+        <IncludeFiles Value="..\..\Resources"/>
+        <OtherUnitFiles Value="..\..\Source;..\..\Source\ASIO;..\..\Source\DSP;..\..\Resources"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="..\..\Source\;..\..\Source\ASIO\;..\..\Source\DSP\;..\..\Resources\"/>
+        <SrcPath Value="..\..\Source;..\..\Source\ASIO;..\..\Source\DSP;..\..\Resources"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
           <CStyleOperator Value="False"/>
+          <CPPInline Value="False"/>
+          <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+      </CodeGeneration>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>

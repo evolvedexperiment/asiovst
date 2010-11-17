@@ -213,12 +213,15 @@ begin
 end;
 
 procedure TGuiBlurIIRFilter.Filter(PixelMap: TGuiCustomPixelMap);
+(*
 var
   X, Y : Integer;
   Data : PPixel32Array;
+*)
 begin
  raise Exception.Create('not yet implemented');
 
+(*
  with PixelMap do
   begin
    for Y := 0 to Height - 1 do
@@ -231,6 +234,7 @@ begin
       end;
     end;
   end;
+*)
 end;
 
 

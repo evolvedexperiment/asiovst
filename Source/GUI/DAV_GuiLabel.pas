@@ -42,9 +42,9 @@ uses
 type
   TCustomGuiLabel = class(TCustomGuiGraphicControl)
   private
-    FGuiFont     : TGuiOversampledGDIFont;
-    FAlignment   : TAlignment;
-    FCaption     : string;
+    FGuiFont   : TGuiOversampledGDIFont;
+    FAlignment : TAlignment;
+    FCaption   : string;
     procedure SetOversampling(const Value: TFontOversampling);
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
