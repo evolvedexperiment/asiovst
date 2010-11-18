@@ -35,11 +35,12 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LCLType, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
   {$IFDEF DARWIN} MacOSAll, Carbon, CarbonCanvas, CarbonPrivate, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF} Graphics, Classes, Controls, SysUtils,
-  DAV_Common, DAV_MemoryUtils, DAV_GuiCommon, DAV_GuiCustomMap, DAV_GuiByteMap,
-  DAV_GuiBlend;
+  {$IFDEF GTK} {$IFDEF LCLGtk2}gdk2, gtk2, gdk2pixbuf, glib2, {$ELSE} gdk, gtk,
+  gdkpixbuf, glib, gtkdef, {$ENDIF} {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
+  Graphics, Classes, Controls, SysUtils, DAV_MemoryUtils, DAV_GuiCommon,
+  DAV_GuiCustomMap, DAV_GuiByteMap, DAV_GuiBlend;
 
 type
   TGuiCustomPixelMap = class(TGuiCustomMap)
@@ -135,6 +136,10 @@ type
     FContext      : CGContextRef;
     FCanvasHandle : TCarbonDeviceContext;
     {$ENDIF}
+    {$IFDEF GTK}
+    FPixbuf       : PGdkPixBuf;
+    {$ENDIF}
+
     FCanvas       : TCanvas;
     procedure AllocateDeviceIndependentBitmap;
     procedure DisposeDeviceIndependentBitmap;
@@ -1281,6 +1286,10 @@ begin
    // allocate memory
    FDataPointer := GetMem(FDataSize);
 
+   // check if data has been allocated correctly
+   if FDataPointer = nil
+    then raise Exception.Create(RCStrNoDibHandle);
+
    // Creates a device context for our raw image area
    FContext := CGBitmapContextCreate(FBits,
      FWidth, FHeight, 8, 4 * FWidth, FColorSpace,
@@ -1292,6 +1301,23 @@ begin
    // flip and offset CTM to upper left corner
    CGContextTranslateCTM(FContext, 0, FHeight);
    CGContextScaleCTM(FContext, 1, -1);
+   {$ENDIF}
+
+   {$IFDEF GTK}
+   // allocate memory
+   FDataPointer := GetMem(FDataSize);
+
+   // check if data has been allocated correctly
+   if FDataPointer = nil
+    then raise Exception.Create(RCStrNoDibHandle);
+
+   // We didn't pass a memory freeing function, so we will have to take care
+   // of that ourselves
+   FPixbuf := gdk_pixbuf_new_from_data(PguChar(FBits), GDK_COLORSPACE_RGB,
+     True, 8, FWidth, FHeight, 4 * FWidth, nil, nil);
+
+   if FPixbuf = nil then
+     raise Exception.Create('Can''t allocate the Pixbuf');
    {$ENDIF}
   end;
 end;
@@ -1307,11 +1333,22 @@ begin
  {$ENDIF}
 
  {$IFDEF Darwin}
- if Assigned(FDataPointer)
-  then FreeAndNil(FDataPointer);
-
  if Assigned(FContext)
   then CGContextRelease(FContext);
+
+ if Assigned(FDataPointer)
+  then FreeAndNil(FDataPointer);
+ {$ENDIF}
+
+ {$IFDEF GTK}
+ if Assigned(FDataPointer)
+  then FreeAndNil(FDataPointer);
+ {$IFDEF LCLGtk2}
+ if Assigned(FPixbuf) then g_object_unref(FPixbuf);
+ {$ELSE}
+ if Assigned(FPixbuf) then gdk_pixbuf_unref(FPixbuf);
+ {$ENDIF}
+ FPixbuf := nil;
  {$ENDIF}
 
  FDataPointer := nil;
