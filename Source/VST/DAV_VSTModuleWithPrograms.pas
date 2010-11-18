@@ -659,15 +659,15 @@ begin
     // use float steps
     if ppfParameterUsesFloatStep in Flags then
      begin
-      stepFloat        := ParameterProperties[Index].StepFloat;
-      largeStepFloat   := ParameterProperties[Index].LargeStepFloat;
-      smallStepFloat   := ParameterProperties[Index].SmallStepFloat;
+      stepFloat      := Parameter2VSTParameter(ParameterProperties[Index].StepFloat, Index);
+      largeStepFloat := Parameter2VSTParameter(ParameterProperties[Index].LargeStepFloat, Index);
+      smallStepFloat := Parameter2VSTParameter(ParameterProperties[Index].SmallStepFloat, Index);
      end
     else
      begin
-      stepFloat := 1;
-      largeStepFloat := 5;
-      smallStepFloat := 0.2;
+      stepFloat      := 0.01;
+      largeStepFloat := 0.05;
+      smallStepFloat := 0.002;
      end;
 
     // assign display index

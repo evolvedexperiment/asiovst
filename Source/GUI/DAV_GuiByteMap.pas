@@ -665,6 +665,7 @@ var
   Buffer        : Pointer;
   OldObject     : HGDIOBJ;
 begin
+ {$IFDEF MSWINDOWS}
  if SetDIBitsToDevice(Canvas.Handle, X, Y, Width, Height, 0, 0, 0, Height,
    FDataPointer, FBitmapInfo^, DIB_RGB_COLORS) = 0 then
   begin
@@ -692,6 +693,7 @@ begin
      DeleteDC(DeviceContext);
     end;
   end;
+ {$ENDIF}
 end;
 
 procedure TGuiByteMapMemory.PaintTo(Canvas: TCanvas; Rect: TRect;
@@ -703,6 +705,7 @@ var
   OldObject     : HGDIOBJ;
   H, W          : Integer;
 begin
+ {$IFDEF MSWINDOWS}
  W := Min(Width, Rect.Right - Rect.Left);
  H := Min(Height, Rect.Bottom - Rect.Top);
  if SetDIBitsToDevice(Canvas.Handle, X, Y, W, H, Rect.Left, Rect.Top, 0, Height,
@@ -732,6 +735,7 @@ begin
      DeleteDC(DeviceContext);
     end;
   end;
+ {$ENDIF}
 end;
 
 procedure TGuiByteMapMemory.HeightChanged(UpdateBitmap: Boolean);
