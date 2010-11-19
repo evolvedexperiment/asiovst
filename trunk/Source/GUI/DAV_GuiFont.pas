@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF} Graphics, Classes, SysUtils,
+  {$IFDEF FPC} LCLIntf, LCLType, LMessages, Types, {$ELSE} Windows, Messages,
+  {$ENDIF} Graphics, Classes, SysUtils,
   DAV_Common, DAV_Classes, DAV_GuiCommon, DAV_GuiBlend, DAV_GuiPixelMap,
   DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
 
@@ -77,6 +77,8 @@ type
     FBuffer       : TGuiByteMapDIB;
     {$IFDEF UseShadowBuffer}
     FShadowBuffer : TGuiCustomByteMap;
+    {$ENDIF}
+    {$IFDEF MSWINDOWS}
     {$ENDIF}
     FOldHandle    : HDC;
     FFontHandle   : HFont;
@@ -147,6 +149,13 @@ implementation
 
 uses
   DAV_Approximations;
+
+const
+  {$IFDEF FPC}
+  CTransparent = 1;
+  {$ELSE}
+  CTransparent = Windows.TRANSPARENT;
+  {$ENDIF}
 
 procedure SetFontAntialiasing(const Font: TFont; Quality: Cardinal);
 var
@@ -377,7 +386,7 @@ begin
   begin
    SelectObject(FBuffer.Handle, Font.Handle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
-   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+   SetBkMode(FBuffer.Handle, CTransparent);
 
    FFontHandle := Font.Handle;
   end
@@ -385,7 +394,7 @@ begin
   begin
    SelectObject(FBuffer.Handle, FFontHandle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
-   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+   SetBkMode(FBuffer.Handle, CTransparent);
   end;
 end;
 
@@ -394,7 +403,7 @@ begin
  Assert(FBuffer.Handle <> 0);
  SelectObject(FBuffer.Handle, Font.Handle);
  SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
- SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+ SetBkMode(FBuffer.Handle, CTransparent);
  FFontHandle := Font.Handle;
  Changed;
 end;
@@ -443,8 +452,13 @@ begin
         end
        else FBuffer.Clear;
 
+       {$IFDEF FPC}
+       LCLIntf.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
+         Length(Text));
+       {$ELSE}
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
+       {$ENDIF}
 
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
@@ -472,8 +486,13 @@ begin
           Y + FShadow.Offset.Y - BlurOffset);
 
        FBuffer.Clear;
+       {$IFDEF FPC}
+       LCLIntf.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
+         Length(Text));
+       {$ELSE}
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
+       {$ENDIF}
        {$ENDIF}
 
        if PixelMap <> nil
@@ -493,7 +512,11 @@ begin
         end
        else FBuffer.Clear;
 
+       {$IFDEF FPC}
+       LCLIntf.TextOut(FBuffer.Handle, 0, 0, PChar(Text), Length(Text));
+       {$ELSE}
        Windows.TextOut(FBuffer.Handle, 0, 0, PChar(Text), Length(Text));
+       {$ENDIF}
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color), X, Y);
@@ -550,7 +573,7 @@ begin
 
  SelectObject(FBuffer.Handle, FScaledFont.Handle);
  SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
- SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+ SetBkMode(FBuffer.Handle, CTransparent);
  FFontHandle := FScaledFont.Handle;
  Changed;
 end;
@@ -586,7 +609,7 @@ begin
   begin
    SelectObject(FBuffer.Handle, FScaledFont.Handle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
-   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+   SetBkMode(FBuffer.Handle, CTransparent);
 
    FFontHandle := FScaledFont.Handle;
   end
@@ -594,7 +617,7 @@ begin
   begin
    SelectObject(FBuffer.Handle, FFontHandle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
-   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+   SetBkMode(FBuffer.Handle, CTransparent);
   end;
 end;
 
@@ -656,8 +679,13 @@ begin
         end
        else FBuffer.Clear;
 
+       {$IFDEF FPC}
+       LCLIntf.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
+         Length(Text));
+       {$ELSE}
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
+       {$ENDIF}
 
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
@@ -701,8 +729,13 @@ begin
           Y + FShadow.Offset.Y + (FBuffer.Height - BlurOffset) div FOSFactor));
 
        FBuffer.Clear;
+       {$IFDEF FPC}
+       LCLIntf.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
+         Length(Text));
+       {$ELSE}
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
+       {$ENDIF}
 
        {$ENDIF}
 
@@ -728,7 +761,11 @@ begin
         end
        else FBuffer.Clear;
 
+       {$IFDEF FPC}
+       LCLIntf.TextOut(FBuffer.Handle, 0, 0, PChar(Text), Length(Text));
+       {$ELSE}
        Windows.TextOut(FBuffer.Handle, 0, 0, PChar(Text), Length(Text));
+       {$ENDIF}
 
        DownsampleByteMap(FBuffer);
 

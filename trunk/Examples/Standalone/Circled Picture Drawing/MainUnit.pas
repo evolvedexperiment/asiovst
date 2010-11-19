@@ -1,8 +1,13 @@
 unit MainUnit;
 
+interface
+
 {$I DAV_Compiler.inc}
 
-interface
+{$DEFINE UseInifiles}
+{$IFDEF MSWINDOWS}
+{$DEFINE UseInifiles}
+{$ENDIF}
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
@@ -125,6 +130,12 @@ type
     procedure SetAdditional(const Value: Single);
     procedure SetRandomOrder(const Value: Boolean);
   protected
+    {$IFDEF DARWIN}
+    AppMenu     : TMenuItem;
+    AppAboutCmd : TMenuItem;
+    AppSep1Cmd  : TMenuItem;
+    AppPrefCmd  : TMenuItem;
+    {$ENDIF}
     procedure ResetCircles;
     procedure SaveDrawingBackup;
     procedure SavePopulationBackup(FileName: TFileName);
@@ -182,8 +193,8 @@ implementation
 {$ENDIF}
 
 uses
-  Filectrl, Math, Registry, IniFiles, DAV_Approximations, SettingsUnit,
-  ProgressBarUnit, AdditionalChunks;
+  Filectrl, Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Approximations,
+  SettingsUnit, ProgressBarUnit, AdditionalChunks;
 
 
 { TEvolution }
@@ -207,6 +218,29 @@ begin
     end;
   end;
 end;
+
+{$IFDEF DARWIN}
+function GetInfoPlistString(const KeyName : string) : string;
+var
+  BundleRef : CFBundleRef;
+  KeyRef    : CFStringRef;
+  ValueRef  : CFTypeRef;
+begin
+  Result := '';
+  BundleRef := CFBundleGetMainBundle;
+  if BundleRef = nil then  {Executable not in an app bundle?}
+    Exit;
+  AnsiStrToCFStr(KeyName, KeyRef);
+  try
+    ValueRef := CFBundleGetValueForInfoDictionaryKey(BundleRef, KeyRef);
+    if CFGetTypeID(ValueRef) <> CFStringGetTypeID then  {Value not a string?}
+      Exit;
+    Result := CFStrToAnsiStr(ValueRef);
+  finally
+    FreeCFRef(KeyRef);
+    end;
+end;
+{$ENDIF}
 
 
 { TFmCircledPictureDialog }
@@ -254,6 +288,28 @@ begin
    CrossOver := 0.9;
    OnCalculateCosts := CalculateError;
   end;
+
+  {$IFDEF DARWIN}
+  AppMenu := TMenuItem.Create(Self);  {Application menu}
+  AppMenu.Caption := #$EF#$A3#$BF;  {Unicode Apple logo char}
+  MainMenu.Items.Insert(0, AppMenu);
+
+(*
+  AppAboutCmd := TMenuItem.Create(Self);
+  AppAboutCmd.Caption := 'About ' + GetInfoPlistString('CFBundleName');
+  AppAboutCmd.OnClick := AboutCmdClick;
+  AppMenu.Add(AppAboutCmd);  {Add About as item in application menu}
+
+  AppSep1Cmd := TMenuItem.Create(Self);
+  AppSep1Cmd.Caption := '-';
+  AppMenu.Add(AppSep1Cmd);
+*)
+  AppPrefCmd := TMenuItem.Create(Self);
+  AppPrefCmd.Caption := 'Preferences...';
+  AppPrefCmd.Shortcut := ShortCut(VK_OEM_COMMA, [ssMeta]);
+  AppPrefCmd.OnClick := AcSettingsExecute;
+  AppMenu.Add(AppPrefCmd);
+  {$ENDIF}
 end;
 
 procedure TFmCircledPictureDialog.FormDestroy(Sender: TObject);
@@ -290,6 +346,7 @@ end;
 
 procedure TFmCircledPictureDialog.FormShow(Sender: TObject);
 begin
+ {$IFDEF UseInifiles}
  with TIniFile.Create(FIniFileName) do
   try
    Left := ReadInteger('Layout', 'Left', Left);
@@ -319,11 +376,45 @@ begin
   finally
    Free;
   end;
+ {$ELSE}
+ {$IFDEF Darwin}
+ with TCFPreferences.Create do
+  try
+   Left := StrToInt(Prefs.GetAppString('Layout:Left'));
+   Top := StrToInt(Prefs.GetAppString('Layout:Top'));
+
+   FAutoInitialSeed := ReadBool('Settings', 'Auto Initial Seed', FAutoInitialSeed);
+   FAutoNextTrial := ReadBool('Settings', 'Auto Trials', True);
+   FTrialsPerCircle := StrToInt(Prefs.GetAppString('Settings:Trials Per Circle');
+   FUpdateTrials := StrToInt(Prefs.GetAppString('Settings:Update Trials');
+   FInitialSeed := StrToInt(Prefs.GetAppString('Settings:Initial Seed');
+   FAdditional := 0.01 * StrToInt(Prefs.GetAppString('Settings:Additional');
+   FCrossover := 0.01 * StrToInt(Prefs.GetAppString('Settings:Crossover');
+   FWeight := 0.01 * StrToInt(Prefs.GetAppString('Settings:Weight');
+   FBest := 0.01 * StrToInt(Prefs.GetAppString('Settings:Best');
+   FWeightDither := ReadBool('Settings', 'Weight Dither', FWeightDither);
+   FChangeOrder := ReadBool('Settings', 'Change Order', FChangeOrder);
+   FRandomOrder := ReadBool('Settings', 'Random Order', FRandomOrder);
+   FCorrectColor := ReadBool('Settings', 'Correct Color', FCorrectColor);
+   FCorrectRadius := ReadBool('Settings', 'Correct Radius', FCorrectRadius);
+   FCorrectPosition := ReadBool('Settings', 'Correct Position', FCorrectPosition);
+   FCorrectInvisibleCircles := ReadBool('Settings', 'Correct Invisible Circles', FCorrectInvisibleCircles);
+   FRandomCircle := ReadBool('Settings', 'Random Circle', FRandomCircle);
+
+   NumberOfCircles := StrToInt(Prefs.GetAppString('Settings:Number of Circles');
+   LoadReference(ReadString('Recent', 'Reference', ''));
+   LoadDrawing(ReadString('Recent', 'Drawing', ''));
+  finally
+   Free;
+  end;
+ {$ENDIF}
+ {$ENDIF}
 end;
 
 procedure TFmCircledPictureDialog.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
+ {$IFDEF UseInifiles}
  with TIniFile.Create(FIniFileName) do
   try
    WriteInteger('Layout', 'Left', Left);
@@ -331,6 +422,17 @@ begin
   finally
    Free;
   end;
+ {$ELSE}
+ {$IFDEF Darwin}
+ with TCFPreferences.Create do
+  try
+   Prefs.SetAppString('Layout:Left', IntToStr(Left));
+   Prefs.SetAppString('Layout:Top', IntToStr(Top));
+  finally
+   Free;
+  end;
+ {$ENDIF}
+ {$ENDIF}
 end;
 
 procedure TFmCircledPictureDialog.AcBackExecute(Sender: TObject);

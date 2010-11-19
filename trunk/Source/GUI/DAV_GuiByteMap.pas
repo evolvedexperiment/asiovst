@@ -35,9 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF MSWindows} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LCLType, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$IFDEF DARWIN} MacOSAll, CarbonCanvas, CarbonPrivate, {$ENDIF}
+  {$IFDEF GTK} {$IFDEF LCLGtk2}gdk2, gtk2, gdk2pixbuf, glib2, {$ELSE} gdk, gtk,
+  gdkpixbuf, glib, gtkdef, {$ENDIF} {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
   DAV_GuiCustomMap, DAV_GuiBlend;
 
@@ -114,9 +115,21 @@ type
 
   TGuiByteMapDIB = class(TGuiCustomByteMap)
   protected
-    FDC            : HDC;
-    FBitmapHandle  : HBITMAP;
-    FDeviceContext : HDC;
+    {$IFDEF MSWINDOWS}
+    FBitmapHandle : HBITMAP;
+    FDC           : HDC;
+    {$ENDIF}
+    {$IFDEF Darwin}
+(*
+    FProfile      : CMProfileRef;
+    FContext      : CGContextRef;
+    FCanvasHandle : TCarbonDeviceContext;
+*)
+    {$ENDIF}
+    {$IFDEF GTK}
+    FPixbuf       : PGdkPixBuf;
+    {$ENDIF}
+
     procedure AllocateDeviceIndependentBitmap;
     procedure DisposeDeviceIndependentBitmap;
     procedure HeightChanged(UpdateBitmap: Boolean = True); override;
@@ -778,7 +791,6 @@ begin
  inherited;
  FDC            := 0;
  FBitmapHandle  := 0;
- FDeviceContext := 0;
 end;
 
 destructor TGuiByteMapDIB.Destroy;
