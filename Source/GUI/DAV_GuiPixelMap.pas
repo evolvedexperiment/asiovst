@@ -38,7 +38,7 @@ uses
   {$IFDEF FPC} LCLIntf, LCLType, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
   {$IFDEF DARWIN} MacOSAll, CarbonCanvas, CarbonPrivate, {$ENDIF}
   {$IFDEF GTK} {$IFDEF LCLGtk2}gdk2, gtk2, gdk2pixbuf, glib2, {$ELSE} gdk, gtk,
-  gdkpixbuf, glib, gtkdef, {$ENDIF} {$ENDIF} {$ELSE} (*Windows, Messages, *) {$ENDIF}
+  gdkpixbuf, glib, gtkdef, {$ENDIF} {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, Controls, SysUtils, DAV_MemoryUtils, DAV_GuiCommon,
   DAV_GuiCustomMap,  {$IFDEF MSWINDOWS} DAV_GuiByteMap, {$ENDIF} DAV_GuiBlend;
 
