@@ -45,7 +45,7 @@ type
 
   TPortableNetworkGraphic = class(TGuiCustomFileFormat)
   private
-    FCompressionLevel      : Byte;
+    FCompressionLevel : Byte;
     function GetBitDepth: Byte;
     function GetColorType: TColorType;
     function GetCompressionMethod: Byte;
@@ -140,7 +140,7 @@ type
     property BitDepth: Byte read GetBitDepth write SetBitDepth;
     property ColorType: TColorType read GetColorType write SetColorType;
     property CompressionMethod: Byte read GetCompressionMethod write SetCompressionMethod;
-    property CompressionLevel: Byte read FCompressionLevel write SetCompressionLevel;
+    property CompressionLevel: Byte read FCompressionLevel write SetCompressionLevel default 9;
     property FilterMethod: TFilterMethod read GetFilterMethod write SetFilterMethod;
     property InterlaceMethod: TInterlaceMethod read GetInterlaceMethod write SetInterlaceMethod;
     property PaletteEntry[index: Integer]: TRGB24 read GetPaletteEntry;
@@ -233,6 +233,7 @@ begin
  FImageHeader         := TChunkPngImageHeader.Create;
  FDataChunkList       := TPngChunkList.Create;
  FAdditionalChunkList := TPngChunkList.Create;
+ FCompressionLevel    := 9;
  inherited;
 end;
 

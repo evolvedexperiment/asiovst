@@ -35,16 +35,11 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Graphics, SysUtils, zlib, DAV_Classes, DAV_ChunkClasses,
-  DAV_GuiCommon, DAV_GuiPngChunks, DAV_GuiPngTypes;
+  Classes, Graphics, SysUtils, DAV_Classes, DAV_ChunkClasses, DAV_GuiCommon,
+  DAV_GuiPngChunks, DAV_GuiPngTypes;
 
 type
   TCustomPngCoder = class
-  private
-    procedure FilterSub(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
-    procedure FilterUp(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
-    procedure FilterAverage(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
-    procedure FilterPaeth(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
   protected
     FStream       : TStream;
     FHeader       : TChunkPngImageHeader;
@@ -53,7 +48,7 @@ type
 
     FRowBuffer    : array [0..1] of PByteArray;
     FMappingTable : PByteArray;
-    procedure FilterRow(FilterMethod: TAdaptiveFilterMethod; CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+
     procedure BuildMappingTable; virtual;
   public
     constructor Create(Stream: TStream; Header: TChunkPngImageHeader;
@@ -64,12 +59,26 @@ type
   TScanLineCallback = function(Bitmap: TObject; Y: Integer): Pointer of object;
 
   TCustomPngDecoder = class(TCustomPngCoder)
+  protected
+    procedure FilterSub(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+    procedure FilterUp(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+    procedure FilterAverage(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+    procedure FilterPaeth(CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+
+    procedure DecodeFilterRow(FilterMethod: TAdaptiveFilterMethod; CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
   public
     procedure DecodeToScanline(Bitmap: TObject; ScanLineCallback: TScanLineCallback); virtual; abstract;
   end;
   TCustomPngDecoderClass = class of TCustomPngDecoder;
 
   TCustomPngEncoder = class(TCustomPngCoder)
+  protected
+    procedure FilterSub(CurrentRow, PreviousRow, OutputRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+    procedure FilterUp(CurrentRow, PreviousRow, OutputRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+    procedure FilterAverage(CurrentRow, PreviousRow, OutputRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+    procedure FilterPaeth(CurrentRow, PreviousRow, OutputRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
+
+    procedure EncodeFilterRow(CurrentRow, PreviousRow, OutputRow, TempBuffer: PByteArray; BytesPerRow, PixelByteSize: Integer);
   public
     procedure EncodeFromScanline(Bitmap: TObject; ScanLineCallback: TScanLineCallback); virtual; abstract;
   end;
@@ -544,7 +553,10 @@ begin
   end;
 end;
 
-procedure TCustomPngCoder.FilterSub(CurrentRow, PreviousRow: PByteArray;
+
+{ TCustomPngDecoder }
+
+procedure TCustomPngDecoder.FilterSub(CurrentRow, PreviousRow: PByteArray;
   BytesPerRow, PixelByteSize: Integer);
 {$IFDEF PUREPASCAL}
 var
@@ -580,7 +592,7 @@ asm
 {$ENDIF}
 end;
 
-procedure TCustomPngCoder.FilterUp(CurrentRow, PreviousRow: PByteArray;
+procedure TCustomPngDecoder.FilterUp(CurrentRow, PreviousRow: PByteArray;
   BytesPerRow, PixelByteSize: Integer);
 {$IFDEF PUREPASCAL}
 var
@@ -614,7 +626,7 @@ asm
 {$ENDIF}
 end;
 
-procedure TCustomPngCoder.FilterAverage(CurrentRow, PreviousRow: PByteArray;
+procedure TCustomPngDecoder.FilterAverage(CurrentRow, PreviousRow: PByteArray;
   BytesPerRow, PixelByteSize: Integer);
 var
   Index : Integer;
@@ -697,7 +709,7 @@ asm
 {$ENDIF}
 end;
 
-procedure TCustomPngCoder.FilterPaeth(CurrentRow, PreviousRow: PByteArray;
+procedure TCustomPngDecoder.FilterPaeth(CurrentRow, PreviousRow: PByteArray;
   BytesPerRow, PixelByteSize: Integer);
 var
   Index : Integer;
@@ -710,7 +722,7 @@ begin
          PreviousRow[Index - PixelByteSize])) and $FF;
 end;
 
-procedure TCustomPngCoder.FilterRow(FilterMethod: TAdaptiveFilterMethod;
+procedure TCustomPngDecoder.DecodeFilterRow(FilterMethod: TAdaptiveFilterMethod;
   CurrentRow, PreviousRow: PByteArray; BytesPerRow, PixelByteSize: Integer);
 begin
  case FilterMethod of
@@ -721,6 +733,122 @@ begin
   afmPaeth   : FilterPaeth(CurrentRow, PreviousRow, BytesPerRow, PixelByteSize);
   else raise Exception.Create(RCStrUnsupportedFilter);
  end;
+end;
+
+
+{ TCustomPngEncoder }
+
+procedure TCustomPngEncoder.FilterSub(CurrentRow, PreviousRow, OutputRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ // copy first pixel
+ Move(CurrentRow[1], OutputRow[1], PixelByteSize);
+
+ for Index := PixelByteSize + 1 to BytesPerRow
+  do OutputRow[Index] := (CurrentRow[Index] - CurrentRow[Index - PixelByteSize]) and $FF;
+end;
+
+procedure TCustomPngEncoder.FilterUp(CurrentRow, PreviousRow, OutputRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ for Index := 1 to BytesPerRow
+  do OutputRow[Index] := (CurrentRow[Index] - PreviousRow[Index]) and $FF;
+end;
+
+procedure TCustomPngEncoder.FilterAverage(CurrentRow, PreviousRow, OutputRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ for Index := 1 to PixelByteSize
+  do OutputRow[Index] := (CurrentRow[Index] - PreviousRow[Index] shr 1) and $FF;
+
+ for Index := PixelByteSize + 1 to BytesPerRow
+  do OutputRow[Index] := (CurrentRow[Index] - (CurrentRow[Index - PixelByteSize] + PreviousRow[Index]) shr 1) and $FF;
+end;
+
+procedure TCustomPngEncoder.FilterPaeth(CurrentRow, PreviousRow, OutputRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ FilterUp(CurrentRow, PreviousRow, OutputRow, PixelByteSize, PixelByteSize);
+
+ for Index := PixelByteSize + 1 to BytesPerRow
+  do OutputRow[Index] := (CurrentRow[Index] -
+       PaethPredictor(CurrentRow[Index - PixelByteSize], PreviousRow[Index],
+         PreviousRow[Index - PixelByteSize])) and $FF;
+end;
+
+procedure TCustomPngEncoder.EncodeFilterRow(CurrentRow, PreviousRow,
+  OutputRow, TempBuffer: PByteArray; BytesPerRow, PixelByteSize: Integer);
+var
+  PixelIndex : Integer;
+  CurrentSum : Cardinal;
+  BestSum    : Cardinal;
+begin
+ BestSum := 0;
+ CurrentSum := 0;
+ OutputRow^[0] := 0;
+ for PixelIndex := 1 to BytesPerRow
+  do BestSum := BestSum + CurrentRow[PixelIndex];
+ Move(CurrentRow^[0], OutputRow^[0], BytesPerRow + 1);
+
+ // calculate sub filter
+ FilterSub(CurrentRow, PreviousRow, TempBuffer, BytesPerRow, PixelByteSize);
+ for PixelIndex := 1 to BytesPerRow
+  do CurrentSum := CurrentSum + TempBuffer[PixelIndex];
+
+ // check if sub filter is the current best filter
+ if CurrentSum < BestSum then
+  begin
+   CurrentSum := BestSum;
+   Move(TempBuffer^[1], OutputRow^[1], BytesPerRow + 1);
+   OutputRow^[0] := 1;
+  end;
+
+ // calculate up filter
+ FilterUp(CurrentRow, PreviousRow, TempBuffer, BytesPerRow, PixelByteSize);
+ for PixelIndex := 1 to BytesPerRow
+  do CurrentSum := CurrentSum + TempBuffer[PixelIndex];
+
+ // check if up filter is the current best filter
+ if CurrentSum < BestSum then
+  begin
+   CurrentSum := BestSum;
+   Move(TempBuffer^[1], OutputRow^[1], BytesPerRow + 1);
+   OutputRow^[0] := 2;
+  end;
+
+ // calculate average filter
+ FilterAverage(CurrentRow, PreviousRow, TempBuffer, BytesPerRow, PixelByteSize);
+ for PixelIndex := 1 to BytesPerRow
+  do CurrentSum := CurrentSum + TempBuffer[PixelIndex];
+
+ // check if average filter is the current best filter
+ if CurrentSum < BestSum then
+  begin
+   CurrentSum := BestSum;
+   Move(TempBuffer^[1], OutputRow^[1], BytesPerRow + 1);
+   OutputRow^[0] := 3;
+  end;
+
+ // calculate paeth filter
+ FilterPaeth(CurrentRow, PreviousRow, TempBuffer, BytesPerRow, PixelByteSize);
+ for PixelIndex := 1 to BytesPerRow
+  do CurrentSum := CurrentSum + TempBuffer[PixelIndex];
+
+ // check if paeth filter is the current best filter
+ if CurrentSum < BestSum then
+  begin
+   CurrentSum := BestSum;
+   Move(TempBuffer^[1], OutputRow^[1], BytesPerRow + 1);
+   OutputRow^[0] := 4;
+  end;
 end;
 
 
@@ -764,7 +892,8 @@ begin
     then raise Exception.Create(RCStrDataIncomplete);
 
    // filter current row
-   FilterRow(TAdaptiveFilterMethod(FRowBuffer[CurrentRow]^[0]), FRowBuffer[CurrentRow], FRowBuffer[1 - CurrentRow], FBytesPerRow, PixelByteSize);
+   DecodeFilterRow(TAdaptiveFilterMethod(FRowBuffer[CurrentRow]^[0]),
+     FRowBuffer[CurrentRow], FRowBuffer[1 - CurrentRow], FBytesPerRow, PixelByteSize);
 
    // transfer data from row to image
    TransferData(@FRowBuffer[CurrentRow][1], ScanLineCallback(Bitmap, Index));
@@ -1149,7 +1278,7 @@ begin
       if FStream.Read(FRowBuffer[CurrentRow][0], RowByteSize + 1) <> (RowByteSize + 1)
        then raise Exception.Create(RCStrDataIncomplete);
 
-      FilterRow(TAdaptiveFilterMethod(FRowBuffer[CurrentRow]^[0]), FRowBuffer[CurrentRow], FRowBuffer[1 - CurrentRow], RowByteSize, PixelByteSize);
+      DecodeFilterRow(TAdaptiveFilterMethod(FRowBuffer[CurrentRow]^[0]), FRowBuffer[CurrentRow], FRowBuffer[1 - CurrentRow], RowByteSize, PixelByteSize);
 
       // transfer and deinterlace image data
       TransferData(CurrentPass, @FRowBuffer[CurrentRow][1], ScanLineCallback(Bitmap, PassRow));
@@ -1989,25 +2118,55 @@ procedure TCustomPngNonInterlacedEncoder.EncodeFromScanline(Bitmap: TObject;
 var
   Index      : Integer;
   CurrentRow : Integer;
+  OutputRow  : PByteArray;
+  TempBuffer : PByteArray;
 begin
  // initialize variables
  CurrentRow := 0;
  FillChar(FRowBuffer[1 - CurrentRow]^[0], FRowByteSize, 0);
 
- for Index := 0 to FHeader.Height - 1 do
+ // check if pre filter is used and eventually calculate pre filter
+ if FHeader.ColorType <> ctIndexedColor then
   begin
-   // set filter method to none
-   FRowBuffer[CurrentRow]^[0] := 0;
+   Assert(FRowByteSize = FBytesPerRow + 1);
+   GetMem(OutputRow, FRowByteSize);
+   GetMem(TempBuffer, FRowByteSize);
+   try
+    for Index := 0 to FHeader.Height - 1 do
+     begin
+      // transfer data from image to current row
+      TransferData(ScanLineCallback(Bitmap, Index), @FRowBuffer[CurrentRow][1]);
 
-   // transfer data from image to current row
-   TransferData(ScanLineCallback(Bitmap, Index), @FRowBuffer[CurrentRow][1]);
+      // filter current row
+      EncodeFilterRow(FRowBuffer[CurrentRow], FRowBuffer[1 - CurrentRow],
+        OutputRow, TempBuffer, FBytesPerRow, FHeader.PixelByteSize);
 
-   // write data to data stream
-   FStream.Write(FRowBuffer[CurrentRow][0], FRowByteSize);
+      // write data to data stream
+      FStream.Write(OutputRow[0], FRowByteSize);
 
-   // flip current row used
-   CurrentRow := 1 - CurrentRow;
-  end;
+      // flip current row used
+      CurrentRow := 1 - CurrentRow;
+     end;
+   finally
+    Dispose(OutputRow);
+    Dispose(TempBuffer);
+   end;
+  end
+ else
+  for Index := 0 to FHeader.Height - 1 do
+   begin
+    // transfer data from image to current row
+    TransferData(ScanLineCallback(Bitmap, Index), @FRowBuffer[CurrentRow][1]);
+
+    // set filter method to none
+    FRowBuffer[CurrentRow][0] := 0;
+
+    // write data to data stream
+    FStream.Write(FRowBuffer[CurrentRow][0], FRowByteSize);
+
+    // flip current row used
+    CurrentRow := 1 - CurrentRow;
+   end;
 end;
 
 

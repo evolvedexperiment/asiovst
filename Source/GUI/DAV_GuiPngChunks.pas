@@ -35,9 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Graphics, SysUtils,
-  DAV_Types, DAV_ChunkClasses, DAV_GuiCommon, DAV_GuiPngTypes,
-  DAV_GuiPngClasses;
+  Classes, Graphics, SysUtils, DAV_Types, DAV_ChunkClasses, DAV_GuiCommon,
+  DAV_GuiPngTypes, DAV_GuiPngClasses;
 
 type
   TCustomChunkPng = class(TDefinedChunk)
