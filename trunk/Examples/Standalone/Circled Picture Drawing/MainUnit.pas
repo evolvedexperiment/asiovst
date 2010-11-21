@@ -345,6 +345,8 @@ begin
 end;
 
 procedure TFmCircledPictureDialog.FormShow(Sender: TObject);
+var
+  FN : TFileName;
 begin
  {$IFDEF UseInifiles}
  with TIniFile.Create(FIniFileName) do
@@ -533,7 +535,7 @@ var
 begin
  Dir := ExtractFileDir(ParamStr(0));
  if SelectDirectory(Dir, [sdAllowCreate, sdPerformCreate, sdPrompt], 0)
-  then SaveAnimation(Dir, 2);
+  then SaveAnimation(Dir, 2, True);
 end;
 
 procedure TFmCircledPictureDialog.MiSaveHighResolutionClick(Sender: TObject);
@@ -1431,13 +1433,21 @@ end;
 procedure TFmCircledPictureDialog.SaveAnimation(FileName: TFileName;
   ScaleFactor: Single; AnimatedCircle: Boolean = False);
 var
-  Drawing    : TGuiPixelMapMemory;
-  Circle     : TGuiPixelFilledCircle;
-  OffsetX    : TFixed24Dot8Point;
-  OffsetY    : TFixed24Dot8Point;
-  FrameIndex : Integer;
-  Index      : Integer;
-  IntScale   : Integer;
+  Drawing       : TGuiPixelMapMemory;
+  BackDraw      : TGuiPixelMapMemory;
+  Circle        : TGuiPixelFilledCircle;
+  OffsetX       : TFixed24Dot8Point;
+  OffsetY       : TFixed24Dot8Point;
+  FrameIndex    : Integer;
+  Index         : Integer;
+  IntScale      : Integer;
+  FinalRadius   : TFixed24Dot8Point;
+  FixedOneThird : TFixed24Dot8Point;
+  TempRect      : TRect;
+  FinalAlpha    : Byte;
+const
+  pxShadeBlack32 : TPixel32 = (ARGB : $1F000000);
+  pxShadeWhite32 : TPixel32 = (ARGB : $1FFFFFFF);
 begin
  with TFmProgressBar.Create(Self) do
   try
@@ -1445,7 +1455,8 @@ begin
    Drawing := TGuiPixelMapMemory.Create;
    Drawing.Width := Round(2 * ScaleFactor * FBestDrawing.Width);
    Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
-   Drawing.Clear;
+   Drawing.Clear(pxBlack32);
+   Drawing.MakeOpaque;
    Drawing.SaveToFile(FileName + '\Frame0.png');
 
    Circle := TGuiPixelFilledCircle.Create;
@@ -1456,33 +1467,121 @@ begin
 
    if AnimatedCircle then
     begin
-     ProgressBar.Max := Length(FCircles);
-     for FrameIndex := 0 to Length(FCircles) - 1 do
-      begin
-       Drawing.Clear;
+     // initialize
+     FixedOneThird := ConvertToFixed24Dot8Point(0.3333);
+     FrameIndex := 0;
+     ProgressBar.Max := 2 * Length(FCircles) + 16;
 
-       for Index := 0 to FrameIndex - 1 do
-        if Assigned(FCircles[Index]) then
-         with FCircles[Index] do
-          begin
-           Circle.GeometricShape.Radius  := FixedMul(GeometricShape.Radius, IntScale);
-           Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
-           Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
-           Circle.Draw(Drawing);
-          end;
+     // create temporary drawing
+     BackDraw := TGuiPixelMapMemory.Create;
+     try
+      for Index := 0 to Length(FCircles) - 1 do
+       if Assigned(FCircles[Index]) then
+        with FCircles[Index] do
+         begin
+          // general steps
+          BackDraw.Assign(Drawing);
+          Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
+          Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
+          Circle.Color := Color;
 
-        if Assigned(FCircles[FrameIndex]) then
-         with FCircles[FrameIndex] do
-          begin
-           Circle.GeometricShape.Radius  := FixedMul(GeometricShape.Radius, IntScale);
-           Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
-           Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
-           Circle.Draw(Drawing);
-          end;
+          // define final values
+          FinalRadius := FixedMul(GeometricShape.Radius, IntScale);
+          FinalAlpha := Alpha;
 
-       Drawing.ResetAlpha;
-       Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
-      end;
+          // set start values
+          Circle.GeometricShape.Radius := CFixed24Dot8One;
+          Circle.Alpha := 1;
+
+          ProgressBar.StepIt;
+
+          while Circle.GeometricShape.Radius.Fixed < FinalRadius.Fixed do
+           begin
+            // calculate alpha
+            Circle.Alpha := Round(FinalAlpha * (Circle.GeometricShape.Radius.Fixed / FinalRadius.Fixed)) and $FF;
+
+            // render circle
+            Circle.Draw(Drawing);
+
+            // advance radius
+            with Circle.GeometricShape do
+             begin
+              Radius := FixedAdd(Radius, FixedMul(FixedSub(FinalRadius, Radius), FixedOneThird));
+              Radius := FixedMul(Radius, ConvertToFixed24Dot8Point(1.1));
+              Radius := FixedAdd(Radius, CFixed24Dot8One);
+             end;
+
+            // finalize and save drawing
+            Drawing.MakeOpaque;
+            if not Drawing.Equals(BackDraw) then
+             begin
+              Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
+              Inc(FrameIndex);
+             end
+            else Continue;
+
+            // reset drawing
+            Drawing.Assign(BackDraw);
+            Application.ProcessMessages;
+           end;
+
+          // draw desired circle
+          Circle.GeometricShape.Radius := FinalRadius;
+          Circle.Alpha := FinalAlpha;
+          Circle.Draw(Drawing);
+
+          // finalize and save drawing
+          Drawing.MakeOpaque;
+          Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
+          Inc(FrameIndex);
+
+          ProgressBar.StepIt;
+          Application.ProcessMessages;
+         end;
+
+      // blend over reference
+      for Index := 0 to 15 do
+       begin
+        TempRect := Rect(0, 0, (Drawing.Width div 4) - 1, Drawing.Height);
+        Drawing.FillRect(TempRect, pxShadeBlack32);
+
+        TempRect := Rect(Drawing.Width - (Drawing.Width div 4) + 1, 0, Drawing.Width, Drawing.Height);
+        Drawing.FillRect(TempRect, pxShadeBlack32);
+
+        TempRect := Rect((Drawing.Width div 4) - 1, 0,
+          Drawing.Width - (Drawing.Width div 4) + 1, (Drawing.Height div 4) - 1);
+        Drawing.FillRect(TempRect, pxShadeBlack32);
+
+        TempRect := Rect((Drawing.Width div 4) - 1,
+          Drawing.Height - (Drawing.Height div 4) + 1,
+          Drawing.Width - (Drawing.Width div 4) + 1, Drawing.Height);
+        Drawing.FillRect(TempRect, pxShadeBlack32);
+
+        TempRect := Rect((Drawing.Width div 4), (Drawing.Height div 4),
+          (Drawing.Width - Drawing.Width div 4),
+          (Drawing.Height - Drawing.Height div 4));
+        Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+        Dec(TempRect.Left);
+        Dec(TempRect.Top);
+        Inc(TempRect.Right);
+        Inc(TempRect.Bottom);
+        Drawing.FrameRect(TempRect, pxShadeWhite32);
+        Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+        Dec(TempRect.Left);
+        Dec(TempRect.Top);
+        Inc(TempRect.Right);
+        Inc(TempRect.Bottom);
+        Drawing.FrameRect(TempRect, pxShadeWhite32);
+        Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
+
+        ProgressBar.StepIt;
+        Application.ProcessMessages;
+       end;
+     finally
+      FreeAndNil(BackDraw);
+     end;
     end
    else
     begin
@@ -1497,20 +1596,26 @@ begin
          Circle.Color := Color;
          Circle.Alpha := Alpha;
          Circle.Draw(Drawing);
-         Drawing.ResetAlpha;
+
+         // finalize and save drawing
+         Drawing.MakeOpaque;
          Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Index + 1) + '.png');
+
          ProgressBar.StepIt;
          Application.ProcessMessages;
         end;
-     (*
+
+(*
+     // blend over reference
      for Index := 0 to 15 do
       begin
        Drawing.Draw(FReference, Drawing.Width div 4, Drawing.Height div 4, $8);
+       Drawing.MakeOpaque;
        Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Length(FCircles) + Index + 1) + '.png');
        ProgressBar.StepIt;
        Application.ProcessMessages;
       end;
-      *)
+*)
     end;
   finally
    if Assigned(Circle) then FreeAndNil(Circle);

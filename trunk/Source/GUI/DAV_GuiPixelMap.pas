@@ -103,6 +103,7 @@ type
     procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32);
     procedure VerticalLine(X, FromY, ToY: Integer; Color: TPixel32);
     procedure Assign(Source: TPersistent); override;
+    function Equals(Obj: TObject): Boolean; override;
 
     property DataPointer: PPixel32Array read GetDataPointer;
     property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
@@ -723,6 +724,13 @@ begin
 
  if Result
   then Result := CompareMem(FDataPointer, PixelMap.FDataPointer, FDataSize);
+end;
+
+function TGuiCustomPixelMap.Equals(Obj: TObject): Boolean;
+begin
+ Result := inherited Equals(Obj);
+ if Obj is TGuiCustomPixelMap
+  then Result := Equal(TGuiCustomPixelMap(Obj));
 end;
 
 procedure TGuiCustomPixelMap.ReadData(Stream: TStream);
