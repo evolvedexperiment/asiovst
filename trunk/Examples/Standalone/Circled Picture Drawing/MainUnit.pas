@@ -1446,8 +1446,8 @@ var
   TempRect      : TRect;
   FinalAlpha    : Byte;
 const
-  pxShadeBlack32 : TPixel32 = (ARGB : $1F000000);
-  pxShadeWhite32 : TPixel32 = (ARGB : $1FFFFFFF);
+  pxShadeBlack32 : TPixel32 = (ARGB : $10000000);
+  pxShadeWhite32 : TPixel32 = (ARGB : $0FFFFFFF);
 begin
  with TFmProgressBar.Create(Self) do
   try
@@ -1470,7 +1470,7 @@ begin
      // initialize
      FixedOneThird := ConvertToFixed24Dot8Point(0.3333);
      FrameIndex := 0;
-     ProgressBar.Max := 2 * Length(FCircles) + 16;
+     ProgressBar.Max := 2 * Length(FCircles) + 41;
 
      // create temporary drawing
      BackDraw := TGuiPixelMapMemory.Create;
@@ -1494,6 +1494,7 @@ begin
           Circle.Alpha := 1;
 
           ProgressBar.StepIt;
+          Application.ProcessMessages;
 
           while Circle.GeometricShape.Radius.Fixed < FinalRadius.Fixed do
            begin
@@ -1540,7 +1541,7 @@ begin
          end;
 
       // blend over reference
-      for Index := 0 to 15 do
+      for Index := 0 to 40 do
        begin
         TempRect := Rect(0, 0, (Drawing.Width div 4) - 1, Drawing.Height);
         Drawing.FillRect(TempRect, pxShadeBlack32);
@@ -1574,7 +1575,9 @@ begin
         Inc(TempRect.Right);
         Inc(TempRect.Bottom);
         Drawing.FrameRect(TempRect, pxShadeWhite32);
+        Drawing.MakeOpaque;
         Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
+        Inc(FrameIndex);
 
         ProgressBar.StepIt;
         Application.ProcessMessages;

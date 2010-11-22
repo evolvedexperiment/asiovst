@@ -32,11 +32,12 @@ unit NSFDmain;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus,
-  StdCtrls, Dialogs, DAV_Types, DAV_DspNoiseShapingFilterDesigner;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, Messages, {$ENDIF}SysUtils, Classes,
+  Graphics, Controls, Forms, Menus, StdCtrls, Dialogs, DAV_Types,
+  DAV_DspNoiseShapingFilterDesigner;
 
 type
   TFmNoiseshapingFilterDesigner = class(TForm)
@@ -59,7 +60,11 @@ var
 
 implementation
 
-{$R *.dfm}
+{$IFNDEF FPC}
+  {$R *.dfm}
+{$ELSE}
+  {$R *.lfm}
+{$ENDIF}
 
 procedure TFmNoiseshapingFilterDesigner.MIExitClick(Sender: TObject);
 begin
