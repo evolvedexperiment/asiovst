@@ -93,6 +93,7 @@ type
     FDrawing                 : TGuiCustomPixelMap;
     FNewDrawing              : TGuiCustomPixelMap;
     FBestDrawing             : TGuiCustomPixelMap;
+    FBackgroundColor         : TPixel32;
     FIniFileName             : TFileName;
     FDiffEvol                : TDifferentialEvolution;
     FEvolution               : TEvolutionThread;
@@ -151,8 +152,8 @@ type
     procedure DrawPopulation(Population: TDifferentialEvolutionPopulation;
       PixelMap: TGuiCustomPixelMap);
   public
-    procedure LoadReference(FileName: TFileName);
     function CalculateError(Sender: TObject; var Population: TDifferentialEvolutionPopulation): Double;
+    procedure LoadReference(FileName: TFileName);
     procedure Evolve;
     procedure InitializeEvolution(InitializePopulation: Boolean = True);
     procedure StartOptimization(InitializePopulation: Boolean = True);
@@ -268,6 +269,8 @@ begin
  FCorrectRadius := True;
  FCorrectPosition := True;
  FCorrectInvisibleCircles := True;
+
+ FBackgroundColor.ARGB := $FFFFFFFF;
 
  // create pixel maps
  FReference := TGuiPixelMapMemory.Create;
@@ -997,7 +1000,7 @@ begin
  if FRandomOrder then
   begin
    // clear pixel map
-   PixelMap.Clear;
+   PixelMap.Clear(FBackgroundColor);
 
    // draw background circles
    if FDrawDraft then
@@ -1304,21 +1307,21 @@ begin
   begin
    Width := FReference.Width;
    Height := FReference.Height;
-   Clear;
+   Clear(FBackgroundColor);
   end;
 
  with FNewDrawing do
   begin
    Width := FReference.Width;
    Height := FReference.Height;
-   Clear;
+   Clear(FBackgroundColor);
   end;
 
  with FBestDrawing do
   begin
    Width := FReference.Width;
    Height := FReference.Height;
-   Clear;
+   Clear(FBackgroundColor);
   end;
 
  PaintBoxRef.Width := FReference.Width;
@@ -1377,7 +1380,7 @@ begin
   Circles := TCircleChunkContainer.Create;
   Circles.LoadFromFile(FileName);
 
-  FDrawing.Clear;
+  FDrawing.Clear(FBackgroundColor);
   FCurrentCircle := Circles.Count;
 
   for Index := 0 to Length(FCircles) - 1
@@ -1455,7 +1458,7 @@ begin
    Drawing := TGuiPixelMapMemory.Create;
    Drawing.Width := Round(2 * ScaleFactor * FBestDrawing.Width);
    Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
-   Drawing.Clear(pxBlack32);
+   Drawing.Clear(FBackgroundColor);
    Drawing.MakeOpaque;
    Drawing.SaveToFile(FileName + '\Frame0.png');
 
@@ -1664,7 +1667,7 @@ begin
   DrawingHR := TGuiPixelMapMemory.Create;
   DrawingHR.Width := 4 * FBestDrawing.Width;
   DrawingHR.Height := 4 * FBestDrawing.Height;
-  DrawingHR.Clear;
+  DrawingHR.Clear(FBackgroundColor);
 
   Circle := TGuiPixelFilledCircle.Create;
   try
@@ -1703,7 +1706,7 @@ begin
   Drawing := TGuiPixelMapMemory.Create;
   Drawing.Width := 3 * FBestDrawing.Width;
   Drawing.Height := 3 * FBestDrawing.Height;
-  Drawing.Clear;
+  Drawing.Clear(FBackgroundColor);
 
   Circle := TGuiPixelFilledCircle.Create;
   try

@@ -693,13 +693,6 @@ var
   GDebugLog    : TStringList;
   {$ENDIF}
 
-
-const
-  SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
-  SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
-  SCRoundDown8087CW : Word = $173F; // exceptions disabled
-  SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
-
 ///////////////////////////////////////////////////////////////////////////////
 
 {$IFDEF Debug64}
@@ -809,18 +802,6 @@ begin
  if (Value and (1 shl 14)) <> 0 then Result := Result + [vtiSmpteValid];
  if (Value and (1 shl 15)) <> 0 then Result := Result + [vtiClockValid];
 end;
-
-procedure DontRaiseExceptionsAndSetFPUcodeword;
-{$IFDEF PUREPASCAL}
-begin
-
-end;
-{$ELSE}
-asm
- fnclex                  // Don't raise pending exceptions enabled by the new flags
- fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
-end;
-{$ENDIF}
 
 function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 var

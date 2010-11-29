@@ -56,10 +56,13 @@ object FmVectorGraphicTest: TFmVectorGraphicTest
       'Filled Rectangle'
       'Filled Rounded Rectangle'
       'Filled Circle'
+      'Filled Circle Sector'
       'Filled Ellipse'
       'Framed Rectangle'
       'Framed Rounded Rectangle'
       'Framed Circle'
+      'Framed Circle Sector'
+      'Framed Ellipse'
       'Thin Line'
       'Line')
   end

@@ -170,7 +170,7 @@ end;
 
 function TCustomVstProgram.GetParameter(AIndex: Integer): Single;
 begin
- assert(FVSTModule is TVSTModuleWithPrograms);
+ Assert(FVSTModule is TVSTModuleWithPrograms);
  if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(FVSTModule).numParams)
   then Result := FParameter[AIndex] else
    begin
@@ -186,18 +186,18 @@ end;
 
 procedure TCustomVstProgram.SetParameters(const Parameters: array of Single);
 var
-  i : Integer;
+  Index : Integer;
 begin
  if Length(Parameters) = 0 then exit;
  if Length(Parameters) > ParameterCount
   then raise Exception.CreateFmt(RCStrParameterMismatch, [Length(Parameters)]);
- for i := 0 to Length(Parameters) - 1
-  do Parameter[i] := Parameters[i];
+ for Index := 0 to Length(Parameters) - 1
+  do Parameter[Index] := Parameters[Index];
 end;
 
 function TCustomVstProgram.ParameterCount: Integer;
 begin
-  result := Length(FParameter);
+ Result := Length(FParameter);
 end;
 
 

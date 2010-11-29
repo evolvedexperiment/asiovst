@@ -140,11 +140,12 @@ end;
 
 procedure TFmVectorGraphicTest.CbTestTypeChange(Sender: TObject);
 const
-  CPrimitiveClasses : array [0..8] of TCustomGuiPixelPrimitiveClass = (
+  CPrimitiveClasses : array [0..11] of TCustomGuiPixelPrimitiveClass = (
     TGuiPixelFilledRectangle, TGuiPixelFilledRoundedRectangle,
-    TGuiPixelFilledCircle, TGuiPixelFilledEllipse, TGuiPixelFrameRectangle,
-    TGuiPixelFrameRoundedRectangle, TGuiPixelFrameCircle, TGuiPixelThinLine,
-    TGuiPixelLine);
+    TGuiPixelFilledCircle, TGuiPixelFilledCircleSector, TGuiPixelFilledEllipse,
+    TGuiPixelFrameRectangle, TGuiPixelFrameRoundedRectangle,
+    TGuiPixelFrameCircle, TGuiPixelFrameCircleSector, TGuiPixelFrameEllipse,
+    TGuiPixelThinLine, TGuiPixelLine);
 begin
  Assert(CbTestType.Items.Count = Length(CPrimitiveClasses));
  FPrimitiveClass := CPrimitiveClasses[CbTestType.ItemIndex];
@@ -209,6 +210,8 @@ begin
        Top := ConvertToFixed24Dot8Point(Random(2 * (FPixelMap.Height - 1)) - FPixelMap.Height div 2 + Random);
        Right := FixedAdd(Left, ConvertToFixed24Dot8Point(Random(FPixelMap.Width - 1)));
        Bottom := FixedAdd(Top, ConvertToFixed24Dot8Point(Random(FPixelMap.Height - 1)));
+       if GeometricShape is TGuiRoundedRectangle
+        then TGuiRoundedRectangle(GeometricShape).BorderRadius := ConvertToFixed24Dot8Point(0.5 * Height * Random);
       end else
     if GeometricShape is TGuiLine then
      with FPixelMap, TGuiLine(GeometricShape) do

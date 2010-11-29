@@ -129,7 +129,7 @@ implementation
 
 uses
   {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils, Math,
-  DAV_VSTCustomModule, DAV_VSTBasicModule;
+  DAV_Common, DAV_VSTCustomModule, DAV_VSTBasicModule;
 
 resourcestring
   RStrUndefined = 'undefined';
@@ -190,16 +190,27 @@ begin
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
   then Result := AnsiString(RStrUndefined)
   else
-   begin
-    if (effFlagsProgramChunks in FEffect.EffectFlags)
-     then Result := AnsiString(FloatToStr(FOnGetChunkParamEvent(Self, Index)))
-     else if (numPrograms > 0)
-      then Result := AnsiString(FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4))
-      else Result := AnsiString(FloatToStrF(FParameter[Index], ffGeneral, 4, 4));
-
+   try
+    if (effFlagsProgramChunks in FEffect.EffectFlags) then
+     begin
+      Assert(Assigned(FOnGetChunkParamEvent));
+      Result := FloatToAnsiString(FOnGetChunkParamEvent(Self, Index));
+     end else
+    if (numPrograms > 0) then
+     begin
+      Assert(FCurProgram < numPrograms);
+      Assert(Index < numParams);
+      Assert(not IsNaN(Programs[FCurProgram].Parameter[Index]));
+      Assert(Programs[FCurProgram].Parameter[Index] >= ParameterProperties[Index].Min);
+      Assert(Programs[FCurProgram].Parameter[Index] <= ParameterProperties[Index].Max);
+      Result := FloatToAnsiString(Programs[FCurProgram].Parameter[Index], 4);
+     end
+    else Result := FloatToAnsiString(FParameter[Index], 4);
     with FParameterProperties[Index] do
      if Assigned(OnCustomParameterDisplay)
       then OnCustomParameterDisplay(Self, Index, Result);
+   except
+    Result := 'error';
    end;
 
  if FTruncateStrings and (Length(Result) > 8)
@@ -246,7 +257,7 @@ procedure TVSTModuleWithPrograms.HostCallSetParameter(const Index: Integer; cons
 begin
  {$IFDEF DebugLog}
  AddLogMessage('HostCallSetParameter: Index = ' + IntToStr(Index) +
-   ' Value = ' + FloatToStr(Value));
+   ' Value = ' + FloatToString(Value));
  {$ENDIF}
 
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count)) then
@@ -549,7 +560,7 @@ begin
    if (Index = Integer(effGetParamDisplay)) and
       Assigned(ptr) and (Value >= 0) and (Value < numParams) then
     begin
-     ParamStr := AnsiString(FloatToStrF(Opt, ffGeneral, 5, 5));
+     ParamStr := FloatToAnsiString(Opt, 5);
      with ParameterProperties[Value] do
       begin
        if Assigned(OnCustomParameterDisplay)
@@ -855,7 +866,7 @@ function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Inde
 begin
  {$IFDEF DebugLog}
  AddLogMessage('Parameter2VSTParameter: Index = ' + IntToStr(Index) +
-   ' Value = ' + FloatToStr(Value));
+   ' Value = ' + FloatToString(Value));
  {$ENDIF}
 
  Result := 0;
@@ -872,17 +883,17 @@ begin
     end;
 
     if Curve in [ctLogarithmic, ctExponential]
-     then AddLogMessage('Parameter2VSTParameter: CurveFactor = ' + FloatToStr(CurveFactor));
+     then AddLogMessage('Parameter2VSTParameter: CurveFactor = ' + FloatToString(CurveFactor));
 
-    AddLogMessage('Parameter2VSTParameter: Min = ' + FloatToStr(Min) +
-      ' Max = ' + FloatToStr(Max));
+    AddLogMessage('Parameter2VSTParameter: Min = ' + FloatToString(Min) +
+      ' Max = ' + FloatToString(Max));
     {$ENDIF}
 
     Result := Parameter2VSTParameter(Value);
    end;
 
  {$IFDEF DebugLog}
- AddLogMessage('Parameter2VSTParameter: Result = ' + FloatToStr(Result));
+ AddLogMessage('Parameter2VSTParameter: Result = ' + FloatToString(Result));
  {$ENDIF}
 end;
 
@@ -890,7 +901,7 @@ function TVSTModuleWithPrograms.VSTParameter2Parameter(const Value: Single; Inde
 begin
  {$IFDEF DebugLog}
  AddLogMessage('VSTParameter2Parameter: Index = ' + IntToStr(Index) +
-   ' Value = ' + FloatToStr(Value));
+   ' Value = ' + FloatToString(Value));
  {$ENDIF}
 
  Result := 0;
@@ -898,7 +909,7 @@ begin
   then Result := FParameterProperties[Index].VSTParameter2Parameter(Value);
 
  {$IFDEF DebugLog}
- AddLogMessage('VSTParameter2Parameter: Result = ' + FloatToStr(Result));
+ AddLogMessage('VSTParameter2Parameter: Result = ' + FloatToString(Result));
  {$ENDIF}
 end;
 
@@ -985,7 +996,7 @@ procedure TVSTModuleWithPrograms.SetParameterDirect(const Index: Integer; Value:
 begin
  {$IFDEF DebugLog}
  AddLogMessage('SetParameterDirect: Index = ' + IntToStr(Index) +
-   '; Value = ' + FloatToStr(Value));
+   '; Value = ' + FloatToString(Value));
  {$ENDIF}
 
  // check parameter index is valid

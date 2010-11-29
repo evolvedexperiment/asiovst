@@ -152,6 +152,7 @@ function FastRound(Sample: Double): Integer; overload;
 
 function OnOff(const Value: Single): Boolean;
 function unDenormalize(const Value: Single): Single;
+procedure DontRaiseExceptionsAndSetFPUcodeword;
 
 { String Stuff & Messages }
 
@@ -176,10 +177,13 @@ procedure Msg(m: string; i: Integer); overload;
 {$ENDIF}
 {$ENDIF}
 
-function FloatWithUnit(const Value: Double):string;
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 function MakeGoodFileName(s: string): string;
 {$ENDIF}
+
+function FloatWithUnit(const Value: Double): string;
+function FloatToString(Value: Extended; Digits: Integer = -1): string;
+function FloatToAnsiString(Value: Extended; Digits: Integer = -1): AnsiString;
 
 {$IFDEF MSWINDOWS}
 {$IFDEF CPU386}
@@ -219,7 +223,6 @@ implementation
 
 uses
   Math, SysUtils;
-
 
 { Byte Ordering }
 
@@ -1249,6 +1252,17 @@ begin
   else Result := Value;
 end;
 
+procedure DontRaiseExceptionsAndSetFPUcodeword;
+const
+  SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
+  SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
+  SCRoundDown8087CW : Word = $173F; // exceptions disabled
+  SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
+asm
+ fnclex                  // Don't raise pending exceptions enabled by the new flags
+ fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
+end;
+
 
 { String Functions }
 
@@ -1294,15 +1308,6 @@ begin MessageBox(0, PAnsiChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
 {$ENDIF}
 {$WARNINGS ON}
 
-function FloatWithUnit(const Value: Double): string;
-begin
- if Value > 1    then Result := FloatToStrF(Value, ffFixed, 6, 3)+ 's' else
- if Value > 1E-3 then Result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms' else
- if Value > 1E-6
-  then Result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
-  else Result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
-end;
-
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 var
   C : Integer;
@@ -1335,6 +1340,48 @@ begin
    else Result := Result + '-';
 end;
 {$ENDIF}
+
+function FloatWithUnit(const Value: Double): string;
+begin
+ if Value > 1    then Result := FloatToStrF(Value, ffFixed, 6, 3)+ 's' else
+ if Value > 1E-3 then Result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms' else
+ if Value > 1E-6
+  then Result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
+  else Result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
+end;
+
+function FloatToString(Value: Extended; Digits: Integer = -1): string;
+begin
+ {$IFDEF UseNativeFloatToStringConversion}
+ if Digits >= 0
+  then Result := FloatToStrF(Value, ffGeneral, Digits, Digits)
+  else Result := FloatToStr(Value);
+ {$ELSE}
+ if IsNan(Value)
+  then Result := 'Error' else
+ if IsInfinite(Value)
+  then Result := 'oo'
+  else
+ Result := IntToStr(Round(Value));
+ {$ENDIF}
+end;
+
+function FloatToAnsiString(Value: Extended; Digits: Integer = -1): AnsiString;
+begin
+ {$IFDEF UseNativeFloatToStringConversion}
+ if Digits >= 0
+  then Result := FloatToStrF(Value, ffGeneral, Digits, Digits)
+  else Result := FloatToStr(Value);
+ {$ELSE}
+ if IsNan(Value)
+  then Result := 'Error' else
+ if IsInfinite(Value)
+  then Result := 'oo'
+  else
+ Result := IntToStr(Round(Value));
+ {$ENDIF}
+end;
+
 
 {$DEFINE PUREPASCAL}
 

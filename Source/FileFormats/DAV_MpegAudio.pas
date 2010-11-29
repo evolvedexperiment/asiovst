@@ -383,7 +383,7 @@ type
     Genre   : Byte;
   end;
 
-  TCustomMpegAudio = class(TObject)
+  TCustomMpegAudio = class(TPersistent)
   private
     FBitStream      : TBitStream;
     FMPEGHeader     : THeader;
@@ -434,12 +434,6 @@ type
     procedure ReadTitle(ChunkSize: Integer); virtual;
     procedure ReadYear(ChunkSize: Integer); virtual;
     procedure ParseID3v2Tag; virtual;
-  public
-    constructor Create(Filename: TFileName; Scan: Boolean = True); overload; virtual;
-    constructor Create(Stream: TStream; Scan: Boolean = True); overload; virtual;
-    destructor Destroy; override;
-    procedure Reset;
-    function ReadBuffer(chLeft, chRight: PDAVSingleFixedArray; Size: Integer): Integer;
 
     property Id3Tag: TId3Tag read FId3Tag;
     property Id3Title: string read GetTitle;
@@ -463,10 +457,17 @@ type
 
     property OnEndOfFile: TNotifyEvent read FOnEndOfFile write FOnEndOfFile;
     property OnFrameChanged: TNotifyEvent read FOnFrameChanged write FOnFrameChanged;
+  public
+    constructor Create(Filename: TFileName; Scan: Boolean = True); overload; virtual;
+    constructor Create(Stream: TStream; Scan: Boolean = True); overload; virtual;
+    destructor Destroy; override;
+
+    procedure Reset;
+    function ReadBuffer(chLeft, chRight: PDAVSingleFixedArray; Size: Integer): Integer;
   end;
 
   TMpegAudio = class(TCustomMpegAudio)
-  published
+  public
     property Id3Title;
     property Id3Artist;
     property Id3Album;

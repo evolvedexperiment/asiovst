@@ -48,7 +48,6 @@ type
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
 
     property GeometricShape: TGuiLine read GetGeometricShape;
   end;
@@ -61,7 +60,6 @@ type
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
 
     property GeometricShape: TGuiLine read GetGeometricShape;
   end;
@@ -77,12 +75,6 @@ constructor TGuiPixelThinLine.Create;
 begin
  inherited;
  FGeometricShape := TGuiLine.Create;
-end;
-
-destructor TGuiPixelThinLine.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
 end;
 
 function TGuiPixelThinLine.GetGeometricShape: TGuiLine;
@@ -463,12 +455,6 @@ constructor TGuiPixelLine.Create;
 begin
  inherited;
  FGeometricShape := TGuiLine.Create;
-end;
-
-destructor TGuiPixelLine.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
 end;
 
 function TGuiPixelLine.GetGeometricShape: TGuiLine;

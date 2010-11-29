@@ -1521,8 +1521,8 @@ end;
 procedure TCustomVSTModule.UpdateVersion;
 begin
  if FVersionRelease < 100
-  then FEffect.version := 1000 * FVersionMajor + 100 * FVersionMinor + FVersionRelease
-  else FEffect.version := (FVersionMajor shl 16) + (FVersionMinor shl 8) + FVersionRelease;
+  then FEffect.Version := 1000 * FVersionMajor + 100 * FVersionMinor + FVersionRelease
+  else FEffect.Version := (FVersionMajor shl 16) + (FVersionMinor shl 8) + FVersionRelease;
 end;
 
 end.

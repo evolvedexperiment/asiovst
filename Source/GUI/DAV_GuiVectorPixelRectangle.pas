@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon, DAV_GuiFixedPoint,
-  DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixel;
+  Graphics, Types, Classes, SysUtils, DAV_Common, DAV_GuiCommon,
+  DAV_GuiFixedPoint, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixel;
 
 type
   TGuiPixelFilledRectangle = class(TCustomGuiPixelFillPrimitive)
@@ -47,7 +47,6 @@ type
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
 
     property GeometricShape: TGuiRectangle read GetGeometricShape;
   end;
@@ -60,7 +59,6 @@ type
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
 
     property GeometricShape: TGuiRectangle read GetGeometricShape;
   end;
@@ -73,7 +71,6 @@ type
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
 
     property GeometricShape: TGuiRoundedRectangle read GetGeometricShape;
   end;
@@ -86,7 +83,6 @@ type
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
 
     property GeometricShape: TGuiRoundedRectangle read GetGeometricShape;
   end;
@@ -103,12 +99,6 @@ constructor TGuiPixelFilledRectangle.Create;
 begin
  inherited;
  FGeometricShape := TGuiRectangle.Create;
-end;
-
-destructor TGuiPixelFilledRectangle.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
 end;
 
 procedure TGuiPixelFilledRectangle.DrawDraftShape(PixelMap: TGuiCustomPixelMap);
@@ -303,12 +293,6 @@ begin
  FGeometricShape := TGuiRectangle.Create;
 end;
 
-destructor TGuiPixelFrameRectangle.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
-end;
-
 function TGuiPixelFrameRectangle.GetGeometricShape: TGuiRectangle;
 begin
  Result := TGuiRectangle(FGeometricShape)
@@ -433,26 +417,21 @@ begin
  FGeometricShape := TGuiRoundedRectangle.Create;
 end;
 
-destructor TGuiPixelFilledRoundedRectangle.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
-end;
-
 procedure TGuiPixelFilledRoundedRectangle.DrawDraftShape(
   PixelMap: TGuiCustomPixelMap);
 var
-  X, Y              : Integer;
-  XStart            : Single;
-  SqrDist, SqrYDist : Single;
-  SqrRadMinusOne    : Single;
-  Temp              : Single;
-
-  XRange       : array [0..1] of Integer;
-  YRange       : array [0..1] of Integer;
-  Radius       : Integer;
-  ScnLne       : array [0..1] of PPixel32Array;
-  PixelColor32 : TPixel32;
+  X, Y           : Integer;
+  ScnLn          : PPixel32Array;
+  ClipRect       : TRect;
+  PixelColor32   : TPixel32;
+  RoundedRadius  : Integer;
+  MinYDistance   : Integer;
+  SqrDist        : TFixed24Dot8Point;
+  SqrYDist       : TFixed24Dot8Point;
+  SqrRadMinusOne : TFixed24Dot8Point;
+  XOffset        : Integer;
+  YRange         : array [0..1] of Integer;
+  XRange, XPos   : array [0..1] of Integer;
 
 begin
  PixelColor32 := ConvertColor(Color);
@@ -460,279 +439,226 @@ begin
 
  with PixelMap do
   begin
-(*
+   // assign and check geometric shape properties
    with GeometricShape do
     begin
-     XRange[0] := FixedFloor(Left);
-     XRange[1] := FixedCeil(Right);
+     RoundedRadius := FixedRound(BorderRadius);
+     Assert(RoundedRadius >= 0);
+
+     // assign x coordinates
+     ClipRect.Left := FixedRound(Left);
+     ClipRect.Right := FixedRound(Right);
 
      // check whether the bitmap needs to be drawn at all
-     if (XRange[0] >= Width) or (XRange[1] < 0) or (XRange[0] >= XRange[1])
+     if (ClipRect.Left >= Width) or (ClipRect.Right < 0) or
+        (ClipRect.Left >= ClipRect.Right)
       then Exit;
 
-     YRange[0] := FixedRound(Top);
-     YRange[1] := FixedRound(Bottom);
+     // assign y coordinates
+     ClipRect.Top := FixedRound(Top);
+     ClipRect.Bottom := FixedRound(Bottom);
 
-     // check whether the bitmap needs to be drawn at all
-     if (YRange[0] >= Height) or (YRange[1] < 0) or (YRange[0] >= YRange[1])
+     if (ClipRect.Top >= Height) or (ClipRect.Bottom < 0) or
+        (ClipRect.Top >= ClipRect.Bottom)
       then Exit;
 
-     Radius := FixedRound(BorderRadius);
+     // set y-range
+     if ClipRect.Top > 0
+      then YRange[0] := ClipRect.Top
+      else YRange[0] := 0;
+
+     if ClipRect.Bottom < Height - 1
+      then YRange[1] := ClipRect.Bottom
+      else YRange[1] := Height - 1;
+
+     // set x-range
+     if ClipRect.Left > 0
+      then XRange[0] := ClipRect.Left
+      else XRange[0] := 0;
+
+     if ClipRect.Right < Width - 1
+      then XRange[1] := ClipRect.Right
+      else XRange[1] := Width - 1;
+
+     // eventually limit round radius
+     if 2 * RoundedRadius > ClipRect.Right - ClipRect.Left
+      then RoundedRadius := (ClipRect.Right - ClipRect.Left) div 2;
+     if 2 * RoundedRadius > ClipRect.Bottom - ClipRect.Top
+      then RoundedRadius := (ClipRect.Bottom - ClipRect.Top) div 2;
     end;
 
-   // draw circle
-   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
-
-   for Y := 0 to Round(Radius) - 1  do
+   for Y := YRange[0] to YRange[1] do
     begin
-     SqrYDist := Sqr(Y - (Radius - 1));
-     XStart := Sqr(Radius) - SqrYDist;
-     if XStart <= 0
-      then Continue
-      else XStart := Sqrt(XStart) - 0.5;
-     ScnLne[0] := Scanline[Y];
-     ScnLne[1] := Scanline[Height - 1 - Y];
+     Assert(Y >= 0);
+     Assert(Y < Height);
+     ScnLn := Scanline[Y];
 
-     for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
+     XPos[0] := XRange[0];
+     XPos[1] := XRange[1];
+
+     // calculate minimal y distance
+     MinYDistance := Y - ClipRect.Top;
+     if ClipRect.Bottom - Y < MinYDistance
+      then MinYDistance := ClipRect.Bottom - Y;
+
+     // check whether rounded border offset needs to be applied
+     if (MinYDistance < RoundedRadius) then
       begin
-       // calculate squared distance
-       if X < (Radius - 1)
-        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(RoundedRadius - MinYDistance));
+       SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RoundedRadius)), SqrYDist);
+       Assert(SqrDist.Fixed >= 0);
+       XOffset := RoundedRadius - FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
 
-       if X > (Width - 1) - (Radius - 1)
-        then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
-        else SqrDist := SqrYDist;
+       // eventually change left offset
+       if XPos[0] - ClipRect.Left < RoundedRadius then
+        begin
+         if XPos[0] - ClipRect.Left < XOffset
+          then XPos[0] := ClipRect.Left + XOffset;
+        end;
 
-       if SqrDist < SqrRadMinusOne
-        then CombColor := PixelColor32;
-        else
-         begin
-          CombColor := BorderColor;
-          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
-         end;
-
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
-       BlendPixelInplace(CombColor, ScnLne[1][X]);
-       EMMS;
+       // eventually change right offset
+       if ClipRect.Right - XPos[1] < RoundedRadius then
+        begin
+         if ClipRect.Right - XPos[1] < XOffset
+          then XPos[1] := ClipRect.Right - XOffset;
+        end;
       end;
+
+     Assert(XPos[0] >= 0);
+     Assert(XPos[1] < Width);
+     Assert(XPos[1] - XPos[0] < Width);
+
+     if XPos[1] > XPos[0]
+      then BlendPixelLine(PixelColor32, @ScnLn[XPos[0]], XPos[1] - XPos[0] + 1);
     end;
 
-   for Y := Round(Radius) to Height - 1 - Round(Radius) do
-    begin
-     ScnLne[0] := Scanline[Y];
-     for X := 0 to Width - 1 do
-      begin
-       // check whether position is a border
-       if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
-        then CombColor := BorderColor else
-
-       // check whether position is an upper half border
-       if (Y < BorderWidth) then
-        begin
-         Temp := BorderWidth - Y;
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-          then CombColor := BorderColor else
-         if (X < BorderWidth) then
-          begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end else
-         if (X > Width - 1 - BorderWidth) then
-          begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end
-         else CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end else
-
-       // check whether position is a lower half border
-       if (Y > Height - 1 - BorderWidth) then
-        begin
-         Temp := Y - (Height - 1 - BorderWidth);
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-          then CombColor := BorderColor else
-         if (X < BorderWidth) then
-          begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end else
-         if (X > Width - 1 - BorderWidth) then
-          begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end
-         else CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end else
-
-       if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-        then CombColor := BorderColor else
-       if (X < BorderWidth) then
-        begin
-         Temp := BorderWidth - X;
-         CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end else
-       if (X > Width - 1 - BorderWidth) then
-        begin
-         Temp := X - (Width - 1 - BorderWidth);
-         CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end
-       else CombColor := PanelColor;
-
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
-       EMMS;
-      end;
-    end;
-*)
+   EMMS;
   end;
 end;
 
 procedure TGuiPixelFilledRoundedRectangle.DrawFixedPoint(
   PixelMap: TGuiCustomPixelMap);
-(*
 var
-  X, Y              : Integer;
-  ScnLne            : array [0..1] of PPixel32Array;
-  PanelColor        : TPixel32;
-  BorderColor       : TPixel32;
-  CombColor         : TPixel32;
-  Radius            : Single;
-  XStart            : Single;
-  BorderWidth       : Single;
-  SqrRadMinusBorder : Single;
-  RadMinusBorderOne : Single;
-  SqrDist, SqrYDist : Single;
-  SqrRadMinusOne    : Single;
-  Temp              : Single;
+  X, Y           : Integer;
+  ScnLn          : PPixel32Array;
+  OriginalLeft   : TFixed24Dot8Point;
+  OriginalTop    : TFixed24Dot8Point;
+  OriginalRight  : TFixed24Dot8Point;
+  OriginalBottom : TFixed24Dot8Point;
+  PixelColor32   : TPixel32;
+  RoundedRadius  : TFixed24Dot8Point;
+  MinYDistance   : TFixed24Dot8Point;
+  SqrDist        : TFixed24Dot8Point;
+  SqrYDist       : TFixed24Dot8Point;
+  SqrRadMinusOne : TFixed24Dot8Point;
+  XOffset        : Integer;
+  YRange         : array [0..1] of Integer;
+  XRange, XPos   : array [0..1] of Integer;
 
-const
-  CBlack : TPixel32 = (ARGB : $FF000000);
-*)
 begin
+ DrawDraftShape(PixelMap);
+
+(*
+ PixelColor32 := ConvertColor(Color);
+ PixelColor32.A := Alpha;
+
  with PixelMap do
   begin
-(*
-   PanelColor := ConvertColor(FPanelColor);
-   if FBorderVisible
-    then BorderColor := ConvertColor(FLineColor)
-    else BorderColor := PanelColor;
-
-   // draw circle
-   Radius := Min(Min(FRoundRadius, 0.5 * Width), 0.5 * Height) + 1;
-   BorderWidth := Max(FBorderWidth, 2);
-
-   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
-   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
-   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
-
-   for Y := 0 to Round(Radius) - 1  do
+   // assign and check geometric shape properties
+   with GeometricShape do
     begin
-     SqrYDist := Sqr(Y - (Radius - 1));
-     XStart := Sqr(Radius) - SqrYDist;
-     if XStart <= 0
-      then Continue
-      else XStart := Sqrt(XStart) - 0.5;
-     ScnLne[0] := Scanline[Y];
-     ScnLne[1] := Scanline[Height - 1 - Y];
+     RoundedRadius := BorderRadius;
 
-     for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
-      begin
-       // calculate squared distance
-       if X < (Radius - 1)
-        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
+     // assign x coordinates
+     OriginalLeft := Left;
+     OriginalRight := Right;
 
-       if X > (Width - 1) - (Radius - 1)
-        then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
-        else SqrDist := SqrYDist;
+     // check whether the bitmap needs to be drawn at all
+     if (FixedFloor(OriginalLeft) >= Width) or (FixedCeil(OriginalRight) < 0)
+       or (FixedFloor(OriginalLeft) >= FixedCeil(OriginalRight))
+      then Exit;
 
-       if SqrDist < SqrRadMinusBorder
-        then CombColor := PanelColor
-        else
-       if SqrDist <= Sqr(RadMinusBorderOne) then
-        begin
-         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
-         CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp * $FF));
-        end else
-       if SqrDist < SqrRadMinusOne
-        then CombColor := BorderColor
-        else
-         begin
-          CombColor := BorderColor;
-          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
-         end;
+     // assign y coordinates
+     OriginalTop := Top;
+     OriginalBottom := Bottom;
 
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
-       BlendPixelInplace(CombColor, ScnLne[1][X]);
-       EMMS;
-      end;
+     if (FixedFloor(OriginalTop) >= Height) or (FixedCeil(OriginalBottom) < 0)
+       or (FixedFloor(OriginalTop) >= FixedCeil(OriginalBottom))
+      then Exit;
+
+     // set y-range
+     if OriginalTop.Fixed > 0
+      then YRange[0] := FixedFloor(OriginalTop)
+      else YRange[0] := 0;
+
+     if OriginalBottom.Fixed < Height - 1
+      then YRange[1] := FixedCeil(OriginalBottom)
+      else YRange[1] := Height - 1;
+
+     // set x-range
+     if OriginalLeft.Fixed > 0
+      then XRange[0] := FixedFloor(OriginalLeft)
+      else XRange[0] := 0;
+
+     if OriginalRight.Fixed < Width - 1
+      then XRange[1] := FixedCeil(OriginalRight)
+      else XRange[1] := Width - 1;
+
+     // eventually limit round radius
+     if 2 * RoundedRadius > OriginalRight - OriginalLeft
+      then RoundedRadius := (OriginalRight - OriginalLeft) div 2;
+     if 2 * RoundedRadius > OriginalBottom - OriginalTop
+      then RoundedRadius := (OriginalBottom - OriginalTop) div 2;
     end;
 
-   for Y := Round(Radius) to Height - 1 - Round(Radius) do
+   for Y := YRange[0] to YRange[1] do
     begin
-     ScnLne[0] := Scanline[Y];
-     for X := 0 to Width - 1 do
+     Assert(Y >= 0);
+     Assert(Y < Height);
+     ScnLn := Scanline[Y];
+
+     XPos[0] := XRange[0];
+     XPos[1] := XRange[1];
+
+     // calculate minimal y distance
+     MinYDistance := Y - OriginalTop;
+     if OriginalBottom - Y < MinYDistance
+      then MinYDistance := OriginalBottom - Y;
+
+     // check whether rounded border offset needs to be applied
+     if (MinYDistance < RoundedRadius) then
       begin
-       // check whether position is a border
-       if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
-        then CombColor := BorderColor else
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(RoundedRadius - MinYDistance));
+       SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RoundedRadius)), SqrYDist);
+       Assert(SqrDist.Fixed >= 0);
+       XOffset := RoundedRadius - FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
 
-       // check whether position is an upper half border
-       if (Y < BorderWidth) then
+       // eventually change left offset
+       if XPos[0] - OriginalLeft < RoundedRadius then
         begin
-         Temp := BorderWidth - Y;
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-          then CombColor := BorderColor else
-         if (X < BorderWidth) then
-          begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end else
-         if (X > Width - 1 - BorderWidth) then
-          begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end
-         else CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end else
+         if XPos[0] - OriginalLeft < XOffset
+          then XPos[0] := OriginalLeft + XOffset;
+        end;
 
-       // check whether position is a lower half border
-       if (Y > Height - 1 - BorderWidth) then
+       // eventually change right offset
+       if OriginalRight - XPos[1] < RoundedRadius then
         begin
-         Temp := Y - (Height - 1 - BorderWidth);
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-          then CombColor := BorderColor else
-         if (X < BorderWidth) then
-          begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end else
-         if (X > Width - 1 - BorderWidth) then
-          begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end
-         else CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end else
-
-       if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-        then CombColor := BorderColor else
-       if (X < BorderWidth) then
-        begin
-         Temp := BorderWidth - X;
-         CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end else
-       if (X > Width - 1 - BorderWidth) then
-        begin
-         Temp := X - (Width - 1 - BorderWidth);
-         CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end
-       else CombColor := PanelColor;
-
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
-       EMMS;
+         if OriginalRight - XPos[1] < XOffset
+          then XPos[1] := OriginalRight - XOffset;
+        end;
       end;
+
+     Assert(XPos[0] >= 0);
+     Assert(XPos[1] < Width);
+     Assert(XPos[1] - XPos[0] < Width);
+
+     if XPos[1] > XPos[0]
+      then BlendPixelLine(PixelColor32, @ScnLn[XPos[0]], XPos[1] - XPos[0] + 1);
     end;
-*)
+
+   EMMS;
   end;
+*)
 end;
 
 function TGuiPixelFilledRoundedRectangle.GetGeometricShape: TGuiRoundedRectangle;
@@ -747,12 +673,6 @@ constructor TGuiPixelFrameRoundedRectangle.Create;
 begin
  inherited;
  FGeometricShape := TGuiRoundedRectangle.Create;
-end;
-
-destructor TGuiPixelFrameRoundedRectangle.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
 end;
 
 procedure TGuiPixelFrameRoundedRectangle.DrawDraftShape(

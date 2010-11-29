@@ -22,7 +22,9 @@ type
   TVstIntPtr = Integer;
   {$ENDIF}
   PPSingle = ^PSingle;
+  {$IFNDEF FPC}
   PPDouble = ^PDouble;
+  {$ENDIF}
   PVSTEffect = ^TVSTEffect;
 
   TDispatcherOpcode = (
