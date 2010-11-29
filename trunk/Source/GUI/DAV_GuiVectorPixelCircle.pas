@@ -53,6 +53,19 @@ type
     property GeometricShape: TGuiCircle read GetGeometricShape;
   end;
 
+  TGuiPixelFilledCircleSector = class(TCustomGuiPixelFillPrimitive)
+  private
+    function GetGeometricShape: TGuiCircleSector;
+  protected
+    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
+    procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property GeometricShape: TGuiCircleSector read GetGeometricShape;
+  end;
+
   TGuiPixelFrameCircle = class(TCustomGuiPixelFramePrimitive)
   private
     function GetGeometricShape: TGuiCircle;
@@ -64,6 +77,19 @@ type
     destructor Destroy; override;
 
     property GeometricShape: TGuiCircle read GetGeometricShape;
+  end;
+
+  TGuiPixelFrameCircleSector = class(TCustomGuiPixelFramePrimitive)
+  private
+    function GetGeometricShape: TGuiCircleSector;
+  protected
+    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
+    procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property GeometricShape: TGuiCircleSector read GetGeometricShape;
   end;
 
 implementation
@@ -314,6 +340,40 @@ begin
 end;
 
 
+{ TGuiPixelFilledCircleSector }
+
+constructor TGuiPixelFilledCircleSector.Create;
+begin
+ inherited;
+ FGeometricShape := TGuiCircleSector.Create;
+end;
+
+destructor TGuiPixelFilledCircleSector.Destroy;
+begin
+ FreeAndNil(FGeometricShape);
+ inherited;
+end;
+
+procedure TGuiPixelFilledCircleSector.DrawDraftShape(
+  PixelMap: TGuiCustomPixelMap);
+begin
+ inherited;
+
+end;
+
+procedure TGuiPixelFilledCircleSector.DrawFixedPoint(
+  PixelMap: TGuiCustomPixelMap);
+begin
+ inherited;
+
+end;
+
+function TGuiPixelFilledCircleSector.GetGeometricShape: TGuiCircleSector;
+begin
+ Result := TGuiCircleSector(FGeometricShape);
+end;
+
+
 { TGuiPixelFrameCircle }
 
 constructor TGuiPixelFrameCircle.Create;
@@ -414,5 +474,37 @@ begin
 end;
 
 
-end.
+{ TGuiPixelFrameCircleSector }
 
+constructor TGuiPixelFrameCircleSector.Create;
+begin
+ inherited;
+ FGeometricShape := TGuiCircleSector.Create;
+end;
+
+destructor TGuiPixelFrameCircleSector.Destroy;
+begin
+ FreeAndNil(FGeometricShape);
+ inherited;
+end;
+
+procedure TGuiPixelFrameCircleSector.DrawDraftShape(
+  PixelMap: TGuiCustomPixelMap);
+begin
+ inherited;
+
+end;
+
+procedure TGuiPixelFrameCircleSector.DrawFixedPoint(
+  PixelMap: TGuiCustomPixelMap);
+begin
+ inherited;
+
+end;
+
+function TGuiPixelFrameCircleSector.GetGeometricShape: TGuiCircleSector;
+begin
+ Result := TGuiCircleSector(FGeometricShape);
+end;
+
+end.

@@ -75,7 +75,7 @@ begin
     VersionMajor   := FConfig.VersionMajor;
     VersionMinor   := FConfig.VersionMinor;
     VersionRelease := FConfig.VersionRelease;
-    Version        := IntToStr(VersionMajor) + '.' + IntToStr(VersionMinor);
+    Version        := AnsiString(IntToStr(VersionMajor) + '.' + IntToStr(VersionMinor));
     VendorName     := FConfig.VendorName;
     ProductName    := FConfig.ProductName;
 

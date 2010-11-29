@@ -83,6 +83,24 @@ type
   end;
   TGuiCircle = class(TGuiCustomCircle);
 
+  TGuiCustomCircleSector = class(TGuiCustomCircle)
+  private
+    FAngleStart : TFixed24Dot8Point;
+    FAngleEnd   : TFixed24Dot8Point;
+    procedure SetAngleEnd(const Value: TFixed24Dot8Point);
+    procedure SetAngleStart(const Value: TFixed24Dot8Point);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure AngleStartChanged; virtual;
+    procedure AngleEndChanged; virtual;
+  public
+    constructor Create; override;
+
+    property AngleStart: TFixed24Dot8Point read FAngleStart write SetAngleStart;
+    property AngleEnd: TFixed24Dot8Point read FAngleEnd write SetAngleEnd;
+  end;
+  TGuiCircleSector = class(TGuiCustomCircleSector);
+
   TGuiCustomEllipse = class(TGuiCustomCenteredGeometricShape)
   private
     FRadiusX  : TFixed24Dot8Point;
@@ -308,6 +326,56 @@ begin
   begin
    FRadius := Value;
    RadiusChanged;
+  end;
+end;
+
+
+{ TGuiCustomCircleSector }
+
+constructor TGuiCustomCircleSector.Create;
+begin
+ inherited;
+
+ FAngleStart.Fixed := 0;
+ FAngleEnd := CFixed24Dot8PI;
+end;
+
+procedure TGuiCustomCircleSector.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TGuiCustomCircleSector then
+  with TGuiCustomCircleSector(Dest) do
+   begin
+    FAngleStart := Self.FAngleStart;
+    FAngleEnd := Self.FAngleEnd;
+   end;
+end;
+
+procedure TGuiCustomCircleSector.AngleEndChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomCircleSector.AngleStartChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiCustomCircleSector.SetAngleEnd(const Value: TFixed24Dot8Point);
+begin
+ if FAngleEnd.Fixed <> Value.Fixed then
+  begin
+   FAngleEnd := Value;
+   AngleEndChanged;
+  end;
+end;
+
+procedure TGuiCustomCircleSector.SetAngleStart(const Value: TFixed24Dot8Point);
+begin
+ if FAngleStart.Fixed <> Value.Fixed then
+  begin
+   FAngleStart := Value;
+   AngleStartChanged;
   end;
 end;
 

@@ -32,8 +32,8 @@ type
     procedure HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
-    function HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
 
     procedure MidiOut(const b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
     procedure MidiSendSysEx(const Data: array of Byte; const Offset: Integer = 0);
@@ -79,7 +79,7 @@ var
 begin
  try
   for i := 0 to CMaxMidiEvents - 1 do
-   if assigned(FMidiEvent.Events[i]) then
+   if Assigned(FMidiEvent.Events[i]) then
     begin
      Dispose(FMidiEvent.Events[i]);
      FMidiEvent.Events[i] := nil;
@@ -157,9 +157,6 @@ begin
 end;
 
 procedure TVSTModuleWithMidi.HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
-var
-  Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
-  Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
  inherited;
  {$IFDEF DebugLog} AddLogMessage('HostCallProcess64Replacing - MIDI Processing'); {$ENDIF}

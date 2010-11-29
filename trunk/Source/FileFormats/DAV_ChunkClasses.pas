@@ -435,13 +435,13 @@ begin
   end;
 end;
 
-function TUnknownChunk.GetData(index: Integer): Byte;
+function TUnknownChunk.GetData(Index: Integer): Byte;
 begin
- if (index >= 0) and (index < FDataStream.Size)
+ if (Index >= 0) and (Index < FDataStream.Size)
   then
    with FDataStream do
     begin
-     Position := index;
+     Position := Index;
      Read(Result, 1);
     end
   else raise Exception.CreateFmt('Index out of bounds (%d)', [index]);

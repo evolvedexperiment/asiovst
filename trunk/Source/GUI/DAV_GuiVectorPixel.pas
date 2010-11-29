@@ -57,6 +57,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
+    destructor Destroy; override;
 
     property Draw: TGuiPixelPrimitiveDraw read FDraw;
     property DrawDraft: TGuiPixelPrimitiveDraw read FDrawDraft;
@@ -109,7 +110,19 @@ type
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
+
+    property GeometricShape: TGuiEllipse read GetGeometricShape;
+  end;
+
+  TGuiPixelFrameEllipse = class(TCustomGuiPixelFillPrimitive)
+  private
+    function GetGeometricShape: TGuiEllipse;
+  protected
+    procedure DrawFloatingPoint(PixelMap: TGuiCustomPixelMap);
+    procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
+    procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
+  public
+    constructor Create; override;
 
     property GeometricShape: TGuiEllipse read GetGeometricShape;
   end;
@@ -145,6 +158,12 @@ begin
  inherited;
  FDrawDraft := DrawDraftShape;
  FDraw := DrawFixedPoint;
+end;
+
+destructor TCustomGuiPixelPrimitive.Destroy;
+begin
+ FreeAndNil(FGeometricShape);
+ inherited;
 end;
 
 { TCustomGuiPixelSimplePrimitive }
@@ -241,12 +260,6 @@ begin
  inherited;
  FGeometricShape := TGuiEllipse.Create;
  FDraw := DrawFloatingPoint;
-end;
-
-destructor TGuiPixelFilledEllipse.Destroy;
-begin
- FreeAndNil(FGeometricShape);
- inherited;
 end;
 
 function TGuiPixelFilledEllipse.GetGeometricShape: TGuiEllipse;
@@ -427,5 +440,34 @@ begin
 
 end;
 
+
+{ TGuiPixelFrameEllipse }
+
+constructor TGuiPixelFrameEllipse.Create;
+begin
+ inherited;
+ FGeometricShape := TGuiEllipse.Create;
+ FDraw := DrawFloatingPoint;
+end;
+
+function TGuiPixelFrameEllipse.GetGeometricShape: TGuiEllipse;
+begin
+ Result := TGuiEllipse(FGeometricShape);
+end;
+
+procedure TGuiPixelFrameEllipse.DrawDraftShape(PixelMap: TGuiCustomPixelMap);
+begin
+
+end;
+
+procedure TGuiPixelFrameEllipse.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
+begin
+
+end;
+
+procedure TGuiPixelFrameEllipse.DrawFloatingPoint(PixelMap: TGuiCustomPixelMap);
+begin
+
+end;
 
 end.

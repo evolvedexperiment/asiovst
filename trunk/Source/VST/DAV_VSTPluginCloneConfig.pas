@@ -110,12 +110,12 @@ end;
 
 function TConfig.GetEditorFormName: string;
 begin
- Result := 'Fm' + FormatToUnitName(FVSTHost[0].EffectName) + 'Gui';
+ Result := string('Fm' + FormatToUnitName(FVSTHost[0].EffectName) + 'Gui');
 end;
 
 function TConfig.GetEditorUnitName: string;
 begin
- Result := FormatToUnitName(FVSTHost[0].EffectName);
+ Result := string(FormatToUnitName(FVSTHost[0].EffectName));
 
  if (Result[1] in ['0'..'9'])
   then Result := 'DAV' + Result;
