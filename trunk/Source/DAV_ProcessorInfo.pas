@@ -524,14 +524,14 @@ asm
 
   // yet to be tested...
   {$IFDEF CPU64}
-  PUSHFD                 // save EFLAGS to stack
+  PUSHFQ                 // save EFLAGS to stack
   POP     RAX            // store EFLAGS in EAX
   MOV     RCX, RAX       // save in EDX for later testing
   XOR     RAX, CFlag     // flip ID bit in EFLAGS
   AND     RCX, CFlag
   PUSH    RAX            // save new EFLAGS Value on stack
-  POPFD                  // replace current EFLAGS Value
-  PUSHFD                 // get new EFLAGS
+  POPFQ                  // replace current EFLAGS Value
+  PUSHFQ                 // get new EFLAGS
   POP     RAX            // store new EFLAGS in EAX
   AND     RAX, CFlag
   XOR     RAX, RCX       // check if ID bit changed

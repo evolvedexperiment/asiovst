@@ -1012,7 +1012,7 @@ begin
      SendMessage(Hndl,WM_CHAR, a, b);
      {$ELSE}
      if keyCode.virt = 0 then b := 0 else b := $100;
-     if mkAlternate in TVSTModifierKeys(Integer(keyCode.modifier))
+     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
       then SendMessage(Hndl, LM_KEYDOWN, a,b)
       else SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
      SendMessage(Hndl,LM_CHAR, a, b);
@@ -1059,7 +1059,7 @@ begin
       else SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
      {$ELSE}
      if keyCode.virt = 0 then b := 0 else b := $100;
-     if mkAlternate in TVSTModifierKeys(Integer(keyCode.modifier))
+     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
       then SendMessage(Hndl, LM_KEYUP, a,b)
       else SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
 

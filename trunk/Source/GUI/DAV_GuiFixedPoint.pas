@@ -104,11 +104,13 @@ function FixedSqrtHighResolution(Value: TFixed16Dot16Point): TFixed16Dot16Point;
 function FixedSqrt(Value: TFixed24Dot8Point): TFixed24Dot8Point; overload;
 
 const
+  CFixed16Dot16Two : TFixed16Dot16Point = (Fixed : $20000);
   CFixed16Dot16One : TFixed16Dot16Point = (Fixed : $10000);
   CFixed16Dot16Half : TFixed16Dot16Point = (Fixed : $8000);
   CFixed16Dot16ToFloat = 1 / $10000;
   CFixed16Dot16PI : TFixed16Dot16Point = (Fixed : Round(PI * $10000));
 
+  CFixed24Dot8Two : TFixed24Dot8Point = (Fixed : $200);
   CFixed24Dot8One : TFixed24Dot8Point = (Fixed : $100);
   CFixed24Dot8Half : TFixed24Dot8Point = (Fixed : $80);
   CFixed24Dot8ToFloat = 1 / $100;

@@ -38,7 +38,7 @@ object FmVectorGraphicTest: TFmVectorGraphicTest
     Width = 405
     Height = 264
     Anchors = [akLeft, akTop, akRight, akBottom]
-    OnClick = FormClick
+    OnClick = PaintBoxClick
     OnDblClick = FormDblClick
     OnPaint = FormPaint
   end
