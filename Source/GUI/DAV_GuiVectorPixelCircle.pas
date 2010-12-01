@@ -131,10 +131,11 @@ var
 begin
  with PixelMap do
   begin
-   // transfer the GeometricShape data to local variables
+   // transfer the color data to local variables
    PixelColor32 := ConvertColor(Color);
    PixelColor32.A := Alpha;
 
+   // transfer the geometric shape data to local variables
    Radius  := FixedAdd(GeometricShape.Radius, CFixed24Dot8One);
    CenterX := GeometricShape.CenterX;
    CenterY := GeometricShape.CenterY;
@@ -271,6 +272,7 @@ var
   SqrYDist       : TFixed24Dot8Point;
   SqrDist        : TFixed24Dot8Point;
   SqrRadMinusOne : TFixed24Dot8Point;
+  PixelLineCount : Integer;
 begin
  with PixelMap do
   begin
@@ -319,7 +321,8 @@ begin
      if XRange[1] >= Width then XRange[1] := Width - 1;
 
      ScnLne := Scanline[Y];
-     for X := XRange[0] to XRange[1] do
+     X := XRange[0];
+     while X <= XRange[1] do
       begin
        // calculate squared distance
        SqrDist.Fixed := X shl 8 - CenterX.Fixed;
@@ -330,9 +333,31 @@ begin
          SqrDist.Fixed := Radius.Fixed - FixedSqrt(SqrDist).Fixed;
          if SqrDist.Fixed < $FF
           then CombColor.A := ((SqrDist.Fixed * CombColor.A + $7F) shr 8);
-        end;
+         BlendPixelInplace(CombColor, ScnLne[X]);
+         Inc(X);
+        end
+       else
+        begin
+         {$IFDEF Simple}
+         BlendPixelInplace(CombColor, ScnLne[X]);
+         Inc(X);
+         {$ELSE}
+         SqrDist := FixedSub(CenterX, ConvertToFixed24Dot8Point(X));
+         PixelLineCount := FixedRound(FixedAdd(SqrDist, SqrDist)) + 1;
+         if PixelLineCount <= 0 then
+          begin
+           BlendPixelInplace(CombColor, ScnLne[X]);
+           Inc(X);
+           Continue;
+          end;
 
-       BlendPixelInplace(CombColor, ScnLne[X]);
+         if X + PixelLineCount > XRange[1]
+          then PixelLineCount := (XRange[1] - X);
+         BlendPixelLine(CombColor, @ScnLne[X], PixelLineCount);
+         FixedRound(FixedSub(CenterX, XStart));
+         X := X + PixelLineCount;
+         {$ENDIF}
+        end;
       end;
     end;
    EMMS;

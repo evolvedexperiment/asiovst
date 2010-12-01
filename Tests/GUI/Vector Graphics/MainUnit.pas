@@ -26,12 +26,14 @@ type
     procedure CbTestTypeChange(Sender: TObject);
     procedure CbDraftClick(Sender: TObject);
     procedure ApplicationEventsIdle(Sender: TObject; var Done: Boolean);
+    procedure PaintBoxClick(Sender: TObject);
   private
     FPixelMap        : TGuiPixelMapMemory;
     FPrimitiveClass  : TCustomGuiPixelPrimitiveClass;
     FPrimitives      : array of TCustomGuiPixelPrimitive;
     FCriticalSection : TCriticalSection;
     FIniFileName     : TFileName;
+    FOffset          : Integer;
   protected
     procedure BuildRandomPrimitives;
   public
@@ -55,6 +57,7 @@ begin
  FIniFileName := ExtractFilePath(ParamStr(0)) + 'VectorGraphicText.ini';
  ControlStyle := ControlStyle + [csOpaque];
  FCriticalSection := TCriticalSection.Create;
+ FOffset := 0;
  Randomize;
 end;
 
@@ -105,9 +108,20 @@ begin
   end;
 end;
 
+procedure TFmVectorGraphicTest.PaintBoxClick(Sender: TObject);
+begin
+ ApplicationEvents.OnIdle := nil;
+ BuildRandomPrimitives;
+ Inc(FOffset);
+ FPixelMap.Clear;
+ Render;
+end;
+
 procedure TFmVectorGraphicTest.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
+ ApplicationEvents.OnIdle := nil;
+ Application.ProcessMessages;
  with TIniFile.Create(FIniFileName) do
   try
    WriteInteger('Layout', 'Left', Left);
@@ -122,7 +136,6 @@ end;
 procedure TFmVectorGraphicTest.FormClick(Sender: TObject);
 begin
  ApplicationEvents.OnIdle := nil;
- BuildRandomPrimitives;
  FPixelMap.Clear;
  Render;
 end;
@@ -173,7 +186,7 @@ begin
   if Assigned(FPrimitives[Index])
    then FreeAndNil(FPrimitives[Index]);
 
- SetLength(FPrimitives, 10);
+ SetLength(FPrimitives, 1);
 
  for Index := 0 to Length(FPrimitives) - 1 do
   begin
@@ -206,12 +219,27 @@ begin
     if GeometricShape is TGuiRectangle then
      with FPixelMap, TGuiRectangle(GeometricShape) do
       begin
-       Left := ConvertToFixed24Dot8Point(Random(2 * (FPixelMap.Width - 1)) - FPixelMap.Width div 2 + Random);
-       Top := ConvertToFixed24Dot8Point(Random(2 * (FPixelMap.Height - 1)) - FPixelMap.Height div 2 + Random);
-       Right := FixedAdd(Left, ConvertToFixed24Dot8Point(Random(FPixelMap.Width - 1)));
-       Bottom := FixedAdd(Top, ConvertToFixed24Dot8Point(Random(FPixelMap.Height - 1)));
-       if GeometricShape is TGuiRoundedRectangle
-        then TGuiRoundedRectangle(GeometricShape).BorderRadius := ConvertToFixed24Dot8Point(0.5 * Height * Random);
+(*
+       if Index = 0 then
+        begin
+
+         Left := ConvertToFixed24Dot8Point(10 + 1/3 * FOffset);
+         Right := ConvertToFixed24Dot8Point(100 - 1/3 * FOffset);
+         Top := ConvertToFixed24Dot8Point(10 + 2/3 * FOffset);
+         Bottom := ConvertToFixed24Dot8Point(100 - 1/3 * FOffset);
+         if GeometricShape is TGuiRoundedRectangle
+          then TGuiRoundedRectangle(GeometricShape).BorderRadius := ConvertToFixed24Dot8Point(20 + 1/3);
+        end
+       else
+*)
+        begin
+         Left := ConvertToFixed24Dot8Point(Random(2 * (FPixelMap.Width - 1)) - FPixelMap.Width div 2 + Random);
+         Top := ConvertToFixed24Dot8Point(Random(2 * (FPixelMap.Height - 1)) - FPixelMap.Height div 2 + Random);
+         Right := FixedAdd(Left, ConvertToFixed24Dot8Point(Random(FPixelMap.Width - 1)));
+         Bottom := FixedAdd(Top, ConvertToFixed24Dot8Point(Random(FPixelMap.Height - 1)));
+         if GeometricShape is TGuiRoundedRectangle
+          then TGuiRoundedRectangle(GeometricShape).BorderRadius := ConvertToFixed24Dot8Point(0.5 * Height * Random);
+        end;
       end else
     if GeometricShape is TGuiLine then
      with FPixelMap, TGuiLine(GeometricShape) do
@@ -234,12 +262,15 @@ var
 begin
  FCriticalSection.Enter;
  try
+  FPixelMap.MakeOpaque;
   if CbDraft.Checked then
    for Index := 0 to Length(FPrimitives) - 1
     do FPrimitives[Index].DrawDraft(FPixelMap)
   else
    for Index := 0 to Length(FPrimitives) - 1
     do FPrimitives[Index].Draw(FPixelMap);
+
+  FPixelMap.MakeOpaque;
   Invalidate;
  finally
   FCriticalSection.Leave;

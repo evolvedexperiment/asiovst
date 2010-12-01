@@ -139,9 +139,11 @@ type
     procedure Paint; override;
     property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
 
+    {$IFNDEF FPC}
     {$IFNDEF COMPILER10_UP}
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    {$ENDIF}
     {$ENDIF}
   end;
 

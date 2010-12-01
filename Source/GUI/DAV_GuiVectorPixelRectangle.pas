@@ -420,7 +420,6 @@ end;
 procedure TGuiPixelFilledRoundedRectangle.DrawDraftShape(
   PixelMap: TGuiCustomPixelMap);
 var
-  X, Y           : Integer;
   ScnLn          : PPixel32Array;
   ClipRect       : TRect;
   PixelColor32   : TPixel32;
@@ -428,8 +427,7 @@ var
   MinYDistance   : Integer;
   SqrDist        : TFixed24Dot8Point;
   SqrYDist       : TFixed24Dot8Point;
-  SqrRadMinusOne : TFixed24Dot8Point;
-  XOffset        : Integer;
+  XOffset, Y     : Integer;
   YRange         : array [0..1] of Integer;
   XRange, XPos   : array [0..1] of Integer;
 
@@ -501,6 +499,8 @@ begin
      if ClipRect.Bottom - Y < MinYDistance
       then MinYDistance := ClipRect.Bottom - Y;
 
+     Assert(MinYDistance >= 0);
+
      // check whether rounded border offset needs to be applied
      if (MinYDistance < RoundedRadius) then
       begin
@@ -539,26 +539,34 @@ end;
 procedure TGuiPixelFilledRoundedRectangle.DrawFixedPoint(
   PixelMap: TGuiCustomPixelMap);
 var
-  X, Y           : Integer;
-  ScnLn          : PPixel32Array;
-  OriginalLeft   : TFixed24Dot8Point;
-  OriginalTop    : TFixed24Dot8Point;
-  OriginalRight  : TFixed24Dot8Point;
-  OriginalBottom : TFixed24Dot8Point;
-  PixelColor32   : TPixel32;
-  RoundedRadius  : TFixed24Dot8Point;
-  MinYDistance   : TFixed24Dot8Point;
-  SqrDist        : TFixed24Dot8Point;
-  SqrYDist       : TFixed24Dot8Point;
-  SqrRadMinusOne : TFixed24Dot8Point;
-  XOffset        : Integer;
-  YRange         : array [0..1] of Integer;
-  XRange, XPos   : array [0..1] of Integer;
+  ScnLn           : PPixel32Array;
+  PixelColor32    : TPixel32;
+  TempColor32     : TPixel32;
+  OriginalLeft    : TFixed24Dot8Point;
+  OriginalTop     : TFixed24Dot8Point;
+  OriginalRight   : TFixed24Dot8Point;
+  OriginalBottom  : TFixed24Dot8Point;
+  RoundedRadius   : TFixed24Dot8Point;
+  RadiusPlusOne   : TFixed24Dot8Point;
+  SqrRadius       : TFixed24Dot8Point;
+  SqrRadPlusOne   : TFixed24Dot8Point;
+  SqrRadMinusOne  : TFixed24Dot8Point;
+  MinYDistance    : TFixed24Dot8Point;
+  YDistPx2Ctr     : TFixed24Dot8Point;
+  SqrDistPx2Ctr   : TFixed24Dot8Point;
+  SqrYDistPx2Ctr  : TFixed24Dot8Point;
+  Y               : Integer;
+  YRange          : array [0..1] of Integer;
+  YFixed          : TFixed24Dot8Point;
+  XDistance       : TFixed24Dot8Point;
+  XOffset         : TFixed24Dot8Point;
+  Temp            : TFixed24Dot8Point;
+  XPos            : array [0..1] of TFixed24Dot8Point;
+  XRange          : array [0..1] of TFixed24Dot8Point;
+  X               : array [0..1] of Integer;
+  XAlpha, YAlpha  : Integer;
 
 begin
- DrawDraftShape(PixelMap);
-
-(*
  PixelColor32 := ConvertColor(Color);
  PixelColor32.A := Alpha;
 
@@ -585,31 +593,37 @@ begin
      if (FixedFloor(OriginalTop) >= Height) or (FixedCeil(OriginalBottom) < 0)
        or (FixedFloor(OriginalTop) >= FixedCeil(OriginalBottom))
       then Exit;
-
-     // set y-range
-     if OriginalTop.Fixed > 0
-      then YRange[0] := FixedFloor(OriginalTop)
-      else YRange[0] := 0;
-
-     if OriginalBottom.Fixed < Height - 1
-      then YRange[1] := FixedCeil(OriginalBottom)
-      else YRange[1] := Height - 1;
-
-     // set x-range
-     if OriginalLeft.Fixed > 0
-      then XRange[0] := FixedFloor(OriginalLeft)
-      else XRange[0] := 0;
-
-     if OriginalRight.Fixed < Width - 1
-      then XRange[1] := FixedCeil(OriginalRight)
-      else XRange[1] := Width - 1;
-
-     // eventually limit round radius
-     if 2 * RoundedRadius > OriginalRight - OriginalLeft
-      then RoundedRadius := (OriginalRight - OriginalLeft) div 2;
-     if 2 * RoundedRadius > OriginalBottom - OriginalTop
-      then RoundedRadius := (OriginalBottom - OriginalTop) div 2;
     end;
+
+   // set y-range
+   if OriginalTop.Fixed > 0
+    then YRange[0] := FixedFloor(OriginalTop)
+    else YRange[0] := 0;
+
+   if OriginalBottom.Fixed < ConvertToFixed24Dot8Point(Height - 1).Fixed
+    then YRange[1] := FixedCeil(OriginalBottom)
+    else YRange[1] := Height - 1;
+
+   // set x-range
+   if OriginalLeft.Fixed > 0
+    then XRange[0] := OriginalLeft
+    else XRange[0].Fixed := 0;
+
+   if OriginalRight.Fixed < ConvertToFixed24Dot8Point(Width - 1).Fixed
+    then XRange[1] := OriginalRight
+    else XRange[1] := ConvertToFixed24Dot8Point(Width - 1);
+
+   // eventually limit round radius
+   if FixedAdd(RoundedRadius, RoundedRadius).Fixed > FixedSub(OriginalRight, OriginalLeft).Fixed
+    then RoundedRadius := FixedDiv(FixedSub(OriginalRight, OriginalLeft), CFixed24Dot8Two);
+   if FixedAdd(RoundedRadius, RoundedRadius).Fixed > FixedSub(OriginalBottom, OriginalTop).Fixed
+    then RoundedRadius := FixedDiv(FixedSub(OriginalBottom, OriginalTop), CFixed24Dot8Two);
+
+   // calculate squared circle radius
+   RadiusPlusOne := FixedAdd(RoundedRadius, CFixed24Dot8One);
+   SqrRadius := FixedSqr(RoundedRadius);
+   SqrRadPlusOne := FixedSqr(RadiusPlusOne);
+   SqrRadMinusOne := FixedSqr(FixedSub(RoundedRadius, CFixed24Dot8One));
 
    for Y := YRange[0] to YRange[1] do
     begin
@@ -620,45 +634,160 @@ begin
      XPos[0] := XRange[0];
      XPos[1] := XRange[1];
 
-     // calculate minimal y distance
-     MinYDistance := Y - OriginalTop;
-     if OriginalBottom - Y < MinYDistance
-      then MinYDistance := OriginalBottom - Y;
+     // calculate fixed point Y
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // calculate y alpha
+     if Y = YRange[0]
+      then YAlpha := $FF - (OriginalTop.Fixed - YFixed.Fixed) else
+     if Y = YRange[1]
+      then YAlpha := $FF - (YFixed.Fixed - OriginalBottom.Fixed)
+      else YAlpha := $FF;
+
+     // calculate minimal y distance (either distance to upper or lower bound)
+     MinYDistance := FixedSub(YFixed, OriginalTop);
+     if FixedSub(OriginalBottom, YFixed).Fixed < MinYDistance.Fixed
+      then MinYDistance := FixedSub(OriginalBottom, YFixed);
 
      // check whether rounded border offset needs to be applied
-     if (MinYDistance < RoundedRadius) then
+     if (MinYDistance.Fixed < RoundedRadius.Fixed) then
       begin
-       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(RoundedRadius - MinYDistance));
-       SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RoundedRadius)), SqrYDist);
-       Assert(SqrDist.Fixed >= 0);
-       XOffset := RoundedRadius - FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
+       // calculate squared vertical distance
+       Temp := FixedSub(RoundedRadius, MinYDistance);
+       SqrYDistPx2Ctr := FixedSqr(Temp);
+
+       // calculate (squared) distance from center to current y position
+       SqrDistPx2Ctr := FixedSub(SqrRadPlusOne, SqrYDistPx2Ctr);
+       if SqrDistPx2Ctr.Fixed < 0
+        then XDistance.Fixed := 0
+        else XDistance := FixedSqrt(SqrDistPx2Ctr);
+       XOffset := FixedSub(RoundedRadius, XDistance);
 
        // eventually change left offset
-       if XPos[0] - OriginalLeft < RoundedRadius then
+       if FixedSub(XPos[0], OriginalLeft).Fixed < RoundedRadius.Fixed then
         begin
-         if XPos[0] - OriginalLeft < XOffset
-          then XPos[0] := OriginalLeft + XOffset;
+         if FixedSub(XPos[0], OriginalLeft).Fixed < XOffset.Fixed
+          then XPos[0] := FixedAdd(OriginalLeft, XOffset);
         end;
 
        // eventually change right offset
-       if OriginalRight - XPos[1] < RoundedRadius then
+       if FixedSub(OriginalRight, XPos[1]).Fixed < RoundedRadius.Fixed then
         begin
-         if OriginalRight - XPos[1] < XOffset
-          then XPos[1] := OriginalRight - XOffset;
+         if FixedSub(OriginalRight, XPos[1]).Fixed < XOffset.Fixed
+          then XPos[1] := FixedSub(OriginalRight, XOffset);
+        end;
+
+       if XPos[1].Fixed > XPos[0].Fixed then
+        begin
+         // define pixel range
+         X[0] := FixedFloor(XPos[0]);
+         X[1] := FixedCeil(XPos[1]);
+         Assert(X[0] < X[1]);
+
+         // draw first pixels
+         TempColor32 := PixelColor32;
+         repeat
+          // calculate squared distance
+          Temp.Fixed := OriginalLeft.Fixed + RoundedRadius.Fixed - X[0] shl 8;
+          if Temp.Fixed < 0 then Break;
+          SqrDistPx2Ctr.Fixed := FixedSqr(Temp).Fixed + SqrYDistPx2Ctr.Fixed;
+          if SqrDistPx2Ctr.Fixed >= SqrRadMinusOne.Fixed then
+           begin
+            Temp := FixedSqrt(SqrDistPx2Ctr);
+            Temp.Fixed := RadiusPlusOne.Fixed - Temp.Fixed;
+            if Temp.Fixed < 0 then
+             begin
+              Inc(X[0]);
+              Continue;
+             end;
+            XAlpha := Temp.Fixed;
+            if Temp.Fixed >= $FF
+             then Break;
+            if YAlpha < $FF
+             then TempColor32.A := (PixelColor32.A * YAlpha * XAlpha) div $FE01
+             else TempColor32.A := (PixelColor32.A * XAlpha) shr 8;
+           end;
+          BlendPixelInplace(TempColor32, ScnLn[X[0]]);
+          Inc(X[0]);
+          if X[0] > X[1] then Exit;
+         until SqrDistPx2Ctr.Fixed < SqrRadMinusOne.Fixed;
+
+         // draw last pixels
+         TempColor32 := PixelColor32;
+         repeat
+          // calculate squared distance
+          Temp.Fixed := X[1] shl 8 - (OriginalRight.Fixed - RoundedRadius.Fixed);
+          if Temp.Fixed < 0 then Break;
+          SqrDistPx2Ctr.Fixed := FixedSqr(Temp).Fixed + SqrYDistPx2Ctr.Fixed;
+          if SqrDistPx2Ctr.Fixed >= SqrRadMinusOne.Fixed then
+           begin
+            Temp := FixedSqrt(SqrDistPx2Ctr);
+            Temp.Fixed := RadiusPlusOne.Fixed - Temp.Fixed;
+            if Temp.Fixed < 0 then
+             begin
+              Dec(X[1]);
+              Continue;
+             end;
+            XAlpha := Temp.Fixed;
+            if Temp.Fixed >= $FF
+             then Break;
+            if YAlpha < $FF
+             then TempColor32.A := (PixelColor32.A * YAlpha * XAlpha) div $FE01
+             else TempColor32.A := (PixelColor32.A * XAlpha) shr 8;
+           end;
+          BlendPixelInplace(TempColor32, ScnLn[X[1]]);
+          Dec(X[1]);
+          if X[1] < X[0] then Exit;
+         until SqrDistPx2Ctr.Fixed < SqrRadMinusOne.Fixed;
+
+         TempColor32 := PixelColor32;
+         if YAlpha < $FF
+          then TempColor32.A := (PixelColor32.A * YAlpha + $7F) shr 8;
+
+         if X[1] >= X[0]
+          then BlendPixelLine(TempColor32, @ScnLn[X[0]], X[1] - X[0] + 1);
+        end;
+      end
+     else
+      begin
+       Assert(XPos[0].Fixed >= 0);
+       Assert(XPos[1].Fixed < ConvertToFixed24Dot8Point(Width).Fixed);
+
+       if XPos[1].Fixed > XPos[0].Fixed then
+        begin
+         // define integer pixel range
+         X[0] := FixedFloor(XPos[0]);
+         X[1] := FixedFloor(XPos[1]) + 1;
+         Assert(X[0] < X[1]);
+
+         // draw first pixels
+         XAlpha := ($FF - XPos[0].Frac);
+         TempColor32 := PixelColor32;
+         if YAlpha < $FF
+          then TempColor32.A := (PixelColor32.A * YAlpha * XAlpha) div $FE01
+          else TempColor32.A := (PixelColor32.A * XAlpha) shr 8;
+         BlendPixelInplace(TempColor32, ScnLn[X[0]]);
+
+         // draw last pixels
+         XAlpha := XPos[1].Frac;
+         TempColor32 := PixelColor32;
+         if YAlpha < $FF
+          then TempColor32.A := (PixelColor32.A * YAlpha * XAlpha) div $FE01
+          else TempColor32.A := (PixelColor32.A * XAlpha) shr 8;
+         BlendPixelInplace(TempColor32, ScnLn[X[1]]);
+
+         TempColor32 := PixelColor32;
+         if YAlpha < $FF
+          then TempColor32.A := (PixelColor32.A * YAlpha + $7F) shr 8;
+
+         if X[1] - X[0] - 1 > 0
+          then BlendPixelLine(TempColor32, @ScnLn[X[0] + 1], X[1] - X[0] - 1);
         end;
       end;
-
-     Assert(XPos[0] >= 0);
-     Assert(XPos[1] < Width);
-     Assert(XPos[1] - XPos[0] < Width);
-
-     if XPos[1] > XPos[0]
-      then BlendPixelLine(PixelColor32, @ScnLn[XPos[0]], XPos[1] - XPos[0] + 1);
     end;
 
    EMMS;
   end;
-*)
 end;
 
 function TGuiPixelFilledRoundedRectangle.GetGeometricShape: TGuiRoundedRectangle;
