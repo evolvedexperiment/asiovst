@@ -9,7 +9,7 @@ uses
   madLinkDisAsm,
   madListModules,
   Forms,
-  MainUnit in 'MainUnit.pas' {FmCircledPictureDialog},
+  MainUnit in 'MainUnit.pas' {FmPrimitivePictureEvolution},
   SettingsUnit in 'SettingsUnit.pas' {FmSettings},
   ProgressBarUnit in 'ProgressBarUnit.pas' {FmProgressBar},
   AdditionalChunks in 'AdditionalChunks.pas';
@@ -19,8 +19,8 @@ begin
   {$IFDEF DELPHI10_UP}
   Application.MainFormOnTaskbar := True;
   {$ENDIF}
-  Application.Title := 'Circled Picture Optimizer';
-  Application.CreateForm(TFmCircledPictureDialog, FmCircledPictureDialog);
+  Application.Title := 'Primitive Picture Evolution';
+  Application.CreateForm(TFmPrimitivePictureEvolution, FmPrimitivePictureEvolution);
   Application.Run;
 end.
 

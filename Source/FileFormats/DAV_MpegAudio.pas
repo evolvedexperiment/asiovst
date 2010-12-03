@@ -486,6 +486,7 @@ type
     property SampleRate;
 
     property OnFrameChanged;
+    property OnEndOfFile;
   end;
 
 function SwapInt32(Value: Cardinal): Cardinal;

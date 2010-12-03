@@ -1370,8 +1370,8 @@ function FloatToAnsiString(Value: Extended; Digits: Integer = -1): AnsiString;
 begin
  {$IFDEF UseNativeFloatToStringConversion}
  if Digits >= 0
-  then Result := FloatToStrF(Value, ffGeneral, Digits, Digits)
-  else Result := FloatToStr(Value);
+  then Result := AnsiString(FloatToStrF(Value, ffGeneral, Digits, Digits))
+  else Result := AnsiString(FloatToStr(Value));
  {$ELSE}
  if IsNan(Value)
   then Result := 'Error' else

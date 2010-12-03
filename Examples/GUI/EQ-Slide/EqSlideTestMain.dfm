@@ -1,8 +1,8 @@
 object FmEqSlideTest: TFmEqSlideTest
-  Left = 368
-  Top = 533
+  Left = 623
+  Top = 235
   Caption = 'EQ-Slide Test'
-  ClientHeight = 52
+  ClientHeight = 56
   ClientWidth = 308
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,8 +20,7 @@ object FmEqSlideTest: TFmEqSlideTest
     Top = 8
     Width = 145
     Height = 17
-    BorderRadius = 2
-    SlideColor = 6316128
+    BorderRadius = 5
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
     OnGetColor = GuiEQSlideGetColor
@@ -33,12 +32,10 @@ object FmEqSlideTest: TFmEqSlideTest
     Top = 31
     Width = 145
     Height = 17
-    AntiAlias = gaaLinear3x
-    BorderRadius = 2
-    SlideColor = 6316128
+    BorderRadius = 5
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
-    OnGetColor = GuiEQSlideGetColor
+    OnGetColor = GuiEQSlideGetColorBW
     Color = clBtnFace
     ParentColor = False
   end
@@ -47,9 +44,7 @@ object FmEqSlideTest: TFmEqSlideTest
     Top = 8
     Width = 145
     Height = 17
-    AntiAlias = gaaLinear2x
-    BorderRadius = 2
-    SlideColor = 6316128
+    BorderRadius = 5
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
     OnGetColor = GuiEQSlideGetColor
@@ -61,12 +56,10 @@ object FmEqSlideTest: TFmEqSlideTest
     Top = 31
     Width = 145
     Height = 17
-    AntiAlias = gaaLinear4x
-    BorderRadius = 2
-    SlideColor = 6316128
+    BorderRadius = 5
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
-    OnGetColor = GuiEQSlideGetColor
+    OnGetColor = GuiEQSlideGetColorBW
     Color = clBtnFace
     ParentColor = False
   end

@@ -39,6 +39,41 @@ type
     property Circle[Index: Integer]: TCircleChunk read GetCircle; default;
   end;
 
+  TRoundedRectangleChunk = class(TDefinedChunk)
+  private
+    FRight: TFixed24Dot8Point;
+    FBottom: TFixed24Dot8Point;
+    FTop: TFixed24Dot8Point;
+    FLeft: TFixed24Dot8Point;
+  protected
+    FAlpha   : Byte;
+    FColor   : TColor;
+    FRadius  : TFixed24Dot8Point;
+  public
+    constructor Create; override;
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
+
+    property Radius: TFixed24Dot8Point read FRadius write FRadius;
+    property Left: TFixed24Dot8Point read FLeft write FLeft;
+    property Top: TFixed24Dot8Point read FTop write FTop;
+    property Right: TFixed24Dot8Point read FRight write FRight;
+    property Bottom: TFixed24Dot8Point read FBottom write FBottom;
+    property Color: TColor read FColor write FColor;
+    property Alpha: Byte read FAlpha write FAlpha;
+  end;
+
+  TRoundedRectangleChunkContainer = class(TChunkContainer)
+  private
+    function GetRoundedRectangle(Index: Integer): TRoundedRectangleChunk;
+  public
+    constructor Create; override;
+    class function GetClassChunkName: TChunkName; override;
+
+    property RoundedRectangle[Index: Integer]: TRoundedRectangleChunk read GetRoundedRectangle; default;
+  end;
+
   TPopulationChunk = class(TDefinedChunk)
   private
     function GetVariableCount: Cardinal;
@@ -201,6 +236,75 @@ begin
 end;
 
 
+{ TRoundedRectangleChunk }
+
+constructor TRoundedRectangleChunk.Create;
+begin
+ inherited;
+ FChunkSize := 5 * SizeOf(TFixed24Dot8Point) + SizeOf(TColor) + SizeOf(Byte);
+end;
+
+class function TRoundedRectangleChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'rore';
+end;
+
+procedure TRoundedRectangleChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+
+ with Stream do
+  begin
+   Assert(Stream.Size >= FChunkSize);
+   Read(FRadius, SizeOf(TFixed24Dot8Point));
+   Read(FLeft, SizeOf(TFixed24Dot8Point));
+   Read(FTop, SizeOf(TFixed24Dot8Point));
+   Read(FRight, SizeOf(TFixed24Dot8Point));
+   Read(FBottom, SizeOf(TFixed24Dot8Point));
+   Read(FAlpha, SizeOf(Byte));
+   Read(FColor, SizeOf(TColor));
+  end;
+end;
+
+procedure TRoundedRectangleChunk.SaveToStream(Stream: TStream);
+begin
+ inherited;
+
+ with Stream do
+  begin
+   Write(FRadius, SizeOf(TFixed24Dot8Point));
+   Write(FLeft, SizeOf(TFixed24Dot8Point));
+   Write(FTop, SizeOf(TFixed24Dot8Point));
+   Write(FRight, SizeOf(TFixed24Dot8Point));
+   Write(FBottom, SizeOf(TFixed24Dot8Point));
+   Write(FAlpha, SizeOf(Byte));
+   Write(FColor, SizeOf(TColor));
+  end;
+end;
+
+{ TRoundedRectangleChunkContainer }
+
+constructor TRoundedRectangleChunkContainer.Create;
+begin
+ RegisterChunkClass(TRoundedRectangleChunk);
+ inherited;
+end;
+
+function TRoundedRectangleChunkContainer.GetRoundedRectangle(
+  Index: Integer): TRoundedRectangleChunk;
+begin
+ if (Index >= 0) and (Index < Count) and
+  (FChunkList[Index] is TRoundedRectangleChunk)
+  then Result := TRoundedRectangleChunk(FChunkList[Index])
+  else Result := nil;
+end;
+
+class function TRoundedRectangleChunkContainer.GetClassChunkName: TChunkName;
+begin
+ Result := 'Rore';
+end;
+
+
 { TPopulationChunkContainer }
 
 constructor TPopulationChunkContainer.Create;
@@ -222,6 +326,5 @@ begin
   then Result := TPopulationChunk(FChunkList[Index])
   else Result := nil;
 end;
-
 
 end.

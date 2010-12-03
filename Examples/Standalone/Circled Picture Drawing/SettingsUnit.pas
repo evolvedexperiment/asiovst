@@ -19,7 +19,7 @@ type
     CbCorrectPosition: TCheckBox;
     CbCorrectRadius: TCheckBox;
     CbRandomCircle: TCheckBox;
-    GbCircles: TGroupBox;
+    GbPrimitives: TGroupBox;
     GbModifications: TGroupBox;
     GbOptimizer: TGroupBox;
     GbTrials: TGroupBox;
@@ -28,7 +28,7 @@ type
     LbInitialSeed: TLabel;
     LbTrialsPerCircle: TLabel;
     LbUpdateTrials: TLabel;
-    SeCircleCount: TSpinEdit;
+    SePrimitiveCount: TSpinEdit;
     SeCrossover: TSpinEdit;
     SeInitialSeed: TSpinEdit;
     SeTrialsPerCircle: TSpinEdit;
@@ -48,7 +48,7 @@ type
     procedure BtApplyClick(Sender: TObject);
     procedure BtOKClick(Sender: TObject);
     procedure CbAutoInitialSeedClick(Sender: TObject);
-    procedure SeCircleCountChange(Sender: TObject);
+    procedure SePrimitiveCountChange(Sender: TObject);
     procedure SeSettingsPress(Sender: TObject; var Key: Char);
   public
     procedure LoadSettings;
@@ -107,12 +107,12 @@ procedure TFmSettings.CbAutoInitialSeedClick(Sender: TObject);
 begin
  SeInitialSeed.Enabled := not CbAutoInitialSeed.Checked;
  if CbAutoInitialSeed.Checked
-  then SeInitialSeed.Value := 10 * 7 * SeCircleCount.Value;
+  then SeInitialSeed.Value := 10 * 7 * SePrimitiveCount.Value;
 end;
 
 procedure TFmSettings.LoadSettings;
 begin
- with TIniFile.Create(FmCircledPictureDialog.IniFileName) do
+ with TIniFile.Create(FmPrimitivePictureEvolution.IniFileName) do
   try
    CbAutoTrials.Checked := ReadBool('Settings', 'Auto Trials', CbAutoTrials.Checked);
    CbAutoInitialSeed.Checked := ReadBool('Settings', 'Auto Initial Seed', CbAutoInitialSeed.Checked);
@@ -123,7 +123,7 @@ begin
    SeWeight.Value := ReadInteger('Settings', 'Weight', SeWeight.Value);
    SeBest.Value := ReadInteger('Settings', 'Best', SeBest.Value);
    SeAdditional.Value := ReadInteger('Settings', 'Additional', SeAdditional.Value);
-   SeCircleCount.Value := ReadInteger('Settings', 'Number of Circles', SeCircleCount.Value);
+   SePrimitiveCount.Value := ReadInteger('Settings', 'Number of Circles', SePrimitiveCount.Value);
    CbCorrectColor.Checked := ReadBool('Settings', 'Correct Color', CbCorrectColor.Checked);
    CbCorrectPosition.Checked := ReadBool('Settings', 'Correct Position', CbCorrectPosition.Checked);
    CbCorrectRadius.Checked := ReadBool('Settings', 'Correct Radius', CbCorrectRadius.Checked);
@@ -136,8 +136,8 @@ begin
    // update GUI
    SeInitialSeed.Enabled := not CbAutoInitialSeed.Checked;
    if CbAutoInitialSeed.Checked
-    then SeInitialSeed.Value := 10 * 7 * SeCircleCount.Value;
-   CbChangeOrder.Enabled := SeCircleCount.Value > 1;
+    then SeInitialSeed.Value := 10 * 7 * SePrimitiveCount.Value;
+   CbChangeOrder.Enabled := SePrimitiveCount.Value > 1;
    CbRandomOrder.Enabled := not CbChangeOrder.Enabled;
   finally
    Free;
@@ -146,7 +146,7 @@ end;
 
 procedure TFmSettings.SaveSettings;
 begin
- with FmCircledPictureDialog, TIniFile.Create(IniFileName) do
+ with FmPrimitivePictureEvolution, TIniFile.Create(IniFileName) do
   try
    WriteBool('Settings', 'Auto Trials', CbAutoTrials.Checked);
    WriteBool('Settings', 'Auto Initial Seed', CbAutoInitialSeed.Checked);
@@ -157,7 +157,7 @@ begin
    WriteInteger('Settings', 'Weight', SeWeight.Value);
    WriteInteger('Settings', 'Best', SeBest.Value);
    WriteInteger('Settings', 'Additional', SeAdditional.Value);
-   WriteInteger('Settings', 'Number of Circles', SeCircleCount.Value);
+   WriteInteger('Settings', 'Number of Circles', SePrimitiveCount.Value);
    WriteBool('Settings', 'Correct Color', CbCorrectColor.Checked);
    WriteBool('Settings', 'Correct Position', CbCorrectPosition.Checked);
    WriteBool('Settings', 'Correct Radius', CbCorrectRadius.Checked);
@@ -170,7 +170,7 @@ begin
    // update program settings
    AutoNextTrial := CbAutoTrials.Checked;
    AutoInitialSeed := CbAutoInitialSeed.Checked;
-   NumberOfCircles := SeCircleCount.Value;
+   NumberOfCircles := SePrimitiveCount.Value;
    TrialsPerCircle := SeTrialsPerCircle.Value;
    UpdateTrials := SeUpdateTrials.Value;
    InitialSeed := SeInitialSeed.Value;
@@ -191,11 +191,11 @@ begin
   end;
 end;
 
-procedure TFmSettings.SeCircleCountChange(Sender: TObject);
+procedure TFmSettings.SePrimitiveCountChange(Sender: TObject);
 begin
  if CbAutoInitialSeed.Checked
-  then SeInitialSeed.Value := 10 * 7 * SeCircleCount.Value;
- CbChangeOrder.Enabled := SeCircleCount.Value > 1;
+  then SeInitialSeed.Value := 10 * 7 * SePrimitiveCount.Value;
+ CbChangeOrder.Enabled := SePrimitiveCount.Value > 1;
  CbRandomOrder.Enabled := not CbChangeOrder.Enabled;
 end;
 

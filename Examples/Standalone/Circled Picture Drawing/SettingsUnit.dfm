@@ -285,12 +285,12 @@ object FmSettings: TFmSettings
       OnKeyPress = SeSettingsPress
     end
   end
-  object GbCircles: TGroupBox
+  object GbPrimitives: TGroupBox
     Left = 251
     Top = 8
     Width = 126
     Height = 81
-    Caption = 'Circles'
+    Caption = 'Primitives'
     TabOrder = 6
     object LbCircleCount: TLabel
       Left = 12
@@ -299,7 +299,7 @@ object FmSettings: TFmSettings
       Height = 13
       Caption = 'Count:'
     end
-    object SeCircleCount: TSpinEdit
+    object SePrimitiveCount: TSpinEdit
       Left = 51
       Top = 24
       Width = 65
@@ -308,7 +308,7 @@ object FmSettings: TFmSettings
       MinValue = 1
       TabOrder = 0
       Value = 1
-      OnChange = SeCircleCountChange
+      OnChange = SePrimitiveCountChange
       OnKeyPress = SeSettingsPress
     end
     object CbRandomOrder: TCheckBox

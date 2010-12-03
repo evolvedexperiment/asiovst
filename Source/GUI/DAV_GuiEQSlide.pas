@@ -37,14 +37,13 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_GuiCommon,
-  DAV_GuiBaseControl, DAV_GuiCustomControl;
+  DAV_GuiCustomControl, DAV_GuiPixelMap;
 
 type
+  TCustomGuiEQSlide = class;
   TGuiEQSlide = class;
 
   TGetColorEvent = function(Sender: TObject; const Frequency: Single): TColor of object;
-
-  TCustomGuiEQSlide = class;
 
   TCustomGuiEQSlideAxis = class(TPersistent)
   protected
@@ -101,16 +100,14 @@ type
   end;
 
 
-
   // EQ-Slide
 
-  TCustomGuiEQSlide = class(TCustomControl)
+  TCustomGuiEQSlide = class(TGuiCustomControl)
   private
     FAutoColor    : Boolean;
     FBorderRadius : Integer;
     FBorderWidth  : Integer;
     FBorderColor  : TColor;
-    FSlideColor   : TColor;
     FXAxis        : TGuiEQSlideXAxis;
     FOnPaint      : TNotifyEvent;
     FOnGetColor   : TGetColorEvent;
@@ -118,23 +115,21 @@ type
     procedure SetBorderColor(const Value: TColor);
     procedure SetBorderRadius(const Value: Integer);
     procedure SetBorderWidth(const Value: Integer);
-    procedure SetSlideColor(const Value: TColor);
     procedure SetXAxis(const Value: TGuiEQSlideXAxis);
+    procedure RenderRoundedFrameRectangle(PixelMap: TGuiCustomPixelMap);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure AutoColorChanged; virtual;
     procedure BorderRadiusChanged; virtual;
     procedure BorderWidthChanged; virtual;
     procedure BorderColorChanged; virtual;
-    procedure SlideColorChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure ChartChanged; virtual;
+    procedure UpdateBuffer; override;
 
     property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
-    property SlideColor: TColor read FSlideColor write SetSlideColor default $303030;
     property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
     property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
     property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
@@ -146,50 +141,12 @@ type
   end;
 
   TGuiEQSlide = class(TCustomGuiEQSlide)
-  private
-    FBuffer           : TBitmap;
-    FAntiAlias        : TGuiAntiAlias;
-    FOSFactor         : Integer;
-    FTransparent      : Boolean;
-    FChartChanged     : Boolean;
-
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
-    procedure SetTransparent(const Value: Boolean);
-  protected
-    procedure AssignTo(Dest: TPersistent); override;
-    procedure Paint; override;
-    procedure Resize; override;
-    procedure Loaded; override;
-
-    procedure AntiAliasChanged; virtual;
-    procedure RenderBuffer; virtual;
-    procedure TransparentChanged; virtual;
-    procedure DownsampleBitmap(Bitmap: TBitmap);
-    procedure UpsampleBitmap(Bitmap: TBitmap);
-
-    procedure RenderToBitmap(Bitmap: TBitmap); virtual;
-    {$IFDEF FPC}
-    procedure CMFontChanged(var Message: TLMessage); message CM_FONTCHANGED;
-    {$ELSE}
-    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
-    {$ENDIF}
-
-    {$IFNDEF FPC}
-    procedure DrawParentImage(Dest: TCanvas); virtual;
-    {$ENDIF}
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
-    procedure ChartChanged; override;
   published
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
-    property Transparent: Boolean read FTransparent write SetTransparent default False;
     property AutoColor;
     property BorderColor;
     property BorderRadius;
     property BorderWidth;
-    property SlideColor;
+    property Transparent;
     property XAxis;
 
     property OnGetColor;
@@ -237,7 +194,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations;
+  Math, DAV_Common, DAV_GuiBlend, DAV_Approximations;
 
 { TCustomGuiEQSlideAxis }
 
@@ -248,7 +205,7 @@ end;
 
 procedure TCustomGuiEQSlideAxis.Changed;
 begin
- FOwner.ChartChanged;
+ FOwner.BufferChanged;
 end;
 
 procedure TCustomGuiEQSlideAxis.RangeChanged;
@@ -395,7 +352,6 @@ begin
  FXAxis           := TGuiEQSlideXAxis.Create(Self);
 
  FAutoColor       := False;
- FSlideColor      := $606060;
  FBorderColor     := $202020;
  FBorderWidth     := 1;
 end;
@@ -416,7 +372,6 @@ begin
     FBorderRadius := Self.FBorderRadius;
     FBorderWidth  := Self.FBorderWidth;
     FBorderColor  := Self.FBorderColor;
-    FSlideColor   := Self.FSlideColor;
     FOnPaint      := Self.FOnPaint;
     FOnGetColor   := Self.FOnGetColor;
 
@@ -459,15 +414,6 @@ begin
   end;
 end;
 
-procedure TCustomGuiEQSlide.SetSlideColor(const Value: TColor);
-begin
- if FSlideColor <> Value then
-  begin
-   FSlideColor := Value;
-   SlideColorChanged;
-  end;
-end;
-
 procedure TCustomGuiEQSlide.AutoColorChanged;
 begin
  if FAutoColor then
@@ -476,13 +422,8 @@ begin
    FChartColor32 := Lighten(Color32(Color),60);
    FChartColor := WinColor(FChartColor32);
 *)
-   ChartChanged;
+   BufferChanged;
   end;
-end;
-
-procedure TCustomGuiEQSlide.BorderWidthChanged;
-begin
- ChartChanged;
 end;
 
 procedure TCustomGuiEQSlide.SetXAxis(const Value: TGuiEQSlideXAxis);
@@ -490,312 +431,185 @@ begin
  FXAxis.Assign(Value);
 end;
 
-procedure TCustomGuiEQSlide.ChartChanged;
+procedure TCustomGuiEQSlide.BorderWidthChanged;
 begin
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TCustomGuiEQSlide.BorderColorChanged;
 begin
- ChartChanged;
+ BufferChanged;
 end;
 
 procedure TCustomGuiEQSlide.BorderRadiusChanged;
 begin
- ChartChanged;
+ BufferChanged;
 end;
 
-procedure TCustomGuiEQSlide.SlideColorChanged;
-begin
- ChartChanged;
-end;
-
-
-{ TGuiEQSlide }
-
-constructor TGuiEQSlide.Create(AOwner: TComponent);
-begin
- inherited Create(AOwner);
-
- FBuffer := TBitmap.Create;
- with FBuffer do
-  begin
-   Canvas.Brush.Color := Self.Color;
-   Width := Self.Width;
-   Height := Self.Height;
-  end;
-
- FOSFactor := 1;
- FTransparent := False;
-end;
-
-destructor TGuiEQSlide.Destroy;
-begin
- FreeAndNil(FBuffer);
- inherited Destroy;
-end;
-
-procedure TGuiEQSlide.AssignTo(Dest: TPersistent);
+procedure TCustomGuiEQSlide.UpdateBuffer;
 begin
  inherited;
- if Dest is TGuiEQSlide then
-  with TGuiEQSlide(Dest) do
-   begin
-    FAntiAlias       := Self.FAntiAlias;
-    FOSFactor        := Self.FOSFactor;
-    FTransparent     := Self.FTransparent;
 
-    FBuffer.Assign(Self.FBuffer);
-   end;
+ RenderRoundedFrameRectangle(FBuffer);
 end;
 
-procedure TGuiEQSlide.ChartChanged;
-begin
- FChartChanged := True;
- inherited;
-end;
-
-{$IFNDEF FPC}
-procedure TGuiEQSlide.CMFontChanged(var Message: TMessage);
-{$ELSE}
-procedure TGuiEQSlide.CMFontChanged(var Message: TLMessage);
-{$ENDIF}
-begin
- inherited;
- FBuffer.Canvas.Font.Assign(Font);
-end;
-
-
-// Drawing stuff
-
-procedure TGuiEQSlide.UpsampleBitmap(Bitmap: TBitmap);
-begin
- case FAntiAlias of
-   gaaLinear2x: Upsample2xBitmap32(Bitmap);
-   gaaLinear3x: Upsample3xBitmap32(Bitmap);
-   gaaLinear4x: Upsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Upsample4xBitmap32(Bitmap);
-                 Upsample4xBitmap32(Bitmap);
-                end;
-  else raise Exception.Create('not yet supported');
- end;
-end;
-
-procedure TGuiEQSlide.DownsampleBitmap(Bitmap: TBitmap);
-begin
- case FAntiAlias of
-   gaaLinear2x: Downsample2xBitmap32(Bitmap);
-   gaaLinear3x: Downsample3xBitmap32(Bitmap);
-   gaaLinear4x: Downsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample4xBitmap32(Bitmap);
-                end;
-  else raise Exception.Create('not yet supported');
- end;
-end;
-
-{$IFNDEF FPC}
-procedure TGuiEQSlide.DrawParentImage(Dest: TCanvas);
+procedure TCustomGuiEQSlide.RenderRoundedFrameRectangle(
+  PixelMap: TGuiCustomPixelMap);
 var
-  SaveIndex : Integer;
-  DC        : THandle;
-  Position  : TPoint;
+  X, Y              : Integer;
+  ScnLne            : array [0..1] of PPixel32Array;
+  BackColor         : TPixel32;
+  BorderColor       : TPixel32;
+  CombColor         : TPixel32;
+  ColorArray        : array of TPixel32;
+  Radius            : Single;
+  XStart            : Single;
+  BorderWidth       : Single;
+  SqrRadMinusBorder : Single;
+  RadMinusBorderOne : Single;
+  SqrDist, SqrYDist : Single;
+  SqrRadMinusOne    : Single;
+  Scale, Temp       : Single;
 begin
-  if Parent = nil then Exit;
-  DC := Dest.Handle;
-  SaveIndex := SaveDC(DC);
-  GetViewportOrgEx(DC, Position);
-  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-  Parent.Perform(WM_PAINT, Longint(DC), 0);
-  RestoreDC(DC, SaveIndex);
-end;
-{$ENDIF}
-
-procedure TGuiEQSlide.Paint;
-begin
- if Assigned(FBuffer) then
+ with PixelMap do
   begin
-   if FChartChanged then
+   BackColor := ConvertColor(Color);
+   if FBorderWidth > 0
+    then BorderColor := ConvertColor(FBorderColor)
+    else BorderColor := BackColor;
+
+   // initialize variables
+   Radius := FBorderRadius;
+   if 0.5 * Width < Radius then Radius := 0.5 * Width;
+   if 0.5 * Height < Radius then Radius := 0.5 * Height;
+   BorderWidth := Math.Max(FBorderWidth, 1);
+   Scale := 1 / (Width - 2 * FBorderRadius);
+
+   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
+   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
+   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
+
+   // calculate colors
+   SetLength(ColorArray, Width);
+   if Assigned(FOnGetColor) then
+    for X := 0 to Width - 1
+     do ColorArray[X] := ConvertColor(FOnGetColor(Self,
+       FXAxis.LinearToLogarithmicFrequency((X - FBorderRadius) * Scale)))
+   else
+    for X := 0 to Width - 1
+     do ColorArray[X] := BackColor;
+
+   // draw upper & lower part (with rounded corners)
+   for Y := 0 to Round(Radius) - 1  do
     begin
-     FChartChanged := False;
-     RenderBuffer;
-    end;
-   Canvas.Draw(0, 0, FBuffer);
-  end;
+     SqrYDist := Sqr(Y - (Radius - 1));
+     XStart := Sqr(Radius) - SqrYDist;
+     if XStart <= 0
+      then Continue
+      else XStart := Sqrt(XStart) - 0.5;
+     ScnLne[0] := Scanline[Y];
+     ScnLne[1] := Scanline[Height - 1 - Y];
 
- inherited;
-
- if Assigned(FOnPaint)
-  then FOnPaint(Self);
-end;
-
-procedure TGuiEQSlide.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   AntiAliasChanged;
-  end;
-end;
-
-procedure TGuiEQSlide.AntiAliasChanged;
-begin
- case FAntiAlias of
-       gaaNone : FOSFactor :=  1;
-   gaaLinear2x : FOSFactor :=  2;
-   gaaLinear3x : FOSFactor :=  3;
-   gaaLinear4x : FOSFactor :=  4;
-   gaaLinear8x : FOSFactor :=  8;
-  gaaLinear16x : FOSFactor := 16;
- end;
- ChartChanged;
-end;
-
-procedure TGuiEQSlide.RenderBuffer;
-var
-  Bmp: TBitmap;
-begin
- if (Width > 0) and (Height > 0) then
-  with FBuffer.Canvas do
-   begin
-    Lock;
-    Brush.Assign(Canvas.Brush);
-
-    case FAntiAlias of
-     gaaNone:
+     for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
       begin
-       // draw background
-       {$IFNDEF FPC}
-       if FTransparent
-        then DrawParentImage(FBuffer.Canvas)
-        else
-       {$ENDIF}
-        begin
-         Brush.Color := Self.Color;
-         FillRect(ClipRect);
-        end;
-       RenderToBitmap(FBuffer);
-      end;
-     else
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSFactor * FBuffer.Width;
-         Height      := FOSFactor * FBuffer.Height;
-         Canvas.Font.Assign(Font);
-         Canvas.Font.Size := FOSFactor * Font.Size;
-         {$IFNDEF FPC}
-         if FTransparent then
+       CombColor := ColorArray[X];
+
+       // calculate squared distance
+       if X < (Radius - 1)
+        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
+
+       if X > (Width - 1) - (Radius - 1)
+        then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
+        else SqrDist := SqrYDist;
+
+       if SqrDist >= SqrRadMinusBorder then
+        if SqrDist <= Sqr(RadMinusBorderOne) then
+         begin
+          Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+          CombColor := CombinePixel(BorderColor, CombColor, Round($FF - Temp * $FF));
+         end else
+        if SqrDist < SqrRadMinusOne
+         then CombColor := BorderColor
+         else
           begin
-           CopyParentImage(Self, Bmp.Canvas);
-//           DrawParentImage(Bmp.Canvas);
-           UpsampleBitmap(Bmp);
+           CombColor := BorderColor;
+           CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+          end;
+
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       BlendPixelInplace(CombColor, ScnLne[1][X]);
+       EMMS;
+      end;
+    end;
+
+   for Y := Round(Radius) to Height - 1 - Round(Radius) do
+    begin
+     ScnLne[0] := Scanline[Y];
+     for X := 0 to Width - 1 do
+      begin
+       CombColor := ColorArray[X];
+
+       // check whether value is a pure border
+       if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
+
+       // check whether value is an upper half border
+       if (Y < BorderWidth) then
+        begin
+         Temp := BorderWidth - Y;
+         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF))
+          end else
+         if (X > Width - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF))
           end
          else
-         {$ENDIF}
-          with Canvas do
-           begin
-            Brush.Color := Self.Color;
-            FillRect(ClipRect);
-           end;
-         RenderToBitmap(Bmp);
-         DownsampleBitmap(Bmp);
-         FBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         Free;
+          CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
+        end else
+
+       // check whether value is a lower half border
+       if (Y > Height - 1 - BorderWidth) then
+        begin
+         Temp := Y - (Height - 1 - BorderWidth);
+         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
+          end else
+         if (X > Width - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
+          end
+         else CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
+        end else
+
+       if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
+       if (X < BorderWidth) then
+        begin
+         Temp := BorderWidth - X;
+         CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
+        end else
+       if (X > Width - 1 - BorderWidth) then
+        begin
+         Temp := X - (Width - 1 - BorderWidth);
+         CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
         end;
+
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       EMMS;
       end;
     end;
-    Unlock;
-   end;
-end;
-
-procedure TGuiEQSlide.RenderToBitmap(Bitmap: TBitmap);
-var
-  PixelIndex  : Integer;
-  Offset      : Integer;
-  Temp        : Single;
-begin
- with Bitmap, Canvas do
-  begin
-   Lock;
-   Offset := FOSFactor * FBorderWidth;
-
-   if Assigned(FOnGetColor) then
-    begin
-     Pen.Color := FOnGetColor(Self, FXAxis.LowerFrequency);
-     MoveTo(FOSFactor,          Offset);
-     LineTo(FOSFactor, Height - Offset);
-     Temp := 1 / (Width - 2 * FOSFactor);
-     for PixelIndex := FOSFactor + 1 to Width - FOSFactor - 1 do
-      begin
-       Pen.Color := FOnGetColor(Self, FXAxis.LinearToLogarithmicFrequency((PixelIndex - FOSFactor) * Temp));
-       MoveTo(PixelIndex,          Offset);
-       LineTo(PixelIndex, Height - Offset);
-      end;
-    end;
-
-   if FBorderWidth > 0 then
-    begin
-     Pen.Color := FBorderColor;
-     Pen.Width := FOSFactor * FBorderWidth;
-     Brush.Style := bsClear;
-     RoundRect((FOSFactor * FBorderWidth) div 2,
-       (FOSFactor * FBorderWidth) div 2,
-       Width - (FOSFactor * FBorderWidth) div 2,
-       Height - (FOSFactor * FBorderWidth) div 2,
-       FOSFactor * FBorderRadius, FOSFactor * FBorderRadius);
-    end;
-
-   Unlock;
   end;
-end;
-
-procedure TGuiEQSlide.Resize;
-begin
- inherited;
- if Assigned(FBuffer) then
-  with FBuffer do
-   begin
-    Canvas.Brush.Color := Self.Color;
-    Width := Self.Width;
-    Height := Self.Height;
-   end;
- ChartChanged;
-end;
-
-procedure TGuiEQSlide.Loaded;
-begin
- inherited;
- Resize;
-end;
-
-procedure TGuiEQSlide.SetTransparent(const Value: Boolean);
-begin
- if FTransparent <> Value then
-  begin
-   FTransparent := Value;
-   TransparentChanged;
-  end;
-end;
-
-procedure TGuiEQSlide.TransparentChanged;
-begin
- ChartChanged;
 end;
 
 end.

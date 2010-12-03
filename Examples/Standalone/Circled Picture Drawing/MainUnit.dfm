@@ -1,7 +1,7 @@
-object FmCircledPictureDialog: TFmCircledPictureDialog
+object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
   Left = 300
   Top = 56
-  Caption = 'Circled Picture Dialog'
+  Caption = 'Primitive Picture Evolution'
   ClientHeight = 234
   ClientWidth = 424
   Color = clBtnFace
@@ -166,15 +166,17 @@ object FmCircledPictureDialog: TFmCircledPictureDialog
     Left = 200
     Top = 16
   end
-  object OpenDialogCircles: TOpenDialog
-    DefaultExt = '.bmp'
-    Filter = 'Circles (*.circles)|*.circles'
+  object OpenDialogPrimitives: TOpenDialog
+    Filter = 
+      'Circles (*.Circles)|*.Circles|Rounded Rectangles (*.RoundRects)|' +
+      '*.RoundRects'
     Left = 112
     Top = 72
   end
-  object SaveDialogCircles: TSaveDialog
-    DefaultExt = '.bmp'
-    Filter = 'Circles (*.circles)|*.circles'
+  object SaveDialogPrimitives: TSaveDialog
+    Filter = 
+      'Circles (*.Circles)|*.Circles|Rounded Rectangles (*.RoundRects)|' +
+      '*.RoundRects'
     Left = 200
     Top = 72
   end
