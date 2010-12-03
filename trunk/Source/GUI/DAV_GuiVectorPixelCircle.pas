@@ -344,6 +344,9 @@ begin
          {$ELSE}
          SqrDist := FixedSub(CenterX, ConvertToFixed24Dot8Point(X));
          PixelLineCount := FixedRound(FixedAdd(SqrDist, SqrDist)) + 1;
+         if X + PixelLineCount > XRange[1]
+          then PixelLineCount := (XRange[1] - X);
+
          if PixelLineCount <= 0 then
           begin
            BlendPixelInplace(CombColor, ScnLne[X]);
@@ -351,8 +354,6 @@ begin
            Continue;
           end;
 
-         if X + PixelLineCount > XRange[1]
-          then PixelLineCount := (XRange[1] - X);
          BlendPixelLine(CombColor, @ScnLne[X], PixelLineCount);
          FixedRound(FixedSub(CenterX, XStart));
          X := X + PixelLineCount;

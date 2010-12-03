@@ -54,8 +54,7 @@ object FmSliderTest: TFmSliderTest
     BorderWidth = 1.000000000000000000
     Caption = 'Value'
     Color = 7373965
-    CurveMapping = 2.000000000000000000
-    DefaultValue = 1000.000000000000000000
+    DefaultValue = 50.000000000000000000
     Digits = 5
     FontShadow.Blur = 1.000000000000000000
     FontShadow.Color = 7373965
@@ -63,13 +62,13 @@ object FmSliderTest: TFmSliderTest
     FontShadow.OffsetY = 0
     FontShadow.Saturation = 4.000000000000000000
     FontShadow.Visible = True
-    Max = 20000.000000000000000000
-    Min = 20.000000000000000000
+    Max = 100.000000000000000000
     ParentColor = False
-    Value = 1000.000000000000000000
+    Value = 50.000000000000000000
     ShowText = True
     SlideColor = 5333094
     Transparent = True
+    OnChange = GuiEQSlide2Change
   end
   object GuiEQSlide3: TGuiSlider
     Left = 159
@@ -108,7 +107,7 @@ object FmSliderTest: TFmSliderTest
     BorderWidth = 1.000000000000000000
     Caption = 'Value'
     Color = 7373965
-    DefaultValue = 100.000000000000000000
+    DefaultValue = 50.000000000000000000
     Digits = 5
     FontShadow.Blur = 1.000000000000000000
     FontShadow.Color = 7373965
@@ -122,5 +121,6 @@ object FmSliderTest: TFmSliderTest
     ShowText = True
     SlideColor = 5333094
     Transparent = True
+    OnChange = GuiEQSlide4Change
   end
 end

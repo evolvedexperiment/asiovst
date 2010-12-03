@@ -49,6 +49,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure GuiEQSlide4Change(Sender: TObject);
+    procedure GuiEQSlide2Change(Sender: TObject);
   private
     FBackground      : TGuiCustomPixelMap;
     FBackgroundColor : TPixel32;
@@ -93,6 +95,16 @@ procedure TFmSliderTest.FormResize(Sender: TObject);
 begin
  FBackground.SetSize(ClientWidth, ClientHeight);
  RenderBackground;
+end;
+
+procedure TFmSliderTest.GuiEQSlide2Change(Sender: TObject);
+begin
+ GuiEQSlide4.BorderRadius := 0.1 * GuiEQSlide2.Value;
+end;
+
+procedure TFmSliderTest.GuiEQSlide4Change(Sender: TObject);
+begin
+ GuiEQSlide4.BorderWidth := 0.1 * GuiEQSlide4.Value;
 end;
 
 procedure TFmSliderTest.RenderBackground;

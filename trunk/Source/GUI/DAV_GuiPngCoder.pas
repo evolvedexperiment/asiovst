@@ -845,7 +845,6 @@ begin
  // check if paeth filter is the current best filter
  if CurrentSum < BestSum then
   begin
-   CurrentSum := BestSum;
    Move(TempBuffer^[1], OutputRow^[1], BytesPerRow + 1);
    OutputRow^[0] := 4;
   end;

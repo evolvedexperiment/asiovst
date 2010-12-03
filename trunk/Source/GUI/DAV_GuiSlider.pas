@@ -761,6 +761,7 @@ var
   BackColor         : TPixel32;
   BorderColor       : TPixel32;
   CombColor         : TPixel32;
+  InnerColor        : TPixel32;
   Radius            : Single;
   XStart            : Single;
   BorderWidth       : Single;
@@ -780,7 +781,7 @@ begin
 
    XPos := Round(Width * UnmapValue((FValue - FMin) / (FMax - FMin)));
 
-   // draw circle
+   // initialize variables
    Radius := FBorderRadius;
    if 0.5 * Width < Radius then Radius := 0.5 * Width;
    if 0.5 * Height < Radius then Radius := 0.5 * Height;
@@ -788,38 +789,21 @@ begin
 
    if Radius = 0 then
     begin
-     // handle rectangle case!
-(*
-     with TGuiPixelFrameRectangle.Create do
-      try
-       GeometricShape.Left := ConvertToFixed24Dot8Point(0);
-       GeometricShape.Top := ConvertToFixed24Dot8Point(0);
-       GeometricShape.Right := ConvertToFixed24Dot8Point(Width);
-       GeometricShape.Bottom := ConvertToFixed24Dot8Point(Height);
-       Width := ConvertToFixed24Dot8Point(BorderWidth);
-       Draw(PixelMap);
-      finally
-       Free;
-      end;
-
-     with TGuiPixelFillRectangle.Create do
-      try
-       GeometricShape.Left := ConvertToFixed24Dot8Point(BorderWidth);
-       GeometricShape.Top := ConvertToFixed24Dot8Point(BorderWidth);
-       GeometricShape.Right := ConvertToFixed24Dot8Point(XPos);
-       GeometricShape.Bottom := ConvertToFixed24Dot8Point(Height - BorderWidth);
-       Draw(PixelMap);
-      finally
-       Free;
-      end;
+     Y := Trunc(FBorderWidth);
+     PixelMap.FillRect(Rect(Y, Y, XPos - 1, Height - Y), SliderColor);
+     PixelMap.FillRect(Rect(XPos, Y, Width - Y, Height - Y), BackColor);
+     for X := 0 to Y - 1
+      do PixelMap.FrameRect(Rect(X, X, Width - 1 - X, Height - 1 - X), BorderColor);
+     BorderColor.A := Round($FF * (FBorderWidth - Y));
+     PixelMap.FrameRect(Rect(Y, Y, Width - 1 - Y, Height - 1 - Y), BorderColor);
      Exit;
-*)
     end;
 
    RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
    SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
    SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
 
+   // draw upper & lower part (with rounded corners)
    for Y := 0 to Round(Radius) - 1  do
     begin
      SqrYDist := Sqr(Y - (Radius - 1));
@@ -832,6 +816,10 @@ begin
 
      for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
       begin
+       if X < XPos
+        then CombColor := SliderColor
+        else CombColor := BackColor;
+
        // calculate squared distance
        if X < (Radius - 1)
         then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
@@ -840,25 +828,19 @@ begin
         then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
         else SqrDist := SqrYDist;
 
-       if SqrDist < SqrRadMinusBorder then
-        if X < XPos
-         then CombColor := SliderColor
-         else CombColor := BackColor
-        else
-       if SqrDist <= Sqr(RadMinusBorderOne) then
-        begin
-         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
-         if X < XPos
-          then CombColor := CombinePixel(BorderColor, SliderColor, Round($FF - Temp * $FF))
-          else CombColor := CombinePixel(BorderColor, BackColor, Round($FF - Temp * $FF));
-        end else
-       if SqrDist < SqrRadMinusOne
-        then CombColor := BorderColor
-        else
+       if SqrDist >= SqrRadMinusBorder then
+        if SqrDist <= Sqr(RadMinusBorderOne) then
          begin
-          CombColor := BorderColor;
-          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
-         end;
+          Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+          CombColor := CombinePixel(BorderColor, CombColor, Round($FF - Temp * $FF));
+         end else
+        if SqrDist < SqrRadMinusOne
+         then CombColor := BorderColor
+         else
+          begin
+           CombColor := BorderColor;
+           CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+          end;
 
        BlendPixelInplace(CombColor, ScnLne[0][X]);
        BlendPixelInplace(CombColor, ScnLne[1][X]);
@@ -871,11 +853,15 @@ begin
      ScnLne[0] := Scanline[Y];
      for X := 0 to Width - 1 do
       begin
-       // check whether Value is a border
+       if X < XPos
+        then CombColor := SliderColor
+        else CombColor := BackColor;
+
+       // check whether value is a pure border
        if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
         then CombColor := BorderColor else
 
-       // check whether Value is an upper half border
+       // check whether value is an upper half border
        if (Y < BorderWidth) then
         begin
          Temp := BorderWidth - Y;
@@ -884,23 +870,18 @@ begin
          if (X < BorderWidth) then
           begin
            Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           if X < XPos
-            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF))
           end else
          if (X > Width - 1 - BorderWidth) then
           begin
            Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           if X < XPos
-            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
-          end else
-         if X < XPos
-          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF))
+          end
+         else
+          CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
         end else
 
-       // check whether Value is a lower half border
+       // check whether value is a lower half border
        if (Y > Height - 1 - BorderWidth) then
         begin
          Temp := Y - (Height - 1 - BorderWidth);
@@ -909,20 +890,14 @@ begin
          if (X < BorderWidth) then
           begin
            Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           if X < XPos
-            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF))
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
           end else
          if (X > Width - 1 - BorderWidth) then
           begin
            Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           if X < XPos
-            then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-            else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
-          end else
-         if X < XPos
-          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
+          end
+         else CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
         end else
 
        if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
@@ -930,22 +905,12 @@ begin
        if (X < BorderWidth) then
         begin
          Temp := BorderWidth - X;
-         if X < XPos
-          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+         CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
         end else
        if (X > Width - 1 - BorderWidth) then
         begin
          Temp := X - (Width - 1 - BorderWidth);
-         if X < XPos
-          then CombColor := CombinePixel(BorderColor, SliderColor, Round(Temp * $FF))
-          else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
-        end
-       else
-        begin
-         if X < XPos
-          then CombColor := SliderColor
-          else CombColor := BackColor
+         CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
         end;
 
        BlendPixelInplace(CombColor, ScnLne[0][X]);

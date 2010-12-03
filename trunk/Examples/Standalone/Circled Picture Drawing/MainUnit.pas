@@ -22,7 +22,7 @@ type
     procedure Execute; override;
   end;
 
-  TFmCircledPictureDialog = class(TForm)
+  TFmPrimitivePictureEvolution = class(TForm)
     AcBack: TAction;
     AcNext: TAction;
     AcSettings: TAction;
@@ -50,11 +50,11 @@ type
     N3: TMenuItem;
     N4: TMenuItem;
     OpenDialog: TOpenDialog;
-    OpenDialogCircles: TOpenDialog;
+    OpenDialogPrimitives: TOpenDialog;
     PaintBoxDraw: TPaintBox;
     PaintBoxRef: TPaintBox;
     SaveDialog: TSaveDialog;
-    SaveDialogCircles: TSaveDialog;
+    SaveDialogPrimitives: TSaveDialog;
     StatusBar: TStatusBar;
     MiSavePopulation: TMenuItem;
     N5: TMenuItem;
@@ -183,7 +183,7 @@ type
   end;
 
 var
-  FmCircledPictureDialog: TFmCircledPictureDialog;
+  FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution;
 
 implementation
 
@@ -207,14 +207,14 @@ begin
  Count := 0;
  while not Terminated do
   begin
-   FmCircledPictureDialog.Evolve;
+   FmPrimitivePictureEvolution.Evolve;
    Inc(Count);
 
-   if Count >= FmCircledPictureDialog.UpdateTrials then
+   if Count >= FmPrimitivePictureEvolution.UpdateTrials then
     begin
-     Synchronize(FmCircledPictureDialog.DrawResults);
+     Synchronize(FmPrimitivePictureEvolution.DrawResults);
      Count := 0;
-     if FmCircledPictureDialog.WindowState <> wsMinimized
+     if FmPrimitivePictureEvolution.WindowState <> wsMinimized
       then Sleep(10);
     end;
   end;
@@ -244,9 +244,9 @@ end;
 {$ENDIF}
 
 
-{ TFmCircledPictureDialog }
+{ TFmPrimitivePictureEvolution }
 
-procedure TFmCircledPictureDialog.FormCreate(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.FormCreate(Sender: TObject);
 begin
  Randomize;
 
@@ -315,7 +315,7 @@ begin
   {$ENDIF}
 end;
 
-procedure TFmCircledPictureDialog.FormDestroy(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.FormDestroy(Sender: TObject);
 var
   Index : Integer;
 begin
@@ -347,9 +347,7 @@ begin
  FreeAndNil(FDiffEvol);
 end;
 
-procedure TFmCircledPictureDialog.FormShow(Sender: TObject);
-var
-  FN : TFileName;
+procedure TFmPrimitivePictureEvolution.FormShow(Sender: TObject);
 begin
  {$IFDEF UseInifiles}
  with TIniFile.Create(FIniFileName) do
@@ -416,7 +414,7 @@ begin
  {$ENDIF}
 end;
 
-procedure TFmCircledPictureDialog.FormClose(Sender: TObject;
+procedure TFmPrimitivePictureEvolution.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
  {$IFDEF UseInifiles}
@@ -440,65 +438,66 @@ begin
  {$ENDIF}
 end;
 
-procedure TFmCircledPictureDialog.AcBackExecute(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.AcBackExecute(Sender: TObject);
 begin
  AcBack.Checked := True;
 end;
 
-procedure TFmCircledPictureDialog.AcSettingsExecute(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.AcSettingsExecute(Sender: TObject);
 begin
  with TFmSettings.Create(Self) do
   try
    if Assigned(EvolutionThread)
-    then SeCircleCount.Enabled := EvolutionThread.Suspended
-    else SeCircleCount.Enabled := True;
+    then SePrimitiveCount.Enabled := EvolutionThread.Suspended
+    else SePrimitiveCount.Enabled := True;
    ShowModal;
   finally
    Free;
   end;
 end;
 
-procedure TFmCircledPictureDialog.AcStartExecute(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.AcStartExecute(Sender: TObject);
 begin
  StartOptimization;
 end;
 
-procedure TFmCircledPictureDialog.AcNextExecute(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.AcNextExecute(Sender: TObject);
 begin
  AcNext.Checked := True;
 end;
 
-procedure TFmCircledPictureDialog.MiCopyReferenceClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiCopyReferenceClick(Sender: TObject);
 begin
  FDrawing.Assign(FReference);
  FBestDrawing.Assign(FReference);
  PaintBoxDraw.Invalidate;
 end;
 
-procedure TFmCircledPictureDialog.MiExitClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiExitClick(Sender: TObject);
 begin
  Close;
 end;
 
-procedure TFmCircledPictureDialog.MiOpenBestClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiOpenBestClick(Sender: TObject);
 begin
- with OpenDialogCircles do
+ with OpenDialogPrimitives do
   begin
    if Execute
     then LoadBest(FileName);
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiOpenDrawingClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiOpenDrawingClick(Sender: TObject);
 begin
- with OpenDialogCircles do
+ with OpenDialogPrimitives do
   begin
    if Execute then
     begin
-     LoadDrawing(FileName);
+     if FilterIndex = 1
+      then LoadDrawing(FileName);
      with TIniFile.Create(FIniFileName) do
       try
-       WriteString('Recent', 'Drawing', OpenDialogCircles.FileName);
+       WriteString('Recent', 'Drawing', OpenDialogPrimitives.FileName);
       finally
        Free;
       end;
@@ -506,16 +505,18 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiSaveDrawingClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiSaveDrawingClick(Sender: TObject);
 begin
- with SaveDialogCircles do
+ with SaveDialogPrimitives do
   begin
    if Execute then
     begin
-     SaveDrawing(FileName);
+     if FilterIndex = 1
+      then SaveDrawing(FileName);
+
      with TIniFile.Create(FIniFileName) do
       try
-       WriteString('Recent', 'Drawing', SaveDialogCircles.FileName);
+       WriteString('Recent', 'Drawing', SaveDialogPrimitives.FileName);
       finally
        Free;
       end;
@@ -523,7 +524,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiSaveFramedClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiSaveFramedClick(Sender: TObject);
 begin
  with SaveDialog do
   begin
@@ -532,7 +533,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiSaveAnimationClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiSaveAnimationClick(Sender: TObject);
 var
   Dir : string;
 begin
@@ -541,7 +542,7 @@ begin
   then SaveAnimation(Dir, 2, True);
 end;
 
-procedure TFmCircledPictureDialog.MiSaveHighResolutionClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiSaveHighResolutionClick(Sender: TObject);
 begin
  with SaveDialog do
   begin
@@ -550,12 +551,12 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiSavePopulationClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiSavePopulationClick(Sender: TObject);
 begin
  SavePopulationBackup('Backup.pop');
 end;
 
-procedure TFmCircledPictureDialog.MiLoadPopulationClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiLoadPopulationClick(Sender: TObject);
 begin
  with TOpenDialog.Create(Self) do
   try
@@ -568,7 +569,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiSaveResultClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiSaveResultClick(Sender: TObject);
 begin
  with SaveDialog do
   begin
@@ -577,7 +578,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiOpenReferenceClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiOpenReferenceClick(Sender: TObject);
 begin
  with OpenDialog do
   begin
@@ -595,7 +596,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.MiStopContinueClick(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.MiStopContinueClick(Sender: TObject);
 begin
  MiStopContinue.Tag := 1 - MiStopContinue.Tag;
 
@@ -619,7 +620,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SetAdditional(const Value: Single);
+procedure TFmPrimitivePictureEvolution.SetAdditional(const Value: Single);
 begin
  if (FAdditional <> Value) and (Value >= 0) and (Value <= 1) then
   begin
@@ -628,7 +629,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SetBest(const Value: Single);
+procedure TFmPrimitivePictureEvolution.SetBest(const Value: Single);
 begin
  if (FBest <> Value) and (Value >= 0) and (Value <= 1) then
   begin
@@ -637,7 +638,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SetCrossover(const Value: Single);
+procedure TFmPrimitivePictureEvolution.SetCrossover(const Value: Single);
 begin
  if (FCrossover <> Value) and (Value >= 0) and (Value <= 1) then
   begin
@@ -646,13 +647,13 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SetInitialSeed(const Value: Integer);
+procedure TFmPrimitivePictureEvolution.SetInitialSeed(const Value: Integer);
 begin
  if (FInitialSeed <> Value) and (Value > 0)
   then FInitialSeed := Value;
 end;
 
-procedure TFmCircledPictureDialog.SetNumberOfCircles(const Value: Integer);
+procedure TFmPrimitivePictureEvolution.SetNumberOfCircles(const Value: Integer);
 begin
  if (FNumberOfCircles <> Value) and (Value > 0) then
   begin
@@ -661,12 +662,12 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SetRandomOrder(const Value: Boolean);
+procedure TFmPrimitivePictureEvolution.SetRandomOrder(const Value: Boolean);
 begin
  FRandomOrder := (FNumberOfCircles = 1) and Value;
 end;
 
-procedure TFmCircledPictureDialog.SetTrialsPerCircle(const Value: Integer);
+procedure TFmPrimitivePictureEvolution.SetTrialsPerCircle(const Value: Integer);
 begin
  if (FTrialsPerCircle <> Value) and (Value > 0) then
   begin
@@ -676,13 +677,13 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SetUpdateTrials(const Value: Integer);
+procedure TFmPrimitivePictureEvolution.SetUpdateTrials(const Value: Integer);
 begin
  if (FUpdateTrials <> Value) and (Value > 0) and (FUpdateTrials <= FTrialsPerCircle)
   then FUpdateTrials := Value;
 end;
 
-procedure TFmCircledPictureDialog.SetWeight(const Value: Single);
+procedure TFmPrimitivePictureEvolution.SetWeight(const Value: Single);
 begin
  if (FWeight <> Value) and (Value >= 0) and (Value <= 1) then
   begin
@@ -714,7 +715,7 @@ begin
  Result := 0.1 * Result + 0.9 * Sqr(Result);
 end;
 
-procedure TFmCircledPictureDialog.ResetCircles;
+procedure TFmPrimitivePictureEvolution.ResetCircles;
 var
   Index : Integer;
 begin
@@ -726,7 +727,7 @@ begin
  FCurrentOrder := 0;
 end;
 
-procedure TFmCircledPictureDialog.StartOptimization(InitializePopulation: Boolean = True);
+procedure TFmPrimitivePictureEvolution.StartOptimization(InitializePopulation: Boolean = True);
 begin
  ResetCircles;
 
@@ -754,7 +755,7 @@ begin
  StatusBar.Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
 end;
 
-function TFmCircledPictureDialog.CalculateError(Sender: TObject;
+function TFmPrimitivePictureEvolution.CalculateError(Sender: TObject;
   var Population: TDifferentialEvolutionPopulation): Double;
 var
   TempData      : array [0..6] of Double;
@@ -992,7 +993,7 @@ begin
  {$ENDIF}
 end;
 
-procedure TFmCircledPictureDialog.DrawPopulation(Population: TDifferentialEvolutionPopulation;
+procedure TFmPrimitivePictureEvolution.DrawPopulation(Population: TDifferentialEvolutionPopulation;
   PixelMap: TGuiCustomPixelMap);
 var
   Index : Integer;
@@ -1027,8 +1028,12 @@ begin
     end;
 
    // draw background circles
-   for Index := FCurrentOrder to Length(FCircles) - 1
-    do FCircles[Index].Draw(PixelMap);
+   if FDrawDraft then
+    for Index := FCurrentOrder to Length(FCircles) - 1
+     do FCircles[Index].DrawDraft(PixelMap)
+   else
+    for Index := FCurrentOrder to Length(FCircles) - 1
+     do FCircles[Index].Draw(PixelMap);
   end
  else
   begin
@@ -1058,7 +1063,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.DrawResults;
+procedure TFmPrimitivePictureEvolution.DrawResults;
 begin
  DrawPopulation(FDiffEvol.GetBestPopulation, FBestDrawing);
  StatusBar.Panels[2].Text := 'Trials: ' + IntToStr(FTrialCount);
@@ -1067,7 +1072,7 @@ begin
  PaintBoxDraw.Invalidate;
 end;
 
-procedure TFmCircledPictureDialog.InitializeEvolution(InitializePopulation: Boolean = True);
+procedure TFmPrimitivePictureEvolution.InitializeEvolution(InitializePopulation: Boolean = True);
 var
   Index : Integer;
 begin
@@ -1106,7 +1111,7 @@ begin
  CalculateStaticCosts;
 end;
 
-procedure TFmCircledPictureDialog.CalculateStaticCosts;
+procedure TFmPrimitivePictureEvolution.CalculateStaticCosts;
 var
   CurrentCost : Double;
   DataSize    : Integer;
@@ -1159,7 +1164,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SaveDrawingBackup;
+procedure TFmPrimitivePictureEvolution.SaveDrawingBackup;
 var
   OldFileName : TFileName;
   NewFileName : TFileName;
@@ -1179,7 +1184,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SavePopulationBackup(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.SavePopulationBackup(FileName: TFileName);
 var
   Index             : Integer;
   VariableIndex     : Integer;
@@ -1201,11 +1206,10 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.LoadPopulationBackup(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.LoadPopulationBackup(FileName: TFileName);
 var
-  Index             : Integer;
-  VariableIndex     : Integer;
-  CurrentPopulation : TPopulationChunk;
+  Index         : Integer;
+  VariableIndex : Integer;
 begin
  with TPopulationChunkContainer.Create do
   try
@@ -1221,7 +1225,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.Evolve;
+procedure TFmPrimitivePictureEvolution.Evolve;
 var
   BestCosts      : Double;
   BestPopulation : TDifferentialEvolutionPopulation;
@@ -1298,7 +1302,7 @@ begin
  FLastBestCosts := BestCosts;
 end;
 
-procedure TFmCircledPictureDialog.LoadReference(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.LoadReference(FileName: TFileName);
 begin
  if not FileExists(FileName) then Exit;
 
@@ -1337,7 +1341,7 @@ begin
  StatusBar.Panels[0].Text := 'Ready';
 end;
 
-procedure TFmCircledPictureDialog.LoadBest(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.LoadBest(FileName: TFileName);
 var
   Circles : TCircleChunkContainer;
   Index   : Integer;
@@ -1369,7 +1373,7 @@ begin
  end;
 end;
 
-procedure TFmCircledPictureDialog.LoadDrawing(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.LoadDrawing(FileName: TFileName);
 var
   Circles : TCircleChunkContainer;
   Index   : Integer;
@@ -1433,7 +1437,7 @@ begin
  end;
 end;
 
-procedure TFmCircledPictureDialog.SaveAnimation(FileName: TFileName;
+procedure TFmPrimitivePictureEvolution.SaveAnimation(FileName: TFileName;
   ScaleFactor: Single; AnimatedCircle: Boolean = False);
 var
   Drawing       : TGuiPixelMapMemory;
@@ -1630,7 +1634,7 @@ begin
   end;
 end;
 
-procedure TFmCircledPictureDialog.SaveDrawing(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.SaveDrawing(FileName: TFileName);
 var
   Circles : TCircleChunkContainer;
   Circle  : TCircleChunk;
@@ -1657,7 +1661,7 @@ begin
  end;
 end;
 
-procedure TFmCircledPictureDialog.SaveDrawingHR(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.SaveDrawingHR(FileName: TFileName);
 var
   DrawingHR : TGuiPixelMapMemory;
   Circle    : TGuiPixelFilledCircle;
@@ -1695,7 +1699,7 @@ begin
  end;
 end;
 
-procedure TFmCircledPictureDialog.SaveDrawingFramed(FileName: TFileName);
+procedure TFmPrimitivePictureEvolution.SaveDrawingFramed(FileName: TFileName);
 var
   Drawing  : TGuiPixelMapMemory;
   Circle   : TGuiPixelFilledCircle;
@@ -1766,12 +1770,12 @@ begin
  end;
 end;
 
-procedure TFmCircledPictureDialog.PaintBoxDrawPaint(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.PaintBoxDrawPaint(Sender: TObject);
 begin
  FBestDrawing.PaintTo(PaintBoxDraw.Canvas);
 end;
 
-procedure TFmCircledPictureDialog.PaintBoxRefPaint(Sender: TObject);
+procedure TFmPrimitivePictureEvolution.PaintBoxRefPaint(Sender: TObject);
 begin
  FReference.PaintTo(PaintBoxRef.Canvas);
 end;

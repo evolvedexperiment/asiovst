@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_DspFilter, DAV_DspFilterBasics;
+  Dialogs, DAV_DspFilter, DAV_DspFilterBasics, DAV_GuiCustomControl,
+  DAV_GuiEQSlide;
 
 type
   TFmEqSlideTest = class(TForm)
@@ -13,11 +14,9 @@ type
     GuiEQSlide3: TGuiEQSlide;
     GuiEQSlide4: TGuiEQSlide;
     procedure FormCreate(Sender: TObject);
-    function GuiEQSlideGetColorBW(Sender: TObject;
-      const Frequency: Single): TColor;
     procedure FormDestroy(Sender: TObject);
-    function GuiEQSlideGetColor(Sender: TObject;
-      const Frequency: Single): TColor;
+    function GuiEQSlideGetColor(Sender: TObject; const Frequency: Single): TColor;
+    function GuiEQSlideGetColorBW(Sender: TObject; const Frequency: Single): TColor;
   private
     FLowpass : TBasicLowpassFilter;
   public
