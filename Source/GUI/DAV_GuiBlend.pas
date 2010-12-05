@@ -38,6 +38,7 @@ unit DAV_GuiBlend;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{$DEFINE AlternativeSSE2}
 {-$DEFINE PUREPASCAL}
 
 uses
@@ -108,6 +109,9 @@ uses
 var
   BiasPointer: Pointer;
   AlphaPointer: Pointer;
+  {$IFDEF AlternativeSSE2}
+  ScaleBiasPointer: Pointer;
+  {$ENDIF}
 {$ENDIF}
 
 const
@@ -1067,6 +1071,29 @@ end;
 {$IFNDEF CPUx86_64}
 function BlendPixelSSE2(Foreground, Background: TPixel32): TPixel32;
 asm
+{$IFDEF AlternativeSSE2}
+  MOVD      XMM0, EAX         // XMM0 contains foreground
+  PXOR      XMM3, XMM3        // XMM3 is zero
+  MOVD      XMM1, EDX         // XMM1 contains background
+  PUNPCKLBW XMM0, XMM3        // stretch foreground
+  PUNPCKLBW XMM1, XMM3        // stretch background
+  MOV       ECX,  ScaleBiasPointer
+  PUNPCKLWD XMM0, XMM3        // stretch foreground (even further)
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  PSHUFD    XMM2, XMM0, $FF   // XMM2 contains foreground alpha
+  PMULLD    XMM2, [ECX]       // scale alpha
+  PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
+  PMULLD    XMM0, XMM2        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
+  PADDD     XMM0, [ECX + $10] // add bias
+  PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, XMM1        // add background to weighted difference
+  PSRLD     XMM0, 24          // shift right XMM0
+  PACKUSWB  XMM0, XMM3        // pack data
+  PACKUSWB  XMM0, XMM3        // pack data
+  MOVD      EAX, XMM0         // return result
+
+{$ELSE}
+
   MOVD      XMM0, EAX
   PXOR      XMM3, XMM3
   MOVD      XMM2, EDX
@@ -1085,6 +1112,7 @@ asm
   PSRLW     XMM2, 8
   PACKUSWB  XMM2, XMM3
   MOVD      EAX, XMM2
+{$ENDIF}
 end;
 
 procedure BlendPixelInplaceSSE2(Foreground: TPixel32; var Background: TPixel32);
@@ -1093,6 +1121,29 @@ asm
   JZ        @Done
   CMP       EAX, $FF000000
   JNC       @Copy
+
+{$IFDEF AlternativeSSE2}
+  MOVD      XMM0, EAX         // XMM0 contains foreground
+  PXOR      XMM3, XMM3        // XMM3 is zero
+  MOVD      XMM1, [EDX]       // XMM1 contains background
+  PUNPCKLBW XMM0, XMM3        // stretch foreground
+  PUNPCKLBW XMM1, XMM3        // stretch background
+  MOV       ECX,  ScaleBiasPointer
+  PUNPCKLWD XMM0, XMM3        // stretch foreground (even further)
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  PSHUFD    XMM2, XMM0, $FF   // XMM2 contains foreground alpha
+  PMULLD    XMM2, [ECX]       // scale alpha
+  PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
+  PMULLD    XMM0, XMM2        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
+  PADDD     XMM0, [ECX + $10] // add bias
+  PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, XMM1        // add background to weighted difference
+  PSRLD     XMM0, 24          // shift right XMM0
+  PACKUSWB  XMM0, XMM3        // pack data
+  PACKUSWB  XMM0, XMM3        // pack data
+  MOVD      [EDX], XMM0       // return result
+
+{$ELSE}
 
   PXOR      XMM3, XMM3
   MOVD      XMM0, EAX
@@ -1112,6 +1163,7 @@ asm
   PSRLW     XMM2, 8
   PACKUSWB  XMM2, XMM3
   MOVD      [EDX], XMM2
+{$ENDIF}
 
 @Done:
   RET
@@ -1376,6 +1428,21 @@ begin
   end;
  BiasPointer := Pointer(Integer(AlphaPointer) + $FF * 4 * SizeOf(Cardinal));
  Assert(PCardinal(BiasPointer)^ = $00FF00FF);
+
+ {$IFDEF AlternativeSSE2}
+ GetAlignedMemory(ScaleBiasPointer, 8 * SizeOf(Cardinal));
+ P := ScaleBiasPointer;
+ for I := 0 to 3 do
+  begin
+   P^ := $10101;
+   Inc(P);
+  end;
+ for I := 0 to 3 do
+  begin
+   P^ := $800000;
+   Inc(P);
+  end;
+ {$ENDIF}
  {$ENDIF}
 end;
 
@@ -1384,6 +1451,9 @@ begin
  {$IFNDEF PUREPASCAL}
  BiasPointer := nil;
  FreeAlignedMemory(AlphaPointer);
+ {$IFDEF AlternativeSSE2}
+ FreeAlignedMemory(ScaleBiasPointer);
+ {$ENDIF}
  {$ENDIF}
 end;
 

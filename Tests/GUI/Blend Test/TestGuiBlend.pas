@@ -146,6 +146,7 @@ begin
  BlendColor32.B := $2B;
  BlendColor32.G := $3C;
  BlendColor32.R := $4D;
+
  ExpectedColor32 := BlendPixelReference(BlendColor32, BlendColor32);
  CombinedColor32 := BlendPixel(BlendColor32, BlendColor32);
  EMMS;
