@@ -195,7 +195,7 @@ implementation
 
 uses
   Filectrl, Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Approximations,
-  SettingsUnit, ProgressBarUnit, AdditionalChunks;
+  DAV_GuiBlend, SettingsUnit, ProgressBarUnit, AdditionalChunks;
 
 
 { TEvolution }

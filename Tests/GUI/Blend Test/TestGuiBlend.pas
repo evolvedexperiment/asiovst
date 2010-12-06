@@ -113,7 +113,7 @@ begin
  inherited;
  GetMem(FForeground, 256 * SizeOf(TPixel32));
  GetMem(FBackground, 256 * SizeOf(TPixel32));
- FColorDiff := 2;
+ FColorDiff := 1;
 end;
 
 procedure TCustomTestBlendModes.TearDown;
