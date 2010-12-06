@@ -38,7 +38,7 @@ unit DAV_GuiBlend;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$DEFINE AlternativeSSE2}
+{-$DEFINE AlternativeSSE2}
 {-$DEFINE PUREPASCAL}
 
 uses
@@ -74,7 +74,6 @@ var
   MergePixelInplace   : TBlendMergePixelInplace;
   MergePixelLine      : TBlendMergePixelLine;
   MergeLine           : TBlendMergeLine;
-
 
 
 { Binding Function Pointers }
@@ -1074,18 +1073,18 @@ asm
 {$IFDEF AlternativeSSE2}
   MOVD      XMM0, EAX         // XMM0 contains foreground
   PXOR      XMM3, XMM3        // XMM3 is zero
-  MOVD      XMM1, EDX         // XMM1 contains background
   PUNPCKLBW XMM0, XMM3        // stretch foreground
-  PUNPCKLBW XMM1, XMM3        // stretch background
-  MOV       ECX,  ScaleBiasPointer
+  MOVD      XMM1, EDX         // XMM1 contains background
   PUNPCKLWD XMM0, XMM3        // stretch foreground (even further)
-  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  MOV       ECX,  ScaleBiasPointer
   PSHUFD    XMM2, XMM0, $FF   // XMM2 contains foreground alpha
+  PUNPCKLBW XMM1, XMM3        // stretch background
   PMULLD    XMM2, [ECX]       // scale alpha
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
   PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
   PMULLD    XMM0, XMM2        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
-  PADDD     XMM0, [ECX + $10] // add bias
   PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, [ECX + $10] // add bias
   PADDD     XMM0, XMM1        // add background to weighted difference
   PSRLD     XMM0, 24          // shift right XMM0
   PACKUSWB  XMM0, XMM3        // pack data
@@ -1125,18 +1124,18 @@ asm
 {$IFDEF AlternativeSSE2}
   MOVD      XMM0, EAX         // XMM0 contains foreground
   PXOR      XMM3, XMM3        // XMM3 is zero
-  MOVD      XMM1, [EDX]       // XMM1 contains background
   PUNPCKLBW XMM0, XMM3        // stretch foreground
-  PUNPCKLBW XMM1, XMM3        // stretch background
-  MOV       ECX,  ScaleBiasPointer
+  MOVD      XMM1, [EDX]       // XMM1 contains background
   PUNPCKLWD XMM0, XMM3        // stretch foreground (even further)
-  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  MOV       ECX,  ScaleBiasPointer
   PSHUFD    XMM2, XMM0, $FF   // XMM2 contains foreground alpha
+  PUNPCKLBW XMM1, XMM3        // stretch background
   PMULLD    XMM2, [ECX]       // scale alpha
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
   PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
   PMULLD    XMM0, XMM2        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
-  PADDD     XMM0, [ECX + $10] // add bias
   PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, [ECX + $10] // add bias
   PADDD     XMM0, XMM1        // add background to weighted difference
   PSRLD     XMM0, 24          // shift right XMM0
   PACKUSWB  XMM0, XMM3        // pack data
