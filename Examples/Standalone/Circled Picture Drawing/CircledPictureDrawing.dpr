@@ -14,6 +14,8 @@ uses
   ProgressBarUnit in 'ProgressBarUnit.pas' {FmProgressBar},
   AdditionalChunks in 'AdditionalChunks.pas';
 
+{$R *.res}
+
 begin
   Application.Initialize;
   {$IFDEF DELPHI10_UP}

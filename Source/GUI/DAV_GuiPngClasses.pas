@@ -140,10 +140,10 @@ begin
   end;
 
  {$IFDEF FPC}
- if DeflateInit_(@ZStreamRecord, Level ,ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+ if DeflateInit_(@ZStreamRecord, Level, ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
   then raise EPngError.Create('Error during compression');
  {$ELSE}
- if DeflateInit_(ZStreamRecord, Level ,ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
+ if DeflateInit_(ZStreamRecord, Level, ZLIB_VERSION, SizeOf(TZStreamRec)) < 0
   then raise EPngError.Create('Error during compression');
  {$ENDIF}
 
