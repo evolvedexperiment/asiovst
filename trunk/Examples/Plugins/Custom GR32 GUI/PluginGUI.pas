@@ -121,7 +121,7 @@ begin
    MenuItem := TMenuItem.Create(MiParameter);
    with MenuItem do
     begin
-     Caption := TVSTModule(Self.Owner).ParameterName[ParamIndex];
+     Caption := string(TVSTModule(Self.Owner).ParameterName[ParamIndex]);
      RadioItem := True;
      Tag := ParamIndex;
      OnClick := AssignParameterClick;
@@ -212,8 +212,8 @@ begin
     with TTextLayer(Gr32Gui.Layers[LayerIndex]) do
      begin
       if Parameter = ParameterIndex
-       then Text := ParameterDisplay[ParameterIndex] + ' ' +
-         ParameterLabel[ParameterIndex];
+       then Text := string(ParameterDisplay[ParameterIndex] + ' ' +
+         ParameterLabel[ParameterIndex]);
      end else
    if Gr32Gui.Layers[LayerIndex] is TDialLayer then
     with TDialLayer(Gr32Gui.Layers[LayerIndex]) do
