@@ -1,4 +1,5 @@
 object TanhWaveshaperModule: TTanhWaveshaperModule
+  OldCreateOrder = True
   Version = '1.0'
   EffectName = 'Tanh Waveshaper'
   ProductName = 'DAV Effect Examples'
@@ -17,7 +18,7 @@ object TanhWaveshaperModule: TTanhWaveshaperModule
   ParameterProperties = <
     item
       CurveFactor = 1.000000000000000000
-      DisplayName = 'FontOversampling'
+      DisplayName = 'Oversampling'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -30,7 +31,7 @@ object TanhWaveshaperModule: TTanhWaveshaperModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParameterFontOversamplingChange
+      OnParameterChange = ParameterOversamplingChange
       OnCustomParameterDisplay = ParameterIntegerDisplay
     end
     item

@@ -32,7 +32,7 @@ unit DAV_DspFilterSimple;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I ..\DAV_Compiler.INC}
 
 uses
   Classes, DAV_Classes, DAV_Types, DAV_Complex, DAV_DspFilter;
@@ -381,21 +381,21 @@ begin
  FState := Input * FCoeff - Result * FAddCoeff;
 {$ELSE}
 asm
- fld Input.Single
+ FLD Input.Single
  {$IFDEF HandleDenormals}
- fadd CDenorm32
+ FADD CDenorm32
  {$ENDIF}
- fmul  [eax.FFilterGain].Double
- jz @End
-  fld   st(0)
-  fadd  [eax.FState].Double
-  fld   st(0)
-  fmul  [eax.FAddCoeff].Double
-  fxch  st(2)
-  fmul  [eax.FCoeff].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp  [eax.FState].Double
+ FMUL  [EAX.FFilterGain].Double
+ JZ @End
+  FLD   ST(0)
+  FADD  [EAX.FState].Double
+  FLD   ST(0)
+  FMUL  [EAX.FAddCoeff].Double
+  FXCH  ST(2)
+  FMUL  [EAX.FCoeff].Double
+  fsubrp ST(2), ST(0)
+  FXCH
+  FSTP  [EAX.FState].Double
  @End:
  {$ENDIF}
 end;
@@ -408,21 +408,21 @@ begin
  FState := Input * FCoeff - Result * FAddCoeff;
 {$ELSE}
 asm
- fld Input.Double
+ FLD Input.Double
  {$IFDEF HandleDenormals}
- fadd CDenorm64
+ FADD CDenorm64
  {$ENDIF}
- fmul  [eax.FFilterGain].Double
- jz @End
-  fld   st(0)
-  fadd  [eax.FState].Double
-  fld   st(0)
-  fmul  [eax.FAddCoeff].Double
-  fxch  st(2)
-  fmul  [eax.FCoeff].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp  [eax.FState].Double
+ FMUL  [EAX.FFilterGain].Double
+ JZ @End
+  FLD   ST(0)
+  FADD  [EAX.FState].Double
+  FLD   ST(0)
+  FMUL  [EAX.FAddCoeff].Double
+  FXCH  ST(2)
+  FMUL  [EAX.FCoeff].Double
+  fsubrp ST(2), ST(0)
+  FXCH
+  FSTP  [EAX.FState].Double
  @End:
  {$ENDIF}
 end;
@@ -448,21 +448,21 @@ begin
  FState := Input * FCoeff - Result * FAddCoeff;
 {$ELSE}
 asm
- fld Input.Single
+ FLD Input.Single
  {$IFDEF HandleDenormals}
- fadd CDenorm32
+ FADD CDenorm32
  {$ENDIF}
- fmul  [eax.FFilterGain].Double
- jz @End
-  fld   st(0)
-  fadd  [eax.FState].Double
-  fld   st(0)
-  fmul  [eax.FAddCoeff].Double
-  fxch  st(2)
-  fmul  [eax.FCoeff].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp  [eax.FState].Double
+ FMUL  [EAX.FFilterGain].Double
+ JZ @End
+  FLD   ST(0)
+  FADD  [EAX.FState].Double
+  FLD   ST(0)
+  FMUL  [EAX.FAddCoeff].Double
+  FXCH  ST(2)
+  FMUL  [EAX.FCoeff].Double
+  fsubrp ST(2), ST(0)
+  FXCH
+  FSTP  [EAX.FState].Double
  @End:
  {$ENDIF}
 end;
@@ -475,21 +475,21 @@ begin
  FState := Input * FCoeff - Result * FAddCoeff;
 {$ELSE}
 asm
- fld Input.Double
+ FLD Input.Double
  {$IFDEF HandleDenormals}
- fadd CDenorm64
+ FADD CDenorm64
  {$ENDIF}
- fmul  [eax.FFilterGain].Double
- jz @End
-  fld   st(0)
-  fadd  [eax.FState].Double
-  fld   st(0)
-  fmul  [eax.FAddCoeff].Double
-  fxch  st(2)
-  fmul  [eax.FCoeff].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp  [eax.FState].Double
+ FMUL  [EAX.FFilterGain].Double
+ JZ @End
+  FLD   ST(0)
+  FADD  [EAX.FState].Double
+  FLD   ST(0)
+  FMUL  [EAX.FAddCoeff].Double
+  FXCH  ST(2)
+  FMUL  [EAX.FCoeff].Double
+  fsubrp ST(2), ST(0)
+  FXCH
+  FSTP  [EAX.FState].Double
  @End:
  {$ENDIF}
 end;
@@ -513,7 +513,7 @@ function TFirstOrderHighcutFilter.MagnitudeSquared(const Frequency: Double): Dou
 var
   cw : Double;
 begin
- cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
+ cw := 2 * Cos(2 * Frequency * Pi * SampleRateReciprocal);
  Result := Sqr(FFilterGain) * (cw + 2) / (1 + Sqr(FCoeff) - cw * FCoeff);
  Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
@@ -526,18 +526,18 @@ begin
  FState := Input + FCoeff * Result;
 {$ELSE}
 asm
- fld Input.Single
+ FLD     Input.Single
  {$IFDEF HandleDenormals}
- fadd CDenorm32
+ FADD    CDenorm32
  {$ENDIF}
- fmul  [eax.FFilterGain].Double
- fld st(0)
- fadd [eax.FState].Double
- fld st(0)
- fmul [eax.FCoeff].Double
- faddp st(2), st(0)
- fxch
- fstp [eax.FState].Double
+ FMUL    [EAX.FFilterGain].Double
+ FLD     ST(0)
+ FADD    [EAX.FState].Double
+ FLD     ST(0)
+ FMUL    [EAX.FCoeff].Double
+ FADDP   ST(2), ST(0)
+ FXCH
+ FSTP    [EAX.FState].Double
  {$ENDIF}
 end;
 
@@ -549,18 +549,18 @@ begin
  FState := Input + FCoeff * Result;
 {$ELSE}
 asm
- fld Input.Double
+ FLD     Input.Double
  {$IFDEF HandleDenormals}
- fadd CDenorm64
+ FADD    CDenorm64
  {$ENDIF}
- fmul  [eax.FFilterGain].Double
- fld st(0)
- fadd [eax.FState].Double
- fld st(0)
- fmul [eax.FCoeff].Double
- faddp st(2), st(0)
- fxch
- fstp [eax.FState].Double
+ FMUL    [EAX.FFilterGain].Double
+ FLD     ST(0)
+ FADD    [EAX.FState].Double
+ FLD     ST(0)
+ FMUL    [EAX.FCoeff].Double
+ FADDP   ST(2), ST(0)
+ FXCH
+ FSTP    [EAX.FState].Double
  {$ENDIF}
 end;
 
@@ -603,7 +603,7 @@ function TFirstOrderLowcutFilter.MagnitudeSquared(const Frequency: Double): Doub
 var
   cw : Double;
 begin
- cw     := 2 * cos(2 * Frequency * pi * FSRR);
+ cw     := 2 * Cos(2 * Frequency * pi * FSRR);
  Result := Sqr(FFilterGain) * (cw - 2) / (1 + Sqr(FCoeff) - cw * FCoeff);
  Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
@@ -640,27 +640,27 @@ begin
  FState := -Input + FCoeff * Result;
 {$ELSE}
 asm
- fld  Input.Single
+ FLD     Input.Single
 
  // eventually add denormal
  {$IFDEF HandleDenormals}
- mov  edx, DenormRandom
- imul edx, DenormRandom, $08088405
- inc  edx
- shr  edx, 23
- or   edx, $20000000
- mov  DenormRandom, edx
- fadd DenormRandom
+ MOV     EDX, DenormRandom
+ IMUL    EDX, DenormRandom, $08088405
+ INC     EDX
+ SHR     EDX, 23
+ OR      EDX, $20000000
+ MOV     DenormRandom, EDX
+ FADD    DenormRandom
  {$ENDIF}
 
- fmul  [eax.FFilterGain].Double
- fld st(0)
- fadd [eax.FState].Double
- fld st(0)
- fmul [eax.FCoeff].Double
- fsubrp st(2), st(0)
- fxch
- fstp [eax.FState].Double
+ FMUL    [EAX.FFilterGain].Double
+ FLD     ST(0)
+ FADD    [EAX.FState].Double
+ FLD     ST(0)
+ FMUL    [EAX.FCoeff].Double
+ FSUBRP  ST(2), ST(0)
+ FXCH
+ FSTP    [EAX.FState].Double
  {$ENDIF}
 end;
 
@@ -672,27 +672,27 @@ begin
  FState := -Input + FCoeff * Result;
 {$ELSE}
 asm
- fld  Input.Double
+ FLD     Input.Double
 
  // eventually add denormal
  {$IFDEF HandleDenormals}
- mov  edx, DenormRandom
- imul edx, DenormRandom, $08088405
- inc  edx
- shr  edx, 23
- or   edx, $20000000
- mov  DenormRandom, edx
- fadd DenormRandom
+ MOV     EDX, DenormRandom
+ IMUL    EDX, DenormRandom, $08088405
+ INC     EDX
+ SHR     EDX, 23
+ OR      EDX, $20000000
+ MOV     DenormRandom, EDX
+ FADD    DenormRandom
  {$ENDIF}
 
- fmul  [eax.FFilterGain].Double
- fld st(0)
- fadd [eax.FState].Double
- fld st(0)
- fmul [eax.FCoeff].Double
- fsubrp st(2), st(0)
- fxch
- fstp [eax.FState].Double
+ FMUL    [EAX.FFilterGain].Double
+ FLD     ST(0)
+ FADD    [EAX.FState].Double
+ FLD     ST(0)
+ FMUL    [EAX.FCoeff].Double
+ FSUBRP  ST(2), ST(0)
+ FXCH
+ FSTP    [EAX.FState].Double
  {$ENDIF}
 end;
 

@@ -14,9 +14,6 @@ type
   TDspVSTModule = class(TVSTModuleWithPrograms)
   private
     procedure ProcessingModeChanged;
-    procedure OnProcessChanged;
-    procedure OnProcess32ReplacingChanged;
-    procedure OnProcess64ReplacingChanged;
   protected
     FBlockModeSize        : Integer;
     FBlockModeOverlap     : Integer;
@@ -34,6 +31,10 @@ type
 
     function IOChanged: Boolean; override;
     procedure SampleRateChanged; override;
+
+    procedure ProcessChanged; virtual;
+    procedure Process32ReplacingChanged; virtual;
+    procedure Process64ReplacingChanged; virtual;
 
     procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer); overload;
     procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
@@ -425,7 +426,7 @@ begin
  if @FOnProcess <> @Value then
   begin
    FOnProcess := Value;
-   OnProcessChanged;
+   ProcessChanged;
   end;
 end;
 
@@ -434,7 +435,7 @@ begin
  if @FOnProcess32Replacing <> @Value then
   begin
    FOnProcess32Replacing := Value;
-   OnProcess32ReplacingChanged;
+   Process32ReplacingChanged;
   end;
 end;
 
@@ -443,7 +444,7 @@ begin
  if @FOnProcess64Replacing <> @Value then
   begin
    FOnProcess64Replacing := Value;
-   OnProcess64ReplacingChanged;
+   Process64ReplacingChanged;
   end;
 end;
 
@@ -456,7 +457,7 @@ begin
   end;
 end;
 
-procedure TDspVSTModule.OnProcessChanged;
+procedure TDspVSTModule.ProcessChanged;
 begin
  case FProcessingMode of
    pmNormal:     FOnProcessEx := FOnProcess;
@@ -469,7 +470,7 @@ begin
  end;
 end;
 
-procedure TDspVSTModule.OnProcess32ReplacingChanged;
+procedure TDspVSTModule.Process32ReplacingChanged;
 begin
  case FProcessingMode of
    pmNormal:    FOnProcess32ReplacingEx := FOnProcess32Replacing;
@@ -482,7 +483,7 @@ begin
  end;
 end;
 
-procedure TDspVSTModule.OnProcess64ReplacingChanged;
+procedure TDspVSTModule.Process64ReplacingChanged;
 begin
  case FProcessingMode of
    pmNormal:    FOnProcess64ReplacingEx := FOnProcess64Replacing;

@@ -41,15 +41,15 @@ uses
 
 type
   {$IFNDEF DELPHI7_UP}
-    TDAVSingleDynArray = Array of Single;
-    TDAVDoubleDynArray = Array of Double;
+    TDAVSingleDynarray = array of Single;
+    TDAVDoubleDynArray = array of Double;
   {$ELSE}
     {$IFDEF UseNativeTypes}
       TDAVSingleDynArray = Types.TSingleDynArray;
       TDAVDoubleDynArray = Types.TDoubleDynArray;
     {$ELSE}
-      TDAVSingleDynArray = Array of Single;
-      TDAVDoubleDynArray = Array of Double;
+      TDAVSingleDynArray = array of Single;
+      TDAVDoubleDynArray = array of Double;
     {$ENDIF}
   {$ENDIF}
 
@@ -81,34 +81,34 @@ type
   TDAVDoubleFixedMatrix = array [0..0, 0..0] of Double;
   PDAVDoubleFixedMatrix = ^TDAVDoubleDynMatrix;
 
-  TDAV2SingleArray = Array [0..1] of Single;
+  TDAV2SingleArray = array [0..1] of Single;
   PDAV2SingleArray = ^TDAV2SingleArray;
-  TDAV2DoubleArray = Array [0..1] of Double;
+  TDAV2DoubleArray = array [0..1] of Double;
   PDAV2DoubleArray = ^TDAV2DoubleArray;
 
-  TDAV3SingleArray = Array [0..2] of Single;
+  TDAV3SingleArray = array [0..2] of Single;
   PDAV3SingleArray = ^TDAV3SingleArray;
-  TDAV3DoubleArray = Array [0..2] of Double;
+  TDAV3DoubleArray = array [0..2] of Double;
   PDAV3DoubleArray = ^TDAV3DoubleArray;
 
-  TDAV4SingleArray = Array [0..3] of Single;
+  TDAV4SingleArray = array [0..3] of Single;
   PDAV4SingleArray = ^TDAV4SingleArray;
-  TDAV4DoubleArray = Array [0..3] of Double;
+  TDAV4DoubleArray = array [0..3] of Double;
   PDAV4DoubleArray = ^TDAV4DoubleArray;
 
-  TDAV6SingleArray = Array [0..5] of Single;
+  TDAV6SingleArray = array [0..5] of Single;
   PDAV6SingleArray = ^TDAV6SingleArray;
-  TDAV6DoubleArray = Array [0..5] of Double;
+  TDAV6DoubleArray = array [0..5] of Double;
   PDAV6DoubleArray = ^TDAV6DoubleArray;
 
-  TDAV8SingleArray = Array [0..7] of Single;
+  TDAV8SingleArray = array [0..7] of Single;
   PDAV8SingleArray = ^TDAV8SingleArray;
-  TDAV8DoubleArray = Array [0..7] of Double;
+  TDAV8DoubleArray = array [0..7] of Double;
   PDAV8DoubleArray = ^TDAV8DoubleArray;
 
-  TDAV16SingleArray = Array [0..15] of Single;
+  TDAV16SingleArray = array [0..15] of Single;
   PDAV16SingleArray = ^TDAV16SingleArray;
-  TDAV16DoubleArray = Array [0..15] of Double;
+  TDAV16DoubleArray = array [0..15] of Double;
   PDAV16DoubleArray = ^TDAV16DoubleArray;
 
   PDAV512SingleArray = ^TDAV1024SingleArray;

@@ -339,7 +339,7 @@ uses
   function FastTanhOpt6Term(Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanhOpt7Term(Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-  {$IFNDEF Purepascal}
+  {$IFNDEF PUREPASCAL}
   function FastTanhOpt3TermFPU(Input: Single): Single; assembler; overload;
   function FastTanhOpt4TermFPU(Input: Single): Single; assembler; overload;
   function FastTanhOpt5TermFPU(Input: Single): Single; assembler; overload;
