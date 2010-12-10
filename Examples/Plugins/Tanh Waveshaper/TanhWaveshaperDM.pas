@@ -54,8 +54,8 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -364,7 +364,7 @@ begin
 end;
 
 procedure TTanhWaveshaperModule.ParameterTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
    0 : PreDefined := 'Tanh (Math)';
@@ -396,7 +396,7 @@ begin
 end;
 
 procedure TTanhWaveshaperModule.ParameterIntegerDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;

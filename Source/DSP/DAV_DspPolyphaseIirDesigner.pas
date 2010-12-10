@@ -86,11 +86,11 @@ class function TPolyphaseIirDesigner.ComputeNbrOfCoeffsFromPrototype(
 var
   k, q: Double;
 begin
-  Assert(Attenuation > 0);
-  Assert(Transition > 0);
-  Assert(Transition < 0.5);
-  ComputeTransitionParam(k, q, Transition);
-  Result := (ComputeOrder(Attenuation, q) - 1) div 2;
+ Assert(Attenuation > 0);
+ Assert(Transition > 0);
+ Assert(Transition < 0.5);
+ ComputeTransitionParam(k, q, Transition);
+ Result := (ComputeOrder(Attenuation, q) - 1) div 2;
 end;
 
 
@@ -116,11 +116,11 @@ class function TPolyphaseIirDesigner.ComputeAttenuationFromOrderTBW(
 var
   k, q: Double;
 begin
-  Assert(NbrOfCoeffs > 0);
-  Assert(Transition > 0);
-  Assert(Transition < 0.5);
-  ComputeTransitionParam(k, q, transition);
-  Result := ComputeAttenuation(q, NbrOfCoeffs * 2 + 1);
+ Assert(NbrOfCoeffs > 0);
+ Assert(Transition > 0);
+ Assert(Transition < 0.5);
+ ComputeTransitionParam(k, q, transition);
+ Result := ComputeAttenuation(q, NbrOfCoeffs * 2 + 1);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,20 +151,20 @@ var
   k, q     : Double;
   Order, i : Integer;
 begin
-  Assert(Length(Coeffs) > 0);
-  Assert(Attenuation > 0);
-  Assert(Transition > 0);
-  Assert(Transition < 0.5);
+ Assert(Length(Coeffs) > 0);
+ Assert(Attenuation > 0);
+ Assert(Transition > 0);
+ Assert(Transition < 0.5);
 
-  ComputeTransitionParam(k, q, transition);
+ ComputeTransitionParam(k, q, transition);
 
  // Computes Nbr of required Coeffs
-  Order := ComputeOrder(Attenuation, q);
-  Result := (Order - 1) div 2;
+ Order := ComputeOrder(Attenuation, q);
+ Result := (Order - 1) div 2;
 
  // Coefficient calculation
-  for i := 0 to Result - 1
-   do Coeffs[i] := ComputeCoefficient(i, k, q, Order);
+ for i := 0 to Result - 1
+  do Coeffs[i] := ComputeCoefficient(i, k, q, Order);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -194,17 +194,17 @@ var
   k, q     : Double;
   Order, i : Integer;
 begin
-  Assert(Length(Coeffs) > 0);
-  Assert(NbrOfCoeffs > 0);
-  Assert(Transition > 0);
-  Assert(Transition < 0.5);
-  ComputeTransitionParam(k, q, Transition);
+ Assert(Length(Coeffs) > 0);
+ Assert(NbrOfCoeffs > 0);
+ Assert(Transition > 0);
+ Assert(Transition < 0.5);
+ ComputeTransitionParam(k, q, Transition);
 
-  Order := NbrOfCoeffs * 2 + 1;
+ Order := NbrOfCoeffs * 2 + 1;
 
- // Coefficient calculation
-  for i := 0 to NbrOfCoeffs - 1
-   do Coeffs[i] := ComputeCoefficient(i, k, q, Order);
+// Coefficient calculation
+ for i := 0 to NbrOfCoeffs - 1
+  do Coeffs[i] := ComputeCoefficient(i, k, q, Order);
 end;
 
 class procedure TPolyphaseIirDesigner.ComputeTransitionParam(
@@ -213,18 +213,18 @@ var
   kksqrt : Double;
   e, e4  : Double;
 begin
-  Assert(Transition > 0);
-  Assert(Transition < 0.5);
+ Assert(Transition > 0);
+ Assert(Transition < 0.5);
 
-  k := Sqr(Tan((1 - Transition * 2) * PI * 0.25));
-  Assert(k < 1);
-  Assert(k > 0);
+ k := Sqr(Tan((1 - Transition * 2) * PI * 0.25));
+ Assert(k < 1);
+ Assert(k > 0);
 
-  kksqrt := Power(1 - sqr(k), 0.25);
-  e := 0.5 * (1 - kksqrt) / (1 + kksqrt);
-  e4 := sqr(sqr(e));
-  q := e * (1 + e4 * (2 + e4 * (15 + 150 * e4)));
-  Assert(q > 0);
+ kksqrt := Power(1 - Sqr(k), 0.25);
+ e := 0.5 * (1 - kksqrt) / (1 + kksqrt);
+ e4 := Sqr(Sqr(e));
+ q := e * (1 + e4 * (2 + e4 * (15 + 150 * e4)));
+ Assert(q > 0);
 end;
 
 class function TPolyphaseIirDesigner.ComputeOrder(
@@ -232,28 +232,29 @@ class function TPolyphaseIirDesigner.ComputeOrder(
 var
   a, attn_p2: Double;
 begin
-  Assert(Attenuation > 0);
-  Assert(Q > 0);
-  attn_p2 := Power(-Attenuation * 0.1, 10.0);
-  a := attn_p2 / (1 - attn_p2);
-  Result := round(ln(sqr(a) / 16) / ln(Q) + 0.5);
-  if (Result and 1) = 0 then
-    Inc(Result);
-  if Result = 1 then
-    Result := 3;
+ Assert(Attenuation > 0);
+ Assert(Q > 0);
+ attn_p2 := Power(-0.1 * Attenuation, 10.0);
+ a := attn_p2 / (1 - attn_p2);
+ Result := Round(Ln(Sqr(a) / 16) / ln(Q) + 0.5);
+
+ if (Result and 1) = 0
+  then Inc(Result);
+ if Result = 1
+  then Result := 3;
 end;
 
 class function TPolyphaseIirDesigner.ComputeAttenuation(const Q: Double;
   const Order: Integer): Double;
 begin
-  Assert(Q > 0);
-  Assert(Order > 0);
-  Assert((Order and 1) = 1);
+ Assert(Q > 0);
+ Assert(Order > 0);
+ Assert((Order and 1) = 1);
 
-  Result := 4 * exp(Order * 0.5 * ln(Q));
-  Assert(Result <> -1.0);
-  Result := -10 * log10(Result / (1 + Result));
-  Assert(Result > 0);
+ Result := 4 * Exp(Order * 0.5 * ln(Q));
+ Assert(Result <> -1.0);
+ Result := -10 * log10(Result / (1 + Result));
+ Assert(Result > 0);
 end;
 
 class function TPolyphaseIirDesigner.ComputeCoefficient(const Index: Integer;
@@ -263,15 +264,15 @@ var
   Num, Den : Double;
   ww       : Double;
 begin
-  Assert(Index >= 0);
-  Assert(Index * 2 < Order);
-  c := Index + 1;
-  Num := ComputeACCNum(Q, Order, c) * Power(q, 0.25);
-  Den := ComputeACCDen(Q, Order, c) + 0.5;
-  ww := Sqr(Num) / Sqr(Den);
+ Assert(Index >= 0);
+ Assert(Index * 2 < Order);
+ c := Index + 1;
+ Num := ComputeACCNum(Q, Order, c) * Power(q, 0.25);
+ Den := ComputeACCDen(Q, Order, c) + 0.5;
+ ww := Sqr(Num) / Sqr(Den);
 
-  Result := Sqrt((1 - ww * k) * (1 - ww / k)) / (1 + ww);
-  Result := (1 - Result) / (1 + Result);
+ Result := Sqrt((1 - ww * k) * (1 - ww / k)) / (1 + ww);
+ Result := (1 - Result) / (1 + Result);
 end;
 
 class function TPolyphaseIirDesigner.ComputeACCNum(const Q: Double;
@@ -280,17 +281,17 @@ var
   q_i1 : Double;
   i, j : Integer;
 begin
-  Assert(c >= 1);
-  Assert(c < Order * 2);
-  i := 0;
-  j := 1;
-  Result := 0;
-  repeat
-    q_i1 := IntPower(q, i * (i + 1)) * (sin((i * 2 + 1) * c * PI / Order) * j);
-    Result := Result + q_i1;
-    j := -j;
-    Inc(i);
-  until abs(q_i1) <= 1e-100;
+ Assert(c >= 1);
+ Assert(c < Order * 2);
+ i := 0;
+ j := 1;
+ Result := 0;
+ repeat
+  q_i1 := IntPower(q, i * (i + 1)) * (sin((i * 2 + 1) * c * PI / Order) * j);
+  Result := Result + q_i1;
+  j := -j;
+  Inc(i);
+ until abs(q_i1) <= 1e-100;
 end;
 
 class function TPolyphaseIirDesigner.ComputeACCDen(const Q: Double;
@@ -299,18 +300,18 @@ var
   q_i2 : Double;
   i, j : Integer;
 begin
-  Assert(c >= 1);
-  Assert(c < Order * 2);
-  i := 1;
-  j := -1;
-  Result := 0;
+ Assert(c >= 1);
+ Assert(c < Order * 2);
+ i := 1;
+ j := -1;
+ Result := 0;
 
-  repeat
-   q_i2 := IntPower(q, i * i) * cos(2 * i * c * PI / Order) * j;
-   Result := Result + q_i2;
-   j := -j;
-   Inc(i);
-  until abs(q_i2) <= 1e-100;
+ repeat
+  q_i2 := IntPower(q, i * i) * cos(2 * i * c * PI / Order) * j;
+  Result := Result + q_i2;
+  j := -j;
+  Inc(i);
+ until abs(q_i2) <= 1e-100;
 end;
 
-end.
+end.

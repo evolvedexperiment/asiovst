@@ -1,4 +1,5 @@
 object OversampledTanhModule: TOversampledTanhModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -11,7 +12,6 @@ object OversampledTanhModule: TOversampledTanhModule
   BlockSize = 16
   CurrentProgramName = 'Init'
   BlockModeSize = 16
-  InitialDelay = 16
   IORatio = 1.000000000000000000
   UniqueID = 'Down'
   ShellPlugins = <>
@@ -54,7 +54,6 @@ object OversampledTanhModule: TOversampledTanhModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange

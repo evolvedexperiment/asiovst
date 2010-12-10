@@ -37,91 +37,107 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_DspPolyphaseFilter;
+  Classes, DAV_Types, DAV_MemoryUtils, DAV_DspPolyphaseFilter;
 
 type
-  TProcessSample32 = procedure (const Input : Single; out Output : TDAV2SingleArray) of object;
-  TProcessSample64 = procedure (const Input : Double; out Output : TDAV2DoubleArray) of object;
+  TProcessSample32 = procedure (const Input: Single; out Output: TDAV2SingleArray) of object;
+  TProcessSample64 = procedure (const Input: Double; out Output: TDAV2DoubleArray) of object;
 
-  TCustomPolyphaseDownsampler = class(TCustomPolyphaseFilter)
+  TCustomPolyphaseUpsampler = class(TCustomPolyphaseFilter)
   protected
     procedure NumberOfCoeffsChanged; override;
+    procedure AllocateBuffer; virtual; abstract;
     procedure ClearBuffers; virtual; abstract;
+    procedure ResetStates; virtual; abstract;
     procedure PushStates; virtual; abstract;
     procedure PopStates; virtual; abstract;
-    procedure ResetStates; virtual; abstract;
+  public
+    constructor Create; override;
   end;
 
-  TPolyphaseUpsampler32 = class(TCustomPolyphaseDownsampler)
+  TPolyphaseUpsampler32 = class(TCustomPolyphaseUpsampler)
   private
     FX, FY           : PDAVSingleFixedArray;
     FStateStack      : PDAVSingleFixedArray;
     FProcessSample32 : TProcessSample32;
-    procedure ProcessSample1(const Input : Single; out Output : TDAV2SingleArray);
-    procedure ProcessSample2(const Input : Single; out Output : TDAV2SingleArray);
-    procedure ProcessSample3(const Input : Single; out Output : TDAV2SingleArray);
-    procedure ProcessSample4(const Input : Single; out Output : TDAV2SingleArray);
-    procedure ProcessSampleOdd(const Input : Single; out Output : TDAV2SingleArray);
-    procedure ProcessSampleEven(const Input : Single; out Output : TDAV2SingleArray);
+    procedure ProcessSample1(const Input: Single; out Output: TDAV2SingleArray);
+    procedure ProcessSample2(const Input: Single; out Output: TDAV2SingleArray);
+    procedure ProcessSample3(const Input: Single; out Output: TDAV2SingleArray);
+    procedure ProcessSample4(const Input: Single; out Output: TDAV2SingleArray);
+    procedure ProcessSampleOdd(const Input: Single; out Output: TDAV2SingleArray);
+    procedure ProcessSampleEven(const Input: Single; out Output: TDAV2SingleArray);
   protected
     procedure AssignTo(Dest: TPersistent); override;
+
+    procedure AllocateBuffer; override;
     procedure ChooseProcedures; override;
-    procedure NumberOfCoeffsChanged; override;
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ProcessBlock(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
+
     procedure ClearBuffers; override;
     procedure PushStates; override;
     procedure PopStates; override;
     procedure ResetStates; override;
 
-    procedure ProcessSample32(Input: Single; out Output : TDAV2SingleArray);
-
+    procedure ProcessBlock(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
+    procedure ProcessSample32(Input: Single; out Output: TDAV2SingleArray);
     property ProcessSample: TProcessSample32 read FProcessSample32;
   end;
 
-  TPolyphaseUpsampler64 = class(TCustomPolyphaseDownsampler)
+  TPolyphaseUpsampler64 = class(TCustomPolyphaseUpsampler)
   private
-    FX, FY              : PDAVDoubleFixedArray;
-    FStateStack         : PDAVDoubleFixedArray;
-    FProcessSample64    : TProcessSample64;
-    procedure ProcessSample1(const Input : Double; out Output : TDAV2DoubleArray);
-    procedure ProcessSample2(const Input : Double; out Output : TDAV2DoubleArray);
-    procedure ProcessSample3(const Input : Double; out Output : TDAV2DoubleArray);
-    procedure ProcessSample4(const Input : Double; out Output : TDAV2DoubleArray);
-    procedure ProcessSampleLarge(const Input : Double; out Output : TDAV2DoubleArray);
+    FX, FY           : PDAVDoubleFixedArray;
+    FStateStack      : PDAVDoubleFixedArray;
+    FProcessSample64 : TProcessSample64;
+    procedure ProcessSample1(const Input: Double; out Output: TDAV2DoubleArray);
+    procedure ProcessSample2(const Input: Double; out Output: TDAV2DoubleArray);
+    procedure ProcessSample3(const Input: Double; out Output: TDAV2DoubleArray);
+    procedure ProcessSample4(const Input: Double; out Output: TDAV2DoubleArray);
+    procedure ProcessSampleOdd(const Input: Double; out Output: TDAV2DoubleArray);
+    procedure ProcessSampleEven(const Input: Double; out Output: TDAV2DoubleArray);
   protected
     procedure AssignTo(Dest: TPersistent); override;
+
+    procedure AllocateBuffer; override;
     procedure ChooseProcedures; override;
-    procedure NumberOfCoeffsChanged; override;
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ProcessBlock(const Input, Output: PDAVDoubleFixedArray; const SampleFrames: Integer);
+
     procedure ClearBuffers; override;
     procedure PushStates; override;
     procedure PopStates; override;
     procedure ResetStates; override;
-    procedure ProcessSample64(Input: Double; out Output : TDAV2DoubleArray);
 
+    procedure ProcessBlock(const Input, Output: PDAVDoubleFixedArray; const SampleFrames: Integer);
+    procedure ProcessSample64(Input: Double; out Output: TDAV2DoubleArray);
     property ProcessSample: TProcessSample64 read FProcessSample64;
   end;
 
 implementation
 
-{ TCustomPolyphaseDownsampler }
 
-procedure TCustomPolyphaseDownsampler.NumberOfCoeffsChanged;
+{ TCustomPolyphaseUpsampler }
+
+constructor TCustomPolyphaseUpsampler.Create;
 begin
  inherited;
+ AllocateBuffer;
  ChooseProcedures;
  ClearBuffers;
 end;
 
-{ TPolyphaseUpsampler32 }
+procedure TCustomPolyphaseUpsampler.NumberOfCoeffsChanged;
+begin
+ inherited;
+ AllocateBuffer;
+ ChooseProcedures;
+ ClearBuffers;
+end;
 
-/////////////////////////////// Constructor //////////////////////////////////
+
+{ TPolyphaseUpsampler32 }
 
 constructor TPolyphaseUpsampler32.Create;
 begin
@@ -133,14 +149,17 @@ end;
 
 destructor TPolyphaseUpsampler32.Destroy;
 begin
- Dispose(FX);
- Dispose(FY);
+ FreeAlignedMemory(FX);
+ FreeAlignedMemory(FY);
  Dispose(FStateStack);
  inherited;
 end;
 
 procedure TPolyphaseUpsampler32.AssignTo(Dest: TPersistent);
+var
+  Index : Integer;
 begin
+ inherited;
  if Dest is TPolyphaseUpsampler32 then
   with TPolyphaseUpsampler32(Dest) do
    begin
@@ -151,8 +170,28 @@ begin
     Move(Self.FX^, FX^, FNumberOfCoeffs * SizeOf(Single));
     Move(Self.FY^, FY^, FNumberOfCoeffs * SizeOf(Single));
     Move(Self.FStateStack^, FStateStack^, 2 * FNumberOfCoeffs * SizeOf(Single));
-   end
- else inherited;
+   end else
+ if Dest is TPolyphaseUpsampler64 then
+  with TPolyphaseUpsampler64(Dest) do
+   begin
+    inherited;
+    Assert(FNumberOfCoeffs = Self.FNumberOfCoeffs);
+    ChooseProcedures;
+
+    for Index := 0 to FNumberOfCoeffs - 1 do
+     begin
+      FX^[Index] := Self.FX^[Index];
+      FY^[Index] := Self.FY^[Index];
+      FStateStack^[Index] := Self.FStateStack^[Index];
+     end;
+   end;
+end;
+
+procedure TPolyphaseUpsampler32.AllocateBuffer;
+begin
+ ReallocateAlignedMemory(Pointer(FX), FNumberOfCoeffs * SizeOf(Single));
+ ReallocateAlignedMemory(Pointer(FY), FNumberOfCoeffs * SizeOf(Single));
+ ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Single));
 end;
 
 procedure TPolyphaseUpsampler32.ChooseProcedures;
@@ -163,30 +202,11 @@ begin
     3: FProcessSample32 := ProcessSample3;
     4: FProcessSample32 := ProcessSample4;
   else
-  if FNumberOfCoeffs mod 2 <> 0
-   then FProcessSample32 := ProcessSampleOdd
-   else FProcessSample32 := ProcessSampleEven;
+   if FNumberOfCoeffs mod 2 <> 0
+    then FProcessSample32 := ProcessSampleOdd
+    else FProcessSample32 := ProcessSampleEven;
  end;
 end;
-
-procedure TPolyphaseUpsampler32.NumberOfCoeffsChanged;
-begin
- ReallocMem(FX, FNumberOfCoeffs * SizeOf(Single));
- ReallocMem(FY, FNumberOfCoeffs * SizeOf(Single));
- ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Single));
- inherited;
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: PushStates                                                          //
-//  ----------------                                                          //
-//                                                                            //
-//  Description:                                                              //
-//    Pushes the states (X and Y) to the state stack. Currently only one      //
-//    combination of push/pop is allowed.                                     //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
 
 procedure TPolyphaseUpsampler32.PushStates;
 begin
@@ -194,52 +214,17 @@ begin
  Move(FY[0], FStateStack[FNumberOfCoeffs], FNumberOfCoeffs * SizeOf(Single));
 end;
 
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: PopStates                                                           //
-//  ---------------                                                           //
-//                                                                            //
-//  Description:                                                              //
-//    Pops the states (X and Y) to the state stack. Currently only one        //
-//    combination of push/pop is allowed.                                     //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-
 procedure TPolyphaseUpsampler32.PopStates;
 begin
  Move(FStateStack[0], FX[0], FNumberOfCoeffs * SizeOf(Single));
  Move(FStateStack[FNumberOfCoeffs], FY[0], FNumberOfCoeffs * SizeOf(Single));
 end;
 
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: ClearBuffers                                                        //
-//  ------------------                                                        //
-//                                                                            //
-//  Description:                                                              //
-//    Clears filter memory, as if it processed silence since an infinite      //
-//    amount of time.                                                         //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-
 procedure TPolyphaseUpsampler32.ClearBuffers;
 begin
  FillChar(FX^, FNumberOfCoeffs * SizeOf(Single), 0);
  FillChar(FY^, FNumberOfCoeffs * SizeOf(Single), 0);
 end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: ResetStates                                                         //
-//  -----------------                                                         //
-//                                                                            //
-//  Description:                                                              //
-//    Identical to ClearBuffers (see above).                                  //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
 
 procedure TPolyphaseUpsampler32.ResetStates;
 begin
@@ -266,7 +251,7 @@ end;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TPolyphaseUpsampler32.ProcessBlock(const Input, Output : PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure TPolyphaseUpsampler32.ProcessBlock(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
   Pos : Integer;
 begin
@@ -274,120 +259,395 @@ begin
   do FProcessSample32(Input[pos], PDAV2SingleArray(@Output[pos * 2])^);
 end;
 
-
-procedure TPolyphaseUpsampler32.ProcessSample1(const Input : Single; out Output : TDAV2SingleArray);
+procedure TPolyphaseUpsampler32.ProcessSample1(const Input: Single; out Output: TDAV2SingleArray);
 {$IFDEF PUREPASCAL}
 begin
  FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0];
  FX[0] := Input;
  Output[0] := FY[0];
  Output[1] := Input;
-end;
 {$ELSE}
 asm
- push  edi
- mov   edi, [eax.FY]                  // edi = FY
- mov   ecx, [eax.FX]                  // esi = FX
- mov   eax, [eax.FCoefficients]       // ecx = FCoefficients
- fld   [ecx].Single                   // FX[0]
- fld   Input.Single                   // Input, FX[0]
- fst   [Output + 4].Single            // Output[1] := Input;
- fst   [ecx].Single                   // FX[0] := Input;
- fsub  [edi].Single                   // (Input - FY[0])
- fmul  [eax].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                         // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst   [edi].Single                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [Output].Single                // Output[1] := FY[3];
- pop   edi
-end;
+ PUSH    EDI
+ MOV     EDI, [EAX.FY]            // EDI = FY
+ MOV     ECX, [EAX.FX]            // ECX = FX
+ MOV     EAX, [EAX.FCoefficients] // EAX = FCoefficients
+ FLD     [ECX].Single             // FX[0]
+ FLD     Input.Single             // Input, FX[0]
+ FST     [Output + 4].Single      // Output[1] := Input;
+ FST     [ECX].Single             // FX[0] := Input;
+ FSUB    [EDI].Single             // (Input - FY[0])
+ FMUL    [EAX].Double             // (Input - FY[0]) * FCoefficients[0]
+ FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FST     [EDI].Single             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [Output].Single          // Output[1] := FY[3];
+ POP     EDI
 {$ENDIF}
+end;
 
 procedure TPolyphaseUpsampler32.ProcessSample2(const Input: Single; out Output: TDAV2SingleArray);
 {$IFDEF PUREPASCAL}
+var
+  LocalX : PDAV2SingleArray;
+  LocalY : PDAV2SingleArray;
+  Coeffs : PDAV2DoubleArray;
 begin
- PDAV2SingleArray(FY)^[0] := (Input - PDAV2SingleArray(FY)^[0]) *
-   PDAV2SingleArray(FCoefficients)^[0] + PDAV2SingleArray(FX)^[0];
- PDAV2SingleArray(FX)^[0] := Input;
- PDAV2SingleArray(FY)^[1] := (Input - PDAV2SingleArray(FY)^[1]) *
-   PDAV2SingleArray(FCoefficients)^[1] + PDAV2SingleArray(FX)^[1];
- PDAV2SingleArray(FX)^[1] := Input;
- Output[0] := PDAV2SingleArray(FY)^[0];
- Output[1] := PDAV2SingleArray(FY)^[1];
-end;
+ // initialize local variables
+ LocalX := PDAV2SingleArray(FX);
+ LocalY := PDAV2SingleArray(FY);
+ Coeffs := PDAV2DoubleArray(FCoefficients);
+
+ // process filter
+ LocalY^[0] := (Input - LocalY^[0]) * Coeffs^[0] + LocalX^[0];
+ LocalX^[0] := Input;
+ LocalY^[1] := (Input - LocalY^[1]) * Coeffs^[1] + LocalX^[1];
+ LocalX^[1] := Input;
+
+ // set output
+ Output[0] := LocalY^[0];
+ Output[1] := LocalY^[1];
 {$ELSE}
 asm
- push edi
- mov edi, [eax.FY]                  // edi = FY
- mov ecx, [eax.FX]                  // esi = FX
- mov eax, [eax.FCoefficients]       // ecx = FCoefficients
+ PUSH    EDI
+ MOV     EDI, [EAX.FY]            // EDI = FY
+ MOV     ECX, [EAX.FX]            // ESI = FX
+ MOV     EAX, [EAX.FCoefficients] // ECX = FCoefficients
 
- fld   [ecx].Single                 // FX[0]
- fld   Input.Single                 // Input, FX[0]
- fst   [ecx].Single                 // FX[0] := Input;
- fsub  [edi].Single                 // (Input - FY[0])
- fmul  [eax].Double                 // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst   [edi].Single                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [Output].Single              // Output[1] := FY[3];
+ FLD     [ECX].Single             // FX[0]
+ FLD     Input.Single             // Input, FX[0]
+ FST     [ECX].Single             // FX[0] := Input;
+ FSUB    [EDI].Single             // (Input - FY[0])
+ FMUL    [EAX].Double             // (Input - FY[0]) * FCoefficients[0]
+ FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FST     [EDI].Single             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [Output].Single          // Output[1] := FY[3];
 
- fld   [ecx + 4].Single             // FX[1]
- fld   Input.Single                 // Input, FX[1]
- fst   [ecx + 4].Single             // FX[1] := Input;
- fsub  [edi + 4].Single             // (Input - FY[1])
- fmul  [eax + 8].Double             // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst   [edi + 4].Single             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [Output + 4].Single          // Output[1] := FY[1];
+ FLD     [ECX + 4].Single         // FX[1]
+ FLD     Input.Single             // Input, FX[1]
+ FST     [ECX + 4].Single         // FX[1] := Input;
+ FSUB    [EDI + 4].Single         // (Input - FY[1])
+ FMUL    [EAX + 8].Double         // (Input - FY[1]) * FCoefficients[1]
+ FADDP                            // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FST     [EDI + 4].Single         // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [Output + 4].Single      // Output[1] := FY[1];
 
- pop edi
-end;
+ POP     EDI
 {$ENDIF}
+end;
 
-procedure TPolyphaseUpsampler32.ProcessSample3(const Input : Single; out Output : TDAV2SingleArray);
+procedure TPolyphaseUpsampler32.ProcessSample3(const Input: Single; out Output: TDAV2SingleArray);
 {$IFDEF PUREPASCAL}
+var
+  LocalX : PDAV3SingleArray;
+  LocalY : PDAV3SingleArray;
+  Coeffs : PDAV3DoubleArray;
 begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
- FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]; FX[2] := FY[0];
- Output[1] := FY[1];
- Output[0] := FY[2];
-end;
+ // initialize local variables
+ LocalX := PDAV3SingleArray(FX);
+ LocalY := PDAV3SingleArray(FY);
+ Coeffs := PDAV3DoubleArray(FCoefficients);
+
+ // calculate filter
+ LocalY[0] := (Input - LocalY[0]) * Coeffs[0] + LocalX[0];
+ LocalX[0] := Input;
+ LocalY[1] := (Input - LocalY[1]) * Coeffs[1] + LocalX[1];
+ LocalX[1] := Input;
+ LocalY[2] := (LocalY[0] - LocalY[2]) * Coeffs[2] + LocalX[2];
+ LocalX[2] := LocalY[0];
+
+ // set output
+ Output[1] := LocalY[1];
+ Output[0] := LocalY[2];
 {$ELSE}
 asm
- push edi
- mov edi, [eax.FY]                  // edi = FY
- mov ecx, [eax.FX]                  // esi = FX
- mov eax, [eax.FCoefficients]       // ecx = FCoefficients
+ PUSH    EDI
+ MOV     EDI, [EAX.FY]            // EDI = FY
+ MOV     ECX, [EAX.FX]            // ESI = FX
+ MOV     EAX, [EAX.FCoefficients] // ECX = FCoefficients
 
- fld   [ecx].Single                 // FX[0]
- fld   Input.Single                 // Input, FX[0]
- fst   [ecx].Single                 // FX[0] := Input;
- fsub  [edi].Single                 // (Input - FY[0])
- fmul  [eax].Double                 // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [edi].Single                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FLD     [ECX].Single             // FX[0]
+ FLD     Input.Single             // Input, FX[0]
+ FST     [ECX].Single             // FX[0] := Input;
+ FSUB    [EDI].Single             // (Input - FY[0])
+ FMUL    [EAX].Double             // (Input - FY[0]) * FCoefficients[0]
+ FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [EDI].Single             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld   [ecx + 4].Single             // FX[1]
- fld   Input.Single                 // Input, FX[1]
- fst   [ecx + 4].Single             // FX[1] := Input;
- fsub  [edi + 4].Single             // (Input - FY[1])
- fmul  [eax + 8].Double             // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst   [edi + 4].Single             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [Output + 4].Single          // Output[1] := FY[1];
+ FLD     [ECX + 4].Single         // FX[1]
+ FLD     Input.Single             // Input, FX[1]
+ FST     [ECX + 4].Single         // FX[1] := Input;
+ FSUB    [EDI + 4].Single         // (Input - FY[1])
+ FMUL    [EAX + 8].Double         // (Input - FY[1]) * FCoefficients[1]
+ FADDP                            // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FST     [EDI + 4].Single         // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [Output + 4].Single      // Output[1] := FY[1];
 
- fld   [ecx +  8].Single            // FX[2]
- fld   [edi].Single                 // FY[0], FX[2]
- fst   [ecx +  8].Single            // FX[2] := FY[0];
- fsub  [edi +  8].Single            // (FY[0] - FY[2])
- fmul  [eax + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
- faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst   [edi +  8].Single            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output].Single              // Output[0] := FY[2];
+ FLD     [ECX +  8].Single        // FX[2]
+ FLD     [EDI].Single             // FY[0], FX[2]
+ FST     [ECX +  8].Single        // FX[2] := FY[0];
+ FSUB    [EDI +  8].Single        // (FY[0] - FY[2])
+ FMUL    [EAX + 16].Double        // (FY[0] - FY[2]) * FCoefficients[2]
+ FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FST     [EDI +  8].Single        // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output].Single          // Output[0] := FY[2];
 
- pop edi
-end;
+ POP     EDI
 {$ENDIF}
+end;
+
+procedure TPolyphaseUpsampler32.ProcessSample4(const Input: Single; out Output: TDAV2SingleArray);
+{$IFDEF PUREPASCAL}
+var
+  LocalX : PDAV4SingleArray;
+  LocalY : PDAV4SingleArray;
+  Coeffs : PDAV4DoubleArray;
+begin
+ // initialize local variables
+ LocalX := PDAV4SingleArray(FX);
+ LocalY := PDAV4SingleArray(FY);
+ Coeffs := PDAV4DoubleArray(FCoefficients);
+
+ // calculate filter
+ LocalY[0] := (Input - LocalY[0]) * Coeffs[0] + LocalX[0];
+ LocalX[0] := Input;
+ LocalY[1] := (Input - LocalY[1]) * Coeffs[1] + LocalX[1];
+ LocalX[1] := Input;
+ LocalY[2] := (LocalY[0] - LocalY[2]) * Coeffs[2] + LocalX[2];
+ LocalX[2] := LocalY[0];
+ LocalY[3] := (LocalY[1] - LocalY[3]) * Coeffs[3] + LocalX[3];
+ LocalX[3] := LocalY[1];
+
+ // set output
+ Output[0] := LocalY[2];
+ Output[1] := LocalY[3];
+{$ELSE}
+asm
+  PUSH    EDI
+  MOV     EDI, [EAX.FY]            // EDI = FY
+  MOV     ECX, [EAX.FX]            // ESI = FX
+  MOV     EAX, [EAX.FCoefficients] // ECX = FCoefficients
+
+  FLD     [ECX].Single             // FX[0]
+  FLD     Input.Single             // Input, FX[0]
+  FST     [ECX].Single             // FX[0] := Input; FX[0]
+  FSUB    [EDI].Single             // (Input - FY[0]), FX[0]
+  FMUL    [EAX].Double             // (Input - FY[0]) * FCoefficients[0], FX[0]
+  FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+  FSTP    [EDI].Single             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+
+  FLD     [ECX + 4].Single         // FX[1]
+  FLD     Input.Single             // Input, FX[1]
+  FST     [ECX + 4].Single         // FX[1] := Input;
+  FSUB    [EDI + 4].Single         // (Input - FY[1])
+  FMUL    [EAX + 8].Double         // (Input - FY[1]) * FCoefficients[1]
+  FADDP                            // (Input - FY[1]) * FCoefficients[1] + FX[1]
+  FSTP    [EDI + 4].Single         // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+
+  FLD     [ECX +  8].Single        // FX[2]
+  FLD     [EDI].Single             // FY[0], FX[2]
+  FST     [ECX +  8].Single        // FX[2] := FY[0];
+  FSUB    [EDI +  8].Single        // (FY[0] - FY[2])
+  FMUL    [EAX + 16].Double        // (FY[0] - FY[2]) * FCoefficients[2]
+  FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+  FST     [EDI + 8].Single         // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+  FSTP    [Output].Single          // Output[0] := FY[2];
+
+  FLD     [ECX + 12].Single        // FX[2], FY[2]
+  FLD     [EDI +  4].Single        // FY[0], FX[2], FY[2]
+  FST     [ECX + 12].Single        // FX[2] := FY[0];
+  FSUB    [EDI + 12].Single        // (FY[0] - FY[2]), FY[2]
+  FMUL    [EAX + 24].Double        // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+  FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+  FST     [EDI + 12].Single        // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+  FSTP    [Output + 4].Single      // Output[1] := FY[3];
+
+  POP     EDI
+{$ENDIF}
+end;
+
+procedure TPolyphaseUpsampler32.ProcessSampleOdd(const Input: Single; out Output: TDAV2SingleArray);
+{$IFDEF PUREPASCAL}
+var
+  Index  : Integer;
+  LocalX : PDAV2SingleArray;
+  LocalY : PDAV2SingleArray;
+  Coeffs : PDAV2DoubleArray;
+begin
+ // initialize local variables
+ LocalX := PDAV2SingleArray(FX);
+ LocalY := PDAV2SingleArray(FY);
+ Coeffs := PDAV2DoubleArray(FCoefficients);
+
+ // calculate first filters
+ LocalY^[0] := (Input - LocalY^[0]) * Coeffs^[0] + LocalX^[0];
+ LocalX^[0] := Input;
+ LocalY^[1] := (Input - LocalY^[1]) * Coeffs^[1] + LocalX^[1];
+ LocalX^[1] := Input;
+
+ // calculate remaining filters
+ for Index := 2 to FNumberOfCoeffs - 1 do
+  begin
+   FY[Index] := (FY[Index - 2] - FY[Index]) * FCoefficients[Index] + FX[Index];
+   FX[Index] :=  FY[Index - 2];
+  end;
+
+ Output[1] := FY[FNumberOfCoeffs - 2];
+ Output[0] := FY[FNumberOfCoeffs - 1];
+{$ELSE}
+asm
+ PUSHAD
+ MOV     ESI, [EAX.FX]              // ESI = FX
+ MOV     EDI, [EAX.FY]              // EDI = FY
+ MOV     EBX, [EAX.FCoefficients]   // EBX = FCoefficients
+
+ FLD     [ESI].Single               // FX[0]
+ FLD     Input.Single               // Input, FX[0]
+ FST     [ESI].Single               // FX[0] := Input;
+ FSUB    [EDI].Single               // (Input - FY[0])
+ FMUL    [EBX].Double               // (Input - FY[0]) * FCoefficients[0]
+ FADDP                              // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [EDI].Single               // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+
+ FLD     [ESI + 4].Single           // FX[1]
+ FLD     Input.Single               // Input, FX[1]
+ FST     [ESI + 4].Single           // FX[1] := Input;
+ FSUB    [EDI + 4].Single           // (Input - FY[1])
+ FMUL    [EBX + 8].Double           // (Input - FY[1]) * FCoefficients[1]
+ FADDP                              // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [EDI + 4].Single           // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+
+ PUSH    ECX                        // store ECX on stack
+ MOV     ECX, [EAX.FNumberOfCoeffs] // ECX = self.FNumberOfCoeffs
+ SUB     ECX, 4                     // subtract first and last two filters from count
+
+@Loopy:
+ FLD     [ESI +  8].Single          // FX[2], FY[2]
+ FLD     [EDI].Single               // FY[0], FX[2], FY[2]
+ FST     [ESI +  8].Single          // FX[2] := FY[0];
+ FSUB    [EDI +  8].Single          // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double          // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                              // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FSTP    [EDI +  8].Single          // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ ADD     ESI, 4                     // advance FX pointer
+ ADD     EDI, 4                     // advance FY pointer
+ ADD     EBX, 8                     // advance FCoefficient pointer
+ LOOP    @Loopy
+
+ POP     ECX                        // restore ECX from stack
+
+ FLD     [ESI +  8].Single          // FX[2], FY[2]
+ FLD     [EDI].Single               // FY[0], FX[2], FY[2]
+ FST     [ESI +  8].Single          // FX[2] := FY[0];
+ FSUB    [EDI +  8].Single          // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double          // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                              // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI +  8].Single          // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output + 4].Single        // Output[0] := FY[2];
+
+ FLD     [ESI + 12].Single          // FX[2], FY[2]
+ FLD     [EDI +  4].Single          // FY[0], FX[2], FY[2]
+ FST     [ESI + 12].Single          // FX[2] := FY[0];
+ FSUB    [EDI + 12].Single          // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 24].Double          // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                              // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI + 12].Single          // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output].Single            // Output[1] := FY[3];
+
+ POPAD
+{$ENDIF}
+end;
+
+procedure TPolyphaseUpsampler32.ProcessSampleEven(const Input: Single; out Output: TDAV2SingleArray);
+{$IFDEF PUREPASCAL}
+var
+  Index  : Integer;
+  LocalX : PDAV2SingleArray;
+  LocalY : PDAV2SingleArray;
+  Coeffs : PDAV2DoubleArray;
+begin
+ // initialize local variables
+ LocalX := PDAV2SingleArray(FX);
+ LocalY := PDAV2SingleArray(FY);
+ Coeffs := PDAV2DoubleArray(FCoefficients);
+
+ // calculate first filters
+ LocalY^[0] := (Input - LocalY^[0]) * Coeffs^[0] + LocalX^[0];
+ LocalX^[0] := Input;
+ LocalY^[1] := (Input - LocalY^[1]) * Coeffs^[1] + LocalX^[1];
+ LocalX^[1] := Input;
+
+ // calculate remaining filters
+ for Index := 2 to FNumberOfCoeffs - 1 do
+  begin
+   FY[Index] := (FY[Index - 2] - FY[Index]) * FCoefficients[Index] + FX[Index];
+   FX[Index] :=  FY[Index - 2];
+  end;
+
+ Output[0] := FY[FNumberOfCoeffs - 2];
+ Output[1] := FY[FNumberOfCoeffs - 1];
+{$ELSE}
+asm
+ PUSHAD
+ MOV     ESI, [EAX.FX]             // ESI = FX
+ MOV     EDI, [EAX.FY]             // EDI = FY
+ MOV     EBX, [EAX.FCoefficients]  // EBX = FCoefficients
+
+ FLD     [ESI].Single              // FX[0]
+ FLD     Input.Single              // Input, FX[0]
+ FST     [ESI].Single              // FX[0] := Input;
+ FSUB    [EDI].Single              // (Input - FY[0])
+ FMUL    [EBX].Double              // (Input - FY[0]) * FCoefficients[0]
+ FADDP                             // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [EDI].Single              // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+
+ FLD     [ESI + 4].Single          // FX[1]
+ FLD     Input.Single              // Input, FX[1]
+ FST     [ESI + 4].Single          // FX[1] := Input;
+ FSUB    [EDI + 4].Single          // (Input - FY[1])
+ FMUL    [EBX + 8].Double          // (Input - FY[1]) * FCoefficients[1]
+ FADDP                             // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [EDI + 4].Single          // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+
+ PUSH    ECX                       // store ECX on stack
+ MOV     ECX,[EAX.FNumberOfCoeffs] // ECX = self.FNumberOfCoeffs
+ SUB     ECX, 4                    // subtract first and last two filters from count
+
+@Loopy:
+ FLD     [ESI +  8].Single         // FX[2], FY[2]
+ FLD     [EDI].Single              // FY[0], FX[2], FY[2]
+ FST     [ESI +  8].Single         // FX[2] := FY[0];
+ FSUB    [EDI +  8].Single         // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double         // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                             // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FSTP    [EDI +  8].Single         // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ ADD     ESI, 4                    // advance FX pointer
+ ADD     EDI, 4                    // advance FY pointer
+ ADD     EBX, 8                    // advance FCoefficient pointer
+ LOOP    @Loopy
+
+ POP     ECX                       // restore ECX from stack
+
+ FLD     [ESI +  8].Single         // FX[2], FY[2]
+ FLD     [EDI].Single              // FY[0], FX[2], FY[2]
+ FST     [ESI +  8].Single         // FX[2] := FY[0];
+ FSUB    [EDI +  8].Single         // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double         // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                             // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI +  8].Single         // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output].Single           // Output[0] := FY[2];
+
+ FLD     [ESI + 12].Single         // FX[2], FY[2]
+ FLD     [EDI +  4].Single         // FY[0], FX[2], FY[2]
+ FST     [ESI + 12].Single         // FX[2] := FY[0];
+ FSUB    [EDI + 12].Single         // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 24].Double         // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                             // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI + 12].Single         // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output + 4].Single       // Output[1] := FY[3];
+
+ POPAD
+{$ENDIF}
+end;
 
 procedure TPolyphaseUpsampler32.ProcessSample32(Input: Single;
   out Output: TDAV2SingleArray);
@@ -395,219 +655,6 @@ begin
  FProcessSample32(Input, Output);
 end;
 
-procedure TPolyphaseUpsampler32.ProcessSample4(const Input : Single; out Output : TDAV2SingleArray);
-{$IFDEF PUREPASCAL}
-begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
- FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]; FX[2] := FY[0];
- FY[3] := (FY[1] - FY[3]) * FCoefficients[3] + FX[3]; FX[3] := FY[1];
- Output[0] := FY[2];
- Output[1] := FY[3];
-end;
-{$ELSE}
-asm
- push edi
- mov edi, [eax.FY]                  // edi = FY
- mov ecx, [eax.FX]                  // esi = FX
- mov eax, [eax.FCoefficients]       // ecx = FCoefficients
-
- fld   [ecx].Single                 // FX[0]
- fld   Input.Single                 // Input, FX[0]
- fst   [ecx].Single                 // FX[0] := Input;
- fsub  [edi].Single                 // (Input - FY[0])
- fmul  [eax].Double                 // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [edi].Single                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
-
- fld   [ecx + 4].Single             // FX[1]
- fld   Input.Single                 // Input, FX[1]
- fst   [ecx + 4].Single             // FX[1] := Input;
- fsub  [edi + 4].Single             // (Input - FY[1])
- fmul  [eax + 8].Double             // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [edi + 4].Single             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
-
- fld   [ecx +  8].Single            // FX[2]
- fld   [edi].Single                 // FY[0], FX[2]
- fst   [ecx +  8].Single            // FX[2] := FY[0];
- fsub  [edi +  8].Single            // (FY[0] - FY[2])
- fmul  [eax + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
- faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst   [edi + 8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output].Single              // Output[0] := FY[2];
-
- fld   [ecx + 12].Single            // FX[2], FY[2]
- fld   [edi +  4].Single            // FY[0], FX[2], FY[2]
- fst   [ecx + 12].Single            // FX[2] := FY[0];
- fsub  [edi + 12].Single            // (FY[0] - FY[2]), FY[2]
- fmul  [eax + 24].Double            // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi + 12].Single            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output + 4].Single          // Output[1] := FY[3];
-
- pop edi
-end;
-{$ENDIF}
-
-procedure TPolyphaseUpsampler32.ProcessSampleOdd(const Input : Single; out Output : TDAV2SingleArray);
-{$IFDEF PUREPASCAL}
-var
-  i : Integer;
-begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- PDav2SingleArray(FY)^[1] := (Input - PDav2SingleArray(FY)^[1]) * PDav2DoubleArray(FCoefficients)^[1] + PDav2SingleArray(FX)^[1];
- PDav2SingleArray(FX)^[1] := Input;
-
- for i := 2 to FNumberOfCoeffs - 1 do
-  begin
-   FY[ i] := (FY[i - 2] - FY[i]) * FCoefficients[i] + FX[i];
-   FX[ i] :=  FY[i - 2];
-  end;
- Output[1] := FY[FNumberOfCoeffs - 2];
- Output[0] := FY[FNumberOfCoeffs - 1];
-end;
-{$ELSE}
-asm
- pushad
- mov   esi, [eax.FX]                 // esi = FX
- mov   edi, [eax.FY]                 // edi = FY
- mov   ebx, [eax.FCoefficients]      // ebx = FCoefficients
-
- fld   [esi].Single                  // FX[0]
- fld   Input.Single                  // Input, FX[0]
- fst   [esi].Single                  // FX[0] := Input;
- fsub  [edi].Single                  // (Input - FY[0])
- fmul  [ebx].Double                  // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                        // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [edi].Single                  // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
-
- fld   [esi + 4].Single              // FX[1]
- fld   Input.Single                  // Input, FX[1]
- fst   [esi + 4].Single              // FX[1] := Input;
- fsub  [edi + 4].Single              // (Input - FY[1])
- fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [edi + 4].Single              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
-
- push ecx                            // The Saviour of ECX
- mov  ecx, [eax.FNumberOfCoeffs]     // ECX = self.FNumberOfCoeffs
- sub  ecx, 4                         // "Den Rest mach ich selber"
-@Loopy:
- fld   [esi +  8].Single             // FX[2], FY[2]
- fld   [edi].Single                  // FY[0], FX[2], FY[2]
- fst   [esi +  8].Single             // FX[2] := FY[0];
- fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fstp  [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- add   esi, 4
- add   edi, 4
- add   ebx, 8                        // Weiter geht's
- loop  @Loopy
- pop   ecx                           // ecx hat ausgedient!
-
- fld   [esi +  8].Single             // FX[2], FY[2]
- fld   [edi].Single                  // FY[0], FX[2], FY[2]
- fst   [esi +  8].Single             // FX[2] := FY[0];
- fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output + 4].Single           // Output[0] := FY[2];
-
- fld   [esi + 12].Single             // FX[2], FY[2]
- fld   [edi +  4].Single             // FY[0], FX[2], FY[2]
- fst   [esi + 12].Single             // FX[2] := FY[0];
- fsub  [edi + 12].Single             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 24].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi + 12].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output].Single               // Output[1] := FY[3];
-
- popad
-end;
-{$ENDIF}
-
-procedure TPolyphaseUpsampler32.ProcessSampleEven(const Input : Single; out Output : TDAV2SingleArray);
-{$IFDEF PUREPASCAL}
-var
-  i : Integer;
-begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- PDav2SingleArray(FY)^[1] := (Input - PDav2SingleArray(FY)^[1]) * PDav2DoubleArray(FCoefficients)^[1] + PDav2SingleArray(FX)^[1];
- PDav2SingleArray(FX)^[1] := Input;
-
- for i := 2 to FNumberOfCoeffs - 1 do
-  begin
-   FY[ i] := (FY[i - 2] - FY[i]) * FCoefficients[i] + FX[i];
-   FX[ i] :=  FY[i - 2];
-  end;
- i := FNumberOfCoeffs and 1;
- Output[0] := FY[FNumberOfCoeffs - 2];
- Output[1] := FY[FNumberOfCoeffs - 1];
-end;
-{$ELSE}
-asm
- pushad
- mov  esi, [eax.FX]                  // esi = FX
- mov  edi, [eax.FY]                  // edi = FY
- mov  ebx, [eax.FCoefficients]       // ebx = FCoefficients
-
- fld   [esi].Single                  // FX[0]
- fld   Input.Single                  // Input, FX[0]
- fst   [esi].Single                  // FX[0] := Input;
- fsub  [edi].Single                  // (Input - FY[0])
- fmul  [ebx].Double                  // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                        // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [edi].Single                  // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
-
- fld   [esi + 4].Single              // FX[1]
- fld   Input.Single                  // Input, FX[1]
- fst   [esi + 4].Single              // FX[1] := Input;
- fsub  [edi + 4].Single              // (Input - FY[1])
- fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [edi + 4].Single              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
-
- push  ecx                           // The Saviour of ECX
- mov   ecx,[eax.FNumberOfCoeffs]     // ECX=self.FNumberOfCoeffs
- sub   ecx, 4                        // "Den Rest mach ich selber"
-@Loopy:
- fld   [esi +  8].Single             // FX[2], FY[2]
- fld   [edi].Single                  // FY[0], FX[2], FY[2]
- fst   [esi +  8].Single             // FX[2] := FY[0];
- fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fstp  [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- add   esi, 4
- add   edi, 4
- add   ebx, 8                        // Weiter geht's
- loop  @Loopy
- pop   ecx                           // ecx hat ausgedient!
-
- fld   [esi +  8].Single             // FX[2], FY[2]
- fld   [edi].Single                  // FY[0], FX[2], FY[2]
- fst   [esi +  8].Single             // FX[2] := FY[0];
- fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output].Single               // Output[0] := FY[2];
-
- fld   [esi + 12].Single             // FX[2], FY[2]
- fld   [edi +  4].Single             // FY[0], FX[2], FY[2]
- fst   [esi + 12].Single             // FX[2] := FY[0];
- fsub  [edi + 12].Single             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 24].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi + 12].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output + 4].Single           // Output[1] := FY[3];
-
- popad
-end;
-{$ENDIF}
 
 { TPolyphaseUpsampler64 }
 
@@ -621,14 +668,18 @@ end;
 
 destructor TPolyphaseUpsampler64.Destroy;
 begin
- Dispose(FX);
- Dispose(FY);
+ FreeAlignedMemory(FX);
+ FreeAlignedMemory(FY);
  Dispose(FStateStack);
  inherited;
 end;
 
 procedure TPolyphaseUpsampler64.AssignTo(Dest: TPersistent);
+var
+  Index : Integer;
 begin
+ inherited;
+
  if Dest is TPolyphaseUpsampler64 then
   with TPolyphaseUpsampler64(Dest) do
    begin
@@ -639,8 +690,28 @@ begin
     Move(Self.FX^, FX^, FNumberOfCoeffs * SizeOf(Double));
     Move(Self.FY^, FY^, FNumberOfCoeffs * SizeOf(Double));
     Move(Self.FStateStack^, FStateStack^, 2 * FNumberOfCoeffs * SizeOf(Double));
-   end
- else inherited;
+   end else
+ if Dest is TPolyphaseUpsampler32 then
+  with TPolyphaseUpsampler32(Dest) do
+   begin
+    inherited;
+    Assert(FNumberOfCoeffs = Self.FNumberOfCoeffs);
+    ChooseProcedures;
+
+    for Index := 0 to FNumberOfCoeffs - 1 do
+     begin
+      FX^[Index] := Self.FX^[Index];
+      FY^[Index] := Self.FY^[Index];
+      FStateStack^[Index] := Self.FStateStack^[Index];
+     end;
+   end;
+end;
+
+procedure TPolyphaseUpsampler64.AllocateBuffer;
+begin
+ ReallocateAlignedMemory(Pointer(FX), FNumberOfCoeffs * SizeOf(Double));
+ ReallocateAlignedMemory(Pointer(FY), FNumberOfCoeffs * SizeOf(Double));
+ ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Double));
 end;
 
 procedure TPolyphaseUpsampler64.ChooseProcedures;
@@ -650,28 +721,12 @@ begin
     2: FProcessSample64 := ProcessSample2;
     3: FProcessSample64 := ProcessSample3;
     4: FProcessSample64 := ProcessSample4;
-  else FProcessSample64 := ProcessSampleLarge;
+  else
+   if FNumberOfCoeffs mod 2 <> 0
+    then FProcessSample64 := ProcessSampleOdd
+    else FProcessSample64 := ProcessSampleEven;
  end;
 end;
-
-procedure TPolyphaseUpsampler64.NumberOfCoeffsChanged;
-begin
- ReallocMem(FX, FNumberOfCoeffs * SizeOf(Double));
- ReallocMem(FY, FNumberOfCoeffs * SizeOf(Double));
- ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Double));
- inherited;
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: PushStates                                                          //
-//  ----------------                                                          //
-//                                                                            //
-//  Description:                                                              //
-//    Pushes the states (X and Y) to the state stack. Currently only one      //
-//    combination of push/pop is allowed.                                     //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
 
 procedure TPolyphaseUpsampler64.PushStates;
 begin
@@ -679,52 +734,17 @@ begin
  Move(FY[0], FStateStack[FNumberOfCoeffs], FNumberOfCoeffs * SizeOf(Double));
 end;
 
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: PopStates                                                           //
-//  ---------------                                                           //
-//                                                                            //
-//  Description:                                                              //
-//    Pops the states (X and Y) to the state stack. Currently only one        //
-//    combination of push/pop is allowed.                                     //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-
 procedure TPolyphaseUpsampler64.PopStates;
 begin
  Move(FStateStack[0], FX[0], FNumberOfCoeffs * SizeOf(Double));
  Move(FStateStack[FNumberOfCoeffs], FY[0], FNumberOfCoeffs * SizeOf(Double));
 end;
 
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: ClearBuffers                                                        //
-//  ------------------                                                        //
-//                                                                            //
-//  Description:                                                              //
-//    Clears filter memory, as if it processed silence since an infinite      //
-//    amount of time.                                                         //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-
 procedure TPolyphaseUpsampler64.ClearBuffers;
 begin
  FillChar(FX[0], FNumberOfCoeffs * SizeOf(Double), 0);
  FillChar(FY[0], FNumberOfCoeffs * SizeOf(Double), 0);
 end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Name: ResetStates                                                         //
-//  -----------------                                                         //
-//                                                                            //
-//  Description:                                                              //
-//    Identical to ClearBuffers (see above).                                  //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
 
 procedure TPolyphaseUpsampler64.ResetStates;
 begin
@@ -751,7 +771,7 @@ end;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TPolyphaseUpsampler64.ProcessBlock(const Input, Output : PDAVDoubleFixedArray; const SampleFrames: Integer);
+procedure TPolyphaseUpsampler64.ProcessBlock(const Input, Output: PDAVDoubleFixedArray; const SampleFrames: Integer);
 var
   Pos : Integer;
 begin
@@ -759,252 +779,400 @@ begin
   do FProcessSample64(Input[pos], PDAV2DoubleArray(@Output[pos * 2])^);
 end;
 
-procedure TPolyphaseUpsampler64.ProcessSample1(const Input : Double; out Output : TDAV2DoubleArray);
+procedure TPolyphaseUpsampler64.ProcessSample1(const Input: Double; out Output: TDAV2DoubleArray);
 {$IFDEF PUREPASCAL}
 begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
+ FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0];
+ FX[0] := Input;
  Output[0] := FY[0];
  Output[1] := Input;
-end;
 {$ELSE}
 asm
- pushad
- mov esi, [eax.FX]                  // esi = FX
- mov edi, [eax.FY]                  // edi = FY
- mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
- fld   [esi].Double                 // FX[0]
- fld   Input.Double                 // Input, FX[0]
- fst   [Output + 4].Single          // Output[1] := Input;
- fst   [esi].Double                 // FX[0] := Input;
- fsub  [edi].Double                 // (Input - FY[0])
- fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst   [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [Output].Double              // Output[1] := FY[3];
- popad
-end;
+ PUSHAD
+ MOV     ESI, [EAX.FX]            // ESI = FX
+ MOV     EDI, [EAX.FY]            // EDI = FY
+ MOV     EBX, [EAX.FCoefficients] // ECX = FCoefficients
+ FLD     [ESI].Double             // FX[0]
+ FLD     Input.Double             // Input, FX[0]
+ FST     [Output + 4].Single      // Output[1] := Input;
+ FST     [ESI].Double             // FX[0] := Input;
+ FSUB    [EDI].Double             // (Input - FY[0])
+ FMUL    [EBX].Double             // (Input - FY[0]) * FCoefficients[0]
+ FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FST     [EDI].Double             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [Output].Double          // Output[1] := FY[3];
+ POPAD
 {$ENDIF}
+end;
 
-procedure TPolyphaseUpsampler64.ProcessSample2(const Input : Double; out Output : TDAV2DoubleArray);
+procedure TPolyphaseUpsampler64.ProcessSample2(const Input: Double; out Output: TDAV2DoubleArray);
 {$IFDEF PUREPASCAL}
+var
+  LocalX : PDAV2DoubleArray;
+  LocalY : PDAV2DoubleArray;
+  Coeffs : PDAV2DoubleArray;
 begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
- Output[0] := FY[0];
- Output[1] := FY[1];
-end;
+ // initialize local variables
+ LocalX := PDAV2DoubleArray(FX);
+ LocalY := PDAV2DoubleArray(FY);
+ Coeffs := PDAV2DoubleArray(FCoefficients);
+
+ // process filter
+ LocalY^[0] := (Input - LocalY^[0]) * Coeffs^[0] + LocalX^[0];
+ LocalX^[0] := Input;
+ LocalY^[1] := (Input - LocalY^[1]) * Coeffs^[1] + LocalX^[1];
+ LocalX^[1] := Input;
+
+ // set output
+ Output[0] := LocalY^[0];
+ Output[1] := LocalY^[1];
 {$ELSE}
 asm
- pushad
- mov esi, [eax.FX]                  // esi = FX
- mov edi, [eax.FY]                  // edi = FY
- mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
+ PUSHAD
+ MOV     ESI, [EAX.FX]            // ESI = FX
+ MOV     EDI, [EAX.FY]            // EDI = FY
+ MOV     EBX, [EAX.FCoefficients] // ECX = FCoefficients
 
- fld   [esi].Double                 // FX[0]
- fld   Input.Double                 // Input, FX[0]
- fst   [esi].Double                 // FX[0] := Input;
- fsub  [edi].Double                 // (Input - FY[0])
- fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst   [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [Output].Double              // Output[1] := FY[3];
+ FLD     [ESI].Double             // FX[0]
+ FLD     Input.Double             // Input, FX[0]
+ FST     [ESI].Double             // FX[0] := Input;
+ FSUB    [EDI].Double             // (Input - FY[0])
+ FMUL    [EBX].Double             // (Input - FY[0]) * FCoefficients[0]
+ FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FST     [EDI].Double             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [Output].Double          // Output[1] := FY[3];
 
- fld   [esi + 8].Double              // FX[1]
- fld   Input.Single                  // Input, FX[1]
- fst   [esi + 8].Double              // FX[1] := Input;
- fsub  [edi + 8].Double              // (Input - FY[1])
- fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst   [edi + 8].Double              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [Output + 8].Double           // Output[1] := FY[1];
+ FLD     [ESI + 8].Double         // FX[1]
+ FLD     Input.Single             // Input, FX[1]
+ FST     [ESI + 8].Double         // FX[1] := Input;
+ FSUB    [EDI + 8].Double         // (Input - FY[1])
+ FMUL    [EBX + 8].Double         // (Input - FY[1]) * FCoefficients[1]
+ FADDP                            // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FST     [EDI + 8].Double         // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [Output + 8].Double      // Output[1] := FY[1];
 
- popad
-end;
+ POPAD
 {$ENDIF}
+end;
 
-procedure TPolyphaseUpsampler64.ProcessSample3(const Input : Double; out Output : TDAV2DoubleArray);
+procedure TPolyphaseUpsampler64.ProcessSample3(const Input: Double; out Output: TDAV2DoubleArray);
 {$IFDEF PUREPASCAL}
+var
+  LocalX : PDAV3DoubleArray;
+  LocalY : PDAV3DoubleArray;
+  Coeffs : PDAV3DoubleArray;
 begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
- FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]; FX[2] := FY[0];
- Output[1] := FY[1];
- Output[0] := FY[2];
-end;
+ // initialize local variables
+ LocalX := PDAV3DoubleArray(FX);
+ LocalY := PDAV3DoubleArray(FY);
+ Coeffs := PDAV3DoubleArray(FCoefficients);
+
+ // process filter
+ LocalY[0] := (Input - LocalY[0]) * Coeffs[0] + LocalX[0];
+ LocalX[0] := Input;
+ LocalY[1] := (Input - LocalY[1]) * Coeffs[1] + LocalX[1];
+ LocalX[1] := Input;
+ LocalY[2] := (LocalY[0] - LocalY[2]) * Coeffs[2] + LocalX[2];
+ LocalX[2] := LocalY[0];
+
+ // set output
+ Output[1] := LocalY[1];
+ Output[0] := LocalY[2];
 {$ELSE}
 asm
- pushad
- mov esi, [eax.FX]                  // esi = FX
- mov edi, [eax.FY]                  // edi = FY
- mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
+ PUSHAD
+ MOV     ESI, [EAX.FX]            // ESI = FX
+ MOV     EDI, [EAX.FY]            // EDI = FY
+ MOV     EBX, [EAX.FCoefficients] // ECX = FCoefficients
 
- fld   [esi].Double                 // FX[0]
- fld   Input.Double                 // Input, FX[0]
- fst   [esi].Double                 // FX[0] := Input;
- fsub  [edi].Double                 // (Input - FY[0])
- fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FLD     [ESI].Double             // FX[0]
+ FLD     Input.Double             // Input, FX[0]
+ FST     [ESI].Double             // FX[0] := Input;
+ FSUB    [EDI].Double             // (Input - FY[0])
+ FMUL    [EBX].Double             // (Input - FY[0]) * FCoefficients[0]
+ FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [EDI].Double             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld   [esi + 8].Double             // FX[1]
- fld   Input.Single                 // Input, FX[1]
- fst   [esi + 8].Double             // FX[1] := Input;
- fsub  [edi + 8].Double             // (Input - FY[1])
- fmul  [ebx + 8].Double             // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst   [edi + 8].Double             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [Output + 8].Double          // Output[1] := FY[1];
+ FLD     [ESI + 8].Double         // FX[1]
+ FLD     Input.Single             // Input, FX[1]
+ FST     [ESI + 8].Double         // FX[1] := Input;
+ FSUB    [EDI + 8].Double         // (Input - FY[1])
+ FMUL    [EBX + 8].Double         // (Input - FY[1]) * FCoefficients[1]
+ FADDP                            // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FST     [EDI + 8].Double         // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [Output + 8].Double      // Output[1] := FY[1];
 
- fld   [esi + 16].Double            // FX[2]
- fld   [edi].Double                 // FY[0], FX[2]
- fst   [esi + 16].Double            // FX[2] := FY[0];
- fsub  [edi + 16].Double            // (FY[0] - FY[2])
- fmul  [ebx + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
- faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst [edi + 16].Double              // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Double               // Output[0] := FY[2];
+ FLD     [ESI + 16].Double        // FX[2]
+ FLD     [EDI].Double             // FY[0], FX[2]
+ FST     [ESI + 16].Double        // FX[2] := FY[0];
+ FSUB    [EDI + 16].Double        // (FY[0] - FY[2])
+ FMUL    [EBX + 16].Double        // (FY[0] - FY[2]) * FCoefficients[2]
+ FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FST     [EDI + 16].Double        // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output].Double          // Output[0] := FY[2];
 
- popad
-end;
+ POPAD
 {$ENDIF}
+end;
 
-procedure TPolyphaseUpsampler64.ProcessSample4(const Input : Double; out Output : TDAV2DoubleArray);
+procedure TPolyphaseUpsampler64.ProcessSample4(const Input: Double; out Output: TDAV2DoubleArray);
 {$IFDEF PUREPASCAL}
+var
+  LocalX : PDAV4DoubleArray;
+  LocalY : PDAV4DoubleArray;
+  Coeffs : PDAV4DoubleArray;
 begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
- FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]; FX[2] := FY[0];
- FY[3] := (FY[1] - FY[3]) * FCoefficients[3] + FX[3]; FX[3] := FY[1];
- Output[0] := FY[2];
- Output[1] := FY[3];
-end;
+ // initialize local variables
+ LocalX := PDAV4DoubleArray(FX);
+ LocalY := PDAV4DoubleArray(FY);
+ Coeffs := PDAV4DoubleArray(FCoefficients);
+
+ // process filter
+ LocalY[0] := (Input - LocalY[0]) * Coeffs[0] + LocalX[0];
+ LocalX[0] := Input;
+ LocalY[1] := (Input - LocalY[1]) * Coeffs[1] + LocalX[1];
+ LocalX[1] := Input;
+ LocalY[2] := (LocalY[0] - LocalY[2]) * Coeffs[2] + LocalX[2];
+ LocalX[2] := LocalY[0];
+ LocalY[3] := (LocalY[1] - LocalY[3]) * Coeffs[3] + LocalX[3];
+ LocalX[3] := LocalY[1];
+
+ // set output
+ Output[0] := LocalY[2];
+ Output[1] := LocalY[3];
 {$ELSE}
 asm
- pushad
- mov esi, [eax.FX]                  // esi = FX
- mov edi, [eax.FY]                  // edi = FY
- mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
+ PUSHAD
+ MOV     ESI, [EAX.FX]            // ESI = FX
+ MOV     EDI, [EAX.FY]            // EDI = FY
+ MOV     EBX, [EAX.FCoefficients] // ECX = FCoefficients
 
- fld   [esi].Double                 // FX[0]
- fld   Input.Double                 // Input, FX[0]
- fst   [esi].Double                 // FX[0] := Input;
- fsub  [edi].Double                 // (Input - FY[0])
- fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FLD     [ESI].Double             // FX[0]
+ FLD     Input.Double             // Input, FX[0]
+ FST     [ESI].Double             // FX[0] := Input;
+ FSUB    [EDI].Double             // (Input - FY[0])
+ FMUL    [EBX].Double             // (Input - FY[0]) * FCoefficients[0]
+ FADDP                            // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [EDI].Double             // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld   [esi + 8].Double             // FX[1]
- fld   Input.Double                 // Input, FX[1]
- fst   [esi + 8].Double             // FX[1] := Input;
- fsub  [edi + 8].Double             // (Input - FY[1])
- fmul  [ebx + 8].Double             // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [edi + 8].Double             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FLD     [ESI + 8].Double         // FX[1]
+ FLD     Input.Double             // Input, FX[1]
+ FST     [ESI + 8].Double         // FX[1] := Input;
+ FSUB    [EDI + 8].Double         // (Input - FY[1])
+ FMUL    [EBX + 8].Double         // (Input - FY[1]) * FCoefficients[1]
+ FADDP                            // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [EDI + 8].Double         // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
- fld   [esi + 16].Double            // FX[2]
- fld   [edi].Double                 // FY[0], FX[2]
- fst   [esi + 16].Double            // FX[2] := FY[0];
- fsub  [edi + 16].Double            // (FY[0] - FY[2])
- fmul  [ebx + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
- faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst   [edi + 16].Double            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output].Double              // Output[0] := FY[2];
+ FLD     [ESI + 16].Double        // FX[2]
+ FLD     [EDI].Double             // FY[0], FX[2]
+ FST     [ESI + 16].Double        // FX[2] := FY[0];
+ FSUB    [EDI + 16].Double        // (FY[0] - FY[2])
+ FMUL    [EBX + 16].Double        // (FY[0] - FY[2]) * FCoefficients[2]
+ FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FST     [EDI + 16].Double        // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output].Double          // Output[0] := FY[2];
 
- fld   [esi + 24].Double            // FX[2], FY[2]
- fld   [edi + 8].Double             // FY[0], FX[2], FY[2]
- fst   [esi + 24].Double            // FX[2] := FY[0];
- fsub  [edi + 24].Double            // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 24].Double            // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi + 24].Double            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output + 8].Double          // Output[1] := FY[3];
+ FLD     [ESI + 24].Double        // FX[2], FY[2]
+ FLD     [EDI + 8].Double         // FY[0], FX[2], FY[2]
+ FST     [ESI + 24].Double        // FX[2] := FY[0];
+ FSUB    [EDI + 24].Double        // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 24].Double        // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI + 24].Double        // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output + 8].Double      // Output[1] := FY[3];
 
- popad
-end;
+ POPAD
 {$ENDIF}
+end;
+
+procedure TPolyphaseUpsampler64.ProcessSampleOdd(const Input: Double; out Output: TDAV2DoubleArray);
+{$IFDEF PUREPASCAL}
+var
+  Index  : Integer;
+  LocalX : PDAV2DoubleArray;
+  LocalY : PDAV2DoubleArray;
+  Coeffs : PDAV2DoubleArray;
+begin
+ // initialize local variables
+ LocalX := PDAV2DoubleArray(FX);
+ LocalY := PDAV2DoubleArray(FY);
+ Coeffs := PDAV2DoubleArray(FCoefficients);
+
+ // calculate first filters
+ LocalY^[0] := (Input - LocalY^[0]) * Coeffs^[0] + LocalX^[0];
+ LocalX^[0] := Input;
+ LocalY^[1] := (Input - LocalY^[1]) * Coeffs^[1] + LocalX^[1];
+ LocalX^[1] := Input;
+
+ // calculate remaining filters
+ for Index := 2 to FNumberOfCoeffs - 1 do
+  begin
+   FY[Index] := (FY[Index - 2] - FY[Index]) * FCoefficients[Index] + FX[Index];
+   FX[Index] :=  FY[Index - 2];
+  end;
+
+ Output[1] := FY[FNumberOfCoeffs - 2];
+ Output[0] := FY[FNumberOfCoeffs - 1];
+{$ELSE}
+asm
+ PUSHAD
+ MOV     ESI, [EAX.FX]              // ESI = FX
+ MOV     EDI, [EAX.FY]              // EDI = FY
+ MOV     EBX, [EAX.FCoefficients]   // EBX = FCoefficients
+
+ FLD     [ESI].Double               // FX[0]
+ FLD     Input.Double               // Input, FX[0]
+ FST     [ESI].Double               // FX[0] := Input;
+ FSUB    [EDI].Double               // (Input - FY[0])
+ FMUL    [EBX].Double               // (Input - FY[0]) * FCoefficients[0]
+ FADDP                              // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [EDI].Double               // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+
+ FLD     [ESI + 8].Double           // FX[1]
+ FLD     Input.Double               // Input, FX[1]
+ FST     [ESI + 8].Double           // FX[1] := Input;
+ FSUB    [EDI + 8].Double           // (Input - FY[1])
+ FMUL    [EBX + 8].Double           // (Input - FY[1]) * FCoefficients[1]
+ FADDP                              // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [EDI + 8].Double           // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+
+ PUSH    ECX                        // store ECX on stack
+ MOV     ECX, [EAX.FNumberOfCoeffs] // ECX = self.FNumberOfCoeffs
+ SUB     ECX, 4                     // subtract first and last two filters from count
+
+@Loopy:
+ FLD     [ESI + 16].Double          // FX[2], FY[2]
+ FLD     [EDI].Double               // FY[0], FX[2], FY[2]
+ FST     [ESI + 16].Double          // FX[2] := FY[0];
+ FSUB    [EDI + 16].Double          // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double          // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                              // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FSTP    [EDI + 16].Double          // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ ADD     ESI, 4                     // advance FX pointer
+ ADD     EDI, 4                     // advance FY pointer
+ ADD     EBX, 8                     // advance FCoefficient pointer
+ LOOP    @Loopy
+
+ POP     ECX                        // restore ECX from stack
+
+ FLD     [ESI + 16].Double          // FX[2], FY[2]
+ FLD     [EDI].Double               // FY[0], FX[2], FY[2]
+ FST     [ESI + 16].Double          // FX[2] := FY[0];
+ FSUB    [EDI + 16].Double          // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double          // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                              // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI + 16].Double          // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output + 8].Double        // Output[0] := FY[2];
+
+ FLD     [ESI + 24].Double          // FX[2], FY[2]
+ FLD     [EDI +  8].Double          // FY[0], FX[2], FY[2]
+ FST     [ESI + 24].Double          // FX[2] := FY[0];
+ FSUB    [EDI + 24].Double          // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 24].Double          // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                              // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI + 24].Double          // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output].Double            // Output[1] := FY[3];
+
+ POPAD
+{$ENDIF}
+end;
+
+procedure TPolyphaseUpsampler64.ProcessSampleEven(const Input: Double; out Output: TDAV2DoubleArray);
+{$IFDEF PUREPASCAL}
+var
+  Index  : Integer;
+  LocalX : PDAV2DoubleArray;
+  LocalY : PDAV2DoubleArray;
+  Coeffs : PDAV2DoubleArray;
+begin
+ // initialize local variables
+ LocalX := PDAV2DoubleArray(FX);
+ LocalY := PDAV2DoubleArray(FY);
+ Coeffs := PDAV2DoubleArray(FCoefficients);
+
+ // calculate first filters
+ LocalY^[0] := (Input - LocalY^[0]) * Coeffs^[0] + LocalX^[0];
+ LocalX^[0] := Input;
+ LocalY^[1] := (Input - LocalY^[1]) * Coeffs^[1] + LocalX^[1];
+ LocalX^[1] := Input;
+
+ // calculate remaining filters
+ for Index := 2 to FNumberOfCoeffs - 1 do
+  begin
+   FY[Index] := (FY[Index - 2] - FY[Index]) * FCoefficients[Index] + FX[Index];
+   FX[Index] :=  FY[Index - 2];
+  end;
+
+ Output[0] := FY[FNumberOfCoeffs - 2];
+ Output[1] := FY[FNumberOfCoeffs - 1];
+{$ELSE}
+asm
+ PUSHAD
+ MOV     ESI, [EAX.FX]             // ESI = FX
+ MOV     EDI, [EAX.FY]             // EDI = FY
+ MOV     EBX, [EAX.FCoefficients]  // EBX = FCoefficients
+
+ FLD     [ESI].Double              // FX[0]
+ FLD     Input.Double              // Input, FX[0]
+ FST     [ESI].Double              // FX[0] := Input;
+ FSUB    [EDI].Double              // (Input - FY[0])
+ FMUL    [EBX].Double              // (Input - FY[0]) * FCoefficients[0]
+ FADDP                             // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ FSTP    [EDI].Double              // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+
+ FLD     [ESI + 8].Double          // FX[1]
+ FLD     Input.Double              // Input, FX[1]
+ FST     [ESI + 8].Double          // FX[1] := Input;
+ FSUB    [EDI + 48].Double          // (Input - FY[1])
+ FMUL    [EBX + 8].Double          // (Input - FY[1]) * FCoefficients[1]
+ FADDP                             // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ FSTP    [EDI + 8].Double          // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+
+ PUSH    ECX                       // store ECX on stack
+ MOV     ECX,[EAX.FNumberOfCoeffs] // ECX = self.FNumberOfCoeffs
+ SUB     ECX, 4                    // subtract first and last two filters from count
+
+@Loopy:
+ FLD     [ESI + 16].Double         // FX[2], FY[2]
+ FLD     [EDI].Double              // FY[0], FX[2], FY[2]
+ FST     [ESI + 16].Double         // FX[2] := FY[0];
+ FSUB    [EDI + 16].Double         // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double         // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                             // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FSTP    [EDI + 16].Double         // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ ADD     ESI, 4                    // advance FX pointer
+ ADD     EDI, 4                    // advance FY pointer
+ ADD     EBX, 8                    // advance FCoefficient pointer
+ LOOP    @Loopy
+
+ POP     ECX                       // restore ECX from stack
+
+ FLD     [ESI + 16].Double         // FX[2], FY[2]
+ FLD     [EDI].Double              // FY[0], FX[2], FY[2]
+ FST     [ESI + 16].Double         // FX[2] := FY[0];
+ FSUB    [EDI + 16].Double         // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 16].Double         // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                             // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI + 16].Double         // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output].Double           // Output[0] := FY[2];
+
+ FLD     [ESI + 24].Double         // FX[2], FY[2]
+ FLD     [EDI +  8].Double         // FY[0], FX[2], FY[2]
+ FST     [ESI + 24].Double         // FX[2] := FY[0];
+ FSUB    [EDI + 24].Double         // (FY[0] - FY[2]), FY[2]
+ FMUL    [EBX + 24].Double         // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ FADDP                             // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ FST     [EDI + 24].Double         // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ FSTP    [Output + 8].Double       // Output[1] := FY[3];
+
+ POPAD
+{$ENDIF}
+end;
 
 procedure TPolyphaseUpsampler64.ProcessSample64(Input: Double;
   out Output: TDAV2DoubleArray);
 begin
  FProcessSample64(Input, Output);
 end;
-
-procedure TPolyphaseUpsampler64.ProcessSampleLarge(const Input : Double; out Output : TDAV2DoubleArray);
-{$IFDEF PUREPASCAL}
-var
-  i : Integer;
-begin
- FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input;
- FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input;
-
- for i := 2 to FNumberOfCoeffs - 1 do
-  begin
-   FY[i] := (FY[i - 2] - FY[i]) * FCoefficients[i] + FX[i];
-   FX[i] :=  FY[i - 2];
-  end;
- Output[0] := FY[FNumberOfCoeffs - 2];
- Output[1] := FY[FNumberOfCoeffs - 1];
-end;
-{$ELSE}
-asm
- pushad
- mov   esi, [eax.FX]                 // esi = FX
- mov   edi, [eax.FY]                 // edi = FY
- mov   ebx, [eax.FCoefficients]      // ebx = FCoefficients
-
- fld   [esi].Double                  // FX[0]
- fld   Input.Double                  // Input, FX[0]
- fst   [esi].Double                  // FX[0] := Input;
- fsub  [edi].Double                  // (Input - FY[0])
- fmul  [ebx].Double                  // (Input - FY[0]) * FCoefficients[0]
- faddp st, st                        // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp  [edi].Double                  // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
-
- fld   [esi + 8].Double              // FX[1]
- fld   Input.Double                  // Input, FX[1]
- fst   [esi + 8].Double              // FX[1] := Input;
- fsub  [edi + 8].Double              // (Input - FY[1])
- fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
- faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp  [edi + 8].Double              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
-
- push ecx                            // The Saviour of ECX
- mov  ecx, [eax.FNumberOfCoeffs]     // ECX = self.FNumberOfCoeffs
- sub  ecx, 4                         // "Den Rest mach ich selber"
-@Loopy:
- fld   [esi + 16].Double             // FX[2], FY[2]
- fld   [edi].Double                  // FY[0], FX[2], FY[2]
- fst   [esi + 16].Double             // FX[2] := FY[0];
- fsub  [edi + 16].Double             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fstp  [edi + 16].Double             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- add   esi, 8
- add   edi, 8
- add   ebx, 8                        // Weiter geht's
- loop  @Loopy
- pop   ecx                           // ecx hat ausgedient!
-
- fld   [esi + 16].Double             // FX[2], FY[2]
- fld   [edi].Double                  // FY[0], FX[2], FY[2]
- fst   [esi + 16].Double             // FX[2] := FY[0];
- fsub  [edi + 16].Double             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi + 16].Double             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output].Double               // Output[0] := FY[2];
-
- fld   [esi + 24].Double             // FX[2], FY[2]
- fld   [edi + 8].Double              // FY[0], FX[2], FY[2]
- fst   [esi + 24].Double             // FX[2] := FY[0];
- fsub  [edi + 24].Double             // (FY[0] - FY[2]), FY[2]
- fmul  [ebx + 24].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst   [edi + 24].Double             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp  [Output + 8].Double           // Output[1] := FY[3];
-
- popad
-end;
-{$ENDIF}
 
 end.
