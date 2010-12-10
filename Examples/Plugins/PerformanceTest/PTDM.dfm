@@ -16,8 +16,8 @@ object PerformanceTestModule: TPerformanceTestModule
   ParameterProperties = <>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess32Replacing = VSTModuleProcess
   Left = 309
   Top = 202
   Height = 150

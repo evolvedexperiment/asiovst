@@ -61,7 +61,7 @@ object LoudnessDataModule: TLoudnessDataModule
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
   Left = 188

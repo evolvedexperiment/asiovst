@@ -453,7 +453,7 @@ object PluginDataModule: TPluginDataModule
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcessLR
-  OnProcessReplacing = VSTModuleProcessLR
+  OnProcess32Replacing = VSTModuleProcessLR
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 838
   Top = 136

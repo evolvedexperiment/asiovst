@@ -22,9 +22,9 @@ object CustomWrapperDataModule: TCustomWrapperDataModule
   OnEditClose = VSTModuleEditClose
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcessEvents = VSTModuleProcessEvents
-  OnProcessReplacing = VSTModuleProcessReplacing
+  OnProcess32Replacing = VSTModuleProcessReplacing
   OnProcessVarIO = VSTModuleProcessVarIO
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange

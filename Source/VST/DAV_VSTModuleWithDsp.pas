@@ -420,7 +420,6 @@ begin
   end;
 end;
 
-
 procedure TDspVSTModule.SetOnProcess(Value : TProcessAudioEvent);
 begin
  if @FOnProcess <> @Value then
@@ -450,9 +449,9 @@ end;
 
 procedure TDspVSTModule.SetProcessingMode(Value : TProcessingMode);
 begin
- if Value <> FProcessingmode then
+ if Value <> FProcessingMode then
   begin
-   FProcessingmode := Value;
+   FProcessingMode := Value;
    ProcessingModeChanged;
   end;
 end;
@@ -461,7 +460,7 @@ procedure TDspVSTModule.ProcessChanged;
 begin
  case FProcessingMode of
    pmNormal:     FOnProcessEx := FOnProcess;
-   pmBlockSave:  if Assigned(FOnProcess32Replacing)
+   pmBlockSave:  if Assigned(FOnProcess)
                    then FOnProcessEx := DoBlockSaveProcess
                    else FOnProcessEx := FOnProcess;
    pmCopy:       FOnProcessEx := DoProcessCopy;

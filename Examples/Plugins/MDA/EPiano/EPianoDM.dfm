@@ -196,7 +196,7 @@ object EPianoDataModule: TEPianoDataModule
   OnOutputProperties = VSTModuleOutputProperties
   OnProcess = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81

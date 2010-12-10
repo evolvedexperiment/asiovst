@@ -75,7 +75,7 @@ object PhaseRotatorModule: TPhaseRotatorModule
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81

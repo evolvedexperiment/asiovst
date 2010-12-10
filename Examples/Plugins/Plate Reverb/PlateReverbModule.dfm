@@ -178,7 +178,7 @@ object PlateReverbVST: TPlateReverbVST
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcessReplacing
+  OnProcess32Replacing = VSTModuleProcessReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 248
   Top = 106

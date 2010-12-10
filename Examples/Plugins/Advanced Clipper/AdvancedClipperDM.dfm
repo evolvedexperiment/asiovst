@@ -226,8 +226,8 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 348
   Top = 80

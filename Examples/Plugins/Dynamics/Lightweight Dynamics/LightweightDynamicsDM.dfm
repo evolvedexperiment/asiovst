@@ -414,7 +414,7 @@ object LightweightDynamicsDataModule: TLightweightDynamicsDataModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessGateCompressorLimiter
-  OnProcessReplacing = VSTModuleProcessGateCompressorLimiter
+  OnProcess32Replacing = VSTModuleProcessGateCompressorLimiter
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 589
   Top = 100

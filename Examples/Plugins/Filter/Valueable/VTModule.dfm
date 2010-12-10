@@ -152,7 +152,7 @@ object VTVSTModule: TVTVSTModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessStereo
-  OnProcessReplacing = VSTModuleProcessStereo
+  OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 248
   Top = 106

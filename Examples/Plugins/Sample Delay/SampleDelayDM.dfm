@@ -57,7 +57,7 @@ object SampleDelayDataModule: TSampleDelayDataModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 218
   Top = 77
   Height = 150

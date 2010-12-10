@@ -51,7 +51,7 @@ object WeightingFiltersDataModule: TWeightingFiltersDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 744
   Top = 233

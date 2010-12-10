@@ -1,5 +1,4 @@
 object SpectralSelfFilterModule: TSpectralSelfFilterModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'
@@ -18,7 +17,6 @@ object SpectralSelfFilterModule: TSpectralSelfFilterModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FFT Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -37,7 +35,6 @@ object SpectralSelfFilterModule: TSpectralSelfFilterModule
       OnCustomParameterDisplay = ParameterFftOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Window Function'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -55,7 +52,7 @@ object SpectralSelfFilterModule: TSpectralSelfFilterModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 286
   Top = 77
   Height = 150

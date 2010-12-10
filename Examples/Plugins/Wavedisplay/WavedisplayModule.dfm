@@ -15,7 +15,7 @@ object WavedisplayModule: TWavedisplayModule
   ParameterProperties = <>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 208
   Top = 110
   Height = 150

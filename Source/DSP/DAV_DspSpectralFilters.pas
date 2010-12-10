@@ -109,6 +109,15 @@ type
     property WindowFunctionClass;
   end;
 
+  TAdjustPhase32 = class(TCustomSpectralFilter32, IDspProcessor32)
+  protected
+    procedure BuildFilter(Spectrum: PDAVComplexSingleFixedArray); override;
+  published
+    property FFTOrder;
+    property FFTSize;
+    property WindowFunctionClass;
+  end;
+
   // 64 bit
 
   TCustomSpectralFilter64 = class(TCustomSpectralEffect64)
@@ -429,6 +438,35 @@ begin
  inherited;
  ReallocMem(FMagnitudeBuffer, Fft.BinCount * SizeOf(Single));
  FillChar(FMagnitudeBuffer^, Fft.BinCount * SizeOf(Single), 0);
+end;
+
+
+{ TAdjustPhase32 }
+
+procedure TAdjustPhase32.BuildFilter(Spectrum: PDAVComplexSingleFixedArray);
+var
+  BinIndex  : Integer;
+  Half      : Integer;
+  Phase     : Single;
+  Magnitude : Single;
+begin
+ Half := FFFTSizeHalf;
+
+ // DC BinIndex
+ // leave untouched
+
+ // other bins
+ for BinIndex := 1 to Half - 1 do
+  begin
+   Phase := ComplexArgument32(FFilter^[BinIndex]);
+   Magnitude := 1;
+   FFilter^[BinIndex] := ComplexPolar32(Magnitude, Phase);
+  end;
+
+ // Nyquist BinIndex
+ // leave untouched
+
+ WindowFilterIR;
 end;
 
 

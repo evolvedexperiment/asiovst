@@ -125,7 +125,7 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessBandpass
-  OnProcessReplacing = VSTModuleProcessBandpass
+  OnProcess32Replacing = VSTModuleProcessBandpass
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

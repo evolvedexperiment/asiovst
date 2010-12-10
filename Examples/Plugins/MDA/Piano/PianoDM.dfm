@@ -198,7 +198,7 @@ object PianoDataModule: TPianoDataModule
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   Left = 188
   Top = 77

@@ -88,8 +88,8 @@ object Chebyshev2HPModule: TChebyshev2HPModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 778
   Top = 75

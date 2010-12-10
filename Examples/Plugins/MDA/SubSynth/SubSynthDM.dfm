@@ -105,7 +105,7 @@ object SubSynthDataModule: TSubSynthDataModule
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   Left = 188
   Top = 77

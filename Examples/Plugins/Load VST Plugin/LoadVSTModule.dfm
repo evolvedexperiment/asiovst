@@ -26,7 +26,7 @@ object PlugInPlugModule: TPlugInPlugModule
   OnGetVU = VST2ModuleGetVU
   OnParameterChange = VST2ModuleParameterChange
   OnProcess = VST2ModuleProcess
-  OnProcessReplacing = VST2ModuleProcessReplacing
+  OnProcess32Replacing = VST2ModuleProcessReplacing
   OnSampleRateChange = VST2ModuleSampleRateChange
   OnStartProcess = VST2ModuleStartProcess
   OnStopProcess = VST2ModuleStopProcess

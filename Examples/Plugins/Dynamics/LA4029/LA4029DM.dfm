@@ -261,8 +261,8 @@ object LA4029DataModule: TLA4029DataModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSoftBypass = VSTModuleSoftBypass
   Left = 739

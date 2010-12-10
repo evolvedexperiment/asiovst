@@ -240,7 +240,7 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessSpeaker
-  OnProcessReplacing = VSTModuleProcessSpeaker
+  OnProcess32Replacing = VSTModuleProcessSpeaker
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

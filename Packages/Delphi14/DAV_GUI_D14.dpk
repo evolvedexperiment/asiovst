@@ -24,6 +24,7 @@ package DAV_GUI_D14;
 {$IMAGEBASE $520000}
 {$DESCRIPTION 'ASIO & VST Project - GUI Components'}
 {$IMPLICITBUILD ON}
+{$DEFINE DEBUG}
 
 requires
   rtl,

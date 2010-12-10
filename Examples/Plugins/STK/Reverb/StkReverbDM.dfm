@@ -84,8 +84,8 @@ object StkReverbModule: TStkReverbModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNetwork
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacingNetwork
-  OnProcessReplacing = VSTModuleProcessNetwork
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacingNetwork
+  OnProcess32Replacing = VSTModuleProcessNetwork
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 284
   Top = 121

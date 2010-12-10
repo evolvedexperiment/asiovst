@@ -120,7 +120,7 @@ object SpinBugLiteModule: TSpinBugLiteModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTEditOpen
   OnProcess = VSTModuleProcessMono
-  OnProcessReplacing = VSTModuleProcessMono
+  OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 285
   Top = 161

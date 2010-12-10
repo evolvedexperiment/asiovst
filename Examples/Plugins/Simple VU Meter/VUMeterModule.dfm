@@ -50,8 +50,8 @@ object VSTVUMeterModule: TVSTVUMeterModule
   OnEditIdle = VSTModuleEditIdle
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess32Replacing = VSTModuleProcess
   Left = 209
   Top = 120
   Height = 150

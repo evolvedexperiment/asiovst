@@ -626,7 +626,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessMono
-  OnProcessReplacing = VSTModuleProcessMono
+  OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

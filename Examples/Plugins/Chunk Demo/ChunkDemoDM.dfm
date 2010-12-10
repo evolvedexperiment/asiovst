@@ -84,7 +84,7 @@ object ChunkDemoDataModule: TChunkDemoDataModule
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 77

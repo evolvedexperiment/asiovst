@@ -59,7 +59,7 @@ object LinearPhaseFilterFFTDataModule: TLinearPhaseFilterFFTDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 191
   Top = 76
   Height = 150

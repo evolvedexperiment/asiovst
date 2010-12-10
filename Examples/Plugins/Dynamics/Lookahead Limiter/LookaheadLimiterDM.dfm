@@ -184,7 +184,7 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessStereo
-  OnProcessReplacing = VSTModuleProcessStereo
+  OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 461
   Top = 183

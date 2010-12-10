@@ -78,7 +78,7 @@ object TalkBoxDataModule: TTalkBoxDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
   Left = 188

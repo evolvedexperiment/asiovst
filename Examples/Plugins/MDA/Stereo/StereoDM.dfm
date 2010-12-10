@@ -87,7 +87,7 @@ object StereoDataModule: TStereoDataModule
   OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
   Left = 188

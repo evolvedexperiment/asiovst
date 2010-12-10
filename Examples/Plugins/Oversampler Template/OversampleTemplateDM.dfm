@@ -188,9 +188,9 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OnOfflinePrepare = VSTModuleOfflinePrepare
   OnOfflineRun = VSTModuleOfflineRun
   OnProcess = VSTModuleProcess32OversampleSingle
-  OnProcessDoubleReplacing = VSTModuleProcess64OversampleSingle
+  OnProcess64Replacing = VSTModuleProcess64OversampleSingle
   OnProcessEvents = VSTModuleProcessEvents
-  OnProcessReplacing = VSTModuleProcess32OversampleSingle
+  OnProcess32Replacing = VSTModuleProcess32OversampleSingle
   OnProcessVarIO = VSTModuleProcessVarIO
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange

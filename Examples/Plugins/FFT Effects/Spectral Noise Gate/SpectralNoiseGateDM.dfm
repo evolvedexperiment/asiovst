@@ -1,5 +1,4 @@
 object SpectralNoiseGateModule: TSpectralNoiseGateModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -20,7 +19,6 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -37,7 +35,6 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
       OnParameterChange = ParameterThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FFT Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -56,7 +53,6 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
       OnCustomParameterDisplay = ParameterFftOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Window Function'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -89,7 +85,6 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
       OnCustomParameterDisplay = Parameter2DigitDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Knee'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -147,7 +142,7 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

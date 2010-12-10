@@ -168,7 +168,7 @@ object DynamicsDataModule: TDynamicsDataModule
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150

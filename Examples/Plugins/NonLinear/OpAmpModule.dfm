@@ -43,8 +43,8 @@ object VSTOpAmp: TVSTOpAmp
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess32Replacing = VSTModuleProcess
   Left = 243
   Top = 103
   Height = 150

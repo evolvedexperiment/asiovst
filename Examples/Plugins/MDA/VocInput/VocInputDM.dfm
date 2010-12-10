@@ -95,7 +95,7 @@ object VocInputDataModule: TVocInputDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
   Left = 726

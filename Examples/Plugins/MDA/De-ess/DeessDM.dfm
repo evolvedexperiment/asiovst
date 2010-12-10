@@ -72,8 +72,8 @@ object DeessDataModule: TDeessDataModule
     end>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnProcess32Replacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150
