@@ -40,8 +40,8 @@ interface
 uses
   Classes, SysUtils;
 
-procedure GetAlignedMemory(var P: Pointer; Size: Integer);
-procedure ReallocateAlignedMemory(var P: Pointer; Size: Integer);
+procedure GetAlignedMemory(var P; Size: Integer);
+procedure ReallocateAlignedMemory(var P; Size: Integer);
 procedure FreeAlignedMemory(P: Pointer);
 
 implementation
@@ -77,33 +77,35 @@ begin
    end;
 end;
 
-procedure GetAlignedMemory(var P: Pointer; Size: Integer);
+procedure GetAlignedMemory(var P; Size: Integer);
+var
+  Ptr : Pointer absolute P;
 begin
  // check for size = 0
  if Size = 0 then
   begin
-   P := nil;
+   Ptr := nil;
    Exit;
   end;
 
  // initially allocate memory
- GetMem(P, Size);
+ GetMem(Ptr, Size);
 
  {$IFNDEF MemoryAlreadyAligned}
  // check if memory is unaligned
- if (Cardinal(P) and $F) <> 0 then
+ if (Cardinal(Ptr) and $F) <> 0 then
   begin
    // reallocate slightly larger memory
-   ReallocMem(P, Size + $F);
+   ReallocMem(Ptr, Size + $F);
 
    // check if memory is still unaligned
 //   if (Cardinal(P) and $F) <> 0 then
     begin
      // add unaligned pointer to the unaligned memory list
-     UnalignedMemoryList.Add(P);
+     UnalignedMemoryList.Add(Ptr);
 
      // assign aligned pointer
-     P := Pointer(Cardinal(P) and (not $F));
+     Ptr := Pointer(Cardinal(Ptr) and (not $F));
     end;
   end;
  {$ENDIF}
@@ -111,48 +113,49 @@ begin
  Assert(Cardinal(P) and $F = 0);
 end;
 
-procedure ReallocateAlignedMemory(var P: Pointer; Size: Integer);
-{$IFNDEF MemoryAlreadyAligned}
+procedure ReallocateAlignedMemory(var P; Size: Integer);
 var
+  Ptr : Pointer absolute P;
+  {$IFNDEF MemoryAlreadyAligned}
   Index : Integer;
-{$ENDIF}
+  {$ENDIF}
 begin
  // check for size = 0
  if Size = 0 then
   begin
-   if Assigned(P)
-    then FreeAlignedMemory(P);
-   P := nil;
+   if Assigned(Ptr)
+    then FreeAlignedMemory(Ptr);
+   Ptr := nil;
    Exit;
   end;
 
- if P = nil then
+ if Ptr = nil then
   begin
-   GetAlignedMemory(P, Size);
+   GetAlignedMemory(Ptr, Size);
    Exit;
   end;
 
  {$IFNDEF MemoryAlreadyAligned}
- Index := GetUnalignedPointerIndex(P);
+ Index := GetUnalignedPointerIndex(Ptr);
  {$ENDIF}
 
- ReallocMem(P, Size);
+ ReallocMem(Ptr, Size);
 
  {$IFNDEF MemoryAlreadyAligned}
- if (Cardinal(P) and $F) <> 0 then
+ if (Cardinal(Ptr) and $F) <> 0 then
   begin
-   ReallocMem(P, Size + $F);
+   ReallocMem(Ptr, Size + $F);
    if (Index >= 0)
-    then UnalignedMemoryList.Items[Index] := P
-    else UnalignedMemoryList.Add(P);
+    then UnalignedMemoryList.Items[Index] := Ptr
+    else UnalignedMemoryList.Add(Ptr);
 
-   P := Pointer(Cardinal(P) and (not $F));
+   Ptr := Pointer(Cardinal(Ptr) and (not $F));
   end else
  if (Index >= 0)
   then UnalignedMemoryList.Delete(Index);
  {$ENDIF}
 
- Assert(Cardinal(P) and $F = 0);
+ Assert(Cardinal(Ptr) and $F = 0);
 end;
 
 procedure FreeAlignedMemory(P: Pointer);

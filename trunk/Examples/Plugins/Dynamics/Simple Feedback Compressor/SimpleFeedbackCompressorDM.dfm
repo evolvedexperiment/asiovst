@@ -107,7 +107,7 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 679
   Top = 126

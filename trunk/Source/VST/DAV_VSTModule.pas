@@ -86,12 +86,12 @@ type
     property OnParameterChange;
     property OnParameterSizeFailed;
     property OnProcess;
-    property OnProcessDoubleReplacing;
+    property OnProcess32Replacing;
+    property OnProcess64Replacing;
     property OnProcessEvents;
     property OnProcessEvent;
     property OnProcessMidi;
     property OnProcessMidiSysEx;
-    property OnProcessReplacing;
     property OnProcessVarIO;
     property OnResume;
     property OnSampleRateChange;

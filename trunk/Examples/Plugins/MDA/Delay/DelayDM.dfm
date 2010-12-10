@@ -93,7 +93,7 @@ object DelayDataModule: TDelayDataModule
   OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSuspend = VSTModuleSuspend
   Left = 218
   Top = 81

@@ -288,8 +288,8 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessLR
-  OnProcessDoubleReplacing = VSTModuleProcessReplacing64LR
-  OnProcessReplacing = VSTModuleProcessLR
+  OnProcess64Replacing = VSTModuleProcessReplacing64LR
+  OnProcess32Replacing = VSTModuleProcessLR
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

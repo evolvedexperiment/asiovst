@@ -138,7 +138,7 @@ object BandistoDataModule: TBandistoDataModule
       VSTModule = Owner
     end>
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150

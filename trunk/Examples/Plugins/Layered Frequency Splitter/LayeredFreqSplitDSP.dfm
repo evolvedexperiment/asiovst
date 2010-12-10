@@ -64,7 +64,7 @@ object LayeredFreqSplitModule: TLayeredFreqSplitModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 299
   Top = 51
   Height = 150

@@ -131,7 +131,7 @@ object SubBoostDataModule: TSubBoostDataModule
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 223

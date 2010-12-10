@@ -216,6 +216,7 @@ begin
  Assert(Transition > 0);
  Assert(Transition < 0.5);
 
+// k := (1 - Sin(Pi * Transition)) / (1 + Sin(Pi * Transition));
  k := Sqr(Tan((1 - Transition * 2) * PI * 0.25));
  Assert(k < 1);
  Assert(k > 0);

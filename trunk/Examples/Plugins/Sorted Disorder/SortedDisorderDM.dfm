@@ -54,7 +54,7 @@ object SortedDisorderModule: TSortedDisorderModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 257
   Top = 82
   Height = 150

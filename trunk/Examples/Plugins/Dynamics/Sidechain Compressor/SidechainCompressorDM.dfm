@@ -384,7 +384,7 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcessMono
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcessMono
+  OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   OnStartProcess = VSTModuleStartProcess
   OnStopProcess = VSTModuleStopProcess

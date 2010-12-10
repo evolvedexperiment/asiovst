@@ -83,7 +83,7 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNormal
-  OnProcessReplacing = VSTModuleProcessNormal
+  OnProcess32Replacing = VSTModuleProcessNormal
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 81

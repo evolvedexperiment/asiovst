@@ -36,8 +36,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, SyncObjs, DAV_Types, DAV_Complex, DAV_DspFftReal2Complex, 
-  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF} 
+  Forms, SyncObjs, DAV_Types, DAV_Complex, DAV_MemoryUtils,
+  DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 
 type
@@ -51,6 +51,8 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFreqLowChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamFreqHighChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FFilterKernel    : PDAVSingleFixedArray;
     FSignalPadded    : PDAVSingleFixedArray;
@@ -77,7 +79,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_DspWindowing, BugpassLiteGUI;
+  Math, DAV_Common, DAV_DspWindowing, BugpassLiteGUI;
 
 procedure TBugpassLiteDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -87,6 +89,7 @@ begin
  FFilterFreq      := nil;
  FSignalFreq      := nil;
  BlockModeOverlap := BlockModeSize div 2;
+ InitialDelay     := (BlockModeOverlap * 3) div 4
 end;
 
 procedure TBugpassLiteDataModule.VSTModuleDestroy(Sender: TObject);
@@ -99,28 +102,28 @@ begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
 
- ReallocMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
- ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
+ ReallocateAlignedMemory(Pointer(FFilterFreq), (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
+ ReallocateAlignedMemory(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
 
- ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
+ ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
+ ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
  FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
 
- ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
+ ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
+ ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ENDIF}{$ENDIF}
 
- ReallocMem(FFilterKernel, BlockModeSize * SizeOf(Single));
- ReallocMem(FSignalPadded, BlockModeSize * SizeOf(Single));
+ ReallocateAlignedMemory(FFilterKernel, BlockModeSize * SizeOf(Single));
+ ReallocateAlignedMemory(FSignalPadded, BlockModeSize * SizeOf(Single));
  FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 
@@ -139,10 +142,10 @@ end;
 
 procedure TBugpassLiteDataModule.VSTModuleClose(Sender: TObject);
 begin
- Dispose(FFilterKernel);
- Dispose(FSignalPadded);
- Dispose(FFilterFreq);
- Dispose(FSignalFreq);
+ FreeAlignedMemory(FFilterKernel);
+ FreeAlignedMemory(FSignalPadded);
+ FreeAlignedMemory(FFilterFreq);
+ FreeAlignedMemory(FSignalFreq);
  FreeAndNil(FFft);
 end;
 
@@ -168,9 +171,27 @@ begin
    do UpdateFrequencyBar;
 end;
 
+procedure TBugpassLiteDataModule.ParameterFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] >= 1000
+  then PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 3)
+  else PreDefined := FloatToAnsiString(Parameter[Index], 3);
+end;
+
+procedure TBugpassLiteDataModule.ParameterFrequencyLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] >= 1000
+  then PreDefined := 'kHz'
+  else PreDefined := 'Hz';
+end;
+
 procedure TBugpassLiteDataModule.CalculateFilterKernel;
 var
-  i, h, q : Integer;
+  Index   : Integer;
+  Half    : Integer;
+  Quarter : Integer;
   n       : Double;
   CutOff  : array [0..1] of Double;
 begin
@@ -180,20 +201,20 @@ begin
    try
     CutOff[0] := Parameter[0] / SampleRate;
     CutOff[1] := Parameter[1] / SampleRate;
-    h := BlockModeSize div 2;
-    q := BlockModeSize div 4;
+    Half := BlockModeSize div 2;
+    Quarter := BlockModeSize div 4;
 
     // Generate sinc delayed by (N-1)/2
-    for i := 0 to h - 1 do
-     if (i = q)
-      then FFilterKernel^[i] := 2.0 * (CutOff[0] - CutOff[1])
+    for Index := 0 to Half - 1 do
+     if (Index = Quarter)
+      then FFilterKernel^[Index] := 2.0 * (CutOff[0] - CutOff[1])
       else
        begin
-        n := PI * (i - q);
-        FFilterKernel^[i] := (sin(2.0 * CutOff[0] * n) - sin(2.0 * CutOff[1] * n)) / n;
+        n := PI * (Index - Quarter);
+        FFilterKernel^[Index] := (sin(2.0 * CutOff[0] * n) - sin(2.0 * CutOff[1] * n)) / n;
        end;
-    ApplyBlackmanWindow(FFilterKernel, h);
-    FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
+    ApplyBlackmanWindow(FFilterKernel, Half);
+    FillChar(FFilterKernel^[Half], Half * SizeOf(Single), 0);
 
     // calculate frequency
     {$IFDEF Use_IPPS}
@@ -269,7 +290,7 @@ begin
        // inbetween...
        while Bin < Half do
         begin
-         ComplexMultiplyInplace(
+         ComplexMultiplyInplace32(
            PDAVSingleFixedArray(FSignalFreq)^[Bin],
            PDAVSingleFixedArray(FSignalFreq)^[Bin + Half],
            PDAVSingleFixedArray(FFilterFreq)^[Bin],
@@ -292,7 +313,7 @@ begin
         FSignalFreq^[0].Im := FFilterFreq^[Half].Im * FSignalFreq^[Half].Im;
 
         for Bin := 1 to Half - 1
-         do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+         do ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
         FFft.PerformIFFTPackedComplex(FSignalFreq, @Outputs[Channel, 0]);
        end

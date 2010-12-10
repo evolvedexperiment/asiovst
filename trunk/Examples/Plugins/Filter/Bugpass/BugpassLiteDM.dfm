@@ -49,6 +49,8 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFreqLowChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
       Curve = ctLogarithmic
@@ -69,13 +71,15 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFreqHighChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 81

@@ -177,9 +177,9 @@ object VSTDecimator: TVSTDecimator
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 243
   Top = 103
   Height = 152

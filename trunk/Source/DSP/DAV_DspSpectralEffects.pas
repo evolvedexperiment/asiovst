@@ -80,6 +80,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
     procedure ProcessBlock(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); virtual;
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleFrames: Integer); virtual;
     function ProcessSample32(Input: Single): Single; virtual;

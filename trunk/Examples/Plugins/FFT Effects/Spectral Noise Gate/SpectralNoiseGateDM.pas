@@ -54,11 +54,10 @@ type
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWindowFunctionChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure Parameter2DigitDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure Parameter2DigitDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FCriticalSection   : TCriticalSection;
     FAdditionalDelay   : array of TDelayLineSamples32;
@@ -168,13 +167,13 @@ begin
 end;
 
 procedure TSpectralNoiseGateModule.ParameterWindowFunctionDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
 
 procedure TSpectralNoiseGateModule.Parameter2DigitDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 3, 1);
 end;
@@ -204,7 +203,7 @@ begin
 end;
 
 procedure TSpectralNoiseGateModule.ParameterFftOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;

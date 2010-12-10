@@ -38,7 +38,7 @@ object AnalogueMojoDM: TAnalogueMojoDM
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessStereo
-  OnProcessReplacing = VSTModuleProcessStereo
+  OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 217
   Top = 77

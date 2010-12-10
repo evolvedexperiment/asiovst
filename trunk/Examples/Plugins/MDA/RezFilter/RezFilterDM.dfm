@@ -154,7 +154,7 @@ object RezFilterDataModule: TRezFilterDataModule
   OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSuspend = VSTModuleSuspend
   Left = 188
   Top = 77

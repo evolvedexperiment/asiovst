@@ -298,8 +298,8 @@ type
     property OnOutputProperties: TOnGetChannelPropertiesEvent read FOnGetOutputProperties write FOnGetOutputProperties;
 
     property OnProcess: TProcessAudioEvent read FOnProcessEx write SetOnProcessEx;
-    property OnProcessReplacing: TProcessAudioEvent read FOnProcess32ReplacingEx write SetOnProcess32ReplacingEx;
-    property OnProcessDoubleReplacing: TProcessDoubleEvent read FOnProcess64ReplacingEx write SetOnProcess64ReplacingEx;
+    property OnProcess32Replacing: TProcessAudioEvent read FOnProcess32ReplacingEx write SetOnProcess32ReplacingEx;
+    property OnProcess64Replacing: TProcessDoubleEvent read FOnProcess64ReplacingEx write SetOnProcess64ReplacingEx;
   end;
 
 
@@ -564,7 +564,7 @@ end;
 function TCustomVSTModule.HostCallSetBlockSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('HostCallSetBlockSize (' + IntToStr(Value) + ')'); {$ENDIF}
- setBlockSize(Value);
+ SetBlockSize(Value);
  Result := 0;
 end;
 

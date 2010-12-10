@@ -73,7 +73,7 @@ object ASIOVSTModule: TASIOVSTModule
   OnEditOpen = VSTModuleEditOpen
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 251
   Top = 331
   Height = 188

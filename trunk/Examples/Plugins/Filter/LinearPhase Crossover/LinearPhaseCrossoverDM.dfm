@@ -65,7 +65,7 @@ object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

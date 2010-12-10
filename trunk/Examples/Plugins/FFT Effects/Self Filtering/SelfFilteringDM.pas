@@ -47,10 +47,10 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowFunctionChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFftOrderDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFftOrderChange(
       Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -109,7 +109,7 @@ begin
 end;
 
 procedure TSpectralSelfFilterModule.ParameterWindowFunctionDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
@@ -131,7 +131,7 @@ begin
 end;
 
 procedure TSpectralSelfFilterModule.ParameterFftOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;

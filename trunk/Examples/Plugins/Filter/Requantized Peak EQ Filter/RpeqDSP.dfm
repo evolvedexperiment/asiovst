@@ -83,7 +83,7 @@ object RpeqModule: TRpeqModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 392
   Top = 67
   Height = 150

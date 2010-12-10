@@ -37,7 +37,7 @@ object SpectralNoiseCutModule: TSpectralNoiseCutModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   Left = 286
   Top = 77
   Height = 150

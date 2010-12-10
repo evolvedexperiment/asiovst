@@ -144,7 +144,7 @@ object RePsychoDataModule: TRePsychoDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessLowQuality
-  OnProcessReplacing = VSTModuleProcessLowQuality
+  OnProcess32Replacing = VSTModuleProcessLowQuality
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
   Left = 188

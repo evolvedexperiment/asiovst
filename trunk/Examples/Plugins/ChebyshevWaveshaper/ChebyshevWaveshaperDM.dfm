@@ -45,8 +45,8 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDouble
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDouble
+  OnProcess32Replacing = VSTModuleProcess
   Left = 286
   Top = 81
   Height = 150

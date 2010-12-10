@@ -121,7 +121,7 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
   OnEditOpen = VST_EditOpen
   OnParameterChange = VST2ModuleParameterChange
   OnProcess = VST2ModuleProcess
-  OnProcessReplacing = VST2ModuleProcess
+  OnProcess32Replacing = VST2ModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 273
   Top = 72
