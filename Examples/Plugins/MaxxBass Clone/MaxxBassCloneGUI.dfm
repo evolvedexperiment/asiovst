@@ -2,84 +2,330 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
   Left = 501
   Top = 225
   Caption = 'MaxxBass Clone'
-  ClientHeight = 498
-  ClientWidth = 753
-  Color = clBtnFace
+  ClientHeight = 300
+  ClientWidth = 505
+  Color = 10592673
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = clBlack
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object GuiColorLevelMeter1: TGuiColorLevelMeter
-    Left = 620
-    Top = 64
+  object OutputMeterLeft: TGuiColorLevelMeter
+    Left = 433
+    Top = 78
     Width = 17
-    Height = 241
+    Height = 135
     BorderColor = clWindowFrame
     ContrastLuminance = 0.300000011920929000
     Upper = 1.000000000000000000
   end
-  object GuiColorLevelMeter2: TGuiColorLevelMeter
-    Left = 667
-    Top = 64
+  object OutputMeterRight: TGuiColorLevelMeter
+    Left = 480
+    Top = 78
     Width = 17
-    Height = 241
+    Height = 131
     BorderColor = clWindowFrame
     ContrastLuminance = 0.300000011920929000
     Upper = 1.000000000000000000
   end
-  object LbAudio: TGuiLabel
-    Left = 628
-    Top = 311
+  object LbOutput: TGuiLabel
+    Left = 440
+    Top = 38
     Width = 48
     Height = 14
     Alignment = taCenter
-    Caption = 'Audio'
-    Shadow.Color = clBlack
+    Caption = 'Output'
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Color = 16777203
+    Shadow.Opacity = 192
+    Shadow.Visible = True
   end
-  object LbMaxxBass: TGuiLabel
-    Left = 628
-    Top = 331
-    Width = 48
+  object GuiLabel2: TGuiLabel
+    Left = 14
+    Top = 179
+    Width = 57
     Height = 14
-    Alignment = taCenter
-    Caption = 'MaxxBass'
-    Shadow.Color = clBlack
+    Caption = 'Frequency:'
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Color = 16777203
+    Shadow.Opacity = 192
+    Shadow.Visible = True
   end
-  object LbOriginalBass: TGuiLabel
-    Left = 620
-    Top = 351
+  object EqGraph: TGuiEQGraph
+    Left = 14
+    Top = 41
+    Width = 263
+    Height = 132
+    BorderRadius = 2
+    ColorChart = 2293760
+    FilterSeries = <
+      item
+        DisplayName = 'Original Bass'
+        Color = 16744448
+      end
+      item
+        DisplayName = 'MaxxBass'
+        Color = clOlive
+      end>
+    GraphColorDark = 5779742
+    GraphColorLight = 3152656
+    XAxis.UpperFrequency = 100.000000000000000000
+    XAxis.LowerFrequency = 16.000000000000000000
+    YAxis.LowerLevel = -24.000000000000000000
+    YAxis.UpperLevel = 6.000000000000000000
+    YAxis.Granularity = 4.000000000000000000
+    Color = 10592673
+    ParentColor = False
+  end
+  object LbAudio: TGuiButton
+    Left = 433
+    Top = 239
     Width = 64
     Height = 14
     Alignment = taCenter
-    Caption = 'Original Bass'
-    Shadow.Color = clBlack
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 9351376
+    Caption = 'Audio'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
   end
-  object LbClipIndicator: TGuiLabel
-    Left = 628
-    Top = 44
-    Width = 48
+  object LbMaxxBass: TGuiButton
+    Left = 433
+    Top = 254
+    Width = 64
     Height = 14
     Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = 'MaxxBass'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object LbOriginalBass: TGuiButton
+    Left = 433
+    Top = 269
+    Width = 64
+    Height = 14
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = 'Original Bass'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object LbClipIndicator: TGuiButton
+    Left = 432
+    Top = 58
+    Width = 65
+    Height = 14
+    Alignment = taCenter
+    BorderColor = 6700041
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 2293760
     Caption = 'No Clip'
-    Shadow.Color = clBlack
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 16777203
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
   end
-  object LbFrequency: TLabel
-    Left = 16
-    Top = 16
-    Width = 55
-    Height = 13
-    Caption = 'Frequency:'
-  end
-  object SBFrequency: TScrollBar
+  object SBFrequency: TGuiSlider
     Left = 77
-    Top = 15
-    Width = 121
+    Top = 179
+    Width = 141
     Height = 16
-    PageSize = 0
-    TabOrder = 0
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.000000000000000000
+    Color = 10592673
+    DefaultValue = 50.000000000000000000
+    Max = 100.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    SlideColor = 6447714
+  end
+  object GuiButton1: TGuiButton
+    Left = 224
+    Top = 179
+    Width = 53
+    Height = 15
+    Alignment = taCenter
+    BorderColor = 6700041
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 2293760
+    Caption = '85 Hz'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 16777203
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton2: TGuiButton
+    Left = 8
+    Top = 8
+    Width = 41
+    Height = 16
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = 'Undo'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton3: TGuiButton
+    Left = 55
+    Top = 8
+    Width = 163
+    Height = 16
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = 'Preset: Medium'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton4: TGuiButton
+    Left = 224
+    Top = 8
+    Width = 53
+    Height = 16
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = 'A -> B'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton5: TGuiButton
+    Left = 283
+    Top = 8
+    Width = 53
+    Height = 16
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = 'Load'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton6: TGuiButton
+    Left = 342
+    Top = 8
+    Width = 53
+    Height = 16
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = 'Save'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton7: TGuiButton
+    Left = 401
+    Top = 8
+    Width = 16
+    Height = 16
+    Alignment = taCenter
+    BorderColor = clBlack
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 10592673
+    Caption = '?'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton8: TGuiButton
+    Left = 433
+    Top = 219
+    Width = 30
+    Height = 14
+    Alignment = taCenter
+    BorderColor = 6700041
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 2293760
+    Caption = '-4.0'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 6078697
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
+  end
+  object GuiButton9: TGuiButton
+    Left = 467
+    Top = 219
+    Width = 30
+    Height = 14
+    Alignment = taCenter
+    BorderColor = 6700041
+    BorderWidth = 1.250000000000000000
+    ButtonColor = 2293760
+    Caption = '-4.0'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 6078697
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Radius = 2.000000000000000000
+    Transparent = False
   end
 end

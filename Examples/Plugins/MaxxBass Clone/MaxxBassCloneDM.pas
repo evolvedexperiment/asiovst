@@ -57,9 +57,9 @@ type
     procedure ParameterResponseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterInputChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterListenDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterHighpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterListenDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterHighpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FHarmonicBass    : array [0..1] of TCustomHarmonicBass;
     FCriticalSection : TCriticalSection;
@@ -186,7 +186,7 @@ begin
 end;
 
 procedure THarmonicBassModule.ParameterHighpassDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := '16 Hz DC Filter';
@@ -196,7 +196,7 @@ begin
 end;
 
 procedure THarmonicBassModule.ParameterListenDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case round(Parameter[Index]) of
   0 : PreDefined := 'Audio';
@@ -206,7 +206,7 @@ begin
 end;
 
 procedure THarmonicBassModule.ParameterdBDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] = 0
   then PreDefined := '-oo'

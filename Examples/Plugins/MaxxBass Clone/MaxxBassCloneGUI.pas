@@ -36,18 +36,30 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiLevelMeter;
+  Dialogs, StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiLevelMeter,
+  DAV_GuiSlider, DAV_GuiButton, DAV_GuiGraphicControl, DAV_GuiEQGraph;
 
 type
   TFmHarmonicBassClone = class(TForm)
-    GuiColorLevelMeter1: TGuiColorLevelMeter;
-    GuiColorLevelMeter2: TGuiColorLevelMeter;
-    LbAudio: TGuiLabel;
-    LbMaxxBass: TGuiLabel;
-    LbOriginalBass: TGuiLabel;
-    LbClipIndicator: TGuiLabel;
-    LbFrequency: TLabel;
-    SBFrequency: TScrollBar;
+    OutputMeterLeft: TGuiColorLevelMeter;
+    OutputMeterRight: TGuiColorLevelMeter;
+    EqGraph: TGuiEQGraph;
+    LbOutput: TGuiLabel;
+    LbAudio: TGuiButton;
+    LbMaxxBass: TGuiButton;
+    LbOriginalBass: TGuiButton;
+    LbClipIndicator: TGuiButton;
+    GuiLabel2: TGuiLabel;
+    SBFrequency: TGuiSlider;
+    GuiButton1: TGuiButton;
+    GuiButton2: TGuiButton;
+    GuiButton3: TGuiButton;
+    GuiButton4: TGuiButton;
+    GuiButton5: TGuiButton;
+    GuiButton6: TGuiButton;
+    GuiButton7: TGuiButton;
+    GuiButton8: TGuiButton;
+    GuiButton9: TGuiButton;
   private
     { Private-Deklarationen }
   public
