@@ -30,7 +30,7 @@ type
   TSetKnobModeEvent        = procedure(Sender: TObject; val: Integer) of object;
   TSoftBypassEvent         = procedure(Sender: TObject; const isBypass: Boolean) of object;
   TOnSetPanLawEvent        = procedure(Sender: TObject; const LawType: TVstPanLawType; const Value: Single) of object;
-  TGetEditorEvent          = procedure(Sender: TObject; var GUI: TForm; ParentWindow : THandle) of object;
+  TGetEditorEvent          = procedure(Sender: TObject; var GUI: TForm; ParentWindow: THandle) of object;
   TOnVendorSpecificEvent   = function(Sender: TObject; const Index: Integer; const Value: TVstIntPtr; const Ptr: pointer; const Float: Single): Integer of object;
   TOnCanDoEvent            = function(Sender: TObject; const CanDoText: AnsiString): Integer of object;
   TOnCheckKey              = function(Sender: TObject; Key: Char): Boolean of object;

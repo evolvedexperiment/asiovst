@@ -58,6 +58,7 @@ type
     FCurveMappingExp     : Single;
     FScrollRange         : Single;
     FWheelStep           : Single;
+    FWrap                : Boolean;
     FOnQuantizeValue     : TQuantizeValueEvent;
 
     procedure SetMax(const Value: Single);
@@ -110,6 +111,7 @@ type
     property DefaultValue: Single read FDefaultValue write SetDefaultValue;
     property ScrollRange: Single read FScrollRange write FScrollRange;
     property WheelStep: Single read FWheelStep write FWheelStep;
+    property Wrap: Boolean read FWrap write FWrap default False;
 
     property OnQuantizeValue: TQuantizeValueEvent read FOnQuantizeValue write FOnQuantizeValue;
   end;
@@ -133,6 +135,7 @@ type
     property Transparent;
     property Value;
     property WheelStep;
+    property Wrap;
 
     property OnChange;
     property OnKeyUp;
@@ -254,6 +257,17 @@ end;
 procedure TCustomGuiStitchedDial.ChangeDialPosition(Amount: Single);
 begin
  FNormalizedPosition := Limit(FNormalizedPosition + Amount, 0, 1);
+ if FWrap then
+  begin
+   FNormalizedPosition := FNormalizedPosition + Amount;
+   while FNormalizedPosition < 0
+    do FNormalizedPosition := FNormalizedPosition + 1;
+   while FNormalizedPosition > 1
+    do FNormalizedPosition := FNormalizedPosition - 1;
+  end
+ else
+  FNormalizedPosition := Limit(FNormalizedPosition + Amount, 0, 1);
+
  Value := CalculateValueFromNormalizedPosition;
 end;
 
