@@ -86,7 +86,7 @@ begin
  FCriticalSection := TCriticalSection.Create;
  FImpulseResponse := nil;
  FFilterFreq      := nil;
- FIRSize          := 1024;
+ FIRSize          := 2048;
 end;
 
 procedure TPhaseAdjustmentModule.VSTModuleDestroy(Sender: TObject);
@@ -186,10 +186,11 @@ begin
    end;
    {$ENDIF}{$ENDIF}
 
-//   FillChar(FImpulseResponse^[FIRSize], FIRSize * SizeOf(Single), 0);
-//   ApplyBlackmanWindow(FImpulseResponse, FIRSize);
+   Move(FImpulseResponse^[0], FImpulseResponse^[FIRSize div 2], (FIRSize div 2) * SizeOf(Single));
+   Move(FImpulseResponse^[3 * FIRSize div 2], FImpulseResponse^[0], (FIRSize div 2) * SizeOf(Single));
+   ApplyBlackmanWindow(@FImpulseResponse^[0], FIRSize);
 
-   FStereoConvolution.LoadImpulseResponse(FImpulseResponse, FIRSize);
+   FStereoConvolution.LoadImpulseResponse(@FImpulseResponse^[0], FIRSize);
    FDesiredPhase := FCurrentPhase;
   end;
 end;
