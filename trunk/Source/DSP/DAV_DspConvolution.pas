@@ -219,6 +219,7 @@ type
     procedure SetMinimumIRBlockOrder(const Value: Byte);
     procedure SetMaximumIRBlockOrder(const Value: Byte);
     procedure SetIRSizePadded(const Value: Integer);
+
     function CalculatePaddedIRSize: Integer;
     procedure AllocatePaddedIRSizeDependentBuffers;
     procedure InputBufferSizeChanged;

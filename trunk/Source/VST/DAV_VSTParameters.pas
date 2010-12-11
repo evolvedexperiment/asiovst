@@ -113,6 +113,7 @@ type
   protected
     function GetDisplayName: string; override;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure CalculateCurveFactor; virtual;
     procedure CurveFactorChanged; virtual;
     procedure MaximumChanged; virtual;
     procedure MinimumChanged; virtual;
@@ -355,6 +356,7 @@ begin
   FMax              := 1;
   FStepFloat        := 1;
   FCurveFactor      := 1;
+  FInvCurveFactor   := 1;
   FSmallStepFloat   := 0.5;
   FLargeStepFloat   := 2;
   FCanBeAutomated   := True;
@@ -491,7 +493,7 @@ begin
  Result := (Value - Min) / (Max - Min);
  case Curve of
   ctLogarithmic: Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
-  ctExponential: Result := Exp(Result * ln(FCurveFactor + 1)) - 1;
+  ctExponential: Result := Exp(Result * Ln(FCurveFactor + 1)) - 1;
   ctFrequencyScale: if min <> 0
                      then Result := Log2(Max / Min * Result + 1) / Log2(Max / Min)
                      else Result := Log2(Max * Result + 1) / Log2(Max);
@@ -599,7 +601,7 @@ begin
   begin
    FCurve := Value;
    case FCurve of
-    ctLogarithmic : if FMin <> 0 then FCurveFactor := FMax / FMin;
+    ctLogarithmic : if FMin <> 0 then CurveFactor := FMax / FMin;
    end;
   end;
 end;
@@ -614,6 +616,11 @@ begin
 end;
 
 procedure TCustomVstParameterProperty.CurveFactorChanged;
+begin
+ CalculateCurveFactor;
+end;
+
+procedure TCustomVstParameterProperty.CalculateCurveFactor;
 begin
  FInvCurveFactor := 1 / FCurveFactor;
 end;

@@ -46,7 +46,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFreqLowChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -129,6 +128,9 @@ begin
 
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
+
+ // set editor form class
+ EditorFormClass := TFmBugpassLite;
 
  // Parameters and Programs
  Parameter[0] := 100;
@@ -232,11 +234,6 @@ begin
     FCriticalSection.Leave;
    end;
   end;
-end;
-
-procedure TBugpassLiteDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmBugpassLite.Create(Self);
 end;
 
 procedure TBugpassLiteDataModule.VSTModuleProcess(const Inputs,
