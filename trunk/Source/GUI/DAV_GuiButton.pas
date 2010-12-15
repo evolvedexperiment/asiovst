@@ -170,12 +170,15 @@ begin
  inherited;
  ControlStyle  := ControlStyle + [csOpaque, csReplicatable];
 
+ // create control canvas
  FCanvas := TControlCanvas.Create;
  TControlCanvas(FCanvas).Control := Self;
 
+ // create GUI font
  FGuiFont := TGuiOversampledGDIFont.Create;
  FGuiFont.OnChange := FontChangedHandler;
 
+ // create buffers
  FBuffer      := TGuiPixelMapMemory.Create;
  FBackBuffer  := TGuiPixelMapMemory.Create;
 
@@ -495,9 +498,12 @@ end;
 procedure TCustomGuiButton.Resize;
 begin
  inherited;
- FBuffer.SetSize(Width, Height);
- FBackBuffer.SetSize(Width, Height);
- UpdateBackBuffer;
+ if Assigned(FBuffer) then FBuffer.SetSize(Width, Height);
+ if Assigned(FBackBuffer) then
+  begin
+   FBackBuffer.SetSize(Width, Height);
+   BackBufferChanged;
+  end;
 end;
 
 procedure TCustomGuiButton.CMFontChanged(var Message: TMessage);

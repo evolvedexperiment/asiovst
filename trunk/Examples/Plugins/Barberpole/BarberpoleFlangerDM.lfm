@@ -121,7 +121,7 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   left = 218
   top = 81

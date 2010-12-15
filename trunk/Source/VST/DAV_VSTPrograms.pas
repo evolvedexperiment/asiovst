@@ -188,9 +188,14 @@ procedure TCustomVstProgram.SetParameters(const Parameters: array of Single);
 var
   Index : Integer;
 begin
- if Length(Parameters) = 0 then exit;
+ // check for no parameters
+ if Length(Parameters) = 0 then Exit;
+
+ // check for parameter mismatch
  if Length(Parameters) > ParameterCount
   then raise Exception.CreateFmt(RCStrParameterMismatch, [Length(Parameters)]);
+
+ // update parameters
  for Index := 0 to Length(Parameters) - 1
   do Parameter[Index] := Parameters[Index];
 end;

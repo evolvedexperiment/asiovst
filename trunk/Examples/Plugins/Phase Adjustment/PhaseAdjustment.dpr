@@ -2,8 +2,6 @@
 library PhaseAdjustment;
 
 uses
-  madExcept,
-  madLinkDisAsm,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

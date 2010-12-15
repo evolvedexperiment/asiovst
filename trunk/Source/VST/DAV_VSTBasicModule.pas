@@ -44,7 +44,7 @@ uses
 
 {$IFDEF DebugLog}
 const
-  CDebugLogFile : string = 'C:\DebugAch.log';
+  CDebugLogFile : string = 'C:\Debug.log';
 {$ENDIF}
 
 type
@@ -144,7 +144,7 @@ type
     function  GetHostProductString(const Text: PAnsiChar): Boolean; virtual; // fills <Text> with a string with product name (max 64 char)
     function  GetHostVendorVersion: Integer; virtual;  // returns vendor-specific version
     function  HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer; virtual;  // no definition
-    function  GetCanHostDo(Text: string): Integer; virtual;  // see 'hostCanDos' in audioeffectx.cpp returns 0: don't know (default), 1: yes, -1: no
+    function  GetCanHostDo(Text: AnsiString): Integer; virtual;  // see 'hostCanDos' in audioeffectx.cpp returns 0: don't know (default), 1: yes, -1: no
     function  GetHostLanguage: Integer; virtual;   // returns VstHostLanguage
     function  OpenWindow(const aWindow: PVstWindow): Pointer; virtual;  // create new window
     function  CloseWindow(const aWindow: PVstWindow): Boolean; virtual; // close a newly created window
@@ -650,7 +650,7 @@ end;
 
 procedure TBasicVSTModule.SetParameterAutomated(const Index: Integer; const Value: Single);
 begin
- CallAudioMaster(amGetNumAutomatableParameters, Index, 0, nil, Value);
+ CallAudioMaster(amAutomate, Index, 0, nil, Value);
 end;
 
 function TBasicVSTModule.GetParameterQuantization: Integer;
@@ -747,7 +747,7 @@ begin
  Result := CallAudioMaster(amVendorSpecific, Arg1, Arg2, ptrArg, floatArg);
 end;
 
-function TBasicVSTModule.GetCanHostDo(Text: string): Integer;
+function TBasicVSTModule.GetCanHostDo(Text: AnsiString): Integer;
 var
   str : AnsiString;
 begin

@@ -20,6 +20,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\DSP;..\..\Source\Math;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -43,7 +44,7 @@
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_MapFile>3</DCC_MapFile>
 		</PropertyGroup>
 		<ItemGroup>
 			<DelphiCompile Include="DAV_Common_D14.dpk">
@@ -152,7 +153,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-10-15 22:45</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-12-15 14:38</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages>
 						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\7.0\Bpl\GR32_Charts_D14.bpl">GR32 Charts</Excluded_Packages>

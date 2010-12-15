@@ -54,6 +54,22 @@ object PhaseAdjustmentModule: TPhaseAdjustmentModule
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterPhaseChange
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Suppress Ringing'
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'No Ring'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = PhaseAdjustmentModuleParameterProperties1ParameterChange
+      OnCustomParameterDisplay = PhaseAdjustmentModuleParameterProperties1CustomParameterDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

@@ -30,11 +30,12 @@ uses
   DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiFont, DAV_GuiFontList,
   DAV_GuiFontDesign, DAV_GuiInscription, DAV_GuiGraphXY, DAV_GuiGraphXYDesign,
   DAV_GuiLabel, DAV_GuiLED, DAV_GuiMediaButton, DAV_GuiMidiKeys,
-  DAV_GuiPaintBox, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPixelMapDesign,
-  DAV_GuiPng, DAV_GuiPngDesign, DAV_GuiSelectBox, DAV_GuiSlider,
-  DAV_GuiStaticWaveform, DAV_GuiStitchedButton, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedDisplay, DAV_GuiStitchedImageList,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
+  DAV_GuiRadioButton, DAV_GuiPaintBox, DAV_GuiPanel, DAV_GuiPixelMap,
+  DAV_GuiPixelMapDesign, DAV_GuiPng, DAV_GuiPngDesign, DAV_GuiSelectBox,
+  DAV_GuiSlider, DAV_GuiStaticWaveform, DAV_GuiStitchedButton,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedDisplay,
+  DAV_GuiStitchedImageList, DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch,
+  DAV_GuiVUMeter;
 
 procedure Register;
 begin
@@ -43,8 +44,8 @@ begin
     TGuiDial, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer,
     TGuiDialMetal, TGuiDynamicWaveform, TGuiEQGraph, TGuiEQSlide, TGuiFontList,
     TGuiGraphXY, TGuiInscription, TGuiLabel, TGuiLED, TGuiMediaButton,
-    TGuiMidiKeys, TGuiPaintBox, TGuiPanel, TGuiSelectBox, TGuiSlider,
-    TGuiStaticWaveform, TGuiStitchedButton, TGuiStitchedDial,
+    TGuiMidiKeys, TGuiControlsRadioButton, TGuiPaintBox, TGuiPanel, TGuiSelectBox,
+    TGuiSlider, TGuiStaticWaveform, TGuiStitchedButton, TGuiStitchedDial,
     TGuiStitchedDisplay, TGuiStitchedImageList, TGuiStitchedPNGList,
     TGuiStitchedSwitch, TGuiSwitch, TGuiVUMeter {$IFNDEF FPC}, TGuiSimpleDial,
     TGuiGroupA, TGuiGroupB, TGuiGroup, TGuiLevelMeter, TGuiColorLevelMeter,

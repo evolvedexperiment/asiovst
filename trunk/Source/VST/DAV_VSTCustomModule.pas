@@ -228,7 +228,7 @@ type
     // Properties
     property About: string read FAbout write ReadOnlyString stored False;
     property BlockSize: Integer read FBlockSize write SetBlockSize default 1024;
-    property CanDo[canDo: string]: Integer read GetCanHostDo;
+    property CanDo[canDo: AnsiString]: Integer read GetCanHostDo;
     property CanDos: TVstCanDos read FCanDos write FCanDos default [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out];
     property EditorForm: TForm read FEditorForm;
     property EditorFormClass: TFormClass read FEditorFormClass write FEditorFormClass;
@@ -931,35 +931,35 @@ end;
 function TCustomVSTModule.HostCallCanDo(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 0;
- {$IFDEF DebugLog} AddLogMessage('HostCallCanDo (' + StrPas(PChar(ptr)) + ')'); {$ENDIF}
- if StrComp(ptr, 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos) - 1 else
- if StrComp(ptr, 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos) - 1 else
- if StrComp(ptr, 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos) - 1 else
- if StrComp(ptr, 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in FCanDos) - 1 else
- if StrComp(ptr, 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in FCanDos) - 1 else
- if StrComp(ptr, 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in FCanDos) - 1 else
- if StrComp(ptr, 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in FCanDos) - 1 else
- if StrComp(ptr, 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in FCanDos) - 1 else
- if StrComp(ptr, 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in FCanDos) - 1 else
- if StrComp(ptr, 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in FCanDos) - 1 else
- if StrComp(ptr, 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in FCanDos) - 1 else
- if StrComp(ptr, 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in FCanDos) - 1 else
- if StrComp(ptr, 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in FCanDos) - 1 else
- if StrComp(ptr, '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in FCanDos) - 1 else
- if StrComp(ptr, '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in FCanDos) - 1 else
- if StrComp(ptr, '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in FCanDos) - 1 else
- if StrComp(ptr, '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in FCanDos) - 1 else
- if StrComp(ptr, '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in FCanDos) - 1 else
- if StrComp(ptr, '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in FCanDos) - 1 else
- if StrComp(ptr, '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in FCanDos) - 1 else
- if StrComp(ptr, '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in FCanDos) - 1 else
- if StrComp(ptr, '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in FCanDos) - 1 else
- if StrComp(ptr, '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in FCanDos) - 1 else
- if StrComp(ptr, 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in FCanDos) - 1 else
- if StrComp(ptr, 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in FCanDos) - 1 else
- if StrComp(ptr, 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in FCanDos) - 1 else
- if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in FCanDos) - 1 else
- if StrComp(ptr, 'hasCockosExtensions')   = 0 then
+ {$IFDEF DebugLog} AddLogMessage('HostCallCanDo (' + StrPas(PAnsiChar(ptr)) + ')'); {$ENDIF}
+ if StrComp(PAnsiChar(ptr), 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'hasCockosExtensions')   = 0 then
   if vcdCockosExtension in FCanDos
    then Result := Integer($BEEF0000)
    else Result := 0;
