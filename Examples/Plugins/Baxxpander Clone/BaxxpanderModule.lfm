@@ -125,7 +125,7 @@ object BaxxpanderModule: TBaxxpanderModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNormal
-  OnProcessReplacing = VSTModuleProcessNormal
+  OnProcess32Replacing = VSTModuleProcessNormal
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 77

@@ -49,25 +49,37 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterPhaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure PhaseAdjustmentModuleParameterProperties1CustomParameterDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure PhaseAdjustmentModuleParameterProperties1ParameterChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FCriticalSection   : TCriticalSection;
-    FIRSize            : Integer;
-    FCurrentPhase      : Single;
-    FDesiredPhase      : Single;
-    FImpulseResponse   : PDAVSingleFixedArray;
-    FFilterFreq        : PDAVComplexSingleFixedArray;
+    FSuppressRinging : Boolean;
+    procedure SetSuppressRinging(const Value: Boolean);
+    procedure SetPhase(const Value: Single);
+  protected
+    FCriticalSection       : TCriticalSection;
+    FIRSize                : Integer;
+    FCurrentPhase          : Single;
+    FDesiredPhase          : Single;
+    FUpdateKernelNecessary : Boolean;
+    FImpulseResponse       : PDAVSingleFixedArray;
+    FFilterFreq            : PDAVComplexSingleFixedArray;
     {$IFDEF Use_IPPS}
-    FFft               : TFftReal2ComplexIPPSFloat32;
+    FFft                   : TFftReal2ComplexIPPSFloat32;
     {$ELSE} {$IFDEF Use_CUDA}
-    FFft               : TFftReal2ComplexCUDA32;
+    FFft                   : TFftReal2ComplexCUDA32;
     {$ELSE}
-    FFft               : TFftReal2ComplexNativeFloat32;
+    FFft                   : TFftReal2ComplexNativeFloat32;
     {$ENDIF}{$ENDIF}
 
-    FStereoConvolution : TLowLatencyConvolutionStereo32;
-
+    FStereoConvolution     : TLowLatencyConvolutionStereo32;
     procedure CalculateFilterKernel;
+    procedure PhaseChanged; virtual;
+    procedure SuppressRingingChanged; virtual;
   public
+    property SuppressHighFrequencyRinging: Boolean read FSuppressRinging write SetSuppressRinging default True;
+    property Phase: Single read FCurrentPhase write SetPhase;
   end;
 
 implementation
@@ -131,12 +143,15 @@ begin
 
  // Parameters and Programs
  Parameter[0] := 45;
+ Parameter[1] := 0;
  Programs[1].CopyParameters(0);
  Programs[2].CopyParameters(0);
  Programs[3].CopyParameters(0);
  Programs[4].CopyParameters(0);
  Programs[5].CopyParameters(0);
 
+ FSuppressRinging := False;
+ FUpdateKernelNecessary := True;
  CalculateFilterKernel;
 end;
 
@@ -152,7 +167,7 @@ end;
 procedure TPhaseAdjustmentModule.ParameterPhaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FDesiredPhase := Value;
+ Phase := Value;
 
  // update GUI
  if EditorForm is TFmPhaseAdjustment then
@@ -160,18 +175,87 @@ begin
    do UpdatePhaseDial;
 end;
 
+procedure TPhaseAdjustmentModule.PhaseAdjustmentModuleParameterProperties1CustomParameterDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] > 0.5
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
+end;
+
+procedure TPhaseAdjustmentModule.PhaseAdjustmentModuleParameterProperties1ParameterChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ SuppressHighFrequencyRinging := Value > 0.5;
+end;
+
+procedure TPhaseAdjustmentModule.SetPhase(const Value: Single);
+begin
+ if FCurrentPhase <> Value then
+  begin
+   FDesiredPhase := Value;
+   PhaseChanged;
+  end;
+end;
+
+procedure TPhaseAdjustmentModule.SetSuppressRinging(const Value: Boolean);
+begin
+ if FSuppressRinging <> Value then
+  begin
+   FSuppressRinging := Value;
+   SuppressRingingChanged;
+  end;
+end;
+
+procedure TPhaseAdjustmentModule.PhaseChanged;
+begin
+ FUpdateKernelNecessary := True;
+end;
+
+procedure TPhaseAdjustmentModule.SuppressRingingChanged;
+begin
+ FUpdateKernelNecessary := True;
+end;
+
 procedure TPhaseAdjustmentModule.CalculateFilterKernel;
 var
-  Index : Integer;
+  Index        : Integer;
+  ComplexValue : TComplexSingle;
+  PhaseOffset  : Double;
+  PhaseSum     : Double;
 const
-  CDegToPi : Single = 180 / Pi;
+  CDegToPi : Single = Pi / 180;
 begin
  if Assigned(FImpulseResponse) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
-   FFilterFreq[0] := ComplexPolar32(1, 0);
-   for Index := 1 to FIRSize - 1
-    do FFilterFreq[Index] := ComplexPolar32(1, FDesiredPhase * CDegToPi);
-   FFilterFreq[FIRSize] := ComplexPolar32(1, 0);
+   FUpdateKernelNecessary := False;
+   FCurrentPhase := FDesiredPhase;
+
+   PhaseOffset := FCurrentPhase * CDegToPi;
+   if PhaseOffset > Pi
+    then PhaseOffset := PhaseOffset - 2 * Pi;
+
+   FFilterFreq[0].Re := 1;
+   FFilterFreq[0].Im := 0;
+   if FSuppressRinging then
+    begin
+     PhaseSum := 0;
+     for Index := 1 to FIRSize - 1 do
+      begin
+       FFilterFreq[Index].Re := Cos(PhaseOffset - PhaseSum);
+       FFilterFreq[Index].Im := Sin(PhaseOffset - PhaseSum);
+       PhaseSum := PhaseSum + PhaseOffset / FIRSize;
+      end;
+    end
+   else
+    begin
+     ComplexValue := ComplexPolar32(1, PhaseOffset);
+     for Index := 1 to FIRSize - 1
+      do FFilterFreq[Index] := ComplexValue;
+    end;
+   FFilterFreq[FIRSize].Re := 1;
+   FFilterFreq[FIRSize].Im := 0;
+
 
    {$IFDEF Use_IPPS}
    FFft.PerformiFFTCCS(FFilterFreq, FImpulseResponse);
@@ -191,7 +275,6 @@ begin
    ApplyBlackmanWindow(@FImpulseResponse^[0], FIRSize);
 
    FStereoConvolution.LoadImpulseResponse(@FImpulseResponse^[0], FIRSize);
-   FDesiredPhase := FCurrentPhase;
   end;
 end;
 

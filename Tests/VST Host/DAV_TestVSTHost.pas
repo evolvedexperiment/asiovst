@@ -446,10 +446,12 @@ end;
 
 procedure TVstPluginBasicTests.TestActiveParameterSweeps;
 var
-  Param : Integer;
-  Value : Single;
-  PP    : TVstParameterPropertyRecord;
-  Str   : AnsiString;
+  Param  : Integer;
+  Start  : Single;
+  Change : Single;
+  Value  : Single;
+  PP     : TVstParameterPropertyRecord;
+  Str    : AnsiString;
 begin
  with FVstHost[0] do
   begin
@@ -458,8 +460,12 @@ begin
    for Param := 0 to numParams - 1 do
     begin
      Value := 0;
+     Start := Parameter[Param];
+     Change := Start;
      repeat
       Parameter[Param] := Value;
+      if (Start = Change) and (Parameter[Param] <> Start)
+       then Change := Parameter[Param];
       Value := Value + 0.01;
      until Value > 1;
      Parameter[Param] := 1;
@@ -506,6 +512,10 @@ begin
        CheckTrue(PP.Future[0] = #0, 'Parameter ' +
          IntToStr(Param) + ': Future character value <> 0!');
       end;
+
+     // check whether automation is possible
+     if (Start = Change) and (CanBeAutomated(Param) <> 0)
+      then Fail('Parameter ' + IntToStr(Param) + ': Automation');
     end;
    Active := False
   end;
@@ -3407,7 +3417,7 @@ begin
        // find peak
        Peak := 0;
        for Sample := 0 to BlockSize - 1 do
-        if abs(Buffer[Ndx]^[Sample]) > Peak
+        if Abs(Buffer[Ndx]^[Sample]) > Peak
          then Peak := abs(Buffer[Ndx]^[Sample]);
 
        // test peak
@@ -3438,7 +3448,7 @@ begin
       begin
        // get random parameters
        for Param := 0 to numParams - 1
-        do Parameter[Param] := random;
+        do Parameter[Param] := Random;
       end;
      {$ENDIF}
     until {$IFNDEF FPC} ElapsedTestTime > 300; {$ELSE} False; {$ENDIF}

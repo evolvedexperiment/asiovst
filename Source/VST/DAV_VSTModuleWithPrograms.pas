@@ -458,10 +458,10 @@ end;
 
 function TVSTModuleWithPrograms.StringToParameter(const Index: Integer; Text: AnsiString): Boolean;
 var
-  ProcStr : AnsiString;
-  CurrVal : Single;
-  Indxes  : array [0..1] of Integer;
-  Mult    : Single;
+  ProcessedStr : AnsiString;
+  CurrentValue : Single;
+  Indices      : array [0..1] of Integer;
+  UnitFactor   : Single;
 begin
  {$IFDEF DebugLog}
  AddLogMessage('StringToParameter');
@@ -474,77 +474,77 @@ begin
   begin
    Result := Assigned(OnStringToParameter) or UseDefaultString2ParameterHandler;
 
-   CurrVal := Parameter[Index];
+   CurrentValue := Parameter[Index];
    if UseDefaultString2ParameterHandler then
     try
      {$IFDEF DELPHI14_UP}
-     ProcStr := AnsiStrings.Trim(Text);
-     Indxes[0] := AnsiStrings.AnsiPos(Units, ProcStr);
+     ProcessedStr := AnsiStrings.Trim(Text);
+     Indices[0] := AnsiStrings.AnsiPos(Units, ProcessedStr);
      {$ELSE}
-     ProcStr := Trim(Text);
-     Indxes[0] := Pos(Units, ProcStr);
+     ProcessedStr := Trim(Text);
+     Indices[0] := Pos(Units, ProcessedStr);
      {$ENDIF}
 
-     if Indxes[0] > 0
-      then Delete(ProcStr, Indxes[0], Length(Units));
+     if Indices[0] > 0
+      then Delete(ProcessedStr, Indices[0], Length(Units));
 
-     Indxes[0] := 1;
+     Indices[0] := 1;
      {$IFDEF DELPHI2009_UP}
-     while (Indxes[0] <= Length(ProcStr)) and
-      (not (CharInSet(ProcStr[Indxes[0]], ['0'..'9', '-', '+', ',', '.']))) do Inc(Indxes[0]);
+     while (Indices[0] <= Length(ProcessedStr)) and
+      (not (CharInSet(ProcessedStr[Indices[0]], ['0'..'9', '-', '+', ',', '.']))) do Inc(Indices[0]);
      {$ELSE}
-     while (Indxes[0] <= Length(ProcStr)) and
-      (not (ProcStr[Indxes[0]] in ['0'..'9', '-', '+', ',', '.'])) do Inc(Indxes[0]);
+     while (Indices[0] <= Length(ProcessedStr)) and
+      (not (ProcessedStr[Indices[0]] in ['0'..'9', '-', '+', ',', '.'])) do Inc(Indices[0]);
      {$ENDIF}
 
-     if (Indxes[0] <= Length(ProcStr)) then
+     if (Indices[0] <= Length(ProcessedStr)) then
       begin
-       Indxes[1] := Indxes[0] + 1;
+       Indices[1] := Indices[0] + 1;
        {$IFDEF DELPHI2009_UP}
-       while (Indxes[1] <= Length(ProcStr)) and
-        (CharInSet(ProcStr[Indxes[1]], ['0'..'9', 'E', ',', '.'])) do Inc(Indxes[1]);
+       while (Indices[1] <= Length(ProcessedStr)) and
+        (CharInSet(ProcessedStr[Indices[1]], ['0'..'9', 'E', ',', '.'])) do Inc(Indices[1]);
        {$ELSE}
-       while (Indxes[1] <= Length(ProcStr)) and
-        (ProcStr[Indxes[1]] in ['0'..'9', 'E', ',', '.']) do Inc(Indxes[1]);
+       while (Indices[1] <= Length(ProcessedStr)) and
+        (ProcessedStr[Indices[1]] in ['0'..'9', 'E', ',', '.']) do Inc(Indices[1]);
        {$ENDIF}
 
        // process unit extensions
        {$IFDEF DELPHI14_UP}
-       if AnsiStrings.AnsiPos('k', ProcStr) >= Indxes[1] then Mult := 1E3 else
-       if AnsiStrings.AnsiPos('K', ProcStr) >= Indxes[1] then Mult := 1024 else
-       if AnsiStrings.AnsiPos('G', ProcStr) >= Indxes[1] then Mult := 1048576 else
-       if AnsiStrings.AnsiPos('m', ProcStr) >= Indxes[1] then Mult := 1E-3 else
-       if AnsiStrings.AnsiPos('µ', ProcStr) >= Indxes[1] then Mult := 1E-6 else
-       if AnsiStrings.AnsiPos('c', ProcStr) >= Indxes[1] then Mult := 1E-2
-        else Mult := 1;
+       if AnsiStrings.AnsiPos('k', ProcessedStr) >= Indices[1] then UnitFactor := 1E3 else
+       if AnsiStrings.AnsiPos('K', ProcessedStr) >= Indices[1] then UnitFactor := 1024 else
+       if AnsiStrings.AnsiPos('G', ProcessedStr) >= Indices[1] then UnitFactor := 1048576 else
+       if AnsiStrings.AnsiPos('m', ProcessedStr) >= Indices[1] then UnitFactor := 1E-3 else
+       if AnsiStrings.AnsiPos('µ', ProcessedStr) >= Indices[1] then UnitFactor := 1E-6 else
+       if AnsiStrings.AnsiPos('c', ProcessedStr) >= Indices[1] then UnitFactor := 1E-2
+        else UnitFactor := 1;
        {$ELSE}
-       if Pos('k', ProcStr) >= Indxes[1] then Mult := 1E3 else
-       if Pos('K', ProcStr) >= Indxes[1] then Mult := 1024 else
-       if Pos('G', ProcStr) >= Indxes[1] then Mult := 1048576 else
-       if Pos('m', ProcStr) >= Indxes[1] then Mult := 1E-3 else
-       if Pos('µ', ProcStr) >= Indxes[1] then Mult := 1E-6 else
-       if Pos('c', ProcStr) >= Indxes[1] then Mult := 1E-2
-        else Mult := 1;
+       if Pos('k', ProcessedStr) >= Indices[1] then UnitFactor := 1E3 else
+       if Pos('K', ProcessedStr) >= Indices[1] then UnitFactor := 1024 else
+       if Pos('G', ProcessedStr) >= Indices[1] then UnitFactor := 1048576 else
+       if Pos('m', ProcessedStr) >= Indices[1] then UnitFactor := 1E-3 else
+       if Pos('µ', ProcessedStr) >= Indices[1] then UnitFactor := 1E-6 else
+       if Pos('c', ProcessedStr) >= Indices[1] then UnitFactor := 1E-2
+        else UnitFactor := 1;
        {$ENDIF}
 
-       ProcStr := Copy(ProcStr, Indxes[0], Indxes[1] - Indxes[0]);
+       ProcessedStr := Copy(ProcessedStr, Indices[0], Indices[1] - Indices[0]);
 
-       CurrVal := Mult * StrToFloat(string(ProcStr));
+       CurrentValue := UnitFactor * StrToFloat(string(ProcessedStr));
       end;
     except
     end;
 
    if Assigned(ParameterProperties[Index].OnStringToParameter)
-    then OnStringToParameter(Self, Index, Text, CurrVal);
+    then OnStringToParameter(Self, Index, Text, CurrentValue);
 
-   Parameter[Index] := CurrVal;
+   Parameter[Index] := CurrentValue;
   end;
 end;
 
 function TVSTModuleWithPrograms.HostCallString2Parameter(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  if Assigned(Ptr)
-  then Result := Integer(StringToParameter(Index, StrPas(PAnsiChar(ptr))))
+  then Result := Integer(StringToParameter(Index, StrPas(PAnsiChar(Ptr))))
   else Result := 0;
 end;
 
@@ -597,15 +597,15 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramNameIndexed(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  str : AnsiString;
+  Str : AnsiString;
 begin
  Result := 0;
  if (Index >= 0) and (Index < Programs.Count) and Assigned(Ptr) {and (Value = -1)} then
   begin
-   str := AnsiString(Programs[Index].DisplayName);
-   if FTruncateStrings and (Length(str) > 24)
-    then SetLength(str, 24);
-   StrPCopy(ptr, str);
+   Str := AnsiString(Programs[Index].DisplayName);
+   if FTruncateStrings and (Length(Str) > 24)
+    then SetLength(Str, 24);
+   StrPCopy(ptr, Str);
    Result := 1;
   end;
 end;
@@ -783,11 +783,12 @@ end;
 
 procedure TVSTModuleWithPrograms.CurrentProgramChanged;
 var
-  i: Integer;
+  ParameterIndex: Integer;
 begin
  try
-  for i := 0 to Programs[FCurProgram].ParameterCount - 1
-   do SetParameterDirect(i, Programs[FCurProgram].Parameter[i]);
+  with Programs[FCurProgram] do
+   for ParameterIndex := 0 to ParameterCount - 1
+    do SetParameterDirect(ParameterIndex, Parameter[ParameterIndex]);
  except
  end;
  FEditorNeedUpdate := True;
@@ -860,6 +861,7 @@ end;
 procedure TVSTModuleWithPrograms.SetParameterString(Index: Integer;
   const Value: AnsiString);
 begin
+ // read only
 end;
 
 function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;

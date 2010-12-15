@@ -453,12 +453,12 @@ end;
 {$IFNDEF COMPILER10_UP}
 procedure TCustomGuiLED.CMMouseEnter(var Message: TMessage);
 begin
-  if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+ if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
 end;
 
 procedure TCustomGuiLED.CMMouseLeave(var Message: TMessage);
 begin
-  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
+ if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
 end;
 {$ENDIF}
 

@@ -93,7 +93,7 @@ object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessMono
-  OnProcessReplacing = VSTModuleProcessMono
+  OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

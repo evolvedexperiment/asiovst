@@ -84,7 +84,7 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessMono
-  OnProcessReplacing = VSTModuleProcessMono
+  OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   left = 218
   top = 81

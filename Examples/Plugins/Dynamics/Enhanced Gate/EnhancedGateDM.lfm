@@ -277,7 +277,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessBypass
-  OnProcessReplacing = VSTModuleProcessBypass
+  OnProcess32Replacing = VSTModuleProcessBypass
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 552
   Top = 84

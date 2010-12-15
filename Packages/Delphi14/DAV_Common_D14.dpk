@@ -1,5 +1,6 @@
 package DAV_Common_D14;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -23,6 +24,7 @@ package DAV_Common_D14;
 {$IMAGEBASE $500000}
 {$DESCRIPTION 'ASIO & VST Project - Base Package'}
 {$IMPLICITBUILD ON}
+{$DEFINE DEBUG}
 
 requires
   vcl,

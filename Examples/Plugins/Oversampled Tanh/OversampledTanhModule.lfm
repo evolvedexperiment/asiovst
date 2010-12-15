@@ -56,7 +56,7 @@ object OversampledTanhModule: TOversampledTanhModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 296
   Top = 130

@@ -147,7 +147,7 @@ type
     property MaxInteger: Integer read FMaxInteger write FMaxInteger default 100;
     property Min: Single read FMin write SetMin;
     property MinInteger: Integer read FMinInteger write FMinInteger default 0;
-    property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
+    property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default False;
     property ShortLabel: AnsiString read FShortLabel write SetShortLabel;
     property SmallStepFloat: Single read FSmallStepFloat write FSmallStepFloat;
     property SmoothingFactor: Single read FSmoothingFactor write SetSmoothingFactor;
@@ -728,6 +728,7 @@ begin
  if Length(FShortLabel) > 7
   then SetLength(FShortLabel, 7);
 end;
+
 
 { TCustomVstParameterProperties }
 
