@@ -118,8 +118,8 @@ implementation
 {$IFDEF WIN32}
 const
   baQueryInterface    = 0;
-  baAddRef            = 1;
-  baRelease           = 2;
+  baAddRef            = 4;
+  baRelease           = 8;
   baInit              = 12;
   baGetDriverName     = 16;
   baGetDriverVersion  = 20;
