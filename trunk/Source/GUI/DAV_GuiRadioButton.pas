@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, StdCtrls, ExtCtrls,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixelCircle,
   DAV_GuiFixedPoint, DAV_GuiFont, DAV_GuiShadow;
@@ -56,13 +56,14 @@ type
     FMouseIsDown       : Boolean;
     FMouseInControl    : Boolean;
     FFlatChecked       : Boolean;
+    FTextChanged       : Boolean;
+    FCircleChanged     : Boolean;
     FGroupIndex        : Integer;
     FFocusedColor      : TColor;
     FDownColor         : TColor;
     FDotColor          : TColor;
     FBorderColor       : TColor;
     FBackgroundColor   : TColor;
-    FDisabledColor     : TColor;
     FOnPaint           : TNotifyEvent;
     function GetOversampling: TFontOversampling;
     function GetShadow: TGUIShadow;
@@ -73,23 +74,28 @@ type
     procedure SetFlat(const Value: Boolean);
 
   protected
-    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
-    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_MOUSELEAVE;
+    procedure CMMouseEnter(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_MOUSEENTER;
 
-    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMTextChanged(var Message: TWmNoParams); message CM_TEXTCHANGED;
-    procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
-    procedure CNCommand(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF}); message CN_COMMAND;
-    procedure CMColorchanged(var Message: TMessage); message CM_COLORCHANGED;
-    procedure CMParentColorChanged(var Message: TWMNoParams); message CM_PARENTCOLORCHANGED;
-    procedure CMDesignHitTest(var Message: {$IFNDEF FPC}TCMDesignHitTest{$ELSE}TLMMouse{$ENDIF}); message CM_DESIGNHITTEST;
-    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    procedure CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_ENABLEDCHANGED;
+    procedure CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF}); message CM_TEXTCHANGED;
+    procedure CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_COLORCHANGED;
+    procedure CMParentColorChanged(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF}); message CM_PARENTCOLORCHANGED;
+    procedure CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_FONTCHANGED;
 
+    {$IFDEF FPC}
+    procedure WMSetFocus(var Message: TLMSetFocus); message LM_SETFOCUS;
+    procedure WMKillFocus(var Message: TLMKillFocus); message LM_KILLFOCUS;
+    procedure WMSize(var Message: TLMSize); message LM_SIZE;
+    procedure WMMove(var Message: TLMMove); message LM_MOVE;
+    procedure WMPaint(var Message: TLMPaint); message LM_PAINT;
+    {$ELSE}
     procedure WMSetFocus(var Message: TWMSetFocus); message WM_SETFOCUS;
     procedure WMKillFocus(var Message: TWMKillFocus); message WM_KILLFOCUS;
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
-    procedure WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF}); message WM_MOVE;
+    procedure WMMove(var Message: TWMMove); message WM_MOVE;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    {$ENDIF}
 
     procedure DoEnter; override;
     procedure DoExit; override;
@@ -100,11 +106,12 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure CreateParams(var Params: TCreateParams); override;
 
-    procedure BufferChanged; virtual;
+    procedure BufferChanged(TextChanged: Boolean = True; CircleChanged: Boolean = True); virtual;
     procedure BackBufferChanged; virtual;
     procedure CalculateRadioButtonRadius; virtual;
     procedure FontChangedHandler(Sender: TObject); virtual;
-    procedure RenderControl(Buffer: TGuiCustomPixelMap); virtual;
+    procedure RenderCircle(Buffer: TGuiCustomPixelMap); virtual;
+    procedure RenderText(Buffer: TGuiCustomPixelMap); virtual;
     procedure UpdateBuffer; virtual;
     procedure UpdateBackBuffer; virtual;
 
@@ -117,6 +124,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
     procedure MouseEnter;
     procedure MouseLeave;
   published
@@ -127,7 +135,6 @@ type
     property ColorDot: TColor index 2 read FDotColor write SetColors default clWindowText;
     property ColorBorder: TColor index 3 read FBorderColor write SetColors default clWindowText;
     property ColorBackground: TColor index 4 read FBackgroundColor write SetColors default clBtnFace;
-    property ColorDisabled: TColor index 5 read FDisabledColor write SetColors default clBtnShadow;
     property Flat: Boolean read FFlat write SetFlat default True;
     property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
     property Shadow: TGUIShadow read GetShadow write SetShadow;
@@ -202,12 +209,13 @@ begin
  FDotColor         := clWindowText;
  FBorderColor      := clWindowText;
  FBackgroundColor  := clBtnShadow;
- FDisabledColor    := clBtnHighlight;
  FFlat             := True;
  FFlatChecked      := False;
  FGroupIndex       := 0;
  Enabled           := True;
  Visible           := True;
+ FTextChanged      := True;
+ FCircleChanged    := True;
 
  CalculateRadioButtonRadius;
 end;
@@ -262,13 +270,15 @@ begin
  Invalidate;
 end;
 
-procedure TGuiControlsRadioButton.BufferChanged;
+procedure TGuiControlsRadioButton.BufferChanged(TextChanged: Boolean = True; CircleChanged: Boolean = True);
 begin
+ FTextChanged := TextChanged;
+ FCircleChanged := CircleChanged;
  FUpdateBuffer := True;
  Invalidate;
 end;
 
-procedure TGuiControlsRadioButton.CMColorchanged(var Message: TMessage);
+procedure TGuiControlsRadioButton.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
 
@@ -276,31 +286,19 @@ begin
   then BackBufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.CMDesignHitTest(var Message: {$IFNDEF FPC}TCMDesignHitTest{$ELSE}TLMMouse{$ENDIF});
-var
-  LazRect : TRect;
-begin
- if Alignment = taRightJustify then LazRect := Rect(ClientRect.Left  +  1, ClientRect.Top + 3, ClientRect.Left + 11, ClientRect.Top + 13);
- if Alignment = taLeftJustify  then LazRect := Rect(ClientRect.Right - 11, ClientRect.Top + 3, ClientRect.Right - 1, ClientRect.Top + 13);
-
- if PtInRect(LazRect, Point(message.XPos, message.YPos))
-  then Message.Result := 1
-  else Message.Result := 0;
-end;
-
-procedure TGuiControlsRadioButton.CMMouseEnter(var Message: TMessage);
+procedure TGuiControlsRadioButton.CMMouseEnter(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
  MouseEnter;
 end;
 
-procedure TGuiControlsRadioButton.CMMouseLeave(var Message: TMessage);
+procedure TGuiControlsRadioButton.CMMouseLeave(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
  MouseLeave;
 end;
 
-procedure TGuiControlsRadioButton.CMEnabledChanged(var Message: TMessage);
+procedure TGuiControlsRadioButton.CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
 
@@ -310,17 +308,17 @@ begin
  BufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.CMFontChanged(var Message: TMessage);
+procedure TGuiControlsRadioButton.CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FGuiFont.Font.Assign(Font);
 end;
 
-procedure TGuiControlsRadioButton.CMTextChanged(var Message: TWmNoParams);
+procedure TGuiControlsRadioButton.CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF});
 begin
  inherited;
 
  if not (csLoading in ComponentState)
-   then BufferChanged;
+   then BufferChanged(True, False);
 end;
 
 procedure TGuiControlsRadioButton.MouseEnter;
@@ -328,7 +326,7 @@ begin
  if Enabled and not FMouseInControl then
   begin
    FMouseInControl := True;
-   BufferChanged;
+   BufferChanged(False);
   end;
 end;
 
@@ -337,37 +335,22 @@ begin
  if Enabled and FMouseInControl and not FMouseIsDown then
   begin
    FMouseInControl := False;
-   BufferChanged;
+   BufferChanged(False);
   end;
 end;
 
-procedure TGuiControlsRadioButton.CMDialogChar(var Message: TCMDialogChar);
-begin
-
- with Message do
-  if (CharCode = VK_SPACE) and FFocused then SetChecked(not Checked) else
-  if IsAccel(CharCode, Caption) and CanFocus
-   then
-    begin
-     SetFocus;
-     Result := 1;
-     BufferChanged;
-    end
-   else inherited;
-end;
-
-procedure TGuiControlsRadioButton.CNCommand(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF});
-begin
- if Message.NotifyCode = BN_CLICKED then Click;
-end;
-
-procedure TGuiControlsRadioButton.WMSetFocus(var Message: TWMSetFocus);
+procedure TGuiControlsRadioButton.WMSetFocus(var Message: {$IFDEF FPC}TLMSetFocus{$ELSE}TWMSetFocus{$ENDIF});
 begin
  inherited;
+
  if Enabled then FFocused := True;
 end;
 
+{$IFDEF FPC}
+procedure TGuiControlsRadioButton.WMKillFocus(var Message: TLMKillFocus);
+{$ELSE}
 procedure TGuiControlsRadioButton.WMKillFocus(var Message: TWMKillFocus);
+{$ENDIF}
 begin
  inherited;
 
@@ -378,7 +361,7 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.CMParentColorChanged(var Message: TWMNoParams);
+procedure TGuiControlsRadioButton.CMParentColorChanged(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF});
 begin
  inherited;
 
@@ -393,7 +376,7 @@ begin
  if FMouseIsDown and FMouseInControl
   then Checked := True;
  FFocused := True;
- BufferChanged;
+ BufferChanged(False);
 end;
 
 procedure TGuiControlsRadioButton.DoExit;
@@ -401,7 +384,7 @@ begin
  inherited DoExit;
 
  FFocused := False;
- BufferChanged;
+ BufferChanged(False);
 end;
 
 procedure TGuiControlsRadioButton.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -411,7 +394,7 @@ begin
    SetFocus;
    FMouseIsDown := True;
    inherited MouseDown(Button, Shift, X, Y);
-   BufferChanged;
+   BufferChanged(False);
   end;
 end;
 
@@ -423,7 +406,7 @@ begin
    if (X >= 0) and (X <= Width) and (Y >= 0) and (Y <= Height) and not Checked
     then Checked := True;
    inherited MouseUp(Button, Shift, X, Y);
-   BufferChanged;
+   BufferChanged(False);
   end;
 end;
 
@@ -445,8 +428,6 @@ begin
 end;
 
 procedure TGuiControlsRadioButton.PaintWindow(DC: HDC);
-var
-  CC : TControlCanvas;
 begin
  FCanvas.Lock;
  try
@@ -523,26 +504,34 @@ begin
   else Result := inherited GetChecked;
 end;
 
+{$IFDEF FPC}
+procedure TGuiControlsRadioButton.WMSize(var Message: TLMSize);
+{$ELSE}
 procedure TGuiControlsRadioButton.WMSize(var Message: TWMSize);
+{$ENDIF}
 begin
  inherited;
- if FTransparent and (not (csLoading in ComponentState)) then Invalidate;
+
+ if FTransparent and (not (csLoading in ComponentState))
+  then BackBufferChanged;
 end;
 
 procedure TGuiControlsRadioButton.WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF});
 begin
  inherited;
- if FTransparent and (not (csLoading in ComponentState)) then Invalidate;
+
+ if FTransparent and (not (csLoading in ComponentState))
+  then BackBufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.WMPaint(var Message: TWMPaint);
+procedure TGuiControlsRadioButton.WMPaint(var Message: {$IFDEF FPC}TLMPaint{$ELSE}TWMPaint{$ENDIF});
 begin
  ControlState := ControlState + [csCustomPaint];
  inherited;
  ControlState := ControlState - [csCustomPaint];
 end;
 
-procedure TGuiControlsRadioButton.RenderControl(Buffer: TGuiCustomPixelMap);
+procedure TGuiControlsRadioButton.RenderCircle(Buffer: TGuiCustomPixelMap);
 var
   Y, X1, X2         : Integer;
   ScnLne            : PPixel32Array;
@@ -575,18 +564,14 @@ begin
    BorderColor := ConvertColor(FBorderColor);
    DotColor := ConvertColor(FDotColor);
    DrawDot := Checked or (FMouseIsDown and Enabled);
-   if not Enabled then
-    begin
-     DotColor.A := $7F;
-     BackColor := ConvertColor(FDisabledColor);
-    end else
+
    if FMouseIsDown then
     begin
      BackColor := ConvertColor(FDownColor);
      if not Checked
       then DotColor.A := $7F;
     end else
-   if FMouseInControl
+   if FMouseInControl or Focused
     then BackColor := ConvertColor(FFocusedColor)
     else BackColor := ConvertColor(FBackgroundColor);
 
@@ -598,16 +583,38 @@ begin
 
    ReciSqrRad := 1 / Sqr(Radius);
    InnerOffset := 2 * BorderWidth;
-   RadMinusInnerOne := BranchlessClipPositive(Radius - InnerOffset + 1);
-   SqrRadMinusInner := Sqr(BranchlessClipPositive(Radius - InnerOffset));
-   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth + 1);
-   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth));
-   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
 
+   SqrRadMinusOne := Radius - 1;
+   if SqrRadMinusOne < 0
+    then SqrRadMinusOne := 0
+    else SqrRadMinusOne := Sqr(SqrRadMinusOne);
+
+   SqrRadMinusBorder := Radius - BorderWidth;
+   if SqrRadMinusBorder < 0
+    then SqrRadMinusBorder := 0
+    else SqrRadMinusBorder := Sqr(SqrRadMinusBorder);
+
+   RadMinusBorderOne := Radius - BorderWidth + 1;
+   if RadMinusBorderOne < 0
+    then RadMinusBorderOne := 0;
+
+   SqrRadMinusInner := Radius - InnerOffset;
+   if SqrRadMinusInner < 0
+    then SqrRadMinusInner := 0
+    else SqrRadMinusInner := Sqr(SqrRadMinusInner);
+
+   RadMinusInnerOne := Radius - InnerOffset + 1;
+   if RadMinusInnerOne < 0 then RadMinusInnerOne := 0;
+
+   {$IFDEF FPC}
+   OffsetX := Radius + 0.5;
+   {$ELSE}
    case Alignment of
     taLeftJustify  : OffsetX := Width - Radius - 0.5;
     taRightJustify : OffsetX := Radius + 0.5;
+    else raise Exception.Create('Unknown justify');
    end;
+   {$ENDIF}
    OffsetY := 0.5 * (Height - 1);
 
    for Y := Round(OffsetY - Radius) to Round(OffsetY + Radius) do
@@ -635,6 +642,7 @@ begin
            if (SqrDist <= SqrRadMinusInner) then
             begin
              CombColor := BlendPixel(DotColor, BackColor);
+             if not Enabled then CombColor.A := CombColor.A shr 1;
              BlendPixelLine(CombColor, @ScnLne[X1], X2 - X1 + 1);
              EMMS;
              Break;
@@ -644,6 +652,7 @@ begin
              Scale := RadMinusInnerOne - FastSqrtBab2(SqrDist);
              CombColor := BlendPixel(DotColor, BackColor);
              CombColor := CombinePixel(CombColor, BackColor, Round(Scale * $FF));
+             if not Enabled then CombColor.A := CombColor.A shr 1;
 
              BlendPixelInplace(CombColor, ScnLne[X1]);
              BlendPixelInplace(CombColor, ScnLne[X2]);
@@ -653,8 +662,10 @@ begin
             end
            else
             begin
-             BlendPixelInplace(BackColor, ScnLne[X1]);
-             BlendPixelInplace(BackColor, ScnLne[X2]);
+             CombColor := BackColor;
+             if not Enabled then CombColor.A := CombColor.A shr 1;
+             BlendPixelInplace(CombColor, ScnLne[X1]);
+             BlendPixelInplace(CombColor, ScnLne[X2]);
              EMMS;
              Inc(X1);
              Dec(X2);
@@ -663,6 +674,7 @@ begin
          else
           begin
            CombColor := BackColor;
+           if not Enabled then CombColor.A := CombColor.A shr 1;
            BlendPixelLine(CombColor, @ScnLne[X1], X2 - X1 + 1);
            EMMS;
            Break;
@@ -685,6 +697,7 @@ begin
             CombColor.A := CombAlpha;
            end;
 
+         if not Enabled then CombColor.A := CombColor.A shr 1;
          BlendPixelInplace(CombColor, ScnLne[X1]);
          BlendPixelInplace(CombColor, ScnLne[X2]);
          EMMS;
@@ -696,6 +709,34 @@ begin
   end;
 end;
 
+procedure TGuiControlsRadioButton.RenderText(Buffer: TGuiCustomPixelMap);
+var
+  TextSize    : TSize;
+  OldAlpha    : Byte;
+begin
+ if Assigned(FGuiFont) then
+  begin
+   TextSize := FGuiFont.TextExtend(Caption);
+   {$IFDEF FPC}
+   TextSize.cx := 2 * FRadioButtonRadius + 3;
+   {$ELSE}
+   case Alignment of
+    taLeftJustify  : TextSize.cx := Width - TextSize.cx - 2 * FRadioButtonRadius - 3;
+    taRightJustify : TextSize.cx := 2 * FRadioButtonRadius + 3;
+   end;
+   {$ENDIF}
+   TextSize.cy := (Height - TextSize.cy) div 2;
+   if not Enabled then
+    begin
+     OldAlpha := FGuiFont.Alpha;
+     FGuiFont.Alpha := FGuiFont.Alpha shr 1;
+     FGuiFont.TextOut(Caption, FBuffer, TextSize.cx, TextSize.cy);
+     FGuiFont.Alpha := OldAlpha;
+    end
+   else FGuiFont.TextOut(Caption, FBuffer, TextSize.cx, TextSize.cy);
+  end;
+end;
+
 procedure TGuiControlsRadioButton.SetColors(Index: Integer; Value: TColor);
 begin
  case Index of
@@ -704,20 +745,24 @@ begin
   2: FDotColor        := Value;
   3: FBorderColor     := Value;
   4: FBackgroundColor := Value;
-  5: FDisabledColor   := Value;
  end;
- Invalidate;
+ BufferChanged(False);
 end;
 
 procedure TGuiControlsRadioButton.SetFlat(const Value: Boolean);
-var oldMIC : Boolean;
+var
+  OldMouseInControl : Boolean;
 begin
  if FFlat <> Value then
   begin
-   OldMIC          := FMouseInControl;
-   FFlat           := Value;
+   OldMouseInControl := FMouseInControl;
+   FFlat             := Value;
+   {$IFDEF FPC}
+   RecreateWnd(Self);
+   {$ELSE}
    RecreateWnd;
-   FMouseInControl := oldMIC;
+   {$ENDIF}
+   FMouseInControl   := OldMouseInControl;
   end;
 end;
 
@@ -736,9 +781,11 @@ procedure TGuiControlsRadioButton.SetBiDiMode(Value: TBiDiMode);
 begin
  inherited;
 
+ {$IFNDEF FPC}
  if BidiMode = bdRightToLeft
   then Alignment := taLeftJustify
   else Alignment := taRightJustify;
+ {$ENDIF}
 end;
 
 procedure TGuiControlsRadioButton.SetChecked(Value: Boolean);
@@ -774,8 +821,10 @@ begin
   begin
    FFlatChecked := Value;
    TabStop := Value;
+   {$IFNDEF FPC}
    if HandleAllocated
     then SendMessage(Handle, BM_SETCHECK, Integer(Checked), 0);
+   {$ENDIF}
 
    if Value then
     begin
@@ -783,7 +832,8 @@ begin
      inherited Changed;
      if not ClicksDisabled then Click;
     end;
-   BufferChanged;
+   FCircleChanged := True;
+   BufferChanged(False);
   end;
 end;
 
@@ -823,9 +873,9 @@ end;
 
 procedure TGuiControlsRadioButton.UpdateBuffer;
 var
-  DataPointer : PPixel32Array;
-  LineIndex   : Integer;
-  TextSize    : TSize;
+  y       : Integer;
+  SrcPtr  : PPixel32Array;
+  DestPtr : PPixel32Array;
 begin
  FUpdateBuffer := False;
 
@@ -837,21 +887,57 @@ begin
 
  Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
 
- // copy back buffer to buffer
- Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
-   FBuffer.Width * SizeOf(TPixel32));
-
- RenderControl(FBuffer);
-
- if Assigned(FGuiFont) then
+ if FCircleChanged and FTextChanged then
   begin
-   TextSize := FGuiFont.TextExtend(Caption);
-   case Alignment of
-    taLeftJustify  : TextSize.cx := Width - TextSize.cx - 2 * FRadioButtonRadius - 3;
-    taRightJustify : TextSize.cx := 2 * FRadioButtonRadius + 3;
-   end;
-   TextSize.cy := (Height - TextSize.cy) div 2;
-   FGuiFont.TextOut(Caption, FBuffer, TextSize.cx, TextSize.cy);
+   FCircleChanged := False;
+   FTextChanged := False;
+
+   // copy entire back buffer to buffer
+   Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
+     FBuffer.Width * SizeOf(TPixel32));
+
+   RenderCircle(FBuffer);
+   RenderText(FBuffer);
+   Exit;
+  end;
+
+ // check whether only the circle changed;
+ if FCircleChanged then
+  begin
+   FCircleChanged := False;
+
+   // copy circle part of the back buffer to buffer
+   SrcPtr := FBackBuffer.DataPointer;
+   DestPtr := FBuffer.DataPointer;
+   for y := 0 to FBuffer.Height - 1 do
+    begin
+     Move(SrcPtr^, DestPtr^, (2 * FRadioButtonRadius + 1) * SizeOf(TPixel32));
+     SrcPtr := @SrcPtr^[FBuffer.Width];
+     DestPtr := @DestPtr^[FBuffer.Width];
+    end;
+
+   // actually render circle
+   RenderCircle(FBuffer);
+   Exit;
+  end;
+
+ // check whether only the text changed;
+ if FTextChanged then
+  begin
+   FTextChanged := False;
+
+   // copy text part of the back buffer to buffer
+   SrcPtr := @FBackBuffer.DataPointer[(2 * FRadioButtonRadius + 1)];
+   DestPtr := @FBuffer.DataPointer[(2 * FRadioButtonRadius + 1)];
+   for y := 0 to FBuffer.Height - 1 do
+    begin
+     Move(SrcPtr^, DestPtr^, (FBuffer.Width - (2 * FRadioButtonRadius + 1)) * SizeOf(TPixel32));
+     SrcPtr := @SrcPtr^[FBuffer.Width];
+     DestPtr := @DestPtr^[FBuffer.Width];
+    end;
+
+   // actually render text
+   RenderText(FBuffer);
   end;
 end;
 

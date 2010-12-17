@@ -69,6 +69,8 @@ type
     procedure Clear; overload; override;
     procedure Clear(Data: Byte); reintroduce; overload; virtual;
 
+    procedure Multiply(Factor: Byte); virtual;
+
     procedure Draw(Bitmap: TBitmap); overload; virtual;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); overload; virtual; abstract;
     procedure Draw(ByteMap: TGuiCustomByteMap; Alpha: Byte = $FF); overload; virtual;
@@ -446,6 +448,14 @@ begin
      end;
     end;
   end;
+end;
+
+procedure TGuiCustomByteMap.Multiply(Factor: Byte);
+var
+  Index : Integer;
+begin
+ for Index := 0 to FWidth * FHeight - 1
+  do FDataPointer^[Index] := ((FDataPointer^[Index] * Factor + $80) shr 8);
 end;
 
 procedure TGuiCustomByteMap.SaveToStream(Stream: TStream);

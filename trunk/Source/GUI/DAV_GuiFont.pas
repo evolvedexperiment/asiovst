@@ -46,6 +46,7 @@ type
   TGuiCustomFont = class(TPersistent)
   private
     FAntiAliasing : Boolean;
+    FAlpha        : Byte;
     FShadow       : TGuiShadow;
     FShadowColor  : TPixel32;
     FSaturation   : TGuiSaturationFilter;
@@ -67,6 +68,7 @@ type
 
     property Shadow: TGuiShadow read FShadow write SetShadow;
     property Antialiasing: Boolean read FAntiAliasing write SetAntialiasing;
+    property Alpha: Byte read FAlpha write FAlpha default $FF;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
   TGuiCustomFontClass = class of TGuiCustomFont;
@@ -283,6 +285,7 @@ end;
 constructor TGuiCustomFont.Create;
 begin
  inherited;
+ FAlpha           := $FF;
  FShadow          := TGuiShadow.Create;
  FShadow.OnChange := ShadowChangedHandler;
  FBlurFilter      := TGuiStackBlurFilter.Create;
@@ -460,6 +463,10 @@ begin
          Length(Text));
        {$ENDIF}
 
+       // pre-multiply alpha
+       if FAlpha <> $FF
+        then FBuffer.Multiply(FAlpha);
+
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
 
@@ -493,6 +500,11 @@ begin
        Windows.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
        {$ENDIF}
+
+       // pre-multiply alpha
+       if FAlpha <> $FF
+        then FBuffer.Multiply(FAlpha);
+
        {$ENDIF}
 
        if PixelMap <> nil
@@ -517,6 +529,10 @@ begin
        {$ELSE}
        Windows.TextOut(FBuffer.Handle, 0, 0, PChar(Text), Length(Text));
        {$ENDIF}
+
+       // pre-multiply alpha
+       if FAlpha <> $FF
+        then FBuffer.Multiply(FAlpha);
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color), X, Y);
@@ -687,6 +703,10 @@ begin
          Length(Text));
        {$ENDIF}
 
+       // pre-multiply alpha
+       if FAlpha <> $FF
+        then FBuffer.Multiply(FAlpha);
+
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
 
@@ -737,6 +757,10 @@ begin
          Length(Text));
        {$ENDIF}
 
+       // pre-multiply alpha
+       if FAlpha <> $FF
+        then FBuffer.Multiply(FAlpha);
+
        {$ENDIF}
 
        DownsampleByteMap(FBuffer);
@@ -766,6 +790,10 @@ begin
        {$ELSE}
        Windows.TextOut(FBuffer.Handle, 0, 0, PChar(Text), Length(Text));
        {$ENDIF}
+
+       // pre-multiply alpha
+       if FAlpha <> $FF
+        then FBuffer.Multiply(FAlpha);
 
        DownsampleByteMap(FBuffer);
 
