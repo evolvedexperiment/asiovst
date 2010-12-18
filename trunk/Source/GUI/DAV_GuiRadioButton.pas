@@ -540,22 +540,21 @@ var
   DotColor          : TPixel32;
   BackColor         : TPixel32;
   DrawDot           : Boolean;
-  Radius            : Integer;
-  InnerOffset       : Single;
-  BorderWidth       : Single;
-  XStart            : Single;
-  Scale             : Single;
-  OffsetX           : Single;
-  OffsetY           : Single;
-  SqrYDist          : Single;
-  SqrDist           : Single;
-  SqrRadMinusOne    : Single;
-  SqrRadMinusBorder : Single;
-  RadMinusBorderOne : Single;
-  SqrRadMinusInner  : Single;
-  RadMinusInnerOne  : Single;
-  ReciSqrRad        : Single;
-  Temp              : Single;
+  Radius            : TFixed24Dot8Point;
+  InnerOffset       : TFixed24Dot8Point;
+  BorderWidth       : TFixed24Dot8Point;
+  XStart            : TFixed24Dot8Point;
+  Scale             : TFixed24Dot8Point;
+  OffsetX           : TFixed24Dot8Point;
+  OffsetY           : TFixed24Dot8Point;
+  SqrYDist          : TFixed24Dot8Point;
+  SqrDist           : TFixed24Dot8Point;
+  SqrRadMinusOne    : TFixed24Dot8Point;
+  SqrRadMinusBorder : TFixed24Dot8Point;
+  RadMinusBorderOne : TFixed24Dot8Point;
+  SqrRadMinusInner  : TFixed24Dot8Point;
+  RadMinusInnerOne  : TFixed24Dot8Point;
+  Temp              : TFixed24Dot8Point;
   CombAlpha         : Integer;
 begin
  with Buffer do
@@ -575,88 +574,89 @@ begin
     then BackColor := ConvertColor(FFocusedColor)
     else BackColor := ConvertColor(FBackgroundColor);
 
-   BorderWidth := Max(2.5, 1 + 0.15 * FRadioButtonRadius);
+   BorderWidth := ConvertToFixed24Dot8Point(Max(2.5, 1 + 0.15 * FRadioButtonRadius));
 
    // draw circle
-   Radius := FRadioButtonRadius;
-   if Radius <= 0 then Exit;
+   Radius := ConvertToFixed24Dot8Point(FRadioButtonRadius);
+   if Radius.Fixed <= 0 then Exit;
 
-   ReciSqrRad := 1 / Sqr(Radius);
-   InnerOffset := 2 * BorderWidth;
+   InnerOffset := FixedAdd(BorderWidth, BorderWidth);
 
-   SqrRadMinusOne := Radius - 1;
-   if SqrRadMinusOne < 0
-    then SqrRadMinusOne := 0
-    else SqrRadMinusOne := Sqr(SqrRadMinusOne);
+   Temp := FixedSub(Radius, CFixed24Dot8One);
+   if Temp.Fixed < 0
+    then SqrRadMinusOne.Fixed := 0
+    else SqrRadMinusOne := FixedSqr(Temp);
 
-   SqrRadMinusBorder := Radius - BorderWidth;
-   if SqrRadMinusBorder < 0
-    then SqrRadMinusBorder := 0
-    else SqrRadMinusBorder := Sqr(SqrRadMinusBorder);
+   Temp := FixedSub(Radius, BorderWidth);
+   if Temp.Fixed < 0
+    then SqrRadMinusBorder.Fixed := 0
+    else SqrRadMinusBorder := FixedSqr(Temp);
 
-   RadMinusBorderOne := Radius - BorderWidth + 1;
-   if RadMinusBorderOne < 0
-    then RadMinusBorderOne := 0;
+   Temp := FixedAdd(Radius, CFixed24Dot8One);
+   RadMinusBorderOne := FixedSub(Temp, BorderWidth);
+   if RadMinusBorderOne.Fixed < 0
+    then RadMinusBorderOne.Fixed := 0;
 
-   SqrRadMinusInner := Radius - InnerOffset;
-   if SqrRadMinusInner < 0
-    then SqrRadMinusInner := 0
-    else SqrRadMinusInner := Sqr(SqrRadMinusInner);
+   Temp := FixedSub(Radius, InnerOffset);
+   if Temp.Fixed < 0
+    then SqrRadMinusInner.Fixed := 0
+    else SqrRadMinusInner := FixedSqr(Temp);
 
-   RadMinusInnerOne := Radius - InnerOffset + 1;
-   if RadMinusInnerOne < 0 then RadMinusInnerOne := 0;
+   RadMinusInnerOne := FixedAdd(FixedSub(Radius, InnerOffset), CFixed24Dot8One);
+   if RadMinusInnerOne.Fixed < 0
+    then RadMinusInnerOne.Fixed := 0;
 
    {$IFDEF FPC}
    OffsetX := Radius + 0.5;
    {$ELSE}
    case Alignment of
-    taLeftJustify  : OffsetX := Width - Radius - 0.5;
-    taRightJustify : OffsetX := Radius + 0.5;
+    taLeftJustify  : OffsetX := FixedSub(FixedSub(ConvertToFixed24Dot8Point(Width), Radius), CFixed24Dot8Half);
+    taRightJustify : OffsetX := FixedAdd(Radius, CFixed24Dot8Half);
     else raise Exception.Create('Unknown justify');
    end;
    {$ENDIF}
-   OffsetY := 0.5 * (Height - 1);
+   OffsetY := FixedMul(ConvertToFixed24Dot8Point(Height - 1), CFixed24Dot8Half);
 
-   for Y := Round(OffsetY - Radius) to Round(OffsetY + Radius) do
+   for Y := FixedRound(FixedSub(OffsetY, Radius)) to FixedRound(FixedAdd(OffsetY, Radius)) do
     begin
      // calculate squared vertical distance
-     SqrYDist := Sqr(Y - OffsetY);
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), OffsetY));
 
-     XStart := Sqr(Radius) - SqrYDist;
-     if XStart < 0
+     XStart := FixedSub(FixedSqr(Radius), SqrYDist);
+     if XStart.Fixed < 0
       then Continue
-      else XStart := Sqrt(XStart) - 0.4999999;
+      else XStart := FixedSub(FixedSqrt(XStart), ConvertToFixed24Dot8Point(0.4999999));
 
      ScnLne := Scanline[Y];
-     X1 := Round(OffsetX - XStart);
-     X2 := Round(OffsetX + XStart);
+     X1 := FixedRound(FixedSub(OffsetX, XStart));
+     X2 := FixedRound(FixedAdd(OffsetX, XStart));
      while X1 < X2 do
       begin
        // calculate squared distance
-       SqrDist := Sqr(X1 - OffsetX) + SqrYDist;
+       SqrDist := FixedAdd(FixedSqr(FixedSub(ConvertToFixed24Dot8Point(X1), OffsetX)), SqrYDist);
 
-       if SqrDist <= SqrRadMinusBorder then
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
         begin
          if DrawDot then
           begin
-           if (SqrDist <= SqrRadMinusInner) then
+           if (SqrDist.Fixed <= SqrRadMinusInner.Fixed) then
             begin
              CombColor := BlendPixel(DotColor, BackColor);
              if not Enabled then CombColor.A := CombColor.A shr 1;
              BlendPixelLine(CombColor, @ScnLne[X1], X2 - X1 + 1);
-             EMMS;
              Break;
             end else
-           if (SqrDist <= Sqr(RadMinusInnerOne)) then
+           if (SqrDist.Fixed <= FixedSqr(RadMinusInnerOne).Fixed) then
             begin
-             Scale := RadMinusInnerOne - FastSqrtBab2(SqrDist);
+             Scale := FixedSub(RadMinusInnerOne, FixedSqrt(SqrDist));
              CombColor := BlendPixel(DotColor, BackColor);
-             CombColor := CombinePixel(CombColor, BackColor, Round(Scale * $FF));
+             Assert(Scale.Fixed >= 0);
+             Assert(Scale.Fixed < $FF);
+             CombColor := CombinePixel(CombColor, BackColor, Scale.Fixed);
              if not Enabled then CombColor.A := CombColor.A shr 1;
 
              BlendPixelInplace(CombColor, ScnLne[X1]);
              BlendPixelInplace(CombColor, ScnLne[X2]);
-             EMMS;
              Inc(X1);
              Dec(X2);
             end
@@ -666,7 +666,6 @@ begin
              if not Enabled then CombColor.A := CombColor.A shr 1;
              BlendPixelInplace(CombColor, ScnLne[X1]);
              BlendPixelInplace(CombColor, ScnLne[X2]);
-             EMMS;
              Inc(X1);
              Dec(X2);
             end;
@@ -676,31 +675,31 @@ begin
            CombColor := BackColor;
            if not Enabled then CombColor.A := CombColor.A shr 1;
            BlendPixelLine(CombColor, @ScnLne[X1], X2 - X1 + 1);
-           EMMS;
            Break;
           end;
         end
        else
         begin
-         if SqrDist <= Sqr(RadMinusBorderOne) then
+         if SqrDist.Fixed <= FixedSqr(RadMinusBorderOne).Fixed then
           begin
-           Scale := RadMinusBorderOne - FastSqrtBab2(SqrDist);
-           CombColor := CombinePixel(BackColor, BorderColor, Round(Scale * $FF));
+           Scale := FixedSub(RadMinusBorderOne, FixedSqrt(SqrDist));
+           Assert(Scale.Fixed >= 0);
+           Assert(Scale.Fixed < $FF);
+           CombColor := CombinePixel(BackColor, BorderColor, Scale.Fixed);
           end else
-         if SqrDist < SqrRadMinusOne
+         if SqrDist.Fixed < SqrRadMinusOne.Fixed
           then CombColor := BorderColor
           else
            begin
             CombColor := BorderColor;
-            CombAlpha := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+            Scale := FixedSub(Radius, FixedSqrt(SqrDist));
             CombinePixelInplace(BackColor, CombColor, 0);
-            CombColor.A := CombAlpha;
+            CombColor.A := Scale.Fixed;
            end;
 
          if not Enabled then CombColor.A := CombColor.A shr 1;
          BlendPixelInplace(CombColor, ScnLne[X1]);
          BlendPixelInplace(CombColor, ScnLne[X2]);
-         EMMS;
          Inc(X1);
          Dec(X2);
         end;
