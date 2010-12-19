@@ -1,4 +1,4 @@
-unit DAV_GuiRadioButton;
+unit DAV_GuiCheckBox;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -37,15 +37,15 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, StdCtrls, ExtCtrls,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixelCircle,
-  DAV_GuiFixedPoint, DAV_GuiFont, DAV_GuiShadow;
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiFixedPoint,
+  DAV_GuiFont, DAV_GuiShadow;
 
 type
-  TGuiControlsRadioButton = class(TRadioButton)
+  TGuiControlsCheckBox = class(TCheckBox)
   private
     FBuffer            : TGuiCustomPixelMap;
     FBackBuffer        : TGuiCustomPixelMap;
-    FRadioButtonRadius : Integer;
+    FCheckBoxSize      : Integer;
     FCanvas            : TCanvas;
     FUpdateBuffer      : Boolean;
     FUpdateBackBuffer  : Boolean;
@@ -55,9 +55,8 @@ type
     FGuiFont           : TGuiOversampledGDIFont;
     FMouseIsDown       : Boolean;
     FMouseInControl    : Boolean;
-    FFlatChecked       : Boolean;
     FTextChanged       : Boolean;
-    FCircleChanged     : Boolean;
+    FBoxChanged        : Boolean;
     FGroupIndex        : Integer;
     FFocusedColor      : TColor;
     FDownColor         : TColor;
@@ -99,18 +98,17 @@ type
 
     procedure DoEnter; override;
     procedure DoExit; override;
-    function GetChecked: Boolean; override;
-    procedure SetChecked(Value: Boolean); override;
     procedure SetBiDiMode(Value: TBiDiMode); override;
+    procedure SetChecked(Value: Boolean); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure CreateParams(var Params: TCreateParams); override;
 
-    procedure BufferChanged(TextChanged: Boolean = True; CircleChanged: Boolean = True); virtual;
+    procedure BufferChanged(TextChanged: Boolean = True; BoxChanged: Boolean = True); virtual;
     procedure BackBufferChanged; virtual;
-    procedure CalculateRadioButtonRadius; virtual;
+    procedure CalculateCheckBoxRadius; virtual;
     procedure FontChangedHandler(Sender: TObject); virtual;
-    procedure RenderCircle(Buffer: TGuiCustomPixelMap); virtual;
+    procedure RenderBox(Buffer: TGuiCustomPixelMap); virtual;
     procedure RenderText(Buffer: TGuiCustomPixelMap); virtual;
     procedure UpdateBuffer; virtual;
     procedure UpdateBackBuffer; virtual;
@@ -129,12 +127,12 @@ type
     procedure MouseLeave;
   published
     property Transparent: Boolean read FTransparent write SetTransparent default False;
-    property Color default $00E1EAEB;
+    property Color default clBtnFace;
     property ColorFocused: TColor index 0 read FFocusedColor write SetColors default clBtnHighlight;
     property ColorDown: TColor index 1 read FDownColor write SetColors default clBtnHighlight;
     property ColorDot: TColor index 2 read FDotColor write SetColors default clWindowText;
     property ColorBorder: TColor index 3 read FBorderColor write SetColors default clWindowText;
-    property ColorBackground: TColor index 4 read FBackgroundColor write SetColors default clBtnFace;
+    property ColorBackground: TColor index 4 read FBackgroundColor write SetColors default clWindow;
     property Flat: Boolean read FFlat write SetFlat default True;
     property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
     property Shadow: TGUIShadow read GetShadow write SetShadow;
@@ -182,7 +180,7 @@ implementation
 uses
   ActnList, Math, DAV_Common, DAV_Complex, DAV_GuiBlend, DAV_Approximations;
 
-constructor TGuiControlsRadioButton.Create(AOwner: TComponent);
+constructor TGuiControlsCheckBox.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
 
@@ -208,26 +206,25 @@ begin
  FDownColor        := clBtnHighlight;
  FDotColor         := clWindowText;
  FBorderColor      := clWindowText;
- FBackgroundColor  := clBtnShadow;
+ FBackgroundColor  := clWindow;
  FFlat             := True;
- FFlatChecked      := False;
  FGroupIndex       := 0;
  Enabled           := True;
  Visible           := True;
  FTextChanged      := True;
- FCircleChanged    := True;
+ FBoxChanged       := True;
 
- CalculateRadioButtonRadius;
+ CalculateCheckBoxRadius;
 end;
 
-procedure TGuiControlsRadioButton.CreateParams(var Params: TCreateParams);
+procedure TGuiControlsCheckBox.CreateParams(var Params: TCreateParams);
 begin
  inherited;
  if FFlat then
   with Params do Style := (Style and not $1F) or BS_OWNERDRAW;
 end;
 
-destructor TGuiControlsRadioButton.Destroy;
+destructor TGuiControlsCheckBox.Destroy;
 begin
  FreeAndNil(FCanvas);
 
@@ -240,16 +237,16 @@ begin
  inherited;
 end;
 
-procedure TGuiControlsRadioButton.Loaded;
+procedure TGuiControlsCheckBox.Loaded;
 begin
  inherited;
  Resize;
 end;
 
-procedure TGuiControlsRadioButton.Resize;
+procedure TGuiControlsCheckBox.Resize;
 begin
  inherited;
- CalculateRadioButtonRadius;
+ CalculateCheckBoxRadius;
 
  // resize and update back buffer
  if Assigned(FBackBuffer) then
@@ -266,30 +263,30 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.CalculateRadioButtonRadius;
+procedure TGuiControlsCheckBox.CalculateCheckBoxRadius;
 begin
- FRadioButtonRadius := Round(Abs(Font.Height * Font.PixelsPerInch / 144));
- if 2 * FRadioButtonRadius > Height - 2
-  then FRadioButtonRadius := Round(0.5 * (Height - 2));
- if 2 * FRadioButtonRadius > Width - 2
-  then FRadioButtonRadius := Round(0.5 * (Width - 2));
+ FCheckBoxSize := Round(Abs(Font.Height * Font.PixelsPerInch / 72));
+ if FCheckBoxSize > Height - 2
+  then FCheckBoxSize := Height - 2;
+ if FCheckBoxSize > Width - 2
+  then FCheckBoxSize := Width - 2;
 end;
 
-procedure TGuiControlsRadioButton.BackBufferChanged;
+procedure TGuiControlsCheckBox.BackBufferChanged;
 begin
  FUpdateBackBuffer := True;
  Invalidate;
 end;
 
-procedure TGuiControlsRadioButton.BufferChanged(TextChanged: Boolean = True; CircleChanged: Boolean = True);
+procedure TGuiControlsCheckBox.BufferChanged(TextChanged: Boolean = True; BoxChanged: Boolean = True);
 begin
  if TextChanged then FTextChanged := True;
- if CircleChanged then FCircleChanged := True;
+ if BoxChanged then FBoxChanged := True;
  FUpdateBuffer := True;
  Invalidate;
 end;
 
-procedure TGuiControlsRadioButton.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+procedure TGuiControlsCheckBox.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
 
@@ -297,19 +294,19 @@ begin
   then BackBufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.CMMouseEnter(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+procedure TGuiControlsCheckBox.CMMouseEnter(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
  MouseEnter;
 end;
 
-procedure TGuiControlsRadioButton.CMMouseLeave(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+procedure TGuiControlsCheckBox.CMMouseLeave(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
  MouseLeave;
 end;
 
-procedure TGuiControlsRadioButton.CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+procedure TGuiControlsCheckBox.CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
 
@@ -319,12 +316,12 @@ begin
  BufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+procedure TGuiControlsCheckBox.CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FGuiFont.Font.Assign(Font);
 end;
 
-procedure TGuiControlsRadioButton.CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF});
+procedure TGuiControlsCheckBox.CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF});
 begin
  inherited;
 
@@ -332,7 +329,7 @@ begin
    then BufferChanged(True, False);
 end;
 
-procedure TGuiControlsRadioButton.MouseEnter;
+procedure TGuiControlsCheckBox.MouseEnter;
 begin
  if Enabled and not FMouseInControl then
   begin
@@ -341,7 +338,7 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.MouseLeave;
+procedure TGuiControlsCheckBox.MouseLeave;
 begin
  if Enabled and FMouseInControl and not FMouseIsDown then
   begin
@@ -350,7 +347,7 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.WMSetFocus(var Message: {$IFDEF FPC}TLMSetFocus{$ELSE}TWMSetFocus{$ENDIF});
+procedure TGuiControlsCheckBox.WMSetFocus(var Message: {$IFDEF FPC}TLMSetFocus{$ELSE}TWMSetFocus{$ENDIF});
 begin
  inherited;
 
@@ -358,9 +355,9 @@ begin
 end;
 
 {$IFDEF FPC}
-procedure TGuiControlsRadioButton.WMKillFocus(var Message: TLMKillFocus);
+procedure TGuiControlsCheckBox.WMKillFocus(var Message: TLMKillFocus);
 {$ELSE}
-procedure TGuiControlsRadioButton.WMKillFocus(var Message: TWMKillFocus);
+procedure TGuiControlsCheckBox.WMKillFocus(var Message: TWMKillFocus);
 {$ENDIF}
 begin
  inherited;
@@ -372,7 +369,7 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.CMParentColorChanged(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF});
+procedure TGuiControlsCheckBox.CMParentColorChanged(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF});
 begin
  inherited;
 
@@ -380,7 +377,7 @@ begin
   then BackBufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.DoEnter;
+procedure TGuiControlsCheckBox.DoEnter;
 begin
  inherited DoEnter;
 
@@ -390,7 +387,7 @@ begin
  BufferChanged(False);
 end;
 
-procedure TGuiControlsRadioButton.DoExit;
+procedure TGuiControlsCheckBox.DoExit;
 begin
  inherited DoExit;
 
@@ -398,7 +395,7 @@ begin
  BufferChanged(False);
 end;
 
-procedure TGuiControlsRadioButton.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TGuiControlsCheckBox.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
  if (Button = mbLeft) and Enabled then
   begin
@@ -409,19 +406,17 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TGuiControlsCheckBox.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
  if (Button = mbLeft) and Enabled then
   begin
-   FMouseIsDown := false;
-   if (X >= 0) and (X <= Width) and (Y >= 0) and (Y <= Height) and not Checked
-    then Checked := True;
+   FMouseIsDown := False;
    inherited MouseUp(Button, Shift, X, Y);
    BufferChanged(False);
   end;
 end;
 
-procedure TGuiControlsRadioButton.Paint;
+procedure TGuiControlsCheckBox.Paint;
 begin
  inherited;
 
@@ -438,7 +433,7 @@ begin
   then FBuffer.PaintTo(Canvas);
 end;
 
-procedure TGuiControlsRadioButton.PaintWindow(DC: HDC);
+procedure TGuiControlsCheckBox.PaintWindow(DC: HDC);
 begin
  FCanvas.Lock;
  try
@@ -457,7 +452,7 @@ begin
 end;
 
 (*
-procedure TGuiControlsRadioButton.DrawRadio;
+procedure TGuiControlsCheckBox.DrawRadio;
 begin
  if Focused or FMouseInControl then
   if not FMouseIsDown then
@@ -502,23 +497,16 @@ begin
 end;
 *)
 
-procedure TGuiControlsRadioButton.FontChangedHandler(Sender: TObject);
+procedure TGuiControlsCheckBox.FontChangedHandler(Sender: TObject);
 begin
- CalculateRadioButtonRadius;
+ CalculateCheckBoxRadius;
  BufferChanged;
 end;
 
-function TGuiControlsRadioButton.GetChecked: Boolean;
-begin
- if FFlat
-  then Result := FFlatChecked
-  else Result := inherited GetChecked;
-end;
-
 {$IFDEF FPC}
-procedure TGuiControlsRadioButton.WMSize(var Message: TLMSize);
+procedure TGuiControlsCheckBox.WMSize(var Message: TLMSize);
 {$ELSE}
-procedure TGuiControlsRadioButton.WMSize(var Message: TWMSize);
+procedure TGuiControlsCheckBox.WMSize(var Message: TWMSize);
 {$ENDIF}
 begin
  inherited;
@@ -527,7 +515,7 @@ begin
   then BackBufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF});
+procedure TGuiControlsCheckBox.WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF});
 begin
  inherited;
 
@@ -535,38 +523,31 @@ begin
   then BackBufferChanged;
 end;
 
-procedure TGuiControlsRadioButton.WMPaint(var Message: {$IFDEF FPC}TLMPaint{$ELSE}TWMPaint{$ENDIF});
+procedure TGuiControlsCheckBox.WMPaint(var Message: {$IFDEF FPC}TLMPaint{$ELSE}TWMPaint{$ENDIF});
 begin
  ControlState := ControlState + [csCustomPaint];
  inherited;
  ControlState := ControlState - [csCustomPaint];
 end;
 
-procedure TGuiControlsRadioButton.RenderCircle(Buffer: TGuiCustomPixelMap);
+procedure TGuiControlsCheckBox.RenderBox(Buffer: TGuiCustomPixelMap);
 var
-  Y, X1, X2         : Integer;
-  ScnLne            : PPixel32Array;
+  YOffset, X, Y     : Integer;
+  ScnLne            : array [0..1] of PPixel32Array;
   CombColor         : TPixel32;
   BorderColor       : TPixel32;
   DotColor          : TPixel32;
   BackColor         : TPixel32;
   DrawDot           : Boolean;
-  Radius            : TFixed24Dot8Point;
-  InnerOffset       : TFixed24Dot8Point;
-  BorderWidth       : TFixed24Dot8Point;
-  XStart            : TFixed24Dot8Point;
-  Scale             : TFixed24Dot8Point;
-  OffsetX           : TFixed24Dot8Point;
-  OffsetY           : TFixed24Dot8Point;
-  SqrYDist          : TFixed24Dot8Point;
-  SqrDist           : TFixed24Dot8Point;
-  SqrRadMinusOne    : TFixed24Dot8Point;
-  SqrRadMinusBorder : TFixed24Dot8Point;
-  RadMinusBorderOne : TFixed24Dot8Point;
-  SqrRadMinusInner  : TFixed24Dot8Point;
-  RadMinusInnerOne  : TFixed24Dot8Point;
-  Temp              : TFixed24Dot8Point;
-  CombAlpha         : Integer;
+  DotRect           : TRect;
+  Radius            : Single;
+  XStart            : Single;
+  BorderWidth       : Single;
+  SqrRadMinusBorder : Single;
+  RadMinusBorderOne : Single;
+  SqrDist, SqrYDist : Single;
+  SqrRadMinusOne    : Single;
+  Temp              : Single;
 begin
  with Buffer do
   begin
@@ -585,141 +566,132 @@ begin
     then BackColor := ConvertColor(FFocusedColor)
     else BackColor := ConvertColor(FBackgroundColor);
 
-   BorderWidth := ConvertToFixed24Dot8Point(Max(2.5, 1 + 0.15 * FRadioButtonRadius));
+   Radius := 4;
+   BorderWidth := Max(1.5, 0.5 + 0.1 * FCheckBoxSize);
+   YOffset := (Height - FCheckBoxSize) div 2;
 
-   // draw circle
-   Radius := ConvertToFixed24Dot8Point(FRadioButtonRadius);
-   if Radius.Fixed <= 0 then Exit;
+   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
+   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
+   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
 
-   InnerOffset := FixedAdd(BorderWidth, BorderWidth);
-
-   Temp := FixedSub(Radius, CFixed24Dot8One);
-   if Temp.Fixed < 0
-    then SqrRadMinusOne.Fixed := 0
-    else SqrRadMinusOne := FixedSqr(Temp);
-
-   Temp := FixedSub(Radius, BorderWidth);
-   if Temp.Fixed < 0
-    then SqrRadMinusBorder.Fixed := 0
-    else SqrRadMinusBorder := FixedSqr(Temp);
-
-   Temp := FixedAdd(Radius, CFixed24Dot8One);
-   RadMinusBorderOne := FixedSub(Temp, BorderWidth);
-   if RadMinusBorderOne.Fixed < 0
-    then RadMinusBorderOne.Fixed := 0;
-
-   Temp := FixedSub(Radius, InnerOffset);
-   if Temp.Fixed < 0
-    then SqrRadMinusInner.Fixed := 0
-    else SqrRadMinusInner := FixedSqr(Temp);
-
-   RadMinusInnerOne := FixedAdd(FixedSub(Radius, InnerOffset), CFixed24Dot8One);
-   if RadMinusInnerOne.Fixed < 0
-    then RadMinusInnerOne.Fixed := 0;
-
-   {$IFDEF FPC}
-   OffsetX := Radius + 0.5;
-   {$ELSE}
-   case Alignment of
-    taLeftJustify  : OffsetX := FixedSub(FixedSub(ConvertToFixed24Dot8Point(Width), Radius), CFixed24Dot8Half);
-    taRightJustify : OffsetX := FixedAdd(Radius, CFixed24Dot8Half);
-    else raise Exception.Create('Unknown justify');
-   end;
-   {$ENDIF}
-   OffsetY := FixedMul(ConvertToFixed24Dot8Point(Height - 1), CFixed24Dot8Half);
-
-   for Y := FixedRound(FixedSub(OffsetY, Radius)) to FixedRound(FixedAdd(OffsetY, Radius)) do
+   for Y := 0 to Round(Radius) - 1  do
     begin
-     // calculate squared vertical distance
-     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), OffsetY));
-
-     XStart := FixedSub(FixedSqr(Radius), SqrYDist);
-     if XStart.Fixed < 0
+     SqrYDist := Sqr(Y - (Radius - 1));
+     XStart := Sqr(Radius) - SqrYDist;
+     if XStart <= 0
       then Continue
-      else XStart := FixedSub(FixedSqrt(XStart), ConvertToFixed24Dot8Point(0.4999999));
+      else XStart := Sqrt(XStart) - 0.5;
+     ScnLne[0] := Scanline[Y + YOffset];
+     ScnLne[1] := Scanline[FCheckBoxSize - 1 - Y + YOffset];
 
-     ScnLne := Scanline[Y];
-     X1 := FixedRound(FixedSub(OffsetX, XStart));
-     X2 := FixedRound(FixedAdd(OffsetX, XStart));
-     while X1 < X2 do
+     for X := Round((Radius - 1) - XStart) to Round((FCheckBoxSize - 1) - (Radius - 1) + XStart) do
       begin
        // calculate squared distance
-       SqrDist := FixedAdd(FixedSqr(FixedSub(ConvertToFixed24Dot8Point(X1), OffsetX)), SqrYDist);
+       if X < (Radius - 1)
+        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
 
-       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
+       if X > (FCheckBoxSize - 1) - (Radius - 1)
+        then SqrDist := Sqr(X - (FCheckBoxSize - 1) + (Radius - 1)) + SqrYDist
+        else SqrDist := SqrYDist;
+
+       if SqrDist < SqrRadMinusBorder
+        then CombColor := BackColor
+        else
+       if SqrDist <= Sqr(RadMinusBorderOne) then
         begin
-         if DrawDot then
-          begin
-           if (SqrDist.Fixed <= SqrRadMinusInner.Fixed) then
-            begin
-             CombColor := BlendPixel(DotColor, BackColor);
-             if not Enabled then CombColor.A := CombColor.A shr 1;
-             BlendPixelLine(CombColor, @ScnLne[X1], X2 - X1 + 1);
-             Break;
-            end else
-           if (SqrDist.Fixed <= FixedSqr(RadMinusInnerOne).Fixed) then
-            begin
-             Scale := FixedSub(RadMinusInnerOne, FixedSqrt(SqrDist));
-             CombColor := BlendPixel(DotColor, BackColor);
-             Assert(Scale.Fixed >= 0);
-             Assert(Scale.Fixed < $FF);
-             CombColor := CombinePixel(CombColor, BackColor, Scale.Fixed);
-             if not Enabled then CombColor.A := CombColor.A shr 1;
+         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+         CombColor := CombinePixel(BorderColor, BackColor, Round($FF - Temp * $FF));
+        end else
+       if SqrDist < SqrRadMinusOne
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+         end;
 
-             BlendPixelInplace(CombColor, ScnLne[X1]);
-             BlendPixelInplace(CombColor, ScnLne[X2]);
-             Inc(X1);
-             Dec(X2);
-            end
-           else
-            begin
-             CombColor := BackColor;
-             if not Enabled then CombColor.A := CombColor.A shr 1;
-             BlendPixelInplace(CombColor, ScnLne[X1]);
-             BlendPixelInplace(CombColor, ScnLne[X2]);
-             Inc(X1);
-             Dec(X2);
-            end;
-          end
-         else
-          begin
-           CombColor := BackColor;
-           if not Enabled then CombColor.A := CombColor.A shr 1;
-           BlendPixelLine(CombColor, @ScnLne[X1], X2 - X1 + 1);
-           Break;
-          end;
-        end
-       else
-        begin
-         if SqrDist.Fixed <= FixedSqr(RadMinusBorderOne).Fixed then
-          begin
-           Scale := FixedSub(RadMinusBorderOne, FixedSqrt(SqrDist));
-           Assert(Scale.Fixed >= 0);
-           Assert(Scale.Fixed < $FF);
-           CombColor := CombinePixel(BackColor, BorderColor, Scale.Fixed);
-          end else
-         if SqrDist.Fixed < SqrRadMinusOne.Fixed
-          then CombColor := BorderColor
-          else
-           begin
-            CombColor := BorderColor;
-            Scale := FixedSub(Radius, FixedSqrt(SqrDist));
-            CombinePixelInplace(BackColor, CombColor, 0);
-            CombColor.A := Scale.Fixed;
-           end;
-
-         if not Enabled then CombColor.A := CombColor.A shr 1;
-         BlendPixelInplace(CombColor, ScnLne[X1]);
-         BlendPixelInplace(CombColor, ScnLne[X2]);
-         Inc(X1);
-         Dec(X2);
-        end;
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       BlendPixelInplace(CombColor, ScnLne[1][X]);
+       EMMS;
       end;
     end;
+
+   for Y := Round(Radius) to FCheckBoxSize - 1 - Round(Radius) do
+    begin
+     ScnLne[0] := Scanline[Y + YOffset];
+     for X := 0 to FCheckBoxSize - 1 do
+      begin
+       // check whether position is a border
+       if (Y < BorderWidth - 1) or (Y > FCheckBoxSize - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
+
+       // check whether position is an upper half border
+       if (Y < BorderWidth) then
+        begin
+         Temp := BorderWidth - Y;
+         if (X < BorderWidth - 1) or (X > FCheckBoxSize - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+          end else
+         if (X > FCheckBoxSize - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - FCheckBoxSize + 1 + BorderWidth) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+          end
+         else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end else
+
+       // check whether position is a lower half border
+       if (Y > FCheckBoxSize - 1 - BorderWidth) then
+        begin
+         Temp := Y - (FCheckBoxSize - 1 - BorderWidth);
+         if (X < BorderWidth - 1) or (X > FCheckBoxSize - 1 - BorderWidth + 1)
+          then CombColor := BorderColor else
+         if (X < BorderWidth) then
+          begin
+           Temp := Temp + (BorderWidth - X) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+          end else
+         if (X > FCheckBoxSize - 1 - BorderWidth) then
+          begin
+           Temp := Temp + (X - FCheckBoxSize + 1 + BorderWidth) * (1 - Temp);
+           CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+          end
+         else CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end else
+
+       if (X < BorderWidth - 1) or (X > FCheckBoxSize - 1 - BorderWidth + 1)
+        then CombColor := BorderColor else
+       if (X < BorderWidth) then
+        begin
+         Temp := BorderWidth - X;
+         CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end else
+       if (X > FCheckBoxSize - 1 - BorderWidth) then
+        begin
+         Temp := X - (FCheckBoxSize - 1 - BorderWidth);
+         CombColor := CombinePixel(BorderColor, BackColor, Round(Temp * $FF));
+        end
+       else CombColor := BackColor;
+
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       EMMS;
+      end;
+    end;
+
+   if Checked then
+    begin
+     DotRect := Rect(4, YOffset + 4, FCheckBoxSize - 4, YOffset + FCheckBoxSize - 4);
+     FillRect(DotRect, DotColor);
+    end;
+
   end;
 end;
 
-procedure TGuiControlsRadioButton.RenderText(Buffer: TGuiCustomPixelMap);
+procedure TGuiControlsCheckBox.RenderText(Buffer: TGuiCustomPixelMap);
 var
   TextSize    : TSize;
   OldAlpha    : Byte;
@@ -728,11 +700,11 @@ begin
   begin
    TextSize := FGuiFont.TextExtend(Caption);
    {$IFDEF FPC}
-   TextSize.cx := 2 * FRadioButtonRadius + 3;
+   TextSize.cx := FCheckBoxSize + 3;
    {$ELSE}
    case Alignment of
-    taLeftJustify  : TextSize.cx := Width - TextSize.cx - 2 * FRadioButtonRadius - 3;
-    taRightJustify : TextSize.cx := 2 * FRadioButtonRadius + 3;
+    taLeftJustify  : TextSize.cx := Width - TextSize.cx - FCheckBoxSize - 3;
+    taRightJustify : TextSize.cx := FCheckBoxSize + 3;
    end;
    {$ENDIF}
    TextSize.cy := (Height - TextSize.cy) div 2;
@@ -747,7 +719,7 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.SetColors(Index: Integer; Value: TColor);
+procedure TGuiControlsCheckBox.SetColors(Index: Integer; Value: TColor);
 begin
  case Index of
   0: FFocusedColor    := Value;
@@ -759,7 +731,7 @@ begin
  BufferChanged(False);
 end;
 
-procedure TGuiControlsRadioButton.SetFlat(const Value: Boolean);
+procedure TGuiControlsCheckBox.SetFlat(const Value: Boolean);
 var
   OldMouseInControl : Boolean;
 begin
@@ -776,18 +748,18 @@ begin
   end;
 end;
 
-procedure TGuiControlsRadioButton.SetOversampling(
+procedure TGuiControlsCheckBox.SetOversampling(
   const Value: TFontOversampling);
 begin
  FGuiFont.FontOversampling := Value;
 end;
 
-procedure TGuiControlsRadioButton.SetShadow(const Value: TGUIShadow);
+procedure TGuiControlsCheckBox.SetShadow(const Value: TGUIShadow);
 begin
  FGuiFont.Shadow.Assign(Value);
 end;
 
-procedure TGuiControlsRadioButton.SetBiDiMode(Value: TBiDiMode);
+procedure TGuiControlsCheckBox.SetBiDiMode(Value: TBiDiMode);
 begin
  inherited;
 
@@ -798,73 +770,32 @@ begin
  {$ENDIF}
 end;
 
-procedure TGuiControlsRadioButton.SetChecked(Value: Boolean);
-
-  procedure TurnSiblingsOff;
-  var
-    I: Integer;
-    Sibling: TControl;
-  begin
-   if Parent <> nil then
-    with Parent do
-     for I := 0 to ControlCount - 1 do
-      begin
-       Sibling := Controls[I];
-       if (Sibling <> Self) and (Sibling is TGuiControlsRadioButton) then
-        with TGuiControlsRadioButton(Sibling) do
-         if GroupIndex = Self.GroupIndex then
-          begin
-           if Assigned(Action) and (Action is TCustomAction) and TCustomAction(Action).AutoCheck
-            then TCustomAction(Action).Checked := False;
-           SetChecked(False);
-          end;
-      end;
-  end;
-
+procedure TGuiControlsCheckBox.SetChecked(Value: Boolean);
 begin
- if not FFlat then
-  begin
-   inherited SetChecked(Value);
-   Invalidate;
-  end else
- if FFlatChecked <> Value then
-  begin
-   FFlatChecked := Value;
-   TabStop := Value;
-   {$IFNDEF FPC}
-   if HandleAllocated
-    then SendMessage(Handle, BM_SETCHECK, Integer(Checked), 0);
-   {$ENDIF}
+ inherited SetChecked(Value);
 
-   if Value then
-    begin
-     TurnSiblingsOff;
-     inherited Changed;
-     if not ClicksDisabled then Click;
-    end;
-   FCircleChanged := True;
-   BufferChanged(False);
-  end;
+ if not FFlat
+  then BufferChanged(False);
 end;
 
-procedure TGuiControlsRadioButton.SetTransparent(const Value: Boolean);
+procedure TGuiControlsCheckBox.SetTransparent(const Value: Boolean);
 begin
  FTransparent := Value;
  if not (csLoading in ComponentState)
   then Invalidate;
 end;
 
-function TGuiControlsRadioButton.GetOversampling: TFontOversampling;
+function TGuiControlsCheckBox.GetOversampling: TFontOversampling;
 begin
  Result := FGuiFont.FontOversampling;
 end;
 
-function TGuiControlsRadioButton.GetShadow: TGUIShadow;
+function TGuiControlsCheckBox.GetShadow: TGUIShadow;
 begin
  Result := FGuiFont.Shadow;
 end;
 
-procedure TGuiControlsRadioButton.UpdateBackBuffer;
+procedure TGuiControlsCheckBox.UpdateBackBuffer;
 var
   PixelColor32 : TPixel32;
 begin
@@ -881,7 +812,7 @@ begin
  FUpdateBuffer := True;
 end;
 
-procedure TGuiControlsRadioButton.UpdateBuffer;
+procedure TGuiControlsCheckBox.UpdateBuffer;
 var
   y       : Integer;
   SrcPtr  : PPixel32Array;
@@ -897,37 +828,37 @@ begin
 
  Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
 
- if FCircleChanged and FTextChanged then
+ if FBoxChanged and FTextChanged then
   begin
-   FCircleChanged := False;
+   FBoxChanged := False;
    FTextChanged := False;
 
    // copy entire back buffer to buffer
    Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
      FBuffer.Width * SizeOf(TPixel32));
 
-   RenderCircle(FBuffer);
+   RenderBox(FBuffer);
    RenderText(FBuffer);
    Exit;
   end;
 
- // check whether only the circle changed;
- if FCircleChanged then
+ // check whether only the box changed;
+ if FBoxChanged then
   begin
-   FCircleChanged := False;
+   FBoxChanged := False;
 
-   // copy circle part of the back buffer to buffer
+   // copy box part of the back buffer to buffer
    SrcPtr := FBackBuffer.DataPointer;
    DestPtr := FBuffer.DataPointer;
    for y := 0 to FBuffer.Height - 1 do
     begin
-     Move(SrcPtr^, DestPtr^, (2 * FRadioButtonRadius + 1) * SizeOf(TPixel32));
+     Move(SrcPtr^, DestPtr^, (FCheckBoxSize + 1) * SizeOf(TPixel32));
      SrcPtr := @SrcPtr^[FBuffer.Width];
      DestPtr := @DestPtr^[FBuffer.Width];
     end;
 
-   // actually render circle
-   RenderCircle(FBuffer);
+   // actually render box
+   RenderBox(FBuffer);
    Exit;
   end;
 
@@ -937,11 +868,11 @@ begin
    FTextChanged := False;
 
    // copy text part of the back buffer to buffer
-   SrcPtr := @FBackBuffer.DataPointer[(2 * FRadioButtonRadius + 1)];
-   DestPtr := @FBuffer.DataPointer[(2 * FRadioButtonRadius + 1)];
+   SrcPtr := @FBackBuffer.DataPointer[(FCheckBoxSize + 1)];
+   DestPtr := @FBuffer.DataPointer[(FCheckBoxSize + 1)];
    for y := 0 to FBuffer.Height - 1 do
     begin
-     Move(SrcPtr^, DestPtr^, (FBuffer.Width - (2 * FRadioButtonRadius + 1)) * SizeOf(TPixel32));
+     Move(SrcPtr^, DestPtr^, (FBuffer.Width - (FCheckBoxSize + 1)) * SizeOf(TPixel32));
      SrcPtr := @SrcPtr^[FBuffer.Width];
      DestPtr := @DestPtr^[FBuffer.Width];
     end;
