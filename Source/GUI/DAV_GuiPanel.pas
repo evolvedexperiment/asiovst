@@ -353,9 +353,6 @@ var
   SqrDist, SqrYDist : Single;
   SqrRadMinusOne    : Single;
   Temp              : Single;
-
-const
-  CBlack : TPixel32 = (ARGB : $FF000000);
 begin
  with PixelMap do
   begin
