@@ -1,4 +1,4 @@
-unit LightweightMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -367,7 +367,7 @@ begin
   0 : OnProcess := VSTModuleProcessMono;
   1 : OnProcess := VSTModuleProcessMonoSoftClip;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 function TLightweightMultibandCompressorDataModule.GetAutoGain(

@@ -112,7 +112,7 @@ begin
     do OnProcess := VSTModuleProcessLR;
   end;
  with TPluginDataModule(Owner)
-  do OnProcessReplacing := OnProcess;
+  do OnProcess32Replacing := OnProcess;
 end;
 
 procedure TEditorForm.LbRSClick(Sender: TObject);
@@ -132,7 +132,7 @@ begin
     do OnProcess := VSTModuleProcessLR;
   end;
  with TPluginDataModule(Owner)
-  do OnProcessReplacing := OnProcess;
+  do OnProcess32Replacing := OnProcess;
 end;
 
 procedure TEditorForm.SBChange(Sender: TObject);

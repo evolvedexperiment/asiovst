@@ -261,8 +261,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Max = 24.000000000000000000
     Min = -6.000000000000000000
     OnChange = DialInputChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialOutput: TGuiStitchedDial
@@ -274,8 +274,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Max = 6.000000000000000000
     Min = -24.000000000000000000
     OnChange = DialOutputChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = -0.009999999776482582
     WheelStep = 1.000000000000000000
   end
@@ -288,8 +288,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Max = 3000.000000000000000000
     Min = 0.003000000026077032
     OnChange = DialReleaseChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
   end

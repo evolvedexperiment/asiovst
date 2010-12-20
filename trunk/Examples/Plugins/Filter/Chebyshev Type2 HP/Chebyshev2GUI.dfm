@@ -170,8 +170,8 @@ object FmChebyshev2: TFmChebyshev2
       Min = 20.000000000000000000
       OnChange = DialFrequencyChange
       ParentColor = False
-      StitchedImageIndex = 0
-      StitchedImageList = GSPL
+      ImageIndex = 0
+      ImageList = GSPL
       Value = 1000.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -186,8 +186,8 @@ object FmChebyshev2: TFmChebyshev2
       Min = -100.000000000000000000
       OnChange = DialStopbandChange
       ParentColor = False
-      StitchedImageIndex = 0
-      StitchedImageList = GSPL
+      ImageIndex = 0
+      ImageList = GSPL
       Value = -24.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -200,8 +200,8 @@ object FmChebyshev2: TFmChebyshev2
       Max = 16.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageIndex = 0
-      StitchedImageList = GSPL
+      ImageIndex = 0
+      ImageList = GSPL
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
     end

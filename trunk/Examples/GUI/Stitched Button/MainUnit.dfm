@@ -19,8 +19,8 @@ object FmStitchedButtonTest: TFmStitchedButtonTest
     Width = 100
     Height = 50
     AutoSize = True
-    StitchedImageList = GuiStitchedPNGList
-    StitchedImageIndex = 0
+    ImageList = GuiStitchedPNGList
+    ImageIndex = 0
     OnClick = StitchedButtonAClick
   end
   object StitchedButtonB: TGuiStitchedButton
@@ -29,8 +29,8 @@ object FmStitchedButtonTest: TFmStitchedButtonTest
     Width = 100
     Height = 50
     AutoSize = True
-    StitchedImageList = GuiStitchedPNGList
-    StitchedImageIndex = 0
+    ImageList = GuiStitchedPNGList
+    ImageIndex = 0
     OnClick = StitchedButtonBClick
   end
   object GuiStitchedPNGList: TGuiStitchedPNGList

@@ -125,8 +125,8 @@ object FmSchaebichef: TFmSchaebichef
     Max = 16.000000000000000000
     OnChange = DialOrderChange
     ParentColor = False
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     WheelStep = 1.000000000000000000
   end
   object DialRipple: TGuiStitchedDial
@@ -140,8 +140,8 @@ object FmSchaebichef: TFmSchaebichef
     Min = 0.001000000047497451
     OnChange = DialRippleChange
     ParentColor = False
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 0.001000000047497451
     WheelStep = 1.000000000000000000
   end
@@ -156,8 +156,8 @@ object FmSchaebichef: TFmSchaebichef
     Min = 20.000000000000000000
     OnChange = DialFrequencyChange
     ParentColor = False
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end

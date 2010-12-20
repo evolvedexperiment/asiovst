@@ -87,8 +87,8 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       Max = 10.000000000000000000
       Min = 0.009999999776482582
       OnChange = DialFrequencyChange
-      StitchedImageList = DSPL
-      StitchedImageIndex = 0
+      ImageList = DSPL
+      ImageIndex = 0
       Value = 0.009999999776482582
       WheelStep = 1.000000000000000000
     end
@@ -160,8 +160,8 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialMixChange
-      StitchedImageList = DSPL
-      StitchedImageIndex = 0
+      ImageList = DSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

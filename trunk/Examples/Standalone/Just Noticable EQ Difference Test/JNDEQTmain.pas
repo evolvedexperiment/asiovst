@@ -40,7 +40,7 @@ uses
   ExtCtrls, DAV_Types, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSlider,
   DAV_AsioHost, DAV_GuiMediaButton, DAV_DspPinkNoiseGenerator, DAV_DspFilter,
   DAV_DspFilterBasics, DAV_DspBufferedMp3Player, DAV_GuiGroup,
-  DAV_GuiPanel, DAV_GuiLED, DAV_GuiButton;
+  DAV_GuiPanel, DAV_GuiLED, DAV_GuiButton, DAV_GuiGraphicControl;
 
 type
   TXAssignment = (xaXisA = 1, xaXisB = 2);
@@ -256,8 +256,8 @@ begin
    DeleteFile(ExtractFilePath(ParamStr(0)) + 'Temp.log');
   end;
 
- FFrequency := SliderFrequency.Position;
- FBandwidth := SliderBandwidth.Position;
+ FFrequency := SliderFrequency.Value;
+ FBandwidth := SliderBandwidth.Value;
  FOutputChannelOffset := 0;
  FVolumeFactor := 1;
  FCurrentIndex := 0;
@@ -317,12 +317,12 @@ begin
    LastAudioFile := ReadString('Test', 'File', '');
    LoadFromFile(LastAudioFile);
    PeakRelease := ReadFloat('Test', 'Peak Release Time', 5);
-   SliderVolume.Position := ReadFloat('Test', 'Volume', -3);
-   SliderGain.Position := ReadFloat('Test', 'Gain', SliderGain.Position);
+   SliderVolume.Value := ReadFloat('Test', 'Volume', -3);
+   SliderGain.Value := ReadFloat('Test', 'Gain', SliderGain.Value);
    FFrequency := ReadFloat('Test', 'Frequency', FFrequency);
    FBandwidth := ReadFloat('Test', 'Bandwidth', FBandwidth);
-   SliderFrequency.Position := FFrequency;
-   SliderBandwidth.Position := FBandwidth;
+   SliderFrequency.Value := FFrequency;
+   SliderBandwidth.Value := FBandwidth;
    MiLatchButtons.Checked := ReadBool('Settings', 'Latch Buttons', MiLatchButtons.Checked);
   finally
    Free;
@@ -334,11 +334,11 @@ begin
  // inifile
  with TIniFile.Create(FmJNDEQT.IniFile) do
   try
-   WriteFloat('Test', 'Volume', SliderVolume.Position);
+   WriteFloat('Test', 'Volume', SliderVolume.Value);
    WriteFloat('Test', 'Peak Release Time', PeakRelease);
-   WriteFloat('Test', 'Gain', SliderGain.Position);
-   WriteFloat('Test', 'Frequency', SliderFrequency.Position);
-   WriteFloat('Test', 'Bandwidth', SliderBandwidth.Position);
+   WriteFloat('Test', 'Gain', SliderGain.Value);
+   WriteFloat('Test', 'Frequency', SliderFrequency.Value);
+   WriteFloat('Test', 'Bandwidth', SliderBandwidth.Value);
    WriteString('Test', 'File', FBufferedPlayer.Filename);
    WriteBool('Settings', 'Latch Buttons', MiLatchButtons.Checked);
   finally
@@ -557,11 +557,11 @@ procedure TFmJNDEQT.UpdateSelection;
 begin
  case FSelection of
   sX : begin
-        SliderGain.Position := 0;
+        SliderGain.Value := 0;
         LbGainValue.Caption := '???';
        end;
-  sA : SliderGain.Position := -0.5 * FCurrentGainDelta;
-  sB : SliderGain.Position := +0.5 * FCurrentGainDelta;
+  sA : SliderGain.Value := -0.5 * FCurrentGainDelta;
+  sB : SliderGain.Value := +0.5 * FCurrentGainDelta;
   else raise Exception.Create('Wrong tag!');
  end;
 end;
@@ -630,9 +630,9 @@ end;
 procedure TFmJNDEQT.MiTestFullGainReferenceClick(Sender: TObject);
 begin
  SliderGain.Enabled := False;
- SliderFrequency.Position := 1000;
+ SliderFrequency.Value := 1000;
  SliderFrequency.Enabled := False;
- SliderBandwidth.Position := 1;
+ SliderBandwidth.Value := 1;
  SliderBandwidth.Enabled := False;
  FTrialCount := 20;
  FEncryptLogFile := True;
@@ -747,7 +747,7 @@ begin
  Result := 0;
  
  // log on
- dwRet := MapiLogon(Handle, PChar(''), PChar(''), MAPI_LOGON_UI or
+ dwRet := MapiLogon(Handle, PAnsiChar(''), PAnsiChar(''), MAPI_LOGON_UI or
    MAPI_NEW_SESSION, 0, @MAPI_Session);
 
  if (dwRet <> SUCCESS_SUCCESS)
@@ -763,8 +763,8 @@ begin
      begin
       Receip.ulReserved := 0;
       Receip.ulRecipClass := MAPI_TO;
-      Receip.lpszName := StrNew(PChar(Mail.Values['to']));
-      Receip.lpszAddress := StrNew(PChar('SMTP:' + Mail.Values['to']));
+      Receip.lpszName := StrNew(PAnsiChar(Mail.Values['to']));
+      Receip.lpszAddress := StrNew(PAnsiChar('SMTP:' + Mail.Values['to']));
       Receip.ulEIDSize := 0;
       MapiMessage.nRecipCount := 1;
       MapiMessage.lpRecips := @Receip;
@@ -789,9 +789,9 @@ begin
         Attachments[i1].ulReserved := 0;
         Attachments[i1].flFlags := 0;
         Attachments[i1].nPosition := ULONG($FFFFFFFF);
-        Attachments[i1].lpszPathName := StrNew(PChar(FileName));
+        Attachments[i1].lpszPathName := StrNew(PAnsiChar(FileName));
         Attachments[i1].lpszFileName :=
-          StrNew(PChar(ExtractFileName(FileName)));
+          StrNew(PAnsiChar(ExtractFileName(FileName)));
         Attachments[i1].lpFileType := nil;
        end;
       MapiMessage.nFileCount := AttachCount;
@@ -799,15 +799,15 @@ begin
      end;
 
     if Mail.Values['subject'] <> ''
-     then MapiMessage.lpszSubject := StrNew(PChar(Mail.Values['subject']));
+     then MapiMessage.lpszSubject := StrNew(PAnsiChar(Mail.Values['subject']));
     if Mail.Values['body'] <> ''
-     then MapiMessage.lpszNoteText := StrNew(PChar(Mail.Values['body']));
+     then MapiMessage.lpszNoteText := StrNew(PAnsiChar(Mail.Values['body']));
 
     WndList := DisableTaskWindows(0);
     try
      Result := MapiSendMail(MAPI_Session, Handle, MapiMessage, MAPI_DIALOG, 0);
     finally
-     EnableTaskWindows( WndList );
+     EnableTaskWindows(WndList);
     end;
 
     for i1 := 0 to AttachCount - 1 do
@@ -934,7 +934,7 @@ begin
          FN := ChangeFileExt(OpenDialog.FileName, '.log');
          SaveToFile(FN);
          try
-          ShellExecute(Handle, 'open', 'notepad.exe', PAnsiChar(FN), nil, SW_SHOWNORMAL);
+          ShellExecute(Handle, 'open', 'notepad.exe', PChar(FN), nil, SW_SHOWNORMAL);
          except
          end;
         finally
@@ -966,9 +966,9 @@ end;
 
 procedure TFmJNDEQT.SliderBandwidthChange(Sender: TObject);
 begin
- if SliderBandwidth.Position <> FBandwidth then
+ if SliderBandwidth.Value <> FBandwidth then
   begin
-   FBandwidth := SliderBandwidth.Position;
+   FBandwidth := SliderBandwidth.Value;
    BandwidthChanged;
   end;
 end;
@@ -981,19 +981,19 @@ begin
  // update filters
  for BandIndex := 0 to Length(FEQFilter) - 1 do
   for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
-   do FEQFilter[BandIndex, ChannelIndex].Bandwidth := SliderBandwidth.Position;
+   do FEQFilter[BandIndex, ChannelIndex].Bandwidth := SliderBandwidth.Value;
 
  // update GUI
- LbBandwidthValue.Caption := FloatToStrF(SliderBandwidth.Position, ffGeneral, 4, 4);
+ LbBandwidthValue.Caption := FloatToStrF(SliderBandwidth.Value, ffGeneral, 4, 4);
 
  FLog.Add(TimeToStr(Now) + ' - ' + 'Bandwidth changed: ' + LbBandwidthValue.Caption);
 end;
 
 procedure TFmJNDEQT.SliderFrequencyChange(Sender: TObject);
 begin
- if SliderFrequency.Position <> FFrequency then
+ if SliderFrequency.Value <> FFrequency then
   begin
-   FFrequency := SliderFrequency.Position;
+   FFrequency := SliderFrequency.Value;
    FrequencyChanged;
   end;
 end;
@@ -1006,12 +1006,12 @@ begin
  // update filters
  for BandIndex := 0 to Length(FEQFilter) - 1 do
   for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
-   do FEQFilter[BandIndex, ChannelIndex].Frequency := SliderFrequency.Position;
+   do FEQFilter[BandIndex, ChannelIndex].Frequency := SliderFrequency.Value;
 
  // update GUI
- if SliderFrequency.Position > 1000
-  then LbFrequencyValue.Caption := FloatToStrF(SliderFrequency.Position * 1E-3, ffGeneral, 4, 4) + ' kHz'
-  else LbFrequencyValue.Caption := FloatToStrF(SliderFrequency.Position       , ffGeneral, 4, 4) + ' Hz';
+ if SliderFrequency.Value > 1000
+  then LbFrequencyValue.Caption := FloatToStrF(SliderFrequency.Value * 1E-3, ffGeneral, 4, 4) + ' kHz'
+  else LbFrequencyValue.Caption := FloatToStrF(SliderFrequency.Value       , ffGeneral, 4, 4) + ' Hz';
 
  FLog.Add(TimeToStr(Now) + ' - ' + 'Frequency changed: ' + LbFrequencyValue.Caption);
 end;
@@ -1025,16 +1025,16 @@ begin
  if SliderGain.Enabled then
   for BandIndex := 0 to Length(FEQFilter) - 1 do
    for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
-    do FEQFilter[BandIndex, ChannelIndex].Gain := SliderGain.Position;
+    do FEQFilter[BandIndex, ChannelIndex].Gain := SliderGain.Value;
 
  // update GUI
- LbGainValue.Caption := FloatToStrF(SliderGain.Position, ffGeneral, 2, 2) + ' dB';
+ LbGainValue.Caption := FloatToStrF(SliderGain.Value, ffGeneral, 2, 2) + ' dB';
 end;
 
 procedure TFmJNDEQT.SliderVolumeChange(Sender: TObject);
 begin
- FVolumeFactor := dB_to_Amp(SliderVolume.Position);
- LbVolumeValue.Caption := FloatToStrF(SliderVolume.Position, ffGeneral, 2, 2) + ' dB';
+ FVolumeFactor := dB_to_Amp(SliderVolume.Value);
+ LbVolumeValue.Caption := FloatToStrF(SliderVolume.Value, ffGeneral, 2, 2) + ' dB';
 end;
 
 procedure TFmJNDEQT.AsioHostBuffersCreate(Sender: TObject);

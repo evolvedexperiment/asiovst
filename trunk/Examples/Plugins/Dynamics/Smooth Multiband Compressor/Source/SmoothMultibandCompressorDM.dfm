@@ -1,5 +1,4 @@
 object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.0'
   EffectName = 'Smooth Multiband Compressor'
@@ -7,7 +6,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DSML'
@@ -61,7 +59,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Limit'
@@ -119,7 +116,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Threshold'
@@ -157,7 +153,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Knee'
@@ -175,7 +170,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low MakeUp Gain'
@@ -194,7 +188,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Low State'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -250,7 +243,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Mid Threshold'
@@ -288,7 +280,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Mid Knee'
@@ -306,7 +297,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Mid MakeUp Gain'
@@ -325,7 +315,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mid State'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -381,7 +370,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Threshold'
@@ -419,7 +407,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Knee'
@@ -437,7 +424,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High MakeUp Gain'
@@ -456,7 +442,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'High State'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -472,7 +457,6 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnParameterChange = ParameterStateChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

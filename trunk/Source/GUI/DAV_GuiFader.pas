@@ -1,4 +1,4 @@
-unit DAV_GuiStitchedImageList;
+unit DAV_GuiFader;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -35,63 +35,16 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_GuiStitchedControls, DAV_GuiImageControl, DAV_GuiPng;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
+  {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiCustomControl, DAV_GuiImageControl;
 
 type
-  TGuiStitchedImageCollectionItem = class(TGuiCustomStitchedCollectionItem)
-  published
-    property DisplayName;
-    property PixelMap;
-    property GlyphCount;
-    property StitchKind;
-    property OnChange;
-    property Height;
-    property Width;
+  TGuiCustomFader = class(TGuiCustomImageControl)
+
   end;
 
-  TGuiStitchedImageList = class(TGuiCustomStitchedList)
-  private
-    function GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
-  protected
-    function GetCount: Integer; override;
-    property Items[Index: Integer]: TGuiStitchedImageCollectionItem read GetItems; default;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-  published
-    property StitchedImages: TGuiStitchedImageCollection read FStitchedCollection write FStitchedCollection;
-  end;
 
 implementation
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
-
-{ TGuiStitchedImageList }
-
-constructor TGuiStitchedImageList.Create(AOwner: TComponent);
-begin
-  inherited;
-  FStitchedCollection := TGuiStitchedImageCollection.Create(Self, TGuiStitchedImageCollectionItem);
-end;
-
-destructor TGuiStitchedImageList.Destroy;
-begin
- UnLinkImageControls;
- FreeAndNil(FStitchedCollection);
- inherited;
-end;
-
-function TGuiStitchedImageList.GetCount: Integer;
-begin
- Result := FStitchedCollection.Count;
-end;
-
-function TGuiStitchedImageList.GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
-begin
- if (Index >= 0) and (Index < FStitchedCollection.Count)
-  then Result := TGuiStitchedImageCollectionItem(FStitchedCollection[Index])
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
-end;
 
 end.

@@ -97,10 +97,10 @@ end;
 
 procedure TGuiStitchedPNGCollectionItem.BuildPixelMap;
 begin
- if Assigned(FPng) and Assigned(FStitchedPixelMap) then
+ if Assigned(FPng) and Assigned(FPixelMap) then
   begin
-   FStitchedPixelMap.SetSize(FPng.Width, FPng.Height);
-   FPng.DrawToPixelMap(FStitchedPixelMap);
+   FPixelMap.SetSize(FPng.Width, FPng.Height);
+   FPng.DrawToPixelMap(FPixelMap);
   end;
 end;
 
@@ -150,14 +150,14 @@ end;
 
 destructor TGuiStitchedPNGList.Destroy;
 begin
- UnLinkStitchedControls;
+ UnLinkImageControls;
  FreeAndNil(FStitchedCollection);
  inherited;
 end;
 
 function TGuiStitchedPNGList.GetCount: Integer;
 begin
-  Result := FStitchedCollection.Count;
+ Result := FStitchedCollection.Count;
 end;
 
 function TGuiStitchedPNGList.GetItems(

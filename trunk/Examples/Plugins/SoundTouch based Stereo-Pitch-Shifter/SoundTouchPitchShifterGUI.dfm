@@ -47,8 +47,8 @@ object FmSoundTouchPitchShifter: TFmSoundTouchPitchShifter
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialSemitonesChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

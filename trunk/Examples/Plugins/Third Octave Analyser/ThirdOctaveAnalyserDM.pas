@@ -62,7 +62,7 @@ type
     procedure VSTModuleProcessDownsampled(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterSmoothChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFullscaleGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterDownsamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterDownsamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterDownsamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject;
       const SampleRate: Single);
@@ -188,7 +188,7 @@ begin
 end;
 
 procedure TThirdOctaveAnalyserModule.ParameterDownsamplingDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 0.5
   then PreDefined := 'Off'
@@ -274,7 +274,7 @@ begin
   then OnProcess := VSTModuleProcessNormal
   else OnProcess := VSTModuleProcessDownSampled;
 
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TThirdOctaveAnalyserModule.VSTModuleProcessNormal(const Inputs,

@@ -165,8 +165,8 @@ object FmSimpleChorus: TFmSimpleChorus
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialSpeedChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
   end
@@ -178,8 +178,8 @@ object FmSimpleChorus: TFmSimpleChorus
     Max = 8.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialStagesChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 4.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -191,8 +191,8 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 36
     Max = 100.000000000000000000
     OnChange = DialDepthChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialMix: TGuiStitchedDial
@@ -202,8 +202,8 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 36
     Max = 100.000000000000000000
     OnChange = DialMixChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -215,8 +215,8 @@ object FmSimpleChorus: TFmSimpleChorus
     CurveMapping = -1.000000000000000000
     Max = 100.000000000000000000
     OnChange = DialDriftChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 8.000000000000000000
     WheelStep = 1.000000000000000000
   end

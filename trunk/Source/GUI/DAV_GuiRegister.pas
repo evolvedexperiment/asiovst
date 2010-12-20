@@ -24,7 +24,7 @@ implementation
 
 uses
   {$IFDEF FPC} LResources, {$ELSE} DAV_GuiGroup, DAV_GuiLevelMeter,
-  DAV_GuiModular, DAV_GuiBackgrounds, DAV_GuiDialNew, {$ENDIF}
+  DAV_GuiModular, DAV_GuiBackgrounds, DAV_GuiDialNew, DAV_GuiEdit, {$ENDIF}
   DAV_GuiADSRGraph, DAV_GuiAudioDataDisplay, DAV_GuiButton, DAV_GuiCheckBox,
   DAV_GuiCorrelationMeter, DAV_GuiDial, DAV_GuiDialDesign, DAV_GuiDialRenderer,
   DAV_GuiDynamicWaveform, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiFont,
@@ -34,8 +34,8 @@ uses
   DAV_GuiPixelMap, DAV_GuiPixelMapDesign, DAV_GuiPng, DAV_GuiPngDesign,
   DAV_GuiSelectBox, DAV_GuiSlider, DAV_GuiStaticWaveform, DAV_GuiStitchedButton,
   DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedDisplay,
-  DAV_GuiStitchedImageList, DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch,
-  DAV_GuiVUMeter;
+  DAV_GuiStitchedImageList, DAV_GuiStitchedRadioSwitch, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
 
 procedure Register;
 begin
@@ -47,10 +47,10 @@ begin
     TGuiMediaButton, TGuiMidiKeys, TGuiControlsRadioButton, TGuiPaintBox,
     TGuiPanel, TGuiSelectBox, TGuiSlider, TGuiStaticWaveform,
     TGuiStitchedButton, TGuiStitchedDial, TGuiStitchedDisplay,
-    TGuiStitchedImageList, TGuiStitchedPNGList, TGuiStitchedSwitch, TGuiSwitch,
-    TGuiVUMeter {$IFNDEF FPC}, TGuiSimpleDial, TGuiGroupA, TGuiGroupB,
-    TGuiGroup, TGuiLevelMeter, TGuiColorLevelMeter, TGuiModular,
-    TGuiBackground {$ENDIF}]);
+    TGuiStitchedImageList, TGuiStitchedPNGList, TGuiStitchedRadioSwitch,
+    TGuiStitchedSwitch, TGuiSwitch, TGuiVUMeter {$IFNDEF FPC}, TGuiSimpleDial,
+    TGuiGroupA, TGuiGroupB, TGuiGroup, TGuiLevelMeter, TGuiColorLevelMeter,
+    TGuiModular, TGuiBackground, TGuiControlsEdit {$ENDIF}]);
 
   RegisterPropertyEditor(TypeInfo(TGuiCustomPixelMap), nil, '', TPixelMapProperty);
   RegisterPropertyEditor(TypeInfo(TPortableNetworkGraphicPixel32), nil, '', TPngProperty);

@@ -173,8 +173,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Max = 100.000000000000000000
     Min = -96.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -186,8 +186,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Max = 3699.000000000000000000
     Min = 699.000000000000000000
     OnChange = DialReleaseChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     Value = 699.000000000000000000
     WheelStep = 1.000000000000000000
@@ -200,8 +200,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Max = 300.000000000000000000
     Min = -200.000000000000000000
     OnChange = DialAttackChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -212,8 +212,8 @@ object FmHardKneeCompressor: TFmHardKneeCompressor
     Height = 64
     Max = 200.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end

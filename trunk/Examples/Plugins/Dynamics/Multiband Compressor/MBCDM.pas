@@ -448,14 +448,14 @@ begin
  case round(Value) of
   0: begin
       OnProcess := VSTModuleProcess;
-      OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
+      OnProcess64Replacing := VSTModuleProcessDoubleReplacing;
      end;
   1: begin
       OnProcess := VSTModuleProcessLimiter;
-      OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingLimiter;
+      OnProcess64Replacing := VSTModuleProcessDoubleReplacingLimiter;
      end;
  end;
- OnProcessReplacing := OnProcess; 
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TMBCDataModule.MBCDCHighOrderChange(Sender: TObject; const Index: Integer; var Value: Single);

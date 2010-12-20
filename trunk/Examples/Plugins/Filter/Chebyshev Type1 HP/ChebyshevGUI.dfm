@@ -134,7 +134,6 @@ object FmChebyshev: TFmChebyshev
       Color = 1315880
       FontOversampling = fo4x
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
       OnDblClick = DialOrderDblClick
     end
     object LbRippleValue: TGuiLabel
@@ -148,7 +147,6 @@ object FmChebyshev: TFmChebyshev
       Color = 1315880
       FontOversampling = fo4x
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
       OnDblClick = DialRippleDblClick
     end
     object LbFrequencyValue: TGuiLabel
@@ -162,7 +160,6 @@ object FmChebyshev: TFmChebyshev
       Color = 1315880
       FontOversampling = fo4x
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
       OnDblClick = DialFrequencyDblClick
     end
     object DialFrequency: TGuiStitchedDial
@@ -174,12 +171,14 @@ object FmChebyshev: TFmChebyshev
       CurveMapping = -2.099999904632568000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialFrequencyChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
     object DialRipple: TGuiStitchedDial
       Left = 102
@@ -190,12 +189,14 @@ object FmChebyshev: TFmChebyshev
       CurveMapping = -2.750000000000000000
       Max = 10.000000000000000000
       Min = 0.001000000047497451
-      OnChange = DialRippleChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.001000000047497451
       WheelStep = 1.000000000000000000
+      OnChange = DialRippleChange
+      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 190
@@ -204,11 +205,14 @@ object FmChebyshev: TFmChebyshev
       Height = 64
       Color = 1315880
       Max = 16.000000000000000000
-      OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialOrderChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList

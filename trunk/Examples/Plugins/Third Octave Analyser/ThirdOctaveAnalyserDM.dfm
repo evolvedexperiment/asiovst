@@ -1,4 +1,5 @@
 object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Third Octave Analyser'

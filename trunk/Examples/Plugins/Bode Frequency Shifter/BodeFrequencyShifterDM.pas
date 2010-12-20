@@ -224,7 +224,7 @@ begin
    2 : OnProcess := VSTModuleProcessStereo;
   else OnProcess := VSTModuleProcessMultiChannel;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TBodeFrequencyShifterDataModule.VSTModuleProcessMono(const Inputs,

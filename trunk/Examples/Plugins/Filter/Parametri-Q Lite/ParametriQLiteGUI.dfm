@@ -1557,8 +1557,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1572,8 +1572,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1586,8 +1586,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq2: TGuiStitchedDial
@@ -1600,8 +1600,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1615,8 +1615,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1629,8 +1629,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq3: TGuiStitchedDial
@@ -1643,8 +1643,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1658,8 +1658,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1672,8 +1672,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq4: TGuiStitchedDial
@@ -1686,8 +1686,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1701,8 +1701,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1715,8 +1715,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq5: TGuiStitchedDial
@@ -1729,8 +1729,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1744,8 +1744,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1758,8 +1758,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq6: TGuiStitchedDial
@@ -1772,8 +1772,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1787,8 +1787,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1801,8 +1801,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq7: TGuiStitchedDial
@@ -1815,8 +1815,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1830,8 +1830,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1844,8 +1844,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialFreq8: TGuiStitchedDial
@@ -1858,8 +1858,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1873,8 +1873,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBWChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end
@@ -1887,8 +1887,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     WheelStep = 1.000000000000000000
   end
   object DialInput: TGuiStitchedDial
@@ -1899,8 +1899,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialInputChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 2
+    ImageList = GSPL
+    ImageIndex = 2
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -1912,8 +1912,8 @@ object FmParametriQLite: TFmParametriQLite
     Max = 15.000000000000000000
     Min = -15.000000000000000000
     OnChange = DialOutputChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 2
+    ImageList = GSPL
+    ImageIndex = 2
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -1924,8 +1924,8 @@ object FmParametriQLite: TFmParametriQLite
     Height = 40
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GSPL
-    StitchedImageIndex = 3
+    ImageList = GSPL
+    ImageIndex = 3
   end
   object Switch: TGuiStitchedSwitch
     Left = 108
@@ -1934,8 +1934,8 @@ object FmParametriQLite: TFmParametriQLite
     Height = 12
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GSPL
-    StitchedImageIndex = 4
+    ImageList = GSPL
+    ImageIndex = 4
     Transparent = True
   end
   object PopupFilter: TPopupMenu

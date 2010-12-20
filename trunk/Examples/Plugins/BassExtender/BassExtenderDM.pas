@@ -368,23 +368,23 @@ begin
  case round(Parameter[Index]) of
   0: begin
       OnProcess := VSTModuleProcess32;
-      OnProcessReplacing := VSTModuleProcess32;
-      OnProcessDoubleReplacing := VSTModuleProcess64;
+      OnProcess32Replacing := VSTModuleProcess32;
+      OnProcess64Replacing := VSTModuleProcess64;
      end;
   1: begin
       OnProcess := VSTModuleProcessMS32;
-      OnProcessReplacing := VSTModuleProcessMS32;
-      OnProcessDoubleReplacing := VSTModuleProcessMS64;
+      OnProcess32Replacing := VSTModuleProcessMS32;
+      OnProcess64Replacing := VSTModuleProcessMS64;
      end;
   2: begin
       OnProcess := VSTModuleProcessLight32;
-      OnProcessReplacing := VSTModuleProcessLight32;
-      OnProcessDoubleReplacing := VSTModuleProcessLight64;
+      OnProcess32Replacing := VSTModuleProcessLight32;
+      OnProcess64Replacing := VSTModuleProcessLight64;
      end;
   3: begin
       OnProcess := VSTModuleProcessLightMS32;
-      OnProcessReplacing := VSTModuleProcessLightMS32;
-      OnProcessDoubleReplacing := VSTModuleProcessLightMS64;
+      OnProcess32Replacing := VSTModuleProcessLightMS32;
+      OnProcess64Replacing := VSTModuleProcessLightMS64;
      end;
  end;
 end;

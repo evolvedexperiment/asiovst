@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, DAV_Types, DAV_VSTModule, DAV_GuiLabel, Controls, DAV_GuiBaseControl, 
   DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList;
+  DAV_GuiStitchedPngList, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmLightweightFeedbackCompressor = class(TForm)
@@ -160,7 +161,7 @@ procedure TFmLightweightFeedbackCompressor.DialAttackChange(Sender: TObject);
 begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[0] := DialAttack.Position;
+   Parameter[0] := DialAttack.Value;
   end;
 end;
 
@@ -168,7 +169,7 @@ procedure TFmLightweightFeedbackCompressor.DialReleaseChange(Sender: TObject);
 begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[1] := DialRelease.Position;
+   Parameter[1] := DialRelease.Value;
   end;
 end;
 
@@ -176,7 +177,7 @@ procedure TFmLightweightFeedbackCompressor.DialThresholdChange(Sender: TObject);
 begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[2] := DialThreshold.Position;
+   Parameter[2] := DialThreshold.Value;
   end;
 end;
 
@@ -190,7 +191,7 @@ procedure TFmLightweightFeedbackCompressor.DialRatioChange(Sender: TObject);
 begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[3] := DialRatio.Position;
+   Parameter[3] := DialRatio.Value;
   end;
 end;
 
@@ -198,7 +199,7 @@ procedure TFmLightweightFeedbackCompressor.DialKneeChange(Sender: TObject);
 begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[4] := DialKnee.Position;
+   Parameter[4] := DialKnee.Value;
   end;
 end;
 
@@ -206,7 +207,7 @@ procedure TFmLightweightFeedbackCompressor.DialMakeUpGainChange(Sender: TObject)
 begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[5] := DialMakeUpGain.Position;
+   Parameter[5] := DialMakeUpGain.Value;
   end;
 end;
 
@@ -217,8 +218,8 @@ begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
    Attack := Parameter[0];
-   if Attack <> DialAttack.Position
-    then DialAttack.Position := Attack;
+   if Attack <> DialAttack.Value
+    then DialAttack.Value := Attack;
    LbAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -230,8 +231,8 @@ begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
    Release := Parameter[1];
-   if Release <> DialRelease.Position
-    then DialRelease.Position := Release;
+   if Release <> DialRelease.Value
+    then DialRelease.Value := Release;
    LbReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
   end;
 end;
@@ -243,8 +244,8 @@ begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
    Knee := Parameter[4];
-   if Knee <> DialKnee.Position
-    then DialKnee.Position := Knee;
+   if Knee <> DialKnee.Value
+    then DialKnee.Value := Knee;
    LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
    GuiGraphXY.UpdateGraph;
   end;
@@ -257,8 +258,8 @@ begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
    MakeUp := LightweightFeedbackCompressor[0].MakeUpGain_dB;
-   if MakeUp <> DialMakeUpGain.Position
-    then DialMakeUpGain.Position := MakeUp;
+   if MakeUp <> DialMakeUpGain.Value
+    then DialMakeUpGain.Value := MakeUp;
    LbMakeUpGainValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
    GuiGraphXY.UpdateGraph;
   end;
@@ -271,8 +272,8 @@ begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[3];
-   if Ratio <> DialRatio.Position
-    then DialRatio.Position := Ratio;
+   if Ratio <> DialRatio.Value
+    then DialRatio.Value := Ratio;
    LbRatioValue.Caption := ParameterDisplay[3] + ' : 1';
    GuiGraphXY.UpdateGraph;
   end;
@@ -285,8 +286,8 @@ begin
  with TLightweightFeedbackCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[2];
-   if Threshold <> DialThreshold.Position
-    then DialThreshold.Position := Threshold;
+   if Threshold <> DialThreshold.Value
+    then DialThreshold.Value := Threshold;
    LbThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
    GuiGraphXY.UpdateGraph;
   end;

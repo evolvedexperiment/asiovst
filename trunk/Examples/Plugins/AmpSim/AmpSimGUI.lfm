@@ -208,8 +208,8 @@ object FmCombo: TFmCombo
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialDriveChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialBias: TGuiStitchedDial
@@ -220,8 +220,8 @@ object FmCombo: TFmCombo
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       OnChange = DialBiasChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
@@ -232,8 +232,8 @@ object FmCombo: TFmCombo
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       OnChange = DialOutputChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialFrequency: TGuiStitchedDial
@@ -245,8 +245,8 @@ object FmCombo: TFmCombo
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
       OnChange = DialFreqChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -257,8 +257,8 @@ object FmCombo: TFmCombo
       Height = 64
       Max = 100.000000000000000000
       OnChange = DialResoChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

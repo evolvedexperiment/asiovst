@@ -39,7 +39,8 @@ uses
   Forms, Controls, Graphics, StdCtrls, ExtCtrls, Menus, DAV_Types, 
   DAV_VSTModule, DAV_GuiButton, DAV_GuiVUMeter, DAV_GuiLED, DAV_GuiLabel, 
   DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDisplay, DAV_GuiStitchedDial;
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDisplay, DAV_GuiStitchedDial,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TLevelState = (lsIn, lsGR, lsOut);
@@ -299,37 +300,37 @@ begin
    lsIn : begin
            BtIn.ButtonColor  := $00202020;
            BtIn.Font.Color   := $00E2E2E2;
-           BtIn.LineColor    := clSilver;
+           BtIn.BorderColor  := clSilver;
            BtGR.ButtonColor  := $00000000;
            BtGR.Font.Color   := clGray;
-           BtGR.LineColor    := $00333333;
+           BtGR.BorderColor  := $00333333;
            BtOut.ButtonColor := $00000000;
            BtOut.Font.Color  := clGray;
-           BtOut.LineColor   := $00333333;
+           BtOut.BorderColor := $00333333;
            LbVUMeterDisplay.Caption := 'Input';
           end;
    lsGR : begin
            BtIn.ButtonColor  := $00000000;
            BtIn.Font.Color   := clGray;
-           BtIn.LineColor    := $00333333;
+           BtIn.BorderColor  := $00333333;
            BtGR.ButtonColor  := $00202020;
            BtGR.Font.Color   := $00E2E2E2;
-           BtGR.LineColor    := clSilver;
+           BtGR.BorderColor  := clSilver;
            BtOut.ButtonColor := $00000000;
            BtOut.Font.Color  := clGray;
-           BtOut.LineColor   := $00333333;
+           BtOut.BorderColor := $00333333;
            LbVUMeterDisplay.Caption := 'Gain Reduction';
           end;
   lsOut : begin
            BtIn.ButtonColor  := $00000000;
            BtIn.Font.Color   := clGray;
-           BtIn.LineColor    := $00333333;
+           BtIn.BorderColor  := $00333333;
            BtGR.ButtonColor  := $00000000;
            BtGR.Font.Color   := clGray;
-           BtGR.LineColor    := $00333333;
+           BtGR.BorderColor  := $00333333;
            BtOut.ButtonColor := $00202020;
            BtOut.Font.Color  := $00E2E2E2;
-           BtOut.LineColor   := clSilver;
+           BtOut.BorderColor := clSilver;
            LbVUMeterDisplay.Caption := 'Output';
           end;
  end;

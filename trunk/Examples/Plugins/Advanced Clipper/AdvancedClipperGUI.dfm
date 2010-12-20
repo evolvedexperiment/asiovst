@@ -132,8 +132,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 6.000000000000000000
       Min = -6.000000000000000000
       OnChange = DialInputGainChange
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialOSFactor1: TGuiStitchedDial
@@ -144,8 +144,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOSFactor1Change
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -157,8 +157,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       CurveMapping = -1.000000000000000000
       Max = 64.000000000000000000
       OnChange = DialFilterOrder1Change
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -290,8 +290,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOSFactor2Change
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -303,8 +303,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       CurveMapping = -1.000000000000000000
       Max = 64.000000000000000000
       OnChange = DialFilterOrder2Change
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -316,8 +316,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Max = 6.000000000000000000
       Min = -6.000000000000000000
       OnChange = DialOutputGainChange
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

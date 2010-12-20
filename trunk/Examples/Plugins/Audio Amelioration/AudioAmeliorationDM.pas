@@ -60,8 +60,8 @@ type
     procedure VSTModuleProcessHeadphones(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterSpeakerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterSpeakerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure Parameter3DSoundChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAmbienceActiveChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAmbienceChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -221,7 +221,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TAudioAmeliorationModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'
@@ -229,7 +229,7 @@ begin
 end;
 
 procedure TAudioAmeliorationModule.ParameterSpeakerDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'Speaker'
@@ -406,7 +406,7 @@ begin
     then OnProcess := VSTModuleProcessSpeaker
     else OnProcess := VSTModuleProcessHeadphones
   else OnProcess := VSTModuleProcessBypass;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////

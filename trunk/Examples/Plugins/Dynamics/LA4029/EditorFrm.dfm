@@ -49,7 +49,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
       Left = 8
@@ -67,7 +66,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbTitle: TGuiLabel
       Left = 149
@@ -85,7 +83,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LEDOnOff: TGuiLED
       Left = 69
@@ -118,7 +115,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LEDOnOffClick
     end
     object LbSlow: TGuiLabel
@@ -137,7 +133,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbFast: TGuiLabel
       Left = 8
@@ -155,7 +150,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbVUMeterDisplay: TLabel
       Left = 87
@@ -191,7 +185,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLevelingAmplifier: TLabel
       Left = 219
@@ -239,10 +232,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
+      FontOversampling = fo4x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtInClick
     end
@@ -262,10 +254,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
+      FontOversampling = fo4x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtGRClick
     end
@@ -285,10 +276,9 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
+      FontOversampling = fo4x
       Radius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtOutClick
     end
@@ -329,12 +319,15 @@ object FmLA4029: TFmLA4029
       Color = clBlack
       Max = 1.301030039787292000
       Min = -0.699000000953674300
-      OnChange = DialAttackChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialRelease: TGuiStitchedDial
       Left = 8
@@ -344,13 +337,15 @@ object FmLA4029: TFmLA4029
       Color = clBlack
       Max = 2.698999881744385000
       Min = 1.000000000000000000
-      OnChange = DialReleaseChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 1
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 1
       Transparent = True
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialMix: TGuiStitchedDial
       Left = 248
@@ -359,12 +354,14 @@ object FmLA4029: TFmLA4029
       Height = 64
       Color = clBlack
       Max = 100.000000000000000000
-      OnChange = DialMixChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 2
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialMixChange
+      DefaultValue = 0.000000000000000000
     end
     object VUMeter: TGuiStitchedDisplay
       Left = 72
@@ -375,8 +372,8 @@ object FmLA4029: TFmLA4029
       DefaultGlyphIndex = 0
       GlyphIndex = 0
       PopupMenu = PopupVUMeterSpeed
-      StitchedImageList = GSPL
-      StitchedImageIndex = 4
+      ImageList = GSPL
+      ImageIndex = 4
     end
   end
   object PnA: TGuiPanel
@@ -408,7 +405,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbOutput: TGuiLabel
       Left = 88
@@ -426,7 +422,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbRatioX: TGuiLabel
       Left = 168
@@ -444,7 +439,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbKnee: TGuiLabel
       Left = 248
@@ -462,7 +456,6 @@ object FmLA4029: TFmLA4029
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object PnKnee: TGuiPanel
       Left = 248
@@ -590,11 +583,14 @@ object FmLA4029: TFmLA4029
       Color = clBlack
       Max = 24.000000000000000000
       Min = -24.000000000000000000
-      OnChange = DialInputChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 2
       WheelStep = 1.000000000000000000
+      OnChange = DialInputChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
       Left = 88
@@ -604,11 +600,14 @@ object FmLA4029: TFmLA4029
       Color = clBlack
       Max = 24.000000000000000000
       Min = -24.000000000000000000
-      OnChange = DialOutputChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 2
       WheelStep = 1.000000000000000000
+      OnChange = DialOutputChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialRatio: TGuiStitchedDial
       Left = 168
@@ -617,11 +616,14 @@ object FmLA4029: TFmLA4029
       Height = 64
       Color = clBlack
       Max = 2.000000000000000000
-      OnChange = DialRatioChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 3
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 3
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialKnee: TGuiStitchedDial
       Left = 248
@@ -630,11 +632,14 @@ object FmLA4029: TFmLA4029
       Height = 64
       Color = clBlack
       Max = 10.000000000000000000
-      OnChange = DialKneeChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 3
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 3
       WheelStep = 1.000000000000000000
+      OnChange = DialKneeChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object Timer: TTimer
@@ -2827,7 +2832,6 @@ object FmLA4029: TFmLA4029
           0000000049454E44AE426082}
         DisplayName = 'Attack Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end
@@ -4984,7 +4988,6 @@ object FmLA4029: TFmLA4029
           3FFF0106629D29EB3E42920000000049454E44AE426082}
         DisplayName = 'Release Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end
@@ -7737,7 +7740,6 @@ object FmLA4029: TFmLA4029
           D8450000000049454E44AE426082}
         DisplayName = 'Pan & I/O Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end
@@ -10573,7 +10575,6 @@ object FmLA4029: TFmLA4029
           426082}
         DisplayName = 'Ratio Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end
@@ -12494,7 +12495,6 @@ object FmLA4029: TFmLA4029
           01C743FCC8C91BC2180000000049454E44AE426082}
         DisplayName = 'VU-Meter'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 72
         Width = 10920
       end>

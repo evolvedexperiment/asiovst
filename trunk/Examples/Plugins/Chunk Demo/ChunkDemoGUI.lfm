@@ -91,8 +91,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialAlphaChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -103,8 +103,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialBetaChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -115,8 +115,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialGammaChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -127,8 +127,8 @@ object FmChunkDemo: TFmChunkDemo
     Height = 56
     Max = 100.000000000000000000
     OnChange = DialDeltaChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end

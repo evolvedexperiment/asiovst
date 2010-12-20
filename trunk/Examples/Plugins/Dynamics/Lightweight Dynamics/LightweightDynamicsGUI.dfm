@@ -269,8 +269,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       OnChange = DialGateAttackChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 15.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -283,8 +283,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialGateReleaseChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 75.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -297,8 +297,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 10.000000000000000000
       Min = -90.000000000000000000
       OnChange = DialGateThresholdChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = -60.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -311,8 +311,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialGateRatioChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -324,8 +324,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
       OnChange = DialGateKneeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -590,8 +590,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 10.000000000000000000
       Min = -90.000000000000000000
       OnChange = DialCompressorThresholdChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = -10.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -604,8 +604,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       OnChange = DialCompressorAttackChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 15.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -618,8 +618,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialCompressorReleaseChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 75.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -632,8 +632,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialCompressorRatioChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 5.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -645,8 +645,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
       OnChange = DialCompressorKneeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -658,8 +658,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
       OnChange = DialCompressorMakeUpGainChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 6.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -908,8 +908,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       OnChange = DialLimiterAttackChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 15.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -922,8 +922,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialLimiterReleaseChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 75.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -936,8 +936,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       Max = 10.000000000000000000
       Min = -90.000000000000000000
       OnChange = DialLimiterThresholdChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = -0.019999999552965160
       WheelStep = 1.000000000000000000
     end
@@ -949,8 +949,8 @@ object FmLightweightDynamics: TFmLightweightDynamics
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
       OnChange = DialLimiterKneeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 5.000000000000000000
       WheelStep = 1.000000000000000000
     end

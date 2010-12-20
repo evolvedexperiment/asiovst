@@ -215,8 +215,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialLowpassFrequencyChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
@@ -233,8 +233,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialLowpassSlopeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
@@ -251,8 +251,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialHighpassFrequencyChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown
@@ -269,8 +269,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialHighpassSlopeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnMouseDown = DialMouseDown

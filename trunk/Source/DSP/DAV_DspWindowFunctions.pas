@@ -2440,7 +2440,7 @@ var
      FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
      Data[p1] := Data[p1] * CurWinVal;
      Data[p2] := Data[p2] * CurWinVal;
-     inc(p1); dec(p2);
+     Inc(p1); Dec(p2);
     end;
   end;
 

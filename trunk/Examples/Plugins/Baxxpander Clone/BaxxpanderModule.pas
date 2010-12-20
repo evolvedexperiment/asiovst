@@ -48,7 +48,7 @@ type
     procedure VSTModuleProcessSaturated(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterDryWetChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixerChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -123,7 +123,7 @@ begin
 end;
 
 procedure TBaxxpanderModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'
@@ -143,7 +143,7 @@ begin
   then OnProcess := VSTModuleProcessSaturated
   else OnProcess := VSTModuleProcessNormal;
 
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TBaxxpanderModule.CalculateGains;

@@ -37,8 +37,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, StdCtrls, ExtCtrls,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixelCircle,
-  DAV_GuiFixedPoint, DAV_GuiFont, DAV_GuiShadow;
+  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiFixedPoint,
+  DAV_GuiFont, DAV_GuiShadow;
 
 type
   TGuiControlsRadioButton = class(TRadioButton)
@@ -129,12 +129,12 @@ type
     procedure MouseLeave;
   published
     property Transparent: Boolean read FTransparent write SetTransparent default False;
-    property Color default $00E1EAEB;
+    property Color default clBtnFace;
     property ColorFocused: TColor index 0 read FFocusedColor write SetColors default clBtnHighlight;
     property ColorDown: TColor index 1 read FDownColor write SetColors default clBtnHighlight;
     property ColorDot: TColor index 2 read FDotColor write SetColors default clWindowText;
     property ColorBorder: TColor index 3 read FBorderColor write SetColors default clWindowText;
-    property ColorBackground: TColor index 4 read FBackgroundColor write SetColors default clBtnFace;
+    property ColorBackground: TColor index 4 read FBackgroundColor write SetColors default clWindow;
     property Flat: Boolean read FFlat write SetFlat default True;
     property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
     property Shadow: TGUIShadow read GetShadow write SetShadow;
@@ -208,7 +208,7 @@ begin
  FDownColor        := clBtnHighlight;
  FDotColor         := clWindowText;
  FBorderColor      := clWindowText;
- FBackgroundColor  := clBtnShadow;
+ FBackgroundColor  := clWindow;
  FFlat             := True;
  FFlatChecked      := False;
  FGroupIndex       := 0;
@@ -230,12 +230,11 @@ end;
 destructor TGuiControlsRadioButton.Destroy;
 begin
  FreeAndNil(FCanvas);
+ FreeAndNil(FGuiFont);
 
- // create buffers
+ // dispose buffers
  FreeAndNil(FBuffer);
  FreeAndNil(FBackBuffer);
-
- FreeAndNil(FGuiFont);
 
  inherited;
 end;
@@ -416,6 +415,7 @@ begin
    FMouseIsDown := false;
    if (X >= 0) and (X <= Width) and (Y >= 0) and (Y <= Height) and not Checked
     then Checked := True;
+
    inherited MouseUp(Button, Shift, X, Y);
    BufferChanged(False);
   end;
@@ -618,7 +618,7 @@ begin
     then RadMinusInnerOne.Fixed := 0;
 
    {$IFDEF FPC}
-   OffsetX := Radius + 0.5;
+   OffsetX := FixedAdd(Radius, CFixed24Dot8Half);
    {$ELSE}
    case Alignment of
     taLeftJustify  : OffsetX := FixedSub(FixedSub(ConvertToFixed24Dot8Point(Width), Radius), CFixed24Dot8Half);

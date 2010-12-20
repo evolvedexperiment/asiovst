@@ -191,7 +191,7 @@ uses
 
 {$IFDEF FPC}
 {$R *.lfm}
-{$IFDEF FPC}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 

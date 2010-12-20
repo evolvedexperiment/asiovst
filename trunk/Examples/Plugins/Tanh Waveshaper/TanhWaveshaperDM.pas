@@ -425,7 +425,7 @@ begin
  if FOSFactor = 1
   then OnProcess := VSTModuleProcess
   else OnProcess := VSTModuleProcessOversampled;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TTanhWaveshaperModule.VSTModuleProcess(const Inputs,

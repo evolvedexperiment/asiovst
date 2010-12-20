@@ -383,8 +383,8 @@ object FmBassExtender: TFmBassExtender
       Min = 16.000000000000000000
       OnChange = DialFrequencyChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 70.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -399,8 +399,8 @@ object FmBassExtender: TFmBassExtender
       Min = 1.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 3.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -413,8 +413,8 @@ object FmBassExtender: TFmBassExtender
       Max = 100.000000000000000000
       OnChange = DialDivideChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -427,8 +427,8 @@ object FmBassExtender: TFmBassExtender
       Max = 100.000000000000000000
       OnChange = DialShapeChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -442,8 +442,8 @@ object FmBassExtender: TFmBassExtender
       Min = -100.000000000000000000
       OnChange = DialBalanceChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 1
+      ImageList = GSPL
+      ImageIndex = 1
       WheelStep = 1.000000000000000000
     end
     object DialThreshold: TGuiStitchedDial
@@ -456,8 +456,8 @@ object FmBassExtender: TFmBassExtender
       Min = -80.000000000000000000
       OnChange = DialThresholdChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ImageList = GSPL
+      ImageIndex = 2
       Value = -20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -472,8 +472,8 @@ object FmBassExtender: TFmBassExtender
       Min = 1.000000000000000000
       OnChange = DialRatioChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 6.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -488,8 +488,8 @@ object FmBassExtender: TFmBassExtender
       Min = 10.000000000000000000
       OnChange = DialAttackChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -504,8 +504,8 @@ object FmBassExtender: TFmBassExtender
       Min = 20.000000000000000000
       OnChange = DialReleaseChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -518,8 +518,8 @@ object FmBassExtender: TFmBassExtender
       Max = 100.000000000000000000
       OnChange = DialCompressionChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

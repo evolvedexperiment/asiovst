@@ -231,7 +231,7 @@ begin
   1 : OnProcess := VSTModuleProcessPeakMono;
   2 : OnProcess := VSTModuleProcessDualMono;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterProcessingModeDisplay(

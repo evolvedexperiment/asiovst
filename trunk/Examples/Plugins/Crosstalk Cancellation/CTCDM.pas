@@ -49,18 +49,18 @@ type
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamSpeakerChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamDistanceDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamDistanceDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamListenerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRecursionStepsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamAttenuationChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamDistanceLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFilterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamDistanceLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFilterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFilterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFilterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFilterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterBypassChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleDestroy(Sender: TObject);
   private
@@ -144,7 +144,7 @@ begin
 end;
 
 procedure TCTCDataModule.ParamDistanceDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 100
   then PreDefined := FloatToStrF(RoundTo(0.01 * Parameter[Index], -2),
@@ -152,7 +152,7 @@ begin
 end;
 
 procedure TCTCDataModule.ParamDistanceLabel(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
   if Parameter[Index] >= 100
   then PreDefined := 'm'
@@ -160,7 +160,7 @@ begin
 end;
 
 procedure TCTCDataModule.ParameterFilterTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   1 : PreDefined := 'Simple Highpass';
@@ -203,7 +203,7 @@ begin
 end;
 
 procedure TCTCDataModule.ParameterFilterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 3, 3)
@@ -211,7 +211,7 @@ begin
 end;
 
 procedure TCTCDataModule.ParameterFilterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := 'Hz'
@@ -224,7 +224,7 @@ begin
  if Boolean(Round(Value))
   then OnProcess := VSTModuleProcessBypass
   else OnProcess := VSTModuleProcess;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TCTCDataModule.ParamAttenuationChange(

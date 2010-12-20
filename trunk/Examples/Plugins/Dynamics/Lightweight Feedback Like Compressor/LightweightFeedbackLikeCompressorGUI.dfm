@@ -352,8 +352,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Max = 10.000000000000000000
     Min = -90.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = -10.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -366,8 +366,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialAttackChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 15.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -380,8 +380,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialReleaseChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -394,8 +394,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -407,8 +407,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     CurveMapping = -0.800000011920929000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -420,8 +420,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     CurveMapping = -0.800000011920929000
     Max = 60.000000000000000000
     OnChange = DialMakeUpGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 6.000000000000000000
     WheelStep = 1.000000000000000000
   end

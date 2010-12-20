@@ -65,7 +65,7 @@ type
     FFreqResp  : PDAVComplexSingleFixedArray;
     FMagnitude : PDAVSingleFixedArray;
     function DiffEvolCalcSharpCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
-    function DiffEvolCalcSoftCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+    function DiffEvolCalcSoftCosts(Sender: TObject; var Population: TDifferentialEvolutionPopulation): Double;
     procedure RenderImpulseResponse(const Population: TDifferentialEvolutionPopulation);
     procedure CalculateMagnitude;
   public
@@ -116,7 +116,7 @@ begin
    GainR3 := 1;
    CrossOver := 1;
    AutoInitialize := False;
-   OnCalcCosts := DiffEvolCalcSoftCosts;
+   OnCalculateCosts := DiffEvolCalcSoftCosts;
   end;
 end;
 
@@ -150,8 +150,8 @@ begin
    BtCalculate.Caption := 'Stop!';
    for VariableNo := 0 to FDiffEvol.VariableCount - 1 do
     begin
-     FDiffEvol.MinArr[VariableNo] := -4;
-     FDiffEvol.MaxArr[VariableNo] :=  4;
+     FDiffEvol.MinConstraints[VariableNo] := -4;
+     FDiffEvol.MaxConstraints[VariableNo] :=  4;
     end;
 
    EvolveCounter := 0;
@@ -280,7 +280,7 @@ begin
  Result := 2 * Avg + 2 * Max - Min + abs(Above - Below);
 end;
 
-function TFmNoiseshapingFilterDesigner.DiffEvolCalcSoftCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+function TFmNoiseshapingFilterDesigner.DiffEvolCalcSoftCosts(Sender: TObject; var Population: TDifferentialEvolutionPopulation): Double;
 var
   BinNo, Coeff : Integer;
   Above, Below : Single;

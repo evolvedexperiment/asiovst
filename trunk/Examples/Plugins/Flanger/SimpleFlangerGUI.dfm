@@ -109,8 +109,8 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialSpeedChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
   end
@@ -121,8 +121,8 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Height = 36
     Max = 100.000000000000000000
     OnChange = DialDepthChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -133,8 +133,8 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Height = 36
     Max = 100.000000000000000000
     OnChange = DialMixChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end

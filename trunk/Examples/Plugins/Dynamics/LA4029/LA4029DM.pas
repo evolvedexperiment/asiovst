@@ -1,4 +1,4 @@
-unit LA4029DM;
+﻿unit LA4029DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -220,14 +220,14 @@ begin
  if Value < 0.5 then
   begin
    OnProcess := VSTModuleProcess;
-   OnProcessReplacing := VSTModuleProcess;
-   OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
+   OnProcess32Replacing := VSTModuleProcess;
+   OnProcess64Replacing := VSTModuleProcessDoubleReplacing;
   end
  else
   begin
    OnProcess := VSTModuleProcessBypass;
-   OnProcessReplacing := VSTModuleProcessBypass;
-   OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingBypass;
+   OnProcess32Replacing := VSTModuleProcessBypass;
+   OnProcess64Replacing := VSTModuleProcessDoubleReplacingBypass;
   end;
 end;
 

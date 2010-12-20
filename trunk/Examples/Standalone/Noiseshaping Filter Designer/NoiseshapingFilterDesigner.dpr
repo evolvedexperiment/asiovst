@@ -6,7 +6,8 @@ uses
 {$IFNDEF FPC}
   FastMM4, FastMove,
 {$ELSE}
-  Interfaces, Forms,
+  Interfaces,
+  Forms,
 {$ENDIF}
   NfdMain in 'NfdMain.pas' {FmNoiseshapingFilterDesigner};
 
