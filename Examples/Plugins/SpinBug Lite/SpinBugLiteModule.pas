@@ -55,12 +55,12 @@ type
     procedure VSTModuleProcessSpecial(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
     procedure VSTModuleProcessOldOne(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
     procedure VSTModuleSampleRateChange(Sender : TObject; const SampleRate : Single);
-    procedure SBMCoefficientsDisplay(Sender : TObject; const Index : Integer; var PreDefined : String);
-    procedure SBMCoefficientsChange(Sender : TObject; const Index : Integer; var Value : Single);
-    procedure SBMProcessTypeDisplay(Sender : TObject; const Index : Integer; var PreDefined : String);
-    procedure SBMProcessTypeChange(Sender : TObject; const Index : Integer; var Value : Single);
-    procedure SBMLFOSpeedChange(Sender : TObject; const Index : Integer; var Value : Single);
-    procedure SBMTBWChange(Sender : TObject; const Index : Integer; var Value : Single);
+    procedure SBMCoefficientsDisplay(Sender : TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure SBMCoefficientsChange(Sender : TObject; const Index: Integer; var Value: Single);
+    procedure SBMProcessTypeDisplay(Sender : TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure SBMProcessTypeChange(Sender : TObject; const Index: Integer; var Value: Single);
+    procedure SBMLFOSpeedChange(Sender : TObject; const Index: Integer; var Value: Single);
+    procedure SBMTBWChange(Sender : TObject; const Index: Integer; var Value: Single);
   private
     FHilbert   : array [0..1] of TPhaseHalfPi32;
     FSineLFO   : array [0..1] of TLFOSine;
@@ -92,7 +92,7 @@ begin
 
  Parameter[0] := 8;
  OnProcess := VSTModuleProcessMono;
- OnProcessReplacing := VSTModuleProcessMono;
+ OnProcess32Replacing := VSTModuleProcessMono;
 
  if Assigned(Programs) then
   try
@@ -174,7 +174,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.SBMCoefficientsDisplay(Sender : TObject;
-  const Index : Integer; var PreDefined : String);
+  const Index : Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(parameter[0]));
 end;
@@ -199,7 +199,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.SBMProcessTypeDisplay(Sender : TObject;
-  const Index : Integer; var PreDefined : String);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GetProcessTypeCaption(Round(Parameter[1]));
 end;
@@ -225,7 +225,7 @@ begin
    10 : OnProcess := VSTModuleProcessOldOne;
   end;
 
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 
  // update GUI
  if Assigned(EditorForm)

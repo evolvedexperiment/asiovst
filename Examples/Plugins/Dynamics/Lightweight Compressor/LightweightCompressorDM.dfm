@@ -1,4 +1,5 @@
 object LightweightCompressorDataModule: TLightweightCompressorDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Compressor'

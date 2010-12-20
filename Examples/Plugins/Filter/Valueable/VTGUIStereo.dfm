@@ -520,8 +520,8 @@ object FmVT: TFmVT
       Min = -12.000000000000000000
       OnChange = DialOutputGainChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ImageList = GSPL
+      ImageIndex = 2
       WheelStep = 1.000000000000000000
     end
     object SwitchChannel: TGuiStitchedSwitch
@@ -532,8 +532,8 @@ object FmVT: TFmVT
       Color = 103128
       DefaultGlyphIndex = 0
       GlyphIndex = 0
-      StitchedImageList = GSPL
-      StitchedImageIndex = 3
+      ImageList = GSPL
+      ImageIndex = 3
       OnChange = SwitchChannelChange
     end
   end
@@ -545,8 +545,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialLowGainLeftChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -558,8 +558,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialHiGainRightChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -571,8 +571,8 @@ object FmVT: TFmVT
     Max = 4.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialSelectorChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 1
+    ImageList = GSPL
+    ImageIndex = 1
     Transparent = True
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
@@ -585,8 +585,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialHiGainLeftChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -598,8 +598,8 @@ object FmVT: TFmVT
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialLowGainRightChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
   end
@@ -610,8 +610,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GSPL
-    StitchedImageIndex = 3
+    ImageList = GSPL
+    ImageIndex = 3
     OnChange = SwitchLowBypassLeftChange
   end
   object SwitchHiBypassRight: TGuiStitchedSwitch
@@ -621,8 +621,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GSPL
-    StitchedImageIndex = 3
+    ImageList = GSPL
+    ImageIndex = 3
     OnChange = SwitchHiBypassRightChange
   end
   object SwitchHiBypassLeft: TGuiStitchedSwitch
@@ -632,8 +632,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GSPL
-    StitchedImageIndex = 3
+    ImageList = GSPL
+    ImageIndex = 3
     OnChange = SwitchHiBypassLeftChange
   end
   object SwitchLowBypassRight: TGuiStitchedSwitch
@@ -643,8 +643,8 @@ object FmVT: TFmVT
     Height = 32
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GSPL
-    StitchedImageIndex = 3
+    ImageList = GSPL
+    ImageIndex = 3
     OnChange = SwitchLowBypassRightChange
   end
   object GSPL: TGuiStitchedPNGList

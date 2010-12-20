@@ -46,7 +46,6 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbWet: TGuiLabel
       Left = 58
@@ -66,7 +65,6 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbWidth: TGuiLabel
       Left = 112
@@ -86,7 +84,6 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbSize: TGuiLabel
       Left = 220
@@ -106,7 +103,6 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbStretch: TGuiLabel
       Left = 274
@@ -126,7 +122,6 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDamp: TGuiLabel
       Left = 166
@@ -146,7 +141,6 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
   end
   object CBFreeze: TCheckBox
@@ -204,7 +198,6 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object BtAB: TGuiButton
       Left = 213
@@ -221,9 +214,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
     end
     object BtAbout: TGuiButton
@@ -241,9 +234,9 @@ object FmReverb: TFmReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       Radius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtAboutClick
     end
@@ -254,10 +247,13 @@ object FmReverb: TFmReverb
     Width = 48
     Height = 48
     Max = 1.000000000000000000
-    OnChange = DialDryChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDryChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialWet: TGuiStitchedDial
     Left = 70
@@ -265,10 +261,13 @@ object FmReverb: TFmReverb
     Width = 48
     Height = 48
     Max = 1.000000000000000000
-    OnChange = DialWetChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialWetChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialWidth: TGuiStitchedDial
     Left = 124
@@ -276,10 +275,13 @@ object FmReverb: TFmReverb
     Width = 48
     Height = 48
     Max = 1.000000000000000000
-    OnChange = DialWidthChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialWidthChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialDamp: TGuiStitchedDial
     Left = 178
@@ -287,10 +289,13 @@ object FmReverb: TFmReverb
     Width = 48
     Height = 48
     Max = 1.000000000000000000
-    OnChange = DialDampChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDampChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialRoomSize: TGuiStitchedDial
     Left = 232
@@ -298,10 +303,13 @@ object FmReverb: TFmReverb
     Width = 48
     Height = 48
     Max = 1.000000000000000000
-    OnChange = DialRoomSizeChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialRoomSizeChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialStretch: TGuiStitchedDial
     Left = 286
@@ -309,10 +317,13 @@ object FmReverb: TFmReverb
     Width = 48
     Height = 48
     Max = 1.000000000000000000
-    OnChange = DialStretchChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialStretchChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <

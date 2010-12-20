@@ -52,8 +52,8 @@ type
     property DefaultGlyphIndex;
     property GlyphIndex;
     property PopupMenu;
-    property StitchedImageList;
-    property StitchedImageIndex;
+    property ImageList;
+    property ImageIndex;
     property Transparent;
     property OnChange;
   end;
@@ -68,7 +68,7 @@ uses
 procedure TCustomGuiStitchedDisplay.UpdateBuffer;
 begin
  inherited;
- if not (Assigned(FStitchedList) and (StitchedImageIndex >= 0)) then
+ if not (Assigned(FImageList) and (ImageIndex >= 0)) then
   if Assigned(FBuffer)
    then FBuffer.FillRect(ClientRect, ConvertColor(Color));
 end;

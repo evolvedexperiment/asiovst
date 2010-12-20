@@ -152,8 +152,8 @@ object FmButterworth: TFmButterworth
       Min = 20.000000000000000000
       OnChange = DialFrequencyChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1000.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -166,8 +166,8 @@ object FmButterworth: TFmButterworth
       Max = 16.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
     end

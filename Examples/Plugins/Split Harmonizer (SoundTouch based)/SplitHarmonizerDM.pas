@@ -407,14 +407,14 @@ begin
  case Round(Value) of
   0 : begin
        OnProcess := VSTModuleProcessLR;
-       OnProcessDoubleReplacing := VSTModuleProcessReplacing64LR;
+       OnProcess64Replacing := VSTModuleProcessReplacing64LR;
       end;
   1 : begin
        OnProcess := VSTModuleProcessMS;
-       OnProcessDoubleReplacing := VSTModuleProcessReplacing64MS;
+       OnProcess64Replacing := VSTModuleProcessReplacing64MS;
       end;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TSplitHarmonizerModule.ParameterEncodeDisplay(

@@ -80,8 +80,8 @@ object FmRingModulator: TFmRingModulator
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
       OnChange = DialFrequencyChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.009999999776482582
       WheelStep = 1.000000000000000000
     end

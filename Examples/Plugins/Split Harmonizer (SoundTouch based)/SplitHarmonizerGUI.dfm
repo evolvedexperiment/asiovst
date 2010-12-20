@@ -173,8 +173,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
       OnChange = DialDetuneAChange
       DefaultValue = 0.000000000000000000
@@ -189,8 +189,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialDelayAChange
@@ -204,8 +204,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 100.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialMixAChange
@@ -220,8 +220,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialLowpassAChange
@@ -354,8 +354,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
       OnChange = DialDetuneBChange
       DefaultValue = 0.000000000000000000
@@ -370,8 +370,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialDelayBChange
@@ -385,8 +385,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 100.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialMixBChange
@@ -401,8 +401,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialLowpassBChange

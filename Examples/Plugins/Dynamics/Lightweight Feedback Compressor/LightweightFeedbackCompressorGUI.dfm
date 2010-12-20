@@ -26,7 +26,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Caption = 'Threshold'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
     Left = 8
@@ -43,7 +42,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbAttack: TGuiLabel
     Left = 18
@@ -54,7 +52,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Caption = 'Attack'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
     Left = 8
@@ -71,7 +68,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbRelease: TGuiLabel
     Left = 92
@@ -82,7 +78,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Caption = 'Release'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
     Left = 86
@@ -99,7 +94,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbRatio: TGuiLabel
     Left = 99
@@ -110,7 +104,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Caption = 'Ratio'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
     Left = 86
@@ -127,7 +120,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbKnee: TGuiLabel
     Left = 163
@@ -138,7 +130,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Caption = 'Soft Knee'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
     Left = 168
@@ -155,7 +146,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
     Left = 168
@@ -202,7 +192,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Caption = 'Make Up'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbMakeUpGainValue: TGuiLabel
     Left = 248
@@ -219,7 +208,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LEDStereo: TGuiLED
     Left = 248
@@ -248,7 +236,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LEDStereoClick
   end
   object LEDLimit: TGuiLED
@@ -278,7 +265,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LEDLimitClick
   end
   object LEDAutoGain: TGuiLED
@@ -308,7 +294,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
   object LEDOversample: TGuiLED
@@ -339,7 +324,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDAutoGainClick
   end
@@ -351,11 +335,13 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     CurveMapping = 0.899999976158142100
     Max = 10.000000000000000000
     Min = -90.000000000000000000
-    OnChange = DialThresholdChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     Value = -10.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialThresholdChange
+    DefaultValue = 0.000000000000000000
   end
   object DialAttack: TGuiStitchedDial
     Left = 27
@@ -365,11 +351,13 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     CurveMapping = -1.299999952316284000
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
-    OnChange = DialAttackChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 15.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialAttackChange
+    DefaultValue = 0.000000000000000000
   end
   object DialRelease: TGuiStitchedDial
     Left = 107
@@ -379,11 +367,13 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     CurveMapping = -1.299999952316284000
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialReleaseChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialReleaseChange
+    DefaultValue = 0.000000000000000000
   end
   object DialRatio: TGuiStitchedDial
     Left = 107
@@ -393,11 +383,13 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     CurveMapping = -1.799999952316284000
     Max = 100.000000000000000000
     Min = 1.000000000000000000
-    OnChange = DialRatioChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialRatioChange
+    DefaultValue = 0.000000000000000000
   end
   object DialKnee: TGuiStitchedDial
     Left = 187
@@ -406,11 +398,13 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Height = 36
     CurveMapping = -0.800000011920929000
     Max = 10.000000000000000000
-    OnChange = DialKneeChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialKneeChange
+    DefaultValue = 0.000000000000000000
   end
   object DialMakeUpGain: TGuiStitchedDial
     Left = 267
@@ -419,11 +413,13 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Height = 36
     CurveMapping = -0.800000011920929000
     Max = 60.000000000000000000
-    OnChange = DialMakeUpGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ScrollRange = 400.000000000000000000
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 6.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialMakeUpGainChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1515,7 +1511,6 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

@@ -669,8 +669,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 10.000000000000000000
       Min = -90.000000000000000000
       OnChange = DialThresholdChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialLowAttack: TGuiStitchedDial
@@ -682,8 +682,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialAttackChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -696,8 +696,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialReleaseChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -710,8 +710,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialRatioChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -723,8 +723,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
       OnChange = DialKneeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialLowMakeUpGain: TGuiStitchedDial
@@ -735,8 +735,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
       OnChange = DialMakeUpGainChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
@@ -1045,8 +1045,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 10.000000000000000000
       Min = -90.000000000000000000
       OnChange = DialThresholdChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialLowMidAttack: TGuiStitchedDial
@@ -1059,8 +1059,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialAttackChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -1074,8 +1074,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialReleaseChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -1089,8 +1089,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialRatioChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -1103,8 +1103,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
       OnChange = DialKneeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialLowMidMakeUpGain: TGuiStitchedDial
@@ -1116,8 +1116,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
       OnChange = DialMakeUpGainChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
@@ -1426,8 +1426,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 10.000000000000000000
       Min = -90.000000000000000000
       OnChange = DialThresholdChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialHighMidAttack: TGuiStitchedDial
@@ -1440,8 +1440,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialAttackChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -1455,8 +1455,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialReleaseChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -1470,8 +1470,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialRatioChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -1484,8 +1484,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
       OnChange = DialKneeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialHighMidMakeUpGain: TGuiStitchedDial
@@ -1497,8 +1497,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
       OnChange = DialMakeUpGainChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
@@ -1807,8 +1807,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 10.000000000000000000
       Min = -90.000000000000000000
       OnChange = DialThresholdChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialHighAttack: TGuiStitchedDial
@@ -1821,8 +1821,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialAttackChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -1836,8 +1836,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       OnChange = DialReleaseChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
     end
@@ -1851,8 +1851,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialRatioChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -1865,8 +1865,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
       OnChange = DialKneeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialHighMakeUpGain: TGuiStitchedDial
@@ -1878,8 +1878,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
       OnChange = DialMakeUpGainChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end
@@ -1892,8 +1892,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Max = 800.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialLowFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1906,8 +1906,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Max = 4000.000000000000000000
     Min = 300.000000000000000000
     OnChange = DialMidFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 300.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -1920,8 +1920,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Max = 20000.000000000000000000
     Min = 800.000000000000000000
     OnChange = DialHighFreqChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 800.000000000000000000
     WheelStep = 1.000000000000000000
   end

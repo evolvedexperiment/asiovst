@@ -194,8 +194,8 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Min = 20.000000000000000000
       OnChange = DialFreqChange
       ParentColor = False
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -208,8 +208,8 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Max = 100.000000000000000000
       OnChange = DialLowDistChange
       ParentColor = False
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialHighDist: TGuiStitchedDial
@@ -221,8 +221,8 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Max = 100.000000000000000000
       OnChange = DialHighDistChange
       ParentColor = False
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
@@ -235,8 +235,8 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Min = 2.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageList = DSIL
-      StitchedImageIndex = 0
+      ImageList = DSIL
+      ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end

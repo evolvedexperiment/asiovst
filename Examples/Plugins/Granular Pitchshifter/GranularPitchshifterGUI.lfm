@@ -98,8 +98,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Height = 36
     Max = 16.000000000000000000
     Min = 2.000000000000000000
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialStagesChange
@@ -112,8 +112,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Height = 36
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.009999999776482582
     WheelStep = 1.000000000000000000
     OnChange = DialSemitonesChange
@@ -127,8 +127,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     CurveMapping = -1.500000000000000000
     Max = 1000.000000000000000000
     Min = 1.000000000000000000
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 100.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialGranularityChange

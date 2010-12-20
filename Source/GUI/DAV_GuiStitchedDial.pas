@@ -130,17 +130,20 @@ type
     property Min;
     property ParentColor;
     property ScrollRange;
-    property StitchedImageList;
-    property StitchedImageIndex;
+    property ImageList;
+    property ImageIndex;
     property Transparent;
     property Value;
     property WheelStep;
     property Wrap;
 
     property OnChange;
-    property OnKeyUp;
-    property OnKeyPress;
+    property OnDblClick;
+    property OnEnter;
+    property OnExit;
     property OnKeyDown;
+    property OnKeyPress;
+    property OnKeyUp;
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
@@ -237,12 +240,12 @@ end;
 procedure TCustomGuiStitchedDial.Loaded;
 begin
  inherited;
- if Assigned(FStitchedItem) then
+ if Assigned(FImageItem) then
   begin
    FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
-   if FStitchedItem.GlyphCount = 0
+   if StitchedImageItem.GlyphCount = 0
     then FGlyphIndex := -1
-    else FGlyphIndex := Round(FNormalizedPosition * (FStitchedItem.GlyphCount - 1));
+    else FGlyphIndex := Round(FNormalizedPosition * (StitchedImageItem.GlyphCount - 1));
   end;
 end;
 
@@ -409,11 +412,11 @@ begin
  inherited;
 
  // calculate matching default glyph index
- if Assigned(FStitchedItem) then
+ if Assigned(FImageItem) then
   begin
    MappedNormalizedValue := MapNormalizedValueToNormalizedPosition(
      (DefaultValue - FMin) * FRangeReciprocal);
-   DefaultGlyphIndex := Round(MappedNormalizedValue * FStitchedItem.GlyphCount);
+   DefaultGlyphIndex := Round(MappedNormalizedValue * StitchedImageItem.GlyphCount);
   end;
 end;
 
@@ -440,9 +443,9 @@ begin
 
  // calculate matching glyph index
  // NOTE: The glyphs are not spaced equally across the entire range
- if Assigned(FStitchedItem) then
+ if Assigned(FImageItem) then
   begin
-   NewGlyphIndex := Round(FNormalizedPosition * (FStitchedItem.GlyphCount - 1));
+   NewGlyphIndex := Round(FNormalizedPosition * (StitchedImageItem.GlyphCount - 1));
    if NewGlyphIndex <> GlyphIndex
     then GlyphIndex := NewGlyphIndex else
    if not (csLoading in ComponentState) then

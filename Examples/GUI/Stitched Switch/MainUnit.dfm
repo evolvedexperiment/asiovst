@@ -24,8 +24,8 @@ object FmSwitchTest: TFmSwitchTest
     Height = 40
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GuiStitchedImageList
-    StitchedImageIndex = 0
+    ImageList = GuiStitchedImageList
+    ImageIndex = 0
     OnChange = GuiStitchedSwitchChange
   end
   object GuiStitchedSwitch1: TGuiStitchedSwitch
@@ -35,8 +35,8 @@ object FmSwitchTest: TFmSwitchTest
     Height = 40
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GuiStitchedPNGList
-    StitchedImageIndex = 0
+    ImageList = GuiStitchedPNGList
+    ImageIndex = 0
     OnChange = GuiStitchedSwitchChange
   end
   object GuiStitchedSwitch2: TGuiStitchedSwitch
@@ -46,8 +46,8 @@ object FmSwitchTest: TFmSwitchTest
     Height = 40
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GuiStitchedImageList
-    StitchedImageIndex = 0
+    ImageList = GuiStitchedImageList
+    ImageIndex = 0
   end
   object GuiStitchedSwitch3: TGuiStitchedSwitch
     Left = 54
@@ -56,16 +56,16 @@ object FmSwitchTest: TFmSwitchTest
     Height = 40
     DefaultGlyphIndex = 0
     GlyphIndex = 0
-    StitchedImageList = GuiStitchedPNGList
-    StitchedImageIndex = 0
+    ImageList = GuiStitchedPNGList
+    ImageIndex = 0
   end
   object GuiStitchedImageList: TGuiStitchedImageList
     StitchedImages = <
       item
         DisplayName = 'Switch'
-        StitchedPixelMap.Width = 40
-        StitchedPixelMap.Height = 80
-        StitchedPixelMap.Data = {
+        PixelMap.Width = 40
+        PixelMap.Height = 80
+        PixelMap.Data = {
           2800000050000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
           FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
           FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00

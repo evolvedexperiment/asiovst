@@ -227,8 +227,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialLowChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -242,8 +242,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialMidChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -257,8 +257,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialPresenceChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end
@@ -272,8 +272,8 @@ object FmUniQuE: TFmUniQuE
       Min = -15.000000000000000000
       OnChange = DialHighChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
     end

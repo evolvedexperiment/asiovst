@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, ExtCtrls, Controls, StdCtrls, DAV_Types, DAV_VSTModule, 
   DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiPanel, 
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiImageControl;
 
 type
   TFmChebyshev = class(TForm)
@@ -126,8 +127,8 @@ begin
  with TChebyshevHPModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
-   if DialFrequency.Position <> Freq
-    then DialFrequency.Position := Freq;
+   if DialFrequency.Value <> Freq
+    then DialFrequency.Value := Freq;
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 3, 3) + ' kHz'

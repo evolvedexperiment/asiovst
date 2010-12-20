@@ -291,12 +291,13 @@ object FmLA1701: TFmLA1701
       Color = clBlack
       Max = 1.301030039787292000
       Min = -0.699000000953674300
-      OnChange = DialAttackChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
       DefaultValue = 0.000000000000000000
       Value = 0.000000000000000000
     end
@@ -308,12 +309,13 @@ object FmLA1701: TFmLA1701
       Color = clBlack
       Max = 2.698999881744385000
       Min = 1.000000000000000000
-      OnChange = DialReleaseChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 1
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 1
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
       DefaultValue = 0.000000000000000000
     end
     object DialMix: TGuiStitchedDial
@@ -323,11 +325,12 @@ object FmLA1701: TFmLA1701
       Height = 64
       Color = clBlack
       Max = 100.000000000000000000
-      OnChange = DialMixChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 2
       WheelStep = 1.000000000000000000
+      OnChange = DialMixChange
       DefaultValue = 0.000000000000000000
       Value = 0.000000000000000000
     end
@@ -369,8 +372,8 @@ object FmLA1701: TFmLA1701
       DefaultGlyphIndex = 0
       GlyphIndex = 0
       PopupMenu = PopupVUMeterSpeed
-      StitchedImageList = GSPL
-      StitchedImageIndex = 4
+      ImageList = GSPL
+      ImageIndex = 4
       Transparent = True
     end
   end
@@ -462,11 +465,12 @@ object FmLA1701: TFmLA1701
       Height = 64
       Color = clBlack
       Max = 10.000000000000000000
-      OnChange = DialKneeChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 3
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 3
       WheelStep = 1.000000000000000000
+      OnChange = DialKneeChange
       DefaultValue = 0.000000000000000000
       Value = 0.000000000000000000
     end
@@ -477,11 +481,12 @@ object FmLA1701: TFmLA1701
       Height = 64
       Color = clBlack
       Max = 2.000000000000000000
-      OnChange = DialRatioChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 3
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 3
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
       DefaultValue = 0.000000000000000000
       Value = 0.000000000000000000
     end
@@ -493,11 +498,12 @@ object FmLA1701: TFmLA1701
       Color = clBlack
       Max = 24.000000000000000000
       Min = -24.000000000000000000
-      OnChange = DialOutputChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 2
       WheelStep = 1.000000000000000000
+      OnChange = DialOutputChange
       DefaultValue = 0.000000000000000000
       Value = 0.000000000000000000
     end
@@ -509,11 +515,12 @@ object FmLA1701: TFmLA1701
       Color = clBlack
       Max = 24.000000000000000000
       Min = -24.000000000000000000
-      OnChange = DialInputChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 2
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 2
       WheelStep = 1.000000000000000000
+      OnChange = DialInputChange
       DefaultValue = 0.000000000000000000
       Value = 0.000000000000000000
     end
@@ -2826,7 +2833,6 @@ object FmLA1701: TFmLA1701
           0000000049454E44AE426082}
         DisplayName = 'Attack Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end
@@ -4983,7 +4989,6 @@ object FmLA1701: TFmLA1701
           3FFF0106629D29EB3E42920000000049454E44AE426082}
         DisplayName = 'Release Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end
@@ -7736,7 +7741,6 @@ object FmLA1701: TFmLA1701
           D8450000000049454E44AE426082}
         DisplayName = 'Pan & I/O Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end
@@ -10572,7 +10576,6 @@ object FmLA1701: TFmLA1701
           426082}
         DisplayName = 'Ratio Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end
@@ -12493,7 +12496,6 @@ object FmLA1701: TFmLA1701
           01C743FCC8C91BC2180000000049454E44AE426082}
         DisplayName = 'VU-Meter'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 72
         Width = 10920
       end>

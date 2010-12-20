@@ -126,8 +126,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Max = 10.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialIRChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -139,8 +139,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Max = 6.000000000000000000
     Min = -60.000000000000000000
     OnChange = DialGainChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDamp: TGuiStitchedDial
@@ -152,8 +152,8 @@ object FmConvoFXLite: TFmConvoFXLite
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialDampChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end

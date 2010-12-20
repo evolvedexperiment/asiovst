@@ -325,8 +325,8 @@ object FmNoiseReduction: TFmNoiseReduction
     CurveMapping = 0.150000005960464500
     Max = 15.000000000000000000
     OnChange = DialThresholdOffsetChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 8.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -339,8 +339,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 9.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -352,8 +352,8 @@ object FmNoiseReduction: TFmNoiseReduction
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 4.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -366,8 +366,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Max = 100.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialAttackChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 10.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -380,8 +380,8 @@ object FmNoiseReduction: TFmNoiseReduction
     Max = 300.000000000000000000
     Min = 0.500000000000000000
     OnChange = DialReleaseChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
   end

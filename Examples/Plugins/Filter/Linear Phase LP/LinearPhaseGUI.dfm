@@ -46,8 +46,8 @@ object FmLinearPhase: TFmLinearPhase
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFrequencyChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end

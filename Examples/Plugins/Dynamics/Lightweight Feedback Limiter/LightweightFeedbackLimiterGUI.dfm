@@ -376,8 +376,8 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Max = 10.000000000000000000
     Min = -90.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = -10.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -390,8 +390,8 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Max = 1000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialAttackChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 15.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -404,8 +404,8 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 75.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -417,8 +417,8 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     CurveMapping = -0.800000011920929000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -431,8 +431,8 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 5.000000000000000000
     WheelStep = 1.000000000000000000
   end

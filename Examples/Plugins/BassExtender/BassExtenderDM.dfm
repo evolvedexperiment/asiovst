@@ -261,8 +261,8 @@ object BassExtenderModule: TBassExtenderModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess32
-  OnProcess64Replacing = VSTModuleProcess64
   OnProcess32Replacing = VSTModuleProcess32
+  OnProcess64Replacing = VSTModuleProcess64
   Left = 218
   Top = 81
   Height = 150

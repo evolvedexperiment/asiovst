@@ -160,8 +160,8 @@ object EditorForm: TEditorForm
     Max = 100.000000000000000000
     Min = -96.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     WheelStep = 1.000000000000000000
   end
   object DialAttack: TGuiStitchedDial
@@ -172,8 +172,8 @@ object EditorForm: TEditorForm
     Max = 3.000000000000000000
     Min = -2.000000000000000000
     OnChange = DialAttackChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     WheelStep = 1.000000000000000000
   end
   object DialRelease: TGuiStitchedDial
@@ -184,8 +184,8 @@ object EditorForm: TEditorForm
     Max = 3.698999881744385000
     Min = 0.699000000953674300
     OnChange = DialReleaseChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 0.699000000953674300
     WheelStep = 1.000000000000000000
   end
@@ -197,8 +197,8 @@ object EditorForm: TEditorForm
     Max = 10.000000000000000000
     Min = 0.050000000745058060
     OnChange = DialSoftKneeChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 0.050000000745058060
     WheelStep = 1.000000000000000000
   end
@@ -209,8 +209,8 @@ object EditorForm: TEditorForm
     Height = 48
     Max = 20.000000000000000000
     OnChange = DialMakeUpChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

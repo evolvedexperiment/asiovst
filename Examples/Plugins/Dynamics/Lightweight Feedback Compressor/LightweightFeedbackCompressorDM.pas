@@ -246,7 +246,7 @@ begin
        1 : OnProcess := VSTModuleProcessStereoSoftClip;
       end;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TLightweightFeedbackCompressorDataModule.ParameterAutoMakeUpGainChange(

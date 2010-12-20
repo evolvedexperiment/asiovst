@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList, DAV_GuiStitchedImageList;
+  DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList, DAV_GuiStitchedImageList,
+  DAV_GuiImageControl, DAV_GuiCustomControl;
 
 type
   TFmSwitchTest = class(TForm)
@@ -35,12 +36,15 @@ uses
   DAV_GuiFileFormats, DAV_GuiPng;
 
 procedure TFmSwitchTest.FormCreate(Sender: TObject);
+const
+  CSwitchFileName : TFileName = '..\Resources\Knobs\BigStop.png';
 begin
- with GuiStitchedImageList[0], StitchedPixelMap do
-  begin
-   LoadFromFile('BigStop.png');
-   GlyphCount := 2;
-  end;
+ if FileExists(CSwitchFileName) then
+  with GuiStitchedImageList[0], PixelMap do
+   begin
+    LoadFromFile(CSwitchFileName);
+    GlyphCount := 2;
+   end;
  FBackground := TGuiPixelMapMemory.Create;
 
  GuiStitchedSwitch2.Transparent := True;

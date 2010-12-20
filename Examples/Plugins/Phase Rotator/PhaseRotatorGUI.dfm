@@ -108,8 +108,8 @@ object FmPhaseRotator: TFmPhaseRotator
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     OnChange = DialFrequencyChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -120,8 +120,8 @@ object FmPhaseRotator: TFmPhaseRotator
     Height = 36
     Max = 4.000000000000000000
     OnChange = DialStagesChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     WheelStep = 1.000000000000000000
   end
   object DialBandwidth: TGuiStitchedDial
@@ -133,8 +133,8 @@ object FmPhaseRotator: TFmPhaseRotator
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     OnChange = DialBandwidthChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
   end

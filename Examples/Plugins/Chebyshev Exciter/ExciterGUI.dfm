@@ -200,8 +200,8 @@ object FmExciter: TFmExciter
       Min = 1000.000000000000000000
       OnChange = DialTuneChange
       ParentColor = False
-      StitchedImageList = DSPL
-      StitchedImageIndex = 0
+      ImageList = DSPL
+      ImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -214,8 +214,8 @@ object FmExciter: TFmExciter
       Max = 100.000000000000000000
       OnChange = DialShapeChange
       ParentColor = False
-      StitchedImageList = DSPL
-      StitchedImageIndex = 0
+      ImageList = DSPL
+      ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -228,8 +228,8 @@ object FmExciter: TFmExciter
       Max = 100.000000000000000000
       OnChange = DialMixChange
       ParentColor = False
-      StitchedImageList = DSPL
-      StitchedImageIndex = 0
+      ImageList = DSPL
+      ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -244,8 +244,8 @@ object FmExciter: TFmExciter
       Min = 2.000000000000000000
       OnChange = DialOrderChange
       ParentColor = False
-      StitchedImageList = DSPL
-      StitchedImageIndex = 0
+      ImageList = DSPL
+      ImageIndex = 0
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
     end

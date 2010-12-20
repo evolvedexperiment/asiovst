@@ -255,8 +255,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialDryChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialWet: TGuiStitchedDial
@@ -266,8 +266,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialWetChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialWidth: TGuiStitchedDial
@@ -277,8 +277,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialWidthChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDamp: TGuiStitchedDial
@@ -288,8 +288,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialDampChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialRoomSize: TGuiStitchedDial
@@ -299,8 +299,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialRoomSizeChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialStretch: TGuiStitchedDial
@@ -310,8 +310,8 @@ object FmReverb: TFmReverb
     Height = 48
     Max = 1.000000000000000000
     OnChange = DialStretchChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

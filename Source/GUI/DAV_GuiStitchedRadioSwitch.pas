@@ -1,4 +1,4 @@
-unit DAV_GuiStitchedSwitch;
+unit DAV_GuiStitchedRadioSwitch;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -40,25 +40,32 @@ uses
   DAV_GuiCommon, DAV_GuiStitchedControls;
 
 type
-  TCustomGuiStitchedSwitch = class(TGuiCustomStitchedControl)
+  TCustomGuiRadioStitchedSwitch = class(TGuiCustomStitchedControl)
   private
-    FReadOnly : Boolean;
-  protected
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure UpdateBuffer; override;
-  public
-    constructor Create(AOwner: TComponent); override;
+    FGroupIndex : Integer;
+    FReadOnly   : Boolean;
+    procedure SetGroupIndex(const Value: Integer);
 
-    property ReadOnly: Boolean read FReadOnly write FReadOnly default False;
+  protected
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure UpdateBuffer; override;
+    procedure GroupIndexChanged; virtual;
+  public
+    constructor Create(AOwner: TComponent);
+
+    property GroupIndex: Integer read FGroupIndex write SetGroupIndex;
+    property ReadOnly: Boolean read FReadOnly write FReadOnly;
   end;
 
-  TGuiStitchedSwitch = class(TCustomGuiStitchedSwitch)
+  TGuiStitchedRadioSwitch = class(TCustomGuiRadioStitchedSwitch)
   published
     property Anchors;
     property AutoSize;
     property Color;
     property DefaultGlyphIndex;
     property GlyphIndex;
+    property GroupIndex;
     property PopupMenu;
     property ReadOnly;
     property ImageList;
@@ -72,36 +79,76 @@ implementation
 uses
   DAV_Common, DAV_GuiBlend;
 
-{ TCustomGuiStitchedSwitch }
+{ TCustomGuiRadioStitchedSwitch }
 
-constructor TCustomGuiStitchedSwitch.Create(AOwner: TComponent);
+constructor TCustomGuiRadioStitchedSwitch.Create(AOwner: TComponent);
 begin
  inherited;
  FReadOnly := False;
 end;
 
-procedure TCustomGuiStitchedSwitch.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+procedure TCustomGuiRadioStitchedSwitch.GroupIndexChanged;
 begin
- if not FReadOnly then
+ inherited;
+ // yet todo !
+end;
+
+procedure TCustomGuiRadioStitchedSwitch.MouseUp(Button: TMouseButton; Shift: TShiftState;
+  X, Y: Integer);
+
+  procedure TurnSiblingsOff;
+  var
+    I: Integer;
+    Sibling: TControl;
+  begin
+   if Parent <> nil then
+    with Parent do
+     for I := 0 to ControlCount - 1 do
+      begin
+       Sibling := Controls[I];
+       if (Sibling <> Self) and (Sibling is TCustomGuiRadioStitchedSwitch) then
+        with TCustomGuiRadioStitchedSwitch(Sibling) do
+         if (GroupIndex = Self.GroupIndex) and (GlyphCount >= 1)
+          then GlyphIndex := 0;
+      end;
+  end;
+
+begin
+ if Enabled and (not FReadOnly) and (Button = mbLeft) then
   if Assigned(FImageItem) then
    with StitchedImageItem do
     begin
-     if (Button = mbLeft) then
-      if FGlyphIndex < GlyphCount - 1
-       then GlyphIndex := FGlyphIndex + 1
-       else GlyphIndex := 0 else
-     if (Button = mbRight) then
-      if FGlyphIndex > 0
-       then GlyphIndex := FGlyphIndex - 1
-       else GlyphIndex := GlyphCount - 1;
-    end
-  else GlyphIndex := -1;
+     if GlyphCount >= 2
+      then GlyphIndex := 1;
+    end;
 
  inherited;
 end;
 
-procedure TCustomGuiStitchedSwitch.UpdateBuffer;
+procedure TCustomGuiRadioStitchedSwitch.CMEnabledChanged(var Message: TMessage);
+begin
+ if not Enabled then
+  if (GlyphIndex in [0..1]) then
+   begin
+    if (GlyphIndex = 1) and (GlyphCount >= 4)
+     then GlyphIndex := 3 else
+    if (GlyphCount >= 3)
+     then GlyphIndex := 2;
+   end else else
+ if (GlyphIndex in [2..3])
+  then GlyphIndex := GlyphIndex - 2;
+end;
+
+procedure TCustomGuiRadioStitchedSwitch.SetGroupIndex(const Value: Integer);
+begin
+ if FGroupIndex <> Value then
+  begin
+   FGroupIndex := Value;
+   GroupIndexChanged;
+  end;
+end;
+
+procedure TCustomGuiRadioStitchedSwitch.UpdateBuffer;
 begin
  inherited;
 

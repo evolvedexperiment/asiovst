@@ -856,7 +856,6 @@ object FmChebyshevWaveshaper: TFmChebyshevWaveshaper
           0000000049454E44AE426082}
         DisplayName = 'Dial'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end>

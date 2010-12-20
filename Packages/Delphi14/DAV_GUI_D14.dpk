@@ -104,6 +104,10 @@ contains
   DAV_GuiVectorPixelRectangle in '..\..\Source\GUI\DAV_GuiVectorPixelRectangle.pas',
   DAV_GuiCustomControl in '..\..\Source\GUI\DAV_GuiCustomControl.pas',
   DAV_GuiRadioButton in '..\..\Source\GUI\DAV_GuiRadioButton.pas',
-  DAV_GuiCheckBox in '..\..\Source\GUI\DAV_GuiCheckBox.pas';
+  DAV_GuiCheckBox in '..\..\Source\GUI\DAV_GuiCheckBox.pas',
+  DAV_GuiEdit in '..\..\Source\GUI\DAV_GuiEdit.pas',
+  DAV_GuiStitchedRadioSwitch in '..\..\Source\GUI\DAV_GuiStitchedRadioSwitch.pas',
+  DAV_GuiFader in '..\..\Source\GUI\DAV_GuiFader.pas',
+  DAV_GuiImageControl in '..\..\Source\GUI\DAV_GuiImageControl.pas';
 
 end.

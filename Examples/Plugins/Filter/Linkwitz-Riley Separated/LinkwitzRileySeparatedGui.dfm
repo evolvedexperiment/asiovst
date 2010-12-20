@@ -140,8 +140,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialFrequencyChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -154,8 +154,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialSlopeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -166,8 +166,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Height = 48
       Max = 1.000000000000000000
       OnChange = DialTypeChange
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

@@ -7,7 +7,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   Dialogs, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiStitchedControls,
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiImageControl,
+  DAV_GuiCustomControl;
 
 type
   TFmDialTest = class(TForm)
@@ -47,10 +48,10 @@ procedure TFmDialTest.FormCreate(Sender: TObject);
 begin
  FBackground := TGuiPixelMapMemory.Create;
 
- GuiStitchedDial0.StitchedImageIndex := 0;
- GuiStitchedDial1.StitchedImageIndex := 0;
- GuiStitchedDial2.StitchedImageIndex := 0;
- GuiStitchedDial3.StitchedImageIndex := 0;
+ GuiStitchedDial0.ImageIndex := 0;
+ GuiStitchedDial1.ImageIndex := 0;
+ GuiStitchedDial2.ImageIndex := 0;
+ GuiStitchedDial3.ImageIndex := 0;
 
  GuiStitchedDial0.LockCursor := True;
 end;

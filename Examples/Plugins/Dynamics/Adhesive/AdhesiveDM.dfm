@@ -1,5 +1,4 @@
 object AdhesiveDataModule: TAdhesiveDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Fast Compressor'
@@ -8,7 +7,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   numInputs = 3
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DVFC'
@@ -60,7 +58,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Threshold'
@@ -80,7 +77,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'MakeUp Gain'
@@ -118,7 +114,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'
@@ -176,7 +171,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Mix'
@@ -192,7 +186,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Active'
@@ -210,7 +203,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'PeakClip'
@@ -247,7 +239,6 @@ object AdhesiveDataModule: TAdhesiveDataModule
       OnParameterChange = ParameterSideChainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Sidechain'
       DisplayName = 'External Sidechain'

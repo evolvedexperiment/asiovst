@@ -175,8 +175,8 @@ object FmHumRemoval: TFmHumRemoval
       Max = 200.000000000000000000
       Min = 2.000000000000000000
       OnChange = DialHighpassFrequencyChange
-      StitchedImageIndex = 0
-      StitchedImageList = GSPL
+      ImageIndex = 0
+      ImageList = GSPL
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -189,8 +189,8 @@ object FmHumRemoval: TFmHumRemoval
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialHighpassOrderChange
-      StitchedImageIndex = 0
-      StitchedImageList = GSPL
+      ImageIndex = 0
+      ImageList = GSPL
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -313,8 +313,8 @@ object FmHumRemoval: TFmHumRemoval
       Max = 120.000000000000000000
       Min = 40.000000000000000000
       OnChange = DialFundamentalFrequencyChange
-      StitchedImageIndex = 0
-      StitchedImageList = GSPL
+      ImageIndex = 0
+      ImageList = GSPL
       Value = 40.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -327,8 +327,8 @@ object FmHumRemoval: TFmHumRemoval
       Max = 0.300000011920929000
       Min = 0.029999999329447750
       OnChange = DialNotchBandwidthChange
-      StitchedImageIndex = 0
-      StitchedImageList = GSPL
+      ImageIndex = 0
+      ImageList = GSPL
       Value = 0.029999999329447750
       WheelStep = 1.000000000000000000
     end

@@ -639,7 +639,9 @@ begin
    2 : OnProcess := VSTModuleProcessMidSide;
   else OnProcess := nil;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
+
+ // update GUI
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateChannel;
 end;

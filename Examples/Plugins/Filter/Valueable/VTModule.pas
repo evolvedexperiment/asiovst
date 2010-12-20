@@ -526,7 +526,7 @@ begin
    2 : OnProcess := VSTModuleProcessStereo;
   else OnProcess := nil;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateChannel;

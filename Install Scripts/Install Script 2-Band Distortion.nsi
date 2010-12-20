@@ -10,6 +10,7 @@ SetCompressor lzma
   !include "MUI.nsh"
   !include "x64.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -33,6 +34,7 @@ SetCompressor lzma
 ;Variables
 
   Var BugReportState
+  
 
 ;--------------------------------
 ;Interface Settings
@@ -103,7 +105,6 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 
-
 ;--------------------------------
 ;Installer Sections
 
@@ -116,7 +117,6 @@ Section "VST-Plugin" SecVstPlugin
   ${If} ${RunningX64}
   File "..\Bin\2-Band Distortion (x64).dll"
   ${Else}
-  ;ADD YOUR OWN FILES HERE...
   File "..\Bin\2-Band Distortion.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
@@ -166,8 +166,11 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd

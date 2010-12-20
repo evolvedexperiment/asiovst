@@ -42,8 +42,8 @@ object FmDialTest: TFmDialTest
     LockCursor = False
     Max = 100.000000000000000000
     OnChange = GuiStitchedDialChange
-    StitchedImageIndex = 0
-    StitchedImageList = GuiStitchedPNGList
+    ImageIndex = 0
+    ImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end
@@ -56,8 +56,8 @@ object FmDialTest: TFmDialTest
     Max = 2.000000000000000000
     Min = -2.000000000000000000
     OnChange = Dial0MappingChange
-    StitchedImageIndex = 0
-    StitchedImageList = GuiStitchedPNGList
+    ImageIndex = 0
+    ImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end
@@ -69,8 +69,8 @@ object FmDialTest: TFmDialTest
     LockCursor = False
     Max = 100.000000000000000000
     OnChange = GuiStitchedDialChange
-    StitchedImageIndex = 0
-    StitchedImageList = GuiStitchedPNGList
+    ImageIndex = 0
+    ImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end
@@ -82,8 +82,8 @@ object FmDialTest: TFmDialTest
     LockCursor = False
     Max = 100.000000000000000000
     OnChange = GuiStitchedDial3Change
-    StitchedImageIndex = 0
-    StitchedImageList = GuiStitchedPNGList
+    ImageIndex = 0
+    ImageList = GuiStitchedPNGList
     Transparent = True
     WheelStep = 0.009999999776482582
   end

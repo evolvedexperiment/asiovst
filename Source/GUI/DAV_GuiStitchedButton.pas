@@ -66,8 +66,8 @@ type
   TGuiStitchedButton = class(TCustomGuiStitchedButton)
   published
     property AutoSize;
-    property StitchedImageList;
-    property StitchedImageIndex;
+    property ImageList;
+    property ImageIndex;
     property Transparent;
 
     property OnChange;
@@ -89,8 +89,8 @@ end;
 procedure TCustomGuiStitchedButton.CMEnabledChanged(var Message:
   {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
- if Assigned(FStitchedItem) then
-  with FStitchedItem do
+ if Assigned(FImageItem) then
+  with StitchedImageItem do
    if (GlyphCount > 2) and (not Enabled)
     then GlyphIndex := 2 else
    if (GlyphCount > 3) and FMouseInRect
@@ -102,8 +102,8 @@ procedure TCustomGuiStitchedButton.CMMouseEnter(var Message:
   {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FMouseInRect := True;
- if Enabled and Assigned(FStitchedItem) then
-  with FStitchedItem do
+ if Enabled and Assigned(FImageItem) then
+  with StitchedImageItem do
    if (GlyphCount > 3) and (GlyphIndex = 0)
     then GlyphIndex := 3;
 end;
@@ -112,8 +112,8 @@ procedure TCustomGuiStitchedButton.CMMouseLeave(var Message:
     {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FMouseInRect := False;
- if Enabled and Assigned(FStitchedItem) then
-  with FStitchedItem do
+ if Enabled and Assigned(FImageItem) then
+  with StitchedImageItem do
    if (GlyphIndex = 3)
     then GlyphIndex := 0;
 end;
@@ -121,8 +121,8 @@ end;
 procedure TCustomGuiStitchedButton.MouseDown(Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- if Enabled and Assigned(FStitchedItem) then
-  with FStitchedItem do
+ if Enabled and Assigned(FImageItem) then
+  with StitchedImageItem do
    if (GlyphCount > 1)
     then GlyphIndex := 1;
 end;
@@ -130,8 +130,8 @@ end;
 procedure TCustomGuiStitchedButton.MouseUp(Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- if Enabled and Assigned(FStitchedItem) then
-  with FStitchedItem do
+ if Enabled and Assigned(FImageItem) then
+  with StitchedImageItem do
    if (GlyphCount > 3) then
     if FMouseInRect
      then GlyphIndex := 3 else

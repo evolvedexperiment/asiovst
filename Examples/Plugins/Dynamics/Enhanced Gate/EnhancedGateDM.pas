@@ -121,12 +121,12 @@ begin
  if Boolean(Round(Value)) then
   begin
    OnProcess := VSTModuleProcess;
-   OnProcessReplacing := OnProcess;
+   OnProcess32Replacing := OnProcess;
   end
  else
   begin
    OnProcess := VSTModuleProcessBypass;
-   OnProcessReplacing := OnProcess;
+   OnProcess32Replacing := OnProcess;
   end;
  if assigned(EditorForm) then
   with TEditorForm(EditorForm) do

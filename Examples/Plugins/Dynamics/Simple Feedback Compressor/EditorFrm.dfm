@@ -183,8 +183,8 @@ object EditorForm: TEditorForm
       Max = 200.000000000000000000
       OnChange = DialRatioChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialRelease: TGuiStitchedDial
@@ -197,8 +197,8 @@ object EditorForm: TEditorForm
       Min = 699.000000000000000000
       OnChange = DialReleaseChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       Value = 699.000000000000000000
       WheelStep = 1.000000000000000000
     end
@@ -212,8 +212,8 @@ object EditorForm: TEditorForm
       Min = -96.000000000000000000
       OnChange = DialThresholdChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
     object DialAttack: TGuiStitchedDial
@@ -226,8 +226,8 @@ object EditorForm: TEditorForm
       Min = -200.000000000000000000
       OnChange = DialAttackChange
       ParentColor = False
-      StitchedImageList = GSPL
-      StitchedImageIndex = 0
+      ImageList = GSPL
+      ImageIndex = 0
       WheelStep = 1.000000000000000000
     end
   end

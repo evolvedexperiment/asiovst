@@ -89,8 +89,8 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialSpeedChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     Value = 0.009999999776482582
     WheelStep = 1.000000000000000000
   end
@@ -101,8 +101,8 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Height = 36
     Max = 100.000000000000000000
     OnChange = DialDepthChange
-    StitchedImageIndex = 0
-    StitchedImageList = GSPL
+    ImageIndex = 0
+    ImageList = GSPL
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

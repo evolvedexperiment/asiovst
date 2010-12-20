@@ -326,7 +326,7 @@ begin
   pmHighpass : OnProcess := VSTModuleProcessHighpass;
   pmBandpass : OnProcess := VSTModuleProcessBandpass;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley

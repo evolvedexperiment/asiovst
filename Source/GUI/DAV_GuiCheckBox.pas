@@ -220,6 +220,7 @@ end;
 procedure TGuiControlsCheckBox.CreateParams(var Params: TCreateParams);
 begin
  inherited;
+
  if FFlat then
   with Params do Style := (Style and not $1F) or BS_OWNERDRAW;
 end;

@@ -38,7 +38,7 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, Graphics, DAV_Types, DAV_VSTModule, DAV_GuiLabel,
   DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
-  DAV_GuiPng, DAV_GuiFont;
+  DAV_GuiPng, DAV_GuiFont, DAV_GuiImageControl;
 
 type
   TFmChebyshevWaveshaper = class(TForm)
@@ -80,19 +80,19 @@ begin
      FDials[i] := TGuiStitchedDial.Create(Self);
      with FDials[i] do
       begin
-       Parent   := Self;
-       Anchors  := [];
-       Width    := 48;
-       Height   := 48;
-       Left     := 8 + (i mod 6 * (Width + 8));
-       Top      := 8 + (i div 6) * 72;
-       StitchedImageList  := GSPL;
-       StitchedImageIndex := 0;
-       Min                := -1;
-       Max                := 1;
-       Tag                := i;
-       Value              := Sign(Parameter[i]) * Sqr(Parameter[i]);
-       OnChange           := GuiDialChange;
+       Parent     := Self;
+       Anchors    := [];
+       Width      := 48;
+       Height     := 48;
+       Left       := 8 + (i mod 6 * (Width + 8));
+       Top        := 8 + (i div 6) * 72;
+       ImageList  := GSPL;
+       ImageIndex := 0;
+       Min        := -1;
+       Max        := 1;
+       Tag        := i;
+       Value      := Sign(Parameter[i]) * Sqr(Parameter[i]);
+       OnChange   := GuiDialChange;
       end;
      FLabels[i] := TGuiLabel.Create(Self);
      with FLabels[i] do

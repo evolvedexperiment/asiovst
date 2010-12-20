@@ -168,16 +168,17 @@ object FmJNDEQT: TFmJNDEQT
     Width = 84
     Height = 8
     Anchors = [akLeft, akTop, akRight]
-    BorderRadius = 3
+    BorderRadius = 3.000000000000000000
+    BorderWidth = 1.000000000000000000
     Color = 8620693
     DefaultValue = 3.000000000000000000
     Max = 3.000000000000000000
     Min = -30.000000000000000000
-    OnChange = SliderVolumeChange
     ParentColor = False
     Value = 3.000000000000000000
     SlideColor = clBlack
     Transparent = True
+    OnChange = SliderVolumeChange
   end
   object BtMedia: TGuiMediaButton
     Left = 8
@@ -392,17 +393,18 @@ object FmJNDEQT: TFmJNDEQT
       Width = 179
       Height = 8
       Anchors = [akLeft, akTop, akRight]
-      BorderRadius = 3
+      BorderRadius = 3.000000000000000000
+      BorderWidth = 1.000000000000000000
       Color = 8620693
       CurveMapping = 1.000000000000000000
       DefaultValue = 3.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
-      OnChange = SliderBandwidthChange
       ParentColor = False
       Value = 3.000000000000000000
       SlideColor = clBlack
       Transparent = True
+      OnChange = SliderBandwidthChange
     end
     object SliderFrequency: TGuiSlider
       Left = 68
@@ -410,17 +412,18 @@ object FmJNDEQT: TFmJNDEQT
       Width = 179
       Height = 8
       Anchors = [akLeft, akTop, akRight]
-      BorderRadius = 3
+      BorderRadius = 3.000000000000000000
+      BorderWidth = 1.000000000000000000
       Color = 8620693
       CurveMapping = 2.000000000000000000
       DefaultValue = 1000.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = SliderFrequencyChange
       ParentColor = False
       Value = 1000.000000000000000000
       SlideColor = clBlack
       Transparent = True
+      OnChange = SliderFrequencyChange
     end
     object SliderGain: TGuiSlider
       Left = 68
@@ -428,16 +431,17 @@ object FmJNDEQT: TFmJNDEQT
       Width = 179
       Height = 8
       Anchors = [akLeft, akTop, akRight]
-      BorderRadius = 3
+      BorderRadius = 3.000000000000000000
+      BorderWidth = 1.000000000000000000
       Color = 8620693
       DefaultValue = 15.000000000000000000
       Max = 15.000000000000000000
       Min = -15.000000000000000000
-      OnChange = SliderGainChange
       ParentColor = False
       Value = 15.000000000000000000
       SlideColor = clBlack
       Transparent = True
+      OnChange = SliderGainChange
     end
   end
   object PnSelectorA: TGuiPanel

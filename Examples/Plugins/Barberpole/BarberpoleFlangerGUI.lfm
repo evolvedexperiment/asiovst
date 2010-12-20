@@ -203,8 +203,8 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Max = 10.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialSpeedChange
-    StitchedImageList = DSIL
-    StitchedImageIndex = 0
+    ImageList = DSIL
+    ImageIndex = 0
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
   end
@@ -216,8 +216,8 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Max = 8.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialStagesChange
-    StitchedImageList = DSIL
-    StitchedImageIndex = 0
+    ImageList = DSIL
+    ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -228,8 +228,8 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Height = 36
     Max = 100.000000000000000000
     OnChange = DialDepthChange
-    StitchedImageList = DSIL
-    StitchedImageIndex = 0
+    ImageList = DSIL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -240,8 +240,8 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Height = 36
     Max = 100.000000000000000000
     OnChange = DialMixChange
-    StitchedImageList = DSIL
-    StitchedImageIndex = 0
+    ImageList = DSIL
+    ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
   end

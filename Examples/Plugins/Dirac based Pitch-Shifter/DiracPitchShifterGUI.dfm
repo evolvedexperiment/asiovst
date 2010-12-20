@@ -49,8 +49,8 @@ object FmDiracPitchShifter: TFmDiracPitchShifter
     Max = 12.000000000000000000
     Min = -12.000000000000000000
     OnChange = DialSemitonesChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

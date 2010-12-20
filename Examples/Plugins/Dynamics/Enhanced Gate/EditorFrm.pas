@@ -40,7 +40,7 @@ uses
   DAV_GuiPixelMap, DAV_GuiPng, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLED,
   DAV_GuiGroup, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
   DAV_GuiStitchedDial, DAV_GuiGraphicControl, DAV_GuiLabel,
-  DAV_GuiCustomControl;
+  DAV_GuiCustomControl, DAV_GuiImageControl, Gauges;
 
 type
   TEditorForm = class(TForm)

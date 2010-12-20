@@ -285,8 +285,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 6.000000000000000000
     Min = -96.000000000000000000
     OnChange = DialThresholdChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = -30.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -298,8 +298,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 13.000000000000000000
     Min = 6.000000000000000000
     OnChange = DialFftOrderChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 9.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -312,8 +312,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     OnChange = DialRatioChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 10.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -325,8 +325,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     OnChange = DialKneeChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -339,8 +339,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 100.000000000000000000
     Min = 0.009999999776482582
     OnChange = DialAttackChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 0.500000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -353,8 +353,8 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     Max = 300.000000000000000000
     Min = 0.500000000000000000
     OnChange = DialReleaseChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
   end

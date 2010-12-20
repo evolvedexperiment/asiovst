@@ -22,8 +22,8 @@ object FmPhaseAdjustment: TFmPhaseAdjustment
     Height = 192
     Max = 360.000000000000000000
     ScrollRange = 600.000000000000000000
-    StitchedImageList = PngList
-    StitchedImageIndex = 0
+    ImageList = PngList
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
     Wrap = True
     OnChange = PhaseDialChange

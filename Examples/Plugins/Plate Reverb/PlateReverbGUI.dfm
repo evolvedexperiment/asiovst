@@ -276,8 +276,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDryChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialWet: TGuiStitchedDial
@@ -287,8 +287,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialWetChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialPreDelay: TGuiStitchedDial
@@ -298,8 +298,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialPreDelayChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDampingFrequency: TGuiStitchedDial
@@ -311,8 +311,8 @@ object FmPlateReverb: TFmPlateReverb
     Max = 13500.000000000000000000
     Min = 135.000000000000000000
     OnChange = DialDampingFrequencyChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     Value = 135.000000000000000000
     WheelStep = 1.000000000000000000
   end
@@ -323,8 +323,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialInputDiffusionChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDecayDiffusion: TGuiStitchedDial
@@ -334,8 +334,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDecayDiffusionChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialDecay: TGuiStitchedDial
@@ -345,8 +345,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDecayChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object DialModulation: TGuiStitchedDial
@@ -356,8 +356,8 @@ object FmPlateReverb: TFmPlateReverb
     Height = 48
     Max = 100.000000000000000000
     OnChange = DialDecayDiffusionChange
-    StitchedImageList = GSPL
-    StitchedImageIndex = 0
+    ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList

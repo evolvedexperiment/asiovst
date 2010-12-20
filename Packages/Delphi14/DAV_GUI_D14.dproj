@@ -130,6 +130,10 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiCustomControl.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiRadioButton.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiCheckBox.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiEdit.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiStitchedRadioSwitch.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiFader.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiImageControl.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -182,7 +186,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-12-19 02:17</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-12-20 00:14</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

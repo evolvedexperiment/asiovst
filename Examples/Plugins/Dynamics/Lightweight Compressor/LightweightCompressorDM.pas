@@ -54,16 +54,16 @@ type
     procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterStereoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCompressor : array [0..1] of TCustomKneeCompressor;
@@ -153,7 +153,7 @@ begin
        1 : OnProcess := VSTModuleProcessStereoSoftClip;
       end;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 function TLightweightCompressorDataModule.GetLightweightCompressor(Index: Integer): TCustomKneeCompressor;
@@ -259,7 +259,7 @@ begin
 end;
 
 procedure TLightweightCompressorDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -271,7 +271,7 @@ begin
 end;
 
 procedure TLightweightCompressorDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -284,7 +284,7 @@ begin
 end;
 
 procedure TLightweightCompressorDataModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
@@ -304,25 +304,25 @@ begin
 end;
 
 procedure TLightweightCompressorDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightCompressorDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightCompressorDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightCompressorDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case round(Parameter[Index]) of
   0 : PreDefined := 'Off';
