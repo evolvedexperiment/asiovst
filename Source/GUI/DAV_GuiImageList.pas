@@ -1,4 +1,4 @@
-unit MaxxBassCloneGUI;
+unit DAV_GuiImageList;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -32,57 +32,59 @@ unit MaxxBassCloneGUI;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiLevelMeter,
-  DAV_GuiSlider, DAV_GuiButton, DAV_GuiGraphicControl, DAV_GuiEQGraph,
-  DAV_GuiImageControl, DAV_GuiPngList, DAV_GuiCustomControl, DAV_GuiFader;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
+  {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
+  DAV_GuiCommon, DAV_GuiImageControl;
 
 type
-  TFmHarmonicBassClone = class(TForm)
-    OutputMeterLeft: TGuiColorLevelMeter;
-    OutputMeterRight: TGuiColorLevelMeter;
-    EqGraph: TGuiEQGraph;
-    LbOutput: TGuiLabel;
-    LbAudio: TGuiButton;
-    LbMaxxBass: TGuiButton;
-    LbOriginalBass: TGuiButton;
-    LbClipIndicator: TGuiButton;
-    GuiLabel2: TGuiLabel;
-    SBFrequency: TGuiSlider;
-    GuiButton1: TGuiButton;
-    GuiButton2: TGuiButton;
-    GuiButton3: TGuiButton;
-    GuiButton4: TGuiButton;
-    GuiButton5: TGuiButton;
-    GuiButton6: TGuiButton;
-    GuiButton7: TGuiButton;
-    GuiButton8: TGuiButton;
-    GuiButton9: TGuiButton;
-    GuiFader1: TGuiFader;
-    GuiPNGList: TGuiPNGList;
-    GuiFader2: TGuiFader;
-    GuiFader3: TGuiFader;
-    GuiLabel1: TGuiLabel;
-    GuiLabel3: TGuiLabel;
-    GuiLabel4: TGuiLabel;
-  private
-    { Private-Deklarationen }
+  TGuiImageList = class(TGuiCustomImageList)
+  protected
+    FImageCollection : TGuiImageCollection;
+    function GetItems(Index: Integer): TGuiCustomImageCollectionItem; override;
+    function GetCount: Integer; override;
   public
-    { Public-Deklarationen }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property Images: TGuiImageCollection read FImageCollection write FImageCollection;
   end;
-
-var
-  FmHarmonicBassClone: TFmHarmonicBassClone;
 
 implementation
 
-{$IFDEF FPC}
-{$R *.lfm}
-{$ELSE}
-{$R *.dfm}
-{$ENDIF}
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+
+
+{ TGuiImageList }
+
+constructor TGuiImageList.Create(AOwner: TComponent);
+begin
+ inherited;
+ FImageCollection := TGuiImageCollection.Create(Self, TGuiImageCollectionItem);
+end;
+
+destructor TGuiImageList.Destroy;
+begin
+ FreeAndNil(FImageCollection);
+ inherited;
+end;
+
+function TGuiImageList.GetCount: Integer;
+begin
+ Result := FImageCollection.Count;
+end;
+
+function TGuiImageList.GetItems(
+  Index: Integer): TGuiCustomImageCollectionItem;
+begin
+ Assert(Assigned(FImageCollection));
+ if (Index >= 0) and (Index < FImageCollection.Count)
+  then Result := TGuiCustomImageCollectionItem(FImageCollection[Index])
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
 
 end.
+

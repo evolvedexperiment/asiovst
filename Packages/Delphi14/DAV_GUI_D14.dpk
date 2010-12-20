@@ -108,6 +108,8 @@ contains
   DAV_GuiEdit in '..\..\Source\GUI\DAV_GuiEdit.pas',
   DAV_GuiStitchedRadioSwitch in '..\..\Source\GUI\DAV_GuiStitchedRadioSwitch.pas',
   DAV_GuiFader in '..\..\Source\GUI\DAV_GuiFader.pas',
-  DAV_GuiImageControl in '..\..\Source\GUI\DAV_GuiImageControl.pas';
+  DAV_GuiImageControl in '..\..\Source\GUI\DAV_GuiImageControl.pas',
+  DAV_GuiImageList in '..\..\Source\GUI\DAV_GuiImageList.pas',
+  DAV_GuiPngList in '..\..\Source\GUI\DAV_GuiPngList.pas';
 
 end.

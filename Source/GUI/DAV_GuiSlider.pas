@@ -55,7 +55,7 @@ type
     FDefaultValue    : Single;
     FDigits          : Integer;
     FDirection       : TSliderDirection;
-    FMin, FMax       : Single;
+    FMinimum, FMaximum       : Single;
     FShowText        : Boolean;
     FSlideColor      : TColor;
     FValue           : Single;
@@ -118,8 +118,8 @@ type
     property DefaultValue: Single read FDefaultValue write SetDefaultValue;
     property Digits: Integer read FDigits write SetDigits default 4;
     property Direction: TSliderDirection read FDirection write SetDirection default sdLeftToRight;
-    property Max: Single read FMax write SetMax;
-    property Min: Single read FMin write SetMin;
+    property Max: Single read FMaximum write SetMax;
+    property Min: Single read FMinimum write SetMin;
     property Value: Single read FValue write SetValue;
     property SlideColor: TColor read FSlideColor write SetSlideColor default $303030;
     property ShowText: Boolean read FShowText write SetShowText default False;
@@ -264,8 +264,8 @@ begin
  FDirection    := sdLeftToRight;
  FShowText     := False;
 
- FMin          :=   0;
- FMax          := 100;
+ FMinimum          :=   0;
+ FMaximum          := 100;
  FValue        :=  50;
  FDefaultValue :=  50;
 
@@ -291,8 +291,8 @@ begin
     FCurveMapping    := Self.FCurveMapping;
     FCurveMappingExp := Self.FCurveMappingExp;
     FDefaultValue    := Self.FDefaultValue;
-    FMax             := Self.FMax;
-    FMin             := Self.FMin;
+    FMaximum             := Self.FMaximum;
+    FMinimum             := Self.FMinimum;
     FSlideColor      := Self.FSlideColor;
     FValue           := Self.FValue;
     FOnPaint         := Self.FOnPaint;
@@ -374,8 +374,8 @@ procedure TCustomGuiSlider.SetDefaultValue(Value: Single);
 begin
  if not (csLoading in ComponentState) then
   begin
-   if Value < FMin then Value := FMin else
-   if Value > FMax then Value := FMax;
+   if Value < FMinimum then Value := FMinimum else
+   if Value > FMaximum then Value := FMaximum;
   end;
 
  FDefaultValue := Value;
@@ -412,49 +412,49 @@ end;
 
 procedure TCustomGuiSlider.SetMax(const Value: Single);
 begin
-  if Value <> FMax then
+  if Value <> FMaximum then
   begin
    {$IFNDEF FPC}
-   if (Value < FMin) and not (csLoading in ComponentState) then
-     raise EInvalidOperation.CreateFmt(SOutOfRange, [FMin + 1, MaxInt]);
+   if (Value < FMinimum) and not (csLoading in ComponentState) then
+     raise EInvalidOperation.CreateFmt(SOutOfRange, [FMinimum + 1, MaxInt]);
    {$ENDIF}
 
-   FMax := Value;
+   FMaximum := Value;
    MaximumChanged;
   end;
 end;
 
 procedure TCustomGuiSlider.SetMin(const Value: Single);
 begin
-  if Value <> FMin then
+  if Value <> FMinimum then
   begin
    {$IFNDEF FPC}
-   if (Value > FMax) and not (csLoading in ComponentState) then
-    raise EInvalidOperation.CreateFmt(SOutOfRange, [-MaxInt, FMax - 1]);
+   if (Value > FMaximum) and not (csLoading in ComponentState) then
+    raise EInvalidOperation.CreateFmt(SOutOfRange, [-MaxInt, FMaximum - 1]);
    {$ENDIF}
 
-   FMin := Value;
+   FMinimum := Value;
   end;
 end;
 
 procedure TCustomGuiSlider.MaximumChanged;
 begin
- if FValue > FMax then FValue := FMax;
- if FDefaultValue > FMax then FDefaultValue := FMax;
+ if FValue > FMaximum then FValue := FMaximum;
+ if FDefaultValue > FMaximum then FDefaultValue := FMaximum;
  ControlChanged;
 end;
 
 procedure TCustomGuiSlider.MinimumChanged;
 begin
- if FValue < FMin then FValue := FMin;
- if FDefaultValue < FMin then FDefaultValue := FMin;
+ if FValue < FMinimum then FValue := FMinimum;
+ if FDefaultValue < FMinimum then FDefaultValue := FMinimum;
  ControlChanged;
 end;
 
 procedure TCustomGuiSlider.SetValue(Value: Single);
 begin
-  if Value < FMin then Value := FMin else
-  if Value > FMax then Value := FMax;
+  if Value < FMinimum then Value := FMinimum else
+  if Value > FMaximum then Value := FMaximum;
 
   if FValue <> Value then
    begin
@@ -476,7 +476,7 @@ end;
 
 procedure TCustomGuiSlider.ReadMaxProperty(Reader: TReader);
 begin
- FMax := Reader.ReadFloat;
+ FMaximum := Reader.ReadFloat;
 end;
 
 procedure TCustomGuiSlider.ReadValueProperty(Reader: TReader);
@@ -571,7 +571,7 @@ end;
 
 procedure TCustomGuiSlider.WriteMaxProperty(Writer: TWriter);
 begin
- Writer.WriteFloat(FMax);
+ Writer.WriteFloat(FMaximum);
 end;
 
 procedure TCustomGuiSlider.WriteValueProperty(Writer: TWriter);
@@ -660,7 +660,7 @@ begin
  if Button = mbLeft then
   begin
    NormalizedPosition := X / (Width - 1);
-   Value := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
+   Value := Limit(FMinimum + MapValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
   end;
 
  inherited;
@@ -673,7 +673,7 @@ begin
  if ssLeft in Shift then
   begin
    NormalizedPosition := X / (Width - 1);
-   Value := Limit(FMin + MapValue(NormalizedPosition) * (FMax - FMin), FMin, FMax);
+   Value := Limit(FMinimum + MapValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
   end;
 
  inherited;
@@ -779,7 +779,7 @@ begin
     then BorderColor := ConvertColor(FBorderColor)
     else BorderColor := SliderColor;
 
-   XPos := Round(Width * UnmapValue((FValue - FMin) / (FMax - FMin)));
+   XPos := Round(Width * UnmapValue((FValue - FMinimum) / (FMaximum - FMinimum)));
 
    // initialize variables
    Radius := FBorderRadius;
