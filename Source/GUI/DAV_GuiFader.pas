@@ -101,6 +101,11 @@ type
     property Orientation;
     property ImageIndex;
     property ImageList;
+    property CurveMapping;
+    property DefaultValue;
+    property Minimum;
+    property Maximum;
+    property Value;
   end;
 
 implementation
