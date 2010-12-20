@@ -39,7 +39,8 @@ uses
   Forms, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_VSTModule,
   DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiSelectBox,
   DAV_GuiButton, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
 

@@ -45,8 +45,8 @@ type
   TCustomGuiStitchedDial = class(TGuiCustomStitchedControl)
   private
     FLockCursor          : Boolean;
-    FMax                 : Single;
-    FMin                 : Single;
+    FMaximum             : Single;
+    FMinimum             : Single;
     FNormalizedPosition  : Single;
     FIgnoreNextMouseMove : Boolean;
     FValue               : Single;
@@ -105,8 +105,8 @@ type
 
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
     property LockCursor: Boolean read FLockCursor write FLockCursor default False;
-    property Max: Single read FMax write SetMax;
-    property Min: Single read FMin write SetMin;
+    property Max: Single read FMaximum write SetMax;
+    property Min: Single read FMinimum write SetMin;
     property Value: Single read FValue write SetValue;
     property DefaultValue: Single read FDefaultValue write SetDefaultValue;
     property ScrollRange: Single read FScrollRange write FScrollRange;
@@ -171,8 +171,8 @@ resourcestring
 constructor TCustomGuiStitchedDial.Create(AOwner: TComponent);
 begin
  inherited;
- FMin                 := 0;
- FMax                 := 100;
+ FMinimum                 := 0;
+ FMaximum                 := 100;
  FValue               := 0;
  FDefaultValue        := 0;
  FCurveMapping        := 0;
@@ -193,7 +193,7 @@ end;
 
 procedure TCustomGuiStitchedDial.ReadMaxProperty(Reader: TReader);
 begin
- FMax := Reader.ReadFloat;
+ FMaximum := Reader.ReadFloat;
 end;
 
 procedure TCustomGuiStitchedDial.ReadValueProperty(Reader: TReader);
@@ -208,7 +208,7 @@ end;
 
 procedure TCustomGuiStitchedDial.WriteMaxProperty(Writer: TWriter);
 begin
- Writer.WriteFloat(FMax);
+ Writer.WriteFloat(FMaximum);
 end;
 
 procedure TCustomGuiStitchedDial.WriteValueProperty(Writer: TWriter);
@@ -234,7 +234,7 @@ end;
 
 function TCustomGuiStitchedDial.GetNormalizedValue: Single;
 begin
- Result := (Value - FMin) * FRangeReciprocal;
+ Result := (Value - FMinimum) * FRangeReciprocal;
 end;
 
 procedure TCustomGuiStitchedDial.Loaded;
@@ -251,7 +251,7 @@ end;
 
 procedure TCustomGuiStitchedDial.CalculateRange;
 begin
- FRange := FMax - FMin;
+ FRange := FMaximum - FMinimum;
  if FRange <> 0
   then FRangeReciprocal := 1 / FRange
   else FRangeReciprocal := 1;
@@ -281,7 +281,7 @@ end;
 
 function TCustomGuiStitchedDial.CalculateValueFromNormalizedPosition: Double;
 begin
- Result := FMin +
+ Result := FMinimum +
    MapNormalizedPositionToNormalizedValue(FNormalizedPosition) * FRange;
 end;
 
@@ -415,21 +415,21 @@ begin
  if Assigned(FImageItem) then
   begin
    MappedNormalizedValue := MapNormalizedValueToNormalizedPosition(
-     (DefaultValue - FMin) * FRangeReciprocal);
+     (DefaultValue - FMinimum) * FRangeReciprocal);
    DefaultGlyphIndex := Round(MappedNormalizedValue * StitchedImageItem.GlyphCount);
   end;
 end;
 
 procedure TCustomGuiStitchedDial.MaximumChanged;
 begin
- if FValue > FMax then FValue := FMax;
+ if FValue > FMaximum then FValue := FMaximum;
  CalculateRange;
  BufferChanged;
 end;
 
 procedure TCustomGuiStitchedDial.MinimumChanged;
 begin
- if FValue < FMin then FValue := FMin;
+ if FValue < FMinimum then FValue := FMinimum;
  CalculateRange;
  BufferChanged;
 end;
@@ -475,31 +475,31 @@ end;
 
 procedure TCustomGuiStitchedDial.SetMax(const Value: Single);
 begin
- if Value <> FMax then
+ if Value <> FMaximum then
   begin
-   if Value < FMin then
+   if Value < FMinimum then
     if not (csLoading in ComponentState) then
-     raise EInvalidOperation.CreateFmt(RCStrOutOfRange, [FMin + 1, MaxInt]);
-   FMax := Value;
+     raise EInvalidOperation.CreateFmt(RCStrOutOfRange, [FMinimum + 1, MaxInt]);
+   FMaximum := Value;
    MaximumChanged;
   end;
 end;
 
 procedure TCustomGuiStitchedDial.SetMin(const Value: Single);
 begin
- if Value <> FMin then
+ if Value <> FMinimum then
   begin
-   if Value > FMax then
+   if Value > FMaximum then
     if not (csLoading in ComponentState)
-     then raise EInvalidOperation.CreateFmt(RCStrOutOfRange, [-MaxInt, FMax - 1]);
-   FMin := Value;
+     then raise EInvalidOperation.CreateFmt(RCStrOutOfRange, [-MaxInt, FMaximum - 1]);
+   FMinimum := Value;
    MinimumChanged;
   end;
 end;
 
 procedure TCustomGuiStitchedDial.SetValue(Value: Single);
 begin
- Value := Limit(Value, FMin, FMax);
+ Value := Limit(Value, FMinimum, FMaximum);
 
  if FValue <> Value then
   begin

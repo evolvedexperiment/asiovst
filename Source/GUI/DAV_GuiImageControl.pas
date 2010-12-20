@@ -90,6 +90,15 @@ type
     property Width: Integer read GetWidth write SetWidth;
   end;
 
+  TGuiImageCollectionItem = class(TGuiCustomImageCollectionItem)
+  published
+    property DisplayName;
+    property PixelMap;
+    property OnChange;
+    property Height;
+    property Width;
+  end;
+
   TGuiCustomImageList = class(TComponent)
   protected
     FLinkedControls  : TObjectList;
@@ -112,19 +121,26 @@ type
   protected
     FImageCollection : TGuiImageCollection;
     function GetItems(Index: Integer): TGuiCustomImageCollectionItem; override;
+    function GetCount: Integer; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property Images: TGuiImageCollection read FImageCollection write FImageCollection;
   end;
 
   TGuiCustomImageControl = class(TGuiCustomControl)
   private
     function GetImageIndex: Integer;
     procedure SetImageIndex(Value: Integer);
-    procedure SetImageList(const Value: TGuiCustomImageList);
     procedure SetImageItem(Value: TGuiCustomImageCollectionItem);
   protected
     FOnChange   : TNotifyEvent;
     FImageList  : TGuiCustomImageList;
     FImageItem  : TGuiCustomImageCollectionItem;
     FImageIndex : Integer;
+
+    procedure SetImageList(const Value: TGuiCustomImageList);
 
     procedure Changed; reintroduce; virtual;
     procedure ImageIndexChanged; virtual;
@@ -344,6 +360,23 @@ end;
 
 { TGuiImageList }
 
+constructor TGuiImageList.Create(AOwner: TComponent);
+begin
+ inherited;
+ FImageCollection := TGuiImageCollection.Create(Self, TGuiImageCollectionItem);
+end;
+
+destructor TGuiImageList.Destroy;
+begin
+ FreeAndNil(FImageCollection);
+ inherited;
+end;
+
+function TGuiImageList.GetCount: Integer;
+begin
+ Result := FImageCollection.Count;
+end;
+
 function TGuiImageList.GetItems(
   Index: Integer): TGuiCustomImageCollectionItem;
 begin
@@ -360,10 +393,10 @@ constructor TGuiCustomImageControl.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
  {$IFDEF FPC}
- DoubleBuffered     := True;
+ DoubleBuffered := True;
  {$ENDIF}
 
- ControlStyle       := ControlStyle + [csOpaque];
+ ControlStyle   := ControlStyle + [csOpaque];
 end;
 
 destructor TGuiCustomImageControl.Destroy;

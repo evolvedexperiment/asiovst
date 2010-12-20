@@ -94,7 +94,9 @@ type
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetGlyphIndex(Value: Integer);
     procedure SetDefaultGlyphIndex(Value: Integer);
+    procedure SetStitchedImageList(const Value: TGuiCustomStitchedList);
     function GetStitchedImageItem: TGuiCustomStitchedCollectionItem;
+    function GetStitchedImageList: TGuiCustomStitchedList;
   protected
     FAutoSize           : Boolean;
     FGlyphIndex         : Integer;
@@ -116,6 +118,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    property ImageList: TGuiCustomStitchedList read GetStitchedImageList write SetStitchedImageList;
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property GlyphCount: Integer read GetGlyphCount;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -377,6 +380,12 @@ begin
   end;
 end;
 
+procedure TGuiCustomStitchedControl.SetStitchedImageList(
+  const Value: TGuiCustomStitchedList);
+begin
+ inherited SetImageList(Value);
+end;
+
 procedure TGuiCustomStitchedControl.Changed;
 begin
  inherited Changed;
@@ -399,7 +408,15 @@ end;
 
 function TGuiCustomStitchedControl.GetStitchedImageItem: TGuiCustomStitchedCollectionItem;
 begin
- Result := TGuiCustomStitchedCollectionItem(ImageItem);
+ Assert(ImageItem is TGuiCustomStitchedCollectionItem);
+ Result := TGuiCustomStitchedCollectionItem(ImageItem)
+end;
+
+function TGuiCustomStitchedControl.GetStitchedImageList: TGuiCustomStitchedList;
+begin
+ if FImageList is TGuiCustomStitchedList
+  then Result := TGuiCustomStitchedList(FImageList)
+  else Result := nil;
 end;
 
 procedure TGuiCustomStitchedControl.GlyphIndexChanged;
