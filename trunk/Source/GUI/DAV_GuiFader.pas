@@ -54,12 +54,14 @@ type
     FRange              : Single;
     FRangeReciprocal    : Single;
     FValue              : Single;
+    FDrawCenterLine     : Boolean;
     procedure SetOrientation(const Value: TFaderOrientation);
     procedure SetMaximum(const Value: Single);
     procedure SetMinimum(const Value: Single);
     procedure SetValue(const Value: Single);
     procedure SetCurveMapping(const Value: Single);
     procedure SetDefaultValue(const Value: Single);
+    procedure SetDrawCenterLine(const Value: Boolean);
 
     procedure ReadMaxProperty(Reader: TReader);
     procedure WriteMaxProperty(Writer: TWriter);
@@ -79,9 +81,15 @@ type
     procedure OrientationChanged; virtual;
     procedure CurveMappingChanged; virtual;
     procedure DefaultValueChanged; virtual;
+    procedure DrawCenterLineChanged; virtual;
     procedure MaximumChanged; virtual;
     procedure MinimumChanged; virtual;
     procedure ValueChanged; virtual;
+    procedure UpdateBuffer; override;
+
+    // mouse input
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
 
     property Range: Single read FRange;
     property NormalizedValue: Single read GetNormalizedValue;
@@ -89,15 +97,17 @@ type
     constructor Create(AOwner: TComponent); override;
 
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
-    property Orientation: TFaderOrientation read FOrientation write SetOrientation;
+    property Orientation: TFaderOrientation read FOrientation write SetOrientation default foVertical;
     property DefaultValue: Single read FDefaultValue write SetDefaultValue;
     property Minimum: Single read FMinimum write SetMinimum;
     property Maximum: Single read FMaximum write SetMaximum;
     property Value: Single read FValue write SetValue;
+    property DrawCenterLine: Boolean read FDrawCenterLine write SetDrawCenterLine default False;
   end;
 
   TGuiFader = class(TGuiCustomFader)
   published
+    property Color;
     property Orientation;
     property ImageIndex;
     property ImageList;
@@ -111,7 +121,7 @@ type
 implementation
 
 uses
-  Math;
+  DAV_Common, DAV_GuiBlend, Math;
 
 { TGuiCustomFader }
 
@@ -125,6 +135,9 @@ begin
  FCurveMapping       := 0;
  FCurveMappingExp    := 1;
  FNormalizedPosition := 0;
+ FOrientation        := foVertical;
+ FDrawCenterLine     := True;
+ CalculateRange;
 end;
 
 procedure TGuiCustomFader.ReadDefaultValueProperty(Reader: TReader);
@@ -166,6 +179,62 @@ begin
    WriteDefaultValueProperty, DefaultValue = 0);
  Filer.DefineProperty('Value', ReadValueProperty,
    WriteValueProperty, Value = 0);
+end;
+
+procedure TGuiCustomFader.DrawCenterLineChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TGuiCustomFader.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+var
+  NormalizedPosition : Single;
+begin
+ if Button = mbLeft then
+  case Orientation of
+   foHorizontal :
+    begin
+     if Assigned(FImageItem)
+      then NormalizedPosition := Limit((X - FImageItem.Width div 2) / (Width - FImageItem.Width - 1), 0, 1)
+      else NormalizedPosition := Limit(X / (Width - 1), 0, 1);
+     Value := Limit(FMinimum + MapNormalizedPositionToNormalizedValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
+    end;
+   foVertical :
+    begin
+     if Assigned(FImageItem)
+      then NormalizedPosition := Limit((Y - FImageItem.Height div 2) / (Height - FImageItem.Height - 1), 0, 1)
+      else NormalizedPosition := Limit(Y / (Height - 1), 0, 1);
+     Value := Limit(FMinimum + MapNormalizedPositionToNormalizedValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
+    end;
+  end;
+
+ inherited;
+end;
+
+procedure TGuiCustomFader.MouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  NormalizedPosition : Single;
+begin
+ if ssLeft in Shift then
+  case Orientation of
+   foHorizontal :
+    begin
+     if Assigned(FImageItem)
+      then NormalizedPosition := Limit((X - FImageItem.Width div 2) / (Width - FImageItem.Width - 1), 0, 1)
+      else NormalizedPosition := Limit(X / (Width - 1), 0, 1);
+     Value := Limit(FMinimum + MapNormalizedPositionToNormalizedValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
+    end;
+   foVertical :
+    begin
+     if Assigned(FImageItem)
+      then NormalizedPosition := Limit((Y - FImageItem.Height div 2) / (Height - FImageItem.Height - 1), 0, 1)
+      else NormalizedPosition := Limit(Y / (Height - 1), 0, 1);
+     Value := Limit(FMinimum + MapNormalizedPositionToNormalizedValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
+    end;
+  end;
+
+ inherited;
 end;
 
 function TGuiCustomFader.GetNormalizedValue: Single;
@@ -216,13 +285,14 @@ end;
 
 procedure TGuiCustomFader.OrientationChanged;
 begin
- // nothing here yet
+ BufferChanged;
 end;
 
 procedure TGuiCustomFader.ValueChanged;
 begin
  // calculate new normalized position
  FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
+ BufferChanged;
 end;
 
 procedure TGuiCustomFader.CalculateExponentialCurveMapping;
@@ -253,6 +323,15 @@ begin
   begin
    FDefaultValue := Value;
    DefaultValueChanged;
+  end;
+end;
+
+procedure TGuiCustomFader.SetDrawCenterLine(const Value: Boolean);
+begin
+ if FDrawCenterLine <> Value then
+  begin
+   FDrawCenterLine := Value;
+   DrawCenterLineChanged;
   end;
 end;
 
@@ -290,6 +369,55 @@ begin
    FValue := Value;
    ValueChanged;
   end;
+end;
+
+procedure TGuiCustomFader.UpdateBuffer;
+var
+  Offset  : Integer;
+  Y, YOff : Integer;
+begin
+ inherited;
+
+ if Assigned(FImageItem) then
+  with FImageItem do
+   case FOrientation of
+    foHorizontal :
+     begin
+  //    FImageItem.PixelMap.Draw();
+     end;
+    foVertical :
+     begin
+      if FDrawCenterLine then
+       begin
+        FBuffer.VerticalLine(Self.Width div 2, Height div 2, Self.Height - Height div 2, pxBlack32);
+        FBuffer.VerticalLine(Self.Width div 2 + 1, Height div 2, Self.Height - Height div 2, pxBlack32);
+       end;
+
+      Offset := (Self.Width - FImageItem.Width) div 2;
+      YOff := Round(NormalizedValue * (Self.Height - PixelMap.Height));
+
+      if Offset > 0 then
+       for Y := 0 to FImageItem.Height - 1 do
+        begin
+         BlendLine(PixelMap.PixelPointer[0, Y],
+           FBuffer.PixelPointer[Offset, YOff + Y], PixelMap.Width);
+(*
+         Move(PixelMap.PixelPointer[0, Y]^, FBuffer.PixelPointer[Offset, YOff + Y]^,
+           PixelMap.Width * SizeOf(TPixel32));
+*)
+        end
+      else
+       for Y := 0 to FImageItem.Height - 1 do
+        begin
+         BlendLine(PixelMap.PixelPointer[-Offset, Y],
+           FBuffer.PixelPointer[0, YOff + Y], FBuffer.Width);
+(*
+         Move(PixelMap.PixelPointer[-Offset, Y]^, FBuffer.PixelPointer[0, YOff + Y]^,
+           FBuffer.Width * SizeOf(TPixel32));
+*)
+        end
+     end;
+   end;
 end;
 
 end.

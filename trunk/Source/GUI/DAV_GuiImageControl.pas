@@ -117,18 +117,6 @@ type
     property Count: Integer read GetCount;
   end;
 
-  TGuiImageList = class(TGuiCustomImageList)
-  protected
-    FImageCollection : TGuiImageCollection;
-    function GetItems(Index: Integer): TGuiCustomImageCollectionItem; override;
-    function GetCount: Integer; override;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-  published
-    property Images: TGuiImageCollection read FImageCollection write FImageCollection;
-  end;
-
   TGuiCustomImageControl = class(TGuiCustomControl)
   private
     function GetImageIndex: Integer;
@@ -169,10 +157,6 @@ implementation
 
 uses
   DAV_Common, DAV_GuiBlend;
-
-resourcestring
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
-  RCStrGlyphCountMustBePositive = 'The glyph count must be positive';
 
 
 { TGuiStitchedImageCollection }
@@ -355,35 +339,6 @@ begin
  while FLinkedControls.Count > 0 do
   with TGuiCustomImageControl(FLinkedControls[0])
    do SetImageList(nil);
-end;
-
-
-{ TGuiImageList }
-
-constructor TGuiImageList.Create(AOwner: TComponent);
-begin
- inherited;
- FImageCollection := TGuiImageCollection.Create(Self, TGuiImageCollectionItem);
-end;
-
-destructor TGuiImageList.Destroy;
-begin
- FreeAndNil(FImageCollection);
- inherited;
-end;
-
-function TGuiImageList.GetCount: Integer;
-begin
- Result := FImageCollection.Count;
-end;
-
-function TGuiImageList.GetItems(
-  Index: Integer): TGuiCustomImageCollectionItem;
-begin
- Assert(Assigned(FImageCollection));
- if (Index >= 0) and (Index < FImageCollection.Count)
-  then Result := TGuiCustomImageCollectionItem(FImageCollection[Index])
-  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 
