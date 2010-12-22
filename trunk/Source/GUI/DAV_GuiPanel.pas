@@ -44,30 +44,35 @@ type
   private
     FBorderVisible : Boolean;
     FPanelColor    : TColor;
-    FOwnerDraw     : Boolean;
+    FNative        : Boolean;
     FRoundRadius   : Single;
     FTransparent   : Boolean;
     FBorderWidth   : Single;
-    FLineColor     : TColor;
+    FBorderColor   : TColor;
     FBuffer        : TGuiPixelMapMemory;
     FBufferChanged : Boolean;
-    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMChanged(var Message: TMessage); message CM_CHANGED;
-
+    FAlpha         : Byte;
     procedure SetBorderVisible(const Value: Boolean);
-    procedure SetOwnerDraw(const Value: Boolean);
-    procedure SetLineColor(const Value: TColor);
+    procedure SetNative(const Value: Boolean);
+    procedure SetBorderColor(const Value: TColor);
     procedure SetBorderWidth(const Value: Single);
     procedure SetPanelColor(const Value: TColor);
     procedure SetRoundRadius(const Value: Single);
     procedure SetTransparent (const Value: Boolean);
+    procedure SetAlpha(const Value: Byte);
   protected
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMChanged(var Message: TMessage); message CM_CHANGED;
+    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure CMParentcolorchanged(var Message: TMessage); message CM_PARENTCOLORCHANGED;
+
     procedure Paint; override;
     procedure Resize; override;
     procedure PaintBitmap; virtual;
     procedure Loaded; override;
 
-    procedure OwnerDrawChanged; virtual;
+    procedure AlphaChanged; virtual;
+    procedure NativeChanged; virtual;
     procedure LineColorChanged; virtual;
     procedure BorderVisibleChanged; virtual;
     procedure BorderWidthChanged; virtual;
@@ -81,10 +86,11 @@ type
     destructor Destroy; override;
     procedure AssignTo(Dest: TPersistent); override;
 
+    property Alpha: Byte read FAlpha write SetAlpha default $FF;
     property BorderVisible: Boolean read FBorderVisible write SetBorderVisible default True;
     property PanelColor: TColor read FPanelColor write SetPanelColor default clBtnShadow;
-    property OwnerDraw: Boolean read FOwnerDraw write SetOwnerDraw default True;
-    property LineColor: TColor read FLineColor write SetLineColor default clBtnHighlight;
+    property Native: Boolean read FNative write SetNative default False;
+    property BorderColor: TColor read FBorderColor write SetBorderColor default clBtnHighlight;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property Radius: Single read FRoundRadius write SetRoundRadius;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
@@ -94,11 +100,13 @@ type
   published
     property Align;
     property Alignment;
+    property Alpha;
     property Anchors;
     property AutoSize;
     property BiDiMode;
+    property BorderColor;
     property BorderVisible;
-    property Caption;
+    property BorderWidth;
     property Color;
     property Constraints;
     property Cursor;
@@ -107,10 +115,8 @@ type
     property DragKind;
     property DragMode;
     property Enabled;
-    property OwnerDraw;
     property Hint;
-    property LineColor;
-    property BorderWidth;
+    property Native;
     property PanelColor;
     property ParentBiDiMode;
     property ParentColor;
@@ -154,7 +160,7 @@ implementation
 
 uses
   Types, SysUtils, Math, DAV_Common, DAV_Math, DAV_Complex, DAV_Approximations,
-  DAV_GuiCommon, DAV_GuiBlend;
+  DAV_GuiCommon, DAV_GuiBlend, DAV_GuiFixedPoint;
 
 
 { TCustomGuiPanel }
@@ -163,18 +169,24 @@ constructor TCustomGuiPanel.Create (AOwner: TComponent);
 begin
  inherited Create(AOwner);
  FPanelColor    := clBtnHighlight;
- FLineColor     := clBtnShadow;
+ FBorderColor     := clBtnShadow;
+ FAlpha         := $FF;
  FBorderWidth   := 2;
  FRoundRadius   := 2;
  FBorderVisible := True;
- FOwnerDraw     := True;
+ FNative        := False;
  FBuffer        := TGuiPixelMapMemory.Create;
  FBufferChanged := True;
  FTransparent   := False;
  ParentColor    := True;
  ControlStyle   := ControlStyle + [csAcceptsControls, csOpaque];
+
+ {$IFDEF FPC}
  DoubleBuffered := True;
- SetBounds(0, 0, 185, 41);
+ {$ENDIF}
+
+ // set initial bounds
+ SetBounds(0, 0, 128, 64);
 end;
 
 destructor TCustomGuiPanel.Destroy;
@@ -194,11 +206,11 @@ begin
    begin
     FBorderVisible := Self.FBorderVisible;
     FPanelColor    := Self.FPanelColor;
-    FOwnerDraw     := Self.FOwnerDraw;
+    FNative        := Self.FNative;
     FRoundRadius   := Self.FRoundRadius;
     FTransparent   := Self.FTransparent;
     FBorderWidth   := Self.FBorderWidth;
-    FLineColor     := Self.FLineColor;
+    FBorderColor     := Self.FBorderColor;
     FBuffer        := Self.FBuffer;
     FBufferChanged := Self.FBufferChanged;
    end else inherited;
@@ -210,20 +222,20 @@ begin
  Resize;
 end;
 
-procedure TCustomGuiPanel.SetOwnerDraw(const Value: Boolean);
+procedure TCustomGuiPanel.SetNative(const Value: Boolean);
 begin
- if FOwnerDraw <> Value then
+ if FNative <> Value then
   begin
-   FOwnerDraw := Value;
-   OwnerDrawChanged;
+   FNative := Value;
+   NativeChanged;
   end;
 end;
 
-procedure TCustomGuiPanel.SetLineColor(const Value: TColor);
+procedure TCustomGuiPanel.SetBorderColor(const Value: TColor);
 begin
- if FLineColor <> Value then
+ if FBorderColor <> Value then
   begin
-   FLineColor := Value;
+   FBorderColor := Value;
    LineColorChanged;
   end;
 end;
@@ -234,6 +246,15 @@ begin
   begin
    FBorderWidth := Value;
    BorderWidthChanged;
+  end;
+end;
+
+procedure TCustomGuiPanel.SetAlpha(const Value: Byte);
+begin
+ if FAlpha <> Value then
+  begin
+   FAlpha := Value;
+   AlphaChanged;
   end;
 end;
 
@@ -274,7 +295,12 @@ begin
 end;
 
 
-procedure TCustomGuiPanel.OwnerDrawChanged;
+procedure TCustomGuiPanel.AlphaChanged;
+begin
+ Changed;
+end;
+
+procedure TCustomGuiPanel.NativeChanged;
 begin
  Changed;
 end;
@@ -325,7 +351,7 @@ end;
 
 procedure TCustomGuiPanel.Paint;
 begin
- if not FOwnerDraw
+ if FNative
   then inherited
   else
    begin
@@ -340,142 +366,213 @@ end;
 
 procedure TCustomGuiPanel.RenderPanel(PixelMap: TGuiCustomPixelMap);
 var
-  X, Y              : Integer;
-  ScnLne            : array [0..1] of PPixel32Array;
-  PanelColor        : TPixel32;
-  BorderColor       : TPixel32;
-  CombColor         : TPixel32;
-  Radius            : Single;
-  XStart            : Single;
-  BorderWidth       : Single;
-  SqrRadMinusBorder : Single;
-  RadMinusBorderOne : Single;
-  SqrDist, SqrYDist : Single;
-  SqrRadMinusOne    : Single;
-  Temp              : Single;
+  X, Y                 : Integer;
+  XRange               : array [0..1] of Integer;
+  ScnLne               : array [0..1] of PPixel32Array;
+  PanelColor           : TPixel32;
+  BorderColor          : TPixel32;
+  CombColor            : TPixel32;
+  IsUpperLowerHalf     : Boolean;
+  Radius               : TFixed24Dot8Point;
+  XStart               : TFixed24Dot8Point;
+  BorderWidthFixed     : TFixed24Dot8Point;
+  RadMinusOne          : TFixed24Dot8Point;
+  RadMinusBorder       : TFixed24Dot8Point;
+  SqrRadMinusBorderOne : TFixed24Dot8Point;
+  SqrRadMinusBorder    : TFixed24Dot8Point;
+  SqrDist, SqrYDist    : TFixed24Dot8Point;
+  SqrRadMinusOne       : TFixed24Dot8Point;
+  XFixed, YFixed       : TFixed24Dot8Point;
+  WidthMinusOne        : TFixed24Dot8Point;
+  YBorderDistance      : TFixed24Dot8Point;
+  Temp                 : TFixed24Dot8Point;
 begin
  with PixelMap do
   begin
+   // set local colors
    PanelColor := ConvertColor(FPanelColor);
+   PanelColor.A := Alpha;
    if FBorderVisible
-    then BorderColor := ConvertColor(FLineColor)
+    then BorderColor := ConvertColor(FBorderColor)
     else BorderColor := PanelColor;
 
-   // draw circle
-   Radius := Min(Min(FRoundRadius, 0.5 * Width), 0.5 * Height) + 1;
-   BorderWidth := Max(FBorderWidth, 1);
+   // set other local variables
+   Radius := ConvertToFixed24Dot8Point(Min(FRoundRadius, 0.5 * Min(Width, Height)) + 1);
+   BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
+   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
 
-   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
-   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
-   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
+   // precalculate radius variables
+   RadMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
+   if RadMinusOne.Fixed < 0
+    then RadMinusOne.Fixed := 0;
 
-   for Y := 0 to Round(Radius) - 1  do
+   RadMinusBorder.Fixed := Radius.Fixed - BorderWidthFixed.Fixed;
+   if RadMinusBorder.Fixed < 0
+    then RadMinusBorder.Fixed := 0;
+   SqrRadMinusBorder := FixedSqr(RadMinusBorder);
+
+   SqrRadMinusBorderOne.Fixed := RadMinusBorder.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusBorderOne.Fixed < 0
+    then SqrRadMinusBorderOne.Fixed := 0
+    else SqrRadMinusBorderOne := FixedSqr(SqrRadMinusBorderOne);
+
+   SqrRadMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusOne.Fixed < 0
+    then SqrRadMinusOne.Fixed := 0
+    else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
+
+   // draw rounded borders
+   for Y := 0 to FixedRound(Radius) - 1  do
     begin
-     SqrYDist := Sqr(Y - (Radius - 1));
-     XStart := Sqr(Radius) - SqrYDist;
-     if XStart <= 0
+     YFixed := ConvertToFixed24Dot8Point(Y);
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(Radius, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(Radius).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
       then Continue
-      else XStart := Sqrt(XStart) - 0.5;
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
      ScnLne[0] := Scanline[Y];
      ScnLne[1] := Scanline[Height - 1 - Y];
 
-     for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     for X := XRange[0] to XRange[1] do
       begin
+       XFixed := ConvertToFixed24Dot8Point(X);
+
        // calculate squared distance
-       if X < (Radius - 1)
-        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
 
-       if X > (Width - 1) - (Radius - 1)
-        then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
-        else SqrDist := SqrYDist;
-
-       if SqrDist < SqrRadMinusBorder
+       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
         then CombColor := PanelColor
         else
-       if SqrDist <= Sqr(RadMinusBorderOne) then
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
         begin
-         Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
-         CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp * $FF));
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         if Temp.Fixed > $FF
+          then CombColor := PanelColor
+          else CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
         end else
-       if SqrDist < SqrRadMinusOne
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
         then CombColor := BorderColor
         else
          begin
           CombColor := BorderColor;
-          CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(Radius, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
          end;
 
        BlendPixelInplace(CombColor, ScnLne[0][X]);
        BlendPixelInplace(CombColor, ScnLne[1][X]);
-       EMMS;
       end;
     end;
 
-   for Y := Round(Radius) to Height - 1 - Round(Radius) do
+   for Y := FixedRound(Radius) to Height - 1 - FixedRound(Radius) do
     begin
      ScnLne[0] := Scanline[Y];
-     for X := 0 to Width - 1 do
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // check whether position is a non-rounded border
+     if (YFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+        (YFixed.Fixed > ConvertToFixed24Dot8Point(Height).Fixed - BorderWidthFixed.Fixed) then
       begin
-       // check whether position is a border
-       if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
-        then CombColor := BorderColor else
+       BlendPixelLine(BorderColor, @ScnLne[0][0], Width);
+       Continue;
+      end;
 
-       // check whether position is an upper half border
-       if (Y < BorderWidth) then
+     // check upper/lower half and eventually precalculate y-border distance
+     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
+       (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
+     if IsUpperLowerHalf then
+      if Y < Height div 2
+       then YBorderDistance.Fixed := BorderWidthFixed.Fixed - YFixed.Fixed
+       else YBorderDistance.Fixed := YFixed.Fixed - Temp.Fixed + BorderWidthFixed.Fixed
+      else YBorderDistance.Fixed := 0;
+
+     X := 0;
+     while X < Width do
+      begin
+       // convert
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // check whether position is an upper/lower half border
+       if IsUpperLowerHalf then
         begin
-         Temp := BorderWidth - Y;
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+         if (XFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+            (XFixed.Fixed > ConvertToFixed24Dot8Point(Width).Fixed - BorderWidthFixed.Fixed)
           then CombColor := BorderColor else
-         if (X < BorderWidth) then
+         if (XFixed.Fixed < BorderWidthFixed.Fixed) then
           begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
+           Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
           end else
-         if (X > Width - 1 - BorderWidth) then
+         if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
           begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
+           Temp.Fixed := XFixed.Fixed + BorderWidthFixed.Fixed - WidthMinusOne.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
           end
-         else CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-        end else
-
-       // check whether position is a lower half border
-       if (Y > Height - 1 - BorderWidth) then
-        begin
-         Temp := Y - (Height - 1 - BorderWidth);
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-          then CombColor := BorderColor else
-         if (X < BorderWidth) then
+         else
           begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end else
-         if (X > Width - 1 - BorderWidth) then
-          begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
-          end
-         else CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
+           Assert(YBorderDistance.Fixed >= 0);
+           Assert(YBorderDistance.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, YBorderDistance.Fixed);
+           BlendPixelLine(CombColor, @ScnLne[0][X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
+          end;
         end else
-
-       if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
+       if (XFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+          (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed + CFixed24Dot8One.Fixed)
         then CombColor := BorderColor else
-       if (X < BorderWidth) then
+       if (XFixed.Fixed < BorderWidthFixed.Fixed) then
         begin
-         Temp := BorderWidth - X;
-         CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
+         Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
         end else
-       if (X > Width - 1 - BorderWidth) then
+       if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
         begin
-         Temp := X - (Width - 1 - BorderWidth);
-         CombColor := CombinePixel(BorderColor, PanelColor, Round(Temp * $FF));
+         Temp.Fixed := XFixed.Fixed - WidthMinusOne.Fixed + BorderWidthFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
         end
-       else CombColor := PanelColor;
+       else
+        begin
+         BlendPixelLine(PanelColor, @ScnLne[0][X], Width - 2 * X);
+         EMMS;
+         X := Width - X;
+         Continue;
+        end;
 
        BlendPixelInplace(CombColor, ScnLne[0][X]);
-       EMMS;
+       Inc(X)
       end;
     end;
+   EMMS;
   end;
 end;
 
@@ -499,16 +596,38 @@ end;
 procedure TCustomGuiPanel.CMChanged(var Message: TMessage);
 begin
  inherited;
- if FOwnerDraw
+ if not FNative
   then FBufferChanged := True;
+ Invalidate;
+end;
+
+procedure TCustomGuiPanel.CMColorChanged(var Message: TMessage);
+begin
+ inherited;
+
+ if (not FNative)
+  then FBufferChanged := True;
+
  Invalidate;
 end;
 
 procedure TCustomGuiPanel.CMEnabledChanged(var Message: TMessage);
 begin
  inherited;
- if FOwnerDraw
+
+ if not FNative
   then FBufferChanged := True;
+
+ Invalidate;
+end;
+
+procedure TCustomGuiPanel.CMParentColorChanged(var Message: TMessage);
+begin
+ inherited;
+
+ if not FNative and ParentColor
+  then FBufferChanged := True;
+
  Invalidate;
 end;
 
