@@ -66,9 +66,10 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
+    procedure Assign(Source: TPersistent); override;
+
     procedure Clear; overload; override;
     procedure Clear(Data: Byte); reintroduce; overload; virtual;
-
     procedure Multiply(Factor: Byte); virtual;
 
     procedure Draw(Bitmap: TBitmap); overload; virtual;
@@ -88,7 +89,6 @@ type
     procedure Line(FromX, FromY, ToX, ToY: Integer; Data: Byte);
     procedure HorizontalLine(FromX, ToX, Y: Integer; Data: Byte);
     procedure VerticalLine(X, FromY, ToY: Integer; Data: Byte);
-    procedure Assign(Source: TPersistent); override;
 
     property DataPointer: PByteArray read GetDataPointer;
     property Value[X, Y: Integer]: Byte read GetValue write SetValue;
@@ -108,6 +108,8 @@ type
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); override;
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
+
+    procedure Turn(CounterClockwise: Boolean = False); override;
   published
     property Width;
     property Height;
@@ -144,6 +146,8 @@ type
     procedure PaintTo(Canvas: TCanvas; X, Y: Integer); override;
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
+
+    procedure Turn(CounterClockwise: Boolean = False); override;
 
     property Handle: HDC read FDC;
   published
@@ -761,6 +765,41 @@ begin
  {$ENDIF}
 end;
 
+procedure TGuiByteMapMemory.Turn(CounterClockwise: Boolean);
+var
+  TurnData : PByteArray;
+  TempData : PByteArray;
+  X, Y     : Integer;
+begin
+ inherited;
+ GetAlignedMemory(Pointer(TurnData), FDataSize);
+
+ if CounterClockwise then
+  for Y := 0 to FHeight - 1 do
+   for X := 0 to FWidth - 1
+    do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X]
+ else
+  for Y := 0 to FHeight - 1 do
+   for X := 0 to FWidth - 1
+    do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X];
+
+ // exchange width and height
+ with FBitmapInfo^ do
+  begin
+   bmiHeader.biWidth := FHeight;
+   bmiHeader.biHeight := FWidth;
+   FWidth := bmiHeader.biWidth;
+   FHeight := bmiHeader.biHeight;
+  end;
+
+ // exchange data pointer
+ TempData := FDataPointer;
+ FDataPointer := TurnData;
+
+ // dispose old data pointer
+ FreeAlignedMemory(TempData);
+end;
+
 procedure TGuiByteMapMemory.HeightChanged(UpdateBitmap: Boolean);
 begin
  inherited;
@@ -895,6 +934,36 @@ begin
  DisposeDeviceIndependentBitmap;
  if Width * Height <> 0
   then AllocateDeviceIndependentBitmap;
+end;
+
+procedure TGuiByteMapDIB.Turn(CounterClockwise: Boolean);
+var
+  TurnData : PByteArray;
+  X, Y     : Integer;
+begin
+ inherited;
+ GetAlignedMemory(Pointer(TurnData), FDataSize);
+
+ if CounterClockwise then
+  for Y := 0 to FHeight - 1 do
+   for X := 0 to FWidth - 1
+    do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X]
+ else
+  for Y := 0 to FHeight - 1 do
+   for X := 0 to FWidth - 1
+    do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X];
+
+ // exchange width and height
+ with FBitmapInfo^ do
+  begin
+   bmiHeader.biWidth := FHeight;
+   bmiHeader.biHeight := FWidth;
+   FWidth := bmiHeader.biWidth;
+   FHeight := bmiHeader.biHeight;
+  end;
+
+ // exchange data pointer
+ Move(TurnData^, FDataPointer^, FDataSize);
 end;
 
 procedure TGuiByteMapDIB.HeightChanged(UpdateBitmap: Boolean);
