@@ -78,6 +78,7 @@ type
     procedure SaveToStream(Stream: TStream); virtual; abstract;
 
     procedure SetSize(Width, Height: Integer); virtual;
+    procedure Turn(CounterClockwise: Boolean = False); virtual; abstract;
 
     property ClientRect: TRect read GetClientRect;
     property Height: Integer read FHeight write SetHeight;
