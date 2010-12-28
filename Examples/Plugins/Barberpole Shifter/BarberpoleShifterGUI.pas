@@ -37,20 +37,21 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, ExtCtrls, StdCtrls, Graphics, DAV_Types, DAV_VSTModule,
-  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiPixelMap, DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiLabel,
+  DAV_GuiImageControl, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiCheckBox;
 
 type
   TFmBarberpoleShifter = class(TForm)
-    GpFrequency: TGuiGroup;
-    GpMix: TGuiGroup;
+    DialFrequency: TGuiStitchedDial;
+    DialMix: TGuiStitchedDial;
+    DSPL: TGuiStitchedPNGList;
+    GpFrequency: TGuiGroupTop;
+    GpMix: TGuiGroupTop;
     LbFrequencyValue: TGuiLabel;
     LbMixValue: TGuiLabel;
     PnDisplay: TGuiPanel;
     PnMix: TGuiPanel;
-    DialFrequency: TGuiStitchedDial;
-    DialMix: TGuiStitchedDial;
-    DSPL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -117,6 +118,8 @@ procedure TFmBarberpoleShifter.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
  UpdateMix;
+ DialFrequency.Transparent := True;
+ DialMix.Transparent := True;
 end;
 
 procedure TFmBarberpoleShifter.FormPaint(Sender: TObject);

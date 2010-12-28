@@ -2,13 +2,14 @@
 library Baxxpander;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
-  madExcept, // either download madExcept or remove mad* if there is an error here
+  FastMM4,
+  FastMove,
+  madExcept,
   madLinkDisAsm,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  BaxxpanderModule in 'BaxxpanderModule.pas' {BaxxpanderModule: TVSTModule};
+  BaxxpanderModule in 'BaxxpanderModule.pas' {BaxxpanderModule: TVSTModule},
+  BaxxpanderGui in 'BaxxpanderGui.pas' {FmBaxxpanderGui};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

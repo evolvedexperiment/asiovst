@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{1A6F4FB9-44C9-4415-8E61-EEBD5AEBED96}</ProjectGuid>
 			<MainSource>DAV_GUI_D14.dpk</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
@@ -136,6 +136,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiImageControl.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiImageList.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngList.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPolygon.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -188,7 +189,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-12-20 23:06</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-12-27 15:00</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

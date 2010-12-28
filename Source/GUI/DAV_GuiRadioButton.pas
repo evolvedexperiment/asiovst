@@ -43,16 +43,13 @@ uses
 type
   TGuiControlsRadioButton = class(TRadioButton)
   private
-    FBuffer            : TGuiCustomPixelMap;
-    FBackBuffer        : TGuiCustomPixelMap;
     FRadioButtonRadius : Integer;
     FCanvas            : TCanvas;
     FUpdateBuffer      : Boolean;
     FUpdateBackBuffer  : Boolean;
     FTransparent       : Boolean;
     FFocused           : Boolean;
-    FFlat              : Boolean;
-    FGuiFont           : TGuiOversampledGDIFont;
+    FNative            : Boolean;
     FMouseIsDown       : Boolean;
     FMouseInControl    : Boolean;
     FFlatChecked       : Boolean;
@@ -71,17 +68,20 @@ type
     procedure SetShadow(const Value: TGUIShadow);
     procedure SetColors(Index: Integer; Value: TColor);
     procedure SetTransparent(const Value: Boolean);
-    procedure SetFlat(const Value: Boolean);
+    procedure SetNative(const Value: Boolean);
 
   protected
-    procedure CMMouseLeave(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_MOUSELEAVE;
-    procedure CMMouseEnter(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_MOUSEENTER;
+    FBuffer     : TGuiCustomPixelMap;
+    FBackBuffer : TGuiCustomPixelMap;
+    FGuiFont    : TGuiOversampledGDIFont;
 
-    procedure CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_ENABLEDCHANGED;
-    procedure CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF}); message CM_TEXTCHANGED;
     procedure CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_COLORCHANGED;
-    procedure CMParentColorChanged(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF}); message CM_PARENTCOLORCHANGED;
+    procedure CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_ENABLEDCHANGED;
     procedure CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_FONTCHANGED;
+    procedure CMMouseEnter(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_MOUSELEAVE;
+    procedure CMParentColorChanged(var Message: {$IFDEF FPC}TLMCommand{$ELSE}TWMCommand{$ENDIF}); message CM_PARENTCOLORCHANGED;
+    procedure CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF}); message CM_TEXTCHANGED;
 
     {$IFDEF FPC}
     procedure WMSetFocus(var Message: TLMSetFocus); message LM_SETFOCUS;
@@ -135,7 +135,7 @@ type
     property ColorDot: TColor index 2 read FDotColor write SetColors default clWindowText;
     property ColorBorder: TColor index 3 read FBorderColor write SetColors default clWindowText;
     property ColorBackground: TColor index 4 read FBackgroundColor write SetColors default clWindow;
-    property Flat: Boolean read FFlat write SetFlat default True;
+    property Native: Boolean read FNative write SetNative default True;
     property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
     property Shadow: TGUIShadow read GetShadow write SetShadow;
     property GroupIndex: Integer read FGroupIndex write FGroupIndex default 0;
@@ -209,7 +209,7 @@ begin
  FDotColor         := clWindowText;
  FBorderColor      := clWindowText;
  FBackgroundColor  := clWindow;
- FFlat             := True;
+ FNative           := False;
  FFlatChecked      := False;
  FGroupIndex       := 0;
  Enabled           := True;
@@ -223,7 +223,8 @@ end;
 procedure TGuiControlsRadioButton.CreateParams(var Params: TCreateParams);
 begin
  inherited;
- if FFlat then
+
+ if not FNative then
   with Params do Style := (Style and not $1F) or BS_OWNERDRAW;
 end;
 
@@ -336,7 +337,8 @@ begin
  if Enabled and not FMouseInControl then
   begin
    FMouseInControl := True;
-   BufferChanged(False);
+   if not FNative
+    then BufferChanged(False);
   end;
 end;
 
@@ -345,7 +347,9 @@ begin
  if Enabled and FMouseInControl and not FMouseIsDown then
   begin
    FMouseInControl := False;
-   BufferChanged(False);
+
+   if not FNative
+    then BufferChanged(False);
   end;
 end;
 
@@ -510,7 +514,7 @@ end;
 
 function TGuiControlsRadioButton.GetChecked: Boolean;
 begin
- if FFlat
+ if FNative
   then Result := FFlatChecked
   else Result := inherited GetChecked;
 end;
@@ -537,9 +541,14 @@ end;
 
 procedure TGuiControlsRadioButton.WMPaint(var Message: {$IFDEF FPC}TLMPaint{$ELSE}TWMPaint{$ENDIF});
 begin
- ControlState := ControlState + [csCustomPaint];
- inherited;
- ControlState := ControlState - [csCustomPaint];
+ if FNative
+  then inherited
+  else
+   begin
+    ControlState := ControlState + [csCustomPaint];
+    inherited;
+    ControlState := ControlState - [csCustomPaint];
+   end;
 end;
 
 procedure TGuiControlsRadioButton.RenderCircle(Buffer: TGuiCustomPixelMap);
@@ -759,20 +768,20 @@ begin
  BufferChanged(False);
 end;
 
-procedure TGuiControlsRadioButton.SetFlat(const Value: Boolean);
+procedure TGuiControlsRadioButton.SetNative(const Value: Boolean);
 var
   OldMouseInControl : Boolean;
 begin
- if FFlat <> Value then
+ if FNative <> Value then
   begin
    OldMouseInControl := FMouseInControl;
-   FFlat             := Value;
+   FNative := Value;
    {$IFDEF FPC}
    RecreateWnd(Self);
    {$ELSE}
    RecreateWnd;
    {$ENDIF}
-   FMouseInControl   := OldMouseInControl;
+   FMouseInControl := OldMouseInControl;
   end;
 end;
 
@@ -822,7 +831,7 @@ procedure TGuiControlsRadioButton.SetChecked(Value: Boolean);
   end;
 
 begin
- if not FFlat then
+ if not FNative then
   begin
    inherited SetChecked(Value);
    Invalidate;

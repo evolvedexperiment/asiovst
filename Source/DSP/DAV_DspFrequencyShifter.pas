@@ -52,9 +52,26 @@ type
     procedure TransitionBandwidthChanged; virtual; abstract;
   public
     constructor Create; override;
-    property Frequency: Single read FFrequency write SetFrequency;
-    property CoefficientCount: Integer read FCoefficientCount write SetCoefficientCount;
-    property TransitionBandwidth: Single read FTransitionBandwidth write SetTransitionBandwidth;
+
+    property Frequency: Single read FFrequency write SetFrequency; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+      The Frequency property descibes the frequency in Hz, by what the audio
+      signal is shifted. A positive frequency means the signal is shifted
+      upwards, while a negative frequency means a shift downwards.
+      since the frequency depends on the samplerate, care must be taken,
+      if this frequency is increased above the nyquist frequency.
+
+    }{$ENDREGION 'Documentation'}{$ENDIF}
+    property CoefficientCount: Integer read FCoefficientCount write SetCoefficientCount; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+      The CoefficientCount property describe the internal number of
+      coefficients for the algorithm. The algorithm uses a polyphase hilbert
+      transform. Further informations can be found in the according classes.
+
+    }{$ENDREGION 'Documentation'}{$ENDIF}
+    property TransitionBandwidth: Single read FTransitionBandwidth write SetTransitionBandwidth; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+      The TransitionBandwidth property describe the internal transition
+      bandwidth of the underlying polyphase filter.
+
+    }{$ENDREGION 'Documentation'}{$ENDIF}
   end;
 
   TCustomBodeFrequencyShifter32 = class(TCustomBodeFrequencyShifter)
@@ -69,7 +86,14 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ProcessSample(Input: Single; var Upshift, Downshift: Single); virtual;
+
+    procedure ProcessSample(Input: Single; out Upshift, Downshift: Single); virtual; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+      The ProcessSample method simulateously processes the upshifted signal
+      and the downshifted signal for the given frequency.
+      NOTE: If the frequency is negative the Upshift and Downshift variables
+      content might contain the wrong data (i.e. downshifted data in Upshift)
+
+    }{$ENDREGION 'Documentation'}{$ENDIF}
   end;
 
   TBodeFrequencyShifter32 = class(TCustomBodeFrequencyShifter32)
@@ -125,12 +149,16 @@ end;
 constructor TCustomBodeFrequencyShifter32.Create;
 begin
  inherited;
+
+ // create and setup LFO
  FLfo := TLFOSine32.Create;
  with FLfo do
   begin
    SampleRate := Self.SampleRate;
    Frequency := FFrequency;
   end;
+
+ // create and setup polyphase hilbert transform
  FHilbert := TPhaseHalfPi32.Create;
  FHilbert.SetCoefficients(8, 0.1);
 end;
@@ -139,13 +167,14 @@ destructor TCustomBodeFrequencyShifter32.Destroy;
 begin
  FreeAndNil(FLFO);
  FreeAndNil(FHilbert);
+
  inherited;
 end;
 
 procedure TCustomBodeFrequencyShifter32.CoefficientCountChanged;
 begin
- assert(FCoefficientCount >= 1);
- assert(FCoefficientCount <= 32);
+ Assert(FCoefficientCount >= 1);
+ Assert(FCoefficientCount <= 32);
  FHilbert.NumberOfCoefficients := FCoefficientCount;
 end;
 
@@ -164,7 +193,7 @@ begin
  FHilbert.Transition := FTransitionBandwidth;
 end;
 
-procedure TCustomBodeFrequencyShifter32.ProcessSample(Input: Single; var Upshift, Downshift: Single);
+procedure TCustomBodeFrequencyShifter32.ProcessSample(Input: Single; out Upshift, Downshift: Single);
 var
   Cmplx : TComplexSingle;
 const

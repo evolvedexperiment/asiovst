@@ -1,6 +1,6 @@
 object BaxxpanderModule: TBaxxpanderModule
   OldCreateOrder = True
-  Flags = [effFlagsCanMono, effFlagsCanReplacing]
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1'
   EffectName = 'Baxxpander'
   ProductName = 'DAV Effect Examples'
@@ -123,7 +123,6 @@ object BaxxpanderModule: TBaxxpanderModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNormal
   OnProcess32Replacing = VSTModuleProcessNormal
   OnSampleRateChange = VSTModuleSampleRateChange

@@ -121,6 +121,8 @@ type
     FBest                    : Single;
     FAdditional              : Single;
     FDrawDraft               : Boolean;
+    FCirclesPerSecond        : Integer;
+    FTimeStamp               : Int64;
     procedure SetInitialSeed(const Value: Integer);
     procedure SetTrialsPerCircle(const Value: Integer);
     procedure SetUpdateTrials(const Value: Integer);
@@ -292,27 +294,29 @@ begin
    OnCalculateCosts := CalculateError;
   end;
 
-  {$IFDEF DARWIN}
-  AppMenu := TMenuItem.Create(Self);  {Application menu}
-  AppMenu.Caption := #$EF#$A3#$BF;  {Unicode Apple logo char}
-  MainMenu.Items.Insert(0, AppMenu);
+ QueryPerformanceCounter(FTimeStamp);
+
+ {$IFDEF DARWIN}
+ AppMenu := TMenuItem.Create(Self);  {Application menu}
+ AppMenu.Caption := #$EF#$A3#$BF;  {Unicode Apple logo char}
+ MainMenu.Items.Insert(0, AppMenu);
 
 (*
-  AppAboutCmd := TMenuItem.Create(Self);
-  AppAboutCmd.Caption := 'About ' + GetInfoPlistString('CFBundleName');
-  AppAboutCmd.OnClick := AboutCmdClick;
-  AppMenu.Add(AppAboutCmd);  {Add About as item in application menu}
+ AppAboutCmd := TMenuItem.Create(Self);
+ AppAboutCmd.Caption := 'About ' + GetInfoPlistString('CFBundleName');
+ AppAboutCmd.OnClick := AboutCmdClick;
+ AppMenu.Add(AppAboutCmd);  {Add About as item in application menu}
 
-  AppSep1Cmd := TMenuItem.Create(Self);
-  AppSep1Cmd.Caption := '-';
-  AppMenu.Add(AppSep1Cmd);
+ AppSep1Cmd := TMenuItem.Create(Self);
+ AppSep1Cmd.Caption := '-';
+ AppMenu.Add(AppSep1Cmd);
 *)
-  AppPrefCmd := TMenuItem.Create(Self);
-  AppPrefCmd.Caption := 'Preferences...';
-  AppPrefCmd.Shortcut := ShortCut(VK_OEM_COMMA, [ssMeta]);
-  AppPrefCmd.OnClick := AcSettingsExecute;
-  AppMenu.Add(AppPrefCmd);
-  {$ENDIF}
+ AppPrefCmd := TMenuItem.Create(Self);
+ AppPrefCmd.Caption := 'Preferences...';
+ AppPrefCmd.Shortcut := ShortCut(VK_OEM_COMMA, [ssMeta]);
+ AppPrefCmd.OnClick := AcSettingsExecute;
+ AppMenu.Add(AppPrefCmd);
+ {$ENDIF}
 end;
 
 procedure TFmPrimitivePictureEvolution.FormDestroy(Sender: TObject);
@@ -1011,6 +1015,9 @@ begin
     for Index := 0 to FCurrentOrder - 1
      do FCircles[Index].Draw(PixelMap);
 
+   // increase circle counter
+   Inc(FCirclesPerSecond, FCurrentOrder);
+
    // draw recent circle
    with TGuiPixelFilledCircle.Create do
     try
@@ -1023,6 +1030,7 @@ begin
      if FDrawDraft
       then DrawDraft(PixelMap)
       else Draw(PixelMap);
+     Inc(FCirclesPerSecond);
     finally
      Free;
     end;
@@ -1034,6 +1042,9 @@ begin
    else
     for Index := FCurrentOrder to Length(FCircles) - 1
      do FCircles[Index].Draw(PixelMap);
+
+   // increase circle counter
+   Inc(FCirclesPerSecond, Length(FCircles) - FCurrentOrder);
   end
  else
   begin
@@ -1056,6 +1067,9 @@ begin
        if FDrawDraft
         then DrawDraft(PixelMap)
         else Draw(PixelMap);
+
+       // increase circle counter
+       Inc(FCirclesPerSecond);
       end;
     finally
      Free;
@@ -1064,11 +1078,24 @@ begin
 end;
 
 procedure TFmPrimitivePictureEvolution.DrawResults;
+var
+  NewTimeStamp : Int64;
+  Frequency    : Int64;
+  CircsPerSec  : Double;
 begin
  DrawPopulation(FDiffEvol.GetBestPopulation, FBestDrawing);
  StatusBar.Panels[2].Text := 'Trials: ' + IntToStr(FTrialCount);
  StatusBar.Panels[3].Text := 'Costs: ' + FloatToStrF(FDiffEvol.GetBestCost - FMaximumCost, ffGeneral, 5, 5);
  StatusBar.Panels[4].Text := 'Global Costs: ' + FloatToStrF(FDiffEvol.GetBestCost, ffGeneral, 5, 5);
+
+ // calculate circles per second
+ QueryPerformanceCounter(NewTimeStamp);
+ QueryPerformanceFrequency(Frequency);
+ CircsPerSec := FCirclesPerSecond * Frequency / (NewTimeStamp - FTimeStamp);
+ StatusBar.Panels[5].Text := 'Cicles Per Second: ' + FloatToStrF(CircsPerSec, ffGeneral, 5, 5);
+ FCirclesPerSecond := 0;
+ FTimeStamp := NewTimeStamp;
+
  PaintBoxDraw.Invalidate;
 end;
 

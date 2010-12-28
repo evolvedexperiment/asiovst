@@ -39,7 +39,7 @@ uses
   SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_VSTModule,
   DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls,
   DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiCustomControl,
-  DAV_GuiGraphicControl;
+  DAV_GuiGraphicControl, DAV_GuiImageControl;
 
 type
   TFmTwoBandDistortion = class(TForm)

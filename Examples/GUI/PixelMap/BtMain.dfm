@@ -10,9 +10,12 @@ object FmPixelMapTest: TFmPixelMapTest
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  Menu = MainMenu
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnDestroy = FormDestroy
+  OnResize = FormResize
   DesignSize = (
     384
     244)
@@ -20,45 +23,86 @@ object FmPixelMapTest: TFmPixelMapTest
   TextHeight = 13
   object PaintBox: TPaintBox
     Left = 8
-    Top = 39
+    Top = 8
     Width = 368
-    Height = 197
+    Height = 228
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnPaint = PaintBoxPaint
   end
-  object BtCountTest: TButton
-    Left = 89
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = '&Count Test'
-    TabOrder = 0
-    OnClick = BtCountTestClick
-  end
-  object BtSimpleTest: TButton
-    Left = 8
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = '&Simple Test'
-    TabOrder = 1
-  end
-  object BtPaintTest: TButton
-    Left = 170
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = '&Paint Test'
-    TabOrder = 2
-    OnClick = BtPaintTestClick
-  end
-  object BtSave: TButton
-    Left = 251
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = '&Save Test'
-    TabOrder = 3
-    OnClick = BtSaveClick
+  object MainMenu: TMainMenu
+    Left = 24
+    Top = 16
+    object MiFile: TMenuItem
+      Caption = '&File'
+      object MiSave: TMenuItem
+        Caption = '&Save as Test.bmp'
+        OnClick = MiSaveClick
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object MiExit: TMenuItem
+        Caption = 'E&xit'
+        OnClick = MiExitClick
+      end
+    end
+    object MiRender: TMenuItem
+      Caption = '&Render'
+      object MiClear: TMenuItem
+        Caption = '&Clear'
+        OnClick = MiClearClick
+      end
+      object N3: TMenuItem
+        Caption = '-'
+      end
+      object MiLineCircle: TMenuItem
+        Caption = '&Line Circle'
+        OnClick = MiLineCircleClick
+      end
+      object MiFillRect: TMenuItem
+        Caption = 'Filled &Rectangles'
+        OnClick = MiFillRectClick
+      end
+      object MiFrameRectangles: TMenuItem
+        Caption = '&Framed Rectangles'
+        OnClick = MiFrameRectanglesClick
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object MiBasicMix: TMenuItem
+        Caption = '&Basic Mix'
+        OnClick = MiBasicMixClick
+      end
+    end
+    object MiEdit: TMenuItem
+      Caption = '&Edit'
+      object MiTurnClockwise: TMenuItem
+        Caption = '&Turn Clockwise'
+        OnClick = MiTurnClockwiseClick
+      end
+      object MiTurnCounterclockwise: TMenuItem
+        Caption = 'Turn &Counterclockwise'
+        OnClick = MiTurnCounterclockwiseClick
+      end
+    end
+    object MiTests: TMenuItem
+      Caption = '&Tests'
+      object MiCountTest: TMenuItem
+        Caption = '&Count Test'
+        OnClick = MiCountTestClick
+      end
+    end
+    object MiFilter: TMenuItem
+      Caption = '&Filter'
+      object MiBoxBlur: TMenuItem
+        Caption = 'Stack &Blur'
+        OnClick = MiBoxBlurClick
+      end
+      object MiSaturation: TMenuItem
+        Caption = 'Saturation'
+        OnClick = MiSaturationClick
+      end
+    end
   end
 end

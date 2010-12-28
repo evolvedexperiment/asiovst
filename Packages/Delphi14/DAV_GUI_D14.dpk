@@ -110,6 +110,7 @@ contains
   DAV_GuiFader in '..\..\Source\GUI\DAV_GuiFader.pas',
   DAV_GuiImageControl in '..\..\Source\GUI\DAV_GuiImageControl.pas',
   DAV_GuiImageList in '..\..\Source\GUI\DAV_GuiImageList.pas',
-  DAV_GuiPngList in '..\..\Source\GUI\DAV_GuiPngList.pas';
+  DAV_GuiPngList in '..\..\Source\GUI\DAV_GuiPngList.pas',
+  DAV_GuiVectorPolygon in '..\..\Source\GUI\DAV_GuiVectorPolygon.pas';
 
 end.

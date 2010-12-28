@@ -42,7 +42,6 @@ type
   TBaxxpanderModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessSaturated(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -68,7 +67,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Approximations, DAV_DspWaveshaper;
+  DAV_Approximations, DAV_DspWaveshaper, BaxxpanderGui;
 
 procedure TBaxxpanderModule.VSTModuleOpen(Sender: TObject);
 var
@@ -87,6 +86,10 @@ begin
     end;
   end;
 
+ // set editor form class
+ EditorFormClass := TFmBaxxpanderGui;
+
+ // set default parameters
  Parameter[0] := 100;
  Parameter[1] := 100;
  Parameter[2] := 100;
@@ -102,24 +105,31 @@ begin
   do FreeAndNil(FButterworthSplitter[Channel]);
 end;
 
-procedure TBaxxpanderModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-// GUI := TFmBaxxpanderGui.Create(Self);
-end;
-
 procedure TBaxxpanderModule.ParameterDryWetChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateGains;
+
+ // update GUI
+ if EditorForm is TFmBaxxpanderGui
+  then TFmBaxxpanderGui(EditorForm).UpdateDryWet;
 end;
 
 procedure TBaxxpanderModule.ParameterMixerChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateGains;
+
+ // update GUI
+ if EditorForm is TFmBaxxpanderGui
+  then TFmBaxxpanderGui(EditorForm).UpdateMixer;
 end;
 
 procedure TBaxxpanderModule.ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateGains;
+
+ // update GUI
+ if EditorForm is TFmBaxxpanderGui
+  then TFmBaxxpanderGui(EditorForm).UpdateLimit;
 end;
 
 procedure TBaxxpanderModule.ParameterOnOffDisplay(
@@ -134,6 +144,10 @@ procedure TBaxxpanderModule.ParameterShapeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateGains;
+
+ // update GUI
+ if EditorForm is TFmBaxxpanderGui
+  then TFmBaxxpanderGui(EditorForm).UpdateShape;
 end;
 
 procedure TBaxxpanderModule.ParameterOnOffChange(
@@ -144,6 +158,10 @@ begin
   else OnProcess := VSTModuleProcessNormal;
 
  OnProcess32Replacing := OnProcess;
+
+ // update GUI
+ if EditorForm is TFmBaxxpanderGui
+  then TFmBaxxpanderGui(EditorForm).UpdateShape;
 end;
 
 procedure TBaxxpanderModule.CalculateGains;
