@@ -70,7 +70,8 @@ implementation
 {$ENDIF}
 
 uses
-  {$IFNDEF FPC} AnsiStrings, {$ENDIF} TwoBandDistortionGUI, DAV_Approximations;
+  {$IFNDEF FPC} AnsiStrings, {$ENDIF} DAV_Common, DAV_Approximations,
+  TwoBandDistortionGUI;
 
 procedure TTwoBandDistortionDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -86,6 +87,7 @@ procedure TTwoBandDistortionDataModule.VSTModuleOpen(Sender: TObject);
 var
   ChannelIndex : Integer;
 begin
+ // create linkwitz riley filters
  for ChannelIndex := 0 to numInputs - 1
   do FLinkwitzRiley[ChannelIndex] := TLinkwitzRiley.Create;
 
@@ -105,6 +107,7 @@ end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleClose(Sender: TObject);
 begin
+ // free linkwitz riley filters
  FreeAndNil(FLinkwitzRiley[0]);
  FreeAndNil(FLinkwitzRiley[1]);
 end;
@@ -183,16 +186,16 @@ end;
 procedure TTwoBandDistortionDataModule.ParameterFrequencyLabel(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 1000
+ if Parameter[Index] >= 1000
   then PreDefined := 'kHz';
 end;
 
 procedure TTwoBandDistortionDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] > 1000
-  then PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4))
-  else PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4));
+ if Parameter[Index] >= 1000
+  then PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 4)
+  else PreDefined := FloatToAnsiString(Parameter[Index], 4);
 end;
 
 procedure TTwoBandDistortionDataModule.ParamHighDistChange(

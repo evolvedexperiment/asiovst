@@ -35,32 +35,49 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiDial, 
-  DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiLED;
+  DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiLED, DAV_GuiPixelMap,
+  DAV_GuiCustomControl, DAV_GuiImageControl, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiGraphicControl;
 
 type
   TFmBaxxpanderGui = class(TForm)
-    PnControls: TGuiPanel;
-    DlDryWet: TGuiDial;
+    DlDryWet: TGuiStitchedDial;
+    DlLimit: TGuiStitchedDial;
+    DlMixer: TGuiStitchedDial;
+    DlShape: TGuiStitchedDial;
+    LbBaxxpander: TGuiLabel;
+    LbClone: TGuiLabel;
     LbDryWet: TGuiLabel;
-    DlMixer: TGuiDial;
-    LbMixer: TGuiLabel;
-    DlShape: TGuiDial;
-    DlLimit: TGuiDial;
-    LbShape: TGuiLabel;
     LbLimit: TGuiLabel;
+    LbManufacturer: TGuiLabel;
+    LbMixer: TGuiLabel;
     LbSaturation: TGuiLabel;
+    LbShape: TGuiLabel;
     LEDSaturation: TGuiLED;
+    PnControls: TGuiPanel;
+    StitchedPNG: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure DlDryWetChange(Sender: TObject);
+    procedure DlMixerChange(Sender: TObject);
+    procedure DlLimitChange(Sender: TObject);
+    procedure DlShapeChange(Sender: TObject);
+    procedure LEDSaturationClick(Sender: TObject);
   private
-    FBackgroundBitmap : TBitmap;
+    FBackground : TGuiCustomPixelMap;
+  public
+    procedure UpdateShape;
+    procedure UpdateLimit;
+    procedure UpdateMixer;
+    procedure UpdateDryWet;
+    procedure UpdateSaturation;
   end;
 
 implementation
 
 uses
-  DAV_GuiCommon;
+  DAV_Common, DAV_GuiCommon, BaxxpanderModule;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -68,21 +85,48 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
+procedure TFmBaxxpanderGui.DlDryWetChange(Sender: TObject);
+begin
+ with TBaxxpanderModule(Owner) do
+  if Parameter[0] <> DlDryWet.Value
+   then Parameter[0] := DlDryWet.Value;
+end;
+
+procedure TFmBaxxpanderGui.DlLimitChange(Sender: TObject);
+begin
+ with TBaxxpanderModule(Owner) do
+  if Parameter[1] <> DlLimit.Value
+   then Parameter[1] := DlLimit.Value;
+end;
+
+procedure TFmBaxxpanderGui.DlMixerChange(Sender: TObject);
+begin
+ with TBaxxpanderModule(Owner) do
+  if Parameter[2] <> DlMixer.Value
+   then Parameter[2] := DlMixer.Value;
+end;
+
+procedure TFmBaxxpanderGui.DlShapeChange(Sender: TObject);
+begin
+ with TBaxxpanderModule(Owner) do
+  if Parameter[4] <> DlShape.Value
+   then Parameter[4] := DlShape.Value;
+end;
+
 procedure TFmBaxxpanderGui.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   x, y   : Integer;
   s      : array [0..3] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
 //  PngBmp : TPngObject;
 
 begin
  // Create Background Image
- FBackgroundBitmap := TBitmap.Create;
- with FBackgroundBitmap do
+ FBackground := TGuiPixelMapMemory.Create;
+ with FBackground do
   begin
-   PixelFormat := pf24bit;
    Width := Self.Width;
    Height := Self.Height;
    s[0] := 0;
@@ -92,7 +136,7 @@ begin
    hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
-     Line := Scanline[y];
+     ScnLn := Scanline[y];
      h    := 0.2 * (1 - Sqr(2 * (y - Height div 2) * hr)) + 0.3 * s[3];
      if Random < 0.2
       then s[2] := Random;
@@ -103,42 +147,67 @@ begin
        s[1] := 0.98 * s[0] + 0.02 * Random;
        s[0] := s[1];
 
-       Line[x].B := Round($52 - $36 * (s[1] - h));
-       Line[x].G := Round($94 - $62 * (s[1] - h));
-       Line[x].R := Round($CF - $8A * (s[1] - h));
+       ScnLn[x].B := Round($52 - $36 * (s[1] - h));
+       ScnLn[x].G := Round($94 - $62 * (s[1] - h));
+       ScnLn[x].R := Round($CF - $8A * (s[1] - h));
+       ScnLn[x].A := $FF;
       end;
     end;
   end;
-
-(*
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'ClipperKnob', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialInputGain.DialBitmap.Assign(PngBmp);
-   DialOutputGain.DialBitmap.Assign(PngBmp);
-   DialOSFactor1.DialBitmap.Assign(PngBmp);
-   DialOSFactor2.DialBitmap.Assign(PngBmp);
-   DialFilterOrder1.DialBitmap.Assign(PngBmp);
-   DialFilterOrder2.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-*)
 end;
 
 procedure TFmBaxxpanderGui.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgroundBitmap);
+ FreeAndNil(FBackground);
 end;
 
 procedure TFmBaxxpanderGui.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgroundBitmap);
+ if Assigned(FBackground)
+  then FBackground.PaintTo(Canvas);
+end;
+
+procedure TFmBaxxpanderGui.LEDSaturationClick(Sender: TObject);
+begin
+ LEDSaturation.Brightness_Percent := 100 - LEDSaturation.Brightness_Percent;
+ with TBaxxpanderModule(Owner) do
+  if Parameter[3] <> 0.01 * LEDSaturation.Brightness_Percent
+   then Parameter[3] := 0.01 * LEDSaturation.Brightness_Percent;
+end;
+
+procedure TFmBaxxpanderGui.UpdateDryWet;
+begin
+ with TBaxxpanderModule(Owner) do
+  if DlDryWet.Value <> Parameter[0]
+   then DlDryWet.Value := Parameter[0];
+end;
+
+procedure TFmBaxxpanderGui.UpdateLimit;
+begin
+ with TBaxxpanderModule(Owner) do
+  if DlLimit.Value <> Parameter[1]
+   then DlLimit.Value := Parameter[1];
+end;
+
+procedure TFmBaxxpanderGui.UpdateMixer;
+begin
+ with TBaxxpanderModule(Owner) do
+  if DlMixer.Value <> Parameter[2]
+   then DlMixer.Value := Parameter[2];
+end;
+
+procedure TFmBaxxpanderGui.UpdateSaturation;
+begin
+ with TBaxxpanderModule(Owner) do
+  if LEDSaturation.Brightness_Percent <> 100 * Limit(Parameter[3], 0, 1)
+   then LEDSaturation.Brightness_Percent := 100 * Limit(Parameter[3], 0, 1);
+end;
+
+procedure TFmBaxxpanderGui.UpdateShape;
+begin
+ with TBaxxpanderModule(Owner) do
+  if DlShape.Value <> Parameter[4]
+   then DlShape.Value := Parameter[4];
 end;
 
 end.

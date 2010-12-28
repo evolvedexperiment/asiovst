@@ -56,6 +56,10 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
       end
       item
         Text = 'Global Costs:'
+        Width = 120
+      end
+      item
+        Text = 'Circles per Second:'
         Width = 100
       end>
   end

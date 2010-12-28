@@ -7,97 +7,172 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
-  DAV_GuiCommon, DAV_GuiBaseControl, DAV_GuiFont, DAV_GuiPixelMap,
-  DAV_GuiByteMap;
+  DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiShadow;
 
 type
   TCustomGuiGroup = class(TCustomGroupBox)
   private
-    FAutoFocus    : Boolean;
-    FCaption      : string;
-    FLineColor    : TColor;
-    FOutlineWidth : Integer;
-    FGroupColor   : TColor;
-    FPanelColor   : TColor;
-    FOwnerDraw    : Boolean;
-    FRoundRadius  : Integer;
-    procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
-    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMParentColorChanged(var Message: TWMNoParams); message CM_PARENTCOLORCHANGED;
-    procedure CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
-    procedure SetCaption(const Value: string);
-    procedure SetLineColor(const Value: TColor);
-    procedure SetGroupColor(const Value: TColor);
-    procedure SetOutlineWidth(const Value: Integer);
-    procedure SetOwnerDraw(const Value: Boolean);
-    procedure SetRoundRadius(Value: Integer);
-    procedure SetPanelColor(const Value: TColor);
-  protected
-    procedure Click; override;
-    procedure CaptionChanged; virtual;
-    procedure GroupColorChanged; virtual;
-    procedure PanelColorChanged; virtual;
-    procedure LineColorChanged; virtual;
-    procedure OutlineWidthChanged; virtual;
-    procedure RoundRadiusChanged; virtual;
-  public
-    constructor Create(AOwner: TComponent); override;
-    property AutoFocus: Boolean read FAutoFocus write FAutoFocus default True;
-    property Caption: string read FCaption write SetCaption;
-    property OwnerDraw: Boolean read FOwnerDraw write SetOwnerDraw default True;
-    property LineColor: TColor read FLineColor write SetLineColor default clBtnShadow;
-    property GroupColor: TColor read FGroupColor write SetGroupColor default clBtnShadow;
-    property PanelColor: TColor read FPanelColor write SetPanelColor default clBtnFace;
-    property OutlineWidth: Integer read FOutlineWidth write SetOutlineWidth default 1;
-    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
-  end;
-
-  TCustomGuiGroupGDI = class(TCustomGuiGroup)
-  private
-    FAntiAlias   : TGuiAntiAlias;
-    FOSFactor    : Integer;
+    FAutoFocus   : Boolean;
+    FBorderColor : TColor;
+    FBorderWidth : Single;
+    FGroupColor  : TColor;
+    FRoundRadius : Single;
+    FNative      : Boolean;
+    FCanvas      : TCanvas;
     FTransparent : Boolean;
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    FOnPaint     : TNotifyEvent;
+    FAlpha       : Byte;
+    function GetOversampling: TFontOversampling;
+    function GetShadow: TGUIShadow;
+    procedure SetAlpha(const Value: Byte);
+    procedure SetBorderColor(const Value: TColor);
+    procedure SetBorderWidth(const Value: Single);
+    procedure SetGroupColor(const Value: TColor);
+    procedure SetNative(const Value: Boolean);
+    procedure SetOversampling(const Value: TFontOversampling);
+    procedure SetRoundRadius(Value: Single);
+    procedure SetShadow(const Value: TGUIShadow);
     procedure SetTransparent(const Value: Boolean);
-    procedure DrawParentImage(Dest: TCanvas);
-    procedure WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF}); message WM_MOVE;
   protected
-    procedure Paint; override;
-    procedure AntiAliasChanged; virtual;
+    FBuffer           : TGuiCustomPixelMap;
+    FBackBuffer       : TGuiCustomPixelMap;
+    FUpdateBuffer     : Boolean;
+    FUpdateBackBuffer : Boolean;
+    FGuiFont          : TGuiOversampledGDIFont;
+
+    procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
+    procedure CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_COLORCHANGED;
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_FONTCHANGED;
+    procedure CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF}); message CM_TEXTCHANGED;
+    procedure CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
+    procedure WMMove(var Message: TWMMove); message WM_MOVE;
+
+    procedure AlphaChanged; virtual;
+    procedure Click; override;
+    procedure GroupColorChanged; virtual;
+    procedure BorderColorChanged; virtual;
+    procedure BorderWidthChanged; virtual;
+    procedure RoundRadiusChanged; virtual;
     procedure TransparentChanged; virtual;
+    procedure TextChanged; virtual;
 
-    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); virtual; abstract;
+    procedure BufferChanged; virtual;
+    procedure BackBufferChanged; virtual;
+    procedure FontChangedHandler(Sender: TObject); virtual;
+    procedure UpdateBuffer; virtual;
+    procedure UpdateBackBuffer; virtual;
+
+    procedure Loaded; override;
+    procedure Resize; override;
+    procedure Paint; override;
+
+    procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); virtual; abstract;
+    procedure RenderCaption(PixelMap: TGuiCustomPixelMap); virtual; abstract;
+
+    property Canvas: TCanvas read FCanvas;
   public
     constructor Create(AOwner: TComponent); override;
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    destructor Destroy; override;
+
+    property Alpha: Byte read FAlpha write SetAlpha default $FF;
+    property AutoFocus: Boolean read FAutoFocus write FAutoFocus default True;
+    property BorderColor: TColor read FBorderColor write SetBorderColor default clBtnShadow;
+    property BorderWidth: Single read FBorderWidth write SetBorderWidth;
+    property Caption;
+    property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
+    property GroupColor: TColor read FGroupColor write SetGroupColor default clBtnFace;
+    property Native: Boolean read FNative write SetNative default True;
+    property Radius: Single read FRoundRadius write SetRoundRadius;
+    property Shadow: TGUIShadow read GetShadow write SetShadow;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
+
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
   end;
 
-
-  TCustomGuiGroupA = class(TCustomGuiGroupGDI)
-  protected
-    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); override;
-  end;
-
-  TCustomGuiGroupB = class(TCustomGuiGroupGDI)
+  TGuiGroup = class(TCustomGuiGroup)
   private
-    FHeaderMinWidth : Integer;
-    FOffset         : Integer;
-    procedure SetHeaderMinWidth(const Value: Integer);
-    procedure SetOffset(const Value: Integer);
+    FHeaderWidth  : Integer;
+    FHeaderHeight : Integer;
+    procedure CalculateHeaderSize;
   protected
-    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); override;
+    procedure FontChangedHandler(Sender: TObject); override;
+    procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); override;
+    procedure RenderCaption(PixelMap: TGuiCustomPixelMap); override;
+    procedure TextChanged; override;
+  published
+    property Align;
+    property Alpha;
+    property Anchors;
+    property BorderColor;
+    property BorderWidth;
+    property Caption;
+    property Color;
+    property Constraints;
+    property Cursor;
+    property DockSite;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    property Font;
+    property FontOversampling;
+    property GroupColor;
+    property HelpContext;
+    property Hint;
+    property Native;
+    property ParentColor;
+    property ParentFont;
+    property ParentShowHint;
+    property PopupMenu;
+    property Radius;
+    property Shadow;
+    property ShowHint;
+    property TabOrder;
+    property TabStop;
+    property Transparent;
+    property Visible;
+
+    property OnCanResize;
+    property OnClick;
+    property OnConstrainedResize;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDockDrop;
+    property OnDockOver;
+    property OnDragDrop;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
+    property OnEnter;
+    property OnExit;
+    property OnGetSiteInfo;
+    property OnMouseDown;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnResize;
+    property OnStartDock;
+    property OnStartDrag;
+    property OnUnDock;
+  end;
+
+  TGuiGroupSide = class(TCustomGuiGroup)
+  private
+    FHeaderWidth  : Integer;
+    procedure CalculateHeaderSize;
+  protected
+    procedure FontChangedHandler(Sender: TObject); override;
+    procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); override;
+    procedure RenderCaption(PixelMap: TGuiCustomPixelMap); override;
+    procedure TextChanged; override;
   public
     constructor Create(AOwner: TComponent); override;
-    property HeaderMinWidth: Integer read FHeaderMinWidth write SetHeaderMinWidth default 32;
-    property Offset: Integer read FOffset write SetOffset default 1;
-  end;
-
-  TGuiGroupA = class(TCustomGuiGroupA)
   published
     property Align;
+    property Alpha;
     property Anchors;
-    property AntiAlias;
+    property BorderColor;
+    property BorderWidth;
     property Caption;
     property Color;
     property Constraints;
@@ -107,19 +182,18 @@ type
     property DragKind;
     property DragMode;
     property Enabled;
-    property GroupColor;
-    property OwnerDraw;
     property Font;
+    property FontOversampling;
+    property GroupColor;
     property HelpContext;
     property Hint;
-    property LineColor;
-    property OutlineWidth;
-    property PanelColor;
+    property Native;
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
     property Radius;
+    property Shadow;
     property ShowHint;
     property TabOrder;
     property TabStop;
@@ -149,11 +223,21 @@ type
     property OnUnDock;
   end;
 
-  TGuiGroupB = class(TCustomGuiGroupB)
+  TGuiGroupTop = class(TCustomGuiGroup)
+  private
+    FHeaderHeight : Integer;
+    procedure CalculateHeaderSize;
+  protected
+    procedure FontChangedHandler(Sender: TObject); override;
+    procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); override;
+    procedure RenderCaption(PixelMap: TGuiCustomPixelMap); override;
+    procedure TextChanged; override;
   published
     property Align;
+    property Alpha;
     property Anchors;
-    property AntiAlias;
+    property BorderColor;
+    property BorderWidth;
     property Caption;
     property Color;
     property Constraints;
@@ -163,21 +247,18 @@ type
     property DragKind;
     property DragMode;
     property Enabled;
-    property Offset;
-    property OwnerDraw;
     property Font;
+    property FontOversampling;
     property GroupColor;
-    property HeaderMinWidth;
     property HelpContext;
     property Hint;
-    property LineColor;
-    property OutlineWidth;
-    property PanelColor;
+    property Native;
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
     property Radius;
+    property Shadow;
     property ShowHint;
     property TabOrder;
     property TabStop;
@@ -206,36 +287,65 @@ type
     property OnStartDrag;
     property OnUnDock;
   end;
-
-  TGuiGroup = class(TGuiGroupB);
 
 implementation
 
 uses
-  Math, DAV_Math, DAV_Complex;
+  Math, DAV_Math, DAV_Complex, DAV_Approximations, DAV_GuiBlend,
+  DAV_GuiFixedPoint;
 
 { TCustomGuiGroup }
 
 constructor TCustomGuiGroup.Create(AOwner: TComponent);
 begin
  inherited;
- ControlStyle  := ControlStyle + [csOpaque];
- FOwnerDraw    := True;
- FRoundRadius  := 2;
- FCaption      := 'Group'; //Name;
- FLineColor    := clBtnShadow;
- FGroupColor   := clBtnShadow;
- FPanelColor   := clBtnFace;
- FOutlineWidth := 1;
+
+ ControlStyle   := ControlStyle + [csAcceptsControls, csOpaque];
+
+ {$IFDEF FPC}
+ DoubleBuffered := True;
+ {$ENDIF}
+
+ FAlpha            := $FF;
+ FRoundRadius      := 2;
+ FUpdateBuffer     := True;
+ FUpdateBackBuffer := True;
+ FTransparent      := False;
+ FBorderColor      := clBtnShadow;
+ FGroupColor       := clBtnFace;
+ FBorderWidth      := 1;
+ FNative           := False;
+
+ // create control canvas
+ FCanvas := TControlCanvas.Create;
+ TControlCanvas(FCanvas).Control := Self;
+
+ // create buffers (& set size)
+ FBuffer           := TGuiPixelMapMemory.Create;
+ FBackBuffer       := TGuiPixelMapMemory.Create;
+ FBuffer.SetSize(Width, Height);
+ FBackBuffer.SetSize(Width, Height);
+
+ // create font
+ FGuiFont          := TGuiOversampledGDIFont.Create;
+ FGuiFont.OnChange := FontChangedHandler;
+
+ // set initial bounds
+ SetBounds(0, 0, 128, 64);
 end;
 
-procedure TCustomGuiGroup.SetCaption(const Value: string);
+destructor TCustomGuiGroup.Destroy;
 begin
- if FCaption <> Value then
-  begin
-   FCaption := Value;
-   CaptionChanged;
-  end;
+ // free buffers
+ FreeAndNil(FBuffer);
+ FreeAndNil(FBackBuffer);
+
+ inherited;
+end;
+
+procedure TCustomGuiGroup.FontChangedHandler(Sender: TObject);
+begin
+ BufferChanged;
 end;
 
 procedure TCustomGuiGroup.SetGroupColor(const Value: TColor);
@@ -247,64 +357,203 @@ begin
   end;
 end;
 
+function TCustomGuiGroup.GetOversampling: TFontOversampling;
+begin
+ Result := FGuiFont.FontOversampling;
+end;
+
+function TCustomGuiGroup.GetShadow: TGUIShadow;
+begin
+ Result := FGuiFont.Shadow;
+end;
+
 procedure TCustomGuiGroup.GroupColorChanged;
 begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiGroup.AlphaChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiGroup.BackBufferChanged;
+begin
+ if not FNative
+  then FUpdateBackBuffer := True;
  Invalidate;
 end;
 
-procedure TCustomGuiGroup.CaptionChanged;
+procedure TCustomGuiGroup.BufferChanged;
 begin
+ if not FNative
+  then FUpdateBuffer := True;
  Invalidate;
 end;
 
-procedure TCustomGuiGroup.SetLineColor(const Value: TColor);
+procedure TCustomGuiGroup.SetAlpha(const Value: Byte);
 begin
- if FLineColor <> Value then
+ if FAlpha <> Value then
   begin
-   FLineColor := Value;
-   LineColorChanged;
+   FAlpha := Value;
+   AlphaChanged;
   end;
 end;
 
-procedure TCustomGuiGroup.LineColorChanged;
+procedure TCustomGuiGroup.SetBorderColor(const Value: TColor);
 begin
- Invalidate;
-end;
-
-procedure TCustomGuiGroup.SetOutlineWidth(const Value: Integer);
-begin
- if FOutlineWidth <> Value then
+ if FBorderColor <> Value then
   begin
-   FOutlineWidth := Value;
-   OutlineWidthChanged;
+   FBorderColor := Value;
+   BorderColorChanged;
   end;
 end;
 
-procedure TCustomGuiGroup.OutlineWidthChanged;
+procedure TCustomGuiGroup.BorderColorChanged;
 begin
- Invalidate;
+ BufferChanged;
 end;
 
-procedure TCustomGuiGroup.SetRoundRadius(Value: Integer);
+procedure TCustomGuiGroup.Loaded;
+begin
+ inherited;
+ Resize;
+end;
+
+procedure TCustomGuiGroup.SetBorderWidth(const Value: Single);
+begin
+ if FBorderWidth <> Value then
+  begin
+   FBorderWidth := Value;
+   BorderWidthChanged;
+  end;
+end;
+
+procedure TCustomGuiGroup.SetOversampling(const Value: TFontOversampling);
+begin
+ FGuiFont.FontOversampling := Value;
+end;
+
+procedure TCustomGuiGroup.BorderWidthChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiGroup.SetRoundRadius(Value: Single);
 begin
  if Value < 0 then Value := 0;
  if FRoundRadius <> Value then
   begin
    FRoundRadius := Value;
-   Invalidate;
+   RoundRadiusChanged;
   end;
+end;
+
+procedure TCustomGuiGroup.Resize;
+begin
+ inherited;
+
+ // resize and update back buffer
+ if Assigned(FBackBuffer) then
+  begin
+   FBackBuffer.SetSize(Width, Height);
+   BackBufferChanged;
+  end;
+
+ // resize and update back buffer
+ if Assigned(FBuffer) then
+  begin
+   FBuffer.SetSize(Width, Height);
+   BufferChanged;
+  end;
+end;
+
+procedure TCustomGuiGroup.SetShadow(const Value: TGUIShadow);
+begin
+ FGuiFont.Shadow.Assign(Value);
+end;
+
+procedure TCustomGuiGroup.SetTransparent(const Value: Boolean);
+begin
+ if FTransparent <> Value then
+  begin
+   FTransparent := Value;
+   TransparentChanged;
+  end;
+end;
+
+procedure TCustomGuiGroup.TextChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiGroup.TransparentChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiGroup.UpdateBackBuffer;
+var
+  PixelColor32 : TPixel32;
+begin
+ FUpdateBackBuffer := False;
+
+ {$IFNDEF FPC}
+ if FTransparent then FBackBuffer.CopyParentImage(Self) else
+ {$ENDIF}
+  begin
+   PixelColor32 := ConvertColor(Color);
+   FBackBuffer.FillRect(ClientRect, PixelColor32);
+  end;
+
+ FUpdateBuffer := True;
+end;
+
+procedure TCustomGuiGroup.UpdateBuffer;
+begin
+ FUpdateBuffer := False;
+
+ inherited;
+
+ // check whether a buffer or a back buffer is assigned
+ if not Assigned(FBuffer) or not Assigned(FBackBuffer)
+  then Exit;
+
+ Assert((FBackBuffer.Width = FBuffer.Width) and (FBackBuffer.Height = FBuffer.Height));
+
+ // copy entire back buffer to buffer
+ Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
+   FBuffer.Width * SizeOf(TPixel32));
+
+ RenderGroupBox(FBuffer);
+ RenderCaption(FBuffer);
+end;
+
+procedure TCustomGuiGroup.WMMove(var Message: TWMMove);
+begin
+ inherited;
+
+ if FTransparent
+  then BackBufferChanged;
 end;
 
 procedure TCustomGuiGroup.RoundRadiusChanged;
 begin
- Invalidate;
+ BufferChanged;
 end;
-
 
 procedure TCustomGuiGroup.Click;
 begin
  if FAutoFocus then SetFocus;
  inherited;
+end;
+
+procedure TCustomGuiGroup.CMColorChanged(var Message: TMessage);
+begin
+ inherited;
+
+ if not FNative
+  then BackBufferChanged;
 end;
 
 procedure TCustomGuiGroup.CMDialogChar(var Message: TCMDialogChar);
@@ -320,225 +569,61 @@ end;
 procedure TCustomGuiGroup.CMEnabledChanged(var Message: TMessage);
 begin
  inherited;
- Invalidate;
+ BufferChanged;
 end;
 
-procedure TCustomGuiGroup.CMParentColorChanged(var Message: TWMNoParams);
+procedure TCustomGuiGroup.CMFontChanged(var Message: TMessage);
 begin
- inherited;
- Invalidate;
+ FGuiFont.Font.Assign(Font);
 end;
 
 procedure TCustomGuiGroup.CMSysColorChange(var Message: TMessage);
 begin
  inherited;
- Invalidate;
+ BufferChanged;
 end;
 
-procedure TCustomGuiGroup.SetOwnerDraw(const Value: Boolean);
+procedure TCustomGuiGroup.CMTextChanged(var Message: TWmNoParams);
 begin
- if FOwnerDraw <> Value then
+ TextChanged;
+end;
+
+procedure TCustomGuiGroup.SetNative(const Value: Boolean);
+begin
+ if FNative <> Value then
   begin
-   FOwnerDraw := Value;
+   FNative := Value;
    RecreateWnd;
+   if not FNative
+    then FUpdateBackBuffer := True;
    Invalidate;
   end;
 end;
 
-procedure TCustomGuiGroup.SetPanelColor(const Value: TColor);
+procedure TCustomGuiGroup.Paint;
 begin
- if FPanelColor <> Value then
-  begin
-   FPanelColor := Value;
-   PanelColorChanged;
-  end;
-end;
-
-procedure TCustomGuiGroup.PanelColorChanged;
-begin
- Invalidate;
-end;
-
-
-{ TCustomGuiGroupGDI }
-
-constructor TCustomGuiGroupGDI.Create(AOwner: TComponent);
-begin
- inherited;
- FAntiAlias := gaaNone;
- FOSFactor  := 1;
-end;
-
-procedure TCustomGuiGroupGDI.DrawParentImage(Dest: TCanvas);
-var
-  SaveIndex : Integer;
-  DC        : THandle;
-  Position  : TPoint;
-begin
-  if Parent = nil then Exit;
-  DC := Dest.Handle;
-  SaveIndex := SaveDC(DC);
-  GetViewportOrgEx(DC, Position);
-  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-  Parent.Perform(WM_PAINT, Longint(DC), 0);
-  RestoreDC(DC, SaveIndex);
-end;
-
-procedure TCustomGuiGroupGDI.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   AntiAliasChanged;
-  end;
-end;
-
-procedure TCustomGuiGroupGDI.AntiAliasChanged;
-begin
- case FAntiAlias of
-       gaaNone : FOSFactor :=  1;
-   gaaLinear2x : FOSFactor :=  2;
-   gaaLinear3x : FOSFactor :=  3;
-   gaaLinear4x : FOSFactor :=  4;
-   gaaLinear8x : FOSFactor :=  8;
-  gaaLinear16x : FOSFactor := 16;
- end;
- Invalidate;
-end;
-
-procedure TCustomGuiGroupGDI.SetTransparent(const Value: Boolean);
-begin
- if FTransparent <> Value then
-  begin
-   FTransparent := Value;
-   TransparentChanged;
-  end;
-end;
-
-procedure TCustomGuiGroupGDI.Paint;
-var
-  OutlineRect : TRect;
-  Buffer     : TBitmap;
-begin
- OutlineRect := ClientRect;
-
- if not FOwnerDraw or (Width <= 0) or (Height <= 0) then
-  begin
-   inherited;
-   Exit;
-  end;
-
- Buffer := TBitmap.Create;
- try
-  with Buffer, Canvas do
+ if FNative
+  then inherited
+  else
    begin
-    Lock;
-    PixelFormat := pf32bit;
-    Width  := FOSFactor * Self.Width;
-    Height := FOSFactor * Self.Height;
-    Brush.Style := bsSolid;
-    Brush.Color := Self.Color;
+    if FUpdateBackBuffer
+     then UpdateBackBuffer;
 
-    case FAntiAlias of
-     gaaNone     :
-      begin
-       {$IFNDEF FPC} if FTransparent then DrawParentImage(Canvas) else {$ENDIF}
-       FillRect(ClipRect);
-       RenderGroupBoxToBitmap(Buffer);
-      end;
-     gaaLinear2x :
-      begin
-       {$IFNDEF FPC}
-       if FTransparent then
-        begin
-         DrawParentImage(Canvas);
-         Upsample2xBitmap32(Buffer);
-        end else
-       {$ENDIF}
-       FillRect(ClipRect);
-       RenderGroupBoxToBitmap(Buffer);
-       Downsample2xBitmap32(Buffer);
-      end;
-     gaaLinear3x :
-      begin
-       {$IFNDEF FPC}
-       if FTransparent then
-        begin
-         DrawParentImage(Canvas);
-         Upsample3xBitmap32(Buffer);
-        end else
-       {$ENDIF}
-       FillRect(ClipRect);
-       RenderGroupBoxToBitmap(Buffer);
-       Downsample3xBitmap32(Buffer);
-      end;
-     gaaLinear4x :
-      begin
-       {$IFNDEF FPC}
-       if FTransparent then
-        begin
-         DrawParentImage(Canvas);
-         Upsample4xBitmap32(Buffer);
-        end else
-       {$ENDIF}
-       FillRect(ClipRect);
-       RenderGroupBoxToBitmap(Buffer);
-       Downsample4xBitmap32(Buffer);
-      end;
-     gaaLinear8x :
-      begin
-       {$IFNDEF FPC}
-       if FTransparent then
-        begin
-         DrawParentImage(Canvas);
-         Upsample2xBitmap32(Buffer);
-         Upsample4xBitmap32(Buffer);
-        end else
-       {$ENDIF}
-       FillRect(ClipRect);
-       RenderGroupBoxToBitmap(Buffer);
-       Downsample2xBitmap32(Buffer);
-       Downsample4xBitmap32(Buffer);
-      end;
-     gaaLinear16x :
-      begin
-       {$IFNDEF FPC}
-       if FTransparent then
-        begin
-         DrawParentImage(Canvas);
-         Upsample4xBitmap32(Buffer);
-         Upsample4xBitmap32(Buffer);
-        end else
-       {$ENDIF}
-       FillRect(ClipRect);
-       RenderGroupBoxToBitmap(Buffer);
-       Downsample4xBitmap32(Buffer);
-       Downsample4xBitmap32(Buffer);
-      end;
-    end;
+    if FUpdateBuffer
+     then UpdateBuffer;
+
+    if Assigned(FOnPaint)
+     then FOnPaint(Self);
+
+    if Assigned(FBuffer)
+     then FBuffer.PaintTo(Canvas);
    end;
-  Self.Canvas.Draw(0, 0, Buffer);
- finally
-  FreeAndNil(Buffer);
- end;
-end;
-
-procedure TCustomGuiGroupGDI.TransparentChanged;
-begin
- Invalidate;
-end;
-
-procedure TCustomGuiGroupGDI.WMMove(var Message: TWMMove);
-begin
- inherited;
- if FTransparent then Invalidate;
 end;
 
 
 { TCustomGuiGroupA }
 
+{
 procedure TCustomGuiGroupA.RenderGroupBoxToBitmap(Bitmap: TBitmap);
 var
   Val, Off : TComplexSingle;
@@ -556,9 +641,9 @@ begin
    Lock;
 
    Brush.Style := bsSolid;
-   Brush.Color := FPanelColor;
-   Pen.Width   := FOSFactor * FOutlineWidth;
-   Pen.Color   := FLineColor;
+   Brush.Color := FGroupColor;
+   Pen.Width   := FOSFactor * FBorderWidth;
+   Pen.Color   := FBorderColor;
    Font.Assign(Self.Font);
    Font.Size := FOSFactor * Font.Size;
    TextSize := TextExtent(FCaption);
@@ -571,8 +656,8 @@ begin
             LineTo(TextSize.cx + 11, TextSize.cy + 4);
            end;
        2 : begin
-            LineOffs[0] := Round(OutlineWidth div 2);
-            LineOffs[1] := Round((OutlineWidth + 1) div 2);
+            LineOffs[0] := Round(BorderWidth div 2);
+            LineOffs[1] := Round((BorderWidth + 1) div 2);
             with ClipRect do
              begin
               PntArray[ 0] := Point(Left  + 1 + LineOffs[0], Bottom - 1 - LineOffs[1]);
@@ -606,7 +691,7 @@ begin
         Val.Re := Val.Re * rad; Val.Im := Val.Im * rad;
 
         GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
-        PtsArray[0] := Point(Round(OutlineWidth div 2), Round(OutlineWidth div 2 + rad));
+        PtsArray[0] := Point(Round(BorderWidth div 2), Round(BorderWidth div 2 + rad));
 
         // upper left corner
         for i := 1 to Steps div 4 - 1 do
@@ -614,9 +699,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
+          PtsArray[i] := Point(Round(BorderWidth div 2 + rad + Val.Re), Round(BorderWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 4] := Point(OutlineWidth div 2 + rad, OutlineWidth div 2 + 0);
+        PtsArray[Steps div 4] := Point(BorderWidth div 2 + rad, BorderWidth div 2 + 0);
 
         // upper right corner
         for i := Steps div 4 to Steps div 2 - 1 do
@@ -624,9 +709,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
+          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (BorderWidth + 1) div 2 + Val.Re), Round(BorderWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (OutlineWidth + 1) div 2, OutlineWidth div 2 + rad);
+        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (BorderWidth + 1) div 2, BorderWidth div 2 + rad);
 
         // lower right corner
         for i := Steps div 2 to 3 * Steps div 4 - 1 do
@@ -634,9 +719,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (BorderWidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (BorderWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (OutlineWidth + 1) div 2, ClipRect.Bottom - (OutlineWidth + 1) div 2);
+        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (BorderWidth + 1) div 2, ClipRect.Bottom - (BorderWidth + 1) div 2);
 
         // lower left corner
         for i := 3 * Steps div 4 to Steps - 1 do
@@ -644,9 +729,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 3] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 3] := Point(Round(BorderWidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (BorderWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[Steps + 3] := Point(OutlineWidth div 2, rad + OutlineWidth div 2);
+        PtsArray[Steps + 3] := Point(BorderWidth div 2, rad + BorderWidth div 2);
 
         PolyGon(PtsArray);
 
@@ -654,12 +739,12 @@ begin
         // Draw inner text
         //////////////////
 
-        Brush.Color   := FLineColor;
+        Brush.Color   := FBorderColor;
         SetLength(PtsArray, Steps div 2 + 5);
         Val.Re := -rad; Val.Im := 0;
 
         GetSinCos(2 * Pi / (Steps div 2 - 1), Off.Im, Off.Re);
-        rct := Rect(OutlineWidth div 2, OutlineWidth div 2, max(TextSize.cx + 10, FOSFactor * FHeaderMinWidth) - (OutlineWidth + 1) div 2, TextSize.cy + 5 - (OutlineWidth + 1) div 2);
+        rct := Rect(BorderWidth div 2, BorderWidth div 2, max(TextSize.cx + 10, FOSFactor * FHeaderMinWidth) - (BorderWidth + 1) div 2, TextSize.cy + 5 - (BorderWidth + 1) div 2);
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 
         // upper left corner
@@ -699,35 +784,349 @@ begin
    Unlock;
   end;
 end;
+}
 
-{ TCustomGuiGroupB }
 
-constructor TCustomGuiGroupB.Create(AOwner: TComponent);
+{ TGuiGroup }
+
+procedure TGuiGroup.FontChangedHandler(Sender: TObject);
 begin
+ CalculateHeaderSize;
  inherited;
- FOffset         := 1;
- FHeaderMinWidth := 32;
 end;
 
-procedure TCustomGuiGroupB.SetHeaderMinWidth(const Value: Integer);
+procedure TGuiGroup.CalculateHeaderSize;
+var
+  TextSize : TSize;
 begin
- if FHeaderMinWidth <> Value then
+ TextSize := FGuiFont.TextExtend(Caption);
+ FHeaderWidth := TextSize.cx;
+ FHeaderHeight := TextSize.cy;
+end;
+
+procedure TGuiGroup.RenderCaption(PixelMap: TGuiCustomPixelMap);
+var
+  TextSize : TSize;
+begin
+ if Assigned(FGuiFont) then
   begin
-   FHeaderMinWidth := Value;
-   Invalidate;
+   TextSize := FGuiFont.TextExtend(Caption);
+   FGuiFont.TextOut(Caption, PixelMap, Round(2 * FBorderWidth), Round(FBorderWidth));
   end;
 end;
 
-procedure TCustomGuiGroupB.SetOffset(const Value: Integer);
+procedure TGuiGroup.RenderGroupBox(PixelMap: TGuiCustomPixelMap);
+var
+  X, Y, Offset         : Integer;
+  XRange               : array [0..1] of Integer;
+  ScnLne               : PPixel32Array;
+  PanelColor           : TPixel32;
+  BorderColor          : TPixel32;
+  CombColor            : TPixel32;
+  IsUpperLowerHalf     : Boolean;
+  IsHeader             : Boolean;
+  HeaderHeight         : TFixed24Dot8Point;
+  HeaderWidth          : TFixed24Dot8Point;
+  RadiusFixed          : TFixed24Dot8Point;
+  XStart               : TFixed24Dot8Point;
+  BorderWidthFixed     : TFixed24Dot8Point;
+  RadMinusOne          : TFixed24Dot8Point;
+  RadMinusBorder       : TFixed24Dot8Point;
+  SqrRadMinusBorderOne : TFixed24Dot8Point;
+  SqrRadMinusBorder    : TFixed24Dot8Point;
+  SqrDist, SqrYDist    : TFixed24Dot8Point;
+  SqrRadMinusOne       : TFixed24Dot8Point;
+  XFixed, YFixed       : TFixed24Dot8Point;
+  WidthMinusOne        : TFixed24Dot8Point;
+  YBorderDistance      : TFixed24Dot8Point;
+  Temp                 : TFixed24Dot8Point;
 begin
- if Value > 0 then
-  if FOffset <> Value then
-   begin
-    FOffset := Value;
-    Invalidate;
-   end;
+ with PixelMap do
+  begin
+   // set local colors
+   PanelColor := ConvertColor(FGroupColor);
+   PanelColor.A := Alpha;
+   BorderColor := ConvertColor(FBorderColor);
+
+   // set other local variables
+   RadiusFixed := ConvertToFixed24Dot8Point(Min(FRoundRadius, 0.5 * Min(Width, Height)) + 1);
+   BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
+   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   HeaderHeight.Fixed := ConvertToFixed24Dot8Point(FHeaderHeight).Fixed +
+     2 * BorderWidthFixed.Fixed;
+   HeaderWidth.Fixed := ConvertToFixed24Dot8Point(FHeaderWidth).Fixed +
+     3 * BorderWidthFixed.Fixed;
+
+   // precalculate radius variables
+   RadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if RadMinusOne.Fixed < 0
+    then RadMinusOne.Fixed := 0;
+
+   RadMinusBorder.Fixed := RadiusFixed.Fixed - BorderWidthFixed.Fixed;
+   if RadMinusBorder.Fixed < 0
+    then RadMinusBorder.Fixed := 0;
+   SqrRadMinusBorder := FixedSqr(RadMinusBorder);
+
+   SqrRadMinusBorderOne.Fixed := RadMinusBorder.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusBorderOne.Fixed < 0
+    then SqrRadMinusBorderOne.Fixed := 0
+    else SqrRadMinusBorderOne := FixedSqr(SqrRadMinusBorderOne);
+
+   SqrRadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusOne.Fixed < 0
+    then SqrRadMinusOne.Fixed := 0
+    else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
+
+   // draw top rounded borders
+   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+    begin
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // calculate x offset
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(RadiusFixed, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(RadiusFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // set scan lines
+     ScnLne := Scanline[Y];
+
+     // check whether the scan line contains the header
+     IsHeader := YFixed.Fixed <= HeaderHeight.Fixed;
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     X := XRange[0];
+     while X <= XRange[1] do
+      begin
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
+
+       // select color to be drawn
+       if SqrDist.Fixed <= SqrRadMinusBorderOne.Fixed
+        then CombColor := PanelColor
+        else
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
+        begin
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+
+(*
+         Offset := FixedRound(FixedSub(HeaderWidth, BorderWidthFixed));
+         if X <= Offset then
+          begin
+           BlendPixelLine(BorderColor, @ScnLne[X], Offset - 1);
+           X := X + Offset - 1;
+          end;
+*)
+        end else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(RadiusFixed, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+       Inc(X);
+      end;
+    end;
+
+   // draw bottom rounded borders
+   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+    begin
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // calculate x offset
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(RadiusFixed, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(RadiusFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // set scan lines
+     ScnLne := Scanline[Height - 1 - Y];
+
+     // check whether the scan line contains the header
+     IsHeader := YFixed.Fixed <= HeaderHeight.Fixed;
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     for X := XRange[0] to XRange[1] do
+      begin
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
+
+       // select color to be drawn
+       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
+        then CombColor := PanelColor
+        else
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
+        begin
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         if Temp.Fixed > $FF
+          then CombColor := PanelColor
+          else CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+        end else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(RadiusFixed, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+      end;
+    end;
+
+   for Y := FixedRound(RadiusFixed) to Height - 1 - FixedRound(RadiusFixed) do
+    begin
+     ScnLne := Scanline[Y];
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // check whether position is a non-rounded border
+     if (YFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+        (YFixed.Fixed > ConvertToFixed24Dot8Point(Height).Fixed - BorderWidthFixed.Fixed) then
+      begin
+       BlendPixelLine(BorderColor, @ScnLne[0], Width);
+       Continue;
+      end;
+
+     // check whether the scan line contains the header
+     IsHeader := YFixed.Fixed <= HeaderHeight.Fixed;
+
+     // check upper/lower half and eventually precalculate y-border distance
+     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
+       (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
+     if IsUpperLowerHalf then
+      if Y < Height div 2
+       then YBorderDistance.Fixed := BorderWidthFixed.Fixed - YFixed.Fixed
+       else YBorderDistance.Fixed := YFixed.Fixed - Temp.Fixed + BorderWidthFixed.Fixed
+      else YBorderDistance.Fixed := 0;
+
+     X := 0;
+     while X < Width do
+      begin
+       // convert
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // check whether position is an upper/lower half border
+       if IsUpperLowerHalf then
+        begin
+         if (XFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+            (XFixed.Fixed > ConvertToFixed24Dot8Point(Width).Fixed - BorderWidthFixed.Fixed) or
+            (IsHeader and (XFixed.Fixed < HeaderWidth.Fixed - CFixed24Dot8One.Fixed))
+          then CombColor := BorderColor else
+         if (XFixed.Fixed < BorderWidthFixed.Fixed) then
+          begin
+           Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end else
+         if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+          begin
+           Temp.Fixed := XFixed.Fixed + BorderWidthFixed.Fixed - WidthMinusOne.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end
+         else
+          begin
+           Assert(YBorderDistance.Fixed >= 0);
+           Assert(YBorderDistance.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, YBorderDistance.Fixed);
+           BlendPixelLine(CombColor, @ScnLne[X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
+          end;
+        end else
+       if (XFixed.Fixed <= BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+          (XFixed.Fixed >= WidthMinusOne.Fixed - BorderWidthFixed.Fixed + CFixed24Dot8One.Fixed) or
+          (IsHeader and (XFixed.Fixed < HeaderWidth.Fixed - CFixed24Dot8One.Fixed))
+        then CombColor := BorderColor else
+       if (XFixed.Fixed < BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end else
+       if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := XFixed.Fixed - WidthMinusOne.Fixed + BorderWidthFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end
+       else
+        begin
+         if Width - X <= 0 then
+          begin
+           BlendPixelLine(PanelColor, @ScnLne[X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
+          end else CombColor := PanelColor;
+        end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+       Inc(X)
+      end;
+    end;
+   EMMS;
+  end;
 end;
 
+procedure TGuiGroup.TextChanged;
+begin
+ CalculateHeaderSize;
+ inherited;
+end;
+
+(*
 procedure TCustomGuiGroupB.RenderGroupBoxToBitmap(Bitmap: TBitmap);
 var
   Val, Off : TComplexSingle;
@@ -743,26 +1142,26 @@ begin
    Lock;
 
    Brush.Style := bsSolid;
-   Brush.Color := FPanelColor;
-   Pen.Width   := FOSFactor * FOutlineWidth;
-   Pen.Color   := FLineColor;
+   Brush.Color := FGroupColor;
+   Pen.Width   := FOSFactor * FBorderWidth;
+   Pen.Color   := FBorderColor;
    Font.Assign(Self.Font);
    Font.Size   := FOSFactor * Font.Size;
    TextSize    := TextExtent(FCaption);
-   TextSize.cx := TextSize.cx + 2 * FOSFactor * (FOutlineWidth + FOffset);
+   TextSize.cx := TextSize.cx + 2 * FOSFactor * (FBorderWidth + FOffset);
    if TextSize.cx < FHeaderMinWidth
     then TextSize.cx := TextSize.cx + FOSFactor * FHeaderMinWidth;
-   TextSize.cy := TextSize.cy + 3 * FOSFactor * FOutlineWidth div 2;
+   TextSize.cy := TextSize.cy + 3 * FOSFactor * FBorderWidth div 2;
 
    rct := ClipRect;
-   InflateRect(rct, -FOSFactor * (OutlineWidth + 1) div 2, -FOSFactor * (OutlineWidth + 1) div 2);
+   InflateRect(rct, -FOSFactor * (BorderWidth + 1) div 2, -FOSFactor * (BorderWidth + 1) div 2);
 
    case FRoundRadius of
     0, 1 : begin
             Rectangle(rct.Left, rct.Top, rct.Right + 1, rct.Bottom + 1);
             Brush.Color := FGroupColor;
-            FillRect(Rect(rct.Left + FOSFactor * OutlineWidth div 2, rct.Top + FOSFactor * OutlineWidth div 2, TextSize.cx, TextSize.cy));
-            MoveTo(FOSFactor * FOutlineWidth, TextSize.cy);
+            FillRect(Rect(rct.Left + FOSFactor * BorderWidth div 2, rct.Top + FOSFactor * BorderWidth div 2, TextSize.cx, TextSize.cy));
+            MoveTo(FOSFactor * FBorderWidth, TextSize.cy);
             LineTo(TextSize.cx, TextSize.cy);
             LineTo(TextSize.cx, rct.Top);
            end;
@@ -781,16 +1180,16 @@ begin
                        Point(Left  + 2 * FOSFactor, Bottom                ),
                        Point(Left                 , Bottom - 2 * FOSFactor)]);
             Brush.Color := FGroupColor;
-            FillRect(Rect(rct.Left + FOSFactor * OutlineWidth div 2, rct.Top + FOSFactor * OutlineWidth div 2, TextSize.cx, TextSize.cy));
-            MoveTo(FOSFactor * FOutlineWidth, TextSize.cy);
+            FillRect(Rect(rct.Left + FOSFactor * BorderWidth div 2, rct.Top + FOSFactor * BorderWidth div 2, TextSize.cx, TextSize.cy));
+            MoveTo(FOSFactor * FBorderWidth, TextSize.cy);
             LineTo(TextSize.cx, TextSize.cy);
             LineTo(TextSize.cx, rct.Top);
            end;
     else
      begin
       rct := ClipRect;
-      Brush.Color := FPanelColor;
-      InflateRect(rct, -FOSFactor * (OutlineWidth + 1) div 2, -FOSFactor * (OutlineWidth + 1) div 2);
+      Brush.Color := FGroupColor;
+      InflateRect(rct, -FOSFactor * (BorderWidth + 1) div 2, -FOSFactor * (BorderWidth + 1) div 2);
 
       rad := FOSFactor * FRoundRadius;
       Steps := Round(2 / arcsin(1 / rad)) + 1;
@@ -801,7 +1200,7 @@ begin
         Val.Re := Val.Re * rad; Val.Im := Val.Im * rad;
 
         GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
-        PtsArray[0] := Point(Round(OutlineWidth div 2), Round(OutlineWidth div 2 + rad));
+        PtsArray[0] := Point(Round(BorderWidth div 2), Round(BorderWidth div 2 + rad));
 
         // upper left corner
         for i := 1 to Steps div 4 - 1 do
@@ -809,9 +1208,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
+          PtsArray[i] := Point(Round(BorderWidth div 2 + rad + Val.Re), Round(BorderWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 4] := Point(OutlineWidth div 2 + rad, OutlineWidth div 2 + 0);
+        PtsArray[Steps div 4] := Point(BorderWidth div 2 + rad, BorderWidth div 2 + 0);
 
         // upper right corner
         for i := Steps div 4 to Steps div 2 - 1 do
@@ -819,9 +1218,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
+          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (BorderWidth + 1) div 2 + Val.Re), Round(BorderWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (OutlineWidth + 1) div 2, OutlineWidth div 2 + rad);
+        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (BorderWidth + 1) div 2, BorderWidth div 2 + rad);
 
         // lower right corner
         for i := Steps div 2 to 3 * Steps div 4 - 1 do
@@ -829,9 +1228,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (BorderWidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (BorderWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (OutlineWidth + 1) div 2, ClipRect.Bottom - (OutlineWidth + 1) div 2);
+        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (BorderWidth + 1) div 2, ClipRect.Bottom - (BorderWidth + 1) div 2);
 
         // lower left corner
         for i := 3 * Steps div 4 to Steps - 1 do
@@ -839,9 +1238,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 3] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 3] := Point(Round(BorderWidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (BorderWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[Steps + 3] := Point(OutlineWidth div 2, rad + OutlineWidth div 2);
+        PtsArray[Steps + 3] := Point(BorderWidth div 2, rad + BorderWidth div 2);
 
         PolyGon(PtsArray);
 
@@ -854,7 +1253,7 @@ begin
         Val.Re := -rad; Val.Im := 0;
 
         GetSinCos(Pi / (Steps div 2 - 1), Off.Im, Off.Re);
-        rct := Rect(OutlineWidth div 2, OutlineWidth div 2, TextSize.cx + 10 - (OutlineWidth + 1) div 2, TextSize.cy + 5 - (OutlineWidth + 1) div 2);
+        rct := Rect(BorderWidth div 2, BorderWidth div 2, TextSize.cx + 10 - (BorderWidth + 1) div 2, TextSize.cy + 5 - (BorderWidth + 1) div 2);
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 
         // upper left corner
@@ -889,274 +1288,640 @@ begin
    end;
 
    Brush.Style := bsClear;
-   TextOut(FOSFactor * (FOutlineWidth + FOffset), FOSFactor * FOutlineWidth, FCaption);
+   TextOut(FOSFactor * (FBorderWidth + FOffset), FOSFactor * FBorderWidth, FCaption);
    Unlock;
   end;
 end;
+*)
 
+{ TGuiGroupSide }
 
-(*
-
-{ TMFControlsCustomGroupBox }
-
-procedure TMFControlsCustomGroupBox.Paint;
+procedure TGuiGroupSide.CalculateHeaderSize;
 var
-  memoryBitmap   : TBitmap;
-  OutlineRect,
-  textBounds     : TRect;
-  textSize       : TSize;
-  textHeightHalf : Integer;
-  format         : UINT;
+  TextSize : TSize;
 begin
+ TextSize := FGuiFont.TextExtend(Caption);
+ FHeaderWidth := TextSize.cy;
+end;
 
- memoryBitmap := TBitmap.Create; // create memory-bitmap to draw flicker-free
- try
-  with memoryBitmap do
-   begin
-    Height           := ClientRect.Bottom;
-    Width            := ClientRect.Right;
-    Canvas.Font      := Self.Font;
+constructor TGuiGroupSide.Create(AOwner: TComponent);
+begin
+ inherited;
+ FGuiFont.FontTurn := ftClockwise;
+end;
 
-    if Caption = '' then
-     begin
-      textSize.cx    := 0;
-      textSize.cy    := Canvas.TextHeight('J');
-      textHeightHalf := (textSize.cy div 2);
-     end
-    else
-     begin
-      textSize       := Canvas.TextExtent(Caption);
-      textHeightHalf := (textSize.cy div 2);
-     end;
-   end;
+procedure TGuiGroupSide.FontChangedHandler(Sender: TObject);
+begin
+ CalculateHeaderSize;
+ inherited;
+end;
 
-  with ClientRect do
-   if not (fOutline = brMFStyle) then
+procedure TGuiGroupSide.RenderGroupBox(PixelMap: TGuiCustomPixelMap);
+var
+  X, Y, Offset         : Integer;
+  XRange               : array [0..1] of Integer;
+  ScnLne               : PPixel32Array;
+  PanelColor           : TPixel32;
+  BorderColor          : TPixel32;
+  CombColor            : TPixel32;
+  IsUpperLowerHalf     : Boolean;
+  HeaderHeight         : TFixed24Dot8Point;
+  HeaderWidth          : TFixed24Dot8Point;
+  RadiusFixed          : TFixed24Dot8Point;
+  XStart               : TFixed24Dot8Point;
+  BorderWidthFixed     : TFixed24Dot8Point;
+  RadMinusOne          : TFixed24Dot8Point;
+  RadMinusBorder       : TFixed24Dot8Point;
+  SqrRadMinusBorderOne : TFixed24Dot8Point;
+  SqrRadMinusBorder    : TFixed24Dot8Point;
+  SqrDist, SqrYDist    : TFixed24Dot8Point;
+  SqrRadMinusOne       : TFixed24Dot8Point;
+  XFixed, YFixed       : TFixed24Dot8Point;
+  WidthMinusOne        : TFixed24Dot8Point;
+  YBorderDistance      : TFixed24Dot8Point;
+  Temp                 : TFixed24Dot8Point;
+begin
+ with PixelMap do
+  begin
+   // set local colors
+   PanelColor := ConvertColor(FGroupColor);
+   PanelColor.A := Alpha;
+   BorderColor := ConvertColor(FBorderColor);
+
+   // set other local variables
+   RadiusFixed := ConvertToFixed24Dot8Point(Min(FRoundRadius, 0.5 * Min(Width, Height)) + 1);
+   BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
+   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   HeaderWidth.Fixed := ConvertToFixed24Dot8Point(FHeaderWidth).Fixed +
+     3 * BorderWidthFixed.Fixed;
+
+   // precalculate radius variables
+   RadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if RadMinusOne.Fixed < 0
+    then RadMinusOne.Fixed := 0;
+
+   RadMinusBorder.Fixed := RadiusFixed.Fixed - BorderWidthFixed.Fixed;
+   if RadMinusBorder.Fixed < 0
+    then RadMinusBorder.Fixed := 0;
+   SqrRadMinusBorder := FixedSqr(RadMinusBorder);
+
+   SqrRadMinusBorderOne.Fixed := RadMinusBorder.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusBorderOne.Fixed < 0
+    then SqrRadMinusBorderOne.Fixed := 0
+    else SqrRadMinusBorderOne := FixedSqr(SqrRadMinusBorderOne);
+
+   SqrRadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusOne.Fixed < 0
+    then SqrRadMinusOne.Fixed := 0
+    else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
+
+   // draw top rounded borders
+   for Y := 0 to FixedRound(RadiusFixed) - 1  do
     begin
-     {$IFDEF MFC_COMPILER_4_UP}
-     if BidiMode = bdRightToLeft
-      then textBounds := Rect(Right - 10 - textSize.cx, Top, Right - 10 , Top + textSize.cy)
-      else textBounds := Rect(Left + 10, Top, Left + 10 + textSize.cx, Top + textSize.cy);
-     {$ELSE}
-     textBounds := Rect(Left + 10, Top, Left + 10 + textSize.cx, Top + textSize.cy);
-    {$ENDIF}
-     textBounds := Rect(Left + 10, Top, Right - 10, Top + textSize.cy);
-    end
-   else
-    textBounds := Rect((Left + Right - textSize.cx) div 2, Top,
-                       (Left + Right + textSize.cx) div 2, ClientRect.Top + textSize.cy);
+     YFixed := ConvertToFixed24Dot8Point(Y);
 
-  // Draw Background
-  if FTransparent //or (Outline=brFullRound)
-   then DrawParentImage(Self, memoryBitmap.Canvas)
-   else
-    begin
-     memoryBitmap.Canvas.Brush.Color := Self.Color;
-     memoryBitmap.Canvas.FillRect(ClientRect);
+     // calculate x offset
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(RadiusFixed, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(RadiusFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // set scan lines
+     ScnLne := Scanline[Y];
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     X := XRange[0];
+     while X <= XRange[1] do
+      begin
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
+
+       // select color to be drawn
+       if SqrDist.Fixed <= SqrRadMinusBorderOne.Fixed
+        then CombColor := PanelColor
+        else
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
+        begin
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+        end else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(RadiusFixed, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+       Inc(X);
+      end;
     end;
 
-  // Draw Outline
-  memoryBitmap.Canvas.Pen.Color := FOutlineColor;
-  case fOutline of
-    brFull:
-      {$IFDEF MFC_COMPILER_4_UP}
-      if BidiMode = bdRightToLeft then
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
-          Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Right - 7 , ClientRect.Top + textHeightHalf)])
-      else
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
-          Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
-      {$ELSE}
-      memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
-        Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
-      {$ENDIF}
-    brFullRound:
-     with memoryBitmap do
-      {$IFDEF MFC_COMPILER_4_UP}
-      if BidiMode = bdRightToLeft then
-        Canvas.Polyline([
-          Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left  +  2, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left  +  1, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Left      , ClientRect.Top + textHeightHalf + 2),
-          Point(ClientRect.Left      , ClientRect.Bottom - 3), Point(ClientRect.Left  + 1, ClientRect.Bottom - 2),
-          Point(ClientRect.Left  +  2, ClientRect.Bottom - 1), Point(ClientRect.Right - 3, ClientRect.Bottom - 1),
-          Point(ClientRect.Right -  2, ClientRect.Bottom - 2), Point(ClientRect.Right - 1, ClientRect.Bottom - 3),
-          Point(ClientRect.Right -  1, ClientRect.Top + textHeightHalf + 2),
-          Point(ClientRect.Right -  2, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Right -  3, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Right -  7, ClientRect.Top + textHeightHalf)])
-      else
-        Canvas.Polyline([
-          Point(ClientRect.Left + 5 , ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left + 2 , ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left + 1 , ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Left     , ClientRect.Top + textHeightHalf + 2),
-          Point(ClientRect.Left     , ClientRect.Bottom - 3), Point(ClientRect.Left + 1, ClientRect.Bottom-2),
-          Point(ClientRect.Left  + 2, ClientRect.Bottom - 1), Point(ClientRect.Right-3, ClientRect.Bottom-1),
-          Point(ClientRect.Right - 2, ClientRect.Bottom  - 2),  Point(ClientRect.Right-1, ClientRect.Bottom-3),
-          Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf+2),
-          Point(ClientRect.Right - 2, ClientRect.Top + textHeightHalf+1),
-          Point(ClientRect.Right - 3, ClientRect.Top + textHeightHalf),
-          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
-      {$ELSE}
-      Canvas.Polyline([
-        Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
-        Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
-{
-       Canvas.Brush.Color := Self.Color;
-       Canvas.Pen.Color := Self.Color;
-       Canvas.FillRect(Rect(ClientRect.Left+1,ClientRect.Top + textHeightHalf+2,ClientRect.Right-1,ClientRect.Bottom-2));
-       Canvas.MoveTo(ClientRect.Left+2,ClientRect.Top + textHeightHalf+1);
-       Canvas.LineTo(ClientRect.Right-2,ClientRect.Top + textHeightHalf+1);
-       Canvas.MoveTo(ClientRect.Left+2,ClientRect.Bottom-2);
-       Canvas.LineTo(ClientRect.Right-2,ClientRect.Bottom-2);
-}
-     {$ENDIF}
-    brOnlyTopLine:
-      {$IFDEF MFC_COMPILER_4_UP}
-      if BidiMode = bdRightToLeft then
-       begin
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 5, ClientRect.Top + textHeightHalf), Point(ClientRect.Right, ClientRect.Top + textHeightHalf)]);
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left  + 1, ClientRect.Top + textHeightHalf), Point(ClientRect.Right - 12 - textSize.cx, ClientRect.Top + textHeightHalf)]);
-       end
-      else
-       begin
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left  + 5, ClientRect.Top + textHeightHalf), Point(ClientRect.Left, ClientRect.Top + textHeightHalf)]);
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf), Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
-       end;
-      {$ELSE}
-       begin
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf), Point(ClientRect.Left, ClientRect.Top + textHeightHalf)]);
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf), Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
-       end;
-      {$ENDIF}
-    brASCII:
-      {$IFDEF MFC_COMPILER_4_UP}
-      if BidiMode = bdRightToLeft then
-       begin
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf - 1),
-          Point(ClientRect.Left, ClientRect.Top + textHeightHalf - 1),
-          Point(ClientRect.Left, ClientRect.Bottom - 1),
-          Point(ClientRect.Right - 1, ClientRect.Bottom - 1),
-          Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf - 1),
-          Point(ClientRect.Right - 9 , ClientRect.Top + textHeightHalf - 1)]);
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Left + 2, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Left + 2, ClientRect.Bottom - 3),
-          Point(ClientRect.Right - 3, ClientRect.Bottom - 3),
-          Point(ClientRect.Right - 3, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Right - 9 , ClientRect.Top + textHeightHalf + 1)]);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 3, ClientRect.Top + textHeightHalf + 1);
-        memoryBitmap.Canvas.LineTo(ClientRect.Left + 3, ClientRect.Bottom - 2);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 1, ClientRect.Top + textHeightHalf);
-        memoryBitmap.Canvas.LineTo(ClientRect.Left + 1, ClientRect.Bottom - 1);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 4, ClientRect.Top + textHeightHalf + 1);
-        memoryBitmap.Canvas.LineTo(ClientRect.Right - 4, ClientRect.Bottom - 2);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 2, ClientRect.Top + textHeightHalf);
-        memoryBitmap.Canvas.LineTo(ClientRect.Right - 2, ClientRect.Bottom - 1);
-       end
-      else
-       begin
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf - 1),
-          Point(ClientRect.Left, ClientRect.Top + textHeightHalf - 1),
-          Point(ClientRect.Left, ClientRect.Bottom - 1),
-          Point(ClientRect.Right - 1, ClientRect.Bottom - 1),
-          Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf - 1),
-          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf - 1)]);
-        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Left + 4, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Left + 4, ClientRect.Bottom - 3),
-          Point(ClientRect.Right - 5, ClientRect.Bottom - 3),
-          Point(ClientRect.Right - 5, ClientRect.Top + textHeightHalf + 1),
-          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf + 1)]);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 3, ClientRect.Top + textHeightHalf + 1);
-        memoryBitmap.Canvas.LineTo(ClientRect.Left + 3, ClientRect.Bottom - 2);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 1, ClientRect.Top + textHeightHalf);
-        memoryBitmap.Canvas.LineTo(ClientRect.Left + 1, ClientRect.Bottom - 1);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 4, ClientRect.Top + textHeightHalf + 1);
-        memoryBitmap.Canvas.LineTo(ClientRect.Right - 4, ClientRect.Bottom - 2);
-        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 2, ClientRect.Top + textHeightHalf);
-        memoryBitmap.Canvas.LineTo(ClientRect.Right - 2, ClientRect.Bottom - 1);
-       end;
-      {$ELSE}
-      memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
-        Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
-        Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
-      {$ENDIF}
-    brMFStyle:
+   // draw bottom rounded borders
+   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+    begin
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // calculate x offset
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(RadiusFixed, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(RadiusFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // set scan lines
+     ScnLne := Scanline[Height - 1 - Y];
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     for X := XRange[0] to XRange[1] do
       begin
-       with memoryBitmap do
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
+
+       // select color to be drawn
+       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
+        then CombColor := PanelColor
+        else
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
         begin
-         Canvas.Polyline([Point((ClientRect.Left + ClientRect.Right - textSize.cx) div 2, ClientRect.Top + textHeightHalf - 1),
-           Point(ClientRect.Left, ClientRect.Top + textHeightHalf - 1),
-           Point(ClientRect.Left, ClientRect.Bottom - 1),
-           Point(ClientRect.Right - 1, ClientRect.Bottom - 1),
-           Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf - 1),
-           Point((ClientRect.Left + ClientRect.Right + textSize.cx) div 2 - 1, ClientRect.Top + textHeightHalf - 1)]);
-         Canvas.Polyline([Point((ClientRect.Left + ClientRect.Right - textSize.cx) div 2, ClientRect.Top + textHeightHalf + 1),
-           Point(ClientRect.Left + 4, ClientRect.Top + textHeightHalf + 1),
-           Point(ClientRect.Left + 4, ClientRect.Bottom - 3),
-           Point(ClientRect.Right - 5, ClientRect.Bottom - 3),
-           Point(ClientRect.Right - 5, ClientRect.Top + textHeightHalf + 1),
-           Point((ClientRect.Left + ClientRect.Right + textSize.cx) div 2 - 1, ClientRect.Top + textHeightHalf + 1)]);
-         Canvas.MoveTo(ClientRect.Left + 3, ClientRect.Top + textHeightHalf + 1);
-         Canvas.LineTo(ClientRect.Left + 3, ClientRect.Bottom - 2);
-         Canvas.MoveTo(ClientRect.Left + 1, ClientRect.Top + textHeightHalf);
-         Canvas.LineTo(ClientRect.Left + 1, ClientRect.Bottom - 1);
-         Canvas.MoveTo(ClientRect.Right - 4, ClientRect.Top + textHeightHalf + 1);
-         Canvas.LineTo(ClientRect.Right - 4, ClientRect.Bottom - 2);
-         Canvas.MoveTo(ClientRect.Right - 2, ClientRect.Top + textHeightHalf);
-         Canvas.LineTo(ClientRect.Right - 2, ClientRect.Bottom - 1);
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         if Temp.Fixed > $FF
+          then CombColor := PanelColor
+          else CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+        end else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(RadiusFixed, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
 
-         // Draw Text
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Font.Color  := Canvas.Brush.Color;
-         Canvas.Brush.Color := FOutlineColor;
-         DrawText(Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
-         // Copy memoryBitmap to screen
-        end;
-       canvas.CopyRect(ClientRect, memoryBitmap.Canvas, ClientRect);
-       Exit;
+       BlendPixelInplace(CombColor, ScnLne[X]);
       end;
-     brNone : Exit;
+    end;
+
+   for Y := FixedRound(RadiusFixed) to Height - 1 - FixedRound(RadiusFixed) do
+    begin
+     ScnLne := Scanline[Y];
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // check whether position is a non-rounded border
+     if (YFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+        (YFixed.Fixed > ConvertToFixed24Dot8Point(Height).Fixed - BorderWidthFixed.Fixed) then
+      begin
+       BlendPixelLine(BorderColor, @ScnLne[0], Width);
+       Continue;
+      end;
+
+     // check upper/lower half and eventually precalculate y-border distance
+     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
+       (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
+     if IsUpperLowerHalf then
+      if Y < Height div 2
+       then YBorderDistance.Fixed := BorderWidthFixed.Fixed - YFixed.Fixed
+       else YBorderDistance.Fixed := YFixed.Fixed - Temp.Fixed + BorderWidthFixed.Fixed
+      else YBorderDistance.Fixed := 0;
+
+     X := 0;
+     while X < Width do
+      begin
+       // convert
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // check whether position is an upper/lower half border
+       if IsUpperLowerHalf then
+        begin
+         if (XFixed.Fixed < BorderWidthFixed.Fixed + HeaderWidth.Fixed - CFixed24Dot8One.Fixed) or
+            (XFixed.Fixed > ConvertToFixed24Dot8Point(Width).Fixed - BorderWidthFixed.Fixed)
+          then CombColor := BorderColor else
+         if (XFixed.Fixed < BorderWidthFixed.Fixed) then
+          begin
+           Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end else
+         if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+          begin
+           Temp.Fixed := XFixed.Fixed + BorderWidthFixed.Fixed - WidthMinusOne.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end
+         else
+          begin
+           Assert(YBorderDistance.Fixed >= 0);
+           Assert(YBorderDistance.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, YBorderDistance.Fixed);
+           BlendPixelLine(CombColor, @ScnLne[X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
+          end;
+        end else
+       if (XFixed.Fixed <= BorderWidthFixed.Fixed + HeaderWidth.Fixed - CFixed24Dot8One.Fixed) or
+          (XFixed.Fixed >= WidthMinusOne.Fixed - BorderWidthFixed.Fixed + CFixed24Dot8One.Fixed)
+        then CombColor := BorderColor else
+       if (XFixed.Fixed < BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end else
+       if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := XFixed.Fixed - WidthMinusOne.Fixed + BorderWidthFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end
+       else
+        begin
+         if Width - X <= 0 then
+          begin
+           BlendPixelLine(PanelColor, @ScnLne[X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
+          end else CombColor := PanelColor;
+        end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+       Inc(X)
+      end;
+    end;
+   EMMS;
   end;
-
-    // Draw Text
-  memoryBitmap.Canvas.Brush.Style := bsClear;
-  if not Enabled then
-   begin
-    OffsetRect(textBounds, 1, 1);
-    memoryBitmap.Canvas.Font.Color := fDisabledHighlightColor;
-    DrawText(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
-    OffsetRect(textBounds, -1, -1);
-    memoryBitmap.Canvas.Font.Color := fDisabledShadowColor;
-    DrawText(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
-   end else
-  if fMFStyle
-   then DrawTextMF(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format)
-   else DrawText(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
-
-  // Copy memoryBitmap to screen
-  canvas.CopyRect(ClientRect, memoryBitmap.canvas, ClientRect);
- finally
-  memoryBitmap.free; // delete the bitmap
- end;
 end;
-*)
+
+procedure TGuiGroupSide.RenderCaption(PixelMap: TGuiCustomPixelMap);
+var
+  TextSize : TSize;
+begin
+ if Assigned(FGuiFont) then
+  begin
+   TextSize := FGuiFont.TextExtend(Caption);
+   FGuiFont.TextOut(Caption, PixelMap, Round(2 * FBorderWidth), (Height - TextSize.cx) div 2);
+  end;
+end;
+
+procedure TGuiGroupSide.TextChanged;
+begin
+ CalculateHeaderSize;
+ inherited;
+end;
+
+
+{ TGuiGroupTop }
+
+procedure TGuiGroupTop.CalculateHeaderSize;
+var
+  TextSize : TSize;
+begin
+ TextSize := FGuiFont.TextExtend(Caption);
+ FHeaderHeight := TextSize.cy;
+end;
+
+procedure TGuiGroupTop.FontChangedHandler(Sender: TObject);
+begin
+ CalculateHeaderSize;
+ inherited;
+end;
+
+procedure TGuiGroupTop.RenderGroupBox(PixelMap: TGuiCustomPixelMap);
+var
+  X, Y, Offset         : Integer;
+  XRange               : array [0..1] of Integer;
+  ScnLne               : PPixel32Array;
+  PanelColor           : TPixel32;
+  BorderColor          : TPixel32;
+  CombColor            : TPixel32;
+  IsUpperLowerHalf     : Boolean;
+  HeaderHeight         : TFixed24Dot8Point;
+  HeaderWidth          : TFixed24Dot8Point;
+  RadiusFixed          : TFixed24Dot8Point;
+  XStart               : TFixed24Dot8Point;
+  BorderWidthFixed     : TFixed24Dot8Point;
+  RadMinusOne          : TFixed24Dot8Point;
+  RadMinusBorder       : TFixed24Dot8Point;
+  SqrRadMinusBorderOne : TFixed24Dot8Point;
+  SqrRadMinusBorder    : TFixed24Dot8Point;
+  SqrDist, SqrYDist    : TFixed24Dot8Point;
+  SqrRadMinusOne       : TFixed24Dot8Point;
+  XFixed, YFixed       : TFixed24Dot8Point;
+  WidthMinusOne        : TFixed24Dot8Point;
+  YBorderDistance      : TFixed24Dot8Point;
+  Temp                 : TFixed24Dot8Point;
+begin
+ with PixelMap do
+  begin
+   // set local colors
+   PanelColor := ConvertColor(FGroupColor);
+   PanelColor.A := Alpha;
+   BorderColor := ConvertColor(FBorderColor);
+
+   // set other local variables
+   RadiusFixed := ConvertToFixed24Dot8Point(Min(FRoundRadius, Min(FHeaderHeight, 0.5 * Min(Width, Height))) + 1);
+   BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
+   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   HeaderHeight.Fixed := ConvertToFixed24Dot8Point(FHeaderHeight).Fixed +
+     2 * BorderWidthFixed.Fixed;
+
+   // precalculate radius variables
+   RadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if RadMinusOne.Fixed < 0
+    then RadMinusOne.Fixed := 0;
+
+   RadMinusBorder.Fixed := RadiusFixed.Fixed - BorderWidthFixed.Fixed;
+   if RadMinusBorder.Fixed < 0
+    then RadMinusBorder.Fixed := 0;
+   SqrRadMinusBorder := FixedSqr(RadMinusBorder);
+
+   SqrRadMinusBorderOne.Fixed := RadMinusBorder.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusBorderOne.Fixed < 0
+    then SqrRadMinusBorderOne.Fixed := 0
+    else SqrRadMinusBorderOne := FixedSqr(SqrRadMinusBorderOne);
+
+   SqrRadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusOne.Fixed < 0
+    then SqrRadMinusOne.Fixed := 0
+    else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
+
+   // draw top rounded borders
+   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+    begin
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // calculate x offset
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(RadiusFixed, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(RadiusFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // set scan lines
+     ScnLne := Scanline[Y];
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     for X := XRange[0] to XRange[1] do
+      begin
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
+
+       // select color to be drawn
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed
+        then CombColor := BorderColor
+        else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(RadiusFixed, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+      end;
+    end;
+
+   // draw bottom rounded borders
+   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+    begin
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // calculate x offset
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(RadiusFixed, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(RadiusFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // set scan lines
+     ScnLne := Scanline[Height - 1 - Y];
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     for X := XRange[0] to XRange[1] do
+      begin
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
+
+       // select color to be drawn
+       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
+        then CombColor := PanelColor
+        else
+       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
+        begin
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         if Temp.Fixed > $FF
+          then CombColor := PanelColor
+          else CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+        end else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(RadiusFixed, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+      end;
+    end;
+
+   for Y := FixedRound(RadiusFixed) to Height - 1 - FixedRound(RadiusFixed) do
+    begin
+     ScnLne := Scanline[Y];
+     YFixed := ConvertToFixed24Dot8Point(Y);
+
+     // check whether position is a non-rounded border
+     if (YFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+        (YFixed.Fixed > ConvertToFixed24Dot8Point(Height).Fixed - BorderWidthFixed.Fixed) then
+      begin
+       BlendPixelLine(BorderColor, @ScnLne[0], Width);
+       Continue;
+      end;
+
+     // check upper/lower half and eventually precalculate y-border distance
+     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
+       (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
+     if IsUpperLowerHalf then
+      if Y < Height div 2
+       then YBorderDistance.Fixed := BorderWidthFixed.Fixed - YFixed.Fixed
+       else YBorderDistance.Fixed := YFixed.Fixed - Temp.Fixed + BorderWidthFixed.Fixed
+      else YBorderDistance.Fixed := 0;
+
+     X := 0;
+     while X < Width do
+      begin
+       // convert
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // check whether position is an upper/lower half border
+       if IsUpperLowerHalf then
+        begin
+         if (XFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+            (XFixed.Fixed > ConvertToFixed24Dot8Point(Width).Fixed - BorderWidthFixed.Fixed) or
+            (YFixed.Fixed <= HeaderHeight.Fixed)
+          then CombColor := BorderColor else
+         if (XFixed.Fixed < BorderWidthFixed.Fixed) then
+          begin
+           Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end else
+         if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+          begin
+           Temp.Fixed := XFixed.Fixed + BorderWidthFixed.Fixed - WidthMinusOne.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end
+         else
+          begin
+           Assert(YBorderDistance.Fixed >= 0);
+           Assert(YBorderDistance.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, YBorderDistance.Fixed);
+           BlendPixelLine(CombColor, @ScnLne[X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
+          end;
+        end else
+       if (XFixed.Fixed <= BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+          (XFixed.Fixed >= WidthMinusOne.Fixed - BorderWidthFixed.Fixed + CFixed24Dot8One.Fixed) or
+          (YFixed.Fixed <= HeaderHeight.Fixed)
+        then CombColor := BorderColor else
+       if (XFixed.Fixed < BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end else
+       if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := XFixed.Fixed - WidthMinusOne.Fixed + BorderWidthFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end
+       else
+        begin
+         if Width - X <= 0 then
+          begin
+           BlendPixelLine(PanelColor, @ScnLne[X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
+          end else CombColor := PanelColor;
+        end;
+
+       BlendPixelInplace(CombColor, ScnLne[X]);
+       Inc(X)
+      end;
+    end;
+   EMMS;
+  end;
+end;
+
+procedure TGuiGroupTop.RenderCaption(PixelMap: TGuiCustomPixelMap);
+var
+  TextSize : TSize;
+begin
+ if Assigned(FGuiFont) then
+  begin
+   TextSize := FGuiFont.TextExtend(Caption);
+   FGuiFont.TextOut(Caption, PixelMap, (Width - TextSize.cx) div 2 , Round(FBorderWidth));
+  end;
+end;
+
+procedure TGuiGroupTop.TextChanged;
+begin
+ CalculateHeaderSize;
+ inherited;
+end;
 
 end.

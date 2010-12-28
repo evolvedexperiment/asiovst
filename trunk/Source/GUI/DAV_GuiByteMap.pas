@@ -853,7 +853,7 @@ var
   NewDataSize : Integer;
 begin
  NewDataSize := FWidth * FHeight;
- if FDataSize <> NewDataSize then
+ if (FDataSize <> NewDataSize) or (FBitmapHandle = 0) then
   begin
    FDataSize := NewDataSize;
    Assert(FDataSize >= 0);

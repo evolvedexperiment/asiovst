@@ -451,16 +451,15 @@ begin
            else SqrDist := SqrYDist;
          end;
 
-       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
+       if SqrDist.Fixed <= SqrRadMinusBorderOne.Fixed
         then CombColor := PanelColor
         else
        if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
         begin
          Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
          Assert(Temp.Fixed >= 0);
-         if Temp.Fixed > $FF
-          then CombColor := PanelColor
-          else CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
         end else
        if SqrDist.Fixed < SqrRadMinusOne.Fixed
         then CombColor := BorderColor
@@ -543,8 +542,8 @@ begin
            Continue;
           end;
         end else
-       if (XFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
-          (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed + CFixed24Dot8One.Fixed)
+       if (XFixed.Fixed <= BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+          (XFixed.Fixed >= WidthMinusOne.Fixed - BorderWidthFixed.Fixed + CFixed24Dot8One.Fixed)
         then CombColor := BorderColor else
        if (XFixed.Fixed < BorderWidthFixed.Fixed) then
         begin

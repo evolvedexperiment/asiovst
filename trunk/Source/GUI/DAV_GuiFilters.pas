@@ -571,8 +571,161 @@ begin
 end;
 
 procedure TGuiStackBlurFilter.Filter(PixelMap: TGuiCustomPixelMap);
-begin
+type
+  TArrayOfInteger = array of Integer;
+var
+  Height, Width   : Integer;
+  HeightMinus1    : Integer;
+  WidthMinus1     : Integer;
+  RadiusWidth     : Integer;
+  I, X, Y         : Integer;
+  YIncrement      : Integer;
+  CurrentLine     : PPixel32Array;
 
+  ASumIn          : Integer;
+  ASumOut, ASum   : Integer;
+
+  KernelSizePlus1 : Integer;
+  CurrentData     : TPixel32;
+  Data            : PPixel32Array;
+
+  DivisionLUT     : TArrayOfInteger;
+  Divi, DivSum    : Integer;
+
+  StackStart      : Integer;
+  StackPos        : Integer;
+  Stack           : array of Byte;
+  VMin            : TArrayOfInteger;
+begin
+ // check whether blur needs to be calculated at all
+ if (FKernelSize < 1) then Exit;
+
+ // initialize local values
+ Width        := PixelMap.Width;
+ Height       := PixelMap.Height;
+ WidthMinus1  := Width - 1;
+ HeightMinus1 := Height - 1;
+ RadiusWidth  := FKernelSize * Width;
+
+ //
+ SetLength(VMin, Max(Width, Height));
+
+ Divi := 2 * FKernelSize + 1;
+
+ // set up division LUT
+ DivSum := (Divi + 1) shr 1;
+ DivSum := Sqr(DivSum);
+
+ SetLength(DivisionLUT, 256 * DivSum);
+ for I := 0 to High(DivisionLUT)
+  do DivisionLUT[I] := (I div DivSum);
+
+ SetLength(Stack, Divi);
+
+ KernelSizePlus1 := FKernelSize + 1;
+
+ for Y := 0 to HeightMinus1 do
+  begin
+   // initialize sum
+   ASumIn  := 0;
+   ASumOut := 0;
+   ASum    := 0;
+
+   CurrentLine := PixelMap.ScanLine[Y];
+
+   for I := -FKernelSize to FKernelSize do
+    begin
+     if I < 0 then CurrentData := CurrentLine^[0] else
+     if I > WidthMinus1 then CurrentData := CurrentLine^[WidthMinus1]
+      else CurrentData := CurrentLine^[I];
+
+     Stack[I + FKernelSize] := CurrentData.A;
+
+     ASum := ASum + CurrentData.A * (KernelSizePlus1 - Abs(I));
+     if I > 0
+      then Inc(ASumIn, CurrentData.A)
+      else Inc(ASumOut, CurrentData.A);
+    end;
+   StackPos := FKernelSize;
+
+   for X := 0 to WidthMinus1 do
+    begin
+     CurrentLine^[X].A := DivisionLUT[ASum];
+
+     Dec(ASum, ASumOut);
+     StackStart := StackPos - FKernelSize + Divi;
+
+     CurrentData.A := Stack[StackStart mod Divi];
+     Dec(ASumOut, CurrentData.A);
+
+     if Y = 0 then VMin[X] := Min(X + KernelSizePlus1, WidthMinus1);
+
+     CurrentData := CurrentLine^[VMin[X]];
+     Stack[StackStart mod Divi] := CurrentData.A;
+     Inc(ASumIn, CurrentData.A);
+     Inc(ASum, ASumIn);
+
+     StackPos := (StackPos + 1) mod Divi;
+     CurrentData.A := Stack[StackPos];
+
+     Inc(ASumOut, CurrentData.A);
+     Dec(ASumIn, CurrentData.A);
+    end;
+  end;
+
+ Data := PixelMap.DataPointer;
+
+ for X := 0 to WidthMinus1 do
+  begin
+   // initialize sum
+   ASumIn := 0;
+   ASumOut := 0;
+   ASum := 0;
+
+   YIncrement := -RadiusWidth;
+
+   for I := -FKernelSize to FKernelSize do
+    begin
+     CurrentData := Data^[Max(0, YIncrement) + X];
+     Stack[I + FKernelSize] := CurrentData.A;
+
+     ASum := ASum + CurrentData.A * (KernelSizePlus1 - Abs(I));
+
+     if I > 0 then Inc(ASumIn, CurrentData.A) else
+      if I < HeightMinus1 then Inc(ASumOut, CurrentData.A);
+
+     if I < HeightMinus1
+      then Inc(YIncrement, Width);
+    end;
+
+   YIncrement := X;
+   StackPos := FKernelSize;
+
+   for Y := 0 to HeightMinus1 do
+    begin
+     Data^[YIncrement].A := DivisionLUT[ASum];
+
+     Dec(ASum, ASumOut);
+     StackStart := StackPos - FKernelSize + Divi;
+
+     CurrentData.A := Stack[StackStart mod Divi];
+     Dec(ASumOut, CurrentData.A);
+
+     if X = 0 then VMin[Y] := Min(Y + KernelSizePlus1, HeightMinus1) * Width;
+
+     CurrentData := Data^[VMin[Y] + X];
+     Stack[StackStart mod Divi] := CurrentData.A;
+     Inc(ASumIn, CurrentData.A);
+     Inc(ASum, ASumIn);
+
+     StackPos := (StackPos + 1) mod Divi;
+     CurrentData.A := Stack[StackPos];
+
+     Inc(ASumOut, CurrentData.A);
+     Dec(ASumIn, CurrentData.A);
+     Inc(YIncrement, Width);
+   end;
+ end;
 end;
 
 procedure TGuiStackBlurFilter.RadiusChanged;

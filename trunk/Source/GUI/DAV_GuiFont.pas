@@ -73,6 +73,7 @@ type
   end;
   TGuiCustomFontClass = class of TGuiCustomFont;
 
+  TFontTurn = (ftNone, ftClockwise, ftCounterClockwise);
   TGuiCustomGDIFont = class(TGuiCustomFont)
   private
     FFont         : TFont;
@@ -84,16 +85,20 @@ type
     {$ENDIF}
     FOldHandle    : HDC;
     FFontHandle   : HFont;
+    FFontTurn: TFontTurn;
     procedure SetFont(const Value: TFont);
+    procedure SetFontTurn(const Value: TFontTurn);
   protected
     procedure FontChanged(Sender: TObject); virtual; abstract;
     procedure AntiAliasingChanged; override;
     procedure AssignByteMapFont; virtual; abstract;
+    procedure FontTurnChanged; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
 
     property Font: TFont read FFont write SetFont;
+    property FontTurn: TFontTurn read FFontTurn write SetFontTurn;
   end;
 
   TGuiCustomSimpleGDIFont = class(TGuiCustomGDIFont)
@@ -364,6 +369,11 @@ begin
  inherited;
 end;
 
+procedure TGuiCustomGDIFont.FontTurnChanged;
+begin
+ Changed;
+end;
+
 procedure TGuiCustomGDIFont.AntiAliasingChanged;
 begin
  inherited;
@@ -377,6 +387,15 @@ procedure TGuiCustomGDIFont.SetFont(const Value: TFont);
 begin
  FFont.Assign(Value);
  FontChanged(nil);
+end;
+
+procedure TGuiCustomGDIFont.SetFontTurn(const Value: TFontTurn);
+begin
+ if FFontTurn <> Value then
+  begin
+   FFontTurn := Value;
+   FontTurnChanged;
+  end;
 end;
 
 
@@ -467,6 +486,12 @@ begin
        if FAlpha <> $FF
         then FBuffer.Multiply(FAlpha);
 
+       // eventually turn bytemap
+       case FFontTurn of
+        ftClockwise        : FBuffer.Turn;
+        ftCounterClockwise : FBuffer.Turn(True);
+       end;
+
        {$IFDEF UseShadowBuffer}
        FShadowBuffer.Assign(FBuffer);
 
@@ -493,6 +518,13 @@ begin
           Y + FShadow.Offset.Y - BlurOffset);
 
        FBuffer.Clear;
+
+       // eventually turn bytemap back
+       case FFontTurn of
+        ftClockwise,
+        ftCounterClockwise : FBuffer.SetSize(Height, Width);
+       end;
+
        {$IFDEF FPC}
        LCLIntf.TextOut(FBuffer.Handle, BlurOffset, BlurOffset, PChar(Text),
          Length(Text));
@@ -504,6 +536,12 @@ begin
        // pre-multiply alpha
        if FAlpha <> $FF
         then FBuffer.Multiply(FAlpha);
+
+       // eventually turn bytemap
+       case FFontTurn of
+        ftClockwise        : FBuffer.Turn;
+        ftCounterClockwise : FBuffer.Turn(True);
+       end;
 
        {$ENDIF}
 
@@ -533,6 +571,12 @@ begin
        // pre-multiply alpha
        if FAlpha <> $FF
         then FBuffer.Multiply(FAlpha);
+
+       // eventually turn bytemap
+       case FFontTurn of
+        ftClockwise        : FBuffer.Turn;
+        ftCounterClockwise : FBuffer.Turn(True);
+       end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color), X, Y);
@@ -722,6 +766,12 @@ begin
 
        DownsampleByteMap(FShadowBuffer);
 
+       // eventually turn shadow buffer
+       case FFontTurn of
+        ftClockwise        : FShadowBuffer.Turn;
+        ftCounterClockwise : FShadowBuffer.Turn(True);
+       end;
+
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FShadowBuffer, FShadowColor, Rect(
           X + FShadow.Offset.X - BlurOffset div FOSFactor,
@@ -739,7 +789,14 @@ begin
           then FSaturation.Filter(FBuffer);
         end;
 
+       // downsample buffer
        DownsampleByteMap(FBuffer);
+
+       // eventually turn shadow buffer
+       case FFontTurn of
+        ftClockwise        : FBuffer.Turn;
+        ftCounterClockwise : FBuffer.Turn(True);
+       end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, FShadowColor, Rect(
@@ -764,6 +821,12 @@ begin
        {$ENDIF}
 
        DownsampleByteMap(FBuffer);
+
+       // eventually turn buffer
+       case FFontTurn of
+        ftClockwise        : FBuffer.Turn;
+        ftCounterClockwise : FBuffer.Turn(True);
+       end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color),
@@ -795,7 +858,14 @@ begin
        if FAlpha <> $FF
         then FBuffer.Multiply(FAlpha);
 
+       // downsample buffer
        DownsampleByteMap(FBuffer);
+
+       // eventually turn buffer
+       case FFontTurn of
+        ftClockwise        : FBuffer.Turn;
+        ftCounterClockwise : FBuffer.Turn(True);
+       end;
 
        if PixelMap <> nil
         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color),

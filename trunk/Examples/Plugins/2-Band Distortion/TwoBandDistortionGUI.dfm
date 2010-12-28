@@ -28,6 +28,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
     Top = 8
     Width = 303
     Height = 113
+    Alpha = 200
     Anchors = [akLeft, akTop, akRight]
     Caption = 'PnControl'
     LineColor = clWhite
@@ -56,6 +57,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object LbFreqValue: TGuiLabel
       Left = 16
@@ -75,6 +77,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object LbLowDist: TGuiLabel
       Left = 156
@@ -94,6 +97,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object LbLowDistValue: TGuiLabel
       Left = 156
@@ -113,6 +117,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object LbHighDist: TGuiLabel
       Left = 226
@@ -132,6 +137,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object LbHighDistValue: TGuiLabel
       Left = 226
@@ -151,6 +157,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object LbOrderValue: TGuiLabel
       Left = 86
@@ -170,6 +177,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object LbOrder: TGuiLabel
       Left = 86
@@ -189,6 +197,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Shadow.Blur = 2.000000000000000000
       Shadow.Opacity = 64
       Shadow.Visible = True
+      Transparent = True
     end
     object DialFreq: TGuiStitchedDial
       Left = 16
@@ -201,8 +210,10 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
+      Transparent = True
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialFreqChange
@@ -216,8 +227,10 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       DefaultValue = 50.000000000000000000
       Max = 100.000000000000000000
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
+      Transparent = True
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialLowDistChange
@@ -231,8 +244,10 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       DefaultValue = 50.000000000000000000
       Max = 100.000000000000000000
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
+      Transparent = True
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialHighDistChange
@@ -247,8 +262,10 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Max = 16.000000000000000000
       Min = 2.000000000000000000
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
+      Transparent = True
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialOrderChange
@@ -884,7 +901,6 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
           49454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end>

@@ -1,10 +1,10 @@
 object FmTrackPlug: TFmTrackPlug
-  Left = 286
-  Top = 77
+  Left = 341
+  Top = 122
   BorderStyle = bsNone
   Caption = 'TrackPlug'
-  ClientHeight = 405
-  ClientWidth = 682
+  ClientHeight = 245
+  ClientWidth = 457
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

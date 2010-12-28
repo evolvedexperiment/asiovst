@@ -7,7 +7,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
   ClientWidth = 223
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = 15659506
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
@@ -19,25 +19,29 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object GpFrequency: TGuiGroup
+  object GpFrequency: TGuiGroupTop
     Left = 8
     Top = 8
     Width = 105
     Height = 113
-    AntiAlias = gaaLinear4x
+    BorderColor = 3226174
+    BorderWidth = 2.500000000000000000
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
+    Font.Color = 15659506
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 15659506
-    LineColor = 15659506
-    OutlineWidth = 3
-    PanelColor = 7373965
+    FontOversampling = fo4x
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    Radius = 5
+    Radius = 5.000000000000000000
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Opacity = 192
+    Shadow.Visible = True
     TabOrder = 0
+    Transparent = True
     DesignSize = (
       105
       113)
@@ -47,8 +51,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       Width = 90
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      Caption = 'PnDisplay'
-      LineColor = 5267301
+      BorderColor = 3818825
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
@@ -75,7 +78,6 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
         FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
-        Shadow.Color = clBlack
       end
     end
     object DialFrequency: TGuiStitchedDial
@@ -86,32 +88,38 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       CurveMapping = -2.069999933242798000
       Max = 10.000000000000000000
       Min = 0.009999999776482582
-      OnChange = DialFrequencyChange
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       Value = 0.009999999776482582
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
   end
-  object GpMix: TGuiGroup
+  object GpMix: TGuiGroupTop
     Left = 119
     Top = 8
     Width = 98
     Height = 113
-    AntiAlias = gaaLinear4x
+    BorderColor = 3226174
+    BorderWidth = 2.500000000000000000
     Caption = 'Mix'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
+    Font.Color = 15659506
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 15659506
-    LineColor = 15659506
-    OutlineWidth = 3
-    PanelColor = 7373965
+    FontOversampling = fo4x
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    Radius = 5
+    Radius = 5.000000000000000000
+    Shadow.Blur = 1.000000000000000000
+    Shadow.Opacity = 192
+    Shadow.Visible = True
     TabOrder = 1
+    Transparent = True
     DesignSize = (
       98
       113)
@@ -121,8 +129,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       Width = 83
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      Caption = 'PnDisplay'
-      LineColor = 5267301
+      BorderColor = 3818825
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
@@ -149,7 +156,6 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
         FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
-        Shadow.Color = clBlack
       end
     end
     object DialMix: TGuiStitchedDial
@@ -159,10 +165,13 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       Height = 48
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      OnChange = DialMixChange
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialMixChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object DSPL: TGuiStitchedPNGList
@@ -2832,7 +2841,6 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
           0049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end>

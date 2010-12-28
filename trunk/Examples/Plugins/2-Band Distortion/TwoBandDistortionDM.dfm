@@ -114,8 +114,8 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   Left = 218
   Top = 81
   Height = 150

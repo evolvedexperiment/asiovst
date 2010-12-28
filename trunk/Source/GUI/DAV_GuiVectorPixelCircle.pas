@@ -136,7 +136,7 @@ begin
    PixelColor32.A := Alpha;
 
    // transfer the geometric shape data to local variables
-   Radius  := FixedAdd(GeometricShape.Radius, CFixed24Dot8One);
+   Radius.Fixed := GeometricShape.Radius.Fixed + CFixed24Dot8One.Fixed;
    CenterX := GeometricShape.CenterX;
    CenterY := GeometricShape.CenterY;
 
@@ -280,7 +280,7 @@ begin
    PixelColor32 := ConvertColor(Color);
    PixelColor32.A := Alpha;
 
-   Radius  := FixedAdd(GeometricShape.Radius, CFixed24Dot8One);
+   Radius.Fixed := GeometricShape.Radius.Fixed + CFixed24Dot8One.Fixed;
    CenterX := GeometricShape.CenterX;
    CenterY := GeometricShape.CenterY;
 
@@ -342,7 +342,7 @@ begin
          BlendPixelInplace(CombColor, ScnLne[X]);
          Inc(X);
          {$ELSE}
-         SqrDist := FixedSub(CenterX, ConvertToFixed24Dot8Point(X));
+         SqrDist.Fixed := CenterX.Fixed - ConvertToFixed24Dot8Point(X).Fixed;
          PixelLineCount := FixedRound(FixedAdd(SqrDist, SqrDist)) + 1;
          if X + PixelLineCount > XRange[1]
           then PixelLineCount := (XRange[1] - X);
@@ -355,7 +355,6 @@ begin
           end;
 
          BlendPixelLine(CombColor, @ScnLne[X], PixelLineCount);
-         FixedRound(FixedSub(CenterX, XStart));
          X := X + PixelLineCount;
          {$ENDIF}
         end;
