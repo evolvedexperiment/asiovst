@@ -1,4 +1,4 @@
-unit BassExtenderGUI;
+﻿unit BassExtenderGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Graphics, Controls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiPng,  
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial, 
-  DAV_GuiPixelMap, DAV_GuiPanel, DAV_GuiLabel;
+  DAV_GuiPixelMap, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiImageControl,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmBassExtender = class(TForm)

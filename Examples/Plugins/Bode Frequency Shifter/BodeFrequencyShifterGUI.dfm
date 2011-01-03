@@ -19,24 +19,24 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object GpFrequency: TGuiGroup
+  object GpFrequency: TGuiGroupTop
     Left = 8
     Top = 8
     Width = 105
     Height = 113
-    AntiAlias = gaaLinear4x
+    BorderColor = 3226174
+    BorderWidth = 2.000000000000000000
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
+    Font.Color = 15659506
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 15659506
-    LineColor = 15659506
-    OutlineWidth = 3
-    PanelColor = 7373965
+    FontOversampling = fo4x
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 0
     DesignSize = (
       105
@@ -47,8 +47,7 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Width = 90
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      Caption = 'PnDisplay'
-      LineColor = 3226174
+      BorderColor = clBtnShadow
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
@@ -75,7 +74,6 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
-        Shadow.Color = clBlack
       end
     end
     object DialFrequency: TGuiStitchedDial
@@ -86,31 +84,33 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       CurveMapping = -2.069999933242798000
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      OnChange = DialFrequencyChange
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
   end
-  object GpMix: TGuiGroup
+  object GpMix: TGuiGroupTop
     Left = 119
     Top = 8
     Width = 98
     Height = 113
-    AntiAlias = gaaLinear4x
+    BorderColor = 3226174
+    BorderWidth = 2.000000000000000000
     Caption = 'Mix'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
+    Font.Color = 15659506
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 15659506
-    LineColor = 15659506
-    OutlineWidth = 3
-    PanelColor = 7373965
+    FontOversampling = fo4x
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 1
     DesignSize = (
       98
@@ -121,8 +121,7 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Width = 83
       Height = 17
       Anchors = [akLeft, akTop, akRight]
-      Caption = 'PnDisplay'
-      LineColor = 3226174
+      BorderColor = clBtnShadow
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
@@ -149,7 +148,6 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
-        Shadow.Color = clBlack
       end
     end
     object DialMix: TGuiStitchedDial
@@ -159,10 +157,13 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       Height = 48
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      OnChange = DialMixChange
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialMixChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object DSPL: TGuiStitchedPNGList
@@ -2832,7 +2833,6 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
           0049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end>

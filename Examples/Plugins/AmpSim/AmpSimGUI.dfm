@@ -88,8 +88,7 @@ object FmCombo: TFmCombo
     Top = 39
     Width = 361
     Height = 125
-    Caption = 'Panel'
-    LineColor = clBlack
+    BorderColor = 2039583
     BorderWidth = 2.000000000000000000
     PanelColor = 4227200
     ParentColor = True
@@ -207,10 +206,13 @@ object FmCombo: TFmCombo
       Height = 64
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      OnChange = DialDriveChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialDriveChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialBias: TGuiStitchedDial
       Left = 78
@@ -219,10 +221,13 @@ object FmCombo: TFmCombo
       Height = 64
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      OnChange = DialBiasChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialBiasChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialOutput: TGuiStitchedDial
       Left = 148
@@ -231,10 +236,13 @@ object FmCombo: TFmCombo
       Height = 64
       Max = 20.000000000000000000
       Min = -20.000000000000000000
-      OnChange = DialOutputChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialOutputChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialFrequency: TGuiStitchedDial
       Left = 218
@@ -244,11 +252,13 @@ object FmCombo: TFmCombo
       CurveMapping = -1.750000000000000000
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
-      OnChange = DialFreqChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFreqChange
+      DefaultValue = 0.000000000000000000
     end
     object DialResonance: TGuiStitchedDial
       Left = 288
@@ -256,10 +266,13 @@ object FmCombo: TFmCombo
       Width = 64
       Height = 64
       Max = 100.000000000000000000
-      OnChange = DialResoChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialResoChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList
@@ -1645,7 +1658,6 @@ object FmCombo: TFmCombo
           AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end>
@@ -1662,9 +1674,8 @@ object FmCombo: TFmCombo
         Font.Font.Height = -20
         Font.Font.Name = 'Trebuchet MS'
         Font.Font.Style = []
-        Font.FontFontOversampling = fo3x
+        Font.FontOversampling = foNone
         Font.Shadow.Blur = 3.000000000000000000
-        Font.Shadow.Color = clBlack
         Font.Shadow.Visible = True
       end
       item
@@ -1675,9 +1686,8 @@ object FmCombo: TFmCombo
         Font.Font.Height = -13
         Font.Font.Name = 'Trebuchet MS'
         Font.Font.Style = []
-        Font.FontFontOversampling = fo3x
+        Font.FontOversampling = foNone
         Font.Shadow.Blur = 4.000000000000000000
-        Font.Shadow.Color = clBlack
       end>
     Left = 144
     Top = 80

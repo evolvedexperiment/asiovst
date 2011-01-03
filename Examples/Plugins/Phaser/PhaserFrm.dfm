@@ -11447,66 +11447,101 @@ object PhaserForm: TPhaserForm
     ParentFont = False
     Transparent = True
   end
-  object SBFeedback: TScrollBar
+  object SBFeedback: TGuiSlider
     Left = 80
     Top = 119
     Width = 288
     Height = 16
-    Max = 1000
-    PageSize = 0
-    TabOrder = 0
+    BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 4887551
+    DefaultValue = 50.000000000000000000
+    Max = 1000.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    SlideColor = 1529213
     OnChange = SBFeedbackChange
   end
-  object SBMinimum: TScrollBar
+  object SBMinimum: TGuiSlider
     Left = 80
     Top = 154
     Width = 288
     Height = 16
-    Max = 1000
-    PageSize = 0
-    TabOrder = 1
+    BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 4887551
+    DefaultValue = 50.000000000000000000
+    Max = 1000.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    SlideColor = 1529213
     OnChange = SBMinimumChange
   end
-  object SBMaximum: TScrollBar
+  object SBMaximum: TGuiSlider
     Left = 80
     Top = 190
     Width = 288
     Height = 16
-    Max = 1000
-    PageSize = 0
-    TabOrder = 2
+    BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 4887551
+    DefaultValue = 50.000000000000000000
+    Max = 1000.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    SlideColor = 1529213
     OnChange = SBMaximumChange
   end
-  object SBRate: TScrollBar
+  object SBRate: TGuiSlider
     Left = 80
     Top = 226
     Width = 288
     Height = 16
-    Max = 10000
-    PageSize = 0
-    TabOrder = 3
+    BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 4887551
+    DefaultValue = 50.000000000000000000
+    Max = 10000.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    SlideColor = 1529213
     OnChange = SBRateChange
   end
-  object SBDepth: TScrollBar
+  object SBDepth: TGuiSlider
     Left = 80
     Top = 84
     Width = 288
     Height = 16
-    Max = 1300
-    PageSize = 0
-    TabOrder = 4
+    BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 4887551
+    DefaultValue = 50.000000000000000000
+    Max = 1300.000000000000000000
+    ParentColor = False
+    Value = 50.000000000000000000
+    SlideColor = 1529213
     OnChange = SBDepthChange
   end
-  object SBStages: TScrollBar
+  object SBStages: TGuiSlider
     Left = 80
     Top = 261
     Width = 288
     Height = 16
-    Max = 5
-    Min = 1
-    PageSize = 0
-    Position = 1
-    TabOrder = 5
+    BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 4887551
+    DefaultValue = 5.000000000000000000
+    Max = 5.000000000000000000
+    Min = 1.000000000000000000
+    ParentColor = False
+    Value = 5.000000000000000000
+    SlideColor = 1529213
     OnChange = SBStagesChange
   end
 end

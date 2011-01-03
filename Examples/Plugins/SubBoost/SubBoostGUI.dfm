@@ -98,8 +98,7 @@ object FmSubBoost: TFmSubBoost
     Top = 37
     Width = 321
     Height = 84
-    Caption = 'GuiPanel1'
-    LineColor = 13948116
+    BorderColor = clBtnShadow
     BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True
@@ -317,8 +316,7 @@ object FmSubBoost: TFmSubBoost
     Top = 133
     Width = 129
     Height = 84
-    Caption = 'GuiPanel1'
-    LineColor = 13948116
+    BorderColor = clBtnShadow
     BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True

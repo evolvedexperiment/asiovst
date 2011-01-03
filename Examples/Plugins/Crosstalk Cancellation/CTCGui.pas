@@ -37,12 +37,11 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, StdCtrls, ExtCtrls, Graphics, DAV_Types, DAV_VSTModule, 
-  DAV_GuiLabel, DAV_GuiPixelMap, DAV_GuiPng;
+  DAV_GuiLabel, DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiCheckBox,
+  DAV_GuiGraphicControl, DAV_GuiSlider;
 
 type
   TFmCTC = class(TForm)
-    CBAGC: TCheckBox;
-    CBBypass: TCheckBox;
     Image1: TImage;
     Image2: TImage;
     LbAttenuation: TLabel;
@@ -63,13 +62,15 @@ type
     LbSpeakerDistanceValue: TLabel;
     LbSwitches: TLabel;
     LbTitle: TGuiLabel;
-    SbAttenuation: TScrollBar;
-    SbFilterFrequency: TScrollBar;
-    SbFilterGain: TScrollBar;
-    SbListenerDistance: TScrollBar;
-    SbOutputGain: TScrollBar;
-    SbRecursionSteps: TScrollBar;
-    SbSpeakerDistance: TScrollBar;
+    CBBypass: TGuiControlsCheckBox;
+    CBAGC: TGuiControlsCheckBox;
+    SbSpeakerDistance: TGuiSlider;
+    SbListenerDistance: TGuiSlider;
+    SbAttenuation: TGuiSlider;
+    SbRecursionSteps: TGuiSlider;
+    SbFilterFrequency: TGuiSlider;
+    SbFilterGain: TGuiSlider;
+    SbOutputGain: TGuiSlider;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -203,7 +204,7 @@ procedure TFmCTC.SbSpeakerDistanceChange(Sender: TObject);
 begin
  with TCTCDataModule(Owner) do
   begin
-   Parameter[0] := 0.1 * SbSpeakerDistance.Position;
+   Parameter[0] := 0.1 * SbSpeakerDistance.Value;
   end;
 end;
 
@@ -211,7 +212,7 @@ procedure TFmCTC.SbListenerDistanceChange(Sender: TObject);
 begin
  with TCTCDataModule(Owner) do
   begin
-   Parameter[1] := 0.1 * SbListenerDistance.Position;
+   Parameter[1] := 0.1 * SbListenerDistance.Value;
   end;
 end;
 
@@ -219,7 +220,7 @@ procedure TFmCTC.SbOutputGainChange(Sender: TObject);
 begin
  with TCTCDataModule(Owner) do
   begin
-   Parameter[7] := 0.1 * SbOutputGain.Position;
+   Parameter[7] := 0.1 * SbOutputGain.Value;
   end;
 end;
 
@@ -227,7 +228,7 @@ procedure TFmCTC.SbRecursionStepsChange(Sender: TObject);
 begin
  with TCTCDataModule(Owner) do
   begin
-   Parameter[2] := SbRecursionSteps.Position;
+   Parameter[2] := SbRecursionSteps.Value;
   end;
 end;
 
@@ -235,7 +236,7 @@ procedure TFmCTC.SbAttenuationChange(Sender: TObject);
 begin
  with TCTCDataModule(Owner) do
   begin
-   Parameter[3] := 0.1 * SbAttenuation.Position;
+   Parameter[3] := 0.1 * SbAttenuation.Value;
   end;
 end;
 
@@ -243,7 +244,7 @@ procedure TFmCTC.SbFilterFrequencyChange(Sender: TObject);
 begin
  with TCTCDataModule(Owner) do
   begin
-   Parameter[5] := FreqLinearToLog(0.0001 * SbFilterFrequency.Position);
+   Parameter[5] := FreqLinearToLog(0.0001 * SbFilterFrequency.Value);
   end;
 end;
 
@@ -251,7 +252,7 @@ procedure TFmCTC.SbFilterGainChange(Sender: TObject);
 begin
  with TCTCDataModule(Owner) do
   begin
-   Parameter[6] := 0.1 * SbFilterGain.Position;
+   Parameter[6] := 0.1 * SbFilterGain.Value;
   end;
 end;
 
@@ -267,8 +268,8 @@ procedure TFmCTC.UpdateSpeakerDistance;
 begin
  with TCTCDataModule(Owner) do
   begin
-   if round(10 * Parameter[0]) <> SbSpeakerDistance.Position
-    then SbSpeakerDistance.Position := round(10 * Parameter[0]);
+   if Round(10 * Parameter[0]) <> SbSpeakerDistance.Value
+    then SbSpeakerDistance.Value := Round(10 * Parameter[0]);
    LbSpeakerDistanceValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
@@ -277,8 +278,8 @@ procedure TFmCTC.UpdateListenerDistance;
 begin
  with TCTCDataModule(Owner) do
   begin
-   if round(10 * Parameter[1]) <> SbListenerDistance.Position
-    then SbListenerDistance.Position := round(10 * Parameter[1]);
+   if Round(10 * Parameter[1]) <> SbListenerDistance.Value
+    then SbListenerDistance.Value := Round(10 * Parameter[1]);
    LbListenerDistanceValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
   end;
 end;
@@ -287,9 +288,9 @@ procedure TFmCTC.UpdateRecursionSteps;
 begin
  with TCTCDataModule(Owner) do
   begin
-   if round(Parameter[2]) <> SbRecursionSteps.Position
-    then SbRecursionSteps.Position := round(Parameter[2]);
-   LbRecursionStepsValue.Caption := IntToStr(round(Parameter[2]));
+   if Round(Parameter[2]) <> SbRecursionSteps.Value
+    then SbRecursionSteps.Value := Round(Parameter[2]);
+   LbRecursionStepsValue.Caption := IntToStr(Round(Parameter[2]));
   end;
 end;
 
@@ -302,8 +303,8 @@ procedure TFmCTC.UpdateAttenuation;
 begin
  with TCTCDataModule(Owner) do
   begin
-   if round(10 * Parameter[3]) <> SbAttenuation.Position
-    then SbAttenuation.Position := round(10 * Parameter[3]);
+   if Round(10 * Parameter[3]) <> SbAttenuation.Value
+    then SbAttenuation.Value := Round(10 * Parameter[3]);
    LbAttenuationValue.Caption := ParameterDisplay[3] + ' dB';
   end;
 end;
@@ -326,8 +327,8 @@ procedure TFmCTC.UpdateFilterFrequency;
 begin
  with TCTCDataModule(Owner) do
   begin
-   if round(10000 * FreqLogToLinear(Parameter[5])) <> SbFilterFrequency.Position
-    then SbFilterFrequency.Position := round(10000 * FreqLogToLinear(Parameter[5]));
+   if Round(10000 * FreqLogToLinear(Parameter[5])) <> SbFilterFrequency.Value
+    then SbFilterFrequency.Value := Round(10000 * FreqLogToLinear(Parameter[5]));
    LbFilterFrequencyValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
   end;
 end;
@@ -336,8 +337,8 @@ procedure TFmCTC.UpdateFilterGain;
 begin
  with TCTCDataModule(Owner) do
   begin
-   if round(10 * Parameter[6]) <> SbFilterGain.Position
-    then SbFilterGain.Position := round(10 * Parameter[6]);
+   if Round(10 * Parameter[6]) <> SbFilterGain.Value
+    then SbFilterGain.Value := Round(10 * Parameter[6]);
    LbFilterGainValue.Caption := ParameterDisplay[6] + ' dB';
   end;
 end;
@@ -346,8 +347,8 @@ procedure TFmCTC.UpdateOutputGain;
 begin
  with TCTCDataModule(Owner) do
   begin
-   if round(10 * Parameter[7]) <> SbOutputGain.Position
-    then SbOutputGain.Position := round(10 * Parameter[7]);
+   if Round(10 * Parameter[7]) <> SbOutputGain.Value
+    then SbOutputGain.Value := Round(10 * Parameter[7]);
    LbOutputGainValue.Caption := ParameterDisplay[7] + ' dB';
   end;
 end;

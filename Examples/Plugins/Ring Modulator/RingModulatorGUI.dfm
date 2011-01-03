@@ -7,7 +7,7 @@ object FmRingModulator: TFmRingModulator
   ClientWidth = 147
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = 7373965
+  Font.Color = 3226174
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
@@ -19,32 +19,32 @@ object FmRingModulator: TFmRingModulator
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object GpFrequency: TGuiGroup
+  object GpFrequency: TGuiGroupTop
     Left = 8
     Top = 8
     Width = 131
     Height = 113
-    AntiAlias = gaaLinear4x
+    BorderColor = 3226174
+    BorderWidth = 2.000000000000000000
     Caption = 'Frequency'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
+    Font.Color = 15659506
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 15659506
-    LineColor = 15659506
-    OutlineWidth = 3
-    PanelColor = 7373965
+    FontOversampling = fo4x
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 0
     object PnDisplay: TGuiPanel
       Left = 8
       Top = 86
       Width = 114
       Height = 17
-      Caption = 'PnDisplay'
-      LineColor = 3226174
+      BorderColor = 3226174
+      BorderVisible = False
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
@@ -68,7 +68,6 @@ object FmRingModulator: TFmRingModulator
         FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
-        Shadow.Color = clBlack
       end
     end
     object DialFrequency: TGuiStitchedDial
@@ -79,11 +78,13 @@ object FmRingModulator: TFmRingModulator
       CurveMapping = -2.069999933242798000
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      OnChange = DialFrequencyChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.009999999776482582
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList
@@ -2753,11 +2754,10 @@ object FmRingModulator: TFmRingModulator
           0049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end>
-    Left = 64
-    Top = 24
+    Left = 104
+    Top = 16
   end
 end

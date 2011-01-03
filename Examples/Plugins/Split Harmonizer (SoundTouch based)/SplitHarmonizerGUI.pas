@@ -39,7 +39,8 @@ uses
   Forms, Controls, Graphics, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiCommon, 
   DAV_GuiLabel, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls, 
   DAV_GuiStitchedDial, DAV_GuiStitchedSwitch, DAV_GuiStitchedPngList,
-  DAV_GuiCustomControl, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphicControl;
+  DAV_GuiCustomControl, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphicControl,
+  DAV_GuiImageControl;
 
 type
   TFmSplitHarmonizer = class(TForm)

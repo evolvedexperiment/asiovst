@@ -20,7 +20,8 @@ object FmReverb: TFmReverb
     Top = 88
     Width = 329
     Height = 23
-    LineColor = clWhite
+    BorderColor = clBtnShadow
+    BorderVisible = False
     BorderWidth = 2.000000000000000000
     PanelColor = clWhite
     ParentColor = True

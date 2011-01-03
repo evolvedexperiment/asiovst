@@ -233,7 +233,6 @@ object FmCTC: TFmCTC
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
   end
   object LbSwitches: TLabel
@@ -250,89 +249,7 @@ object FmCTC: TFmCTC
     ParentFont = False
     Transparent = True
   end
-  object SbSpeakerDistance: TScrollBar
-    Left = 291
-    Top = 50
-    Width = 141
-    Height = 17
-    Max = 5000
-    Min = 10
-    PageSize = 0
-    Position = 100
-    TabOrder = 0
-    OnChange = SbSpeakerDistanceChange
-  end
-  object SbListenerDistance: TScrollBar
-    Left = 291
-    Top = 73
-    Width = 141
-    Height = 17
-    Max = 5000
-    Min = 10
-    PageSize = 0
-    Position = 100
-    TabOrder = 1
-    OnChange = SbListenerDistanceChange
-  end
-  object SbAttenuation: TScrollBar
-    Left = 291
-    Top = 119
-    Width = 141
-    Height = 17
-    Max = 0
-    Min = -150
-    PageSize = 0
-    Position = -60
-    TabOrder = 2
-    OnChange = SbAttenuationChange
-  end
-  object SbRecursionSteps: TScrollBar
-    Left = 291
-    Top = 96
-    Width = 141
-    Height = 17
-    Max = 16
-    Min = 1
-    PageSize = 0
-    Position = 1
-    TabOrder = 3
-    OnChange = SbRecursionStepsChange
-  end
-  object SbFilterFrequency: TScrollBar
-    Left = 291
-    Top = 169
-    Width = 141
-    Height = 17
-    Max = 10000
-    PageSize = 0
-    TabOrder = 4
-    OnChange = SbFilterFrequencyChange
-  end
-  object SbFilterGain: TScrollBar
-    Left = 291
-    Top = 193
-    Width = 141
-    Height = 17
-    Max = 0
-    Min = -150
-    PageSize = 0
-    Position = -60
-    TabOrder = 5
-    OnChange = SbFilterGainChange
-  end
-  object SbOutputGain: TScrollBar
-    Left = 291
-    Top = 231
-    Width = 141
-    Height = 17
-    Max = 0
-    Min = -150
-    PageSize = 0
-    Position = -60
-    TabOrder = 6
-    OnChange = SbOutputGainChange
-  end
-  object CBBypass: TCheckBox
+  object CBBypass: TGuiControlsCheckBox
     Left = 290
     Top = 256
     Width = 60
@@ -340,10 +257,12 @@ object FmCTC: TFmCTC
     Caption = 'Bypass'
     Color = 11121848
     ParentColor = False
-    TabOrder = 7
+    TabOrder = 0
     OnClick = CBBypassClick
+    Transparent = True
+    Native = False
   end
-  object CBAGC: TCheckBox
+  object CBAGC: TGuiControlsCheckBox
     Left = 356
     Top = 256
     Width = 128
@@ -352,6 +271,119 @@ object FmCTC: TFmCTC
     Color = 11121848
     Enabled = False
     ParentColor = False
-    TabOrder = 8
+    TabOrder = 1
+    Transparent = True
+    Native = False
+  end
+  object SbSpeakerDistance: TGuiSlider
+    Left = 291
+    Top = 50
+    Width = 141
+    Height = 17
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 11121848
+    DefaultValue = 50.000000000000000000
+    Max = 5000.000000000000000000
+    Min = 10.000000000000000000
+    ParentColor = False
+    Value = 1000.000000000000000000
+    SlideColor = 6316128
+    OnChange = SbSpeakerDistanceChange
+  end
+  object SbListenerDistance: TGuiSlider
+    Left = 291
+    Top = 73
+    Width = 141
+    Height = 17
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 11121848
+    DefaultValue = 50.000000000000000000
+    Max = 5000.000000000000000000
+    Min = 10.000000000000000000
+    ParentColor = False
+    Value = 1000.000000000000000000
+    SlideColor = 6316128
+    OnChange = SbListenerDistanceChange
+  end
+  object SbAttenuation: TGuiSlider
+    Left = 291
+    Top = 119
+    Width = 141
+    Height = 17
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 11121848
+    Min = -150.000000000000000000
+    ParentColor = False
+    Value = -30.000000000000000000
+    SlideColor = 6316128
+    OnChange = SbAttenuationChange
+    DefaultValue = 0.000000000000000000
+    Max = 0.000000000000000000
+  end
+  object SbRecursionSteps: TGuiSlider
+    Left = 291
+    Top = 96
+    Width = 141
+    Height = 17
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 11121848
+    DefaultValue = 16.000000000000000000
+    Max = 16.000000000000000000
+    Min = 1.000000000000000000
+    ParentColor = False
+    Value = 3.000000000000000000
+    SlideColor = 6316128
+    OnChange = SbRecursionStepsChange
+  end
+  object SbFilterFrequency: TGuiSlider
+    Left = 291
+    Top = 169
+    Width = 141
+    Height = 17
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 11121848
+    DefaultValue = 50.000000000000000000
+    Max = 10000.000000000000000000
+    ParentColor = False
+    Value = 1400.000000000000000000
+    SlideColor = 6316128
+    OnChange = SbFilterFrequencyChange
+  end
+  object SbFilterGain: TGuiSlider
+    Left = 291
+    Top = 193
+    Width = 141
+    Height = 17
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 11121848
+    Min = -150.000000000000000000
+    ParentColor = False
+    Value = -10.000000000000000000
+    SlideColor = 6316128
+    OnChange = SbFilterGainChange
+    DefaultValue = 0.000000000000000000
+    Max = 0.000000000000000000
+  end
+  object SbOutputGain: TGuiSlider
+    Left = 291
+    Top = 231
+    Width = 141
+    Height = 17
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 1.500000000000000000
+    Color = 11121848
+    Min = -150.000000000000000000
+    ParentColor = False
+    Value = -6.000000000000000000
+    SlideColor = 6316128
+    OnChange = SbOutputGainChange
+    DefaultValue = 0.000000000000000000
+    Max = 0.000000000000000000
   end
 end

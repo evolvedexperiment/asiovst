@@ -39,7 +39,8 @@ uses
   Graphics, Controls, Forms, StdCtrls, ExtCtrls,
   DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiLED, DAV_GuiPanel,
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
-  DAV_GuiPixelMap, DAV_GuiInscription, DAV_GuiFont, DAV_GuiFontList;
+  DAV_GuiPixelMap, DAV_GuiInscription, DAV_GuiFont, DAV_GuiFontList,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmCombo = class(TForm)
