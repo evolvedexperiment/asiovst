@@ -21,7 +21,8 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 328
     Height = 133
-    LineColor = 14602441
+    BorderColor = 14602441
+    BorderVisible = False
     BorderWidth = 2.000000000000000000
     PanelColor = 14602441
     ParentColor = True
@@ -95,7 +96,8 @@ object EditorForm: TEditorForm
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4737096
+      Shadow.Opacity = 128
       Shadow.Visible = True
     end
     object LbRelease: TGuiLabel
@@ -115,7 +117,8 @@ object EditorForm: TEditorForm
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4737096
+      Shadow.Opacity = 128
       Shadow.Visible = True
     end
     object LbThreshold: TGuiLabel
@@ -135,7 +138,8 @@ object EditorForm: TEditorForm
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4737096
+      Shadow.Opacity = 128
       Shadow.Visible = True
     end
     object LbAttack: TGuiLabel
@@ -155,7 +159,8 @@ object EditorForm: TEditorForm
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Color = 4737096
+      Shadow.Opacity = 128
       Shadow.Visible = True
     end
     object LbAttackValue: TLabel
@@ -181,11 +186,14 @@ object EditorForm: TEditorForm
       Height = 48
       Color = 14602441
       Max = 200.000000000000000000
-      OnChange = DialRatioChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialRelease: TGuiStitchedDial
       Left = 169
@@ -195,12 +203,14 @@ object EditorForm: TEditorForm
       Color = 14602441
       Max = 3699.000000000000000000
       Min = 699.000000000000000000
-      OnChange = DialReleaseChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 699.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialThreshold: TGuiStitchedDial
       Left = 11
@@ -210,11 +220,14 @@ object EditorForm: TEditorForm
       Color = 14602441
       Max = 100.000000000000000000
       Min = -96.000000000000000000
-      OnChange = DialThresholdChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialThresholdChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialAttack: TGuiStitchedDial
       Left = 169
@@ -224,11 +237,14 @@ object EditorForm: TEditorForm
       Color = 14602441
       Max = 300.000000000000000000
       Min = -200.000000000000000000
-      OnChange = DialAttackChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList
