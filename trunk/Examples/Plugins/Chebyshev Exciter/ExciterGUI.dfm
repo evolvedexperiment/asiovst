@@ -29,8 +29,7 @@ object FmExciter: TFmExciter
     Width = 303
     Height = 113
     Anchors = [akLeft, akTop, akRight]
-    Caption = 'PnControl'
-    LineColor = clWhite
+    BorderColor = clWhite
     BorderWidth = 2.000000000000000000
     PanelColor = 6908265
     ParentColor = True
@@ -198,12 +197,14 @@ object FmExciter: TFmExciter
       CurveMapping = -1.200000047683716000
       Max = 16000.000000000000000000
       Min = 1000.000000000000000000
-      OnChange = DialTuneChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialTuneChange
+      DefaultValue = 0.000000000000000000
     end
     object DialShape: TGuiStitchedDial
       Left = 156
@@ -212,12 +213,14 @@ object FmExciter: TFmExciter
       Height = 64
       Color = 6908265
       Max = 100.000000000000000000
-      OnChange = DialShapeChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialShapeChange
+      DefaultValue = 0.000000000000000000
     end
     object DialMix: TGuiStitchedDial
       Left = 226
@@ -226,12 +229,14 @@ object FmExciter: TFmExciter
       Height = 64
       Color = 6908265
       Max = 100.000000000000000000
-      OnChange = DialMixChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialMixChange
+      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 86
@@ -242,12 +247,14 @@ object FmExciter: TFmExciter
       CurveMapping = -0.660000026226043700
       Max = 8.000000000000000000
       Min = 2.000000000000000000
-      OnChange = DialOrderChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = DSPL
       ImageIndex = 0
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialOrderChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object DSPL: TGuiStitchedPNGList
@@ -880,7 +887,6 @@ object FmExciter: TFmExciter
           49454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end>

@@ -65,6 +65,8 @@ type
     MiFilter: TMenuItem;
     MiBoxBlur: TMenuItem;
     MiSaturation: TMenuItem;
+    N4: TMenuItem;
+    MiResize: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
@@ -82,6 +84,7 @@ type
     procedure MiCountTestClick(Sender: TObject);
     procedure MiBoxBlurClick(Sender: TObject);
     procedure MiSaturationClick(Sender: TObject);
+    procedure MiResizeClick(Sender: TObject);
   protected
     {$IFDEF DIB}
     FGuiBitmap : TGuiPixelMapDIB;
@@ -102,7 +105,7 @@ var
 implementation
 
 uses
-  DAV_Common, DAV_Math, DAV_GuiCommon;
+  Math, DAV_Common, DAV_Math, DAV_GuiCommon;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -143,8 +146,11 @@ end;
 
 procedure TFmPixelMapTest.FormResize(Sender: TObject);
 begin
- if Assigned(FGuiBitmap)
-  then FGuiBitmap.SetSize(PaintBox.Width, PaintBox.Height);
+ if Assigned(FGuiBitmap) then
+  begin
+   FGuiBitmap.SetSize(PaintBox.Width, PaintBox.Height);
+   FGuiBitmap.Clear;
+  end;
 end;
 
 procedure TFmPixelMapTest.MiFrameRectanglesClick(Sender: TObject);
@@ -156,6 +162,14 @@ end;
 procedure TFmPixelMapTest.MiLineCircleClick(Sender: TObject);
 begin
  RenderLineCircleBitmap;
+ PaintBox.Invalidate;
+end;
+
+procedure TFmPixelMapTest.MiResizeClick(Sender: TObject);
+begin
+ with FGuiBitmap
+  do Resize((2 * Width) div 3, Height);
+
  PaintBox.Invalidate;
 end;
 

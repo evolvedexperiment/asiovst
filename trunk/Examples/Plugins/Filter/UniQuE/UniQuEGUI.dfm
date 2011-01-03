@@ -25,19 +25,23 @@ object FmUniQuE: TFmUniQuE
     Top = 8
     Width = 345
     Height = 137
-    AntiAlias = gaaLinear4x
+    BorderColor = 15790320
+    BorderWidth = 2.000000000000000000
     Caption = 'UNIQUE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5329233
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    HeaderMinWidth = 72
-    LineColor = 15790320
-    OutlineWidth = 3
-    PanelColor = 5329233
+    FontOversampling = fo4x
+    GroupColor = 5329233
+    Native = False
     ParentFont = False
-    Radius = 9
+    Radius = 9.000000000000000000
+    Shadow.Blur = 1.500000000000000000
+    Shadow.Opacity = 100
+    Shadow.Saturation = 1.000000000000000000
+    Shadow.Visible = True
     TabOrder = 0
     object LEDOnOff: TGuiLED
       Left = 97
@@ -69,7 +73,6 @@ object FmUniQuE: TFmUniQuE
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
       Shadow.Visible = True
       OnClick = OnOffClick
     end
@@ -88,7 +91,6 @@ object FmUniQuE: TFmUniQuE
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
       Shadow.Visible = True
       OnClick = PadClick
     end
@@ -122,7 +124,6 @@ object FmUniQuE: TFmUniQuE
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
       Shadow.Visible = True
       OnClick = InvertClick
     end
@@ -141,13 +142,13 @@ object FmUniQuE: TFmUniQuE
       ParentColor = False
       OnClick = InvertClick
     end
-    object LbLow: TGuiLabel
-      Left = 11
+    object LbHigh: TGuiLabel
+      Left = 254
       Top = 103
       Width = 75
       Height = 22
       Alignment = taCenter
-      Caption = 'Low'
+      Caption = 'High'
       Color = 5329233
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -157,7 +158,6 @@ object FmUniQuE: TFmUniQuE
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
       Shadow.Visible = True
     end
     object LbMid: TGuiLabel
@@ -176,7 +176,24 @@ object FmUniQuE: TFmUniQuE
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
+      Shadow.Visible = True
+    end
+    object LbLow: TGuiLabel
+      Left = 11
+      Top = 103
+      Width = 75
+      Height = 22
+      Alignment = taCenter
+      Caption = 'Low'
+      Color = 5329233
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -16
+      Font.Name = 'Trebuchet MS'
+      Font.Style = []
+      FontOversampling = fo4x
+      ParentFont = False
+      Shadow.Blur = 2.000000000000000000
       Shadow.Visible = True
     end
     object LbPRes: TGuiLabel
@@ -195,72 +212,7 @@ object FmUniQuE: TFmUniQuE
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
       Shadow.Visible = True
-    end
-    object LbHigh: TGuiLabel
-      Left = 254
-      Top = 103
-      Width = 75
-      Height = 22
-      Alignment = taCenter
-      Caption = 'High'
-      Color = 5329233
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Trebuchet MS'
-      Font.Style = []
-      FontOversampling = fo4x
-      ParentFont = False
-      Shadow.Blur = 2.000000000000000000
-      Shadow.Color = clBlack
-      Shadow.Visible = True
-    end
-    object DialLow: TGuiStitchedDial
-      Left = 11
-      Top = 34
-      Width = 75
-      Height = 75
-      Color = 5329233
-      Max = 15.000000000000000000
-      Min = -15.000000000000000000
-      OnChange = DialLowChange
-      ParentColor = False
-      ImageList = GSPL
-      ImageIndex = 0
-      Transparent = True
-      WheelStep = 1.000000000000000000
-    end
-    object DialMid: TGuiStitchedDial
-      Left = 92
-      Top = 34
-      Width = 75
-      Height = 75
-      Color = 5329233
-      Max = 15.000000000000000000
-      Min = -15.000000000000000000
-      OnChange = DialMidChange
-      ParentColor = False
-      ImageList = GSPL
-      ImageIndex = 0
-      Transparent = True
-      WheelStep = 1.000000000000000000
-    end
-    object DialPresence: TGuiStitchedDial
-      Left = 173
-      Top = 34
-      Width = 75
-      Height = 75
-      Color = 5329233
-      Max = 15.000000000000000000
-      Min = -15.000000000000000000
-      OnChange = DialPresenceChange
-      ParentColor = False
-      ImageList = GSPL
-      ImageIndex = 0
-      Transparent = True
-      WheelStep = 1.000000000000000000
     end
     object DialHigh: TGuiStitchedDial
       Left = 254
@@ -270,12 +222,69 @@ object FmUniQuE: TFmUniQuE
       Color = 5329233
       Max = 15.000000000000000000
       Min = -15.000000000000000000
-      OnChange = DialHighChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Transparent = True
       WheelStep = 1.000000000000000000
+      OnChange = DialHighChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
+    end
+    object DialPresence: TGuiStitchedDial
+      Left = 173
+      Top = 34
+      Width = 75
+      Height = 75
+      Color = 5329233
+      Max = 15.000000000000000000
+      Min = -15.000000000000000000
+      ParentColor = False
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
+      Transparent = True
+      WheelStep = 1.000000000000000000
+      OnChange = DialPresenceChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
+    end
+    object DialMid: TGuiStitchedDial
+      Left = 92
+      Top = 34
+      Width = 75
+      Height = 75
+      Color = 5329233
+      Max = 15.000000000000000000
+      Min = -15.000000000000000000
+      ParentColor = False
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
+      Transparent = True
+      WheelStep = 1.000000000000000000
+      OnChange = DialMidChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
+    end
+    object DialLow: TGuiStitchedDial
+      Left = 11
+      Top = 34
+      Width = 75
+      Height = 75
+      Color = 5329233
+      Max = 15.000000000000000000
+      Min = -15.000000000000000000
+      ParentColor = False
+      ScrollRange = 400.000000000000000000
+      ImageList = GSPL
+      ImageIndex = 0
+      Transparent = True
+      WheelStep = 1.000000000000000000
+      OnChange = DialLowChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList

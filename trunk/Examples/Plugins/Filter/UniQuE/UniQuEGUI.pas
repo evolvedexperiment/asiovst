@@ -39,7 +39,7 @@ uses
   Forms, Controls, Graphics, StdCtrls, DAV_Types, DAV_VSTModule, 
   DAV_GuiPixelMap, DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiLabel, 
   DAV_GuiGroup, DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedDial, 
-  DAV_GuiStitchedPngList;
+  DAV_GuiStitchedPngList, DAV_GuiImageControl;
 
 type
   TFmUniQuE = class(TForm)
@@ -55,10 +55,10 @@ type
     LbMid: TGuiLabel;
     LbOnOff: TGuiLabel;
     LbPad: TGuiLabel;
-    LbPRes: TGuiLabel;
     LEDInvert: TGuiLED;
     LEDOnOff: TGuiLED;
     LEDPad: TGuiLED;
+    LbPRes: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);

@@ -31,7 +31,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbBassFLat: TGuiLabel
     Left = 65
@@ -48,7 +47,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
     Left = 162
@@ -65,7 +63,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
     Shadow.OffsetX = 2
     Shadow.OffsetY = 2
     Shadow.Opacity = 128
@@ -86,7 +83,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbTreble: TGuiLabel
     Left = 52
@@ -103,7 +99,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbSubTitle: TGuiLabel
     Left = 199
@@ -120,7 +115,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
     Shadow.OffsetX = 2
     Shadow.OffsetY = 2
     Shadow.Opacity = 128
@@ -141,7 +135,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbRoasty1: TGuiLabel
     Left = 256
@@ -157,7 +150,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbRoasty1Click
   end
   object LbRoasty2: TGuiLabel
@@ -174,7 +166,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbRoasty2Click
   end
   object LbSteamin1: TGuiLabel
@@ -191,7 +182,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbSteamin1Click
   end
   object LbSteamin2: TGuiLabel
@@ -208,7 +198,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbSteamin2Click
   end
   object LbTrebleMin: TGuiLabel
@@ -226,7 +215,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbBassMin: TGuiLabel
     Left = 14
@@ -243,7 +231,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbTrebleMax: TGuiLabel
     Left = 132
@@ -259,7 +246,6 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbBassMax: TGuiLabel
     Left = 132
@@ -275,15 +261,13 @@ object FmVT: TFmVT
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 3.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiPanel: TGuiPanel
     Left = 163
     Top = 275
     Width = 178
     Height = 106
-    Caption = 'GuiPanel'
-    LineColor = 103128
+    BorderColor = 103128
     BorderWidth = 2.000000000000000000
     PanelColor = 103128
     ParentColor = True
@@ -306,7 +290,6 @@ object FmVT: TFmVT
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbChannel: TGuiLabel
       Left = 13
@@ -323,7 +306,6 @@ object FmVT: TFmVT
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbGainValue: TGuiLabel
       Left = 109
@@ -340,7 +322,6 @@ object FmVT: TFmVT
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbMono: TGuiLabel
       Left = 112
@@ -358,7 +339,6 @@ object FmVT: TFmVT
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbStereo: TGuiLabel
       Left = 111
@@ -376,7 +356,6 @@ object FmVT: TFmVT
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 3.000000000000000000
-      Shadow.Color = clBlack
     end
     object DialOutputGain: TGuiStitchedDial
       Left = 71
@@ -386,11 +365,14 @@ object FmVT: TFmVT
       Color = 103128
       Max = 12.000000000000000000
       Min = -12.000000000000000000
-      OnChange = DialOutputGainChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 2
       WheelStep = 1.000000000000000000
+      OnChange = DialOutputGainChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object SwitchChannel: TGuiStitchedSwitch
       Left = 114
@@ -412,11 +394,14 @@ object FmVT: TFmVT
     Height = 128
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    OnChange = DialLowGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
+    OnChange = DialLowGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialHiGain: TGuiStitchedDial
     Left = 20
@@ -425,11 +410,14 @@ object FmVT: TFmVT
     Height = 128
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    OnChange = DialHiGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Transparent = True
     WheelStep = 1.000000000000000000
+    OnChange = DialHiGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialSelector: TGuiStitchedDial
     Left = 162
@@ -438,11 +426,13 @@ object FmVT: TFmVT
     Height = 84
     Max = 4.000000000000000000
     Min = 1.000000000000000000
-    OnChange = DialSelectorChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialSelectorChange
+    DefaultValue = 0.000000000000000000
   end
   object SwitchLowBypass: TGuiStitchedSwitch
     Left = 29
@@ -10300,7 +10290,6 @@ object FmVT: TFmVT
           35400DD4AA06FE7FE6631486ABAF49CE0000000049454E44AE426082}
         DisplayName = 'Big Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 128
         Width = 8320
       end
@@ -10787,7 +10776,6 @@ object FmVT: TFmVT
           1B1D6874A0D1812E75E0FF01DD24046192344DA70000000049454E44AE426082}
         DisplayName = 'Selector'
         GlyphCount = 4
-        StitchKind = skHorizontal
         Height = 84
         Width = 336
       end
@@ -11595,7 +11583,6 @@ object FmVT: TFmVT
           6082}
         DisplayName = 'Small Knob'
         GlyphCount = 31
-        StitchKind = skHorizontal
         Height = 32
         Width = 992
       end
@@ -11680,7 +11667,6 @@ object FmVT: TFmVT
           9D761A435400310000000049454E44AE426082}
         DisplayName = 'Switch'
         GlyphCount = 2
-        StitchKind = skHorizontal
         Height = 32
         Width = 64
       end>

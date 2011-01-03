@@ -4,28 +4,29 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiGroup, DAV_GuiPixelMap;
+  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiGroup, DAV_GuiPixelMap, DAV_GuiSlider,
+  DAV_GuiCheckBox, DAV_GuiGraphicControl, DAV_GuiLabel;
 
 type
   TFmGroupBoxTest = class(TForm)
-    CbTransparent: TCheckBox;
     ColorDialog: TColorDialog;
     GroupA: TGuiGroup;
     GroupB: TGuiGroup;
     GroupC: TGuiGroup;
     GroupD: TGuiGroup;
-    LbColor: TLabel;
-    LbOutlineWidth: TLabel;
-    LbRoundRadius: TLabel;
     ShGroupColor: TShape;
-    TbOutlineWidth: TTrackBar;
-    TbRoundRadius: TTrackBar;
+    CbTransparent: TGuiControlsCheckBox;
+    SlBorderWidth: TGuiSlider;
+    SlRoundRadius: TGuiSlider;
+    LbOutlineWidth: TGuiLabel;
+    LbRoundRadius: TGuiLabel;
+    LbColor: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure TbRoundRadiusChange(Sender: TObject);
-    procedure TbOutlineWidthChange(Sender: TObject);
+    procedure SlRoundRadiusChange(Sender: TObject);
+    procedure SlBorderWidthChange(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
     procedure ShGroupColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
@@ -56,7 +57,7 @@ end;
 
 procedure TFmGroupBoxTest.FormPaint(Sender: TObject);
 begin
- if CbTransparent.Checked and Assigned(FBackground)
+ if Assigned(FBackground)
   then FBackground.PaintTo(Canvas);
 end;
 
@@ -107,20 +108,20 @@ begin
   end;
 end;
 
-procedure TFmGroupBoxTest.TbOutlineWidthChange(Sender: TObject);
+procedure TFmGroupBoxTest.SlBorderWidthChange(Sender: TObject);
 begin
- GroupA.OutlineWidth := TbOutlineWidth.Position;
- GroupB.OutlineWidth := TbOutlineWidth.Position;
- GroupC.OutlineWidth := TbOutlineWidth.Position;
- GroupD.OutlineWidth := TbOutlineWidth.Position;
+ GroupA.BorderWidth := SlBorderWidth.Value;
+ GroupB.BorderWidth := SlBorderWidth.Value;
+ GroupC.BorderWidth := SlBorderWidth.Value;
+ GroupD.BorderWidth := SlBorderWidth.Value;
 end;
 
-procedure TFmGroupBoxTest.TbRoundRadiusChange(Sender: TObject);
+procedure TFmGroupBoxTest.SlRoundRadiusChange(Sender: TObject);
 begin
- GroupA.Radius := TbRoundRadius.Position;
- GroupB.Radius := TbRoundRadius.Position;
- GroupC.Radius := TbRoundRadius.Position;
- GroupD.Radius := TbRoundRadius.Position;
+ GroupA.Radius := SlRoundRadius.Value;
+ GroupB.Radius := SlRoundRadius.Value;
+ GroupC.Radius := SlRoundRadius.Value;
+ GroupD.Radius := SlRoundRadius.Value;
 end;
 
 procedure TFmGroupBoxTest.CbTransparentClick(Sender: TObject);
@@ -129,6 +130,8 @@ begin
  GroupB.Transparent := CbTransparent.Checked;
  GroupC.Transparent := CbTransparent.Checked;
  GroupD.Transparent := CbTransparent.Checked;
+ SlBorderWidth.Transparent := CbTransparent.Checked;
+ SlRoundRadius.Transparent := CbTransparent.Checked;
  LbOutlineWidth.Transparent := CbTransparent.Checked;
  LbRoundRadius.Transparent := CbTransparent.Checked;
  Invalidate;

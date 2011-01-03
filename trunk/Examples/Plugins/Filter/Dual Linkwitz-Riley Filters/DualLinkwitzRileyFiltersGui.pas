@@ -39,26 +39,14 @@ uses
   Dialogs, ExtCtrls, StdCtrls, Menus, DAV_GuiPixelMap, DAV_GuiPanel,
   DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED,
   DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
-  DAV_GuiCustomControl, DAV_GuiGraphicControl;
+  DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiImageControl;
 
 type
   TFmLinkwitzRiley = class(TForm)
-    DialHighpassFrequency: TGuiStitchedDial;
-    DialHighpassSlope: TGuiStitchedDial;
-    DialLowpassFrequency: TGuiStitchedDial;
-    DialLowpassSlope: TGuiStitchedDial;
     EQGraphUpdate: TTimer;
-    GpDualLiknwitzRiley: TGuiGroup;
     GSPL: TGuiStitchedPNGList;
     GuiEQGraph: TGuiEQGraph;
-    LbDisplay: TGuiLabel;
-    LbFrequency: TGuiLabel;
-    LbHighpass: TGuiLabel;
-    LbLowpass: TGuiLabel;
     LbShowFrequencyPlot: TGuiLabel;
-    LbSlope: TGuiLabel;
-    LedHighCut: TGuiLED;
-    LedLowCut: TGuiLED;
     Mi100Hz: TMenuItem;
     Mi10kHz: TMenuItem;
     Mi125Hz: TMenuItem;
@@ -105,9 +93,21 @@ type
     MiStoreF: TMenuItem;
     MiStoreHigh: TMenuItem;
     N251: TMenuItem;
-    PnDisplay: TGuiPanel;
     PuFrequency: TPopupMenu;
     PuPreset: TPopupMenu;
+    GpDualLiknwitzRiley: TGuiGroupTop;
+    LbFrequency: TGuiLabel;
+    LbSlope: TGuiLabel;
+    LbLowpass: TGuiLabel;
+    LbHighpass: TGuiLabel;
+    LedHighCut: TGuiLED;
+    LedLowCut: TGuiLED;
+    PnDisplay: TGuiPanel;
+    LbDisplay: TGuiLabel;
+    DialLowpassFrequency: TGuiStitchedDial;
+    DialLowpassSlope: TGuiStitchedDial;
+    DialHighpassFrequency: TGuiStitchedDial;
+    DialHighpassSlope: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);

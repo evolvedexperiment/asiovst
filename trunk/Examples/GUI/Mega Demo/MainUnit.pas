@@ -4,9 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls,
-  DAV_GuiCheckBox, DAV_GuiFont, DAV_GuiShadow, DAV_GuiRadioButton, DAV_GuiGroup,
-  Menus;
+  StdCtrls, ComCtrls, Menus,
+  DAV_GuiCheckBox, DAV_GuiFont, DAV_GuiShadow, DAV_GuiRadioButton, DAV_GuiGroup;
 
 type
   TFmMegaDemo = class(TForm)

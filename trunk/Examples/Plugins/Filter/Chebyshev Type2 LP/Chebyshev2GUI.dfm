@@ -25,31 +25,29 @@ object FmChebyshev: TFmChebyshev
     Top = 11
     Width = 273
     Height = 26
-    FontOversampling = fo4x
     Caption = 'Chebyshev Filter Demo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2039615
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
   end
   object LbChebyshevFilterDemo: TGuiLabel
     Left = 8
     Top = 8
     Width = 274
     Height = 26
-    FontOversampling = fo4x
     Caption = 'Chebyshev Filter Demo'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
     ParentFont = False
     Transparent = True
-    Shadow.Color = clBlack
   end
   object PnControls: TGuiPanel
     Left = 8
@@ -57,7 +55,7 @@ object FmChebyshev: TFmChebyshev
     Width = 274
     Height = 129
     Anchors = [akLeft, akTop, akRight, akBottom]
-    LineColor = 10526927
+    BorderColor = 10526927
     BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
@@ -73,7 +71,6 @@ object FmChebyshev: TFmChebyshev
       Width = 80
       Height = 19
       Alignment = taCenter
-      FontOversampling = fo4x
       Caption = 'Frequency'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -81,8 +78,8 @@ object FmChebyshev: TFmChebyshev
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbStopband: TGuiLabel
       Left = 94
@@ -91,7 +88,6 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akTop]
-      FontOversampling = fo4x
       Caption = 'Stopband'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -99,8 +95,8 @@ object FmChebyshev: TFmChebyshev
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbOrder: TGuiLabel
       Left = 182
@@ -109,7 +105,6 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akTop, akRight]
-      FontOversampling = fo4x
       Caption = 'Order'
       Color = 1315880
       Font.Charset = DEFAULT_CHARSET
@@ -117,8 +112,8 @@ object FmChebyshev: TFmChebyshev
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
       Left = 182
@@ -127,10 +122,9 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akRight, akBottom]
-      FontOversampling = fo4x
       Caption = 'Order'
       Color = 1315880
-      Shadow.Color = clBlack
+      FontOversampling = fo4x
       OnDblClick = DialOrderDblClick
     end
     object LbStopbandValue: TGuiLabel
@@ -140,10 +134,9 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akBottom]
-      FontOversampling = fo4x
       Caption = 'Stopband'
       Color = 1315880
-      Shadow.Color = clBlack
+      FontOversampling = fo4x
       OnDblClick = DialStopbandDblClick
     end
     object LbFrequencyValue: TGuiLabel
@@ -153,10 +146,9 @@ object FmChebyshev: TFmChebyshev
       Height = 19
       Alignment = taCenter
       Anchors = [akLeft, akBottom]
-      FontOversampling = fo4x
       Caption = 'Frequency'
       Color = 1315880
-      Shadow.Color = clBlack
+      FontOversampling = fo4x
       OnDblClick = DialFrequencyDblClick
     end
     object DialFrequency: TGuiStitchedDial
@@ -168,12 +160,14 @@ object FmChebyshev: TFmChebyshev
       CurveMapping = -2.099999904632568000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialFrequencyChange
       ParentColor = False
-      ImageIndex = 0
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
+      ImageIndex = 0
       Value = 1000.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
     object DialStopband: TGuiStitchedDial
       Left = 102
@@ -184,12 +178,14 @@ object FmChebyshev: TFmChebyshev
       CurveMapping = 1.330000042915344000
       Max = -0.009999999776482582
       Min = -100.000000000000000000
-      OnChange = DialStopbandChange
       ParentColor = False
-      ImageIndex = 0
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
+      ImageIndex = 0
       Value = -24.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialStopbandChange
+      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 190
@@ -198,12 +194,14 @@ object FmChebyshev: TFmChebyshev
       Height = 64
       Color = 1315880
       Max = 16.000000000000000000
-      OnChange = DialOrderChange
       ParentColor = False
-      ImageIndex = 0
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
+      ImageIndex = 0
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialOrderChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList

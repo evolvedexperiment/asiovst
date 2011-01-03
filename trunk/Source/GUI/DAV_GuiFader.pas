@@ -383,7 +383,28 @@ begin
    case FOrientation of
     foHorizontal :
      begin
-  //    FImageItem.PixelMap.Draw();
+      if FDrawCenterLine then
+       begin
+        FBuffer.HorizontalLine(Width div 2, Self.Width - Width div 2, Self.Height div 2, pxBlack32);
+        FBuffer.HorizontalLine(Width div 2, Self.Width - Width div 2, Self.Height div 2 + 1, pxBlack32);
+       end;
+
+      Offset := (Self.Height - FImageItem.Height) div 2;
+      Assert(NormalizedValue <= 1);
+      YOff := Round(NormalizedValue * (Self.Width - Width));
+
+      if Offset > 0 then
+       for Y := 0 to FImageItem.Height - 1 do
+        begin
+         BlendLine(PixelMap.PixelPointer[0, Y],
+           FBuffer.PixelPointer[YOff, Offset + Y], Width);
+        end
+      else
+       for Y := -Offset to FImageItem.Height + Offset - 1 do
+        begin
+         BlendLine(PixelMap.PixelPointer[0, Y],
+           FBuffer.PixelPointer[YOff, Y + Offset], Width);
+        end
      end;
     foVertical :
      begin
@@ -401,20 +422,12 @@ begin
         begin
          BlendLine(PixelMap.PixelPointer[0, Y],
            FBuffer.PixelPointer[Offset, YOff + Y], PixelMap.Width);
-(*
-         Move(PixelMap.PixelPointer[0, Y]^, FBuffer.PixelPointer[Offset, YOff + Y]^,
-           PixelMap.Width * SizeOf(TPixel32));
-*)
         end
       else
        for Y := 0 to FImageItem.Height - 1 do
         begin
          BlendLine(PixelMap.PixelPointer[-Offset, Y],
            FBuffer.PixelPointer[0, YOff + Y], FBuffer.Width);
-(*
-         Move(PixelMap.PixelPointer[-Offset, Y]^, FBuffer.PixelPointer[0, YOff + Y]^,
-           FBuffer.Width * SizeOf(TPixel32));
-*)
         end
      end;
    end;

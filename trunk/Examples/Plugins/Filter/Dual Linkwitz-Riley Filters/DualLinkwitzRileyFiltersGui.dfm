@@ -38,25 +38,62 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Transparent = True
     OnClick = LbShowFrequencyPlotClick
   end
-  object GpDualLiknwitzRiley: TGuiGroup
+  object GuiEQGraph: TGuiEQGraph
+    Left = 8
+    Top = 175
+    Width = 220
+    Height = 53
+    AntiAlias = gaaLinear4x
+    BorderColor = 15659506
+    BorderRadius = 7
+    BorderWidth = 2
+    ColorChart = 7373965
+    FilterSeries = <
+      item
+        DisplayName = 'TGuiEQGraphSeriesCollectionItem'
+        Color = 15659506
+        OnGetFilterGain = GuiEQGraphGetFilterGain
+      end>
+    GraphColorDark = 5991539
+    GraphColorLight = 6978950
+    XAxis.LabelPosition = xlpBottom
+    XAxis.UpperFrequency = 20000.000000000000000000
+    XAxis.LowerFrequency = 20.000000000000000000
+    YAxis.LabelPosition = ylpLeft
+    YAxis.LowerLevel = -30.000000000000000000
+    YAxis.UpperLevel = 6.000000000000000000
+    YAxis.Granularity = 20.000000000000000000
+    YAxis.MaximumGridLines = 2
+    Color = 7373965
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 15659506
+    Font.Height = -7
+    Font.Name = 'Times New Roman'
+    Font.Style = [fsBold]
+    OnClick = GuiEQGraphClick
+    ParentColor = False
+  end
+  object GpDualLiknwitzRiley: TGuiGroupTop
     Left = 8
     Top = 8
     Width = 220
     Height = 161
-    AntiAlias = gaaLinear4x
+    BorderColor = 15659506
+    BorderWidth = 2.000000000000000000
     Caption = 'Dual Linkwitz-Riley Filters'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 7373965
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 15659506
-    HeaderMinWidth = 64
-    LineColor = 15659506
-    OutlineWidth = 3
-    PanelColor = 7373965
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    Radius = 7
+    Radius = 7.000000000000000000
+    Shadow.Blur = 3.000000000000000000
+    Shadow.Color = 3226174
+    Shadow.Opacity = 100
+    Shadow.Visible = True
     TabOrder = 0
     OnClick = GpDualLiknwitzRileyClick
     object LbFrequency: TGuiLabel
@@ -174,8 +211,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 81
       Width = 83
       Height = 17
-      Caption = 'PnDisplay'
-      LineColor = 5398887
+      BorderColor = 3226174
+      BorderVisible = False
       BorderWidth = 2.000000000000000000
       PanelColor = 3226174
       ParentColor = True
@@ -214,11 +251,12 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       CurveMapping = -2.099999904632568000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialLowpassFrequencyChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialLowpassFrequencyChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassFrequencyMouseEnter
       DefaultValue = 0.000000000000000000
@@ -232,11 +270,12 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       CurveMapping = -1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialLowpassSlopeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialLowpassSlopeChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassSlopeMouseEnter
       DefaultValue = 0.000000000000000000
@@ -250,11 +289,12 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       CurveMapping = -2.099999904632568000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialHighpassFrequencyChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialHighpassFrequencyChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassFrequencyMouseEnter
       DefaultValue = 0.000000000000000000
@@ -268,50 +308,16 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       CurveMapping = -1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialHighpassSlopeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialHighpassSlopeChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassSlopeMouseEnter
       DefaultValue = 0.000000000000000000
     end
-  end
-  object GuiEQGraph: TGuiEQGraph
-    Left = 8
-    Top = 175
-    Width = 220
-    Height = 53
-    AntiAlias = gaaLinear4x
-    BorderColor = 15659506
-    BorderRadius = 7
-    BorderWidth = 2
-    ColorChart = 7373965
-    FilterSeries = <
-      item
-        DisplayName = 'TGuiEQGraphSeriesCollectionItem'
-        Color = 15659506
-        OnGetFilterGain = GuiEQGraphGetFilterGain
-      end>
-    GraphColorDark = 5991539
-    GraphColorLight = 6978950
-    XAxis.LabelPosition = xlpBottom
-    XAxis.UpperFrequency = 20000.000000000000000000
-    XAxis.LowerFrequency = 20.000000000000000000
-    YAxis.LabelPosition = ylpLeft
-    YAxis.LowerLevel = -30.000000000000000000
-    YAxis.UpperLevel = 6.000000000000000000
-    YAxis.Granularity = 20.000000000000000000
-    YAxis.MaximumGridLines = 2
-    Color = 7373965
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 15659506
-    Font.Height = -7
-    Font.Name = 'Times New Roman'
-    Font.Style = [fsBold]
-    OnClick = GuiEQGraphClick
-    ParentColor = False
   end
   object PuFrequency: TPopupMenu
     OnPopup = PuFrequencyPopup
@@ -3220,7 +3226,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
           0049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end>

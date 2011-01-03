@@ -123,6 +123,7 @@ type
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
 
+    procedure Resize(Width: Integer; Height: Integer); override;
     procedure Turn(CounterClockwise: Boolean = False); override;
   published
     property Width;
@@ -164,6 +165,7 @@ type
     procedure PaintTo(Canvas: TCanvas; LRect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
 
+    procedure Resize(Width, Height: Integer); override;
     procedure Turn(CounterClockwise: Boolean = False); override;
 
     property Canvas: TCanvas read GetCanvas;
@@ -1152,6 +1154,39 @@ begin
  AllocateDataPointer;
 end;
 
+procedure TGuiPixelMapMemory.Resize(Width, Height: Integer);
+var
+  NewSize  : Integer;
+  NewData  : PPixel32Array;
+  TempData : PPixel32Array;
+  Y, Wdth  : Integer;
+begin
+ inherited;
+ if (Width <> FWidth) or (Height <> FHeight) then
+  begin
+   NewSize := Width * Height * SizeOf(TPixel32);
+   GetAlignedMemory(Pointer(NewData), NewSize);
+
+   Wdth := Min(Width, FWidth);
+   for Y := 0 to Min(Height, FHeight) - 1 do
+     Move(FDataPointer^[Y * FWidth], NewData^[Y * Width], Wdth * SizeOf(TPixel32));
+
+   // set new width (not thread safe!)
+   FWidth := Width;
+   FHeight := Height;
+   FBitmapInfo.bmiHeader.biWidth := Width;
+   FBitmapInfo.bmiHeader.biHeight := -Height;
+
+   // exchange data pointer
+   TempData := FDataPointer;
+   FDataPointer := NewData;
+   FDataSize := NewSize;
+
+   // dispose old data pointer
+   FreeAlignedMemory(TempData);
+  end;
+end;
+
 procedure TGuiPixelMapMemory.Turn(CounterClockwise: Boolean);
 var
   TurnData : PPixel32Array;
@@ -1165,19 +1200,19 @@ begin
  if CounterClockwise then
   for Y := 0 to FHeight - 1 do
    for X := 0 to FWidth - 1
-    do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X]
+    do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X]
  else
   for Y := 0 to FHeight - 1 do
    for X := 0 to FWidth - 1
-    do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X];
+    do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X];
 
  // exchange width and height
  with FBitmapInfo do
   begin
    bmiHeader.biWidth := FHeight;
-   bmiHeader.biHeight := FWidth;
+   bmiHeader.biHeight := -FWidth;
    FWidth := bmiHeader.biWidth;
-   FHeight := bmiHeader.biHeight;
+   FHeight := -bmiHeader.biHeight;
   end;
 
  // exchange data pointer
@@ -1192,7 +1227,7 @@ procedure TGuiPixelMapMemory.AllocateDataPointer;
 var
   NewDataSize : Integer;
 begin
- NewDataSize := FWidth * FHeight * SizeOf(Cardinal);
+ NewDataSize := FWidth * FHeight * SizeOf(TPixel32);
  if FDataSize <> NewDataSize then
   begin
    FDataSize := NewDataSize;
@@ -1590,6 +1625,31 @@ begin
   then AllocateDeviceIndependentBitmap;
 end;
 
+procedure TGuiPixelMapDIB.Resize(Width, Height: Integer);
+var
+  TempData : TGuiPixelMapMemory;
+  Y, Wdth  : Integer;
+begin
+ inherited;
+ if (Width <> FWidth) or (Height <> FHeight) then
+  begin
+   TempData := TGuiPixelMapMemory.Create;
+   try
+    TempData.Assign(Self);
+
+    // set new size of this bitmap
+    SetSize(Width, Height);
+
+    Wdth := Min(Width, FWidth);
+    for Y := 0 to Min(TempData.Height, Height) - 1 do
+      Move(TempData.DataPointer^[Y * TempData.Width], DataPointer^[Y * Width],
+        Wdth * SizeOf(TPixel32));
+   finally
+    FreeAndNil(TempData);
+   end;
+  end;
+end;
+
 procedure TGuiPixelMapDIB.Turn(CounterClockwise: Boolean);
 var
   TurnData : PPixel32Array;
@@ -1597,6 +1657,7 @@ var
 begin
  inherited;
  GetAlignedMemory(Pointer(TurnData), FDataSize);
+
  try
   // perform turn
   if CounterClockwise then
@@ -1612,9 +1673,9 @@ begin
   with FBitmapInfo do
    begin
     bmiHeader.biWidth := FHeight;
-    bmiHeader.biHeight := FWidth;
+    bmiHeader.biHeight := -FWidth;
     FWidth := bmiHeader.biWidth;
-    FHeight := bmiHeader.biHeight;
+    FHeight := -bmiHeader.biHeight;
    end;
 
   // exchange data pointer

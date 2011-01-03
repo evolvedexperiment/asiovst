@@ -103,15 +103,16 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure CreateParams(var Params: TCreateParams); override;
 
-    procedure BufferChanged(TextChanged: Boolean = True; BoxChanged: Boolean = True); virtual;
     procedure BackBufferChanged; virtual;
+    procedure BufferChanged(TextChanged: Boolean = True; BoxChanged: Boolean = True); virtual;
     procedure CalculateCheckBoxRadius; virtual;
     procedure FontChangedHandler(Sender: TObject); virtual;
+    procedure NativeChanged; virtual;
     procedure RenderBox(Buffer: TGuiCustomPixelMap); virtual;
     procedure RenderText(Buffer: TGuiCustomPixelMap); virtual;
     procedure TransparentChanged; virtual;
-    procedure UpdateBuffer; virtual;
     procedure UpdateBackBuffer; virtual;
+    procedure UpdateBuffer; virtual;
 
     procedure Loaded; override;
     procedure Resize; override;
@@ -200,6 +201,7 @@ begin
  FGuiFont          := TGuiOversampledGDIFont.Create;
  FGuiFont.OnChange := FontChangedHandler;
 
+ // initialize variables
  ParentColor       := True;
  ParentFont        := True;
  FFocusedColor     := clBtnHighlight;
@@ -732,6 +734,24 @@ begin
   end;
 end;
 
+procedure TGuiControlsCheckBox.NativeChanged;
+var
+  OldMouseInControl : Boolean;
+begin
+ OldMouseInControl := FMouseInControl;
+
+ {$IFDEF FPC}
+ RecreateWnd(Self);
+ {$ELSE}
+ RecreateWnd;
+ {$ENDIF}
+ FMouseInControl := OldMouseInControl;
+
+ if not FNative
+  then FUpdateBackBuffer := True;
+ Invalidate;
+end;
+
 procedure TGuiControlsCheckBox.SetColors(Index: Integer; Value: TColor);
 begin
  case Index of
@@ -745,19 +765,11 @@ begin
 end;
 
 procedure TGuiControlsCheckBox.SetNative(const Value: Boolean);
-var
-  OldMouseInControl : Boolean;
 begin
  if FNative <> Value then
   begin
-   OldMouseInControl := FMouseInControl;
    FNative := Value;
-   {$IFDEF FPC}
-   RecreateWnd(Self);
-   {$ELSE}
-   RecreateWnd;
-   {$ENDIF}
-   FMouseInControl := OldMouseInControl;
+   NativeChanged;
   end;
 end;
 

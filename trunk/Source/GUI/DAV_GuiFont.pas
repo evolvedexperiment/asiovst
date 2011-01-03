@@ -776,8 +776,8 @@ begin
         then PixelMap.DrawByteMap(FShadowBuffer, FShadowColor, Rect(
           X + FShadow.Offset.X - BlurOffset div FOSFactor,
           Y + FShadow.Offset.Y - BlurOffset div FOSFactor,
-          X + FShadow.Offset.X + (FBuffer.Width - BlurOffset) div FOSFactor,
-          Y + FShadow.Offset.Y + (FBuffer.Height - BlurOffset) div FOSFactor));
+          X + FShadow.Offset.X + (FShadowBuffer.Width - BlurOffset) div FOSFactor,
+          Y + FShadow.Offset.Y + (FShadowBuffer.Height - BlurOffset) div FOSFactor));
        {$ELSE}
        if FShadow.Blur > 0 then
         begin
@@ -863,14 +863,14 @@ begin
 
        // eventually turn buffer
        case FFontTurn of
-        ftClockwise        : FBuffer.Turn;
+        ftClockwise        : FBuffer.Turn(False);
         ftCounterClockwise : FBuffer.Turn(True);
        end;
 
        if PixelMap <> nil
-        then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color),
-          Rect(X, Y, X + FBuffer.Width div FOSFactor,
-            Y + FBuffer.Height div FOSFactor));
+         then PixelMap.DrawByteMap(FBuffer, ConvertColor(Font.Color),
+           Rect(X, Y, X + FBuffer.Width div FOSFactor,
+           Y + FBuffer.Height div FOSFactor));
       end;
     end;
   end;

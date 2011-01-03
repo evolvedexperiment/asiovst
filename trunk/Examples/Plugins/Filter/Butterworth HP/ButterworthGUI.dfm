@@ -45,7 +45,7 @@ object FmButterworth: TFmButterworth
     Top = 44
     Width = 184
     Height = 129
-    LineColor = 10526927
+    BorderColor = 10526927
     BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
@@ -112,7 +112,6 @@ object FmButterworth: TFmButterworth
       Color = 1315880
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnDblClick = LbOrderValueDblClick
     end
     object LbFrequencyValue: TGuiLabel
@@ -126,7 +125,6 @@ object FmButterworth: TFmButterworth
       Color = 1315880
       FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnDblClick = LbFrequencyValueDblClick
     end
     object DialFrequency: TGuiStitchedDial
@@ -138,12 +136,14 @@ object FmButterworth: TFmButterworth
       CurveMapping = -2.099999904632568000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialFrequencyChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 104
@@ -152,12 +152,14 @@ object FmButterworth: TFmButterworth
       Height = 64
       Color = 1315880
       Max = 16.000000000000000000
-      OnChange = DialOrderChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialOrderChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GuiEQGraph: TGuiEQGraph

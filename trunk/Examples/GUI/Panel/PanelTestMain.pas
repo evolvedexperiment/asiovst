@@ -6,26 +6,29 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPanel;
+  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPanel,
+  DAV_GuiSlider, DAV_GuiCheckBox, DAV_GuiGraphicControl, DAV_GuiLabel;
 
 type
   TFmPanelTest = class(TForm)
-    CbTransparent: TCheckBox;
-    LbLineWidth: TLabel;
-    LbRoundRadius: TLabel;
     PanelA: TGuiPanel;
     PanelB: TGuiPanel;
     PanelC: TGuiPanel;
     PanelD: TGuiPanel;
-    TbLineWidth: TTrackBar;
-    TbRoundRadius: TTrackBar;
+    SlRoundRadius: TGuiSlider;
+    SlLineWidth: TGuiSlider;
+    LbRoundRadius: TGuiLabel;
+    LbLineWidth: TGuiLabel;
+    CbTransparent: TGuiControlsCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
-    procedure TbLineWidthChange(Sender: TObject);
-    procedure TbRoundRadiusChange(Sender: TObject);
+    procedure SlLineWidthChange(Sender: TObject);
+    procedure SlRoundRadiusChange(Sender: TObject);
+    procedure PanelAClick(Sender: TObject);
+    procedure PanelBClick(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   end;
@@ -89,6 +92,18 @@ begin
   end;
 end;
 
+procedure TFmPanelTest.PanelAClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 3;
+ SlRoundRadius.Value := 3.9;
+end;
+
+procedure TFmPanelTest.PanelBClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 6.632;
+ SlRoundRadius.Value := 5.054;
+end;
+
 procedure TFmPanelTest.CbTransparentClick(Sender: TObject);
 begin
  PanelA.Transparent := CbTransparent.Checked;
@@ -97,20 +112,20 @@ begin
  PanelD.Transparent := CbTransparent.Checked;
 end;
 
-procedure TFmPanelTest.TbLineWidthChange(Sender: TObject);
+procedure TFmPanelTest.SlLineWidthChange(Sender: TObject);
 begin
- PanelA.Borderwidth := 0.25 * TbLinewidth.Position;
- PanelB.Borderwidth := 0.25 * TbLinewidth.Position;
- PanelC.Borderwidth := 0.25 * TbLinewidth.Position;
- PanelD.Borderwidth := 0.25 * TbLinewidth.Position;
+ PanelA.Borderwidth := SlLineWidth.Value;
+ PanelB.Borderwidth := SlLineWidth.Value;
+ PanelC.Borderwidth := SlLineWidth.Value;
+ PanelD.Borderwidth := SlLineWidth.Value;
 end;
 
-procedure TFmPanelTest.TbRoundRadiusChange(Sender: TObject);
+procedure TFmPanelTest.SlRoundRadiusChange(Sender: TObject);
 begin
- PanelA.Radius := TbRoundRadius.Position;
- PanelB.Radius := TbRoundRadius.Position;
- PanelC.Radius := TbRoundRadius.Position;
- PanelD.Radius := TbRoundRadius.Position;
+ PanelA.Radius := SlRoundRadius.Value;
+ PanelB.Radius := SlRoundRadius.Value;
+ PanelC.Radius := SlRoundRadius.Value;
+ PanelD.Radius := SlRoundRadius.Value;
 end;
 
 end.

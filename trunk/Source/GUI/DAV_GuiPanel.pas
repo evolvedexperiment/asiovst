@@ -451,15 +451,16 @@ begin
            else SqrDist := SqrYDist;
          end;
 
-       if SqrDist.Fixed <= SqrRadMinusBorderOne.Fixed
+       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
         then CombColor := PanelColor
         else
-       if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
+       if SqrDist.Fixed < SqrRadMinusBorder.Fixed then
         begin
          Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
          Assert(Temp.Fixed >= 0);
-         Assert(Temp.Fixed <= $FF);
-         CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+         if Temp.Fixed > $FF
+          then CombColor := PanelColor
+          else CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
         end else
        if SqrDist.Fixed < SqrRadMinusOne.Fixed
         then CombColor := BorderColor
@@ -477,6 +478,7 @@ begin
        BlendPixelInplace(CombColor, ScnLne[1][X]);
       end;
     end;
+
 
    for Y := FixedRound(Radius) to Height - 1 - FixedRound(Radius) do
     begin
@@ -510,8 +512,8 @@ begin
        // check whether position is an upper/lower half border
        if IsUpperLowerHalf then
         begin
-         if (XFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
-            (XFixed.Fixed > ConvertToFixed24Dot8Point(Width).Fixed - BorderWidthFixed.Fixed)
+         if (XFixed.Fixed <= BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+            (XFixed.Fixed >= ConvertToFixed24Dot8Point(Width).Fixed - BorderWidthFixed.Fixed)
           then CombColor := BorderColor else
          if (XFixed.Fixed < BorderWidthFixed.Fixed) then
           begin
@@ -522,7 +524,7 @@ begin
            Assert(Temp.Fixed <= $FF);
            CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
           end else
-         if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+         if (XFixed.Fixed >= WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
           begin
            Temp.Fixed := XFixed.Fixed + BorderWidthFixed.Fixed - WidthMinusOne.Fixed;
            Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
