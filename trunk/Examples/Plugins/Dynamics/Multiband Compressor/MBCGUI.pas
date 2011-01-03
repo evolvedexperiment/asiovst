@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Graphics, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_VSTModule, 
   DAV_GuiBaseControl, DAV_GuiLevelMeter, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiSlider,
+  DAV_GuiImageControl, DAV_GuiCustomControl;
 
 type
   TFmMBC = class(TForm)
@@ -157,8 +158,8 @@ type
     LMOutRight: TGuiColorLevelMeter;
     RBBWIIR: TRadioButton;
     RbLPFIR: TRadioButton;
-    SbHighFreq: TScrollBar;
-    SbLowFreq: TScrollBar;
+    SbLowFreq: TGuiSlider;
+    SbHighFreq: TGuiSlider;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -321,7 +322,7 @@ end;
 
 procedure TFmMBC.SbLowFreqChange(Sender: TObject);
 begin
- (Owner as TMBCDataModule).Parameter[1] := FreqLinearToLog(SbLowFreq.Position * 0.0001);
+ (Owner as TMBCDataModule).Parameter[1] := FreqLinearToLog(SbLowFreq.Value * 0.0001);
 end;
 
 procedure TFmMBC.DlMidGainChange(Sender: TObject);
@@ -383,7 +384,7 @@ procedure TFmMBC.SbHighFreqChange(Sender: TObject);
 begin
  with TMBCDataModule(Owner) do
   begin
-   Parameter[12] := FreqLinearToLog(SbHighFreq.Position * 0.0001);
+   Parameter[12] := FreqLinearToLog(SbHighFreq.Value * 0.0001);
   end;
 end;
 

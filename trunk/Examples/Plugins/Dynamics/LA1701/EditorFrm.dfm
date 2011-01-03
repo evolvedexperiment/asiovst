@@ -25,7 +25,7 @@ object FmLA1701: TFmLA1701
     Top = 131
     Width = 321
     Height = 170
-    LineColor = clGray
+    BorderColor = clGray
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
@@ -341,7 +341,7 @@ object FmLA1701: TFmLA1701
       Height = 17
       Color = clBlack
       DockSite = True
-      LineColor = 3355443
+      BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
       Radius = 5.000000000000000000
@@ -382,7 +382,7 @@ object FmLA1701: TFmLA1701
     Top = 8
     Width = 321
     Height = 117
-    LineColor = clGray
+    BorderColor = clGray
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
@@ -530,7 +530,7 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 17
       Color = clBlack
-      LineColor = 3355443
+      BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
       Radius = 5.000000000000000000
@@ -559,7 +559,7 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 17
       Color = clBlack
-      LineColor = 3355443
+      BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
       Radius = 5.000000000000000000
@@ -589,7 +589,7 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 17
       Color = clBlack
-      LineColor = 3355443
+      BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
       Radius = 5.000000000000000000
@@ -618,7 +618,7 @@ object FmLA1701: TFmLA1701
       Width = 64
       Height = 17
       Color = clBlack
-      LineColor = 3355443
+      BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
       Radius = 5.000000000000000000

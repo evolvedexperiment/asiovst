@@ -36,18 +36,16 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, Controls, StdCtrls, Graphics, ExtCtrls, DAV_Types,
-  DAV_GuiPixelMap, DAV_GuiPng, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLED,
-  DAV_GuiGroup, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial, DAV_GuiGraphicControl, DAV_GuiLabel,
-  DAV_GuiCustomControl, DAV_GuiImageControl, Gauges;
+  Forms, Controls, StdCtrls, Graphics, ExtCtrls, Gauges, DAV_Types,
+  DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiPng, DAV_GuiLED, DAV_GuiGroup,
+  DAV_GuiGraphicControl, DAV_GuiCustomControl, DAV_GuiImageControl,
+  DAV_GuiLabel, DAV_GuiStitchedDial, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiCheckBox;
 
 type
   TEditorForm = class(TForm)
-    CBDuck: TCheckBox;
     CBOnOff: TGuiLED;
     CBSideChain: TComboBox;
-    CBStereoLink: TCheckBox;
     DialAttack: TGuiStitchedDial;
     DialDecay: TGuiStitchedDial;
     DialHiCut: TGuiStitchedDial;
@@ -84,6 +82,8 @@ type
     LbThreshold: TLabel;
     VUTimer: TTimer;
     LbEnhancedAudioGate: TGuiLabel;
+    CBDuck: TGuiControlsCheckBox;
+    CBStereoLink: TGuiControlsCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);

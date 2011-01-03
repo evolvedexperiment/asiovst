@@ -48,21 +48,19 @@ object EditorForm: TEditorForm
     Top = 6
     Width = 325
     Height = 145
-    AntiAlias = gaaLinear4x
+    BorderColor = 5723991
+    BorderWidth = 2.000000000000000000
     Caption = 'MAIN'
-    Offset = 8
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
-    Font.Name = 'Tahoma'
+    Font.Name = 'Trebuchet MS'
     Font.Style = [fsBold]
-    GroupColor = clGray
-    HeaderMinWidth = 64
-    LineColor = clSilver
-    OutlineWidth = 2
-    PanelColor = 11327984
+    FontOversampling = fo4x
+    GroupColor = 11327984
+    Native = False
     ParentFont = False
-    Radius = 7
+    Radius = 7.000000000000000000
     TabOrder = 2
     object LbThreshold: TLabel
       Left = 8
@@ -231,38 +229,6 @@ object EditorForm: TEditorForm
       TabOrder = 3
       Text = '39.7 ms'
     end
-    object CBDuck: TCheckBox
-      Left = 147
-      Top = 13
-      Width = 49
-      Height = 17
-      Caption = 'DUCK'
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 4
-      OnClick = CBDuckClick
-    end
-    object CBStereoLink: TCheckBox
-      Left = 234
-      Top = 13
-      Width = 82
-      Height = 17
-      Caption = 'STEREOLINK'
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 5
-      OnClick = CBStereoLinkClick
-    end
     object DialThreshold: TGuiStitchedDial
       Left = 8
       Top = 32
@@ -323,26 +289,59 @@ object EditorForm: TEditorForm
       OnChange = DialDecayChange
       DefaultValue = 0.000000000000000000
     end
+    object CBDuck: TGuiControlsCheckBox
+      Left = 147
+      Top = 13
+      Width = 49
+      Height = 17
+      Caption = 'DUCK'
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 4
+      OnClick = CBDuckClick
+      Native = False
+    end
+    object CBStereoLink: TGuiControlsCheckBox
+      Left = 234
+      Top = 13
+      Width = 82
+      Height = 17
+      Caption = 'STEREOLINK'
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 5
+      OnClick = CBStereoLinkClick
+      Native = False
+    end
   end
   object GBSideChain: TGuiGroup
     Left = 8
     Top = 157
     Width = 135
     Height = 138
-    AntiAlias = gaaLinear4x
+    BorderColor = 5723991
+    BorderWidth = 2.000000000000000000
     Caption = ' SIDECHAIN '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
-    Font.Name = 'Tahoma'
+    Font.Name = 'Trebuchet MS'
     Font.Style = [fsBold]
-    GroupColor = clGray
-    HeaderMinWidth = 96
-    LineColor = clSilver
-    OutlineWidth = 2
-    PanelColor = 11327984
+    FontOversampling = fo4x
+    GroupColor = 11327984
+    Native = False
     ParentFont = False
-    Radius = 7
+    Radius = 7.000000000000000000
     TabOrder = 0
     object LBHighCut: TLabel
       Left = 70
@@ -482,20 +481,19 @@ object EditorForm: TEditorForm
     Top = 157
     Width = 184
     Height = 116
-    AntiAlias = gaaLinear4x
+    BorderColor = 5723991
+    BorderWidth = 2.000000000000000000
     Caption = ' DYNAMICS '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
-    Font.Name = 'Tahoma'
+    Font.Name = 'Trebuchet MS'
     Font.Style = [fsBold]
-    GroupColor = clGray
-    HeaderMinWidth = 96
-    LineColor = clSilver
-    OutlineWidth = 2
-    PanelColor = 11327984
+    FontOversampling = fo4x
+    GroupColor = 11327984
+    Native = False
     ParentFont = False
-    Radius = 7
+    Radius = 7.000000000000000000
     TabOrder = 1
     object LbKnee: TLabel
       Left = 65

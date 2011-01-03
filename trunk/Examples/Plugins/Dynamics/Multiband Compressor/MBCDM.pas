@@ -191,8 +191,8 @@ begin
     if Value < 1000
      then LbLowFreqHz.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' Hz'
      else LbLowFreqHz.Caption := FloatToStrF(0.001 * Value, ffGeneral, 3, 2) + 'kHz';
-    if SbLowFreq.Position <> Round(10000 * FreqLogToLinear(Value))
-     then SbLowFreq.Position := Round(10000 * FreqLogToLinear(Value));
+    if SbLowFreq.Value <> 10000 * FreqLogToLinear(Value)
+     then SbLowFreq.Value := 10000 * FreqLogToLinear(Value);
    end;
 end;
 
@@ -480,8 +480,8 @@ begin
     if Value < 1000
      then LbHighFreqHz.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + 'Hz'
      else LbHighFreqHz.Caption := FloatToStrF(0.001 * Value, ffGeneral, 3, 2) + 'kHz';
-    if SbHighFreq.Position <> Round(10000 * FreqLogToLinear(Value))
-     then SbHighFreq.Position := Round(10000 * FreqLogToLinear(Value));
+    if SbHighFreq.Value <> 10000 * FreqLogToLinear(Value)
+     then SbHighFreq.Value := 10000 * FreqLogToLinear(Value);
    end;
 end;
 
