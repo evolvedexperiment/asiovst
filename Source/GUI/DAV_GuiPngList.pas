@@ -106,25 +106,16 @@ end;
 
 procedure TGuiPNGCollectionItem.SetPng(
   const Value: TPortableNetworkGraphicPixel32);
-var
-  SizeModified : Boolean;
 begin
  FPng.Assign(Value);
 
  BuildPixelMap;
 
- SizeModified := False;
- if Width <> FPng.Width then
-  begin
-   Width := FPng.Width;
-   SizeModified := True;
-  end;
+ if Width <> FPng.Width
+  then Width := FPng.Width;
 
- if Height <> FPng.Height then
-  begin
-   Height := FPng.Height;
-   SizeModified := True;
-  end;
+ if Height <> FPng.Height
+  then Height := FPng.Height;
 end;
 
 

@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, ExtCtrls, Controls, StdCtrls, DAV_Types, DAV_VSTModule, 
   DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiImageControl,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmChebyshev2 = class(TForm)

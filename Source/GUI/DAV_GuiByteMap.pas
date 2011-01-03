@@ -109,6 +109,7 @@ type
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
 
+    procedure Resize(Width, Height: Integer); override;
     procedure Turn(CounterClockwise: Boolean = False); override;
   published
     property Width;
@@ -147,6 +148,7 @@ type
     procedure PaintTo(Canvas: TCanvas; Rect: TRect; X: Integer = 0; Y: Integer = 0); override;
     procedure Draw(Bitmap: TBitmap; X, Y: Integer); override;
 
+    procedure Resize(Width, Height: Integer); override;
     procedure Turn(CounterClockwise: Boolean = False); override;
 
     property Handle: HDC read FDC;
@@ -765,6 +767,39 @@ begin
  {$ENDIF}
 end;
 
+procedure TGuiByteMapMemory.Resize(Width, Height: Integer);
+var
+  NewSize  : Integer;
+  NewData  : PByteArray;
+  TempData : PByteArray;
+  Y, Wdth  : Integer;
+begin
+ inherited;
+ if (Width <> FWidth) or (Height <> FHeight) then
+  begin
+   NewSize := Width * Height;
+   GetAlignedMemory(Pointer(NewData), NewSize);
+
+   Wdth := Min(Width, FWidth);
+   for Y := 0 to Min(Height, FHeight) - 1 do
+     Move(FDataPointer^[Y * FWidth], NewData^[Y * Width], Wdth);
+
+   // set new width (not thread safe!)
+   FWidth := Width;
+   FHeight := Height;
+   FBitmapInfo.bmiHeader.biWidth := Width;
+   FBitmapInfo.bmiHeader.biHeight := -Height;
+
+   // exchange data pointer
+   TempData := FDataPointer;
+   FDataPointer := NewData;
+   FDataSize := NewSize;
+
+   // dispose old data pointer
+   FreeAlignedMemory(TempData);
+  end;
+end;
+
 procedure TGuiByteMapMemory.Turn(CounterClockwise: Boolean);
 var
   TurnData : PByteArray;
@@ -774,14 +809,15 @@ begin
  inherited;
  GetAlignedMemory(Pointer(TurnData), FDataSize);
 
+ // perform turn
  if CounterClockwise then
   for Y := 0 to FHeight - 1 do
    for X := 0 to FWidth - 1
-    do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X]
+    do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X]
  else
   for Y := 0 to FHeight - 1 do
    for X := 0 to FWidth - 1
-    do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X];
+    do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X];
 
  // exchange width and height
  with FBitmapInfo^ do
@@ -936,6 +972,31 @@ begin
   then AllocateDeviceIndependentBitmap;
 end;
 
+procedure TGuiByteMapDIB.Resize(Width, Height: Integer);
+var
+  TempData : TGuiPixelMapMemory;
+  Y, Wdth  : Integer;
+begin
+ inherited;
+ if (Width <> FWidth) or (Height <> FHeight) then
+  begin
+   TempData := TGuiPixelMapMemory.Create;
+   try
+    TempData.Assign(Self);
+
+    // set new size of this bitmap
+    SetSize(Width, Height);
+
+    Wdth := Min(Width, FWidth);
+    for Y := 0 to Min(TempData.Height, Height) - 1 do
+      Move(TempData.DataPointer^[Y * TempData.Width], DataPointer^[Y * Width],
+        Wdth * SizeOf(TPixel32));
+   finally
+    FreeAndNil(TempData);
+   end;
+  end;
+end;
+
 procedure TGuiByteMapDIB.Turn(CounterClockwise: Boolean);
 var
   TurnData : PByteArray;
@@ -944,26 +1005,31 @@ begin
  inherited;
  GetAlignedMemory(Pointer(TurnData), FDataSize);
 
- if CounterClockwise then
-  for Y := 0 to FHeight - 1 do
-   for X := 0 to FWidth - 1
-    do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X]
- else
-  for Y := 0 to FHeight - 1 do
-   for X := 0 to FWidth - 1
-    do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X];
+ try
+  // perform turn
+  if CounterClockwise then
+   for Y := 0 to FHeight - 1 do
+    for X := 0 to FWidth - 1
+     do TurnData^[(FWidth - 1 - X) * FHeight + Y] := FDataPointer^[Y * FWidth + X]
+  else
+   for Y := 0 to FHeight - 1 do
+    for X := 0 to FWidth - 1
+     do TurnData^[X * FHeight + FHeight - 1 - Y] := FDataPointer^[Y * FWidth + X];
 
- // exchange width and height
- with FBitmapInfo^ do
-  begin
-   bmiHeader.biWidth := FHeight;
-   bmiHeader.biHeight := FWidth;
-   FWidth := bmiHeader.biWidth;
-   FHeight := bmiHeader.biHeight;
-  end;
+  // exchange width and height
+  with FBitmapInfo^ do
+   begin
+    bmiHeader.biWidth := FHeight;
+    bmiHeader.biHeight := -FWidth;
+    FWidth := bmiHeader.biWidth;
+    FHeight := -bmiHeader.biHeight;
+   end;
 
- // exchange data pointer
- Move(TurnData^, FDataPointer^, FDataSize);
+  // exchange data pointer
+  Move(TurnData^, FDataPointer^, FDataSize);
+ finally
+  FreeAlignedMemory(Pointer(TurnData));
+ end;
 end;
 
 procedure TGuiByteMapDIB.HeightChanged(UpdateBitmap: Boolean);

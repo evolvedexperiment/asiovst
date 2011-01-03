@@ -19,7 +19,7 @@ object FmMegaDemo: TFmMegaDemo
     Top = 0
     Width = 409
     Height = 243
-    ActivePage = TsCheckBox
+    ActivePage = TsGroupBox
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
@@ -33,6 +33,7 @@ object FmMegaDemo: TFmMegaDemo
         Caption = 'Item 1'
         TabOrder = 0
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -45,6 +46,7 @@ object FmMegaDemo: TFmMegaDemo
         Caption = 'Item 2'
         TabOrder = 1
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -57,6 +59,7 @@ object FmMegaDemo: TFmMegaDemo
         Caption = 'Item 3'
         TabOrder = 2
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -75,6 +78,7 @@ object FmMegaDemo: TFmMegaDemo
         ParentFont = False
         TabOrder = 3
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -93,6 +97,7 @@ object FmMegaDemo: TFmMegaDemo
         ParentFont = False
         TabOrder = 4
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -109,6 +114,7 @@ object FmMegaDemo: TFmMegaDemo
         Caption = 'Item 1'
         TabOrder = 0
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -121,6 +127,7 @@ object FmMegaDemo: TFmMegaDemo
         Caption = 'Item 2'
         TabOrder = 1
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -133,6 +140,7 @@ object FmMegaDemo: TFmMegaDemo
         Caption = 'Item 3'
         TabOrder = 2
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -151,6 +159,7 @@ object FmMegaDemo: TFmMegaDemo
         ParentFont = False
         TabOrder = 3
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -170,6 +179,7 @@ object FmMegaDemo: TFmMegaDemo
         ParentFont = False
         TabOrder = 4
         ColorFocused = 10874110
+        Native = False
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -199,6 +209,7 @@ object FmMegaDemo: TFmMegaDemo
           Height = 17
           Caption = 'Group Item'
           TabOrder = 0
+          Native = False
           Shadow.Blur = 2.000000000000000000
           Shadow.Opacity = 128
           Shadow.Saturation = 0.100000001490116100
@@ -224,6 +235,7 @@ object FmMegaDemo: TFmMegaDemo
           Height = 17
           Caption = 'Another Item'
           TabOrder = 0
+          Native = False
           Shadow.Blur = 2.000000000000000000
           Shadow.Opacity = 128
           Shadow.Saturation = 0.100000001490116100

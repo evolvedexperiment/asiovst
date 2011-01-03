@@ -34,7 +34,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Style = [fsBold]
     GroupColor = 15659506
     HeaderMinWidth = 64
-    LineColor = 15659506
+    BorderColor = 15659506
     OutlineWidth = 3
     PanelColor = 7373965
     ParentFont = False
@@ -98,7 +98,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 20
       Caption = 'PnDisplay'
       Enabled = False
-      LineColor = 4938079
+      BorderColor = 4938079
       BorderWidth = 1.000000000000000000
       PanelColor = 4938079
       ParentColor = True
@@ -177,7 +177,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Style = [fsBold]
     GroupColor = 15659506
     HeaderMinWidth = 64
-    LineColor = 15659506
+    BorderColor = 15659506
     OutlineWidth = 3
     PanelColor = 7373965
     ParentFont = False
@@ -240,7 +240,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 105
       Height = 20
       Caption = 'PnDisplay'
-      LineColor = 4938079
+      BorderColor = 4938079
       BorderWidth = 1.000000000000000000
       PanelColor = 4938079
       ParentColor = True
@@ -326,7 +326,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Top = 231
     Width = 201
     Height = 54
-    LineColor = 15659506
+    BorderColor = 15659506
     BorderWidth = 2.000000000000000000
     PanelColor = 7373965
     ParentColor = True

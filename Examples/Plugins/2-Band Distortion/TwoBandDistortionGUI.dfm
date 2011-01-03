@@ -31,7 +31,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
     Alpha = 200
     Anchors = [akLeft, akTop, akRight]
     Caption = 'PnControl'
-    LineColor = clWhite
+    BorderColor = clWhite
     BorderWidth = 2.000000000000000000
     PanelColor = 6908265
     ParentColor = True

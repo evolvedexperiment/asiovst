@@ -17,55 +17,63 @@ object FmPanelTest: TFmPanelTest
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object LbRoundRadius: TLabel
+  object LbRoundRadius: TGuiLabel
     Left = 8
     Top = 85
     Width = 70
     Height = 13
+    Margins.Bottom = 0
+    AutoSize = True
     Caption = 'Round Radius:'
+    Transparent = True
   end
-  object LbLineWidth: TLabel
+  object LbLineWidth: TGuiLabel
     Left = 8
     Top = 109
     Width = 54
     Height = 13
+    Margins.Bottom = 0
+    AutoSize = True
     Caption = 'Line Width:'
+    Transparent = True
   end
   object PanelA: TGuiPanel
     Left = 8
     Top = 8
     Width = 128
     Height = 32
-    Caption = 'PanelA'
-    LineColor = 4605510
+    Alpha = 128
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = clBlue
     ParentColor = True
     Radius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
+    OnClick = PanelAClick
   end
   object PanelB: TGuiPanel
     Left = 142
     Top = 8
     Width = 128
     Height = 32
-    Caption = 'GuiPanel1'
-    LineColor = 4605510
+    Alpha = 128
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = clLime
     ParentColor = True
     Radius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
+    OnClick = PanelBClick
   end
   object PanelC: TGuiPanel
     Left = 8
     Top = 46
     Width = 128
     Height = 32
-    Caption = 'GuiPanel1'
-    LineColor = 4605510
+    Alpha = 128
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = clRed
     ParentColor = True
@@ -78,8 +86,8 @@ object FmPanelTest: TFmPanelTest
     Top = 46
     Width = 128
     Height = 32
-    Caption = 'GuiPanel1'
-    LineColor = 4605510
+    Alpha = 128
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = clYellow
     ParentColor = True
@@ -87,37 +95,52 @@ object FmPanelTest: TFmPanelTest
     TabOrder = 3
     UseDockManager = True
   end
-  object TbRoundRadius: TTrackBar
+  object SlRoundRadius: TGuiSlider
     Left = 84
     Top = 84
     Width = 186
     Height = 18
-    Max = 16
-    Min = 1
-    Position = 1
-    TabOrder = 4
-    ThumbLength = 12
-    OnChange = TbRoundRadiusChange
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 2.000000000000000000
+    Color = clBtnFace
+    DefaultValue = 16.000000000000000000
+    Max = 16.000000000000000000
+    Min = 1.000000000000000000
+    ParentColor = False
+    Value = 2.000000000000000000
+    ShowText = True
+    SlideColor = 6316128
+    Transparent = True
+    OnChange = SlRoundRadiusChange
   end
-  object TbLineWidth: TTrackBar
+  object SlLineWidth: TGuiSlider
     Left = 68
     Top = 108
     Width = 118
     Height = 18
-    Max = 32
-    Frequency = 2
-    Position = 4
-    TabOrder = 5
-    ThumbLength = 12
-    OnChange = TbLineWidthChange
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 2.000000000000000000
+    Color = clBtnFace
+    DefaultValue = 8.000000000000000000
+    Max = 8.000000000000000000
+    ParentColor = False
+    ParentShowHint = False
+    Value = 2.000000000000000000
+    ShowHint = True
+    ShowText = True
+    SlideColor = 6316128
+    Transparent = True
+    OnChange = SlLineWidthChange
   end
-  object CbTransparent: TCheckBox
+  object CbTransparent: TGuiControlsCheckBox
     Left = 192
     Top = 108
     Width = 78
     Height = 17
     Caption = 'Transparent'
-    TabOrder = 6
+    TabOrder = 4
     OnClick = CbTransparentClick
+    Transparent = True
+    Native = False
   end
 end

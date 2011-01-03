@@ -85,6 +85,13 @@ object FmPixelMapTest: TFmPixelMapTest
         Caption = 'Turn &Counterclockwise'
         OnClick = MiTurnCounterclockwiseClick
       end
+      object N4: TMenuItem
+        Caption = '-'
+      end
+      object MiResize: TMenuItem
+        Caption = '&Resize'
+        OnClick = MiResizeClick
+      end
     end
     object MiTests: TMenuItem
       Caption = '&Tests'

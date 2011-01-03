@@ -47,7 +47,7 @@ object FmChebyshev: TFmChebyshev
     Width = 274
     Height = 129
     Anchors = [akLeft, akTop, akRight, akBottom]
-    LineColor = 10526927
+    BorderColor = 10526927
     BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True

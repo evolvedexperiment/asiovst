@@ -39,7 +39,8 @@ uses
   SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPng, DAV_GuiPanel,
   DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial, DAV_GuiCustomControl, DAV_GuiGraphicControl;
+  DAV_GuiStitchedDial, DAV_GuiCustomControl, DAV_GuiGraphicControl,
+  DAV_GuiImageControl;
 
 type
   TFmButterworth = class(TForm)
