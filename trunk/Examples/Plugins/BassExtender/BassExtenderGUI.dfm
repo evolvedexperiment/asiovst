@@ -24,7 +24,7 @@ object FmBassExtender: TFmBassExtender
     Top = 8
     Width = 529
     Height = 271
-    LineColor = 1450277
+    BorderColor = 6857659
     BorderWidth = 2.000000000000000000
     PanelColor = 2372409
     ParentColor = True
@@ -46,7 +46,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbFrequencyValue: TGuiLabel
       Left = 12
@@ -63,7 +62,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
       Left = 116
@@ -80,7 +78,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbOrder: TGuiLabel
       Left = 116
@@ -97,7 +94,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDivideValue: TGuiLabel
       Left = 220
@@ -114,7 +110,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbDivide: TGuiLabel
       Left = 220
@@ -131,7 +126,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbShapeValue: TGuiLabel
       Left = 324
@@ -148,7 +142,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbShape: TGuiLabel
       Left = 324
@@ -165,7 +158,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbBalanceValue: TGuiLabel
       Left = 428
@@ -183,7 +175,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbBalance: TGuiLabel
       Left = 428
@@ -200,7 +191,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbThreshold: TGuiLabel
       Left = 12
@@ -217,7 +207,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbThresholdValue: TGuiLabel
       Left = 12
@@ -234,7 +223,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbRatioValue: TGuiLabel
       Left = 116
@@ -251,7 +239,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbRatio: TGuiLabel
       Left = 116
@@ -268,7 +255,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbAttackValue: TGuiLabel
       Left = 220
@@ -285,7 +271,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
       Left = 220
@@ -302,7 +287,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbReleaseValue: TGuiLabel
       Left = 324
@@ -319,7 +303,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbRelease: TGuiLabel
       Left = 324
@@ -336,7 +319,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompressionValue: TGuiLabel
       Left = 428
@@ -353,7 +335,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbCompression: TGuiLabel
       Left = 418
@@ -370,7 +351,6 @@ object FmBassExtender: TFmBassExtender
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object DialFrequency: TGuiStitchedDial
       Left = 22
@@ -381,12 +361,14 @@ object FmBassExtender: TFmBassExtender
       CurveMapping = -0.250000000000000000
       Max = 160.000000000000000000
       Min = 16.000000000000000000
-      OnChange = DialFrequencyChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 70.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 126
@@ -397,12 +379,14 @@ object FmBassExtender: TFmBassExtender
       CurveMapping = -0.400000005960464500
       Max = 6.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialOrderChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 3.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialOrderChange
+      DefaultValue = 0.000000000000000000
     end
     object DialDivide: TGuiStitchedDial
       Left = 230
@@ -411,12 +395,14 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       Max = 100.000000000000000000
-      OnChange = DialDivideChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialDivideChange
+      DefaultValue = 0.000000000000000000
     end
     object DialShape: TGuiStitchedDial
       Left = 334
@@ -425,12 +411,14 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       Max = 100.000000000000000000
-      OnChange = DialShapeChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialShapeChange
+      DefaultValue = 0.000000000000000000
     end
     object DialBalance: TGuiStitchedDial
       Left = 438
@@ -440,11 +428,14 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      OnChange = DialBalanceChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 1
       WheelStep = 1.000000000000000000
+      OnChange = DialBalanceChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialThreshold: TGuiStitchedDial
       Left = 22
@@ -454,12 +445,14 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       Max = 100.000000000000000000
       Min = -80.000000000000000000
-      OnChange = DialThresholdChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 2
       Value = -20.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialThresholdChange
+      DefaultValue = 0.000000000000000000
     end
     object DialRatio: TGuiStitchedDial
       Left = 126
@@ -470,12 +463,14 @@ object FmBassExtender: TFmBassExtender
       CurveMapping = -1.799999952316284000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialRatioChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 6.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
+      DefaultValue = 0.000000000000000000
     end
     object DialAttack: TGuiStitchedDial
       Left = 230
@@ -486,12 +481,14 @@ object FmBassExtender: TFmBassExtender
       CurveMapping = -2.200000047683716000
       Max = 100000.000000000000000000
       Min = 10.000000000000000000
-      OnChange = DialAttackChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialRelease: TGuiStitchedDial
       Left = 334
@@ -502,12 +499,14 @@ object FmBassExtender: TFmBassExtender
       CurveMapping = -1.100000023841858000
       Max = 800.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialReleaseChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialCompression: TGuiStitchedDial
       Left = 438
@@ -516,11 +515,14 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       Max = 100.000000000000000000
-      OnChange = DialCompressionChange
       ParentColor = False
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialCompressionChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList
@@ -6918,7 +6920,6 @@ object FmBassExtender: TFmBassExtender
           00000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end
@@ -12930,7 +12931,6 @@ object FmBassExtender: TFmBassExtender
           950000000049454E44AE426082}
         DisplayName = 'Pan'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end
@@ -19029,7 +19029,6 @@ object FmBassExtender: TFmBassExtender
           01C8E356E157CFBBF30000000049454E44AE426082}
         DisplayName = 'Threshold'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end>

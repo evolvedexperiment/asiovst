@@ -37,16 +37,16 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Graphics, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_VSTModule, 
-  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, 
-  DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedDial, 
-  DAV_GuiStitchedPngList;
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiCustomControl, DAV_GuiImageControl, DAV_GuiGraphicControl;
 
 type
   TFmRingModulator = class(TForm)
-    GpFrequency: TGuiGroup;
+    GSPL: TGuiStitchedPNGList;
+    GpFrequency: TGuiGroupTop;
     PnDisplay: TGuiPanel;
     LbDisplay: TGuiLabel;
-    GSPL: TGuiStitchedPNGList;
     DialFrequency: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);

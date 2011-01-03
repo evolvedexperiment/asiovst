@@ -52,10 +52,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Top = 8
     Width = 398
     Height = 107
-    Caption = 'PnStageA'
-    Color = clBlack
-    LineColor = 15133420
+    BorderColor = 15133420
     BorderWidth = 2.000000000000000000
+    Color = clBlack
     PanelColor = clBlack
     Radius = 7.000000000000000000
     TabOrder = 0
@@ -185,7 +184,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.699999988079071100
+      CurveMapping = -0.699999988079071000
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       ScrollRange = 400.000000000000000000
@@ -216,7 +215,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.400000005960464400
+      CurveMapping = -0.400000005960464500
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -233,10 +232,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Top = 151
     Width = 398
     Height = 107
-    Caption = 'PnStageA'
-    Color = clBlack
-    LineColor = 15133420
+    BorderColor = 15133420
     BorderWidth = 2.000000000000000000
+    Color = clBlack
     PanelColor = clBlack
     Radius = 7.000000000000000000
     TabOrder = 1
@@ -366,7 +364,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.699999988079071100
+      CurveMapping = -0.699999988079071000
       Max = 80.000000000000000000
       Min = 0.001000000047497451
       ScrollRange = 400.000000000000000000
@@ -397,7 +395,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Top = 38
       Width = 36
       Height = 36
-      CurveMapping = -0.400000005960464400
+      CurveMapping = -0.400000005960464500
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -1499,7 +1497,6 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Default'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

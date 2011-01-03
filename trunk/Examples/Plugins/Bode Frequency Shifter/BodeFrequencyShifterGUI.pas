@@ -37,20 +37,21 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, ExtCtrls, StdCtrls, Graphics, DAV_Types, DAV_VSTModule,
-  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiPixelMap,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, DAV_GuiGraphicControl;
 
 type
   TFmBodeFrequencyShifter = class(TForm)
-    DialFrequency: TGuiStitchedDial;
-    DialMix: TGuiStitchedDial;
     DSPL: TGuiStitchedPNGList;
-    GpFrequency: TGuiGroup;
-    GpMix: TGuiGroup;
-    LbFrequencyValue: TGuiLabel;
-    LbMixValue: TGuiLabel;
+    GpFrequency: TGuiGroupTop;
     PnDisplay: TGuiPanel;
+    LbFrequencyValue: TGuiLabel;
+    DialFrequency: TGuiStitchedDial;
+    GpMix: TGuiGroupTop;
     PnMix: TGuiPanel;
+    LbMixValue: TGuiLabel;
+    DialMix: TGuiStitchedDial;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);

@@ -28,8 +28,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
     Height = 170
     Alpha = 222
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Caption = 'PnControls'
-    LineColor = clSilver
+    BorderColor = clBtnShadow
     BorderWidth = 2.500000000000000000
     PanelColor = 1644825
     ParentColor = True
