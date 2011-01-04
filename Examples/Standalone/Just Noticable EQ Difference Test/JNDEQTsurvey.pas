@@ -36,8 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiBaseControl, DAV_GuiLabel, StdCtrls, ExtCtrls, DAV_GuiPanel,
-  DAV_GuiLED;
+  Dialogs, StdCtrls, ExtCtrls, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiLED,
+  DAV_GuiGraphicControl;
 
 type
   TFmSurvey = class(TForm)

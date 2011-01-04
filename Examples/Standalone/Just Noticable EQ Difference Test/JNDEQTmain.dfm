@@ -168,6 +168,7 @@ object FmJNDEQT: TFmJNDEQT
     Width = 84
     Height = 8
     Anchors = [akLeft, akTop, akRight]
+    BorderColor = clBlack
     BorderRadius = 3.000000000000000000
     BorderWidth = 1.000000000000000000
     Color = 8620693
@@ -187,6 +188,7 @@ object FmJNDEQT: TFmJNDEQT
     Height = 20
     Transparent = True
     BorderRadius = 2
+    BorderWidth = 2
     ButtonColor = 10333885
     Color = clBtnFace
     Enabled = False
@@ -199,22 +201,21 @@ object FmJNDEQT: TFmJNDEQT
     Width = 312
     Height = 82
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear3x
+    BorderColor = clBlack
+    BorderWidth = 2.000000000000000000
     Caption = 'EQ Peak Filter'
     Color = 8620693
-    Offset = 3
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10333885
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    GroupColor = clBlack
-    LineColor = clBlack
-    OutlineWidth = 2
-    PanelColor = 10333885
+    FontOversampling = fo3x
+    GroupColor = 8620693
+    Native = False
     ParentColor = False
     ParentFont = False
-    Radius = 5
+    Radius = 5.000000000000000000
     TabOrder = 2
     DesignSize = (
       312
@@ -450,8 +451,7 @@ object FmJNDEQT: TFmJNDEQT
     Top = 31
     Width = 100
     Height = 100
-    Caption = 'PnSelectorA'
-    LineColor = clBlack
+    BorderColor = 2105376
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
@@ -489,8 +489,7 @@ object FmJNDEQT: TFmJNDEQT
     Top = 31
     Width = 100
     Height = 100
-    Caption = 'GuiPanel1'
-    LineColor = clBlack
+    BorderColor = 2105376
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
@@ -527,8 +526,7 @@ object FmJNDEQT: TFmJNDEQT
     Top = 31
     Width = 100
     Height = 100
-    Caption = 'GuiPanel1'
-    LineColor = clBlack
+    BorderColor = 2105376
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
@@ -562,8 +560,7 @@ object FmJNDEQT: TFmJNDEQT
     Top = 137
     Width = 100
     Height = 48
-    Caption = 'PnXisA'
-    LineColor = clBlack
+    BorderColor = 2105376
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
@@ -601,8 +598,7 @@ object FmJNDEQT: TFmJNDEQT
     Top = 137
     Width = 100
     Height = 48
-    Caption = 'PnXisB'
-    LineColor = clBlack
+    BorderColor = 2105376
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
@@ -640,7 +636,7 @@ object FmJNDEQT: TFmJNDEQT
     Top = 137
     Width = 100
     Height = 48
-    LineColor = clBlack
+    BorderColor = 2105376
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True

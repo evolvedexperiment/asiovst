@@ -31,7 +31,6 @@ object FmSetup: TFmSetup
     Caption = 'ASIO Driver:'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
   end
   object SbDrivers: TGuiSelectBox
@@ -45,6 +44,7 @@ object FmSetup: TFmSetup
     ButtonColor = 8620693
     ItemIndex = -1
     LineColor = clBlack
+    LineWidth = 2
     Radius = 5
     SelectBoxColor = 10333885
     OnChange = SbDriversChange
@@ -58,7 +58,6 @@ object FmSetup: TFmSetup
     Caption = 'Output Channels:'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Transparent = True
   end
   object SbChannels: TGuiSelectBox
@@ -72,6 +71,7 @@ object FmSetup: TFmSetup
     ButtonColor = 8620693
     ItemIndex = -1
     LineColor = clBlack
+    LineWidth = 2
     Radius = 5
     SelectBoxColor = 10333885
     OnChange = SbChannelsChange
@@ -81,7 +81,7 @@ object FmSetup: TFmSetup
     Top = 8
     Width = 86
     Height = 22
-    LineColor = clBlack
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True

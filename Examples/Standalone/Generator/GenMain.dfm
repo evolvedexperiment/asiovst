@@ -74,7 +74,7 @@ object FmGenerator: TFmGenerator
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.000000000000000000
+    BorderWidth = 2.099999904632568000
     Uniformity_Percent = 36.754447937011720000
     Transparent = True
   end
@@ -86,7 +86,7 @@ object FmGenerator: TFmGenerator
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.000000000000000000
+    BorderWidth = 2.099999904632568000
     Uniformity_Percent = 36.754447937011720000
     Transparent = True
   end
@@ -98,7 +98,7 @@ object FmGenerator: TFmGenerator
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.000000000000000000
+    BorderWidth = 2.099999904632568000
     Uniformity_Percent = 36.754447937011720000
     Transparent = True
   end
@@ -110,7 +110,7 @@ object FmGenerator: TFmGenerator
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.000000000000000000
+    BorderWidth = 2.099999904632568000
     Uniformity_Percent = 36.754447937011720000
     Transparent = True
   end
@@ -122,7 +122,7 @@ object FmGenerator: TFmGenerator
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.000000000000000000
+    BorderWidth = 2.099999904632568000
     Uniformity_Percent = 36.754447937011720000
     Transparent = True
   end
@@ -134,7 +134,7 @@ object FmGenerator: TFmGenerator
     BorderStrength_Percent = 50.000000000000000000
     Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
-    LineWidth = 2.000000000000000000
+    BorderWidth = 2.099999904632568000
     Uniformity_Percent = 36.754447937011720000
     Transparent = True
   end
