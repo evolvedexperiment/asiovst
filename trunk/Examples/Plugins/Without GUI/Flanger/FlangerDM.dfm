@@ -1,5 +1,4 @@
 object FlangerModule: TFlangerModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanReplacing, effFlagsCanDoubleReplacing]
@@ -11,7 +10,7 @@ object FlangerModule: TFlangerModule
   SampleRate = 44100.000000000000000000
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'Chor'
+  UniqueID = 'Flng'
   ShellPlugins = <>
   Programs = <
     item
@@ -32,7 +31,6 @@ object FlangerModule: TFlangerModule
     end>
   ParameterProperties = <
     item
-      CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
@@ -47,6 +45,7 @@ object FlangerModule: TFlangerModule
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDepthChange
+      CurveFactor = 0.000000000000000000
     end
     item
       Curve = ctLogarithmic
@@ -67,7 +66,6 @@ object FlangerModule: TFlangerModule
       OnParameterChange = ParamSpeedChange
     end
     item
-      CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
@@ -80,6 +78,7 @@ object FlangerModule: TFlangerModule
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamMixChange
+      CurveFactor = 0.000000000000000000
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

@@ -1,8 +1,6 @@
 object FlangerModule: TFlangerModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Flanger'
   ProductName = 'DAV Effect Examples'
@@ -11,7 +9,7 @@ object FlangerModule: TFlangerModule
   SampleRate = 44100.000000000000000000
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'Chor'
+  UniqueID = 'Flng'
   ShellPlugins = <>
   Programs = <
     item
@@ -84,10 +82,9 @@ object FlangerModule: TFlangerModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81

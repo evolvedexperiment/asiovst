@@ -1,5 +1,7 @@
 object PhaserModule: TPhaserModule
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
+  Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Phaser VST Example'
   ProductName = 'DAV Effect Examples'

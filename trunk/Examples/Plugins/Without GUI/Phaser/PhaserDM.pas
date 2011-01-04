@@ -35,10 +35,13 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule, DAV_DspPhaser;
+  Windows, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
+  DAV_DspPhaser;
 
 type
   TPhaserModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -50,7 +53,8 @@ type
     procedure PMRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PMStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FPhaser : array [0..1] of TPhaser;
+    FCriticalSection : TCriticalSection;
+    FPhaser          : array [0..1] of TPhaser;
   public
   end;
 
@@ -65,11 +69,27 @@ implementation
 uses
   DAV_Common;
 
-procedure TPhaserModule.VSTModuleOpen(Sender: TObject);
+procedure TPhaserModule.VSTModuleCreate(Sender: TObject);
 begin
- FPhaser[0] := TPhaser.Create;
- FPhaser[1] := TPhaser.Create;
+ FCriticalSection := TCriticalSection.Create;
+end;
 
+procedure TPhaserModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
+procedure TPhaserModule.VSTModuleOpen(Sender: TObject);
+var
+  Index : Integer;
+begin
+ for Index := 0 to Length(FPhaser) - 1 do
+  begin
+   FPhaser[Index] := TPhaser.Create;
+   FPhaser[Index].SampleRate := SampleRate;
+  end;
+
+ // initialize parameters
  Parameter[0] := 30;
  Parameter[1] := 30;
  Parameter[2] := 300;
@@ -79,9 +99,11 @@ begin
 end;
 
 procedure TPhaserModule.VSTModuleClose(Sender: TObject);
+var
+  Index : Integer;
 begin
- FreeAndNil(FPhaser[0]);
- FreeAndNil(FPhaser[1]);
+ for Index := 0 to Length(FPhaser) - 1
+  do FreeAndNil(FPhaser[Index]);
 end;
 
 procedure TPhaserModule.PMDepthChange(Sender: TObject; const Index: Integer;
@@ -89,9 +111,14 @@ procedure TPhaserModule.PMDepthChange(Sender: TObject; const Index: Integer;
 var
   Channel : Integer;
 begin
- for Channel := 0 to 1 do
-  if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Depth := 0.01 * Value;
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if Assigned(FPhaser[Channel])
+    then FPhaser[Channel].Depth := 0.01 * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaserModule.PMFeedbackChange(
@@ -99,9 +126,14 @@ procedure TPhaserModule.PMFeedbackChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to 1 do
-  if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Feedback := 0.01 * Value;
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if Assigned(FPhaser[Channel])
+    then FPhaser[Channel].Feedback := 0.01 * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaserModule.PMMinimumChange(Sender: TObject; const Index: Integer;
@@ -109,9 +141,14 @@ procedure TPhaserModule.PMMinimumChange(Sender: TObject; const Index: Integer;
 var
   Channel : Integer;
 begin
- for Channel := 0 to 1 do
-  if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Minimum := Limit(Value, 20, 20000);
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if Assigned(FPhaser[Channel])
+    then FPhaser[Channel].Minimum := Limit(Value, 20, 20000);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaserModule.PMMaximumChange(Sender: TObject; const Index: Integer;
@@ -119,9 +156,14 @@ procedure TPhaserModule.PMMaximumChange(Sender: TObject; const Index: Integer;
 var
   Channel : Integer;
 begin
- for Channel := 0 to 1 do
-  if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Maximum := Limit(Value, 20, 20000);
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if Assigned(FPhaser[Channel])
+    then FPhaser[Channel].Maximum := Limit(Value, 20, 20000);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaserModule.PMRateChange(Sender: TObject; const Index: Integer;
@@ -129,9 +171,14 @@ procedure TPhaserModule.PMRateChange(Sender: TObject; const Index: Integer;
 var
   Channel : Integer;
 begin
- for Channel := 0 to 1 do
-  if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Rate := Value;
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if Assigned(FPhaser[Channel])
+    then FPhaser[Channel].Rate := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaserModule.PMStagesChange(Sender: TObject; const Index: Integer;
@@ -139,31 +186,46 @@ procedure TPhaserModule.PMStagesChange(Sender: TObject; const Index: Integer;
 var
   Channel : Integer;
 begin
- for Channel := 0 to 1 do
-  if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Stages := round(Value);
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if Assigned(FPhaser[Channel])
+    then FPhaser[Channel].Stages := round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaserModule.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := FPhaser[0].ProcessSample32(Inputs[0, Sample]);
-   Outputs[1, Sample] := FPhaser[1].ProcessSample32(Inputs[1, Sample]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FPhaser[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := FPhaser[1].ProcessSample32(Inputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaserModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := FPhaser[0].ProcessSample32(Inputs[0, Sample]);
-   Outputs[1, Sample] := FPhaser[1].ProcessSample32(Inputs[1, Sample]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FPhaser[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := FPhaser[1].ProcessSample32(Inputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.

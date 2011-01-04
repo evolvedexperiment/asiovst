@@ -1,7 +1,7 @@
 object VibratoModule: TVibratoModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
+  Flags = [effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Vibrato'
   ProductName = 'DAV Effect Examples'

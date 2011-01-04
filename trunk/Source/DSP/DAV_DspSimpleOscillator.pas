@@ -36,7 +36,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes;
+  Classes, DAV_Complex, DAV_Classes;
 
 type
   TCustomOscillator = class(TDspSampleRatePersistent)
@@ -348,11 +348,11 @@ end;
 procedure TCustomSimpleOscillator64.CalculateNextSample;
 {$IFDEF PUREPASCAL}
 var
-  temp : Double;
+  Temp : Double;
 begin
-  temp := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+  Temp := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
-  FPosition.Re := temp;
+  FPosition.Re := Temp;
 end;
 {$ELSE}
 asm

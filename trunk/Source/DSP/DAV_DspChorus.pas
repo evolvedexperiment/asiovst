@@ -258,22 +258,22 @@ end;
 
 procedure TCustomDspChorus.SpeedChanged;
 var
-  i         : Integer;
+  LFOIndex  : Integer;
   d         : Double;
   BasePhase : Double;
 begin
  // check that at least one LFO is available
- if Length(FLFOs) = 0 then exit;
+ if Length(FLFOs) = 0 then Exit;
 
  // calculate scale factor
  d := 2 * Pi / Length(FLFOs);
 
  // store current base phase
  BasePhase := FLFOs[0].Phase;
- for i := 0 to Length(FLFOs) - 1 do
+ for LFOIndex := 0 to Length(FLFOs) - 1 do
   begin
-   FLFOs[i].Frequency := (1 - FDrift * random) * Speed;
-   FLFOs[i].Phase := BasePhase + (i + FDrift * random) * d;
+   FLFOs[LFOIndex].Frequency := (1 - FDrift * Random) * Speed;
+   FLFOs[LFOIndex].Phase := BasePhase + (LFOIndex + FDrift * Random) * d;
   end;
  UpdateBuffer;
  Changed;

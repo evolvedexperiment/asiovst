@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
-  {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+  Messages, Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
   DAV_GuiCommon, DAV_GuiStitchedControls;
 
 type

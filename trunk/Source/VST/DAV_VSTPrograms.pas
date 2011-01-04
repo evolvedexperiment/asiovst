@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_VSTBasicModule;
+  Classes, DAV_VSTBasicModule;
 
 type
   TChunkEvent = procedure(Sender: TObject; const Index : Integer; const isPreset : Boolean) of object;

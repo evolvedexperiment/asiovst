@@ -112,7 +112,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_DspInterpolation;
+  SysUtils, DAV_DspInterpolation;
 
 { TCustomDspVibrato }
 
