@@ -40,16 +40,15 @@ uses
 
 type
   TModDelayModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParameterLowpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterLowpassLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLowpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterLowpassLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLowpassChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -74,9 +73,14 @@ uses
 
 procedure TModDelayModule.VSTModuleOpen(Sender: TObject);
 begin
+ // create mod delay class
  FModDelay := TModDelay32.Create;
  FModDelay.SampleRate := SampleRate;
 
+ // set editor form class
+ EditorFormClass := TFmModDelay;
+
+ // initialize default parameters
  Parameter[0] := -3;
  Parameter[1] := 25;
  Parameter[2] := 22000;
@@ -91,13 +95,8 @@ begin
  FreeAndNil(FModDelay);
 end;
 
-procedure TModDelayModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmModDelay.Create(Self);
-end;
-
 procedure TModDelayModule.ParameterGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  Predefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
@@ -179,7 +178,7 @@ begin
 end;
 
 procedure TModDelayModule.ParameterLowpassLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Freq: Single;
 begin
@@ -192,7 +191,7 @@ begin
 end;
 
 procedure TModDelayModule.ParameterLowpassDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Freq: Single;
 begin

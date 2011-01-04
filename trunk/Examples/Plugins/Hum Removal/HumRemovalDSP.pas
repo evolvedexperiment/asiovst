@@ -46,7 +46,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDetect(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -109,6 +108,9 @@ begin
    FGoertzel[Index].Frequency := 45 + 1 * Index;
   end;
 
+ // set editor form class
+ EditorFormClass := TFmHumRemoval;
+
  // initialize parameters
  Parameter[0] := 1;
  Parameter[1] := 0;
@@ -130,11 +132,6 @@ begin
 
  for Index := 0 to Length(FGoertzel) - 1
   do FreeAndNil(FGoertzel[Index]);
-end;
-
-procedure THumRemovalModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmHumRemoval.Create(Self);
 end;
 
 procedure THumRemovalModule.ParameterHighpassOrderDisplay(
@@ -216,7 +213,7 @@ begin
  if Value > 0.5
   then OnProcess := VSTModuleProcessDetect
   else OnProcess := VSTModuleProcess;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 
  // reset sample count
  FSampleCount := 0;

@@ -2,7 +2,7 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
   OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
+  Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Delay'
   ProductName = 'Simple Delay'
@@ -69,7 +69,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterInvFBChange
-      OnCustomParameterDisplay = ParameterInvFBDisplay
     end
     item
       CurveFactor = 1.000000000000000000
@@ -106,7 +105,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing

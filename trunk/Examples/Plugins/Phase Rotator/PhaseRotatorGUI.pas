@@ -6,7 +6,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, StdCtrls, Controls, DAV_Types, DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel,  
   DAV_GuiBaseControl, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, 
-  DAV_GuiStitchedDial;
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmPhaseRotator = class(TForm)
@@ -20,8 +21,8 @@ type
     DialStages: TGuiStitchedDial;
     DialBandwidth: TGuiStitchedDial;
     GSPL: TGuiStitchedPNGList;
-    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormClick(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialStagesChange(Sender: TObject);
@@ -49,17 +50,17 @@ implementation
 uses
   PhaseRotatorDSP, DAV_VSTModuleWithPrograms;
 
-procedure TFmPhaseRotator.FormDestroy(Sender: TObject);
-begin
- if Assigned(FEdValue)
-  then FreeAndNil(FEdValue);
-end;
-
 procedure TFmPhaseRotator.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
  UpdateBandwidth;
  UpdateStages;
+end;
+
+procedure TFmPhaseRotator.FormDestroy(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmPhaseRotator.FormClick(Sender: TObject);

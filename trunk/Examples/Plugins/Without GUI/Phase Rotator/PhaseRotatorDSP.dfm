@@ -2,7 +2,6 @@ object PhaseRotatorModule: TPhaseRotatorModule
   OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Phase Rotator'
   ProductName = 'DAV Effect Examples'

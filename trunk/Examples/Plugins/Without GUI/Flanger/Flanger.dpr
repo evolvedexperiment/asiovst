@@ -1,23 +1,24 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library PhaseRotator;
-
-
+library Flanger;
 
 uses
+  FastMM4, // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  PhaseRotatorDSP in 'PhaseRotatorDSP.pas' {PhaseRotatorModule: TVSTModule},
-  PhaseRotatorGUI in 'PhaseRotatorGUI.pas' {FmPhaseRotator};
+  FlangerDM in 'FlangerDM.pas' {FlangerModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, TPhaseRotatorModule);
+ Result := VstModuleMain(AudioMasterCallback, TFlangerModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
-  Result := WinampDSPModuleHeader(TPhaseRotatorModule);
+ Result := WinampDSPModuleHeader(TFlangerModule);
 end;
 
 exports

@@ -13,17 +13,16 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; const MidiEvent: TVstMidiEvent);
-    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterBandwidthChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterBandwidthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterBandwidthDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FAllpass         : array of array [0..3] of TBasicAllpassFilter;
     FOrder           : Integer;
@@ -59,6 +58,7 @@ var
 begin
  SetLength(FAllpass, numInputs);
 
+ // create allpass filters
  for ChannelIndex := 0 to Length(FAllpass) - 1 do
   for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
    begin
@@ -71,6 +71,10 @@ begin
      end;
    end;
 
+ // set editor form class
+ EditorFormClass := TFmPhaseRotator;
+
+ // initialize default parameters
  Parameter[0] := 200;
  Parameter[1] := 2;
  Parameter[2] := 1.4;
@@ -86,34 +90,28 @@ begin
    do FreeAndNil(FAllpass[ChannelIndex, BandIndex]);
 end;
 
-procedure TPhaseRotatorModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmPhaseRotator.Create(Self);
-end;
-
 procedure TPhaseRotatorModule.ParameterFrequencyDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3);
 end;
 
 procedure TPhaseRotatorModule.ParameterFrequencyLabel(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := 'kHz';
 end;
 
 procedure TPhaseRotatorModule.ParameterOrderDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(2 * Round(Parameter[Index]));
 end;
 
 procedure TPhaseRotatorModule.ParameterBandwidthDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 2, 2);
 end;

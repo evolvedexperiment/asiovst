@@ -1,23 +1,20 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library PhaseRotator;
-
-
+library PhaseAdjustment;
 
 uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  PhaseRotatorDSP in 'PhaseRotatorDSP.pas' {PhaseRotatorModule: TVSTModule},
-  PhaseRotatorGUI in 'PhaseRotatorGUI.pas' {FmPhaseRotator};
+  PhaseAdjustmentDSP in 'PhaseAdjustmentDSP.pas' {PhaseAdjustmentModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, TPhaseRotatorModule);
+  Result := VstModuleMain(AudioMasterCallback, TPhaseAdjustmentModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
-  Result := WinampDSPModuleHeader(TPhaseRotatorModule);
+  Result := WinampDSPModuleHeader(TPhaseAdjustmentModule);
 end;
 
 exports

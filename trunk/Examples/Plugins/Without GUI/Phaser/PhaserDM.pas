@@ -63,17 +63,13 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, PhaserFrm;
+  DAV_Common;
 
 procedure TPhaserModule.VSTModuleOpen(Sender: TObject);
 begin
  FPhaser[0] := TPhaser.Create;
  FPhaser[1] := TPhaser.Create;
 
- // set editor form class
- EditorFormClass := TPhaserForm;
-
- // initialize default parameters
  Parameter[0] := 30;
  Parameter[1] := 30;
  Parameter[2] := 300;
@@ -96,10 +92,6 @@ begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
    then FPhaser[Channel].Depth := 0.01 * Value;
-
- // update GUI
- if EditorForm is TPhaserForm
-  then TPhaserForm(EditorForm).UpdateDepth;
 end;
 
 procedure TPhaserModule.PMFeedbackChange(
@@ -110,10 +102,6 @@ begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
    then FPhaser[Channel].Feedback := 0.01 * Value;
-
- // update GUI
- if EditorForm is TPhaserForm
-  then TPhaserForm(EditorForm).UpdateFeedback;
 end;
 
 procedure TPhaserModule.PMMinimumChange(Sender: TObject; const Index: Integer;
@@ -124,10 +112,6 @@ begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
    then FPhaser[Channel].Minimum := Limit(Value, 20, 20000);
-
- // update GUI
- if EditorForm is TPhaserForm
-  then TPhaserForm(EditorForm).UpdateMinimum;
 end;
 
 procedure TPhaserModule.PMMaximumChange(Sender: TObject; const Index: Integer;
@@ -138,10 +122,6 @@ begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
    then FPhaser[Channel].Maximum := Limit(Value, 20, 20000);
-
- // update GUI
- if EditorForm is TPhaserForm
-  then TPhaserForm(EditorForm).UpdateMaximum;
 end;
 
 procedure TPhaserModule.PMRateChange(Sender: TObject; const Index: Integer;
@@ -152,10 +132,6 @@ begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
    then FPhaser[Channel].Rate := Value;
-
- // update GUI
- if EditorForm is TPhaserForm
-  then TPhaserForm(EditorForm).UpdateRate;
 end;
 
 procedure TPhaserModule.PMStagesChange(Sender: TObject; const Index: Integer;
@@ -166,10 +142,6 @@ begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
    then FPhaser[Channel].Stages := round(Value);
-
- // update GUI
- if EditorForm is TPhaserForm
-  then TPhaserForm(EditorForm).UpdateStages;
 end;
 
 procedure TPhaserModule.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
