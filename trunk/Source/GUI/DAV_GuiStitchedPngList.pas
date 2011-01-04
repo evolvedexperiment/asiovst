@@ -59,7 +59,7 @@ type
 
   TGuiStitchedPNGList = class(TGuiCustomStitchedList)
   private
-    function GetItems(Index: Integer): TGuiStitchedPNGCollectionItem;
+    function GetItems(Index: Integer): TGuiStitchedPNGCollectionItem; reintroduce;
   protected
     function GetCount: Integer; override;
     procedure Loaded; override;

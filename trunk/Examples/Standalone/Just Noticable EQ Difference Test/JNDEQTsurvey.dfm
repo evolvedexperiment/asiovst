@@ -146,7 +146,7 @@ object FmSurvey: TFmSurvey
     Width = 156
     Height = 22
     Anchors = [akLeft, akTop, akRight]
-    LineColor = clBlack
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
@@ -179,7 +179,7 @@ object FmSurvey: TFmSurvey
     Width = 47
     Height = 22
     Anchors = [akLeft, akTop, akRight]
-    LineColor = clBlack
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
@@ -211,7 +211,7 @@ object FmSurvey: TFmSurvey
     Top = 36
     Width = 48
     Height = 22
-    LineColor = clBlack
+    BorderColor = clBlack
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True

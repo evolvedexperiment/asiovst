@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, DAV_GuiBaseControl,
-  DAV_GuiLabel, DAV_GuiSelectBox, ExtCtrls, DAV_GuiPanel;
+  DAV_GuiLabel, DAV_GuiSelectBox, ExtCtrls, DAV_GuiPanel, DAV_GuiGraphicControl;
 
 type
   TFmSetup = class(TForm)
