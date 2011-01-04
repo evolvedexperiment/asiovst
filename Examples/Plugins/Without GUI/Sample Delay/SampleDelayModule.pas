@@ -1,4 +1,4 @@
-unit SimpleSampleDelayModule;
+unit SampleDelayModule;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -39,7 +39,7 @@ uses
   DAV_DspInterpolation;
 
 type
-  TSimpleSampleDelayVST = class(TVSTModule)
+  TSampleDelayVST = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
@@ -78,17 +78,17 @@ implementation
 uses
   DAV_VSTCustomModule;
 
-procedure TSimpleSampleDelayVST.VSTModuleCreate(Sender: TObject);
+procedure TSampleDelayVST.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TSimpleSampleDelayVST.VSTModuleDestroy(Sender: TObject);
+procedure TSampleDelayVST.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FCriticalSection);
 end;
 
-procedure TSimpleSampleDelayVST.VSTModuleOpen(Sender: TObject);
+procedure TSampleDelayVST.VSTModuleOpen(Sender: TObject);
 begin
  FBufferPos := 0;
  FClearBuffer := True;
@@ -101,13 +101,13 @@ begin
  Parameter[4] := 100;
 end;
 
-procedure TSimpleSampleDelayVST.VSTModuleClose(Sender: TObject);
+procedure TSampleDelayVST.VSTModuleClose(Sender: TObject);
 begin
  Dispose(FBuffer[0]);
  Dispose(FBuffer[1]);
 end;
 
-procedure TSimpleSampleDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSampleDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel, newLatency : Integer;
 begin
@@ -148,26 +148,26 @@ begin
  end;
 end;
 
-procedure TSimpleSampleDelayVST.ParameterFeedbackChange(
+procedure TSampleDelayVST.ParameterFeedbackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FFeedback := (0.01 * Value);
  CalculateFeedFactor;
 end;
 
-procedure TSimpleSampleDelayVST.ParameterInvFBChange(
+procedure TSampleDelayVST.ParameterInvFBChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FFeedbackSign := 2 * Value - 1;
  CalculateFeedFactor;
 end;
 
-procedure TSimpleSampleDelayVST.CalculateFeedfactor;
+procedure TSampleDelayVST.CalculateFeedfactor;
 begin
  FFeedFactor := FFeedbackSign * abs(FFeedback);
 end;
 
-procedure TSimpleSampleDelayVST.ParameterInvFBDisplay(
+procedure TSampleDelayVST.ParameterInvFBDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 0.5
@@ -175,19 +175,19 @@ begin
   else PreDefined := 'On';
 end;
 
-procedure TSimpleSampleDelayVST.ParameterWetMixChange(
+procedure TSampleDelayVST.ParameterWetMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[1] := 0.01 * Value;
 end;
 
-procedure TSimpleSampleDelayVST.ParamDryMixChange(
+procedure TSampleDelayVST.ParamDryMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[0] := 0.01 * Value;
 end;
 
-procedure TSimpleSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin
@@ -208,7 +208,7 @@ begin
  end;
 end;
 
-procedure TSimpleSampleDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TSampleDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;

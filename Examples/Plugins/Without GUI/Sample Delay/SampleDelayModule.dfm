@@ -1,4 +1,4 @@
-object SimpleSampleDelayVST: TSimpleSampleDelayVST
+object SampleDelayVST: TSampleDelayVST
   OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy

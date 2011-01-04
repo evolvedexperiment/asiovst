@@ -94,7 +94,7 @@ begin
   2 : OnProcess := VSTModuleProcessStereo;
   else OnProcess := VSTModuleProcessMulti;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TAnalogueMojoDM.ParameterFrequencyChange(

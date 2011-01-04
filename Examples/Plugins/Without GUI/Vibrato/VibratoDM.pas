@@ -1,4 +1,4 @@
-unit SimpleVibratoDM;
+unit VibratoDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -40,7 +40,7 @@ uses
   DAV_VSTCustomModule;
 
 type
-  TSimpleVibratoModule = class(TVSTModule)
+  TVibratoModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -73,19 +73,19 @@ resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
 
-{ TSimpleVibratoModule }
+{ TVibratoModule }
 
-procedure TSimpleVibratoModule.VSTModuleCreate(Sender: TObject);
+procedure TVibratoModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TSimpleVibratoModule.VSTModuleDestroy(Sender: TObject);
+procedure TVibratoModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FCriticalSection);
 end;
 
-procedure TSimpleVibratoModule.VSTModuleOpen(Sender: TObject);
+procedure TVibratoModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
@@ -140,20 +140,20 @@ begin
   end;
 end;
 
-procedure TSimpleVibratoModule.VSTModuleClose(Sender: TObject);
+procedure TVibratoModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FVibrato[0]);
  FreeAndNil(FVibrato[1]);
 end;
 
-function TSimpleVibratoModule.GetVibrato(Index: Integer): TDspVibrato32;
+function TVibratoModule.GetVibrato(Index: Integer): TDspVibrato32;
 begin
  if Index in [0..1]
   then Result := FVibrato[Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TSimpleVibratoModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TVibratoModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCriticalSection.Enter;
  try
@@ -164,7 +164,7 @@ begin
  end;
 end;
 
-procedure TSimpleVibratoModule.ParamDepthChange(
+procedure TVibratoModule.ParamDepthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCriticalSection.Enter;
@@ -176,7 +176,7 @@ begin
  end;
 end;
 
-procedure TSimpleVibratoModule.VSTModuleProcess(const Inputs,
+procedure TVibratoModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel, Sample : Integer;
@@ -191,7 +191,7 @@ begin
  end;
 end;
 
-procedure TSimpleVibratoModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TVibratoModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Channel, Sample : Integer;
@@ -206,7 +206,7 @@ begin
  end;
 end;
 
-procedure TSimpleVibratoModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TVibratoModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  if Abs(SampleRate) = 0 then Exit;

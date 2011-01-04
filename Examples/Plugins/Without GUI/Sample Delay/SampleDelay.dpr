@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library SimpleSampleDelay;
+library SampleDelay;
 
 uses
   FastMM4, // either download the library or comment if there is an error here
@@ -11,16 +11,16 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  SimpleSampleDelayModule in 'SimpleSampleDelayModule.pas' {SimpleSampleDelayVST: TVST2Module};
+  SampleDelayModule in 'SampleDelayModule.pas' {SampleDelayVST: TVST2Module};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSimpleSampleDelayVST);
+ Result := VstModuleMain(AudioMasterCallback, TSampleDelayVST);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSimpleSampleDelayVST);
+ Result := WinampDSPModuleHeader(TSampleDelayVST);
 end;
 
 exports
