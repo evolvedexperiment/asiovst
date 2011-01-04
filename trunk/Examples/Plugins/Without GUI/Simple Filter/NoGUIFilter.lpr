@@ -10,40 +10,15 @@ uses
   DAV_VSTParameters,
   FilterModule in 'FilterModule.pas';
 
-{$DEFINE DEBUG64}
-{$IFDEF DEBUG64}
-var
-  GDebug : TStringList;
-
-procedure AddDebugMessage(Text: string);
-begin
- GDebug.Add(Text);
- GDebug.SaveToFile('Debug64.log');
-end;
-{$ENDIF}
-
 function VSTPluginMain(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
   VSTFilterModule : TVSTFilter;
 begin
-  {$IFDEF DEBUG64}
-  AddDebugMessage('Jetzt geht''s los!');
-  {$ENDIF}
-
   VSTFilterModule := TVSTFilter.Create(nil);
-
-  {$IFDEF DEBUG64}
-  AddDebugMessage('After Create Filter');
-  {$ENDIF}
-
   // check if Effect has been assigned
   Result := nil;
   if (not Assigned(VSTFilterModule)) or (not Assigned(VSTFilterModule.Effect))
    then Exit;
-
-  {$IFDEF DEBUG64}
-  AddDebugMessage('After Check');
-  {$ENDIF}
 
   {$IFDEF UseAudioEffectPtr}
   VSTFilterModule.Effect^.AudioEffectPtr := VSTFilterModule;
@@ -51,21 +26,8 @@ begin
   VSTFilterModule.Effect^.User := VSTFilterModule;
   {$ENDIF}
 
-  {$IFDEF DEBUG64}
-  AddDebugMessage('After assign user pointer');
-  {$ENDIF}
-
   VSTFilterModule.AudioMaster := audioMaster;
-
-  {$IFDEF DEBUG64}
-  AddDebugMessage('After assign audio master');
-  {$ENDIF}
-
   Result := VSTFilterModule.Effect;
-
-  {$IFDEF DEBUG64}
-  AddDebugMessage('After Assign Filter');
-  {$ENDIF}
 
   with VSTFilterModule do
   try
@@ -82,8 +44,8 @@ begin
     KeysRequired := False;
     UniqueID := 'Filt';
     OnProcess := VSTModuleProcess;
-    OnProcessReplacing := VSTModuleProcess;
-    OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
+    OnProcess32Replacing := VSTModuleProcess;
+    OnProcess64Replacing := VSTModuleProcessDoubleReplacing;
     OnOpen := VSTModuleOpen;
 
     with (Programs.Add) do
@@ -151,10 +113,6 @@ begin
     if Assigned(OnInitialize) then OnInitialize(VSTFilterModule);
   except
   end;
-
-  {$IFDEF DEBUG64}
-  AddDebugMessage('Feddich');
-  {$ENDIF}
 end;
 
 exports
@@ -168,8 +126,4 @@ exports
   VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
- {$IFDEF DEBUG64}
- GDebug := TStringList.Create;
- {$ENDIF}
 end.
