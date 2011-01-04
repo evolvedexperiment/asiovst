@@ -39,7 +39,7 @@
     </RequiredPackages>
     <Units Count="2">
       <Unit0>
-        <Filename Value="SimpleVibrato.lpr"/>
+        <Filename Value="Vibrato.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
@@ -48,12 +48,12 @@
         <UsageCount Value="34"/>
       </Unit0>
       <Unit1>
-        <Filename Value="SimpleVibratoDM.pas"/>
+        <Filename Value="VibratoDM.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SimpleVibratoModule"/>
+        <ComponentName Value="VibratoModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="SimpleVibratoDM"/>
+        <UnitName Value="VibratoDM"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="73"/>
@@ -101,11 +101,11 @@
   <Debugging>
     <BreakPoints Count="2">
       <Item1>
-        <Source Value="SimpleVibratoDM.pas"/>
+        <Source Value="VibratoDM.pas"/>
         <Line Value="81"/>
       </Item1>
       <Item2>
-        <Source Value="SimpleVibratoDM.pas"/>
+        <Source Value="VibratoDM.pas"/>
         <Line Value="86"/>
       </Item2>
     </BreakPoints>

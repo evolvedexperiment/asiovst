@@ -1,4 +1,4 @@
-object SimpleVibratoModule: TSimpleVibratoModule
+object VibratoModule: TVibratoModule
   OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
