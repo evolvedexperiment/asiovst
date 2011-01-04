@@ -21,7 +21,7 @@ object FmHumRemoval: TFmHumRemoval
     Top = 8
     Width = 379
     Height = 169
-    FontOversampling = fo4x
+    AntiAlias = gaaLinear4x
     BorderColor = 14277598
     BorderRadius = 7
     BorderWidth = 2
@@ -55,18 +55,19 @@ object FmHumRemoval: TFmHumRemoval
     Top = 183
     Width = 172
     Height = 160
-    FontOversampling = fo4x
+    BorderColor = 14277598
+    BorderWidth = 1.000000000000000000
     Caption = 'Highpass'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    LineColor = 14277598
-    OutlineWidth = 2
-    PanelColor = clBlack
+    FontOversampling = fo4x
+    GroupColor = clBlack
+    Native = False
     ParentFont = False
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 1
     object LbHighpassFrequency: TGuiLabel
       Left = 10
@@ -74,15 +75,14 @@ object FmHumRemoval: TFmHumRemoval
       Width = 85
       Height = 25
       Alignment = taCenter
-      FontOversampling = fo4x
       Caption = 'Frequency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LedHighpassActive: TGuiLED
       Left = 10
@@ -102,7 +102,6 @@ object FmHumRemoval: TFmHumRemoval
       Top = 35
       Width = 111
       Height = 22
-      FontOversampling = fo4x
       ArrowColor = 14606306
       ButtonColor = clBlack
       Font.Charset = DEFAULT_CHARSET
@@ -126,15 +125,14 @@ object FmHumRemoval: TFmHumRemoval
       Width = 51
       Height = 25
       Alignment = taCenter
-      FontOversampling = fo4x
       Caption = 'Order'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbHighpassFrequencyValue: TGuiLabel
       Left = 18
@@ -142,14 +140,13 @@ object FmHumRemoval: TFmHumRemoval
       Width = 69
       Height = 20
       Alignment = taCenter
-      FontOversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbHighpassOrderValue: TGuiLabel
       Left = 97
@@ -157,14 +154,13 @@ object FmHumRemoval: TFmHumRemoval
       Width = 59
       Height = 20
       Alignment = taCenter
-      FontOversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object DialHighpassFrequency: TGuiStitchedDial
       Left = 35
@@ -174,11 +170,13 @@ object FmHumRemoval: TFmHumRemoval
       CurveMapping = -1.799999952316284000
       Max = 200.000000000000000000
       Min = 2.000000000000000000
-      OnChange = DialHighpassFrequencyChange
-      ImageIndex = 0
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
+      ImageIndex = 0
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialHighpassFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
     object DialHighpassOrder: TGuiStitchedDial
       Left = 109
@@ -188,11 +186,13 @@ object FmHumRemoval: TFmHumRemoval
       CurveMapping = -1.200000047683716000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialHighpassOrderChange
-      ImageIndex = 0
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
+      ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialHighpassOrderChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GbNotchFilters: TGuiGroup
@@ -200,18 +200,19 @@ object FmHumRemoval: TFmHumRemoval
     Top = 182
     Width = 201
     Height = 160
-    FontOversampling = fo4x
+    BorderColor = 14277598
+    BorderWidth = 1.000000000000000000
     Caption = 'Notch Filters'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -17
     Font.Name = 'Tahoma'
     Font.Style = []
-    LineColor = 14277598
-    OutlineWidth = 2
-    PanelColor = clBlack
+    FontOversampling = fo4x
+    GroupColor = clBlack
+    Native = False
     ParentFont = False
-    Radius = 8
+    Radius = 8.000000000000000000
     TabOrder = 2
     object LbFundamentalFrequency: TGuiLabel
       Left = 10
@@ -219,15 +220,14 @@ object FmHumRemoval: TFmHumRemoval
       Width = 85
       Height = 25
       Alignment = taCenter
-      FontOversampling = fo4x
       Caption = 'Frequency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbNotchBandwidth: TGuiLabel
       Left = 106
@@ -235,15 +235,14 @@ object FmHumRemoval: TFmHumRemoval
       Width = 84
       Height = 25
       Alignment = taCenter
-      FontOversampling = fo4x
       Caption = 'Bandwidth'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbFundamentalFrequencyValue: TGuiLabel
       Left = 10
@@ -251,14 +250,13 @@ object FmHumRemoval: TFmHumRemoval
       Width = 85
       Height = 20
       Alignment = taCenter
-      FontOversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LbNotchBandwidthValue: TGuiLabel
       Left = 106
@@ -266,14 +264,13 @@ object FmHumRemoval: TFmHumRemoval
       Width = 84
       Height = 20
       Alignment = taCenter
-      FontOversampling = fo4x
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
     end
     object LedHumProfile: TGuiLED
       Left = 10
@@ -293,15 +290,14 @@ object FmHumRemoval: TFmHumRemoval
       Top = 34
       Width = 156
       Height = 22
-      FontOversampling = fo4x
       Caption = 'Capture Hum Profile'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      FontOversampling = fo4x
       ParentFont = False
-      Shadow.Color = clBlack
       OnClick = LedHumProfileClick
     end
     object DialFundamentalFrequency: TGuiStitchedDial
@@ -312,11 +308,13 @@ object FmHumRemoval: TFmHumRemoval
       CurveMapping = -1.299999952316284000
       Max = 120.000000000000000000
       Min = 40.000000000000000000
-      OnChange = DialFundamentalFrequencyChange
-      ImageIndex = 0
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
+      ImageIndex = 0
       Value = 40.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFundamentalFrequencyChange
+      DefaultValue = 0.000000000000000000
     end
     object DialNotchBandwidth: TGuiStitchedDial
       Left = 130
@@ -326,11 +324,13 @@ object FmHumRemoval: TFmHumRemoval
       CurveMapping = -1.200000047683716000
       Max = 0.300000011920929000
       Min = 0.029999999329447750
-      OnChange = DialNotchBandwidthChange
-      ImageIndex = 0
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
+      ImageIndex = 0
       Value = 0.029999999329447750
       WheelStep = 1.000000000000000000
+      OnChange = DialNotchBandwidthChange
+      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList
@@ -1423,7 +1423,6 @@ object FmHumRemoval: TFmHumRemoval
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

@@ -2,7 +2,6 @@ object HumRemovalModule: THumRemovalModule
   OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Hum Removal'
   ProductName = 'DAV Effect Examples'

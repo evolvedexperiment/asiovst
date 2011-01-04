@@ -24,9 +24,8 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 50
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Freq.'
-    Shadow.Color = clBlack
+    FontOversampling = fo4x
   end
   object LbStages: TGuiLabel
     Left = 65
@@ -34,9 +33,8 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 56
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Stages'
-    Shadow.Color = clBlack
+    FontOversampling = fo4x
   end
   object LbBandwidth: TGuiLabel
     Left = 128
@@ -44,9 +42,8 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 50
     Height = 25
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'BW'
-    Shadow.Color = clBlack
+    FontOversampling = fo4x
   end
   object LbFrequencyValue: TGuiLabel
     Left = 0
@@ -54,15 +51,14 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 66
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '200 Hz'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
     OnDblClick = DialFrequencyDblClick
   end
   object LbStagesValue: TGuiLabel
@@ -71,15 +67,14 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 36
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
     OnDblClick = DialStagesDblClick
   end
   object LbBandwidthValue: TGuiLabel
@@ -88,15 +83,14 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 66
     Height = 20
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '1.4'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
     ParentFont = False
-    Shadow.Color = clBlack
     OnDblClick = DialBandwidthDblClick
   end
   object DialFrequency: TGuiStitchedDial
@@ -107,11 +101,13 @@ object FmPhaseRotator: TFmPhaseRotator
     CurveMapping = -1.399999976158142000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFrequencyChange
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFrequencyChange
+    DefaultValue = 0.000000000000000000
   end
   object DialStages: TGuiStitchedDial
     Left = 76
@@ -119,10 +115,13 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 36
     Height = 36
     Max = 4.000000000000000000
-    OnChange = DialStagesChange
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialStagesChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialBandwidth: TGuiStitchedDial
     Left = 136
@@ -132,11 +131,13 @@ object FmPhaseRotator: TFmPhaseRotator
     CurveMapping = -1.500000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBandwidthChange
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBandwidthChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1228,7 +1229,6 @@ object FmPhaseRotator: TFmPhaseRotator
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

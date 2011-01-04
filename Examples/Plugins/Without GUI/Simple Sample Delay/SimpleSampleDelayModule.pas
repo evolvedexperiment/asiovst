@@ -40,8 +40,10 @@ uses
 
 type
   TSimpleSampleDelayVST = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -50,9 +52,6 @@ type
     procedure ParameterWetMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterInvFBDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterInvFBChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FCriticalSection : TCriticalSection;
     FBuffer          : array [0..1] of PDAVSingleFixedArray;
@@ -77,7 +76,7 @@ implementation
 {$ENDIF}
 
 uses
-  SimpleSampleDelayGUI, DAV_VSTCustomModule;
+  DAV_VSTCustomModule;
 
 procedure TSimpleSampleDelayVST.VSTModuleCreate(Sender: TObject);
 begin
@@ -106,12 +105,6 @@ procedure TSimpleSampleDelayVST.VSTModuleClose(Sender: TObject);
 begin
  Dispose(FBuffer[0]);
  Dispose(FBuffer[1]);
-end;
-
-procedure TSimpleSampleDelayVST.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmSimpleSampleDelay.Create(Self);
 end;
 
 procedure TSimpleSampleDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -153,10 +146,6 @@ begin
  finally
   FCriticalSection.Leave;
  end;
-
- // update GUI 
- if EditorForm is TFmSimpleSampleDelay
-  then TFmSimpleSampleDelay(EditorForm).UpdateDelayLength;
 end;
 
 procedure TSimpleSampleDelayVST.ParameterFeedbackChange(
@@ -164,10 +153,6 @@ procedure TSimpleSampleDelayVST.ParameterFeedbackChange(
 begin
  FFeedback := (0.01 * Value);
  CalculateFeedFactor;
-
- // update GUI
- if EditorForm is TFmSimpleSampleDelay
-  then TFmSimpleSampleDelay(EditorForm).UpdateFeedback;
 end;
 
 procedure TSimpleSampleDelayVST.ParameterInvFBChange(
@@ -175,10 +160,6 @@ procedure TSimpleSampleDelayVST.ParameterInvFBChange(
 begin
  FFeedbackSign := 2 * Value - 1;
  CalculateFeedFactor;
-
- // update GUI 
- if EditorForm is TFmSimpleSampleDelay
-  then TFmSimpleSampleDelay(EditorForm).UpdateFeedbackInvert;
 end;
 
 procedure TSimpleSampleDelayVST.CalculateFeedfactor;
@@ -198,20 +179,12 @@ procedure TSimpleSampleDelayVST.ParameterWetMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[1] := 0.01 * Value;
-
- // update GUI 
- if EditorForm is TFmSimpleSampleDelay
-  then TFmSimpleSampleDelay(EditorForm).UpdateWetMix;
 end;
 
 procedure TSimpleSampleDelayVST.ParamDryMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[0] := 0.01 * Value;
-
- // update GUI 
- if EditorForm is TFmSimpleSampleDelay
-  then TFmSimpleSampleDelay(EditorForm).UpdateDryMix;
 end;
 
 procedure TSimpleSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);

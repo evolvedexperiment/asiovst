@@ -89,7 +89,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math, DAV_DspWindowing, PhaseAdjustmentGUI;
+  Math, DAV_Common, DAV_Math, DAV_DspWindowing;
 
 procedure TPhaseAdjustmentModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -136,9 +136,6 @@ begin
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
 
- // set editor class
- EditorFormClass := TFmPhaseAdjustment;
-
  // Parameters and Programs
  Parameter[0] := 45;
  Parameter[1] := 0;
@@ -166,11 +163,6 @@ procedure TPhaseAdjustmentModule.ParameterPhaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Phase := Value;
-
- // update GUI
- if EditorForm is TFmPhaseAdjustment then
-  with TFmPhaseAdjustment(EditorForm)
-   do UpdatePhaseDial;
 end;
 
 procedure TPhaseAdjustmentModule.ParameterSuppressRingingDisplay(

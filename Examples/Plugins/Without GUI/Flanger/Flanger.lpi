@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <Units Count="2">
+      <Unit0>
+        <Filename Value="Flanger.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="58" Y="24"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="FlangerDM.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UsageCount Value="24"/>
+      </Unit1>
+    </Units>
+    <JumpHistory Count="12" HistoryIndex="11">
+      <Position1>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="153" Column="17" TopLine="137"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="185" Column="44" TopLine="174"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="3" Column="8" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="83" Column="112" TopLine="66"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="80" Column="20" TopLine="74"/>
+      </Position6>
+      <Position7>
+        <Filename Value="Flanger.lpr"/>
+        <Caret Line="31" Column="63" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="83" Column="28" TopLine="67"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="105" Column="50" TopLine="88"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Caret Line="109" Column="21" TopLine="93"/>
+      </Position10>
+      <Position11>
+        <Filename Value="Flanger.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position11>
+      <Position12>
+        <Filename Value="Flanger.lpr"/>
+        <Caret Line="13" Column="1" TopLine="1"/>
+      </Position12>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="..\..\..\source"/>
+      <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\FileFormats"/>
+      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <UseAnsiStrings Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+        <ExecutableType Value="Library"/>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

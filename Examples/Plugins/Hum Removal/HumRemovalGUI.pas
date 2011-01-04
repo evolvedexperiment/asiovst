@@ -37,9 +37,9 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLED, DAV_GuiPng,
-  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiGroup,
-  DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  DAV_GuiBaseControl, DAV_GuiGraphicControl, DAV_GuiSelectBox, DAV_GuiLabel,
+  DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl;
 
 type
   TFmHumRemoval = class(TForm)

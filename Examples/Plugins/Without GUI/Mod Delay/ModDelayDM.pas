@@ -1,4 +1,4 @@
-unit ModDelay2DM;
+unit ModDelayDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -34,16 +34,14 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses
+uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspModDelay;
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspModDelay;
 
 type
-  TModDelay2Module = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleOpen(Sender: TObject);
+  TModDelayModule = class(TVSTModule)
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterLowpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -57,9 +55,8 @@ type
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FGain            : array [0..1] of Single;
-    FModDelay        : array [0..1] of TModDelay32;
-    FCriticalSection : TCriticalSection;
+    FGain     : Single;
+    FModDelay : TModDelay32;
   public
   end;
 
@@ -72,192 +69,88 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, ModDelay2GUI;
+  Math, DAV_Common, DAV_VSTCustomModule;
 
-procedure TModDelay2Module.VSTModuleCreate(Sender: TObject);
+procedure TModDelayModule.VSTModuleOpen(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
+ FModDelay := TModDelay32.Create;
+ FModDelay.SampleRate := SampleRate;
+
+ // initialize default parameters
+ Parameter[0] := -3;
+ Parameter[1] := 25;
+ Parameter[2] := 22000;
+ Parameter[3] := 20;
+ Parameter[4] := 20;
+ Parameter[5] := 2;
+ Parameter[6] := 10;
 end;
 
-procedure TModDelay2Module.VSTModuleDestroy(Sender: TObject);
+procedure TModDelayModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+ FreeAndNil(FModDelay);
 end;
 
-procedure TModDelay2Module.VSTModuleOpen(Sender: TObject);
-var
-  Channel : Integer;
-begin
- // create mod delay objects
- for Channel := 0 to Length(FModDelay) - 1 do
-  begin
-   FModDelay[Channel] := TModDelay32.Create;
-   FModDelay[Channel].SampleRate := SampleRate
-  end;
-
- // set editor form class
- EditorFormClass := TFmModDelay2;
-
- // Delay Left
- Parameter[ 0] := 0;
- Parameter[ 1] := 25;
- Parameter[ 2] := 22000;
- Parameter[ 3] := 20;
- Parameter[ 4] := 20;
- Parameter[ 5] := 2;
- Parameter[ 6] := 10;
- // Delay Right
- Parameter[ 7] := 0;
- Parameter[ 8] := 25;
- Parameter[ 9] := 22000;
- Parameter[10] := 20;
- Parameter[11] := 20;
- Parameter[12] := 2;
- Parameter[13] := -10;
-
- with Programs[0] do
-  begin
-   // Delay Left
-   Parameter[ 0] := 0;
-   Parameter[ 1] := 25;
-   Parameter[ 2] := 22000;
-   Parameter[ 3] := 20;
-   Parameter[ 4] := 20;
-   Parameter[ 5] := 2;
-   Parameter[ 6] := 10;
-   // Delay Right
-   Parameter[ 7] := 0;
-   Parameter[ 8] := 25;
-   Parameter[ 9] := 22000;
-   Parameter[10] := 20;
-   Parameter[11] := 20;
-   Parameter[12] := 2;
-   Parameter[13] := -10;
-  end;
- with Programs[1] do
-  begin
-   // Delay Left
-   Parameter[ 0] := 0;
-   Parameter[ 1] := 44;
-   Parameter[ 2] := 12000;
-   Parameter[ 3] := 33;
-   Parameter[ 4] := 10;
-   Parameter[ 5] := 2;
-   Parameter[ 6] := 90;
-   // Delay Right
-   Parameter[ 7] := 0;
-   Parameter[ 8] := 42;
-   Parameter[ 9] := 12000;
-   Parameter[10] := 33;
-   Parameter[11] := 10;
-   Parameter[12] := 2;
-   Parameter[13] := -90;
-  end;
-end;
-
-procedure TModDelay2Module.VSTModuleClose(Sender: TObject);
-var
-  Channel : Integer;
-begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FModDelay) - 1
-   do FreeAndNil(FModDelay[0]);
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TModDelay2Module.ParameterGainDisplay(
+procedure TModDelayModule.ParameterGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  Predefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TModDelay2Module.ParameterMixChange(
+procedure TModDelayModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FModDelay[Index div 7])
-   then FModDelay[Index div 7].Mix := Value;
- finally
-  FCriticalSection.Leave;
- end;
+ if Assigned(FModDelay)
+  then FModDelay.Mix := Value;
 end;
 
-procedure TModDelay2Module.ParameterDepthChange(
+procedure TModDelayModule.ParameterDepthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FModDelay[Index div 7])
-   then FModDelay[Index div 7].Depth := Value;
- finally
-  FCriticalSection.Leave;
- end;
+ if Assigned(FModDelay)
+  then FModDelay.Depth := Value;
 end;
 
-procedure TModDelay2Module.ParameterRateChange(
+procedure TModDelayModule.ParameterRateChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FModDelay[Index div 7])
-   then FModDelay[Index div 7].Rate := Value;
- finally
-  FCriticalSection.Leave;
- end;
+ if Assigned(FModDelay)
+  then FModDelay.Rate := Value;
 end;
 
-procedure TModDelay2Module.ParameterFeedbackChange(
+procedure TModDelayModule.ParameterFeedbackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FModDelay[Index div 7])
-   then FModDelay[Index div 7].Feedback := Value;
- finally
-  FCriticalSection.Leave;
- end;
+ if Assigned(FModDelay)
+  then FModDelay.Feedback := Value;
 end;
 
-procedure TModDelay2Module.ParameterDelayChange(
+procedure TModDelayModule.ParameterDelayChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FModDelay[Index div 7])
-   then FModDelay[Index div 7].Delay := Value;
- finally
-  FCriticalSection.Leave;
- end;
+ if Assigned(FModDelay)
+  then FModDelay.Delay := Value;
 end;
 
-procedure TModDelay2Module.ParameterGainChange(
+procedure TModDelayModule.ParameterGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FGain[Index div 7] := dB_to_Amp(Value);
+ FGain := dB_to_Amp(Value);
 end;
 
-procedure TModDelay2Module.ParameterLowpassChange(
+procedure TModDelayModule.ParameterLowpassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCriticalSection.Enter;
- try
-  if Assigned(FModDelay[Index div 7])
-   then FModDelay[Index div 7].LowpassFrequency := Value;
- finally
-  FCriticalSection.Leave;
- end;
+ if Assigned(FModDelay)
+  then FModDelay.LowpassFrequency := Value;
 end;
 
-procedure TModDelay2Module.ParameterLowpassLabel(
+procedure TModDelayModule.ParameterLowpassLabel(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Freq: Single;
 begin
- Freq := FModDelay[Index div 7].LowpassFrequency;
+ Freq := FModDelay.LowpassFrequency;
  if Freq < 1000
   then PreDefined := 'Hz' else
  if Freq <= 20000
@@ -265,12 +158,12 @@ begin
   else PreDefined := '';
 end;
 
-procedure TModDelay2Module.ParameterLowpassDisplay(
+procedure TModDelayModule.ParameterLowpassDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Freq: Single;
 begin
- Freq := FModDelay[Index div 7].LowpassFrequency;
+ Freq := FModDelay.LowpassFrequency;
  if Freq < 1000
   then PreDefined := FloatToStrF(Freq, ffGeneral, 3, 3) else
  if Freq < 20000
@@ -278,36 +171,20 @@ begin
   else PreDefined := 'off';
 end;
 
-procedure TModDelay2Module.VSTModuleSampleRateChange(Sender: TObject;
+procedure TModDelayModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
-var
-  Channel : Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FModDelay) - 1 do
-   if Assigned(FModDelay[Channel])
-    then FModDelay[Channel].Samplerate := SampleRate;
- finally
-  FCriticalSection.Leave;
- end;
+ if Assigned(FModDelay)
+  then FModDelay.Samplerate := SampleRate;
 end;
 
-procedure TModDelay2Module.VSTModuleProcess(const Inputs,
+procedure TModDelayModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
- FCriticalSection.Enter;
- try
-  for Sample := 0 to min(BlockSize, SampleFrames) - 1 do
-   begin
-    Outputs[0, Sample] := FModDelay[0].ProcessSample32(FGain[0] * Inputs[0, Sample]);
-    Outputs[1, Sample] := FModDelay[1].ProcessSample32(FGain[1] * Inputs[1, Sample]);
-   end;
- finally
-  FCriticalSection.Leave;
- end;
+ for Sample := 0 to SampleFrames - 1
+  do Outputs[0, Sample] := FModDelay.ProcessSample32(FGain * Inputs[0, Sample]);
 end;
 
 end.
