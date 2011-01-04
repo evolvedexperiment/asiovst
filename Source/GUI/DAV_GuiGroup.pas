@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LCLType, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
   DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiShadow;
 
@@ -66,7 +66,7 @@ type
     procedure CreateParams(var Params: TCreateParams); override;
     procedure Loaded; override;
     procedure Resize; override;
-    procedure Paint; override;
+    procedure Paint; {$IFDEF FPC} virtual; {$ELSE} override; {$ENDIF}
 
     procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); virtual; abstract;
     procedure RenderCaption(PixelMap: TGuiCustomPixelMap); virtual; abstract;
@@ -134,7 +134,9 @@ type
     property Transparent;
     property Visible;
 
+    {$IFNDEF FPC}
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -201,7 +203,9 @@ type
     property Transparent;
     property Visible;
 
+    {$IFNDEF FPC}
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -266,7 +270,9 @@ type
     property Transparent;
     property Visible;
 
+    {$IFNDEF FPC}
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -374,8 +380,10 @@ begin
     if Assigned(FOnPaint)
      then FOnPaint(Self);
 
+    {$IFNDEF FPC}
     if Assigned(FBuffer)
      then FBuffer.PaintTo(Canvas);
+    {$ENDIF}
    end;
 end;
 
@@ -448,7 +456,7 @@ begin
  BufferChanged;
 end;
 
-procedure TCustomGuiGroup.CMTextChanged(var Message: TWmNoParams);
+procedure TCustomGuiGroup.CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF});
 begin
  TextChanged;
 end;

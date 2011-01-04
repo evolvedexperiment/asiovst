@@ -88,7 +88,8 @@ procedure TChorusModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- for Channel := 0 to 1 do
+ // create chorus
+ for Channel := 0 to Length(FChorus) - 1 do
   begin
    FChorus[Channel] := TDspChorus32.Create;
    FChorus[Channel].SampleRate := SampleRate;
@@ -202,8 +203,8 @@ procedure TChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer;
 begin
  FCriticalSection.Enter;
  try
-  if Assigned(FChorus[0]) then FChorus[0].Stages := round(Value);
-  if Assigned(FChorus[1]) then FChorus[1].Stages := round(Value);
+  if Assigned(FChorus[0]) then FChorus[0].Stages := Round(Value);
+  if Assigned(FChorus[1]) then FChorus[1].Stages := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -212,16 +213,16 @@ end;
 procedure TChorusModule.ParamDriftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  i : Integer;
+  StageIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
   if Assigned(FChorus[0]) then FChorus[0].Drift := 0.01 * Value;
   if Assigned(FChorus[1]) then
    if Value > 0
-    then FChorus[1].Drift := 0.01 * Value
-    else for i := 0 to FChorus[1].Stages - 1
-          do FChorus[1].LFO[i].Assign(FChorus[0].LFO[i]);
+    then FChorus[1].Drift := 0.01 * Value else
+   for StageIndex := 0 to FChorus[1].Stages - 1
+    do FChorus[1].LFO[StageIndex].Assign(FChorus[0].LFO[Index]);
  finally
   FCriticalSection.Leave;
  end;
@@ -272,7 +273,7 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to 1 do
+  for Channel := 0 to Length(FChorus) - 1 do
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FastTanhContinousError4(FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
  finally

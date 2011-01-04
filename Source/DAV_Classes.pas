@@ -193,8 +193,10 @@ implementation
 resourcestring
   RCStrInvalidSamplerate = 'Invalid Samplerate!';
   RCStrDspProcessorDuplicate = 'DSP Processor registered twice! (%s)';
+{
   RCStrNoIDspProcessor32 = 'Class %s does not support IDspProcessor32';
   RCStrNoIDspProcessor64 = 'Class %s does not support IDspProcessor64';
+}
 
 { TClassList }
 

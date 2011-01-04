@@ -11,6 +11,7 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
+      <Title Value="Bode Frequency Shifter"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -45,9 +46,6 @@
           <Linking>
             <LinkSmart Value="True"/>
             <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
@@ -127,14 +125,12 @@
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
       <CompilerMessages>
+        <IgnoredMessages idx5024="True"/>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>

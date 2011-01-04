@@ -38,7 +38,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes, DAV_DspSimpleOscillator;
+  Classes, DAV_Classes, DAV_DspSimpleOscillator;
 
 type
   TLFOSine32 = TSimpleOscillator32;

@@ -40,7 +40,7 @@ uses
   DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiVUMeter, DAV_GuiEQGraph, 
   DAV_GuiPixelMap, DAV_GuiStitchedSwitch, DAV_GuiStitchedDisplay, 
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial, 
-  DAV_GuiCustomControl, DAV_GuiGraphicControl;
+  DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiImageControl;
 
 type
   TFmParametriQLite = class(TForm)

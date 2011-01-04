@@ -43,7 +43,6 @@ type
   TParametriQLiteDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -113,7 +112,10 @@ begin
     end;
   end;
 
- // Initial Parameters
+ // set editor form class
+ EditorFormClass := TFmParametriQLite;
+
+ // initialize parameters
  Parameter[ 0] := 0;
  Parameter[ 1] := 60;
  Parameter[ 2] := 2;
@@ -161,11 +163,6 @@ begin
  for Channel := 0 to Length(FFilters) - 1 do
   for Band := 0 to Length(FFilters[Channel]) - 1
    do FreeAndNil(FFilters[Channel, Band]);
-end;
-
-procedure TParametriQLiteDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmParametriQLite.Create(Self);
 end;
 
 procedure TParametriQLiteDataModule.VSTModuleProcess(const Inputs,
@@ -251,11 +248,11 @@ begin
      then Transition := 20000 / Abs(SampleRate)
      else Transition := 0.499;
 
-    if assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
-    if assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
+    if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
+    if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
 
     for Band := 0 to Length(FFilters[Channel]) - 1 do
-     if assigned(FFilters[Channel, Band])
+     if Assigned(FFilters[Channel, Band])
       then FFilters[Channel, Band].SampleRate := Abs(SampleRate);
    end;
 end;
@@ -266,8 +263,10 @@ var
   Band: Integer;
 begin
  Band := (Index - 1) div 4;
- if assigned(FFilters[0, Band]) then FFilters[0, Band].Gain := Value;
- if assigned(FFilters[1, Band]) then FFilters[1, Band].Gain := Value;
+ if Assigned(FFilters[0, Band]) then FFilters[0, Band].Gain := Value;
+ if Assigned(FFilters[1, Band]) then FFilters[1, Band].Gain := Value;
+
+ // update GUI
  if EditorForm is TFmParametriQLite
   then TFmParametriQLite(EditorForm).UpdateGain(Band);
 end;
@@ -306,6 +305,8 @@ begin
    11 : FilterClass[Band] := TBasicHighShelfAFilter;
    12 : FilterClass[Band] := TBasicHighShelfBFilter;
   end;
+
+ // update GUI
  if EditorForm is TFmParametriQLite
   then TFmParametriQLite(EditorForm).UpdateFilterType(Band);
 end;
@@ -338,13 +339,13 @@ var
 begin
  if (Index >= 0) and (Index < Length(FFilters[0])) then
   for Channel := 0 to Length(FFilters) - 1 do
-   if assigned(FFilters[Channel, Index]) then
+   if Assigned(FFilters[Channel, Index]) then
     if TBandwidthIIRFilterClass(FFilters[Channel, Index].ClassType) <> Value then
      begin
       OldFilter := FFilters[Channel, Index];
       FFilters[Channel, Index] := Value.Create;
       FFilters[Channel, Index].Assign(OldFilter);
-      if assigned(OldFilter) then FreeAndNil(OldFilter);
+      if Assigned(OldFilter) then FreeAndNil(OldFilter);
      end else
    else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
@@ -355,8 +356,10 @@ var
   Band: Integer;
 begin
  Band := (Index - 1) div 4;
- if assigned(FFilters[0, Band]) then FFilters[0, Band].Frequency := 0.5 * Value;
- if assigned(FFilters[1, Band]) then FFilters[1, Band].Frequency := 0.5 * Value;
+ if Assigned(FFilters[0, Band]) then FFilters[0, Band].Frequency := 0.5 * Value;
+ if Assigned(FFilters[1, Band]) then FFilters[1, Band].Frequency := 0.5 * Value;
+
+ // update GUI
  if EditorForm is TFmParametriQLite
   then TFmParametriQLite(EditorForm).UpdateFrequency(Band);
 end;
@@ -418,8 +421,10 @@ var
   Band: Integer;
 begin
  Band := (Index - 1) div 4;
- if assigned(FFilters[0, Band]) then FFilters[0, Band].BandWidth := Value;
- if assigned(FFilters[1, Band]) then FFilters[1, Band].BandWidth := Value;
+ if Assigned(FFilters[0, Band]) then FFilters[0, Band].BandWidth := Value;
+ if Assigned(FFilters[1, Band]) then FFilters[1, Band].BandWidth := Value;
+
+ // update GUI
  if EditorForm is TFmParametriQLite
   then TFmParametriQLite(EditorForm).UpdateBandwidth(Band);
 end;

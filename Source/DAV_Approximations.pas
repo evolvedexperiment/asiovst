@@ -569,7 +569,7 @@ end;
 
 function FastCosInBounds3Term(Value: Single): Single;
 begin
- case round(Value * CTwoDivPi32 - CHalf32) of
+ case Round(Value * CTwoDivPi32 - CHalf32) of
    0 : Result :=  FastCosPart3Term(Value);
    1 : Result := -FastCosPart3Term(Pi - Value);
    2 : Result := -FastCosPart3Term(Value - Pi);
@@ -580,7 +580,7 @@ end;
 
 function FastCosInBounds3Term(Value: Double): Double;
 begin
- case round(Value * CTwoDivPi64 - CHalf64) of
+ case Round(Value * CTwoDivPi64 - CHalf64) of
    0 : Result :=  FastCosPart3Term(Value);
    1 : Result := -FastCosPart3Term(Pi - Value);
    2 : Result := -FastCosPart3Term(Value - Pi);
@@ -698,7 +698,7 @@ end;
 
 function FastCosInBounds4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
- case round(Value * CTwoDivPi64 - CHalf64) of
+ case Round(Value * CTwoDivPi64 - CHalf64) of
    0 : Result :=  FastCosPart4Term(Value);
    1 : Result := -FastCosPart4Term(Pi - Value);
    2 : Result := -FastCosPart4Term(Value - Pi);
@@ -831,7 +831,7 @@ end;
 
 function FastCosInBounds5Term(Value: Double): Double;
 begin
- case round(Value * CTwoDivPi64 - CHalf64) of
+ case Round(Value * CTwoDivPi64 - CHalf64) of
   0 : Result :=  FastCosPart5Term(Value);
   1 : Result := -FastCosPart5Term(Pi - Value);
   2 : Result := -FastCosPart5Term(Value - Pi);
@@ -971,7 +971,7 @@ end;
 
 function FastCosInBounds6Term(Value: Double): Double;
 begin
- case round(Value * CTwoDivPi64 - CHalf64) of
+ case Round(Value * CTwoDivPi64 - CHalf64) of
   0 : Result :=  FastCosPart6Term(Value);
   1 : Result := -FastCosPart6Term(Pi - Value);
   2 : Result := -FastCosPart6Term(Value - Pi);
@@ -1061,7 +1061,7 @@ end;
 function FastCos7Term(Value: Single): Single; 
 begin
  Result := Abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi32 - CHalf32) of
+ case Round(Result * CTwoDivPi32 - CHalf32) of
   0 : Result :=  FastCosPart7Term(Result);
   1 : Result := -FastCosPart7Term(Pi - Result);
   2 : Result := -FastCosPart7Term(Result - Pi);
@@ -1073,7 +1073,7 @@ end;
 function FastCos7Term(Value: Double): Double;
 begin
  Result := Abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi64 - CHalf64) of
+ case Round(Result * CTwoDivPi64 - CHalf64) of
   0 : Result :=  FastCosPart7Term(Result);
   1 : Result := -FastCosPart7Term(Pi - Result);
   2 : Result := -FastCosPart7Term(Result - Pi);
@@ -1141,7 +1141,7 @@ end;
 
 function FastTanInBounds2Term(Value: Single): Single;
 begin
-  case round(Value * CFourDivPi32) of
+  case Round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi32);
     1 : Result :=  FastTanPInv2Term((CPiHalf32 - Value)      * CFourDivPi32);
     2 : Result := -FastTanPInv2Term((Value - CPiHalf32)      * CFourDivPi32);
@@ -1156,7 +1156,7 @@ end;
 
 function FastTanInBounds2Term(Value: Double): Double;
 begin
-  case round(Value * CFourDivPi64) of
+  case Round(Value * CFourDivPi64) of
     0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi64);
     1 : Result :=  FastTanPInv2Term((CPiHalf64 - Value)      * CFourDivPi64);
     2 : Result := -FastTanPInv2Term((Value - CPiHalf64)      * CFourDivPi64);
@@ -1233,7 +1233,7 @@ end;
 
 function FastTanInBounds3Term(Value: Single): Single;
 begin
-  case round(Value * CFourDivPi32) of
+  case Round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi32);
     1 : Result :=  FastTanPInv3Term((CPiHalf32 - Value)      * CFourDivPi32);
     2 : Result := -FastTanPInv3Term((Value - CPiHalf32)      * CFourDivPi32);
@@ -1249,7 +1249,7 @@ end;
 function FastTanInBounds3Term(Value: Double): Double;
 begin
   Result := Abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi64) of
+  case Round(Result * CFourDivPi64) of
     0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi64);
     1 : Result :=  FastTanPInv3Term((CPiHalf64 - Value)      * CFourDivPi64);
     2 : Result := -FastTanPInv3Term((Value - CPiHalf64)      * CFourDivPi64);
@@ -1332,7 +1332,7 @@ end;
 
 function FastTanInBounds4Term(Value: Single): Single;
 begin
-   case round(Value * CFourDivPi32) of
+   case Round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi32);
     1 : Result :=  FastTanPInv4Term((CPiHalf32 - Value)      * CFourDivPi32);
     2 : Result := -FastTanPInv4Term((Value - CPiHalf32)      * CFourDivPi32);
@@ -1347,7 +1347,7 @@ end;
 
 function FastTanInBounds4Term(Value: Double): Double;
 begin
-  case round(Value * CFourDivPi64) of
+  case Round(Value * CFourDivPi64) of
     0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi64);
     1 : Result :=  FastTanPInv4Term((CPiHalf64 - Value)      * CFourDivPi64);
     2 : Result := -FastTanPInv4Term((Value - CPiHalf64)      * CFourDivPi64);
@@ -1428,7 +1428,7 @@ end;
 
 function FastTanInBounds6Term(Value: Single): Single;
 begin
-  case round(Value * CFourDivPi32) of
+  case Round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi32);
     1 : Result :=  FastTanPInv6Term((CPiHalf32 - Value)      * CFourDivPi32);
     2 : Result := -FastTanPInv6Term((Value - CPiHalf32)      * CFourDivPi32);
@@ -1443,7 +1443,7 @@ end;
 
 function FastTanInBounds6Term(Value: Double): Double;
 begin
-  case round(Value * CFourDivPi64) of
+  case Round(Value * CFourDivPi64) of
     0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi64);
     1 : Result :=  FastTanPInv6Term((CPiHalf64 - Value)      * CFourDivPi64);
     2 : Result := -FastTanPInv6Term((Value - CPiHalf64)      * CFourDivPi64);
@@ -1878,7 +1878,7 @@ function FastPower2MinError2(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result := Result * (1 +
@@ -1890,7 +1890,7 @@ function FastPower2ContinousError2(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result := Result * (1 +
@@ -1902,7 +1902,7 @@ function FastPower2MinError3(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result := Result * (1.0 +
@@ -1915,7 +1915,7 @@ function FastPower2ContinousError3(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result := Result * (1 +
@@ -1928,7 +1928,7 @@ function FastPower2MinError4(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result :=  Result * (1 +
@@ -1942,7 +1942,7 @@ function FastPower2ContinousError4(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result :=  Result * (1 +
@@ -1956,7 +1956,7 @@ function FastPower2MinError5(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result :=  Result * (1 +
@@ -1971,7 +1971,7 @@ function FastPower2ContinousError5(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result :=  Result * (1 +
@@ -2653,8 +2653,8 @@ asm
   sahf
   jb      @@RealPower    // exp > MaxInt
   fld     st             // exp in st(0) and st(1)
-  frndint                // round(exp)
-  fcomp                  // compare exp and round(exp)
+  frndint                // Round(exp)
+  fcomp                  // compare exp and Round(exp)
   fstsw   ax
   sahf
   jne     @@RealPower

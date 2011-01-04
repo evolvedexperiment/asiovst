@@ -1,7 +1,7 @@
 object LimiterDataModule: TLimiterDataModule
   OldCreateOrder = True
   Version = '1.0'
-  EffectName = 'Simple Limiter'
+  EffectName = 'Limiter'
   ProductName = 'DAV Dynamics Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect

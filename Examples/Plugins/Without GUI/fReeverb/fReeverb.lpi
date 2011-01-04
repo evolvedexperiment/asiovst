@@ -11,6 +11,8 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
+      <Title Value="fReeverb"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
     <i18n>
@@ -51,9 +53,6 @@
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
@@ -131,9 +130,6 @@
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>

@@ -191,7 +191,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreq2: TGuiLabel
@@ -204,7 +203,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreq3: TGuiLabel
@@ -217,7 +215,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreq4: TGuiLabel
@@ -230,7 +227,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreq7: TGuiLabel
@@ -243,7 +239,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreq6: TGuiLabel
@@ -256,7 +251,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreq5: TGuiLabel
@@ -269,7 +263,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreq8: TGuiLabel
@@ -282,7 +275,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'FREQ'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW1: TGuiLabel
@@ -295,7 +287,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW2: TGuiLabel
@@ -308,7 +299,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW3: TGuiLabel
@@ -321,7 +311,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW4: TGuiLabel
@@ -334,7 +323,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW8: TGuiLabel
@@ -347,7 +335,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW7: TGuiLabel
@@ -360,7 +347,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW6: TGuiLabel
@@ -373,7 +359,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbBW5: TGuiLabel
@@ -386,7 +371,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'BW'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain1: TGuiLabel
@@ -399,7 +383,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain2: TGuiLabel
@@ -412,7 +395,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain3: TGuiLabel
@@ -425,7 +407,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain4: TGuiLabel
@@ -438,7 +419,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain8: TGuiLabel
@@ -451,7 +431,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain7: TGuiLabel
@@ -464,7 +443,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain6: TGuiLabel
@@ -477,7 +455,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain5: TGuiLabel
@@ -490,7 +467,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbFreqValue1: TGuiLabel
@@ -508,7 +484,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbFreqValue2: TGuiLabel
     Tag = 2
@@ -525,7 +500,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbFreqValue4: TGuiLabel
     Tag = 4
@@ -542,7 +516,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbFreqValue3: TGuiLabel
     Tag = 3
@@ -559,7 +532,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbFreqValue8: TGuiLabel
     Tag = 8
@@ -576,7 +548,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbFreqValue7: TGuiLabel
     Tag = 7
@@ -593,7 +564,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbFreqValue6: TGuiLabel
     Tag = 6
@@ -610,7 +580,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbFreqValue5: TGuiLabel
     Tag = 5
@@ -627,7 +596,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin1: TGuiLabel
     Tag = 1
@@ -643,7 +611,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin2: TGuiLabel
     Tag = 2
@@ -659,7 +626,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin4: TGuiLabel
     Tag = 4
@@ -675,7 +641,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin3: TGuiLabel
     Tag = 3
@@ -691,7 +656,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin8: TGuiLabel
     Tag = 8
@@ -707,7 +671,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin7: TGuiLabel
     Left = 655
@@ -722,7 +685,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin6: TGuiLabel
     Tag = 6
@@ -738,7 +700,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMin5: TGuiLabel
     Left = 513
@@ -753,7 +714,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax1: TGuiLabel
     Tag = 1
@@ -770,7 +730,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax2: TGuiLabel
     Left = 341
@@ -786,7 +745,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax4: TGuiLabel
     Tag = 4
@@ -803,7 +761,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax3: TGuiLabel
     Tag = 3
@@ -820,7 +777,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax8: TGuiLabel
     Left = 761
@@ -836,7 +792,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax7: TGuiLabel
     Left = 691
@@ -852,7 +807,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax6: TGuiLabel
     Left = 621
@@ -868,7 +822,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object GuiMax5: TGuiLabel
     Left = 551
@@ -884,7 +837,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object SeparatorA1: TShape
     Tag = 1
@@ -1112,7 +1064,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1126,7 +1077,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1140,7 +1090,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1154,7 +1103,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1168,7 +1116,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1182,7 +1129,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1196,7 +1142,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1210,7 +1155,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'TYPE'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
     OnClick = LbTypeClick
   end
@@ -1223,7 +1167,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'INPUT'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbOutput: TGuiLabel
@@ -1235,7 +1178,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'OUTPUT'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbGain: TGuiLabel
@@ -1247,7 +1189,6 @@ object FmParametriQLite: TFmParametriQLite
     Caption = 'GAIN'
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object ShapeInputBottom: TShape
@@ -1292,7 +1233,6 @@ object FmParametriQLite: TFmParametriQLite
     Color = 1447701
     FontOversampling = fo4x
     Shadow.Blur = 2.000000000000000000
-    Shadow.Color = clBlack
     Shadow.Visible = True
   end
   object LbIn: TGuiLabel
@@ -1310,7 +1250,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbOut: TGuiLabel
     Left = 141
@@ -1326,7 +1265,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbdB: TGuiLabel
     Left = 75
@@ -1343,7 +1281,6 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbTypeValue1: TGuiLabel
     Tag = 1
@@ -1363,7 +1300,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object LbTypeValue2: TGuiLabel
@@ -1384,7 +1320,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object LbTypeValue3: TGuiLabel
@@ -1405,7 +1340,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object LbTypeValue4: TGuiLabel
@@ -1426,7 +1360,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object LbTypeValue5: TGuiLabel
@@ -1447,7 +1380,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object LbTypeValue6: TGuiLabel
@@ -1468,7 +1400,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object LbTypeValue7: TGuiLabel
@@ -1489,7 +1420,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object LbTypeValue8: TGuiLabel
@@ -1510,7 +1440,6 @@ object FmParametriQLite: TFmParametriQLite
     ParentFont = False
     PopupMenu = PopupFilter
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LbTypeClick
   end
   object GuiEQGraph: TGuiEQGraph
@@ -1556,11 +1485,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW1: TGuiStitchedDial
     Tag = 1
@@ -1571,11 +1502,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain1: TGuiStitchedDial
     Tag = 1
@@ -1585,10 +1518,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialFreq2: TGuiStitchedDial
     Tag = 2
@@ -1599,11 +1535,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW2: TGuiStitchedDial
     Tag = 2
@@ -1614,11 +1552,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain2: TGuiStitchedDial
     Tag = 2
@@ -1628,10 +1568,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialFreq3: TGuiStitchedDial
     Tag = 3
@@ -1642,11 +1585,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW3: TGuiStitchedDial
     Tag = 3
@@ -1657,11 +1602,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain3: TGuiStitchedDial
     Tag = 3
@@ -1671,10 +1618,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialFreq4: TGuiStitchedDial
     Tag = 4
@@ -1685,11 +1635,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW4: TGuiStitchedDial
     Tag = 4
@@ -1700,11 +1652,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain4: TGuiStitchedDial
     Tag = 4
@@ -1714,10 +1668,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialFreq5: TGuiStitchedDial
     Tag = 5
@@ -1728,11 +1685,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW5: TGuiStitchedDial
     Tag = 5
@@ -1743,11 +1702,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain5: TGuiStitchedDial
     Tag = 5
@@ -1757,10 +1718,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialFreq6: TGuiStitchedDial
     Tag = 6
@@ -1771,11 +1735,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW6: TGuiStitchedDial
     Tag = 6
@@ -1786,11 +1752,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain6: TGuiStitchedDial
     Tag = 6
@@ -1800,10 +1768,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialFreq7: TGuiStitchedDial
     Tag = 7
@@ -1814,11 +1785,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW7: TGuiStitchedDial
     Tag = 7
@@ -1829,11 +1802,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain7: TGuiStitchedDial
     Tag = 7
@@ -1843,10 +1818,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialFreq8: TGuiStitchedDial
     Tag = 8
@@ -1857,11 +1835,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialBW8: TGuiStitchedDial
     Tag = 8
@@ -1872,11 +1852,13 @@ object FmParametriQLite: TFmParametriQLite
     CurveMapping = -1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    OnChange = DialBWChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
+    OnChange = DialBWChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain8: TGuiStitchedDial
     Tag = 8
@@ -1886,10 +1868,13 @@ object FmParametriQLite: TFmParametriQLite
     Height = 64
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 1
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialInput: TGuiStitchedDial
     Left = 16
@@ -1898,11 +1883,14 @@ object FmParametriQLite: TFmParametriQLite
     Height = 96
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialInputChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 2
     Transparent = True
     WheelStep = 1.000000000000000000
+    OnChange = DialInputChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialOutput: TGuiStitchedDial
     Left = 118
@@ -1911,11 +1899,14 @@ object FmParametriQLite: TFmParametriQLite
     Height = 96
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    OnChange = DialOutputChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 2
     Transparent = True
     WheelStep = 1.000000000000000000
+    OnChange = DialOutputChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object VUMeter: TGuiStitchedDisplay
     Left = 31
@@ -2694,7 +2685,6 @@ object FmParametriQLite: TFmParametriQLite
           6082}
         DisplayName = 'Knob 1'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end
@@ -3538,7 +3528,6 @@ object FmParametriQLite: TFmParametriQLite
           AE426082}
         DisplayName = 'Knob 2'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end
@@ -10984,7 +10973,6 @@ object FmParametriQLite: TFmParametriQLite
           B80000000049454E44AE426082}
         DisplayName = 'Knob 3'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 96
         Width = 6240
       end
@@ -13279,7 +13267,6 @@ object FmParametriQLite: TFmParametriQLite
           29497A15300000000049454E44AE426082}
         DisplayName = 'VU Meter'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 40
         Width = 10920
       end
@@ -13331,7 +13318,6 @@ object FmParametriQLite: TFmParametriQLite
           000049454E44AE426082}
         DisplayName = 'Switch'
         GlyphCount = 2
-        StitchKind = skHorizontal
         Height = 12
         Width = 64
       end>

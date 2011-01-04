@@ -115,17 +115,17 @@ begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(Pointer(FFilterFreq), (FIRSize + 1) * SizeOf(TComplexSingle));
+ ReallocateAlignedMemory(FFilterFreq, (FIRSize + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (FIRSize + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(FIRSize)));
+ FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(Single));
+ ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
  {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(FIRSize)));
+ FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(Single));
+ ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
  {$ENDIF}{$ENDIF}
 
@@ -277,13 +277,7 @@ begin
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
   if FDesiredPhase <> FCurrentPhase then
    begin
-(*
-    FStereoConvolution.ProcessBlock(PDAVSingleFixedArray(@Outputs[0, 0]),
-      PDAVSingleFixedArray(@Outputs[1, 0]), SampleFrames);
-    *)
-
     CalculateFilterKernel;
-    // FStereoConvolution.Reset
    end;
 
   FStereoConvolution.ProcessBlock(PDAVSingleFixedArray(@Outputs[0, 0]),

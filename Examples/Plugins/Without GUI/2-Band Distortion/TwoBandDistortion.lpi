@@ -27,12 +27,12 @@
           <Version Value="9"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\..\Bin\2-BandDistortion_x64.dll"/>
+            <Filename Value="..\..\..\..\Bin\WithoutGui\TwoBandDistortion_$(TargetCPU).dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\..\Source"/>
             <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\Math;..\..\..\..\Source\DSP;..\..\..\..\Source\FileFormats"/>
-            <UnitOutputDirectory Value="..\..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -42,15 +42,12 @@
               <CPPInline Value="False"/>
             </SyntaxOptions>
           </Parsing>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-          </CodeGeneration>
           <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="True"/>
+            </Debugging>
             <LinkSmart Value="True"/>
             <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
@@ -72,6 +69,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <HostApplicationFilename Value="C:\Program Files\Audio\Hosts\VST Host\vsthost.exe"/>
+        <CommandLineParams Value="&quot;C:\Users\Public\Code\VSTPack\Bin\WithoutGUI\TwoBandDistortion_x86_64.dll&quot;"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -132,9 +131,6 @@
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>

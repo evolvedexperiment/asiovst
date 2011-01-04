@@ -3,7 +3,7 @@ object ComboDataModule: TComboDataModule
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'AmpSim'
-  ProductName = 'DAV effect examples'
+  ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000

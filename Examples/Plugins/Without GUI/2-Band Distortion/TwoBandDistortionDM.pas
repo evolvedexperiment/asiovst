@@ -129,7 +129,7 @@ begin
        FastTanhOpt5Term(FHighMix[1] * High);
      {$ELSE}
      Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  + FastTanhOpt5TermFPU(FLowMix[1]  * Low) +
-                                 FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
+       FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
      {$ENDIF}
    end;
  finally

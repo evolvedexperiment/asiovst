@@ -1,5 +1,7 @@
 object fReeverbVST: TfReeverbVST
   OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'fReeverb'
   ProductName = 'DAV Effect Examples'
