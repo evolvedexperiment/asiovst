@@ -1,4 +1,4 @@
-library Vibrato;
+library Phaser;
 
 {$I DAV_Compiler.inc}
 
@@ -7,11 +7,11 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  VibratoDM in 'VibratoDM.pas' {VibratoModule: TVSTModule};
+  PhaserDM in 'PhaserDM.pas' {PhaserModule: TPhaserModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVibratoModule);
+ Result := VstModuleMain(AudioMasterCallback, TPhaserModule);
 end;
 
 exports

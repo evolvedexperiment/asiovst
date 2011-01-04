@@ -1,4 +1,5 @@
-library Vibrato;
+{$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
+library VariableDelay;
 
 {$I DAV_Compiler.inc}
 
@@ -7,11 +8,11 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  VibratoDM in 'VibratoDM.pas' {VibratoModule: TVSTModule};
+  VariableDelayModule in 'VariableDelayModule.pas' {VariableDelayVST: TVST2Module};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVibratoModule);
+ Result := VstModuleMain(AudioMasterCallback, TVariableDelayVST);
 end;
 
 exports

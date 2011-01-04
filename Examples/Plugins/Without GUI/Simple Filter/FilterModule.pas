@@ -70,8 +70,8 @@ begin
 
  {$IFDEF FPC}
  OnProcess := VSTModuleProcess;
- OnProcessReplacing := VSTModuleProcess;
- OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
+ OnProcess32Replacing := VSTModuleProcess;
+ OnProcess64Replacing := VSTModuleProcessDoubleReplacing;
  {$ENDIF}
 
  Parameter[0] := 1000;

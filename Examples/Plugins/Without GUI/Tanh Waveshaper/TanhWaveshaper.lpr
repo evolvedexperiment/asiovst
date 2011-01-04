@@ -1,4 +1,4 @@
-library Vibrato;
+library TanhWaveshaper;
 
 {$I DAV_Compiler.inc}
 
@@ -7,11 +7,11 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  VibratoDM in 'VibratoDM.pas' {VibratoModule: TVSTModule};
+  TanhWaveshaperDM in 'TanhWaveshaperDM.pas' {TanhWaveshaperModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVibratoModule);
+  Result := VstModuleMain(AudioMasterCallback, TTanhWaveshaperModule);
 end;
 
 exports

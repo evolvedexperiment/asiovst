@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} FastMove, Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, {$ELSE} FastMove, Windows, Messages, {$ENDIF}
   SysUtils, Classes, Forms, DAV_Types, DAV_DspPolyphaseHilbert, DAV_VSTModule,
   DAV_DspLFO;
 
@@ -78,7 +78,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Approximations;
+  DAV_Approximations;
 
 procedure TSpinBugLiteModule.VSTModuleOpen(Sender : TObject);
 begin

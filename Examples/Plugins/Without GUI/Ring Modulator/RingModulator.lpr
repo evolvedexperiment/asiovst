@@ -1,33 +1,19 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library RingModulator;
 
-{$MODE Delphi}
-
-{$R 'RingModulator.res' 'RingModulator.rc'}
+{$I DAV_Compiler.inc}
 
 uses
   Interfaces,
   Forms,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  RingModulatorDM in 'RingModulatorDM.pas' {RingModulatorDataModule: TVSTModule},
-  RingModulatorGUI in 'RingModulatorGUI.pas', DAV_Common_Lazarus,
-  DAV_DSP_Lazarus, DAV_VSTPlugin_Lazarus {FmRingModulator};
+  RingModulatorDM in 'RingModulatorDM.pas' {RingModulatorDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
   Result := VstModuleMain(AudioMasterCallback, TRingModulatorDataModule);
 end;
-
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TRingModulatorDataModule);
-end;
-{$ENDIF}
 
 exports
 {$IFDEF DARWIN}  {OS X entry points}
@@ -37,10 +23,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-
-begin
 end.
