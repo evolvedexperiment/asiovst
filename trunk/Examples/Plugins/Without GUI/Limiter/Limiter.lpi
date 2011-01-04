@@ -9,10 +9,11 @@
         <MainUnitHasTitleStatement Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
+      <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="Simple Limiter"/>
+      <Title Value="Limiter"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -20,8 +21,41 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="1" Active="Default">
-      <Item1 Name="Default" Default="True"/>
+    <BuildModes Count="2">
+      <Item1 Name="Release" Default="True"/>
+      <Item2 Name="Debug">
+        <CompilerOptions>
+          <Version Value="9"/>
+          <PathDelim Value="\"/>
+          <SearchPaths>
+            <IncludeFiles Value="..\..\..\..\Source"/>
+            <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\DSP;..\..\..\..\Source\GUI;..\..\..\..\Source\FileFormats;..\..\..\..\Source\Math;..\..\..\..\Source\VST"/>
+            <UnitOutputDirectory Value="..\..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <CStyleOperator Value="False"/>
+              <IncludeAssertionCode Value="True"/>
+              <CPPInline Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <Linking>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <UseMsgFile Value="True"/>
+            </CompilerMessages>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -33,19 +67,24 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+        <PackageName Value="DAV_DSP_Lazarus"/>
       </Item1>
+      <Item2>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+      </Item4>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="3">
       <Unit0>
         <Filename Value="Limiter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="8"/>
-        <UsageCount Value="21"/>
       </Unit0>
       <Unit1>
         <Filename Value="LimiterDM.pas"/>
@@ -54,10 +93,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="LimiterDM"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="24"/>
-        <CursorPos X="34" Y="38"/>
-        <UsageCount Value="21"/>
       </Unit1>
       <Unit2>
         <Filename Value="EditorFrm.pas"/>
@@ -66,47 +101,30 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EditorFrm"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="24"/>
-        <CursorPos X="24" Y="38"/>
-        <UsageCount Value="21"/>
       </Unit2>
-      <Unit3>
-        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModule.pas"/>
-        <UnitName Value="DAV_VSTModule"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="103"/>
-        <CursorPos X="42" Y="117"/>
-        <UsageCount Value="10"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\..\..\..\Source\VST\DAV_VSTParameters.pas"/>
-        <UnitName Value="DAV_VSTParameters"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="175"/>
-        <CursorPos X="63" Y="189"/>
-        <UsageCount Value="10"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <UnitName Value="DAV_VSTCustomModule"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1387"/>
-        <CursorPos X="5" Y="1414"/>
-        <UsageCount Value="10"/>
-      </Unit5>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\..\Bin\WithoutGUI\Limiter_$(TargetCPU)"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source"/>
       <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\DSP;..\..\..\..\Source\GUI;..\..\..\..\Source\FileFormats;..\..\..\..\Source\Math;..\..\..\..\Source\VST"/>
-      <UnitOutputDirectory Value="..\..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
+        <CPPInline Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+    </CodeGeneration>
     <Linking>
       <Debugging>
         <UseLineInfoUnit Value="False"/>
@@ -121,6 +139,9 @@
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

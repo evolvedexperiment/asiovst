@@ -2,9 +2,8 @@
 library GraphicEQ;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  FastMove,
-  DAV_WinAmp,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   PluginDM in 'PluginDM.pas' {PluginDataModule: TVSTModule};
@@ -14,15 +13,8 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TPluginDataModule);
 end;
 
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
- Result := WinampDSPModuleHeader(TPluginDataModule);
-end;
-
 exports
   VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VstPluginMain name 'VSTPluginMain';
 
-begin
 end.

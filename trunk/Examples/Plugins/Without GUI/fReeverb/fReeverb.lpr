@@ -6,9 +6,6 @@ library fReeverb;
 uses
   Interfaces,
   Forms,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   fReeverbModule in 'fReeverbModule.pas' {fReeverbVST: TVSTModule};
@@ -18,13 +15,6 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TfReeverbVST);
 end;
 
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TfReeverbVST);
-end;
-{$ENDIF}
-
 exports
 {$IFDEF DARWIN}  {OS X entry points}
   VSTPluginMain name '_main',
@@ -33,12 +23,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-{$IFDEF MSWINDOWS}
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
-{$ENDIF}
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
- Application.Initialize;
 end.

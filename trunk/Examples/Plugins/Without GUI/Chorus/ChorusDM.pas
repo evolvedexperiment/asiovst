@@ -47,7 +47,6 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -70,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  ChorusGUI, DAV_Approximations, DAV_VSTCustomModule;
+  DAV_Approximations, DAV_VSTCustomModule;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -181,11 +180,6 @@ begin
  FreeAndNil(FChorus[1]);
 end;
 
-procedure TChorusModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmChorus.Create(Self);
-end;
-
 function TChorusModule.GetChorus(Index: Integer): TDspChorus32;
 begin
  if Index in [0..1]
@@ -202,11 +196,6 @@ begin
  finally
   FCriticalSection.Leave;
  end;
-
- // update GUI
- if EditorForm is TFmChorus then
-  with TFmChorus(EditorForm)
-   do UpdateSpeed;
 end;
 
 procedure TChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -218,11 +207,6 @@ begin
  finally
   FCriticalSection.Leave;
  end;
-
- // update GUI
- if EditorForm is TFmChorus then
-  with TFmChorus(EditorForm)
-   do UpdateStages;
 end;
 
 procedure TChorusModule.ParamDriftChange(
@@ -241,11 +225,6 @@ begin
  finally
   FCriticalSection.Leave;
  end;
-
- // update GUI
- if EditorForm is TFmChorus then
-  with TFmChorus(EditorForm)
-   do UpdateDrift;
 end;
 
 procedure TChorusModule.ParamDepthChange(
@@ -258,11 +237,6 @@ begin
  finally
   FCriticalSection.Leave;
  end;
-
- // update GUI
- if EditorForm is TFmChorus then
-  with TFmChorus(EditorForm)
-   do UpdateDepth;
 end;
 
 procedure TChorusModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -274,11 +248,6 @@ begin
  finally
   FCriticalSection.Leave;
  end;
-
- // update GUI
- if EditorForm is TFmChorus then
-  with TFmChorus(EditorForm)
-   do UpdateMix;
 end;
 
 procedure TChorusModule.VSTModuleProcess(const Inputs,

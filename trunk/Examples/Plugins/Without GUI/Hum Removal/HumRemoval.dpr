@@ -2,11 +2,8 @@
 library HumRemoval;
 
 uses
-  FastMM4,
-  FastMove,
-  madExcept,
-  madLinkDisAsm,
-  DAV_WinAmp,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   HumRemovalDSP in 'HumRemovalDSP.pas' {HumRemovalModule: TVSTModule};
@@ -16,15 +13,8 @@ begin
   Result := VstModuleMain(AudioMasterCallback, THumRemovalModule);
 end;
 
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(THumRemovalModule);
-end;
-
 exports
   VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VstPluginMain name 'VSTPluginMain';
 
-begin
 end.

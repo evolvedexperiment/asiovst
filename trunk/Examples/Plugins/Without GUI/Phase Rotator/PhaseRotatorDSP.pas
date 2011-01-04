@@ -1,5 +1,7 @@
 unit PhaseRotatorDSP;
 
+{$MODE Delphi}
+
 interface
 
 uses 
@@ -89,7 +91,7 @@ procedure TPhaseRotatorModule.ParameterFrequencyDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
-  then PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3);
+  then PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 3);
 end;
 
 procedure TPhaseRotatorModule.ParameterFrequencyLabel(Sender: TObject;
@@ -102,13 +104,13 @@ end;
 procedure TPhaseRotatorModule.ParameterOrderDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(2 * Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(2 * Round(Parameter[Index])));
 end;
 
 procedure TPhaseRotatorModule.ParameterBandwidthDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 2, 2);
+ PreDefined := FloatToAnsiString(Parameter[Index], 2);
 end;
 
 procedure TPhaseRotatorModule.ParameterBandwidthChange(

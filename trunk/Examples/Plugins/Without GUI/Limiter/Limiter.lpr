@@ -6,9 +6,6 @@ library Limiter;
 uses
   Interfaces,
   Forms,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   LimiterDM in 'LimiterDM.pas' {LimiterDataModule: TVSTModule};
@@ -18,13 +15,6 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TLimiterDataModule);
 end;
 
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TLimiterDataModule);
-end;
-{$ENDIF}
-
 exports
 {$IFDEF DARWIN}  {OS X entry points}
   VSTPluginMain name '_main',
@@ -33,11 +23,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-
-begin
- Application.Initialize;
 end.

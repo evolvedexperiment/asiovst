@@ -6,9 +6,6 @@ library AmpSim;
 uses
   Interfaces,
   Forms,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   AmpSimDM in 'AmpSimDM.pas' {ComboDataModule: TVSTModule};
@@ -18,13 +15,6 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TComboDataModule);
 end;
 
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
- Result := WinampDSPModuleHeader(TComboDataModule);
-end;
-{$ENDIF}
-
 exports
 {$IFDEF DARWIN}  {OS X entry points}
   VSTPluginMain name '_main',
@@ -33,11 +23,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-{$IFDEF MSWINDOWS}
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
-{$ENDIF}
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
 end.

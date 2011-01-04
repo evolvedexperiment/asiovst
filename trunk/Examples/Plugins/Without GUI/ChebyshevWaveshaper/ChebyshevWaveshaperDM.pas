@@ -68,7 +68,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_VSTParameters;
+  DAV_Common;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var
@@ -86,7 +86,7 @@ begin
     SmallStepFloat    := 0.1;
     LargeStepFloat    := 10;
     LargeStepInteger  := 10;
-    ShortLabel        := 'H' + IntToStr(HarmIndex + 1);
+    ShortLabel        := AnsiString('H' + IntToStr(HarmIndex + 1));
     Units             := 'dB';
     OnParameterChange := ParamHarmonicChange;
     OnCustomParameterDisplay := ParamHarmDisplay;
@@ -140,7 +140,7 @@ begin
  Val := Abs(140 * Parameter[Index]) - 140;
  if Abs(Parameter[Index]) < 1E-3
   then PreDefined := '-oo'
-  else PreDefined := FloatToStrF(Val, ffGeneral, 3, 3);
+  else PreDefined := FloatToAnsiString(Val, 3);
 end;
 
 procedure TChebyshevWaveshaperDataModule.ParamHarmonicChange(

@@ -64,7 +64,7 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, DAV_VSTParameters;
+  Registry, DAV_Common, DAV_VSTParameters;
 
 const
   CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Ring Modulator';
@@ -74,8 +74,8 @@ var
   ChannelIndex : Integer;
   UpperFreq    : Single;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
 
  with TRegistry.Create do
   try
@@ -139,8 +139,8 @@ procedure TRingModulatorDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
-  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
-  else PreDefined := FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4);
+  then PreDefined := FloatToAnsiString(Parameter[Index], 4)
+  else PreDefined := FloatToAnsiString(0.001 * Parameter[Index], 4);
 end;
 
 procedure TRingModulatorDataModule.ParameterFrequencyLabel(
