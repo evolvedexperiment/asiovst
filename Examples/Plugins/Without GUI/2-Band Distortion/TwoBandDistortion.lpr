@@ -9,23 +9,12 @@ uses
   DAV_Common,
   DAV_VSTBasicModule,
   DAV_VSTEffect,
-  ImagesForLazarus,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   TwoBandDistortionDM in 'TwoBandDistortionDM.pas' {TwoBandDistortionDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  Result := VstModuleMain(AudioMasterCallback, TTwoBandDistortionDataModule);
 end;
-
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
- Result := WinampDSPModuleHeader(TTwoBandDistortionDataModule);
-end;
-{$ENDIF}
 
 exports
 {$IFDEF DARWIN}  {OS X entry points}
@@ -35,12 +24,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-{$IFDEF MSWINDOWS}
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
-{$ENDIF}
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
- Application.Initialize;
 end.

@@ -131,7 +131,7 @@ end;
 procedure THumRemovalModule.ParameterHighpassOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure THumRemovalModule.ParameterHighpassTypeChange(
@@ -238,7 +238,7 @@ end;
 procedure THumRemovalModule.ParameterHighpassActiveDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 const
-  CActiveStr : array [0..1] of string = ('On', 'Off');
+  CActiveStr : array [0..1] of AnsiString = ('On', 'Off');
 begin
  PreDefined := CActiveStr[Integer(Parameter[Index] < 0.5)];
 end;

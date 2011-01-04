@@ -3,8 +3,7 @@ library Compressor;
 
 uses
   FastMM4,  // either download the library or comment if there is an error here
-  FastMove,
-  DAV_WinAmp,
+  FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   CompressorDM in 'CompressorDM.pas' {CompressorDataModule: TVSTModule};
@@ -14,15 +13,8 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TCompressorDataModule);
 end;
 
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
- Result := WinampDSPModuleHeader(TCompressorDataModule);
-end;
-
 exports
   VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VstPluginMain name 'VSTPluginMain';
 
-begin
 end.

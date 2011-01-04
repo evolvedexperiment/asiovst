@@ -6,9 +6,6 @@ library BodeFrequencyShifter;
 uses
   Interfaces,
   Forms,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   BodeFrequencyShifterDM in 'BodeFrequencyShifterDM.pas' {BodeFrequencyShifterDataModule: TVSTModule};
@@ -18,13 +15,6 @@ begin
   Result := VstModuleMain(AudioMasterCallback, TBodeFrequencyShifterDataModule);
 end;
 
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TBodeFrequencyShifterDataModule);
-end;
-{$ENDIF}
-
 exports
 {$IFDEF DARWIN}  {OS X entry points}
   VSTPluginMain name '_main',
@@ -33,10 +23,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
- Application.Initialize;
 end.

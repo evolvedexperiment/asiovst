@@ -9,6 +9,7 @@
         <MainUnitHasTitleStatement Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
+      <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
     </General>
@@ -18,8 +19,52 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="1" Active="Default">
-      <Item1 Name="Default" Default="True"/>
+    <BuildModes Count="2">
+      <Item1 Name="Release" Default="True"/>
+      <Item2 Name="Debug">
+        <CompilerOptions>
+          <Version Value="9"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\..\..\Bin\WithoutGUIfReeverb_x64.DLL"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="..\..\..\..\Source"/>
+            <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\Math;..\..\..\..\Source\DSP;..\..\..\..\Source\FileFormats"/>
+            <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
+              <CStyleOperator Value="False"/>
+              <IncludeAssertionCode Value="True"/>
+              <CPPInline Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <UseLineInfoUnit Value="False"/>
+              <StripSymbols Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <UseMsgFile Value="True"/>
+            </CompilerMessages>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -31,45 +76,49 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+        <PackageName Value="LCL"/>
       </Item1>
+      <Item2>
+        <PackageName Value="DAV_DSP_Lazarus"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+      </Item4>
     </RequiredPackages>
     <Units Count="2">
       <Unit0>
         <Filename Value="fReeverb.lpr"/>
         <IsPartOfProject Value="True"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="31"/>
-        <UsageCount Value="20"/>
       </Unit0>
       <Unit1>
         <Filename Value="fReeverbModule.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="fReeverbModule"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="33" Y="113"/>
-        <UsageCount Value="20"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\..\Bin\WithoutGUI\fReeverb_$(TargetCPU)"/>
+    </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\..\source;$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\FileFormats"/>
-      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <IncludeFiles Value="..\..\..\..\Source"/>
+      <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\Math;..\..\..\..\Source\DSP;..\..\..\..\Source\FileFormats"/>
+      <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <UseAnsiStrings Value="False"/>
+        <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
+        <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>

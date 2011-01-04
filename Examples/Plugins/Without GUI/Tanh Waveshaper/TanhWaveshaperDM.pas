@@ -398,7 +398,7 @@ end;
 procedure TTanhWaveshaperModule.ParameterIntegerDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TTanhWaveshaperModule.ParameterGainChange(

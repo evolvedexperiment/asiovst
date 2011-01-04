@@ -2,9 +2,8 @@
 library Vibrato;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  FastMove,
-  DAV_WinAmp,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   VibratoDM in 'VibratoDM.pas' {VibratoModule: TVSTModule};
@@ -14,15 +13,9 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TVibratoModule);
 end;
 
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
- Result := WinampDSPModuleHeader(TVibratoModule);
-end;
-
 exports
   VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

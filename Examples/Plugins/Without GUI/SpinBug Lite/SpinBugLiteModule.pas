@@ -166,9 +166,9 @@ begin
  if Assigned(FSineLFO[1]) then FreeAndNil(FSineLFO[1]);
 end;
 
-function GetProcessTypeCaption(Nr : Integer) : string;
+function GetProcessTypeCaption(ParameterIndex : Integer): AnsiString;
 begin
- case Nr of
+ case ParameterIndex of
   0 : Result := 'illegal';
   1 : Result := 'stereo a';
   2 : Result := 'stereo b';
@@ -183,9 +183,9 @@ begin
  end;
 end;
 
-function GetColourCaption(Nr : Integer) : string;
+function GetColourCaption(ParameterIndex : Integer): AnsiString;
 begin
-  case Nr of
+  case ParameterIndex of
     1 : Result := 'rough';
     4 : Result := 'firm';
     8 : Result := 'medium';
@@ -198,7 +198,7 @@ end;
 procedure TSpinBugLiteModule.SBMCoefficientsDisplay(Sender : TObject;
   const Index : Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[0]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[0])));
 end;
 
 procedure TSpinBugLiteModule.SBMCoefficientsChange(Sender : TObject;

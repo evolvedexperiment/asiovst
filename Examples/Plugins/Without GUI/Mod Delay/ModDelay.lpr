@@ -1,4 +1,3 @@
-{$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library ModDelay;
 
 {$I DAV_Compiler.inc}
@@ -6,9 +5,6 @@ library ModDelay;
 uses
   Interfaces,
   Forms,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   ModDelayDM in 'ModDelayDM.pas' {ModDelayModule: TVSTModule};
@@ -18,20 +14,6 @@ begin
   Result := VstModuleMain(AudioMasterCallback, TModDelayModule);
 end;
 
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TModDelayModule);
-end;
-{$ENDIF}
-
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TBodeFrequencyShifterDataModule);
-end;
-{$ENDIF}
-
 exports
 {$IFDEF DARWIN}  {OS X entry points}
   VSTPluginMain name '_main',
@@ -40,12 +22,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-{$IFDEF MSWINDOWS}
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
-{$ENDIF}
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
- Application.Initialize;
 end.

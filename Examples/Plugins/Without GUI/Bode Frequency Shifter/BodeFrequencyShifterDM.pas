@@ -71,7 +71,7 @@ implementation
 {$ENDIF}
 
 uses
-  Registry;
+  Registry, DAV_Common;
 
 const
   CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Bode Frequency Shifter';
@@ -196,8 +196,8 @@ procedure TBodeFrequencyShifterDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
-  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
-  else PreDefined := FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4);
+  then PreDefined := FloatToAnsiString(Parameter[Index], 4)
+  else PreDefined := FloatToAnsiString(0.001 * Parameter[Index], 4);
 end;
 
 procedure TBodeFrequencyShifterDataModule.ParameterFrequencyLabel(

@@ -91,8 +91,6 @@ end;
 
 procedure TPluginDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
-var
-  PosVal : Integer;
 begin
  if Assigned(FEQs[Index div 11, Index mod 11])
   then FEQs[Index div 11, Index mod 11].Gain := -Value;

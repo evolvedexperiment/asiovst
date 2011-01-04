@@ -89,7 +89,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math, DAV_DspWindowing;
+  Math, DAV_Math, DAV_DspWindowing;
 
 procedure TPhaseAdjustmentModule.VSTModuleCreate(Sender: TObject);
 begin

@@ -9,9 +9,10 @@
         <MainUnitHasTitleStatement Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
+      <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -19,8 +20,47 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="1" Active="Default">
-      <Item1 Name="Default" Default="True"/>
+    <BuildModes Count="2">
+      <Item1 Name="Release" Default="True"/>
+      <Item2 Name="Debug">
+        <CompilerOptions>
+          <Version Value="9"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\..\..\Bin\WithoutGui\HumRemoval_x64.DLL"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="..\..\..\..\Source"/>
+            <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\Math;..\..\..\..\Source\DSP;..\..\..\..\Source\FileFormats"/>
+            <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
+              <CStyleOperator Value="False"/>
+              <IncludeAssertionCode Value="True"/>
+              <CPPInline Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <UseMsgFile Value="True"/>
+            </CompilerMessages>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -32,57 +72,50 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+        <PackageName Value="LCL"/>
       </Item1>
+      <Item2>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="DAV_DSP_Lazarus"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+      </Item4>
     </RequiredPackages>
     <Units Count="2">
       <Unit0>
         <Filename Value="HumRemoval.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="54" Y="13"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="HumRemovalDSP.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="HumRemovalModule"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="HumRemovalDSP"/>
-        <EditorIndex Value="2"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="52"/>
-        <CursorPos X="1" Y="80"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
-      <Position1>
-        <Filename Value="HumRemoval.lpr"/>
-        <Caret Line="32" Column="1" TopLine="13"/>
-      </Position1>
-      <Position2>
-        <Filename Value="HumRemovalDSP.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position2>
-    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\..\Bin\WithoutGui\HumRemoval_$(TargetCPU)"/>
+    </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\..\Source"/>
-      <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\FileFormats"/>
-      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <IncludeFiles Value="..\..\..\..\Source"/>
+      <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\Math;..\..\..\..\Source\DSP;..\..\..\..\Source\FileFormats"/>
+      <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <UseAnsiStrings Value="False"/>
+        <CStyleOperator Value="False"/>
+        <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>

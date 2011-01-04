@@ -186,8 +186,13 @@ begin
        Temp[0] := ProcessSample64(Temp[0]);
        Temp[1] := ProcessSample64(Temp[1]);
       end;
+    {$IFDEF CPU64}
+    Temp[0] := FastTanhOpt5Term(Temp[0]);
+    Temp[1] := FastTanhOpt5Term(Temp[1]);
+    {$ELSE}
     Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
     Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
+    {$ENDIF}
     Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
 
     // Peak Meter (Output)
@@ -221,8 +226,13 @@ begin
        Temp[0] := ProcessSample64(Temp[0]);
        Temp[1] := ProcessSample64(Temp[1]);
       end;
+    {$IFDEF CPU64}
+    Temp[0] := FastTanhOpt5Term(Temp[0]);
+    Temp[1] := FastTanhOpt5Term(Temp[1]);
+    {$ELSE}
     Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
     Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
+    {$ENDIF}
     Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
 
     // Peak Meter (Output)

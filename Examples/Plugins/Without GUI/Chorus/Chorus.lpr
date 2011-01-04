@@ -6,25 +6,14 @@ library Chorus;
 uses
   Interfaces,
   Forms,
-  {$IFDEF MSWINDOWS}
-  DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ChorusDM in 'ChorusDM.pas' {ChorusModule: TVSTModule},
-  ChorusGUI in 'ChorusGUI.pas' {FmChorus};
+  ChorusDM in 'ChorusDM.pas' {ChorusModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  Result := VstModuleMain(AudioMasterCallback, TChorusModule);
 end;
-
-{$IFDEF MSWINDOWS}
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TChorusModule);
-end;
-{$ENDIF}
 
 exports
 {$IFDEF DARWIN}  {OS X entry points}
@@ -34,12 +23,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-{$IFDEF MSWINDOWS}
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
-{$ENDIF}
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
- Application.Initialize;
 end.

@@ -2,7 +2,8 @@
 library PhaseAdjustment;
 
 uses
-  DAV_WinAmp,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   PhaseAdjustmentDSP in 'PhaseAdjustmentDSP.pas' {PhaseAdjustmentModule: TVSTModule};
@@ -12,15 +13,9 @@ begin
   Result := VstModuleMain(AudioMasterCallback, TPhaseAdjustmentModule);
 end;
 
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
-  Result := WinampDSPModuleHeader(TPhaseAdjustmentModule);
-end;
-
 exports
   VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

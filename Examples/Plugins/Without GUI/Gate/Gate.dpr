@@ -4,7 +4,6 @@ library Gate;
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
-  DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   GateDM in 'GateDM.pas' {GateDataModule: TVSTModule};
@@ -14,14 +13,8 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TGateDataModule);
 end;
 
-function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
-begin
- Result := WinampDSPModuleHeader(TGateDataModule);
-end;
-
-exports 
+exports
   VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain',
-  WinampDSPGetHeader name 'winampDSPGetHeader2';
+  VstPluginMain name 'VSTPluginMain';
 
 end.

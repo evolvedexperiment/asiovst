@@ -59,7 +59,7 @@ type
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure StringToParameterModel(Sender: TObject; const Index: Integer; const ParameterAnsiString: AnsiString; var Value: Single);
+    procedure StringToParameterModel(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
   private
     FBufferSize     : Integer;
     FBufferPosition : Integer;
@@ -98,7 +98,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Controls, DAV_VSTEffect, DAV_Common;
+  {$IFDEF DELPHI14_UP} AnsiStrings, {$ENDIF} Math, Controls,
+  DAV_VSTEffect, DAV_Common;
 
 procedure TComboDataModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -301,12 +302,12 @@ begin
 end;
 
 procedure TComboDataModule.StringToParameterModel(
-  Sender: TObject; const Index: Integer; const ParameterAnsiString: AnsiString;
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
   var Value: Single);
 var
   Text : AnsiString;
 begin
- Text := Trim(ParameterAnsiString);
+ Text := Trim(ParameterString);
  if Text = 'D.I.' then Value := 0 else
  if Text = 'Spkr Sim' then Value := 1 else
  if Text = 'Radio' then Value := 2 else
