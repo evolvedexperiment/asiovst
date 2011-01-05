@@ -26,7 +26,7 @@ unit DAV_DspFrequencyDomainPitchshifter;
 //  The initial developer of this code is Stephan M. Bernsee, translated and  //
 //  adapted for the Delphi ASIO & VST Project by Christian-W. Budde           //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

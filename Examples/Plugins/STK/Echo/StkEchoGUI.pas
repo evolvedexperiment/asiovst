@@ -25,7 +25,7 @@ unit StkEchoGUI;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

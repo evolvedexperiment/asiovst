@@ -1,6 +1,6 @@
 library SERealverb;
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 {$R 'RealVerb.res' 'RealVerb.rc'}
 

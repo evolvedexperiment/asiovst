@@ -2,7 +2,7 @@ unit SERealverbStereoModule;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 uses
   SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Complex,

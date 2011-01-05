@@ -1,6 +1,6 @@
 library SEHRTF3D;
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 {$R 'HRTF3D.res' 'HRTF3D.rc'}
 

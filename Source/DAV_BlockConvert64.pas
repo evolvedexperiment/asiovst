@@ -25,7 +25,7 @@ unit DAV_BlockConvert64;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,8 @@ const
     1 / $7FFFFF, 1 / $7FFFFF);
 
 procedure BlockConvertInt16LSBToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
+
+  Source: Pointer; Count: Integer);
 {$IFDEF PUREPASCAL}
 var
   SourceWord : PWord absolute Source;
@@ -508,7 +509,8 @@ asm
  ADD     EDX, 3
  ADD     ECX, 1
  JS      @Start
-
+
+
  POP     EBX
  FFREE   ST(0)
 
@@ -1068,7 +1070,8 @@ asm
  ADD     EAX, 3
  ADD     ECX, 1
  JS      @Start
-
+
+
  POP     EBX
  FFREE   ST(0)
 
@@ -1152,7 +1155,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
@@ -1194,7 +1198,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
@@ -1236,7 +1241,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
@@ -1278,7 +1284,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
