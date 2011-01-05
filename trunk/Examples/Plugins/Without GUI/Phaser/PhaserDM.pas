@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
-  DAV_DspPhaser;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
+  SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspPhaser;
 
 type
   TPhaserModule = class(TVSTModule)
@@ -228,4 +228,4 @@ begin
  end;
 end;
 
-end.
+end.
