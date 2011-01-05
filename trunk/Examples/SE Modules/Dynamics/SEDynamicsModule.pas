@@ -25,7 +25,7 @@ unit SEDynamicsModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 //  SynthEdit is witten by Jef McClintock (see http://www.synthedit.com/      //

@@ -27,7 +27,7 @@ unit DAV_SoundTouchDLL;
 //  information below. This wrapper has been and written by Christian-W.      //
 //  Budde.                                                                    //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2003-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

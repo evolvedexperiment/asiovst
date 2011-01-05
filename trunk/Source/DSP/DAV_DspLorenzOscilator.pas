@@ -27,7 +27,7 @@ unit DAV_DspLorenzOscilator;
 //  Initial Delphi Pascal Version ©2005, Thaddy de Koning                     //
 //  Reviewed and rewritten as part of this project by Christian-W. Budde      //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

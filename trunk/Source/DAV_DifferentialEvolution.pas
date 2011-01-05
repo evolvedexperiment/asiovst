@@ -28,7 +28,7 @@ unit DAV_DifferentialEvolution;
 //  see http://ldesoras.free.fr/prod.html for more details                    //
 //  It was reviewed and rewritten from scratch by Christian-W. Budde          //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2006-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2006-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

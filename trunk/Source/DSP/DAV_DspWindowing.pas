@@ -25,7 +25,7 @@ unit DAV_DspWindowing;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -5138,4 +5138,4 @@ begin
 end;
 {$ENDIF}
 
-end.
+end.
