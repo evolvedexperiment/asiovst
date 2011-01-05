@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Types, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspVariableDelay;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Types, SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspVariableDelay;
 
 type
   TVariableDelayVST = class(TVSTModule)
@@ -160,4 +160,4 @@ begin
  end;
 end;
 
-end.
+end.

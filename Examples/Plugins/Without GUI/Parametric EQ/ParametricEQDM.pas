@@ -420,4 +420,4 @@ begin
  if Assigned(FFilters[1, Band]) then FFilters[1, Band].BandWidth := Value;
 end;
 
-end.
+end.

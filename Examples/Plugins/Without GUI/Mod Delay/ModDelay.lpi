@@ -140,6 +140,7 @@
             <Options>
               <PassLinkerOptions Value="True"/>
               <LinkerOptions Value="-no_order_inits"/>
+              <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
