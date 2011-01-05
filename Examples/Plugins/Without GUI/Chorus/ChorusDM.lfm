@@ -59,11 +59,11 @@ object ChorusModule: TChorusModule
       LargeStepFloat = 2
       Max = 10
       MaxInteger = 10
-      Min = 0.0010000000475
+      Min = 0.00100000004749
       MinInteger = 1
       ReportVST2Properties = True
       ShortLabel = 'Speed'
-      SmallStepFloat = 0.10000000149012
+      SmallStepFloat = 0.10000000149011
       SmoothingFactor = 0
       StepFloat = 1
       Units = 'Hz'
@@ -152,4 +152,4 @@ object ChorusModule: TChorusModule
   HorizontalOffset = 316
   VerticalOffset = 383
   Width = 215
-end
+end

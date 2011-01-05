@@ -3,8 +3,6 @@ library GraphicEQ;
 
 {$I DAV_Compiler.inc}
 
-{$R *.res}
-
 uses
   Interfaces,
   Forms,
