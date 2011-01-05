@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>AmpSim</string>
 	<key>CFBundleName</key>
-	<string>AmpSim</string>
+	<string>Amplifier Simulation</string>
 	<key>CFBundleIdentifier</key>
 	<string>Delphi ASIO &amp; VST Project</string>
 	<key>CFBundleInfoDictionaryVersion</key>

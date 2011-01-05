@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>2banddistortion</string>
+	<string>BodeFrequencyShifter</string>
 	<key>CFBundleName</key>
-	<string>2-Band Distortion</string>
+	<string>Bode Frequency Shifter</string>
 	<key>CFBundleIdentifier</key>
 	<string>Delphi ASIO &amp; VST Project</string>
 	<key>CFBundleInfoDictionaryVersion</key>

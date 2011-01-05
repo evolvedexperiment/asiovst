@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Vibrato</string>
+	<string>libvibrato.dylib</string>
 	<key>CFBundleName</key>
 	<string>Vibrato</string>
 	<key>CFBundleIdentifier</key>
