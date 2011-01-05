@@ -55,9 +55,9 @@ type
 implementation
 
 {$IFDEF FPC}
-{$R *.LFM}
+{$R *.lfm}
 {$ELSE}
-{$R *.DFM}
+{$R *.dfm}
 {$ENDIF}
 
 procedure TLimiterDataModule.VSTModuleOpen(Sender: TObject);

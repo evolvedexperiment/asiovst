@@ -118,15 +118,15 @@ begin
  ReallocateAlignedMemory(Pointer(FFilterFreq), (FIRSize + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (FIRSize + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(FIRSize)));
+ FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(Single));
- FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
+ ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplexSingle));
+ FillChar(FFilterFreq^[0], FIRSize * SizeOf(TComplexSingle), 0);
  {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(FIRSize)));
+ FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(Single));
- FillChar(FFilterFreq^[0], FIRSize * SizeOf(Single), 0);
+ ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplexSingle));
+ FillChar(FFilterFreq^[0], FIRSize * SizeOf(TComplexSingle), 0);
  {$ENDIF}{$ENDIF}
 
  // allocate memory for impulse response

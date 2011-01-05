@@ -408,7 +408,11 @@ begin
   begin
    SelectObject(FBuffer.Handle, Font.Handle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
+   {$IFDEF MSWINDOWS}
+   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+   {$ELSE}
    SetBkMode(FBuffer.Handle, CTransparent);
+   {$ENDIF}
 
    FFontHandle := Font.Handle;
   end
@@ -416,7 +420,11 @@ begin
   begin
    SelectObject(FBuffer.Handle, FFontHandle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
+   {$IFDEF MSWINDOWS}
+   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+   {$ELSE}
    SetBkMode(FBuffer.Handle, CTransparent);
+   {$ENDIF}
   end;
 end;
 
@@ -425,7 +433,11 @@ begin
  Assert(FBuffer.Handle <> 0);
  SelectObject(FBuffer.Handle, Font.Handle);
  SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
+ {$IFDEF MSWINDOWS}
+ SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
+ {$ENDIF}
  SetBkMode(FBuffer.Handle, CTransparent);
+ {$ENDIF}
  FFontHandle := Font.Handle;
  Changed;
 end;

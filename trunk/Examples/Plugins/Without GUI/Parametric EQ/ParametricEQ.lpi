@@ -95,6 +95,7 @@
         <Filename Value="ParametricEQDM.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="ParametricEQDM"/>
       </Unit1>
     </Units>
   </ProjectOptions>

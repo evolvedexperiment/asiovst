@@ -47,11 +47,10 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="GraphicEQ.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -67,12 +66,32 @@
         <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterBasics.pas"/>
+        <UnitName Value="DAV_DspFilterBasics"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="27"/>
+        <CursorPos X="23" Y="38"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="GraphicEQ.lpr"/>
         <Caret Line="25" Column="57" TopLine="1"/>
       </Position1>
+      <Position2>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterBasics.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterBasics.pas"/>
+        <Caret Line="163" Column="17" TopLine="152"/>
+      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
