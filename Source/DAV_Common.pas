@@ -26,7 +26,7 @@ unit DAV_Common;
 //  The initial developer of this code is Tobias Fleischer and                //
 //  Christian-W. Budde                                                        //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2003-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -1253,6 +1253,14 @@ begin
 end;
 
 procedure DontRaiseExceptionsAndSetFPUcodeword;
+{$IFDEF FPC}
+var
+  FpuCodeword : Word;
+asm
+ mov     FpuCodeword, $133F
+ fnclex                     // Don't raise pending exceptions enabled by the new flags
+ fldcw   FpuCodeword        // round FPU codeword, with exceptions disabled
+{$ELSE}
 const
   SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
   SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
@@ -1261,6 +1269,7 @@ const
 asm
  fnclex                  // Don't raise pending exceptions enabled by the new flags
  fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
+ {$ENDIF}
 end;
 
 

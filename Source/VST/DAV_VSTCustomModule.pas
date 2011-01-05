@@ -1009,13 +1009,13 @@ begin
      if mkAlternate in TVSTModifierKeys(keyCode.modifier)
       then SendMessage(Hndl, WM_KEYDOWN, a,b)
       else SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
-     SendMessage(Hndl,WM_CHAR, a, b);
+     SendMessage(Hndl, WM_CHAR, a, b);
      {$ELSE}
      if keyCode.virt = 0 then b := 0 else b := $100;
-     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
+     if (keyCode.modifier and 2) <> 0
       then SendMessage(Hndl, LM_KEYDOWN, a,b)
       else SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
-     SendMessage(Hndl,LM_CHAR, a, b);
+     SendMessage(Hndl, LM_CHAR, a, b);
      {$ENDIF}
 
      if Assigned(FOnKeyDown) then FOnKeyDown(Self, keyCode);
@@ -1059,11 +1059,9 @@ begin
       else SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
      {$ELSE}
      if keyCode.virt = 0 then b := 0 else b := $100;
-     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
+     if (keyCode.modifier and 2) <> 0
       then SendMessage(Hndl, LM_KEYUP, a,b)
       else SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
-
-     SendMessage(Hndl,LM_CHAR, a, b);
      {$ENDIF}
 
      if Assigned(FOnKeyUp) then FOnKeyUp(Self, keyCode);

@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterBasics, 
-  DAV_DspPolyphaseFilter, DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
+  DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
   TParametricEQDataModule = class(TVSTModule)
@@ -186,7 +186,7 @@ begin
        Temp[0] := ProcessSample64(Temp[0]);
        Temp[1] := ProcessSample64(Temp[1]);
       end;
-    {$IFDEF CPU64}
+    {$IFDEF PUREPASCAL}
     Temp[0] := FastTanhOpt5Term(Temp[0]);
     Temp[1] := FastTanhOpt5Term(Temp[1]);
     {$ELSE}
@@ -226,7 +226,7 @@ begin
        Temp[0] := ProcessSample64(Temp[0]);
        Temp[1] := ProcessSample64(Temp[1]);
       end;
-    {$IFDEF CPU64}
+    {$IFDEF PUREPASCAL}
     Temp[0] := FastTanhOpt5Term(Temp[0]);
     Temp[1] := FastTanhOpt5Term(Temp[1]);
     {$ELSE}

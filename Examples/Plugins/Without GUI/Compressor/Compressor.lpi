@@ -104,8 +104,8 @@
       <Filename Value="..\..\..\..\Bin\WithoutGUI\Compressor_$(TargetCPU)"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\..\..\source"/>
-      <OtherUnitFiles Value="..\..\..\..\source;..\..\..\..\source\DSP;..\..\..\..\source\VST;..\..\..\..\source\Math"/>
+      <IncludeFiles Value="..\..\..\..\Source"/>
+      <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\DSP;..\..\..\..\Source\VST;..\..\..\..\Source\Math"/>
       <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

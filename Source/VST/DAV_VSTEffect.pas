@@ -1325,7 +1325,7 @@ begin
    if mkShift in TVstModifierKeys(VKC.modifier)
     then Dec(Result, 32);
    {$ELSE}
-   if mkShift in TVstModifierKeys(VKC.modifier)
+   if (VKC.modifier and 1) <> 0
     then Dec(Result, 32);
    {$ENDIF}
   end;

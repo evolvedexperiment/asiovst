@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Classes, DAV_Complex, DAV_DspFilter;
+  Classes, DAV_Classes, DAV_DspFilter;
 
 type
   TBasicGainFilter = class(TBiquadIIRFilter, IDspProcessor32,
@@ -160,7 +160,7 @@ type
 implementation
 
 uses
-  Math, DAV_Math, DAV_Common;
+  Math, DAV_Math;
 
 { TBasicGainFilter }
 

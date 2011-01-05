@@ -61,9 +61,6 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses
-  Math;
-
 procedure TCompressorDataModule.VSTModuleOpen(Sender: TObject);
 begin
  FCompressors[0] := TSimpleRMSCompressor.Create;

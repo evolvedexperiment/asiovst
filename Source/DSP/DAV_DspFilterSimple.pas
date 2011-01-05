@@ -32,7 +32,7 @@ unit DAV_DspFilterSimple;
 
 interface
 
-{$I ..\DAV_Compiler.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_Classes, DAV_Types, DAV_Complex, DAV_DspFilter;
