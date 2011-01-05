@@ -719,4 +719,4 @@ begin
  FillChar(FFilterState[0, 0], 10 * SizeOf(Double), 0);
 end;
 
-end.
+end.

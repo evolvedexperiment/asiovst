@@ -25,4 +25,4 @@ exports
   VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-end.
+end.

@@ -114,4 +114,4 @@ begin
  if Assigned(FLimiters[1]) then FLimiters[1].SampleRate := SampleRate;
 end;
 
-end.
+end.

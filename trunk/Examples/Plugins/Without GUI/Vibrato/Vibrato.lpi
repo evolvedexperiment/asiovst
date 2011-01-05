@@ -123,6 +123,8 @@
               <GenerateDebugInfo Value="True"/>
             </Debugging>
             <Options>
+              <PassLinkerOptions Value="True"/>
+              <LinkerOptions Value="-no_order_inits"/>
               <ExecutableType Value="Library"/>
             </Options>
           </Linking>
@@ -228,4 +230,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
