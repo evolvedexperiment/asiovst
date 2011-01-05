@@ -28,7 +28,7 @@ unit DAV_DspDitherNoiseShaper;
 //  The code is based on coefficients posted by cshei[AT]indiana.edu For      //
 //  more information see  http://www.musicdsp.org/archive.php?classid=5#99    //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

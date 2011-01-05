@@ -27,7 +27,7 @@ unit DAV_DspLFO;
 //                                                                            //
 //  Some parts of this unit are inspired by code by Didier Dambrin            //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
