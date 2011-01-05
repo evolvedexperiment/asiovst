@@ -1,6 +1,6 @@
 library SEAllDspModules;
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 uses
   SysUtils,

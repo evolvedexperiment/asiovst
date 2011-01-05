@@ -25,7 +25,7 @@ unit DAV_BlockConvert32;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -511,7 +511,8 @@ asm
  ADD     EDX, 3
  ADD     ECX, 1
  JS      @Start
-
+
+
  POP     EBX
  FFREE   ST(0)
 
@@ -1071,7 +1072,8 @@ asm
  ADD     EAX, 3
  ADD     ECX, 1
  JS      @Start
-
+
+
  POP     EBX
  FFREE   ST(0)
 
@@ -1155,7 +1157,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
@@ -1197,7 +1200,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
@@ -1239,7 +1243,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
@@ -1281,7 +1286,8 @@ asm
  MOV     [EAX + ECX * 4], EBX
  ADD     ECX, 1
  JS      @Start
-
+
+
  FFREE   ST(0)
  POP     EBX
 
@@ -1317,13 +1323,20 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- XORPS    XMM1, XMM1
- PINSRW   XMM1, [EDX + ECX * 2    ], 0
- PINSRW   XMM1, [EDX + ECX * 2 + 2], 2
- PINSRW   XMM1, [EDX + ECX * 2 + 4], 4
- PINSRW   XMM1, [EDX + ECX * 2 + 6], 6
- CVTDQ2PS XMM1, XMM1
- MULPS    XMM1, XMM0
+
+ XORPS    XMM1, XMM1
+
+ PINSRW   XMM1, [EDX + ECX * 2    ], 0
+
+ PINSRW   XMM1, [EDX + ECX * 2 + 2], 2
+
+ PINSRW   XMM1, [EDX + ECX * 2 + 4], 4
+
+ PINSRW   XMM1, [EDX + ECX * 2 + 6], 6
+
+ CVTDQ2PS XMM1, XMM1
+
+ MULPS    XMM1, XMM0
  MOVAPS   [EAX + ECX * 4], XMM1
  ADD      ECX, 4
  JLE      @MainAlgorithm
@@ -1342,7 +1355,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt16LSBToFloat32Native
 
 @Done:
@@ -1371,7 +1385,8 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- CVTDQ2PS XMM1, [EDX + ECX * 4]
+
+ CVTDQ2PS XMM1, [EDX + ECX * 4]
  MULPS    XMM1, XMM0
  MOVAPS   [EAX + ECX * 4], XMM1
  ADD      ECX, 4
@@ -1390,7 +1405,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32LSBToFloat32Native
 
 @Done:
@@ -1419,7 +1435,8 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- CVTDQ2PS XMM1, [EDX + ECX * 4]
+
+ CVTDQ2PS XMM1, [EDX + ECX * 4]
  MULPS    XMM1, XMM0
  MOVAPS   [EAX + ECX * 4], XMM1
  ADD      ECX, 4
@@ -1438,7 +1455,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32LSB16ToFloat32Native
 
 @Done:
@@ -1467,7 +1485,8 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- CVTDQ2PS XMM1, [EDX + ECX * 4]
+
+ CVTDQ2PS XMM1, [EDX + ECX * 4]
  MULPS    XMM1, XMM0
  MOVAPS   [EAX + ECX * 4], XMM1
  ADD      ECX, 4
@@ -1486,7 +1505,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32LSB18ToFloat32Native
 
 @Done:
@@ -1515,7 +1535,8 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- CVTDQ2PS XMM1, [EDX + ECX * 4]
+
+ CVTDQ2PS XMM1, [EDX + ECX * 4]
  MULPS    XMM1, XMM0
  MOVAPS   [EAX + ECX * 4], XMM1
  ADD      ECX, 4
@@ -1534,7 +1555,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32LSB20ToFloat32Native
 
 @Done:
@@ -1563,7 +1585,8 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- CVTDQ2PS XMM1, [EDX + ECX * 4]
+
+ CVTDQ2PS XMM1, [EDX + ECX * 4]
  MULPS    XMM1, XMM0
  MOVAPS   [EAX + ECX * 4], XMM1
  ADD      ECX, 4
@@ -1582,7 +1605,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32LSB24ToFloat32Native
 
 @Done:
@@ -1611,9 +1635,12 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- XORPS    XMM1, XMM1
- MOV      BX, [EDX + 2 * ECX]
- XCHG     BH, BL
+
+ XORPS    XMM1, XMM1
+
+ MOV      BX, [EDX + 2 * ECX]
+
+ XCHG     BH, BL
  PINSRW   XMM1, EBX, 0
  MOV      BX, [EDX + 2 * ECX + 2]
  XCHG     BH, BL
@@ -1622,10 +1649,12 @@ asm
  XCHG     BH, BL
  PINSRW   XMM1, EBX, 4
  MOV      BX, [EDX + 2 * ECX + 6]
- XCHG     BH, BL
+
+ XCHG     BH, BL
  PINSRW   XMM1, EBX, 6
  CVTDQ2PS XMM1, XMM1
- MULPS    XMM1, XMM0
+
+ MULPS    XMM1, XMM0
  MOVAPS   [EAX + ECX * 4], XMM1
  ADD      ECX, 4
  JLE      @MainAlgorithm
@@ -1646,7 +1675,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt16MSBToFloat32Native
 
 @Done:
@@ -1679,21 +1709,27 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- MOV      EBX, [EDX + ECX * 4     ]
- BSWAP    EBX
- MOV      [ESI     ], EBX
+
+ MOV      EBX, [EDX + ECX * 4     ]
+
+ BSWAP    EBX
+
+ MOV      [ESI     ], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  4]
  BSWAP    EBX
- MOV      [ESI +  4], EBX
+
+ MOV      [ESI +  4], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  8]
  BSWAP    EBX
- MOV      [ESI +  8], EBX
+
+ MOV      [ESI +  8], EBX
 
  MOV      EBX, [EDX + ECX * 4 + 12]
  BSWAP    EBX
- MOV      [ESI + 12], EBX
+
+ MOV      [ESI + 12], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULPS    XMM1, XMM0
@@ -1708,7 +1744,8 @@ asm
 @ReminderLoop:
  MOV      EBX, [EDX + ECX * 4 + 16]
  BSWAP    EBX
- MOV      [ESI], EBX
+
+ MOV      [ESI], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULSS    XMM1, XMM0
@@ -1717,7 +1754,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32MSBToFloat32Native
 
 @Done:
@@ -1751,21 +1789,27 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- MOV      EBX, [EDX + ECX * 4     ]
- BSWAP    EBX
- MOV      [ESI     ], EBX
+
+ MOV      EBX, [EDX + ECX * 4     ]
+
+ BSWAP    EBX
+
+ MOV      [ESI     ], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  4]
  BSWAP    EBX
- MOV      [ESI +  4], EBX
+
+ MOV      [ESI +  4], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  8]
  BSWAP    EBX
- MOV      [ESI +  8], EBX
+
+ MOV      [ESI +  8], EBX
 
  MOV      EBX, [EDX + ECX * 4 + 12]
  BSWAP    EBX
- MOV      [ESI + 12], EBX
+
+ MOV      [ESI + 12], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULPS    XMM1, XMM0
@@ -1780,7 +1824,8 @@ asm
 @ReminderLoop:
  MOV      EBX, [EDX + ECX * 4 + 16]
  BSWAP    EBX
- MOV      [ESI], EBX
+
+ MOV      [ESI], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULSS    XMM1, XMM0
@@ -1789,7 +1834,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32MSB16ToFloat32Native
 
 @Done:
@@ -1823,21 +1869,27 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- MOV      EBX, [EDX + ECX * 4     ]
- BSWAP    EBX
- MOV      [ESI     ], EBX
+
+ MOV      EBX, [EDX + ECX * 4     ]
+
+ BSWAP    EBX
+
+ MOV      [ESI     ], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  4]
  BSWAP    EBX
- MOV      [ESI +  4], EBX
+
+ MOV      [ESI +  4], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  8]
  BSWAP    EBX
- MOV      [ESI +  8], EBX
+
+ MOV      [ESI +  8], EBX
 
  MOV      EBX, [EDX + ECX * 4 + 12]
  BSWAP    EBX
- MOV      [ESI + 12], EBX
+
+ MOV      [ESI + 12], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULPS    XMM1, XMM0
@@ -1852,7 +1904,8 @@ asm
 @ReminderLoop:
  MOV      EBX, [EDX + ECX * 4 + 16]
  BSWAP    EBX
- MOV      [ESI], EBX
+
+ MOV      [ESI], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULSS    XMM1, XMM0
@@ -1861,7 +1914,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32MSB18ToFloat32Native
 
 @Done:
@@ -1896,21 +1950,27 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- MOV      EBX, [EDX + ECX * 4     ]
- BSWAP    EBX
- MOV      [ESI     ], EBX
+
+ MOV      EBX, [EDX + ECX * 4     ]
+
+ BSWAP    EBX
+
+ MOV      [ESI     ], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  4]
  BSWAP    EBX
- MOV      [ESI +  4], EBX
+
+ MOV      [ESI +  4], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  8]
  BSWAP    EBX
- MOV      [ESI +  8], EBX
+
+ MOV      [ESI +  8], EBX
 
  MOV      EBX, [EDX + ECX * 4 + 12]
  BSWAP    EBX
- MOV      [ESI + 12], EBX
+
+ MOV      [ESI + 12], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULPS    XMM1, XMM0
@@ -1925,7 +1985,8 @@ asm
 @ReminderLoop:
  MOV      EBX, [EDX + ECX * 4 + 16]
  BSWAP    EBX
- MOV      [ESI], EBX
+
+ MOV      [ESI], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULSS    XMM1, XMM0
@@ -1934,7 +1995,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32MSB20ToFloat32Native
 
 @Done:
@@ -1969,21 +2031,27 @@ asm
  JG       @Reminder
 
 @MainAlgorithm:
- MOV      EBX, [EDX + ECX * 4     ]
- BSWAP    EBX
- MOV      [ESI     ], EBX
+
+ MOV      EBX, [EDX + ECX * 4     ]
+
+ BSWAP    EBX
+
+ MOV      [ESI     ], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  4]
  BSWAP    EBX
- MOV      [ESI +  4], EBX
+
+ MOV      [ESI +  4], EBX
 
  MOV      EBX, [EDX + ECX * 4 +  8]
  BSWAP    EBX
- MOV      [ESI +  8], EBX
+
+ MOV      [ESI +  8], EBX
 
  MOV      EBX, [EDX + ECX * 4 + 12]
  BSWAP    EBX
- MOV      [ESI + 12], EBX
+
+ MOV      [ESI + 12], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULPS    XMM1, XMM0
@@ -1998,7 +2066,8 @@ asm
 @ReminderLoop:
  MOV      EBX, [EDX + ECX * 4 + 16]
  BSWAP    EBX
- MOV      [ESI], EBX
+
+ MOV      [ESI], EBX
 
  CVTDQ2PS XMM1, [ESI]
  MULSS    XMM1, XMM0
@@ -2007,7 +2076,8 @@ asm
  JS       @ReminderLoop
  JMP      @Done
 
-@Fallback:
+
+@Fallback:
  CALL     BlockConvertInt32MSB24ToFloat32Native
 
 @Done:

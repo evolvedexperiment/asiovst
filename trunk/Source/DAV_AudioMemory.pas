@@ -25,7 +25,7 @@ unit DAV_AudioMemory;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -253,7 +253,8 @@ begin
    // check if new length is longer than the old length and fill with zeroes if necessary
    if SampleCount > Self.SampleCount
     then FillChar(FData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Single), 0);
-  end;
+
+  end;
 
  inherited;
 end;
@@ -366,7 +367,8 @@ begin
    // check if new length is longer than the old length and fill with zeroes if necessary
    if SampleCount > Self.SampleCount
     then FillChar(FData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Double), 0);
-  end;
+
+  end;
 
  inherited;
 end;

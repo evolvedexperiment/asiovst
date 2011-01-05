@@ -26,7 +26,7 @@ unit MultiSineGeneratorFrequency;
 //  The initial developer of this code is Tobias Fleischer and                //
 //  Christian-W. Budde                                                        //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-﻿unit LA4029DM;
+unit LA4029DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -25,7 +25,7 @@
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

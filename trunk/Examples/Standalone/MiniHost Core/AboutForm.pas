@@ -1,6 +1,6 @@
 unit AboutForm;
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 interface
 
