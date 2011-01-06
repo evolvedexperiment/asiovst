@@ -160,9 +160,9 @@ var
   InList,
   OutList : array of PDAVSingleFixedArray;
 begin
- assert(Inputs.SampleFrames = Outputs.SampleFrames);
- assert(Inputs.ChannelCount >= numInputs);
- assert(Outputs.ChannelCount >= numOutputs);
+ Assert(Inputs.SampleFrames = Outputs.SampleFrames);
+ Assert(Inputs.ChannelCount >= numInputs);
+ Assert(Outputs.ChannelCount >= numOutputs);
 
  SetLength(InList, Inputs.ChannelCount);
  for Channel := 0 to Inputs.ChannelCount - 1
@@ -181,9 +181,9 @@ var
   InList,
   OutList : array of PDAVDoubleFixedArray;
 begin
- assert(Inputs.SampleFrames = Outputs.SampleFrames);
- assert(Inputs.ChannelCount >= numInputs);
- assert(Outputs.ChannelCount >= numOutputs);
+ Assert(Inputs.SampleFrames = Outputs.SampleFrames);
+ Assert(Inputs.ChannelCount >= numInputs);
+ Assert(Outputs.ChannelCount >= numOutputs);
 
  SetLength(InList, Inputs.ChannelCount);
  for Channel := 0 to Inputs.ChannelCount - 1
@@ -192,7 +192,7 @@ begin
  SetLength(OutList, Outputs.ChannelCount);
  for Channel := 0 to Outputs.ChannelCount - 1
   do OutList[Channel] := Outputs[Channel].ChannelDataPointer;
- ProcessDoubleReplacing(PPDouble(InList), PPDouble(OutList), Inputs.SampleFrames);
+ Process64Replacing(PPDouble(InList), PPDouble(OutList), Inputs.SampleFrames);
 end;
 
 procedure TCustomVstPlugInAudioData.ProcessAudioDataCollectionInplace(
@@ -201,8 +201,8 @@ var
   Channel  : Integer;
   DataList : array of PDAVSingleFixedArray;
 begin
- assert(AudioData.ChannelCount >= numInputs);
- assert(AudioData.ChannelCount >= numOutputs);
+ Assert(AudioData.ChannelCount >= numInputs);
+ Assert(AudioData.ChannelCount >= numOutputs);
 
  SetLength(DataList, AudioData.ChannelCount);
  for Channel := 0 to AudioData.ChannelCount - 1
@@ -217,14 +217,14 @@ var
   Channel  : Integer;
   DataList : array of PDAVDoubleFixedArray;
 begin
- assert(AudioData.ChannelCount >= numInputs);
- assert(AudioData.ChannelCount >= numOutputs);
+ Assert(AudioData.ChannelCount >= numInputs);
+ Assert(AudioData.ChannelCount >= numOutputs);
 
  SetLength(DataList, AudioData.ChannelCount);
  for Channel := 0 to AudioData.ChannelCount - 1
   do DataList[Channel] := AudioData[Channel].ChannelDataPointer;
 
- ProcessDoubleReplacing(PPDouble(DataList), PPDouble(DataList), AudioData.SampleFrames);
+ Process64Replacing(PPDouble(DataList), PPDouble(DataList), AudioData.SampleFrames);
 end;
 
 

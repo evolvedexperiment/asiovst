@@ -32,6 +32,7 @@ requires
 
 contains
   DAV_VSTHost in '..\..\Source\VST\DAV_VSTHost.pas',
-  DAV_VSTHostRegister in '..\..\Source\VST\DAV_VSTHostRegister.pas';
+  DAV_VSTHostRegister in '..\..\Source\VST\DAV_VSTHostRegister.pas',
+  DAV_VSTHostAudioData in '..\..\Source\VST\DAV_VSTHostAudioData.pas';
 
 end.
