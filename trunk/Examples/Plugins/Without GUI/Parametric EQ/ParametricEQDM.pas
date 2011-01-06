@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterBasics, 
+  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
+  SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterBasics,
   DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
@@ -53,12 +53,15 @@ type
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FFilters     : array [0..1, 0..7] of TCustomBandwidthIIRFilter;
-    FUpSampler   : array [0..1] of TPolyphaseUpsampler64;
-    FDownSampler : array [0..1] of TPolyphaseDownSampler64;
-    FPeaks       : array [0..1, 0..1] of Single;
-    FGains       : array [0..1] of Single;
+    FCriticalSection : TCriticalSection;
+    FFilters         : array [0..1, 0..7] of TCustomBandwidthIIRFilter;
+    FUpSampler       : array [0..1] of TPolyphaseUpsampler64;
+    FDownSampler     : array [0..1] of TPolyphaseDownSampler64;
+    FPeaks           : array [0..1, 0..1] of Single;
+    FGains           : array [0..1] of Single;
     procedure SetFilterClass(Index: Integer; const Value: TBandwidthIIRFilterClass);
     function GetFilterClass(Index: Integer): TBandwidthIIRFilterClass;
     function GetDownSampler(Index: Integer): TPolyphaseDownSampler64;
@@ -88,6 +91,16 @@ uses
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+
+procedure TParametricEQDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TParametricEQDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TParametricEQDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -162,154 +175,6 @@ begin
    do FreeAndNil(FFilters[Channel, Band]);
 end;
 
-procedure TParametricEQDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  Sample  : Integer;
-  Channel : Integer;
-  Band    : Integer;
-  Temp    : TDAV2DoubleArray;
-const
-  CPeakRelease : Single = 0.99999;
-begin
- for Channel := 0 to Length(FFilters) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    // Peak Meter (Input)
-    Temp[0] := CHalf32 * (abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
-    FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + abs(Temp[0]));
-
-    FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
-    for Band := 0 to Length(FFilters[Channel]) - 1 do
-     with FFilters[Channel, Band] do
-      begin
-       Temp[0] := ProcessSample64(Temp[0]);
-       Temp[1] := ProcessSample64(Temp[1]);
-      end;
-    {$IFDEF PUREPASCAL}
-    Temp[0] := FastTanhOpt5Term(Temp[0]);
-    Temp[1] := FastTanhOpt5Term(Temp[1]);
-    {$ELSE}
-    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
-    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
-    {$ENDIF}
-    Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
-
-    // Peak Meter (Output)
-    Temp[1] := CHalf32 * (abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
-    FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + abs(Temp[1]));
-   end;
-end;
-
-procedure TParametricEQDataModule.VSTModuleProcessDoubleReplacing(
-  const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
-  const SampleFrames: Integer);
-var
-  Sample  : Integer;
-  Channel : Integer;
-  Band    : Integer;
-  Temp    : TDAV2DoubleArray;
-const
-  CPeakRelease : Single = 0.99999;
-begin
- for Channel := 0 to Length(FFilters) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    // Peak Meter (Input)
-    Temp[0] := CHalf32 * (abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
-    FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + abs(Temp[0]));
-
-    FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
-    for Band := 0 to Length(FFilters[Channel]) - 1 do
-     with FFilters[Channel, Band] do
-      begin
-       Temp[0] := ProcessSample64(Temp[0]);
-       Temp[1] := ProcessSample64(Temp[1]);
-      end;
-    {$IFDEF PUREPASCAL}
-    Temp[0] := FastTanhOpt5Term(Temp[0]);
-    Temp[1] := FastTanhOpt5Term(Temp[1]);
-    {$ELSE}
-    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
-    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
-    {$ENDIF}
-    Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
-
-    // Peak Meter (Output)
-    Temp[1] := CHalf32 * (abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
-    FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + abs(Temp[1]));
-   end;
-end;
-
-procedure TParametricEQDataModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
-var
-  Channel, Band : Integer;
-  Transition    : Single;
-begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FFilters) - 1 do
-   begin
-    // calculate up/downsampler transition bandwidth
-    if 20000 / Abs(SampleRate) < 0.5
-     then Transition := 20000 / Abs(SampleRate)
-     else Transition := 0.499;
-
-    if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
-    if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
-
-    for Band := 0 to Length(FFilters[Channel]) - 1 do
-     if Assigned(FFilters[Channel, Band])
-      then FFilters[Channel, Band].SampleRate := Abs(SampleRate);
-   end;
-end;
-
-procedure TParametricEQDataModule.ParameterGainChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  Band: Integer;
-begin
- Band := (Index - 1) div 4;
- if Assigned(FFilters[0, Band]) then FFilters[0, Band].Gain := Value;
- if Assigned(FFilters[1, Band]) then FFilters[1, Band].Gain := Value;
-end;
-
-procedure TParametricEQDataModule.ParameterInputChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FGains[0] := 0.01125 * dB_to_Amp(Value);
-end;
-
-procedure TParametricEQDataModule.ParameterOutputChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FGains[1] := 100 * dB_to_Amp(Value);
-end;
-
-procedure TParametricEQDataModule.ParameterTypeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  Band: Integer;
-begin
- Band := (Index - 1) div 4;
- if Assigned(FFilters[0, Band]) then
-  case Round(Value) of
-    0 : FilterClass[Band] := TBasicGainFilter;
-    1 : FilterClass[Band] := TBasicPeakFilter;
-    2 : FilterClass[Band] := TBasicLowShelfFilter;
-    3 : FilterClass[Band] := TBasicHighShelfFilter;
-    4 : FilterClass[Band] := TBasicLowpassFilter;
-    5 : FilterClass[Band] := TBasicHighpassFilter;
-    6 : FilterClass[Band] := TBasicBandpassFilter;
-    7 : FilterClass[Band] := TBasicNotchFilter;
-    8 : FilterClass[Band] := TBasicAllpassFilter;
-    9 : FilterClass[Band] := TBasicLowShelfAFilter;
-   10 : FilterClass[Band] := TBasicLowShelfBFilter;
-   11 : FilterClass[Band] := TBasicHighShelfAFilter;
-   12 : FilterClass[Band] := TBasicHighShelfBFilter;
-  end;
-end;
-
 procedure TParametricEQDataModule.ParameterTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
@@ -347,16 +212,6 @@ begin
       if Assigned(OldFilter) then FreeAndNil(OldFilter);
      end else
    else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
-end;
-
-procedure TParametricEQDataModule.ParameterFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  Band: Integer;
-begin
- Band := (Index - 1) div 4;
- if Assigned(FFilters[0, Band]) then FFilters[0, Band].Frequency := 0.5 * Value;
- if Assigned(FFilters[1, Band]) then FFilters[1, Band].Frequency := 0.5 * Value;
 end;
 
 function TParametricEQDataModule.GetDownSampler(
@@ -410,14 +265,225 @@ begin
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
+procedure TParametricEQDataModule.ParameterInputChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FCriticalSection.Enter;
+ try
+  FGains[0] := 0.01125 * dB_to_Amp(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TParametricEQDataModule.ParameterOutputChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FCriticalSection.Enter;
+ try
+  FGains[1] := 100 * dB_to_Amp(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TParametricEQDataModule.ParameterTypeChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band: Integer;
+begin
+ // determine band based on parameter index
+ Band := (Index - 1) div 4;
+
+ FCriticalSection.Enter;
+ try
+  if Assigned(FFilters[0, Band]) then
+   case Round(Value) of
+     0 : FilterClass[Band] := TBasicGainFilter;
+     1 : FilterClass[Band] := TBasicPeakFilter;
+     2 : FilterClass[Band] := TBasicLowShelfFilter;
+     3 : FilterClass[Band] := TBasicHighShelfFilter;
+     4 : FilterClass[Band] := TBasicLowpassFilter;
+     5 : FilterClass[Band] := TBasicHighpassFilter;
+     6 : FilterClass[Band] := TBasicBandpassFilter;
+     7 : FilterClass[Band] := TBasicNotchFilter;
+     8 : FilterClass[Band] := TBasicAllpassFilter;
+     9 : FilterClass[Band] := TBasicLowShelfAFilter;
+    10 : FilterClass[Band] := TBasicLowShelfBFilter;
+    11 : FilterClass[Band] := TBasicHighShelfAFilter;
+    12 : FilterClass[Band] := TBasicHighShelfBFilter;
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TParametricEQDataModule.ParameterGainChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band: Integer;
+begin
+ // determine band based on parameter index
+ Band := (Index - 1) div 4;
+
+ FCriticalSection.Enter;
+ try
+  if Assigned(FFilters[0, Band]) then FFilters[0, Band].Gain := Value;
+  if Assigned(FFilters[1, Band]) then FFilters[1, Band].Gain := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TParametricEQDataModule.ParameterFrequencyChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band: Integer;
+begin
+ // determine band based on parameter index
+ Band := (Index - 1) div 4;
+
+ FCriticalSection.Enter;
+ try
+  if Assigned(FFilters[0, Band]) then FFilters[0, Band].Frequency := 0.5 * Value;
+  if Assigned(FFilters[1, Band]) then FFilters[1, Band].Frequency := 0.5 * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
 procedure TParametricEQDataModule.ParameterBandwidthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band: Integer;
 begin
+ // determine band based on parameter index
  Band := (Index - 1) div 4;
- if Assigned(FFilters[0, Band]) then FFilters[0, Band].BandWidth := Value;
- if Assigned(FFilters[1, Band]) then FFilters[1, Band].BandWidth := Value;
+
+ FCriticalSection.Enter;
+ try
+  if Assigned(FFilters[0, Band]) then FFilters[0, Band].BandWidth := Value;
+  if Assigned(FFilters[1, Band]) then FFilters[1, Band].BandWidth := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
-end.
+procedure TParametricEQDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  Channel, Band : Integer;
+  Transition    : Single;
+begin
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for Channel := 0 to Length(FFilters) - 1 do
+    begin
+     // calculate up/downsampler transition bandwidth
+     if 20000 / Abs(SampleRate) < 0.5
+      then Transition := 20000 / Abs(SampleRate)
+      else Transition := 0.499;
+
+     if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
+     if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
+
+     for Band := 0 to Length(FFilters[Channel]) - 1 do
+      if Assigned(FFilters[Channel, Band])
+       then FFilters[Channel, Band].SampleRate := Abs(SampleRate);
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TParametricEQDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Channel : Integer;
+  Band    : Integer;
+  Temp    : TDAV2DoubleArray;
+const
+  CPeakRelease : Single = 0.99999;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FFilters) - 1 do
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     // Peak Meter (Input)
+     Temp[0] := CHalf32 * (abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
+     FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + abs(Temp[0]));
+
+     FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
+     for Band := 0 to Length(FFilters[Channel]) - 1 do
+      with FFilters[Channel, Band] do
+       begin
+        Temp[0] := ProcessSample64(Temp[0]);
+        Temp[1] := ProcessSample64(Temp[1]);
+       end;
+     {$IFDEF PUREPASCAL}
+     Temp[0] := FastTanhOpt5Term(Temp[0]);
+     Temp[1] := FastTanhOpt5Term(Temp[1]);
+     {$ELSE}
+     Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
+     Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
+     {$ENDIF}
+     Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
+
+     // Peak Meter (Output)
+     Temp[1] := CHalf32 * (abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
+     FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + abs(Temp[1]));
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TParametricEQDataModule.VSTModuleProcessDoubleReplacing(
+  const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
+  const SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Channel : Integer;
+  Band    : Integer;
+  Temp    : TDAV2DoubleArray;
+const
+  CPeakRelease : Single = 0.99999;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FFilters) - 1 do
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     // Peak Meter (Input)
+     Temp[0] := CHalf32 * (abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
+     FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + abs(Temp[0]));
+
+     FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
+     for Band := 0 to Length(FFilters[Channel]) - 1 do
+      with FFilters[Channel, Band] do
+       begin
+        Temp[0] := ProcessSample64(Temp[0]);
+        Temp[1] := ProcessSample64(Temp[1]);
+       end;
+     {$IFDEF PUREPASCAL}
+     Temp[0] := FastTanhOpt5Term(Temp[0]);
+     Temp[1] := FastTanhOpt5Term(Temp[1]);
+     {$ELSE}
+     Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
+     Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
+     {$ENDIF}
+     Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
+
+     // Peak Meter (Output)
+     Temp[1] := CHalf32 * (abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
+     FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + abs(Temp[1]));
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+end.

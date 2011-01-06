@@ -42,7 +42,7 @@ type
   TModelType = (mtDI, mtSpeakerSim, mtRadio, mtMesaBoogie1, mtMesaBoogie8,
     mtMarshall4x12, mtScoopedOutMetal);
 
-  TComboDataModule = class(TVSTModule)
+  TAmpSimModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -101,7 +101,7 @@ uses
   {$IFDEF DELPHI14_UP} AnsiStrings, {$ENDIF} Math, Controls,
   DAV_VSTEffect, DAV_Common;
 
-procedure TComboDataModule.VSTModuleOpen(Sender: TObject);
+procedure TAmpSimModule.VSTModuleOpen(Sender: TObject);
 begin
  FBufferSize := 1024;
  FBufferPosition := 0;
@@ -147,7 +147,7 @@ begin
   end;
 end;
 
-procedure TComboDataModule.VSTModuleClose(Sender: TObject);
+procedure TAmpSimModule.VSTModuleClose(Sender: TObject);
 begin
  Dispose(FBuffer[0]);
  Dispose(FBuffer[1]);
@@ -155,19 +155,19 @@ begin
  FreeAndNil(FHighPass[1]);
 end;
 
-procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAmpSimModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FStereo := Value > 0.5;
 end;
 
-procedure TComboDataModule.ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAmpSimModule.ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  TrimChanged;
  DriveChanged(Value);
  BiasChanged;
 end;
 
-procedure TComboDataModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAmpSimModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if Assigned(FHighPass[0]) then
   begin
@@ -176,27 +176,27 @@ begin
   end;
 end;
 
-procedure TComboDataModule.ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAmpSimModule.ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  BiasChanged;
 end;
 
-function TComboDataModule.FilterFreq(Frequency: Double): Double;
+function TAmpSimModule.FilterFreq(Frequency: Double): Double;
 var
   j, k, r : Double;
 begin
  r := 0.999;
- j := sqr(r) - 1;
- k := 2 - 2 * sqr(r) * cos(0.647 * Frequency / SampleRate);
- result := (sqrt(sqr(k) - 4 * sqr(j)) - k) / (2 * j);
+ j := Sqr(r) - 1;
+ k := 2 - 2 * Sqr(r) * Cos(0.647 * Frequency / SampleRate);
+ Result := (Sqrt(Sqr(k) - 4 * Sqr(j)) - k) / (2 * j);
 end;
 
-function TComboDataModule.GetModelType: TModelType;
+function TAmpSimModule.GetModelType: TModelType;
 begin
  Result := TModelType(Round(ParameterByName['Model']));
 end;
 
-procedure TComboDataModule.SetModelType(const Value: TModelType);
+procedure TAmpSimModule.SetModelType(const Value: TModelType);
 begin
  if Value <> FModelType then
   begin
@@ -205,7 +205,7 @@ begin
   end;
 end;
 
-procedure TComboDataModule.ModelTypeChanged;
+procedure TAmpSimModule.ModelTypeChanged;
 begin
  case FModelType of
   mtDI:
@@ -280,13 +280,13 @@ begin
  end;
 end;
 
-procedure TComboDataModule.ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAmpSimModule.ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  SetModelType(TModelType(Round(Value)));
  TrimChanged;
 end;
 
-procedure TComboDataModule.ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAmpSimModule.ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if Assigned(FHighPass[0]) then
   begin
@@ -296,12 +296,12 @@ begin
  DriveChanged(Parameter[1]);
 end;
 
-procedure TComboDataModule.ParamNoiseChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TAmpSimModule.ParamNoiseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FRndAmt := dB_to_Amp(Value);
 end;
 
-procedure TComboDataModule.StringToParameterModel(
+procedure TAmpSimModule.StringToParameterModel(
   Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
   var Value: Single);
 var
@@ -317,7 +317,7 @@ begin
  if Text = '4x12 >' then Value := 6;
 end;
 
-procedure TComboDataModule.DriveChanged(const Value: Single);
+procedure TAmpSimModule.DriveChanged(const Value: Single);
 begin
  FIsSoftClipping := Value < 0;
 
@@ -338,12 +338,12 @@ begin
   then FDrive := FDrive * (1 + 0.1 * FDrive);
 end;
 
-procedure TComboDataModule.BiasChanged;
+procedure TAmpSimModule.BiasChanged;
 begin
- FBias := 6 * Parameter[2] / (1000 + abs(1.5 * Parameter[1]));
+ FBias := 6 * Parameter[2] / (1000 + Abs(1.5 * Parameter[1]));
 end;
 
-procedure TComboDataModule.TrimChanged;
+procedure TAmpSimModule.TrimChanged;
 begin
  case Round(Parameter[0]) of
   0: FTrim := 0.50;   // DI
@@ -362,7 +362,7 @@ begin
  if FStereo then FTrim := FTrim * 2;
 end;
 
-procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TAmpSimModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'D.I.';
@@ -375,20 +375,20 @@ begin
  end;
 end;
 
-procedure TComboDataModule.ParamOutputChanged(Sender: TObject;
+procedure TAmpSimModule.ParamOutputChanged(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
  TrimChanged;
 end;
 
-procedure TComboDataModule.ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+procedure TAmpSimModule.ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'STEREO'
   else PreDefined := 'MONO';
 end;
 
-procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TAmpSimModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   InP, OutP    : array [0..1] of Double;
   trm, clp     : Single;
@@ -430,8 +430,8 @@ begin
 
      if FIsSoftClipping then
       begin
-       OutP[0] := InP[0] / (1 + abs(InP[0]));
-       OutP[1] := InP[1] / (1 + abs(InP[1]));
+       OutP[0] := InP[0] / (1 + Abs(InP[0]));
+       OutP[1] := InP[1] / (1 + Abs(InP[1]));
       end
      else
       begin
@@ -481,7 +481,7 @@ begin
       begin
        InP[0] := FHighPass[0].ProcessSample64(drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
-       OutP[0] := InP[0] / (1 + abs(InP[0]));
+       OutP[0] := InP[0] / (1 + Abs(InP[0]));
 
        FBuffer[0]^[bp] := OutP[0];
        OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
@@ -535,15 +535,15 @@ begin
     end;
   end;
  FBufferPosition := bp;
- if (abs(FilterState[0, 0]) < 1E-10)
+ if (Abs(FilterState[0, 0]) < 1E-10)
   then FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
   else Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
- if (abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
+ if (Abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
   then FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
   else Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
 end;
 
-procedure TComboDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TAmpSimModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   InP, OutP    : array [0..1] of Double;
@@ -587,8 +587,8 @@ begin
 
       if FIsSoftClipping then
        begin
-        OutP[0] := InP[0] / (1 + abs(InP[0]));
-        OutP[1] := InP[1] / (1 + abs(InP[1]));
+        OutP[0] := InP[0] / (1 + Abs(InP[0]));
+        OutP[1] := InP[1] / (1 + Abs(InP[1]));
        end
       else
        begin
@@ -638,7 +638,7 @@ begin
       begin
        InP[0] := FHighPass[0].ProcessSample64(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
-       OutP[0] := InP[0] / (1 + abs(InP[0]));
+       OutP[0] := InP[0] / (1 + Abs(InP[0]));
 
        FBuffer[0]^[bp] := OutP[0];
        OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
@@ -692,25 +692,25 @@ begin
     end;
   end;
  FBufferPosition := bp;
- if (abs(FilterState[0, 0]) < 1E-10)
+ if (Abs(FilterState[0, 0]) < 1E-10)
   then FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
   else Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
- if (abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
+ if (Abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
   then FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
   else Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
 end;
 
-procedure TComboDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+procedure TAmpSimModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- if abs(SampleRate) > 0 then
+ if Abs(SampleRate) > 0 then
   begin
-   if Assigned(FHighPass[0]) then FHighPass[0].SampleRate := abs(SampleRate);
-   if Assigned(FHighPass[1]) then FHighPass[1].SampleRate := abs(SampleRate);
+   if Assigned(FHighPass[0]) then FHighPass[0].SampleRate := Abs(SampleRate);
+   if Assigned(FHighPass[1]) then FHighPass[1].SampleRate := Abs(SampleRate);
    ModelTypeChanged;
   end;
 end;
 
-procedure TComboDataModule.VSTModuleSuspend(Sender: TObject);
+procedure TAmpSimModule.VSTModuleSuspend(Sender: TObject);
 begin
  if Assigned(FBuffer[0])
   then FillChar(FBuffer[0]^[0], FBufferSize * SizeOf(Single), 0);
@@ -719,4 +719,4 @@ begin
  FillChar(FFilterState[0, 0], 10 * SizeOf(Double), 0);
 end;
 
-end.
+end.

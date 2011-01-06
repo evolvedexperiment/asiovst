@@ -69,7 +69,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <HostApplicationFilename Value="C:\Program Files\Audio\Hosts\VST Host\vsthost.exe"/>
+        <HostApplicationFilename Value="C:\Users\Public\Code\VSTPack\Bin\VST-Plugin Unit Test (x64).exe"/>
         <CommandLineParams Value="&quot;C:\Users\Public\Code\VSTPack\Bin\WithoutGUI\TwoBandDistortion_x86_64.dll&quot;"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>

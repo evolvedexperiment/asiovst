@@ -1,5 +1,6 @@
 object GateDataModule: TGateDataModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Simple Gate'
   ProductName = 'DAV Dynamics Examples'

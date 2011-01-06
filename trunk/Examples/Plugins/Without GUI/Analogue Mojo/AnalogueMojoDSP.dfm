@@ -1,5 +1,6 @@
 object AnalogueMojoDM: TAnalogueMojoDM
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Analogue Mojo'
   ProductName = 'DAV Effect Examples'

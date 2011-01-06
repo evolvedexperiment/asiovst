@@ -103,7 +103,7 @@ type
     property OnVendorSpecific;
 
     {$IFDEF UseDelphi}
-    property OldCreateOrder default False;
+    property OldCreateOrder default True;
     {$ENDIF}
   end;
 

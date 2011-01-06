@@ -435,7 +435,7 @@ begin
  SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
  {$IFDEF MSWINDOWS}
  SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
- {$ENDIF}
+ {$ELSE}
  SetBkMode(FBuffer.Handle, CTransparent);
  {$ENDIF}
  FFontHandle := Font.Handle;

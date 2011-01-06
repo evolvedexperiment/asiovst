@@ -2,11 +2,11 @@
 library AmpSim;
 
 uses
-  FastMM4,  // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
+  FastMM4,
+  FastMove,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  AmpSimDM in 'AmpSimDM.pas' {ComboDataModule: TVSTModule};
+  AmpSimDM in 'AmpSimDM.pas' {AmpSimModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

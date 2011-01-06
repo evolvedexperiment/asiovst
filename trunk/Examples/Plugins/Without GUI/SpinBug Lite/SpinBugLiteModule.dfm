@@ -1,5 +1,6 @@
 object SpinBugLiteModule: TSpinBugLiteModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SpinBug Lite'

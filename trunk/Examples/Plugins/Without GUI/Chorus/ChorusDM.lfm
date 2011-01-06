@@ -1,7 +1,6 @@
 object ChorusModule: TChorusModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  OldCreateOrder = True
   Flags = [effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Chorus'
@@ -145,6 +144,9 @@ object ChorusModule: TChorusModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnProcess = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   left = 218
   top = 81
@@ -152,4 +154,4 @@ object ChorusModule: TChorusModule
   HorizontalOffset = 316
   VerticalOffset = 383
   Width = 215
-end
+end

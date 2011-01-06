@@ -1,5 +1,4 @@
 object ChorusModule: TChorusModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanReplacing, effFlagsCanDoubleReplacing]

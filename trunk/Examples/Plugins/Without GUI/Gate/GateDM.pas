@@ -36,17 +36,20 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
 type
   TGateDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure SGDMThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure SGDMThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FGates : array [0..1] of TClassicGate;
+    FCriticalSection : TCriticalSection;
+    FGates           : array [0..1] of TClassicGate;
   public
   end;
 
@@ -58,44 +61,83 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-procedure TGateDataModule.VSTModuleOpen(Sender: TObject);
+procedure TGateDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FGates[0] := TClassicGate.Create;
- FGates[1] := TClassicGate.Create;
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TGateDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
+procedure TGateDataModule.VSTModuleOpen(Sender: TObject);
+var
+  ChannelIndex : Integer;
+begin
+ for ChannelIndex := 0 to Length(FGates) - 1 do
+  begin
+   FGates[ChannelIndex] := TClassicGate.Create;
+   if Abs(SampleRate) > 0
+    then FGates[ChannelIndex].SampleRate := Abs(SampleRate);
+  end;
 
  Parameter[0] := -10;
 end;
 
 procedure TGateDataModule.VSTModuleClose(Sender: TObject);
+var
+  ChannelIndex : Integer;
 begin
- FreeAndNil(FGates[0]);
- FreeAndNil(FGates[1]);
+ for ChannelIndex := 0 to Length(FGates) - 1
+  do FreeAndNil(FGates[ChannelIndex]);
 end;
 
 procedure TGateDataModule.SGDMThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
 begin
- if Assigned(FGates[0]) then FGates[0].Threshold_dB := Value;
- if Assigned(FGates[1]) then FGates[1].Threshold_dB := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FGates) - 1 do
+   if Assigned(FGates[ChannelIndex])
+    then FGates[ChannelIndex].Threshold_dB := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TGateDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  SampleIndex : Integer;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, SampleIndex] := FGates[0].ProcessSample64(Inputs[0, SampleIndex]);
-   Outputs[1, SampleIndex] := FGates[1].ProcessSample64(Inputs[1, SampleIndex]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for SampleIndex := 0 to SampleFrames - 1 do
+   for ChannelIndex := 0 to Length(FGates) - 1
+    do Outputs[ChannelIndex, SampleIndex] := FGates[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
+var
+  ChannelIndex : Integer;
 begin
- if Assigned(FGates[0]) then FGates[0].SampleRate := SampleRate;
- if Assigned(FGates[1]) then FGates[1].SampleRate := SampleRate;
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FGates) - 1 do
+    if Assigned(FGates[ChannelIndex])
+     then FGates[ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.

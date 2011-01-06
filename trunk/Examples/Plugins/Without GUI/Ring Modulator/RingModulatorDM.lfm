@@ -1,4 +1,6 @@
 object RingModulatorDataModule: TRingModulatorDataModule
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Ring Modulator'
   ProductName = 'DAV Effect Examples'
@@ -46,6 +48,8 @@ object RingModulatorDataModule: TRingModulatorDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnProcess = VSTModuleProcessMono
+  OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   left = 286
   top = 81

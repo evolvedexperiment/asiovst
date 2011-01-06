@@ -1,5 +1,6 @@
 object LimiterDataModule: TLimiterDataModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Limiter'
   ProductName = 'DAV Dynamics Examples'
@@ -8,7 +9,7 @@ object LimiterDataModule: TLimiterDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'SiGa'
+  UniqueID = 'Limi'
   ShellPlugins = <>
   Programs = <
     item

@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspWaveshaper;
+  SyncObjs, Forms, DAV_Types, DAV_VSTModule, DAV_DspWaveshaper;
 
 const
   CHarmCount : Integer = 24;
@@ -45,6 +45,7 @@ const
 type
   TChebyshevWaveshaperDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -53,6 +54,7 @@ type
     procedure ParamHarmDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamHarmLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
+    FCriticalSection    : TCriticalSecction;
     FChebysheWaveshaper : TChebyshevWaveshaper;
     FVolume             : Single;
     procedure ParamHarmonicChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -74,6 +76,10 @@ procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var
   HarmIndex : Integer;
 begin
+ // create critical section
+ FCriticalSection := TCriticalSecction.Create;
+
+ // create parameters
  FVolume := 1;
  for HarmIndex := CHarmCount - 1 downto 0 do
   with ParameterProperties.Insert(0) do
@@ -92,6 +98,11 @@ begin
     OnCustomParameterDisplay := ParamHarmDisplay;
     OnCustomParameterLabel := ParamHarmLabel;
    end;
+end;
+
+procedure TChebyshevWaveshaperDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleOpen(Sender: TObject);
@@ -117,12 +128,6 @@ begin
  FreeAndNil(FChebysheWaveshaper);
 end;
 
-procedure TChebyshevWaveshaperDataModule.ParamVolumeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FVolume := dB_to_Amp(Value);
-end;
-
 procedure TChebyshevWaveshaperDataModule.ParamHarmLabel(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
@@ -146,18 +151,34 @@ end;
 procedure TChebyshevWaveshaperDataModule.ParamHarmonicChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FChebysheWaveshaper)then
-  begin
-   if Abs(Value) < 1E-3 then
-    begin
-     FChebysheWaveshaper.Gain[Index] := 0;
-    end
-   else
-    begin
-     FChebysheWaveshaper.Level[Index]    := Abs(Value * 140) - 140;
-     FChebysheWaveshaper.Inverted[Index] := Value < 0;
-    end;
-  end;
+ FCriticalSection.Enter;
+ try
+  if Assigned(FChebysheWaveshaper)then
+   begin
+    if Abs(Value) < 1E-3 then
+     begin
+      FChebysheWaveshaper.Gain[Index] := 0;
+     end
+    else
+     begin
+      FChebysheWaveshaper.Level[Index]    := Abs(Value * 140) - 140;
+      FChebysheWaveshaper.Inverted[Index] := Value < 0;
+     end;
+   end;
+ finally
+  FreeAndNil(FCriticalSection);
+ end;
+end;
+
+procedure TChebyshevWaveshaperDataModule.ParamVolumeChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FCriticalSection.Enter;
+ try
+  FVolume := dB_to_Amp(Value);
+ finally
+  FreeAndNil(FCriticalSection);
+ end;
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcess(const Inputs,
@@ -166,9 +187,14 @@ var
   ChannelIndex : Integer;
   SampleIndex  : Integer;
 begin
- for ChannelIndex := 0 to 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do Outputs[ChannelIndex, SampleIndex] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to 1 do
+   for SampleIndex := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, SampleIndex] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
+ finally
+  FreeAndNil(FCriticalSection);
+ end;
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcessDouble(
@@ -178,9 +204,14 @@ var
   ChannelIndex : Integer;
   SampleIndex  : Integer;
 begin
- for ChannelIndex := 0 to 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do Outputs[ChannelIndex, SampleIndex] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to 1 do
+   for SampleIndex := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, SampleIndex] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
+ finally
+  FreeAndNil(FCriticalSection);
+ end;
 end;
 
 end.

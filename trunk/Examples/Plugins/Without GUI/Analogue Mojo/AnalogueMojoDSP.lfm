@@ -1,5 +1,6 @@
 object AnalogueMojoDM: TAnalogueMojoDM
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Analogue Mojo'
   ProductName = 'DAV Effect Examples'
@@ -28,7 +29,6 @@ object AnalogueMojoDM: TAnalogueMojoDM
       ReportVST2Properties = True
       ShortLabel = 'DC Frq.'
       SmallStepFloat = 0.5
-      SmoothingFactor = 0
       StepFloat = 1
       Units = 'Hz'
       UseDefaultString2ParameterHandler = True
@@ -38,6 +38,8 @@ object AnalogueMojoDM: TAnalogueMojoDM
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnProcess = VSTModuleProcessStereo
+  OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
   left = 217
   top = 77
