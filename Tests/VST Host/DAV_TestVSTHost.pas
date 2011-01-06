@@ -37,8 +37,8 @@ interface
 {$DEFINE NoInvalidOpcodes}
 
 uses
-  {$IFDEF FPC}fpcunit, testutils, testregistry, {$ELSE} TestFramework, {$ENDIF}
-  Graphics, Registry, Classes, Contnrs, Windows, SysUtils, Messages, Dialogs,
+  {$IFDEF FPC}fpcunit, testutils, testregistry, {$ELSE} TestFramework, Windows,
+  {$ENDIF} Graphics, Registry, Classes, Contnrs, SysUtils, Messages, Dialogs,
   DAV_Types, DAV_VSTHost;
 
 type
@@ -3788,4 +3788,4 @@ initialization
   InitializeVstPluginTests;
 {$ENDIF}
 
-end.
+end.

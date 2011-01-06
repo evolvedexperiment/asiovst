@@ -12,7 +12,7 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TComboDataModule);
+ Result := VstModuleMain(AudioMasterCallback, TAmpSimModule);
 end;
 
 exports
@@ -26,4 +26,4 @@ exports
   VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-end.
+end.
