@@ -24,7 +24,7 @@ implementation
 
 uses
   {$IFDEF FPC} LResources, {$ELSE} DAV_GuiLevelMeter,
-  DAV_GuiModular, DAV_GuiBackgrounds, DAV_GuiDialNew, DAV_GuiEdit, {$ENDIF}
+  DAV_GuiModular, DAV_GuiBackgrounds, DAV_GuiEdit, {$ENDIF}
   DAV_GuiADSRGraph, DAV_GuiAudioDataDisplay, DAV_GuiButton, DAV_GuiCheckBox,
   DAV_GuiCorrelationMeter, DAV_GuiDial, DAV_GuiDialDesign, DAV_GuiDialRenderer,
   DAV_GuiDynamicWaveform, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiFader,
@@ -48,7 +48,7 @@ begin
     TGuiGroupSide, TGuiInscription, TGuiImageList, TGuiLabel, TGuiLED,
     TGuiMediaButton, TGuiMidiKeys, TGuiControlsRadioButton, TGuiPaintBox,
     TGuiPanel, TGuiPngList, TGuiSelectBox, TGuiSlider, TGuiStaticWaveform,
-    TGuiSwitch, TGuiVUMeter {$IFNDEF FPC}, TGuiSimpleDial, TGuiLevelMeter,
+    TGuiSwitch, TGuiVUMeter {$IFNDEF FPC}, TGuiLevelMeter,
     TGuiColorLevelMeter, TGuiModular, TGuiBackground, TGuiControlsEdit {$ENDIF}]);
 
   RegisterComponents('ASIO/VST GUI Stitched', [
