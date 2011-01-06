@@ -151,7 +151,9 @@ type
     procedure Resize(Width, Height: Integer); override;
     procedure Turn(CounterClockwise: Boolean = False); override;
 
+    {$IFDEF MSWINDOWS}
     property Handle: HDC read FDC;
+    {$ENDIF}
   published
     property Width;
     property Height;
@@ -218,7 +220,7 @@ begin
    if Bottom > Self.Height then Bottom := Self.Height;
 
    for Index := Top to Bottom - 1
-    do Move(ByteMap.ValuePointer[Left - X, Top - Y + Index]^,
+    do System.Move(ByteMap.ValuePointer[Left - X, Top - Y + Index]^,
       ValuePointer[Left, Top + Index]^, Right - Left);
   end;
 end;
@@ -241,7 +243,7 @@ begin
    if Bottom > Self.Height then Bottom := Self.Height;
 
    for Index := Top to Bottom - 1
-    do Move(ByteMap.ValuePointer[Left - X, Top - Y + Index]^,
+    do System.Move(ByteMap.ValuePointer[Left - X, Top - Y + Index]^,
       ValuePointer[Left, Top + Index]^, Right - Left);
   end;
 end;
@@ -270,7 +272,7 @@ begin
 
    // blend scanlines
    for Index := Top to Bottom - 1
-    do Move(ByteMap.ValuePointer[Left - X, Index - Y]^,
+    do System.Move(ByteMap.ValuePointer[Left - X, Index - Y]^,
       ValuePointer[Left, Index]^, Right - Left);
   end;
 end;
@@ -289,9 +291,9 @@ begin
   with TGuiCustomByteMap(Source) do
    begin
     Self.SetSize(Width, Height);
-    Move(FBitmapInfo^, Self.FBitmapInfo^, SizeOf(TBitmapInfoHeader));
+    System.Move(FBitmapInfo^, Self.FBitmapInfo^, SizeOf(TBitmapInfoHeader));
     Assert(Self.FDataSize = FDataSize);
-    Move(FDataPointer^, Self.FDataPointer^, FDataSize);
+    System.Move(FDataPointer^, Self.FDataPointer^, FDataSize);
     Self.FOnChange := FOnChange;
     Self.FOnResize := FOnResize;
    end else
@@ -342,7 +344,7 @@ begin
     FBitmapInfo := Self.FBitmapInfo;
 
     Assert(FDataSize = Self.FDataSize);
-    Move(Self.FDataPointer^, FDataPointer^, FDataSize);
+    System.Move(Self.FDataPointer^, FDataPointer^, FDataSize);
 
     FOnChange := Self.FOnChange;
     FOnResize := Self.FOnResize;
@@ -782,7 +784,7 @@ begin
 
    Wdth := Min(Width, FWidth);
    for Y := 0 to Min(Height, FHeight) - 1 do
-     Move(FDataPointer^[Y * FWidth], NewData^[Y * Width], Wdth);
+     System.Move(FDataPointer^[Y * FWidth], NewData^[Y * Width], Wdth);
 
    // set new width (not thread safe!)
    FWidth := Width;
@@ -874,8 +876,10 @@ end;
 constructor TGuiByteMapDIB.Create;
 begin
  inherited;
+ {$IFDEF MSWINDOWS}
  FDC            := 0;
  FBitmapHandle  := 0;
+ {$ENDIF}
 end;
 
 destructor TGuiByteMapDIB.Destroy;
@@ -1054,4 +1058,4 @@ begin
   end;
 end;
 
-end.
+end.

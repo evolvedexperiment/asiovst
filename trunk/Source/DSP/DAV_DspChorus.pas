@@ -579,7 +579,7 @@ end;
 
 destructor TDspChorus.Destroy;
 begin
- Dispose(FBuffer);
+ FreeMem(FBuffer);
  inherited;
 end;
 
@@ -821,4 +821,4 @@ initialization
   RegisterDspProcessors32([TDspChorus32, TDspChorus]);
   RegisterDspProcessors64([TDspChorus64, TDspChorus]);
 
-end.
+end.

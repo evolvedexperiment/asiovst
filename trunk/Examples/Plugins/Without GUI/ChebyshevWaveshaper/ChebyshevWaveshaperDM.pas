@@ -54,7 +54,7 @@ type
     procedure ParamHarmDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamHarmLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FCriticalSection    : TCriticalSecction;
+    FCriticalSection    : TCriticalSection;
     FChebysheWaveshaper : TChebyshevWaveshaper;
     FVolume             : Single;
     procedure ParamHarmonicChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -77,7 +77,7 @@ var
   HarmIndex : Integer;
 begin
  // create critical section
- FCriticalSection := TCriticalSecction.Create;
+ FCriticalSection := TCriticalSection.Create;
 
  // create parameters
  FVolume := 1;
@@ -214,4 +214,4 @@ begin
  end;
 end;
 
-end.
+end.

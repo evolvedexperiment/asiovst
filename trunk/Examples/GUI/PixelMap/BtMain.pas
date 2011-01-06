@@ -39,7 +39,7 @@ uses
   Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls, Menus,
   DAV_GuiPixelMap, DAV_GuiFilters;
 
-{-$DEFINE DIB}
+{$DEFINE DIB}
 
 type
   TFmPixelMapTest = class(TForm)
@@ -366,4 +366,4 @@ begin
  FGuiBitmap.Clear;
 end;
 
-end.
+end.

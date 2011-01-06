@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_Classes, DAV_DspLfo;
+  DAV_Types, DAV_Classes, DAV_DspLFO;
 
 type
   TCustomRingModulator = class(TDspPersistent)
@@ -487,4 +487,4 @@ initialization
   RegisterDspProcessors64([TAutoRingModulator64, TAnalogAutoRingModulator64,
     TLightweightAnalogAutoRingModulator64]);
 
-end.
+end.
