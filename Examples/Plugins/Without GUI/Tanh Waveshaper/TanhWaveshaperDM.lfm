@@ -1,5 +1,6 @@
 object TanhWaveshaperModule: TTanhWaveshaperModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Tanh Waveshaper'
   ProductName = 'DAV Effect Examples'

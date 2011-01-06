@@ -1,5 +1,4 @@
 object VariableDelayVST: TVariableDelayVST
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]

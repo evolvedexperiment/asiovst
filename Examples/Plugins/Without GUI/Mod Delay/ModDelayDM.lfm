@@ -1,5 +1,6 @@
 object ModDelayModule: TModDelayModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Mod Delay'
   ProductName = 'DAV Effect Examples'

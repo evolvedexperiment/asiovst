@@ -34,9 +34,9 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspUpDownsampling;
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspUpDownsampling;
 
 type
   TUpDownSampler = record
@@ -58,11 +58,14 @@ type
     procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FOversampler    : array of TUpDownSampler;
-    FOSFactor       : Integer;
-    FGain           : Double;
-    FTanhWaveShaper : TSimpleWaveshaper;
+    FCriticalSection : TCriticalSection;
+    FOversampler     : array of TUpDownSampler;
+    FOSFactor        : Integer;
+    FGain            : Double;
+    FTanhWaveShaper  : TSimpleWaveshaper;
     function TanhWaveshaper(Input: Double): Double;
     function TanhLike1Waveshaper(Input: Double): Double;
     function TanhLike2Waveshaper(Input: Double): Double;
@@ -102,11 +105,21 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
+procedure TTanhWaveshaperModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TTanhWaveshaperModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TTanhWaveshaperModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- assert(numInputs = numOutputs);
+ Assert(numInputs = numOutputs);
 
  SetLength(FOversampler, numInputs);
  for Channel := 0 to Length(FOversampler) - 1 do
@@ -334,32 +347,37 @@ end;
 procedure TTanhWaveshaperModule.ParameterTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Parameter[Index]) of
-   0 : FTanhWaveShaper := TanhWaveshaperMath;
-   1 : FTanhWaveShaper := TanhWaveshaper;
-   2 : FTanhWaveShaper := TanhOpt3Waveshaper;
-   3 : FTanhWaveShaper := TanhOpt4Waveshaper;
-   4 : FTanhWaveShaper := TanhOpt5Waveshaper;
-   5 : FTanhWaveShaper := TanhOpt6Waveshaper;
-   6 : FTanhWaveShaper := TanhOpt7Waveshaper;
-   7 : FTanhWaveShaper := FastTanhContinousError2Waveshaper;
-   8 : FTanhWaveShaper := FastTanhContinousError3Waveshaper;
-   9 : FTanhWaveShaper := FastTanhContinousError4Waveshaper;
-  10 : FTanhWaveShaper := FastTanhContinousError5Waveshaper;
-  11 : FTanhWaveShaper := FastTanhMinError2Waveshaper;
-  12 : FTanhWaveShaper := FastTanhMinError3Waveshaper;
-  13 : FTanhWaveShaper := FastTanhMinError4Waveshaper;
-  14 : FTanhWaveShaper := FastTanhMinError5Waveshaper;
-  15 : FTanhWaveShaper := TanhLike1Waveshaper;
-  16 : FTanhWaveShaper := TanhLike2Waveshaper;
-  17 : FTanhWaveShaper := TanhLike3Waveshaper;
-  18 : FTanhWaveShaper := TanhLike4Waveshaper;
-  19 : FTanhWaveShaper := FastTanhNollock3Waveshaper;
-  20 : FTanhWaveShaper := FastTanhMrToast3TermWaveshaper;
-  21 : FTanhWaveShaper := FastTanhMrToast4TermWaveshaper;
-  22 : FTanhWaveShaper := FastTanhToguAudioLineWaveshaper;
-  23 : FTanhWaveShaper := FastTanhTALtoastWaveshaper;
-  24 : FTanhWaveShaper := FastTanhOhmforceWaveshaper;
+ FCriticalSection.Enter;
+ try
+  case Round(Parameter[Index]) of
+    0 : FTanhWaveShaper := TanhWaveshaperMath;
+    1 : FTanhWaveShaper := TanhWaveshaper;
+    2 : FTanhWaveShaper := TanhOpt3Waveshaper;
+    3 : FTanhWaveShaper := TanhOpt4Waveshaper;
+    4 : FTanhWaveShaper := TanhOpt5Waveshaper;
+    5 : FTanhWaveShaper := TanhOpt6Waveshaper;
+    6 : FTanhWaveShaper := TanhOpt7Waveshaper;
+    7 : FTanhWaveShaper := FastTanhContinousError2Waveshaper;
+    8 : FTanhWaveShaper := FastTanhContinousError3Waveshaper;
+    9 : FTanhWaveShaper := FastTanhContinousError4Waveshaper;
+   10 : FTanhWaveShaper := FastTanhContinousError5Waveshaper;
+   11 : FTanhWaveShaper := FastTanhMinError2Waveshaper;
+   12 : FTanhWaveShaper := FastTanhMinError3Waveshaper;
+   13 : FTanhWaveShaper := FastTanhMinError4Waveshaper;
+   14 : FTanhWaveShaper := FastTanhMinError5Waveshaper;
+   15 : FTanhWaveShaper := TanhLike1Waveshaper;
+   16 : FTanhWaveShaper := TanhLike2Waveshaper;
+   17 : FTanhWaveShaper := TanhLike3Waveshaper;
+   18 : FTanhWaveShaper := TanhLike4Waveshaper;
+   19 : FTanhWaveShaper := FastTanhNollock3Waveshaper;
+   20 : FTanhWaveShaper := FastTanhMrToast3TermWaveshaper;
+   21 : FTanhWaveShaper := FastTanhMrToast4TermWaveshaper;
+   22 : FTanhWaveShaper := FastTanhToguAudioLineWaveshaper;
+   23 : FTanhWaveShaper := FastTanhTALtoastWaveshaper;
+   24 : FTanhWaveShaper := FastTanhOhmforceWaveshaper;
+  end;
+ finally
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -404,7 +422,12 @@ end;
 procedure TTanhWaveshaperModule.ParameterGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FGain := dB_to_Amp(Value);
+ FCriticalSection.Enter;
+ try
+  FGain := dB_to_Amp(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TTanhWaveshaperModule.ParameterOversamplingChange(
@@ -412,20 +435,24 @@ procedure TTanhWaveshaperModule.ParameterOversamplingChange(
 var
   Channel : Integer;
 begin
- FOSFactor := round(Value);
+ FCriticalSection.Enter;
+ try
+  FOSFactor := Round(Value);
+  for Channel := 0 to Length(FOversampler) - 1 do
+   begin
+    if Assigned(FOversampler[Channel].Upsampling)
+     then FOversampler[Channel].Upsampling.Factor := FOSFactor;
+    if Assigned(FOversampler[Channel].Downsampling)
+     then FOversampler[Channel].Downsampling.Factor := FOSFactor;
+   end;
 
- for Channel := 0 to Length(FOversampler) - 1 do
-  begin
-   if Assigned(FOversampler[Channel].Upsampling)
-    then FOversampler[Channel].Upsampling.Factor := FOSFactor;
-   if Assigned(FOversampler[Channel].Downsampling)
-    then FOversampler[Channel].Downsampling.Factor := FOSFactor;
-  end;
-
- if FOSFactor = 1
-  then OnProcess := VSTModuleProcess
-  else OnProcess := VSTModuleProcessOversampled;
- OnProcess32Replacing := OnProcess;
+  if FOSFactor = 1
+   then OnProcess := VSTModuleProcess
+   else OnProcess := VSTModuleProcessOversampled;
+  OnProcess32Replacing := OnProcess;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TTanhWaveshaperModule.VSTModuleProcess(const Inputs,
@@ -434,9 +461,14 @@ var
   Channel : Integer;
   Sample  : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for Channel := 0 to Length(FOversampler) - 1
-   do Outputs[Channel, Sample] := FTanhWaveShaper(Inputs[Channel, Sample]);
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   for Channel := 0 to Length(FOversampler) - 1
+    do Outputs[Channel, Sample] := FTanhWaveShaper(Inputs[Channel, Sample]);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TTanhWaveshaperModule.VSTModuleProcessOversampled(const Inputs,
@@ -447,16 +479,21 @@ var
   OScnt   : Integer;
   Temp    : array [0..15] of Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for Channel := 0 to Length(FOversampler) - 1 do
-   begin
-    FOversampler[Channel].Upsampling.Upsample64(Inputs[Channel, Sample], @Temp);
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   for Channel := 0 to Length(FOversampler) - 1 do
+    begin
+     FOversampler[Channel].Upsampling.Upsample64(Inputs[Channel, Sample], @Temp);
 
-    for OScnt := 0 to FOSFactor - 1
-     do Temp[OScnt] := FTanhWaveShaper(Temp[OScnt]);
+     for OScnt := 0 to FOSFactor - 1
+      do Temp[OScnt] := FTanhWaveShaper(Temp[OScnt]);
 
-    Outputs[Channel, Sample] := FOversampler[Channel].Downsampling.Downsample64(@Temp);
-   end;
+     Outputs[Channel, Sample] := FOversampler[Channel].Downsampling.Downsample64(@Temp);
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TTanhWaveshaperModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -467,10 +504,15 @@ begin
  if Abs(SampleRate) > 0 then
   for Channel := 0 to Length(FOversampler) - 1 do
    begin
-    if Assigned(FOversampler[Channel].Upsampling)
-     then FOversampler[Channel].Upsampling.SampleRate := Abs(SampleRate);
-    if Assigned(FOversampler[Channel].Downsampling)
-     then FOversampler[Channel].Downsampling.SampleRate := Abs(SampleRate);
+    FCriticalSection.Enter;
+    try
+     if Assigned(FOversampler[Channel].Upsampling)
+      then FOversampler[Channel].Upsampling.SampleRate := Abs(SampleRate);
+     if Assigned(FOversampler[Channel].Downsampling)
+      then FOversampler[Channel].Downsampling.SampleRate := Abs(SampleRate);
+    finally
+     FCriticalSection.Leave;
+    end;
    end;
 end;
 

@@ -36,10 +36,12 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
 type
   TCompressorDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -49,7 +51,8 @@ type
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FCompressors : array [0..1] of TSimpleCompressor;
+    FCriticalSection : TCriticalSection;
+    FCompressors     : array [0..1] of TSimpleCompressor;
   public
   end;
 
@@ -61,76 +64,128 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-procedure TCompressorDataModule.VSTModuleOpen(Sender: TObject);
+procedure TCompressorDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FCompressors[0] := TSimpleRMSCompressor.Create;
- FCompressors[1] := TSimpleRMSCompressor.Create;
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TCompressorDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
+procedure TCompressorDataModule.VSTModuleOpen(Sender: TObject);
+var
+  ChannelIndex : Integer;
+begin
+ for ChannelIndex := 0 to Length(FCompressors) - 1 do
+  begin
+   FCompressors[ChannelIndex] := TSimpleRMSCompressor.Create;
+   if Abs(SampleRate) > 0
+    then FCompressors[ChannelIndex].SampleRate := Abs(SampleRate);
+  end;
 end;
 
 procedure TCompressorDataModule.VSTModuleClose(Sender: TObject);
+var
+  ChannelIndex : Integer;
 begin
- FreeAndNil(FCompressors[0]);
- FreeAndNil(FCompressors[1]);
+ for ChannelIndex := 0 to Length(FCompressors) - 1
+  do FreeAndNil(FCompressors[ChannelIndex]);
 end;
 
 procedure TCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
 begin
- if Assigned(FCompressors[0])
-  then FCompressors[0].Threshold_dB := Value;
- if Assigned(FCompressors[1])
-  then FCompressors[1].Threshold_dB := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FCompressors) - 1 do
+   if Assigned(FCompressors[ChannelIndex])
+    then FCompressors[ChannelIndex].Threshold_dB := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TCompressorDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex    : Integer;
+  ReciprocalRatio : Double;
 begin
- if Assigned(FCompressors[0])
-  then FCompressors[0].Ratio := 1 / Value;
- if Assigned(FCompressors[1])
-  then FCompressors[1].Ratio := 1 / Value;
+ FCriticalSection.Enter;
+ try
+  ReciprocalRatio := 1 / Value;
+  for ChannelIndex := 0 to Length(FCompressors) - 1 do
+   if Assigned(FCompressors[ChannelIndex])
+    then FCompressors[ChannelIndex].Ratio := ReciprocalRatio
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TCompressorDataModule.SLReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
 begin
- if Assigned(FCompressors[0])
-  then FCompressors[0].Release := Value;
- if Assigned(FCompressors[1])
-  then FCompressors[1].Release := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FCompressors) - 1 do
+   if Assigned(FCompressors[ChannelIndex])
+    then FCompressors[ChannelIndex].Release := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TCompressorDataModule.SLAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
 begin
- if Assigned(FCompressors[0])
-  then FCompressors[0].Attack := Value;
- if Assigned(FCompressors[1])
-  then FCompressors[1].Attack := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FCompressors) - 1 do
+   if Assigned(FCompressors[ChannelIndex])
+    then FCompressors[ChannelIndex].Attack := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TCompressorDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  SampleIndex : Integer;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, SampleIndex] := FCompressors[0].ProcessSample64(Inputs[0, SampleIndex]);
-   Outputs[1, SampleIndex] := FCompressors[1].ProcessSample64(Inputs[1, SampleIndex]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for SampleIndex := 0 to SampleFrames - 1 do
+   for ChannelIndex := 0 to Length(FCompressors) - 1
+    do Outputs[ChannelIndex, SampleIndex] := FCompressors[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
+var
+  ChannelIndex : Integer;
 begin
- if Abs(SampleRate) <> 0 then
-  begin
-   if Assigned(FCompressors[0])
-    then FCompressors[0].SampleRate := Abs(SampleRate);
-   if Assigned(FCompressors[1])
-    then FCompressors[1].SampleRate := Abs(SampleRate);
-  end;
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) <> 0 then
+   for ChannelIndex := 0 to Length(FCompressors) - 1 do
+    if Assigned(FCompressors[ChannelIndex])
+     then FCompressors[ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
-end.
+end.

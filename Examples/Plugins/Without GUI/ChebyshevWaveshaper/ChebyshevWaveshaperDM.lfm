@@ -1,6 +1,6 @@
 object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Chebyshev Waveshaper'
   ProductName = 'DAV Effect Examples'
@@ -44,8 +44,8 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDouble
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDouble
   Left = 286
   Top = 81
   Height = 150

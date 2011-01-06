@@ -1,6 +1,7 @@
 object FlangerModule: TFlangerModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
+  Flags = [effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Flanger'
   ProductName = 'DAV Effect Examples'

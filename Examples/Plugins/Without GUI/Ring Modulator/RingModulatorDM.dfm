@@ -1,5 +1,6 @@
 object RingModulatorDataModule: TRingModulatorDataModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Ring Modulator'
   ProductName = 'DAV Effect Examples'

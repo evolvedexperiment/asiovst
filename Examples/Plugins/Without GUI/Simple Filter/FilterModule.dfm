@@ -60,8 +60,8 @@ object VSTFilter: TVSTFilter
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   Left = 443
   Top = 102
   Height = 150

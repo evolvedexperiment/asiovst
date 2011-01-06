@@ -1,5 +1,6 @@
 object ParametricEQDataModule: TParametricEQDataModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Parametric EQ'
   ProductName = 'DAV Filter Examples'

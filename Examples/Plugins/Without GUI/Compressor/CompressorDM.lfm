@@ -1,5 +1,6 @@
 object CompressorDataModule: TCompressorDataModule
-  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
   EffectName = 'Simple Limiter'
   ProductName = 'DAV Dynamics Examples'

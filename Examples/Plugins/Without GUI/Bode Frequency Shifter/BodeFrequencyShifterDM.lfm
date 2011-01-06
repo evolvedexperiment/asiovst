@@ -1,8 +1,6 @@
 object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Bode Frequency Shifter'
   ProductName = 'DAV Effect Examples'

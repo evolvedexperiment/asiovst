@@ -1,5 +1,4 @@
 object SampleDelayVST: TSampleDelayVST
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]

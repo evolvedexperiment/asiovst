@@ -1,4 +1,4 @@
-object ComboDataModule: TComboDataModule
+object AmpSimModule: TAmpSimModule
   OldCreateOrder = True
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'

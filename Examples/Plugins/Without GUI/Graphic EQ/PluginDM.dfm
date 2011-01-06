@@ -1,5 +1,4 @@
 object PluginDataModule: TPluginDataModule
-  OldCreateOrder = True
   Version = '1.0'
   EffectName = 'Graphic EQ'
   ProductName = 'DAV Filter Examples'

@@ -35,12 +35,13 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspTransformerSimulation;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspTransformerSimulation;
 
 type
   TAnalogueMojoDM = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -49,7 +50,8 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FTransformator : array of TTransformatorSimulation;
+    FCriticalSection : TCriticalSection;
+    FTransformator   : array of TTransformatorSimulation;
     procedure ChooseProcess;
   public
   end;
@@ -87,6 +89,16 @@ begin
   do FreeAndNil(FTransformator[ChannelIndex]);
 end;
 
+procedure TAnalogueMojoDM.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TAnalogueMojoDM.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TAnalogueMojoDM.ChooseProcess;
 begin
  case Length(FTransformator) of
@@ -102,19 +114,29 @@ procedure TAnalogueMojoDM.ParameterFrequencyChange(
 var
   ChannelIndex : Integer;
 begin
- for ChannelIndex := 0 to Length(FTransformator) - 1 do
-  if Assigned(FTransformator[ChannelIndex])
-   then FTransformator[ChannelIndex].HighpassFrequency := (1 + 0.02 * ChannelIndex) * Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FTransformator) - 1 do
+   if Assigned(FTransformator[ChannelIndex])
+    then FTransformator[ChannelIndex].HighpassFrequency := (1 + 0.02 * ChannelIndex) * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAnalogueMojoDM.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 var
   ChannelIndex : Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for ChannelIndex := 0 to Length(FTransformator) - 1 do
-   if Assigned(FTransformator[ChannelIndex])
-    then FTransformator[ChannelIndex].SampleRate := SampleRate;
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FTransformator) - 1 do
+    if Assigned(FTransformator[ChannelIndex])
+     then FTransformator[ChannelIndex].SampleRate := SampleRate;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAnalogueMojoDM.VSTModuleProcessMono(const Inputs,
@@ -122,8 +144,13 @@ procedure TAnalogueMojoDM.VSTModuleProcessMono(const Inputs,
 var
   SampleIndex  : Integer;
 begin
- for SampleIndex := 0 to SampleFrames - 1
-  do Outputs[0, SampleIndex] := FTransformator[0].ProcessSample64(Inputs[0, SampleIndex])
+ FCriticalSection.Enter;
+ try
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[0, SampleIndex] := FTransformator[0].ProcessSample64(Inputs[0, SampleIndex])
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAnalogueMojoDM.VSTModuleProcessStereo(const Inputs,
@@ -134,11 +161,16 @@ const
   CCrossTalkCoeff : array [0..1, 0..1] of Single = (
     (0.033, 0.967), (0.034, 0.967));
 begin
- for SampleIndex := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, SampleIndex] := FTransformator[0].ProcessSample64(CCrossTalkCoeff[0, 0] * Inputs[1, SampleIndex] + CCrossTalkCoeff[0, 1] * Inputs[0, SampleIndex]);
-   Outputs[1, SampleIndex] := FTransformator[1].ProcessSample64(CCrossTalkCoeff[1, 0] * Inputs[0, SampleIndex] + CCrossTalkCoeff[1, 1] * Inputs[1, SampleIndex]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for SampleIndex := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, SampleIndex] := FTransformator[0].ProcessSample64(CCrossTalkCoeff[0, 0] * Inputs[1, SampleIndex] + CCrossTalkCoeff[0, 1] * Inputs[0, SampleIndex]);
+    Outputs[1, SampleIndex] := FTransformator[1].ProcessSample64(CCrossTalkCoeff[1, 0] * Inputs[0, SampleIndex] + CCrossTalkCoeff[1, 1] * Inputs[1, SampleIndex]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAnalogueMojoDM.VSTModuleProcessMulti(const Inputs,
@@ -147,9 +179,14 @@ var
   ChannelIndex : Integer;
   SampleIndex  : Integer;
 begin
- for ChannelIndex := 0 to Length(FTransformator) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1
-   do Outputs[ChannelIndex, SampleIndex] := FTransformator[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex])
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FTransformator) - 1 do
+   for SampleIndex := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, SampleIndex] := FTransformator[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex])
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.

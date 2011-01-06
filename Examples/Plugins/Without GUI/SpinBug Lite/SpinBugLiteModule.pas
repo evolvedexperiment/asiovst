@@ -36,11 +36,13 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, {$ELSE} FastMove, Windows, Messages, {$ENDIF}
-  SysUtils, Classes, Forms, DAV_Types, DAV_DspPolyphaseHilbert, DAV_VSTModule,
-  DAV_DspLFO;
+  SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_DspPolyphaseHilbert,
+  DAV_VSTModule, DAV_DspLFO;
 
 type
   TSpinBugLiteModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender : TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcessStereoA(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
@@ -61,9 +63,10 @@ type
     procedure SBMLFOSpeedChange(Sender : TObject; const Index: Integer; var Value: Single);
     procedure SBMTBWChange(Sender : TObject; const Index: Integer; var Value: Single);
   private
-    FHilbert   : array [0..1] of TPhaseHalfPi32;
-    FSineLFO   : array [0..1] of TLFOSine;
-    FTBW       : Single;
+    FCriticalSection : TCriticalSection;
+    FHilbert         : array [0..1] of TPhaseHalfPi32;
+    FSineLFO         : array [0..1] of TLFOSine;
+    FTBW             : Single;
   public
     property BasicSineLFO: TLFOSine read FSineLFO[0];
     property AdditionalSineLFO: TLFOSine read FSineLFO[1];
@@ -79,6 +82,16 @@ implementation
 
 uses
   DAV_Approximations;
+
+procedure TSpinBugLiteModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TSpinBugLiteModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TSpinBugLiteModule.VSTModuleOpen(Sender : TObject);
 begin
@@ -211,8 +224,14 @@ begin
  if (ival = 17) or (ival = 18) or (ival = 19) or (ival = 20) or (ival = 21) or
     (ival = 22) or (ival = 23) or (ival = 25) or (ival = 26) or (ival = 27) or
     (ival = 28) or (ival = 29) or (ival = 30) or (ival = 31) then Exit;
- if Assigned(FHilbert[0]) then FHilbert[0].NumberOfCoefficients := ival;
- if Assigned(FHilbert[1]) then FHilbert[1].NumberOfCoefficients := ival;
+
+ FCriticalSection.Enter;
+ try
+  if Assigned(FHilbert[0]) then FHilbert[0].NumberOfCoefficients := ival;
+  if Assigned(FHilbert[1]) then FHilbert[1].NumberOfCoefficients := ival;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.SBMProcessTypeDisplay(Sender : TObject;
@@ -229,38 +248,54 @@ begin
   then Value := 10 else
  if (Value > 10) then Value := 1;
 
- case Round(Value) of
-    1 : OnProcess := VSTModuleProcessStereoA;
-    2 : OnProcess := VSTModuleProcessStereoB;
-    3 : OnProcess := VSTModuleProcessStereoC;
-    4 : OnProcess := VSTModuleProcessStereoD;
-    5 : OnProcess := VSTModuleProcessMono;
-    6 : OnProcess := VSTModuleProcessMonoL;
-    7 : OnProcess := VSTModuleProcessMonoR;
-    8 : OnProcess := VSTModuleProcessMS;
-    9 : OnProcess := VSTModuleProcessSpecial;
-   10 : OnProcess := VSTModuleProcessOldOne;
-  end;
+ FCriticalSection.Enter;
+ try
+  case Round(Value) of
+     1 : OnProcess := VSTModuleProcessStereoA;
+     2 : OnProcess := VSTModuleProcessStereoB;
+     3 : OnProcess := VSTModuleProcessStereoC;
+     4 : OnProcess := VSTModuleProcessStereoD;
+     5 : OnProcess := VSTModuleProcessMono;
+     6 : OnProcess := VSTModuleProcessMonoL;
+     7 : OnProcess := VSTModuleProcessMonoR;
+     8 : OnProcess := VSTModuleProcessMS;
+     9 : OnProcess := VSTModuleProcessSpecial;
+    10 : OnProcess := VSTModuleProcessOldOne;
+   end;
 
- OnProcess32Replacing := OnProcess;
+  OnProcess32Replacing := OnProcess;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.SBMLFOSpeedChange(Sender : TObject;
   const Index : Integer; var Value : Single);
 begin
- if Assigned(FSineLFO[0]) then FSineLFO[0].Frequency := Value;
- if Assigned(FSineLFO[1]) then FSineLFO[1].Frequency := 1.01 * Value;
+ FCriticalSection.Enter;
+ try
+  if Assigned(FSineLFO[0]) then FSineLFO[0].Frequency := Value;
+  if Assigned(FSineLFO[1]) then FSineLFO[1].Frequency := 1.01 * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.SBMTBWChange(Sender : TObject;
   const Index : Integer; var Value : Single);
 begin
  if (Value <= 0) or (Value >= 0.5) then Exit;
+
  if Value <> FTBW then
   begin
    FTBW := Value;
-   if Assigned(FHilbert[0]) then FHilbert[0].Transition := FTBW;
-   if Assigned(FHilbert[1]) then FHilbert[1].Transition := FTBW;
+   FCriticalSection.Enter;
+   try
+    if Assigned(FHilbert[0]) then FHilbert[0].Transition := FTBW;
+    if Assigned(FHilbert[1]) then FHilbert[1].Transition := FTBW;
+   finally
+    FCriticalSection.Leave;
+   end;
   end;
 end;
 
@@ -269,8 +304,13 @@ procedure TSpinBugLiteModule.VSTModuleSampleRateChange(Sender : TObject;
 begin
  if Abs(SampleRate) > 0 then
   begin
-   if Assigned(FSineLFO[0]) then FSineLFO[0].SampleRate := Abs(SampleRate);
-   if Assigned(FSineLFO[1]) then FSineLFO[1].SampleRate := Abs(SampleRate);
+   FCriticalSection.Enter;
+   try
+    if Assigned(FSineLFO[0]) then FSineLFO[0].SampleRate := Abs(SampleRate);
+    if Assigned(FSineLFO[1]) then FSineLFO[1].SampleRate := Abs(SampleRate);
+   finally
+    FCriticalSection.Leave;
+   end;
   end;
 end;
 
@@ -281,20 +321,25 @@ var
   a1, b1 : Single;
   a2, b2 : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
-   FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
-   a1 := a1 * BasicSineLFO.Cosine;
-   b1 := b1 * BasicSineLFO.Sine;
-   a2 := a2 * BasicSineLFO.Cosine;
-   b2 := b2 * BasicSineLFO.Sine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := a1 + b1 + Inputs[0, i];
-   Outputs[1, i] := a1 - b1 + Inputs[0, i];
-   Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 - b2 + Inputs[1, i]);
-   Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 + b2 + Inputs[1, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
+    FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
+    a1 := a1 * BasicSineLFO.Cosine;
+    b1 := b1 * BasicSineLFO.Sine;
+    a2 := a2 * BasicSineLFO.Cosine;
+    b2 := b2 * BasicSineLFO.Sine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := a1 + b1 + Inputs[0, i];
+    Outputs[1, i] := a1 - b1 + Inputs[0, i];
+    Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 - b2 + Inputs[1, i]);
+    Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 + b2 + Inputs[1, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoB(
@@ -304,20 +349,25 @@ var
   a1, b1 : Single;
   a2, b2 : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
-   FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
-   a1 := a1 * BasicSineLFO.Cosine;
-   b1 := b1 * BasicSineLFO.Sine;
-   a2 := a2 * BasicSineLFO.Cosine;
-   b2 := b2 * BasicSineLFO.Sine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := a1 + b1 + Inputs[0, i];
-   Outputs[1, i] := a1 - b1 + Inputs[0, i];
-   Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
-   Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[1, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
+    FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
+    a1 := a1 * BasicSineLFO.Cosine;
+    b1 := b1 * BasicSineLFO.Sine;
+    a2 := a2 * BasicSineLFO.Cosine;
+    b2 := b2 * BasicSineLFO.Sine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := a1 + b1 + Inputs[0, i];
+    Outputs[1, i] := a1 - b1 + Inputs[0, i];
+    Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
+    Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[1, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoC(
@@ -327,18 +377,23 @@ var
   a1, b1 : Single;
   a2, b2 : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
-   FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
-   a1 := a1 * BasicSineLFO.Cosine;
-   b1 := b1 * BasicSineLFO.Sine;
-   a2 := a2 * BasicSineLFO.Cosine;
-   b2 := b2 * BasicSineLFO.Sine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := 0.5 * (a1 + b1 + Inputs[0, i]);
-   Outputs[1, i] := 0.5 * (a2 - b2 + Inputs[1, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
+    FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
+    a1 := a1 * BasicSineLFO.Cosine;
+    b1 := b1 * BasicSineLFO.Sine;
+    a2 := a2 * BasicSineLFO.Cosine;
+    b2 := b2 * BasicSineLFO.Sine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := 0.5 * (a1 + b1 + Inputs[0, i]);
+    Outputs[1, i] := 0.5 * (a2 - b2 + Inputs[1, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoD(
@@ -349,22 +404,27 @@ var
   a1, b1 : Single;
   a2, b2 : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   s := BasicSineLFO.Sine;
-   c := 1 - 2 * s * s;
-   BasicSineLFO.CalculateNextSample;
-   FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
-   FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
-   a1 := a1 * c;
-   b1 := b1 * s;
-   a2 := a2 * c;
-   b2 := b2 * s;
-   Outputs[0, i] := a1 + b1 + Inputs[0, i];
-   Outputs[1, i] := a1 - b1 + Inputs[0, i];
-   Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
-   Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[1, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    s := BasicSineLFO.Sine;
+    c := 1 - 2 * s * s;
+    BasicSineLFO.CalculateNextSample;
+    FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
+    FHilbert[1].ProcessHilbertSample(Inputs[1, i], a2, b2);
+    a1 := a1 * c;
+    b1 := b1 * s;
+    a2 := a2 * c;
+    b2 := b2 * s;
+    Outputs[0, i] := a1 + b1 + Inputs[0, i];
+    Outputs[1, i] := a1 - b1 + Inputs[0, i];
+    Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
+    Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[1, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMono(
@@ -373,15 +433,20 @@ var
   i    : Integer;
   a, b : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(0.5 * (Inputs[0, i] + Inputs[1, i]), a, b);
-   a := a * BasicSineLFO.Sine;
-   b := b * BasicSineLFO.Cosine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := 0.5 * (a + b + Inputs[0, i]);
-   Outputs[1, i] := 0.5 * (a - b + Inputs[1, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(0.5 * (Inputs[0, i] + Inputs[1, i]), a, b);
+    a := a * BasicSineLFO.Sine;
+    b := b * BasicSineLFO.Cosine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := 0.5 * (a + b + Inputs[0, i]);
+    Outputs[1, i] := 0.5 * (a - b + Inputs[1, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMonoL(
@@ -390,15 +455,20 @@ var
   i    : Integer;
   a, b : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(Inputs[0, i], a, b);
-   a := a * BasicSineLFO.Sine;
-   b := b * BasicSineLFO.Cosine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := 0.5 * (a + b + Inputs[0, i]);
-   Outputs[1, i] := 0.5 * (a - b + Inputs[0, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(Inputs[0, i], a, b);
+    a := a * BasicSineLFO.Sine;
+    b := b * BasicSineLFO.Cosine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := 0.5 * (a + b + Inputs[0, i]);
+    Outputs[1, i] := 0.5 * (a - b + Inputs[0, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMonoR(
@@ -407,15 +477,20 @@ var
   i    : Integer;
   a, b : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(Inputs[1, i], a, b);
-   a := a * BasicSineLFO.Sine;
-   b := b * BasicSineLFO.Cosine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := 0.5 * (a + b + Inputs[0, i]);
-   Outputs[1, i] := 0.5 * (a - b + Inputs[0, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(Inputs[1, i], a, b);
+    a := a * BasicSineLFO.Sine;
+    b := b * BasicSineLFO.Cosine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := 0.5 * (a + b + Inputs[0, i]);
+    Outputs[1, i] := 0.5 * (a - b + Inputs[0, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMS(
@@ -425,20 +500,25 @@ var
   a1, b1 : Single;
   a2, b2 : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(0.5 * (Inputs[0, i] + Inputs[1, i]), a1, b1);
-   FHilbert[1].ProcessHilbertSample(0.5 * (Inputs[0, i] - Inputs[1, i]), a2, b2);
-   a1 := a1 * BasicSineLFO.Sine;
-   b1 := b1 * BasicSineLFO.Cosine;
-   a2 := a2 * BasicSineLFO.Sine;
-   b2 := b2 * BasicSineLFO.Cosine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := a1 + b1 + Inputs[0, i];
-   Outputs[1, i] := a1 - b1 + Inputs[0, i];
-   Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
-   Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[1, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(0.5 * (Inputs[0, i] + Inputs[1, i]), a1, b1);
+    FHilbert[1].ProcessHilbertSample(0.5 * (Inputs[0, i] - Inputs[1, i]), a2, b2);
+    a1 := a1 * BasicSineLFO.Sine;
+    b1 := b1 * BasicSineLFO.Cosine;
+    a2 := a2 * BasicSineLFO.Sine;
+    b2 := b2 * BasicSineLFO.Cosine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := a1 + b1 + Inputs[0, i];
+    Outputs[1, i] := a1 - b1 + Inputs[0, i];
+    Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
+    Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[1, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessSpecial(
@@ -448,21 +528,26 @@ var
   a1, b1 : Single;
   a2, b2 : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
-   FHilbert[0].ProcessHilbertSample(-Inputs[1, i], a2, b2);
-   a1 := a1 * BasicSineLFO.Sine;
-   b1 := b1 * BasicSineLFO.Cosine;
-   a2 := a2 * AdditionalSineLFO.Sine;
-   b2 := b2 * AdditionalSineLFO.Cosine;
-   BasicSineLFO.CalculateNextSample;
-   AdditionalSineLFO.CalculateNextSample;
-   Outputs[0, i] := a1 + b1 + Inputs[0, i];
-   Outputs[1, i] := a1 - b1 + Inputs[0, i];
-   Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 - b2 + Inputs[1, i]);
-   Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 + b2 + Inputs[1, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(Inputs[0, i], a1, b1);
+    FHilbert[0].ProcessHilbertSample(-Inputs[1, i], a2, b2);
+    a1 := a1 * BasicSineLFO.Sine;
+    b1 := b1 * BasicSineLFO.Cosine;
+    a2 := a2 * AdditionalSineLFO.Sine;
+    b2 := b2 * AdditionalSineLFO.Cosine;
+    BasicSineLFO.CalculateNextSample;
+    AdditionalSineLFO.CalculateNextSample;
+    Outputs[0, i] := a1 + b1 + Inputs[0, i];
+    Outputs[1, i] := a1 - b1 + Inputs[0, i];
+    Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 - b2 + Inputs[1, i]);
+    Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 + b2 + Inputs[1, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessOldOne(
@@ -472,20 +557,25 @@ var
   a1, b1 : Single;
   a2, b2 : Single;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   FHilbert[0].ProcessHilbertSample(FastTanh2Like3Term(2.1 * Inputs[0, i]), a1, b1);
-   FHilbert[1].ProcessHilbertSample(FastTanh2Like3Term(2.2 * Inputs[1, i]), a2, b2);
-   a1 := a1 * BasicSineLFO.Sine;
-   b1 := b1 * BasicSineLFO.Cosine;
-   a2 := a2 * BasicSineLFO.Sine;
-   b2 := b2 * BasicSineLFO.Cosine;
-   BasicSineLFO.CalculateNextSample;
-   Outputs[0, i] := a1 + b1 + Inputs[0, i];
-   Outputs[1, i] := a1 - b1 + Inputs[1, i];
-   Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
-   Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[0, i]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   begin
+    FHilbert[0].ProcessHilbertSample(FastTanh2Like3Term(2.1 * Inputs[0, i]), a1, b1);
+    FHilbert[1].ProcessHilbertSample(FastTanh2Like3Term(2.2 * Inputs[1, i]), a2, b2);
+    a1 := a1 * BasicSineLFO.Sine;
+    b1 := b1 * BasicSineLFO.Cosine;
+    a2 := a2 * BasicSineLFO.Sine;
+    b2 := b2 * BasicSineLFO.Cosine;
+    BasicSineLFO.CalculateNextSample;
+    Outputs[0, i] := a1 + b1 + Inputs[0, i];
+    Outputs[1, i] := a1 - b1 + Inputs[1, i];
+    Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
+    Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[0, i]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.

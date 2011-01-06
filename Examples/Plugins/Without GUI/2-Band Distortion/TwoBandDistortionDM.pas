@@ -53,6 +53,8 @@ type
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
     FCriticalSection : TCriticalSection;
     FLinkwitzRiley   : array [0..1] of TLinkwitzRiley;
@@ -75,6 +77,7 @@ uses
 procedure TTwoBandDistortionDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
+ Assert(numInputs = Length(FLinkwitzRiley));
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleDestroy(Sender: TObject);
@@ -87,8 +90,11 @@ var
   ChannelIndex : Integer;
 begin
  // create linkwitz riley filters
- for ChannelIndex := 0 to numInputs - 1
-  do FLinkwitzRiley[ChannelIndex] := TLinkwitzRiley.Create;
+ for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
+  begin
+   FLinkwitzRiley[ChannelIndex] := TLinkwitzRiley.Create;
+   FLinkwitzRiley[ChannelIndex].SampleRate := SampleRate;
+  end;
 
  // initial parameters
  Parameter[0] := 1000;
@@ -106,6 +112,91 @@ begin
  // free linkwitz riley filters
  FreeAndNil(FLinkwitzRiley[0]);
  FreeAndNil(FLinkwitzRiley[1]);
+end;
+
+procedure TTwoBandDistortionDataModule.ParameterFrequencyLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] >= 1000
+  then PreDefined := 'kHz';
+end;
+
+procedure TTwoBandDistortionDataModule.ParameterFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] >= 1000
+  then PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 4)
+  else PreDefined := FloatToAnsiString(Parameter[Index], 4);
+end;
+
+procedure TTwoBandDistortionDataModule.ParamFrequencyChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to numInputs - 1 do
+   if Assigned(FLinkwitzRiley[ChannelIndex])
+    then FLinkwitzRiley[ChannelIndex].Frequency := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TTwoBandDistortionDataModule.ParameterOrderChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to numInputs - 1 do
+   if Assigned(FLinkwitzRiley[ChannelIndex])
+    then FLinkwitzRiley[ChannelIndex].Order := Round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TTwoBandDistortionDataModule.ParamLowDistChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FCriticalSection.Enter;
+ try
+  FLowMix[1] := 0.01 * Value;
+  FLowMix[0] := 1 - FLowMix[1];
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TTwoBandDistortionDataModule.ParamHighDistChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FCriticalSection.Enter;
+ try
+  FHighMix[1] := 0.01 * Value;
+  FHighMix[0] := 1 - FHighMix[1];
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TTwoBandDistortionDataModule.VSTModuleSampleRateChange(
+  Sender: TObject; const SampleRate: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
+    if Assigned(FLinkwitzRiley[ChannelIndex])
+     then FLinkwitzRiley[ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleProcess(const Inputs,
@@ -162,70 +253,6 @@ begin
                                  FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
      {$ENDIF}
    end;
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TTwoBandDistortionDataModule.ParamLowDistChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FLowMix[1] := 0.01 * Value;
- FLowMix[0] := 1 - FLowMix[1];
-end;
-
-procedure TTwoBandDistortionDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-begin
- if Parameter[Index] >= 1000
-  then PreDefined := 'kHz';
-end;
-
-procedure TTwoBandDistortionDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-begin
- if Parameter[Index] >= 1000
-  then PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 4)
-  else PreDefined := FloatToAnsiString(Parameter[Index], 4);
-end;
-
-procedure TTwoBandDistortionDataModule.ParamHighDistChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FCriticalSection.Enter;
- try
-  FHighMix[1] := 0.01 * Value;
-  FHighMix[0] := 1 - FHighMix[1];
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TTwoBandDistortionDataModule.ParameterOrderChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  ChannelIndex : Integer;
-begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to numInputs - 1 do
-   if Assigned(FLinkwitzRiley[ChannelIndex])
-    then FLinkwitzRiley[ChannelIndex].Order := Round(Value);
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TTwoBandDistortionDataModule.ParamFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  ChannelIndex : Integer;
-begin
- FCriticalSection.Enter;
- try
-  for ChannelIndex := 0 to numInputs - 1 do
-   if Assigned(FLinkwitzRiley[ChannelIndex])
-    then FLinkwitzRiley[ChannelIndex].Frequency := Value;
  finally
   FCriticalSection.Leave;
  end;
