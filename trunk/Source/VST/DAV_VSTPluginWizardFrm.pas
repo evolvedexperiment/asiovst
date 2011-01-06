@@ -259,7 +259,7 @@ end;
 procedure TVSTPluginWizardForm.edtVersionMajorKeyPress(Sender: TObject;
   var Key: Char);
 begin
- {$IFDEF DELPHI10_UP}
+ {$IFDEF DELPHI14_UP}
  if CharInSet(AnsiChar(Key), [#8, '0'..'9'])
  {$ELSE}
  if not (Key in [#8, '0'..'9'])
