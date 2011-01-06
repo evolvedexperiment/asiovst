@@ -102,7 +102,7 @@ type
     procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32);
     procedure VerticalLine(X, FromY, ToY: Integer; Color: TPixel32);
     procedure Assign(Source: TPersistent); override;
-    function Equals(Obj: TObject): Boolean; {$IFDEF DELPHI10_UP} override; {$ENDIF}
+    function Equals(Obj: TObject): Boolean; {$IFDEF DELPHI14_UP} override; {$ENDIF}
 
     property DataPointer: PPixel32Array read GetDataPointer;
     property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
@@ -733,7 +733,7 @@ end;
 
 function TGuiCustomPixelMap.Equals(Obj: TObject): Boolean;
 begin
- {$IFDEF DELPHI10_UP}
+ {$IFDEF DELPHI14_UP}
  Result := inherited Equals(Obj);
  {$ELSE}
  Result := False;
