@@ -355,6 +355,7 @@ begin
  // free buffers
  FreeAndNil(FBuffer);
  FreeAndNil(FBackBuffer);
+ FreeAndNil(FGuiFont);
 
  inherited;
 end;

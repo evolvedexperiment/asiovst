@@ -9,9 +9,11 @@ uses
 
 {$R *.res}
 
+{$SetPEFlags 1}
+
 begin
   Application.Initialize;
-  Application.Title := 'Buffered ASIO MP3 Player';
+  Application.Title := 'Automotive Audio Signal Emulator';
   Application.CreateForm(TFmAASE, FmAASE);
   Application.CreateForm(TFmSetup, FmSetup);
   Application.Run;
