@@ -408,10 +408,10 @@ begin
   begin
    SelectObject(FBuffer.Handle, Font.Handle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
-   {$IFDEF MSWINDOWS}
-   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
-   {$ELSE}
+   {$IFDEF FPC}
    SetBkMode(FBuffer.Handle, CTransparent);
+   {$ELSE}
+   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
    {$ENDIF}
 
    FFontHandle := Font.Handle;
@@ -420,10 +420,10 @@ begin
   begin
    SelectObject(FBuffer.Handle, FFontHandle);
    SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
-   {$IFDEF MSWINDOWS}
-   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
-   {$ELSE}
+   {$IFDEF FPC}
    SetBkMode(FBuffer.Handle, CTransparent);
+   {$ELSE}
+   SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
    {$ENDIF}
   end;
 end;
@@ -433,10 +433,10 @@ begin
  Assert(FBuffer.Handle <> 0);
  SelectObject(FBuffer.Handle, Font.Handle);
  SetTextColor(FBuffer.Handle, ColorToRGB(clWhite));
- {$IFDEF MSWINDOWS}
- SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
- {$ELSE}
+ {$IFDEF FPC}
  SetBkMode(FBuffer.Handle, CTransparent);
+ {$ELSE}
+ SetBkMode(FBuffer.Handle, Windows.TRANSPARENT);
  {$ENDIF}
  FFontHandle := Font.Handle;
  Changed;
