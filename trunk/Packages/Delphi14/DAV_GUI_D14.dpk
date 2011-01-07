@@ -1,6 +1,5 @@
 package DAV_GUI_D14;
 
-{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -24,7 +23,6 @@ package DAV_GUI_D14;
 {$IMAGEBASE $520000}
 {$DESCRIPTION 'ASIO & VST Project - GUI Components'}
 {$IMPLICITBUILD ON}
-{$DEFINE DEBUG}
 
 requires
   rtl,

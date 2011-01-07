@@ -39,49 +39,72 @@ uses
   Forms, Graphics, Controls, StdCtrls, ExtCtrls, Dialogs, Menus, DAV_Types,
   DAV_DspBufferedMp3Player, DAV_DspSimpleOscillator, DAV_GuiPixelMap,
   DAV_GuiLabel, DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_AsioHost,
-  DAV_GuiSlider, DAV_GuiButton;
+  DAV_GuiSlider, DAV_GuiButton, DAV_GuiImageControl, DAV_GuiStitchedControls,
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiPanel, DAV_GuiGroup;
 
 type
+  TDriveParameter = record
+    Percent : Single;
+    Scale   : array [0..1] of Single;
+  end;
+
   TFmAASE = class(TForm)
     ASIOHost: TASIOHost;
-    OpenDialog: TOpenDialog;
-    MainMenu: TMainMenu;
-    MiFile: TMenuItem;
-    MiExit: TMenuItem;
-    N1: TMenuItem;
-    MiOpen: TMenuItem;
-    MiSaveAs: TMenuItem;
-    MiSave: TMenuItem;
-    MiSettings: TMenuItem;
-    MiAsio: TMenuItem;
-    SlLevelMp3: TGuiSlider;
-    LbMp3Level: TGuiLabel;
-    GuiLabel1: TGuiLabel;
-    SlLevelSynth: TGuiSlider;
     BtStartStop: TGuiButton;
-    N2: TMenuItem;
-    MiAdvanced: TMenuItem;
+    DlDrive1: TGuiStitchedDial;
+    DlDrive2: TGuiStitchedDial;
+    DlDrive3: TGuiStitchedDial;
+    DlDrive4: TGuiStitchedDial;
+    DlDrive5: TGuiStitchedDial;
+    DlDrive6: TGuiStitchedDial;
+    DlFrequency1: TGuiStitchedDial;
+    DlFrequency2: TGuiStitchedDial;
+    DlFrequency3: TGuiStitchedDial;
+    DlFrequency4: TGuiStitchedDial;
+    DlFrequency5: TGuiStitchedDial;
+    DlFrequency6: TGuiStitchedDial;
+    DlLevel1: TGuiStitchedDial;
+    DlLevel2: TGuiStitchedDial;
+    DlLevel3: TGuiStitchedDial;
+    DlLevel4: TGuiStitchedDial;
+    DlLevel5: TGuiStitchedDial;
+    DlLevel6: TGuiStitchedDial;
+    GbOscillator: TGuiGroupSide;
+    LbSynthLevel: TGuiLabel;
+    LbFrequency: TGuiLabel;
+    LbLevel: TGuiLabel;
+    LbDrive: TGuiLabel;
+    PnReadOut: TGuiPanel;
     LbMp3File: TGuiLabel;
     LbMp3FileName: TGuiButton;
-    GuiLabel2: TGuiLabel;
-    SlOsc1Freq: TGuiSlider;
-    SlOsc1Gain: TGuiSlider;
-    GuiLabel3: TGuiLabel;
-    GuiSlider1: TGuiSlider;
-    GuiSlider2: TGuiSlider;
-    GuiLabel4: TGuiLabel;
-    GuiSlider3: TGuiSlider;
-    GuiSlider4: TGuiSlider;
-    GuiLabel5: TGuiLabel;
-    GuiSlider5: TGuiSlider;
-    GuiSlider6: TGuiSlider;
-    GuiLabel6: TGuiLabel;
-    GuiSlider7: TGuiSlider;
-    GuiSlider8: TGuiSlider;
-    GuiLabel7: TGuiLabel;
-    GuiLabel8: TGuiLabel;
+    LbMp3Level: TGuiLabel;
+    LbOsc1: TGuiLabel;
+    LbOsc2: TGuiLabel;
+    LbOsc3: TGuiLabel;
+    LbOsc4: TGuiLabel;
+    LbOsc5: TGuiLabel;
+    LbOsc6: TGuiLabel;
+    LbOscillator: TGuiLabel;
+    LbReadOut: TGuiLabel;
+    LbReadOutValue: TGuiLabel;
+    MainMenu: TMainMenu;
+    MiAdvanced: TMenuItem;
+    MiAsio: TMenuItem;
+    MiExit: TMenuItem;
+    MiFile: TMenuItem;
+    MiOpen: TMenuItem;
+    MiSave: TMenuItem;
+    MiSaveAs: TMenuItem;
+    MiSettings: TMenuItem;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    OpenDialog: TOpenDialog;
+    SlLevelMp3: TGuiSlider;
+    SlLevelSynth: TGuiSlider;
+    SPL: TGuiStitchedPNGList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -90,24 +113,34 @@ type
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
     procedure BtStartStopClick(Sender: TObject);
+    procedure DlDriveChange(Sender: TObject);
+    procedure DlFrequencyChange(Sender: TObject);
+    procedure DlFrequencyMouseEnter(Sender: TObject);
+    procedure DlLevelChange(Sender: TObject);
+    procedure DlLevelMouseEnter(Sender: TObject);
     procedure LbBufferClick(Sender: TObject);
+    procedure LbMp3FileNameClick(Sender: TObject);
+    procedure LbOsc1Click(Sender: TObject);
+    procedure LbOsc2Click(Sender: TObject);
+    procedure LbOsc3Click(Sender: TObject);
+    procedure LbOsc4Click(Sender: TObject);
+    procedure LbOsc5Click(Sender: TObject);
+    procedure LbOsc6Click(Sender: TObject);
+    procedure MiAdvancedClick(Sender: TObject);
     procedure MiAsioClick(Sender: TObject);
     procedure MiExitClick(Sender: TObject);
-    procedure SlLevelMp3Change(Sender: TObject);
-    procedure SlLevelGetText(Sender: TObject; var Text: string);
-    procedure SlLevelSynthChange(Sender: TObject);
-    procedure MiAdvancedClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure LbMp3FileNameClick(Sender: TObject);
     procedure SlFreqGetText(Sender: TObject; var Text: string);
-    procedure SlOscFreqChange(Sender: TObject);
-    procedure SlOscGainChange(Sender: TObject);
+    procedure SlLevelGetText(Sender: TObject; var Text: string);
+    procedure SlLevelMp3Change(Sender: TObject);
+    procedure SlLevelSynthChange(Sender: TObject);
+    procedure DlDriveMouseEnter(Sender: TObject);
   private
     FIniFile             : TFileName;
     FBufferedPlayer      : TBufferedMP3FilePlayer;
     FSynthFactor         : Single;
     FMp3Factor           : Single;
-    FSineGenerators      : array [0..4] of TSimpleOscillator32;
+    FSineGenerators      : array [0..5] of TSimpleOscillator32;
+    FDrive               : array [0..5] of TDriveParameter;
     FOutputChannelOffset : Integer;
     FMp3File             : TFileName;
     procedure SetMp3File(const Value: TFileName);
@@ -128,8 +161,8 @@ implementation
 {$R *.dfm}
 
 uses
-  DAV_Common, DAV_GuiCommon, DAV_GuiBlend, DAV_BlockProcessing, Math, IniFiles,
-  AaseSetup;
+  Math, IniFiles, DAV_Common, DAV_GuiCommon, DAV_GuiBlend, DAV_BlockProcessing,
+  DAV_Approximations, AaseSetup;
 
 { TFmASIOMP3 }
 
@@ -155,7 +188,7 @@ begin
  FOutputChannelOffset := 0;
  FSynthFactor := 1;
  FMp3Factor := 1;
- ClientHeight := 68;
+// ClientHeight := 68;
 
  for GeneratorIndex := 0 to Length(FSineGenerators) - 1 do
   begin
@@ -239,12 +272,12 @@ begin
       h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
       for x := 0 to Width - 1 do
        begin
-        s[1] := 0.97 * s[0] + 0.03 * random;
+        s[1] := 0.97 * s[0] + 0.03 * Random;
         s[0] := s[1];
 
-        ScnLn[x].B := Round($70 - $34 * (s[1] - h));
-        ScnLn[x].G := Round($84 - $48 * (s[1] - h));
-        ScnLn[x].R := Round($8D - $50 * (s[1] - h));
+        ScnLn[x].B := Round($10 - $8 * (s[1] - h));
+        ScnLn[x].G := Round($63 - $31 * (s[1] - h));
+        ScnLn[x].R := Round($AF - $57 * (s[1] - h));
        end;
      end;
    end;
@@ -263,8 +296,77 @@ begin
    ASIOHost.Active := False;
    FBufferedPlayer.Reset;
    BtStartStop.Caption := 'Start Audio';
-   BtStartStop.ButtonColor := $0070848D;
+   BtStartStop.ButtonColor := $001063AF;
   end;
+end;
+
+procedure TFmAASE.DlDriveMouseEnter(Sender: TObject);
+begin
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender) do
+   begin
+    LbReadOutValue.Caption := 'Oscillator ' + IntToStr(Tag + 1) + ': ' +
+      'Drive = ' + FloatToStrF(Value, ffGeneral, 5, 5) + ' %';
+   end;
+end;
+
+procedure TFmAASE.DlDriveChange(Sender: TObject);
+begin
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender) do
+   begin
+    if FDrive[Tag].Percent <> Value then
+     begin
+      FDrive[Tag].Percent := Value;
+      FDrive[Tag].Scale[0] := 0.01 * Power(2, 10 * Log2(1 + 0.01 * Value));
+      FDrive[Tag].Scale[1] := 1 / FDrive[Tag].Scale[0];
+     end;
+
+    LbReadOutValue.Caption := 'Oscillator ' + IntToStr(Tag + 1) + ': ' +
+      'Drive = ' + FloatToStrF(Value, ffGeneral, 5, 5) + ' %';
+   end;
+end;
+
+procedure TFmAASE.DlFrequencyMouseEnter(Sender: TObject);
+begin
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender) do
+   begin
+    LbReadOutValue.Caption := 'Oscillator ' + IntToStr(Tag + 1) + ': ' +
+      'Frequency = ' + FloatToStrF(Value, ffGeneral, 5, 5) + ' Hz';
+   end;
+end;
+
+procedure TFmAASE.DlFrequencyChange(Sender: TObject);
+begin
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender) do
+   begin
+    FSineGenerators[Tag].Frequency := Value;
+    LbReadOutValue.Caption := 'Oscillator ' + IntToStr(Tag + 1) + ': ' +
+      'Frequency = ' + FloatToStrF(Value, ffGeneral, 5, 5) + ' Hz';
+   end;
+end;
+
+procedure TFmAASE.DlLevelMouseEnter(Sender: TObject);
+begin
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender) do
+   begin
+    LbReadOutValue.Caption := 'Oscillator ' + IntToStr(Tag + 1) + ': ' +
+      'Level = ' + FloatToStrF(Value, ffGeneral, 3, 3) + ' dB';
+   end;
+end;
+
+procedure TFmAASE.DlLevelChange(Sender: TObject);
+begin
+ if Sender is TGuiStitchedDial then
+  with TGuiStitchedDial(Sender) do
+   begin
+    FSineGenerators[Tag].Amplitude := dB_to_Amp(Value);
+    LbReadOutValue.Caption := 'Oscillator ' + IntToStr(Tag + 1) + ': ' +
+      'Level = ' + FloatToStrF(Value, ffGeneral, 3, 3) + ' dB';
+   end;
 end;
 
 procedure TFmAASE.LbBufferClick(Sender: TObject);
@@ -278,12 +380,108 @@ begin
   then MP3File := OpenDialog.FileName;
 end;
 
+procedure TFmAASE.LbOsc1Click(Sender: TObject);
+begin
+ DlLevel1.Enabled := not DlLevel1.Enabled;
+ DlFrequency1.Enabled := DlLevel1.Enabled;
+ if DlLevel1.Enabled then
+  begin
+   LbOsc1.Font.Color := clWhite;
+   FSineGenerators[0].Amplitude := dB_to_Amp(DlLevel1.Value);
+  end
+ else
+  begin
+   LbOsc1.Font.Color := $001063AF;
+   FSineGenerators[0].Amplitude := 0;
+  end;
+end;
+
+procedure TFmAASE.LbOsc2Click(Sender: TObject);
+begin
+ DlLevel2.Enabled := not DlLevel2.Enabled;
+ DlFrequency2.Enabled := DlLevel2.Enabled;
+ if DlLevel2.Enabled then
+  begin
+   LbOsc2.Font.Color := clWhite;
+   FSineGenerators[1].Amplitude := dB_to_Amp(DlLevel2.Value);
+  end
+ else
+  begin
+   LbOsc2.Font.Color := $001063AF;
+   FSineGenerators[1].Amplitude := 0;
+  end;
+end;
+
+procedure TFmAASE.LbOsc3Click(Sender: TObject);
+begin
+ DlLevel3.Enabled := not DlLevel3.Enabled;
+ DlFrequency3.Enabled := DlLevel3.Enabled;
+ if DlLevel3.Enabled then
+  begin
+   LbOsc3.Font.Color := clWhite;
+   FSineGenerators[2].Amplitude := dB_to_Amp(DlLevel3.Value);
+  end
+ else
+  begin
+   LbOsc3.Font.Color := $001063AF;
+   FSineGenerators[2].Amplitude := 0;
+  end;
+end;
+
+procedure TFmAASE.LbOsc4Click(Sender: TObject);
+begin
+ DlLevel4.Enabled := not DlLevel4.Enabled;
+ DlFrequency4.Enabled := DlLevel4.Enabled;
+ if DlLevel4.Enabled then
+  begin
+   LbOsc4.Font.Color := clWhite;
+   FSineGenerators[3].Amplitude := dB_to_Amp(DlLevel4.Value);
+  end
+ else
+  begin
+   LbOsc4.Font.Color := $001063AF;
+   FSineGenerators[3].Amplitude := 0;
+  end;
+end;
+
+procedure TFmAASE.LbOsc5Click(Sender: TObject);
+begin
+ DlLevel5.Enabled := not DlLevel5.Enabled;
+ DlFrequency5.Enabled := DlLevel5.Enabled;
+ if DlLevel5.Enabled then
+  begin
+   LbOsc5.Font.Color := clWhite;
+   FSineGenerators[4].Amplitude := dB_to_Amp(DlLevel5.Value);
+  end
+ else
+  begin
+   LbOsc5.Font.Color := $001063AF;
+   FSineGenerators[4].Amplitude := 0;
+  end;
+end;
+
+procedure TFmAASE.LbOsc6Click(Sender: TObject);
+begin
+ DlLevel6.Enabled := not DlLevel6.Enabled;
+ DlFrequency6.Enabled := DlLevel6.Enabled;
+ if DlLevel6.Enabled then
+  begin
+   LbOsc6.Font.Color := clWhite;
+   FSineGenerators[5].Amplitude := dB_to_Amp(DlLevel6.Value);
+  end
+ else
+  begin
+   LbOsc6.Font.Color := $001063AF;
+   FSineGenerators[5].Amplitude := 0;
+  end;
+end;
+
 procedure TFmAASE.MiAdvancedClick(Sender: TObject);
 begin
  MiAdvanced.Checked := not MiAdvanced.Checked;
 
  if MiAdvanced.Checked
-  then ClientHeight := 268
+  then ClientHeight := 345
   else ClientHeight := 68;
 end;
 
@@ -329,18 +527,6 @@ begin
  FSynthFactor := dB_to_Amp(SlLevelSynth.Value);
 end;
 
-procedure TFmAASE.SlOscGainChange(Sender: TObject);
-begin
- with TGuiSlider(Sender)
-  do FSineGenerators[Tag].Amplitude := dB_to_Amp(Value);
-end;
-
-procedure TFmAASE.SlOscFreqChange(Sender: TObject);
-begin
- with TGuiSlider(Sender)
-  do FSineGenerators[Tag].Frequency := Value;
-end;
-
 procedure TFmAASE.SlFreqGetText(Sender: TObject; var Text: string);
 begin
  if Sender is TGuiSlider then
@@ -377,11 +563,16 @@ begin
 
  for SampleIndex := 0 to ASIOHost.Buffersize - 1 do
   begin
-   GeneratorSignal := FSineGenerators[0].Sine;
+   if FDrive[0].Percent > 0
+    then GeneratorSignal := FastTanhOpt5Term(FDrive[0].Scale[0] * FSineGenerators[0].Sine) * FDrive[0].Scale[1]
+    else GeneratorSignal := FSineGenerators[0].Sine;
+
    FSineGenerators[0].CalculateNextSample;
    for GeneratorIndex := 1 to Length(FSineGenerators) - 1 do
     begin
-     GeneratorSignal := GeneratorSignal + FSineGenerators[GeneratorIndex].Sine;
+     if FDrive[GeneratorIndex].Percent > 0
+      then GeneratorSignal := GeneratorSignal + FastTanhOpt5Term(FDrive[GeneratorIndex].Scale[0] * FSineGenerators[GeneratorIndex].Sine) * FDrive[GeneratorIndex].Scale[1]
+      else GeneratorSignal := GeneratorSignal + FSineGenerators[GeneratorIndex].Sine;
      FSineGenerators[GeneratorIndex].CalculateNextSample;
     end;
 

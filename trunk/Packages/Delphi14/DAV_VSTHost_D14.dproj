@@ -56,6 +56,7 @@
 			<DCCReference Include="DAV_VstPlugin_D14.dcp"/>
 			<DCCReference Include="..\..\Source\VST\DAV_VSTHost.pas"/>
 			<DCCReference Include="..\..\Source\VST\DAV_VSTHostRegister.pas"/>
+			<DCCReference Include="..\..\Source\VST\DAV_VSTHostAudioData.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
