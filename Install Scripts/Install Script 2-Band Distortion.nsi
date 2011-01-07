@@ -112,10 +112,10 @@ Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\TwoBandDistortion.dll" "..\Bin\2-Band Distortion.dll"'  
-  !system 'copy "..\Bin\x86_64-win64\TwoBandDistortion.dll" "..\Bin\2-Band Distortion (x64).dll"'  
+  !system 'copy "..\Bin\TwoBandDistortion.x64.dll" "..\Bin\2-Band Distortion.x64.dll"'  
 
   ${If} ${RunningX64}
-  File "..\Bin\2-Band Distortion (x64).dll"
+  File "..\Bin\2-Band Distortion.x64.dll"
   ${Else}
   File "..\Bin\2-Band Distortion.dll"
 
@@ -200,7 +200,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   ${If} ${RunningX64}
-  Delete "$INSTDIR\2-Band Distortion (x64).dll"
+  Delete "$INSTDIR\2-Band Distortion.x64.dll"
   ${Else}
   Delete "$INSTDIR\2-Band Distortion.dll"
   ${Endif}
