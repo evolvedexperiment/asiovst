@@ -1,5 +1,4 @@
-object SimpleChorusModule: TSimpleChorusModule
-  OldCreateOrder = True
+object ChorusModule: TChorusModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
@@ -140,8 +139,8 @@ object SimpleChorusModule: TSimpleChorusModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81

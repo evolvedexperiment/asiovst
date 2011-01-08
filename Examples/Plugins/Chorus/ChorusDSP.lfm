@@ -1,4 +1,4 @@
-object SimpleChorusModule: TSimpleChorusModule
+object ChorusModule: TChorusModule
   OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy

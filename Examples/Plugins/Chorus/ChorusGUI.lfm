@@ -1,4 +1,4 @@
-object FmSimpleChorus: TFmSimpleChorus
+object FmChorus: TFmChorus
   Left = 218
   Top = 81
   BorderStyle = bsNone
