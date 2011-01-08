@@ -2557,33 +2557,42 @@ begin
 end;
 
 procedure TCustomVstPlugIn.RenderEditorToBitmap(Bitmap: TBitmap);
+{$IFDEF MSWindows}
 var
-  r : TRect;
+  EditorRect   : TRect;
+  Hndl         : THandle;
+  User32Handle : THandle; //Handle of user32.dll
+
+  // prototype of a missing windows function
+  PrintWindow  : function(sHandle: HWND; dHandle: HDC; nFlags: UINT): BOOL; stdcall;
 begin
  // make sure the editor is visible
  if not Assigned(FGUIControl)
   then raise Exception.Create('Editor not instanciated yet');
 
- {$IFNDEF FPC}
- with TCanvas.Create do
-  try
-   Handle := GetWindowDC(GUIControl.Handle);
-   try
-    r := GetRect;
-    Bitmap.Width  := r.Right - r.Left;
-    Bitmap.Height := r.Bottom - r.Top;
-    BitBlt(Bitmap.Canvas.Handle, 0, 0, Bitmap.Width, Bitmap.Height, Handle,
-      r.Left, r.Top, SRCCOPY)
- //   Bitmap.Canvas.CopyRect(r, c, r);
-   finally
-    ReleaseDC(0, Handle);
-    Handle := 0;
-   end;
-  finally
-   Free;
+ User32Handle := GetModuleHandle(user32);
+ if User32Handle <> 0 then
+  begin
+   @PrintWindow := GetProcAddress(User32Handle , 'PrintWindow');
+   if @PrintWindow <> nil then
+    begin
+     EditorRect := GetRect;
+     Bitmap.Width  := EditorRect.Right - EditorRect.Left;
+     Bitmap.Height := EditorRect.Bottom - EditorRect.Top;
+     Bitmap.Canvas.Lock;
+     try
+      PrintWindow(FGUIControl.Handle, Bitmap.Canvas.Handle, 0);
+     finally
+      Bitmap.Canvas.Unlock;
+     end;
+    end;
   end;
- {$ENDIF}
 end;
+{$ELSE}
+begin
+ raise Exception.Create('Not implemented!');
+end;
+{$ENDIF}
 
 procedure TCustomVstPlugIn.GuiParameterChangeSelector(Sender: TObject);
 var

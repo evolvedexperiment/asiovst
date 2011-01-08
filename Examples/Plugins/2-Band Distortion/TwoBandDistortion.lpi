@@ -13,14 +13,13 @@
       <Title Value="2-Band Distortion"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <Language Value=""/>
       <CharSet Value=""/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="3" Active="Release &amp; Publish">
+    <BuildModes Count="3" Active="Release">
       <Item1 Name="Release" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -166,12 +165,10 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TwoBandDistortionDM"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="249"/>
-        <CursorPos X="5" Y="284"/>
+        <CursorPos X="32" Y="270"/>
         <UsageCount Value="23"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -265,37 +262,14 @@
       <Unit12>
         <Filename Value="..\..\..\Source\GUI\DAV_GuiFont.pas"/>
         <UnitName Value="DAV_GuiFont"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="419"/>
         <CursorPos X="34" Y="432"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiFont.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiFont.pas"/>
-        <Caret Line="424" Column="34" TopLine="394"/>
-      </Position2>
-      <Position3>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiFont.pas"/>
-        <Caret Line="162" Column="3" TopLine="144"/>
-      </Position3>
-      <Position4>
-        <Filename Value="TwoBandDistortionDM.pas"/>
-        <Caret Line="67" Column="40" TopLine="49"/>
-      </Position4>
-      <Position5>
-        <Filename Value="TwoBandDistortionDM.pas"/>
-        <Caret Line="114" Column="1" TopLine="79"/>
-      </Position5>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>

@@ -2,7 +2,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
   Left = 396
   Top = 84
   BorderStyle = bsNone
-  Caption = 'Simple Shepard'
+  Caption = 'Barberpole Flanger'
   ClientHeight = 115
   ClientWidth = 247
   Color = clBlack
@@ -31,7 +31,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbStages: TGuiLabel
     Left = 6
@@ -48,7 +47,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
     Left = 128
@@ -65,7 +63,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbMix: TGuiLabel
     Left = 197
@@ -82,7 +79,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
     Left = 64
@@ -99,7 +95,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbStagesValue: TGuiLabel
     Left = 18
@@ -116,7 +111,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
     Left = 123
@@ -133,7 +127,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbMixValue: TGuiLabel
     Left = 183
@@ -150,7 +143,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbAlgorithm: TGuiLabel
     Left = 8
@@ -166,7 +158,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object SBAlgorithm: TGuiSelectBox
     Left = 99
@@ -202,11 +193,13 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     CurveMapping = -1.799999952316284000
     Max = 10.000000000000000000
     Min = 0.009999999776482582
-    OnChange = DialSpeedChange
+    ScrollRange = 400.000000000000000000
     ImageList = DSIL
     ImageIndex = 0
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
+    OnChange = DialSpeedChange
+    DefaultValue = 0.000000000000000000
   end
   object DialStages: TGuiStitchedDial
     Left = 16
@@ -215,11 +208,13 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Height = 36
     Max = 8.000000000000000000
     Min = 1.000000000000000000
-    OnChange = DialStagesChange
+    ScrollRange = 400.000000000000000000
     ImageList = DSIL
     ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialStagesChange
+    DefaultValue = 0.000000000000000000
   end
   object DialDepth: TGuiStitchedDial
     Left = 136
@@ -227,11 +222,13 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 36
     Height = 36
     Max = 100.000000000000000000
-    OnChange = DialDepthChange
+    ScrollRange = 400.000000000000000000
     ImageList = DSIL
     ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialDepthChange
+    DefaultValue = 0.000000000000000000
   end
   object DialMix: TGuiStitchedDial
     Left = 196
@@ -239,11 +236,13 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Width = 36
     Height = 36
     Max = 100.000000000000000000
-    OnChange = DialMixChange
+    ScrollRange = 400.000000000000000000
     ImageList = DSIL
     ImageIndex = 0
     Value = 2.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialMixChange
+    DefaultValue = 0.000000000000000000
   end
   object DSIL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1335,7 +1334,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>
