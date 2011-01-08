@@ -175,7 +175,7 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="GateDM.pas"/>
+        <Filename Value="GateDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
       </Unit1>
@@ -235,4 +235,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

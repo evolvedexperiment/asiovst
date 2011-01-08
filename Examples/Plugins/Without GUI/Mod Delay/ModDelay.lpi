@@ -182,10 +182,10 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="ModDelayDM.pas"/>
+        <Filename Value="ModDelayDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="ModDelayDM"/>
+        <UnitName Value="ModDelayDSP"/>
       </Unit1>
     </Units>
   </ProjectOptions>
@@ -243,4 +243,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

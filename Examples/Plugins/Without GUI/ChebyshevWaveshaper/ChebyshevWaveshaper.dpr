@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ChebyshevWaveshaperDM in 'ChebyshevWaveshaperDM.pas' {ChebyshevWaveshaperDataModule: TVSTModule};
+  ChebyshevWaveshaperDSP in 'ChebyshevWaveshaperDSP.pas' {ChebyshevWaveshaperDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

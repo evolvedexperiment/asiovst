@@ -1,4 +1,3 @@
-{$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library ParametricEQ;
 
 {$I DAV_Compiler.inc}
@@ -8,7 +7,7 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ParametricEQDM in 'ParametricEQDM.pas' {ParametricEQDataModule: TVSTModule};
+  ParametricEqDSP in 'ParametricEqDSP.pas' {ParametricEQDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

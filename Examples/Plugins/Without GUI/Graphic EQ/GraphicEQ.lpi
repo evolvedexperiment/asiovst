@@ -187,7 +187,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
-        <Filename Value="PluginDM.pas"/>
+        <Filename Value="PluginDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UsageCount Value="20"/>

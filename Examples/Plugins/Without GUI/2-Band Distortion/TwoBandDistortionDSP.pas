@@ -1,4 +1,4 @@
-unit TwoBandDistortionDM;
+unit TwoBandDistortionDSP;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //

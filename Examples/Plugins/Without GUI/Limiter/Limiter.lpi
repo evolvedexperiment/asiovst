@@ -175,12 +175,12 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="LimiterDM.pas"/>
+        <Filename Value="LimiterDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="LimiterDataModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="LimiterDM"/>
+        <UnitName Value="LimiterDSP"/>
       </Unit1>
       <Unit2>
         <Filename Value="EditorFrm.pas"/>
@@ -246,4 +246,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

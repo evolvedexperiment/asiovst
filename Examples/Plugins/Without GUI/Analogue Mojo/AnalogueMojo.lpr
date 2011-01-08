@@ -11,7 +11,7 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, TAnalogueMojoDM);
+ Result := VstModuleMain(AudioMasterCallback, TAnalogueMojoDM);
 end;
 
 exports

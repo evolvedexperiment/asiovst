@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  TwoBandDistortionDM in 'TwoBandDistortionDM.pas' {TwoBandDistortionDataModule: TVSTModule};
+  TwoBandDistortionDSP in 'TwoBandDistortionDSP.pas' {TwoBandDistortionDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

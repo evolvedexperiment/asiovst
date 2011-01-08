@@ -7,11 +7,11 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  TanhWaveshaperDM in 'TanhWaveshaperDM.pas' {TanhWaveshaperModule: TVSTModule};
+  TanhWaveshaperDSP in 'TanhWaveshaperDSP.pas' {TanhWaveshaperModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, TTanhWaveshaperModule);
+ Result := VstModuleMain(AudioMasterCallback, TTanhWaveshaperModule);
 end;
 
 exports

@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  VariableDelayModule in 'VariableDelayModule.pas' {VariableDelayVST: TVST2Module};
+  VariableDelayDSP in 'VariableDelayDSP.pas' {VariableDelayVST: TVST2Module};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

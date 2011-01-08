@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  SpinBugLiteModule in 'SpinBugLiteModule.pas' {SpinBugLiteModule: TVSTModule};
+  SpinBugLiteDSP in 'SpinBugLiteDSP.pas' {SpinBugLiteModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

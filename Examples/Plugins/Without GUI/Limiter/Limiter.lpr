@@ -1,4 +1,3 @@
-{$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library Limiter;
 
 {$I DAV_Compiler.inc}
@@ -8,7 +7,7 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  LimiterDM in 'LimiterDM.pas' {LimiterDataModule: TVSTModule};
+  LimiterDSP in 'LimiterDSP.pas' {LimiterDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

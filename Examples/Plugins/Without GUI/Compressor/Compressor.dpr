@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  CompressorDM in 'CompressorDM.pas' {CompressorDataModule: TVSTModule};
+  CompressorDSP in 'CompressorDSP.pas' {CompressorDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

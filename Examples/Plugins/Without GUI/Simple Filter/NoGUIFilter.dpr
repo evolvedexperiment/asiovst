@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  FilterModule in 'FilterModule.pas' {VSTFilter: TVSTModule};
+  FilterDSP in 'FilterDSP.pas' {VSTFilter: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
@@ -17,5 +17,4 @@ exports
   VstPluginMain name 'main',
   VstPluginMain name 'VSTPluginMain';
 
-begin
 end.

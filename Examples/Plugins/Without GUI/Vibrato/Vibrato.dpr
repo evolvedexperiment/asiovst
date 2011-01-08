@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  VibratoDM in 'VibratoDM.pas' {VibratoModule: TVSTModule};
+  VibratoDSP in 'VibratoDSP.pas' {VibratoModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

@@ -181,12 +181,12 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="ChorusDM.pas"/>
+        <Filename Value="ChorusDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ChorusModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="ChorusDM"/>
+        <UnitName Value="ChorusDSP"/>
       </Unit1>
     </Units>
   </ProjectOptions>
@@ -241,4 +241,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
