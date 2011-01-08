@@ -1,4 +1,4 @@
-object FmSimpleChorus: TFmSimpleChorus
+object FmChorus: TFmChorus
   Left = 218
   Top = 81
   BorderStyle = bsNone
@@ -25,7 +25,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Caption = 'Speed'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbStages: TGuiLabel
     Left = 65
@@ -36,7 +35,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Caption = 'Stages'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
     Left = 128
@@ -47,7 +45,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Caption = 'Depth'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbMix: TGuiLabel
     Left = 188
@@ -58,7 +55,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Caption = 'Mix'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
     Left = 3
@@ -75,7 +71,6 @@ object FmSimpleChorus: TFmSimpleChorus
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbStagesValue: TGuiLabel
     Left = 67
@@ -92,7 +87,6 @@ object FmSimpleChorus: TFmSimpleChorus
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
     Left = 123
@@ -109,7 +103,6 @@ object FmSimpleChorus: TFmSimpleChorus
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbMixValue: TGuiLabel
     Left = 183
@@ -126,7 +119,6 @@ object FmSimpleChorus: TFmSimpleChorus
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDrift: TGuiLabel
     Left = 246
@@ -137,7 +129,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Caption = 'Drift'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbDriftValue: TGuiLabel
     Left = 241
@@ -154,7 +145,6 @@ object FmSimpleChorus: TFmSimpleChorus
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object DialSpeed: TGuiStitchedDial
     Left = 16
@@ -164,11 +154,13 @@ object FmSimpleChorus: TFmSimpleChorus
     CurveMapping = -1.799999952316284000
     Max = 10.000000000000000000
     Min = 0.009999999776482582
-    OnChange = DialSpeedChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 0.200000002980232200
     WheelStep = 1.000000000000000000
+    OnChange = DialSpeedChange
+    DefaultValue = 0.000000000000000000
   end
   object DialStages: TGuiStitchedDial
     Left = 76
@@ -177,11 +169,13 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 36
     Max = 8.000000000000000000
     Min = 1.000000000000000000
-    OnChange = DialStagesChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 4.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialStagesChange
+    DefaultValue = 0.000000000000000000
   end
   object DialDepth: TGuiStitchedDial
     Tag = 5
@@ -190,10 +184,13 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 36
     Height = 36
     Max = 100.000000000000000000
-    OnChange = DialDepthChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDepthChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialMix: TGuiStitchedDial
     Left = 196
@@ -201,11 +198,13 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 36
     Height = 36
     Max = 100.000000000000000000
-    OnChange = DialMixChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 50.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialMixChange
+    DefaultValue = 0.000000000000000000
   end
   object DialDrift: TGuiStitchedDial
     Left = 254
@@ -214,11 +213,13 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 36
     CurveMapping = -1.000000000000000000
     Max = 100.000000000000000000
-    OnChange = DialDriftChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 8.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialDriftChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1310,7 +1311,6 @@ object FmSimpleChorus: TFmSimpleChorus
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

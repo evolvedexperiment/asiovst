@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library SimpleChorus;
+library Chorus;
 
 uses
   FastMM4, // either download the library or comment if there is an error here
@@ -9,17 +9,17 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  SimpleChorusDM in 'SimpleChorusDM.pas' {SimpleChorusModule: TVSTModule},
-  SimpleChorusGUI in 'SimpleChorusGUI.pas' {FmSimpleChorus};
+  ChorusDSP in 'ChorusDSP.pas' {ChorusModule: TVSTModule},
+  ChorusGUI in 'ChorusGUI.pas' {FmSimpleChorus};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSimpleChorusModule);
+ Result := VstModuleMain(AudioMasterCallback, TChorusModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSimpleChorusModule);
+ Result := WinampDSPModuleHeader(TChorusModule);
 end;
 
 exports
@@ -27,5 +27,4 @@ exports
   VstPluginMain name 'VSTPluginMain',
   WinampDSPGetHeader name 'winampDSPGetHeader2';
 
-begin
 end.

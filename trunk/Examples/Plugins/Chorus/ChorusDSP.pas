@@ -1,4 +1,4 @@
-unit SimpleChorusDM;
+unit ChorusDSP;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -39,7 +39,7 @@ uses
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspChorus;
 
 type
-  TSimpleChorusModule = class(TVSTModule)
+  TChorusModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
@@ -70,22 +70,22 @@ implementation
 {$ENDIF}
 
 uses
-  SimpleChorusGUI, DAV_Approximations, DAV_VSTCustomModule;
+  ChorusGUI, DAV_Approximations, DAV_VSTCustomModule;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
-procedure TSimpleChorusModule.VSTModuleCreate(Sender: TObject);
+procedure TChorusModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TSimpleChorusModule.VSTModuleDestroy(Sender: TObject);
+procedure TChorusModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FCriticalSection);
 end;
 
-procedure TSimpleChorusModule.VSTModuleOpen(Sender: TObject);
+procedure TChorusModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
@@ -175,25 +175,25 @@ begin
   end;
 end;
 
-procedure TSimpleChorusModule.VSTModuleClose(Sender: TObject);
+procedure TChorusModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FChorus[0]);
  FreeAndNil(FChorus[1]);
 end;
 
-procedure TSimpleChorusModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TChorusModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
- GUI := TFmSimpleChorus.Create(Self);
+ GUI := TFmChorus.Create(Self);
 end;
 
-function TSimpleChorusModule.GetChorus(Index: Integer): TDspChorus32;
+function TChorusModule.GetChorus(Index: Integer): TDspChorus32;
 begin
  if Index in [0..1]
   then Result := FChorus[Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TSimpleChorusModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCriticalSection.Enter;
  try
@@ -204,12 +204,12 @@ begin
  end;
 
  // update GUI
- if EditorForm is TFmSimpleChorus then
-  with TFmSimpleChorus(EditorForm)
+ if EditorForm is TFmChorus then
+  with TFmChorus(EditorForm)
    do UpdateSpeed;
 end;
 
-procedure TSimpleChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCriticalSection.Enter;
  try
@@ -220,12 +220,12 @@ begin
  end;
 
  // update GUI
- if EditorForm is TFmSimpleChorus then
-  with TFmSimpleChorus(EditorForm)
+ if EditorForm is TFmChorus then
+  with TFmChorus(EditorForm)
    do UpdateStages;
 end;
 
-procedure TSimpleChorusModule.ParamDriftChange(
+procedure TChorusModule.ParamDriftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   i : Integer;
@@ -243,12 +243,12 @@ begin
  end;
 
  // update GUI
- if EditorForm is TFmSimpleChorus then
-  with TFmSimpleChorus(EditorForm)
+ if EditorForm is TFmChorus then
+  with TFmChorus(EditorForm)
    do UpdateDrift;
 end;
 
-procedure TSimpleChorusModule.ParamDepthChange(
+procedure TChorusModule.ParamDepthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCriticalSection.Enter;
@@ -260,12 +260,12 @@ begin
  end;
 
  // update GUI
- if EditorForm is TFmSimpleChorus then
-  with TFmSimpleChorus(EditorForm)
+ if EditorForm is TFmChorus then
+  with TFmChorus(EditorForm)
    do UpdateDepth;
 end;
 
-procedure TSimpleChorusModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChorusModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCriticalSection.Enter;
  try
@@ -276,12 +276,12 @@ begin
  end;
 
  // update GUI
- if EditorForm is TFmSimpleChorus then
-  with TFmSimpleChorus(EditorForm)
+ if EditorForm is TFmChorus then
+  with TFmChorus(EditorForm)
    do UpdateMix;
 end;
 
-procedure TSimpleChorusModule.VSTModuleProcess(const Inputs,
+procedure TChorusModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel, Sample : Integer;
@@ -296,7 +296,7 @@ begin
  end;
 end;
 
-procedure TSimpleChorusModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TChorusModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Channel, Sample : Integer;
@@ -311,7 +311,7 @@ begin
  end;
 end;
 
-procedure TSimpleChorusModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TChorusModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  if Abs(SampleRate) > 0 then

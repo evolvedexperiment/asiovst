@@ -12,6 +12,7 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -39,33 +40,34 @@
     </RequiredPackages>
     <Units Count="4">
       <Unit0>
-        <Filename Value="SimpleChorus.lpr"/>
+        <Filename Value="Chorus.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="5"/>
-        <CursorPos X="25" Y="33"/>
+        <TopLine Value="1"/>
+        <CursorPos X="36" Y="8"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
-        <Filename Value="SimpleChorusDM.pas"/>
+        <Filename Value="ChorusDSP.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SimpleChorusModule"/>
+        <ComponentName Value="ChorusModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="SimpleChorusDM"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
+        <UnitName Value="ChorusDSP"/>
         <TopLine Value="43"/>
         <CursorPos X="66" Y="66"/>
         <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="SimpleChorusGUI.pas"/>
+        <Filename Value="ChorusGUI.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="SimpleChorusGUI"/>
+        <UnitName Value="ChorusGUI"/>
         <WindowIndex Value="0"/>
         <TopLine Value="16"/>
         <CursorPos X="3" Y="41"/>
@@ -76,6 +78,7 @@
         <Filename Value="../\Barberpole Shifter\ConverterBackup\DAV_WinAmp.pas"/>
         <IsPartOfProject Value="True"/>
         <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
@@ -83,10 +86,13 @@
   <CompilerOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\Bin\Chorus.x64.dll"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>
       <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
-      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

@@ -1,4 +1,4 @@
-unit SimpleChorusGUI;
+unit ChorusGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -38,10 +38,11 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, DAV_Types, Controls, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiPng,
   DAV_GuiLabel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
-  TFmSimpleChorus = class(TForm)
+  TFmChorus = class(TForm)
     DialDepth: TGuiStitchedDial;
     DialDrift: TGuiStitchedDial;
     DialMix: TGuiStitchedDial;
@@ -81,9 +82,9 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_VSTModuleWithPrograms, SimpleChorusDM;
+  Math, DAV_VSTModuleWithPrograms, ChorusDSP;
 
-procedure TFmSimpleChorus.FormShow(Sender: TObject);
+procedure TFmChorus.FormShow(Sender: TObject);
 begin
  UpdateDepth;
  UpdateDrift;
@@ -92,56 +93,56 @@ begin
  UpdateStages;
 end;
 
-procedure TFmSimpleChorus.DialDepthChange(Sender: TObject);
+procedure TFmChorus.DialDepthChange(Sender: TObject);
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    if Parameter[2] <> DialDepth.Value
     then Parameter[2] := DialDepth.Value;
   end;
 end;
 
-procedure TFmSimpleChorus.DialDriftChange(Sender: TObject);
+procedure TFmChorus.DialDriftChange(Sender: TObject);
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    if Parameter[4] <> DialDrift.Value
     then Parameter[4] := DialDrift.Value;
   end;
 end;
 
-procedure TFmSimpleChorus.DialMixChange(Sender: TObject);
+procedure TFmChorus.DialMixChange(Sender: TObject);
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    if Parameter[3] <> DialMix.Value
     then Parameter[3] := DialMix.Value;
   end;
 end;
 
-procedure TFmSimpleChorus.DialSpeedChange(Sender: TObject);
+procedure TFmChorus.DialSpeedChange(Sender: TObject);
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    if Parameter[0] <> DialSpeed.Value
     then Parameter[0] := DialSpeed.Value;
   end;
 end;
 
-procedure TFmSimpleChorus.DialStagesChange(Sender: TObject);
+procedure TFmChorus.DialStagesChange(Sender: TObject);
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    if Parameter[1] <> DialStages.Value
     then Parameter[1] := DialStages.Value;
   end;
 end;
 
-procedure TFmSimpleChorus.UpdateDepth;
+procedure TFmChorus.UpdateDepth;
 var
   Depth : Single;
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    Depth := Parameter[2];
    if DialDepth.Value <> Depth
@@ -150,11 +151,11 @@ begin
   end;
 end;
 
-procedure TFmSimpleChorus.UpdateDrift;
+procedure TFmChorus.UpdateDrift;
 var
   Drift : Single;
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    Drift := Parameter[4];
    if DialDrift.Value <> Drift
@@ -163,11 +164,11 @@ begin
   end;
 end;
 
-procedure TFmSimpleChorus.UpdateMix;
+procedure TFmChorus.UpdateMix;
 var
   Mix : Single;
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    Mix := Parameter[3];
    if DialMix.Value <> Mix
@@ -176,11 +177,11 @@ begin
   end;
 end;
 
-procedure TFmSimpleChorus.UpdateSpeed;
+procedure TFmChorus.UpdateSpeed;
 var
   Speed : Single;
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    Speed := Parameter[0];
    if DialSpeed.Value <> Speed
@@ -189,9 +190,9 @@ begin
   end;
 end;
 
-procedure TFmSimpleChorus.UpdateStages;
+procedure TFmChorus.UpdateStages;
 begin
- with TSimpleChorusModule(Owner) do
+ with TChorusModule(Owner) do
   begin
    if DialStages.Value <> Parameter[1]
     then DialStages.Value := Parameter[1];
