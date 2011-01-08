@@ -6,12 +6,12 @@ program VstPluginScreenshotTool;
 
 uses
 {$IFNDEF FPC}
-  PngImage, 
+  PngImage, DAV_GuiPng,
 {$ELSE}
   Interfaces, LazPng, imagesforlazarus,
 {$ENDIF}
-  Windows, Classes, Controls, Forms, Graphics, SysUtils, FileCtrl,
-  DAV_VstHost;
+  Windows, Messages, Classes, Controls, Forms, Graphics, SysUtils, FileCtrl,
+  DAV_VstEffect, DAV_VstHost, DAV_GuiPixelMap;
 
 resourcestring
   RCStrProductString = 'Vst Plugin Screenshot Tool';
@@ -20,16 +20,18 @@ resourcestring
   RCStrWrongSyntax = 'Wrong syntax!';
   RCStrAbout = 'Delphi ASIO & VST Project - Vst Plugin Screenshot Tool';
 
+{-$DEFINE Alternative}
+
 procedure RenderScreenshot(FileName: TFileName);
 var
-  Form    : TForm;
-  Bitmap  : TBitmap;
+  Form      : TForm;
+  Bitmap    : TBitmap;
   {$IFNDEF FPC}
-  Png     : TPNGObject;
+  Png       : TPNGObject;
   {$ELSE}
-  Png     : TPNGImage;
+  Png       : TPNGImage;
   {$ENDIF}
-  Rct     : TRect;
+  Rct       : TRect;
 begin
  with TVstHost.Create(nil) do
   try
@@ -48,16 +50,19 @@ begin
 
      // activate VST plugin
      Active := True;
+     if not Active
+      then raise Exception.Create('Plugin not active!');
+
+     if not (effFlagsHasEditor in VstEffectPointer.EffectFlags)
+      then raise Exception.Create('Plugin does not feature an editor!');
 
      // create form for GUI rendering
-     Form := TForm.Create(nil);
+     Form := TForm.CreateNew(Application);
      try
       if FileExists(ParamStr(2))
        then LoadPreset(ParamStr(2)) else
       if FileExists(FileName + '.fxp')
        then LoadPreset(FileName + '.fxp');
-      Form.BorderStyle := bsNone;
-      Form.Position := poScreenCenter;
 
       if ParamStr(3) <> '' then
        begin
@@ -65,11 +70,13 @@ begin
        end;
 
       ShowEdit(Form);
+
       Rct := GetRect;
+      Form.BorderStyle := bsNone;
       Form.ClientWidth := Rct.Right - Rct.Left;
       Form.ClientHeight := Rct.Bottom - Rct.Top;
+      Form.Left := -Form.ClientWidth;
       Form.Visible := True;
-//      Form.Repaint;
       Application.ProcessMessages;
       Bitmap := TBitmap.Create;
       try
@@ -94,6 +101,7 @@ begin
       FreeAndNil(Form);
      end;
     except
+     on E:Exception do Writeln('Error: ' + E.Message);
     end;
   finally
    Free;

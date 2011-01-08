@@ -15,7 +15,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "Barberpole Flanger Installer"
-  OutFile "Barberpole Flanger_Install.exe"
+  OutFile "Barberpole_Flanger_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
