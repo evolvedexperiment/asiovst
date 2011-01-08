@@ -7,7 +7,7 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  SampleDelayModule in 'SampleDelayModule.pas' {SampleDelayVST: TVST2Module};
+  SampleDelayDSP in 'SampleDelayDSP.pas' {SampleDelayVST: TVST2Module};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

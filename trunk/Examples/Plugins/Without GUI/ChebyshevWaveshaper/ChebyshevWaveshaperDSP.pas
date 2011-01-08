@@ -1,4 +1,4 @@
-unit ChebyshevWaveshaperDM;
+unit ChebyshevWaveshaperDSP;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -214,4 +214,4 @@ begin
  end;
 end;
 
-end.
+end.

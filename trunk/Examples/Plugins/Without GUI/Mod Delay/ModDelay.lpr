@@ -7,11 +7,11 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ModDelayDM in 'ModDelayDM.pas' {ModDelayModule: TVSTModule};
+  ModDelayDSP in 'ModDelayDSP.pas' {ModDelayModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, TModDelayModule);
+ Result := VstModuleMain(AudioMasterCallback, TModDelayModule);
 end;
 
 exports

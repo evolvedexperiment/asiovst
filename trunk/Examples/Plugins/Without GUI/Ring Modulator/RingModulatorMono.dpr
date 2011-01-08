@@ -9,7 +9,7 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  RingModulatorDM in 'RingModulatorDM.pas' {RingModulatorDataModule: TVSTModule};
+  RingModulatorDSP in 'RingModulatorDSP.pas' {RingModulatorDataModule: TVSTModule};
 
 {$ELSE}
 

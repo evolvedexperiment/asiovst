@@ -169,7 +169,7 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="TanhWaveshaperDM.pas"/>
+        <Filename Value="TanhWaveshaperDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
       </Unit1>
@@ -226,4 +226,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

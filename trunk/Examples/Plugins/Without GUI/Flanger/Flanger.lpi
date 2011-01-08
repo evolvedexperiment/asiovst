@@ -178,10 +178,10 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="FlangerDM.pas"/>
+        <Filename Value="FlangerDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="FlangerDM"/>
+        <UnitName Value="FlangerDSP"/>
       </Unit1>
     </Units>
   </ProjectOptions>
@@ -236,4 +236,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

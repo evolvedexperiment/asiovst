@@ -171,12 +171,12 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="VibratoDM.pas"/>
+        <Filename Value="VibratoDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VibratoModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="VibratoDM"/>
+        <UnitName Value="VibratoDSP"/>
       </Unit1>
     </Units>
   </ProjectOptions>
@@ -230,4 +230,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

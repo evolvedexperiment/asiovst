@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ChorusDM in 'ChorusDM.pas' {ChorusModule: TVSTModule};
+  ChorusDSP in 'ChorusDSP.pas' {ChorusModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

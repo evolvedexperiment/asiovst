@@ -11,7 +11,7 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, THumRemovalModule);
+ Result := VstModuleMain(AudioMasterCallback, THumRemovalModule);
 end;
 
 exports

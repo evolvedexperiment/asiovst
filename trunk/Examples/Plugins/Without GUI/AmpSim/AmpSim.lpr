@@ -1,4 +1,3 @@
-{$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library AmpSim;
 
 {$I DAV_Compiler.inc}
@@ -8,7 +7,7 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  AmpSimDM in 'AmpSimDM.pas' {ComboDataModule: TVSTModule};
+  AmpSimDSP in 'AmpSimDSP.pas' {ComboDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
@@ -26,4 +25,4 @@ exports
   VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-end.
+end.

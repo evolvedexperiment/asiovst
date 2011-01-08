@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  TanhWaveshaperDM in 'TanhWaveshaperDM.pas' {TanhWaveshaperModule: TVSTModule};
+  TanhWaveshaperDSP in 'TanhWaveshaperDSP.pas' {TanhWaveshaperModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

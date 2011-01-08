@@ -169,12 +169,12 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="AmpSimDM.pas"/>
+        <Filename Value="AmpSimDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ComboDataModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="AmpSimDM"/>
+        <UnitName Value="AmpSimDSP"/>
       </Unit1>
     </Units>
   </ProjectOptions>

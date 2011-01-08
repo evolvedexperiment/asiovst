@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  FlangerDM in 'FlangerDM.pas' {FlangerModule: TVSTModule};
+  FlangerDSP in 'FlangerDSP.pas' {FlangerModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

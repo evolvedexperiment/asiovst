@@ -176,12 +176,12 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="PhaserDM.pas"/>
+        <Filename Value="PhaserDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="PhaserModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="PhaserDM"/>
+        <UnitName Value="PhaserDSP"/>
       </Unit1>
     </Units>
   </ProjectOptions>
@@ -239,4 +239,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

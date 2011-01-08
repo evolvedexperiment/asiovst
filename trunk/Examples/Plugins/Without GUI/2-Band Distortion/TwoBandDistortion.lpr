@@ -1,4 +1,3 @@
-{$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library TwoBandDistortion;
 
 {$I DAV_Compiler.inc}
@@ -6,10 +5,9 @@ library TwoBandDistortion;
 uses
   Interfaces,
   Forms,
-  DAV_Common,
   DAV_VSTBasicModule,
   DAV_VSTEffect,
-  TwoBandDistortionDM in 'TwoBandDistortionDM.pas' {TwoBandDistortionDataModule: TVSTModule};
+  TwoBandDistortionDSP in 'TwoBandDistortionDSP.pas' {TwoBandDistortionDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

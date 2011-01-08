@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ParametricEQDM in 'ParametricEQDM.pas' {ParametricEQDataModule: TVSTModule};
+  ParametricEqDSP in 'ParametricEqDSP.pas' {ParametricEQDataModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

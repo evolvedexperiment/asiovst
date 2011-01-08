@@ -6,7 +6,7 @@ uses
   FastMove, // either download the library or comment if there is an error here
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  fReeverbModule in 'fReeverbModule.pas' {fReeverbVST: TVSTModule};
+  fReeverbDSP in 'fReeverbDSP.pas' {fReeverbVST: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

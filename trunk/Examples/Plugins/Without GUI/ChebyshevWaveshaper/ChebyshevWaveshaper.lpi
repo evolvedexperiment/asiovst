@@ -176,12 +176,12 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="ChebyshevWaveshaperDM.pas"/>
+        <Filename Value="ChebyshevWaveshaperDSP.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ChebyshevWaveshaperDataModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="ChebyshevWaveshaperDM"/>
+        <UnitName Value="ChebyshevWaveshaperDSP"/>
       </Unit1>
     </Units>
   </ProjectOptions>
@@ -236,4 +236,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

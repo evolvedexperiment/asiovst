@@ -8,7 +8,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTModule,
   DAV_VSTParameters,
-  FilterModule in 'FilterModule.pas';
+  FilterDSP in 'FilterDSP.pas';
 
 function VSTPluginMain(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

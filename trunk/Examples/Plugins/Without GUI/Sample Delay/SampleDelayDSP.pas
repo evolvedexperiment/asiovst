@@ -1,4 +1,4 @@
-unit SampleDelayModule;
+unit SampleDelayDSP;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -230,4 +230,4 @@ begin
  end;
 end;
 
-end.
+end.

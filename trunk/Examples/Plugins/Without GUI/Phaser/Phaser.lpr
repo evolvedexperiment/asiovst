@@ -7,7 +7,7 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  PhaserDM in 'PhaserDM.pas' {PhaserModule: TPhaserModule};
+  PhaserDSP in 'PhaserDSP.pas' {PhaserModule: TPhaserModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

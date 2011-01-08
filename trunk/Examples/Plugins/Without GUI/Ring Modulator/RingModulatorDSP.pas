@@ -1,4 +1,4 @@
-unit BodeFrequencyShifterDM;
+unit RingModulatorDSP;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -35,11 +35,11 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspFrequencyShifter;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  SyncObjs, Forms, DAV_Types, DAV_VSTModule, DAV_DspRingModulator;
 
 type
-  TBodeFrequencyShifterDataModule = class(TVSTModule)
+  TRingModulatorDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
@@ -48,16 +48,12 @@ type
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTransitionBWChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FFreqShifter     : array of TBodeFrequencyShifter32;
-    FUpMix, FDownMix : Single;
     FCriticalSection : TCriticalSection;
+    FRingMod         : array of TAutoRingModulator32;
     procedure ChooseProcess;
   public
   end;
@@ -71,29 +67,28 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, DAV_Common;
+  Registry, DAV_Common, DAV_VSTParameters;
 
 const
-  CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Bode Frequency Shifter';
+  CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Ring Modulator';
 
-procedure TBodeFrequencyShifterDataModule.VSTModuleCreate(Sender: TObject);
+procedure TRingModulatorDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TBodeFrequencyShifterDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TRingModulatorDataModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FCriticalSection);
 end;
 
-procedure TBodeFrequencyShifterDataModule.VSTModuleOpen(Sender: TObject);
+procedure TRingModulatorDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel  : Integer;
-  TempFreq : Single;
+  ChannelIndex : Integer;
+  UpperFreq    : Single;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
- SetLength(FFreqShifter, numInputs);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
 
  with TRegistry.Create do
   try
@@ -102,113 +97,38 @@ begin
     begin
      if ValueExists('Upper Frequency') then
       begin
-       TempFreq := StrToFloat(ReadString('Upper Frequency'));
-       if TempFreq > ParameterProperties[0].Min
-        then ParameterProperties[0].Max := TempFreq;
-      end;
-     if ValueExists('Lower Frequency') then
-      begin
-       TempFreq := StrToFloat(ReadString('Lower Frequency'));
-       if TempFreq < ParameterProperties[0].Max
-        then ParameterProperties[0].Min := TempFreq;
+       UpperFreq := StrToFloat(ReadString('Upper Frequency'));
+       if UpperFreq > ParameterProperties[0].Min
+        then ParameterProperties[0].Max := UpperFreq;
       end;
     end
   finally
    Free;
   end;
 
+ SetLength(FRingMod, numInputs);
+
  ChooseProcess;
 
- for Channel := 0 to Length(FFreqShifter) - 1
-  do FFreqShifter[Channel] := TBodeFrequencyShifter32.Create;
+ for ChannelIndex := 0 to Length(FRingMod) - 1
+  do FRingMod[ChannelIndex] := TAutoRingModulator32.Create;
 
- // default parameters
- Parameter[0] := 100;
- Parameter[1] := 100;
- Parameter[2] := 12;
- Parameter[3] := 0.1;
+ Parameter[0] := 10;
 
-(*
  Programs[0].Parameter[0] := 10;
  Programs[1].Parameter[0] := 0.1;
  Programs[2].Parameter[0] := 1000;
-*)
 end;
 
-procedure TBodeFrequencyShifterDataModule.VSTModuleClose(Sender: TObject);
+procedure TRingModulatorDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFreqShifter) - 1
-  do FreeAndNil(FFreqShifter[Channel]);
+ for ChannelIndex := 0 to Length(FRingMod) - 1
+  do FreeAndNil(FRingMod[ChannelIndex]);
 end;
 
-procedure TBodeFrequencyShifterDataModule.ParameterFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  Channel : Integer;
-begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FFreqShifter) - 1 do
-   if Assigned(FFreqShifter[Channel])
-    then FFreqShifter[Channel].Frequency := Value;
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TBodeFrequencyShifterDataModule.ParameterMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FUpMix   := 0.5 * ((0.01 * Value) + 1);
- FDownMix := 1 - FUpMix;
- FUpMix   := sqrt(FUpMix);
- FDownMix := sqrt(FDownMix);
-end;
-
-procedure TBodeFrequencyShifterDataModule.ParameterCoeffsChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  Channel : Integer;
-begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FFreqShifter) - 1 do
-   if Assigned(FFreqShifter[Channel])
-    then FFreqShifter[Channel].CoefficientCount := round(Value);
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TBodeFrequencyShifterDataModule.ParameterTransitionBWChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  Channel : Integer;
-begin
- for Channel := 0 to Length(FFreqShifter) - 1 do
-  if Assigned(FFreqShifter[Channel])
-   then FFreqShifter[Channel].TransitionBandwidth := Value;
-end;
-
-procedure TBodeFrequencyShifterDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-begin
- if Parameter[Index] < 1000
-  then PreDefined := FloatToAnsiString(Parameter[Index], 4)
-  else PreDefined := FloatToAnsiString(0.001 * Parameter[Index], 4);
-end;
-
-procedure TBodeFrequencyShifterDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-begin
- if Parameter[Index] < 1000
-  then PreDefined := 'Hz'
-  else PreDefined := 'kHz';
-end;
-
-procedure TBodeFrequencyShifterDataModule.ChooseProcess;
+procedure TRingModulatorDataModule.ChooseProcess;
 begin
  case numInputs of
    1 : OnProcess := VSTModuleProcessMono;
@@ -218,75 +138,98 @@ begin
  OnProcess32Replacing := OnProcess;
 end;
 
-procedure TBodeFrequencyShifterDataModule.VSTModuleProcessMono(const Inputs,
+procedure TRingModulatorDataModule.ParameterFrequencyChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FRingMod) - 1 do
+   if Assigned(FRingMod[ChannelIndex])
+    then FRingMod[ChannelIndex].Frequency := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TRingModulatorDataModule.ParameterFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := FloatToAnsiString(Parameter[Index], 4)
+  else PreDefined := FloatToAnsiString(0.001 * Parameter[Index], 4);
+end;
+
+procedure TRingModulatorDataModule.ParameterFrequencyLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := 'Hz'
+  else PreDefined := 'kHz';
+end;
+
+procedure TRingModulatorDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FRingMod) - 1 do
+    if Assigned(FRingMod[ChannelIndex])
+     then FRingMod[ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TRingModulatorDataModule.VSTModuleProcessMono(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample   : Integer;
-  Up, Down : Single;
+  Sample  : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1
+   do Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TRingModulatorDataModule.VSTModuleProcessStereo(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample  : Integer;
 begin
  FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    FFreqShifter[0].ProcessSample(Inputs[0, Sample], Up, Down);
-    Outputs[0, Sample] := FUpMix * Up + FDownMix * Down;
+    Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := FRingMod[1].ProcessSample32(Inputs[1, Sample]);
    end;
  finally
   FCriticalSection.Leave;
  end;
 end;
 
-procedure TBodeFrequencyShifterDataModule.VSTModuleProcessStereo(const Inputs,
+procedure TRingModulatorDataModule.VSTModuleProcessMultiChannel(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample   : Integer;
-  Up, Down : Single;
+  Sample  : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    FFreqShifter[0].ProcessSample(Inputs[0, Sample], Up, Down);
-    Outputs[0, Sample] := FUpMix * Up + FDownMix * Down;
-
-    FFreqShifter[1].ProcessSample(Inputs[1, Sample], Up, Down);
-    Outputs[1, Sample] := FUpMix * Up + FDownMix * Down;
-   end;
+  for ChannelIndex := 0 to Length(FRingMod) - 1 do
+   for Sample := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, Sample] := FRingMod[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, Sample]);
  finally
   FCriticalSection.Leave;
  end;
-end;
-
-procedure TBodeFrequencyShifterDataModule.VSTModuleProcessMultiChannel(
-  const Inputs, Outputs: TDAVArrayOfSingleDynArray;
-  const SampleFrames: Integer);
-var
-  Channel  : Integer;
-  Sample   : Integer;
-  Up, Down : Single;
-begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FFreqShifter) - 1 do
-   for Sample := 0 to SampleFrames - 1 do
-    begin
-     FFreqShifter[Channel].ProcessSample(Inputs[Channel, Sample], Up, Down);
-     Outputs[Channel, Sample] := FUpMix * Up + FDownMix * Down;
-    end;
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TBodeFrequencyShifterDataModule.VSTModuleSampleRateChange(
-  Sender: TObject; const SampleRate: Single);
-var
-  Channel : Integer;
-begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FFreqShifter) - 1 do
-   if Assigned(FFreqShifter[Channel])
-    then FFreqShifter[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

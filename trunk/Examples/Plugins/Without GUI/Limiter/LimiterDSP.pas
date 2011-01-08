@@ -1,4 +1,4 @@
-unit VariableDelayModule;
+unit LimiterDSP;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -25,7 +25,7 @@ unit VariableDelayModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,25 +34,25 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses
-  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Types, SysUtils, Classes,
-  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspVariableDelay;
+uses 
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, Messages, {$ENDIF} SysUtils, Classes,
+  SyncObjs, Forms, DAV_Types, DAV_VSTModule, DAV_DspDynamics;
 
 type
-  TVariableDelayVST = class(TVSTModule)
+  TLimiterDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWetMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection : TCriticalSection;
-    FVariDelay       : array [0..1] of TCustomVariableDelay32;
-    FMix             : array [0..1] of Single;
+    FLimiters        : array [0..1] of TLimiter;
+  public
   end;
 
 implementation
@@ -63,101 +63,112 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses
-  DAV_VSTCustomModule;
-
-procedure TVariableDelayVST.VSTModuleCreate(Sender: TObject);
+procedure TLimiterDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TVariableDelayVST.VSTModuleDestroy(Sender: TObject);
+procedure TLimiterDataModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FCriticalSection);
 end;
 
-procedure TVariableDelayVST.VSTModuleOpen(Sender: TObject);
+procedure TLimiterDataModule.VSTModuleOpen(Sender: TObject);
+var
+  ChannelIndex : Integer;
 begin
- FVariDelay[0] := TVariableDelay32Allpass.Create;
- FVariDelay[1] := TVariableDelay32Allpass.Create;
+ for ChannelIndex := 0 to Length(FLimiters) - 1 do
+  begin
+   FLimiters[ChannelIndex] := TLimiter.Create;
+   FLimiters[ChannelIndex].SampleRate := SampleRate;
+  end;
 
- Parameter[0] := 100;
- Parameter[1] := 0;
- Parameter[2] := 100;
+ Parameter[0] := -10;
 end;
 
-procedure TVariableDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLimiterDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
+begin
+ for ChannelIndex := 0 to Length(FLimiters) - 1
+  do FreeAndNil(FLimiters[ChannelIndex]);
+end;
+
+procedure TLimiterDataModule.ParameterThresholdChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FVariDelay) - 1 do
-   if assigned(FVariDelay[Channel])
-    then FVariDelay[Channel].Delay := 1E-4 * Value;
- finally
-   FCriticalSection.Leave;
- end;
-end;
-
-procedure TVariableDelayVST.ParameterWetMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FMix[1] := 0.01 * Value;
-end;
-
-procedure TVariableDelayVST.ParamDryMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FMix[0] := 0.01 * Value;
-end;
-
-procedure TVariableDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  Sample, Channel : Integer;
-begin
- FCriticalSection.Enter;
- try
-  for Sample := 0 to SampleFrames - 1 do
-   for Channel := 0 to Length(FVariDelay) - 1
-    do Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
-         FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
+  for ChannelIndex := 0 to Length(FLimiters) - 1 do
+   if Assigned(FLimiters[ChannelIndex])
+    then FLimiters[ChannelIndex].Threshold_dB := Value;
  finally
   FCriticalSection.Leave;
  end;
 end;
 
-procedure TVariableDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TLimiterDataModule.ParameterReleaseChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Sample, Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Sample := 0 to SampleFrames - 1 do
-   for Channel := 0 to Length(FVariDelay) - 1
-    do Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
-         FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
+  for ChannelIndex := 0 to Length(FLimiters) - 1 do
+   if Assigned(FLimiters[ChannelIndex])
+    then FLimiters[ChannelIndex].Release := Value;
  finally
   FCriticalSection.Leave;
  end;
 end;
 
-procedure TVariableDelayVST.VSTModuleSampleRateChange(Sender: TObject;
+procedure TLimiterDataModule.ParameterAttackChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FLimiters) - 1 do
+   if Assigned(FLimiters[ChannelIndex])
+    then FLimiters[ChannelIndex].Attack := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TLimiterDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for SampleIndex := 0 to SampleFrames - 1 do
+   for ChannelIndex := 0 to Length(FLimiters) - 1
+    do Outputs[ChannelIndex, SampleIndex] := FLimiters[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, SampleIndex]);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- if Abs(SampleRate) = 0 then Exit;
- 
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FVariDelay) - 1 do
-   if Assigned(FVariDelay[Channel])
-    then FVariDelay[Channel].SampleRate := Abs(SampleRate);
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FLimiters) - 1 do
+    if Assigned(FLimiters[ChannelIndex])
+     then FLimiters[ChannelIndex].SampleRate := SampleRate;
  finally
-   FCriticalSection.Leave;
+  FCriticalSection.Leave;
  end;
 end;
 
-end.
+end.

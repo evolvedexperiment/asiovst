@@ -6,11 +6,11 @@ uses
   FastMove,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  AmpSimDM in 'AmpSimDM.pas' {AmpSimModule: TVSTModule};
+  AmpSimDSP in 'AmpSimDSP.pas' {AmpSimModule: TVSTModule};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TComboDataModule);
+ Result := VstModuleMain(AudioMasterCallback, TAmpSimModule);
 end;
 
 exports
