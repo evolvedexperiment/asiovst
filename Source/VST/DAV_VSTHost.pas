@@ -59,11 +59,11 @@ interface
 {-$DEFINE Debug64}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
-  {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
-  {$IFDEF VstHostGUI} Controls, Forms, StdCtrls, ComCtrls, Dialogs,{$ENDIF}
-  DAV_Types, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL},
-  DAV_DLLLoader{$ENDIF};
+  {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF MSWINDOWS}Windows, {$ENDIF}
+  {$ELSE} Windows, Messages, {$ENDIF} {$IFDEF MSWINDOWS} Registry, {$ENDIF}
+  Contnrs, SysUtils, Classes, Graphics, {$IFDEF VstHostGUI} Controls, Forms,
+  StdCtrls, ComCtrls, Dialogs,{$ENDIF} DAV_Types, DAV_VSTEffect,
+  DAV_VSTOfflineTask {$IFDEF MemDLL}, DAV_DLLLoader{$ENDIF};
 
 const
   CDefaultBlockSize = 2048;

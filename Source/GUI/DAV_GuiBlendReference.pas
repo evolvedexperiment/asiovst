@@ -45,6 +45,7 @@ uses
 
 function BlendPixelReference(Foreground, Background: TPixel32): TPixel32;
 procedure BlendPixelInplaceReference(Foreground: TPixel32; var Background: TPixel32);
+procedure BlendPixelLineReference(Foreground: TPixel32; Destination: PPixel32; Count: Cardinal);
 procedure BlendLineReference(Source, Destination: PPixel32; Count: Integer);
 function CombinePixelReference(ForeGround, Background: TPixel32; Weight: Cardinal): TPixel32;
 procedure CombinePixelInplaceReference(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
@@ -145,11 +146,21 @@ begin
   end;
 end;
 
+procedure BlendPixelLineReference(Foreground: TPixel32; Destination: PPixel32; Count: Cardinal);
+begin
+ while Count > 0 do
+  begin
+   BlendPixelInplaceReference(Foreground, Destination^);
+   Inc(Destination);
+   Dec(Count);
+  end;
+end;
+
 procedure BlendLineReference(Source, Destination: PPixel32; Count: Integer);
 begin
  while Count > 0 do
   begin
-   BlendPixelInplace(Source^, Destination^);
+   BlendPixelInplaceReference(Source^, Destination^);
    Inc(Source);
    Inc(Destination);
    Dec(Count);

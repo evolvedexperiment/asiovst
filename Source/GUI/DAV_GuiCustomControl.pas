@@ -58,12 +58,15 @@ type
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     {$ENDIF}
+    procedure WMMove(var Message: TWMMove); message WM_MOVE;
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     procedure CMParentColorChanged(var Message: TMessage); message CM_PARENTCOLORCHANGED;
     {$ELSE}
+    procedure WMMove(var Message: TLMMove); message LM_MOVE;
     procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
     procedure CMParentColorChanged(var Message: TLMessage); message CM_PARENTCOLORCHANGED;
     {$ENDIF}
+
 
     procedure BufferChanged;
     procedure BackBufferChanged;
@@ -227,6 +230,12 @@ begin
  // copy back buffer to buffer
  Move(FBackBuffer.DataPointer^, FBuffer.DataPointer^, FBuffer.Height *
    FBuffer.Width * SizeOf(TPixel32));
+end;
+
+procedure TGuiCustomControl.WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF});
+begin
+ if FTransparent
+  then BackBufferChanged;
 end;
 
 end.

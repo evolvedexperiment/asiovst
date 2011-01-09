@@ -16,8 +16,6 @@ program VSTPluginUnitTest;
 
 uses
   FastMM4,
-  madExcept,
-  madLinkDisAsm,
   FastMove,
   Forms,
   TestFramework,
