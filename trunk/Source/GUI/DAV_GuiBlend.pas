@@ -1171,6 +1171,98 @@ asm
   MOV       [EDX], EAX
 end;
 
+procedure BlendPixelLineSSE2(Foreground: TPixel32; Destination: PPixel32; Count: Integer);
+asm
+  TEST      ECX, ECX
+  JS        @Done
+
+  TEST      EAX, $FF000000
+  JZ        @Done
+
+  PUSH      EBX
+
+  MOV       EBX, EAX
+  SHR       EBX, 24
+
+  CMP       EBX, $FF
+  JZ        @CopyPixel
+
+{$IFDEF AlternativeSSE2}
+  MOVD      XMM4, EAX         // XMM4 contains foreground
+  PXOR      XMM3, XMM3        // XMM3 is zero
+  PUNPCKLBW XMM4, XMM3        // stretch foreground
+  PUNPCKLWD XMM4, XMM3        // stretch foreground (even further)
+  MOV       EBX,  ScaleBiasPointer
+  PSHUFD    XMM5, XMM4, $FF   // XMM2 contains foreground alpha
+  PMULLD    XMM5, [EBX]       // scale alpha
+
+@LoopStart:
+  MOVD      XMM1, [EDX]       // XMM1 contains background
+  PUNPCKLBW XMM1, XMM3        // stretch background
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  MOVDQA    XMM0, XMM4        // XMM0 = stretched foreground
+  PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
+  PMULLD    XMM0, XMM5        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
+  PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, [EBX + $10] // add bias
+  PADDD     XMM0, XMM1        // add background to weighted difference
+  PSRLD     XMM0, 24          // shift right XMM0
+  PACKUSWB  XMM0, XMM3        // pack data
+  PACKUSWB  XMM0, XMM3        // pack data
+  MOVD      [EDX], XMM0       // return result
+
+{$ELSE}
+
+  MOVD      XMM4, EAX
+  PXOR      XMM3, XMM3
+  PUNPCKLBW XMM4, XMM3
+  MOV       EBX,  BiasPointer
+
+@LoopStart:
+
+  MOVD      XMM2, [EDX]
+  PUNPCKLBW XMM2, XMM3
+  MOVQ      XMM1, XMM4
+  PUNPCKLBW XMM1, XMM3
+  PUNPCKHWD XMM1, XMM1
+  MOVQ      XMM0, XMM4
+  PSUBW     XMM0, XMM2
+  PUNPCKHDQ XMM1, XMM1
+  PSLLW     XMM2, 8
+  PMULLW    XMM0, XMM1
+  PADDW     XMM2, [EBX]
+  PADDW     XMM2, XMM0
+  PSRLW     XMM2, 8
+  PACKUSWB  XMM2, XMM3
+  MOVD      [EDX], XMM2
+
+{$ENDIF}
+
+@NextPixel:
+  ADD     EDX, 4
+
+  DEC     ECX
+  JNZ     @LoopStart
+
+  POP     EBX
+
+@Done:
+  RET
+
+@CopyPixel:
+  {$IFDEF CPUx86_64}
+  MOV     [RDX], EAX
+  {$ELSE}
+  MOV     [EDX], EAX
+  {$ENDIF}
+  ADD     EDX, 4
+
+  DEC     ECX
+  JNZ     @CopyPixel
+
+  POP     EBX
+end;
+
 procedure BlendLineSSE2(Source, Destination: PPixel32; Count: Integer);
 asm
   TEST      ECX, ECX
@@ -1515,7 +1607,7 @@ begin
    Add(@BlendPixelLineNative);
    {$IFNDEF PUREPASCAL}
 //   Add(@BlendPixelLineMMX, [pfMMX]);
-//   Add(@BlendPixelLineSSE2, [pfSSE2]);
+   Add(@BlendPixelLineSSE2, [pfSSE2]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;

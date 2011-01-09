@@ -46,6 +46,7 @@ type
     function CompareColors(Expected, Actual: TPixel32): Boolean;
     procedure TestBlend; virtual;
     procedure TestBlendInplace; virtual;
+    procedure TestBlendPixelLine; virtual;
     procedure TestBlendLine; virtual;
     procedure TestCombine; virtual;
     procedure TestCombineInplace; virtual;
@@ -64,6 +65,7 @@ type
     procedure TestBlend; override;
     procedure TestBlendInplace; override;
     procedure TestBlendLine; override;
+    procedure TestBlendPixelLine; override;
     procedure TestCombine; override;
     procedure TestCombineInplace; override;
     procedure TestCombineLine; override;
@@ -78,6 +80,7 @@ type
     procedure TestBlend; override;
     procedure TestBlendInplace; override;
     procedure TestBlendLine; override;
+    procedure TestBlendPixelLine; override;
     procedure TestCombine; override;
     procedure TestCombineInplace; override;
     procedure TestCombineLine; override;
@@ -91,6 +94,7 @@ type
   published
     procedure TestBlend; override;
     procedure TestBlendInplace; override;
+    procedure TestBlendPixelLine; override;
     procedure TestBlendLine; override;
     procedure TestCombine; override;
     procedure TestCombineInplace; override;
@@ -227,6 +231,35 @@ begin
     CheckTrue(CompareColors(ExpectedColor32, FBackground^[Index]),
       'Color should be: ' + IntToHex(ExpectedColor32.ARGB, 8) +
       ', but was: ' + IntToHex(CombinedColor32.ARGB, 8));
+  end;
+end;
+
+procedure TCustomTestBlendModes.TestBlendPixelLine;
+var
+  BlendColor32 : TPixel32;
+  Index        : Integer;
+begin
+  BlendColor32 := pxSemiWhite32;
+  for Index := 0 to High(Byte) do
+  begin
+    FBackground^[Index].R := Index;
+    FBackground^[Index].G := Index;
+    FBackground^[Index].B := Index;
+    FBackground^[Index].A := $FF;
+    FForeground^[Index] := FBackground^[Index];
+  end;
+
+  BlendPixelLineReference(BlendColor32, PPixel32(FForeground), 256);
+  BlendPixelLine(BlendColor32, PPixel32(FBackground), 256);
+  EMMS;
+
+  for Index := 0 to High(Byte) do
+  begin
+    FForeground^[Index].A := $FF;
+    FBackground^[Index].A := $FF;
+    CheckTrue(CompareColors(FForeground^[Index], FBackground^[Index]),
+      'Color should be: ' + IntToHex(FForeground^[Index].ARGB, 8) +
+      ', but was: ' + IntToHex(FBackground^[Index].ARGB, 8));
   end;
 end;
 
@@ -441,6 +474,12 @@ begin
   inherited;
 end;
 
+procedure TTestBlendModesNative.TestBlendPixelLine;
+begin
+  BindingBlend.Rebind([]);
+  inherited;
+end;
+
 procedure TTestBlendModesNative.TestCombine;
 begin
   BindingBlend.Rebind([]);
@@ -504,6 +543,12 @@ begin
   inherited;
 end;
 
+procedure TTestBlendModesMMX.TestBlendPixelLine;
+begin
+  BindingBlend.Rebind([pfMMX]);
+  inherited;
+end;
+
 procedure TTestBlendModesMMX.TestCombine;
 begin
   BindingBlend.Rebind([pfMMX]);
@@ -562,6 +607,12 @@ begin
 end;
 
 procedure TTestBlendModesSSE2.TestBlendLine;
+begin
+  BindingBlend.Rebind([pfSSE2]);
+  inherited;
+end;
+
+procedure TTestBlendModesSSE2.TestBlendPixelLine;
 begin
   BindingBlend.Rebind([pfSSE2]);
   inherited;

@@ -14,6 +14,10 @@ uses
   ProgressBarUnit in 'ProgressBarUnit.pas' {FmProgressBar},
   AdditionalChunks in 'AdditionalChunks.pas';
 
+{$IFDEF RELEASE}
+{$SetPEFlags 1}
+{$ENDIF}
+
 {$R *.res}
 
 begin
