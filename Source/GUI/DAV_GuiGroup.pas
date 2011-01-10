@@ -7,29 +7,28 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
-  DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiShadow;
+  DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiShadow,
+  DAV_GuiVectorPixelCircle;
 
 type
   TCustomGuiGroup = class(TCustomGroupBox)
   private
-    FAutoFocus   : Boolean;
-    FBorderColor : TColor;
-    FBorderWidth : Single;
-    FGroupColor  : TColor;
-    FRoundRadius : Single;
-    FNative      : Boolean;
-    FTransparent : Boolean;
-    FOnPaint     : TNotifyEvent;
-    FAlpha       : Byte;
+    FAutoFocus    : Boolean;
+    FBorderColor  : TColor;
+    FBorderWidth  : Single;
+    FBorderRadius : Single;
+    FNative       : Boolean;
+    FTransparent  : Boolean;
+    FOnPaint      : TNotifyEvent;
+    FAlpha        : Byte;
     function GetOversampling: TFontOversampling;
     function GetShadow: TGUIShadow;
     procedure SetAlpha(const Value: Byte);
     procedure SetBorderColor(const Value: TColor);
     procedure SetBorderWidth(const Value: Single);
-    procedure SetGroupColor(const Value: TColor);
     procedure SetNative(const Value: Boolean);
     procedure SetOversampling(const Value: TFontOversampling);
-    procedure SetRoundRadius(Value: Single);
+    procedure SetBorderRadius(Value: Single);
     procedure SetShadow(const Value: TGUIShadow);
     procedure SetTransparent(const Value: Boolean);
   protected
@@ -51,7 +50,6 @@ type
     procedure BorderColorChanged; virtual;
     procedure BorderWidthChanged; virtual;
     procedure Click; override;
-    procedure GroupColorChanged; virtual;
     procedure NativeChanged; virtual;
     procedure RoundRadiusChanged; virtual;
     procedure TextChanged; virtual;
@@ -77,19 +75,30 @@ type
     property Alpha: Byte read FAlpha write SetAlpha default $FF;
     property AutoFocus: Boolean read FAutoFocus write FAutoFocus default True;
     property BorderColor: TColor read FBorderColor write SetBorderColor default clBtnShadow;
+    property BorderRadius: Single read FBorderRadius write SetBorderRadius;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property Caption;
     property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
-    property GroupColor: TColor read FGroupColor write SetGroupColor default clBtnFace;
     property Native: Boolean read FNative write SetNative default True;
-    property Radius: Single read FRoundRadius write SetRoundRadius;
     property Shadow: TGUIShadow read GetShadow write SetShadow;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
 
     property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
   end;
 
-  TGuiGroup = class(TCustomGuiGroup)
+  TCustomGuiGroupColor = class(TCustomGuiGroup)
+  private
+    FGroupColor  : TColor;
+    procedure SetGroupColor(const Value: TColor);
+  protected
+    procedure GroupColorChanged; virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+
+    property GroupColor: TColor read FGroupColor write SetGroupColor default clBtnFace;
+  end;
+
+  TGuiGroup = class(TCustomGuiGroupColor)
   private
     FHeaderWidth  : Integer;
     FHeaderHeight : Integer;
@@ -126,7 +135,7 @@ type
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
-    property Radius;
+    property BorderRadius;
     property Shadow;
     property ShowHint;
     property TabOrder;
@@ -159,7 +168,7 @@ type
     property OnUnDock;
   end;
 
-  TGuiGroupSide = class(TCustomGuiGroup)
+  TGuiGroupSide = class(TCustomGuiGroupColor)
   private
     FHeaderWidth  : Integer;
     procedure CalculateHeaderSize;
@@ -168,6 +177,7 @@ type
     procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); override;
     procedure RenderCaption(PixelMap: TGuiCustomPixelMap); override;
     procedure TextChanged; override;
+    procedure AdjustClientRect(var Rect: TRect); override;
   public
     constructor Create(AOwner: TComponent); override;
   published
@@ -195,7 +205,7 @@ type
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
-    property Radius;
+    property BorderRadius;
     property Shadow;
     property ShowHint;
     property TabOrder;
@@ -228,7 +238,7 @@ type
     property OnUnDock;
   end;
 
-  TGuiGroupTop = class(TCustomGuiGroup)
+  TGuiGroupTop = class(TCustomGuiGroupColor)
   private
     FHeaderHeight : Integer;
     procedure CalculateHeaderSize;
@@ -262,7 +272,75 @@ type
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
-    property Radius;
+    property BorderRadius;
+    property Shadow;
+    property ShowHint;
+    property TabOrder;
+    property TabStop;
+    property Transparent;
+    property Visible;
+
+    {$IFNDEF FPC}
+    property OnCanResize;
+    {$ENDIF}
+    property OnClick;
+    property OnConstrainedResize;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDockDrop;
+    property OnDockOver;
+    property OnDragDrop;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
+    property OnEnter;
+    property OnExit;
+    property OnGetSiteInfo;
+    property OnMouseDown;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnResize;
+    property OnStartDock;
+    property OnStartDrag;
+    property OnUnDock;
+  end;
+
+  TGuiGroupSimple = class(TCustomGuiGroup)
+  private
+    FTextWidth  : Integer;
+    FYOffset    : Integer;
+    procedure CalculateTextWidthAndOffset;
+  protected
+    procedure BorderWidthChanged; override;
+    procedure FontChangedHandler(Sender: TObject); override;
+    procedure TextChanged; override;
+    procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); override;
+    procedure RenderCaption(PixelMap: TGuiCustomPixelMap); override;
+  published
+    property Align;
+    property Alpha;
+    property Anchors;
+    property BorderColor;
+    property BorderWidth;
+    property Caption;
+    property Color;
+    property Constraints;
+    property Cursor;
+    property DockSite;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    property Font;
+    property FontOversampling;
+    property HelpContext;
+    property Hint;
+    property Native;
+    property ParentColor;
+    property ParentFont;
+    property ParentShowHint;
+    property PopupMenu;
+    property BorderRadius;
     property Shadow;
     property ShowHint;
     property TabOrder;
@@ -329,12 +407,11 @@ begin
  Enabled           := True;
  Visible           := True;
  FAlpha            := $FF;
- FRoundRadius      := 2;
+ FBorderRadius      := 2;
  FUpdateBuffer     := True;
  FUpdateBackBuffer := True;
  FTransparent      := False;
  FBorderColor      := clBtnShadow;
- FGroupColor       := clBtnFace;
  FBorderWidth      := 1;
  FNative           := False;
 
@@ -496,11 +573,6 @@ begin
  Invalidate;
 end;
 
-procedure TCustomGuiGroup.GroupColorChanged;
-begin
- BufferChanged;
-end;
-
 procedure TCustomGuiGroup.NativeChanged;
 begin
  {$IFDEF FPC}
@@ -584,15 +656,6 @@ begin
   end;
 end;
 
-procedure TCustomGuiGroup.SetGroupColor(const Value: TColor);
-begin
- if FGroupColor <> Value then
-  begin
-   FGroupColor := Value;
-   GroupColorChanged;
-  end;
-end;
-
 function TCustomGuiGroup.GetOversampling: TFontOversampling;
 begin
  Result := FGuiFont.FontOversampling;
@@ -617,12 +680,12 @@ begin
  FGuiFont.FontOversampling := Value;
 end;
 
-procedure TCustomGuiGroup.SetRoundRadius(Value: Single);
+procedure TCustomGuiGroup.SetBorderRadius(Value: Single);
 begin
  if Value < 0 then Value := 0;
- if FRoundRadius <> Value then
+ if FBorderRadius <> Value then
   begin
-   FRoundRadius := Value;
+   FBorderRadius := Value;
    RoundRadiusChanged;
   end;
 end;
@@ -647,6 +710,29 @@ begin
   begin
    FNative := Value;
    NativeChanged;
+  end;
+end;
+
+
+{ TCustomGuiGroupColor }
+
+constructor TCustomGuiGroupColor.Create(AOwner: TComponent);
+begin
+ inherited;
+ FGroupColor := clBtnFace;
+end;
+
+procedure TCustomGuiGroupColor.GroupColorChanged;
+begin
+ BufferChanged;
+end;
+
+procedure TCustomGuiGroupColor.SetGroupColor(const Value: TColor);
+begin
+ if FGroupColor <> Value then
+  begin
+   FGroupColor := Value;
+   GroupColorChanged;
   end;
 end;
 
@@ -678,7 +764,7 @@ begin
    Font.Size := FOSFactor * Font.Size;
    TextSize := TextExtent(FCaption);
 
-   case FRoundRadius of
+   case FBorderRadius of
     0, 1 : begin
             FrameRect(ClipRect);
             FillRect(Rect(1, 1, TextSize.cx + 12, TextSize.cy + 4));
@@ -712,7 +798,7 @@ begin
            end;
     else
      begin
-      rad := FOSFactor * FRoundRadius;
+      rad := FOSFactor * FBorderRadius;
       Steps := Round(2 / Arcsin(1 / rad)) + 1;
       if Steps > 1 then
       begin
@@ -836,7 +922,7 @@ var
   TextSize : TSize;
 begin
  TextSize := FGuiFont.TextExtend(Caption);
- FHeaderWidth := Round(TextSize.cx + 2 * (FBorderWidth + FRoundRadius));
+ FHeaderWidth := Round(TextSize.cx + 2 * (FBorderWidth + FBorderRadius));
  FHeaderHeight := Round(TextSize.cy + 2 * FBorderWidth);
 end;
 
@@ -847,7 +933,7 @@ begin
  if Assigned(FGuiFont) then
   begin
    TextSize := FGuiFont.TextExtend(Caption);
-   FGuiFont.TextOut(Caption, PixelMap, Round(FBorderWidth + FRoundRadius), Round(FBorderWidth));
+   FGuiFont.TextOut(Caption, PixelMap, Round(FBorderWidth + FBorderRadius), Round(FBorderWidth));
   end;
 end;
 
@@ -885,13 +971,13 @@ begin
    BorderColor := ConvertColor(FBorderColor);
 
    // set other local variables
-   RadiusFixed := ConvertToFixed24Dot8Point(Min(FRoundRadius, 0.5 * Min(Width, Height)) + 1);
+   RadiusFixed := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
    WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
    HeaderHeight.Fixed := ConvertToFixed24Dot8Point(FHeaderHeight).Fixed;
    HeaderWidth.Fixed := ConvertToFixed24Dot8Point(FHeaderWidth).Fixed;
 
-   // precalculate radius variables
+   // precalculate BorderRadius variables
    RadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
    if RadMinusOne.Fixed < 0
     then RadMinusOne.Fixed := 0;
@@ -1379,7 +1465,7 @@ begin
    rct := ClipRect;
    InflateRect(rct, -FOSFactor * (BorderWidth + 1) div 2, -FOSFactor * (BorderWidth + 1) div 2);
 
-   case FRoundRadius of
+   case FBorderRadius of
     0, 1 : begin
             Rectangle(rct.Left, rct.Top, rct.Right + 1, rct.Bottom + 1);
             Brush.Color := FGroupColor;
@@ -1414,7 +1500,7 @@ begin
       Brush.Color := FGroupColor;
       InflateRect(rct, -FOSFactor * (BorderWidth + 1) div 2, -FOSFactor * (BorderWidth + 1) div 2);
 
-      rad := FOSFactor * FRoundRadius;
+      rad := FOSFactor * FBorderRadius;
       Steps := Round(2 / arcsin(1 / rad)) + 1;
       if Steps > 1 then
        begin
@@ -1519,6 +1605,17 @@ end;
 
 { TGuiGroupSide }
 
+procedure TGuiGroupSide.AdjustClientRect(var Rect: TRect);
+begin
+ Inc(Rect.Left, Padding.Left);
+ Inc(Rect.Top, Padding.Top);
+ Dec(Rect.Right, Padding.Right);
+ Dec(Rect.Bottom, Padding.Bottom);
+
+ Inc(Rect.Left, FHeaderWidth);
+ InflateRect(Rect, -Round(FBorderWidth), -Round(FBorderWidth));
+end;
+
 procedure TGuiGroupSide.CalculateHeaderSize;
 var
   TextSize : TSize;
@@ -1572,13 +1669,13 @@ begin
    BorderColor := ConvertColor(FBorderColor);
 
    // set other local variables
-   RadiusFixed := ConvertToFixed24Dot8Point(Min(FRoundRadius, 0.5 * Min(Width, Height)) + 1);
+   RadiusFixed := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
    WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
    HeaderWidth.Fixed := ConvertToFixed24Dot8Point(FHeaderWidth).Fixed +
      3 * BorderWidthFixed.Fixed;
 
-   // precalculate radius variables
+   // precalculate BorderRadius variables
    RadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
    if RadMinusOne.Fixed < 0
     then RadMinusOne.Fixed := 0;
@@ -1896,13 +1993,13 @@ begin
    BorderColor := ConvertColor(FBorderColor);
 
    // set other local variables
-   RadiusFixed := ConvertToFixed24Dot8Point(Min(FRoundRadius, Min(FHeaderHeight, 0.5 * Min(Width, Height))) + 1);
+   RadiusFixed := ConvertToFixed24Dot8Point(Min(FBorderRadius, Min(FHeaderHeight, 0.5 * Min(Width, Height))) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
    WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
    HeaderHeight.Fixed := ConvertToFixed24Dot8Point(FHeaderHeight).Fixed +
      2 * BorderWidthFixed.Fixed;
 
-   // precalculate radius variables
+   // precalculate BorderRadius variables
    RadMinusOne.Fixed := RadiusFixed.Fixed - CFixed24Dot8One.Fixed;
    if RadMinusOne.Fixed < 0
     then RadMinusOne.Fixed := 0;
@@ -2153,6 +2250,338 @@ procedure TGuiGroupTop.TextChanged;
 begin
  CalculateHeaderSize;
  inherited;
+end;
+
+
+{ TGuiGroupSimple }
+
+procedure TGuiGroupSimple.BorderWidthChanged;
+begin
+ CalculateTextWidthAndOffset;
+ inherited;
+end;
+
+procedure TGuiGroupSimple.CalculateTextWidthAndOffset;
+var
+  TextSize : TSize;
+begin
+ if Caption <> '' then
+  begin
+   TextSize := FGuiFont.TextExtend(Caption);
+   FTextWidth := Round(TextSize.cx + 3 * (FBorderWidth));
+   FYOffset := Round(0.5 * (TextSize.cy - FBorderWidth));
+  end
+ else FTextWidth := 0;
+end;
+
+procedure TGuiGroupSimple.TextChanged;
+begin
+ CalculateTextWidthAndOffset;
+ inherited;
+end;
+
+procedure TGuiGroupSimple.FontChangedHandler(Sender: TObject);
+begin
+ CalculateTextWidthAndOffset;
+ inherited;
+end;
+
+procedure TGuiGroupSimple.RenderCaption(PixelMap: TGuiCustomPixelMap);
+var
+  TextSize : TSize;
+  XPos     : Integer;
+begin
+ if Assigned(FGuiFont) then
+  begin
+   TextSize := FGuiFont.TextExtend(Caption);
+   XPos := Round(Max(FBorderRadius, FBorderWidth) + 1.5 * FBorderWidth);
+   FGuiFont.TextOut(Caption, PixelMap, XPos, 0);
+  end;
+end;
+
+procedure TGuiGroupSimple.RenderGroupBox(PixelMap: TGuiCustomPixelMap);
+var
+  X, Y                 : Integer;
+  XRange               : array [0..1] of Integer;
+  ScnLne               : array [0..1] of PPixel32Array;
+  BorderColor          : TPixel32;
+  CombColor            : TPixel32;
+  XStart               : TFixed24Dot8Point;
+  BorderRadiusFixed    : TFixed24Dot8Point;
+  BorderWidthFixed     : TFixed24Dot8Point;
+  RadMinusOne          : TFixed24Dot8Point;
+  RadMinusBorder       : TFixed24Dot8Point;
+  SqrRadMinusBorderOne : TFixed24Dot8Point;
+  SqrRadMinusBorder    : TFixed24Dot8Point;
+  SqrDist, SqrYDist    : TFixed24Dot8Point;
+  SqrRadMinusOne       : TFixed24Dot8Point;
+  XFixed, YFixed       : TFixed24Dot8Point;
+  Temp                 : TFixed24Dot8Point;
+
+  YRange               : array [0..1] of Integer;
+  CenterX              : TFixed24Dot8Point;
+  CenterY              : TFixed24Dot8Point;
+begin
+ with PixelMap do
+  begin
+   // set local colors
+   BorderColor := ConvertColor(FBorderColor);
+   BorderColor.A := Alpha;
+
+   // set other local variables
+   BorderRadiusFixed := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
+   BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
+
+   // precalculate BorderRadiusFixed variables
+   RadMinusOne.Fixed := BorderRadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if RadMinusOne.Fixed < 0
+    then RadMinusOne.Fixed := 0;
+
+   RadMinusBorder.Fixed := BorderRadiusFixed.Fixed - BorderWidthFixed.Fixed;
+   if RadMinusBorder.Fixed < 0
+    then RadMinusBorder.Fixed := 0;
+   SqrRadMinusBorder := FixedSqr(RadMinusBorder);
+
+   SqrRadMinusBorderOne.Fixed := RadMinusBorder.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusBorderOne.Fixed < 0
+    then SqrRadMinusBorderOne.Fixed := 0
+    else SqrRadMinusBorderOne := FixedSqr(SqrRadMinusBorderOne);
+
+   SqrRadMinusOne.Fixed := BorderRadiusFixed.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusOne.Fixed < 0
+    then SqrRadMinusOne.Fixed := 0
+    else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
+
+   // draw rounded borders
+   for Y := 0 to FixedRound(BorderRadiusFixed) - 1  do
+    begin
+     YFixed := ConvertToFixed24Dot8Point(Y);
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(BorderRadiusFixed, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(BorderRadiusFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+     ScnLne[0] := Scanline[FYOffset + Y];
+     ScnLne[1] := Scanline[Height - 1 - Y];
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedFloor(RadMinusOne);
+     for X := XRange[0] to XRange[1] do
+      begin
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else SqrDist := SqrYDist;
+
+       // calculate color based on distance
+       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
+        then Continue
+        else
+       if SqrDist.Fixed < SqrRadMinusBorder.Fixed then
+        begin
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         if Temp.Fixed > $FF
+          then Continue
+          else
+           begin
+            CombColor := BorderColor;
+            CombColor.A := (CombColor.A * Round($FF - Temp.Fixed) + $80) shr 8;
+           end;
+        end else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(BorderRadiusFixed, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
+
+       // finally draw pixels
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       BlendPixelInplace(CombColor, ScnLne[1][X]);
+
+       BlendPixelInplace(CombColor, ScnLne[0][Width - 1 - X]);
+       BlendPixelInplace(CombColor, ScnLne[1][Width - 1 - X]);
+      end;
+    end;
+
+   // draw horizontal lines
+   X := Max(FixedFloor(BorderWidthFixed), FixedFloor(BorderRadiusFixed));
+   for Y := 0 to FixedFloor(BorderWidthFixed) - 1  do
+    begin
+     BlendPixelLine(BorderColor, @Scanline[FYOffset + Y][X + FTextWidth], Width - 2 * X - FTextWidth);
+     BlendPixelLine(BorderColor, @Scanline[Height - 1 - Y][X], Width - 2 * X);
+    end;
+
+   // draw fractional horizontal line
+   Y := FixedFloor(BorderWidthFixed);
+   CombColor := BorderColor;
+   CombColor.A := (CombColor.A * BorderWidthFixed.Frac + $80) shr 8;
+   BlendPixelLine(CombColor, @Scanline[FYOffset + Y][X + FTextWidth], Width - 2 * X - FTextWidth);
+   BlendPixelLine(CombColor, @Scanline[Height - 1 - Y][X], Width - 2 * X);
+
+   // draw missing top/bottom borders
+   if BorderWidthFixed.Fixed > BorderRadiusFixed.Fixed then
+    begin
+     X := FixedFloor(BorderRadiusFixed);
+     XRange[0] := FixedFloor(BorderWidthFixed) - X;
+     if XRange[0] > 0 then
+      for Y := 0 to FixedRound(BorderRadiusFixed) - 1 do
+       begin
+        ScnLne[0] := Scanline[FYOffset + Y];
+        ScnLne[1] := Scanline[Height - 1 - Y];
+
+        BlendPixelLine(BorderColor, @ScnLne[0][X], XRange[0]);
+        BlendPixelLine(BorderColor, @ScnLne[0][Width - XRange[0] - X], XRange[0]);
+        BlendPixelLine(BorderColor, @ScnLne[1][X], XRange[0]);
+        BlendPixelLine(BorderColor, @ScnLne[1][Width - XRange[0] - X], XRange[0]);
+       end;
+    end;
+
+   // draw vertical lines
+   Temp.Fixed := Max(BorderRadiusFixed.Fixed, BorderWidthFixed.Fixed);
+   XRange[0] := FYOffset + FixedRound(Temp);
+   XRange[1] := Height - FixedRound(Temp);
+   for Y := XRange[0] to XRange[1] - 1 do
+    begin
+     ScnLne[0] := Scanline[Y];
+     YFixed := ConvertToFixed24Dot8Point(Y - FYOffset);
+
+     X := FixedFloor(BorderWidthFixed);
+     BlendPixelLine(BorderColor, @ScnLne[0][0], X);
+     BlendPixelLine(BorderColor, @ScnLne[0][Width - X], X);
+
+     CombColor := BorderColor;
+     CombColor.A := (CombColor.A * BorderWidthFixed.Frac + $80) shr 8;
+     BlendPixelInplace(CombColor, ScnLne[0][X]);
+     BlendPixelInplace(CombColor, ScnLne[0][Width - X - 1]);
+    end;
+
+   // draw missing vertical lines part
+   if (BorderWidthFixed.Fixed > BorderRadiusFixed.Fixed) then
+    for Y := FixedRound(BorderRadiusFixed) to FixedRound(BorderWidthFixed) - 1 do
+     begin
+      ScnLne[0] := Scanline[FYOffset + Y];
+      ScnLne[1] := Scanline[Height - Y - 1];
+      YFixed := ConvertToFixed24Dot8Point(Y - FYOffset);
+
+      X := FixedFloor(BorderWidthFixed);
+      BlendPixelLine(BorderColor, @ScnLne[0][0], X);
+      BlendPixelLine(BorderColor, @ScnLne[0][Width - X], X);
+      BlendPixelLine(BorderColor, @ScnLne[1][0], X);
+      BlendPixelLine(BorderColor, @ScnLne[1][Width - X], X);
+     end;
+
+
+
+
+   // draw half circles
+   CenterX.Fixed := Max(BorderRadiusFixed.Fixed, BorderWidthFixed.Fixed);
+   CenterX.Frac := 0;
+   BorderWidthFixed := FixedMul(FixedAdd(BorderWidthFixed, CFixed24Dot8One), CFixed24Dot8Half);
+   CenterY := FixedSub(BorderWidthFixed, CFixed24Dot8One);
+
+   // calculate affected scanlines
+   YRange[0] := FixedRound(FixedSub(CenterY, BorderWidthFixed));
+   YRange[1] := FixedRound(FixedAdd(CenterY, BorderWidthFixed));
+
+   // eventually limit range
+   if YRange[0] < 0 then YRange[0] := 0;
+
+   SqrRadMinusOne := FixedSqr(FixedSub(BorderWidthFixed, CFixed24Dot8One));
+
+   for Y := YRange[0] to YRange[1] do
+    begin
+     // calculate squared vertical distance
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
+
+     XStart.Fixed := FixedSqr(BorderWidthFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // calculate affected pixels within this scanline
+     XRange[0] := FixedRound(CenterX);
+     XRange[1] := FixedRound(FixedAdd(CenterX, XStart));
+
+     ScnLne[0] := Scanline[FYOffset + Y];
+     X := XRange[0];
+     while X <= XRange[1] do
+      begin
+       // calculate squared distance
+       SqrDist.Fixed := X shl 8 - CenterX.Fixed;
+       SqrDist.Fixed := FixedSqr(SqrDist).Fixed + SqrYDist.Fixed;
+       CombColor := BorderColor;
+       if SqrDist.Fixed >= SqrRadMinusOne.Fixed then
+        begin
+         SqrDist.Fixed := BorderWidthFixed.Fixed - FixedSqrt(SqrDist).Fixed;
+         if SqrDist.Fixed < $FF
+          then CombColor.A := ((SqrDist.Fixed * CombColor.A + $7F) shr 8);
+         BlendPixelInplace(CombColor, ScnLne[0][X]);
+        end
+       else BlendPixelInplace(CombColor, ScnLne[0][X]);
+       Inc(X);
+      end;
+    end;
+
+
+   CenterX := FixedAdd(CenterX, ConvertToFixed24Dot8Point(FTextWidth - 1));
+   CenterX.Frac := 0;
+
+   // calculate affected scanlines
+   YRange[0] := FixedRound(FixedSub(CenterY, BorderWidthFixed));
+   YRange[1] := FixedRound(FixedAdd(CenterY, BorderWidthFixed));
+
+   // eventually limit range
+   if YRange[0] < 0 then YRange[0] := 0;
+
+   SqrRadMinusOne := FixedSqr(FixedSub(BorderWidthFixed, CFixed24Dot8One));
+
+   for Y := YRange[0] to YRange[1] do
+    begin
+     // calculate squared vertical distance
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
+
+     XStart.Fixed := FixedSqr(BorderWidthFixed).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // calculate affected pixels within this scanline
+     XRange[0] := FixedRound(FixedSub(CenterX, XStart));
+     XRange[1] := FixedRound(CenterX);
+
+     ScnLne[0] := Scanline[FYOffset + Y];
+     X := XRange[0];
+     while X <= XRange[1] do
+      begin
+       // calculate squared distance
+       SqrDist.Fixed := X shl 8 - CenterX.Fixed;
+       SqrDist.Fixed := FixedSqr(SqrDist).Fixed + SqrYDist.Fixed;
+       CombColor := BorderColor;
+       if SqrDist.Fixed >= SqrRadMinusOne.Fixed then
+        begin
+         SqrDist.Fixed := BorderWidthFixed.Fixed - FixedSqrt(SqrDist).Fixed;
+         if SqrDist.Fixed < $FF
+          then CombColor.A := ((SqrDist.Fixed * CombColor.A + $7F) shr 8);
+         BlendPixelInplace(CombColor, ScnLne[0][X]);
+        end
+       else BlendPixelInplace(CombColor, ScnLne[0][X]);
+       Inc(X);
+      end;
+    end;
+
+
+   EMMS;
+  end;
 end;
 
 end.

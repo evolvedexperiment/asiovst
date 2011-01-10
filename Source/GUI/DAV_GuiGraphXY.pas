@@ -37,7 +37,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Classes, Graphics, Forms, Messages, SysUtils, RTLConsts, Controls,
-  DAV_Classes, DAV_GuiBaseControl;
+  DAV_Classes, DAV_GuiCustomControl, DAV_GuiPixelMap, DAV_GuiFont,
+  DAV_GuiShadow, DAV_GuiVectorPixelLine;
 
 type
   TCustomAxisFlag = (cafAutoGranularity, cafAutoExtendBounds);
@@ -96,7 +97,7 @@ type
     constructor Create; virtual;
     procedure SetBounds(Lower, Upper: Double);
 
-    property Range: Double read fRange;
+    property Range: Double read FRange;
     property PixelSize: Integer read FPixelSize write SetPixelSize nodefault;
   published
     property Flags: TCustomAxisFlags read FFlags write SetFlags default [cafAutoGranularity];
@@ -122,7 +123,7 @@ type
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure Changed;
-    procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const Bitmap: TBitmap); virtual; abstract;
+    procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); virtual; abstract;
   public
     constructor Create; virtual;
 
@@ -139,7 +140,7 @@ type
     FOnEvaluate : TFunctionEvaluateEvent;
     procedure SetOnEvaluate(const Value: TFunctionEvaluateEvent);
   protected
-    procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const Bitmap: TBitmap); override;
+    procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     property OnEvaluate: TFunctionEvaluateEvent read FOnEvaluate write SetOnEvaluate;
@@ -243,45 +244,69 @@ type
 
   TGraphXYFlag = (gfShowLabels);
   TGraphXYFlags = set of TGraphXYFlag;
-  TCustomGuiGraphXY = class(TCustomGuiBaseAntialiasedControl)
+  TCustomGuiGraphXY = class(TGuiCustomControl)
   private
-    FOnChange         : TNotifyEvent;
     FBorderColor      : TColor;
+    FBorderRadius     : Single;
+    FBorderWidth      : Single;
     FFrameColor       : TColor;
     FXAxis            : TCustomAxis;
     FYAxis            : TCustomAxis;
     FSeriesCollection : TGuiGraphXYSeriesCollection;
     FFlags            : TGraphXYFlags;
-    FBorderRadius     : Integer;
+    FOnChange         : TNotifyEvent;
+    FGridColor        : TColor;
+    FAlpha            : Byte;
+    FGuiFont          : TGuiOversampledGDIFont;
+    function GetFontShadow: TGuiShadow;
     function GetSeriesCollectionItem(Index: Integer): TGuiGraphXYSeriesCollectionItem;
-    procedure SetSeriesCollectionItem(Index: Integer; const Value: TGuiGraphXYSeriesCollectionItem);
-    procedure SetFlags(const Value: TGraphXYFlags);
-    procedure ShowLabelsChanged;
-    procedure SetFrameColor(const Value: TColor);
-    procedure SetSeriesCollection(const Value: TGuiGraphXYSeriesCollection);
+    procedure SetAlpha(const Value: Byte);
     procedure SetBorderColor(const Value: TColor);
-    procedure SetBorderRadius(const Value: Integer);
+    procedure SetBorderRadius(const Value: Single);
+    procedure SetBorderWidth(const Value: Single);
+    procedure SetFlags(const Value: TGraphXYFlags);
+    procedure SetFontShadow(const Value: TGuiShadow);
+    procedure SetFrameColor(const Value: TColor);
+    procedure SetGridColor(const Value: TColor);
+    procedure SetSeriesCollection(const Value: TGuiGraphXYSeriesCollection);
+    procedure SetSeriesCollectionItem(Index: Integer; const Value: TGuiGraphXYSeriesCollectionItem);
   protected
     procedure AssignTo(Dest: TPersistent); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure Resize; override;
+
+    procedure CMFontchanged(var Message: TMessage); message CM_FONTCHANGED;
+
+    procedure AlphaChanged; virtual;
     procedure BorderColorChanged; virtual;
     procedure BorderRadiusChanged; virtual;
+    procedure BorderWidthChanged; virtual;
     procedure FrameColorChanged; virtual;
-    procedure Loaded; override;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure RenderGraphXYToBitmap(const Bitmap: TBitmap); virtual;
-    procedure Resize; override;
+    procedure GridColorChanged; virtual;
+    procedure ShowLabelsChanged; virtual;
+    procedure FontChanged(Sender: TObject); virtual;
     procedure SettingsChanged(Sender: TObject); virtual;
+
+    procedure RenderBorder(PixelMap: TGuiCustomPixelMap); virtual;
+    procedure RenderGrid(PixelMap: TGuiCustomPixelMap); virtual;
+    procedure RenderSeries(PixelMap: TGuiCustomPixelMap); virtual;
     procedure UpdateBuffer; override;
+    procedure UpdateBackBuffer; override;
+
     property SeriesCollectionItem[Index: Integer]: TGuiGraphXYSeriesCollectionItem read GetSeriesCollectionItem write SetSeriesCollectionItem; default;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure UpdateGraph;
   published
+    property Alpha: Byte read FAlpha write SetAlpha default $FF;
     property BorderColor: TColor read FBorderColor write SetBorderColor default clRed;
-    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
+    property BorderRadius: Single read FBorderRadius write SetBorderRadius;
+    property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
+    property GridColor: TColor read FGridColor write SetGridColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
+    property FontShadow: TGuiShadow read GetFontShadow write SetFontShadow;
     property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write SetSeriesCollection;
     property XAxis: TCustomAxis read FXAxis write FXAxis;
     property YAxis: TCustomAxis read FYAxis write FYAxis;
@@ -290,20 +315,20 @@ type
 
   TGuiGraphXY = class(TCustomGuiGraphXY)
   published
-    property Font;
     property Align;
     property Anchors;
-    property AntiAlias;
     property BorderColor;
+    property BorderRadius;
+    property BorderWidth;
     property Color;
     property Constraints;
     property DragCursor;
     property DragKind;
     property DragMode;
     property Enabled;
+    property Font;
     property FrameColor;
-    property LineColor;
-    property LineWidth;
+    property GridColor;
     property OnChange;
     property PopupMenu;
     property SeriesCollection;
@@ -320,7 +345,8 @@ var
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Common, DAV_Complex;
+  ExtCtrls, Math, DAV_Common, DAV_GuiCommon, DAV_Complex, DAV_GuiFixedPoint,
+  DAV_GuiBlend;
 
 resourcestring
   RCStrCalculateRange = 'The upper value must not be equal to the lower value!' + #10#13 +
@@ -486,7 +512,7 @@ end;
 
 procedure TCustomAxis.CalculateZeroPosition;
 begin
- FZeroPosition := -fLower * fRangeReci;
+ FZeroPosition := -FLower * fRangeReci;
 end;
 
 procedure TCustomAxis.MaximumChanged;
@@ -697,30 +723,61 @@ begin
 end;
 
 procedure TCustomGuiGraphXYFunctionSeries.PaintToGraph(
-  const GraphXY: TCustomGuiGraphXY; const Bitmap: TBitmap);
+  const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap);
 var
-  x        : Integer;
-  Offset   : TDAVPointSingle;
-  Scale    : TDAVPointSingle;
-  Value    : Single;
+  x            : Integer;
+  Offset       : TDAVPointSingle;
+  Scale        : TDAVPointSingle;
+  Value        : Single;
+  PixelColor32 : TPixel32;
+  ThinLine     : TGuiPixelThinLine;
+  Pnts         : array [0..1] of TPoint;
 begin
  if Visible and Assigned(FOnEvaluate) then
-  with GraphXY, Bitmap do
+  with GraphXY, PixelMap do
    begin
-    Scale.X   := FXAxis.ValuePerPixel / OversamplingFactor;
+    Scale.X   := FXAxis.ValuePerPixel;
     Offset.X  := FXAxis.Lower;
-    Scale.Y   := OversamplingFactor * FYAxis.PixelPerValue;
-    Offset.Y  := {Top} + OversamplingFactor * FYAxis.PixelSize + fYAxis.Lower * Scale.Y;
+    Scale.Y   := FYAxis.PixelPerValue;
+    Offset.Y  := FYAxis.PixelSize + FYAxis.Lower * Scale.Y;
 
-    Canvas.Pen.Color := fColor;
-    Canvas.Pen.Width := LineWidth * OversamplingFactor;
+    PixelColor32 := ConvertColor(FColor);
+    ThinLine := TGuiPixelThinLine.Create;
+    try
+     Value := FOnEvaluate(Self, Offset.X);
+     ThinLine.Color := FColor;
+     ThinLine.GeometricShape.XA := ConvertToFixed24Dot8Point(0);
+     ThinLine.GeometricShape.YA := ConvertToFixed24Dot8Point(Offset.Y - Scale.Y * Value);
+     for x := 1 to FXAxis.PixelSize do
+      begin
+       Value := FOnEvaluate(Self, Offset.X + x * Scale.X);
+       ThinLine.GeometricShape.XB := ConvertToFixed24Dot8Point(x);
+       ThinLine.GeometricShape.YB := ConvertToFixed24Dot8Point(Offset.Y - Scale.Y * Value);
+       ThinLine.Draw(PixelMap);
+       ThinLine.GeometricShape.XA := ThinLine.GeometricShape.XB;
+       ThinLine.GeometricShape.YA := ThinLine.GeometricShape.YB;
+      end;
+    finally
+     FreeAndNil(ThinLine);
+    end;
+
+(*
     Value := FOnEvaluate(Self, Offset.X);
-    Canvas.MoveTo(0 {+ Left}, Round(Offset.Y - Scale.Y * Value));
-    for x := 1 to OversamplingFactor * FXAxis.PixelSize do
+    Pnts[0].X := 0;
+    Pnts[0].Y := Round(Offset.Y - Scale.Y * Value);
+    for x := 1 to FXAxis.PixelSize do
      begin
       Value := FOnEvaluate(Self, Offset.X + x * Scale.X);
-      Canvas.LineTo(0 {+ Left} + x, Round(Offset.Y - Scale.Y * Value));
+      Pnts[1].X := + x;
+      Pnts[1].Y := Round(Offset.Y - Scale.Y * Value);
+      if (Pnts[0].X >= 0) and (Pnts[1].X >= 0) and
+        (Pnts[0].X < Width) and (Pnts[1].X < Width) and
+        (Pnts[0].Y >= 0) and (Pnts[1].Y >= 0) and
+        (Pnts[0].Y < Height) and (Pnts[1].Y < Height)
+        then Line(Pnts[0].X, Pnts[0].Y, Pnts[1].X, Pnts[1].Y, PixelColor32);
+      Pnts[0] := Pnts[1];
      end;
+*)
    end;
 end;
 
@@ -732,6 +789,7 @@ begin
    Changed;
   end;
 end;
+
 
 { TCustomGuiGraphXYDataSeries }
 
@@ -896,6 +954,7 @@ begin
   end;
 end;
 
+
 { TGuiGraphXYSortedDataSeries }
 
 function TGuiGraphXYSortedDataSeries.AddPoint(
@@ -925,6 +984,7 @@ begin
    Inc(FCount);
   end;
 end;
+
 
 { TGuiGraphXYSeriesCollectionItem }
 
@@ -1054,16 +1114,18 @@ end;
 constructor TCustomGuiGraphXY.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FAlpha            := $FF;
   FBorderColor      := clRed;
   FBorderRadius     := 0;
-  FLineColor        := clBlack;
-  FLineColor        := clMaroon;
+  FBorderColor      := clMaroon;
+  FBorderWidth      := 1.5;
   FFrameColor       := clRed;
-  FLineWidth        := 2;
   FFlags            := [gfShowLabels];
   FSeriesCollection := TGuiGraphXYSeriesCollection.Create(Self);
   FXAxis            := TCustomAxis.Create;
   FYAxis            := TCustomAxis.Create;
+  FGuiFont          := TGuiOversampledGDIFont.Create;
+  FGuiFont.OnChange := FontChanged;
   FXAxis.OnChanged  := SettingsChanged;
   FYAxis.OnChanged  := SettingsChanged;
 end;
@@ -1073,7 +1135,18 @@ begin
  FreeAndNil(FXAxis);
  FreeAndNil(FYAxis);
  FreeAndNil(FSeriesCollection);
+ FreeAndNil(FGuiFont);
  inherited Destroy;
+end;
+
+procedure TCustomGuiGraphXY.CMFontchanged(var Message: TMessage);
+begin
+ FGuiFont.Font.Assign(Font);
+end;
+
+function TCustomGuiGraphXY.GetFontShadow: TGuiShadow;
+begin
+ Result := FGuiFont.Shadow;
 end;
 
 function TCustomGuiGraphXY.GetSeriesCollectionItem(
@@ -1084,192 +1157,370 @@ begin
   else Result := nil;
 end;
 
-procedure TCustomGuiGraphXY.Loaded;
+procedure TCustomGuiGraphXY.GridColorChanged;
 begin
- inherited;
- Resize;
+ BackBufferChanged;
 end;
 
 procedure TCustomGuiGraphXY.SettingsChanged(Sender: TObject);
 begin
- Invalidate;
+ BufferChanged;
 end;
 
-procedure TCustomGuiGraphXY.RenderGraphXYToBitmap(const Bitmap: TBitmap);
+procedure TCustomGuiGraphXY.RenderBorder(PixelMap: TGuiCustomPixelMap);
 var
-  Rct        : TRect;
-  SeriesNr   : Integer;
-  NormGran   : Double;
-  DispValue  : Double;
-  c          : Double;
-  PixelRange : Integer;
-  TextSize   : TSize;
-  ZeroPos    : TPoint;
-  str        : string;
-const
-  TextXMargin = 2;
+  X, Y                 : Integer;
+  XRange               : array [0..1] of Integer;
+  ScnLne               : array [0..1] of PPixel32Array;
+  PanelColor           : TPixel32;
+  BorderColor          : TPixel32;
+  CombColor            : TPixel32;
+  IsUpperLowerHalf     : Boolean;
+  Radius               : TFixed24Dot8Point;
+  XStart               : TFixed24Dot8Point;
+  BorderWidthFixed     : TFixed24Dot8Point;
+  RadMinusOne          : TFixed24Dot8Point;
+  RadMinusBorder       : TFixed24Dot8Point;
+  SqrRadMinusBorderOne : TFixed24Dot8Point;
+  SqrRadMinusBorder    : TFixed24Dot8Point;
+  SqrDist, SqrYDist    : TFixed24Dot8Point;
+  SqrRadMinusOne       : TFixed24Dot8Point;
+  XFixed, YFixed       : TFixed24Dot8Point;
+  WidthMinusOne        : TFixed24Dot8Point;
+  YBorderDistance      : TFixed24Dot8Point;
+  Temp                 : TFixed24Dot8Point;
 begin
- with Bitmap, Canvas do
+ with PixelMap do
   begin
-   Pen.Color := FBorderColor;
-   Brush.Style := bsClear;
-   Rct := ClipRect;
-   RoundRect(Rct.Left, Rct.Top, Rct.Right, Rct.Bottom,
-     OversamplingFactor * FBorderRadius, OversamplingFactor * FBorderRadius);
-   InflateRect(Rct, -1, -1);
-   ZeroPos   := Point(Round(XAxis.ZeroPosition * OversamplingFactor * XAxis.PixelSize),
-                      Round((1 - YAxis.ZeroPosition) * OversamplingFactor * YAxis.PixelSize));
+   // set local colors
+   PanelColor := ConvertColor(Color);
+   PanelColor.A := Alpha;
+   if BorderRadius = 0 then Exit;
+   BorderColor := ConvertColor(FBorderColor);
 
-   Pen.Color   := FLineColor;
-   Pen.Width   := OversamplingFactor;
-   Brush.Color := Color;
-   Font.Assign(Self.Font);
-   Font.Height := Self.Font.Height * OversamplingFactor;
+   // set other local variables
+   Radius := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
+   BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
+   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
 
-   with XAxis do
+   // precalculate radius variables
+   RadMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
+   if RadMinusOne.Fixed < 0
+    then RadMinusOne.Fixed := 0;
+
+   RadMinusBorder.Fixed := Radius.Fixed - BorderWidthFixed.Fixed;
+   if RadMinusBorder.Fixed < 0
+    then RadMinusBorder.Fixed := 0;
+   SqrRadMinusBorder := FixedSqr(RadMinusBorder);
+
+   SqrRadMinusBorderOne.Fixed := RadMinusBorder.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusBorderOne.Fixed < 0
+    then SqrRadMinusBorderOne.Fixed := 0
+    else SqrRadMinusBorderOne := FixedSqr(SqrRadMinusBorderOne);
+
+   SqrRadMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
+   if SqrRadMinusOne.Fixed < 0
+    then SqrRadMinusOne.Fixed := 0
+    else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
+
+   // draw rounded borders
+   for Y := 0 to FixedRound(Radius) - 1  do
     begin
-     PixelRange := OversamplingFactor * (PixelSize - 2);
-     NormGran := FGranularity * FRangeReci;
-     c := FZeroPosition + Round(0.5 - FZeroPosition / NormGran) * NormGran;
-     while c < 0 do c := c + NormGran;
-     while c < 1 do
+     YFixed := ConvertToFixed24Dot8Point(Y);
+     SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(Radius, CFixed24Dot8One)));
+     XStart.Fixed := FixedSqr(Radius).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+     ScnLne[0] := Scanline[Y];
+     ScnLne[1] := Scanline[Height - 1 - Y];
+
+     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     XRange[0] := FixedRound(Temp);
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     for X := XRange[0] to XRange[1] do
       begin
-       if Abs(c - FZeroPosition) < 0.1 * NormGran
-        then Pen.Color := FFrameColor
-        else Pen.Color := FLineColor;
+       XFixed := ConvertToFixed24Dot8Point(X);
 
-       MoveTo(Rct.Left + Round(c * PixelRange), Rct.Top);
-       LineTo(Rct.Left + Round(c * PixelRange), Rct.Bottom);
+       // calculate squared distance
+       if XFixed.Fixed < RadMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+        else
+         begin
+          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          if XFixed.Fixed > Temp.Fixed
+           then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
+           else SqrDist := SqrYDist;
+         end;
 
-       if (gfShowLabels in Self.Flags) then
+       if SqrDist.Fixed < SqrRadMinusBorderOne.Fixed
+        then CombColor := PanelColor
+        else
+       if SqrDist.Fixed < SqrRadMinusBorder.Fixed then
         begin
-         DispValue := fLower + FRange * c;
-         if abs(DispValue) < 0.01 * FGranularity then
-          begin
-           str := '0';
-           TextSize := TextExtent(str);
-           TextOut(Rct.Left + Round(c * PixelRange - TextSize.cx) - OversamplingFactor * TextXMargin,
-                   ZeroPos.Y, str);
-          end
-         else
-          begin
-           str := FloatToStrF(fLower + FRange * c, ffGeneral, 2, 2);
-           TextSize := TextExtent(str);
+         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Assert(Temp.Fixed >= 0);
+         if Temp.Fixed > $FF
+          then CombColor := PanelColor
+          else CombColor := CombinePixel(BorderColor, PanelColor, Round($FF - Temp.Fixed));
+        end else
+       if SqrDist.Fixed < SqrRadMinusOne.Fixed
+        then CombColor := BorderColor
+        else
+         begin
+          CombColor := BorderColor;
+          Temp.Fixed := CombColor.A;
+          Temp := FixedMul(Temp, FixedSub(Radius, FixedSqrt(SqrDist)));
+          Assert(Temp.Fixed >= 0);
+          Assert(Temp.Fixed <= $FF);
+          CombColor.A := Temp.Fixed;
+         end;
 
-           TextOut(Rct.Left + Round(c * PixelRange - 0.5 * TextSize.cx),
-                   ZeroPos.Y, str);
-          end;
-        end;
-
-       c := c + NormGran;
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       BlendPixelInplace(CombColor, ScnLne[1][X]);
       end;
     end;
 
-   with YAxis do
-    if fRange <> 0 then
-     begin
-      PixelRange := OversamplingFactor * (PixelSize - 2);
-      NormGran := FGranularity * fRangeReci;
-      c := FZeroPosition + Round( -FZeroPosition / NormGran + 0.5) * NormGran;
-      while c < 0 do c := c + NormGran;
-      while c < 1 do
-       begin
-       if Abs(c - FZeroPosition) < 0.1 * NormGran
-        then Pen.Color := FFrameColor
-        else Pen.Color := FLineColor;
 
-        MoveTo(Rct.Left, Rct.Bottom - Round(c * PixelRange));
-        LineTo(Rct.Right, Rct.Bottom - Round(c * PixelRange));
+   for Y := FixedRound(Radius) to Height - 1 - FixedRound(Radius) do
+    begin
+     ScnLne[0] := Scanline[Y];
+     YFixed := ConvertToFixed24Dot8Point(Y);
 
-       if (gfShowLabels in Self.Flags) then
+     // check whether position is a non-rounded border
+     if (YFixed.Fixed < BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+        (YFixed.Fixed > ConvertToFixed24Dot8Point(Height).Fixed - BorderWidthFixed.Fixed) then
+      begin
+       BlendPixelLine(BorderColor, @ScnLne[0][0], Width);
+       Continue;
+      end;
+
+     // check upper/lower half and eventually precalculate y-border distance
+     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
+       (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
+     if IsUpperLowerHalf then
+      if Y < Height div 2
+       then YBorderDistance.Fixed := BorderWidthFixed.Fixed - YFixed.Fixed
+       else YBorderDistance.Fixed := YFixed.Fixed - Temp.Fixed + BorderWidthFixed.Fixed
+      else YBorderDistance.Fixed := 0;
+
+     X := 0;
+     while X < Width do
+      begin
+       // convert
+       XFixed := ConvertToFixed24Dot8Point(X);
+
+       // check whether position is an upper/lower half border
+       if IsUpperLowerHalf then
         begin
-         DispValue := fLower + FRange * c;
-         if abs(DispValue) > 0.01 * FGranularity then
+         if (XFixed.Fixed <= BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+            (XFixed.Fixed >= ConvertToFixed24Dot8Point(Width).Fixed - BorderWidthFixed.Fixed)
+          then CombColor := BorderColor else
+         if (XFixed.Fixed < BorderWidthFixed.Fixed) then
           begin
-           str := FloatToStrF(fLower + FRange * c, ffGeneral, 2, 2);
-           TextSize := TextExtent(str);
-
-           TextOut(ZeroPos.X - TextSize.cx - OversamplingFactor * TextXMargin,
-                   Rct.Top + Round((1 - c) * PixelRange - 0.5 * TextSize.cy),
-                   str);
+           Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end else
+         if (XFixed.Fixed >= WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+          begin
+           Temp.Fixed := XFixed.Fixed + BorderWidthFixed.Fixed - WidthMinusOne.Fixed;
+           Temp := FixedMul(Temp, FixedSub(CFixed24Dot8One, YBorderDistance));
+           Temp.Fixed := YBorderDistance.Fixed + Temp.Fixed;
+           Assert(Temp.Fixed >= 0);
+           Assert(Temp.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+          end
+         else
+          begin
+           Assert(YBorderDistance.Fixed >= 0);
+           Assert(YBorderDistance.Fixed <= $FF);
+           CombColor := CombinePixel(BorderColor, PanelColor, YBorderDistance.Fixed);
+           BlendPixelLine(CombColor, @ScnLne[0][X], Width - 2 * X);
+           EMMS;
+           X := Width - X;
+           Continue;
           end;
+        end else
+       if (XFixed.Fixed <= BorderWidthFixed.Fixed - CFixed24Dot8One.Fixed) or
+          (XFixed.Fixed >= WidthMinusOne.Fixed - BorderWidthFixed.Fixed + CFixed24Dot8One.Fixed)
+        then CombColor := BorderColor else
+       if (XFixed.Fixed < BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := BorderWidthFixed.Fixed - XFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end else
+       if (XFixed.Fixed > WidthMinusOne.Fixed - BorderWidthFixed.Fixed) then
+        begin
+         Temp.Fixed := XFixed.Fixed - WidthMinusOne.Fixed + BorderWidthFixed.Fixed;
+         Assert(Temp.Fixed >= 0);
+         Assert(Temp.Fixed <= $FF);
+         CombColor := CombinePixel(BorderColor, PanelColor, Temp.Fixed);
+        end
+       else
+        begin
+         BlendPixelLine(PanelColor, @ScnLne[0][X], Width - 2 * X);
+         EMMS;
+         X := Width - X;
+         Continue;
         end;
 
-        c := c + NormGran;
-       end;
-     end;
-
-   for SeriesNr := 0 to FSeriesCollection.Count - 1 do
-    if Assigned(FSeriesCollection[SeriesNr].FSeries)
-     then FSeriesCollection[SeriesNr].FSeries.PaintToGraph(Self, Bitmap);
+       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       Inc(X)
+      end;
+    end;
+   EMMS;
   end;
+end;
+
+procedure TCustomGuiGraphXY.RenderGrid(PixelMap: TGuiCustomPixelMap);
+var
+  Rct          : TRect;
+  PixelColor32 : TPixel32;
+  NormGran     : Double;
+  DispValue    : Double;
+  c            : Double;
+  PixelRange   : Integer;
+  TextSize     : TSize;
+  ZeroPos      : TPoint;
+  str          : string;
+const
+  TextXMargin = 2;
+begin
+ Rct := ClientRect;
+ InflateRect(Rct, -1, -1);
+(*
+ ZeroPos   := Point(Round(XAxis.ZeroPosition * XAxis.PixelSize),
+                    Round((1 - YAxis.ZeroPosition) * YAxis.PixelSize));
+
+ Pen.Color   := FLineColor;
+ Pen.Width   := 1;
+ Brush.Color := Color;
+ Font.Assign(Self.Font);
+ Font.Height := Self.Font.Height * 1;
+*)
+
+
+ with XAxis do
+  begin
+   PixelRange := (PixelSize - 2);
+   NormGran := FGranularity * FRangeReci;
+   c := FZeroPosition + Round(0.5 - FZeroPosition / NormGran) * NormGran;
+   while c < 0 do c := c + NormGran;
+   while c < 1 do
+    begin
+     if Abs(c - FZeroPosition) < 0.1 * NormGran
+      then PixelColor32 := ConvertColor(FFrameColor)
+      else PixelColor32 := ConvertColor(FGridColor);
+
+     PixelMap.VerticalLine(Rct.Left + Round(c * PixelRange), Rct.Top, Rct.Bottom, PixelColor32);
+
+     if (gfShowLabels in Self.Flags) then
+      begin
+       DispValue := FLower + FRange * c;
+(*
+       if Abs(DispValue) < 0.01 * FGranularity then
+        begin
+         str := '0';
+         TextSize := TextExtent(str);
+         TextOut(Rct.Left + Round(c * PixelRange - TextSize.cx) - TextXMargin,
+                 ZeroPos.Y, str);
+        end
+       else
+        begin
+         str := FloatToStrF(FLower + FRange * c, ffGeneral, 2, 2);
+         TextSize := TextExtent(str);
+
+         TextOut(Rct.Left + Round(c * PixelRange - 0.5 * TextSize.cx),
+                 ZeroPos.Y, str);
+        end;
+*)
+      end;
+
+     c := c + NormGran;
+    end;
+  end;
+
+ with YAxis do
+  if FRange <> 0 then
+   begin
+    PixelRange := (PixelSize - 2);
+    NormGran := FGranularity * fRangeReci;
+    c := FZeroPosition + Round( -FZeroPosition / NormGran + 0.5) * NormGran;
+    while c < 0 do c := c + NormGran;
+    while c < 1 do
+     begin
+      if Abs(c - FZeroPosition) < 0.1 * NormGran
+       then PixelColor32 := ConvertColor(FFrameColor)
+       else PixelColor32 := ConvertColor(FGridColor);
+
+      PixelMap.HorizontalLine(Rct.Left, Rct.Right, Rct.Bottom - Round(c * PixelRange), PixelColor32);
+
+     if (gfShowLabels in Self.Flags) then
+      begin
+       DispValue := FLower + FRange * c;
+(*
+       if Abs(DispValue) > 0.01 * FGranularity then
+        begin
+         str := FloatToStrF(FLower + FRange * c, ffGeneral, 2, 2);
+         TextSize := TextExtent(str);
+
+         TextOut(ZeroPos.X - TextSize.cx - TextXMargin,
+                 Rct.Top + Round((1 - c) * PixelRange - 0.5 * TextSize.cy),
+                 str);
+        end;
+*)
+      end;
+
+      c := c + NormGran;
+     end;
+   end;
+end;
+
+procedure TCustomGuiGraphXY.RenderSeries(PixelMap: TGuiCustomPixelMap);
+var
+  SeriesIndex : Integer;
+begin
+ for SeriesIndex := 0 to FSeriesCollection.Count - 1 do
+  if Assigned(FSeriesCollection[SeriesIndex].FSeries)
+   then FSeriesCollection[SeriesIndex].FSeries.PaintToGraph(Self, PixelMap);
 end;
 
 procedure TCustomGuiGraphXY.Resize;
 begin
- inherited;
  FXAxis.PixelSize := Width;
  FYAxis.PixelSize := Height;
- Invalidate;
+ inherited;
+end;
+
+procedure TCustomGuiGraphXY.UpdateBackBuffer;
+begin
+ inherited;
+ RenderBorder(FBackBuffer);
+ RenderGrid(FBackBuffer);
 end;
 
 procedure TCustomGuiGraphXY.UpdateBuffer;
-var
-  Bmp : TBitmap;
 begin
- if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
-  begin
-   Lock;
-   if AntiAlias = gaaNone then
-    begin
-     // draw background
-     {$IFNDEF FPC}
-     if FTransparent
-      then CopyParentImage(Self, FBuffer.Canvas)
-      else
-     {$ENDIF}
-      begin
-       Brush.Color := Self.Color;
-       FillRect(ClipRect);
-      end;
-     RenderGraphXYToBitmap(FBuffer);
-    end
-   else
-    begin
-     Bmp := TBitmap.Create;
-     with Bmp do
-      try
-       PixelFormat := pf32bit;
-       Width       := OversamplingFactor * FBuffer.Width;
-       Height      := OversamplingFactor * FBuffer.Height;
-       {$IFNDEF FPC}
-       if FTransparent then
-        begin
-         CopyParentImage(Self, Bmp.Canvas);
-         UpsampleBitmap(Bmp);
-        end
-       else
-       {$ENDIF}
-        with Bmp.Canvas do
-         begin
-          Brush.Color := Self.Color;
-          FillRect(ClipRect);
-         end;
-       RenderGraphXYToBitmap(Bmp);
-       DownsampleBitmap(Bmp);
-       FBuffer.Canvas.Draw(0, 0, Bmp);
-      finally
-       Free;
-      end;
-    end;
-   Unlock;
-  end;
+ inherited;
+ RenderSeries(FBuffer);
 end;
 
 procedure TCustomGuiGraphXY.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
   inherited;
+end;
+
+procedure TCustomGuiGraphXY.FontChanged(Sender: TObject);
+begin
+ BufferChanged;
 end;
 
 procedure TCustomGuiGraphXY.FrameColorChanged;
@@ -1279,7 +1530,17 @@ end;
 
 procedure TCustomGuiGraphXY.BorderRadiusChanged;
 begin
- UpdateGraph;
+ BackBufferChanged;
+end;
+
+procedure TCustomGuiGraphXY.BorderWidthChanged;
+begin
+ BackBufferChanged;
+end;
+
+procedure TCustomGuiGraphXY.AlphaChanged;
+begin
+ BackBufferChanged;
 end;
 
 procedure TCustomGuiGraphXY.AssignTo(Dest: TPersistent);
@@ -1301,7 +1562,7 @@ end;
 
 procedure TCustomGuiGraphXY.BorderColorChanged;
 begin
- UpdateGraph;
+ BackBufferChanged;
 end;
 
 procedure TCustomGuiGraphXY.ShowLabelsChanged;
@@ -1311,7 +1572,16 @@ end;
 
 procedure TCustomGuiGraphXY.UpdateGraph;
 begin
- Invalidate;
+ BufferChanged;
+end;
+
+procedure TCustomGuiGraphXY.SetAlpha(const Value: Byte);
+begin
+ if FAlpha <> Value then
+  begin
+   FAlpha := Value;
+   AlphaChanged;
+  end;
 end;
 
 procedure TCustomGuiGraphXY.SetBorderColor(const Value: TColor);
@@ -1323,12 +1593,21 @@ begin
   end;
 end;
 
-procedure TCustomGuiGraphXY.SetBorderRadius(const Value: Integer);
+procedure TCustomGuiGraphXY.SetBorderRadius(const Value: Single);
 begin
  if FBorderRadius <> Value then
   begin
    FBorderRadius := Value;
    BorderRadiusChanged;
+  end;
+end;
+
+procedure TCustomGuiGraphXY.SetBorderWidth(const Value: Single);
+begin
+ if FBorderWidth <> Value then
+  begin
+   FBorderWidth := Value;
+   BorderWidthChanged;
   end;
 end;
 
@@ -1346,12 +1625,26 @@ begin
   end;
 end;
 
+procedure TCustomGuiGraphXY.SetFontShadow(const Value: TGuiShadow);
+begin
+ FGuiFont.Shadow.Assign(Value);
+end;
+
 procedure TCustomGuiGraphXY.SetFrameColor(const Value: TColor);
 begin
  if FFrameColor <> Value then
   begin
    FFrameColor := Value;
    FrameColorChanged;
+  end;
+end;
+
+procedure TCustomGuiGraphXY.SetGridColor(const Value: TColor);
+begin
+ if FGridColor <> Value then
+  begin
+   FGridColor := Value;
+   GridColorChanged;
   end;
 end;
 

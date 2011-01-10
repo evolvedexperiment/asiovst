@@ -14,7 +14,9 @@ uses
 
 begin
   Application.Initialize;
+  {$IFDEF DELPHI14_UP}
   Application.MainFormOnTaskbar := True;
+  {$ENDIF}
   Application.CreateForm(TFmVectorGraphicTest, FmVectorGraphicTest);
   Application.Run;
 end.

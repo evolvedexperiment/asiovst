@@ -15,6 +15,7 @@ object FmGraphXY: TFmGraphXY
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnResize = FormResize
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object GraphXYA: TGuiGraphXY
@@ -22,6 +23,12 @@ object FmGraphXY: TFmGraphXY
     Top = 8
     Width = 196
     Height = 196
+    Alpha = 100
+    BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    FrameColor = 3355443
+    GridColor = clGray
     SeriesCollection = <
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
@@ -38,8 +45,6 @@ object FmGraphXY: TFmGraphXY
     YAxis.Maximum = 5.000000000000000000
     YAxis.Lower = -5.000000000000000000
     YAxis.Upper = 5.000000000000000000
-    LineColor = clMaroon
-    LineWidth = 2
     Transparent = True
   end
   object GraphXYB: TGuiGraphXY
@@ -47,6 +52,12 @@ object FmGraphXY: TFmGraphXY
     Top = 8
     Width = 196
     Height = 196
+    Alpha = 100
+    BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    FrameColor = 3355443
+    GridColor = clGray
     SeriesCollection = <
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
@@ -63,9 +74,6 @@ object FmGraphXY: TFmGraphXY
     YAxis.Maximum = 5.000000000000000000
     YAxis.Lower = -5.000000000000000000
     YAxis.Upper = 5.000000000000000000
-    AntiAlias = gaaLinear2x
-    LineColor = clMaroon
-    LineWidth = 2
     Transparent = True
   end
   object GraphXYC: TGuiGraphXY
@@ -73,6 +81,12 @@ object FmGraphXY: TFmGraphXY
     Top = 210
     Width = 196
     Height = 196
+    Alpha = 100
+    BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    FrameColor = 3355443
+    GridColor = clGray
     SeriesCollection = <
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
@@ -89,9 +103,6 @@ object FmGraphXY: TFmGraphXY
     YAxis.Maximum = 5.000000000000000000
     YAxis.Lower = -5.000000000000000000
     YAxis.Upper = 5.000000000000000000
-    AntiAlias = gaaLinear3x
-    LineColor = clMaroon
-    LineWidth = 2
     Transparent = True
   end
   object GraphXYD: TGuiGraphXY
@@ -99,6 +110,12 @@ object FmGraphXY: TFmGraphXY
     Top = 210
     Width = 196
     Height = 196
+    Alpha = 100
+    BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    FrameColor = 3355443
+    GridColor = clGray
     SeriesCollection = <
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
@@ -114,9 +131,6 @@ object FmGraphXY: TFmGraphXY
     YAxis.Maximum = 5.000000000000000000
     YAxis.Lower = -5.000000000000000000
     YAxis.Upper = 5.000000000000000000
-    AntiAlias = gaaLinear4x
-    LineColor = clMaroon
-    LineWidth = 2
     Transparent = True
   end
 end
