@@ -1,6 +1,38 @@
 unit MainUnit;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010-2011        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
@@ -48,7 +80,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, IniFiles;
+  Math, IniFiles, DAV_Math, DAV_Complex;
 
 procedure TFmVectorGraphicTest.FormCreate(Sender: TObject);
 begin
@@ -88,6 +120,7 @@ begin
  if Assigned(FPixelMap) then
   begin
    FPixelMap.SetSize(PaintBox.Width, PaintBox.Height);
+   FPixelMap.Clear;
    BuildRandomPrimitives;
    Render;
   end;
@@ -99,6 +132,8 @@ begin
   try
    Left := ReadInteger('Layout', 'Left', Left);
    Top := ReadInteger('Layout', 'Top', Top);
+   Width := ReadInteger('Layout', 'Width', Width);
+   Height := ReadInteger('Layout', 'Height', Height);
    CbTestType.ItemIndex := CbTestType.Items.IndexOf(
      ReadString('Recent', 'Primitive', CbTestType.Text));
    CbTestTypeChange(Self);
@@ -126,6 +161,8 @@ begin
   try
    WriteInteger('Layout', 'Left', Left);
    WriteInteger('Layout', 'Top', Top);
+   WriteInteger('Layout', 'Width', Width);
+   WriteInteger('Layout', 'Height', Height);
    WriteString('Recent', 'Primitive', CbTestType.Text);
    WriteBool('Recent', 'Draft', CbDraft.Checked);
   finally
@@ -179,6 +216,7 @@ end;
 procedure TFmVectorGraphicTest.BuildRandomPrimitives;
 var
   Index : Integer;
+  Cmplx : TComplexSingle;
 begin
  if not Assigned(FPixelMap.DataPointer) then Exit;
 
@@ -229,6 +267,33 @@ begin
     if GeometricShape is TGuiLine then
      with FPixelMap, TGuiLine(GeometricShape) do
       begin
+
+(*
+       if 2 * Index >= Length(FPrimitives) then
+        begin
+         GetSinCos(4 * Pi * Index / Length(FPrimitives), Cmplx.Re, Cmplx.Im);
+         XA := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.2 * Cmplx.Re));
+         YA := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.2 * Cmplx.Im));
+         XB := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.8 * Cmplx.Re));
+         YB := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.8 * Cmplx.Im));
+        end
+       else
+        begin
+         GetSinCos(4 * Pi * Index / Length(FPrimitives), Cmplx.Re, Cmplx.Im);
+         XA := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.8 * Cmplx.Re));
+         YA := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.8 * Cmplx.Im));
+         XB := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.9 * Cmplx.Re));
+         YB := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.9 * Cmplx.Im));
+        end;
+*)
+
+(*
+       XA := ConvertToFixed24Dot8Point(10 + 5 * Index + Index / 10);
+       XB := XA;
+       YA := ConvertToFixed24Dot8Point(10);
+       YB := ConvertToFixed24Dot8Point(Height - 10);
+*)
+
        XA := ConvertToFixed24Dot8Point(Random(2 * (Width - 1)) - Width div 2 + Random);
        YA := ConvertToFixed24Dot8Point(Random(2 * (Height - 1)) - Height div 2 + Random);
        if Index = 0

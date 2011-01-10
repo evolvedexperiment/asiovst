@@ -25,7 +25,7 @@ unit DAV_GuiVectorPixelLine;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,6 @@ type
   private
     function GetGeometricShape: TGuiLine;
   protected
-    procedure DrawFloatingPoint(PixelMap: TGuiCustomPixelMap);
     procedure DrawFixedPoint(PixelMap: TGuiCustomPixelMap); override;
     procedure DrawDraftShape(PixelMap: TGuiCustomPixelMap); override;
   public
@@ -299,151 +298,160 @@ begin
 end;
 
 procedure TGuiPixelThinLine.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
-begin
- DrawFloatingPoint(PixelMap);
-end;
-
-procedure TGuiPixelThinLine.DrawFloatingPoint(PixelMap: TGuiCustomPixelMap);
 var
-  FromX, ToX   : Double;
-  FromY, ToY   : Double;
-  dx, dy, t    : Double;
-  Gradient     : Double;
-  FltEnd       : Double;
-  gap          : Double;
-  Inter        : Double;
-  Index        : Integer;
-  IntEnd       : Integer;
-  xpxl1, ypxl1 : Integer;
-  xpxl2, ypxl2 : Integer;
-  DataPointer  : PPixel32Array;
-  PixelColor32 : TPixel32;
-const
-  COne255th : Double = 1 / 255;
+  FromX, ToX      : TFixed24Dot8Point;
+  FromY, ToY      : TFixed24Dot8Point;
+  DeltaX, DeltaY  : TFixed24Dot8Point;
+  PixelColor32    : TPixel32;
+  Gradient        : TFixed24Dot8Point;
+  XEnd            : TFixed24Dot8Point;
+  YEnd            : TFixed24Dot8Point;
+  Gap             : TFixed24Dot8Point;
+  Temp            : TFixed24Dot8Point;
+  XPos            : array [0..1] of Integer;
+  YPos            : array [0..1] of Integer;
+  X, Y            : Integer;
+  Inter           : TFixed24Dot8Point;
 begin
  with GeometricShape do
   begin
-   FromX := XA.Fixed * COne255th;
-   FromY := YA.Fixed * COne255th;
-   ToX := XB.Fixed * COne255th;
-   ToY := YB.Fixed * COne255th;
+   FromX := XA;
+   FromY := YA;
+   ToX := XB;
+   ToY := YB;
   end;
 
  PixelColor32 := ConvertColor(Color);
  PixelColor32.A := Alpha;
 
- DataPointer := PixelMap.DataPointer;
+ DeltaX := FixedSub(ToX, FromX);
+ DeltaY := FixedSub(ToY, FromY);
 
- dx := ToX - FromX;
- dy := ToY - FromY;
- if Abs(dx) > Abs(dy) then
+ if Abs(DeltaX.Fixed) < Abs(DeltaY.Fixed) then
   begin
-   // draw lines from left to right
-   if ToX < FromX then
+   if ToY.Fixed < FromY.Fixed then
     begin
-     t := FromX;
-     FromX := ToX;
-     ToX := t;
-     t := FromY;
-     FromY := ToY;
-     ToY := t;
+     Exchange32(FromX, ToX);
+     Exchange32(FromY, ToY);
     end;
 
-   Gradient := dy / dx;
-   IntEnd   := Round(FromX);
-   FltEnd   := FromY + gradient * (IntEnd - FromX);
-   gap      := 1 - Frac(FromX + 0.5);
-   xpxl1    := IntEnd;
-   ypxl1    := Trunc(FltEnd);
+   Gradient := FixedDiv(DeltaX, DeltaY);
 
-   if (xpxl1 >= 0) and (xpxl1 < PixelMap.Width) then
+   // handle first endpoint
+   YEnd := FixedAdd(FromY, CFixed24Dot8Half);
+   YEnd.Frac := 0;
+   XEnd := FixedAdd(FromX, FixedMul(Gradient, FixedSub(YEnd, FromY)));
+   Gap.Fixed := $FF - FixedAdd(FromY, CFixed24Dot8Half).Frac;
+   YPos[0] := FixedRound(YEnd);  // this will be used in the main loop
+   XPos[0] := FixedFloor(XEnd);
+
+   if (YPos[0] >= 0) and (YPos[0] < PixelMap.Height) then
     begin
-     if (Trunc(ypxl1) >= 0) and (Trunc(ypxl1) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl1) * PixelMap.Width + xpxl1], Round($FF * (1 - Frac(FltEnd)) * gap));
-     if (Trunc(ypxl1 + 1) >= 0) and (Trunc(ypxl1 + 1) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl1 + 1) * PixelMap.Width + xpxl1], Round($FF * Frac(FltEnd) * gap));
-    end;
-   Inter := FltEnd + gradient;
-
-   IntEnd := Round(ToX);
-   FltEnd := ToY + gradient * (IntEnd - ToX);
-   gap := Frac(ToX + 0.5);
-   xpxl2 := IntEnd;
-   ypxl2 := Trunc(FltEnd);
-
-   if (xpxl2 >= 0) and (xpxl2 < PixelMap.Width) then
-    begin
-     if (Trunc(ypxl2) >= 0) and (Trunc(ypxl2) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl2) * PixelMap.Width + xpxl2], Round($FF * (1 - Frac(FltEnd)) * gap)); // weight = (1 - Frac(FltEnd)) * gap
-     if (Trunc(ypxl2 + 1) >= 0) and (Trunc(ypxl2 + 1) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl2 + 1) * PixelMap.Width + xpxl2], Round($FF * (Frac(FltEnd) * gap)));
+     Temp.Fixed := $FF - XEnd.Frac;
+     if (XPos[0] >= 0) and (XPos[0] < PixelMap.Width)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0]    , YPos[0]]^, FixedMul(Temp, Gap).Fixed);
+     Temp.Fixed := XEnd.Frac;
+     if (XPos[0] + 1 >= 0) and (XPos[0] + 1 < PixelMap.Width)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0] + 1, YPos[0]]^, FixedMul(Temp, Gap).Fixed);
     end;
 
-   for Index := xpxl1 + 1 to xpxl2 - 1 do
-    begin
+   Inter.Fixed := XEnd.Fixed + Gradient.Fixed; // first Y-intersection for the main loop
 
-     if (Index >= 0) and (Index < PixelMap.Width) then
+   YEnd := FixedAdd(ToY, CFixed24Dot8Half);
+   YEnd.Frac := 0;
+   YPos[1] := FixedRound(YEnd);  // this will be used in the main loop
+
+   // main loop
+   for Y := YPos[0] + 1 to YPos[1] - 1 do
+    begin
+     if (Y >= 0) and (Y < PixelMap.Height) then
       begin
-       if (Trunc(Inter) >= 0) and (Trunc(Inter) < PixelMap.Height)
-        then CombinePixelInplace(PixelColor32, TPixel32(DataPointer[Trunc(Inter) * PixelMap.Width + Index]), Round((1 - Frac(Inter)) * 255));
-       if (Trunc(Inter + 1) >= 0) and (Trunc(Inter + 1) < PixelMap.Height)
-        then CombinePixelInplace(PixelColor32, TPixel32(DataPointer[Trunc(Inter + 1) * PixelMap.Width + Index]), Round(Frac(Inter) * 255));
+       X := FixedFloor(Inter);
+       if (X >= 0) and (X < PixelMap.Width)
+        then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[X    , Y]^, $FF - Inter.Frac);
+       if (X + 1 >= 0) and (X + 1 < PixelMap.Width)
+        then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[X + 1, Y]^, Inter.Frac);
       end;
-
-     Inter := Inter + gradient;
+     Inter.Fixed := Inter.Fixed + Gradient.Fixed;
     end;
+
+   // handle second endpoint
+   XEnd := Inter;
+   Gap.Fixed := FixedAdd(ToY, CFixed24Dot8Half).Frac;
+   XPos[1] := FixedFloor(XEnd);
+
+   if (YPos[1] >= 0) and (YPos[1] < PixelMap.Height) then
+    begin
+     Temp.Fixed := $FF - XEnd.Frac;
+     if (XPos[1] >= 0) and (XPos[1] < PixelMap.Width)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1]    , YPos[1]]^, FixedMul(Temp, Gap).Fixed);
+     Temp.Fixed := XEnd.Frac;
+     if (XPos[1] + 1 >= 0) and (XPos[1] + 1 < PixelMap.Width)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1] + 1, YPos[1]]^, FixedMul(Temp, Gap).Fixed);
+    end;
+
   end
  else
   begin
-   if ToY < FromY then
+   if ToX.Fixed < FromX.Fixed then
     begin
-     t := FromX;
-     FromX := ToX;
-     ToX := t;
-     t := FromY;
-     FromY := ToY;
-     ToY := t;
-    end;
-   Gradient := dx / dy;
-   IntEnd   := Round(FromY);
-   FltEnd   := FromX + gradient * (IntEnd - FromY);
-   gap      := 1 - Frac(FromY + 0.5);
-   ypxl1    := IntEnd;
-   xpxl1    := Trunc(FltEnd);
-
-   if (xpxl1 >= 0) and (xpxl1 < PixelMap.Width) then
-    begin
-     if (Trunc(ypxl1) >= 0) and (Trunc(ypxl1) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl1) * PixelMap.Width + xpxl1], Round($FF * (1 - Frac(FltEnd)) * gap));
-     if (Trunc(ypxl1 + 1) >= 0) and (Trunc(ypxl1 + 1) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl1 + 1) * PixelMap.Width + xpxl1], Round($FF * Frac(FltEnd) * gap));
-    end;
-   Inter := FltEnd + gradient;
-
-   IntEnd := Round(ToY);
-   FltEnd := ToX + gradient * (IntEnd - ToY);
-   gap := Frac(ToY + 0.5);
-   ypxl2 := IntEnd;
-   xpxl2 := Trunc(FltEnd);
-
-   if (xpxl2 >= 0) and (xpxl2 < PixelMap.Width) then
-    begin
-     if (Trunc(ypxl2) >= 0) and (Trunc(ypxl2) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl2) * PixelMap.Width + xpxl2], Round($FF * (1 - Frac(FltEnd)) * gap));
-     if (Trunc(ypxl2 + 1) >= 0) and (Trunc(ypxl2 + 1) < PixelMap.Height)
-      then CombinePixelInplace(PixelColor32, DataPointer[Trunc(ypxl2 + 1) * PixelMap.Width + xpxl2], Round($FF * Frac(FltEnd) * gap));
+     Exchange32(FromX, ToX);
+     Exchange32(FromY, ToY);
     end;
 
-   for Index := ypxl1 + 1 to ypxl2 - 1 do
+   Gradient := FixedDiv(DeltaY, DeltaX);
+
+   // handle first endpoint
+   XEnd := FixedAdd(FromX, CFixed24Dot8Half);
+   XEnd.Frac := 0;
+   YEnd := FixedAdd(FromY, FixedMul(Gradient, FixedSub(XEnd, FromX)));
+   Gap.Fixed := $FF - FixedAdd(FromX, CFixed24Dot8Half).Frac;
+   XPos[0] := FixedRound(XEnd);  // this will be used in the main loop
+   YPos[0] := FixedFloor(YEnd);
+
+   if (XPos[0] >= 0) and (XPos[0] < PixelMap.Width) then
     begin
-     if (Index >= 0) and (Index < PixelMap.Height) then
+     Temp.Fixed := $FF - YEnd.Frac;
+     if (YPos[0] >= 0) and (YPos[0] < PixelMap.Height)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0], YPos[0]    ]^, FixedMul(Temp, Gap).Fixed);
+     Temp.Fixed := YEnd.Frac;
+     if (YPos[0] + 1 >= 0) and (YPos[0] + 1 < PixelMap.Height)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0], YPos[0] + 1]^, FixedMul(Temp, Gap).Fixed);
+    end;
+
+   Inter := FixedAdd(YEnd, Gradient); // first Y-intersection for the main loop
+
+   XEnd := FixedAdd(ToX, CFixed24Dot8Half);
+   XEnd.Frac := 0;
+   XPos[1] := FixedRound(XEnd);  // this will be used in the main loop
+
+   // main loop
+   for X := XPos[0] + 1 to XPos[1] - 1 do
+    begin
+     if (X >= 0) and (X < PixelMap.Width) then
       begin
-       if (Trunc(Inter) >= 0) and (Trunc(Inter) < PixelMap.Width)
-        then CombinePixelInplace(PixelColor32, DataPointer[Index * PixelMap.Width + Trunc(Inter)], Round($FF * (1 - Frac(Inter))));
-       if (Trunc(Inter + 1) >= 0) and (Trunc(Inter + 1) < PixelMap.Width)
-        then CombinePixelInplace(PixelColor32, DataPointer[Index * PixelMap.Width + Trunc(Inter + 1)], Round($FF * Frac(Inter)));
+       Y := FixedFloor(Inter);
+       if (Y >= 0) and (Y < PixelMap.Height)
+        then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[X, Y    ]^, $FF - Inter.Frac);
+       if (Y + 1 >= 0) and (Y + 1 < PixelMap.Height)
+        then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[X, Y + 1]^, Inter.Frac);
       end;
-     Inter := Inter + Gradient;
+     Inter := FixedAdd(Inter, Gradient);
+    end;
+
+   // handle second endpoint
+   YEnd := Inter;
+   Gap.Fixed := FixedAdd(ToX, CFixed24Dot8Half).Frac;
+   YPos[1] := FixedFloor(YEnd);
+
+   if (XPos[1] >= 0) and (XPos[1] < PixelMap.Width) then
+    begin
+     Temp.Fixed := $FF - YEnd.Frac;
+     if (YPos[1] >= 0) and (YPos[1] < PixelMap.Height)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1], YPos[1]    ]^, FixedMul(Temp, Gap).Fixed);
+     Temp.Fixed := YEnd.Frac;
+     if (YPos[1] + 1 >= 0) and (YPos[1] + 1 < PixelMap.Height)
+      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1], YPos[1] + 1]^, FixedMul(Temp, Gap).Fixed);
     end;
   end;
 end;

@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiPixelMap;
+  Dialogs, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiPixelMap,
+  DAV_GuiCustomControl;
 
 type
   TFmGraphXY = class(TForm)
@@ -16,6 +17,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     FBackground : TGuiCustomPixelMap;
   public
@@ -80,6 +82,14 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFmGraphXY.FormShow(Sender: TObject);
+begin
+ GraphXYA.UpdateGraph;
+ GraphXYB.UpdateGraph;
+ GraphXYC.UpdateGraph;
+ GraphXYD.UpdateGraph;
 end;
 
 function TFmGraphXY.SimpleFunctionEvaluate(Sender: TObject; X: Double): Double;

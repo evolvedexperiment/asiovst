@@ -257,7 +257,7 @@ begin
   end;
 end;
 
-{$DEFINE Simple}
+{-$DEFINE Simple}
 
 procedure TGuiPixelFilledCircle.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
 var
@@ -346,32 +346,15 @@ begin
          BlendPixelInplace(CombColor, ScnLne[X]);
          Inc(X);
          {$ELSE}
-(*
-         SqrDist := FixedSqrt(FixedSub(SqrRadMinusOne, SqrYDist));
-         PixelLineCount := FixedRound(FixedAdd(FixedSub(CenterX, ConvertToFixed24Dot8Point(X)), SqrDist));
-         if X + PixelLineCount > XRange[1]
-          then PixelLineCount := (XRange[1] - X);
 
-         if PixelLineCount <= 0 then
+         PixelLineCount := FixedFloor(FixedAdd(FixedSub(CenterX,
+           ConvertToFixed24Dot8Point(X)), FixedSqrt(
+           FixedSub(SqrRadMinusOne, SqrYDist)))) + 1;
+
+         if X + PixelLineCount > XRange[1] then
           begin
-           BlendPixelInplace(CombColor, ScnLne[X]);
-           Inc(X);
-           Continue;
-          end;
-
-         BlendPixelLine(CombColor, @ScnLne[X], PixelLineCount);
-         X := X + PixelLineCount;
-*)
-         SqrDist.Fixed := CenterX.Fixed - ConvertToFixed24Dot8Point(X).Fixed;
-         PixelLineCount := FixedRound(FixedAdd(SqrDist, SqrDist)) + 1;
-         if X + PixelLineCount > XRange[1]
-          then PixelLineCount := (XRange[1] - X);
-
-         if PixelLineCount <= 0 then
-          begin
-           BlendPixelInplace(CombColor, ScnLne[X]);
-           Inc(X);
-           Continue;
+           BlendPixelLine(CombColor, @ScnLne[X], (XRange[1] - X) + 1);
+           Break;
           end;
 
          BlendPixelLine(CombColor, @ScnLne[X], PixelLineCount);
