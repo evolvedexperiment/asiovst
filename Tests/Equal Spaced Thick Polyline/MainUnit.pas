@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, DAV_GuiByteMap, DAV_GuiPixelMap, DAV_GuiGraphicControl,
-  DAV_GuiLabel, DAV_GuiSlider, StdCtrls;
+  DAV_GuiLabel, DAV_GuiSlider, StdCtrls, Menus;
 
 type
   TFmESTP = class(TForm)
@@ -13,12 +13,16 @@ type
     SlLineWidth: TGuiSlider;
     Label1: TLabel;
     Label2: TLabel;
+    PuMenu: TPopupMenu;
+    MiPositionA: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
     procedure SlLineWidthChange(Sender: TObject);
     procedure PaintBoxClick(Sender: TObject);
+    procedure SlLineWidthDblClick(Sender: TObject);
+    procedure MiPositionAClick(Sender: TObject);
   private
     FPixelMap       : TGuiCustomPixelMap;
     FLineWidth      : Single;
@@ -30,6 +34,7 @@ type
     procedure RenderPolyline;
   public
     property LineWidth: Single read FLineWidth write SetLineWidth;
+    property PixelMap: TGuiCustomPixelMap read FPixelMap;
   end;
 
 var
@@ -40,7 +45,8 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, DAV_Types, DAV_Common, DAV_GuiCommon, DAV_GuiBlend, DAV_MemoryUtils;
+  Math, DAV_Types, DAV_Common, DAV_GuiCommon, DAV_GuiBlend, DAV_MemoryUtils,
+  Magnifier;
 
 procedure TFmESTP.FormCreate(Sender: TObject);
 begin
@@ -65,7 +71,10 @@ begin
    SetLength(FPointArray, PaintBox.Width);
 
    for x := 0 to Length(FPointArray) - 1
-    do FPointArray[x] := 0.5 * Height;
+    do FPointArray[x] := Round(0.5 * Height) + 0.001;
+   FPointArray[1] := 0.1 * Height;
+   FPointArray[2] := 0.1 * Height;
+   FPointArray[3] := 0.1 * Height;
    FPointArray[4] := 0.1 * Height;
 
    FPointArray[24] := 0.1 * Height;
@@ -82,11 +91,23 @@ begin
    FPointArray[58] := 0.9 * Height;
    FPointArray[59] := 0.9 * Height;
    FPointArray[60] := 0.9 * Height;
+
+   FPointArray[76] := 0.6 * Height;
+   FPointArray[79] := 0.9 * Height;
+
+   FPointArray[77] := FPointArray[79];
+   FPointArray[78] := FPointArray[79];
+   FPointArray[80] := FPointArray[79];
+
+   FPointArray[84] := Round(FPointArray[84]);
+   for x := 85 to 130
+    do FPointArray[x] := FPointArray[x - 1] + 1.5;
 (*
    FPointArray[5] := 0.1 * Height;
    FPointArray[6] := 0.1 * Height;
    FPointArray[7] := 0.1 * Height;
    FPointArray[8] := 0.1 * Height;
+*)
 
 (*
    FPointArray[0] := 0.5 * Height;
@@ -124,7 +145,20 @@ end;
 procedure TFmESTP.PaintBoxClick(Sender: TObject);
 begin
 // SlLineWidth.Value := 1;
- SlLineWidth.Value := 9;
+// SlLineWidth.Value := 9;
+// SlLineWidth.Value := 2.999999;
+// SlLineWidth.Value := 7.076;
+ FmMagnifier.Show;
+end;
+
+procedure TFmESTP.SlLineWidthDblClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 7.076;
+end;
+
+procedure TFmESTP.MiPositionAClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 7.076;
 end;
 
 procedure TFmESTP.PaintBoxPaint(Sender: TObject);
@@ -142,8 +176,10 @@ begin
 end;
 
 
-{-$DEFINE DrawSolid}
+{$DEFINE DrawSolid}
 {$DEFINE DrawAntialiasedLines}
+{$DEFINE DrawInnerHalfLines}
+{$DEFINE DrawOuterHalfLines}
 
 procedure TFmESTP.RenderPolyline;
 var
@@ -163,7 +199,7 @@ var
   CurrentValue   : Double;
   YStartPos      : Double;
   YEndPos        : Double;
-  YWSEndPos      : Double;
+  YWSSplitPos    : Double;
   YWSStartPos    : Double;
   Delta          : Double;
   WidthScale     : Double;
@@ -271,20 +307,6 @@ begin
 *)
 
 
-
-
-
-      {$IFDEF DrawSolid}
-      // fill solid
-      for y := Max(0, SolidRange[0]) to Min(Height - 1, SolidRange[1])
-       do VertLine^[y] := $FF;
-      {$ENDIF}
-
-
-
-
-
-
       // draw antialiased border
       CurrentValue := PointPtr^[0];
       if (YRange[0] < SolidRange[0]) or (YRange[0] >= SolidRange[1]) then
@@ -306,8 +328,13 @@ begin
 
 
       {$IFDEF DrawAntialiasedLines}
-//      if (IntegerRadius > 1) then
-      if False then
+
+      // calculate width scale
+      WidthScale := 2 + RadiusMinusOne - IntegerRadius;
+
+
+(*
+      if (IntegerRadius > 1) then
        for LeftRightIdx := 0 to 1 do
         begin
          // set start/end values (left/right)
@@ -336,26 +363,16 @@ begin
 
            if YStartPos < YEndPos then
             begin
- (*
-             if LeftRightIdx = 0 then
-              begin
-               YRange[0] := Ceil(YStartPos + RadiusMinusOne);
-               YRange[1] := Ceil(YEndPos + RadiusMinusOne);
-              end
-             else
-              begin
-               YRange[0] := Trunc(YStartPos - RadiusMinusOne);
-               YRange[1] := Trunc(YEndPos - RadiusMinusOne);
-              end;
- *)
-
              YRange[0] := Round(YStartPos);
              YRange[1] := Round(YEndPos);
 
              if YRange[1] > YRange[0] then
               begin
+{
                for Y := YRange[0] to Round(YWSStartPos + RadiusMinusOne) - 1
                 do VertLine^[y] := $FF;
+}
+
                for Y := Round(YWSStartPos + RadiusMinusOne) to YRange[1] do
                 begin
                  TempDouble := WidthScale + (YEndPos - Y) * Delta;
@@ -366,119 +383,138 @@ begin
             end
            else
             begin
- (*
-             if LeftRightIdx = 0 then
-              begin
-               YRange[0] := Trunc(YStartPos - RadiusMinusOne);
-               YRange[1] := Trunc(YEndPos - RadiusMinusOne);
-              end
-             else
-              begin
-               YRange[0] := Ceil(YStartPos + RadiusMinusOne);
-               YRange[1] := Ceil(YEndPos + RadiusMinusOne);
-              end;
- *)
+             YRange[0] := Round(YEndPos);
+             YRange[1] := Round(YStartPos);
 
-             YRange[0] := Round(YStartPos);
-             YRange[1] := Round(YEndPos);
-
-             if YRange[0] > YRange[1] then
+             if YRange[1] > YRange[0] then
               begin
-               for Y := YRange[1] to Round(YWSStartPos + RadiusMinusOne) - 1 do
+               for Y := YRange[0] to Round(YWSStartPos + RadiusMinusOne) - 1 do
                 begin
                  TempDouble := WidthScale + (Y - YEndPos) * Delta;
                  if VertLine^[y] < $FF
                   then MergeBytesInplace(Round(Limit(TempDouble, 0, 1) * $FF), VertLine^[y]);
                 end;
-               for Y := Round(YWSStartPos + RadiusMinusOne) to YRange[0]
+{
+               for Y := Round(YWSStartPos + RadiusMinusOne) to YRange[1]
                 do VertLine^[y] := $FF;
+}
               end;
             end;
           end;
         end;
+*)
 
 
 
+      {$IFDEF DrawInnerHalfLines}
+      if (IntegerRadius > 1) then
+       for LeftRightIdx := 0 to 1 do
+        begin
+         // set start/end values (left/right)
+         YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 2)];
+         YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
 
+         // eventually skip drawing if inside the solid range
+         if YStartPos < YEndPos then
+          if (YStartPos > SolidRange[0]) and (YEndPos < SolidRange[1])
+           then Continue else else
+          if (YEndPos > SolidRange[0]) and (YStartPos < SolidRange[1])
+           then Continue;
+
+         // calculate split point
+         YWSSplitPos := YStartPos + WidthScale * (YEndPos - YStartPos);
+
+         if YEndPos <> YWSSplitPos then
+          begin
+           Delta := (1 - WidthScale) / Abs(YEndPos - YStartPos);
+
+           if YStartPos < YEndPos then
+            begin
+             YRange[0] := Round(YWSSplitPos);
+             YRange[1] := Round(YEndPos);
+             for Y := Round(YStartPos) to YRange[0] - 1
+              do VertLine^[y] := $FF;
+            end
+           else
+            begin
+             YRange[0] := Round(YEndPos);
+             YRange[1] := Round(YWSSplitPos);
+             for Y := YRange[1] to Round(YStartPos) - 1
+              do VertLine^[y] := $FF;
+            end;
+
+           Delta := 1  / (YWSSplitPos - YEndPos);
+
+           if YRange[1] > YRange[0] then
+            begin
+             for Y := YRange[0] to YRange[1] - 1 do
+              begin
+               TempDouble := WidthScale + (Y - YEndPos) * Delta;
+
+               if VertLine^[y] < $FF
+                then MergeBytesInplace(Round(Limit(TempDouble, 0, 1) * $FF), VertLine^[y]);
+              end;
+            end;
+          end;
+        end;
+      {$ENDIF}
+
+
+
+      {$IFDEF DrawOuterHalfLines}
       for LeftRightIdx := 0 to 1 do
        begin
         // set start/end values (left/right)
         YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
         YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * IntegerRadius];
 
-        // eventually skip drawing if inside the solid range
-        if YStartPos < YEndPos then
-         if (YStartPos > SolidRange[0]) and (YEndPos < SolidRange[1])
-          then Continue else else
-         if (YEndPos > SolidRange[0]) and (YStartPos < SolidRange[1])
-          then Continue;
+        // calculate split point
+        YWSSplitPos := YStartPos + WidthScale * (YEndPos - YStartPos);
 
-        // calculate width scale and width scaled end position
-        WidthScale := 2 + RadiusMinusOne - IntegerRadius;
-        YWSEndPos := YStartPos + WidthScale * (YEndPos - YStartPos);
-
-        if YWSEndPos <> YStartPos then
+        if YWSSplitPos <> YStartPos then
          begin
-          // eventually exchange start and end point
-
-          Delta := 1 / Abs(YEndPos - YStartPos);
-
           if YStartPos < YEndPos then
            begin
-            if LeftRightIdx = 0 then
-             begin
-              // draw line up (right)
-              YRange[0] := Ceil(YStartPos + RadiusMinusOne);
-              YRange[1] := Ceil(YWSEndPos + RadiusMinusOne);
-             end
-            else
-             begin
-              // draw line down (left)
-              YRange[0] := Ceil(YStartPos + RadiusMinusOne);
-              YRange[1] := Ceil(YWSEndPos + RadiusMinusOne);
-             end;
-
-            if YRange[1] > YRange[0] then
-             for Y := YRange[0] to YRange[1] - 1 do
-              begin
-//               TempDouble := WidthScale * ((YWSEndPos - Y) * Delta);
-               TempDouble := WidthScale * (Y - YWSEndPos) / (YStartPos - YWSEndPos);
-               if VertLine^[Y] < $FF
-                then MergeBytesInplace(Round(Limit(TempDouble, 0, 1) * $FF), VertLine^[Y]);
-              end
+            YStartPos := YStartPos + RadiusMinusOne;
+            YWSSplitPos := YWSSplitPos - RadiusMinusOne;
+            YRange[0] := Ceil(YStartPos);
+            YRange[1] := Trunc(YWSSplitPos) + 1;
            end
           else
            begin
-            if LeftRightIdx = 0 then
-             begin
-              // draw line down (right)
-              YRange[0] := Trunc(YStartPos - RadiusMinusOne) + 1;
-              YRange[1] := Trunc(YWSEndPos - RadiusMinusOne) + 1;
-             end
-            else
-             begin
-              // draw line up (left)
-              YRange[0] := Trunc(YStartPos - RadiusMinusOne) + 1;
-              YRange[1] := Trunc(YWSEndPos - RadiusMinusOne) + 1;
-             end;
+            YStartPos := YStartPos - RadiusMinusOne;
+            YWSSplitPos := YWSSplitPos + RadiusMinusOne;
+            YRange[0] := Ceil(YWSSplitPos);
+            YRange[1] := Trunc(YStartPos) + 1;
+           end;
 
+          Delta := WidthScale / (YStartPos - YWSSplitPos);
 
-            if YRange[0] > YRange[1] then
-             for Y := YRange[1] to YRange[0] - 1 do
-              begin
-//               TempDouble := WidthScale * (Y - YWSEndPos) * Delta;
+          // exclude solid range
+          if (YRange[0] >= SolidRange[0]) and (YRange[0] < SolidRange[1])
+           then YRange[0] := SolidRange[1];
+          if (YRange[1] < SolidRange[1]) and (YRange[1] >= SolidRange[0])
+           then YRange[1] := SolidRange[0];
 
-               TempDouble := WidthScale * (Y - YWSEndPos) / (YStartPos - YWSEndPos);
-
-               if VertLine^[Y] < $FF
-                then MergeBytesInplace(Round(Limit(TempDouble, 0, 1) * $FF), VertLine^[Y]);
-              end;
+          for Y := YRange[0] to YRange[1] - 1 do
+           begin
+            TempDouble := (Y - YWSSplitPos) * Delta;
+            if VertLine^[Y] < $FF
+             then MergeBytesInplace(Round(Limit(TempDouble, 0, 1) * $FF), VertLine^[Y]);
            end;
          end;
        end;
+      {$ENDIF}
 
       {$ENDIF}
 
+
+
+      {$IFDEF DrawSolid}
+      // fill solid
+      for y := Max(0, SolidRange[0]) to Min(Height - 1, SolidRange[1])
+       do VertLine^[y] := $FF;
+      {$ENDIF}
 
 
       // copy line to pixel map
@@ -512,6 +548,10 @@ var
   CenterValue  : Integer;
 begin
  LineWidth := SlLineWidth.Value;
+
+ if FmMagnifier.Visible
+  then FmMagnifier.PaintBox.Invalidate;
+
 
 (*
  Label1.Visible := True;

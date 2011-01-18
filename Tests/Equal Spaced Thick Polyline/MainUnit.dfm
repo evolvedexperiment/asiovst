@@ -2,7 +2,7 @@ object FmESTP: TFmESTP
   Left = 299
   Top = 51
   Caption = 'Equal Spaced Thick Polyline'
-  ClientHeight = 328
+  ClientHeight = 269
   ClientWidth = 411
   Color = clBtnFace
   Constraints.MinHeight = 128
@@ -18,31 +18,33 @@ object FmESTP: TFmESTP
   OnResize = FormResize
   DesignSize = (
     411
-    328)
+    269)
   PixelsPerInch = 96
   TextHeight = 13
   object PaintBox: TPaintBox
     Left = 8
     Top = 32
     Width = 395
-    Height = 288
+    Height = 229
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnClick = PaintBoxClick
     OnPaint = PaintBoxPaint
   end
   object Label1: TLabel
     Left = 128
-    Top = 317
+    Top = 258
     Width = 31
     Height = 13
+    Anchors = [akLeft, akBottom]
     Caption = 'Label1'
     Visible = False
   end
   object Label2: TLabel
     Left = 184
-    Top = 317
+    Top = 258
     Width = 31
     Height = 13
+    Anchors = [akLeft, akBottom]
     Caption = 'Label2'
     Visible = False
   end
@@ -72,9 +74,19 @@ object FmESTP: TFmESTP
     Max = 10.000000000000000000
     Min = 1.000000000000000000
     ParentColor = False
+    PopupMenu = PuMenu
     Value = 2.000000000000000000
     ShowText = True
     SlideColor = 6316128
     OnChange = SlLineWidthChange
+    OnDblClick = SlLineWidthDblClick
+  end
+  object PuMenu: TPopupMenu
+    Left = 48
+    Top = 32
+    object MiPositionA: TMenuItem
+      Caption = 'Position A'
+      OnClick = MiPositionAClick
+    end
   end
 end
