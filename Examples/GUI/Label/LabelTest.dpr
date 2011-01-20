@@ -1,6 +1,7 @@
 program LabelTest;
 
 uses
+  FastMM4,
   Forms,
   LabelTestMain in 'LabelTestMain.pas' {FmLabelTest};
 

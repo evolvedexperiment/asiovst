@@ -137,7 +137,9 @@ begin
 
  if (RegisteredName <> 'Treck.de') and
     (RegisteredName <> 'Boris Kovalev') and
-    (RegisteredName <> 'Victor Pavia')
+    (RegisteredName <> 'Victor Pavia') and
+    (RegisteredName <> 'Bruno Bordi') and
+    (RegisteredName <> 'Xhun Audio')
   then
    begin
     ID := $29A2A826;
@@ -182,7 +184,7 @@ end;
 
 procedure TSEConvolutionModule.ChooseProcess;
 begin
- if (FContainedIRs.Count = 0) and (not FileExists(FFileName))
+ if (FContainedIRs.Count = 0) and (not FileExists(string(FFileName)))
   then OnProcess := SubProcessBypass
   else
  if Pin[Integer(pinInput)].Status = stRun
@@ -332,8 +334,8 @@ begin
         pinFileName : begin
                        if FContainedIRs.Count <= 0 then
                         begin
-                         if FileExists(FFileName)
-                          then LoadIR(StrPas(FFileName));
+                         if FileExists(string(FFileName))
+                          then LoadIR(string(StrPas(FFileName)));
                         end
                        else LoadIR(Integer(FFileName));
                        ChooseProcess;
