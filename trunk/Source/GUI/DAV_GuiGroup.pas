@@ -614,7 +614,7 @@ begin
    PixelColor32 := ConvertColor(Color);
    FBackBuffer.FillRect(ClientRect, PixelColor32);
   end;
-
+ FBackBuffer.MakeOpaque;
  FUpdateBuffer := True;
 end;
 

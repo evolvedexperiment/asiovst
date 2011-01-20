@@ -4,7 +4,8 @@ uses
   FastMM4,
   Forms,
   MainUnit in 'MainUnit.pas' {Form1},
-  Magnifier in 'Magnifier.pas' {FmMagnifier};
+  Magnifier in 'Magnifier.pas' {FmMagnifier},
+  DAV_GuiFiltersBlur in '..\..\Source\DAV_GuiFiltersBlur.pas';
 
 {$R *.res}
 

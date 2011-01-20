@@ -38,7 +38,7 @@ uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, Types, {$ELSE} Windows, Messages,
   {$ENDIF} Graphics, Classes, SysUtils,
   DAV_Common, DAV_Classes, DAV_GuiCommon, DAV_GuiBlend, DAV_GuiPixelMap,
-  DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiShadow;
+  DAV_GuiByteMap, DAV_GuiFilters, DAV_GuiFiltersBlur, DAV_GuiShadow;
 
 {$DEFINE UseShadowBuffer}
 
@@ -50,7 +50,7 @@ type
     FShadow       : TGuiShadow;
     FShadowColor  : TPixel32;
     FSaturation   : TGuiSaturationFilter;
-    FBlurFilter   : TGuiStackBlurFilter;
+    FBlurFilter   : TGuiCustomBlurFilter;
     FOnChange     : TNotifyEvent;
     procedure SetAntialiasing(const Value: Boolean);
     procedure SetShadow(const Value: TGuiShadow);

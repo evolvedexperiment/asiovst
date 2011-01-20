@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, DAV_GuiByteMap, DAV_GuiPixelMap, DAV_GuiGraphicControl,
-  DAV_GuiLabel, DAV_GuiSlider, StdCtrls, Menus;
+  ExtCtrls, StdCtrls, Menus, DAV_GuiByteMap, DAV_GuiPixelMap,
+  DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiSlider, DAV_GuiFilters;
 
 type
   TFmESTP = class(TForm)

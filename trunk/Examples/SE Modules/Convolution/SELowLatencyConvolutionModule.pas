@@ -137,7 +137,9 @@ begin
  end;
  if (RegisteredName <> 'Treck.de') and
     (RegisteredName <> 'Boris Kovalev') and
-    (RegisteredName <> 'Victor Pavia')
+    (RegisteredName <> 'Victor Pavia') and
+    (RegisteredName <> 'Bruno Bordi') and
+    (RegisteredName <> 'Xhun Audio')
   then
    begin
     ID := $29A2A826;
