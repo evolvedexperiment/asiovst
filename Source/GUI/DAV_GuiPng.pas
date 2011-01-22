@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Graphics, SysUtils,
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Classes, Graphics, SysUtils,
   DAV_Types, DAV_ChunkClasses, DAV_GuiCommon, DAV_GuiPixelMap,
   DAV_GuiPngTypes, DAV_GuiPngClasses, DAV_GuiFileFormats, DAV_GuiPngChunks;
 
