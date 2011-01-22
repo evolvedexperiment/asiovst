@@ -64,6 +64,9 @@ procedure FillWithZeroes(StartAdr: PDAVDoubleFixedArray; StartPos, EndPos, Sampl
 procedure InvertBuffer(Data: PDAVSingleFixedArray; SampleCount: Integer); overload;
 procedure InvertBuffer(Data: PDAVDoubleFixedArray; SampleCount: Integer); overload;
 
+procedure CopyAndCheck32(Input, Output: PSingle; Count: Integer);
+procedure CopyAndCheck64(Input, Output: PDouble; Count: Integer);
+
 procedure QuickSort32(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer);
 procedure QuickSort64(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer);
 procedure QuickSortWithPosition(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray); overload;
@@ -72,6 +75,9 @@ procedure ReorderPositions(Data: PDAVSingleFixedArray; StartSample, EndSample: I
 procedure ReorderPositions(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray); overload;
 
 implementation
+
+uses
+  Math;
 
 procedure ComplexMultiplyBlock32(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
 {$IFDEF PUREPASCAL}
@@ -672,6 +678,42 @@ asm
  loop @Start
 end;
 {$ENDIF}
+
+procedure CopyAndCheck32(Input, Output: PSingle; Count: Integer);
+var
+  Index : Integer;
+begin
+ for Index := 0 to Count - 1 do
+  begin
+   // check for none and copy value
+   if ((PLongWord(Input)^ and $7F800000)  = $7F800000) and
+     ((PLongWord(Input)^ and $007FFFFF) <> $00000000)
+    then Output^ := 0
+    else Output^ := Input^;
+
+   // advance pointers
+   Inc(Input);
+   Inc(Output);
+  end;
+end;
+
+procedure CopyAndCheck64(Input, Output: PDouble; Count: Integer);
+var
+  Index : Integer;
+begin
+ for Index := 0 to Count - 1 do
+  begin
+   // check for none and copy value
+   if ((PInt64(Input)^ and $7FF0000000000000)  = $7FF0000000000000) and
+     ((PInt64(Input)^ and $000FFFFFFFFFFFFF) <> $0000000000000000)
+     then Output^ := 0
+     else Output^ := Input^;
+
+   // advance pointers
+   Inc(Input);
+   Inc(Output);
+  end;
+end;
 
 function FindMaximum(Data: PSingle; SampleCount: Integer): Integer;
 {$IFDEF PUREPASCAL}
