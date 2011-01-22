@@ -207,7 +207,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_GuiPngCoder, DAV_GuiPngResourceStrings;
+  DAV_Common, DAV_GuiPngCoder, DAV_GuiPngResourceStrings;
 
 type
   TPalette24 = array of TRGB24;

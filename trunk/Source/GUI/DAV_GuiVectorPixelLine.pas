@@ -311,6 +311,7 @@ var
   XPos            : array [0..1] of Integer;
   YPos            : array [0..1] of Integer;
   X, Y            : Integer;
+  OriginalAlpha   : Integer;
   Inter           : TFixed24Dot8Point;
 begin
  with GeometricShape do
@@ -323,6 +324,7 @@ begin
 
  PixelColor32 := ConvertColor(Color);
  PixelColor32.A := Alpha;
+ OriginalAlpha := Alpha;
 
  DeltaX := FixedSub(ToX, FromX);
  DeltaY := FixedSub(ToY, FromY);
@@ -348,11 +350,13 @@ begin
    if (YPos[0] >= 0) and (YPos[0] < PixelMap.Height) then
     begin
      Temp.Fixed := $FF - XEnd.Frac;
+     PixelColor32.A := (OriginalAlpha * FixedMul(Temp, Gap).Fixed + $80) shr 8;
      if (XPos[0] >= 0) and (XPos[0] < PixelMap.Width)
-      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0]    , YPos[0]]^, FixedMul(Temp, Gap).Fixed);
+      then BlendPixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0]    , YPos[0]]^);
      Temp.Fixed := XEnd.Frac;
+     PixelColor32.A := (OriginalAlpha * FixedMul(Temp, Gap).Fixed + $80) shr 8;
      if (XPos[0] + 1 >= 0) and (XPos[0] + 1 < PixelMap.Width)
-      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0] + 1, YPos[0]]^, FixedMul(Temp, Gap).Fixed);
+      then BlendPixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[0] + 1, YPos[0]]^);
     end;
 
    Inter.Fixed := XEnd.Fixed + Gradient.Fixed; // first Y-intersection for the main loop
@@ -367,10 +371,12 @@ begin
      if (Y >= 0) and (Y < PixelMap.Height) then
       begin
        X := FixedFloor(Inter);
+       PixelColor32.A := (OriginalAlpha * ($FF - Inter.Frac) + $80) shr 8;
        if (X >= 0) and (X < PixelMap.Width)
-        then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[X    , Y]^, $FF - Inter.Frac);
+        then BlendPixelInplace(PixelColor32, PixelMap.PixelPointer[X    , Y]^);
+       PixelColor32.A := (OriginalAlpha * Inter.Frac + $80) shr 8;
        if (X + 1 >= 0) and (X + 1 < PixelMap.Width)
-        then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[X + 1, Y]^, Inter.Frac);
+        then BlendPixelInplace(PixelColor32, PixelMap.PixelPointer[X + 1, Y]^);
       end;
      Inter.Fixed := Inter.Fixed + Gradient.Fixed;
     end;
@@ -383,11 +389,13 @@ begin
    if (YPos[1] >= 0) and (YPos[1] < PixelMap.Height) then
     begin
      Temp.Fixed := $FF - XEnd.Frac;
+     PixelColor32.A := (OriginalAlpha * FixedMul(Temp, Gap).Fixed + $80) shr 8;
      if (XPos[1] >= 0) and (XPos[1] < PixelMap.Width)
-      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1]    , YPos[1]]^, FixedMul(Temp, Gap).Fixed);
+      then BlendPixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1]    , YPos[1]]^);
      Temp.Fixed := XEnd.Frac;
+     PixelColor32.A := (OriginalAlpha * FixedMul(Temp, Gap).Fixed + $80) shr 8;
      if (XPos[1] + 1 >= 0) and (XPos[1] + 1 < PixelMap.Width)
-      then CombinePixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1] + 1, YPos[1]]^, FixedMul(Temp, Gap).Fixed);
+      then BlendPixelInplace(PixelColor32, PixelMap.PixelPointer[XPos[1] + 1, YPos[1]]^);
     end;
 
   end

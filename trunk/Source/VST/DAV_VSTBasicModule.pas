@@ -947,7 +947,7 @@ const
 begin
  for Channel := 0 to min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do I16^[Sample * ChannelCount + Channel] := round(Limit(FWinAmpOutputBuffer[Channel]^[Sample]) * MulFakDith16 + random - random);
+   do I16^[Sample * ChannelCount + Channel] := Round(Limit(FWinAmpOutputBuffer[Channel]^[Sample]) * MulFakDith16 + Random - Random);
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved24bit(const Data: Pointer;
