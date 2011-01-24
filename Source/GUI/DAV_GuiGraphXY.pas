@@ -115,19 +115,24 @@ type
   TCustomGuiGraphXYSeries = class(TPersistent)
   private
     FColor    : TColor;
+    FWidth    : Single;
     FTag      : Integer;
     FVisible  : Boolean;
     FOnChange : TNotifyEvent;
     procedure SetColor(const Value: TColor);
     procedure SetVisible(const Value: Boolean);
+    procedure SetWidth(const Value: Single);
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    procedure Changed;
-    procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); virtual; abstract;
+    procedure Changed; virtual;
+    procedure WidthChanged; virtual;
+    procedure PaintToGraphAntialias(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); virtual; abstract;
+    procedure PaintToGraphDraft(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); virtual; abstract;
   public
     constructor Create; virtual;
 
     property Color: TColor read FColor write SetColor default clRed;
+    property Width: Single read FWidth write SetWidth;
     property Visible: Boolean read FVisible write SetVisible default True;
     property Tag: Longint read FTag write FTag default 0;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -140,7 +145,8 @@ type
     FOnEvaluate : TFunctionEvaluateEvent;
     procedure SetOnEvaluate(const Value: TFunctionEvaluateEvent);
   protected
-    procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); override;
+    procedure PaintToGraphAntialias(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); override;
+    procedure PaintToGraphDraft(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     property OnEvaluate: TFunctionEvaluateEvent read FOnEvaluate write SetOnEvaluate;
@@ -149,6 +155,7 @@ type
   TGuiGraphXYFunctionSeries = class(TCustomGuiGraphXYFunctionSeries)
   published
     property Color;
+    property Width;
     property Tag;
     property Visible;
     property OnEvaluate;
@@ -246,6 +253,7 @@ type
   TGraphXYFlags = set of TGraphXYFlag;
   TCustomGuiGraphXY = class(TGuiCustomControl)
   private
+    FAntiAlias        : Boolean;
     FBorderColor      : TColor;
     FBorderRadius     : Single;
     FBorderWidth      : Single;
@@ -270,6 +278,7 @@ type
     procedure SetGridColor(const Value: TColor);
     procedure SetSeriesCollection(const Value: TGuiGraphXYSeriesCollection);
     procedure SetSeriesCollectionItem(Index: Integer; const Value: TGuiGraphXYSeriesCollectionItem);
+    procedure SetAntiAlias(const Value: Boolean);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -278,6 +287,7 @@ type
     procedure CMFontchanged(var Message: TMessage); message CM_FONTCHANGED;
 
     procedure AlphaChanged; virtual;
+    procedure AntiAliasChanged; virtual;
     procedure BorderColorChanged; virtual;
     procedure BorderRadiusChanged; virtual;
     procedure BorderWidthChanged; virtual;
@@ -300,6 +310,7 @@ type
     procedure UpdateGraph;
   published
     property Alpha: Byte read FAlpha write SetAlpha default $FF;
+    property AntiAlias: Boolean read FAntiAlias write SetAntiAlias default True;
     property BorderColor: TColor read FBorderColor write SetBorderColor default clRed;
     property BorderRadius: Single read FBorderRadius write SetBorderRadius;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
@@ -345,8 +356,8 @@ var
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Common, DAV_GuiCommon, DAV_Complex, DAV_GuiFixedPoint,
-  DAV_GuiBlend;
+  ExtCtrls, Math, DAV_Types, DAV_Common, DAV_GuiCommon, DAV_Complex,
+  DAV_GuiFixedPoint, DAV_GuiBlend;
 
 resourcestring
   RCStrCalculateRange = 'The upper value must not be equal to the lower value!' + #10#13 +
@@ -674,6 +685,7 @@ begin
  inherited;
  FVisible := True;
  FColor   := clRed;
+ FWidth   := 1;
 end;
 
 procedure TCustomGuiGraphXYSeries.AssignTo(Dest: TPersistent);
@@ -710,6 +722,21 @@ begin
   end;
 end;
 
+procedure TCustomGuiGraphXYSeries.SetWidth(const Value: Single);
+begin
+ if FWidth <> Value then
+  begin
+   FWidth := Value;
+   WidthChanged;
+  end;
+end;
+
+procedure TCustomGuiGraphXYSeries.WidthChanged;
+begin
+ Changed;
+end;
+
+
 { TCustomGuiFunctionSeries }
 
 procedure TCustomGuiGraphXYFunctionSeries.AssignTo(Dest: TPersistent);
@@ -722,7 +749,156 @@ begin
    end else inherited;
 end;
 
-procedure TCustomGuiGraphXYFunctionSeries.PaintToGraph(
+procedure TCustomGuiGraphXYFunctionSeries.PaintToGraphDraft(
+  const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap);
+var
+  SolidRange     : array [0..1] of Integer;
+  IntegerRadius  : Integer;
+  NewSolid       : Integer;
+  x, y           : Integer;
+  Offset         : TDAVPointSingle;
+  Scale          : TDAVPointSingle;
+  PtIndex        : Integer;
+
+  YValues        : array of Double;
+  Distance       : Double;
+  IntLineWdth    : Double;
+  RadiusMinusOne : Double;
+  CurrentValue   : Double;
+  YStartPos      : Double;
+  YEndPos        : Double;
+  WidthScale     : Double;
+  PointPtr       : PDAVDoubleFixedArray;
+  PixelColor32   : TPixel32;
+  LeftRightIdx   : Integer;
+
+  procedure AddToSolidRange(Lower, Upper: Integer);
+  begin
+   if Lower < Upper then
+    begin
+     if Lower < SolidRange[0] then SolidRange[0] := Lower;
+     if Upper > SolidRange[1] then SolidRange[1] := Upper;
+    end;
+  end;
+
+begin
+ if Visible and Assigned(FOnEvaluate) then
+  with GraphXY, PixelMap do
+   begin
+    Scale.X   := FXAxis.ValuePerPixel;
+    Offset.X  := FXAxis.Lower;
+    Scale.Y   := FYAxis.PixelPerValue;
+    Offset.Y  := FYAxis.PixelSize + FYAxis.Lower * Scale.Y;
+
+    PixelColor32 := ConvertColor(FColor);
+
+    IntLineWdth := Max(FWidth - 1, 0);
+    RadiusMinusOne := 0.5 * IntLineWdth;
+
+    // initialize temporaty variables
+    IntegerRadius := 2 + Trunc(RadiusMinusOne);
+    SetLength(YValues, 1 + 2 * IntegerRadius);
+    Assert(Length(YValues) mod 2 = 1);
+    PointPtr := @YValues[IntegerRadius];
+
+    // fill additional points
+    for PtIndex := 0 to Length(YValues) - 1
+     do YValues[PtIndex] := Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (PtIndex - IntegerRadius) * Scale.X);
+
+    for x := 0 to Width - 1 do
+     begin
+      // get next value
+      YValues[Length(YValues) - 1] := Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (x + IntegerRadius) * Scale.X);
+
+      // calculate solid range
+      CurrentValue := PointPtr^[0];
+      SolidRange[0] := Round(CurrentValue - RadiusMinusOne);
+      SolidRange[1] := Round(CurrentValue + RadiusMinusOne);
+
+      // check for the solid range
+      for PtIndex := 1 to IntegerRadius - 2 do
+       for LeftRightIdx := 0 to 1 do
+        begin
+         CurrentValue := PointPtr^[(2 * LeftRightIdx - 1) * PtIndex];
+
+         // quick check for rectangle
+         NewSolid := Round(CurrentValue - RadiusMinusOne);
+         if NewSolid < SolidRange[0] then
+          begin
+           // calculate true y distance
+           Distance := Sqrt(Sqr(RadiusMinusOne) - Sqr(PtIndex));
+           NewSolid := Round(CurrentValue - Distance);
+           if NewSolid < SolidRange[0]
+            then SolidRange[0] := NewSolid;
+          end
+         else
+          begin
+           // quick check for rectangle
+           NewSolid := Round(CurrentValue + RadiusMinusOne);
+           if NewSolid > SolidRange[1] then
+            begin
+             // calculate true y distance
+             Distance := Sqrt(Sqr(RadiusMinusOne) - Sqr(PtIndex));
+             NewSolid := Round(CurrentValue + Distance);
+             if NewSolid > SolidRange[1]
+              then SolidRange[1] := NewSolid;
+            end;
+          end;
+        end;
+
+      // calculate width scale
+      WidthScale := 2 + RadiusMinusOne - IntegerRadius;
+
+      for LeftRightIdx := 0 to 1 do
+       begin
+        // set start/end values (left/right)
+        YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 2)];
+        YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
+
+        // calculate split point
+        Distance := YStartPos + WidthScale * (YEndPos - YStartPos);
+
+        if YEndPos <> Distance then
+         begin
+          Y := Round(YEndPos + ((0.5 - WidthScale) * (Distance - YEndPos)));
+
+          if YStartPos < YEndPos
+           then AddToSolidRange(Round(YStartPos), Min(Y, Round(YEndPos)))
+           else AddToSolidRange(Max(Y, Round(YEndPos)), Round(YStartPos));
+         end;
+       end;
+
+      for LeftRightIdx := 0 to 1 do
+       begin
+        // set start/end values (left/right)
+        YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
+        YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * IntegerRadius];
+
+        // calculate split point
+        Distance := YStartPos + WidthScale * (YEndPos - YStartPos);
+
+        if Distance <> YStartPos then
+         begin
+          Y := Round(0.5 * (YStartPos - YEndPos) + Distance);
+
+          if YStartPos < YEndPos
+           then AddToSolidRange(Round(YStartPos), Min(Y, Round(Distance)))
+           else AddToSolidRange(Max(Y, Round(Distance)), Round(YStartPos));
+         end;
+       end;
+
+      // copy line to pixel map
+      for y := Max(0, SolidRange[0]) to Min(Height - 1, SolidRange[1])
+       do BlendPixelInplace(PixelColor32, PixelPointer[x, y]^);
+      EMMS;
+
+      // shift y-values
+      Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(Double));
+     end;
+   end;
+end;
+
+procedure TCustomGuiGraphXYFunctionSeries.PaintToGraphAntiAlias(
   const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap);
 var
   x            : Integer;
@@ -1115,6 +1291,7 @@ constructor TCustomGuiGraphXY.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FAlpha            := $FF;
+  FAntiAlias        := True;
   FBorderColor      := clRed;
   FBorderRadius     := 0;
   FBorderColor      := clMaroon;
@@ -1487,9 +1664,14 @@ procedure TCustomGuiGraphXY.RenderSeries(PixelMap: TGuiCustomPixelMap);
 var
   SeriesIndex : Integer;
 begin
- for SeriesIndex := 0 to FSeriesCollection.Count - 1 do
-  if Assigned(FSeriesCollection[SeriesIndex].FSeries)
-   then FSeriesCollection[SeriesIndex].FSeries.PaintToGraph(Self, PixelMap);
+ if FAntiAlias then
+  for SeriesIndex := 0 to FSeriesCollection.Count - 1 do
+   if Assigned(FSeriesCollection[SeriesIndex].FSeries)
+    then FSeriesCollection[SeriesIndex].FSeries.PaintToGraphAntialias(Self, PixelMap) else
+ else
+  for SeriesIndex := 0 to FSeriesCollection.Count - 1 do
+   if Assigned(FSeriesCollection[SeriesIndex].FSeries)
+    then FSeriesCollection[SeriesIndex].FSeries.PaintToGraphDraft(Self, PixelMap)
 end;
 
 procedure TCustomGuiGraphXY.Resize;
@@ -1543,6 +1725,11 @@ begin
  BackBufferChanged;
 end;
 
+procedure TCustomGuiGraphXY.AntiAliasChanged;
+begin
+ Changed;
+end;
+
 procedure TCustomGuiGraphXY.AssignTo(Dest: TPersistent);
 begin
  inherited;
@@ -1581,6 +1768,15 @@ begin
   begin
    FAlpha := Value;
    AlphaChanged;
+  end;
+end;
+
+procedure TCustomGuiGraphXY.SetAntiAlias(const Value: Boolean);
+begin
+ if FAntiAlias <> Value then
+  begin
+   FAntiAlias := Value;
+   AntiAliasChanged;
   end;
 end;
 

@@ -1,5 +1,6 @@
 package DAV_GUI_D14;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -109,6 +110,7 @@ contains
   DAV_GuiImageControl in '..\..\Source\GUI\DAV_GuiImageControl.pas',
   DAV_GuiImageList in '..\..\Source\GUI\DAV_GuiImageList.pas',
   DAV_GuiPngList in '..\..\Source\GUI\DAV_GuiPngList.pas',
-  DAV_GuiVectorPolygon in '..\..\Source\GUI\DAV_GuiVectorPolygon.pas';
+  DAV_GuiVectorPolygon in '..\..\Source\GUI\DAV_GuiVectorPolygon.pas',
+  DAV_GuiFiltersBlur in '..\..\Source\GUI\DAV_GuiFiltersBlur.pas';
 
 end.

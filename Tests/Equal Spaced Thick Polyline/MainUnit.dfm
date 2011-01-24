@@ -27,6 +27,7 @@ object FmESTP: TFmESTP
     Width = 395
     Height = 229
     Anchors = [akLeft, akTop, akRight, akBottom]
+    PopupMenu = PuScenario
     OnClick = PaintBoxClick
     OnPaint = PaintBoxPaint
   end
@@ -58,7 +59,8 @@ object FmESTP: TFmESTP
     BorderWidth = 1.500000000000000000
     Caption = 'Linewidth'
     Color = clBtnFace
-    DefaultValue = 10.000000000000000000
+    CurveMapping = 0.500000000000000000
+    DefaultValue = 2.000000000000000000
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
@@ -71,22 +73,79 @@ object FmESTP: TFmESTP
     FontShadow.OffsetY = 0
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
-    Max = 10.000000000000000000
+    Max = 20.000000000000000000
     Min = 1.000000000000000000
     ParentColor = False
-    PopupMenu = PuMenu
+    PopupMenu = PuLinePreset
     Value = 2.000000000000000000
     ShowText = True
     SlideColor = 6316128
     OnChange = SlLineWidthChange
     OnDblClick = SlLineWidthDblClick
   end
-  object PuMenu: TPopupMenu
-    Left = 48
+  object PuLinePreset: TPopupMenu
+    Left = 40
     Top = 32
     object MiPositionA: TMenuItem
-      Caption = 'Position A'
+      Caption = 'Position A (7.076)'
       OnClick = MiPositionAClick
+    end
+    object MiPositionB: TMenuItem
+      Caption = 'Position B (2.0)'
+      OnClick = MiPositionBClick
+    end
+    object MiPositionC: TMenuItem
+      Caption = 'Position C (2.99999)'
+      OnClick = MiPositionCClick
+    end
+    object MiPositionD: TMenuItem
+      Caption = 'Position D (7.0)'
+      OnClick = MiPositionDClick
+    end
+    object MiPositionE: TMenuItem
+      Caption = 'Position E (9.0)'
+      OnClick = MiPositionEClick
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object MiAddTinyValue: TMenuItem
+      Caption = 'Add Tiny Value'
+      OnClick = MiAddTinyValueClick
+    end
+    object MiSubtractTinyValue: TMenuItem
+      Caption = 'Subtract Tiny Value'
+      OnClick = MiSubtractTinyValueClick
+    end
+  end
+  object PuScenario: TPopupMenu
+    Left = 40
+    Top = 80
+    object MiScenarioStandard: TMenuItem
+      Caption = '&Standard'
+      Checked = True
+      RadioItem = True
+      OnClick = MiScenarioStandardClick
+    end
+    object MiScenarioPeakLineI: TMenuItem
+      Caption = '&Peak Line I'
+      RadioItem = True
+      OnClick = MiScenarioPeakLineIClick
+    end
+    object MiScenarioRandom: TMenuItem
+      Caption = 'Random'
+      RadioItem = True
+      OnClick = MiScenarioRandomClick
+    end
+    object MiScenarioSmallIncrease: TMenuItem
+      Caption = 'Small Increase'
+      RadioItem = True
+      OnClick = MiScenarioSmallIncreaseClick
+    end
+    object MiScenarioExceedBorders: TMenuItem
+      Caption = 'Exceed Borders'
+      RadioItem = True
+      OnClick = MiScenarioExceedBordersClick
     end
   end
 end
