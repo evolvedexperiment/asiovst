@@ -136,6 +136,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiImageList.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPngList.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVectorPolygon.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiFiltersBlur.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -188,7 +189,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2011-01-03 17:31</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2011-01-24 21:52</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

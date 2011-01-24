@@ -559,7 +559,7 @@ begin
      // the TrimInt keeps us from running off the edge of the row...
      Temp := Temp + Weight * CurrentRow[TrimInt(PixelCount - 1, i - n)];
     end;
-   TempRow[i] := Limit(Temp, 0, 255);
+   TempRow[i] := RoundLimit(Temp, 0, 255);
   end;
  Move(TempRow[0], CurrentRow[0], PixelCount);
 end;
@@ -593,10 +593,10 @@ begin
     end;
    with TempRow[PixelIndex] do
     begin
-     b := Limit(tb, 0, $FF);
-     g := Limit(tg, 0, $FF);
-     r := Limit(tr, 0, $FF);
-     a := Limit(ta, 0, $FF);
+     b := RoundLimit(tb, 0, $FF);
+     g := RoundLimit(tg, 0, $FF);
+     r := RoundLimit(tr, 0, $FF);
+     a := RoundLimit(ta, 0, $FF);
      // a:=255;
     end;
   end;

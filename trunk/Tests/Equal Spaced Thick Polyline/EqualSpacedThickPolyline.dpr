@@ -3,9 +3,8 @@ program EqualSpacedThickPolyline;
 uses
   FastMM4,
   Forms,
-  MainUnit in 'MainUnit.pas' {Form1},
-  Magnifier in 'Magnifier.pas' {FmMagnifier},
-  DAV_GuiFiltersBlur in '..\..\Source\DAV_GuiFiltersBlur.pas';
+  MainUnit in 'MainUnit.pas' {FmESTP},
+  Magnifier in 'Magnifier.pas' {FmMagnifier};
 
 {$R *.res}
 

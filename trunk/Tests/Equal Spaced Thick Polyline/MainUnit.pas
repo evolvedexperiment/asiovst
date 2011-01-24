@@ -13,8 +13,21 @@ type
     SlLineWidth: TGuiSlider;
     Label1: TLabel;
     Label2: TLabel;
-    PuMenu: TPopupMenu;
+    PuLinePreset: TPopupMenu;
     MiPositionA: TMenuItem;
+    MiPositionB: TMenuItem;
+    MiPositionC: TMenuItem;
+    MiPositionE: TMenuItem;
+    MiPositionD: TMenuItem;
+    N1: TMenuItem;
+    MiAddTinyValue: TMenuItem;
+    MiSubtractTinyValue: TMenuItem;
+    PuScenario: TPopupMenu;
+    MiScenarioStandard: TMenuItem;
+    MiScenarioPeakLineI: TMenuItem;
+    MiScenarioRandom: TMenuItem;
+    MiScenarioSmallIncrease: TMenuItem;
+    MiScenarioExceedBorders: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -23,15 +36,33 @@ type
     procedure PaintBoxClick(Sender: TObject);
     procedure SlLineWidthDblClick(Sender: TObject);
     procedure MiPositionAClick(Sender: TObject);
+    procedure MiPositionBClick(Sender: TObject);
+    procedure MiPositionCClick(Sender: TObject);
+    procedure MiPositionEClick(Sender: TObject);
+    procedure MiPositionDClick(Sender: TObject);
+    procedure MiAddTinyValueClick(Sender: TObject);
+    procedure MiSubtractTinyValueClick(Sender: TObject);
+    procedure MiScenarioStandardClick(Sender: TObject);
+    procedure MiScenarioRandomClick(Sender: TObject);
+    procedure MiScenarioPeakLineIClick(Sender: TObject);
+    procedure MiScenarioSmallIncreaseClick(Sender: TObject);
+    procedure MiScenarioExceedBordersClick(Sender: TObject);
   private
     FPixelMap       : TGuiCustomPixelMap;
     FLineWidth      : Single;
     FPaintBoxUpdate : Boolean;
     FPointArray     : array of Double;
     procedure SetLineWidth(const Value: Single);
+    procedure ScenarioPeakLine1;
+    procedure ScenarioRandom;
+    procedure ScenarioStandard;
+    procedure ScenarioSmallIncrease;
+    procedure ScenarioExceedBorders;
   protected
     procedure LineWidthChanged; virtual;
+    procedure UpdateGui; virtual;
     procedure RenderPolyline;
+    procedure RenderPolylineDraft;
   public
     property LineWidth: Single read FLineWidth write SetLineWidth;
     property PixelMap: TGuiCustomPixelMap read FPixelMap;
@@ -62,14 +93,52 @@ begin
 end;
 
 procedure TFmESTP.FormResize(Sender: TObject);
-var
-  x : Integer;
 begin
  with FPixelMap do
   begin
    SetSize(PaintBox.Width, PaintBox.Height);
    SetLength(FPointArray, PaintBox.Width);
 
+   ScenarioStandard;
+   FPaintBoxUpdate := True;
+  end;
+end;
+
+procedure TFmESTP.ScenarioStandard;
+var
+  x : Integer;
+begin
+ with FPixelMap do
+  begin
+   FPointArray[0] := 0.5 * Height;
+   FPointArray[1] := FPointArray[0]; // + 0.0001;
+   FPointArray[2] := FPointArray[0];
+   FPointArray[3] := FPointArray[0];
+   FPointArray[4] := 0.1 * Height;
+   for x := 5 to 19
+    do FPointArray[x] := (1 + 0.1 * (x - 4)) * 0.1 * Height;
+   for x := 20 to 27
+    do FPointArray[x] := FPointArray[19];
+   for x := 30 to 32
+    do FPointArray[x] := 0.7 * Height;
+   for x := 33 to 59
+    do FPointArray[x] := 0.5 * Height;
+   for x := 60 to Length(FPointArray) - 1
+    do FPointArray[x] := Height * (0.5 * (1 + 0.5 * (Random - Random)));
+
+   FPointArray[28] := 0.3 * Height;
+   FPointArray[29] := 0.5 * Height;
+   FPointArray[44] := 0.1 * Height;
+   FPointArray[45] := 0.9 * Height;
+  end;
+end;
+
+procedure TFmESTP.ScenarioPeakLine1;
+var
+  x : Integer;
+begin
+ with FPixelMap do
+  begin
    for x := 0 to Length(FPointArray) - 1
     do FPointArray[x] := Round(0.5 * Height) + 0.001;
    FPointArray[1] := 0.1 * Height;
@@ -108,38 +177,39 @@ begin
    FPointArray[7] := 0.1 * Height;
    FPointArray[8] := 0.1 * Height;
 *)
-
-(*
-   FPointArray[0] := 0.5 * Height;
-   FPointArray[1] := FPointArray[0]; // + 0.0001;
-   FPointArray[2] := FPointArray[0];
-   FPointArray[3] := FPointArray[0];
-   FPointArray[4] := 0.1 * Height;
-   for x := 5 to 19
-    do FPointArray[x] := (1 + 0.1 * (x - 4)) * 0.1 * Height;
-   for x := 20 to 27
-    do FPointArray[x] := FPointArray[19];
-   for x := 30 to 32
-    do FPointArray[x] := 0.7 * Height;
-   for x := 33 to 59
-    do FPointArray[x] := 0.5 * Height;
-   for x := 60 to Length(FPointArray) - 1
-    do FPointArray[x] := Height * (0.5 * (1 + 0.5 * (Random - Random)));
-
-   FPointArray[28] := 0.3 * Height;
-   FPointArray[29] := 0.5 * Height;
-   FPointArray[44] := 0.1 * Height;
-   FPointArray[45] := 0.9 * Height;
-*)
-
-   FPaintBoxUpdate := True;
   end;
+end;
+
+procedure TFmESTP.ScenarioRandom;
+var
+  x : Integer;
+begin
+ with FPixelMap do
+  for x := 0 to Length(FPointArray) - 1
+   do FPointArray[x] := Height * (0.5 * (1 + 0.5 * (Random - Random)));
+end;
+
+procedure TFmESTP.ScenarioSmallIncrease;
+var
+  x : Integer;
+begin
+ with FPixelMap do
+  for x := 0 to Length(FPointArray) - 1
+   do FPointArray[x] := Height * 0.5 - 4 * x / Length(FPointArray);
+end;
+
+procedure TFmESTP.ScenarioExceedBorders;
+var
+  x : Integer;
+begin
+ with FPixelMap do
+  for x := 0 to Length(FPointArray) - 1
+   do FPointArray[x] := (2 * Random - 0.5) * Height;
 end;
 
 procedure TFmESTP.LineWidthChanged;
 begin
- FPaintBoxUpdate := True;
- PaintBox.Invalidate
+ UpdateGui;
 end;
 
 procedure TFmESTP.PaintBoxClick(Sender: TObject);
@@ -156,9 +226,80 @@ begin
  SlLineWidth.Value := 7.076;
 end;
 
+procedure TFmESTP.UpdateGui;
+begin
+ FPaintBoxUpdate := True;
+ PaintBox.Invalidate
+end;
+
+procedure TFmESTP.MiAddTinyValueClick(Sender: TObject);
+begin
+ SlLineWidth.Value := SlLineWidth.Value + 0.0001;
+end;
+
 procedure TFmESTP.MiPositionAClick(Sender: TObject);
 begin
  SlLineWidth.Value := 7.076;
+end;
+
+procedure TFmESTP.MiPositionBClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 2.0;
+end;
+
+procedure TFmESTP.MiPositionCClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 2.99999;
+end;
+
+procedure TFmESTP.MiPositionDClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 7.0;
+end;
+
+procedure TFmESTP.MiPositionEClick(Sender: TObject);
+begin
+ SlLineWidth.Value := 9.0;
+end;
+
+procedure TFmESTP.MiScenarioExceedBordersClick(Sender: TObject);
+begin
+ MiScenarioExceedBorders.Checked := True;
+ ScenarioExceedBorders;
+ UpdateGui;
+end;
+
+procedure TFmESTP.MiScenarioPeakLineIClick(Sender: TObject);
+begin
+ MiScenarioPeakLineI.Checked := True;
+ ScenarioPeakLine1;
+ UpdateGui;
+end;
+
+procedure TFmESTP.MiScenarioRandomClick(Sender: TObject);
+begin
+ MiScenarioRandom.Checked := True;
+ ScenarioRandom;
+ UpdateGui;
+end;
+
+procedure TFmESTP.MiScenarioSmallIncreaseClick(Sender: TObject);
+begin
+ MiScenarioSmallIncrease.Checked := True;
+ ScenarioSmallIncrease;
+ UpdateGui;
+end;
+
+procedure TFmESTP.MiScenarioStandardClick(Sender: TObject);
+begin
+ MiScenarioStandard.Checked := True;
+ ScenarioStandard;
+ UpdateGui;
+end;
+
+procedure TFmESTP.MiSubtractTinyValueClick(Sender: TObject);
+begin
+ SlLineWidth.Value := SlLineWidth.Value - 0.0001;
 end;
 
 procedure TFmESTP.PaintBoxPaint(Sender: TObject);
@@ -426,8 +567,6 @@ begin
 
          if YEndPos <> YWSSplitPos then
           begin
-           Delta := (1 - WidthScale) / Abs(YEndPos - YStartPos);
-
            if YStartPos < YEndPos then
             begin
              YRange[0] := Round(YWSSplitPos);
@@ -533,6 +672,167 @@ begin
    MakeOpaque;
   end;
 end;
+
+procedure TFmESTP.RenderPolylineDraft;
+var
+  SolidRange     : array [0..1] of Integer;
+  IntegerRadius  : Integer;
+  NewSolid       : Integer;
+  x, y           : Integer;
+  PtIndex        : Integer;
+
+  YValues        : array of Double;
+  Distance       : Double;
+  IntLineWdth    : Double;
+  RadiusMinusOne : Double;
+  CurrentValue   : Double;
+  YStartPos      : Double;
+  YEndPos        : Double;
+  WidthScale     : Double;
+  PointPtr       : PDAVDoubleFixedArray;
+  PxColor        : TPixel32;
+  LeftRightIdx   : Integer;
+
+
+  procedure AddToSolidRange(Lower, Upper: Integer);
+  begin
+   if Lower < Upper then
+    begin
+     if Lower < SolidRange[0] then SolidRange[0] := Lower;
+     if Upper > SolidRange[1] then SolidRange[1] := Upper;
+    end;
+  end;
+
+begin
+ FPaintBoxUpdate := False;
+ with FPixelMap do
+  begin
+   FillRect(ClientRect, pxBlack32);
+
+   PxColor := pxWhite32;
+   IntLineWdth := Max(FLineWidth - 1, 0);
+   RadiusMinusOne := 0.5 * IntLineWdth;
+
+   // initialize temporaty variables
+   IntegerRadius := 2 + Trunc(RadiusMinusOne);
+   SetLength(YValues, 1 + 2 * IntegerRadius);
+   Assert(Length(YValues) mod 2 = 1);
+   PointPtr := @YValues[IntegerRadius];
+
+   // fill additional points
+   for PtIndex := 0 to IntegerRadius - 1
+    do YValues[PtIndex] := 0.5 * Height;
+
+   for PtIndex := IntegerRadius to Length(YValues) - 1
+    do YValues[PtIndex] := FPointArray[PtIndex - IntegerRadius];
+
+
+   for x := 0 to Width - 1 do
+    begin
+     // get next value
+     if IntegerRadius + x < Length(FPointArray)
+      then YValues[Length(YValues) - 1] := FPointArray[x + IntegerRadius]
+      else YValues[Length(YValues) - 1] := 0;
+
+     // calculate solid range
+     CurrentValue := PointPtr^[0];
+     SolidRange[0] := Round(CurrentValue - RadiusMinusOne);
+     SolidRange[1] := Round(CurrentValue + RadiusMinusOne);
+
+     // check for the solid range
+     for PtIndex := 1 to IntegerRadius - 2 do
+      for LeftRightIdx := 0 to 1 do
+       begin
+        CurrentValue := PointPtr^[(2 * LeftRightIdx - 1) * PtIndex];
+
+        // quick check for rectangle
+        NewSolid := Round(CurrentValue - RadiusMinusOne);
+        if NewSolid < SolidRange[0] then
+         begin
+          // calculate true y distance
+          Distance := Sqrt(Sqr(RadiusMinusOne) - Sqr(PtIndex));
+          NewSolid := Round(CurrentValue - Distance);
+          if NewSolid < SolidRange[0]
+           then SolidRange[0] := NewSolid;
+         end
+        else
+         begin
+          // quick check for rectangle
+          NewSolid := Round(CurrentValue + RadiusMinusOne);
+          if NewSolid > SolidRange[1] then
+           begin
+            // calculate true y distance
+            Distance := Sqrt(Sqr(RadiusMinusOne) - Sqr(PtIndex));
+            NewSolid := Round(CurrentValue + Distance);
+            if NewSolid > SolidRange[1]
+             then SolidRange[1] := NewSolid;
+           end;
+         end;
+       end;
+
+     {$IFDEF DrawAntialiasedLines}
+
+     // calculate width scale
+     WidthScale := 2 + RadiusMinusOne - IntegerRadius;
+
+     {$IFDEF DrawInnerHalfLines}
+     for LeftRightIdx := 0 to 1 do
+      begin
+       // set start/end values (left/right)
+       YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 2)];
+       YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
+
+       // calculate split point
+       Distance := YStartPos + WidthScale * (YEndPos - YStartPos);
+
+       if YEndPos <> Distance then
+        begin
+         Y := Round(YEndPos + ((0.5 - WidthScale) * (Distance - YEndPos)));
+
+         if YStartPos < YEndPos
+          then AddToSolidRange(Round(YStartPos), Min(Y, Round(YEndPos)))
+          else AddToSolidRange(Max(Y, Round(YEndPos)), Round(YStartPos));
+        end;
+      end;
+     {$ENDIF}
+
+
+     {$IFDEF DrawOuterHalfLines}
+     for LeftRightIdx := 0 to 1 do
+      begin
+       // set start/end values (left/right)
+       YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
+       YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * IntegerRadius];
+
+       // calculate split point
+       Distance := YStartPos + WidthScale * (YEndPos - YStartPos);
+
+       if Distance <> YStartPos then
+        begin
+         Y := Round(0.5 * (YStartPos - YEndPos) + Distance);
+
+         if YStartPos < YEndPos
+          then AddToSolidRange(Round(YStartPos), Min(Y, Round(Distance)))
+          else AddToSolidRange(Max(Y, Round(Distance)), Round(YStartPos));
+        end;
+      end;
+     {$ENDIF}
+
+     {$ENDIF}
+
+     // copy line to pixel map
+     for y := Max(0, SolidRange[0]) to Min(Height - 1, SolidRange[1])
+      do BlendPixelInplace(PxColor, PixelPointer[x, y]^);
+     EMMS;
+
+     // shift y-values
+     Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(Double));
+    end;
+
+   MakeOpaque;
+  end;
+end;
+
 
 procedure TFmESTP.SetLineWidth(const Value: Single);
 begin

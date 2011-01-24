@@ -34,6 +34,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clBlue
+        Series.Width = 1.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -63,6 +64,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clYellow
+        Series.Width = 1.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -82,6 +84,7 @@ object FmGraphXY: TFmGraphXY
     Width = 196
     Height = 196
     Alpha = 100
+    AntiAlias = False
     BorderColor = clBlack
     BorderRadius = 5.000000000000000000
     BorderWidth = 1.500000000000000000
@@ -92,6 +95,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clLime
+        Series.Width = 1.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -111,6 +115,7 @@ object FmGraphXY: TFmGraphXY
     Width = 196
     Height = 196
     Alpha = 100
+    AntiAlias = False
     BorderColor = clBlack
     BorderRadius = 5.000000000000000000
     BorderWidth = 1.500000000000000000
@@ -120,6 +125,7 @@ object FmGraphXY: TFmGraphXY
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
+        Series.Width = 1.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
