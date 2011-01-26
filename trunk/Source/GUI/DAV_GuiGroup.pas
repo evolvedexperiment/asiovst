@@ -1607,10 +1607,14 @@ end;
 
 procedure TGuiGroupSide.AdjustClientRect(var Rect: TRect);
 begin
+ {$IFDEF DELPHI10_UP}
  Inc(Rect.Left, Padding.Left);
  Inc(Rect.Top, Padding.Top);
  Dec(Rect.Right, Padding.Right);
  Dec(Rect.Bottom, Padding.Bottom);
+ {$ELSE}
+ inherited AdjustClientRect(Rect);
+ {$ENDIF}
 
  Inc(Rect.Left, FHeaderWidth);
  InflateRect(Rect, -Round(FBorderWidth), -Round(FBorderWidth));

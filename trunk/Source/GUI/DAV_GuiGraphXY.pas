@@ -119,18 +119,22 @@ type
     FTag      : Integer;
     FVisible  : Boolean;
     FOnChange : TNotifyEvent;
+    FAlpha: Byte;
     procedure SetColor(const Value: TColor);
     procedure SetVisible(const Value: Boolean);
     procedure SetWidth(const Value: Single);
+    procedure SetAlpha(const Value: Byte);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure Changed; virtual;
+    procedure AlphaChanged; virtual;
     procedure WidthChanged; virtual;
     procedure PaintToGraphAntialias(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); virtual; abstract;
     procedure PaintToGraphDraft(const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap); virtual; abstract;
   public
     constructor Create; virtual;
 
+    property Alpha: Byte read FAlpha write SetAlpha default $FF;
     property Color: TColor read FColor write SetColor default clRed;
     property Width: Single read FWidth write SetWidth;
     property Visible: Boolean read FVisible write SetVisible default True;
@@ -154,6 +158,7 @@ type
 
   TGuiGraphXYFunctionSeries = class(TCustomGuiGraphXYFunctionSeries)
   published
+    property Alpha;
     property Color;
     property Width;
     property Tag;
@@ -685,6 +690,7 @@ begin
  inherited;
  FVisible := True;
  FColor   := clRed;
+ FAlpha   := $FF;
  FWidth   := 1;
 end;
 
@@ -702,6 +708,15 @@ end;
 procedure TCustomGuiGraphXYSeries.Changed;
 begin
  if Assigned(FOnChange) then FOnChange(Self)
+end;
+
+procedure TCustomGuiGraphXYSeries.SetAlpha(const Value: Byte);
+begin
+ if FAlpha <> Value then
+  begin
+   FAlpha := Value;
+   AlphaChanged;
+  end;
 end;
 
 procedure TCustomGuiGraphXYSeries.SetColor(const Value: TColor);
@@ -731,6 +746,11 @@ begin
   end;
 end;
 
+procedure TCustomGuiGraphXYSeries.AlphaChanged;
+begin
+ Changed;
+end;
+
 procedure TCustomGuiGraphXYSeries.WidthChanged;
 begin
  Changed;
@@ -752,25 +772,28 @@ end;
 procedure TCustomGuiGraphXYFunctionSeries.PaintToGraphDraft(
   const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap);
 var
-  SolidRange     : array [0..1] of Integer;
-  IntegerRadius  : Integer;
-  NewSolid       : Integer;
-  x, y           : Integer;
-  Offset         : TDAVPointSingle;
-  Scale          : TDAVPointSingle;
-  PtIndex        : Integer;
+  SolidRange      : array [0..1] of Integer;
+  YRange          : array [0..1] of Integer;
+  IntegerRadiusX  : Integer;
+  IntegerRadiusY  : Integer;
+  x, y            : Integer;
+  Offset          : TDAVPointSingle;
+  Scale           : TDAVPointSingle;
+  PtIndex         : Integer;
 
-  YValues        : array of Double;
-  Distance       : Double;
-  IntLineWdth    : Double;
-  RadiusMinusOne : Double;
-  CurrentValue   : Double;
-  YStartPos      : Double;
-  YEndPos        : Double;
-  WidthScale     : Double;
-  PointPtr       : PDAVDoubleFixedArray;
-  PixelColor32   : TPixel32;
-  LeftRightIdx   : Integer;
+  YValues         : array of TFixed24Dot8Point;
+  Distance        : TFixed24Dot8Point;
+  IntLineWdth     : TFixed24Dot8Point;
+  RadiusMinusHalf : TFixed24Dot8Point;
+  CurrentValue    : TFixed24Dot8Point;
+  YStartPos       : TFixed24Dot8Point;
+  YEndPos         : TFixed24Dot8Point;
+  WidthScale      : TFixed24Dot8Point;
+  PointPtr        : PFixed24Dot8PointArray;
+  PxColor         : TPixel32;
+  CombColor       : TPixel32;
+  LeftRightIdx    : Integer;
+
 
   procedure AddToSolidRange(Lower, Upper: Integer);
   begin
@@ -790,110 +813,135 @@ begin
     Scale.Y   := FYAxis.PixelPerValue;
     Offset.Y  := FYAxis.PixelSize + FYAxis.Lower * Scale.Y;
 
-    PixelColor32 := ConvertColor(FColor);
+    PxColor   := ConvertColor(FColor);
+    PxColor.A := Self.Alpha;
 
-    IntLineWdth := Max(FWidth - 1, 0);
-    RadiusMinusOne := 0.5 * IntLineWdth;
+    IntLineWdth := ConvertToFixed24Dot8Point(Max(FWidth - 1, 0));
+    RadiusMinusHalf := FixedMul(IntLineWdth, CFixed24Dot8Half);
 
     // initialize temporaty variables
-    IntegerRadius := 2 + Trunc(RadiusMinusOne);
-    SetLength(YValues, 1 + 2 * IntegerRadius);
+    IntegerRadiusX := 1 + FixedCeil(RadiusMinusHalf);
+    IntegerRadiusY := 2 + FixedFloor(RadiusMinusHalf);
+    SetLength(YValues, 1 + 2 * IntegerRadiusX);
     Assert(Length(YValues) mod 2 = 1);
-    PointPtr := @YValues[IntegerRadius];
+    PointPtr := @YValues[IntegerRadiusX];
 
     // fill additional points
     for PtIndex := 0 to Length(YValues) - 1
-     do YValues[PtIndex] := Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (PtIndex - IntegerRadius) * Scale.X);
+     do YValues[PtIndex] := ConvertToFixed24Dot8Point(Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (PtIndex - IntegerRadiusX) * Scale.X));
 
     for x := 0 to Width - 1 do
      begin
       // get next value
-      YValues[Length(YValues) - 1] := Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (x + IntegerRadius) * Scale.X);
+      YValues[Length(YValues) - 1] := ConvertToFixed24Dot8Point(Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (x + IntegerRadiusX) * Scale.X));
 
       // calculate solid range
       CurrentValue := PointPtr^[0];
-      SolidRange[0] := Round(CurrentValue - RadiusMinusOne);
-      SolidRange[1] := Round(CurrentValue + RadiusMinusOne);
+      SolidRange[0] := FixedRound(FixedSub(CurrentValue, RadiusMinusHalf));
+      SolidRange[1] := FixedRound(FixedAdd(CurrentValue, RadiusMinusHalf));
 
       // check for the solid range
-      for PtIndex := 1 to IntegerRadius - 2 do
+      for PtIndex := 1 to IntegerRadiusY - 2 do
+       begin
+        // calculate distance
+        Distance := FixedSqrt(FixedSub(FixedSqr(RadiusMinusHalf),
+          FixedSqr(ConvertToFixed24Dot8Point(PtIndex))));
+
+        for LeftRightIdx := 0 to 1 do
+         begin
+          CurrentValue := PointPtr^[(2 * LeftRightIdx - 1) * PtIndex];
+
+          // quick check for rectangle
+          Y := FixedRound(FixedSub(CurrentValue, Distance));
+          if Y < SolidRange[0]
+           then SolidRange[0] := Y
+           else
+            begin
+             Y := FixedRound(FixedAdd(CurrentValue, Distance));
+             if Y > SolidRange[1]
+              then SolidRange[1] := Y;
+            end;
+         end;
+       end;
+
+      // calculate width scale (0 < x <= 1)
+      WidthScale := FixedSub(RadiusMinusHalf, ConvertToFixed24Dot8Point(IntegerRadiusX - 2));
+
+      if IntegerRadiusY = IntegerRadiusX then
        for LeftRightIdx := 0 to 1 do
         begin
-         CurrentValue := PointPtr^[(2 * LeftRightIdx - 1) * PtIndex];
+         // set start/end values (left/right)
+         YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadiusX - 2)];
+         YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadiusX - 1)];
 
-         // quick check for rectangle
-         NewSolid := Round(CurrentValue - RadiusMinusOne);
-         if NewSolid < SolidRange[0] then
-          begin
-           // calculate true y distance
-           Distance := Sqrt(Sqr(RadiusMinusOne) - Sqr(PtIndex));
-           NewSolid := Round(CurrentValue - Distance);
-           if NewSolid < SolidRange[0]
-            then SolidRange[0] := NewSolid;
-          end
+         // calculate split point
+         Distance := FixedSub(YStartPos, FixedMul(WidthScale, FixedSub(YStartPos, YEndPos)));
+         CurrentValue := FixedAdd(YEndPos,
+           ((FixedMul(FixedSub(CFixed24Dot8Half, WidthScale), FixedSub(Distance, YEndPos)))));
+
+         Y := FixedRound(YStartPos);
+         if YStartPos.Fixed <= YEndPos.Fixed then
+          if FixedRound(CurrentValue) <= FixedRound(YEndPos)
+           then AddToSolidRange(Y, FixedRound(CurrentValue))
+           else AddToSolidRange(Y, FixedRound(YEndPos) - 1)
          else
-          begin
-           // quick check for rectangle
-           NewSolid := Round(CurrentValue + RadiusMinusOne);
-           if NewSolid > SolidRange[1] then
-            begin
-             // calculate true y distance
-             Distance := Sqrt(Sqr(RadiusMinusOne) - Sqr(PtIndex));
-             NewSolid := Round(CurrentValue + Distance);
-             if NewSolid > SolidRange[1]
-              then SolidRange[1] := NewSolid;
-            end;
-          end;
+          if FixedRound(CurrentValue) > FixedRound(YEndPos)
+           then AddToSolidRange(FixedRound(CurrentValue) + 1, Y)
+           else AddToSolidRange(FixedRound(YEndPos), Y);
         end;
 
-      // calculate width scale
-      WidthScale := 2 + RadiusMinusOne - IntegerRadius;
+       for LeftRightIdx := 0 to 1 do
+        begin
+         // set start/end values (left/right)
+         YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadiusX - 1)];
+         YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * IntegerRadiusX];
 
-      for LeftRightIdx := 0 to 1 do
-       begin
-        // set start/end values (left/right)
-        YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 2)];
-        YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
+         // calculate split point
+         CurrentValue := FixedSub(YStartPos, YEndPos);
+         Distance := FixedSub(YStartPos, FixedMul(WidthScale, CurrentValue));
+         CurrentValue := FixedAdd(Distance, FixedMul(CFixed24Dot8Half, CurrentValue));
 
-        // calculate split point
-        Distance := YStartPos + WidthScale * (YEndPos - YStartPos);
-
-        if YEndPos <> Distance then
-         begin
-          Y := Round(YEndPos + ((0.5 - WidthScale) * (Distance - YEndPos)));
-
-          if YStartPos < YEndPos
-           then AddToSolidRange(Round(YStartPos), Min(Y, Round(YEndPos)))
-           else AddToSolidRange(Max(Y, Round(YEndPos)), Round(YStartPos));
-         end;
-       end;
-
-      for LeftRightIdx := 0 to 1 do
-       begin
-        // set start/end values (left/right)
-        YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadius - 1)];
-        YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * IntegerRadius];
-
-        // calculate split point
-        Distance := YStartPos + WidthScale * (YEndPos - YStartPos);
-
-        if Distance <> YStartPos then
-         begin
-          Y := Round(0.5 * (YStartPos - YEndPos) + Distance);
-
-          if YStartPos < YEndPos
-           then AddToSolidRange(Round(YStartPos), Min(Y, Round(Distance)))
-           else AddToSolidRange(Max(Y, Round(Distance)), Round(YStartPos));
-         end;
-       end;
+         Y := FixedRound(YStartPos);
+         if YStartPos.Fixed <= YEndPos.Fixed then
+          if FixedRound(CurrentValue) < FixedRound(Distance)
+           then AddToSolidRange(Y, FixedRound(CurrentValue))
+           else AddToSolidRange(Y, FixedRound(Distance) - 1)
+         else
+          if FixedRound(CurrentValue) >= FixedRound(Distance)
+           then AddToSolidRange(FixedRound(CurrentValue) + 1, Y)
+           else AddToSolidRange(FixedRound(Distance), Y);
+        end;
 
       // copy line to pixel map
-      for y := Max(0, SolidRange[0]) to Min(Height - 1, SolidRange[1])
-       do BlendPixelInplace(PixelColor32, PixelPointer[x, y]^);
+      CombColor := ApplyAlpha(PxColor, Round($FF * (1 - Frac(FBorderWidth))));
+      if SolidRange[0] < Ceil(FBorderWidth) then
+       begin
+        YRange[0] := Ceil(FBorderWidth);
+        if YRange[0] - 1 < SolidRange[1] then
+         begin
+          BlendPixelInplace(CombColor, PixelPointer[x, YRange[0] - 1]^);
+          EMMS;
+         end;
+       end
+      else YRange[0] := SolidRange[0];
+
+      if SolidRange[1] > Height - Ceil(FBorderWidth) - 1 then
+       begin
+        YRange[1] := Height - Ceil(FBorderWidth) - 1;
+        if YRange[1] + 1 > SolidRange[0] then
+         begin
+          BlendPixelInplace(CombColor, PixelPointer[x, YRange[1] + 1]^);
+          EMMS;
+         end;
+       end
+      else YRange[1] := SolidRange[1];
+
+      for y := YRange[0] to YRange[1]
+       do BlendPixelInplace(PxColor, PixelPointer[x, y]^);
       EMMS;
 
       // shift y-values
-      Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(Double));
+      Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(TFixed24Dot8Point));
      end;
    end;
 end;
@@ -1560,6 +1608,7 @@ procedure TCustomGuiGraphXY.RenderGrid(PixelMap: TGuiCustomPixelMap);
 var
   Rct          : TRect;
   PixelColor32 : TPixel32;
+  CombColor32  : TPixel32;
   NormGran     : Double;
   DispValue    : Double;
   c            : Double;
@@ -1571,7 +1620,7 @@ const
   TextXMargin = 2;
 begin
  Rct := ClientRect;
- InflateRect(Rct, -1, -1);
+ InflateRect(Rct, -Ceil(FBorderWidth), -Ceil(FBorderWidth));
 (*
  ZeroPos   := Point(Round(XAxis.ZeroPosition * XAxis.PixelSize),
                     Round((1 - YAxis.ZeroPosition) * YAxis.PixelSize));
@@ -1597,6 +1646,12 @@ begin
       else PixelColor32 := ConvertColor(FGridColor);
 
      PixelMap.VerticalLine(Rct.Left + Round(c * PixelRange), Rct.Top, Rct.Bottom, PixelColor32);
+
+     CombColor32 := ApplyAlpha(PixelColor32, Round($FF * (1 - Frac(FBorderWidth))));
+     BlendPixelInplace(CombColor32,
+       PixelMap.PixelPointer[Rct.Left + Round(c * PixelRange), Rct.Top - 1]^);
+     BlendPixelInplace(CombColor32,
+       PixelMap.PixelPointer[Rct.Left + Round(c * PixelRange), Rct.Bottom]^);
 
      if (gfShowLabels in Self.Flags) then
       begin
@@ -1638,6 +1693,12 @@ begin
        else PixelColor32 := ConvertColor(FGridColor);
 
       PixelMap.HorizontalLine(Rct.Left, Rct.Right, Rct.Bottom - Round(c * PixelRange), PixelColor32);
+
+      CombColor32 := ApplyAlpha(PixelColor32, Round($FF * (1 - Frac(FBorderWidth))));
+      BlendPixelInplace(CombColor32,
+        PixelMap.PixelPointer[Rct.Left - 1, Rct.Bottom - Round(c * PixelRange)]^);
+      BlendPixelInplace(CombColor32,
+        PixelMap.PixelPointer[Rct.Right, Rct.Bottom - Round(c * PixelRange)]^);
 
      if (gfShowLabels in Self.Flags) then
       begin

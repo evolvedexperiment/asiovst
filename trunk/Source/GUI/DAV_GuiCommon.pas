@@ -185,6 +185,7 @@ procedure RGBToHLS(const Color: TColor; out H, L, S: Single); overload;
 
 procedure PixelToHLS(Pixel: TPixel32; out H, L, S: Single);
 function HLSToPixel(H, L, S: Single): TPixel32;
+function ApplyAlpha(const Pixel: TPixel32; Alpha: Byte): TPixel32;
 
 implementation
 
@@ -1111,6 +1112,12 @@ begin
    Result.G := Round(HueToColorValue(H) * 255);
    Result.B := Round(HueToColorValue(H - 1 / 3) * 255);
   end;
+end;
+
+function ApplyAlpha(const Pixel: TPixel32; Alpha: Byte): TPixel32;
+begin
+ Result := Pixel;
+ Result.A := (Result.A * Alpha + $80) shr 8;
 end;
 
 end.
