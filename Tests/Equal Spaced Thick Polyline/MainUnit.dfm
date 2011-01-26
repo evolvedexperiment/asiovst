@@ -2,7 +2,7 @@ object FmESTP: TFmESTP
   Left = 299
   Top = 51
   Caption = 'Equal Spaced Thick Polyline'
-  ClientHeight = 269
+  ClientHeight = 290
   ClientWidth = 411
   Color = clBtnFace
   Constraints.MinHeight = 128
@@ -16,38 +16,21 @@ object FmESTP: TFmESTP
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
+  OnShow = FormShow
   DesignSize = (
     411
-    269)
+    290)
   PixelsPerInch = 96
   TextHeight = 13
   object PaintBox: TPaintBox
     Left = 8
     Top = 32
     Width = 395
-    Height = 229
+    Height = 233
     Anchors = [akLeft, akTop, akRight, akBottom]
     PopupMenu = PuScenario
     OnClick = PaintBoxClick
     OnPaint = PaintBoxPaint
-  end
-  object Label1: TLabel
-    Left = 128
-    Top = 258
-    Width = 31
-    Height = 13
-    Anchors = [akLeft, akBottom]
-    Caption = 'Label1'
-    Visible = False
-  end
-  object Label2: TLabel
-    Left = 184
-    Top = 258
-    Width = 31
-    Height = 13
-    Anchors = [akLeft, akBottom]
-    Caption = 'Label2'
-    Visible = False
   end
   object SlLineWidth: TGuiSlider
     Left = 8
@@ -81,41 +64,64 @@ object FmESTP: TFmESTP
     ShowText = True
     SlideColor = 6316128
     OnChange = SlLineWidthChange
-    OnDblClick = SlLineWidthDblClick
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Top = 271
+    Width = 411
+    Height = 19
+    Panels = <
+      item
+        Text = 'X Pixel:'
+        Width = 60
+      end
+      item
+        Width = 50
+      end>
   end
   object PuLinePreset: TPopupMenu
     Left = 40
     Top = 32
-    object MiPositionA: TMenuItem
-      Caption = 'Position A (7.076)'
-      OnClick = MiPositionAClick
+    object MiWidthA: TMenuItem
+      Caption = 'Width A (2.0)'
+      OnClick = MiWidthAClick
     end
-    object MiPositionB: TMenuItem
-      Caption = 'Position B (2.0)'
-      OnClick = MiPositionBClick
+    object MiWidthB: TMenuItem
+      Caption = 'Width B (2.99999)'
+      OnClick = MiWidthBClick
     end
-    object MiPositionC: TMenuItem
-      Caption = 'Position C (2.99999)'
-      OnClick = MiPositionCClick
+    object MiWidthC: TMenuItem
+      Caption = 'Width C (3.0)'
+      OnClick = MiWidthCClick
     end
-    object MiPositionD: TMenuItem
-      Caption = 'Position D (7.0)'
-      OnClick = MiPositionDClick
+    object MiWidthD: TMenuItem
+      Caption = 'Width D (3.5)'
+      OnClick = MiWidthDClick
     end
-    object MiPositionE: TMenuItem
-      Caption = 'Position E (9.0)'
-      OnClick = MiPositionEClick
+    object MiWidthE: TMenuItem
+      Caption = 'Width E (4.5)'
+      OnClick = MiWidthEClick
+    end
+    object MiWidthF: TMenuItem
+      Caption = 'Width F (7.0)'
+      OnClick = MiWidthFClick
+    end
+    object MiWidthG: TMenuItem
+      Caption = 'Width G (7.076)'
+      OnClick = MiWidthGClick
+    end
+    object MiWidthH: TMenuItem
+      Caption = 'Width H (9.0)'
+      OnClick = MiWidthHClick
     end
     object N1: TMenuItem
       Caption = '-'
     end
     object MiAddTinyValue: TMenuItem
-      Caption = 'Add Tiny Value'
-      OnClick = MiAddTinyValueClick
+      Action = ACAddTinyValue
     end
     object MiSubtractTinyValue: TMenuItem
-      Caption = 'Subtract Tiny Value'
-      OnClick = MiSubtractTinyValueClick
+      Action = ACSubtractTinyValue
     end
   end
   object PuScenario: TPopupMenu
@@ -133,19 +139,38 @@ object FmESTP: TFmESTP
       OnClick = MiScenarioPeakLineIClick
     end
     object MiScenarioRandom: TMenuItem
-      Caption = 'Random'
+      Caption = '&Random'
       RadioItem = True
       OnClick = MiScenarioRandomClick
     end
     object MiScenarioSmallIncrease: TMenuItem
-      Caption = 'Small Increase'
+      Caption = '&Small Increase'
       RadioItem = True
       OnClick = MiScenarioSmallIncreaseClick
     end
     object MiScenarioExceedBorders: TMenuItem
-      Caption = 'Exceed Borders'
+      Caption = 'E&xceed Borders'
       RadioItem = True
       OnClick = MiScenarioExceedBordersClick
+    end
+    object MiUpDown: TMenuItem
+      Caption = '&Up && Down'
+      RadioItem = True
+      OnClick = MiUpDownClick
+    end
+  end
+  object ActionList1: TActionList
+    Left = 128
+    Top = 64
+    object ACAddTinyValue: TAction
+      Caption = 'Add tiny value'
+      ShortCut = 187
+      OnExecute = ACAddTinyValueExecute
+    end
+    object ACSubtractTinyValue: TAction
+      Caption = 'Subtract Tiny Value'
+      ShortCut = 111
+      OnExecute = ACSubtractTinyValueExecute
     end
   end
 end

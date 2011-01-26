@@ -34,7 +34,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clBlue
-        Series.Width = 1.000000000000000000
+        Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -64,7 +64,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clYellow
-        Series.Width = 1.000000000000000000
+        Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -95,7 +95,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clLime
-        Series.Width = 1.000000000000000000
+        Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -125,7 +125,7 @@ object FmGraphXY: TFmGraphXY
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
-        Series.Width = 1.000000000000000000
+        Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
     XAxis.Minimum = -5.000000000000000000
