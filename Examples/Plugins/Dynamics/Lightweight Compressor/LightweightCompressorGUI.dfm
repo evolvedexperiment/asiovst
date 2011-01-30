@@ -306,7 +306,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
+        Series.Alpha = 200
         Series.Color = clWhite
+        Series.Width = 2.000000000000000000
       end>
     XAxis.Flags = []
     XAxis.Granularity = 50.000000000000000000
