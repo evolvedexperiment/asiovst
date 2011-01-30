@@ -476,7 +476,7 @@ end;
 
 {-$DEFINE DrawHalo}
 
-{$DEFINE ShowCenter}
+{-$DEFINE ShowCenter}
 {-$DEFINE ShowHalfLine}
 
 
@@ -583,13 +583,11 @@ begin
       YBounds[1] := Height - 1;
 
 
-(*
       if x < 4 then
        begin
         Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(Double));
         Continue;
        end;
-*)
 
 
       for y := YBounds[0] to YBounds[1] do
@@ -612,30 +610,40 @@ begin
 
 //          if Abs(PtIndex) = IntegerRadiusX - 1 then Continue;
 
-          if Abs(PtIndex) >= IntegerRadiusX - 1 then
+          if (Abs(PtIndex) >= IntegerRadiusX - 1) then
            begin
             PtSgn := Sign(PtIndex);
-            if Abs(PtIndex) = IntegerRadiusX
-             then PtOuter := 1
-             else PtOuter := 0;
 
             YSrc := PointPtr[PtIndex - PtSgn];
             YDest := PointPtr[PtIndex];
 
             if YDest <> YSrc then
-             if (YDest > Y) and (YSrc <= Y) then
-              begin
-               CurrentValue := Y;
-               XPos := (Y - YDest) / (YSrc - YDest);
-               XPos := PtIndex - PtSgn * XPos;
-              end else
-             if (YDest < Y) and (YSrc >= Y) then
-              begin
-               CurrentValue := Y;
-               XPos := (Y - YDest) / (YSrc - YDest);
-               XPos := PtIndex - PtSgn * XPos;
-              end;
-           end;
+             begin
+              if (YDest > Y) and (YSrc <= Y) then
+               begin
+                CurrentValue := Y;
+                XPos := (Y - YDest) / (YSrc - YDest);
+                XPos := PtIndex - PtSgn * XPos;
+               end else
+              if (YDest < Y) and (YSrc >= Y) then
+               begin
+                CurrentValue := Y;
+                XPos := (Y - YDest) / (YSrc - YDest);
+                XPos := PtIndex - PtSgn * XPos;
+               end
+              else
+               begin
+                if Abs(PtIndex) >= IntegerRadiusX
+                 then //Continue
+                 else
+                  begin
+                   if Sign(PointPtr[PtIndex - PtSgn] - PointPtr[PtIndex]) <>
+                      Sign(PointPtr[PtIndex + PtSgn] - PointPtr[PtIndex])
+                    then Continue;
+                  end;
+               end;
+             end;
+          end;
 
           SqrDist := Sqr(CurrentValue - y) + Sqr(XPos);
           if SqrDist < SqrRadius then
