@@ -361,8 +361,8 @@ var
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Types, DAV_Common, DAV_GuiCommon, DAV_Complex,
-  DAV_GuiFixedPoint, DAV_GuiBlend;
+  ExtCtrls, Math, DAV_Types, DAV_Common, DAV_Complex, DAV_MemoryUtils,
+  DAV_GuiCommon, DAV_GuiFixedPoint, DAV_GuiBlend;
 
 resourcestring
   RCStrCalculateRange = 'The upper value must not be equal to the lower value!' + #10#13 +
@@ -946,16 +946,52 @@ begin
    end;
 end;
 
+procedure MergeBytesInplace(Foreground: Byte; var Background: Byte);
+begin
+ Background := Round($FF - ($FF - Foreground) * (1 - Background * COne255th));
+end;
+
 procedure TCustomGuiGraphXYFunctionSeries.PaintToGraphAntiAlias(
   const GraphXY: TCustomGuiGraphXY; const PixelMap: TGuiCustomPixelMap);
 var
-  x            : Integer;
-  Offset       : TDAVPointSingle;
-  Scale        : TDAVPointSingle;
-  Value        : Single;
-  PixelColor32 : TPixel32;
-  ThinLine     : TGuiPixelThinLine;
-  Pnts         : array [0..1] of TPoint;
+  Offset          : TDAVPointSingle;
+  Scale           : TDAVPointSingle;
+  Distance        : Double;
+  IntLineWdth     : Double;
+  RadiusMinusHalf : Double;
+  CurrentValue    : Double;
+  YStartPos       : Double;
+  YEndPos         : Double;
+  YWSSplitPos     : Double;
+  Delta           : Double;
+  WidthScale      : Double;
+  TempDouble      : Double;
+
+  YRange          : array [0..1] of Integer;
+  SolidRange      : array [0..1] of Integer;
+  NewYRange       : array [0..1] of Integer;
+  IntegerRadiusX  : Integer;
+  IntegerRadiusY  : Integer;
+  NewSolid        : Integer;
+  x, y            : Integer;
+  PtIndex         : Integer;
+
+  YValues         : array of Double;
+  VertLine        : PByteArray;
+  PointPtr        : PDAVDoubleFixedArray;
+  PixelColor32    : TPixel32;
+  CombColor       : TPixel32;
+  LeftRightIdx    : Integer;
+
+  procedure AddToSolidRange(Lower, Upper: Integer);
+  begin
+   if Lower < Upper then
+    begin
+     if Lower < SolidRange[0] then SolidRange[0] := Lower;
+     if Upper > SolidRange[1] then SolidRange[1] := Upper;
+    end;
+  end;
+
 begin
  if Visible and Assigned(FOnEvaluate) then
   with GraphXY, PixelMap do
@@ -966,42 +1002,226 @@ begin
     Offset.Y  := FYAxis.PixelSize + FYAxis.Lower * Scale.Y;
 
     PixelColor32 := ConvertColor(FColor);
-    ThinLine := TGuiPixelThinLine.Create;
+    IntLineWdth := Max(FWidth - 1, 0);
+    RadiusMinusHalf := 0.5 * IntLineWdth;
+
+    GetAlignedMemory(VertLine, Height);
     try
-     Value := FOnEvaluate(Self, Offset.X);
-     ThinLine.Color := FColor;
-     ThinLine.GeometricShape.XA := ConvertToFixed24Dot8Point(0);
-     ThinLine.GeometricShape.YA := ConvertToFixed24Dot8Point(Offset.Y - Scale.Y * Value);
-     for x := 1 to FXAxis.PixelSize do
+     // initialize temporaty variables
+     IntegerRadiusX := 1 + Ceil(RadiusMinusHalf);
+     IntegerRadiusY := 2 + Trunc(RadiusMinusHalf);
+     SetLength(YValues, 1 + 2 * IntegerRadiusX);
+     Assert(Length(YValues) mod 2 = 1);
+     PointPtr := @YValues[IntegerRadiusX];
+
+     // fill additional points
+     for PtIndex := 0 to Length(YValues) - 1
+      do YValues[PtIndex] := Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (PtIndex - IntegerRadiusX) * Scale.X);
+
+     for x := 0 to Width - 1 do
       begin
-       Value := FOnEvaluate(Self, Offset.X + x * Scale.X);
-       ThinLine.GeometricShape.XB := ConvertToFixed24Dot8Point(x);
-       ThinLine.GeometricShape.YB := ConvertToFixed24Dot8Point(Offset.Y - Scale.Y * Value);
-       ThinLine.Draw(PixelMap);
-       ThinLine.GeometricShape.XA := ThinLine.GeometricShape.XB;
-       ThinLine.GeometricShape.YA := ThinLine.GeometricShape.YB;
+       // get next value
+       YValues[Length(YValues) - 1] := Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + (x + IntegerRadiusX) * Scale.X);
+
+       // clear vertical line array
+       FillChar(VertLine^, Height, 0);
+
+       // calculate solid range
+       CurrentValue := PointPtr^[0];
+       YRange[0] := Trunc(CurrentValue - RadiusMinusHalf);
+       YRange[1] := Ceil(CurrentValue + RadiusMinusHalf);
+       SolidRange[0] := YRange[0] + 1;
+       SolidRange[1] := YRange[1] - 1;
+
+       // check for the solid range
+       for PtIndex := 1 to IntegerRadiusY - 2 do
+        begin
+         // calculate distance
+         Distance := Sqrt(Sqr(RadiusMinusHalf) - Sqr(PtIndex));
+
+         for LeftRightIdx := 0 to 1 do
+          begin
+           CurrentValue := PointPtr^[(2 * LeftRightIdx - 1) * PtIndex];
+
+           NewSolid := Trunc(CurrentValue - Distance) + 1;
+           if NewSolid < SolidRange[0]
+            then SolidRange[0] := NewSolid
+            else
+             begin
+              NewSolid := Ceil(CurrentValue + Distance) - 1;
+              if NewSolid > SolidRange[1]
+               then SolidRange[1] := NewSolid;
+             end;
+          end;
+        end;
+
+       // draw antialiased border
+       if (YRange[0] < SolidRange[0]) or (YRange[0] >= SolidRange[1]) then
+        begin
+         Distance := 1 + RadiusMinusHalf - PointPtr^[0] + YRange[0];
+         if (YRange[0] >= 0) and (YRange[0] < Height) and (VertLine^[YRange[0]] < $FF)
+          then MergeBytesInplace(Round($FF * Distance), VertLine^[YRange[0]]);
+        end;
+
+       if (YRange[1] < SolidRange[0]) or (YRange[1] >= SolidRange[1]) then
+        begin
+         Distance := 1 + RadiusMinusHalf - YRange[1] + PointPtr^[0];
+         if (YRange[1] >= 0) and (YRange[1] < Height) and (VertLine^[YRange[1]] < $FF)
+          then MergeBytesInplace(Round($FF * Distance), VertLine^[YRange[1]])
+        end;
+
+       // calculate width scale
+       WidthScale := RadiusMinusHalf - (IntegerRadiusX - 2);
+
+       if IntegerRadiusY = IntegerRadiusX then
+        for LeftRightIdx := 0 to 1 do
+         begin
+          // set start/end values (left/right)
+          YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadiusX - 2)];
+          YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadiusX - 1)];
+
+          // eventually skip drawing if inside the solid range
+          if YStartPos < YEndPos then
+           if (YStartPos > SolidRange[0]) and (YEndPos < SolidRange[1])
+            then Continue else else
+           if (YEndPos > SolidRange[0]) and (YStartPos < SolidRange[1])
+            then Continue;
+
+          // calculate split point
+          YWSSplitPos := YStartPos + WidthScale * (YEndPos - YStartPos);
+
+          if YEndPos <> YWSSplitPos then
+           begin
+            if YStartPos < YEndPos then
+             begin
+              YRange[0] := Round(YWSSplitPos);
+              YRange[1] := Round(YEndPos);
+
+              AddToSolidRange(Round(YStartPos), YRange[0]);
+             end
+            else
+             begin
+              YRange[0] := Round(YEndPos);
+              YRange[1] := Round(YWSSplitPos);
+
+              AddToSolidRange(YRange[1], Round(YStartPos));
+             end;
+
+            Delta := 1  / (YWSSplitPos - YEndPos);
+
+            for Y := YRange[0] + 1 to YRange[1] - 1 do
+             begin
+              TempDouble := WidthScale + (Y - YEndPos) * Delta;
+
+              if (y >= 0) and (y < Height) and (VertLine^[y] < $FF)
+               then MergeBytesInplace(Round(Limit(TempDouble, 0, 1) * $FF), VertLine^[y]);
+             end;
+           end;
+         end;
+
+       for LeftRightIdx := 0 to 1 do
+        begin
+         // set start/end values (left/right)
+         YStartPos := PointPtr^[(2 * LeftRightIdx - 1) * (IntegerRadiusX - 1)];
+         YEndPos := PointPtr^[(2 * LeftRightIdx - 1) * IntegerRadiusX];
+
+         // calculate split point
+         YWSSplitPos := YStartPos + WidthScale * (YEndPos - YStartPos);
+
+         if YWSSplitPos <> YStartPos then
+          begin
+           if YStartPos < YEndPos then
+            begin
+             YRange[0] := Round(YStartPos);
+             YRange[1] := Round(YWSSplitPos);
+            end
+           else
+            begin
+             YRange[0] := Round(YWSSplitPos);
+             YRange[1] := Round(YStartPos);
+            end;
+
+           Delta := WidthScale / (YStartPos - YWSSplitPos);
+           for Y := YRange[0] + 1 to YRange[1] - 1 do
+            begin
+             TempDouble := (Y - YWSSplitPos) * Delta;
+             if (y >= 0) and (y < Height) and (VertLine^[Y] < $FF)
+              then MergeBytesInplace(Round(Limit(TempDouble, 0, 1) * $FF), VertLine^[Y]);
+            end;
+          end;
+        end;
+
+       // draw round borders
+       for PtIndex := 1 to IntegerRadiusY - 1 do
+        for LeftRightIdx := 0 to 1 do
+         begin
+          CurrentValue := PointPtr^[(2 * LeftRightIdx - 1) * PtIndex];
+          TempDouble := Sqr(RadiusMinusHalf + 0.5) - Sqr(PtIndex);
+          if TempDouble > 0
+           then TempDouble := Sqrt(TempDouble)
+           else TempDouble := 0;
+
+          YRange[0] := Round(CurrentValue - TempDouble);
+          YRange[1] := Round(CurrentValue + TempDouble);
+
+          for Y := YRange[0] to YRange[1] do
+           begin
+            Distance := Sqrt(Sqr(Y - CurrentValue) + Sqr(PtIndex)) - 0.5;
+            if ((y >= SolidRange[0]) and (y <= SolidRange[1]))
+             then Continue;
+
+            if (y >= 0) and (y < Height) and (VertLine[Y] < $FF) then
+             if (RadiusMinusHalf + 0.5 - Distance < 1) // and (VertLine^[Y] = 0)
+              then MergeBytesInplace(Round(Limit(RadiusMinusHalf + 0.5 - Distance, 0, 1) * $FF), VertLine^[Y]);
+           end;
+
+         end;
+
+       // fill solid
+       for y := Max(0, SolidRange[0]) to Min(Height - 1, SolidRange[1])
+        do VertLine^[y] := $FF;
+
+      // copy line to pixel map
+      if FBorderWidth > 0  then
+       begin
+        YRange[0] := Ceil(FBorderWidth);
+        YRange[1] := Height - YRange[0];
+        CombColor := ApplyAlpha(PixelColor32, Round($FF * (1 - Frac(FBorderWidth))));
+        if YRange[0] < Height then
+         begin
+          BlendPixelInplace(ApplyAlpha(CombColor, VertLine^[YRange[0] - 1]), PixelPointer[x, YRange[0] - 1]^);
+          EMMS;
+         end;
+        if YRange[1] > 0 then
+         begin
+          BlendPixelInplace(ApplyAlpha(CombColor, VertLine^[YRange[1]]), PixelPointer[x, YRange[1]]^);
+          EMMS;
+         end;
+        Dec(YRange[1]);
+       end
+      else
+       begin
+        YRange[0] := 0;
+        YRange[1] := Height - 1;
+       end;
+
+      // copy line to pixel map
+      for y := YRange[0] to YRange[1] do
+       if VertLine^[y] > 0 then
+        begin
+         CombColor := ApplyAlpha(PixelColor32, VertLine^[y]);
+         BlendPixelInplace(CombColor, PixelPointer[x, y]^);
+        end;
+      EMMS;
+
+       // shift y-values
+       Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(Double));
       end;
     finally
-     FreeAndNil(ThinLine);
+     FreeAlignedMemory(VertLine);
     end;
 
-(*
-    Value := FOnEvaluate(Self, Offset.X);
-    Pnts[0].X := 0;
-    Pnts[0].Y := Round(Offset.Y - Scale.Y * Value);
-    for x := 1 to FXAxis.PixelSize do
-     begin
-      Value := FOnEvaluate(Self, Offset.X + x * Scale.X);
-      Pnts[1].X := + x;
-      Pnts[1].Y := Round(Offset.Y - Scale.Y * Value);
-      if (Pnts[0].X >= 0) and (Pnts[1].X >= 0) and
-        (Pnts[0].X < Width) and (Pnts[1].X < Width) and
-        (Pnts[0].Y >= 0) and (Pnts[1].Y >= 0) and
-        (Pnts[0].Y < Height) and (Pnts[1].Y < Height)
-        then Line(Pnts[0].X, Pnts[0].Y, Pnts[1].X, Pnts[1].Y, PixelColor32);
-      Pnts[0] := Pnts[1];
-     end;
-*)
+    MakeOpaque;
    end;
 end;
 

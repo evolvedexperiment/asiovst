@@ -87,7 +87,7 @@ object FmGraphXY: TFmGraphXY
     AntiAlias = False
     BorderColor = clBlack
     BorderRadius = 5.000000000000000000
-    BorderWidth = 1.500000000000000000
+    BorderWidth = 1.200000047683716000
     FrameColor = 3355443
     GridColor = clGray
     SeriesCollection = <
@@ -118,7 +118,7 @@ object FmGraphXY: TFmGraphXY
     AntiAlias = False
     BorderColor = clBlack
     BorderRadius = 5.000000000000000000
-    BorderWidth = 1.500000000000000000
+    BorderWidth = 1.799999952316284000
     FrameColor = 3355443
     GridColor = clGray
     SeriesCollection = <

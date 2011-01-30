@@ -133,10 +133,20 @@ object FmESTP: TFmESTP
       RadioItem = True
       OnClick = MiScenarioStandardClick
     end
-    object MiScenarioPeakLineI: TMenuItem
+    object MiScenarioPeakLine1: TMenuItem
       Caption = '&Peak Line I'
       RadioItem = True
-      OnClick = MiScenarioPeakLineIClick
+      OnClick = MiScenarioPeakLine1Click
+    end
+    object MiScenarioPeakLine2: TMenuItem
+      Caption = 'Peak Line II'
+      RadioItem = True
+      OnClick = MiScenarioPeakLine2Click
+    end
+    object MiScenarioPeakLine3: TMenuItem
+      Caption = 'Peak Line III'
+      RadioItem = True
+      OnClick = MiScenarioPeakLine3Click
     end
     object MiScenarioRandom: TMenuItem
       Caption = '&Random'
@@ -157,6 +167,11 @@ object FmESTP: TFmESTP
       Caption = '&Up && Down'
       RadioItem = True
       OnClick = MiUpDownClick
+    end
+    object MiScenarioLargeUpDown: TMenuItem
+      Caption = '&Large Up && Down'
+      RadioItem = True
+      OnClick = MiScenarioLargeUpDownClick
     end
   end
   object ActionList1: TActionList
