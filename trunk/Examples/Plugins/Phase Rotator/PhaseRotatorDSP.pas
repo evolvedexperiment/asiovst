@@ -2,6 +2,8 @@ unit PhaseRotatorDSP;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, SyncObjs, DAV_Types, DAV_DspFilter, DAV_DspFilterBasics, DAV_VSTModule, 
@@ -24,7 +26,7 @@ type
     procedure ParameterBandwidthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBandwidthDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FAllpass         : array of array [0..3] of TBasicAllpassFilter;
+    FAllpass         : array of array of TBasicAllpassFilter;
     FOrder           : Integer;
     FCriticalSection : TCriticalSection;
   end;
@@ -38,12 +40,38 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, PhaseRotatorGUI;
+  Math, {$IFDEF MSWINDOWS} Registry, {$ENDIF} DAV_Common, PhaseRotatorGUI;
+
+{$IFDEF MSWINDOWS}
+const
+  CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Phase Rotator';
+{$ENDIF}
 
 procedure TPhaseRotatorModule.VSTModuleCreate(Sender: TObject);
+var
+  MaxStages : Integer;
 begin
  Assert(numInputs = numOutputs);
  FCriticalSection := TCriticalSection.Create;
+
+ {$IFDEF MSWINDOWS}
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   if OpenKey(CRegKeyRoot, False) then
+    begin
+     if ValueExists('Maximum Stages') then
+      begin
+       MaxStages := StrToInt(ReadString('Maximum Stages'));
+       if MaxStages > ParameterProperties[1].Min
+        then ParameterProperties[1].Max := MaxStages;
+      end;
+    end
+  finally
+   Free;
+  end;
+ {$ENDIF}
+
 end;
 
 procedure TPhaseRotatorModule.VSTModuleDestroy(Sender: TObject);
@@ -60,16 +88,19 @@ begin
 
  // create allpass filters
  for ChannelIndex := 0 to Length(FAllpass) - 1 do
-  for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
-   begin
-    FAllpass[ChannelIndex, BandIndex] := TBasicAllpassFilter.Create;
-    with FAllpass[ChannelIndex, BandIndex] do
-     begin
-      SampleRate := Self.SampleRate;
-      Frequency  := 200;
-      Bandwidth  := 1.4;
-     end;
-   end;
+  begin
+   SetLength(FAllpass[ChannelIndex], Round(ParameterProperties[1].Max));
+   for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
+    begin
+     FAllpass[ChannelIndex, BandIndex] := TBasicAllpassFilter.Create;
+     with FAllpass[ChannelIndex, BandIndex] do
+      begin
+       SampleRate := Self.SampleRate;
+       Frequency  := 200;
+       Bandwidth  := 1.4;
+      end;
+    end;
+  end;
 
  // set editor form class
  EditorFormClass := TFmPhaseRotator;
@@ -151,7 +182,7 @@ end;
 procedure TPhaseRotatorModule.ParameterOrderChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FOrder := IntLimit(Round(Value), 0, 4);
+ FOrder := Round(Value);
 
  // update GUI
  if EditorForm is TFmPhaseRotator

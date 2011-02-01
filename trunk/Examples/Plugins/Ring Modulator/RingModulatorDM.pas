@@ -36,13 +36,14 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspRingModulator;
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspRingModulator;
 
 type
   TRingModulatorDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -51,7 +52,8 @@ type
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FRingMod : array of TAutoRingModulator32;
+    FCriticalSection : TCriticalSection;
+    FRingMod         : array of TAutoRingModulator32;
     procedure ChooseProcess;
   public
   end;
@@ -65,19 +67,32 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, RingModulatorGUI, DAV_VSTParameters;
+  {$IFDEF MSWINDOWS} Registry, {$ENDIF} RingModulatorGUI, DAV_VSTParameters;
 
+{$IFDEF MSWINDOWS}
 const
   CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Ring Modulator';
+{$ENDIF}
+
+procedure TRingModulatorDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
+
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TRingModulatorDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TRingModulatorDataModule.VSTModuleOpen(Sender: TObject);
 var
   ChannelIndex : Integer;
   UpperFreq    : Single;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
-
+ {$IFDEF MSWINDOWS}
  with TRegistry.Create do
   try
    RootKey := HKEY_CURRENT_USER;
@@ -93,16 +108,23 @@ begin
   finally
    Free;
   end;
+ {$ENDIF}
 
  SetLength(FRingMod, numInputs);
 
  ChooseProcess;
 
+ // create ring modulator objects
  for ChannelIndex := 0 to Length(FRingMod) - 1
   do FRingMod[ChannelIndex] := TAutoRingModulator32.Create;
 
+ // set editor form class
+ EditorFormClass := TFmRingModulator;
+
+ // set default parameter
  Parameter[0] := 10;
 
+ // set program parameters
  Programs[0].Parameter[0] := 10;
  Programs[1].Parameter[0] := 0.1;
  Programs[2].Parameter[0] := 1000;
@@ -114,11 +136,6 @@ var
 begin
  for ChannelIndex := 0 to Length(FRingMod) - 1
   do FreeAndNil(FRingMod[ChannelIndex]);
-end;
-
-procedure TRingModulatorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmRingModulator.Create(Self);
 end;
 
 procedure TRingModulatorDataModule.ChooseProcess;
@@ -136,10 +153,16 @@ procedure TRingModulatorDataModule.ParameterFrequencyChange(
 var
   ChannelIndex : Integer;
 begin
- for ChannelIndex := 0 to Length(FRingMod) - 1 do
-  if Assigned(FRingMod[ChannelIndex])
-   then FRingMod[ChannelIndex].Frequency := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FRingMod) - 1 do
+   if Assigned(FRingMod[ChannelIndex])
+    then FRingMod[ChannelIndex].Frequency := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 
+ // update GUI
  if EditorForm is TFmRingModulator
   then TFmRingModulator(EditorForm).UpdateFrequency;
 end;
@@ -165,8 +188,13 @@ procedure TRingModulatorDataModule.VSTModuleProcessMono(const Inputs,
 var
   Sample  : Integer;
 begin
- for Sample := 0 to SampleFrames - 1
-  do Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1
+   do Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleProcessStereo(const Inputs,
@@ -174,11 +202,16 @@ procedure TRingModulatorDataModule.VSTModuleProcessStereo(const Inputs,
 var
   Sample  : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
-   Outputs[1, Sample] := FRingMod[1].ProcessSample32(Inputs[1, Sample]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := FRingMod[1].ProcessSample32(Inputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleProcessMultiChannel(const Inputs,
@@ -187,9 +220,14 @@ var
   Sample  : Integer;
   ChannelIndex : Integer;
 begin
- for ChannelIndex := 0 to Length(FRingMod) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[ChannelIndex, Sample] := FRingMod[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, Sample]);
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FRingMod) - 1 do
+   for Sample := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, Sample] := FRingMod[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, Sample]);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TRingModulatorDataModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -197,10 +235,15 @@ procedure TRingModulatorDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   ChannelIndex : Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for ChannelIndex := 0 to Length(FRingMod) - 1 do
-   if Assigned(FRingMod[ChannelIndex])
-    then FRingMod[ChannelIndex].SampleRate := Abs(SampleRate);
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FRingMod) - 1 do
+    if Assigned(FRingMod[ChannelIndex])
+     then FRingMod[ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.
