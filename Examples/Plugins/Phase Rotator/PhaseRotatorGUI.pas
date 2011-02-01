@@ -52,6 +52,8 @@ uses
 
 procedure TFmPhaseRotator.FormShow(Sender: TObject);
 begin
+ with TPhaseRotatorModule(Owner)
+  do DialStages.Max := ParameterProperties[1].Max;
  UpdateFrequency;
  UpdateBandwidth;
  UpdateStages;

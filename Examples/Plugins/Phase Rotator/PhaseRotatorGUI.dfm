@@ -114,7 +114,8 @@ object FmPhaseRotator: TFmPhaseRotator
     Top = 32
     Width = 36
     Height = 36
-    Max = 4.000000000000000000
+    CurveMapping = -0.100000001490116100
+    Max = 8.000000000000000000
     ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0

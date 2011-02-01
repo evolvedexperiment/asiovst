@@ -1,5 +1,4 @@
 object PhaseRotatorModule: TPhaseRotatorModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -9,11 +8,15 @@ object PhaseRotatorModule: TPhaseRotatorModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'PhRo'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLogarithmic
@@ -37,15 +40,17 @@ object PhaseRotatorModule: TPhaseRotatorModule
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 2.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
-      Max = 4.000000000000000000
-      MaxInteger = 4
+      LargeStepInteger = 2
+      Max = 8.000000000000000000
+      MaxInteger = 8
       ReportVST2Properties = True
       ShortLabel = 'Order'
-      SmallStepFloat = 0.500000000000000000
+      SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterOrderChange
