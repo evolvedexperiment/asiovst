@@ -42,7 +42,7 @@ begin
  for HysteresisIndex := 0 to numInputs - 1 do
   begin
    FHysteresis[HysteresisIndex] := TDspPreisach32.Create;
-   FHysteresis[HysteresisIndex].HysteronResolution := 16;
+   FHysteresis[HysteresisIndex].HysteronResolution := 128;
   end;
 
  // set editor form class

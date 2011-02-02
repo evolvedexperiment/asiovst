@@ -65,7 +65,7 @@ type
     procedure LowerChanged; override;
     procedure UpperChanged; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
   published
     property Upper: Double read FUpper write SetUpper;
     property Lower: Double read FLower write SetLower;
@@ -84,7 +84,7 @@ type
     procedure LowerChanged; override;
     procedure UpperChanged; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure ProcessBlock(const Data: PIntegerArray; SampleCount: Integer);
     function ProcessSample(Input: Integer): Integer;
   published

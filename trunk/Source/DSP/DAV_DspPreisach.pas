@@ -40,26 +40,19 @@ uses
 type
   TCustomDspPreisach = class(TDspPersistent)
   private
-    FHysterons          : array of TDspIntegerRelay;
-    FHysteronResolution : Cardinal;
+    FHysteronResolution : Integer;
     FHysteronScale      : Single;
+    FTotalHysteronCount : Integer;
     FStates             : PByteArray;
-    procedure SetHysteronResolution(const Value: Cardinal);
-    function GetTotalHysteronCount: Cardinal;
-    function GetDistance: Single;
-    function GetHysterons(Index: Integer): TCustomDspRelay;
+    procedure SetHysteronResolution(const Value: Integer);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure HysteronResolutionChanged; virtual;
-
-    property TotalHysteronCount: Cardinal read GetTotalHysteronCount;
-    property Distance: Single read GetDistance;
-    property Hysterons[Index: Integer]: TCustomDspRelay read GetHysterons;
   public
     constructor Create; virtual;
     destructor Destroy; override;
 
-    property HysteronResolution: Cardinal read FHysteronResolution write SetHysteronResolution;
+    property HysteronResolution: Integer read FHysteronResolution write SetHysteronResolution;
   end;
 
   TDspPreisach32 = class(TCustomDspPreisach, IDspProcessor32)
@@ -80,6 +73,9 @@ type
 
 implementation
 
+uses
+  DAV_MemoryUtils;
+
 { TCustomDspPreisach }
 
 constructor TCustomDspPreisach.Create;
@@ -90,31 +86,10 @@ begin
 end;
 
 destructor TCustomDspPreisach.Destroy;
-var
-  HysteronIndex : Integer;
 begin
- FreeMem(FStates);
+ FreeAlignedMemory(FStates);
 
- for HysteronIndex := 0 to Length(FHysterons) - 1
-  do FreeAndNil(FHysterons[HysteronIndex]);
  inherited;
-end;
-
-function TCustomDspPreisach.GetDistance: Single;
-begin
- Result := 1 / (FHysteronResolution);
-end;
-
-function TCustomDspPreisach.GetHysterons(Index: Integer): TCustomDspRelay;
-begin
- if (Index > 0) and (Index < Length(FHysterons))
-  then Result := FHysterons[Index]
-  else raise Exception.CreateFmt('Index out of bounds', [Index]);
-end;
-
-function TCustomDspPreisach.GetTotalHysteronCount: Cardinal;
-begin
- Result := ((FHysteronResolution - 1) * FHysteronResolution) div 2;
 end;
 
 procedure TCustomDspPreisach.AssignTo(Dest: TPersistent);
@@ -129,53 +104,23 @@ begin
 end;
 
 procedure TCustomDspPreisach.HysteronResolutionChanged;
-var
-  NewTotalHysteronCount : Integer;
-  HysteronIndex         : Integer;
-  X, Y                  : Integer;
-  HalfDistance          : Single;
 begin
- NewTotalHysteronCount := TotalHysteronCount;
- for HysteronIndex := NewTotalHysteronCount to Length(FHysterons) - 1
-  do FreeAndNil(FHysterons[HysteronIndex]);
-
- SetLength(FHysterons, TotalHysteronCount);
+ FTotalHysteronCount := ((FHysteronResolution - 1) * FHysteronResolution) div 2;
 
  // allocate states
- ReallocMem(FStates, TotalHysteronCount);
+ ReallocateAlignedMemory(FStates, FTotalHysteronCount);
 
  // reset states (todo!)
- for HysteronIndex := 0 to TotalHysteronCount - 1
-  do FStates[HysteronIndex] := 1;
+ FillChar(FStates[0], FTotalHysteronCount, 1);
 
-
- FHysteronScale := 1 / Length(FHysterons);
- HalfDistance := Distance;
- X := 0;
- Y := 0;
- for HysteronIndex := 0 to Length(FHysterons) - 1 do
-  begin
-   // eventually create hysteron
-   if not Assigned(FHysterons[HysteronIndex])
-    then FHysterons[HysteronIndex] := TDspIntegerRelay.Create;
-
-   FHysterons[HysteronIndex].Lower := (2 * X - FHysteronResolution) + 1;
-   FHysterons[HysteronIndex].Upper := (FHysteronResolution - 2 * Y) - 1;
-
-   Inc(X);
-   if X >= FHysteronResolution - Y - 1 then
-    begin
-     X := 0;
-     Inc(Y);
-    end;
-  end;
-
- Assert(X = 0);
- Assert(Y + 1 = FHysteronResolution);
+ FHysteronScale := 1 / FTotalHysteronCount;
 end;
 
-procedure TCustomDspPreisach.SetHysteronResolution(const Value: Cardinal);
+procedure TCustomDspPreisach.SetHysteronResolution(const Value: Integer);
 begin
+ if Value <= 0
+  then raise Exception.Create('Value must be larger than zero!');
+ 
  if Value <> FHysteronResolution then
   begin
    FHysteronResolution := Value;
@@ -202,58 +147,12 @@ var
   HysteronIndex : Integer;
   X, Y, Offset  : Integer;
 begin
-(*
- IntegerInput := Round(FHysteronResolution * Input);
-
- X := ((FHysteronResolution + IntegerInput) div 2);
- if X < 0 then X := 0;
- Offset := FHysteronResolution - 1;
- HysteronIndex := X;
- for y := 0 to FHysteronResolution - X - 2 do
-  begin
-{
-   Assert((FHysteronResolution - 1) - X - Y > 0);
-   if HysteronIndex + FHysteronResolution - 1 - X - Y >= Length(FHysterons)
-    then
-     begin
-      IntegerInput := HysteronIndex;
-      Break;
-     end;
-}
-   FillChar(FStates^[HysteronIndex], FHysteronResolution - 1 - X - Y, 0);
-   Inc(HysteronIndex, Offset);
-   Dec(Offset);
-  end;
-
- Y := (FHysteronResolution - IntegerInput) div 2;
- if Y < 0 then Y := 0;
-{
-  begin
-   FillChar(FStates^[0], Length(FHysterons), 1);
-   IntegerResult := Length(FHysterons);
-  end
- else
-}
-  begin
-   Offset := Y * FHysteronResolution - (Y * (Y + 1)) div 2;
-   FillChar(FStates^[Offset], Length(FHysterons) - Offset, 1);
-
-   IntegerResult := 0;
-   for HysteronIndex := 0 to Offset - 1
-    do Inc(IntegerResult, FStates[HysteronIndex]);
-   Inc(IntegerResult, Length(FHysterons) - Offset);
-  end;
-
- Result := 2 * FHysteronScale * IntegerResult - 1;
-*)
-
-
  IntegerInput := Round(FHysteronResolution * Input);
 
  X := ((FHysteronResolution + IntegerInput) div 2);
  if X <= 0 then
   begin
-   FillChar(FStates^[0], Length(FHysterons), 0);
+   FillChar(FStates^[0], FTotalHysteronCount, 0);
    Result := -1;
    Exit;
   end
@@ -270,34 +169,10 @@ begin
      end;
    end;
 
-
-(*
- X := ((FHysteronResolution + IntegerInput) div 2);
- if X < 0 then X := 0;
- Y := 0;
- Offset := FHysteronResolution - 1;
- HysteronIndex := X;
- while (X >= 0) and (X < FHysteronResolution - 1) do
-  begin
-   FStates[HysteronIndex] := 0;
-   Inc(HysteronIndex, Offset);
-   Dec(Offset);
-   Inc(Y);
-   if Y >= FHysteronResolution - X - 1 then
-    begin
-     Y := 0;
-     Inc(X);
-     Offset := FHysteronResolution - 1;
-     HysteronIndex := X;
-    end;
-  end;
-*)
-
-
  Y := (FHysteronResolution - IntegerInput) div 2;
  if Y <= 0 then
   begin
-   FillChar(FStates^[0], Length(FHysterons), 1);
+   FillChar(FStates^[0], FTotalHysteronCount, 1);
    Result := 1;
    Exit;
   end
@@ -306,24 +181,16 @@ begin
    if Y < FHysteronResolution - 1 then
     begin
      Offset := Y * FHysteronResolution - (Y * (Y + 1)) div 2;
-     FillChar(FStates^[Offset], Length(FHysterons) - Offset, 1);
-    end else Offset := Length(FHysterons);
+     FillChar(FStates^[Offset], FTotalHysteronCount - Offset, 1);
+    end
+   else Offset := FTotalHysteronCount;
 
     IntegerResult := 0;
     for HysteronIndex := 0 to Offset - 1
      do Inc(IntegerResult, FStates[HysteronIndex]);
-    Inc(IntegerResult, Length(FHysterons) - Offset);
+    Inc(IntegerResult, FTotalHysteronCount - Offset);
   end;
  Result := 2 * FHysteronScale * IntegerResult - 1;
-
-(*
- IntegerInput := Round(FHysteronResolution * Input);
- IntegerResult := FHysterons[0].ProcessSample(IntegerInput);
- for HysteronIndex := 1 to Length(FHysterons) - 1 do
-  with FHysterons[HysteronIndex]
-   do Inc(IntegerResult, ProcessSample(IntegerInput));
- Result := FHysteronScale * IntegerResult;
-*)
 end;
 
 
@@ -343,13 +210,51 @@ var
   IntegerInput  : Integer;
   IntegerResult : Integer;
   HysteronIndex : Integer;
+  X, Y, Offset  : Integer;
 begin
  IntegerInput := Round(FHysteronResolution * Input);
- IntegerResult := FHysterons[0].ProcessSample(IntegerInput);
- for HysteronIndex := 1 to Length(FHysterons) - 1 do
-  with FHysterons[HysteronIndex]
-   do Inc(IntegerResult, ProcessSample(IntegerInput));
- Result := FHysteronScale * IntegerResult;
+
+ X := ((FHysteronResolution + IntegerInput) div 2);
+ if X <= 0 then
+  begin
+   FillChar(FStates^[0], FTotalHysteronCount, 0);
+   Result := -1;
+   Exit;
+  end
+ else
+  if X < FHysteronResolution - 1 then
+   begin
+    Offset := FHysteronResolution - 1;
+    HysteronIndex := X;
+    for y := 0 to FHysteronResolution - X - 2 do
+     begin
+      FillChar(FStates^[HysteronIndex], FHysteronResolution - 1 - X - Y, 0);
+      Inc(HysteronIndex, Offset);
+      Dec(Offset);
+     end;
+   end;
+
+ Y := (FHysteronResolution - IntegerInput) div 2;
+ if Y <= 0 then
+  begin
+   FillChar(FStates^[0], FTotalHysteronCount, 1);
+   Result := 1;
+   Exit;
+  end
+ else
+  begin
+   if Y < FHysteronResolution - 1 then
+    begin
+     Offset := Y * FHysteronResolution - (Y * (Y + 1)) div 2;
+     FillChar(FStates^[Offset], FTotalHysteronCount - Offset, 1);
+    end else Offset := FTotalHysteronCount;
+
+    IntegerResult := 0;
+    for HysteronIndex := 0 to Offset - 1
+     do Inc(IntegerResult, FStates[HysteronIndex]);
+    Inc(IntegerResult, FTotalHysteronCount - Offset);
+  end;
+ Result := 2 * FHysteronScale * IntegerResult - 1;
 end;
 
 end.
