@@ -76,6 +76,9 @@ procedure Exchange8(var ValueA, ValueB);
 procedure Exchange16(var ValueA, ValueB);
 procedure Exchange32(var ValueA, ValueB);
 
+function BitCount(Value: Integer): Integer; overload;
+function BitCount(Value: Int64): Int64; overload;
+
 // dB stuff
 function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -498,6 +501,13 @@ begin
  Result := 40.6728602E-9 * (exp(17.7493332 * (Voltage + 0.3)) - 1);
 end;
 
+
+/////////////////////////
+//                     //
+// Exchange two values //
+//                     //
+/////////////////////////
+
 procedure Exchange8(var ValueA, ValueB);
 var
   Temp : Byte;
@@ -523,6 +533,43 @@ begin
  Temp := Integer(ValueA);
  Integer(ValueA) := Integer(ValueB);
  Integer(ValueB) := Temp;
+end;
+
+function BitCount(Value: Integer): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ Value := Value - (Value shr 1) and $55555555;
+ Value := (Value and $33333333) + ((Value shr 2) and $33333333);
+ Value := (Value + (Value shr 4)) and $0F0F0F0F;
+ Result := (Value * $01010101) shr 24;
+{$ELSE}
+asm
+  MOV     EAX, Value
+  MOV     EDX, EAX
+  SHR     EAX, 1
+  AND     EAX, $55555555
+  SUB     EDX, EAX
+  MOV     EAX, EDX
+  SHR     EDX, 2
+  AND     EAX, $33333333
+  AND     EDX, $33333333
+  ADD     EAX, EDX
+  MOV     EDX, EAX
+  SHR     EAX, 4
+  ADD     EAX, EDX
+  AND     EAX, $0F0F0F0F
+  IMUL    EAX, $01010101
+  SHR     EAX, 24
+  MOV     Result, EAX
+{$ENDIF}
+end;
+
+function BitCount(Value: Int64): Int64;
+begin
+ Value := Value - (Value shr 1) and $5555555555555555;
+ Value := (Value and $3333333333333333) + ((Value shr 2) and $3333333333333333);
+ Value := (Value + (Value shr 4)) and $0F0F0F0F0F0F0F0F;
+ Result := (Value * $0101010101010101) shr 56;
 end;
 
 
