@@ -40,16 +40,16 @@ uses
 type
   TCustomDspPreisach = class(TDspPersistent)
   private
-    FHysterons          : array of TCustomDspFloatingPointRelay;
+    FHysterons          : array of TDspIntegerRelay;
     FHysteronResolution : Cardinal;
     FHysteronScale      : Single;
+    FStates             : PByteArray;
     procedure SetHysteronResolution(const Value: Cardinal);
     function GetTotalHysteronCount: Cardinal;
     function GetDistance: Single;
     function GetHysterons(Index: Integer): TCustomDspRelay;
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    class function HysteronClass: TCustomDspFloatingPointRelayClass; virtual; abstract;
     procedure HysteronResolutionChanged; virtual;
 
     property TotalHysteronCount: Cardinal read GetTotalHysteronCount;
@@ -63,8 +63,6 @@ type
   end;
 
   TDspPreisach32 = class(TCustomDspPreisach, IDspProcessor32)
-  protected
-    class function HysteronClass: TCustomDspFloatingPointRelayClass; override;
   public
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
@@ -73,8 +71,6 @@ type
   end;
 
   TDspPreisach64 = class(TCustomDspPreisach, IDspProcessor64)
-  protected
-    class function HysteronClass: TCustomDspFloatingPointRelayClass; override;
   public
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
@@ -89,6 +85,7 @@ implementation
 constructor TCustomDspPreisach.Create;
 begin
  inherited;
+ FStates := nil;
  HysteronResolution := 3;
 end;
 
@@ -96,6 +93,8 @@ destructor TCustomDspPreisach.Destroy;
 var
   HysteronIndex : Integer;
 begin
+ FreeMem(FStates);
+
  for HysteronIndex := 0 to Length(FHysterons) - 1
   do FreeAndNil(FHysterons[HysteronIndex]);
  inherited;
@@ -133,7 +132,6 @@ procedure TCustomDspPreisach.HysteronResolutionChanged;
 var
   NewTotalHysteronCount : Integer;
   HysteronIndex         : Integer;
-  InvHysteronResolution : Single;
   X, Y                  : Integer;
   HalfDistance          : Single;
 begin
@@ -142,19 +140,27 @@ begin
   do FreeAndNil(FHysterons[HysteronIndex]);
 
  SetLength(FHysterons, TotalHysteronCount);
+
+ // allocate states
+ ReallocMem(FStates, TotalHysteronCount);
+
+ // reset states (todo!)
+ for HysteronIndex := 0 to TotalHysteronCount - 1
+  do FStates[HysteronIndex] := 1;
+
+
  FHysteronScale := 1 / Length(FHysterons);
  HalfDistance := Distance;
  X := 0;
  Y := 0;
- InvHysteronResolution := 1 / FHysteronResolution;
  for HysteronIndex := 0 to Length(FHysterons) - 1 do
   begin
    // eventually create hysteron
    if not Assigned(FHysterons[HysteronIndex])
-    then FHysterons[HysteronIndex] := HysteronClass.Create;
+    then FHysterons[HysteronIndex] := TDspIntegerRelay.Create;
 
-   FHysterons[HysteronIndex].Lower := (2 * X * InvHysteronResolution - 1) + HalfDistance;
-   FHysterons[HysteronIndex].Upper := (1 - 2 * Y * InvHysteronResolution) - HalfDistance;
+   FHysterons[HysteronIndex].Lower := (2 * X - FHysteronResolution) + 1;
+   FHysterons[HysteronIndex].Upper := (FHysteronResolution - 2 * Y) - 1;
 
    Inc(X);
    if X >= FHysteronResolution - Y - 1 then
@@ -180,11 +186,6 @@ end;
 
 { TDspPreisach32 }
 
-class function TDspPreisach32.HysteronClass: TCustomDspFloatingPointRelayClass;
-begin
- Result := TDspRelay32;
-end;
-
 procedure TDspPreisach32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
@@ -196,22 +197,137 @@ end;
 
 function TDspPreisach32.ProcessSample32(Input: Single): Single;
 var
+  IntegerInput  : Integer;
+  IntegerResult : Integer;
   HysteronIndex : Integer;
+  X, Y, Offset  : Integer;
 begin
- Result := TDspRelay32(FHysterons[0]).ProcessSample32(Input);
+(*
+ IntegerInput := Round(FHysteronResolution * Input);
+
+ X := ((FHysteronResolution + IntegerInput) div 2);
+ if X < 0 then X := 0;
+ Offset := FHysteronResolution - 1;
+ HysteronIndex := X;
+ for y := 0 to FHysteronResolution - X - 2 do
+  begin
+{
+   Assert((FHysteronResolution - 1) - X - Y > 0);
+   if HysteronIndex + FHysteronResolution - 1 - X - Y >= Length(FHysterons)
+    then
+     begin
+      IntegerInput := HysteronIndex;
+      Break;
+     end;
+}
+   FillChar(FStates^[HysteronIndex], FHysteronResolution - 1 - X - Y, 0);
+   Inc(HysteronIndex, Offset);
+   Dec(Offset);
+  end;
+
+ Y := (FHysteronResolution - IntegerInput) div 2;
+ if Y < 0 then Y := 0;
+{
+  begin
+   FillChar(FStates^[0], Length(FHysterons), 1);
+   IntegerResult := Length(FHysterons);
+  end
+ else
+}
+  begin
+   Offset := Y * FHysteronResolution - (Y * (Y + 1)) div 2;
+   FillChar(FStates^[Offset], Length(FHysterons) - Offset, 1);
+
+   IntegerResult := 0;
+   for HysteronIndex := 0 to Offset - 1
+    do Inc(IntegerResult, FStates[HysteronIndex]);
+   Inc(IntegerResult, Length(FHysterons) - Offset);
+  end;
+
+ Result := 2 * FHysteronScale * IntegerResult - 1;
+*)
+
+
+ IntegerInput := Round(FHysteronResolution * Input);
+
+ X := ((FHysteronResolution + IntegerInput) div 2);
+ if X <= 0 then
+  begin
+   FillChar(FStates^[0], Length(FHysterons), 0);
+   Result := -1;
+   Exit;
+  end
+ else
+  if X < FHysteronResolution - 1 then
+   begin
+    Offset := FHysteronResolution - 1;
+    HysteronIndex := X;
+    for y := 0 to FHysteronResolution - X - 2 do
+     begin
+      FillChar(FStates^[HysteronIndex], FHysteronResolution - 1 - X - Y, 0);
+      Inc(HysteronIndex, Offset);
+      Dec(Offset);
+     end;
+   end;
+
+
+(*
+ X := ((FHysteronResolution + IntegerInput) div 2);
+ if X < 0 then X := 0;
+ Y := 0;
+ Offset := FHysteronResolution - 1;
+ HysteronIndex := X;
+ while (X >= 0) and (X < FHysteronResolution - 1) do
+  begin
+   FStates[HysteronIndex] := 0;
+   Inc(HysteronIndex, Offset);
+   Dec(Offset);
+   Inc(Y);
+   if Y >= FHysteronResolution - X - 1 then
+    begin
+     Y := 0;
+     Inc(X);
+     Offset := FHysteronResolution - 1;
+     HysteronIndex := X;
+    end;
+  end;
+*)
+
+
+ Y := (FHysteronResolution - IntegerInput) div 2;
+ if Y <= 0 then
+  begin
+   FillChar(FStates^[0], Length(FHysterons), 1);
+   Result := 1;
+   Exit;
+  end
+ else
+  begin
+   if Y < FHysteronResolution - 1 then
+    begin
+     Offset := Y * FHysteronResolution - (Y * (Y + 1)) div 2;
+     FillChar(FStates^[Offset], Length(FHysterons) - Offset, 1);
+    end else Offset := Length(FHysterons);
+
+    IntegerResult := 0;
+    for HysteronIndex := 0 to Offset - 1
+     do Inc(IntegerResult, FStates[HysteronIndex]);
+    Inc(IntegerResult, Length(FHysterons) - Offset);
+  end;
+ Result := 2 * FHysteronScale * IntegerResult - 1;
+
+(*
+ IntegerInput := Round(FHysteronResolution * Input);
+ IntegerResult := FHysterons[0].ProcessSample(IntegerInput);
  for HysteronIndex := 1 to Length(FHysterons) - 1 do
-  with TDspRelay32(FHysterons[HysteronIndex])
-   do Result := Result + ProcessSample32(Input);
- Result := FHysteronScale * Result;
+  with FHysterons[HysteronIndex]
+   do Inc(IntegerResult, ProcessSample(IntegerInput));
+ Result := FHysteronScale * IntegerResult;
+*)
 end;
 
 
 { TDspPreisach64 }
-
-class function TDspPreisach64.HysteronClass: TCustomDspFloatingPointRelayClass;
-begin
- Result := TDspRelay64;
-end;
 
 procedure TDspPreisach64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
@@ -224,13 +340,16 @@ end;
 
 function TDspPreisach64.ProcessSample64(Input: Double): Double;
 var
+  IntegerInput  : Integer;
+  IntegerResult : Integer;
   HysteronIndex : Integer;
 begin
- Result := TDspRelay64(FHysterons[0]).ProcessSample64(Input);
+ IntegerInput := Round(FHysteronResolution * Input);
+ IntegerResult := FHysterons[0].ProcessSample(IntegerInput);
  for HysteronIndex := 1 to Length(FHysterons) - 1 do
-  with TDspRelay64(FHysterons[HysteronIndex])
-   do Result := Result + ProcessSample64(Input);
- Result := FHysteronScale * Result;
+  with FHysterons[HysteronIndex]
+   do Inc(IntegerResult, ProcessSample(IntegerInput));
+ Result := FHysteronScale * IntegerResult;
 end;
 
 end.
