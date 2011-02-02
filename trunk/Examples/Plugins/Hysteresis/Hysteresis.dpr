@@ -2,6 +2,7 @@
 library Hysteresis;
 
 uses
+  FastMM4,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

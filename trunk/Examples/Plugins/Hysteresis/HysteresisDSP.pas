@@ -10,11 +10,11 @@ type
   THysteresisModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterInputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputChange(Sender: TObject;
       const Index: Integer; var Value: Single);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FScaleFactor : array [0..1] of Single;
     FHysteresis  : array of TDspPreisach32;
@@ -42,7 +42,7 @@ begin
  for HysteresisIndex := 0 to numInputs - 1 do
   begin
    FHysteresis[HysteresisIndex] := TDspPreisach32.Create;
-   FHysteresis[HysteresisIndex].HysteronResolution := 10;
+   FHysteresis[HysteresisIndex].HysteronResolution := 16;
   end;
 
  // set editor form class

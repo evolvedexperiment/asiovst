@@ -238,6 +238,7 @@ begin
 end;
 
 function TDspIntegerRelay.ProcessSample(Input: Integer): Integer;
+{$IFDEF PUREPASCAL}
 begin
  inherited;
 
@@ -247,6 +248,28 @@ begin
  if FState
   then Result := 1
   else Result := -1;
+{$ELSE}
+asm
+ cmp     edx, [Self + FUpper]
+ jle     @NextComparison
+ mov     byte ptr [Self + FState],$01
+ jmp     @OutputDecision
+
+ @NextComparison:
+ cmp     edx, [Self + FLower]
+ jnl     @OutputDecision
+ mov     byte ptr [Self + FState], $00
+
+@OutputDecision:
+ cmp     byte ptr [Self + FState], $00
+ jz      @Negative
+
+ mov     eax, $00000001
+ ret
+
+@Negative:
+ or      eax, -$01
+{$ENDIF}
 end;
 
 procedure TDspIntegerRelay.SetLower(const Value: Integer);
