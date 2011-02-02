@@ -74,7 +74,7 @@ type
 implementation
 
 uses
-  DAV_MemoryUtils;
+  DAV_Common, DAV_MemoryUtils;
 
 { TCustomDspPreisach }
 
@@ -131,6 +131,39 @@ end;
 
 { TDspPreisach32 }
 
+function CountBytes(Data: PByte; Count: Integer): Integer;
+{$IFDEF PUREPASCAL}
+var
+  Index : Integer;
+begin
+ Result := 0;
+ for Index := 0 to Count - 1 do
+  begin
+   Result := Result + Data^;
+   Inc(Data);
+  end;
+{$ELSE}
+asm
+ MOV     ECX, EDX
+ XOR     EDX, EDX
+ LEA     EAX, EAX + ECX
+ NEG     ECX
+ JNL     @Done
+
+ PUSH    EBX
+@Start:
+ MOVZX   EBX, [EAX + ECX]
+ ADD     EDX, EBX
+ ADD     ECX, 1
+ JS      @Start
+
+ POP     EBX
+
+@Done:
+ MOV     Result, EDX
+{$ENDIF}
+end;
+
 procedure TDspPreisach32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
@@ -185,10 +218,8 @@ begin
     end
    else Offset := FTotalHysteronCount;
 
-    IntegerResult := 0;
-    for HysteronIndex := 0 to Offset - 1
-     do Inc(IntegerResult, FStates[HysteronIndex]);
-    Inc(IntegerResult, FTotalHysteronCount - Offset);
+   IntegerResult := CountBytes(@FStates[0], Offset);
+   Inc(IntegerResult, FTotalHysteronCount - Offset);
   end;
  Result := 2 * FHysteronScale * IntegerResult - 1;
 end;
@@ -247,7 +278,8 @@ begin
     begin
      Offset := Y * FHysteronResolution - (Y * (Y + 1)) div 2;
      FillChar(FStates^[Offset], FTotalHysteronCount - Offset, 1);
-    end else Offset := FTotalHysteronCount;
+    end
+   else Offset := FTotalHysteronCount;
 
     IntegerResult := 0;
     for HysteronIndex := 0 to Offset - 1
