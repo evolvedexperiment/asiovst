@@ -35,11 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LCLType, LResources,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
-  DAV_GuiBlend;
+  Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiBlend;
 
 type
   TGuiCustomMap = class(TInterfacedPersistent, IStreamPersist)

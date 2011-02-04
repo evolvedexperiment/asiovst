@@ -39,7 +39,7 @@ uses
   {$IFDEF DARWIN} MacOSAll, CarbonCanvas, CarbonPrivate, {$ENDIF}
   {$IFDEF GTK} {$IFDEF LCLGtk2}gdk2, gtk2, gdk2pixbuf, glib2, {$ELSE} gdk, gtk,
   gdkpixbuf, glib, gtkdef, {$ENDIF} {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
+  Graphics, Classes, SysUtils, DAV_MemoryUtils, DAV_GuiCommon,
   DAV_GuiCustomMap, DAV_GuiBlend;
 
 type
@@ -1058,4 +1058,4 @@ begin
   end;
 end;
 
-end.
+end.

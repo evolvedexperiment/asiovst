@@ -4,9 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, StdCtrls, Menus, DAV_GuiByteMap, DAV_GuiPixelMap,
-  DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiSlider, DAV_GuiFilters, ComCtrls,
-  ActnList;
+  ExtCtrls, StdCtrls, Menus, ComCtrls, ActnList, DAV_GuiByteMap,
+  DAV_GuiPixelMap, DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiSlider,
+  DAV_GuiFilters;
 
 type
   TFmESTP = class(TForm)
@@ -44,26 +44,26 @@ type
     procedure PaintBoxPaint(Sender: TObject);
     procedure SlLineWidthChange(Sender: TObject);
     procedure PaintBoxClick(Sender: TObject);
-    procedure MiWidthGClick(Sender: TObject);
+    procedure ACAddTinyValueExecute(Sender: TObject);
+    procedure ACSubtractTinyValueExecute(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure MiScenarioExceedBordersClick(Sender: TObject);
+    procedure MiScenarioLargeUpDownClick(Sender: TObject);
+    procedure MiScenarioPeakLine1Click(Sender: TObject);
+    procedure MiScenarioPeakLine2Click(Sender: TObject);
+    procedure MiScenarioPeakLine3Click(Sender: TObject);
+    procedure MiScenarioRandomClick(Sender: TObject);
+    procedure MiScenarioSmallIncreaseClick(Sender: TObject);
+    procedure MiScenarioStandardClick(Sender: TObject);
+    procedure MiUpDownClick(Sender: TObject);
     procedure MiWidthAClick(Sender: TObject);
     procedure MiWidthBClick(Sender: TObject);
-    procedure MiWidthHClick(Sender: TObject);
-    procedure MiWidthFClick(Sender: TObject);
-    procedure MiScenarioStandardClick(Sender: TObject);
-    procedure MiScenarioRandomClick(Sender: TObject);
-    procedure MiScenarioPeakLine1Click(Sender: TObject);
-    procedure MiScenarioSmallIncreaseClick(Sender: TObject);
-    procedure MiScenarioExceedBordersClick(Sender: TObject);
     procedure MiWidthCClick(Sender: TObject);
     procedure MiWidthDClick(Sender: TObject);
     procedure MiWidthEClick(Sender: TObject);
-    procedure MiUpDownClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure ACAddTinyValueExecute(Sender: TObject);
-    procedure ACSubtractTinyValueExecute(Sender: TObject);
-    procedure MiScenarioLargeUpDownClick(Sender: TObject);
-    procedure MiScenarioPeakLine2Click(Sender: TObject);
-    procedure MiScenarioPeakLine3Click(Sender: TObject);
+    procedure MiWidthFClick(Sender: TObject);
+    procedure MiWidthGClick(Sender: TObject);
+    procedure MiWidthHClick(Sender: TObject);
   private
     FPixelMap       : TGuiCustomPixelMap;
     FLineWidth      : Single;
@@ -567,28 +567,19 @@ begin
        end;
 
       // determine y bounds
-(*
       YBounds[0] := Trunc(Mn - RadiusMinusHalf);
       YBounds[1] := Ceil(Mx + RadiusMinusHalf);
       for PtIndex := Max(1, IntegerRadiusX - 2) to IntegerRadiusX do
        begin
-        if PointPtr[ PtIndex] - RadiusMinusHalf > YBounds[0] then YBounds[0] := Trunc(PointPtr[ PtIndex] - RadiusMinusHalf);
-        if PointPtr[ PtIndex] + RadiusMinusHalf < YBounds[1] then YBounds[1] := Ceil(PointPtr[ PtIndex] - RadiusMinusHalf);
+        if PointPtr[PtIndex] - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(PointPtr[PtIndex] - RadiusMinusHalf);
+        if PointPtr[PtIndex] + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(PointPtr[PtIndex] + RadiusMinusHalf);
+        if PointPtr[-PtIndex] - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(PointPtr[-PtIndex] - RadiusMinusHalf);
+        if PointPtr[-PtIndex] + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(PointPtr[-PtIndex] + RadiusMinusHalf);
        end;
 
       if YBounds[0] < 0 then YBounds[0] := 0;
       if YBounds[1] > Height - 1 then YBounds[1] := Height - 1;
-*)
-      YBounds[0] := 0;
-      YBounds[1] := Height - 1;
-
-
-      if x < 4 then
-       begin
-        Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(Double));
-        Continue;
-       end;
-
+      Assert(YBounds[0] < YBounds[1]);
 
       for y := YBounds[0] to YBounds[1] do
        begin
@@ -600,15 +591,11 @@ begin
           Continue;
          end;
 
-
-
         for PtIndex := -IntegerRadiusX to IntegerRadiusX do
          begin
           // initialize defaults
           XPos := PtIndex;
           CurrentValue := PointPtr[PtIndex];
-
-//          if Abs(PtIndex) = IntegerRadiusX - 1 then Continue;
 
           if (Abs(PtIndex) >= IntegerRadiusX - 1) then
            begin
@@ -632,20 +619,19 @@ begin
                 XPos := PtIndex - PtSgn * XPos;
                end
               else
-               begin
-                if Abs(PtIndex) >= IntegerRadiusX
-                 then //Continue
-                 else
-                  begin
-                   if Sign(PointPtr[PtIndex - PtSgn] - PointPtr[PtIndex]) <>
-                      Sign(PointPtr[PtIndex + PtSgn] - PointPtr[PtIndex])
-                    then Continue;
-                  end;
-               end;
+               if Abs(PtIndex) >= IntegerRadiusX
+                then Continue
+                else
+                 if ((PointPtr[PtIndex - PtSgn] < PointPtr[PtIndex]) and
+                     (PointPtr[PtIndex + PtSgn] > PointPtr[PtIndex])) or
+                    ((PointPtr[PtIndex - PtSgn] > PointPtr[PtIndex]) and
+                    (PointPtr[PtIndex + PtSgn] < PointPtr[PtIndex]))
+                  then Continue;
              end;
           end;
 
           SqrDist := Sqr(CurrentValue - y) + Sqr(XPos);
+
           if SqrDist < SqrRadius then
            begin
             Distance := Sqrt(SqrDist);
@@ -656,8 +642,8 @@ begin
                Assert(Value >= 0);
                Assert(Value <= 1);
                Sum := 1 - Value * (1 - Sum);
-               if Sum > 1
-                then Sum := 1;
+               if Sum > 1 then Sum := 1;
+               if Sum = 1 then Break;
               end
              else
               begin
