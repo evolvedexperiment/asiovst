@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, Forms, 
-  DAV_VSTEffect, DAV_Common, DAV_VSTBasicModule;
+  DAV_VSTEffect, DAV_VSTBasicModule;
 
 type
   TCustomVstChannel = class(TCollectionItem)

@@ -35,9 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
-  {$IFDEF MSWINDOWS} Windows, {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon, DAV_GuiFixedPoint;
+  {$IFDEF FPC} LCLIntf, LCLType, {$ELSE} Windows, Messages, {$ENDIF}
+  Graphics, Classes, SysUtils, DAV_GuiFixedPoint;
 
 type
   TGuiCustomGeometricShape = class(TPersistent)

@@ -380,7 +380,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Math, DAV_BlockArithmetrics, DAV_BlockProcessing;
+  SysUtils, DAV_Math, DAV_BlockArithmetrics, DAV_BlockProcessing;
 
 resourcestring
   RCStrIRBlockOrderError = 'Maximum IR block order must be larger or equal ' +

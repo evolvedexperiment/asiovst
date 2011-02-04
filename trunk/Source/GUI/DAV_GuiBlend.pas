@@ -102,7 +102,7 @@ var
 implementation
 
 uses
-  DAV_Common, DAV_MemoryUtils;
+  DAV_MemoryUtils;
 
 {$IFNDEF PUREPASCAL}
 var

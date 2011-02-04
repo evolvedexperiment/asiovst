@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages,
+  {$IFDEF FPC} LCLIntf, LCLType, LResources,
   {$IFDEF MSWINDOWS} Windows, {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
   DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiFixedPoint;
@@ -130,7 +130,7 @@ type
 implementation
 
 uses
-  Math, DAV_Complex, DAV_Approximations;
+  DAV_Complex, DAV_Approximations;
 
 
 { TCustomGuiPixelPrimitive }
