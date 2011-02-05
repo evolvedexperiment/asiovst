@@ -1,6 +1,6 @@
 object FmGraphXY: TFmGraphXY
-  Left = 218
-  Top = 77
+  Left = 391
+  Top = 122
   Caption = 'GraphXY Test'
   ClientHeight = 416
   ClientWidth = 414
@@ -34,6 +34,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clBlue
+        Series.ShadeAlpha = 32
         Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
@@ -64,6 +65,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clYellow
+        Series.ShadeAlpha = 32
         Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
@@ -95,6 +97,7 @@ object FmGraphXY: TFmGraphXY
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clLime
+        Series.ShadeAlpha = 32
         Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000
@@ -125,6 +128,7 @@ object FmGraphXY: TFmGraphXY
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
+        Series.ShadeAlpha = 32
         Series.Width = 2.000000000000000000
       end>
     XAxis.Granularity = 2.000000000000000000

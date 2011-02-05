@@ -84,6 +84,7 @@ type
     procedure LineWidthChanged; virtual;
     procedure UpdateGui; virtual;
     procedure RenderNewPolyline;
+    procedure RenderReferencePolyline;
     procedure RenderPolyline;
     procedure RenderPolyline2Pixel;
     procedure RenderPolylineDraft;
@@ -449,6 +450,7 @@ begin
  if FPaintBoxUpdate then
   begin
    RenderNewPolyline;
+//   RenderReferencePolyline;
    with FmMagnifier do
     if Visible then
      begin
@@ -480,7 +482,7 @@ end;
 {-$DEFINE ShowHalfLine}
 
 
-procedure TFmESTP.RenderNewPolyline;
+procedure TFmESTP.RenderReferencePolyline;
 var
   Distance        : Double;
   IntLineWdth     : Double;
@@ -650,6 +652,327 @@ begin
                Sum := 1;
                Break;
               end;
+           end;
+         end;
+
+        VertLine^[y] := Round($FF * Limit(Sum, 0, 1));
+       end;
+
+
+
+      // copy line to pixel map
+      for y := 0 to Height - 1 do
+       if VertLine^[y] > 0
+        then CombinePixelInplace(PxColor, PixelPointer[x, y]^, VertLine^[y]);
+      EMMS;
+
+
+      {$IFDEF ShowCenter}
+      if (PointPtr[0] >= 0) and (PointPtr[0] < Height) then
+       begin
+        CurrentValue := PointPtr[0];
+        DontRaiseExceptionsAndSetFPUcodeword;
+        Y := Round(CurrentValue);
+        BlendPixelInplace(pxRed32, PixelPointer[x, Y]^);
+       end;
+      EMMS;
+      {$ENDIF}
+
+
+      // shift y-values
+      Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(Double));
+     end;
+   finally
+    FreeAlignedMemory(VertLine);
+   end;
+
+   MakeOpaque;
+  end;
+end;
+
+
+procedure TFmESTP.RenderNewPolyline;
+var
+  Distance        : Double;
+  IntLineWdth     : Double;
+  Radius          : Double;
+  RadiusMinusHalf : Double;
+  SqrRadius       : Double;
+  SqrDist         : Double;
+
+  Sum, Mn, Mx     : Double;
+  Value           : Double;
+  XPos            : Double;
+  YDest, YSrc     : Double;
+
+  CurrentValue    : Double;
+
+  IntegerRadiusX  : Integer;
+  IntegerRadiusY  : Integer;
+  YBounds         : array [0..1] of Integer;
+  NewSolid        : Integer;
+  x, y            : Integer;
+  PtIndex, PtSgn  : Integer;
+  PtOuter         : Integer;
+
+  YValues         : array of Double;
+  VertLine        : PByteArray;
+  PointPtr        : PDAVDoubleFixedArray;
+  PxColor         : TPixel32;
+  LeftRightIdx    : Integer;
+
+begin
+ FPaintBoxUpdate := False;
+ with FPixelMap do
+  begin
+   FillRect(ClientRect, pxBlack32);
+
+   PxColor := pxWhite32;
+   IntLineWdth := Max(FLineWidth - 1, 0);
+   RadiusMinusHalf := 0.5 * IntLineWdth;
+   Radius := RadiusMinusHalf + 1;
+   SqrRadius := Sqr(Radius);
+
+   GetAlignedMemory(VertLine, Height);
+   try
+    // initialize temporaty variables
+    IntegerRadiusX := 1 + Ceil(RadiusMinusHalf);
+    IntegerRadiusY := 2 + Trunc(RadiusMinusHalf);
+    SetLength(YValues, 1 + 2 * IntegerRadiusX);
+    Assert(Length(YValues) mod 2 = 1);
+    PointPtr := @YValues[IntegerRadiusX];
+
+    // fill additional points
+    for PtIndex := 0 to IntegerRadiusX - 1
+     do YValues[PtIndex] := 0.5 * Height;
+
+    for PtIndex := IntegerRadiusX to Length(YValues) - 1
+     do YValues[PtIndex] := FPointArray[PtIndex - IntegerRadiusX];
+
+
+    for x := 0 to Width - 1 do
+     begin
+      // get next value
+      if IntegerRadiusX + X < Length(FPointArray)
+       then YValues[Length(YValues) - 1] := FPointArray[x + IntegerRadiusX]
+       else YValues[Length(YValues) - 1] := 0;
+
+      // clear vertical line array
+      FillChar(VertLine^, Height, 0);
+
+      // determine minimum and maximum
+      Mn := PointPtr[0]; // - IntLineWdth;
+      Mx := PointPtr[0]; // + IntLineWdth;
+      for PtIndex := 1 to IntegerRadiusX - 2 do
+       begin
+        if PointPtr[ PtIndex] > Mx then Mx := PointPtr[ PtIndex];
+        if PointPtr[ PtIndex] < Mn then Mn := PointPtr[ PtIndex];
+        if PointPtr[-PtIndex] > Mx then Mx := PointPtr[-PtIndex];
+        if PointPtr[-PtIndex] < Mn then Mn := PointPtr[-PtIndex];
+       end;
+
+      // determine y bounds
+      YBounds[0] := Trunc(Mn - RadiusMinusHalf);
+      YBounds[1] := Ceil(Mx + RadiusMinusHalf);
+      for PtIndex := Max(1, IntegerRadiusX - 2) to IntegerRadiusX do
+       begin
+        CurrentValue := PointPtr[PtIndex];
+        if CurrentValue - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(CurrentValue - RadiusMinusHalf);
+        if CurrentValue + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(CurrentValue + RadiusMinusHalf);
+        CurrentValue := PointPtr[-PtIndex];
+        if CurrentValue - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(CurrentValue - RadiusMinusHalf);
+        if CurrentValue + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(CurrentValue + RadiusMinusHalf);
+       end;
+
+      if YBounds[0] < 0 then YBounds[0] := 0;
+      if YBounds[1] > Height - 1 then YBounds[1] := Height - 1;
+      Assert(YBounds[0] <= YBounds[1]);
+
+      for y := YBounds[0] to YBounds[1] do
+       begin
+        // check for solid area
+        if (y > Mn) and (y < Mx) then
+         begin
+          VertLine^[y] := $FF;
+          Continue;
+         end;
+
+        // draw center
+        Sum := 0;
+        Value := Abs(PointPtr[0] - y);
+        if Value < Radius then
+         begin
+          Value := Value - RadiusMinusHalf;
+          if Value > 0 then
+           begin
+            Sum := 1 - Value;
+            if Sum >= 1 then
+             begin
+              VertLine^[y] := $FF;
+              Continue;
+             end;
+           end
+          else
+           begin
+            VertLine^[y] := $FF;
+            Continue;
+           end;
+         end;
+
+
+        for PtIndex := 1 to IntegerRadiusX - 2 do
+         begin
+          // draw left
+          CurrentValue := PointPtr[-PtIndex];
+          SqrDist := Sqr(CurrentValue - y) + Sqr(PtIndex);
+          if SqrDist < SqrRadius then
+           begin
+            Distance := Sqrt(SqrDist);
+            if Distance > RadiusMinusHalf
+             then
+              begin
+               Value := (Distance - RadiusMinusHalf);
+               Sum := 1 - Value * (1 - Sum);
+               if Sum > 1 then Sum := 1;
+               if Sum = 1 then Break;
+              end
+             else
+              begin
+               Sum := 1;
+               Break;
+              end;
+           end;
+
+          // draw right
+          CurrentValue := PointPtr[PtIndex];
+          SqrDist := Sqr(CurrentValue - y) + Sqr(PtIndex);
+          if SqrDist < SqrRadius then
+           begin
+            Distance := Sqrt(SqrDist);
+            if Distance > RadiusMinusHalf
+             then
+              begin
+               Value := (Distance - RadiusMinusHalf);
+               Sum := 1 - Value * (1 - Sum);
+               if Sum > 1 then Sum := 1;
+               if Sum = 1 then Break;
+              end
+             else
+              begin
+               Sum := 1;
+               Break;
+              end;
+           end;
+         end;
+
+        // check if sum already equals 1
+        if Sum = 1 then
+         begin
+          VertLine^[y] := $FF;
+          Continue;
+         end;
+
+
+        PtIndex := IntegerRadiusX - 1;
+        if PtIndex > 0 then
+         for LeftRightIdx := 0 to 1 do
+          begin
+           // initialize defaults
+           PtSgn := (2 * LeftRightIdx - 1);
+           XPos := PtSgn * PtIndex;
+           CurrentValue := PointPtr[PtSgn * PtIndex];
+
+           YSrc := PointPtr[PtSgn * (PtIndex - 1)];
+           YDest := PointPtr[PtSgn * PtIndex];
+
+           if YDest <> YSrc then
+            begin
+             if ((YDest >= Y) and (YSrc <= Y)) or
+                ((YDest <= Y) and (YSrc >= Y)) then
+              begin
+               XPos := PtSgn * (PtIndex - (Y - YDest) / (YSrc - YDest));
+
+               if XPos < Radius then
+                if Abs(XPos) > RadiusMinusHalf then
+                 begin
+                  Value := Abs(XPos) - RadiusMinusHalf;
+                  Sum := 1 - Value * (1 - Sum);
+                  if Sum > 1 then Sum := 1;
+                  if Sum = 1 then Break;
+                 end
+                else
+                 begin
+                  Sum := 1;
+                  Break;
+                 end;
+               Continue;
+              end
+             else
+              if ((YSrc < YDest) and (PointPtr[PtSgn * (PtIndex + 1)] > YDest)) or
+                 ((YSrc > YDest) and (PointPtr[PtSgn * (PtIndex + 1)] < YDest))
+               then Continue;
+            end;
+
+            SqrDist := Sqr(CurrentValue - y) + Sqr(XPos);
+
+            if SqrDist < SqrRadius then
+             begin
+              Distance := Sqrt(SqrDist);
+              Assert(Distance > RadiusMinusHalf);
+              Value := (Distance - RadiusMinusHalf);
+              Sum := 1 - Value * (1 - Sum);
+              if Sum > 1 then Sum := 1;
+              if Sum = 1 then Break;
+             end;
+          end;
+
+
+        // check if sum already equals 1
+        if Sum = 1 then
+         begin
+          VertLine^[y] := $FF;
+          Continue;
+         end;
+
+        YSrc := PointPtr[IntegerRadiusX - 1];
+        YDest := PointPtr[IntegerRadiusX];
+
+        if (((YDest >= Y) and (YSrc <= Y)) or
+            ((YDest <= Y) and (YSrc >= Y))) and (YSrc <> YDest) then
+         begin
+          XPos := IntegerRadiusX - (Y - YDest) / (YSrc - YDest);
+
+          if XPos <= Radius then
+           begin
+            Assert(XPos >= RadiusMinusHalf);
+            Value := XPos - RadiusMinusHalf;
+            Sum := 1 - Value * (1 - Sum);
+            if Sum >= 1 then
+             begin
+              VertLine^[y] := $FF;
+              Break;
+             end;
+           end;
+         end;
+
+        YSrc := PointPtr[1 - IntegerRadiusX];
+        YDest := PointPtr[-IntegerRadiusX];
+
+        if (((YDest >= Y) and (YSrc <= Y)) or
+            ((YDest <= Y) and (YSrc >= Y))) and (YSrc <> YDest) then
+         begin
+          XPos := IntegerRadiusX - (Y - YDest) / (YSrc - YDest);
+
+          if XPos <= Radius then
+           begin
+            Assert(XPos >= RadiusMinusHalf);
+            Value := XPos - RadiusMinusHalf;
+            Sum := 1 - Value * (1 - Sum);
+            if Sum >= 1 then
+             begin
+              VertLine^[y] := $FF;
+              Break;
+             end;
            end;
          end;
 
