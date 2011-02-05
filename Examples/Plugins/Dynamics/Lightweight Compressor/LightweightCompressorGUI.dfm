@@ -299,8 +299,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     BorderColor = 14277598
     BorderRadius = 5.000000000000000000
     BorderWidth = 2.000000000000000000
-    FrameColor = 14277598
-    GridColor = 6712439
+    FrameColor = 11383224
+    GridColor = 4606545
     Flags = []
     SeriesCollection = <
       item
@@ -308,7 +308,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Alpha = 200
         Series.Color = clWhite
-        Series.Width = 2.000000000000000000
+        Series.ShadeAlpha = 40
+        Series.Width = 3.000000000000000000
       end>
     XAxis.Flags = []
     XAxis.Granularity = 50.000000000000000000

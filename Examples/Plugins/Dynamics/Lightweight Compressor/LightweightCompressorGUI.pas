@@ -36,10 +36,9 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl,
+  Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiCustomControl,
   DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl,
-  DAV_GuiGraphicControl;
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiGraphicControl;
 
 type
   TFmLightweightCompressor = class(TForm)

@@ -4,8 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiBaseControl, DAV_GuiGraphXY, DAV_GuiPixelMap,
-  DAV_GuiCustomControl;
+  Dialogs, DAV_GuiCustomControl, DAV_GuiGraphXY, DAV_GuiPixelMap;
 
 type
   TFmGraphXY = class(TForm)
