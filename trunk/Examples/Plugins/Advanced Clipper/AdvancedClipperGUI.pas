@@ -75,6 +75,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure DialFilterOrder1Change(Sender: TObject);
     procedure DialFilterOrder2Change(Sender: TObject);
     procedure DialInputGainChange(Sender: TObject);
@@ -85,7 +86,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ClipLEDClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
-    procedure FormResize(Sender: TObject);
   private
     FBackgroundBitmap : TGuiCustomPixelMap;
   public

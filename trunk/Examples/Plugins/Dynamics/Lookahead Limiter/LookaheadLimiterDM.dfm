@@ -1,5 +1,4 @@
 object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -182,12 +181,11 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessStereo
   OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 461
-  Top = 183
+  Left = 605
+  Top = 240
   Height = 150
   Width = 215
 end

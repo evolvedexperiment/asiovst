@@ -309,7 +309,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
         Series.Alpha = 200
         Series.Color = clWhite
         Series.ShadeAlpha = 40
-        Series.Width = 3.000000000000000000
+        Series.Width = 2.500000000000000000
       end>
     XAxis.Flags = []
     XAxis.Granularity = 50.000000000000000000

@@ -45,7 +45,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDualMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessPeakMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -137,8 +136,12 @@ begin
  Parameter[4] :=  1.00;
  Parameter[5] := 64.00;
 
+ // copy parameter presets
  for Channel := 1 to numPrograms - 1
   do Programs[Channel].SetParameters(CPresets[Channel]);
+
+ // set editor form class
+ EditorFormClass := TFmLookaheadLimiter;
 end;
 
 procedure TLookaheadLimiterDataModule.VSTModuleClose(Sender: TObject);
@@ -152,11 +155,6 @@ begin
  // free limiter line
  for Channel := 0 to Length(FLimiter) - 1
   do FreeAndNil(FLimiter[Channel]);
-end;
-
-procedure TLookaheadLimiterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmLookaheadLimiter.Create(Self);
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterMixChange(
@@ -231,6 +229,7 @@ begin
   1 : OnProcess := VSTModuleProcessPeakMono;
   2 : OnProcess := VSTModuleProcessDualMono;
  end;
+
  OnProcess32Replacing := OnProcess;
 end;
 
@@ -341,20 +340,29 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterAttackShapeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLimiter[0])
-  then FLimiter[0].AttackShape := TAttackShape(Round(Limit(Value, 0, 1)));
- if Assigned(FLimiter[1])
-  then FLimiter[1].AttackShape := TAttackShape(Round(Limit(Value, 0, 1)));
+ FCriticalSection.Enter;
+ try
+  if Assigned(FLimiter[0])
+   then FLimiter[0].AttackShape := TAttackShape(Round(Limit(Value, 0, 1)));
+  if Assigned(FLimiter[1])
+   then FLimiter[1].AttackShape := TAttackShape(Round(Limit(Value, 0, 1)));
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterInputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLimiter[0])
-  then FLimiter[0].Input_dB := Value;
- if Assigned(FLimiter[1])
-  then FLimiter[1].Input_dB := Value;
+ FCriticalSection.Enter;
+ try
+  if Assigned(FLimiter[0]) then FLimiter[0].Input_dB := Value;
+  if Assigned(FLimiter[1]) then FLimiter[1].Input_dB := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 
+ // update GUI
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateInput;
 end;
@@ -362,11 +370,15 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLimiter[0])
-  then FLimiter[0].Output_dB := Value;
- if Assigned(FLimiter[1])
-  then FLimiter[1].Output_dB := Value;
+ FCriticalSection.Enter;
+ try
+  if Assigned(FLimiter[0]) then FLimiter[0].Output_dB := Value;
+  if Assigned(FLimiter[1]) then FLimiter[1].Output_dB := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 
+ // update GUI
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateOutput;
 end;
@@ -374,11 +386,15 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FLimiter[0])
-  then FLimiter[0].Release := Value;
- if Assigned(FLimiter[1])
-  then FLimiter[1].Release := Value;
+ FCriticalSection.Enter;
+ try
+  if Assigned(FLimiter[0]) then FLimiter[0].Release := Value;
+  if Assigned(FLimiter[1]) then FLimiter[1].Release := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 
+ // update GUI
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateRelease;
 end;
@@ -386,13 +402,16 @@ end;
 procedure TLookaheadLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if abs(SampleRate) > 0 then
-  begin
-   if Assigned(FLimiter[0])
-    then FLimiter[0].SampleRate := abs(SampleRate);
-   if Assigned(FLimiter[1])
-    then FLimiter[1].SampleRate := abs(SampleRate);
-  end;
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   begin
+    if Assigned(FLimiter[0]) then FLimiter[0].SampleRate := Abs(SampleRate);
+    if Assigned(FLimiter[1]) then FLimiter[1].SampleRate := Abs(SampleRate);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TLookaheadLimiterDataModule.VSTModuleProcessStereo(const Inputs,
@@ -401,15 +420,20 @@ var
   Sample : Integer;
   Temp   : Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   FLimiter[0].InputSample(Inputs[0, Sample]);
-   FLimiter[1].InputSample(Inputs[1, Sample]);
-   Temp := Min(FLimiter[0].GainReductionFactor, FLimiter[1].GainReductionFactor);
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    FLimiter[0].InputSample(Inputs[0, Sample]);
+    FLimiter[1].InputSample(Inputs[1, Sample]);
+    Temp := Min(FLimiter[0].GainReductionFactor, FLimiter[1].GainReductionFactor);
 
-   Outputs[0, Sample] := Temp * FDelayLine[0].ProcessSample32(Inputs[0, Sample]);
-   Outputs[1, Sample] := Temp * FDelayLine[1].ProcessSample32(Inputs[1, Sample]);
-  end;
+    Outputs[0, Sample] := Temp * FDelayLine[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := Temp * FDelayLine[1].ProcessSample32(Inputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TLookaheadLimiterDataModule.VSTModuleProcessDualMono(const Inputs,
@@ -417,11 +441,16 @@ procedure TLookaheadLimiterDataModule.VSTModuleProcessDualMono(const Inputs,
 var
   Sample : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := FLimiter[0].ProcessSample32(Inputs[0, Sample]);
-   Outputs[1, Sample] := FLimiter[1].ProcessSample32(Inputs[1, Sample]);
-  end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FLimiter[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := FLimiter[1].ProcessSample32(Inputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TLookaheadLimiterDataModule.VSTModuleProcessPeakMono(const Inputs,
@@ -430,17 +459,22 @@ var
   Sample : Integer;
   Temp   : Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Temp := abs(Inputs[0, Sample]);
-   if abs(Inputs[1, Sample]) > Temp
-    then Temp := abs(Inputs[1, Sample]);
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Temp := abs(Inputs[0, Sample]);
+    if Abs(Inputs[1, Sample]) > Temp
+     then Temp := Abs(Inputs[1, Sample]);
 
-   FLimiter[0].InputSample(Temp);
-   Temp := FLimiter[0].GainReductionFactor;
-   Outputs[0, Sample] := Temp * FDelayLine[0].ProcessSample32(Inputs[0, Sample]);
-   Outputs[1, Sample] := Temp * FDelayLine[1].ProcessSample32(Inputs[1, Sample]);
-  end;
+    FLimiter[0].InputSample(Temp);
+    Temp := FLimiter[0].GainReductionFactor;
+    Outputs[0, Sample] := Temp * FDelayLine[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := Temp * FDelayLine[1].ProcessSample32(Inputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.
