@@ -10,34 +10,34 @@ uses
 
 type
   TFmESTP = class(TForm)
-    PaintBox: TPaintBox;
-    SlLineWidth: TGuiSlider;
-    PuLinePreset: TPopupMenu;
-    MiWidthG: TMenuItem;
-    MiWidthA: TMenuItem;
-    MiWidthB: TMenuItem;
-    MiWidthH: TMenuItem;
-    MiWidthF: TMenuItem;
-    N1: TMenuItem;
+    ACAddTinyValue: TAction;
+    ACSubtractTinyValue: TAction;
+    ActionList1: TActionList;
     MiAddTinyValue: TMenuItem;
-    MiSubtractTinyValue: TMenuItem;
-    PuScenario: TPopupMenu;
-    MiScenarioStandard: TMenuItem;
+    MiScenarioExceedBorders: TMenuItem;
+    MiScenarioLargeUpDown: TMenuItem;
     MiScenarioPeakLine1: TMenuItem;
+    MiScenarioPeakLine2: TMenuItem;
+    MiScenarioPeakLine3: TMenuItem;
     MiScenarioRandom: TMenuItem;
     MiScenarioSmallIncrease: TMenuItem;
-    MiScenarioExceedBorders: TMenuItem;
+    MiScenarioStandard: TMenuItem;
+    MiSubtractTinyValue: TMenuItem;
+    MiUpDown: TMenuItem;
+    MiWidthA: TMenuItem;
+    MiWidthB: TMenuItem;
     MiWidthC: TMenuItem;
     MiWidthD: TMenuItem;
     MiWidthE: TMenuItem;
-    MiUpDown: TMenuItem;
+    MiWidthF: TMenuItem;
+    MiWidthG: TMenuItem;
+    MiWidthH: TMenuItem;
+    N1: TMenuItem;
+    PaintBox: TPaintBox;
+    PuLinePreset: TPopupMenu;
+    PuScenario: TPopupMenu;
+    SlLineWidth: TGuiSlider;
     StatusBar: TStatusBar;
-    ActionList1: TActionList;
-    ACAddTinyValue: TAction;
-    ACSubtractTinyValue: TAction;
-    MiScenarioLargeUpDown: TMenuItem;
-    MiScenarioPeakLine2: TMenuItem;
-    MiScenarioPeakLine3: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -451,6 +451,8 @@ begin
   begin
    RenderNewPolyline;
 //   RenderReferencePolyline;
+//   RenderPolyline;
+
    with FmMagnifier do
     if Visible then
      begin
@@ -470,13 +472,13 @@ end;
 
 
 {$DEFINE DrawSolid}
-{-$DEFINE DrawAntialiasedBorder}
+{$DEFINE DrawAntialiasedBorder}
 {$DEFINE DrawAntialiasedLines}
 
 {$DEFINE DrawInnerHalfLines}
 {$DEFINE DrawOuterHalfLines}
 
-{-$DEFINE DrawHalo}
+{$DEFINE DrawHalo}
 
 {-$DEFINE ShowCenter}
 {-$DEFINE ShowHalfLine}
@@ -510,15 +512,6 @@ var
   PointPtr        : PDAVDoubleFixedArray;
   PxColor         : TPixel32;
   LeftRightIdx    : Integer;
-
-  function CalculateCircleYOffset(Value: Single; XOffset: Integer): Single;
-  begin
-   Result := Sqr(Value) - Sqr(XOffset);
-   if Result > 0
-    then Result := Sqrt(Result)
-    else Result := 0;
-  end;
-
 begin
  FPaintBoxUpdate := False;
  with FPixelMap do
@@ -573,15 +566,17 @@ begin
       YBounds[1] := Ceil(Mx + RadiusMinusHalf);
       for PtIndex := Max(1, IntegerRadiusX - 2) to IntegerRadiusX do
        begin
-        if PointPtr[PtIndex] - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(PointPtr[PtIndex] - RadiusMinusHalf);
-        if PointPtr[PtIndex] + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(PointPtr[PtIndex] + RadiusMinusHalf);
-        if PointPtr[-PtIndex] - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(PointPtr[-PtIndex] - RadiusMinusHalf);
-        if PointPtr[-PtIndex] + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(PointPtr[-PtIndex] + RadiusMinusHalf);
+        CurrentValue := PointPtr[PtIndex];
+        if CurrentValue - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(CurrentValue - RadiusMinusHalf);
+        if CurrentValue + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(CurrentValue + RadiusMinusHalf);
+        CurrentValue := PointPtr[-PtIndex];
+        if CurrentValue - RadiusMinusHalf < YBounds[0] then YBounds[0] := Trunc(CurrentValue - RadiusMinusHalf);
+        if CurrentValue + RadiusMinusHalf > YBounds[1] then YBounds[1] := Ceil(CurrentValue + RadiusMinusHalf);
        end;
 
       if YBounds[0] < 0 then YBounds[0] := 0;
       if YBounds[1] > Height - 1 then YBounds[1] := Height - 1;
-      Assert(YBounds[0] < YBounds[1]);
+      Assert(YBounds[0] <= YBounds[1]);
 
       for y := YBounds[0] to YBounds[1] do
        begin
@@ -622,7 +617,7 @@ begin
                end
               else
                if Abs(PtIndex) >= IntegerRadiusX
-                then Continue
+                then //Continue
                 else
                  if ((PointPtr[PtIndex - PtSgn] < PointPtr[PtIndex]) and
                      (PointPtr[PtIndex + PtSgn] > PointPtr[PtIndex])) or
@@ -819,7 +814,6 @@ begin
            end;
          end;
 
-
         for PtIndex := 1 to IntegerRadiusX - 2 do
          begin
           // draw left
@@ -873,6 +867,9 @@ begin
          end;
 
 
+        {$IFDEF DrawAntialiasedLines}
+
+        {$IFDEF DrawInnerHalfLines}
         PtIndex := IntegerRadiusX - 1;
         if PtIndex > 0 then
          for LeftRightIdx := 0 to 1 do
@@ -908,8 +905,8 @@ begin
                Continue;
               end
              else
-              if ((YSrc < YDest) and (PointPtr[PtSgn * (PtIndex + 1)] > YDest)) or
-                 ((YSrc > YDest) and (PointPtr[PtSgn * (PtIndex + 1)] < YDest))
+              if ((YSrc < YDest - 1) and (PointPtr[PtSgn * (PtIndex + 1)] > YDest + 1)) or
+                 ((YSrc > YDest + 1) and (PointPtr[PtSgn * (PtIndex + 1)] < YDest - 1))
                then Continue;
             end;
 
@@ -933,7 +930,9 @@ begin
           VertLine^[y] := $FF;
           Continue;
          end;
+        {$ENDIF}
 
+        {$IFDEF DrawOuterHalfLines}
         YSrc := PointPtr[IntegerRadiusX - 1];
         YDest := PointPtr[IntegerRadiusX];
 
@@ -975,10 +974,11 @@ begin
              end;
            end;
          end;
+        {$ENDIF}
+        {$ENDIF}
 
         VertLine^[y] := Round($FF * Limit(Sum, 0, 1));
        end;
-
 
 
       // copy line to pixel map
@@ -1372,9 +1372,7 @@ begin
            if ((y >= SolidRange[0]) and (y <= SolidRange[1]))
             then Continue;
 
-           if ((y >= UsedRange[0]) and (y <= UsedRange[1]))
-            then Continue;
-
+//           if ((y >= UsedRange[0]) and (y <= UsedRange[1])) then Continue;
 
            if (y >= 0) and (y < Height) and (VertLine[Y] < $FF) then
             if (RadiusMinusHalf + 0.5 - Distance < 1) // and (VertLine^[Y] = 0)

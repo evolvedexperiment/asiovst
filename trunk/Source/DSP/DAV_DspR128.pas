@@ -48,6 +48,8 @@ type
     Next     : PLinkedLoudnessRecord;
   end;
 
+  TLoudnessTime = (ltMomentary, ltShort, ltIntegrated);
+
   TCustomR128 = class(TDspSampleRatePersistent)
   private
     FShortIntSum       : Double;
@@ -57,31 +59,51 @@ type
     FMomIntScale       : Double;
     FPeakHold          : Double;
 
-    FUnitOffset        : Single;
     FSampleCount       : Integer;
     FOverlapSamples    : Integer;
     F400msSampleCount  : Integer;
     F2600msSampleCount : Integer;
     FTotalSamples      : Integer;
+    FUpdateSampleCount : Integer;
+    FUpdateSamples     : Integer;
     FIsRunning         : Boolean;
+    FTime              : TLoudnessTime;
+    FLoudness          : Single;
+    FPeakHoldLoudness  : Single;
+    FOnPeakChanged     : TNotifyEvent;
+    FOnLoudnessChanged : TNotifyEvent;
+    procedure SetTime(const Value: TLoudnessTime);
+    procedure CalculateUpdateSampleCount;
   protected
     function GetPeakHold: Single;
     function GetLoudnessShort: Single;
     function GetLoudnessMomentary: Single;
     function GetLoudnessIntegration: Single; virtual; abstract;
     procedure ClearLinkedLoudness; virtual; abstract;
+    procedure UpdateLoudness; virtual;
+    procedure UpdatePeak; virtual;
+    procedure TimeChanged; virtual;
+    procedure SampleRateChanged; override;
   public
     constructor Create; override;
     destructor Destroy; override;
 
     procedure ResetPeak; virtual;
+    procedure StartIntegration; virtual;
+    procedure StopIntegration; virtual;
+    procedure ResetIntegration; virtual;
 
-    property LoudnessShort: Double read GetLoudnessShort;
-    property LoudnessMomentary: Double read GetLoudnessMomentary;
+    property LoudnessShort: Single read GetLoudnessShort;
+    property LoudnessMomentary: Single read GetLoudnessMomentary;
     property LoudnessIntegration: Single read GetLoudnessIntegration;
-    property PeakHold: Double read GetPeakHold;
+    property Loudness: Single read FLoudness;
+    property PeakHold: Single read FPeakHoldLoudness;
     property TotalSamples: Integer read FTotalSamples;
-    property IntegrationIsRunning: Boolean read FIsRunning write FIsRunning;
+    property IntegrationIsRunning: Boolean read FIsRunning;
+    property Time: TLoudnessTime read FTime write SetTime;
+
+    property OnLoudnessChanged: TNotifyEvent read FOnLoudnessChanged write FOnLoudnessChanged;
+    property OnPeakLoudnessChanged: TNotifyEvent read FOnPeakChanged write FOnPeakChanged;
   end;
 
   TMonoR128 = class(TCustomR128)
@@ -159,7 +181,6 @@ begin
  FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
  FOverlapSamples := F400msSampleCount div 4;
 
- FUnitOffset := 23;
  FMomIntSum := 0;
  FShortIntSum := 0;
  FAbsoluteGatedSum := 0;
@@ -175,6 +196,70 @@ end;
 procedure TCustomR128.ResetPeak;
 begin
  FPeakHold := 0;
+end;
+
+procedure TCustomR128.SampleRateChanged;
+begin
+ CalculateUpdateSampleCount;
+ inherited;
+end;
+
+procedure TCustomR128.SetTime(const Value: TLoudnessTime);
+begin
+ if FTime <> Value then
+  begin
+   FTime := Value;
+   TimeChanged;
+  end;
+end;
+
+procedure TCustomR128.StartIntegration;
+begin
+ FIsRunning := True;
+end;
+
+procedure TCustomR128.StopIntegration;
+begin
+ FIsRunning := False;
+end;
+
+procedure TCustomR128.TimeChanged;
+begin
+ CalculateUpdateSampleCount;
+ FUpdateSamples := 0;
+end;
+
+procedure TCustomR128.CalculateUpdateSampleCount;
+begin
+ case FTime of
+  ltMomentary  : FUpdateSampleCount := Round(0.1 * SampleRate);
+  ltShort      : FUpdateSampleCount := Round(SampleRate);
+  ltIntegrated : FUpdateSampleCount := Round(SampleRate);
+ end;
+end;
+
+procedure TCustomR128.UpdateLoudness;
+begin
+ case FTime of
+  ltMomentary  : FLoudness := GetLoudnessMomentary;
+  ltShort      : FLoudness := GetLoudnessShort;
+  ltIntegrated : FLoudness := GetLoudnessIntegration;
+ end;
+
+ if Assigned(FOnLoudnessChanged)
+  then FOnLoudnessChanged(Self);
+end;
+
+procedure TCustomR128.UpdatePeak;
+begin
+ FPeakHoldLoudness := -0.691 + 10 * FastLog10ContinousError3(FPeakHold);
+
+ if Assigned(FOnPeakChanged)
+  then FOnPeakChanged(Self);
+end;
+
+procedure TCustomR128.ResetIntegration;
+begin
  FSampleCount := 0;
  FTotalSamples := 0;
 
@@ -183,17 +268,17 @@ end;
 
 function TCustomR128.GetLoudnessMomentary: Single;
 begin
- Result := FUnitOffset - 0.691 + 10 * FastLog10ContinousError3(FMomIntSum);
+ Result := -0.691 + 10 * FastLog10ContinousError3(FMomIntSum);
 end;
 
 function TCustomR128.GetLoudnessShort: Single;
 begin
- Result := FUnitOffset - 0.691 + 10 * FastLog10ContinousError3(FShortIntSum);
+ Result := -0.691 + 10 * FastLog10ContinousError3(FShortIntSum);
 end;
 
 function TCustomR128.GetPeakHold: Single;
 begin
- Result := FUnitOffset - 0.691 + 10 * FastLog10ContinousError3(FPeakHold);
+ Result := -0.691 + 10 * FastLog10ContinousError3(FPeakHold);
 end;
 
 
@@ -227,15 +312,15 @@ begin
     then SampleRate := Self.SampleRate;
    Frequency := 1500;
    Gain := 4;
-   Bandwidth := 1.8;
+   Bandwidth := 1.895;
   end;
  FRLBFilter := TBasicLowcutFilter.Create;
  with FRLBFilter do
   begin
    if Abs(Self.SampleRate) > 0
     then SampleRate := Self.SampleRate;
-   Frequency := 50;
-   Bandwidth := 1.8;
+   Frequency := 38;
+   Bandwidth := 2.54;
   end;
 
  FDelayLine400ms := TDelayLineSamples32.Create(F400msSampleCount);
@@ -285,7 +370,7 @@ begin
   then Value := CMeanSquareBias
   else Value := Value / ItemCount;
 
- Result := FUnitOffset - 0.691 + 10 * FastLog10ContinousError3(Value);
+ Result := -0.691 + 10 * FastLog10ContinousError3(Value);
 end;
 
 procedure TMonoR128.ProcessLongTermSample(Value: Single);
@@ -332,6 +417,35 @@ begin
  until False;
 end;
 
+procedure TMonoR128.ResetPeak;
+begin
+ inherited;
+
+ FAbsoluteGatedValue := 0;
+ FAbsoluteGatedCount := 0;
+end;
+
+procedure TMonoR128.SampleRateChanged;
+begin
+ inherited;
+
+ if Abs(Self.SampleRate) > 0 then
+  begin
+   F400msSampleCount := Round(0.4 * Abs(SampleRate));
+   F2600msSampleCount := Round(2.6 * Abs(SampleRate));
+
+   FMomIntScale := 1 / F400msSampleCount;
+   FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
+
+   FPreFilter.SampleRate := Abs(SampleRate);
+   FRLBFilter.SampleRate := Abs(SampleRate);
+   FDelayLine400ms.BufferSize := F400msSampleCount;
+   FDelayLine2600ms.BufferSize := F2600msSampleCount;
+
+   FOverlapSamples := F400msSampleCount div 4;
+  end;
+end;
+
 procedure TMonoR128.ProcessSample(Value: Single);
 var
   Value400ms   : Single;
@@ -365,45 +479,20 @@ begin
  if FIsRunning then Inc(FTotalSamples);
 
  // override peak hold if necessary
- if FMomIntSum > FPeakHold
-  then FPeakHold := FMomIntSum;
-end;
-
-procedure TMonoR128.ResetPeak;
-begin
- inherited;
-
- FAbsoluteGatedValue := 0;
- FAbsoluteGatedCount := 0;
-end;
-
-procedure TMonoR128.SampleRateChanged;
-begin
- inherited;
-
- if Abs(Self.SampleRate) > 0 then
+ if FMomIntSum > FPeakHold then
   begin
-   F400msSampleCount := Round(0.4 * Abs(SampleRate));
-   F2600msSampleCount := Round(2.6 * Abs(SampleRate));
+   FPeakHold := FMomIntSum;
+   UpdatePeak;
+  end;
 
-   FMomIntScale := 1 / F400msSampleCount;
-   FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
-
-   FPreFilter.SampleRate := Abs(SampleRate);
-   FRLBFilter.SampleRate := Abs(SampleRate);
-   FDelayLine400ms.BufferSize := F400msSampleCount;
-   FDelayLine2600ms.BufferSize := F2600msSampleCount;
-
-   FOverlapSamples := F400msSampleCount div 4;
+ // eventually update loudness
+ Dec(FUpdateSamples);
+ if FUpdateSamples < 0 then
+  begin
+   FUpdateSamples := FUpdateSampleCount - 1;
+   UpdateLoudness;
   end;
 end;
-
-
-
-
-
-
-
 
 
 { TStereoR128 }
@@ -424,15 +513,15 @@ begin
       then SampleRate := Self.SampleRate;
      Frequency := 1500;
      Gain := 4;
-     Bandwidth := 1.8;
+     Bandwidth := 1.895;
     end;
    FRLBFilter[ChannelIndex] := TBasicLowcutFilter.Create;
    with FRLBFilter[ChannelIndex] do
     begin
      if Abs(Self.SampleRate) > 0
       then SampleRate := Self.SampleRate;
-     Frequency := 50;
-     Bandwidth := 1.8;
+     Frequency := 38;
+     Bandwidth := 2.54;
     end;
 
    FDelayLine400ms[ChannelIndex] := TDelayLineSamples32.Create(F400msSampleCount);
@@ -514,7 +603,7 @@ begin
     else Value[ChannelIndex] := Value[ChannelIndex] / ItemCount;
   end;
 
- Result := FUnitOffset - 0.691 + 10 * FastLog10ContinousError3(Value[0] + Value[1]);
+ Result := -0.691 + 10 * FastLog10ContinousError3(Value[0] + Value[1]);
 end;
 
 procedure TStereoR128.ProcessLongTermSample(const Index: Integer;
@@ -562,6 +651,42 @@ begin
  until False;
 end;
 
+procedure TStereoR128.ResetPeak;
+begin
+ inherited;
+
+ FAbsoluteGatedValue[0] := 0;
+ FAbsoluteGatedValue[1] := 0;
+ FAbsoluteGatedCount[0] := 0;
+ FAbsoluteGatedCount[1] := 0;
+end;
+
+procedure TStereoR128.SampleRateChanged;
+var
+  ChannelIndex : Integer;
+begin
+ inherited;
+
+ if Abs(Self.SampleRate) > 0 then
+  begin
+   F400msSampleCount := Round(0.4 * Abs(SampleRate));
+   F2600msSampleCount := Round(2.6 * Abs(SampleRate));
+
+   FMomIntScale := 1 / F400msSampleCount;
+   FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
+
+   for ChannelIndex := 0 to 1 do
+    begin
+     FPreFilter[ChannelIndex].SampleRate := Abs(SampleRate);
+     FRLBFilter[ChannelIndex].SampleRate := Abs(SampleRate);
+     FDelayLine400ms[ChannelIndex].BufferSize := F400msSampleCount;
+     FDelayLine2600ms[ChannelIndex].BufferSize := F2600msSampleCount;
+    end;
+
+   FOverlapSamples := F400msSampleCount div 4;
+  end;
+end;
+
 procedure TStereoR128.ProcessMono(Value: Single);
 var
   CurrentValue : Single;
@@ -600,8 +725,19 @@ begin
  if FIsRunning then Inc(FTotalSamples);
 
  // override peak hold if necessary
- if FMomIntSum > FPeakHold
-  then FPeakHold := FMomIntSum;
+ if FMomIntSum > FPeakHold then
+  begin
+   FPeakHold := FMomIntSum;
+   UpdatePeak;
+  end;
+
+ // eventually update loudness
+ Dec(FUpdateSamples);
+ if FUpdateSamples < 0 then
+  begin
+   FUpdateSamples := FUpdateSampleCount - 1;
+   UpdateLoudness;
+  end;
 end;
 
 procedure TStereoR128.ProcessStereo(Left, Right: Single);
@@ -661,43 +797,18 @@ begin
  if FIsRunning then Inc(FTotalSamples);
 
  // override peak hold if necessary
- if FMomIntSum > FPeakHold
-  then FPeakHold := FMomIntSum;
-end;
-
-procedure TStereoR128.ResetPeak;
-begin
- inherited;
-
- FAbsoluteGatedValue[0] := 0;
- FAbsoluteGatedValue[1] := 0;
- FAbsoluteGatedCount[0] := 0;
- FAbsoluteGatedCount[1] := 0;
-end;
-
-procedure TStereoR128.SampleRateChanged;
-var
-  ChannelIndex : Integer;
-begin
- inherited;
-
- if Abs(Self.SampleRate) > 0 then
+ if FMomIntSum > FPeakHold then
   begin
-   F400msSampleCount := Round(0.4 * Abs(SampleRate));
-   F2600msSampleCount := Round(2.6 * Abs(SampleRate));
+   FPeakHold := FMomIntSum;
+   UpdatePeak;
+  end;
 
-   FMomIntScale := 1 / F400msSampleCount;
-   FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
-
-   for ChannelIndex := 0 to 1 do
-    begin
-     FPreFilter[ChannelIndex].SampleRate := Abs(SampleRate);
-     FRLBFilter[ChannelIndex].SampleRate := Abs(SampleRate);
-     FDelayLine400ms[ChannelIndex].BufferSize := F400msSampleCount;
-     FDelayLine2600ms[ChannelIndex].BufferSize := F2600msSampleCount;
-    end;
-
-   FOverlapSamples := F400msSampleCount div 4;
+ // eventually update loudness
+ Dec(FUpdateSamples);
+ if FUpdateSamples < 0 then
+  begin
+   FUpdateSamples := FUpdateSampleCount - 1;
+   UpdateLoudness;
   end;
 end;
 

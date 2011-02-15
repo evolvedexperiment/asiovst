@@ -5,7 +5,7 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
   Graphics, DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiGraphicControl,
-  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup;
+  DAV_GuiLabel, DAV_GuiPanel, DAV_GuiGroup, Menus;
 
 type
   TFmLoudnessMeter = class(TForm)
@@ -20,6 +20,10 @@ type
     LbMomentaryPeak: TGuiLabel;
     LbTimeDisplay: TGuiLabel;
     TrScreenUpdate: TTimer;
+    PmIntegrationTime: TPopupMenu;
+    MiIntegrationShort: TMenuItem;
+    MiIntegrationMomentary: TMenuItem;
+    MiIntegrationLongTerm: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -30,6 +34,9 @@ type
     procedure LbIntegrationTimeClick(Sender: TObject);
     procedure LbMomentaryPeakClick(Sender: TObject);
     procedure LbTimeDisplayClick(Sender: TObject);
+    procedure MiIntegrationShortClick(Sender: TObject);
+    procedure MiIntegrationMomentaryClick(Sender: TObject);
+    procedure MiIntegrationLongTermClick(Sender: TObject);
   private
     FTotalInterval    : Integer;
     FBackgroundBitmap : TGuiCustomPixelMap;
@@ -133,6 +140,21 @@ procedure TFmLoudnessMeter.LbUnitClick(Sender: TObject);
 begin
  with TLoudnessMeterModule(Owner)
   do Parameter[0] := 1 - Parameter[0];
+end;
+
+procedure TFmLoudnessMeter.MiIntegrationMomentaryClick(Sender: TObject);
+begin
+ TLoudnessMeterModule(Owner).Parameter[1] := 0;
+end;
+
+procedure TFmLoudnessMeter.MiIntegrationShortClick(Sender: TObject);
+begin
+ TLoudnessMeterModule(Owner).Parameter[1] := 1;
+end;
+
+procedure TFmLoudnessMeter.MiIntegrationLongTermClick(Sender: TObject);
+begin
+ TLoudnessMeterModule(Owner).Parameter[2] := 0;
 end;
 
 procedure TFmLoudnessMeter.TrScreenUpdateTimer(Sender: TObject);
@@ -245,8 +267,15 @@ end;
 
 procedure TFmLoudnessMeter.UpdateTime;
 begin
- with TLoudnessMeterModule(Owner)
-  do LbIntegrationTime.Caption := string(ParameterDisplay[1]);
+ with TLoudnessMeterModule(Owner) do
+  begin
+   LbIntegrationTime.Caption := string(ParameterDisplay[1]);
+   case Round(Parameter[1]) of
+    0 : MiIntegrationMomentary.Checked := True;
+    1 : MiIntegrationShort.Checked := True;
+    2 : MiIntegrationLongTerm.Checked := True;
+   end;
+  end;
 
  UpdateLoudness;
  UpdatePeak;
