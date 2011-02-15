@@ -153,7 +153,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2011-02-05 01:15</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2011-02-11 17:32</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages>
 						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\7.0\Bpl\GR32_Charts_D14.bpl">GR32 Charts</Excluded_Packages>

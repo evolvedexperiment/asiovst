@@ -306,7 +306,7 @@ var
   Temp : Single;
 begin
  // get maximum and hold it
- if abs(Input) >= FHoldValue then
+ if Abs(Input) >= FHoldValue then
   begin
    FHoldValue := Abs(Input);
    FHoldCounter := FLookAhead;

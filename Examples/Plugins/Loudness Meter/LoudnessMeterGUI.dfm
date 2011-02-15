@@ -187,7 +187,7 @@ object FmLoudnessMeter: TFmLoudnessMeter
       Width = 137
       Height = 30
       Alignment = taCenter
-      Caption = 'Short'
+      Caption = 'Momentary'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14410211
       Font.Height = -24
@@ -195,6 +195,7 @@ object FmLoudnessMeter: TFmLoudnessMeter
       Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
+      PopupMenu = PmIntegrationTime
       Shadow.Blur = 3.000000000000000000
       Shadow.Opacity = 64
       Shadow.Saturation = 1.000000000000000000
@@ -254,5 +255,25 @@ object FmLoudnessMeter: TFmLoudnessMeter
     OnTimer = TrScreenUpdateTimer
     Left = 312
     Top = 176
+  end
+  object PmIntegrationTime: TPopupMenu
+    Left = 328
+    Top = 120
+    object MiIntegrationMomentary: TMenuItem
+      Caption = '&Momentary'
+      RadioItem = True
+      OnClick = MiIntegrationMomentaryClick
+    end
+    object MiIntegrationShort: TMenuItem
+      Caption = '&Short'
+      Checked = True
+      RadioItem = True
+      OnClick = MiIntegrationShortClick
+    end
+    object MiIntegrationLongTerm: TMenuItem
+      Caption = '&Integration'
+      RadioItem = True
+      OnClick = MiIntegrationLongTermClick
+    end
   end
 end
