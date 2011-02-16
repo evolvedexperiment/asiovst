@@ -1444,6 +1444,7 @@ begin
       OnDecode := DataDecoding;
       OnBeginReadAudioData := BeginReadAudioData;
       LoadFromFile(FileName);
+      Self.SampleRate := SampleRate;
      finally
       Free;
      end;

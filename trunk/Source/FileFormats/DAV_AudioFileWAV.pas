@@ -265,11 +265,11 @@ begin
    WriteTotalSampleFrames(FStream);
   end;
 
- if assigned(FFactChunk)
+ if Assigned(FFactChunk)
   then FreeAndNil(FFactChunk);
- if assigned(FBextChunk)
+ if Assigned(FBextChunk)
   then FreeAndNil(FBextChunk);
- if assigned(FCartChunk)
+ if Assigned(FCartChunk)
   then FreeAndNil(FCartChunk);
  FreeAndNil(FFormatChunk);
  FreeAndNil(FChunkList);
@@ -302,12 +302,12 @@ end;
 
 class function TCustomAudioFileWAV.Description: string;
 begin
- result := 'Microsoft RIFF WAVE';
+ Result := 'Microsoft RIFF WAVE';
 end;
 
 class function TCustomAudioFileWAV.FileFormatFilter: string;
 begin
- result := Description + ' (*.' + DefaultExtension + ')|*.wav*'
+ Result := Description + ' (*.' + DefaultExtension + ')|*.wav*'
 end;
 
 procedure TCustomAudioFileWAV.AddSubChunk(SubChunk: TCustomChunk);
@@ -321,7 +321,7 @@ var
   ChunkSize   : Cardinal;
   OldPosition : Cardinal;
 begin
- result := False;
+ Result := False;
 
  // store old position
  OldPosition := Stream.Position;
@@ -349,73 +349,73 @@ end;
 
 function TCustomAudioFileWAV.GetBextDescription: string;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.Description
-  else result := '';
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.Description
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetCategory: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.Category
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.Category
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetChannels: Cardinal;
 begin
- result := FFormatChunk.Channels;
+ Result := FFormatChunk.Channels;
 end;
 
 function TCustomAudioFileWAV.GetClassification: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.Classification
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.Classification
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetClientID: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.ClientID
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.ClientID
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetCutID: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.CutID
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.CutID
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetdbLevelReference: Integer;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.dbLevelReference
-  else result := 0;
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.dbLevelReference
+  else Result := 0;
 end;
 
 function TCustomAudioFileWAV.GetSampleFrames: Cardinal;
 begin
- result := FTotalSampleFrames;
+ Result := FTotalSampleFrames;
 end;
 
 function TCustomAudioFileWAV.GetSampleRate: Double;
 begin
- result := FFormatChunk.SampleRate;
+ Result := FFormatChunk.SampleRate;
 end;
 
 function TCustomAudioFileWAV.GetStartDate: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.StartDate
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.StartDate
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetStartTime: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.StartTime
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.StartTime
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetSubChunk(Index: Integer): TCustomChunk;
@@ -432,68 +432,68 @@ end;
 
 function TCustomAudioFileWAV.GetTimeRefHigh: Integer;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.TimeRefHigh
-  else result := 0;
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.TimeRefHigh
+  else Result := 0;
 end;
 
 function TCustomAudioFileWAV.GetTimeRefLow: Integer;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.TimeRefLow
-  else result := 0;
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.TimeRefLow
+  else Result := 0;
 end;
 
 function TCustomAudioFileWAV.GetTitle: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.Title
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.Title
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetTypicalAudioDataPosition: Cardinal;
 begin
  Result := 12 + SizeOf(TChunkName) + SizeOf(Integer) + FFormatChunk.ChunkSize;
- if assigned(FFactChunk)
+ if Assigned(FFactChunk)
   then Result := Result + SizeOf(TChunkName) + SizeOf(Integer) + FFactChunk.ChunkSize;
 end;
 
 function TCustomAudioFileWAV.GetArtist: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.Artist
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.Artist
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetUserDef: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.UserDef
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.UserDef
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetBextVersion: Integer;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.Version
-  else result := 0;
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.Version
+  else Result := 0;
 end;
 
 function TCustomAudioFileWAV.GetCartVersion: Integer;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.Version
-  else result := 0;
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.Version
+  else Result := 0;
 end;
 
 function TCustomAudioFileWAV.GetBitsPerSample: Byte;
 begin
- result := FFormatChunk.BitsPerSample;
+ Result := FFormatChunk.BitsPerSample;
 end;
 
 function TCustomAudioFileWAV.GetDataSize: Cardinal;
 begin
- result := FFormatChunk.BlockAlign * SampleFrames;
+ Result := FFormatChunk.BlockAlign * SampleFrames;
 end;
 
 function TCustomAudioFileWAV.GetEmptyData: Boolean;
@@ -504,76 +504,76 @@ end;
 function TCustomAudioFileWAV.GetEncoding: TAudioEncoding;
 begin
  case FFormatChunk.FormatTag of
-             etPCM : result := aeInteger;
-        etPCMFLOAT : result := aeFloat;
-         etMSADPCM : result := aeMSADPCM;
-        etDVIADPCM : result := aeDVIADPCM;
-//  etACM, etACMMPEG : result := aeACM;
-              else   result := aeOther;
+             etPCM : Result := aeInteger;
+        etPCMFLOAT : Result := aeFloat;
+         etMSADPCM : Result := aeMSADPCM;
+        etDVIADPCM : Result := aeDVIADPCM;
+//  etACM, etACMMPEG : Result := aeACM;
+              else   Result := aeOther;
  end;
 end;
 
 function TCustomAudioFileWAV.GetEndDate: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.EndDate
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.EndDate
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetEndTime: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.EndTime
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.EndTime
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetOriginationDate: string;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.OriginationDate
-  else result := '';
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.OriginationDate
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetOriginationTime: string;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.OriginationTime
-  else result := '';
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.OriginationTime
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetOriginator: string;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.Originator
-  else result := '';
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.Originator
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetOriginatorRef: string;
 begin
- if assigned(FBextChunk)
-  then result := FBextChunk.OriginatorRef
-  else result := '';
+ if Assigned(FBextChunk)
+  then Result := FBextChunk.OriginatorRef
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetOutCue: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.OutCue
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.OutCue
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetProducerAppID: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.ProducerAppID
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.ProducerAppID
+  else Result := '';
 end;
 
 function TCustomAudioFileWAV.GetProducerAppVersion: string;
 begin
- if assigned(FCartChunk)
-  then result := FCartChunk.ProducerAppVersion
-  else result := '';
+ if Assigned(FCartChunk)
+  then Result := FCartChunk.ProducerAppVersion
+  else Result := '';
 end;
 
 procedure TCustomAudioFileWAV.SetArtist(const Value: string);
@@ -593,7 +593,7 @@ end;
 procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Byte);
 begin
  // assert stream is empty
- if assigned(FStream) and not EmptyData
+ if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
  with FFormatChunk do
@@ -607,7 +607,7 @@ begin
    end;
 
  // if empty stream is assigned update format chunk
- if assigned(FStream) and EmptyData then
+ if Assigned(FStream) and EmptyData then
   begin
    FStream.Position := 12;
    WriteFormatChunk(FStream);
@@ -729,7 +729,7 @@ end;
 procedure TCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
 begin
  // assert stream is empty
- if assigned(FStream) and not EmptyData
+ if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
  case Value of
@@ -752,7 +752,7 @@ begin
  end;
 
  // if empty stream is assigned update format chunk
- if assigned(FStream) and EmptyData then
+ if Assigned(FStream) and EmptyData then
   begin
    FStream.Position := 12;
    WriteFormatChunk(FStream);
@@ -897,16 +897,16 @@ end;
 
 procedure TCustomAudioFileWAV.SampleFramesChanged;
 begin
- if assigned(FFactChunk)
+ if Assigned(FFactChunk)
   then FFactChunk.SampleCount := FTotalSampleFrames;
- if assigned(FStream)
+ if Assigned(FStream)
   then WriteTotalSampleFrames(FStream);
 end;
 
 procedure TCustomAudioFileWAV.SetSampleRate(const Value: Double);
 begin
  // assert stream is empty
- if assigned(FStream) and not EmptyData
+ if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
  inherited;
@@ -918,7 +918,7 @@ begin
    end;
 
  // if empty stream is assigned update format chunk
- if assigned(FStream) and EmptyData then
+ if Assigned(FStream) and EmptyData then
   begin
    FStream.Position := 12;
    WriteFormatChunk(FStream);
@@ -1056,14 +1056,14 @@ end;
 procedure TCustomAudioFileWAV.CheckCreateCartChunk;
 begin
  // eventually create cart chunk
- if not assigned(FCartChunk)
+ if not Assigned(FCartChunk)
   then FCartChunk := TCartChunk.Create;
 end;
 
 procedure TCustomAudioFileWAV.CheckCreateBextChunk;
 begin
  // eventually create bext chunk
- if not assigned(FBextChunk)
+ if not Assigned(FBextChunk)
   then FBextChunk := TBextChunk.Create;
 end;
 
@@ -1098,9 +1098,9 @@ begin
  with Stream do
   begin
    // clear all chunks
-   if assigned(FFactChunk) then FreeAndNil(FFactChunk);
-   if assigned(FCartChunk) then FreeAndNil(FCartChunk);
-   if assigned(FBextChunk) then FreeAndNil(FBextChunk);
+   if Assigned(FFactChunk) then FreeAndNil(FFactChunk);
+   if Assigned(FCartChunk) then FreeAndNil(FCartChunk);
+   if Assigned(FBextChunk) then FreeAndNil(FBextChunk);
    FChunkList.Clear;
 
    // reset current data positions
@@ -1153,7 +1153,7 @@ begin
  with Stream do
   begin
    // check whether fact chunk has already been created
-   if assigned(FFactChunk)
+   if Assigned(FFactChunk)
     then raise Exception.Create(RCFACTChunkDublicate);
 
    FFactChunk := TFactChunk.Create;
@@ -1189,7 +1189,7 @@ begin
      Read(DataSize, 4);
 
      // eventually set total number of samples
-     if not assigned(FFactChunk)
+     if not Assigned(FFactChunk)
       then FTotalSampleFrames := DataSize div FFormatChunk.BlockAlign
       else
      if FFormatChunk.FormatTag <> etPcm
@@ -1228,7 +1228,7 @@ var
   DefinedChunk : TDefinedChunk;
 begin
  ChunkClass := WaveChunkClassByChunkName(ChunkName);
- if assigned(ChunkClass) then
+ if Assigned(ChunkClass) then
   begin
    DefinedChunk := ChunkClass.Create;
    DefinedChunk.LoadFromStream(Stream);
@@ -1286,6 +1286,7 @@ begin
  inherited;
  CheckHeader(Stream);
  ParseStream(Stream);
+
  ReadAudioDataFromStream(Stream);
 end;
 
@@ -1340,7 +1341,7 @@ begin
    if (FFormatChunk.FormatTag <> etPCM) then
     begin
      // if no fact chunk has been found, create it
-     if not assigned(FFactChunk)
+     if not Assigned(FFactChunk)
       then FFactChunk := TFactChunk.Create;
 
      // store total number of samples to fact
@@ -1360,15 +1361,15 @@ begin
  with Stream do
   begin
    // write cart chunk if available
-   if assigned(FCartChunk)
+   if Assigned(FCartChunk)
     then FCartChunk.SaveToStream(Stream);
 
    // write bext chunk if available
-   if assigned(FBextChunk)
+   if Assigned(FBextChunk)
     then FBextChunk.SaveToStream(Stream);
 
    // write subchunks
-   if assigned(FChunkList) and (FChunkList.Count > 0) then
+   if Assigned(FChunkList) and (FChunkList.Count > 0) then
     for SubChunk := 0 to FChunkList.Count - 1
      do FChunkList[SubChunk].SaveToStream(Stream);
   end;
@@ -1419,7 +1420,7 @@ begin
  end;
 
  // set blocksize
- if assigned(Result) then
+ if Assigned(Result) then
   with Result do
    begin
     if Self.FBlockSize > 0
@@ -1441,14 +1442,14 @@ begin
  with FStream do
   begin
    DataDecoder := CreateDataCoder;
-   if not assigned(DataDecoder) then exit;
+   if not Assigned(DataDecoder) then exit;
    if FBlockSize <= 0
     then DataDecoder.SampleFrames := SampleFrames;
 
    assert(FAudioDataPosition > 0);
    Position := FAudioDataPosition + 8 + DataDecoder.SampleToByte(SamplePosition);
 
-   if assigned(FOnBeginRead)
+   if Assigned(FOnBeginRead)
     then FOnBeginRead(Self);
 
    try
@@ -1456,14 +1457,14 @@ begin
     while Samples - SamplePosition + DataDecoder.SampleFrames < SampleFrames do
      begin
       DataDecoder.LoadFromStream(FStream);
-      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+      if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
 
       Samples := Samples + DataDecoder.SampleFrames;
      end;
 
      DataDecoder.SampleFrames := SampleFrames - Samples + SamplePosition;
      DataDecoder.LoadFromStream(FStream);
-     if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+     if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
    finally
     FreeAndNil(DataDecoder);
    end;
@@ -1483,7 +1484,7 @@ begin
  with FStream do
   begin
    DataEncoder := CreateDataCoder;
-   if not assigned(DataEncoder) then exit;
+   if not Assigned(DataEncoder) then exit;
    if FBlockSize <= 0
     then DataEncoder.SampleFrames := SampleFrames;
 
@@ -1496,7 +1497,7 @@ begin
 
    Position := FAudioDataPosition + 8 + DataEncoder.SampleToByte(SamplePosition);
 
-   if assigned(FOnBeginWrite)
+   if Assigned(FOnBeginWrite)
     then FOnBeginWrite(Self);
 
    try
@@ -1504,7 +1505,7 @@ begin
     Pos := SamplePosition;
     while Samples + DataEncoder.SampleFrames < SampleFrames do
      begin
-      if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+      if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
       DataEncoder.SaveToStream(FStream);
 
       Samples := Samples + DataEncoder.SampleFrames;
@@ -1512,7 +1513,7 @@ begin
      end;
 
      DataEncoder.SampleFrames := SampleFrames - Samples;
-     if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Pos);
+     if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Pos);
      DataEncoder.SaveToStream(FStream);
    finally
     FreeAndNil(DataEncoder);
@@ -1541,11 +1542,11 @@ begin
    Read(ChunkSize, 4);
 
    DataDecoder := CreateDataCoder;
-   if not assigned(DataDecoder) then Exit;
+   if not Assigned(DataDecoder) then Exit;
    if FBlockSize <= 0
     then DataDecoder.SampleFrames := SampleFrames;
 
-   if assigned(FOnBeginRead)
+   if Assigned(FOnBeginRead)
     then FOnBeginRead(Self);
 
    with DataDecoder do
@@ -1554,14 +1555,14 @@ begin
      while Samples + SampleFrames < Self.SampleFrames do
       begin
        LoadFromStream(Stream);
-       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+       if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
 
        Samples := Samples + SampleFrames;
       end;
 
       SampleFrames := Self.SampleFrames - Samples;
       LoadFromStream(Stream);
-      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+      if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
     finally
      FreeAndNil(DataDecoder);
     end;
@@ -1589,11 +1590,11 @@ begin
    ChunkEnd := Stream.Position + DataSize;
 
    DataEncoder := CreateDataCoder;
-   if not assigned(DataEncoder) then exit;
+   if not Assigned(DataEncoder) then exit;
    if FBlockSize <= 0
     then DataEncoder.SampleFrames := SampleFrames;
 
-   if assigned(FOnBeginWrite)
+   if Assigned(FOnBeginWrite)
     then FOnBeginWrite(Self);
 
    with DataEncoder do
@@ -1601,14 +1602,14 @@ begin
      Samples := 0;
      while Samples + SampleFrames < Self.SampleFrames do
       begin
-       if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+       if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
        SaveToStream(Stream);
 
        Samples := Samples + SampleFrames;
       end;
 
       SampleFrames := Self.SampleFrames - Samples;
-      if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+      if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
       SaveToStream(Stream);
     finally
      FreeAndNil(DataEncoder);

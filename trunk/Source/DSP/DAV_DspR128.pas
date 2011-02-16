@@ -49,6 +49,7 @@ type
   end;
 
   TLoudnessTime = (ltMomentary, ltShort, ltIntegrated);
+  TLoudnessUpdate = procedure(Sender: TObject; Loudness: Single) of object;
 
   TCustomR128 = class(TDspSampleRatePersistent)
   private
@@ -68,42 +69,41 @@ type
     FUpdateSamples     : Integer;
     FIsRunning         : Boolean;
     FTime              : TLoudnessTime;
-    FLoudness          : Single;
-    FPeakHoldLoudness  : Single;
-    FOnPeakChanged     : TNotifyEvent;
-    FOnLoudnessChanged : TNotifyEvent;
+    FOnPeakChanged     : TLoudnessUpdate;
+    FOnLoudnessChanged : TLoudnessUpdate;
     procedure SetTime(const Value: TLoudnessTime);
     procedure CalculateUpdateSampleCount;
+    function GetLoudness: Single;
   protected
     function GetPeakHold: Single;
     function GetLoudnessShort: Single;
     function GetLoudnessMomentary: Single;
     function GetLoudnessIntegration: Single; virtual; abstract;
     procedure ClearLinkedLoudness; virtual; abstract;
-    procedure UpdateLoudness; virtual;
-    procedure UpdatePeak; virtual;
-    procedure TimeChanged; virtual;
     procedure SampleRateChanged; override;
+    procedure TimeChanged; virtual;
+    procedure UpdateLoudness; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
 
     procedure ResetPeak; virtual;
+    procedure ResetUpdate; virtual;
     procedure StartIntegration; virtual;
     procedure StopIntegration; virtual;
     procedure ResetIntegration; virtual;
 
+    property Loudness: Single read GetLoudness;
     property LoudnessShort: Single read GetLoudnessShort;
     property LoudnessMomentary: Single read GetLoudnessMomentary;
     property LoudnessIntegration: Single read GetLoudnessIntegration;
-    property Loudness: Single read FLoudness;
-    property PeakHold: Single read FPeakHoldLoudness;
+    property LoudnessPeak: Single read GetPeakHold;
     property TotalSamples: Integer read FTotalSamples;
     property IntegrationIsRunning: Boolean read FIsRunning;
     property Time: TLoudnessTime read FTime write SetTime;
 
-    property OnLoudnessChanged: TNotifyEvent read FOnLoudnessChanged write FOnLoudnessChanged;
-    property OnPeakLoudnessChanged: TNotifyEvent read FOnPeakChanged write FOnPeakChanged;
+    property OnLoudnessChanged: TLoudnessUpdate read FOnLoudnessChanged write FOnLoudnessChanged;
+    property OnPeakLoudnessChanged: TLoudnessUpdate read FOnPeakChanged write FOnPeakChanged;
   end;
 
   TMonoR128 = class(TCustomR128)
@@ -190,12 +190,18 @@ end;
 
 destructor TCustomR128.Destroy;
 begin
+ inherited;
  ClearLinkedLoudness;
 end;
 
 procedure TCustomR128.ResetPeak;
 begin
  FPeakHold := 0;
+end;
+
+procedure TCustomR128.ResetUpdate;
+begin
+ FUpdateSamples := 0;
 end;
 
 procedure TCustomR128.SampleRateChanged;
@@ -240,22 +246,8 @@ end;
 
 procedure TCustomR128.UpdateLoudness;
 begin
- case FTime of
-  ltMomentary  : FLoudness := GetLoudnessMomentary;
-  ltShort      : FLoudness := GetLoudnessShort;
-  ltIntegrated : FLoudness := GetLoudnessIntegration;
- end;
-
  if Assigned(FOnLoudnessChanged)
-  then FOnLoudnessChanged(Self);
-end;
-
-procedure TCustomR128.UpdatePeak;
-begin
- FPeakHoldLoudness := -0.691 + 10 * FastLog10ContinousError3(FPeakHold);
-
- if Assigned(FOnPeakChanged)
-  then FOnPeakChanged(Self);
+  then FOnLoudnessChanged(Self, GetLoudness);
 end;
 
 procedure TCustomR128.ResetIntegration;
@@ -264,6 +256,16 @@ begin
  FTotalSamples := 0;
 
  ClearLinkedLoudness;
+end;
+
+function TCustomR128.GetLoudness: Single;
+begin
+ case FTime of
+  ltMomentary  : Result := GetLoudnessMomentary;
+  ltShort      : Result := GetLoudnessShort;
+  ltIntegrated : Result := GetLoudnessIntegration;
+  else raise Exception.Create('Undefined');
+ end;
 end;
 
 function TCustomR128.GetLoudnessMomentary: Single;
@@ -482,7 +484,8 @@ begin
  if FMomIntSum > FPeakHold then
   begin
    FPeakHold := FMomIntSum;
-   UpdatePeak;
+   if Assigned(FOnPeakChanged)
+    then FOnPeakChanged(Self, -0.691 + 10 * FastLog10ContinousError3(FPeakHold));
   end;
 
  // eventually update loudness
@@ -728,7 +731,8 @@ begin
  if FMomIntSum > FPeakHold then
   begin
    FPeakHold := FMomIntSum;
-   UpdatePeak;
+   if Assigned(FOnPeakChanged)
+    then FOnPeakChanged(Self, -0.691 + 10 * FastLog10ContinousError3(FPeakHold));
   end;
 
  // eventually update loudness
@@ -800,7 +804,8 @@ begin
  if FMomIntSum > FPeakHold then
   begin
    FPeakHold := FMomIntSum;
-   UpdatePeak;
+   if Assigned(FOnPeakChanged)
+    then FOnPeakChanged(Self, -0.691 + 10 * FastLog10ContinousError3(FPeakHold));
   end;
 
  // eventually update loudness

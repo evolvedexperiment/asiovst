@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Controls, DAV_VSTModule, Forms, LazIDEIntf, ProjectIntf,
-  FormEditingIntf;
+  CompOptsIntf, FormEditingIntf;
 
 type
   { TVSTModuleLibraryDescriptor }

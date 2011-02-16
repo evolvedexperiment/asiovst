@@ -965,7 +965,7 @@ begin
  with Stream do
   begin
    // make sure the chunk size is at least the header size
-   assert(FChunkSize >= SizeOf(TWavFormatRecord));
+   Assert(FChunkSize >= SizeOf(TWavFormatRecord));
    Read(FWaveFormatRecord, SizeOf(TWavFormatRecord));
 
    // check whether format specific data can be found:
@@ -973,7 +973,7 @@ begin
    Read(FormatSpecificBytes, SizeOf(Word));
 
    // read format specific bytes
-   assert(FChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
+   Assert(FChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
 
    // check format extensible
    if FWaveFormatRecord.FormatTag = $FFFE then
@@ -1854,7 +1854,7 @@ begin
      do Read(CuePointRecord, SizeOf(TCuePointRecord));
 
    // make sure the position is still inside this chunk
-   assert(Position <= ChunkEnd);
+   Assert(Position <= ChunkEnd);
 
    // jump to the end of this chunk
    Position := ChunkEnd;
@@ -1970,7 +1970,7 @@ begin
      do Read(LoopRecord, SizeOf(TLoopRecord));
 
    // read rest, should only be SamplerRecord.SamplerData
-   assert(FChunkSize - SizeOf(TSamplerRecord) = SamplerRecord.SamplerData);
+   Assert(FChunkSize - SizeOf(TSamplerRecord) = SamplerRecord.SamplerData);
    Position := Position + FChunkSize - SizeOf(TSamplerRecord);
 
    // eventually skip padded zeroes

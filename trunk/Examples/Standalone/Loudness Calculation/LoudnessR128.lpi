@@ -12,7 +12,6 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -43,13 +42,12 @@
       <Unit0>
         <Filename Value="LoudnessR128.dpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="LoudnessR128"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="58"/>
-        <CursorPos X="1" Y="80"/>
+        <TopLine Value="1"/>
+        <CursorPos X="35" Y="29"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -61,29 +59,14 @@
       <Unit2>
         <Filename Value="..\..\..\Source\FileFormats\DAV_ChannelDataCoder.pas"/>
         <UnitName Value="DAV_ChannelDataCoder"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="47" Y="9"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
-      <Position1>
-        <Filename Value="LoudnessR128.dpr"/>
-        <Caret Line="80" Column="5" TopLine="71"/>
-      </Position1>
-      <Position2>
-        <Filename Value="..\..\..\Source\FileFormats\DAV_ChannelDataCoder.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="..\..\..\Source\FileFormats\DAV_ChannelDataCoder.pas"/>
-        <Caret Line="12" Column="17" TopLine="1"/>
-      </Position3>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="10"/>
