@@ -112,8 +112,8 @@ type
 
   TDelayLineSamples = class(TCustomDelayLineSamples, IDspProcessor64)
   private
-    FBufferFloatType: TBufferFloatType;
-    FBytesPerSample: Integer;
+    FBufferFloatType : TBufferFloatType;
+    FBytesPerSample  : Integer;
     function GetSample(Index: Integer): Double;
     procedure SetBufferFloatType(const Value: TBufferFloatType);
   protected
@@ -300,7 +300,9 @@ end;
 
 destructor TCustomDelayLineSamples32.Destroy;
 begin
- Dispose(FBuffer);
+ if Assigned(FBuffer)
+  then FreeMem(FBuffer);
+ FBuffer := nil;
  inherited;
 end;
 
@@ -310,10 +312,10 @@ var
 begin
  Assert(FBufferSize > 0);
 
- Result := abs(FBuffer^[0]);
+ Result := Abs(FBuffer^[0]);
 
  for Pos := 1 to FBufferSize - 1 do
-  if abs(FBuffer^[Pos]) > Result then Result := abs(FBuffer^[Pos]);
+  if Abs(FBuffer^[Pos]) > Result then Result := Abs(FBuffer^[Pos]);
 end;
 
 function TCustomDelayLineSamples32.GetMaximum: Single;
@@ -374,7 +376,7 @@ function TCustomDelayLineSamples32.ProcessSample32(Input: Single): Single;
 begin
  Result := FBuffer^[FBufferPos];
  FBuffer^[FBufferPos] := Input;
- inc(FBufferPos);
+ Inc(FBufferPos);
  if FBufferPos >= FBufferSize
   then FBufferPos := 0;
 end;
@@ -404,7 +406,6 @@ end;
 procedure TCustomDelayLineSamples32.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
- // ClearBuffer;
 end;
 
 procedure TCustomDelayLineSamples32.Reset;
@@ -509,11 +510,11 @@ var
 begin
  Assert(FBufferSize > 0);
 
- Result := abs(FBuffer^[0]);
+ Result := Abs(FBuffer^[0]);
 
  for Pos := 1 to FBufferSize - 1 do
-  if abs(FBuffer^[Pos]) > Result
-   then Result := abs(FBuffer^[Pos]);
+  if Abs(FBuffer^[Pos]) > Result
+   then Result := Abs(FBuffer^[Pos]);
 end;
 
 function TCustomDelayLineSamples64.GetMaximum: Double;
@@ -552,7 +553,8 @@ end;
 
 destructor TDelayLineSamples.Destroy;
 begin
- Dispose(FBuffer);
+ if Assigned(FBuffer)
+  then Dispose(FBuffer);
  inherited;
 end;
 

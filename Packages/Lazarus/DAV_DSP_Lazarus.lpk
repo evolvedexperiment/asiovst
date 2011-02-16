@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Name Value="DAV_DSP_Lazarus"/>
     <CompilerOptions>
-      <Version Value="9"/>
+      <Version Value="10"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\..\Resources"/>
@@ -27,7 +27,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="50">
+    <Files Count="51">
       <Item1>
         <Filename Value="..\..\Resources\DAV_DspRegister.lrs"/>
         <Type Value="LRS"/>
@@ -229,6 +229,10 @@
         <Filename Value="..\..\Source\DSP\DAV_DspWindowing.pas"/>
         <UnitName Value="DAV_DspWindowing"/>
       </Item50>
+      <Item51>
+        <Filename Value="..\..\Source\DSP\DAV_DspR128.pas"/>
+        <UnitName Value="DAV_DspR128"/>
+      </Item51>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="4">
