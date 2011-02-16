@@ -1,11 +1,42 @@
 unit LoudnessMeterDSP;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs,
-  DAV_Types, DAV_VSTModule, DAV_DspFilter, DAV_DspFilterBasics,
-  DAV_DspDelayLines, DAV_DspR128;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule, DAV_DspR128;
 
 type
   PPLinkedLoudnessRecord = ^PLinkedLoudnessRecord;
@@ -37,9 +68,6 @@ type
   private
     FR128Stereo          : TStereoR128;
 
-    FTotalSamples        : Integer;
-    FUpdateSampleCount   : Integer;
-    FUpdateSamples       : Integer;
     FIsRunning           : Boolean;
     FUnitOffset          : Single;
     procedure PeakLoudnessChanged(Sender: TObject);
@@ -118,7 +146,7 @@ begin
   then FUnitOffset := 23.056476593
   else FUnitOffset := 0.056476593;
 
- FUpdateSamples := 0;
+ FR128Stereo.ResetUpdate;
 
  // update GUI
  if EditorForm is TFmLoudnessMeter
@@ -128,13 +156,8 @@ end;
 procedure TLoudnessMeterModule.ParameterTimeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case Round(Value) of
-  0 : FUpdateSampleCount := Round(0.1 * SampleRate);
-  1 : FUpdateSampleCount := Round(SampleRate);
-  2 : FUpdateSampleCount := Round(SampleRate);
- end;
-
- FUpdateSamples := 0;
+ FR128Stereo.Time := TLoudnessTime(Round(Value));
+ FR128Stereo.ResetUpdate;
 
  // update GUI
  if EditorForm is TFmLoudnessMeter
@@ -144,7 +167,13 @@ end;
 procedure TLoudnessMeterModule.ParameterStateChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FIsRunning := Round(Value) = 1;
+ if FIsRunning <> (Round(Value) = 1) then
+  begin
+   FIsRunning := Round(Value) = 1;
+   if FIsRunning
+    then FR128Stereo.StartIntegration
+    else FR128Stereo.StopIntegration;
+  end;
 
  // update GUI
  if EditorForm is TFmLoudnessMeter
