@@ -1,9 +1,15 @@
 program LoudnessR128;
 
+{$I DAV_Compiler.inc}
 {$APPTYPE CONSOLE}
 
 uses
-  FastMM4, FastMove, SysUtils, Math, DAV_AudioFile, DAV_AudioFileWAV,
+  {$IFDEF FPC}
+  Interfaces,
+  {$ELSE}
+  FastMove,
+  {$ENDIF}
+  SysUtils, Math, DAV_AudioFile, DAV_AudioFileWAV,
   DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_MpegAudio, DAV_DspR128,
   DAV_AudioData;
 
@@ -41,8 +47,8 @@ begin
    FreeAndNil(ADC);
   end;
   R128.StopIntegration;
-  Writeln('Integrated Loudness: ' + FloatToStr(RoundTo(R128.LoudnessIntegration, -1)) + ' LUFS');
-  Writeln('Peak Momentary Loudness: ' + FloatToStr(RoundTo(R128.LoudnessPeak, -1)) + ' LUFS');
+  Writeln('Integrated Loudness: ' + FloatToStrF(RoundTo(R128.LoudnessIntegration, -1), ffGeneral, 4, 4) + ' LUFS');
+  Writeln('Peak Momentary Loudness: ' + FloatToStrF(RoundTo(R128.LoudnessPeak, -1), ffGeneral, 4, 4) + ' LUFS');
  finally
   FreeAndNil(R128);
  end;
@@ -50,6 +56,7 @@ end;
 
 var
   SR : TSearchRec;
+
 begin
  try
   if ParamStr(1) = ''
@@ -74,4 +81,3 @@ begin
      Writeln(E.ClassName, ': ', E.Message);
  end;
 end.
-
