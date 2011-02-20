@@ -20,7 +20,7 @@ type
     FItemIndex        : Integer;
     FItems            : TStrings;
     FOnChange         : TNotifyEvent;
-    FRoundRadius      : Integer;
+    FBorderRadius      : Integer;
     FPopupMenu        : TPopupMenu;
     FSelectBoxColor   : TColor;
     procedure RenderSelectBoxToBitmap(const Bitmap: TBitmap);
@@ -32,17 +32,17 @@ type
     procedure SetButtonColor(const Value: TColor);
     procedure SetItemIndex(Value: Integer);
     procedure SetItems(const Value: TStrings);
-    procedure SetRoundRadius(Value: Integer);
+    procedure SetBorderRadius(Value: Integer);
     procedure SetSelectBoxColor(const Value: TColor);
   protected
     procedure AlignmentChanged; virtual;
     procedure AlternateChanged; virtual;
     procedure ArrowColorChanged; virtual;
     procedure ArrowWidthChanged; virtual;
+    procedure BorderRadiusChanged; virtual;
     procedure ButtonColorChanged; virtual;
     procedure ButtonWidthChanged; virtual;
     procedure ItemIndexChanged; virtual;
-    procedure RoundRadiusChanged; virtual;
     procedure SelectBoxColorChanged; virtual;
     procedure UpdateBuffer; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
@@ -59,7 +59,7 @@ type
     property Items: TStrings read FItems write SetItems;
     property LineColor default clBtnHighlight;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
-    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
+    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 2;
     property SelectBoxColor: TColor read FSelectBoxColor write SetSelectBoxColor default clBtnShadow;
   end;
 
@@ -87,7 +87,7 @@ type
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
-    property Radius;
+    property BorderRadius;
     property SelectBoxColor;
     property ShowHint;
     property Visible;
@@ -128,7 +128,7 @@ begin
  inherited;
  ControlStyle    := ControlStyle + [csFramed, csOpaque, csReplicatable,
                                     csAcceptsControls];
- FRoundRadius    := 2;
+ FBorderRadius    := 2;
  FLineColor      := clBtnHighlight;
  FSelectBoxColor := clBtnHighlight;
  FArrowColor     := clBtnHighlight;
@@ -173,7 +173,7 @@ begin
    Offsets[0]  := Pen.Width div 2;
    Offsets[1]  := (Pen.Width - 1) div 2;
 
-   case FRoundRadius of
+   case FBorderRadius of
     0, 1 : with ClipRect
             do Rectangle(Left + Offsets[0], Top + Offsets[0],
                          Right - Offsets[1], Bottom - Offsets[1]);
@@ -181,7 +181,7 @@ begin
      then with ClipRect
            do RoundRect(Left + Offsets[0], Top + Offsets[0],
                         Right - Offsets[1], Bottom - Offsets[1],
-                        FRoundRadius * OversamplingFactor, FRoundRadius * OversamplingFactor)
+                        FBorderRadius * OversamplingFactor, FBorderRadius * OversamplingFactor)
 
 (*        with ClipRect do Polygon(
              [Point(Left  + Offsets[0]     + Pen.Width, Top    + Offsets[0]),
@@ -195,8 +195,8 @@ begin
 *)
     else
      begin
-      rad := OversamplingFactor * FRoundRadius;
-      Steps := Round(2 / arcsin(1 / FRoundRadius)) + 1;
+      rad := OversamplingFactor * FBorderRadius;
+      Steps := Round(2 / arcsin(1 / FBorderRadius)) + 1;
       if Steps > 1 then
        begin
         SetLength(PtsArray, Steps + 4);
@@ -424,7 +424,7 @@ procedure TCustomGuiSelectBox.ButtonWidthChanged;
 begin
  case FAlignment of
    taLeftJustify : FArrowButtonWidth := 12 + (FLineWidth div 2) + FArrowWidth;
-        taCenter : FArrowButtonWidth := Max(Max(FArrowWidth, FRoundRadius div 2) + 4, abs(Font.Height)) + FLineWidth div 2;
+        taCenter : FArrowButtonWidth := Max(Max(FArrowWidth, FBorderRadius div 2) + 4, abs(Font.Height)) + FLineWidth div 2;
   taRightJustify : FArrowButtonWidth := 12 + (FLineWidth div 2) + FArrowWidth;
  end;
  Inc(FArrowButtonWidth, FArrowWidth);
@@ -514,17 +514,17 @@ begin
  Invalidate;
 end;
 
-procedure TCustomGuiSelectBox.SetRoundRadius(Value: Integer);
+procedure TCustomGuiSelectBox.SetBorderRadius(Value: Integer);
 begin
  if Value < 0 then Value := 0;
- if FRoundRadius <> Value then
+ if FBorderRadius <> Value then
   begin
-   FRoundRadius := Value;
-   RoundRadiusChanged;
+   FBorderRadius := Value;
+   BorderRadiusChanged;
   end;
 end;
 
-procedure TCustomGuiSelectBox.RoundRadiusChanged;
+procedure TCustomGuiSelectBox.BorderRadiusChanged;
 begin
  ButtonWidthChanged;
  Invalidate;

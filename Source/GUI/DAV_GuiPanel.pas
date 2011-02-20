@@ -92,7 +92,7 @@ type
     property Native: Boolean read FNative write SetNative default False;
     property BorderColor: TColor read FBorderColor write SetBorderColor default clBtnHighlight;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
-    property Radius: Single read FRoundRadius write SetRoundRadius;
+    property BorderRadius: Single read FRoundRadius write SetRoundRadius;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
@@ -105,6 +105,7 @@ type
     property AutoSize;
     property BiDiMode;
     property BorderColor;
+    property BorderRadius;
     property BorderVisible;
     property BorderWidth;
     property Color;
@@ -122,7 +123,6 @@ type
     property ParentColor;
     property ParentShowHint;
     property PopupMenu;
-    property Radius;
     property ShowHint;
     property TabOrder;
     property TabStop;

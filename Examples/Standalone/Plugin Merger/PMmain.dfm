@@ -139,7 +139,7 @@ object FmPluginMerger: TFmPluginMerger
         PanelColor = clSilver
         ParentColor = False
         ParentFont = False
-        Radius = 3
+        BorderRadius = 3
         TabOrder = 2
         Transparent = True
         object DialPreview: TGuiDial

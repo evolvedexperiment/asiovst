@@ -66,7 +66,7 @@ object FmHumRemoval: TFmHumRemoval
     OutlineWidth = 2
     PanelColor = clBlack
     ParentFont = False
-    Radius = 8
+    BorderRadius = 8
     TabOrder = 1
     object LbHighpassFrequency: TGuiLabel
       Left = 10
@@ -211,7 +211,7 @@ object FmHumRemoval: TFmHumRemoval
     OutlineWidth = 2
     PanelColor = clBlack
     ParentFont = False
-    Radius = 8
+    BorderRadius = 8
     TabOrder = 2
     object LbFundamentalFrequency: TGuiLabel
       Left = 10

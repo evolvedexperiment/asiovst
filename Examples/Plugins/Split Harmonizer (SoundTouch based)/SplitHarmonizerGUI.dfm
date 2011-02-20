@@ -56,7 +56,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     BorderWidth = 2.000000000000000000
     Color = clBlack
     PanelColor = clBlack
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True
@@ -236,7 +236,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     BorderWidth = 2.000000000000000000
     Color = clBlack
     PanelColor = clBlack
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 1
     UseDockManager = True
     Transparent = True

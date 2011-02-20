@@ -44,7 +44,7 @@ object FmOversampler: TFmOversampler
     Linewidth = 0
     PanelColor = 7701642
     PopupMenu = PUSettings
-    Radius = 0
+    BorderRadius = 0
     TabOrder = 0
     UseDockManager = True
     object GuiLEDFontOversampling: TGuiLED

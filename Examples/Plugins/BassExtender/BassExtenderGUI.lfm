@@ -28,7 +28,7 @@ object FmBassExtender: TFmBassExtender
     BorderWidth = 2.000000000000000000
     PanelColor = 2372409
     ParentColor = True
-    Radius = 13.000000000000000000
+    BorderRadius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object LbFrequency: TGuiLabel

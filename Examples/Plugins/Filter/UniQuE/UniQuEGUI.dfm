@@ -37,7 +37,7 @@ object FmUniQuE: TFmUniQuE
     GroupColor = 5329233
     Native = False
     ParentFont = False
-    Radius = 9.000000000000000000
+    BorderRadius = 9.000000000000000000
     Shadow.Blur = 1.500000000000000000
     Shadow.Opacity = 100
     Shadow.Saturation = 1.000000000000000000

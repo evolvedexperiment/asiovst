@@ -92,7 +92,7 @@ object FmSpinBugLite: TFmSpinBugLite
       'old one')
     LineColor = clWhite
     ParentFont = False
-    Radius = 4
+    BorderRadius = 4
     SelectBoxColor = 271837
     OnChange = SelectTypeChange
   end
@@ -118,7 +118,7 @@ object FmSpinBugLite: TFmSpinBugLite
       'smooth')
     LineColor = clWhite
     ParentFont = False
-    Radius = 4
+    BorderRadius = 4
     SelectBoxColor = 271837
     OnChange = SelectColourChange
   end

@@ -74,7 +74,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Native = False
     ParentColor = False
     ParentFont = False
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 0
     Transparent = True
   end
@@ -95,7 +95,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     GroupColor = clLime
     Native = False
     ParentFont = False
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 1
     Transparent = True
   end
@@ -118,7 +118,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Native = False
     ParentColor = False
     ParentFont = False
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 2
     Transparent = True
   end
@@ -139,7 +139,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     GroupColor = clBlue
     Native = False
     ParentFont = False
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 3
     Transparent = True
   end

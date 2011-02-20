@@ -55,7 +55,7 @@ object FmSubBoost: TFmSubBoost
     LineColor = 13948116
     LineWidth = 2
     ParentFont = False
-    Radius = 5
+    BorderRadius = 5
     SelectBoxColor = 2105376
     OnChange = SBTypeChange
   end
@@ -102,7 +102,7 @@ object FmSubBoost: TFmSubBoost
     BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object DialLevel: TGuiDial
@@ -320,7 +320,7 @@ object FmSubBoost: TFmSubBoost
     BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 1
     UseDockManager = True
     object DialInputFilter: TGuiDial

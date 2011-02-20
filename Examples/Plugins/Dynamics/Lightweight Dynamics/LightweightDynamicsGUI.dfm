@@ -32,7 +32,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     LineColor = 14277598
     PanelColor = clBlack
     ParentFont = False
-    Radius = 5
+    BorderRadius = 5
     TabOrder = 0
     object LbGateAttack: TGuiLabel
       Left = 58
@@ -345,7 +345,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     LineColor = 14277598
     PanelColor = clBlack
     ParentFont = False
-    Radius = 5
+    BorderRadius = 5
     TabOrder = 1
     object LbCompressorThreshold: TGuiLabel
       Left = 166
@@ -679,7 +679,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     LineColor = 14277598
     PanelColor = clBlack
     ParentFont = False
-    Radius = 5
+    BorderRadius = 5
     TabOrder = 2
     object GuiGraphXY: TGuiGraphXY
       Left = 16
@@ -731,7 +731,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
     LineColor = 14277598
     PanelColor = clBlack
     ParentFont = False
-    Radius = 5
+    BorderRadius = 5
     TabOrder = 3
     object LbLimiterAttack: TGuiLabel
       Left = 103

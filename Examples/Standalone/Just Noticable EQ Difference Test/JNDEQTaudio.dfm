@@ -45,7 +45,7 @@ object FmSetup: TFmSetup
     ItemIndex = -1
     LineColor = clBlack
     LineWidth = 2
-    Radius = 5
+    BorderRadius = 5
     SelectBoxColor = 10333885
     OnChange = SbDriversChange
   end
@@ -72,7 +72,7 @@ object FmSetup: TFmSetup
     ItemIndex = -1
     LineColor = clBlack
     LineWidth = 2
-    Radius = 5
+    BorderRadius = 5
     SelectBoxColor = 10333885
     OnChange = SbChannelsChange
   end
@@ -85,7 +85,7 @@ object FmSetup: TFmSetup
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = LbControlPanelClick

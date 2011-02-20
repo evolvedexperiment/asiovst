@@ -190,7 +190,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     LineColor = 14277598
     LineWidth = 2
     ParentFont = False
-    Radius = 4
+    BorderRadius = 4
     SelectBoxColor = 2829619
     OnChange = SBAlgorithmChange
   end

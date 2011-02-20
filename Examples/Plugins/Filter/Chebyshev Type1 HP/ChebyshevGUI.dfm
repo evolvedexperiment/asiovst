@@ -51,7 +51,7 @@ object FmChebyshev: TFmChebyshev
     BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
-    Radius = 8.000000000000000000
+    BorderRadius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick

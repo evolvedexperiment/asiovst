@@ -60,7 +60,7 @@ object EditorForm: TEditorForm
     GroupColor = 11327984
     Native = False
     ParentFont = False
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 2
     object LbThreshold: TLabel
       Left = 8
@@ -341,7 +341,7 @@ object EditorForm: TEditorForm
     GroupColor = 11327984
     Native = False
     ParentFont = False
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 0
     object LBHighCut: TLabel
       Left = 70
@@ -493,7 +493,7 @@ object EditorForm: TEditorForm
     GroupColor = 11327984
     Native = False
     ParentFont = False
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 1
     object LbKnee: TLabel
       Left = 65

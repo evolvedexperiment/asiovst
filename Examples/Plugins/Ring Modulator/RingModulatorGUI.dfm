@@ -36,7 +36,7 @@ object FmRingModulator: TFmRingModulator
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 0
     object PnDisplay: TGuiPanel
       Left = 8
@@ -48,7 +48,7 @@ object FmRingModulator: TFmRingModulator
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       Transparent = True

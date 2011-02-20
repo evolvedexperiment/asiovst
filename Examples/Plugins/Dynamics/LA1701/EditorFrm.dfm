@@ -29,7 +29,7 @@ object FmLA1701: TFmLA1701
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True
@@ -234,7 +234,7 @@ object FmLA1701: TFmLA1701
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontOversampling = fo3x
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtInClick
@@ -256,7 +256,7 @@ object FmLA1701: TFmLA1701
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontOversampling = fo3x
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtGRClick
@@ -278,7 +278,7 @@ object FmLA1701: TFmLA1701
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontOversampling = fo3x
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtOutClick
@@ -344,7 +344,7 @@ object FmLA1701: TFmLA1701
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbMixValue: TLabel
@@ -386,7 +386,7 @@ object FmLA1701: TFmLA1701
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     Transparent = True
@@ -533,7 +533,7 @@ object FmLA1701: TFmLA1701
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbKneeValue: TLabel
@@ -562,7 +562,7 @@ object FmLA1701: TFmLA1701
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 1
       UseDockManager = True
       object LbInputValue: TLabel
@@ -592,7 +592,7 @@ object FmLA1701: TFmLA1701
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 2
       UseDockManager = True
       object LbRatioValue: TLabel
@@ -621,7 +621,7 @@ object FmLA1701: TFmLA1701
       BorderColor = 3355443
       BorderWidth = 2.000000000000000000
       PanelColor = 1118481
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 3
       UseDockManager = True
       object LbOutputValue: TLabel
