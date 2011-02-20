@@ -34,7 +34,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
     BorderWidth = 2.000000000000000000
     PanelColor = 6908265
     ParentColor = True
-    Radius = 13.000000000000000000
+    BorderRadius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True

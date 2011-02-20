@@ -67,6 +67,53 @@ type
     property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
 
+
+
+
+  // the code below is the result of some brain storming towards finding a new
+  // universal interface for all processing (sink & generator) with different
+  // input / output count and optimizable for different CPU features
+
+  TProcessingSampleFrameEvent = procedure of object;
+  TProcessingSampleFramesEvent = procedure (SampleFrames: Integer)of object;
+
+  TDspSampleRateProcessing = class(TDspSampleRatePersistent)
+  protected
+    FProcessSampleFrame  : TProcessingSampleFrameEvent;
+    FProcessSampleFrames : TProcessingSampleFramesEvent;
+  public
+    property ProcessSampleFrame: TProcessingSampleFrameEvent read FProcessSampleFrame;
+    property ProcessSampleFrames: TProcessingSampleFramesEvent read FProcessSampleFrames;
+  end;
+
+
+  TFloatingPointAccuracy = (fpaMini, fpaHalf, fpaSingle, fpaDouble,
+    fpaExtended);
+
+  TDspSampleRateSink = class(TDspSampleRateProcessing)
+  private
+    FDataType            : TFloatingPointAccuracy;
+    FAutoAdvancePointers : Boolean;
+    procedure SetDataType(const Value: TFloatingPointAccuracy);
+  protected
+    FInputData : Pointer;
+  public
+    procedure ProcessSample32; overload;
+    procedure ProcessSample64; overload;
+    procedure ProcessSample32(Input: Single); overload;
+    procedure ProcessSample64(Input: Double); overload;
+    procedure ProcessBlock32(SampleCount: Integer); overload;
+    procedure ProcessBlock64(SampleCount: Integer); overload;
+    procedure ProcessBlock32(const Data: PDAVDoubleFixedArray; SampleCount: Integer); overload;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); overload;
+
+    property InputData: Pointer read FInputData write FInputData;
+    property DataType: TFloatingPointAccuracy read FDataType write SetDataType;
+    property AutoAdvancePointers: Boolean read FAutoAdvancePointers write FAutoAdvancePointers;
+  end;
+
+
+
   // some interfaces
 
   {.$IFDEF DELPHI7_UP}
@@ -320,9 +367,9 @@ begin
  if Value = 0
   then raise Exception.Create(RCStrInvalidSamplerate);
 
- if FSampleRate <> abs(Value) then
+ if FSampleRate <> Abs(Value) then
   begin
-   FSampleRate := abs(Value);
+   FSampleRate := Abs(Value);
    SampleRateChanged;
   end;
 end;
@@ -417,6 +464,77 @@ end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 
+{ TDspSampleRateSink }
+
+procedure TDspSampleRateSink.ProcessBlock32(const Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+begin
+ FInputData := @Data;
+ DataType := fpaSingle;
+ ProcessSampleFrames(SampleCount);
+ FInputData := nil;
+end;
+
+procedure TDspSampleRateSink.ProcessBlock32(SampleCount: Integer);
+begin
+ DataType := fpaSingle;
+ ProcessSampleFrames(SampleCount);
+ if FAutoAdvancePointers then Inc(PSingle(FInputData));
+end;
+
+procedure TDspSampleRateSink.ProcessBlock64(const Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+begin
+ FInputData := @Data;
+ DataType := fpaDouble;
+ ProcessSampleFrames(SampleCount);
+ FInputData := nil;
+end;
+
+procedure TDspSampleRateSink.ProcessBlock64(SampleCount: Integer);
+begin
+ DataType := fpaDouble;
+ ProcessSampleFrames(SampleCount);
+ if FAutoAdvancePointers then Inc(PDouble(FInputData));
+end;
+
+procedure TDspSampleRateSink.ProcessSample32(Input: Single);
+begin
+ FInputData := @Input;
+ DataType := fpaSingle;
+ ProcessSampleFrame;
+ FInputData := nil;
+end;
+
+procedure TDspSampleRateSink.ProcessSample32;
+begin
+ DataType := fpaSingle;
+ ProcessSampleFrame;
+ if FAutoAdvancePointers then Inc(PSingle(FInputData));
+end;
+
+procedure TDspSampleRateSink.ProcessSample64;
+begin
+ DataType := fpaDouble;
+ ProcessSampleFrame;
+ if FAutoAdvancePointers then Inc(PDouble(FInputData));
+end;
+
+procedure TDspSampleRateSink.ProcessSample64(Input: Double);
+begin
+ FInputData := @Input;
+ DataType := fpaDouble;
+ ProcessSampleFrame;
+ FInputData := nil;
+end;
+
+procedure TDspSampleRateSink.SetDataType(const Value: TFloatingPointAccuracy);
+begin
+ FDataType := Value;
+end;
+
+
+
 { TDAVUpdateAbleObject }
 
 constructor TDAVUpdateAbleObject.Create(AOwner: TPersistent);
@@ -459,6 +577,7 @@ begin
   end;
 end;
 
+
 { TDAVCadenceAbleComponent }
 
 procedure TDAVCadenceAbleComponent.RemoveFreeNotification(
@@ -466,6 +585,7 @@ procedure TDAVCadenceAbleComponent.RemoveFreeNotification(
 begin
  Notification(AComponent, opRemove);
 end;
+
 
 { TDAVUpdateAbleComponent }
 
@@ -553,6 +673,7 @@ begin
  for i := 0 to Length(AClasses) - 1
   do RegisterDspProcessor64(AClasses[i]);
 end;
+
 
 { TNotifiableComponent }
 

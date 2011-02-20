@@ -158,7 +158,7 @@ type
 implementation
 
 uses
-  DAV_Approximations;
+  Math, DAV_Approximations;
 
 const
   CMeanSquareBias : Single = 1E-10;
@@ -177,14 +177,16 @@ begin
    F2600msSampleCount := Round(2.6 * Abs(SampleRate));
   end;
 
+ Assert(F400msSampleCount > 0);
  FMomIntScale := 1 / F400msSampleCount;
  FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
  FOverlapSamples := F400msSampleCount div 4;
 
- FMomIntSum := 0;
- FShortIntSum := 0;
- FAbsoluteGatedSum := 0;
+ FMomIntSum := CMeanSquareBias;
+ FShortIntSum := CMeanSquareBias;
+ FAbsoluteGatedSum := CMeanSquareBias;
 
+ CalculateUpdateSampleCount;
  ResetPeak;
 end;
 
@@ -196,7 +198,7 @@ end;
 
 procedure TCustomR128.ResetPeak;
 begin
- FPeakHold := 0;
+ FPeakHold := CMeanSquareBias;
 end;
 
 procedure TCustomR128.ResetUpdate;
@@ -270,16 +272,19 @@ end;
 
 function TCustomR128.GetLoudnessMomentary: Single;
 begin
+ Assert(FMomIntSum > 0);
  Result := -0.691 + 10 * FastLog10ContinousError3(FMomIntSum);
 end;
 
 function TCustomR128.GetLoudnessShort: Single;
 begin
+ Assert(FShortIntSum > 0);
  Result := -0.691 + 10 * FastLog10ContinousError3(FShortIntSum);
 end;
 
 function TCustomR128.GetPeakHold: Single;
 begin
+ Assert(FPeakHold > 0);
  Result := -0.691 + 10 * FastLog10ContinousError3(FPeakHold);
 end;
 
@@ -349,9 +354,10 @@ var
   ItemCount    : Integer;
 begin
  // calculate integrated loudness level
- if FAbsoluteGatedCount = 0
-  then Value := CMeanSquareBias
-  else Value := FAbsoluteGatedValue / FAbsoluteGatedCount;
+ Value := CMeanSquareBias;
+ if FAbsoluteGatedCount <> 0
+  then Value := Value + FAbsoluteGatedValue / FAbsoluteGatedCount;
+ Assert(Value > 0);
  Loudness := -0.691 + 10 * FastLog10ContinousError3(Value) - 8;
 
  // calculate integrated loudness level
@@ -370,8 +376,9 @@ begin
 
  if ItemCount = 0
   then Value := CMeanSquareBias
-  else Value := Value / ItemCount;
+  else Value := CMeanSquareBias + Value / ItemCount;
 
+ Assert(Value > 0);
  Result := -0.691 + 10 * FastLog10ContinousError3(Value);
 end;
 
@@ -390,7 +397,7 @@ begin
  // allocate memory for loudness record
  GetMem(LLRec, SizeOf(TLinkedLoudnessRecord));
 
- // set loudness / Value
+ // set Loudness & Value
  LLRec^.Loudness := Loudness;
  LLRec^.Value := Value;
 
@@ -436,6 +443,7 @@ begin
    F400msSampleCount := Round(0.4 * Abs(SampleRate));
    F2600msSampleCount := Round(2.6 * Abs(SampleRate));
 
+   Assert(F400msSampleCount > 0);
    FMomIntScale := 1 / F400msSampleCount;
    FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
 
@@ -578,12 +586,12 @@ var
   ItemCount    : Integer;
 begin
  // calculate integrated loudness level
- if FAbsoluteGatedCount[0] = 0
-  then Value[0] := CMeanSquareBias
-  else Value[0] := FAbsoluteGatedValue[0] / FAbsoluteGatedCount[0];
- if FAbsoluteGatedCount[1] = 0
-  then Value[1] := CMeanSquareBias
-  else Value[1] := FAbsoluteGatedValue[1] / FAbsoluteGatedCount[1];
+ Value[0] := CMeanSquareBias;
+ if FAbsoluteGatedCount[0] <> 0
+  then Value[0] := Value[0] + FAbsoluteGatedValue[0] / FAbsoluteGatedCount[0];
+ Value[1] := CMeanSquareBias;
+ if FAbsoluteGatedCount[1] <> 0
+  then Value[1] := Value[1] + FAbsoluteGatedValue[1] / FAbsoluteGatedCount[1];
  Loudness := -0.691 + 10 * FastLog10ContinousError3(Value[0] + Value[1]) - 8;
 
  // calculate integrated loudness level
@@ -601,9 +609,10 @@ begin
      Value[ChannelIndex] := Value[ChannelIndex] + LLRec^.Value;
      LLRec := LLRec^.Next;
     end;
+
    if ItemCount = 0
     then Value[ChannelIndex] := CMeanSquareBias
-    else Value[ChannelIndex] := Value[ChannelIndex] / ItemCount;
+    else Value[ChannelIndex] := CMeanSquareBias + Value[ChannelIndex] / ItemCount;
   end;
 
  Result := -0.691 + 10 * FastLog10ContinousError3(Value[0] + Value[1]);
@@ -625,7 +634,7 @@ begin
  // allocate memory for loudness record
  GetMem(LLRec, SizeOf(TLinkedLoudnessRecord));
 
- // set loudness / Value
+ // set Loudness & Value
  LLRec^.Loudness := Loudness;
  LLRec^.Value := Value;
 
@@ -675,6 +684,7 @@ begin
    F400msSampleCount := Round(0.4 * Abs(SampleRate));
    F2600msSampleCount := Round(2.6 * Abs(SampleRate));
 
+   Assert(F400msSampleCount > 0);
    FMomIntScale := 1 / F400msSampleCount;
    FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
 
@@ -737,7 +747,7 @@ begin
 
  // eventually update loudness
  Dec(FUpdateSamples);
- if FUpdateSamples < 0 then
+ if FUpdateSamples <= 0 then
   begin
    FUpdateSamples := FUpdateSampleCount - 1;
    UpdateLoudness;
@@ -810,7 +820,7 @@ begin
 
  // eventually update loudness
  Dec(FUpdateSamples);
- if FUpdateSamples < 0 then
+ if FUpdateSamples <= 0 then
   begin
    FUpdateSamples := FUpdateSampleCount - 1;
    UpdateLoudness;

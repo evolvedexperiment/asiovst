@@ -67,7 +67,7 @@ object FmHumRemoval: TFmHumRemoval
     GroupColor = clBlack
     Native = False
     ParentFont = False
-    Radius = 8.000000000000000000
+    BorderRadius = 8.000000000000000000
     TabOrder = 1
     object LbHighpassFrequency: TGuiLabel
       Left = 10
@@ -212,7 +212,7 @@ object FmHumRemoval: TFmHumRemoval
     GroupColor = clBlack
     Native = False
     ParentFont = False
-    Radius = 8.000000000000000000
+    BorderRadius = 8.000000000000000000
     TabOrder = 2
     object LbFundamentalFrequency: TGuiLabel
       Left = 10

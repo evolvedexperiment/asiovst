@@ -131,7 +131,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object LbMaxxBass: TGuiButton
@@ -149,7 +149,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object LbOriginalBass: TGuiButton
@@ -167,7 +167,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object LbClipIndicator: TGuiButton
@@ -185,7 +185,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object SBFrequency: TGuiSlider
@@ -217,7 +217,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton2: TGuiButton
@@ -235,7 +235,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton3: TGuiButton
@@ -253,7 +253,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton4: TGuiButton
@@ -271,7 +271,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton5: TGuiButton
@@ -289,7 +289,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton6: TGuiButton
@@ -307,7 +307,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton7: TGuiButton
@@ -325,7 +325,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton8: TGuiButton
@@ -343,7 +343,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiButton9: TGuiButton
@@ -361,7 +361,7 @@ object FmHarmonicBassClone: TFmHarmonicBassClone
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Transparent = False
   end
   object GuiFader1: TGuiFader

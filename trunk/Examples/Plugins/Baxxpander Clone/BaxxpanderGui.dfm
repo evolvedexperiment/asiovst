@@ -32,7 +32,7 @@ object FmBaxxpanderGui: TFmBaxxpanderGui
     BorderWidth = 2.500000000000000000
     PanelColor = 1644825
     ParentColor = True
-    Radius = 16.000000000000000000
+    BorderRadius = 16.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True

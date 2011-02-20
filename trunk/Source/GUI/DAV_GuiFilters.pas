@@ -132,6 +132,12 @@ type
     procedure Filter(PixelMap: TGuiCustomPixelMap); override;
   end;
 
+  TGuiSharpenFilter = class(TGuiCustomFilter)
+  public
+    procedure Filter(ByteMap: TGuiCustomByteMap); override;
+    procedure Filter(PixelMap: TGuiCustomPixelMap); override;
+  end;
+
 implementation
 
 uses
@@ -495,6 +501,162 @@ begin
  Data := PixelMap.DataPointer;
  for Index := 0 to PixelMap.Width * PixelMap.Height - 1
   do Data^[Index].ARGB := not Data^[Index].ARGB;
+end;
+
+
+{ TGuiSharpenFilter }
+
+procedure TGuiSharpenFilter.Filter(ByteMap: TGuiCustomByteMap);
+var
+  y, x      : Integer;
+  n, j      : Integer;
+  Dest      : PByteArray;
+  ByteArray : array [0..7] of Byte;
+  Sum       : Cardinal;
+  Reference : Byte;
+  Temp      : Byte;
+begin
+ with ByteMap do
+  for y := 0 to Height - 1 do
+   begin
+    Dest := ScanLine[y];
+    for x := 0 to Width - 1 do
+     begin
+      n := 0;
+
+      // get surrounding pixels
+      if (y > 0) then
+       begin
+        if (x > 0) then ByteArray[0] := Value[x - 1, y - 1];
+        ByteArray[1] := Value[x, y - 1];
+        if (x < Width - 1) then ByteArray[2] := Value[x + 1, y - 1];
+       end
+      else
+       begin
+        ByteArray[0] := 0;
+        ByteArray[1] := 0;
+        ByteArray[2] := 0;
+       end;
+      if (x > 0)          then ByteArray[3] := Value[x - 1, y];
+      if (x < Width - 1) then ByteArray[4] := Value[x + 1, y];
+      if (y < Height - 1) then
+       begin
+        if (x > 0) then ByteArray[5] := Value[x - 1, y + 1];
+        ByteArray[6] := Value[x, y + 1];
+        if (x < Height - 1) then ByteArray[7] := Value[x + 1, y + 1];
+       end
+      else
+       begin
+        ByteArray[5] := 0;
+        ByteArray[6] := 0;
+        ByteArray[7] := 0;
+       end;
+
+      // initialize sum
+      Sum := 0;
+
+      for j := 0 to n - 1 do
+       begin
+        Temp := ByteArray[j];
+        Sum  := Sum + Temp;
+       end;
+
+      if (Sum = 0)
+       then Reference := 0
+       else Reference := (Sum + n shr 1) div n;
+
+      Temp := Value[x, y];
+      if Reference <> 0
+       then Temp := Limit(2 * Temp - Reference, 0, 255);
+      Dest^[x] := Temp;
+     end;
+   end;
+end;
+
+procedure TGuiSharpenFilter.Filter(PixelMap: TGuiCustomPixelMap);
+var
+  y, x         : Integer;
+  dx, dy, n, j : Integer;
+  Dest         : PPixel32Array;
+  PixelArray   : array [0..7] of TPixel32;
+  SumR, SumG   : Cardinal;
+  SumB, SumA   : Cardinal;
+  RGBdiv       : Cardinal;
+  RefPixel     : TPixel32;
+  TempPixel    : TPixel32;
+begin
+ with PixelMap do
+  for y := 0 to Height - 1 do
+   begin
+    Dest := ScanLine[y];
+    for x := 0 to Width - 1 do
+     begin
+      n := 0;
+
+      // get surrounding pixels
+      if (y > 0) then
+       begin
+        if (x > 0) then PixelArray[0] := Pixel[x - 1, y - 1];
+        PixelArray[1] := Pixel[x, y - 1];
+        if (x < Width - 1) then PixelArray[2] := Pixel[x + 1, y - 1];
+       end
+      else
+       begin
+        PixelArray[0].ARGB := 0;
+        PixelArray[1].ARGB := 0;
+        PixelArray[2].ARGB := 0;
+       end;
+      if (x > 0)          then PixelArray[3] := Pixel[x - 1, y];
+      if (x < Width - 1) then PixelArray[4] := Pixel[x + 1, y];
+      if (y < Height - 1) then
+       begin
+        if (x > 0) then PixelArray[5] := Pixel[x - 1, y + 1];
+        PixelArray[6] := Pixel[x, y + 1];
+        if (x < Height - 1) then PixelArray[7] := Pixel[x + 1, y + 1];
+       end
+      else
+       begin
+        PixelArray[5].ARGB := 0;
+        PixelArray[6].ARGB := 0;
+        PixelArray[7].ARGB := 0;
+       end;
+
+      // initialize sums
+      SumR := 0;
+      SumG := 0;
+      SumB := 0;
+      SumA := 0;
+      RGBdiv := 0;
+
+      for j := 0 to n - 1 do
+       begin
+        TempPixel := PixelArray[j];
+        SumR      := SumR + TempPixel.R * TempPixel.A;
+        SumG      := SumG + TempPixel.G * TempPixel.A;
+        SumB      := SumB + TempPixel.B * TempPixel.A;
+        RGBdiv    := RGBdiv + TempPixel.A;
+        SumA      := SumA + TempPixel.A;
+       end;
+
+      if (RGBdiv = 0) then RefPixel.ARGB := 0 else
+       begin
+        RefPixel.R := (SumR + RGBdiv shr 1) div RGBdiv;
+        RefPixel.G := (SumG + RGBdiv shr 1) div RGBdiv;
+        RefPixel.B := (SumB + RGBdiv shr 1) div RGBdiv;
+        RefPixel.A := (SumA + n shr 1) div n;
+       end;
+
+      TempPixel := Pixel[x, y];
+      if RefPixel.ARGB <> 0 then
+       begin
+        TempPixel.R := Limit(2 * TempPixel.R - RefPixel.R, 0, 255);
+        TempPixel.G := Limit(2 * TempPixel.G - RefPixel.G, 0, 255);
+        TempPixel.B := Limit(2 * TempPixel.B - RefPixel.B, 0, 255);
+        TempPixel.A := Limit(2 * TempPixel.A - RefPixel.A, 0, 255);
+       end;
+      Dest^[x] := TempPixel;
+     end;
+   end;
 end;
 
 end.

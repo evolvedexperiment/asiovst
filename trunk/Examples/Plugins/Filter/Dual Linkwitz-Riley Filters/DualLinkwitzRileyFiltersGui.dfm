@@ -89,7 +89,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     Shadow.Blur = 3.000000000000000000
     Shadow.Color = 3226174
     Shadow.Opacity = 100
@@ -216,7 +216,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       BorderWidth = 2.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       Transparent = True

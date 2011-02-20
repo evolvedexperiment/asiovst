@@ -197,7 +197,7 @@ object FmMegaDemo: TFmMegaDemo
         BorderWidth = 1.500000000000000000
         Caption = 'Typical Group'
         Native = False
-        Radius = 5.000000000000000000
+        BorderRadius = 5.000000000000000000
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -223,7 +223,7 @@ object FmMegaDemo: TFmMegaDemo
         BorderWidth = 1.500000000000000000
         Caption = 'Top Group'
         Native = False
-        Radius = 5.000000000000000000
+        BorderRadius = 5.000000000000000000
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100
@@ -249,7 +249,7 @@ object FmMegaDemo: TFmMegaDemo
         BorderWidth = 1.500000000000000000
         Caption = 'Side Group'
         Native = False
-        Radius = 5.000000000000000000
+        BorderRadius = 5.000000000000000000
         Shadow.Blur = 2.000000000000000000
         Shadow.Opacity = 128
         Shadow.Saturation = 0.100000001490116100

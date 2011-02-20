@@ -47,7 +47,7 @@ object FmPanelTest: TFmPanelTest
     BorderWidth = 2.000000000000000000
     PanelColor = clBlue
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PanelAClick
@@ -62,7 +62,7 @@ object FmPanelTest: TFmPanelTest
     BorderWidth = 2.000000000000000000
     PanelColor = clLime
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     OnClick = PanelBClick
@@ -77,7 +77,7 @@ object FmPanelTest: TFmPanelTest
     BorderWidth = 2.000000000000000000
     PanelColor = clRed
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 2
     UseDockManager = True
   end
@@ -91,7 +91,7 @@ object FmPanelTest: TFmPanelTest
     BorderWidth = 2.000000000000000000
     PanelColor = clYellow
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 3
     UseDockManager = True
   end

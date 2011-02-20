@@ -50,7 +50,7 @@ type
     FCanvas      : TCanvas;
     FCaption     : string;
     FGuiFont     : TGuiOversampledGDIFont;
-    FRadius      : Single;
+    FBorderRadius      : Single;
     FTransparent : Boolean;
     FOnPaint     : TNotifyEvent;
     function GetShadow: TGUIShadow;
@@ -60,7 +60,7 @@ type
     procedure SetBorderWidth(const Value: Single);
     procedure SetButtonColor(const Value: TColor);
     procedure SetCaption(const Value: string);
-    procedure SetRadius(Value: Single);
+    procedure SetBorderRadius(Value: Single);
     procedure SetShadow(const Value: TGUIShadow);
     procedure SetTransparent(const Value: Boolean);
     procedure SetOversampling(const Value: TFontOversampling);
@@ -86,10 +86,10 @@ type
 
     procedure AlignmentChanged; virtual;
     procedure BorderColorChanged; virtual;
+    procedure BorderRadiusChanged; virtual;
     procedure BorderWidthChanged; virtual;
     procedure ButtonColorChanged; virtual;
     procedure CaptionChanged; virtual;
-    procedure RadiusChanged; virtual;
     procedure TransparentChanged; virtual;
 
     property Canvas: TCanvas read FCanvas;
@@ -99,11 +99,11 @@ type
 
     property Alignment: TAlignment read FAlignment write SetAlignment;
     property BorderColor: TColor read FBorderColor write SetBorderColor default clBtnShadow;
+    property BorderRadius: Single read FBorderRadius write SetBorderRadius;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnFace;
     property Caption: string read FCaption write SetCaption;
     property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
-    property Radius: Single read FRadius write SetRadius;
     property Shadow: TGUIShadow read GetShadow write SetShadow;
     property Transparent: Boolean read FTransparent write SetTransparent;
 
@@ -117,6 +117,7 @@ type
     property Alignment;
     property BorderColor;
     property BorderWidth;
+    property BorderRadius;
     property ButtonColor;
     property Caption;
     property Color;
@@ -128,7 +129,6 @@ type
     property Font;
     property FontOversampling;
     property PopupMenu;
-    property Radius;
     property Shadow;
     property ShowHint;
     property Transparent;
@@ -184,7 +184,7 @@ begin
 
  FAlignment   := taCenter;
  FCaption     := 'empty';
- FRadius      := 2;
+ FBorderRadius      := 2;
  FBorderWidth := 1;
  FButtonColor := clBtnShadow;
 end;
@@ -286,7 +286,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiButton.RadiusChanged;
+procedure TCustomGuiButton.BorderRadiusChanged;
 begin
  BufferChanged;
 end;
@@ -378,7 +378,7 @@ begin
     else BorderColor := ConvertColor(FBorderColor);
 
    // draw circle
-   Radius := Min(Min(FRadius, 0.5 * Width), 0.5 * Height) + 1;
+   Radius := Min(Min(FBorderRadius, 0.5 * Width), 0.5 * Height) + 1;
    BorderWidth := Max(FBorderWidth, 1);
 
    RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
@@ -561,13 +561,13 @@ begin
  FGuiFont.FontOversampling := Value;
 end;
 
-procedure TCustomGuiButton.SetRadius(Value: Single);
+procedure TCustomGuiButton.SetBorderRadius(Value: Single);
 begin
  if Value < 0 then Value := 0;
- if FRadius <> Value then
+ if FBorderRadius <> Value then
   begin
-   FRadius := Value;
-   RadiusChanged;
+   FBorderRadius := Value;
+   BorderRadiusChanged;
   end;
 end;
 

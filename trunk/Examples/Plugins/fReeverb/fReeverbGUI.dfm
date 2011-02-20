@@ -25,7 +25,7 @@ object FmReverb: TFmReverb
     BorderWidth = 2.000000000000000000
     PanelColor = clWhite
     ParentColor = True
-    Radius = 9.000000000000000000
+    BorderRadius = 9.000000000000000000
     TabOrder = 2
     UseDockManager = True
     Transparent = True
@@ -179,7 +179,7 @@ object FmReverb: TFmReverb
         'Random 23')
       LineColor = clSilver
       ParentFont = False
-      Radius = 4
+      BorderRadius = 4
       SelectBoxColor = 2960685
       OnChange = SBPresetChange
     end
@@ -216,7 +216,7 @@ object FmReverb: TFmReverb
       Font.Name = 'Tahoma'
       Font.Style = []
       FontOversampling = fo4x
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
     end
@@ -236,7 +236,7 @@ object FmReverb: TFmReverb
       Font.Name = 'Tahoma'
       Font.Style = []
       FontOversampling = fo4x
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtAboutClick

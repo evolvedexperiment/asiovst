@@ -392,7 +392,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 9.000000000000000000
+    BorderRadius = 9.000000000000000000
     TabOrder = 1
     UseDockManager = True
     object LbLowThreshold: TGuiLabel
@@ -752,7 +752,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 9.000000000000000000
+    BorderRadius = 9.000000000000000000
     TabOrder = 3
     UseDockManager = True
     object LbLowMidThreshold: TGuiLabel
@@ -1133,7 +1133,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 9.000000000000000000
+    BorderRadius = 9.000000000000000000
     TabOrder = 2
     UseDockManager = True
     object LbHighMidThreshold: TGuiLabel
@@ -1514,7 +1514,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    Radius = 9.000000000000000000
+    BorderRadius = 9.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object LbHighThreshold: TGuiLabel

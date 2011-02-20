@@ -215,7 +215,7 @@ object FmSplitter: TFmSplitter
       LineColor = clBlack
       LineWidth = 2
       ParentFont = False
-      Radius = 4
+      BorderRadius = 4
       SelectBoxColor = 7701642
       OnChange = SBModeChange
     end
@@ -235,7 +235,7 @@ object FmSplitter: TFmSplitter
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontFontOversampling = fo4x
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       Transparent = False
@@ -257,7 +257,7 @@ object FmSplitter: TFmSplitter
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       FontFontOversampling = fo4x
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Shadow.Color = clBlack
       Transparent = False

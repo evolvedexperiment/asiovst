@@ -43,7 +43,7 @@ object FmCombo: TFmCombo
     LineColor = 2039583
     LineWidth = 2
     ParentFont = False
-    Radius = 8
+    BorderRadius = 8
     SelectBoxColor = 4227200
     OnChange = SBModelChange
   end
@@ -93,7 +93,7 @@ object FmCombo: TFmCombo
     BorderWidth = 2.000000000000000000
     PanelColor = 4227200
     ParentColor = True
-    Radius = 8.000000000000000000
+    BorderRadius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick

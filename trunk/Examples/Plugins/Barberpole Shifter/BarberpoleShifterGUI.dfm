@@ -36,7 +36,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     Shadow.Blur = 1.000000000000000000
     Shadow.Opacity = 192
     Shadow.Visible = True
@@ -55,7 +55,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       DesignSize = (
@@ -114,7 +114,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     Shadow.Blur = 1.000000000000000000
     Shadow.Opacity = 192
     Shadow.Visible = True
@@ -133,7 +133,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       DesignSize = (

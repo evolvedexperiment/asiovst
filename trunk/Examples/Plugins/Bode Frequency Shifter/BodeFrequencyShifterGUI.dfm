@@ -36,7 +36,7 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 0
     DesignSize = (
       105
@@ -51,7 +51,7 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       DesignSize = (
@@ -110,7 +110,7 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 1
     DesignSize = (
       98
@@ -125,7 +125,7 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
       BorderWidth = 1.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       DesignSize = (

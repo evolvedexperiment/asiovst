@@ -175,7 +175,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     FontOversampling = fo4x
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clWhite
     Shadow.OffsetX = 0
@@ -202,7 +202,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     FontOversampling = fo4x
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clWhite
     Shadow.OffsetX = 0
@@ -229,7 +229,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     FontOversampling = fo4x
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clWhite
     Shadow.OffsetX = 0

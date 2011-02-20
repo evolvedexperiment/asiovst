@@ -26,7 +26,7 @@ object EditorForm: TEditorForm
     BorderWidth = 2.000000000000000000
     PanelColor = 14602441
     ParentColor = True
-    Radius = 15.000000000000000000
+    BorderRadius = 15.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True

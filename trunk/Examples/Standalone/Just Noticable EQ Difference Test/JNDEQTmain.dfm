@@ -215,7 +215,7 @@ object FmJNDEQT: TFmJNDEQT
     Native = False
     ParentColor = False
     ParentFont = False
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 2
     DesignSize = (
       312
@@ -455,7 +455,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 3
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
@@ -493,7 +493,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 4
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
@@ -530,7 +530,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 5
     UseDockManager = True
     OnMouseDown = LbSelectionMouseDown
@@ -564,7 +564,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 6
     UseDockManager = True
     OnClick = LbXisAClick
@@ -602,7 +602,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 7
     UseDockManager = True
     OnClick = LbXisBClick
@@ -640,7 +640,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 8
     UseDockManager = True
     OnClick = LbXisAClick

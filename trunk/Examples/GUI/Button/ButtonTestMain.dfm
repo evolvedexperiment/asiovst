@@ -43,7 +43,7 @@ object FmButton: TFmButton
     BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button A'
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
     OnClick = ButtonAClick
@@ -58,7 +58,7 @@ object FmButton: TFmButton
     BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button B'
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
   end
@@ -72,7 +72,7 @@ object FmButton: TFmButton
     BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button C'
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
   end
@@ -86,7 +86,7 @@ object FmButton: TFmButton
     BorderWidth = 1.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button D'
-    Radius = 2.000000000000000000
+    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
   end

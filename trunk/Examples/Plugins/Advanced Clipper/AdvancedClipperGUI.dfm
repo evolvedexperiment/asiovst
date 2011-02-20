@@ -37,7 +37,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 0
     object LbInputGain: TGuiLabel
       Left = 11
@@ -97,7 +97,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Enabled = False
       PanelColor = 4938079
       ParentColor = True
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbDisplay: TGuiLabel
@@ -181,7 +181,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 1
     object LbOSFactor2: TGuiLabel
       Left = 11
@@ -240,7 +240,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderWidth = 1.000000000000000000
       PanelColor = 4938079
       ParentColor = True
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbHardClip: TGuiLabel
@@ -332,7 +332,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     BorderWidth = 2.000000000000000000
     PanelColor = 7373965
     ParentColor = True
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 2
     UseDockManager = True
     object LbClipInput: TGuiLabel

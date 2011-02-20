@@ -271,7 +271,7 @@ object FmVT: TFmVT
     BorderWidth = 2.000000000000000000
     PanelColor = 103128
     ParentColor = True
-    Radius = 8.000000000000000000
+    BorderRadius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     Transparent = True

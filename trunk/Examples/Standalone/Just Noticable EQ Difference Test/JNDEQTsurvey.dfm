@@ -150,7 +150,7 @@ object FmSurvey: TFmSurvey
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     DesignSize = (
@@ -183,7 +183,7 @@ object FmSurvey: TFmSurvey
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 4.000000000000000000
+    BorderRadius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     DesignSize = (
@@ -215,7 +215,7 @@ object FmSurvey: TFmSurvey
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     TabOrder = 2
     UseDockManager = True
     OnClick = PnOKClick

@@ -41,7 +41,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     OutlineWidth = 3
     PanelColor = 7373965
     ParentFont = False
-    Radius = 7
+    BorderRadius = 7
     TabOrder = 0
     object LbIFrequency: TGuiLabel
       Left = 11
@@ -104,7 +104,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       BorderWidth = 2.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       Transparent = True
@@ -186,7 +186,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     HeaderMinWidth = 64
     LineColor = 15659506
     ParentFont = False
-    Radius = 7
+    BorderRadius = 7
     TabOrder = 1
     Visible = False
     object GuiEQGraph: TGuiEQGraph

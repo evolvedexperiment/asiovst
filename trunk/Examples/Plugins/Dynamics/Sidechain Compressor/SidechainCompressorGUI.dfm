@@ -805,7 +805,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     BorderWidth = 2.000000000000000000
     PanelColor = 4341035
     ParentColor = True
-    Radius = 3.000000000000000000
+    BorderRadius = 3.000000000000000000
     TabOrder = 14
     UseDockManager = True
     DesignSize = (

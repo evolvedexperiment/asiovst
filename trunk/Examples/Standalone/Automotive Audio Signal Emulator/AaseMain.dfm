@@ -149,7 +149,7 @@ object FmAASE: TFmAASE
     ButtonColor = 1074095
     Caption = 'Start Audio'
     FontOversampling = fo4x
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     Shadow.Blur = 2.000000000000000000
     Shadow.OffsetX = 0
     Shadow.OffsetY = 0
@@ -170,7 +170,7 @@ object FmAASE: TFmAASE
     ButtonColor = 1074095
     Caption = '[none]'
     FontOversampling = fo4x
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     Shadow.Blur = 2.000000000000000000
     Shadow.OffsetX = 0
     Shadow.OffsetY = 0
@@ -191,7 +191,7 @@ object FmAASE: TFmAASE
     Caption = 'Oscillators'
     GroupColor = 1074095
     Native = False
-    Radius = 5.000000000000000000
+    BorderRadius = 5.000000000000000000
     Shadow.Blur = 2.000000000000000000
     Shadow.OffsetX = 0
     Shadow.OffsetY = 0
@@ -820,7 +820,7 @@ object FmAASE: TFmAASE
       BorderWidth = 1.500000000000000000
       PanelColor = 1074095
       ParentColor = True
-      Radius = 5.000000000000000000
+      BorderRadius = 5.000000000000000000
       TabOrder = 18
       UseDockManager = True
       Transparent = True

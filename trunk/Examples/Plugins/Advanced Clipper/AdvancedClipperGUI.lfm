@@ -27,6 +27,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Height = 105
     AntiAlias = gaaLinear4x
     Caption = ' Stage 1 '
+    BorderRadius = 7
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 7373965
     Font.Height = -16
@@ -38,7 +39,6 @@ object FmAdvancedClipper: TFmAdvancedClipper
     OutlineWidth = 3
     PanelColor = 7373965
     ParentFont = False
-    Radius = 7
     TabOrder = 0
     object LbInputGain: TGuiLabel
       Left = 11
@@ -102,7 +102,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderWidth = 1.000000000000000000
       PanelColor = 4938079
       ParentColor = True
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbDisplay: TGuiLabel
@@ -181,7 +181,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     OutlineWidth = 3
     PanelColor = 7373965
     ParentFont = False
-    Radius = 7
+    BorderRadius = 7
     TabOrder = 1
     object LbOSFactor2: TGuiLabel
       Left = 11
@@ -244,7 +244,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderWidth = 1.000000000000000000
       PanelColor = 4938079
       ParentColor = True
-      Radius = 4.000000000000000000
+      BorderRadius = 4.000000000000000000
       TabOrder = 0
       UseDockManager = True
       object LbHardClip: TGuiLabel
@@ -330,7 +330,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     BorderWidth = 2.000000000000000000
     PanelColor = 7373965
     ParentColor = True
-    Radius = 7.000000000000000000
+    BorderRadius = 7.000000000000000000
     TabOrder = 2
     UseDockManager = True
     object LbClipInput: TGuiLabel
