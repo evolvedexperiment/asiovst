@@ -447,7 +447,7 @@ begin
      Center.Im := ConvertFromFixed24Dot8Point(CenterY);
 
      // inner radius
-     SqrMinusWidth := Sqr(BranchlessClipPositive(SingleRadius - Self.Width.Fixed * CFixed24Dot8ToFloat));
+     SqrMinusWidth := Sqr(BranchlessClipPositive(SingleRadius - LineWidth.Fixed * CFixed24Dot8ToFloat));
     end;
 
    // calculate affected scanlines
@@ -497,8 +497,134 @@ begin
 end;
 
 procedure TGuiPixelFrameCircle.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
+var
+  X, Y           : Integer;
+  ScnLne         : PPixel32Array;
+  PixelColor32   : TPixel32;
+  CombColor      : TPixel32;
+  YRange         : array [0..1] of Integer;
+  XRange         : array [0..1] of Integer;
+  OuterRadius    : TFixed24Dot8Point;
+  InnerRadius    : TFixed24Dot8Point;
+  CenterX        : TFixed24Dot8Point;
+  CenterY        : TFixed24Dot8Point;
+  XStart         : TFixed24Dot8Point;
+  SqrYDist       : TFixed24Dot8Point;
+  SqrDist        : TFixed24Dot8Point;
+  SqrOuterRad    : TFixed24Dot8Point;
+  SqrInnerRad    : TFixed24Dot8Point;
+  SqrInnerRadOne : TFixed24Dot8Point;
+  {$IFNDEF Simple}
+  PixelLineCount : Integer;
+  {$ENDIF}
 begin
- DrawDraftShape(PixelMap);
+ with PixelMap do
+  begin
+   // transfer the GeometricShape data to local variables
+   PixelColor32 := ConvertColor(Color);
+   PixelColor32.A := Alpha;
+
+   OuterRadius.Fixed := GeometricShape.Radius.Fixed + CFixed24Dot8One.Fixed;
+   InnerRadius.Fixed := GeometricShape.Radius.Fixed - LineWidth.Fixed;
+   CenterX := GeometricShape.CenterX;
+   CenterY := GeometricShape.CenterY;
+
+   // calculate affected scanlines
+   YRange[0] := FixedRound(FixedSub(CenterY, OuterRadius));
+   YRange[1] := FixedRound(FixedAdd(CenterY, OuterRadius));
+
+   // check whether the bitmap needs to be drawn at all
+   if YRange[0] >= Height then Exit;
+   if YRange[1] < 0 then Exit;
+   if FixedRound(FixedSub(CenterX, OuterRadius)) >= Width then Exit;
+   if FixedRound(FixedAdd(CenterX, OuterRadius)) < 0 then Exit;
+
+   // eventually limit range
+   if YRange[0] < 0 then YRange[0] := 0;
+   if YRange[1] >= Height then YRange[1] := Height - 1;
+
+   if OuterRadius.Fixed > 0
+    then SqrOuterRad := FixedSqr(FixedSub(OuterRadius, CFixed24Dot8One))
+    else SqrOuterRad.Fixed := 0;
+
+   if InnerRadius.Fixed > 0 then
+    begin
+     SqrInnerRadOne := FixedSqr(FixedAdd(InnerRadius, CFixed24Dot8One));
+     SqrInnerRad := FixedSqr(InnerRadius);
+    end
+   else
+    begin
+     SqrInnerRad.Fixed := 0;
+     SqrInnerRad.Fixed := 0;
+    end;
+
+   for Y := YRange[0] to YRange[1] do
+    begin
+     // calculate squared vertical distance
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
+
+     XStart.Fixed := FixedSqr(OuterRadius).Fixed - SqrYDist.Fixed;
+     if XStart.Fixed <= 0
+      then Continue
+      else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
+
+     // calculate affected pixels within this scanline
+     XRange[0] := FixedRound(FixedSub(CenterX, XStart));
+     XRange[1] := FixedRound(FixedAdd(CenterX, XStart));
+
+     // eventually limit range
+     if XRange[0] < 0 then XRange[0] := 0;
+     if XRange[1] >= Width then XRange[1] := Width - 1;
+
+     ScnLne := Scanline[Y];
+     X := XRange[0];
+     while X <= XRange[1] do
+      begin
+       // calculate squared distance
+       SqrDist.Fixed := X shl 8 - CenterX.Fixed;
+       SqrDist.Fixed := FixedSqr(SqrDist).Fixed + SqrYDist.Fixed;
+       CombColor := PixelColor32;
+       if SqrDist.Fixed >= SqrOuterRad.Fixed then
+        begin
+         SqrDist.Fixed := OuterRadius.Fixed - FixedSqrt(SqrDist).Fixed;
+         if SqrDist.Fixed < $FF
+          then CombColor.A := ((SqrDist.Fixed * CombColor.A + $7F) shr 8);
+         BlendPixelInplace(CombColor, ScnLne[X]);
+         Inc(X);
+        end else
+       if SqrDist.Fixed >= SqrInnerRadOne.Fixed then
+        begin
+         BlendPixelInplace(PixelColor32, ScnLne[X]);
+         Inc(X);
+        end
+       else
+       if SqrDist.Fixed > SqrInnerRad.Fixed then
+        begin
+         SqrDist.Fixed := InnerRadius.Fixed - FixedSqrt(SqrDist).Fixed;
+         if SqrDist.Fixed < $FF
+          then CombColor.A := $FF - ((SqrDist.Fixed * CombColor.A + $7F) shr 8)
+          else CombColor.A := 0;
+         BlendPixelInplace(CombColor, ScnLne[X]);
+         Inc(X);
+        end
+       else
+        begin
+         {$IFDEF Simple}
+         Inc(X);
+         {$ELSE}
+         PixelLineCount := FixedFloor(FixedAdd(FixedSub(CenterX,
+           ConvertToFixed24Dot8Point(X)), FixedSqrt(
+           FixedSub(SqrInnerRad, SqrYDist)))) + 1;
+
+         if X + PixelLineCount > XRange[1]
+          then Break;
+         X := X + PixelLineCount;
+         {$ENDIF}
+        end;
+      end;
+    end;
+   EMMS;
+  end;
 end;
 
 

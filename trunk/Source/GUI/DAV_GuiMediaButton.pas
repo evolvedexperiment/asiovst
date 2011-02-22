@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_GuiCommon,
-  DAV_GuiBaseControl, DAV_GuiPixelMap;
+  DAV_GuiBaseControl, DAV_GuiPixelMap, DAV_GuiVectorPixelCircle;
 
 type
   TMediaButtonState = (mbsPlay, mbsPause, mbsStop, mbsRecord, mbsFastBackward,
@@ -45,16 +45,16 @@ type
 
   TCustomGuiMediaButton = class(TCustomControl)
   private
-    FBorderRadius : Integer;
-    FBorderWidth  : Integer;
+    FBorderRadius : Single;
+    FBorderWidth  : Single;
     FBorderColor  : TColor;
     FButtonColor  : TColor;
     FButtonState  : TMediaButtonState;
     FGlyphOffset  : Integer;
     FOnPaint      : TNotifyEvent;
     procedure SetBorderColor(const Value: TColor);
-    procedure SetBorderRadius(const Value: Integer);
-    procedure SetBorderWidth(const Value: Integer);
+    procedure SetBorderRadius(const Value: Single);
+    procedure SetBorderWidth(const Value: Single);
     procedure SetButtonColor(const Value: TColor);
     procedure SetButtonState(const Value: TMediaButtonState);
   protected
@@ -65,13 +65,14 @@ type
     procedure ButtonColorChanged; virtual;
     procedure ButtonStateChanged; virtual;
     procedure ControlChanged; virtual;
+    procedure CalculateAbsoluteGlyphOffset;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
-    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
-    property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
+    property BorderRadius: Single read FBorderRadius write SetBorderRadius;
+    property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property ButtonColor: TColor read FButtonColor write SetButtonColor default $303030;
     property ButtonState: TMediaButtonState read FButtonState write SetButtonState default mbsPlay;
 
@@ -100,6 +101,8 @@ type
     procedure ControlChanged; override;
     procedure RenderButton(PixelMap: TGuiCustomPixelMap);
     procedure RenderGlyph(PixelMap: TGuiCustomPixelMap);
+    procedure RenderTriangle(PixelMap: TGuiCustomPixelMap; Rect: TRect;
+      Color: TColor; Reverse: Boolean = False);
     procedure TransparentChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
@@ -157,7 +160,7 @@ implementation
 
 uses
   Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_GuiBlend,
-  DAV_Approximations;
+  DAV_GuiFixedPoint, DAV_Approximations;
 
 
 { TCustomGuiMediaButton }
@@ -173,9 +176,9 @@ begin
  FButtonColor     := $606060;
  FBorderColor     := $202020;
  FBorderWidth     := 1;
- FGlyphOffset     := 3;
  FButtonState     := mbsPlay;
  FBorderRadius    := 0;
+ CalculateAbsoluteGlyphOffset;
 end;
 
 destructor TCustomGuiMediaButton.Destroy;
@@ -207,7 +210,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiMediaButton.SetBorderRadius(const Value: Integer);
+procedure TCustomGuiMediaButton.SetBorderRadius(const Value: Single);
 begin
  if FBorderRadius <> Value then
   begin
@@ -216,7 +219,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiMediaButton.SetBorderWidth(const Value: Integer);
+procedure TCustomGuiMediaButton.SetBorderWidth(const Value: Single);
 begin
  if FBorderWidth <> Value then
   begin
@@ -271,6 +274,11 @@ end;
 procedure TCustomGuiMediaButton.ButtonColorChanged;
 begin
  ControlChanged;
+end;
+
+procedure TCustomGuiMediaButton.CalculateAbsoluteGlyphOffset;
+begin
+ FGlyphOffset := Max(3, Min(Width, Height) div 10);
 end;
 
 
@@ -374,7 +382,7 @@ procedure TGuiMediaButton.RenderButton(PixelMap: TGuiCustomPixelMap);
 var
   X, Y              : Integer;
   ScnLne            : array [0..1] of PPixel32Array;
-  ButtonColor        : TPixel32;
+  ButtonColor       : TPixel32;
   BorderColor       : TPixel32;
   CombColor         : TPixel32;
   Radius            : Single;
@@ -512,44 +520,186 @@ begin
 end;
 
 procedure TGuiMediaButton.RenderGlyph(PixelMap: TGuiCustomPixelMap);
+var
+  Offset : Integer;
+  IntOff : Integer;
+  Y      : Integer;
+const
+  CBorderColor : TPixel32 = (ARGB : $AF000000);
 begin
  with PixelMap do
   begin
+   Offset := Round(FBorderWidth + FGlyphOffset);
    case FButtonState of
-    mbsPlay :
-     begin
-(*
-      Brush.Color := clLime;
-      Polygon([Point((FBorderWidth + FGlyphOffset), (FBorderWidth + FGlyphOffset)),
-               Point(Width - (FBorderWidth + FGlyphOffset), Height div 2),
-               Point((FBorderWidth + FGlyphOffset), Height - (FBorderWidth + FGlyphOffset))]);
-*)
-     end;
+    mbsPlay : RenderTriangle(PixelMap, Rect(Offset, Offset, Width - Offset,
+                Height - Offset), clLime);
     mbsPause :
      begin
-      FillRect(FBorderWidth + FGlyphOffset, FBorderWidth + FGlyphOffset,
-        Width div 2 - ((FGlyphOffset + FBorderWidth) div 2),
-        Height - (FBorderWidth + FGlyphOffset), pxGray32);
+      IntOff := Trunc(FBorderWidth) div 2;
+      FillRect(Offset, Offset, Round(0.5 * (Width - Offset)),
+        Height - Offset, pxGray32);
 
-      FillRect(Width div 2 + ((FGlyphOffset + FBorderWidth) div 2),
-        FBorderWidth + FGlyphOffset, Width - FBorderWidth - FGlyphOffset,
-        Height - FBorderWidth - FGlyphOffset, pxGray32);
+      FillRect(Round(0.5 * (Width + Offset)), Offset,
+        Width - Offset, Height - Offset, pxGray32);
+
+      // draw frame
+      for Y := 0 to Trunc(FBorderWidth) - 1 do
+       begin
+        BlendPixelLine(CBorderColor, @ScanLine[Offset - IntOff + Y]^[Offset - IntOff],
+          Round(0.5 * (Width - Offset) + 2 * IntOff - Offset));
+        BlendPixelLine(CBorderColor, @ScanLine[Height - Offset - IntOff + Y]^[Offset - IntOff],
+          Round(0.5 * (Width - Offset) + 2 * IntOff - Offset));
+       end;
+      for Y := Offset + IntOff to Height - Offset - IntOff - 1 do
+       begin
+        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Offset - IntOff],
+          Trunc(FBorderWidth));
+        BlendPixelLine(CBorderColor, @ScanLine[Y]^[
+          Round(0.5 * (Width - Offset)) - IntOff], Trunc(FBorderWidth));
+       end;
+
+      for Y := 0 to Trunc(FBorderWidth) - 1 do
+       begin
+        BlendPixelLine(CBorderColor, @ScanLine[Offset - IntOff + Y]^[Round(0.5 * (Width + Offset)) - IntOff],
+          Width - Offset - Round(0.5 * (Width + Offset)) + 2 * IntOff);
+        BlendPixelLine(CBorderColor, @ScanLine[Height - Offset - IntOff + Y]^[Round(0.5 * (Width + Offset)) - IntOff],
+          Width - Offset - Round(0.5 * (Width + Offset)) + 2 * IntOff);
+       end;
+      for Y := Offset + IntOff to Height - Offset - IntOff - 1 do
+       begin
+        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Round(0.5 * (Width + Offset)) - IntOff],
+          Trunc(FBorderWidth));
+        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Width - Offset - IntOff],
+          Trunc(FBorderWidth));
+       end;
      end;
-    mbsStop :
+    mbsStop : FillRect(Offset, Offset, Width  - Offset, Height - Offset, pxBlack32);
+
+    mbsFastForward :
      begin
-      FillRect(FBorderWidth + FGlyphOffset, FBorderWidth + FGlyphOffset,
-        Width  - (FBorderWidth + FGlyphOffset),
-        Height - (FBorderWidth + FGlyphOffset), pxBlack32);
+      RenderTriangle(PixelMap, Rect(Offset, Offset, (Width - Offset) div 2,
+        Height - Offset), clYellow);
+      RenderTriangle(PixelMap, Rect((Width + Offset) div 2, Offset,
+        Width - Offset, Height - Offset), clYellow);
      end;
 
+    mbsFastBackward :
+     begin
+      RenderTriangle(PixelMap, Rect(Offset, Offset, (Width - Offset) div 2,
+        Height - Offset), clYellow, True);
+      RenderTriangle(PixelMap, Rect((Width + Offset) div 2, Offset,
+        Width - Offset, Height - Offset), clYellow, True);
+     end;
+
+    mbsNext :
+     begin
+      RenderTriangle(PixelMap, Rect(Offset, Offset, (Width - Offset) div 2,
+        Height - Offset), clBlue);
+      FillRect(Round(0.5 * (Width + Offset)), Offset,
+        Width - Offset, Height - Offset, pxBlue32);
+     end;
+
+    mbsPrevious :
+     begin
+      FillRect(Offset, Offset, (Width - Offset) div 2,
+        Height - Offset, pxBlue32);
+      RenderTriangle(PixelMap, Rect(Round(0.5 * (Width + Offset)), Offset,
+        Width - Offset, Height - Offset), clBlue, True);
+     end;
+
+    mbsRecord :
+     begin
+      with TGuiPixelFilledCircle.Create do
+       try
+        Color := clRed;
+        GeometricShape.CenterX := ConvertToFixed24Dot8Point(0.5 * Width);
+        GeometricShape.CenterY := ConvertToFixed24Dot8Point(0.5 * Height);
+        GeometricShape.Radius := ConvertToFixed24Dot8Point(0.5 * (Min(Width, Height) - FBorderWidth) - Offset);
+        Alpha := $FF;
+        Draw(PixelMap);
+       finally
+        Free;
+       end;
+      with TGuiPixelFrameCircle.Create do
+       try
+        Color := clBlack;
+        Alpha := $AF;
+        LineWidth := ConvertToFixed24Dot8Point(FBorderWidth);
+        GeometricShape.CenterX := ConvertToFixed24Dot8Point(0.5 * Width);
+        GeometricShape.CenterY := ConvertToFixed24Dot8Point(0.5 * Height);
+        GeometricShape.Radius := ConvertToFixed24Dot8Point(0.5 * Min(Width, Height) - Offset);
+        Draw(PixelMap);
+       finally
+        Free;
+       end;
+     end;
    end;
 
+  end;
+end;
+
+procedure TGuiMediaButton.RenderTriangle(PixelMap: TGuiCustomPixelMap;
+  Rect: TRect; Color: TColor; Reverse: Boolean = False);
+var
+  X, Y   : Integer;
+  XFixed : TFixed24Dot8Point;
+  XAdv   : TFixed24Dot8Point;
+  ScnLn  : array [0..1] of PPixel32Array;
+  Clr    : TPixel32;
+  BrdClr : TPixel32;
+begin
+ with PixelMap do
+  begin
+   if (Rect.Right - Rect.Left) < 0 then Exit;
+
+   // set color
+   Clr := ConvertColor(Color);
+   Clr.A := $FF;
+   BrdClr.ARGB := $AF000000;
+
+   // set start and advance
+   XFixed := CFixed24Dot8Half;
+   XAdv := ConvertToFixed24Dot8Point(2 * (Rect.Right - Rect.Left) / (Rect.Bottom - Rect.Top));
+   if Reverse then
+    for Y := 0 to ((Rect.Bottom - Rect.Top) div 2) do
+     begin
+      ScnLn[0] := ScanLine[Rect.Top + Y];
+      ScnLn[1] := ScanLine[Rect.Bottom - Y];
+      X := FixedFloor(XFixed);
+      BlendPixelLine(Clr, @ScnLn[0]^[Rect.Right - X], X);
+      BlendPixelInplace(ApplyAlpha(Clr, XFixed.Frac), ScnLn[0]^[Rect.Right - X - 1]);
+      if ScnLn[0] <> ScnLn[1] then
+       begin
+        BlendPixelLine(Clr, @ScnLn[1]^[Rect.Right - X], X);
+        BlendPixelInplace(ApplyAlpha(Clr, XFixed.Frac), ScnLn[1]^[Rect.Right - X - 1]);
+       end else Break;
+      XFixed := FixedAdd(XFixed, XAdv);
+     end
+   else
+    for Y := 0 to ((Rect.Bottom - Rect.Top) div 2) do
+     begin
+      ScnLn[0] := ScanLine[Rect.Top + Y];
+      ScnLn[1] := ScanLine[Rect.Bottom - Y];
+      X := FixedFloor(XFixed);
+      BlendPixelLine(Clr, @ScnLn[0]^[Rect.Left], X);
+      BlendPixelInplace(ApplyAlpha(Clr, XFixed.Frac), ScnLn[0]^[Rect.Left + X]);
+      if ScnLn[0] <> ScnLn[1] then
+       begin
+        BlendPixelLine(Clr, @ScnLn[1]^[Rect.Left], X);
+        BlendPixelInplace(ApplyAlpha(Clr, XFixed.Frac), ScnLn[1]^[Rect.Left + X]);
+       end else Break;
+
+      XFixed := FixedAdd(XFixed, XAdv);
+     end;
+   EMMS;
   end;
 end;
 
 procedure TGuiMediaButton.Resize;
 begin
  inherited;
+
+ CalculateAbsoluteGlyphOffset;
 
  if Assigned(FBuffer)
   then FBuffer.SetSize(Self.Width, Self.Height);

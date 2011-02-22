@@ -44,6 +44,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -83,7 +84,7 @@ implementation
 {$ENDIF}
 
 uses
-  AdvancedClipperGUI, DAV_Common, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_VSTModuleWithPrograms, AdvancedClipperGUI;
 
 procedure TAdvancedClipperDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -283,7 +284,7 @@ end;
 procedure TAdvancedClipperDataModule.ParamRoundDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TAdvancedClipperDataModule.ParamHardClipDisplay(
@@ -393,42 +394,44 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to Min(BlockSize, SampleFrames) - 1 do
    for ChannelIndex := 0 to Length(FUpDownSampling) - 1 do
     begin
      // multiply input data with input gain
-     InterStage := FInputGain * Inputs[ChannelIndex, SampleIndex];
+     if IsNan(Inputs[ChannelIndex, SampleIndex])
+      then InterStage := 0
+      else InterStage := FInputGain * Inputs[ChannelIndex, SampleIndex];
 
      // detect input peak level
      FPeakInput := FPeakInput * FReleaseFactor;
-     if abs(InterStage) > FPeakInput
-      then FPeakInput := abs(InterStage);
+     if Abs(InterStage) > FPeakInput
+      then FPeakInput := Abs(InterStage);
 
      // first stage
      FUpDownSampling[0, ChannelIndex].Upsample64(InterStage, @SubSamples);
      for SubSampleIndex := 0 to FUpDownSampling[0, ChannelIndex].Factor - 1
-      do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
+      do SubSamples[SubSampleIndex] := (Abs(SubSamples[SubSampleIndex] + 1) - Abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
      InterStage := FUpDownSampling[0, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 1 peak level
      FPeakStage1 := FPeakStage1 * FReleaseFactor;
-     if abs(InterStage) > FPeakStage1
-      then FPeakStage1 := abs(InterStage);
+     if Abs(InterStage) > FPeakStage1
+      then FPeakStage1 := Abs(InterStage);
 
      // second stage
      FUpDownSampling[1, ChannelIndex].Upsample64(InterStage, @SubSamples);
      for SubSampleIndex := 0 to FUpDownSampling[1, ChannelIndex].Factor - 1
-      do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
+      do SubSamples[SubSampleIndex] := (Abs(SubSamples[SubSampleIndex] + 1) - Abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
      SubSamples[0] := FUpDownSampling[1, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 2 peak level
      FPeakStage2 := FPeakStage2 * FReleaseFactor;
-     if abs(SubSamples[0]) > FPeakStage2
-      then FPeakStage2 := abs(SubSamples[0]);
+     if Abs(SubSamples[0]) > FPeakStage2
+      then FPeakStage2 := Abs(SubSamples[0]);
 
      // process hard clip at 0 dBFS
      if FHardClip
-      then SubSamples[0] := (abs(SubSamples[0] + 1) - abs(SubSamples[0] - 1)) * 0.5;
+      then SubSamples[0] := (Abs(SubSamples[0] + 1) - Abs(SubSamples[0] - 1)) * 0.5;
 
      // shift output ceiling
      Outputs[ChannelIndex, SampleIndex] := FOutputGain * SubSamples[0];
@@ -450,46 +453,64 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to Min(BlockSize, SampleFrames) - 1 do
    for ChannelIndex := 0 to Length(FUpDownSampling) - 1 do
     begin
      // multiply input data with input gain
-     InterStage := FInputGain * Inputs[ChannelIndex, SampleIndex];
+     if IsNan(Inputs[ChannelIndex, SampleIndex])
+      then InterStage := 0
+      else InterStage := FInputGain * Inputs[ChannelIndex, SampleIndex];
 
      // detect input peak level
      FPeakInput := FPeakInput * FReleaseFactor;
-     if abs(InterStage) > FPeakInput
-      then FPeakInput := abs(InterStage);
+     if Abs(InterStage) > FPeakInput
+      then FPeakInput := Abs(InterStage);
 
      // first stage
      FUpDownSampling[0, ChannelIndex].Upsample64(InterStage, @SubSamples);
      for SubSampleIndex := 0 to FUpDownSampling[0, ChannelIndex].Factor - 1
-      do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
+      do SubSamples[SubSampleIndex] := (Abs(SubSamples[SubSampleIndex] + 1) - Abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
      InterStage := FUpDownSampling[0, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 1 peak level
      FPeakStage1 := FPeakStage1 * FReleaseFactor;
-     if abs(InterStage) > FPeakStage1
-      then FPeakStage1 := abs(InterStage);
+     if Abs(InterStage) > FPeakStage1
+      then FPeakStage1 := Abs(InterStage);
 
      // second stage
      FUpDownSampling[1, ChannelIndex].Upsample64(InterStage, @SubSamples);
      for SubSampleIndex := 0 to FUpDownSampling[1, ChannelIndex].Factor - 1
-      do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
+      do SubSamples[SubSampleIndex] := (Abs(SubSamples[SubSampleIndex] + 1) - Abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
      SubSamples[0] := FUpDownSampling[1, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 2 peak level
      FPeakStage2 := FPeakStage2 * FReleaseFactor;
-     if abs(SubSamples[0]) > FPeakStage2
-      then FPeakStage2 := abs(SubSamples[0]);
+     if Abs(SubSamples[0]) > FPeakStage2
+      then FPeakStage2 := Abs(SubSamples[0]);
 
      // process hard clip at 0 dBFS
      if FHardClip
-      then SubSamples[0] := (abs(SubSamples[0] + 1) - abs(SubSamples[0] - 1)) * 0.5;
+      then SubSamples[0] := (Abs(SubSamples[0] + 1) - Abs(SubSamples[0] - 1)) * 0.5;
 
      // shift output ceiling
      Outputs[ChannelIndex, SampleIndex] := FOutputGain * SubSamples[0];
     end;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TAdvancedClipperDataModule.VSTModuleResume(Sender: TObject);
+var
+  StageIndex   : Integer;
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for StageIndex := 0 to Length(FUpDownSampling) - 1 do
+   for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1 do
+    if Assigned(FUpDownSampling[StageIndex, ChannelIndex])
+     then FUpDownSampling[StageIndex, ChannelIndex].ResetStates;
  finally
   FCriticalSection.Leave;
  end;
@@ -501,12 +522,17 @@ var
   StageIndex   : Integer;
   ChannelIndex : Integer;
 begin
- // update samplerate
- if Abs(SampleRate) > 0 then
-  for StageIndex := 0 to Length(FUpDownSampling) - 1 do
-   for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1 do
-    if Assigned(FUpDownSampling[StageIndex, ChannelIndex])
-     then FUpDownSampling[StageIndex, ChannelIndex].SampleRate := Abs(SampleRate);
+ FCriticalSection.Enter;
+ try
+  // update samplerate
+  if Abs(SampleRate) > 0 then
+   for StageIndex := 0 to Length(FUpDownSampling) - 1 do
+    for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1 do
+     if Assigned(FUpDownSampling[StageIndex, ChannelIndex])
+      then FUpDownSampling[StageIndex, ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.

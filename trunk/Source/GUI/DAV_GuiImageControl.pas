@@ -127,6 +127,7 @@ type
     FImageList  : TGuiCustomImageList;
     FImageItem  : TGuiCustomImageCollectionItem;
     FImageIndex : Integer;
+    FLockCount  : Integer;
 
     procedure SetImageList(const Value: TGuiCustomImageList);
 
@@ -142,6 +143,9 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
+    procedure BeginUpdate;
+    procedure EndUpdate;
 
     property ImageList: TGuiCustomImageList read FImageList write SetImageList;
     property ImageIndex: Integer read GetImageIndex write SetImageIndex default -1;
@@ -271,8 +275,8 @@ var
 begin
  Assert(Assigned(FLinkedControls));
  for Index := 0 to FLinkedControls.Count - 1 do
-  with TGuiCustomImageControl(FLinkedControls[Index])
-   do BufferChanged;
+  with TGuiCustomImageControl(FLinkedControls[Index]) do
+   if FLockCount = 0 then BufferChanged;
 end;
 
 procedure TGuiCustomImageCollectionItem.SetDisplayName(const Value: string);
@@ -456,6 +460,21 @@ begin
   end;
 end;
 
+procedure TGuiCustomImageControl.BeginUpdate;
+begin
+ Inc(FLockCount);
+end;
+
+procedure TGuiCustomImageControl.EndUpdate;
+begin
+ if FLockCount <= 0
+  then raise Exception.Create('Control is not locked');
+ Dec(FLockCount);
+
+ if FLockCount = 0
+  then BufferChanged;
+end;
+
 procedure TGuiCustomImageControl.Changed;
 begin
  inherited Changed;
@@ -473,7 +492,8 @@ end;
 
 procedure TGuiCustomImageControl.ImageIndexChanged;
 begin
- BufferChanged;
+ if FLockCount = 0
+  then BufferChanged;
 end;
 
 procedure TGuiCustomImageControl.ImageItemChanged;
@@ -484,7 +504,8 @@ end;
 procedure TGuiCustomImageControl.ImageListChanged;
 begin
  ImageItem := nil;
- BufferChanged;
+ if FLockCount = 0
+  then BufferChanged;
 end;
 
 procedure TGuiCustomImageControl.UpdateBuffer;

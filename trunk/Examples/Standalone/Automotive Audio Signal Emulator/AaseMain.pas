@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Graphics, Controls, StdCtrls, ExtCtrls, Dialogs, Menus, DAV_Types,
   DAV_DspBufferedMp3Player, DAV_DspSimpleOscillator, DAV_GuiPixelMap,
-  DAV_GuiLabel, DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_AsioHost,
+  DAV_AsioHost, DAV_AudioData, DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAU,
+  DAV_AudioFileAIFF, DAV_GuiLabel, DAV_GuiCustomControl, DAV_GuiGraphicControl,
   DAV_GuiSlider, DAV_GuiButton, DAV_GuiImageControl, DAV_GuiStitchedControls,
   DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiPanel, DAV_GuiGroup;
 
@@ -98,10 +99,13 @@ type
     MiSettings: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
-    OpenDialog: TOpenDialog;
+    OpenDialogMp3: TOpenDialog;
     SlLevelMp3: TGuiSlider;
     SlLevelSynth: TGuiSlider;
     SPL: TGuiStitchedPNGList;
+    LbWaveFile: TGuiLabel;
+    LbAudioFileName: TGuiButton;
+    OpenDialogAudio: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -114,10 +118,12 @@ type
     procedure BtControlPanelClick(Sender: TObject);
     procedure BtStartStopClick(Sender: TObject);
     procedure DlDriveChange(Sender: TObject);
+    procedure DlDriveMouseEnter(Sender: TObject);
     procedure DlFrequencyChange(Sender: TObject);
     procedure DlFrequencyMouseEnter(Sender: TObject);
     procedure DlLevelChange(Sender: TObject);
     procedure DlLevelMouseEnter(Sender: TObject);
+    procedure LbAudioFileNameClick(Sender: TObject);
     procedure LbBufferClick(Sender: TObject);
     procedure LbMp3FileNameClick(Sender: TObject);
     procedure LbOsc1Click(Sender: TObject);
@@ -133,23 +139,32 @@ type
     procedure SlLevelGetText(Sender: TObject; var Text: string);
     procedure SlLevelMp3Change(Sender: TObject);
     procedure SlLevelSynthChange(Sender: TObject);
-    procedure DlDriveMouseEnter(Sender: TObject);
+    procedure LbMp3FileNameMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure LbAudioFileNameMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     FIniFile             : TFileName;
     FBufferedPlayer      : TBufferedMP3FilePlayer;
     FSynthFactor         : Single;
-    FMp3Factor           : Single;
+    FFileFactor           : Single;
     FSineGenerators      : array [0..5] of TSimpleOscillator32;
     FDrive               : array [0..5] of TDriveParameter;
     FOutputChannelOffset : Integer;
     FMp3File             : TFileName;
+    FAudioFile           : TFileName;
+    FAudioData           : TAudioDataCollection32;
+    FAudioDataPosition   : Integer;
     procedure SetMp3File(const Value: TFileName);
+    procedure SetAudioFile(const Value: TFileName);
   protected
     FBackgroundBitmap : TGuiCustomPixelMap;
+    procedure AudioFileChanged; virtual;
     procedure Mp3FileChanged; virtual;
   public
     property IniFile: TFileName read FIniFile;
     property MP3File: TFileName read FMp3File write SetMp3File;
+    property AudioFile: TFileName read FAudioFile write SetAudioFile;
     property OutputChannelOffset: Integer read FOutputChannelOffset write FOutputChannelOffset;
   end;
 
@@ -169,6 +184,7 @@ uses
 procedure TFmAASE.FormCreate(Sender: TObject);
 var
   GeneratorIndex : Integer;
+  SynthLevel     : Single;
 begin
  FIniFile := ExtractFilePath(ParamStr(0)) + 'AASE.INI';
 
@@ -187,19 +203,39 @@ begin
 
  FOutputChannelOffset := 0;
  FSynthFactor := 1;
- FMp3Factor := 1;
+ FFileFactor := 1;
 // ClientHeight := 68;
 
+ // create audio data collection
+ FAudioData := TAudioDataCollection32.Create(Self);
+ FAudioDataPosition := 0;
+
+ // create sine generators
+ SynthLevel := 1 / Length(FSineGenerators);
  for GeneratorIndex := 0 to Length(FSineGenerators) - 1 do
   begin
    FSineGenerators[GeneratorIndex] := TSimpleOscillator32.Create;
    with FSineGenerators[GeneratorIndex] do
     begin
      Frequency := 100 * Power(2, GeneratorIndex);
-     Amplitude := 1 / Length(FSineGenerators);
+     Amplitude := SynthLevel;
      SampleRate := ASIOHost.SampleRate;
     end;
   end;
+
+ SynthLevel := Amp_to_dB(SynthLevel);
+ DlLevel1.Value := SynthLevel;
+ DlLevel2.Value := SynthLevel;
+ DlLevel3.Value := SynthLevel;
+ DlLevel4.Value := SynthLevel;
+ DlLevel5.Value := SynthLevel;
+ DlLevel6.Value := SynthLevel;
+ DlLevel1.DefaultValue := DlLevel1.Value;
+ DlLevel2.DefaultValue := DlLevel2.Value;
+ DlLevel3.DefaultValue := DlLevel3.Value;
+ DlLevel4.DefaultValue := DlLevel4.Value;
+ DlLevel5.DefaultValue := DlLevel5.Value;
+ DlLevel6.DefaultValue := DlLevel6.Value;
 end;
 
 procedure TFmAASE.FormDestroy(Sender: TObject);
@@ -214,6 +250,9 @@ begin
 
  // free buffered MP3 player
  FreeAndNil(FBufferedPlayer);
+
+ // free audio data
+ FreeAndNil(FAudioData);
 
  // free sine generators
  for GeneratorIndex := 0 to Length(FSineGenerators) - 1
@@ -376,8 +415,15 @@ end;
 
 procedure TFmAASE.LbMp3FileNameClick(Sender: TObject);
 begin
- if OpenDialog.Execute
-  then MP3File := OpenDialog.FileName;
+ if OpenDialogMp3.Execute
+  then MP3File := OpenDialogMp3.FileName;
+end;
+
+procedure TFmAASE.LbMp3FileNameMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+ if Button = mbRight
+  then MP3File := '';
 end;
 
 procedure TFmAASE.LbOsc1Click(Sender: TObject);
@@ -476,6 +522,18 @@ begin
   end;
 end;
 
+procedure TFmAASE.LbAudioFileNameClick(Sender: TObject);
+begin
+ if OpenDialogAudio.Execute
+  then AudioFile := OpenDialogAudio.FileName;
+end;
+
+procedure TFmAASE.LbAudioFileNameMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+ if Button = mbRight then AudioFile := '';
+end;
+
 procedure TFmAASE.MiAdvancedClick(Sender: TObject);
 begin
  MiAdvanced.Checked := not MiAdvanced.Checked;
@@ -497,8 +555,25 @@ end;
 
 procedure TFmAASE.Mp3FileChanged;
 begin
- FBufferedPlayer.Filename := FMp3File;
- LbMp3FileName.Caption := ExtractFileName(FMp3File);
+ if FileExists(FMp3File) then
+  begin
+   FBufferedPlayer.Filename := FMp3File;
+   LbMp3FileName.Caption := ExtractFileName(FMp3File)
+  end
+ else
+  begin
+   FBufferedPlayer.Reset;
+   LbMp3FileName.Caption := '[none]';
+  end;
+end;
+
+procedure TFmAASE.SetAudioFile(const Value: TFileName);
+begin
+ if FAudioFile <> Value then
+  begin
+   FAudioFile := Value;
+   AudioFileChanged;
+  end;
 end;
 
 procedure TFmAASE.SetMp3File(const Value: TFileName);
@@ -512,7 +587,7 @@ end;
 
 procedure TFmAASE.SlLevelMp3Change(Sender: TObject);
 begin
- FMp3Factor := dB_to_Amp(SlLevelMp3.Value);
+ FFileFactor := dB_to_Amp(SlLevelMp3.Value);
 end;
 
 procedure TFmAASE.SlLevelGetText(Sender: TObject; var Text: string);
@@ -547,6 +622,22 @@ begin
   do FSineGenerators[GeneratorIndex].SampleRate := ASIOHost.SampleRate;
 end;
 
+procedure TFmAASE.AudioFileChanged;
+begin
+ try
+  if FileExists(FAudioFile) then
+   begin
+    FAudioData.LoadFromFile(FAudioFile);
+    FAudioDataPosition := 0;
+    LbAudioFileName.Caption := ExtractFileName(FAudioFile);
+   end
+  else LbMp3FileName.Caption := '[none]';
+ except
+  FAudioData.Clear;
+  LbAudioFileName.Caption := '[none]';
+ end;
+end;
+
 procedure TFmAASE.BtControlPanelClick(Sender: TObject);
 begin
  ASIOHost.ControlPanel;
@@ -558,8 +649,21 @@ var
   GeneratorIndex  : Integer;
   SampleIndex     : Integer;
   GeneratorSignal : Single;
+  AudioDataPtr    : array [0..1] of PDAVSingleFixedArray;
+  AudioData       : array [0..1] of Single;
 begin
  FBufferedPlayer.GetSamples(OutBuffer[0], OutBuffer[1], ASIOHost.Buffersize);
+
+ if (FAudioData.Channels.Count > 0) and (FAudioData.SampleFrames > 0) then
+  begin
+   AudioDataPtr[0] := FAudioData.ChannelDataPointer[0];
+   AudioDataPtr[1] := FAudioData.ChannelDataPointer[1 mod FAudioData.Channels.Count];
+  end
+ else
+  begin
+   AudioDataPtr[0] := nil;
+   AudioDataPtr[1] := nil;
+  end;
 
  for SampleIndex := 0 to ASIOHost.Buffersize - 1 do
   begin
@@ -576,9 +680,18 @@ begin
      FSineGenerators[GeneratorIndex].CalculateNextSample;
     end;
 
-   OutBuffer[0, SampleIndex] := FMp3Factor * OutBuffer[0, SampleIndex] +
+   if Assigned(AudioDataPtr[0]) then
+    begin
+     AudioData[0] := AudioDataPtr[0]^[FAudioDataPosition];
+     AudioData[1] := AudioDataPtr[1]^[FAudioDataPosition];
+     Inc(FAudioDataPosition);
+     if FAudioDataPosition >= FAudioData.SampleFrames
+      then FAudioDataPosition := 0;
+    end;
+
+   OutBuffer[0, SampleIndex] := FFileFactor * (OutBuffer[0, SampleIndex] + AudioData[0]) +
      FSynthFactor * GeneratorSignal;
-   OutBuffer[1, SampleIndex] := FMp3Factor * OutBuffer[1, SampleIndex] +
+   OutBuffer[1, SampleIndex] := FFileFactor * (OutBuffer[1, SampleIndex] + AudioData[1]) +
      FSynthFactor * GeneratorSignal;
   end;
 

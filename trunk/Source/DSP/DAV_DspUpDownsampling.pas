@@ -60,6 +60,8 @@ type
     procedure UpdateFilter; virtual; abstract;
   public
     constructor Create; override;
+    procedure ResetStates; virtual; abstract;
+
     property FilterClass: TOrderFilterClass read FFilterClass write SetFilterClass;
   published
     property Factor: Integer read FFactor write SetFactor;
@@ -80,6 +82,9 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ResetStates; override;
+
     procedure Upsample32(Input: Single; Output: PDAVSingleFixedArray);
     procedure Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
   end;
@@ -96,6 +101,9 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ResetStates; override;
+
     function Downsample32(Input: PDAVSingleFixedArray): Single;
     function Downsample64(Input: PDAVDoubleFixedArray): Double;
   end;
@@ -112,6 +120,9 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ResetStates; override;
+
     procedure Upsample32(Input: Single; Output: PDAVSingleFixedArray);
     procedure Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
     function Downsample32(Input: PDAVSingleFixedArray): Single;
@@ -125,6 +136,14 @@ uses
 
 { TDAVResampling }
 
+constructor TDAVResampling.Create;
+begin
+ inherited;
+ FFactor              := 1;
+ FTransitionBandwidth := 0.99;
+ Order                := 2;
+end;
+
 procedure TDAVResampling.AssignTo(Dest: TPersistent);
 begin
  if Dest is TDAVResampling then
@@ -136,14 +155,6 @@ begin
     FTransitionBandwidth := Self.FTransitionBandwidth;
    end
  else inherited;
-end;
-
-constructor TDAVResampling.Create;
-begin
- inherited;
- FFactor              := 1;
- FTransitionBandwidth := 0.99;
- Order                := 2;
 end;
 
 procedure TDAVResampling.SetFactor(const Value: Integer);
@@ -208,6 +219,12 @@ end;
 
 
 { TDAVUpDownsampling }
+
+procedure TDAVUpDownsampling.ResetStates;
+begin
+ FFilter[0].ResetStates;
+ FFilter[1].ResetStates;
+end;
 
 constructor TDAVUpDownsampling.Create;
 begin
@@ -347,6 +364,11 @@ begin
  else inherited;
 end;
 
+procedure TDAVUpSampling.ResetStates;
+begin
+ FFilter.ResetStates;
+end;
+
 procedure TDAVUpSampling.FilterClassChanged;
 var
   oldFilter : TCustomOrderFilter;
@@ -404,6 +426,11 @@ begin
 end;
 
 { TDAVDownSampling }
+
+procedure TDAVDownSampling.ResetStates;
+begin
+ FFilter.ResetStates;
+end;
 
 constructor TDAVDownSampling.Create;
 begin

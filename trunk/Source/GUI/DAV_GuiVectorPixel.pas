@@ -83,13 +83,13 @@ type
 
   TCustomGuiPixelFramePrimitive = class(TCustomGuiPixelSimplePrimitive)
   private
-    FWidth    : TFixed24Dot8Point;
-    procedure SetWidth(const Value: TFixed24Dot8Point);
+    FLineWidth : TFixed24Dot8Point;
+    procedure SetLineWidth(const Value: TFixed24Dot8Point);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure WidthChanged; virtual;
   public
-    property Width: TFixed24Dot8Point read FWidth write SetWidth;
+    property LineWidth: TFixed24Dot8Point read FLineWidth write SetLineWidth;
   end;
 
   TCustomGuiPixelFillPrimitive = class(TCustomGuiPixelSimplePrimitive)
@@ -224,16 +224,16 @@ begin
  if Dest is TCustomGuiPixelFramePrimitive then
   with TCustomGuiPixelFramePrimitive(Dest) do
    begin
-    FWidth := Self.FWidth;
+    FLineWidth := Self.FLineWidth;
    end;
 end;
 
-procedure TCustomGuiPixelFramePrimitive.SetWidth(
+procedure TCustomGuiPixelFramePrimitive.SetLineWidth(
   const Value: TFixed24Dot8Point);
 begin
- if FWidth.Fixed <> Value.Fixed then
+ if FLineWidth.Fixed <> Value.Fixed then
   begin
-   FWidth.Fixed := Value.Fixed;
+   FLineWidth.Fixed := Value.Fixed;
    WidthChanged;
   end;
 end;

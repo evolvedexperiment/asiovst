@@ -45,10 +45,11 @@ type
   TCustomGuiStitchedDial = class(TGuiCustomStitchedControl)
   private
     FLockCursor          : Boolean;
+    FIgnoreNextMouseMove : Boolean;
+    FWrap                : Boolean;
     FMaximum             : Single;
     FMinimum             : Single;
     FNormalizedPosition  : Single;
-    FIgnoreNextMouseMove : Boolean;
     FValue               : Single;
     FDefaultValue        : Single;
     FRange               : Single;
@@ -58,13 +59,12 @@ type
     FCurveMappingExp     : Single;
     FScrollRange         : Single;
     FWheelStep           : Single;
-    FWrap                : Boolean;
     FOnQuantizeValue     : TQuantizeValueEvent;
 
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
     procedure SetValue(Value: Single);
-    procedure SetDefaultValue(const Value: Single);
+    procedure SetDefaultValue(Value: Single);
 
     function PositionToAngle: Single;
     function GetNormalizedValue: Single;
@@ -402,7 +402,8 @@ end;
 procedure TCustomGuiStitchedDial.CurveMappingChanged;
 begin
  CalculateExponentialCurveMapping;
- BufferChanged;
+ if FLockCount = 0
+  then BufferChanged;
 end;
 
 procedure TCustomGuiStitchedDial.DefaultValueChanged;
@@ -424,14 +425,16 @@ procedure TCustomGuiStitchedDial.MaximumChanged;
 begin
  if FValue > FMaximum then FValue := FMaximum;
  CalculateRange;
- BufferChanged;
+ if FLockCount = 0
+  then BufferChanged;
 end;
 
 procedure TCustomGuiStitchedDial.MinimumChanged;
 begin
  if FValue < FMinimum then FValue := FMinimum;
  CalculateRange;
- BufferChanged;
+ if FLockCount = 0
+  then BufferChanged;
 end;
 
 procedure TCustomGuiStitchedDial.ValueChanged;
@@ -452,7 +455,9 @@ begin
     if Assigned(FOnChange)
      then FOnChange(Self);
   end;
- BufferChanged;
+
+ if FLockCount = 0
+  then BufferChanged;
 end;
 
 procedure TCustomGuiStitchedDial.SetCurveMapping(const Value: Single);
@@ -464,8 +469,10 @@ begin
   end;
 end;
 
-procedure TCustomGuiStitchedDial.SetDefaultValue(const Value: Single);
+procedure TCustomGuiStitchedDial.SetDefaultValue(Value: Single);
 begin
+ Value := Limit(Value, FMinimum, FMaximum);
+
  if FDefaultValue <> Value then
   begin
    FDefaultValue := Value;

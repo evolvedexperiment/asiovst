@@ -39,6 +39,7 @@ object FmDialTest: TFmDialTest
     Width = 64
     Height = 64
     CurveMapping = 1.000000000000000000
+    DefaultValue = 60.000000000000000000
     Max = 100.000000000000000000
     ScrollRange = 400.000000000000000000
     ImageList = GuiStitchedPNGList
@@ -46,7 +47,6 @@ object FmDialTest: TFmDialTest
     Transparent = True
     WheelStep = 0.009999999776482582
     OnChange = GuiStitchedDialChange
-    DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
   object GuiStitchedDial1: TGuiStitchedDial

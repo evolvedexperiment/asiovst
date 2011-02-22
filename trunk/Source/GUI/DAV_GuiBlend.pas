@@ -300,7 +300,7 @@ begin
 {$ELSE}
 asm
   TEST    ECX, ECX
-  JS      @Done
+  JZ      @Done
 
   TEST    EAX, $FF000000
   JZ      @Done
@@ -403,7 +403,7 @@ begin
 {$ELSE}
 asm
   TEST    ECX, ECX
-  JS      @Done
+  JZ      @Done
 
   PUSH    EBX
   PUSH    ESI
@@ -655,7 +655,7 @@ begin
 {$ELSE}
 asm
   TEST      ECX, ECX
-  JS        @Done
+  JZ        @Done
 
   PUSH      EBX
   MOV       EBX, Weight
@@ -835,7 +835,7 @@ end;
 procedure BlendLineMMX(Source, Destination: PPixel32; Count: Integer);
 asm
   TEST      ECX, ECX
-  JS        @Done
+  JZ        @Done
 
   PUSH      ESI
   PUSH      EDI
@@ -955,7 +955,7 @@ procedure CombineLineMMX(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
 asm
   TEST      ECX, ECX
-  JS        @Done
+  JZ        @Done
 
   PUSH      EBX
   MOV       EBX, Weight
@@ -1174,7 +1174,7 @@ end;
 procedure BlendPixelLineSSE2(Foreground: TPixel32; Destination: PPixel32; Count: Integer);
 asm
   TEST      ECX, ECX
-  JS        @Done
+  JZ        @Done
 
   TEST      EAX, $FF000000
   JZ        @Done
@@ -1266,7 +1266,7 @@ end;
 procedure BlendLineSSE2(Source, Destination: PPixel32; Count: Integer);
 asm
   TEST      ECX, ECX
-  JS        @Done
+  JZ        @Done
 
   PUSH      ESI
   PUSH      EDI
@@ -1389,7 +1389,7 @@ procedure CombineLineSSE2(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
 asm
   TEST      ECX, ECX
-  JS        @Done
+  JZ        @Done
 
   PUSH      EBX
   MOV       EBX, Weight
