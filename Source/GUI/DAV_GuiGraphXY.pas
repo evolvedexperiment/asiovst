@@ -294,7 +294,7 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure Resize; override;
 
-    procedure CMFontchanged(var Message: TMessage); message CM_FONTCHANGED;
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
 
     procedure AlphaChanged; virtual;
     procedure AntiAliasChanged; virtual;
@@ -317,6 +317,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
     procedure UpdateGraph;
   published
     property Alpha: Byte read FAlpha write SetAlpha default $FF;
@@ -1659,10 +1660,13 @@ begin
   FBorderWidth      := 1.5;
   FFrameColor       := clRed;
   FFlags            := [gfShowLabels];
+
+  // create sub objects
   FSeriesCollection := TGuiGraphXYSeriesCollection.Create(Self);
   FXAxis            := TCustomAxis.Create;
   FYAxis            := TCustomAxis.Create;
   FGuiFont          := TGuiOversampledGDIFont.Create;
+
   FGuiFont.OnChange := FontChanged;
   FXAxis.OnChanged  := SettingsChanged;
   FYAxis.OnChanged  := SettingsChanged;
@@ -1677,7 +1681,7 @@ begin
  inherited Destroy;
 end;
 
-procedure TCustomGuiGraphXY.CMFontchanged(var Message: TMessage);
+procedure TCustomGuiGraphXY.CMFontChanged(var Message: TMessage);
 begin
  FGuiFont.Font.Assign(Font);
 end;

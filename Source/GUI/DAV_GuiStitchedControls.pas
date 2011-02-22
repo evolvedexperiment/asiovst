@@ -64,8 +64,8 @@ type
 
   TGuiCustomStitchedCollectionItem = class(TGuiCustomImageCollectionItem)
   private
-    FGlyphCount     : Integer;
-    FStitchKind     : TGuiStitchKind;
+    FGlyphCount : Integer;
+    FStitchKind : TGuiStitchKind;
     procedure SetGlyphCount(const Value: Integer);
     procedure SetStitchKind(const Value: TGuiStitchKind);
   protected
@@ -89,7 +89,6 @@ type
 
   TGuiCustomStitchedControl = class(TGuiCustomImageControl)
   private
-    FOnChange: TNotifyEvent;
     function GetGlyphCount: Integer;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetGlyphIndex(Value: Integer);
@@ -121,7 +120,6 @@ type
     property ImageList: TGuiCustomStitchedList read GetStitchedImageList write SetStitchedImageList;
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property GlyphCount: Integer read GetGlyphCount;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
 implementation
@@ -422,7 +420,8 @@ end;
 procedure TGuiCustomStitchedControl.GlyphIndexChanged;
 begin
  Changed;
- BufferChanged;
+ if FLockCount = 0
+  then BufferChanged;
 end;
 
 procedure TGuiCustomStitchedControl.ImageItemChanged;

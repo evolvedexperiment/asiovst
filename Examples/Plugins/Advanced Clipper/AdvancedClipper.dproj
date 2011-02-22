@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{6EF0140A-3055-4580-A921-CAD8840AF50B}</ProjectGuid>
 			<MainSource>AdvancedClipper.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release &amp; Publish</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
@@ -43,17 +43,13 @@
 			<DCC_F>false</DCC_F>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
-			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_3)'!=''">
-			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
-			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<ItemGroup>
@@ -101,7 +97,7 @@
 					</Source>
 					<Parameters>
 						<Parameters Name="RunParams">AdvancedClipper.dll</Parameters>
-						<Parameters Name="HostApplication">C:\Users\Public\Code\VSTPack\Bin\KnobGrabber.exe</Parameters>
+						<Parameters Name="HostApplication">C:\Users\Public\Code\VSTPack\Bin\VST-Plugin Unit Test.exe</Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>

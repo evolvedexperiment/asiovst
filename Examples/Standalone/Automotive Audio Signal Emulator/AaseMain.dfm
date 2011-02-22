@@ -4,7 +4,7 @@ object FmAASE: TFmAASE
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Automotive Audio Signal Emulator'
-  ClientHeight = 345
+  ClientHeight = 379
   ClientWidth = 505
   Color = 1074095
   Font.Charset = DEFAULT_CHARSET
@@ -28,7 +28,7 @@ object FmAASE: TFmAASE
     Width = 84
     Height = 24
     Alignment = taCenter
-    Caption = 'MP3 Level:'
+    Caption = 'File Level:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -16
@@ -67,6 +67,28 @@ object FmAASE: TFmAASE
     Height = 24
     Alignment = taCenter
     Caption = 'MP3 File:'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -16
+    Font.Name = 'Trebuchet MS'
+    Font.Style = []
+    FontOversampling = fo4x
+    ParentFont = False
+    Shadow.Blur = 2.000000000000000000
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 192
+    Shadow.Saturation = 3.000000000000000000
+    Shadow.Visible = True
+    Transparent = True
+  end
+  object LbWaveFile: TGuiLabel
+    Left = 8
+    Top = 118
+    Width = 82
+    Height = 24
+    Alignment = taCenter
+    Caption = 'WAVE File:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -16
@@ -146,10 +168,10 @@ object FmAASE: TFmAASE
     Alignment = taCenter
     BorderColor = clWhite
     BorderWidth = 1.500000000000000000
+    BorderRadius = 5.000000000000000000
     ButtonColor = 1074095
     Caption = 'Start Audio'
     FontOversampling = fo4x
-    BorderRadius = 5.000000000000000000
     Shadow.Blur = 2.000000000000000000
     Shadow.OffsetX = 0
     Shadow.OffsetY = 0
@@ -160,17 +182,17 @@ object FmAASE: TFmAASE
     OnClick = BtStartStopClick
   end
   object LbMp3FileName: TGuiButton
-    Left = 87
+    Left = 83
     Top = 80
-    Width = 410
+    Width = 414
     Height = 28
     Alignment = taCenter
     BorderColor = clWhite
     BorderWidth = 1.500000000000000000
+    BorderRadius = 5.000000000000000000
     ButtonColor = 1074095
     Caption = '[none]'
     FontOversampling = fo4x
-    BorderRadius = 5.000000000000000000
     Shadow.Blur = 2.000000000000000000
     Shadow.OffsetX = 0
     Shadow.OffsetY = 0
@@ -179,10 +201,11 @@ object FmAASE: TFmAASE
     Shadow.Visible = True
     Transparent = True
     OnClick = LbMp3FileNameClick
+    OnMouseUp = LbMp3FileNameMouseUp
   end
   object GbOscillator: TGuiGroupSide
     Left = 8
-    Top = 114
+    Top = 148
     Width = 489
     Height = 223
     Alpha = 128
@@ -580,6 +603,7 @@ object FmAASE: TFmAASE
       Height = 40
       Color = 1074095
       CurveMapping = 1.000000000000000000
+      DefaultValue = -15.000000000000000000
       Max = 6.000000000000000000
       Min = -94.000000000000000000
       ParentColor = False
@@ -587,11 +611,10 @@ object FmAASE: TFmAASE
       ImageList = SPL
       ImageIndex = 0
       Transparent = True
-      Value = -6.000000000000000000
+      Value = -15.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DlLevelChange
       OnMouseEnter = DlLevelMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DlLevel2: TGuiStitchedDial
       Tag = 1
@@ -601,6 +624,7 @@ object FmAASE: TFmAASE
       Height = 40
       Color = 1074095
       CurveMapping = 1.000000000000000000
+      DefaultValue = -15.000000000000000000
       Max = 6.000000000000000000
       Min = -94.000000000000000000
       ParentColor = False
@@ -608,11 +632,10 @@ object FmAASE: TFmAASE
       ImageList = SPL
       ImageIndex = 0
       Transparent = True
-      Value = -6.000000000000000000
+      Value = -15.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DlLevelChange
       OnMouseEnter = DlLevelMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DlLevel3: TGuiStitchedDial
       Tag = 2
@@ -622,6 +645,7 @@ object FmAASE: TFmAASE
       Height = 40
       Color = 1074095
       CurveMapping = 1.000000000000000000
+      DefaultValue = -15.000000000000000000
       Max = 6.000000000000000000
       Min = -94.000000000000000000
       ParentColor = False
@@ -629,11 +653,10 @@ object FmAASE: TFmAASE
       ImageList = SPL
       ImageIndex = 0
       Transparent = True
-      Value = -6.000000000000000000
+      Value = -15.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DlLevelChange
       OnMouseEnter = DlLevelMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DlLevel4: TGuiStitchedDial
       Tag = 3
@@ -643,6 +666,7 @@ object FmAASE: TFmAASE
       Height = 40
       Color = 1074095
       CurveMapping = 1.000000000000000000
+      DefaultValue = -15.000000000000000000
       Max = 6.000000000000000000
       Min = -94.000000000000000000
       ParentColor = False
@@ -650,11 +674,10 @@ object FmAASE: TFmAASE
       ImageList = SPL
       ImageIndex = 0
       Transparent = True
-      Value = -6.000000000000000000
+      Value = -15.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DlLevelChange
       OnMouseEnter = DlLevelMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DlLevel5: TGuiStitchedDial
       Tag = 4
@@ -664,6 +687,7 @@ object FmAASE: TFmAASE
       Height = 40
       Color = 1074095
       CurveMapping = 1.000000000000000000
+      DefaultValue = -15.000000000000000000
       Max = 6.000000000000000000
       Min = -94.000000000000000000
       ParentColor = False
@@ -671,11 +695,10 @@ object FmAASE: TFmAASE
       ImageList = SPL
       ImageIndex = 0
       Transparent = True
-      Value = -6.000000000000000000
+      Value = -15.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DlLevelChange
       OnMouseEnter = DlLevelMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DlLevel6: TGuiStitchedDial
       Tag = 5
@@ -685,6 +708,7 @@ object FmAASE: TFmAASE
       Height = 40
       Color = 1074095
       CurveMapping = 1.000000000000000000
+      DefaultValue = -15.000000000000000000
       Max = 6.000000000000000000
       Min = -94.000000000000000000
       ParentColor = False
@@ -692,11 +716,10 @@ object FmAASE: TFmAASE
       ImageList = SPL
       ImageIndex = 0
       Transparent = True
-      Value = -6.000000000000000000
+      Value = -15.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DlLevelChange
       OnMouseEnter = DlLevelMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DlDrive1: TGuiStitchedDial
       Left = 134
@@ -817,10 +840,10 @@ object FmAASE: TFmAASE
       Width = 358
       Height = 28
       BorderColor = clWhite
+      BorderRadius = 5.000000000000000000
       BorderWidth = 1.500000000000000000
       PanelColor = 1074095
       ParentColor = True
-      BorderRadius = 5.000000000000000000
       TabOrder = 18
       UseDockManager = True
       Transparent = True
@@ -847,6 +870,28 @@ object FmAASE: TFmAASE
       end
     end
   end
+  object LbAudioFileName: TGuiButton
+    Left = 95
+    Top = 114
+    Width = 402
+    Height = 28
+    Alignment = taCenter
+    BorderColor = clWhite
+    BorderWidth = 1.500000000000000000
+    BorderRadius = 5.000000000000000000
+    ButtonColor = 1074095
+    Caption = '[none]'
+    FontOversampling = fo4x
+    Shadow.Blur = 2.000000000000000000
+    Shadow.OffsetX = 0
+    Shadow.OffsetY = 0
+    Shadow.Opacity = 192
+    Shadow.Saturation = 3.000000000000000000
+    Shadow.Visible = True
+    Transparent = True
+    OnClick = LbAudioFileNameClick
+    OnMouseUp = LbAudioFileNameMouseUp
+  end
   object ASIOHost: TAsioHost
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
@@ -858,8 +903,8 @@ object FmAASE: TFmAASE
     Left = 50
     Top = 16
   end
-  object OpenDialog: TOpenDialog
-    DefaultExt = 'mp3'
+  object OpenDialogMp3: TOpenDialog
+    DefaultExt = '.mp3'
     Filter = 'MP3 File (*.mp3)|*.mp3'
     Left = 177
     Top = 16
@@ -5145,5 +5190,11 @@ object FmAASE: TFmAASE
       end>
     Left = 184
     Top = 64
+  end
+  object OpenDialogAudio: TOpenDialog
+    DefaultExt = '.wav'
+    Filter = 'WAVE File (*.wav)|*.wav|AIFF File (*.aiff)|*.aif*'
+    Left = 257
+    Top = 16
   end
 end
