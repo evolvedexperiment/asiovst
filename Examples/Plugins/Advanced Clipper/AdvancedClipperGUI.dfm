@@ -5,7 +5,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
   Caption = 'Advanced Clipper'
   ClientHeight = 293
   ClientWidth = 217
-  Color = 7373965
+  Color = 5660773
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -47,6 +47,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'Input Gain'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -63,6 +64,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'OS Factor'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -79,6 +81,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'Filter Order'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -96,9 +99,9 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderColor = 4938079
       BorderRadius = 4.000000000000000000
       BorderWidth = 1.000000000000000000
+      Color = 7373965
       Enabled = False
       PanelColor = 4938079
-      ParentColor = True
       TabOrder = 0
       UseDockManager = True
       object LbDisplay: TGuiLabel
@@ -124,8 +127,10 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
+      Color = 7373965
       Max = 6.000000000000000000
       Min = -6.000000000000000000
+      ParentColor = False
       ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
@@ -139,23 +144,27 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
+      Color = 7373965
+      DefaultValue = 1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
+      ParentColor = False
       ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialOSFactor1Change
-      DefaultValue = 0.000000000000000000
     end
     object DialFilterOrder1: TGuiStitchedDial
       Left = 139
       Top = 33
       Width = 48
       Height = 48
+      Color = 7373965
       CurveMapping = -1.000000000000000000
       Max = 64.000000000000000000
+      ParentColor = False
       ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
@@ -192,6 +201,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'OS Factor'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -208,6 +218,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'Filter Order'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -224,6 +235,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'Output Gain'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -241,8 +253,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderColor = 4938079
       BorderRadius = 4.000000000000000000
       BorderWidth = 1.000000000000000000
+      Color = 7373965
       PanelColor = 4938079
-      ParentColor = True
       TabOrder = 0
       UseDockManager = True
       object LbHardClip: TGuiLabel
@@ -284,23 +296,27 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
+      Color = 7373965
+      DefaultValue = 1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
+      ParentColor = False
       ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialOSFactor2Change
-      DefaultValue = 0.000000000000000000
     end
     object DialFilterOrder2: TGuiStitchedDial
       Left = 75
       Top = 33
       Width = 48
       Height = 48
+      Color = 7373965
       CurveMapping = -1.000000000000000000
       Max = 64.000000000000000000
+      ParentColor = False
       ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
@@ -314,8 +330,10 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
+      Color = 7373965
       Max = 6.000000000000000000
       Min = -6.000000000000000000
+      ParentColor = False
       ScrollRange = 400.000000000000000000
       ImageList = DSIL
       ImageIndex = 0
@@ -345,6 +363,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'Input'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -361,6 +380,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'Stage 1'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -377,6 +397,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 15
       Alignment = taCenter
       Caption = 'Stage 2'
+      Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
@@ -397,6 +418,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderWidth = 2.799999952316284000
       Uniformity_Percent = 50.000000000000000000
       Transparent = False
+      Color = 7373965
+      ParentColor = False
       ParentShowHint = False
       ShowHint = True
       OnClick = ClipLEDClick
@@ -412,6 +435,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderWidth = 2.799999952316284000
       Uniformity_Percent = 50.000000000000000000
       Transparent = False
+      Color = 7373965
+      ParentColor = False
       OnClick = ClipLEDClick
     end
     object ClipLEDStage2: TGuiLED
@@ -425,6 +450,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       BorderWidth = 2.799999952316284000
       Uniformity_Percent = 50.000000000000000000
       Transparent = False
+      Color = 7373965
+      ParentColor = False
       OnClick = ClipLEDClick
     end
   end

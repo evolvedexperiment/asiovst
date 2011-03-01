@@ -119,7 +119,7 @@ end;
 
 destructor TFreeverbAllpass.Destroy;
 begin
- Dispose(FBuffer);
+ FreeMem(FBuffer);
  inherited;
 end;
 
@@ -223,7 +223,7 @@ end;
 
 destructor TFreeverbCombFilter.Destroy;
 begin
- Dispose(FBuffer);
+ FreeMem(FBuffer);
  inherited;
 end;
 
@@ -281,12 +281,8 @@ end;
 
 procedure TFreeverbCombFilter.Mute;
 begin
- Fillchar(FBuffer^[0], FBufferSize * SizeOf(Single), 0);
+ FillChar(FBuffer^[0], FBufferSize * SizeOf(Single), 0);
 end;
-
-{ I really don't know if this is all as fast as can be,
-  but it beats Delphi's compiler generated code hands down,
-  Thaddy}
 
 procedure TFreeverbCombFilter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
@@ -310,9 +306,9 @@ asm
   // to switch in extra precision mode, which is expensive.
   // Since such small values are irrelevant to audio, avoid this.
   // This is the same spot where the original C macro appears
-  test  dword ptr [ecx+edx], $7F800000           // test if denormal
+  test  dword ptr [ecx + edx], $7F800000         // test if denormal
   jnz   @Normal
-  mov   dword ptr [ecx+edx], 0                   // if so, zero out
+  mov   dword ptr [ecx + edx], 0                 // if so, zero out
 @normal:
 
   fld   [ecx + edx].Single;                      // load sample from FBuffer

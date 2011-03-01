@@ -168,6 +168,7 @@ type
     procedure TestHandleNANs;
     procedure TestProcess;
     procedure TestProcess64Replacing;
+    procedure TestMainsChanged;
     procedure TestSmallBlocksizes;
     procedure TestSampleRateDependency;
 
@@ -3291,11 +3292,12 @@ begin
 
  for Channel := 0 to Length(FInput) - 1 do
   for Sample := 0 to FBlockSize - 1
-   do FInput[Channel, Sample] := 2 * random - 1;
+   do FInput[Channel, Sample] := 2 * Random - 1;
+
  with FVstHost[0] do
   begin
    for Cnt := 0 to 10
-    do Process(@FInput[0], @FOutput[0], random(FBlocksize));
+    do Process(@FInput[0], @FOutput[0], Random(FBlocksize));
   end;
 end;
 
@@ -3471,6 +3473,58 @@ begin
    Process32Replacing(@FInput[0], @FOutput[0], 5);
   end;
 end;
+
+procedure TVstPluginIOTests.TestMainsChanged;
+var
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+begin
+ with FVstHost[0] do
+  begin
+   // set blocksize to process 2 seconds of audio
+   BlockSize := 2 * Round(FVstHost.VstTimeInfo.SampleRate);
+
+   MainsChanged(True);
+
+   // generate random input
+   for ChannelIndex := 0 to Length(FOutput) - 1 do
+    for SampleIndex := 0 to FBlockSize - 1
+     do FInput[ChannelIndex]^[SampleIndex] := 2 * Random - 1;
+
+   // clear output buffer
+   for ChannelIndex := 0 to Length(FOutput) - 1
+    do FillChar(FOutput[ChannelIndex]^, FBlockSize * SizeOf(Single), 0);
+
+   // process random data
+   Process32Replacing(@FInput[0], @FOutput[0], FBlockSize);
+
+   // switch mains off
+   MainsChanged(False);
+
+   // clear input buffer
+   for ChannelIndex := 0 to Length(FOutput) - 1
+    do FillChar(FOutput[ChannelIndex]^, FBlockSize * SizeOf(Single), 0);
+
+   // clear output buffer
+   for ChannelIndex := 0 to Length(FInput) - 1
+    do FillChar(FInput[ChannelIndex]^, FBlockSize * SizeOf(Single), 0);
+
+   // switch mains on again
+   MainsChanged(True);
+
+   // process silence
+   Process32Replacing(@FInput[0], @FOutput[0], FBlockSize);
+
+   // check output buffer is silence as well
+   if (FOutput[0]^[Blocksize - 1] = 0) then
+    for ChannelIndex := 0 to Length(FInput) - 1 do
+     for SampleIndex := 0 to FBlockSize - 1
+      do Check(FOutput[ChannelIndex]^[SampleIndex] = 0, 'Potential reset issue');
+
+   MainsChanged(True);
+  end;
+end;
+
 
 { TVSTProcessThread }
 
@@ -3788,4 +3842,4 @@ initialization
   InitializeVstPluginTests;
 {$ENDIF}
 
-end.
+end.
