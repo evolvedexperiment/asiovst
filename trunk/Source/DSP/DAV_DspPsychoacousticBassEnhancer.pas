@@ -85,6 +85,7 @@ type
     destructor Destroy; override;
 
     function ProcessSample32(Input: Single): Single; override;
+    procedure ResetStates; virtual;
 
     property Ratio: Single read FRatio write SetRatio;
     property Response: Single read FResponse write SetResponse;
@@ -348,6 +349,14 @@ end;
 procedure TCustomHarmonicBass.DecayChanged;
 begin
  Changed;
+end;
+
+procedure TCustomHarmonicBass.ResetStates;
+begin
+ FCrossover.ResetStates;
+ FHighpass.ResetStates;
+ FLimiter.Reset;
+ FUpwardComp.Reset;
 end;
 
 procedure TCustomHarmonicBass.ResponseChanged;

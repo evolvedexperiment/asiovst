@@ -39,8 +39,9 @@ uses
   {$IFDEF DARWIN} MacOSAll, CarbonCanvas, CarbonPrivate, {$ENDIF}
   {$IFDEF GTK} {$IFDEF LCLGtk2}gdk2, gtk2, gdk2pixbuf, glib2, {$ELSE} gdk, gtk,
   gdkpixbuf, glib, gtkdef, {$ENDIF} {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, Controls, SysUtils, DAV_MemoryUtils, DAV_GuiCommon,
-  DAV_GuiCustomMap,  {$IFDEF MSWINDOWS} DAV_GuiByteMap, {$ENDIF} DAV_GuiBlend;
+  Graphics, Classes, Controls, SysUtils, DAV_MemoryUtils, DAV_GuiCommon, Dialogs, Forms,
+  DAV_GuiCustomMap, DAV_GuiInterface, {$IFDEF MSWINDOWS} DAV_GuiByteMap,
+  {$ENDIF} DAV_GuiBlend;
 
 {$IFDEF DARWIN}
 const
@@ -48,7 +49,7 @@ const
 {$ENDIF}
 
 type
-  TGuiCustomPixelMap = class(TGuiCustomMap)
+  TGuiCustomPixelMap = class(TGuiCustomMap, IPixel32Access)
   private
     function GetDataPointer: PPixel32Array;
     function GetPixel(X, Y: Integer): TPixel32;
@@ -475,6 +476,7 @@ var
   Pnt       : TPoint;
   R, SelfR  : TRect;
   CtlR      : TRect;
+  Interf    : IInterface;
   {$IFDEF UsePixelMap}
   Bmp       : TGuiPixelMapDIB;
   {$ELSE}
@@ -482,6 +484,14 @@ var
   {$ENDIF}
 {$ENDIF}
 begin
+(*
+  if Supports(Control.Parent, IPixel32Access) then
+   begin
+//    IPixel32Access(Control.Owner).;
+    Exit;
+   end;
+*)
+
 {$IFNDEF FPC}
  if (Control.Parent = nil) then Exit;
  SubCount := Control.Parent.ControlCount;

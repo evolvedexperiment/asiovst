@@ -62,6 +62,7 @@ type
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure StringOrderToParameter(Sender: TObject; const Index: Integer;
       const ParameterString: AnsiString; var Value: Single);
+    procedure VSTModuleResume(Sender: TObject);
   private
     FLowpass     : array of array [0..1] of TButterworthLowPassFilter;
     FHighpass    : array of array [0..1] of TButterworthHighPassFilter;
@@ -420,6 +421,22 @@ begin
  // update GUI
  if EditorForm is TFmLinkwitzRiley
   then TFmLinkwitzRiley(EditorForm).UpdateHighpassSlope;
+end;
+
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleResume(Sender: TObject);
+var
+  Channel: Integer;
+begin
+ for Channel := 0 to Length(FLowpass) - 1 do
+  begin
+   if Assigned(FLowpass[Channel][0]) then FLowpass[Channel][0].ResetStates;
+   if Assigned(FLowpass[Channel][1]) then FLowpass[Channel][1].ResetStates;
+  end;
+ for Channel := 0 to Length(FHighpass) - 1 do
+  begin
+   if Assigned(FHighpass[Channel][0]) then FHighpass[Channel][0].ResetStates;
+   if Assigned(FHighpass[Channel][1]) then FHighpass[Channel][1].ResetStates;
+  end;
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleSampleRateChange(Sender: TObject;

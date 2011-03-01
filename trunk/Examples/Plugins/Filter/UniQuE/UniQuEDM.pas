@@ -58,6 +58,7 @@ type
     procedure ParamMidChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPresChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHigh(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleResume(Sender: TObject);
   private
     FFade   : array [0..1] of Single;
     FVolume : Single;
@@ -290,6 +291,19 @@ begin
  if Parameter[Index] > 0.5
   then PreDefined := '-'
   else PreDefined := '+';
+end;
+
+procedure TUniQuEDataModule.VSTModuleResume(Sender: TObject);
+var
+  ChannelIndex : Integer;
+begin
+ for ChannelIndex := 0 to 1 do
+  begin
+   if Assigned(FLow[ChannelIndex]) then FLow[ChannelIndex].ResetStates;
+   if Assigned(FMid[ChannelIndex]) then FMid[ChannelIndex].ResetStates;
+   if Assigned(FPres[ChannelIndex]) then FPres[ChannelIndex].ResetStates;
+   if Assigned(FHigh[ChannelIndex]) then FHigh[ChannelIndex].ResetStates;
+  end;
 end;
 
 procedure TUniQuEDataModule.VSTModuleSampleRateChange(Sender: TObject;

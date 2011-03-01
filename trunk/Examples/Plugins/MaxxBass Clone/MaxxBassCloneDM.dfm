@@ -1,5 +1,4 @@
 object HarmonicBassModule: THarmonicBassModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'
@@ -217,10 +216,10 @@ object HarmonicBassModule: THarmonicBassModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 77

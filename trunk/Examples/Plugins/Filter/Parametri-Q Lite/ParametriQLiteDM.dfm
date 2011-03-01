@@ -1,5 +1,4 @@
 object ParametriQLiteDataModule: TParametriQLiteDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Parametri-Q Lite'
@@ -676,6 +675,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

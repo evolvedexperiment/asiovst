@@ -38,7 +38,7 @@ uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Classes, Graphics, Forms, Messages, SysUtils, RTLConsts, Controls,
   DAV_Classes, DAV_GuiCustomControl, DAV_GuiPixelMap, DAV_GuiFont,
-  DAV_GuiShadow, DAV_GuiVectorPixelLine;
+  DAV_GuiShadow, DAV_GuiVectorPixelGraph;
 
 type
   TCustomAxisFlag = (cafAutoGranularity, cafAutoExtendBounds);

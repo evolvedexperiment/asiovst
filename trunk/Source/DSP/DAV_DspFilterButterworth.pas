@@ -106,12 +106,14 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(const Order: Integer = 0); override;
+
     procedure CalculateCoefficients; override;
     procedure ProcessSample(Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
     procedure ProcessSample(Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
     function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
+    procedure ResetStates; override;
   end;
 
   TButterworthHighPassFilter = class(TCustomButterworthHighPassFilter)
@@ -1249,6 +1251,12 @@ function TCustomButterworthSplitBandFilter.ProcessSample64(
   Input: Double): Double;
 begin
  raise Exception.Create('Please use the function ProcessSample!');
+end;
+
+procedure TCustomButterworthSplitBandFilter.ResetStates;
+begin
+ inherited;
+ FillChar(FHPState[0], Length(FHPState) * SizeOf(Double), 0);
 end;
 
 

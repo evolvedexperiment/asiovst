@@ -49,10 +49,9 @@ type
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParameterIntensityChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterAddOriginalBassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterAddOriginalBassDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterAddOriginalBassChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FRenaissanceBass : array [0..1] of TResurrectionBass;
@@ -132,6 +131,9 @@ begin
    Parameter[2] := 0;
    Parameter[3] := 1;
   end;
+
+ // set editor form
+ EditorFormClass := TFmRenaissanceBassClone;
 end;
 
 procedure TResurrectionBassCloneModule.VSTModuleClose(Sender: TObject);
@@ -142,23 +144,17 @@ begin
   do FreeAndNil(FRenaissanceBass[Channel]);
 end;
 
-procedure TResurrectionBassCloneModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmRenaissanceBassClone.Create(Self);
-end;
-
 procedure TResurrectionBassCloneModule.ParameterAddOriginalBassDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
 end;
 
 procedure TResurrectionBassCloneModule.ParameterdBDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] = 0
   then PreDefined := '-oo'
@@ -173,8 +169,8 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FRenaissanceBass) - 1 do
-   if assigned(FRenaissanceBass[Channel])
-    then FRenaissanceBass[Channel].AddOriginalBass := Boolean(round(Value));
+   if Assigned(FRenaissanceBass[Channel])
+    then FRenaissanceBass[Channel].AddOriginalBass := Boolean(Round(Value));
  finally
   FCriticalSection.Release;
  end;
@@ -188,7 +184,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FRenaissanceBass) - 1 do
-   if assigned(FRenaissanceBass[Channel])
+   if Assigned(FRenaissanceBass[Channel])
     then FRenaissanceBass[Channel].Intensity := Value;
  finally
   FCriticalSection.Release;
@@ -203,7 +199,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FRenaissanceBass) - 1 do
-   if assigned(FRenaissanceBass[Channel])
+   if Assigned(FRenaissanceBass[Channel])
     then FRenaissanceBass[Channel].Gain := Value;
  finally
   FCriticalSection.Release;
@@ -218,7 +214,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FRenaissanceBass) - 1 do
-   if assigned(FRenaissanceBass[Channel])
+   if Assigned(FRenaissanceBass[Channel])
     then FRenaissanceBass[Channel].Frequency := Value;
  finally
   FCriticalSection.Release;
@@ -232,9 +228,10 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FRenaissanceBass) - 1 do
-   if assigned(FRenaissanceBass[Channel])
-    then FRenaissanceBass[Channel].SampleRate := SampleRate;
+  if Abs(SampleRate) > 0 then
+   for Channel := 0 to Length(FRenaissanceBass) - 1 do
+    if Assigned(FRenaissanceBass[Channel])
+     then FRenaissanceBass[Channel].SampleRate := Abs(SampleRate);
  finally
   FCriticalSection.Release;
  end;
