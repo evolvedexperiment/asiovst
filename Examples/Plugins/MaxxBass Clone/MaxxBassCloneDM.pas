@@ -44,7 +44,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -60,6 +59,7 @@ type
     procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterListenDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure VSTModuleResume(Sender: TObject);
   private
     FHarmonicBass    : array [0..1] of TCustomHarmonicBass;
     FCriticalSection : TCriticalSection;
@@ -169,6 +169,9 @@ begin
    Parameter[7] := 1;
    Parameter[8] := 0;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmHarmonicBassClone;
 end;
 
 procedure THarmonicBassModule.VSTModuleClose(Sender: TObject);
@@ -177,12 +180,6 @@ var
 begin
  for Channel := 0 to Length(FHarmonicBass) - 1
   do FreeAndNil(FHarmonicBass[Channel]);
-end;
-
-procedure THarmonicBassModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmHarmonicBassClone.Create(Self);
 end;
 
 procedure THarmonicBassModule.ParameterHighpassDisplay(
@@ -369,6 +366,19 @@ begin
  end;
 end;
 
+procedure THarmonicBassModule.VSTModuleResume(Sender: TObject);
+var
+  Channel : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FHarmonicBass) - 1
+   do FHarmonicBass[Channel].ResetStates;
+ finally
+  FCriticalSection.Release;
+ end;
+end;
+
 procedure THarmonicBassModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -378,8 +388,10 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FHarmonicBass[Channel].ProcessSample32(Inputs[Channel, Sample]);
+   for Sample := 0 to Min(FBlockSize, SampleFrames) - 1 do
+    if IsNaN(Inputs[Channel, Sample])
+     then Outputs[Channel, Sample] := FHarmonicBass[Channel].ProcessSample32(0)
+     else Outputs[Channel, Sample] := FHarmonicBass[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;
  end;
@@ -394,7 +406,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   for Sample := 0 to SampleFrames - 1
+   for Sample := 0 to Min(FBlockSize, SampleFrames) - 1
     do Outputs[Channel, Sample] := FHarmonicBass[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;

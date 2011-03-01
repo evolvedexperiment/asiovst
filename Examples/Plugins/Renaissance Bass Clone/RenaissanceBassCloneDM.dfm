@@ -8,7 +8,6 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'RenaissanceBass Full Reset'
   IORatio = 1.000000000000000000
   UniqueID = 'DMBC'
@@ -36,7 +35,6 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Frequency'
@@ -55,7 +53,6 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Dynamics'
       DisplayName = 'Add Original Bass'
@@ -72,7 +69,6 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
       OnCustomParameterDisplay = ParameterAddOriginalBassDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Intensity'
@@ -131,10 +127,9 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 290
   Top = 82

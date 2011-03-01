@@ -53,6 +53,7 @@ type
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure VSTModuleResume(Sender: TObject);
   private
     FFilters     : array [0..1, 0..7] of TCustomBandwidthIIRFilter;
     FUpSampler   : array [0..1] of TPolyphaseUpsampler64;
@@ -232,6 +233,22 @@ begin
     Temp[1] := CHalf32 * (abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
     FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + abs(Temp[1]));
    end;
+end;
+
+procedure TParametriQLiteDataModule.VSTModuleResume(Sender: TObject);
+var
+  Channel : Integer;
+  Band    : Integer;
+begin
+ for Channel := 0 to Length(FFilters) - 1 do
+  begin
+   if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].ResetStates
+   if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].ResetStates
+
+   for Band := 0 to Length(FFilters[Channel]) - 1 do
+    if Assigned(FFilters[Channel, Band])
+     then FFilters[Channel, Band].ResetStates;
+  end;
 end;
 
 procedure TParametriQLiteDataModule.VSTModuleSampleRateChange(Sender: TObject;

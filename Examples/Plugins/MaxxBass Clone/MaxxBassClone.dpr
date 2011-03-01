@@ -29,5 +29,4 @@ exports
   VstPluginMain name 'VSTPluginMain',
   WinampDSPGetHeader name 'winampDSPGetHeader2';
 
-begin
 end.

@@ -24,7 +24,7 @@
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\DSP;..\..\Source\Math;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\DAV_Common_D14.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_Common_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00500000</DCC_ImageBase>
 			<GenPackage>true</GenPackage>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
@@ -153,7 +153,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2011-02-20 21:57</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2011-03-01 14:54</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages>
 						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\7.0\Bpl\GR32_Charts_D14.bpl">GR32 Charts</Excluded_Packages>

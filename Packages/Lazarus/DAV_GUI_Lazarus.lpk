@@ -24,7 +24,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="63">
+    <Files Count="64">
       <Item1>
         <Filename Value="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
         <UnitName Value="DAV_GuiVUMeter"/>
@@ -278,6 +278,10 @@
         <Filename Value="..\..\Source\GUI\DAV_GuiVectorPixelLine.pas"/>
         <UnitName Value="DAV_GuiVectorPixelLine"/>
       </Item63>
+      <Item64>
+        <Filename Value="..\..\Source\GUI\DAV_GuiInterface.pas"/>
+        <UnitName Value="DAV_GuiInterface"/>
+      </Item64>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="4">

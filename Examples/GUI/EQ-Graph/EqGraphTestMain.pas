@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_GuiEQGraph, DAV_DspFilter, DAV_DspFilterBasics;
+  Dialogs, DAV_GuiEQGraph, DAV_DspFilter, DAV_DspFilterBasics,
+  DAV_GuiCustomControl;
 
 type
   TFmEqGraphTest = class(TForm)

@@ -10,14 +10,18 @@ object QuadropolisDataModule: TQuadropolisDataModule
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd4in2out]
   SampleRate = 44100.000000000000000000
   numInputs = 4
-  CurrentProgram = -1
+  CurrentProgramName = 'Default'
   ProcessingMode = pmBlockSave
   BlockModeOverlap = 512
   InitialDelay = 512
   IORatio = 1.000000000000000000
   UniqueID = 'Quad'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

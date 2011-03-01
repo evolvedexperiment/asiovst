@@ -192,6 +192,19 @@ type
     X, Y : TFixed16Dot16Point;
   end;
 
+  TGetValueEvent = function (Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point of object;
+
+  TGuiEquallySpacedPolyline = class(TGuiCustomGeometricShape)
+  private
+    FOnGetValue: TGetValueEvent;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+
+    property OnGetValue: TGetValueEvent read FOnGetValue write FOnGetValue;
+  end;
+
   TGuiCustomPolygon = class(TGuiCustomGeometricShape)
   private
     FData : array of TFixed24Dot8PointPoint;
@@ -625,6 +638,25 @@ begin
    FYB := Value;
    YBChanged;
   end;
+end;
+
+
+{ TGuiEquallySpacedPolyline }
+
+constructor TGuiEquallySpacedPolyline.Create;
+begin
+
+end;
+
+procedure TGuiEquallySpacedPolyline.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TGuiEquallySpacedPolyline then
+  with TGuiEquallySpacedPolyline(Dest) do
+   begin
+    FOnGetValue := Self.FOnGetValue;
+   end;
 end;
 
 
