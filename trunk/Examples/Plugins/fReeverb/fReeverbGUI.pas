@@ -43,7 +43,6 @@ uses
   DAV_GuiGraphicControl;
 
 type
-
   TFmReverb = class(TForm)
     BtAB: TGuiButton;
     BtAbout: TGuiButton;
@@ -125,55 +124,43 @@ end;
 procedure TFmReverb.UpdateDamp;
 begin
  with TfReeverbVST(Owner) do
-  if DialDamp.Value <> Parameter[6] then
-   begin
-    DialDamp.Value := Parameter[6];
-   end;
+  if DialDamp.Value <> Parameter[6]
+   then DialDamp.Value := Parameter[6];
 end;
 
 procedure TFmReverb.UpdateDry;
 begin
  with TfReeverbVST(Owner) do
-  if DialDry.Value <> Parameter[0]  then
-   begin
-    DialDry.Value := Parameter[0];
-   end;
+  if DialDry.Value <> Parameter[0]
+   then DialDry.Value := Parameter[0];
 end;
 
 procedure TFmReverb.UpdateSize;
 begin
  with TfReeverbVST(Owner) do
-  if DialRoomSize.Value <> Parameter[3] then
-   begin
-    DialRoomSize.Value := Parameter[3];
-   end;
+  if DialRoomSize.Value <> Parameter[3]
+   then DialRoomSize.Value := Parameter[3];
 end;
 
 procedure TFmReverb.UpdateStretch;
 begin
  with TfReeverbVST(Owner) do
-  if DialStretch.Value <> Parameter[5] then
-   begin
-    DialStretch.Value := Parameter[5];
-   end;
+  if DialStretch.Value <> Parameter[5]
+   then DialStretch.Value := Parameter[5];
 end;
 
 procedure TFmReverb.UpdateWet;
 begin
  with TfReeverbVST(Owner) do
-  if DialWet.Value <> Parameter[1]  then
-   begin
-    DialWet.Value := Parameter[1];
-   end;
+  if DialWet.Value <> Parameter[1]
+   then DialWet.Value := Parameter[1];
 end;
 
 procedure TFmReverb.UpdateWidth;
 begin
  with TfReeverbVST(Owner) do
-  if DialWidth.Value <> Parameter[2]  then
-   begin
-    DialWidth.Value := Parameter[2];
-   end;
+  if DialWidth.Value <> Parameter[2]
+   then DialWidth.Value := Parameter[2];
 end;
 
 procedure TFmReverb.DialDryChange(Sender: TObject);
@@ -203,49 +190,41 @@ end;
 procedure TFmReverb.DialWidthChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[2] <> DialWidth.Value then
-   begin
-    Parameter[2] := DialWidth.Value;
-   end;
+  if Parameter[2] <> DialWidth.Value
+   then Parameter[2] := DialWidth.Value;
 end;
 
 procedure TFmReverb.DialRoomSizeChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[3] <> DialRoomSize.Value then
-   begin
-    Parameter[3] := DialRoomSize.Value;
-   end;
+  if Parameter[3] <> DialRoomSize.Value
+   then Parameter[3] := DialRoomSize.Value;
 end;
 
 procedure TFmReverb.BtAboutClick(Sender: TObject);
 begin
  MessageDlg('fReeverb example plugin written by Christian Budde' + #13#10 +
-            'based on algorithm by Jezar at Dreampoint' + #13#10 +
-            'based on GUI by thcilnnahoj', mtInformation, [mbOK], 0);
+   'based on algorithm by Jezar at Dreampoint' + #13#10 +
+   'based on GUI by thcilnnahoj', mtInformation, [mbOK], 0);
 end;
 
 procedure TFmReverb.CBFreezeClick(Sender: TObject);
 begin
-  TfReeverbVST(Owner).Parameter[4] := Byte(CBFreeze.Checked);
+ TfReeverbVST(Owner).Parameter[4] := Byte(CBFreeze.Checked);
 end;
 
 procedure TFmReverb.DialStretchChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[5] <> DialStretch.Value then
-   begin
-    Parameter[5] := DialStretch.Value;
-   end;
+  if Parameter[5] <> DialStretch.Value
+   then Parameter[5] := DialStretch.Value;
 end;
 
 procedure TFmReverb.DialDampChange(Sender: TObject);
 begin
  with TfReeverbVST(Owner) do
-  if Parameter[6] <> DialDamp.Value then
-   begin
-    Parameter[6] := DialDamp.Value;
-   end;
+  if Parameter[6] <> DialDamp.Value
+   then Parameter[6] := DialDamp.Value;
 end;
 
 end.

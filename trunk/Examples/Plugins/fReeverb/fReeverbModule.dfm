@@ -1,5 +1,4 @@
 object fReeverbVST: TfReeverbVST
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'fReeverb'
@@ -203,7 +202,6 @@ object fReeverbVST: TfReeverbVST
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcessReplacing
   OnSampleRateChange = VSTModuleSampleRateChange

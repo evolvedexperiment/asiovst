@@ -37,13 +37,13 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Graphics, Controls, StdCtrls, ExtCtrls, 
-  DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiGroup, DAV_GuiPanel,
-  DAV_GuiLabel, DAV_GuiLED, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial, DAV_GuiCustomControl, DAV_GuiGraphicControl,
-  DAV_GuiImageControl;
+  DAV_Types, DAV_VSTModule, DAV_GuiPixelMap, DAV_GuiCommon, DAV_GuiInterface,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiImageControl,
+  DAV_GuiGroup, DAV_GuiPanel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial, DAV_GuiLabel, DAV_GuiLED;
 
 type
-  TFmAdvancedClipper = class(TForm)
+  TFmAdvancedClipper = class(TForm, IPixel32Access)
     ClipLEDInput: TGuiLED;
     ClipLEDStage1: TGuiLED;
     ClipLEDStage2: TGuiLED;
@@ -88,6 +88,11 @@ type
     procedure TimerTimer(Sender: TObject);
   private
     FBackgroundBitmap : TGuiCustomPixelMap;
+    function GetDataPointer: PPixel32Array;
+    function GetPixel(X, Y: Integer): TPixel32;
+    function GetPixelPointer(X, Y: Integer): PPixel32;
+    function GetScanLine(Y: Integer): PPixel32Array;
+    procedure SetPixel(X, Y: Integer; const Value: TPixel32);
   public
     procedure UpdateInputGain;
     procedure UpdateOSFactor1;
@@ -107,7 +112,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_GuiCommon, AdvancedClipperDM;
+  Math, DAV_Common, AdvancedClipperDM;
 
 procedure TFmAdvancedClipper.FormCreate(Sender: TObject);
 begin
@@ -165,6 +170,31 @@ begin
  UpdateOutputGain;
  UpdateHardClip;
  LbDisplay.Caption := 'Advanced Clipper';
+end;
+
+function TFmAdvancedClipper.GetDataPointer: PPixel32Array;
+begin
+ Result := FBackgroundBitmap.DataPointer;
+end;
+
+function TFmAdvancedClipper.GetPixel(X, Y: Integer): TPixel32;
+begin
+ Result := FBackgroundBitmap.Pixel[X, Y];
+end;
+
+function TFmAdvancedClipper.GetPixelPointer(X, Y: Integer): PPixel32;
+begin
+ Result := FBackgroundBitmap.PixelPointer[X, Y];
+end;
+
+function TFmAdvancedClipper.GetScanLine(Y: Integer): PPixel32Array;
+begin
+ Result := FBackgroundBitmap.ScanLine[Y];
+end;
+
+procedure TFmAdvancedClipper.SetPixel(X, Y: Integer; const Value: TPixel32);
+begin
+ FBackgroundBitmap.Pixel[X, Y] := Value;
 end;
 
 procedure TFmAdvancedClipper.DialFilterOrder1Change(Sender: TObject);

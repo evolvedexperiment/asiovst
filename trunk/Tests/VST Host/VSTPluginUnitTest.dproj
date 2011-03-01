@@ -1,8 +1,8 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{B8B65950-75D0-4B4B-AF5F-48607D65AE3C}</ProjectGuid>
 			<MainSource>VSTPluginUnitTest.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release Console</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
@@ -47,7 +47,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_Define>DEBUG;madExcept;$(DCC_Define)</DCC_Define>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_3)'!=''">
 			<DCC_Define>CONSOLE_TESTRUNNER;$(DCC_Define)</DCC_Define>
@@ -59,6 +59,9 @@
 			<DelphiCompile Include="VSTPluginUnitTest.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
+			<DCCReference Include="SplashScreen.pas">
+				<Form>FmSplashScreen</Form>
+			</DCCReference>
 			<DCCReference Include="DAV_TestVSTHost.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
@@ -86,7 +89,7 @@
 						<Source Name="MainSource">VSTPluginUnitTest.dpr</Source>
 					</Source>
 					<Parameters>
-						<Parameters Name="RunParams">C:\Users\Public\Code\VSTPack\Bin\PhaseAdjustment.dll</Parameters>
+						<Parameters Name="RunParams">freeverb.dll</Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>

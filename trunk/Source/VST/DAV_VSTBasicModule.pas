@@ -362,9 +362,9 @@ const
   CHostCallProcess64ReplacingOffset = $0000023C;
 *)
   {$ELSE}
-  CHostCallProcessOffset = $00000228;
-  CHostCallProcess32ReplacingOffset = $0000022C;
-  CHostCallProcess64ReplacingOffset = $00000230;
+  CHostCallProcessOffset = $0000022C;
+  CHostCallProcess32ReplacingOffset = $00000230;
+  CHostCallProcess64ReplacingOffset = $00000234;
   {$ENDIF}
 {$ENDIF}
 

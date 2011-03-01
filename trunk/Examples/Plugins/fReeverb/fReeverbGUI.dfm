@@ -21,11 +21,11 @@ object FmReverb: TFmReverb
     Width = 329
     Height = 23
     BorderColor = clBtnShadow
+    BorderRadius = 9.000000000000000000
     BorderVisible = False
     BorderWidth = 2.000000000000000000
     PanelColor = clWhite
     ParentColor = True
-    BorderRadius = 9.000000000000000000
     TabOrder = 2
     UseDockManager = True
     Transparent = True
@@ -208,6 +208,7 @@ object FmReverb: TFmReverb
       Alignment = taCenter
       BorderColor = 5855577
       BorderWidth = 1.500000000000000000
+      BorderRadius = 4.000000000000000000
       ButtonColor = 14803425
       Caption = 'a <> b'
       Font.Charset = DEFAULT_CHARSET
@@ -216,7 +217,6 @@ object FmReverb: TFmReverb
       Font.Name = 'Tahoma'
       Font.Style = []
       FontOversampling = fo4x
-      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
     end
@@ -228,6 +228,7 @@ object FmReverb: TFmReverb
       Alignment = taCenter
       BorderColor = 5855577
       BorderWidth = 1.500000000000000000
+      BorderRadius = 4.000000000000000000
       ButtonColor = 14803425
       Caption = 'about'
       Font.Charset = DEFAULT_CHARSET
@@ -236,7 +237,6 @@ object FmReverb: TFmReverb
       Font.Name = 'Tahoma'
       Font.Style = []
       FontOversampling = fo4x
-      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtAboutClick
