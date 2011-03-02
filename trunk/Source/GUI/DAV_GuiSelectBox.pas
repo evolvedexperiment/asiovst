@@ -1,11 +1,41 @@
 unit DAV_GuiSelectBox;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010-2011        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Controls, Graphics, Menus, DAV_GuiPixelMap,
+  Windows, Classes, Controls, Graphics, Menus, Messages, DAV_GuiPixelMap,
   DAV_GuiCustomControl, DAV_GuiFont, DAV_GuiShadow;
 
 type
@@ -58,6 +88,8 @@ type
     procedure RenderSelectBox(PixelMap: TGuiCustomPixelMap);
     procedure UpdateBuffer; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
+
+    procedure CMFontchanged(var Message: TMessage); message CM_FONTCHANGED;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -132,7 +164,7 @@ implementation
 
 uses
   Math, SysUtils, DAV_Approximations, DAV_Common, DAV_Math, DAV_Complex,
-  DAV_GuiCommon, DAV_GuiBlend;
+  DAV_GuiCommon, DAV_GuiBlend, DAV_GuiFixedPoint;
 
 { TCustomGuiSelectBox }
 
@@ -193,10 +225,16 @@ begin
  BufferChanged;
 end;
 
+procedure TCustomGuiSelectBox.CMFontchanged(var Message: TMessage);
+begin
+ FGuiFont.Font.Assign(Font);
+ BufferChanged;
+end;
+
 procedure TCustomGuiSelectBox.RenderSelectBox(PixelMap: TGuiCustomPixelMap);
 var
   X, Y              : Integer;
-  ScnLne            : array [0..1] of PPixel32Array;
+  ScnLn             : array [0..1] of PPixel32Array;
   ButtonColor       : TPixel32;
   BorderColor       : TPixel32;
   CombColor         : TPixel32;
@@ -208,15 +246,12 @@ var
   SqrDist, SqrYDist : Single;
   SqrRadMinusOne    : Single;
   Temp              : Single;
-
-  Val, Off          : TComplexDouble;
-  Steps, i          : Integer;
-  tmp               : Single;
-  rad               : Integer;
+  XFixed            : TFixed24Dot8Point;
+  XAdv              : TFixed24Dot8Point;
+  Offset            : Integer;
+  ArrowHeight       : Integer;
+  ArrowWidth        : Integer;
   TextSize          : TSize;
-  ArrowPos          : TPoint;
-  PtsArray          : array of TPoint;
-  Offsets           : array [0..1] of Integer;
 begin
  with PixelMap do
   begin
@@ -240,8 +275,8 @@ begin
      if XStart <= 0
       then Continue
       else XStart := Sqrt(XStart) - 0.5;
-     ScnLne[0] := Scanline[Y];
-     ScnLne[1] := Scanline[Height - 1 - Y];
+     ScnLn[0] := Scanline[Y];
+     ScnLn[1] := Scanline[Height - 1 - Y];
 
      for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
       begin
@@ -270,19 +305,20 @@ begin
          end;
 
        // lines
-       if (X = FArrowButtonWidth) or (X = Width - 1 - FArrowButtonWidth)
+       if ((X >= FArrowButtonWidth) and (X < FArrowButtonWidth + FBorderWidth)) or
+          ((X > Width - 1 - FArrowButtonWidth - FBorderWidth) and (X <= Width - 1 - FArrowButtonWidth))
         then CombColor := BorderColor;
 
 
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
-       BlendPixelInplace(CombColor, ScnLne[1][X]);
+       BlendPixelInplace(CombColor, ScnLn[0][X]);
+       BlendPixelInplace(CombColor, ScnLn[1][X]);
        EMMS;
       end;
     end;
 
    for Y := Round(Radius) to Height - 1 - Round(Radius) do
     begin
-     ScnLne[0] := Scanline[Y];
+     ScnLn[0] := Scanline[Y];
      for X := 0 to Width - 1 do
       begin
        // check whether position is a border
@@ -338,111 +374,70 @@ begin
         begin
          Temp := X - (Width - 1 - BorderWidth);
          CombColor := CombinePixel(BorderColor, ButtonColor, Round(Temp * $FF));
-        end
-       else CombColor := ButtonColor;
+        end else
+       if ((X >= FArrowButtonWidth) and (X < FArrowButtonWidth + FBorderWidth)) or
+          ((X > Width - 1 - FArrowButtonWidth - FBorderWidth) and (X <= Width - 1 - FArrowButtonWidth))
+        then CombColor := BorderColor
+        else CombColor := ButtonColor;
 
 
-       // lines
-       if (X = FArrowButtonWidth) or (X = Width - 1 - FArrowButtonWidth)
-        then CombColor := BorderColor;
-
-
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
+       BlendPixelInplace(CombColor, ScnLn[0][X]);
        EMMS;
       end;
     end;
 
-   rad := FArrowButtonWidth;
+   ArrowHeight := Round(0.5 * (Height - FBorderWidth));
+   ArrowWidth := Round(0.5 * (FArrowButtonWidth - FBorderWidth));
+   Offset := Round(FArrowButtonWidth - ArrowWidth div 2);
+
+   // set advance
+   XAdv := ConvertToFixed24Dot8Point(2 * ArrowWidth / ArrowHeight);
+
+   // set start
+   XFixed := CFixed24Dot8Half;
+   for Y := 0 to (ArrowHeight div 2) do
+    begin
+     ScnLn[0] := ScanLine[(Height - ArrowHeight) div 2 + Y];
+     ScnLn[1] := ScanLine[(Height + ArrowHeight) div 2 - Y];
+     X := FixedFloor(XFixed);
+     BlendPixelLine(BorderColor, @ScnLn[0]^[Offset - X], X);
+     BlendPixelInplace(ApplyAlpha(BorderColor, XFixed.Frac), ScnLn[0]^[Offset - X - 1]);
+     BlendPixelLine(BorderColor, @ScnLn[0]^[Width - Offset], X);
+     BlendPixelInplace(ApplyAlpha(BorderColor, XFixed.Frac), ScnLn[0]^[Width - Offset + X]);
+     if ScnLn[0] <> ScnLn[1] then
+      begin
+       BlendPixelLine(BorderColor, @ScnLn[1]^[Offset - X], X);
+       BlendPixelInplace(ApplyAlpha(BorderColor, XFixed.Frac), ScnLn[1]^[Offset - X - 1]);
+       BlendPixelLine(BorderColor, @ScnLn[1]^[Width - Offset], X);
+       BlendPixelInplace(ApplyAlpha(BorderColor, XFixed.Frac), ScnLn[1]^[Width - Offset + X]);
+      end else Break;
+     XFixed := FixedAdd(XFixed, XAdv);
+    end;
+   EMMS;
+
+   Offset := FArrowButtonWidth;
 
    case FAlignment of
     taLeftJustify :
-     begin
-
-(*
-      Brush.Color := FArrowColor;
-      with ArrowPos do
-       begin
-        Pen.Width := OversamplingFactor * FArrowWidth;
-        y := Bitmap.Height div 2;
-        x := Bitmap.Width - rad;
-        Polygon([Point(x, y - OversamplingFactor * 4),
-                 Point(x, y + OversamplingFactor * 4),
-                 Point(x + 8 * OversamplingFactor, y)]);
-
-        x := x - rad;
-        Polygon([Point(x + 8 * OversamplingFactor, y - OversamplingFactor * 4),
-                 Point(x + 8 * OversamplingFactor, y + OversamplingFactor * 4),
-                 Point(x, y)]);
-       end;
-
-*)
       if FItemIndex >= 0 then
        begin
         TextSize := FGuiFont.TextExtent(FItems[FItemIndex]);
-        FGuiFont.TextOut(FItems[FItemIndex], PixelMap, rad, (Height - TextSize.cy) div 2);
+        FGuiFont.TextOut(FItems[FItemIndex], PixelMap, Offset, (Height - TextSize.cy) div 2);
        end;
-
-     end;
     taCenter :
-     begin
-(*
-      MoveTo(rad, 0);
-      LineTo(rad, Bitmap.Height);
-      MoveTo(Bitmap.Width - 1 - rad, 0);
-      LineTo(Bitmap.Width - 1 - rad, Bitmap.Height);
-
-      Brush.Color := FArrowColor;
-      with ArrowPos do
-       begin
-        x := rad div 2;
-        y := Bitmap.Height div 2;
-        Pen.Width := OversamplingFactor * FArrowWidth;
-        Polygon([Point(x + 2 * OversamplingFactor, y - OversamplingFactor * 4),
-                 Point(x + 2 * OversamplingFactor, y + OversamplingFactor * 4),
-                 Point(x - 2 * OversamplingFactor, y)]);
-
-        x := Bitmap.Width - 1 - rad div 2;
-        Polygon([Point(x - 2 * OversamplingFactor, y - OversamplingFactor * 4),
-                 Point(x - 2 * OversamplingFactor, y + OversamplingFactor * 4),
-                 Point(x + 2 * OversamplingFactor, y)]);
-       end;
-*)
-
       if FItemIndex >= 0 then
        begin
         TextSize := FGuiFont.TextExtent(FItems[FItemIndex]);
         FGuiFont.TextOut(FItems[FItemIndex], PixelMap,
           (Width - TextSize.cx) div 2, (Height - TextSize.cy) div 2);
        end;
-     end;
     taRightJustify :
-     begin
-(*
-      Brush.Color := FArrowColor;
-      with ArrowPos do
-       begin
-        Pen.Width := OversamplingFactor * FArrowWidth;
-        y := Bitmap.Height div 2;
-        x := rad;
-        Polygon([Point(x, y - OversamplingFactor * 4),
-                 Point(x, y + OversamplingFactor * 4),
-                 Point(x - 8 * OversamplingFactor, y)]);
-
-        x := x + rad;
-        Polygon([Point(x - 8 * OversamplingFactor, y - OversamplingFactor * 4),
-                 Point(x - 8 * OversamplingFactor, y + OversamplingFactor * 4),
-                 Point(x, y)]);
-       end;
-*)
-
       if FItemIndex >= 0 then
        begin
         TextSize := FGuiFont.TextExtent(FItems[FItemIndex]);
         FGuiFont.TextOut(FItems[FItemIndex], PixelMap,
-          Width - rad - TextSize.cx, (Height - TextSize.cy) div 2);
+          Width - Offset - TextSize.cx, (Height - TextSize.cy) div 2);
        end;
-
-     end;
    end;
   end;
 end;

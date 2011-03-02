@@ -40,11 +40,12 @@ uses
 type
   TCustomPinkNoiseGenerator = class(TDspPersistent)
   protected
-    FContribution : Array [0..4] of Double;
+    FContribution : array [0..4] of Double;
     FAmplitude    : Double;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
+    procedure Clear;
 
     function ProcessSample32: Single; virtual; abstract;
     function ProcessSample64: Double; virtual; abstract;
@@ -79,7 +80,7 @@ uses
 constructor TCustomPinkNoiseGenerator.Create;
 begin
  inherited;
- FAmplitude := 1; 
+ FAmplitude := 1;
  FillChar(FContribution[0], Length(FContribution) * SizeOf(Double), 0);
 end;
 
@@ -91,6 +92,11 @@ begin
     FContribution := Self.FContribution;
    end
  else inherited;
+end;
+
+procedure TCustomPinkNoiseGenerator.Clear;
+begin
+ FillChar(FContribution[0], Length(FContribution) * SizeOf(Double), 0);
 end;
 
 procedure TCustomPinkNoiseGenerator.ProcessBlock32(const Data: PDAVSingleFixedArray;
@@ -127,8 +133,12 @@ begin
  if (ur1 <= pSUM[2]) then FContribution[2] := (2 * Random - 1) * pA[2] else
  if (ur1 <= pSUM[3]) then FContribution[3] := (2 * Random - 1) * pA[3] else
  if (ur1 <= pSUM[4]) then FContribution[4] := (2 * Random - 1) * pA[4];
+
  Result := FAmplitude * (FContribution[0] + FContribution[1] +
    FContribution[2] + FContribution[3] + FContribution[4]);
+
+ Assert(Result <=  1);
+ Assert(Result >= -1);
 end;
 
 function TPinkNoiseGenerator.ProcessSample64: Double;
@@ -144,8 +154,12 @@ begin
  if (ur1 <= pSUM[2]) then FContribution[2] := (2 * Random - 1) * pA[2] else
  if (ur1 <= pSUM[3]) then FContribution[3] := (2 * Random - 1) * pA[3] else
  if (ur1 <= pSUM[4]) then FContribution[4] := (2 * Random - 1) * pA[4];
+
  Result := FAmplitude * (FContribution[0] + FContribution[1] +
    FContribution[2] + FContribution[3] + FContribution[4]);
+
+ Assert(Result <=  1);
+ Assert(Result >= -1);
 end;
 
 
@@ -164,6 +178,7 @@ begin
  if (ur1 <= pSUM[2]) then FContribution[2] := FastRandom * pA[2] else
  if (ur1 <= pSUM[3]) then FContribution[3] := FastRandom * pA[3] else
  if (ur1 <= pSUM[4]) then FContribution[4] := FastRandom * pA[4];
+
  Result := FAmplitude * (FContribution[0] + FContribution[1] +
    FContribution[2] + FContribution[3] + FContribution[4]);
 end;
@@ -181,6 +196,7 @@ begin
  if (ur1 <= pSUM[2]) then FContribution[2] := FastRandom * pA[2] else
  if (ur1 <= pSUM[3]) then FContribution[3] := FastRandom * pA[3] else
  if (ur1 <= pSUM[4]) then FContribution[4] := FastRandom * pA[4];
+
  Result := FAmplitude * (FContribution[0] + FContribution[1] +
    FContribution[2] + FContribution[3] + FContribution[4]);
 end;

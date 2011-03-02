@@ -2,7 +2,7 @@ object FmJNDEQT: TFmJNDEQT
   Left = 329
   Top = 72
   Caption = 'Just Noticable EQ Difference Test'
-  ClientHeight = 311
+  ClientHeight = 312
   ClientWidth = 328
   Color = 8620693
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object FmJNDEQT: TFmJNDEQT
   OnShow = FormShow
   DesignSize = (
     328
-    311)
+    312)
   PixelsPerInch = 96
   TextHeight = 13
   object LbAudioFile: TGuiLabel
@@ -120,6 +120,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderWidth = 2.200000047683716000
     Uniformity_Percent = 30.000001907348630000
     Transparent = False
+    OnClick = ClipLEDClick
   end
   object LbClipIndicator: TGuiLabel
     Left = 229
@@ -145,7 +146,7 @@ object FmJNDEQT: TFmJNDEQT
     Left = 8
     Top = 191
     Width = 312
-    Height = 11
+    Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = True
@@ -190,6 +191,7 @@ object FmJNDEQT: TFmJNDEQT
     BorderRadius = 3.000000000000000000
     BorderWidth = 2.000000000000000000
     ButtonColor = 10333885
+    OutlineWidth = 1.000000000000000000
     Color = clBtnFace
     Enabled = False
     OnClick = BtMediaClick
@@ -691,10 +693,12 @@ object FmJNDEQT: TFmJNDEQT
         object MiTestTrainingFrequency: TMenuItem
           Caption = '&Frequency'
           Enabled = False
+          OnClick = MiTestTrainingFrequencyClick
         end
         object MiTestTrainingBandwidth: TMenuItem
           Caption = '&Bandwidth'
           Enabled = False
+          OnClick = MiTestTrainingBandwidthClick
         end
       end
       object MiTestFull: TMenuItem
@@ -703,8 +707,16 @@ object FmJNDEQT: TFmJNDEQT
         object MiTestFullGain: TMenuItem
           Caption = '&Gain'
           object MiTestFullGainReference: TMenuItem
-            Caption = '&Reference (1 kHz, 1 dB/Oct)'
+            Caption = '&Reference (1 kHz, 1 Oct.)'
             OnClick = MiTestFullGainReferenceClick
+          end
+          object MiTestFullGainNarrow: TMenuItem
+            Caption = '&Narrow (1 kHz, 1/3 Oct.)'
+            OnClick = MiTestFullGainNarrowClick
+          end
+          object MiTestFullGainWide: TMenuItem
+            Caption = 'Wide (1 kHz, 3 Oct.)'
+            OnClick = MiTestFullGainWideClick
           end
         end
         object MiTestFullFrequency: TMenuItem

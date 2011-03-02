@@ -37,23 +37,22 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ExtCtrls,
-  DAV_GuiPixelMap, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox,
-  DAV_GuiPanel, DAV_GuiGraphicControl;
+  DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiGraphicControl,
+  DAV_GuiCustomControl, DAV_GuiButton;
 
 type
   TFmSetup = class(TForm)
-    LbControlPanel: TGuiLabel;
     LbOutputChannels: TGuiLabel;
     LbPreset: TGuiLabel;
-    PnControlPanel: TGuiPanel;
     SbChannels: TGuiSelectBox;
     SbDrivers: TGuiSelectBox;
+    BtControlPanel: TGuiButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure SbDriversChange(Sender: TObject);
-    procedure LbControlPanelClick(Sender: TObject);
+    procedure BtControlPanelClick(Sender: TObject);
     procedure SbChannelsChange(Sender: TObject);
   private
     FBackgroundBitmap : TGuiCustomPixelMap;
@@ -92,32 +91,6 @@ begin
   finally
    Free;
   end;
-end;
-
-procedure TFmSetup.SbChannelsChange(Sender: TObject);
-begin
- FmJNDEQT.OutputChannelOffset := SbChannels.ItemIndex * 2;
-end;
-
-procedure TFmSetup.SbDriversChange(Sender: TObject);
-var
-  ChannelIndex : Integer;
-begin
- with FmJNDEQT.ASIOHost do
-  if SbDrivers.ItemIndex >= 0 then
-   begin
-    DriverIndex := SbDrivers.ItemIndex;
-    if Assigned(OnReset)
-     then OnReset(Self);
-
-    SbChannels.Clear;
-    for ChannelIndex := 0 to (FmJNDEQT.ASIOHost.OutputChannelCount div 2) - 1 do
-     begin
-      SbChannels.Items.Add(string(
-        FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex].Name) + ' / ' +
-        string(FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex + 1].Name));
-     end;
-   end;
 end;
 
 procedure TFmSetup.FormDestroy(Sender: TObject);
@@ -171,9 +144,35 @@ begin
    end;
 end;
 
-procedure TFmSetup.LbControlPanelClick(Sender: TObject);
+procedure TFmSetup.BtControlPanelClick(Sender: TObject);
 begin
  FmJNDEQT.AsioHost.ControlPanel;
+end;
+
+procedure TFmSetup.SbChannelsChange(Sender: TObject);
+begin
+ FmJNDEQT.OutputChannelOffset := SbChannels.ItemIndex * 2;
+end;
+
+procedure TFmSetup.SbDriversChange(Sender: TObject);
+var
+  ChannelIndex : Integer;
+begin
+ with FmJNDEQT.ASIOHost do
+  if SbDrivers.ItemIndex >= 0 then
+   begin
+    DriverIndex := SbDrivers.ItemIndex;
+    if Assigned(OnReset)
+     then OnReset(Self);
+
+    SbChannels.Clear;
+    for ChannelIndex := 0 to (FmJNDEQT.ASIOHost.OutputChannelCount div 2) - 1 do
+     begin
+      SbChannels.Items.Add(string(
+        FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex].Name) + ' / ' +
+        string(FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex + 1].Name));
+     end;
+   end;
 end;
 
 {$IFDEF FPC}

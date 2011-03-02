@@ -52,11 +52,13 @@ type
     FButtonState  : TMediaButtonState;
     FGlyphOffset  : Integer;
     FOnPaint      : TNotifyEvent;
+    FOutlineWidth: Single;
     procedure SetBorderColor(const Value: TColor);
     procedure SetBorderRadius(const Value: Single);
     procedure SetBorderWidth(const Value: Single);
     procedure SetButtonColor(const Value: TColor);
     procedure SetButtonState(const Value: TMediaButtonState);
+    procedure SetOutlineWidth(const Value: Single);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure BorderRadiusChanged; virtual;
@@ -66,6 +68,7 @@ type
     procedure ButtonStateChanged; virtual;
     procedure ControlChanged; virtual;
     procedure CalculateAbsoluteGlyphOffset;
+    procedure OutlineWidthChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -73,6 +76,7 @@ type
     property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
     property BorderRadius: Single read FBorderRadius write SetBorderRadius;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
+    property OutlineWidth: Single read FOutlineWidth write SetOutlineWidth;
     property ButtonColor: TColor read FButtonColor write SetButtonColor default $303030;
     property ButtonState: TMediaButtonState read FButtonState write SetButtonState default mbsPlay;
 
@@ -114,6 +118,7 @@ type
     property BorderWidth;
     property ButtonColor;
     property ButtonState;
+    property OutlineWidth;
 
     property OnPaint;
 
@@ -168,16 +173,20 @@ uses
 constructor TCustomGuiMediaButton.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
- ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
-   csDoubleClicks, csReplicatable, csOpaque];
- TabStop := False; // Ensure we're not a tab-stop
- Color := clBtnFace;
+ ControlStyle := ControlStyle + [csDoubleClicks, csReplicatable, csOpaque] -
+   [csFramed];
 
- FButtonColor     := $606060;
- FBorderColor     := $202020;
- FBorderWidth     := 1;
- FButtonState     := mbsPlay;
- FBorderRadius    := 0;
+ // Ensure we're not a tab-stop
+ TabStop := False;
+
+ // initialize defaults
+ Color := clBtnFace;
+ FButtonColor  := $606060;
+ FBorderColor  := $202020;
+ FBorderWidth  := 1;
+ FButtonState  := mbsPlay;
+ FBorderRadius := 0;
+ FOutlineWidth := 1;
  CalculateAbsoluteGlyphOffset;
 end;
 
@@ -237,7 +246,21 @@ begin
   end;
 end;
 
+procedure TCustomGuiMediaButton.SetOutlineWidth(const Value: Single);
+begin
+ if FOutlineWidth <> Value then
+  begin
+   FOutlineWidth := Value;
+   OutlineWidthChanged;
+  end;
+end;
+
 procedure TCustomGuiMediaButton.ButtonStateChanged;
+begin
+ ControlChanged;
+end;
+
+procedure TCustomGuiMediaButton.OutlineWidthChanged;
 begin
  ControlChanged;
 end;
@@ -287,9 +310,11 @@ end;
 constructor TGuiMediaButton.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
- FBuffer := TGuiPixelMapMemory.Create;
- FBackBuffer := TGuiPixelMapMemory.Create;
- FTransparent := False;
+ FBuffer       := TGuiPixelMapMemory.Create;
+ FBackBuffer   := TGuiPixelMapMemory.Create;
+
+ // initiliaze defaults
+ FTransparent  := False;
 end;
 
 destructor TGuiMediaButton.Destroy;
@@ -523,6 +548,7 @@ procedure TGuiMediaButton.RenderGlyph(PixelMap: TGuiCustomPixelMap);
 var
   Offset : Integer;
   IntOff : Integer;
+  Wdth   : Integer;
   Y      : Integer;
 const
   CBorderColor : TPixel32 = (ARGB : $AF000000);
@@ -531,46 +557,61 @@ begin
   begin
    Offset := Round(FBorderWidth + FGlyphOffset);
    case FButtonState of
-    mbsPlay : RenderTriangle(PixelMap, Rect(Offset, Offset, Width - Offset,
-                Height - Offset), clLime);
+    mbsPlay :
+     begin
+       RenderTriangle(PixelMap, Rect(Offset, Offset, Width - Offset,
+         Height - Offset), clLime);
+(*
+       Wdth := Round(0.5 * FOutlineWidth);
+       RenderTriangle(PixelMap, Rect(Offset - Wdth, Offset - Wdth,
+         Width - Offset + Wdth,
+         Height - Offset + Wdth), clBlack);
+       RenderTriangle(PixelMap, Rect(Offset + Wdth, Offset + Wdth,
+         Width - Offset - Wdth,
+         Height - Offset - Wdth), clLime);
+*)
+     end;
     mbsPause :
      begin
-      IntOff := Trunc(FBorderWidth) div 2;
-      FillRect(Offset, Offset, Round(0.5 * (Width - Offset)),
+      IntOff := Trunc(FOutlineWidth) div 2;
+      Wdth := Round(0.5 * (Width - 3 * Offset));
+      if Wdth < FGlyphOffset then Wdth := FGlyphOffset;
+
+      FillRect(Offset, Offset, Offset + Wdth,
         Height - Offset, pxGray32);
 
-      FillRect(Round(0.5 * (Width + Offset)), Offset,
+      FillRect(Width - Offset - Wdth, Offset,
         Width - Offset, Height - Offset, pxGray32);
 
       // draw frame
-      for Y := 0 to Trunc(FBorderWidth) - 1 do
+      for Y := 0 to Trunc(FOutlineWidth) - 1 do
        begin
         BlendPixelLine(CBorderColor, @ScanLine[Offset - IntOff + Y]^[Offset - IntOff],
-          Round(0.5 * (Width - Offset) + 2 * IntOff - Offset));
+          Wdth + Trunc(FOutlineWidth));
         BlendPixelLine(CBorderColor, @ScanLine[Height - Offset - IntOff + Y]^[Offset - IntOff],
-          Round(0.5 * (Width - Offset) + 2 * IntOff - Offset));
+          Wdth + Trunc(FOutlineWidth));
        end;
-      for Y := Offset + IntOff to Height - Offset - IntOff - 1 do
+      for Y := Offset - IntOff + Trunc(FOutlineWidth) to Height - Offset - IntOff - 1 do
        begin
         BlendPixelLine(CBorderColor, @ScanLine[Y]^[Offset - IntOff],
-          Trunc(FBorderWidth));
-        BlendPixelLine(CBorderColor, @ScanLine[Y]^[
-          Round(0.5 * (Width - Offset)) - IntOff], Trunc(FBorderWidth));
+          Trunc(FOutlineWidth));
+        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Offset + Wdth - IntOff],
+          Trunc(FOutlineWidth));
        end;
 
-      for Y := 0 to Trunc(FBorderWidth) - 1 do
+      for Y := 0 to Trunc(FOutlineWidth) - 1 do
        begin
-        BlendPixelLine(CBorderColor, @ScanLine[Offset - IntOff + Y]^[Round(0.5 * (Width + Offset)) - IntOff],
-          Width - Offset - Round(0.5 * (Width + Offset)) + 2 * IntOff);
-        BlendPixelLine(CBorderColor, @ScanLine[Height - Offset - IntOff + Y]^[Round(0.5 * (Width + Offset)) - IntOff],
-          Width - Offset - Round(0.5 * (Width + Offset)) + 2 * IntOff);
+        BlendPixelLine(CBorderColor, @ScanLine[Offset - IntOff + Y]^[Width - 1 - Offset - Wdth - IntOff],
+          Wdth + Trunc(FOutlineWidth));
+        BlendPixelLine(CBorderColor, @ScanLine[Height - Offset - IntOff + Y]^[Width - 1 - Offset - Wdth - IntOff],
+          Wdth + Trunc(FOutlineWidth));
        end;
-      for Y := Offset + IntOff to Height - Offset - IntOff - 1 do
+      for Y := Offset - IntOff + Trunc(FOutlineWidth) to Height - Offset - IntOff - 1 do
        begin
-        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Round(0.5 * (Width + Offset)) - IntOff],
-          Trunc(FBorderWidth));
-        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Width - Offset - IntOff],
-          Trunc(FBorderWidth));
+        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Width - 1 - (Offset + IntOff)],
+          Trunc(FOutlineWidth));
+        BlendPixelLine(CBorderColor, @ScanLine[Y]^[Width - 1 - (Offset + Wdth + IntOff)],
+          Trunc(FOutlineWidth));
        end;
      end;
     mbsStop : FillRect(Offset, Offset, Width  - Offset, Height - Offset, pxBlack32);
@@ -614,7 +655,7 @@ begin
         Color := clRed;
         GeometricShape.CenterX := ConvertToFixed24Dot8Point(0.5 * Width);
         GeometricShape.CenterY := ConvertToFixed24Dot8Point(0.5 * Height);
-        GeometricShape.Radius := ConvertToFixed24Dot8Point(0.5 * (Min(Width, Height) - FBorderWidth) - Offset);
+        GeometricShape.Radius := ConvertToFixed24Dot8Point(0.5 * (Min(Width, Height) - FOutlineWidth) - Offset);
         Alpha := $FF;
         Draw(PixelMap);
        finally
@@ -624,7 +665,7 @@ begin
        try
         Color := clBlack;
         Alpha := $AF;
-        LineWidth := ConvertToFixed24Dot8Point(FBorderWidth);
+        LineWidth := ConvertToFixed24Dot8Point(FOutlineWidth);
         GeometricShape.CenterX := ConvertToFixed24Dot8Point(0.5 * Width);
         GeometricShape.CenterY := ConvertToFixed24Dot8Point(0.5 * Height);
         GeometricShape.Radius := ConvertToFixed24Dot8Point(0.5 * Min(Width, Height) - Offset);

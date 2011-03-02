@@ -33,22 +33,6 @@ object FmSetup: TFmSetup
     Shadow.Blur = 4.000000000000000000
     Transparent = True
   end
-  object SbDrivers: TGuiSelectBox
-    Left = 81
-    Top = 8
-    Width = 217
-    Height = 22
-    Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
-    ArrowColor = clBlack
-    ButtonColor = 8620693
-    ItemIndex = -1
-    LineColor = clBlack
-    LineWidth = 2
-    BorderRadius = 5
-    SelectBoxColor = 10333885
-    OnChange = SbDriversChange
-  end
   object LbOutputChannels: TGuiLabel
     Left = 8
     Top = 41
@@ -60,58 +44,54 @@ object FmSetup: TFmSetup
     Shadow.Blur = 4.000000000000000000
     Transparent = True
   end
+  object SbDrivers: TGuiSelectBox
+    Left = 81
+    Top = 8
+    Width = 217
+    Height = 22
+    Anchors = [akLeft, akTop, akRight]
+    ArrowColor = clBlack
+    BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 2.000000000000000000
+    ButtonColor = 8620693
+    FontOversampling = fo4x
+    ItemIndex = -1
+    SelectBoxColor = 10333885
+    OnChange = SbDriversChange
+  end
   object SbChannels: TGuiSelectBox
     Left = 106
     Top = 36
     Width = 284
     Height = 22
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
     ArrowColor = clBlack
+    BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 2.000000000000000000
     ButtonColor = 8620693
+    FontOversampling = fo4x
     ItemIndex = -1
-    LineColor = clBlack
-    LineWidth = 2
-    BorderRadius = 5
     SelectBoxColor = 10333885
     OnChange = SbChannelsChange
   end
-  object PnControlPanel: TGuiPanel
+  object BtControlPanel: TGuiButton
     Left = 304
     Top = 8
     Width = 86
     Height = 22
+    Alignment = taCenter
     BorderColor = clBlack
-    BorderRadius = 5.000000000000000000
     BorderWidth = 2.000000000000000000
-    PanelColor = 10333885
-    ParentColor = True
-    TabOrder = 0
-    UseDockManager = True
-    OnClick = LbControlPanelClick
-    DesignSize = (
-      86
-      22)
-    object LbControlPanel: TGuiLabel
-      Left = 6
-      Top = 5
-      Width = 75
-      Height = 13
-      Alignment = taCenter
-      Anchors = [akLeft, akTop, akRight]
-      Caption = 'Control Panel'
-      Color = 10333885
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-      FontOversampling = fo4x
-      ParentFont = False
-      Shadow.Blur = 4.000000000000000000
-      Shadow.Color = 5663873
-      Shadow.Visible = True
-      OnClick = LbControlPanelClick
-    end
+    BorderRadius = 5.000000000000000000
+    ButtonColor = 10333885
+    Caption = 'Control Panel'
+    FontOversampling = fo4x
+    Shadow.Blur = 4.000000000000000000
+    Shadow.Color = 5663873
+    Shadow.Visible = True
+    Transparent = False
+    OnClick = BtControlPanelClick
   end
 end

@@ -36,8 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiLED,
-  DAV_GuiGraphicControl;
+  Dialogs, StdCtrls, ExtCtrls, DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiPanel,
+  DAV_GuiLED, DAV_GuiGraphicControl;
 
 type
   TFmSurvey = class(TForm)
@@ -62,7 +62,7 @@ type
     procedure LbGenderFemaleClick(Sender: TObject);
     procedure PnOKClick(Sender: TObject);
   private
-    FBackgroundBitmap : TBitmap;
+    FBackgroundBitmap : TGuiCustomPixelMap;
   end;
 
 implementation
@@ -75,7 +75,7 @@ uses
 procedure TFmSurvey.FormCreate(Sender: TObject);
 begin
  // create background bitmap
- FBackgroundBitmap := TBitmap.Create;
+ FBackgroundBitmap := TGuiPixelMapMemory.Create;
  FormResize(Self);
 end;
 
@@ -86,7 +86,8 @@ end;
 
 procedure TFmSurvey.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgroundBitmap);
+ if Assigned(FBackgroundBitmap)
+  then FBackgroundBitmap.PaintTo(Canvas);
 end;
 
 procedure TFmSurvey.FormResize(Sender: TObject);
@@ -94,29 +95,27 @@ var
   x, y   : Integer;
   s      : array [0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
 begin
  if Assigned(FBackgroundBitmap) then
   with FBackgroundBitmap do
    begin
-    PixelFormat := pf24bit;
-    Width := Self.Width;
-    Height := Self.Height;
+    SetSize(ClientWidth, ClientHeight);
     s[0] := 0;
     s[1] := 0;
     hr   := 1 / Height;
     for y := 0 to Height - 1 do
      begin
-      Line := Scanline[y];
+      ScnLn := ScanLine[y];
       h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
       for x := 0 to Width - 1 do
        begin
-        s[1] := 0.97 * s[0] + 0.03 * random;
+        s[1] := 0.97 * s[0] + 0.03 * Random;
         s[0] := s[1];
 
-        Line[x].B := Round($9D - $34 * (s[1] - h));
-        Line[x].G := Round($AE - $48 * (s[1] - h));
-        Line[x].R := Round($BD - $50 * (s[1] - h));
+        ScnLn[x].B := Round($9D - $34 * (s[1] - h));
+        ScnLn[x].G := Round($AE - $48 * (s[1] - h));
+        ScnLn[x].R := Round($BD - $50 * (s[1] - h));
        end;
      end;
    end;

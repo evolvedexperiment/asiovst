@@ -38,14 +38,15 @@ uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Menus, StdCtrls,
   ExtCtrls, DAV_Types, DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiSlider,
-  DAV_AsioHost, DAV_GuiMediaButton, DAV_DspPinkNoiseGenerator,
-  DAV_DspFilter, DAV_DspFilterBasics, DAV_DspBufferedMp3Player, DAV_GuiGroup,
-  DAV_GuiPanel, DAV_GuiLED, DAV_GuiButton, DAV_GuiGraphicControl;
+  DAV_AsioHost, DAV_GuiMediaButton, DAV_DspPinkNoiseGenerator, DAV_DspFilter,
+  DAV_DspFilterBasics, DAV_DspFilterSimple, DAV_DspBufferedMp3Player,
+  DAV_GuiGroup, DAV_GuiPanel, DAV_GuiLED, DAV_GuiButton, DAV_GuiGraphicControl;
 
 type
   TXAssignment = (xaXisA = 1, xaXisB = 2);
   TGuess = (gNone = 0, gXisA = 1, gXisB = 2);
   TSelection = (sX, sA, sB);
+  TTestParameter = (tpGain, tpFrequency, tpBandwidth);
   TFmJNDEQT = class(TForm)
     AsioHost: TAsioHost;
     BtMedia: TGuiMediaButton;
@@ -110,12 +111,14 @@ type
     SliderFrequency: TGuiSlider;
     SliderGain: TGuiSlider;
     SliderVolume: TGuiSlider;
+    MiTestFullGainNarrow: TMenuItem;
+    MiTestFullGainWide: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
-    procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure AsioHostBuffersCreate(Sender: TObject);
     procedure AsioHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
@@ -141,10 +144,16 @@ type
     procedure SliderFrequencyChange(Sender: TObject);
     procedure SliderGainChange(Sender: TObject);
     procedure SliderVolumeChange(Sender: TObject);
+    procedure MiTestTrainingFrequencyClick(Sender: TObject);
+    procedure MiTestTrainingBandwidthClick(Sender: TObject);
+    procedure MiTestFullGainNarrowClick(Sender: TObject);
+    procedure MiTestFullGainWideClick(Sender: TObject);
+    procedure ClipLEDClick(Sender: TObject);
   private
     FBackgroundBitmap    : TGuiCustomPixelMap;
     FBufferedPlayer      : TBufferedMP3FilePlayer;
-    FPinkNoise           : array [0..1] of TFastPinkNoiseGenerator;
+    FPinkNoise           : array [0..1] of TPinkNoiseGenerator;
+    FHighpass            : array [0..1] of TFirstOrderHighpassFilter;
     FEQFilter            : array [0..1, 0..1] of TBasicPeakFilter;
     FAudioBuffer         : array [0..1, 0..1] of PDAVSingleFixedArray;
     FPeak                : array [0..1, 0..1] of Double;
@@ -161,6 +170,7 @@ type
     FTrialNo             : Integer;
     FTrialCount          : Integer;
     FLog                 : TStringList;
+    FTestParameter       : TTestParameter;
     FEncryptLogFile      : Boolean;
     FIniFile             : string;
     FVolumeAutoAdj       : Boolean;
@@ -184,7 +194,7 @@ type
     procedure NextTrial(GuessWasCorrect: Boolean); virtual;
     procedure LogMessage(MessageText: string);
   public
-    procedure StartTest;
+    procedure StartTest(TestParameter: TTestParameter = tpGain);
     procedure LoadFromFile(FileName: TFileName);
 
     property IniFile: string read FIniFile;
@@ -222,7 +232,15 @@ begin
 
  // create pink noise generator
  for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
-  do FPinkNoise[ChannelIndex] := TFastPinkNoiseGenerator.Create;
+  do FPinkNoise[ChannelIndex] := TPinkNoiseGenerator.Create;
+
+ // create DC filters
+ for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1 do
+  begin
+   FHighpass[ChannelIndex] := TFirstOrderHighpassFilter.Create;
+   FHighpass[ChannelIndex].Frequency := 5;
+   FHighpass[ChannelIndex].SampleRate := AsioHost.SampleRate;
+  end;
 
  // create buffered MP3 player
  FBufferedPlayer := TBufferedMP3FilePlayer.Create;
@@ -256,6 +274,8 @@ begin
    DeleteFile(ExtractFilePath(ParamStr(0)) + 'Temp.log');
   end;
 
+ // initialize defaults
+ FTestParameter := tpGain;
  FFrequency := SliderFrequency.Value;
  FBandwidth := SliderBandwidth.Value;
  FOutputChannelOffset := 0;
@@ -287,8 +307,12 @@ begin
  FreeAndNil(FBufferedPlayer);
 
  // free pink noise generator
- for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
+ for ChannelIndex := 0 to Length(FPinkNoise) - 1
   do FreeAndNil(FPinkNoise[ChannelIndex]);
+
+ // free DC filters
+ for ChannelIndex := 0 to Length(FHighpass) - 1
+  do FreeAndNil(FHighpass[ChannelIndex]);
 
  FreeAndNil(FBackgroundBitmap);
 
@@ -395,6 +419,11 @@ begin
   for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1 do
    if Assigned(FEQFilter[BandIndex, ChannelIndex])
     then FEQFilter[BandIndex, ChannelIndex].SampleRate := AsioHost.SampleRate;
+
+ // update DC filters
+ for ChannelIndex := 0 to Length(FHighpass) - 1 do
+  if Assigned(FHighpass[ChannelIndex])
+   then FHighpass[ChannelIndex].SampleRate := AsioHost.SampleRate;
 
  // updated buffered MP3 file player
  if Assigned(FBufferedPlayer)
@@ -635,10 +664,43 @@ begin
  SliderBandwidth.Enabled := False;
  FTrialCount := 20;
  FEncryptLogFile := True;
- StartTest;
+ StartTest(tpGain);
  GbEQFilter.Visible := False;
- LogMessage('Full test started');
- ClientHeight := LbInformation.Top + LbInformation.Height + 8;
+ LogMessage('Full test started (Gain: Reference)');
+ ClientHeight := LbInformation.Top + LbInformation.Height + 6;
+ ClipLED.Top := LbInformation.Top;
+end;
+
+procedure TFmJNDEQT.MiTestFullGainNarrowClick(Sender: TObject);
+begin
+ SliderGain.Enabled := False;
+ SliderFrequency.Value := 1000;
+ SliderFrequency.Enabled := False;
+ SliderBandwidth.Value := 3;
+ SliderBandwidth.Enabled := False;
+ FTrialCount := 20;
+ FEncryptLogFile := True;
+ StartTest(tpGain);
+ GbEQFilter.Visible := False;
+ LogMessage('Full test started (Gain: Narrow)');
+ ClientHeight := LbInformation.Top + LbInformation.Height + 6;
+ ClipLED.Top := LbInformation.Top;
+end;
+
+procedure TFmJNDEQT.MiTestFullGainWideClick(Sender: TObject);
+begin
+ SliderGain.Enabled := False;
+ SliderFrequency.Value := 1000;
+ SliderFrequency.Enabled := False;
+ SliderBandwidth.Value := 1/3;
+ SliderBandwidth.Enabled := False;
+ FTrialCount := 20;
+ FEncryptLogFile := True;
+ StartTest(tpGain);
+ GbEQFilter.Visible := False;
+ LogMessage('Full test started (Gain: Narrow)');
+ ClientHeight := LbInformation.Top + LbInformation.Height + 6;
+ ClipLED.Top := LbInformation.Top;
 end;
 
 procedure TFmJNDEQT.MiTestTrainingGainClick(Sender: TObject);
@@ -648,10 +710,39 @@ begin
  SliderBandwidth.Enabled := True;
  FTrialCount := 0;
  FEncryptLogFile := False;
- StartTest;
+ StartTest(tpGain);
  GbEQFilter.Visible := True;
- LogMessage('training test started');
+ LogMessage('Training test started (Gain)');
  ClientHeight := LbVolume.Top + LbVolume.Height + 8;
+ ClipLED.Top := LbVolume.Top;
+end;
+
+procedure TFmJNDEQT.MiTestTrainingFrequencyClick(Sender: TObject);
+begin
+ SliderGain.Enabled := True;
+ SliderFrequency.Enabled := False;
+ SliderBandwidth.Enabled := True;
+ FTrialCount := 0;
+ FEncryptLogFile := False;
+ StartTest(tpFrequency);
+ GbEQFilter.Visible := True;
+ LogMessage('Training test started (Frequency)');
+ ClientHeight := LbVolume.Top + LbVolume.Height + 8;
+ ClipLED.Top := LbVolume.Top;
+end;
+
+procedure TFmJNDEQT.MiTestTrainingBandwidthClick(Sender: TObject);
+begin
+ SliderGain.Enabled := True;
+ SliderFrequency.Enabled := True;
+ SliderBandwidth.Enabled := False;
+ FTrialCount := 0;
+ FEncryptLogFile := False;
+ StartTest(tpBandwidth);
+ GbEQFilter.Visible := True;
+ LogMessage('Training test started (Bandwidth)');
+ ClientHeight := LbVolume.Top + LbVolume.Height + 8;
+ ClipLED.Top := LbVolume.Top;
 end;
 
 procedure TFmJNDEQT.LogMessage(MessageText: string);
@@ -716,7 +807,7 @@ begin
  UpdateSelection;
 end;
 
-procedure TFmJNDEQT.StartTest;
+procedure TFmJNDEQT.StartTest(TestParameter: TTestParameter = tpGain);
 begin
  FVolumeFactor := 1;
  FCurrentGainDelta := 10;
@@ -920,6 +1011,15 @@ begin
   end;
 end;
 
+procedure TFmJNDEQT.ClipLEDClick(Sender: TObject);
+begin
+ FPeak[0, 0] := 0;
+ FPeak[0, 1] := 0;
+ FPeak[1, 0] := 0;
+ FPeak[1, 1] := 0;
+ ClipLED.Brightness_Percent := 0;
+end;
+
 procedure TFmJNDEQT.MiDecryptJNDfileClick(Sender: TObject);
 var
   FS : TFileStream;
@@ -1071,16 +1171,13 @@ var
   SampleIndex  : Integer;
 begin
  // generator
- if FileExists(FBufferedPlayer.Filename) then
-  begin
-   FBufferedPlayer.GetSamples(FAudioBuffer[0, 0], FAudioBuffer[0, 1], ASIOHost.Buffersize);
-  end
- else
-  begin
+ if FileExists(FBufferedPlayer.Filename)
+  then FBufferedPlayer.GetSamples(FAudioBuffer[0, 0], FAudioBuffer[0, 1], ASIOHost.Buffersize)
+  else
    for ChannelIndex := 0 to Length(FAudioBuffer[0]) - 1 do
     for SampleIndex := 0 to AsioHost.BufferSize - 1
-     do FAudioBuffer[0, ChannelIndex, SampleIndex] := FPinkNoise[ChannelIndex].ProcessSample64;
-  end;
+     do FAudioBuffer[0, ChannelIndex, SampleIndex] := FHighpass[ChannelIndex].ProcessSample64(
+       FPinkNoise[ChannelIndex].ProcessSample64);
 
  // apply peak release 
  for BandIndex := Length(FAudioBuffer) - 1 downto 0 do
