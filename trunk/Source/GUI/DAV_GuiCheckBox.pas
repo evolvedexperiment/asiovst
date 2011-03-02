@@ -713,7 +713,7 @@ var
 begin
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtend(Caption);
+   TextSize := FGuiFont.TextExtent(Caption);
    {$IFDEF FPC}
    TextSize.cx := FCheckBoxSize + 3;
    {$ELSE}

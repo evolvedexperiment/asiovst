@@ -36,8 +36,9 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, DAV_GuiBaseControl,
-  DAV_GuiLabel, DAV_GuiSelectBox, ExtCtrls, DAV_GuiPanel, DAV_GuiGraphicControl;
+  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ExtCtrls,
+  DAV_GuiPixelMap, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox,
+  DAV_GuiPanel, DAV_GuiGraphicControl;
 
 type
   TFmSetup = class(TForm)
@@ -55,7 +56,7 @@ type
     procedure LbControlPanelClick(Sender: TObject);
     procedure SbChannelsChange(Sender: TObject);
   private
-    FBackgroundBitmap : TBitmap;
+    FBackgroundBitmap : TGuiCustomPixelMap;
   end;
 
 var
@@ -73,7 +74,7 @@ uses
 procedure TFmSetup.FormCreate(Sender: TObject);
 begin
  // create background bitmap
- FBackgroundBitmap := TBitmap.Create;
+ FBackgroundBitmap := TGuiPixelMapMemory.Create;
  FormResize(Self);
 
  SbDrivers.Items := FmJNDEQT.ASIOHost.DriverList;
@@ -112,9 +113,9 @@ begin
     SbChannels.Clear;
     for ChannelIndex := 0 to (FmJNDEQT.ASIOHost.OutputChannelCount div 2) - 1 do
      begin
-      SbChannels.Items.Add(
-        FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex].Name + ' / ' +
-        FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex + 1].Name);
+      SbChannels.Items.Add(string(
+        FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex].Name) + ' / ' +
+        string(FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex + 1].Name));
      end;
    end;
 end;
@@ -135,7 +136,8 @@ end;
 
 procedure TFmSetup.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgroundBitmap);
+ if Assigned(FBackgroundBitmap)
+  then FBackgroundBitmap.PaintTo(Canvas);
 end;
 
 procedure TFmSetup.FormResize(Sender: TObject);
@@ -143,29 +145,27 @@ var
   x, y   : Integer;
   s      : array [0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
 begin
  if Assigned(FBackgroundBitmap) then
   with FBackgroundBitmap do
    begin
-    PixelFormat := pf24bit;
-    Width := Self.Width;
-    Height := Self.Height;
+    SetSize(ClientWidth, ClientHeight);
     s[0] := 0;
     s[1] := 0;
     hr   := 1 / Height;
     for y := 0 to Height - 1 do
      begin
-      Line := Scanline[y];
-      h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+      ScnLn := Scanline[y];
+      h     := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
       for x := 0 to Width - 1 do
        begin
-        s[1] := 0.97 * s[0] + 0.03 * random;
+        s[1] := 0.97 * s[0] + 0.03 * Random;
         s[0] := s[1];
 
-        Line[x].B := Round($9D - $34 * (s[1] - h));
-        Line[x].G := Round($AE - $48 * (s[1] - h));
-        Line[x].R := Round($BD - $50 * (s[1] - h));
+        ScnLn[x].B := Round($9D - $34 * (s[1] - h));
+        ScnLn[x].G := Round($AE - $48 * (s[1] - h));
+        ScnLn[x].R := Round($BD - $50 * (s[1] - h));
        end;
      end;
    end;

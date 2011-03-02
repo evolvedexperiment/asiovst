@@ -921,7 +921,7 @@ procedure TGuiGroup.CalculateHeaderSize;
 var
   TextSize : TSize;
 begin
- TextSize := FGuiFont.TextExtend(Caption);
+ TextSize := FGuiFont.TextExtent(Caption);
  FHeaderWidth := Round(TextSize.cx + 2 * (FBorderWidth + FBorderRadius));
  FHeaderHeight := Round(TextSize.cy + 2 * FBorderWidth);
 end;
@@ -932,7 +932,7 @@ var
 begin
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtend(Caption);
+   TextSize := FGuiFont.TextExtent(Caption);
    FGuiFont.TextOut(Caption, PixelMap, Round(FBorderWidth + FBorderRadius), Round(FBorderWidth));
   end;
 end;
@@ -1624,7 +1624,7 @@ procedure TGuiGroupSide.CalculateHeaderSize;
 var
   TextSize : TSize;
 begin
- TextSize := FGuiFont.TextExtend(Caption);
+ TextSize := FGuiFont.TextExtent(Caption);
  FHeaderWidth := TextSize.cy;
 end;
 
@@ -1936,7 +1936,7 @@ var
 begin
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtend(Caption);
+   TextSize := FGuiFont.TextExtent(Caption);
    FGuiFont.TextOut(Caption, PixelMap, Round(2 * FBorderWidth), (Height - TextSize.cx) div 2);
   end;
 end;
@@ -1954,7 +1954,7 @@ procedure TGuiGroupTop.CalculateHeaderSize;
 var
   TextSize : TSize;
 begin
- TextSize := FGuiFont.TextExtend(Caption);
+ TextSize := FGuiFont.TextExtent(Caption);
  FHeaderHeight := TextSize.cy;
 end;
 
@@ -2245,7 +2245,7 @@ var
 begin
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtend(Caption);
+   TextSize := FGuiFont.TextExtent(Caption);
    FGuiFont.TextOut(Caption, PixelMap, (Width - TextSize.cx) div 2 , Round(FBorderWidth));
   end;
 end;
@@ -2271,7 +2271,7 @@ var
 begin
  if Caption <> '' then
   begin
-   TextSize := FGuiFont.TextExtend(Caption);
+   TextSize := FGuiFont.TextExtent(Caption);
    FTextWidth := Round(TextSize.cx + 3 * (FBorderWidth));
    FYOffset := Round(0.5 * (TextSize.cy - FBorderWidth));
   end
@@ -2297,7 +2297,7 @@ var
 begin
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtend(Caption);
+   TextSize := FGuiFont.TextExtent(Caption);
    XPos := Round(Max(FBorderRadius, FBorderWidth) + 1.5 * FBorderWidth);
    FGuiFont.TextOut(Caption, PixelMap, XPos, 0);
   end;

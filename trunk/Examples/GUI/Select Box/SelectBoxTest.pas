@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, DAV_GuiPixelMap,
-  DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiSlider;
+  Dialogs, ComCtrls, StdCtrls, DAV_GuiPixelMap, DAV_GuiCustomControl,
+  DAV_GuiSelectBox, DAV_GuiSlider, DAV_GuiButton;
 
 type
   TFmSelectBox = class(TForm)
@@ -105,10 +105,10 @@ end;
 
 procedure TFmSelectBox.TbRoundRadiusChange(Sender: TObject);
 begin
- SelectBoxA.Radius := Round(TbRoundRadius.Value);
- SelectBoxB.Radius := Round(TbRoundRadius.Value);
- SelectBoxC.Radius := Round(TbRoundRadius.Value);
- SelectBoxD.Radius := Round(TbRoundRadius.Value);
+ SelectBoxA.BorderRadius := Round(TbRoundRadius.Value);
+ SelectBoxB.BorderRadius := Round(TbRoundRadius.Value);
+ SelectBoxC.BorderRadius := Round(TbRoundRadius.Value);
+ SelectBoxD.BorderRadius := Round(TbRoundRadius.Value);
 end;
 
 end.

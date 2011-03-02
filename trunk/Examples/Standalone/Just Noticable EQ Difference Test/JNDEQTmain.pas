@@ -37,9 +37,9 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Menus, StdCtrls,
-  ExtCtrls, DAV_Types, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSlider,
-  DAV_AsioHost, DAV_GuiMediaButton, DAV_DspPinkNoiseGenerator, DAV_DspFilter,
-  DAV_DspFilterBasics, DAV_DspBufferedMp3Player, DAV_GuiGroup,
+  ExtCtrls, DAV_Types, DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiSlider,
+  DAV_AsioHost, DAV_GuiMediaButton, DAV_DspPinkNoiseGenerator,
+  DAV_DspFilter, DAV_DspFilterBasics, DAV_DspBufferedMp3Player, DAV_GuiGroup,
   DAV_GuiPanel, DAV_GuiLED, DAV_GuiButton, DAV_GuiGraphicControl;
 
 type
@@ -63,10 +63,10 @@ type
     LbGain: TGuiLabel;
     LbGainValue: TGuiLabel;
     LbInformation: TGuiLabel;
-    LbSkip: TGuiLabel;
     LbSelectionA: TGuiLabel;
     LbSelectionB: TGuiLabel;
     LbSelectionX: TGuiLabel;
+    LbSkip: TGuiLabel;
     LbVolume: TGuiLabel;
     LbVolumeValue: TGuiLabel;
     LbXisA: TGuiLabel;
@@ -75,6 +75,7 @@ type
     MiAudioSettings: TMenuItem;
     MiDecryptJNDfile: TMenuItem;
     MiExit: TMenuItem;
+    MiLatchButtons: TMenuItem;
     MiPinkNoise: TMenuItem;
     MiSettings: TMenuItem;
     MiTest: TMenuItem;
@@ -93,6 +94,7 @@ type
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
+    N4: TMenuItem;
     OD: TOpenDialog;
     OpenDialog: TOpenDialog;
     PeakCheck: TTimer;
@@ -103,13 +105,11 @@ type
     PnSelectorXisB: TGuiPanel;
     PnSkip: TGuiPanel;
     PuAudioFile: TPopupMenu;
+    ResultButtonEnabler: TTimer;
     SliderBandwidth: TGuiSlider;
     SliderFrequency: TGuiSlider;
     SliderGain: TGuiSlider;
     SliderVolume: TGuiSlider;
-    MiLatchButtons: TMenuItem;
-    N4: TMenuItem;
-    ResultButtonEnabler: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -123,26 +123,26 @@ type
     procedure BtMediaClick(Sender: TObject);
     procedure LbAudioFileValueDblClick(Sender: TObject);
     procedure LbAutoVolumeAdjustmentClick(Sender: TObject);
+    procedure LbSelectionMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure LbSelectionMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure LbSkipClick(Sender: TObject);
     procedure LbXisAClick(Sender: TObject);
     procedure LbXisBClick(Sender: TObject);
     procedure MiAudioSettingsClick(Sender: TObject);
     procedure MiDecryptJNDfileClick(Sender: TObject);
     procedure MiExitClick(Sender: TObject);
+    procedure MiLatchButtonsClick(Sender: TObject);
     procedure MiPinkNoiseClick(Sender: TObject);
     procedure MiTestFullGainReferenceClick(Sender: TObject);
     procedure MiTestTrainingGainClick(Sender: TObject);
     procedure PeakCheckTimer(Sender: TObject);
+    procedure ResultButtonEnablerTimer(Sender: TObject);
     procedure SliderBandwidthChange(Sender: TObject);
     procedure SliderFrequencyChange(Sender: TObject);
     procedure SliderGainChange(Sender: TObject);
     procedure SliderVolumeChange(Sender: TObject);
-    procedure MiLatchButtonsClick(Sender: TObject);
-    procedure LbSelectionMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure LbSelectionMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure ResultButtonEnablerTimer(Sender: TObject);
   private
-    FBackgroundBitmap    : TBitmap;
+    FBackgroundBitmap    : TGuiCustomPixelMap;
     FBufferedPlayer      : TBufferedMP3FilePlayer;
     FPinkNoise           : array [0..1] of TFastPinkNoiseGenerator;
     FEQFilter            : array [0..1, 0..1] of TBasicPeakFilter;
@@ -165,11 +165,11 @@ type
     FIniFile             : string;
     FVolumeAutoAdj       : Boolean;
     FOutputChannelOffset : Integer;
+    function CheckDecryptEnabled: Boolean;
+    procedure DisableResultButtons;
     procedure SetSelection(const Value: TSelection);
     procedure SetPeakReleaseFactor(const Value: Double);
     procedure SetVolumeAutoAdjustment(const Value: Boolean);
-    function CheckDecryptEnabled: Boolean;
-    procedure DisableResultButtons;
   protected
     procedure PeakReleaseChanged;
     procedure SelectionChanged;
@@ -202,7 +202,7 @@ implementation
 {$R *.dfm}
 
 uses
-  IniFiles, Math, Mapi, ShellApi,
+  IniFiles, Math, Mapi, ShellApi, AnsiStrings,
   ZLibEx, // get this library here: http://www.dellapasqua.com/delphizlib/
   DAV_GuiCommon, DAV_Common, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
 
@@ -218,7 +218,7 @@ begin
  FIniFile := ExtractFilePath(ParamStr(0)) + 'JNEQDT.ini';
 
  // create background bitmap
- FBackgroundBitmap := TBitmap.Create;
+ FBackgroundBitmap := TGuiPixelMapMemory.Create;
 
  // create pink noise generator
  for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
@@ -348,7 +348,8 @@ end;
 
 procedure TFmJNDEQT.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgroundBitmap);
+ if Assigned(FBackgroundBitmap)
+  then FBackgroundBitmap.PaintTo(Canvas);
 end;
 
 procedure TFmJNDEQT.FormResize(Sender: TObject);
@@ -356,29 +357,27 @@ var
   x, y   : Integer;
   s      : array [0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  ScnLn  : PPixel32Array;
 begin
  if Assigned(FBackgroundBitmap) then
   with FBackgroundBitmap do
    begin
-    PixelFormat := pf24bit;
-    Width := Self.Width;
-    Height := Self.Height;
+    SetSize(ClientWidth, ClientHeight);
     s[0] := 0;
     s[1] := 0;
     hr   := 1 / Height;
     for y := 0 to Height - 1 do
      begin
-      Line := Scanline[y];
-      h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+      ScnLn := Scanline[y];
+      h     := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
       for x := 0 to Width - 1 do
        begin
-        s[1] := 0.97 * s[0] + 0.03 * random;
+        s[1] := 0.97 * s[0] + 0.03 * Random;
         s[0] := s[1];
 
-        Line[x].B := Round($9D - $34 * (s[1] - h));
-        Line[x].G := Round($AE - $48 * (s[1] - h));
-        Line[x].R := Round($BD - $50 * (s[1] - h));
+        ScnLn[x].B := Round($9D - $34 * (s[1] - h));
+        ScnLn[x].G := Round($AE - $48 * (s[1] - h));
+        ScnLn[x].R := Round($BD - $50 * (s[1] - h));
        end;
      end;
    end;
@@ -738,11 +737,12 @@ var
   Receip       : TMapiRecipDesc;
   Attachments  : PAttachAccessArray;
   AttachCount  : Integer;
-  i1           : integer;
-  FileName     : string;
+  i1           : Integer;
+  FileName     : AnsiString;
   dwRet        : Cardinal;
   MAPI_Session : Cardinal;
   WndList      : Pointer;
+  TempString   : AnsiString;
 begin
  Result := 0;
  
@@ -763,8 +763,10 @@ begin
      begin
       Receip.ulReserved := 0;
       Receip.ulRecipClass := MAPI_TO;
-      Receip.lpszName := StrNew(PAnsiChar(Mail.Values['to']));
-      Receip.lpszAddress := StrNew(PAnsiChar('SMTP:' + Mail.Values['to']));
+      TempString := AnsiString(Mail.Values['to']);
+      Receip.lpszName := StrNew(PAnsiChar(TempString));
+      TempString := AnsiString('SMTP:' + Mail.Values['to']);
+      Receip.lpszAddress := StrNew(PAnsiChar(TempString));
       Receip.ulEIDSize := 0;
       MapiMessage.nRecipCount := 1;
       MapiMessage.lpRecips := @Receip;
@@ -785,23 +787,27 @@ begin
 
       for i1 := 0 to AttachCount - 1 do
        begin
-        FileName := Mail.Values['attachment' + IntToStr(i1)];
+        FileName := AnsiString(Mail.Values['attachment' + IntToStr(i1)]);
         Attachments[i1].ulReserved := 0;
         Attachments[i1].flFlags := 0;
         Attachments[i1].nPosition := ULONG($FFFFFFFF);
         Attachments[i1].lpszPathName := StrNew(PAnsiChar(FileName));
+        FileName := ExtractFileName(FileName);
         Attachments[i1].lpszFileName :=
-          StrNew(PAnsiChar(ExtractFileName(FileName)));
+          StrNew(PAnsiChar(FileName));
         Attachments[i1].lpFileType := nil;
        end;
       MapiMessage.nFileCount := AttachCount;
       MapiMessage.lpFiles := @Attachments^;
      end;
 
-    if Mail.Values['subject'] <> ''
-     then MapiMessage.lpszSubject := StrNew(PAnsiChar(Mail.Values['subject']));
-    if Mail.Values['body'] <> ''
-     then MapiMessage.lpszNoteText := StrNew(PAnsiChar(Mail.Values['body']));
+    TempString := AnsiString(Mail.Values['subject']);
+    if TempString <> ''
+     then MapiMessage.lpszSubject := StrNew(PAnsiChar(TempString));
+
+    TempString := AnsiString(Mail.Values['body']);
+    if TempString <> ''
+     then MapiMessage.lpszNoteText := StrNew(PAnsiChar(TempString));
 
     WndList := DisableTaskWindows(0);
     try

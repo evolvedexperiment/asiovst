@@ -82,10 +82,10 @@ object FmSetup: TFmSetup
     Width = 86
     Height = 22
     BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    BorderRadius = 5.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = LbControlPanelClick

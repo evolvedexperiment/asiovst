@@ -171,7 +171,7 @@ begin
 
  if Assigned(FFontItem) and Assigned(FFontItem.Font) then
   begin
-   TextSize := FFontItem.Font.TextExtend(FCaption);
+   TextSize := FFontItem.Font.TextExtent(FCaption);
    case FAlignment of
     taLeftJustify  : TextSize.cx := 0;
     taRightJustify : TextSize.cx := Width - TextSize.cx;
