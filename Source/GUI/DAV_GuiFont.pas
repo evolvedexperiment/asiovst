@@ -62,7 +62,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    function TextExtend(Text: string): TSize; virtual; abstract;
+    function TextExtent(Text: string): TSize; virtual; abstract;
     procedure TextOut(Text: string; PixelMap: TGuiCustomPixelMap;
       X: Integer = 0; Y: Integer = 0); virtual; abstract;
 
@@ -106,7 +106,7 @@ type
     procedure FontChanged(Sender: TObject); override;
     procedure AssignByteMapFont; override;
   public
-    function TextExtend(Text: string): TSize; override;
+    function TextExtent(Text: string): TSize; override;
     procedure TextOut(Text: string; PixelMap: TGuiCustomPixelMap;
       X: Integer = 0; Y: Integer = 0); override;
   end;
@@ -129,7 +129,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function TextExtend(Text: string): TSize; override;
+    function TextExtent(Text: string): TSize; override;
     procedure TextOut(Text: string; PixelMap: TGuiCustomPixelMap;
       X: Integer = 0; Y: Integer = 0); override;
 
@@ -442,7 +442,7 @@ begin
  Changed;
 end;
 
-function TGuiCustomSimpleGDIFont.TextExtend(Text: string): TSize;
+function TGuiCustomSimpleGDIFont.TextExtent(Text: string): TSize;
 begin
  Result.cx := 0;
  Result.cy := 0;
@@ -453,16 +453,16 @@ end;
 procedure TGuiCustomSimpleGDIFont.TextOut(Text: string; PixelMap: TGuiCustomPixelMap;
   X, Y: Integer);
 var
-  TextExtend : TSize;
+  TextExtent : TSize;
   BlurOffset : Integer;
 begin
  if FBuffer.Handle <> 0 then
   begin
-   TextExtend.cx := 0;
-   TextExtend.cy := 0;
-   GetTextExtentPoint32(FBuffer.Handle, PChar(Text), Length(Text), TextExtend);
+   TextExtent.cx := 0;
+   TextExtent.cy := 0;
+   GetTextExtentPoint32(FBuffer.Handle, PChar(Text), Length(Text), TextExtent);
 
-   if (TextExtend.cx > 0) and (TextExtend.cy > 0) then
+   if (TextExtent.cx > 0) and (TextExtent.cy > 0) then
     begin
      if FShadow.Visible then
       begin
@@ -472,13 +472,13 @@ begin
        {$ENDIF}
 
        BlurOffset := Round(FShadow.Blur + 0.5);
-       Inc(TextExtend.cx, 2 * BlurOffset);
-       Inc(TextExtend.cy, 2 * BlurOffset);
+       Inc(TextExtent.cx, 2 * BlurOffset);
+       Inc(TextExtent.cy, 2 * BlurOffset);
 
-       TextExtend.cx := (TextExtend.cx and $FFFFFFFC) + $4;
-       TextExtend.cy := (TextExtend.cy and $FFFFFFFC) + $4;
+       TextExtent.cx := (TextExtent.cx and $FFFFFFFC) + $4;
+       TextExtent.cy := (TextExtent.cy and $FFFFFFFC) + $4;
 
-       FBuffer.SetSize(TextExtend.cx, TextExtend.cy);
+       FBuffer.SetSize(TextExtent.cx, TextExtent.cy);
        if FBuffer.Handle <> FOldHandle then
         begin
          AssignByteMapFont;
@@ -563,10 +563,10 @@ begin
       end
      else
       begin
-       TextExtend.cx := (TextExtend.cx and $FFFFFFFC) + $4;
-       TextExtend.cy := (TextExtend.cy and $FFFFFFFC) + $4;
+       TextExtent.cx := (TextExtent.cx and $FFFFFFFC) + $4;
+       TextExtent.cy := (TextExtent.cy and $FFFFFFFC) + $4;
 
-       FBuffer.SetSize(TextExtend.cx, TextExtend.cy);
+       FBuffer.SetSize(TextExtent.cx, TextExtent.cy);
        if FBuffer.Handle <> FOldHandle then
         begin
          AssignByteMapFont;
@@ -703,7 +703,7 @@ begin
   end;
 end;
 
-function TGuiCustomOversampledGDIFont.TextExtend(Text: string): TSize;
+function TGuiCustomOversampledGDIFont.TextExtent(Text: string): TSize;
 begin
  Result.cx := 0;
  Result.cy := 0;
@@ -717,16 +717,16 @@ end;
 procedure TGuiCustomOversampledGDIFont.TextOut(Text: string;
   PixelMap: TGuiCustomPixelMap; X, Y: Integer);
 var
-  TextExtend : TSize;
+  TextExtent : TSize;
   BlurOffset : Integer;
 begin
  if FBuffer.Handle <> 0 then
   begin
-   TextExtend.cx := 0;
-   TextExtend.cy := 0;
-   GetTextExtentPoint32(FBuffer.Handle, PChar(Text), Length(Text), TextExtend);
+   TextExtent.cx := 0;
+   TextExtent.cy := 0;
+   GetTextExtentPoint32(FBuffer.Handle, PChar(Text), Length(Text), TextExtent);
 
-   if (TextExtend.cx > 0) and (TextExtend.cy > 0) then
+   if (TextExtent.cx > 0) and (TextExtent.cy > 0) then
     begin
      if FShadow.Visible then
       begin
@@ -736,14 +736,14 @@ begin
        {$ENDIF}
 
        BlurOffset := FOSFactor * Round(FShadow.Blur);
-       TextExtend.cx := TextExtend.cx + 2 * BlurOffset;
-       TextExtend.cy := TextExtend.cy + 2 * BlurOffset;
+       TextExtent.cx := TextExtent.cx + 2 * BlurOffset;
+       TextExtent.cy := TextExtent.cy + 2 * BlurOffset;
 
        // align byte map size
-       TextExtend.cx := (TextExtend.cx and $FFFFFFFC) + $4;
-       TextExtend.cy := (TextExtend.cy and $FFFFFFFC) + $4;
+       TextExtent.cx := (TextExtent.cx and $FFFFFFFC) + $4;
+       TextExtent.cy := (TextExtent.cy and $FFFFFFFC) + $4;
 
-       FBuffer.SetSize(TextExtend.cx, TextExtend.cy);
+       FBuffer.SetSize(TextExtent.cx, TextExtent.cy);
        if FBuffer.Handle <> FOldHandle then
         begin
          AssignByteMapFont;
@@ -849,10 +849,10 @@ begin
       end
      else
       begin
-       TextExtend.cx := (TextExtend.cx and $FFFFFFFC) + $4;
-       TextExtend.cy := (TextExtend.cy and $FFFFFFFC) + $4;
+       TextExtent.cx := (TextExtent.cx and $FFFFFFFC) + $4;
+       TextExtent.cy := (TextExtent.cy and $FFFFFFFC) + $4;
 
-       FBuffer.SetSize(TextExtend.cx, TextExtend.cy);
+       FBuffer.SetSize(TextExtent.cx, TextExtent.cy);
        if FBuffer.Handle <> FOldHandle then
         begin
          AssignByteMapFont;

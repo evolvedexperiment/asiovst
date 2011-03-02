@@ -67,7 +67,6 @@ type
     procedure CMParentColorChanged(var Message: TLMessage); message CM_PARENTCOLORCHANGED;
     {$ENDIF}
 
-
     procedure BufferChanged;
     procedure BackBufferChanged;
     procedure UpdateBackBuffer; virtual;
@@ -102,7 +101,7 @@ begin
  FBuffer        := TGuiPixelMapMemory.Create;
  FBackBuffer    := TGuiPixelMapMemory.Create;
  FUpdateBuffer  := False;
- ControlStyle   := ControlStyle + [csOpaque];
+ ControlStyle   := ControlStyle + [csOpaque] - [csFramed];
  {$IFDEF FPC}
  DoubleBuffered := True;
  {$ENDIF}
@@ -213,7 +212,8 @@ begin
  {$ENDIF}
   begin
    PixelColor32 := ConvertColor(Color);
-   FBackBuffer.FillRect(ClientRect, PixelColor32);
+   with FBackBuffer
+    do FillRect(0, 0, Width, Height, PixelColor32);
   end;
 
  FUpdateBuffer := True;

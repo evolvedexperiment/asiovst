@@ -476,7 +476,6 @@ var
   Pnt       : TPoint;
   R, SelfR  : TRect;
   CtlR      : TRect;
-  Interf    : IInterface;
   {$IFDEF UsePixelMap}
   Bmp       : TGuiPixelMapDIB;
   {$ELSE}
@@ -801,9 +800,8 @@ begin
     do FDataPointer[Y * Width + X] := Color
  else
   try
-   for Y := Rect.Top to Rect.Bottom - 1 do
-    for X := Rect.Left to Rect.Right - 1
-     do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
+   for Y := Rect.Top to Rect.Bottom - 1
+    do BlendPixelLine(Color, @FDataPointer[Y * Width + Rect.Left], Rect.Bottom - Rect.Top);
   finally
    EMMS;
   end;

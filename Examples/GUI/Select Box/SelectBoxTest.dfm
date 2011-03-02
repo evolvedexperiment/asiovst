@@ -17,63 +17,6 @@ object FmSelectBox: TFmSelectBox
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object SelectBoxA: TGuiSelectBox
-    Left = 8
-    Top = 8
-    Width = 100
-    Height = 25
-    ButtonColor = 7373965
-    ItemIndex = -1
-    Items.Strings = (
-      'Test 1'
-      'Test 2'
-      'Test 3')
-    SelectBoxColor = 7373965
-  end
-  object SelectBoxB: TGuiSelectBox
-    Left = 114
-    Top = 8
-    Width = 100
-    Height = 25
-    AntiAlias = gaaLinear2x
-    ButtonColor = 7373965
-    ItemIndex = -1
-    Items.Strings = (
-      'Test 1'
-      'Test 2'
-      'Test 3')
-    SelectBoxColor = 7373965
-  end
-  object SelectBoxC: TGuiSelectBox
-    Left = 8
-    Top = 39
-    Width = 100
-    Height = 25
-    AntiAlias = gaaLinear3x
-    ButtonColor = 7373965
-    ItemIndex = -1
-    Items.Strings = (
-      'Test A'
-      'Test B'
-      'Test C'
-      'Test D')
-    SelectBoxColor = 7373965
-  end
-  object SelectBoxD: TGuiSelectBox
-    Left = 114
-    Top = 39
-    Width = 100
-    Height = 25
-    AntiAlias = gaaLinear4x
-    ButtonColor = 7373965
-    ItemIndex = -1
-    Items.Strings = (
-      'Test 1'
-      'Test 2'
-      'Test 3'
-      'Test 4')
-    SelectBoxColor = 7373965
-  end
   object LbRoundRadius: TLabel
     Left = 8
     Top = 72
@@ -89,6 +32,68 @@ object FmSelectBox: TFmSelectBox
     Height = 13
     Caption = 'Arrow Width:'
     Transparent = True
+  end
+  object SelectBoxA: TGuiSelectBox
+    Left = 8
+    Top = 8
+    Width = 100
+    Height = 25
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 7373965
+    ItemIndex = -1
+    Items.Strings = (
+      'Test 1'
+      'Test 2'
+      'Test 3')
+    SelectBoxColor = 7373965
+  end
+  object SelectBoxB: TGuiSelectBox
+    Left = 114
+    Top = 8
+    Width = 100
+    Height = 25
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 7373965
+    ItemIndex = -1
+    Items.Strings = (
+      'Test 1'
+      'Test 2'
+      'Test 3')
+    SelectBoxColor = 7373965
+  end
+  object SelectBoxC: TGuiSelectBox
+    Left = 8
+    Top = 39
+    Width = 100
+    Height = 25
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 7373965
+    ItemIndex = -1
+    Items.Strings = (
+      'Test A'
+      'Test B'
+      'Test C'
+      'Test D')
+    SelectBoxColor = 7373965
+  end
+  object SelectBoxD: TGuiSelectBox
+    Left = 114
+    Top = 39
+    Width = 100
+    Height = 25
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 7373965
+    ItemIndex = -1
+    Items.Strings = (
+      'Test 1'
+      'Test 2'
+      'Test 3'
+      'Test 4')
+    SelectBoxColor = 7373965
   end
   object CbTransparent: TCheckBox
     Left = 8
@@ -107,8 +112,8 @@ object FmSelectBox: TFmSelectBox
     Width = 130
     Height = 19
     BorderColor = clBtnHighlight
-    BorderRadius = 8.000000000000000000
-    BorderWidth = 1.000000000000000000
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
     Color = 7373965
     DefaultValue = 19.000000000000000000
     Digits = 2
@@ -133,8 +138,8 @@ object FmSelectBox: TFmSelectBox
     Width = 130
     Height = 19
     BorderColor = clBtnHighlight
-    BorderRadius = 8.000000000000000000
-    BorderWidth = 1.000000000000000000
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
     Color = 7373965
     DefaultValue = 5.000000000000000000
     Digits = 2

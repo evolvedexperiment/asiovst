@@ -43,16 +43,16 @@ uses
 type
   TCustomGuiButton = class(TButtonControl)
   private
-    FAlignment   : TAlignment;
-    FBorderColor : TColor;
-    FBorderWidth : Single;
-    FButtonColor : TColor;
-    FCanvas      : TCanvas;
-    FCaption     : string;
-    FGuiFont     : TGuiOversampledGDIFont;
-    FBorderRadius      : Single;
-    FTransparent : Boolean;
-    FOnPaint     : TNotifyEvent;
+    FAlignment    : TAlignment;
+    FBorderColor  : TColor;
+    FBorderRadius : Single;
+    FBorderWidth  : Single;
+    FButtonColor  : TColor;
+    FCanvas       : TCanvas;
+    FCaption      : string;
+    FGuiFont      : TGuiOversampledGDIFont;
+    FTransparent  : Boolean;
+    FOnPaint      : TNotifyEvent;
     function GetShadow: TGUIShadow;
     function GetOversampling: TFontOversampling;
     procedure SetAlignment(const Value: TAlignment);
@@ -179,14 +179,14 @@ begin
  FGuiFont.OnChange := FontChangedHandler;
 
  // create buffers
- FBuffer      := TGuiPixelMapMemory.Create;
- FBackBuffer  := TGuiPixelMapMemory.Create;
+ FBuffer       := TGuiPixelMapMemory.Create;
+ FBackBuffer   := TGuiPixelMapMemory.Create;
 
- FAlignment   := taCenter;
- FCaption     := 'empty';
- FBorderRadius      := 2;
- FBorderWidth := 1;
- FButtonColor := clBtnShadow;
+ FAlignment    := taCenter;
+ FCaption      := 'empty';
+ FBorderRadius := 2;
+ FBorderWidth  := 1;
+ FButtonColor  := clBtnShadow;
 end;
 
 destructor TCustomGuiButton.Destroy;
@@ -274,7 +274,7 @@ begin
 
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtend(FCaption);
+   TextSize := FGuiFont.TextExtent(FCaption);
    case FAlignment of
     taLeftJustify  : TextSize.cx := 0;
     taRightJustify : TextSize.cx := Width - TextSize.cx;

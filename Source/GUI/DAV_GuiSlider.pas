@@ -746,7 +746,7 @@ begin
    if Assigned(FOnGetText)
     then FOnGetText(Self, CurrentText);
 
-   TextSize := FGuiFont.TextExtend(CurrentText);
+   TextSize := FGuiFont.TextExtent(CurrentText);
    FGuiFont.TextOut(CurrentText, FBuffer, (Width - TextSize.cx) div 2,
      (Height - TextSize.cy) div 2);
   end;

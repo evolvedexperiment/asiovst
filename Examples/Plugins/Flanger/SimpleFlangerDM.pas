@@ -51,6 +51,7 @@ type
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleResume(Sender: TObject);
   private
     FVibrato         : array [0..1] of TDspVibrato32;
     FMix, FMixInv    : Single;
@@ -69,7 +70,7 @@ implementation
 {$ENDIF}
 
 uses
-  SimpleFlangerGUI, DAV_VSTCustomModule, DAV_Approximations;
+  Math, DAV_Approximations, DAV_VSTCustomModule, SimpleFlangerGUI;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -194,13 +195,27 @@ begin
    do UpdateDepth;
 end;
 
+procedure TSimpleFlangerModule.VSTModuleResume(Sender: TObject);
+begin
+ FCriticalSection.Enter;
+ try
+  if Assigned(FVibrato[0]) then FVibrato[0].Reset;
+  if Assigned(FVibrato[1]) then FVibrato[1].Reset;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
 procedure TSimpleFlangerModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  FCriticalSection.Enter;
  try
-  if Assigned(FVibrato[0]) then FVibrato[0].SampleRate := SampleRate;
-  if Assigned(FVibrato[1]) then FVibrato[1].SampleRate := SampleRate;
+  if Abs(SampleRate) > 0 then
+   begin
+    if Assigned(FVibrato[0]) then FVibrato[0].SampleRate := Abs(SampleRate);
+    if Assigned(FVibrato[1]) then FVibrato[1].SampleRate := Abs(SampleRate);
+   end;
  finally
   FCriticalSection.Leave;
  end;
@@ -209,13 +224,21 @@ end;
 procedure TSimpleFlangerModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Channel, Sample : Integer;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+  Input        : Single;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
+  for ChannelIndex := 0 to 1 do
+   for SampleIndex := 0 to Min(FBlockSize, SampleFrames) - 1 do
+    begin
+     if IsNaN(Inputs[ChannelIndex, SampleIndex])
+      then Input := 0
+      else Input := Inputs[ChannelIndex, SampleIndex];
+     Outputs[ChannelIndex, SampleIndex] := FastTanhContinousError4(FMix * Input +
+       FMixInv * FVibrato[ChannelIndex].ProcessSample32(Input));
+    end;
  finally
   FCriticalSection.Leave;
  end;
@@ -229,7 +252,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to 1 do
-   for Sample := 0 to SampleFrames - 1
+   for Sample := 0 to Min(FBlockSize, SampleFrames) - 1
     do Outputs[Channel, Sample] := FastTanhContinousError4(FMix * Inputs[Channel, Sample] + FMixInv * FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
  finally
   FCriticalSection.Leave;

@@ -147,7 +147,7 @@ begin
 
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtend(FCaption);
+   TextSize := FGuiFont.TextExtent(FCaption);
    case FAlignment of
     taLeftJustify  : TextSize.cx := 0;
     taRightJustify : TextSize.cx := Width - TextSize.cx;
