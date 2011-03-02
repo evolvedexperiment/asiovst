@@ -147,10 +147,10 @@ object FmSurvey: TFmSurvey
     Height = 22
     Anchors = [akLeft, akTop, akRight]
     BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     DesignSize = (
@@ -180,10 +180,10 @@ object FmSurvey: TFmSurvey
     Height = 22
     Anchors = [akLeft, akTop, akRight]
     BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     DesignSize = (
@@ -212,10 +212,10 @@ object FmSurvey: TFmSurvey
     Width = 48
     Height = 22
     BorderColor = clBlack
+    BorderRadius = 5.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 10333885
     ParentColor = True
-    BorderRadius = 5.000000000000000000
     TabOrder = 2
     UseDockManager = True
     OnClick = PnOKClick

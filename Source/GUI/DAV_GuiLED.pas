@@ -44,16 +44,17 @@ type
 
   TCustomGuiLED = class(TGraphicControl)
   private
-    FPixelMap     : TGuiCustomPixelMap;
-    FOnPaint      : TNotifyEvent;
+    FBuffer        : TGuiCustomPixelMap;
+    FOnPaint       : TNotifyEvent;
 
-    FLEDColor     : TColor;
-    FBrightness   : Single;
-    FUniformity   : Single;
-    FBorderFactor : Single;
-    FBorderWidth  : Single;
-    FTransparent  : Boolean;
-    FOnChange     : TNotifyEvent;
+    FLEDColor      : TColor;
+    FBrightness    : Single;
+    FUniformity    : Single;
+    FBorderFactor  : Single;
+    FBorderWidth   : Single;
+    FTransparent   : Boolean;
+    FBufferChanged : Boolean;
+    FOnChange      : TNotifyEvent;
     function GetUniformity: Single;
     function GetBorderStrength: Single;
     procedure SetLEDColor(const Value: TColor);
@@ -84,6 +85,7 @@ type
     procedure SetBorderWidth(const Value: Single);
 
     procedure Paint; override;
+    procedure BufferChanged; virtual;
     procedure ResizeBuffer; virtual;
     procedure UpdateBuffer; virtual;
 
@@ -172,20 +174,20 @@ uses
 constructor TCustomGuiLED.Create(AOwner: TComponent);
 begin
  inherited;
- FPixelMap := TGuiPixelMapMemory.Create;
+ FBuffer := TGuiPixelMapMemory.Create;
 
- FLEDColor    := clRed;
- FBorderWidth := 1.5;
- FBrightness  := 100;
- FUniformity  := 0.4;
+ FLEDColor      := clRed;
+ FBorderWidth   := 1.5;
+ FBrightness    := 100;
+ FUniformity    := 0.4;
+ FBufferChanged := True;
 
- ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
-   csDoubleClicks, csReplicatable, csOpaque];
+ ControlStyle := ControlStyle + [csOpaque] - [csFramed];
 end;
 
 destructor TCustomGuiLED.Destroy;
 begin
- FreeAndNil(FPixelMap);
+ FreeAndNil(FBuffer);
  inherited;
 end;
 
@@ -199,10 +201,9 @@ procedure TCustomGuiLED.ResizeBuffer;
 begin
  if (Width > 0) and (Height > 0) then
   begin
-   FPixelMap.Width := Width;
-   FPixelMap.Height := Height;
-   UpdateBuffer;
-   Invalidate;
+   FBuffer.Width := Width;
+   FBuffer.Height := Height;
+   BufferChanged;
   end;
 end;
 
@@ -214,44 +215,47 @@ end;
 
 procedure TCustomGuiLED.Paint;
 begin
- FPixelMap.PaintTo(Canvas);
+ if FBufferChanged
+  then UpdateBuffer;
+
+ FBuffer.PaintTo(Canvas);
  if Assigned(FOnPaint) then FOnPaint(Self);
+end;
+
+procedure TCustomGuiLED.BufferChanged;
+begin
+ FBufferChanged := True;
+ Invalidate;
 end;
 
 procedure TCustomGuiLED.BorderStrengthChanged;
 begin
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TCustomGuiLED.BrightnessChanged;
 begin
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TCustomGuiLED.LEDColorChanged;
 begin
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TCustomGuiLED.BorderWidthChanged;
 begin
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TCustomGuiLED.TransparentChanged;
 begin
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TCustomGuiLED.UniformityChanged;
 begin
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 
@@ -311,10 +315,13 @@ end;
 
 procedure TCustomGuiLED.UpdateBuffer;
 begin
+ FBufferChanged := False;
+
  if FTransparent
-  then FPixelMap.CopyParentImage(Self)
-  else FPixelMap.Clear(Color);
- RenderLED(FPixelMap);
+  then FBuffer.CopyParentImage(Self)
+  else FBuffer.Clear(Color);
+
+ RenderLED(FBuffer);
 end;
 
 procedure TCustomGuiLED.RenderLED(const PixelMap: TGuiCustomPixelMap);
@@ -477,15 +484,13 @@ end;
 procedure TCustomGuiLED.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 procedure TCustomGuiLED.CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  inherited;
- UpdateBuffer;
- Invalidate;
+ BufferChanged;
 end;
 
 end.

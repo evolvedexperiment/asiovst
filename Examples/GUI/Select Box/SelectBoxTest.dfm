@@ -37,10 +37,10 @@ object FmSelectBox: TFmSelectBox
     Left = 8
     Top = 8
     Width = 100
-    Height = 25
+    Height = 22
     BorderRadius = 7.000000000000000000
     BorderWidth = 1.500000000000000000
-    ButtonColor = 7373965
+    ButtonColor = 5530731
     ItemIndex = -1
     Items.Strings = (
       'Test 1'
@@ -52,10 +52,10 @@ object FmSelectBox: TFmSelectBox
     Left = 114
     Top = 8
     Width = 100
-    Height = 25
+    Height = 23
     BorderRadius = 7.000000000000000000
     BorderWidth = 1.500000000000000000
-    ButtonColor = 7373965
+    ButtonColor = 5530731
     ItemIndex = -1
     Items.Strings = (
       'Test 1'
@@ -67,10 +67,10 @@ object FmSelectBox: TFmSelectBox
     Left = 8
     Top = 39
     Width = 100
-    Height = 25
+    Height = 24
     BorderRadius = 7.000000000000000000
     BorderWidth = 1.500000000000000000
-    ButtonColor = 7373965
+    ButtonColor = 5530731
     ItemIndex = -1
     Items.Strings = (
       'Test A'
@@ -86,7 +86,7 @@ object FmSelectBox: TFmSelectBox
     Height = 25
     BorderRadius = 7.000000000000000000
     BorderWidth = 1.500000000000000000
-    ButtonColor = 7373965
+    ButtonColor = 5530731
     ItemIndex = -1
     Items.Strings = (
       'Test 1'
