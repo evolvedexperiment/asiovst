@@ -34,11 +34,11 @@ unit SELowLatencyConvolutionModule;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I DAV_Compiler.Inc}
 
 uses
   Windows, Classes, SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule,
-  DAV_Complex, DAV_DspConvolution;
+  DAV_Complex, DAV_DspConvolution, DAV_AudioData;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -54,6 +54,8 @@ type
     FOutputBuffer        : PDAVSingleFixedArray;
 
     FConvolver           : TLowLatencyConvolution32;
+    FImpulseResponse     : TAudioData32;
+
 
     FSemaphore           : Integer;
     FStaticCount         : Integer;
@@ -78,12 +80,13 @@ type
 
     procedure LoadIR(FileName: TFileName); overload;
     procedure LoadIR(ID: Integer); overload;
+    procedure LoadImpulseResponse;
   end;
 
 implementation
 
 uses
-  DAV_AudioData, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 resourcestring
   RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';
@@ -103,8 +106,12 @@ begin
  FMaxIRBlockOrder     := FConvolver.MaximumIRBlockOrder;
  FDesiredLatencyIndex := 5;
 
+ // create and enumerate contained IR resource names
  FContainedIRs := TStringList.Create;
  EnumResourceNames(HInstance, 'IR', @EnumNamesFunc, LongWord(FContainedIRs));
+
+ // create impulse response storage
+ FImpulseResponse     := TAudioData32.Create;
 
  if FContainedIRs.Count > 0
   then Integer(FFileName) := 0
@@ -115,6 +122,8 @@ destructor TSELowLatencyConvolutionModule.Destroy;
 begin
  FreeAndNil(FContainedIRs);
  FreeAndNil(FConvolver);
+ FreeAndNil(FImpulseResponse);
+
  inherited;
 end;
 
@@ -168,7 +177,8 @@ end;
 procedure TSELowLatencyConvolutionModule.SampleRateChanged;
 begin
  inherited;
- // ignore
+
+ LoadImpulseResponse;
 end;
 
 // The most important part, processing the audio
@@ -213,24 +223,24 @@ begin
     {$IFDEF Use_IPPS}
     if ContainedIRs.Count > 0 then
      begin
-      Name     := 'Low Latency Resource Convolution Module (IPP based)';
-      ID       := 'IPP ResLL Convolution Module';
+      Name := 'Low Latency Resource Convolution Module (IPP based)';
+      ID   := 'IPP ResLL Convolution Module';
      end
     else
      begin
-      Name     := 'Low Latency Convolution Module (IPP based)';
-      ID       := 'IPP Low Latency Convolution Module';
+      Name := 'Low Latency Convolution Module (IPP based)';
+      ID   := 'IPP Low Latency Convolution Module';
      end;
     {$ELSE}
     if ContainedIRs.Count > 0 then
      begin
-      Name     := 'Low Latency Convolution Module';
-      ID       := 'DAV Low Latency Convolution Module';
+      Name := 'Low Latency Convolution Module';
+      ID   := 'DAV Low Latency Convolution Module';
      end
     else
      begin
-      Name     := 'Low Latency Resource Convolution Module';
-      ID       := 'DAV ResLL Convolution Module';
+      Name := 'Low Latency Resource Convolution Module';
+      ID   := 'DAV ResLL Convolution Module';
      end;
     {$ENDIF}
     About      := 'by Christian-W. Budde';
@@ -286,7 +296,7 @@ begin
         DataType        := dtEnum;
         DefaultValue    := '0';
         str             := 'range 0,' + IntToStr(FContainedIRs.Count - 1);
-        DatatypeExtra   := PChar(str);
+        DatatypeExtra   := PAnsiChar(str);
        end;
      end;
   pinMaxFFTOrder:
@@ -372,18 +382,25 @@ var
   ADC : TAudioDataCollection32;
 begin
  while FSemaphore > 0 do;
- inc(FSemaphore);
+ Inc(FSemaphore);
  try
   ADC := TAudioDataCollection32.Create(nil);
   with ADC do
    try
     LoadFromFile(FileName);
-    FConvolver.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+
+    // copy impulse response
+    FImpulseResponse.SampleCount := ADC.SampleFrames;
+    FImpulseResponse.SampleRate := ADC.SampleRate;
+    Move(ADC[0].ChannelDataPointer^, FImpulseResponse.ChannelDataPointer^,
+      ADC.SampleFrames * SizeOf(Single));
+
+    LoadImpulseResponse;
    finally
     FreeAndNil(ADC);
    end;
  finally
-  dec(FSemaphore);
+  Dec(FSemaphore);
  end;
 end;
 
@@ -395,7 +412,7 @@ begin
  if (ID >= 0) and (ID < FContainedIRs.Count) then
   begin
    while FSemaphore > 0 do;
-   inc(FSemaphore);
+   Inc(FSemaphore);
    try
     ADC := TAudioDataCollection32.Create(nil);
     with ADC do
@@ -406,13 +423,45 @@ begin
       finally
        FreeAndNil(RS);
       end;
-      FConvolver.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+
+      // copy impulse response
+      FImpulseResponse.SampleCount := ADC.SampleFrames;
+      FImpulseResponse.SampleRate := ADC.SampleRate;
+      Move(ADC[0].ChannelDataPointer^, FImpulseResponse.ChannelDataPointer^,
+        ADC.SampleFrames * SizeOf(Single));
+
+      LoadImpulseResponse;
      finally
       FreeAndNil(ADC);
      end;
    finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
    end;
+  end;
+end;
+
+procedure TSELowLatencyConvolutionModule.LoadImpulseResponse;
+var
+  SampleIndex : Integer;
+  Ratio, Pos  : Single;
+begin
+ with TAudioData32.Create do
+  try
+   Ratio := FImpulseResponse.SampleRate / SampleRate;
+   SampleCount := Round(FImpulseResponse.SampleCount / Ratio);
+
+   Pos := 0;
+   for SampleIndex := 0 to SampleCount - 1 do
+    begin
+     if Round(Pos) < FImpulseResponse.SampleCount
+      then ChannelDataPointer^[SampleIndex] := FImpulseResponse.ChannelDataPointer^[Round(Pos)]
+      else ChannelDataPointer^[SampleIndex] := 0;
+     Pos := Pos + Ratio;
+    end;
+
+   FConvolver.LoadImpulseResponse(ChannelDataPointer, SampleCount);
+  finally
+   Free;
   end;
 end;
 
@@ -420,13 +469,13 @@ procedure TSELowLatencyConvolutionModule.SubProcess(const BufferOffset, SampleFr
 begin
  // lock processing
  while FSemaphore > 0 do;
- inc(FSemaphore);
+ Inc(FSemaphore);
  try
   FConvolver.ProcessBlock(PDAVSingleFixedArray(@FInputBuffer[BufferOffset]),
                           PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]),
                           SampleFrames);
  finally
-  dec(FSemaphore);
+  Dec(FSemaphore);
  end;
 end;
 
