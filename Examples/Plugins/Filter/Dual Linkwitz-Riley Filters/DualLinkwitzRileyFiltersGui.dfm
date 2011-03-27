@@ -43,15 +43,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Top = 175
     Width = 220
     Height = 53
-    AntiAlias = gaaLinear4x
     BorderColor = 15659506
-    BorderRadius = 7
-    BorderWidth = 2
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 2.000000000000000000
     ColorChart = 7373965
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = 15659506
+        LineWidth = 2.000000000000000000
         OnGetFilterGain = GuiEQGraphGetFilterGain
       end>
     GraphColorDark = 5991539
@@ -212,11 +212,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 83
       Height = 17
       BorderColor = 3226174
+      BorderRadius = 5.000000000000000000
       BorderVisible = False
       BorderWidth = 2.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      BorderRadius = 5.000000000000000000
       TabOrder = 0
       UseDockManager = True
       Transparent = True
@@ -249,6 +249,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 48
       CurveMapping = -2.099999904632568000
+      DefaultValue = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -259,7 +260,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       OnChange = DialLowpassFrequencyChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassFrequencyMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DialLowpassSlope: TGuiStitchedDial
       Tag = 1
@@ -268,6 +268,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 48
       CurveMapping = -1.000000000000000000
+      DefaultValue = 1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -278,7 +279,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       OnChange = DialLowpassSlopeChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassSlopeMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DialHighpassFrequency: TGuiStitchedDial
       Tag = 2
@@ -287,6 +287,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 48
       CurveMapping = -2.099999904632568000
+      DefaultValue = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -297,7 +298,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       OnChange = DialHighpassFrequencyChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassFrequencyMouseEnter
-      DefaultValue = 0.000000000000000000
     end
     object DialHighpassSlope: TGuiStitchedDial
       Tag = 3
@@ -306,6 +306,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 48
       CurveMapping = -1.000000000000000000
+      DefaultValue = 1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -316,7 +317,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       OnChange = DialHighpassSlopeChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassSlopeMouseEnter
-      DefaultValue = 0.000000000000000000
     end
   end
   object PuFrequency: TPopupMenu

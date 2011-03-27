@@ -539,7 +539,7 @@ begin
   begin
    if DialHighpassFrequency.Value <> Parameter[2]
     then DialHighpassFrequency.Value := Parameter[2];
-   LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbDisplay.Caption := string('Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2]);
    UpdateEQGraph;
   end;
 end;
@@ -550,7 +550,7 @@ begin
   begin
    if DialHighpassSlope.Value <> Parameter[3]
     then DialHighpassSlope.Value := Parameter[3];
-   LbDisplay.Caption := 'Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3];
+   LbDisplay.Caption := string('Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3]);
    UpdateEQGraph;
   end;
 end;
@@ -569,7 +569,7 @@ begin
     then LedLowCut.Brightness_Percent := 90
     else LedLowCut.Brightness_Percent := 10;
 
-   LbDisplay.Caption := ParameterDisplay[4];
+   LbDisplay.Caption := string(ParameterDisplay[4]);
    UpdateEQGraph;
   end;
 end;
