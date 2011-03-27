@@ -35,8 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Controls, Graphics, Menus, Messages, DAV_GuiPixelMap,
-  DAV_GuiCustomControl, DAV_GuiFont, DAV_GuiShadow;
+  {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Controls, Graphics, Menus, DAV_GuiPixelMap, DAV_GuiCustomControl,
+  DAV_GuiFont, DAV_GuiShadow;
 
 type
   TCustomGuiSelectBox = class(TGuiCustomControl)
@@ -89,7 +90,11 @@ type
     procedure UpdateBuffer; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
 
-    procedure CMFontchanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$IFDEF FPC}
+    procedure CMFontChanged(var Message: TLMessage); message CM_FONTCHANGED;
+    {$ELSE}
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -182,6 +187,7 @@ begin
  FAlternate      := False;
  FAlignment      := taCenter;
  FBorderRadius   := 2;
+ FBorderWidth    := 2;
  FBorderColor    := clBtnHighlight;
  FButtonColor    := clBtnShadow;
  FSelectBoxColor := clBtnHighlight;
@@ -225,7 +231,7 @@ begin
  BufferChanged;
 end;
 
-procedure TCustomGuiSelectBox.CMFontchanged(var Message: TMessage);
+procedure TCustomGuiSelectBox.CMFontchanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FGuiFont.Font.Assign(Font);
  BufferChanged;

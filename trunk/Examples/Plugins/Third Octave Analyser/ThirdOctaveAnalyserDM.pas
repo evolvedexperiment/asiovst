@@ -32,7 +32,7 @@ unit ThirdOctaveAnalyserDM;
 
 interface
 
-{$I DAV_Compiler.Inc}
+{$I DAV_Compiler.inc}
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
@@ -40,9 +40,10 @@ uses
 
 const
   CNumFrequencies = 32;
-  CThirdOctaveFrequencies : array [0..cNumFrequencies-1] of Single =
-      (16,20,25,31,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,
-       1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000);
+  CThirdOctaveFrequencies : array [0..cNumFrequencies - 1] of Single =
+      (16, 20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500,
+       630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
+       10000, 12500, 16000, 20000);
   CDS = 8;
   CBW = 0.4;
 
@@ -55,7 +56,6 @@ type
   end;
 
   TThirdOctaveAnalyserModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -64,8 +64,7 @@ type
     procedure ParameterFullscaleGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDownsamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterDownsamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FUseDownsampling: Boolean;
     function GetBandReserve: Single;
@@ -136,6 +135,9 @@ begin
    Parameter[1] := 90;
    Parameter[2] := 1;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmThirdOctaveAnalyser;
 end;
 
 procedure TThirdOctaveAnalyserModule.VSTModuleClose(Sender: TObject);
@@ -148,11 +150,6 @@ begin
    FreeAndNil(FFilterArray[Band].Lowpass);
    FreeAndNil(FFilterArray[Band].Highpass);
   end;
-end;
-
-procedure TThirdOctaveAnalyserModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmThirdOctaveAnalyser.Create(Self);
 end;
 
 function TThirdOctaveAnalyserModule.GetBandReserve: Single;

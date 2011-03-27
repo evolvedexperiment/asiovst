@@ -187,8 +187,8 @@ begin
      begin
       FilterKernel[Sample] := FLinkwitzRileyFilter.ProcessSample64(0.0);
       Peak := 0.9 * Peak;
-      if abs(FilterKernel[Sample]) > Peak
-       then Peak := abs(FilterKernel[Sample]);
+      if Abs(FilterKernel[Sample]) > Peak
+       then Peak := Abs(FilterKernel[Sample]);
      end;
     Inc(KernelSize, CStepSize);
    end;

@@ -1253,7 +1253,8 @@ procedure TLowLatencyConvolution32.AllocatePaddedIRSizeDependentBuffers;
 begin
  // zero pad filter
  ReallocMem(FImpulseResponse, FIRSizePadded * SizeOf(Single));
- FillChar(FImpulseResponse^[FIRSize], (FIRSizePadded - FIRSize) * SizeOf(Single), 0);
+ if (FIRSizePadded - FIRSize) > 0
+  then FillChar(FImpulseResponse^[FIRSize], (FIRSizePadded - FIRSize) * SizeOf(Single), 0);
 
  // reallocate output buffer
  OutputBufferSizeChanged;
@@ -1348,9 +1349,9 @@ var
 begin
  // clear existing convolution stages
  for c := 0 to Length(FConvStages) - 1 do FreeAndNil(FConvStages[c]);
- if FIRSizePadded = 0 then exit;
+ if FIRSizePadded = 0 then Exit;
 
- assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
+ Assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
 
  // calculate maximum FFT order (to create proper buffers later)
  MaxIROrd := TruncLog2(FIRSizePadded + MinimumIRBlockSize) - 1;

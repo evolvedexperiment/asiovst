@@ -223,6 +223,7 @@ end;
 
 procedure TCustomR128.StartIntegration;
 begin
+ ResetIntegration;
  FIsRunning := True;
 end;
 

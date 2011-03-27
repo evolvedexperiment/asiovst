@@ -170,7 +170,7 @@
   The default is enabled.}
 
 
-{.$DEFINE Use_IPPS}
+{$DEFINE Use_IPPS}
 { If this compiler switch is enabled the Intel Performance Primitives are used.
   Right now there only exists a unit (not part of the package) to integrate the
   FFT found in the IPP. You need to purchase the IPP separately from Intel in

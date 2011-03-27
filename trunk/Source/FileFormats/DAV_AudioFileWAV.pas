@@ -148,7 +148,9 @@ type
     procedure WriteTotalSampleFrames(const Stream: TStream);
 
     property EmptyData: Boolean read GetEmptyData;
-    property TypicalAudioDataPosition: Cardinal read GetTypicalAudioDataPosition; 
+    property TypicalAudioDataPosition: Cardinal read GetTypicalAudioDataPosition;
+    property BextChunk: TBextChunk read FBextChunk;
+    property CartChunk: TCartChunk read FCartChunk;
   public
     constructor Create; override;
     destructor Destroy; override;

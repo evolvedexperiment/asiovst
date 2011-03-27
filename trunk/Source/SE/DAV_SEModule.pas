@@ -300,9 +300,9 @@ type
 
   PSEModuleProperties = ^TSEModuleProperties;
   TSEModuleProperties = record
-    Name       : PChar;
-    ID         : PChar; // max. 32 chars
-    About      : PChar;
+    Name       : PAnsiChar;
+    ID         : PAnsiChar; // max. 32 chars
+    About      : PAnsiChar;
     Flags      : TUgFlags;
     GuiFlags   : TGuiFlags;
     SdkVersion : Integer;
@@ -313,9 +313,9 @@ type
     VariableAddress  : Pointer;
     Direction        : TSEDirection;
     Datatype         : TSEPlugDataType;
-    Name             : PChar;
-    DefaultValue     : PChar;
-    DatatypeExtra    : PChar;
+    Name             : PAnsiChar;
+    DefaultValue     : PAnsiChar;
+    DatatypeExtra    : PAnsiChar;
     Flags            : TSEIOFlags;
     Spare            : Integer;
   end;
@@ -326,7 +326,7 @@ type
      1 : (EnumValue  : Smallint);
      2 : (BoolValue  : Boolean);
      3 : (FloatValue : Single);
-     4 : (TextPtr    : PPchar);
+     4 : (TextPtr    : PPAnsiChar);
      5 : (IntValue   : Integer);
     end;
 
@@ -404,8 +404,8 @@ type
     FPins          : TSEPins;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; virtual;
-    function GetName(name: PChar): Boolean; virtual;     // name max 32 Char
-    function GetUniqueId(name: PChar): Boolean; virtual; // id max 32 Char
+    function GetName(Name: PAnsiChar): Boolean; virtual;     // name max 32 Char
+    function GetUniqueId(Name: PAnsiChar): Boolean; virtual; // id max 32 Char
 
     procedure Open; virtual;
     procedure Close; virtual;
@@ -532,7 +532,7 @@ begin
      begin
       (* don't work
       // FAutoDuplicatePlugVar.TextPtr := 0;
-      FAutoDuplicatePlugVar.TextPtr := PPChar(FModule.CallHost(SEAudioMasterGetPinVarAddress, FPinIndex));
+      FAutoDuplicatePlugVar.TextPtr := PPAnsiChar(FModule.CallHost(SEAudioMasterGetPinVarAddress, FPinIndex));
       FVariablePtr := @FAutoDuplicatePlugVar.TextPtr;
       *)
      end;
@@ -714,13 +714,13 @@ begin
    end;
   seffGetEffectName:
    begin
-//    StrCopy(Ptr, PChar('obsolete'));
+//    StrCopy(Ptr, PAnsiChar('obsolete'));
 
     Result := 0;
    end;
   seffGetUniqueId:
    begin
-//    StrCopy(Ptr, PChar('obsolete'));
+//    StrCopy(Ptr, PAnsiChar('obsolete'));
     Result := 0;
    end;
   seffAddEvent:
@@ -872,7 +872,7 @@ begin
    try
     GetModuleFileName(HInstance, ModuleFileName, SizeOf(ModuleFileName));
 //    FileName := ;
-    ID := PChar(ExtractFileName(ModuleFileName));
+    ID := PAnsiChar(ExtractFileName(ModuleFileName));
    except
     ID := 'Delphi ASIO & VST Packages';
    end;
@@ -882,7 +882,7 @@ begin
   end;
 end;
 
-function TSEModuleBase.GetName(name: PChar): Boolean;
+function TSEModuleBase.GetName(Name: PAnsiChar): Boolean;
 begin
  Result := False;
 end;
@@ -909,7 +909,7 @@ begin
  Result := GetPinProperties(Index, Properties);
 end;
 
-function TSEModuleBase.GetUniqueId(name: PChar): Boolean;
+function TSEModuleBase.GetUniqueId(Name: PAnsiChar): Boolean;
 begin
  Result := False;
 end;
@@ -1009,8 +1009,8 @@ end;
 function TSEModuleBase.ResolveFileName(const FileName: TFileName): TFileName;
 begin
  SetLength(Result, 256);
- CallHost(SEAudioMasterResolveFilename2, Integer(PChar(FileName)),
-   Length(Result), PChar(Result));
+ CallHost(SEAudioMasterResolveFilename2, Integer(PAnsiChar(FileName)),
+   Length(Result), PAnsiChar(Result));
 end;
 
 function TSEModuleBase.ResolveFileName(const Pin: Integer): TFileName;
