@@ -1,4 +1,4 @@
-unit OpAmpGUI;
+unit NonlinearGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -59,7 +59,7 @@ implementation
 {$ENDIF}
 
 uses
-  Dialogs, SysUtils, OpAmpModule;
+  Dialogs, SysUtils, NonlinearDSP;
 
 { TVSTGUI }
 
