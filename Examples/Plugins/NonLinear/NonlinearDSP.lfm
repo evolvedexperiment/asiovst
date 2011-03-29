@@ -6,7 +6,6 @@ object VSTOpAmp: TVSTOpAmp
   ProductName = 'Simple OpAmp Simulation'
   VendorName = 'Christian Budde'
   SampleRate = 44100
-  CurrentProgram = 0
   CurrentProgramName = 'Init'
   IORatio = 1
   UniqueID = 'NoLi'
@@ -18,7 +17,6 @@ object VSTOpAmp: TVSTOpAmp
     end>
   ParameterProperties = <  
     item
-      Curve = ctLinear
       CurveFactor = 1
       DisplayName = 'Gain'
       LargeStepFloat = 2
@@ -38,6 +36,8 @@ object VSTOpAmp: TVSTOpAmp
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
+  OnProcess = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   left = 243
   top = 103
   Height = 150

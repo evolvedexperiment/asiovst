@@ -1,4 +1,4 @@
-unit OpAmpModule;
+unit NonlinearDSP;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -40,6 +40,9 @@ uses
   DAV_VSTParameters;
 
 type
+
+  { TVSTOpAmp }
+
   TVSTOpAmp = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
@@ -61,32 +64,21 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Approximations, OpAmpGUI, Controls;
+  Math, Controls, DAV_Common, DAV_Approximations, NonlinearGUI;
 
 { TVSTOpAmp }
 
 procedure TVSTOpAmp.VSTModuleOpen(Sender: TObject);
 begin
  FGain := 1;
-
- {$IFDEF FPC}
- OnProcess := VSTModuleProcess;
- OnProcessReplacing := VSTModuleProcess;
- OnParameterChange := VSTModuleParameterChange;
- {$ENDIF}
-
  Parameter[0] := 1;
 end;
 
 procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
   ParentWindow: Cardinal);
 begin
-{$IFNDEF FPC}
  GUI := TVSTGUI.Create(Self);
-{$ELSE}
- GUI := TVSTGUI.Create(Self);
-// GUI := TVSTGUI.CreateParented(ParentWindow);
-{$ENDIF}
+
  with TVSTGUI(GUI) do
   begin
    LbGain.Caption  := 'OpAmp Gain';

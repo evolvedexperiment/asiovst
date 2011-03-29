@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library OpAmp;
+library Nonlinear;
 
 {$I DAV_Compiler.inc}
 
@@ -13,10 +13,10 @@ uses
   DAV_VSTBasicModule,
   DAV_Common,
   DAV_VSTPlugin_Lazarus,
-  OpAmpModule in 'OpAmpModule.pas' {VSTOpAmp: TVSTModule},
-  OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI};
+  NonlinearDSP in 'NonlinearDSP.pas' {VSTOpAmp: TVSTModule},
+  NonlinearGUI in 'NonlinearGUI.pas' {VSTGUI};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VSTPluginMain(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
   VSTOpAmp : TVSTOpAmp;
 begin
@@ -41,8 +41,7 @@ exports
 {$ELSE}
   VSTPluginMain name 'main',
   VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
+  VSTPluginMain name 'VSTPluginMain';
 {$ENDIF}
 
-begin
 end.

@@ -46,13 +46,32 @@
   The default is disabled.}
 {$DEFINE AllowMultipleAsioHosts}
 
-
 { After uninstalling some ASIO driver, empty strings or false settings might
   remain in the registry leading to non existing ASIO drivers. These non-
   functional drivers can be ignored or an exception can be raised to warn the
   user.
   The default is enabled.}
 {$DEFINE IgnoreBrokenAsioList}
+
+{ Since the interface to ASIO can't be handled natively by pascal/delphi a
+  special wrapper for the calling convention is mandatory. This can either be
+  the build-in wrapper by BeRo or via the OpenASIO.DLL by Martin Fay. If you
+  prefer the second option you need to enable this switch (needs OpenASIO.dll).
+  The default is disabled.}
+{.$DEFINE OpenASIO}
+
+{ In the very early days a dedicated ASIO mixer was included with this
+  component. It has not been used since ages, but if you long for testing it,
+  you can enable this switch and experiment with the code. Not recommended!
+  The default is disabled.}
+{.$DEFINE ASIOMixer}
+
+{ In the very early days it was possible to call the control panel from the
+  application (right click -> "control panel"). This was handy in case some
+  settings needed to be tweaked from within the IDE. The current state is
+  unknown, but it might work (only Delphi 5 though).}
+{.$DEFINE D5CP}
+
 
 ////////////////////////////////////
 //  VST Plugin Compiler Switches  //
@@ -135,30 +154,6 @@
 {.$DEFINE VstHostExceptionHandling}
 
 
-///////////////////////////////////
-//  ASIO Host Compiler Switches  //
-///////////////////////////////////
-
-{ Since the interface to ASIO can't be handled natively by pascal/delphi a
-  special wrapper for the calling convention is mandatory. This can either be
-  the build-in wrapper by BeRo or via the OpenASIO.DLL by Martin Fay. If you
-  prefer the second option you need to enable this switch (needs OpenASIO.dll).
-  The default is disabled.}
-{.$DEFINE OpenASIO}
-
-{ In the very early days a dedicated ASIO mixer was included with this
-  component. It has not been used since ages, but if you long for testing it,
-  you can enable this switch and experiment with the code. Not recommended!
-  The default is disabled.}
-{.$DEFINE ASIOMixer}
-
-{ In the very early days it was possible to call the control panel from the
-  application (right click -> "control panel"). This was handy in case some
-  settings needed to be tweaked from within the IDE. The current state is
-  unknown, but it might work (only Delphi 5 though).}
-{.$DEFINE D5CP}
-
-
 /////////////////////////////
 //  DSP Compiler Switches  //
 /////////////////////////////
@@ -169,8 +164,7 @@
   penalty caused by denormal calculations (around factor 3)  
   The default is enabled.}
 
-
-{$DEFINE Use_IPPS}
+{-$DEFINE Use_IPPS}
 { If this compiler switch is enabled the Intel Performance Primitives are used.
   Right now there only exists a unit (not part of the package) to integrate the
   FFT found in the IPP. You need to purchase the IPP separately from Intel in
