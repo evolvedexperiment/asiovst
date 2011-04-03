@@ -40,6 +40,8 @@ exports
 {$ENDIF}
 {$ENDIF}
 
+{$R *.res}
+
 begin
  Application.Initialize;
 end.
