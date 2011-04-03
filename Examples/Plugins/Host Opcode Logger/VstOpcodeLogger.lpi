@@ -7,7 +7,9 @@
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
+      <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="Host Opcode Logger"/>
       <ResourceType Value="res"/>
@@ -19,8 +21,52 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="1" Active="Default">
-      <Item1 Name="Default" Default="True"/>
+    <BuildModes Count="2">
+      <Item1 Name="Release" Default="True"/>
+      <Item2 Name="Debug">
+        <CompilerOptions>
+          <Version Value="10"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\..\Bin\VstOpcodeLogger.x64"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="..\..\..\Source"/>
+            <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math"/>
+            <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
+              <CStyleOperator Value="False"/>
+              <IncludeAssertionCode Value="True"/>
+              <CPPInline Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <UseMsgFile Value="True"/>
+            </CompilerMessages>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -38,16 +84,10 @@
         <PackageName Value="DAV_VSTPlugin_Lazarus"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="4">
       <Unit0>
         <Filename Value="VstOpcodeLogger.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="9"/>
-        <CursorPos X="1" Y="33"/>
-        <UsageCount Value="21"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="VOLDM.pas"/>
@@ -56,11 +96,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="VOLDM"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="32"/>
-        <CursorPos X="57" Y="39"/>
-        <UsageCount Value="21"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="VOLGUI.pas"/>
@@ -69,120 +104,29 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="VOLGUI"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="108"/>
-        <CursorPos X="1" Y="124"/>
-        <UsageCount Value="21"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\DAV_WinAmp.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="21"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
-      <Unit4>
-        <Filename Value="..\..\..\Source\Math\DAV_BufferMathPascal.pas"/>
-        <UnitName Value="DAV_BufferMathPascal"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="295"/>
-        <CursorPos X="78" Y="297"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="C:\Lazarus\fpc\2.4.3\source\rtl\win\sysutils.pp"/>
-        <UnitName Value="sysutils"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="19" Y="4"/>
-        <UsageCount Value="10"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
-        <UnitName Value="DAV_VSTModule"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="61" Y="8"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
-        <UnitName Value="DAV_VSTModuleWithDsp"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="2"/>
-        <CursorPos X="37" Y="9"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <UnitName Value="DAV_VSTCustomModule"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="619"/>
-        <CursorPos X="1" Y="626"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTEffect.pas"/>
-        <UnitName Value="DAV_VSTEffect"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1037"/>
-        <CursorPos X="3" Y="1044"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
-        <UnitName Value="DAV_VSTBasicModule"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="169"/>
-        <CursorPos X="30" Y="176"/>
-        <UsageCount Value="10"/>
-        <Bookmarks Count="1">
-          <Item0 X="1" Y="172" ID="2"/>
-        </Bookmarks>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="C:\Lazarus\lcl\controls.pp"/>
-        <UnitName Value="Controls"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1675"/>
-        <CursorPos X="15" Y="1689"/>
-        <UsageCount Value="10"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="C:\Lazarus\lcl\include\wincontrol.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="4028"/>
-        <CursorPos X="40" Y="4040"/>
-        <UsageCount Value="10"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="C:\Lazarus\lcl\lclintf.pas"/>
-        <UnitName Value="LCLIntf"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="218"/>
-        <CursorPos X="5" Y="240"/>
-        <UsageCount Value="10"/>
-      </Unit13>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\Bin\VstOpcodeLogger.x64"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>
       <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math"/>
-      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
+        <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
@@ -193,10 +137,8 @@
         <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>
@@ -208,16 +150,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="2">
-      <Item1>
-        <Source Value="VstOpcodeLogger.lpr"/>
-        <Line Value="35"/>
-      </Item1>
-      <Item2>
-        <Source Value="VstOpcodeLogger.lpr"/>
-        <Line Value="20"/>
-      </Item2>
-    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

@@ -46,8 +46,9 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FOpcodeLog  : TStringList;
-    FLastOpcode : TDispatcherOpcode;
+    FOpcodeLog   : TStringList;
+    FLastOpcode  : TDispatcherOpcode;
+    FLogFileName : TFileName;
     procedure SyncLogDisplay;
   protected
     function HostCallDispatchEffect(const opcode : TDispatcherOpcode;
@@ -68,11 +69,30 @@ implementation
 {$ENDIF}
 
 uses
-  VOLGUI, DAV_VSTCustomModule;
+  VOLGUI;
 
 procedure TVOLDataModule.VSTModuleCreate(Sender: TObject);
+var
+  FormatSettings : TFormatSettings;
 begin
  FOpcodeLog := TStringList.Create;
+
+ try
+  {$IFDEF FPC}
+  FormatSettings := DefaultFormatSettings;
+  {$ELSE}
+  GetLocaleFormatSettings(SysLocale.DefaultLCID, FormatSettings);
+  {$ENDIF}
+  FormatSettings.ShortDateFormat := 'yyyymmdd';
+  FormatSettings.LongTimeFormat := 'yyyymmdd';
+  FormatSettings.ShortTimeFormat := 'hhmmss';
+  FormatSettings.LongTimeFormat := 'hhmmsss';
+  FLogFileName := 'OpcodeLog - ' + DateTimeToStr(Now, FormatSettings) + '.log';
+ except
+  FLogFileName := 'OpcodeLog.log';
+ end;
+
+ FLogFileName := 'C:\' + FLogFileName;
 end;
 
 procedure TVOLDataModule.VSTModuleDestroy(Sender: TObject);
@@ -82,11 +102,11 @@ end;
 
 procedure TVOLDataModule.VSTModuleOpen(Sender: TObject);
 begin
- if not assigned(FOpcodeLog)
+ if not Assigned(FOpcodeLog)
   then Exit;
 
- FOpcodeLog.Add('HostProduct: ' + HostProduct);
- FOpcodeLog.Add('HostVendor: ' + HostVendor);
+ FOpcodeLog.Add('HostProduct: ' + string(HostProduct));
+ FOpcodeLog.Add('HostVendor: ' + string(HostVendor));
 
  SyncLogDisplay;
 end;
@@ -101,24 +121,36 @@ function TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
   const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer;
   const opt: Single): TVstIntPtr;
 var
-  FormatSettings : TFormatSettings;
-  ChunkName      : TChunkName;
+  ChunkName : TChunkName;
 begin
  inherited;
 
- if not assigned(FOpcodeLog)
-  then exit;
+ // set default return
+ Result := 0;
+
+ if not Assigned(FOpcodeLog)
+  then Exit;
 
  case Opcode of
   effOpen,
   effEditClose,
   effStartProcess,
   effGetNumProgramCategories,
-  effStopProcess   : FOpcodeLog.Add(Opcode2String(Opcode));
-  effSetSampleRate : FOpcodeLog.Add(Opcode2String(Opcode) +
-                       ' SampleRate: ' + FloatToStr(Single(Opt)));
-  effSetBlockSize  : FOpcodeLog.Add(Opcode2String(Opcode) +
-                       ' BlockSize: ' + IntToStr(Value));
+  effStopProcess   :
+   begin
+    FOpcodeLog.Add(Opcode2String(Opcode));
+    FOpcodeLog.SaveToFile(FLogFileName);
+   end;
+  effSetSampleRate :
+   begin
+    FOpcodeLog.Add(Opcode2String(Opcode) + ' SampleRate: ' + FloatToStr(Single(Opt)));
+    FOpcodeLog.SaveToFile(FLogFileName);
+   end;
+  effSetBlockSize  :
+   begin
+    FOpcodeLog.Add(Opcode2String(Opcode) + ' BlockSize: ' + IntToStr(Value));
+    FOpcodeLog.SaveToFile(FLogFileName);
+   end;
   effVendorSpecific :
    begin
     ChunkName := TChunkName(Index);
@@ -127,7 +159,7 @@ begin
        (ChunkName[2] in ['0'..'z']) and
        (ChunkName[3] in ['0'..'z'])
      then FOpcodeLog.Add(Opcode2String(Opcode) +
-            ' Chunkname: ' + ChunkName +
+            ' Chunkname: ' + string(ChunkName) +
             ' Value: ' + IntToStr(Value) +
             ' Pointer: ' + IntToStr(Integer(ptr)) +
             ' Single: ' + FloatToStr(Single(Opt)))
@@ -136,36 +168,35 @@ begin
             ' Value: ' + IntToStr(Value) +
             ' Pointer: ' + IntToStr(Integer(ptr)) +
             ' Single: ' + FloatToStr(Single(Opt)));
+    FOpcodeLog.SaveToFile(FLogFileName);
    end;
   effIdle:
     if FLastOpcode <> effIdle
      then FOpcodeLog.Add(Opcode2String(Opcode))
-     else exit;
+     else Exit;
   effEditIdle:
     if FLastOpcode <> effEditIdle
      then FOpcodeLog.Add(Opcode2String(Opcode))
-     else exit;
-  effCanDo: FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' +
-                           StrPas(PChar(Ptr)) + '''');
+     else Exit;
+  effCanDo:
+   begin
+    FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' + StrPas(PChar(Ptr)) + '''');
+    FOpcodeLog.SaveToFile(FLogFileName);
+   end;
   effClose:
    begin
     FOpcodeLog.Add(Opcode2String(Opcode));
-    {$IFDEF FPC}
-    FormatSettings := DefaultFormatSettings;
-    {$ELSE}
-    GetLocaleFormatSettings(SysLocale.DefaultLCID, FormatSettings);
-    {$ENDIF}
-    FormatSettings.ShortDateFormat := 'yyyymmdd';
-    FormatSettings.LongTimeFormat := 'yyyymmdd';
-    FormatSettings.ShortTimeFormat := 'hhmmss';
-    FormatSettings.LongTimeFormat := 'hhmmsss';
-    FOpcodeLog.SaveToFile('OpcodeLog - ' + DateTimeToStr(Now, FormatSettings) + '.log');
+    FOpcodeLog.SaveToFile(FLogFileName);
    end;
-  else FOpcodeLog.Add(Opcode2String(Opcode) +
-                      ' Index: ' + IntToStr(Index) +
-                      ' Value: ' + IntToStr(Value) +
-                      ' Pointer: ' + IntToStr(Integer(ptr)) +
-                      ' Single: ' + FloatToStr(Single(Opt)))
+  else
+   begin
+    FOpcodeLog.Add(Opcode2String(Opcode) +
+      ' Index: ' + IntToStr(Index) +
+      ' Value: ' + IntToStr(Value) +
+      ' Pointer: ' + IntToStr(Integer(ptr)) +
+      ' Single: ' + FloatToStr(Single(Opt)));
+    FOpcodeLog.SaveToFile(FLogFileName);
+   end;
  end;
  FLastOpcode := Opcode;
 
@@ -174,10 +205,10 @@ end;
 
 function TVOLDataModule.HostCallGetParameter(const Index: Integer): Single;
 begin
- result := inherited HostCallGetParameter(Index);
+ Result := inherited HostCallGetParameter(Index);
 
- if not assigned(FOpcodeLog)
-  then exit;
+ if not Assigned(FOpcodeLog)
+  then Exit;
 
  FOpcodeLog.Add('GetParameter' +
                 ' Index: ' + IntToStr(Index) +
@@ -190,8 +221,8 @@ procedure TVOLDataModule.HostCallSetParameter(const Index: Integer;
 begin
  inherited;
 
- if not assigned(FOpcodeLog)
-  then exit;
+ if not Assigned(FOpcodeLog)
+  then Exit;
 
  FOpcodeLog.Add('GetParameter' +
                 ' Index: ' + IntToStr(Index) +
