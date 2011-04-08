@@ -33,6 +33,7 @@ unit VOLDM;
 interface
 
 {$I DAV_Compiler.inc}
+{-$DEFINE UseMessageDialogs}
 
 uses 
   {$IFDEF FPC} LCLIntf, {$ELSE} Windows, Messages, {$ENDIF}
@@ -69,11 +70,12 @@ implementation
 {$ENDIF}
 
 uses
-  VOLGUI;
+  {$IFDEF UseMessageDialogs}Dialogs, {$ENDIF} VOLGUI;
 
 procedure TVOLDataModule.VSTModuleCreate(Sender: TObject);
 var
   FormatSettings : TFormatSettings;
+  Offset         : Integer;
 begin
  FOpcodeLog := TStringList.Create;
 
@@ -93,6 +95,22 @@ begin
  end;
 
  FLogFileName := 'C:\' + FLogFileName;
+ if FileExists(FLogFileName) then
+  begin
+   Offset := 1;
+   while FileExists(Copy(FLogFileName, 0, Length(FLogFileName) - 4) + ' - ' +
+     IntToStr(Offset) + '.log') and (Offset < 999)
+    do Inc(Offset);
+   FLogFileName := Copy(FLogFileName, 0, Length(FLogFileName) - 4) + ' - ' +
+     IntToStr(Offset) + '.log';
+  end;
+
+ {$IFDEF UseMessageDialogs}
+ ShowMessage('Start Logging (' + FLogFileName + ')');
+
+ FOpcodeLog.SaveToFile(FLogFileName);
+ ShowMessage('Logfile stored (' + FLogFileName + ')');
+ {$ENDIF}
 end;
 
 procedure TVOLDataModule.VSTModuleDestroy(Sender: TObject);
@@ -104,6 +122,10 @@ procedure TVOLDataModule.VSTModuleOpen(Sender: TObject);
 begin
  if not Assigned(FOpcodeLog)
   then Exit;
+
+ {$IFDEF UseMessageDialogs}
+ ShowMessage('Effect Open');
+ {$ENDIF}
 
  FOpcodeLog.Add('HostProduct: ' + string(HostProduct));
  FOpcodeLog.Add('HostVendor: ' + string(HostVendor));
@@ -123,10 +145,7 @@ function TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
 var
   ChunkName : TChunkName;
 begin
- inherited;
-
- // set default return
- Result := 0;
+ Result := inherited HostCallDispatchEffect(Opcode, Index, Value, ptr, opt);
 
  if not Assigned(FOpcodeLog)
   then Exit;
@@ -136,9 +155,18 @@ begin
   effEditClose,
   effStartProcess,
   effGetNumProgramCategories,
+  effGetPlugCategory,
+  effIdentify,
   effStopProcess   :
    begin
     FOpcodeLog.Add(Opcode2String(Opcode));
+    FOpcodeLog.SaveToFile(FLogFileName);
+   end;
+  effGetSpeakerArrangement,
+  effSetSpeakerArrangement :
+   begin
+    FOpcodeLog.Add(Opcode2String(Opcode) + 'Input: ' + IntToHex(Integer(Value), 8) +
+      'Output: ' + IntToHex(Integer(Ptr), 8));
     FOpcodeLog.SaveToFile(FLogFileName);
    end;
   effSetSampleRate :
@@ -180,7 +208,7 @@ begin
      else Exit;
   effCanDo:
    begin
-    FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' + StrPas(PChar(Ptr)) + '''');
+    FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' + StrPas(PAnsiChar(Ptr)) + '''');
     FOpcodeLog.SaveToFile(FLogFileName);
    end;
   effClose:

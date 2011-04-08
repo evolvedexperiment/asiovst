@@ -613,6 +613,10 @@ begin
   end;
 end;
 
+{$IFDEF FPC}
+{$DEFINE UseCreateParented}
+{$ENDIF}
+
 function TCustomVSTModule.HostCallEditOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 {$IFDEF DARWIN}
 var
@@ -624,8 +628,13 @@ begin
  if (effFlagsHasEditor in FEffect.EffectFlags) and Assigned(ptr) then
   begin
    // if an editor form is assigned create the form and assign it
+   {$IFDEF UseCreateParented}
+   if Assigned(FEditorFormClass)
+    then FEditorForm := FEditorFormClass.CreateParented(HWnd(ptr));
+   {$ELSE}
    if Assigned(FEditorFormClass)
     then FEditorForm := FEditorFormClass.Create(Self);
+   {$ENDIF}
 
    // the below code is about to be removed soon!
    if Assigned(FOnEditOpen)
@@ -924,7 +933,7 @@ function TCustomVSTModule.HostCallVendorSpecific(const Index: Integer; const Val
 begin
  {$IFDEF DebugLog} AddLogMessage('HostCallVendorSpecific'); {$ENDIF}
  if Assigned(FOnVendorSpecific)
-  then Result := FOnVendorSpecific(Self, Index, Value, ptr, opt)
+  then Result := FOnVendorSpecific(Self, Index, Value, Ptr, Opt)
   else Result := 0;
 end;
 
@@ -959,6 +968,7 @@ begin
  if StrComp(PAnsiChar(ptr), 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in FCanDos) - 1 else
  if StrComp(PAnsiChar(ptr), 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in FCanDos) - 1 else
  if StrComp(PAnsiChar(ptr), 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in FCanDos) - 1 else
+ if StrComp(PAnsiChar(ptr), 'ChainPluginAPI')        = 0 then Result := 2 * Integer(vcdChainPluginAPI        in FCanDos) - 1 else
  if StrComp(PAnsiChar(ptr), 'hasCockosExtensions')   = 0 then
   if vcdCockosExtension in FCanDos
    then Result := Integer($BEEF0000)
@@ -1278,7 +1288,7 @@ function TCustomVSTModule.GetSpeakerArrangement(var InputArrangement,
   OutputArrangement: PVstSpeakerArrangement): Boolean;
 begin
  {$IFDEF DebugLog} AddLogMessage('GetSpeakerArrangement'); {$ENDIF}
- result := False;
+ Result := False;
 end;
 
 procedure TCustomVSTModule.SetInitialDelay(const Delay: Integer);

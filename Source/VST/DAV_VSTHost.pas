@@ -2560,7 +2560,6 @@ procedure TCustomVstPlugIn.RenderEditorToBitmap(Bitmap: TBitmap);
 {$IFDEF MSWindows}
 var
   EditorRect   : TRect;
-  Hndl         : THandle;
   User32Handle : THandle; //Handle of user32.dll
 
   // prototype of a missing windows function

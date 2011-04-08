@@ -136,6 +136,8 @@ type
     procedure TestMULAB;
     procedure TestReaper;
     procedure TestSamplitude;
+    procedure TestSonarX1Scan;
+    procedure TestSonarX1;
     procedure TestSoundForge10Scan;
     procedure TestSoundForge10;
     procedure TestSoundForge10Bug;
@@ -235,6 +237,9 @@ resourcestring
   RCStrErrorOpeningPlugin = 'Error opening plugin: %d';
   RCStrVendorProduct = 'Delphi ASIO & VST Project';
 
+const
+  CEffectIdentity : TChunkName = 'fEvN';
+
 function RemoveFileExt(const FileName: string): string;
 var
   I: Integer;
@@ -278,12 +283,12 @@ end;
 
 function TCustomTestVstPlugin.GetProductString: AnsiString;
 begin
- Result := RCStrVendorProduct;
+ Result := AnsiString(RCStrVendorProduct);
 end;
 
 function TCustomTestVstPlugin.GetVendorString: AnsiString;
 begin
- Result := RCStrVendorProduct;
+ Result := AnsiString(RCStrVendorProduct);
 end;
 
 procedure TCustomTestVstPlugin.SetUp;
@@ -602,7 +607,7 @@ end;
 
 procedure TVstPluginPerverseTests.TestCanDoUnknownTokens;
 var
-  TestCanDo : string;
+  TestCanDo : AnsiString;
   CharCnt   : Integer;
 begin
  // Test empty CanDo text
@@ -655,7 +660,7 @@ begin
     VstDispatch(effGetParameterProperties);
     VstDispatch(effOpen);
     {$IFNDEF FPC}
-    CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+    CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
       'effIdentify didn''t return NvEf');
     {$ENDIF}
    except
@@ -691,7 +696,7 @@ end;
 procedure TVstPluginPerverseTests.TestString2Parameter;
 var
   ParameterIndex  : Integer;
-  ParameterString : string;
+  ParameterString : AnsiString;
   TrialIndex      : Integer;
   DesiredValue    : Single;
   TrialNo         : Integer;
@@ -1057,7 +1062,7 @@ end;
 
 function TVstPluginHostTests.GetProductString: AnsiString;
 begin
- Result := {$IFDEF FPC} TestName; {$ELSE} GetName; {$ENDIF}
+ Result := {$IFDEF FPC} TestName; {$ELSE} AnsiString(GetName); {$ENDIF}
  if Result = 'TestAbletonLiveScan' then Result := 'Live' else
  if Result = 'TestAbletonLive' then Result := 'Live' else
  if Result = 'TestCantabile' then Result := 'Cantabile' else
@@ -1081,7 +1086,7 @@ end;
 
 function TVstPluginHostTests.GetVendorString: AnsiString;
 begin
- Result := {$IFDEF FPC} TestName; {$ELSE} GetName; {$ENDIF}
+ Result := {$IFDEF FPC} TestName; {$ELSE} AnsiString(GetName); {$ENDIF}
  if Result = 'TestAbletonLiveScan' then Result := 'Live' else
  if Result = 'TestAbletonLive' then Result := 'Live' else
  if Result = 'TestCantabile' then Result := 'Cantabile' else
@@ -1115,7 +1120,6 @@ begin
    // open
    VstDispatch(effOpen);
 
-   Data := nil;
    GetMem(Data, 1024);
    FillChar(Data^, 1024, 0);
    try
@@ -1168,7 +1172,6 @@ begin
    // switch on
    VstDispatch(effMainsChanged, 0, 1);
 
-   Data := nil;
    GetMem(Data, 1024);
    FillChar(Data^, 1024, 0);
    try
@@ -1300,7 +1303,7 @@ begin
   begin
    // check identify is fEvN
    {$IFNDEF FPC}
-   CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+   CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
      'effIdentify didn''t return NvEf');
    {$ENDIF}
 
@@ -1428,7 +1431,6 @@ begin
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 1024);
 
-   Data := nil;
    GetMem(Data, 1024);
    FillChar(Data^, 1024, 0);
    try
@@ -1472,7 +1474,6 @@ begin
    // Get Program
    VstDispatch(effGetProgram, 0, -1);
 
-   Data := nil;
    GetMem(Data, 1024);
    FillChar(Data^, 1024, 0);
    try
@@ -1563,7 +1564,6 @@ begin
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 4096);
 
-   Data := nil;
    GetMem(Data, 1024);
    FillChar(Data^, 1024, 0);
    try
@@ -1612,7 +1612,6 @@ begin
      // edit top
      VstDispatch(effEditTop);
 
-     Data := nil;
      GetMem(Data, 1024);
      FillChar(Data^, 1024, 0);
      try
@@ -1705,6 +1704,208 @@ begin
     Dispose(Data);
    end;
 
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestSonarX1Scan;
+var
+  Data : PAnsiChar;
+  ChNm : TChunkName;
+begin
+ FVstHost.VendorString := 'Twelve Tone Systems';
+ FVstHost.ProductString := 'Cakewalk VST 4.5';
+
+ with FVstHost[0] do
+  begin
+   GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
+   try
+    // vendor specific
+    ChNm := 'ekaC';
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0003, Data);
+
+    // get plugin category
+    VstDispatch(effGetPlugCategory);
+
+    // open VST plugin
+    VstDispatch(effOpen);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    // cando 'noRealTime'
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('noRealTime'));
+
+    // get plugin category
+    VstDispatch(effGetPlugCategory);
+
+    // mains changed
+    VstDispatch(effMainsChanged);
+
+    // stop process
+    VstDispatch(effStopProcess);
+
+    // set samplerate
+    VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+    // set blocksize
+    VstDispatch(effSetBlockSize, 0, 512);
+
+    // cando 'receiveVstMidiEvent'
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
+
+    // get vendor string
+    VstDispatch(effGetVendorString, 0, 0, Data);
+   finally
+    FreeMem(Data);
+   end;
+
+   // cando 'receiveVstTimeInfo'
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstTimeInfo'));
+
+   // close
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestSonarX1;
+var
+  PrgIndx : Integer;
+  ParIndx : Integer;
+  Data    : PAnsiChar;
+  ChNm    : TChunkName;
+begin
+ FVstHost.VendorString := 'Twelve Tone Systems';
+ FVstHost.ProductString := 'Cakewalk VST Wizard 4.5';
+ with FVstHost[0] do
+  begin
+   GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
+   try
+    // open VST plugin
+    VstDispatch(effOpen);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    // get program name indexed
+    VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    // get program name indexed
+    for PrgIndx := 0 to numPrograms - 1
+     do VstDispatch(effGetProgramNameIndexed, PrgIndx, -1, Data);
+
+    // set program
+    VstDispatch(effGetProgram);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    // get plugin category
+    VstDispatch(effGetProductString, 0, 0, Data);
+
+    // cando 'ChainPluginAPI'
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('ChainPluginAPI'));
+
+    // cando 'bypass'
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
+
+    // get vendor string
+    VstDispatch(effGetVendorString, 0, 0, Data);
+
+    // get program name indexed
+    for PrgIndx := 0 to numPrograms - 1
+     do VstDispatch(effGetProgramNameIndexed, PrgIndx, -1, Data);
+
+    // get program name indexed
+    for ParIndx := 0 to numParams - 1
+     do GetParameter(ParIndx);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    // get midi key name
+    for ParIndx := 0 to 127
+     do VstDispatch(effGetMidiKeyName, 0, 0, Data);
+
+    // vendor specific
+    ChNm := 'ekaC';
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0003, Data, 17);
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 32);
+
+    // scan parameters
+    for ParIndx := 0 to numParams - 1 do
+     begin
+      VstDispatch(effGetParamName, 0, 0, Data);
+      VstDispatch(effGetParamLabel, 0, 0, Data);
+      VstDispatch(effGetParamName, 0, 0, Data);
+      VstDispatch(effGetParamLabel, 0, 0, Data);
+      VstDispatch(effGetParamName, 0, 0, Data);
+      VstDispatch(effGetParamLabel, 0, 0, Data);
+      GetParameter(ParIndx);
+     end;
+
+    // vendor specific
+    ChNm := 'ekaC';
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 64);
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 32);
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 32);
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 32);
+
+    // set samplerate
+    VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+    // set blocksize
+    VstDispatch(effSetBlockSize, 0, 256);
+
+    // set speaker arrangement
+    VstDispatch(effSetSpeakerArrangement, 0, 321690640, Data);
+
+    // vendor specific
+    ChNm := 'ekaC';
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 64);
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 32);
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0002, Data, 32);
+
+    // mains changed
+    VstDispatch(effMainsChanged, 0, 1);
+
+    // start process
+    VstDispatch(effStartProcess);
+
+    // scan parameters
+    for ParIndx := 0 to numParams - 1 do
+     begin
+      VstDispatch(effGetParamName, 0, 0, Data);
+      VstDispatch(effGetParamLabel, 0, 0, Data);
+      GetParameter(ParIndx);
+      VstDispatch(effGetParamName, 0, 0, Data);
+      VstDispatch(effGetParamLabel, 0, 0, Data);
+      VstDispatch(effGetParamDisplay, 0, 0, Data);
+     end;
+
+    // scan parameters
+    for ParIndx := 0 to numParams - 1 do
+     begin
+      VstDispatch(effGetParamName, 0, 0, Data);
+      VstDispatch(effGetParamLabel, 0, 0, Data);
+      GetParameter(ParIndx);
+      VstDispatch(effGetParamName, 0, 0, Data);
+      VstDispatch(effGetParamLabel, 0, 0, Data);
+      VstDispatch(effGetParamDisplay, 0, 0, Data);
+     end;
+    // vendor specific
+    ChNm := 'ekaC';
+    VstDispatch(effVendorSpecific, Integer(ChNm), $7FFF0001, Data, 0);
+   finally
+    FreeMem(Data);
+   end;
+
+   // close
    VstDispatch(effClose);
   end;
 end;
@@ -1895,7 +2096,7 @@ begin
  with FVstHost[0] do
   begin
    {$IFNDEF FPC}
-   CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+   CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
      'effIdentify didn''t return NvEf');
    {$ENDIF}
 
@@ -2096,7 +2297,7 @@ begin
   begin
    VstDispatch(effGetPlugCategory);
    {$IFNDEF FPC}
-   CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+   CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
      'effIdentify didn''t return NvEf');
    {$ENDIF}
    VstDispatch(effOpen);
@@ -2676,7 +2877,6 @@ begin
    VstDispatch(effCanDo, 0, 0, PAnsiChar('midiProgramNames'));
 
    // program scanning
-   Data := nil;
    GetMem(Data, 1024);
    FillChar(Data^, 1024, 0);
    try
@@ -2715,7 +2915,6 @@ begin
 
    finally
     Dispose(Data);
-    Data := nil;
    end;
 
    // set process precision (32 bit)
@@ -2830,7 +3029,6 @@ begin
 
      finally
       Dispose(Data);
-      Data := nil;
      end;
 
      // get program
@@ -3171,8 +3369,8 @@ begin
  inherited;
  SetupBuffers;
 
- FVstHost.VendorString := RCStrVendorProduct;
- FVstHost.ProductString := RCStrVendorProduct;
+ FVstHost.VendorString := AnsiString(RCStrVendorProduct);
+ FVstHost.ProductString := AnsiString(RCStrVendorProduct);
  with FVstHost[0] do
   begin
    Active := True;
@@ -3617,8 +3815,8 @@ begin
  FVstProcessThread := TVSTProcessThread.Create(FVstHost[0]);
  FVstProcessThread.BlockSize := FBlockSize;
 
- FVstHost.VendorString := RCStrVendorProduct;
- FVstHost.ProductString := RCStrVendorProduct;
+ FVstHost.VendorString := AnsiString(RCStrVendorProduct);
+ FVstHost.ProductString := AnsiString(RCStrVendorProduct);
 
  with FVstHost[0] do
   begin
@@ -3760,7 +3958,7 @@ begin
       repeat
        try
         LbScannedPlugin.Caption := SR.Name;
- //       Invalidate;
+//        Invalidate;
         Application.ProcessMessages;
         Hndl := LoadLibrary(PChar(SR.Name));
         if (GetProcAddress(Hndl, 'VSTMain') <> nil) or

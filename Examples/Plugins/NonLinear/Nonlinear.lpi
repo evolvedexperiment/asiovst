@@ -155,13 +155,13 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="Nonlinear"/>
+      <Filename Value="..\..\..\Bin\Nonlinear.dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>
       <Libraries Value="..\..\..\Packages\Lazarus;..\..\..\Source"/>
       <OtherUnitFiles Value="..\..\..\Packages\Lazarus;..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math"/>
-      <UnitOutputDirectory Value="..\..\..\Bin"/>
+      <UnitOutputDirectory Value="..\..\..\Precompiles"/>
       <ObjectPath Value="..\..\Source"/>
     </SearchPaths>
     <Parsing>

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Classes, DAV_Types, DAV_Complex, DAV_DspWindowing;
+  Classes, DAV_Classes, DAV_Types, DAV_DspWindowing;
 
 type
   TWindowSlope  = (wsLeft, wsSymmetric, wsRight);

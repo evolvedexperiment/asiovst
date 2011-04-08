@@ -104,8 +104,8 @@ procedure TFmVOL.UpdateParameter;
 begin
  with TVOLDataModule(Owner) do
   begin
-   if Sb1.Position <> round(100 * Parameter[1])
-    then Sb1.Position := round(100 * Parameter[1]);
+   if Sb1.Position <> Round(100 * Parameter[1])
+    then Sb1.Position := Round(100 * Parameter[1]);
    LbParameterValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 3, 3);
   end;
 end;

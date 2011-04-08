@@ -14,6 +14,7 @@ object FmSplashScreen: TFmSplashScreen
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow

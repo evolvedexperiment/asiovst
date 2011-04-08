@@ -129,7 +129,7 @@ implementation
 
 uses
   {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils, Math,
-  DAV_Common, DAV_VSTCustomModule, DAV_VSTBasicModule;
+  DAV_Common, DAV_VSTBasicModule;
 
 resourcestring
   RStrUndefined = 'undefined';
@@ -201,8 +201,10 @@ begin
       Assert(FCurProgram < numPrograms);
       Assert(Index < numParams);
       Assert(not IsNaN(Programs[FCurProgram].Parameter[Index]));
+      {$IFDEF ParameterCheckOnDisplay}
       Assert(Programs[FCurProgram].Parameter[Index] >= ParameterProperties[Index].Min);
       Assert(Programs[FCurProgram].Parameter[Index] <= ParameterProperties[Index].Max);
+      {$ENDIF}
       Result := FloatToAnsiString(Programs[FCurProgram].Parameter[Index], 4);
      end
     else Result := FloatToAnsiString(FParameter[Index], 4);
@@ -410,9 +412,10 @@ end;
 
 function TVSTModuleWithPrograms.HostCallSetChunk(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  i  : Integer;
-  pi : pInteger;
-  pb : pbyte;
+  i         : Integer;
+  ChunkSize : Integer;
+  pb        : PByte;
+  pi        : PInteger;
 begin
  Result := 0;
  if (numPrograms <= 0) or (ptr = nil) then Exit;
@@ -434,10 +437,11 @@ begin
      begin
       Programs[i].Chunk.Clear;
       pi := PInteger(pb);
+      ChunkSize := pi^;
       Inc(pb, 4);
-      Programs[i].Chunk.Write(pb^, pi^);
+      Programs[i].Chunk.Write(pb^, ChunkSize);
       Programs[i].Chunk.Position := 0;
-      Inc(pb, pi^);
+      Inc(pb, ChunkSize);
 
       if Assigned(Programs[i].OnLoadChunk)
        then Programs[i].OnLoadChunk(Programs[i], i, False);

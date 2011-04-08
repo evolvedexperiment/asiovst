@@ -118,8 +118,6 @@ procedure Remez(var h: TDAVDoubleDynArray;
 
 implementation
 
-uses Math;
-
 const
   CPi2 = 2 * Pi;
   CGridDensity = 16;

@@ -187,7 +187,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_VSTModuleWithPrograms, DAV_VSTPrograms;
+  Math, DAV_Common, DAV_VSTModuleWithPrograms;
 
 { TCustomVstParameterCategory }
 
