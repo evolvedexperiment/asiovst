@@ -149,8 +149,13 @@ end;
 
 destructor TPolyphaseUpsampler32.Destroy;
 begin
+ {$IFDEF UseAlignedMemory}
  FreeAlignedMemory(FX);
  FreeAlignedMemory(FY);
+ {$ELSE}
+ Dispose(FX);
+ Dispose(FY);
+ {$ENDIF}
  Dispose(FStateStack);
  inherited;
 end;
@@ -189,8 +194,13 @@ end;
 
 procedure TPolyphaseUpsampler32.AllocateBuffer;
 begin
+ {$IFDEF UseAlignedMemory}
  ReallocateAlignedMemory(Pointer(FX), FNumberOfCoeffs * SizeOf(Single));
  ReallocateAlignedMemory(Pointer(FY), FNumberOfCoeffs * SizeOf(Single));
+ {$ELSE}
+ ReallocMem(Pointer(FX), FNumberOfCoeffs * SizeOf(Single));
+ ReallocMem(Pointer(FY), FNumberOfCoeffs * SizeOf(Single));
+ {$ENDIF}
  ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Single));
 end;
 
@@ -668,8 +678,13 @@ end;
 
 destructor TPolyphaseUpsampler64.Destroy;
 begin
+ {$IFDEF UseAlignedMemory}
  FreeAlignedMemory(FX);
  FreeAlignedMemory(FY);
+ {$ELSE}
+ Dispose(FX);
+ Dispose(FY);
+ {$ENDIF}
  Dispose(FStateStack);
  inherited;
 end;
@@ -709,8 +724,13 @@ end;
 
 procedure TPolyphaseUpsampler64.AllocateBuffer;
 begin
+ {$IFDEF UseAlignedMemory}
  ReallocateAlignedMemory(Pointer(FX), FNumberOfCoeffs * SizeOf(Double));
  ReallocateAlignedMemory(Pointer(FY), FNumberOfCoeffs * SizeOf(Double));
+ {$ELSE}
+ ReallocMem(Pointer(FX), FNumberOfCoeffs * SizeOf(Double));
+ ReallocMem(Pointer(FY), FNumberOfCoeffs * SizeOf(Double));
+ {$ENDIF}
  ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Double));
 end;
 

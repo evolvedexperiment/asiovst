@@ -34,6 +34,8 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{-$DEFINE Simple}
+
 uses
   Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon, DAV_GuiFixedPoint,
   DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixel;
@@ -256,8 +258,6 @@ begin
     end;
   end;
 end;
-
-{-$DEFINE Simple}
 
 procedure TGuiPixelFilledCircle.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
 var

@@ -73,7 +73,6 @@ var
   Index : Integer;
 begin
  Result := -1;
-
  for Index := 0 to UnalignedMemoryList.Count - 1 do
   if P = Pointer(PtrUInt(UnalignedMemoryList.Items[Index]) and (not $F)) then
    begin
@@ -106,6 +105,8 @@ begin
    // check if memory is still unaligned
 //   if (Cardinal(P) and $F) <> 0 then
     begin
+     Assert(Assigned(UnalignedMemoryList));
+
      // add unaligned pointer to the unaligned memory list
      UnalignedMemoryList.Add(Ptr);
 
@@ -141,6 +142,7 @@ begin
   end;
 
  {$IFNDEF MemoryAlreadyAligned}
+ Assert(Assigned(UnalignedMemoryList));
  Index := GetUnalignedPointerIndex(Ptr);
  {$ENDIF}
 
@@ -150,6 +152,7 @@ begin
  if (PtrUInt(Ptr) and $F) <> 0 then
   begin
    ReallocMem(Ptr, Size + $F);
+
    if (Index >= 0)
     then UnalignedMemoryList.Items[Index] := Ptr
     else UnalignedMemoryList.Add(Ptr);
@@ -170,6 +173,7 @@ var
 {$ENDIF}
 begin
  {$IFNDEF MemoryAlreadyAligned}
+ Assert(Assigned(UnalignedMemoryList));
  for Index := 0 to UnalignedMemoryList.Count - 1 do
   begin
    // check if P is alread the unaligned pointer
@@ -179,7 +183,7 @@ begin
      UnalignedMemoryList.Delete(Index);
 
      // dispose memory & exit
-     Freemem(P);
+     FreeMem(P);
      Exit;
     end;
 
@@ -193,12 +197,12 @@ begin
      UnalignedMemoryList.Delete(Index);
 
      // dispose memory & exit
-     Freemem(P);
+     FreeMem(P);
      Exit;
     end;
   end;
  {$ENDIF}
- Freemem(P);
+ FreeMem(P);
 end;
 
 

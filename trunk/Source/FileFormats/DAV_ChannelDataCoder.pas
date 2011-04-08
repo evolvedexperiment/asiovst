@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, Types, DAV_Types,
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, DAV_Types,
   DAV_HalfFloat;
 
 type
@@ -368,7 +368,7 @@ type
 implementation
 
 uses
-  Math, SysUtils;
+  SysUtils;
 
 
 { TCustomChannelDataCoder }

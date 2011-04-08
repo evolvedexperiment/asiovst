@@ -287,7 +287,7 @@ type
                vcd4in2out,            vcd4in4out,               vcd4in8out,
                vcd8in4out,            vcd8in8out,               vcdMidiProgramNames,
                vcdLiveWithoutToolbar, vcdConformsToWindowRules, vcdBypass,
-               vcdCockosExtension);
+               vcdCockosExtension,    vcdChainPluginAPI);
 
   TVstCanDos = set of TVstCanDo;
 
@@ -1035,10 +1035,10 @@ type
     fxVersion   : LongInt;
 
     numPrograms : LongInt;
-    future      : array [0..127] of Byte;
+    Future      : array [0..127] of Byte;
 
-    chunkSize   : LongInt;
-    chunk       : Pointer;    // variable
+    ChunkSize   : LongInt;
+    Chunk       : Pointer;    // variable
   end;
   PFXChunkBank = ^TFXChunkBank;
 

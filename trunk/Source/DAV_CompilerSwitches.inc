@@ -33,6 +33,7 @@
 { Misc. undocumented compiler switches}
 {$DEFINE CheckCRC}
 {-$DEFINE ValidateEveryReadOperation}
+{$DEFINE UseAlignedMemory}
 
 
 //////////////////////////////

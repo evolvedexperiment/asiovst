@@ -5,8 +5,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF Win32} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF} Classes;
+  {$IFDEF FPC} LCLIntf, LCLType, LResources, Dynlibs,
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF} {$ELSE} Windows, Messages, {$ENDIF}
+  Classes;
 
 const
   IMPORTED_NAME_OFFSET = $00000002;
@@ -531,15 +532,17 @@ begin
 end;
 *)
 
+{$IFNDEF FPC}
 function GetModuleFileNameA(hModule: HINST; lpFilename: PAnsiChar; nSize: DWORD): DWORD; stdcall;
 begin
  Result := Windows.GetModuleFileNameA(hModule, lpFilename, nSize);
  if (Result = 0) and (hModule <> 0) then
   begin
    StrCopy(lpFilename, @ParamStr(0)[1]);
-   result := Length(ParamStr(0));
+   Result := Length(ParamStr(0));
   end;
 end;
+{$ENDIF}
 
 function GetModuleFileNameW(hModule: HINST; lpFilename: PWideChar; nSize: DWORD): DWORD; stdcall;
 begin

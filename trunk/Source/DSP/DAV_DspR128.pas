@@ -35,8 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Types, DAV_Classes, DAV_DspFilterBasics,
-  DAV_DspDelayLines;
+  Classes, SysUtils, DAV_Classes, DAV_DspFilterBasics, DAV_DspDelayLines;
 
 
 type
@@ -158,7 +157,7 @@ type
 implementation
 
 uses
-  Math, DAV_Approximations;
+  DAV_Approximations;
 
 const
   CMeanSquareBias : Single = 1E-10;

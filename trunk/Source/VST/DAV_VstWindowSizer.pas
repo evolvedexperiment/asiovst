@@ -58,8 +58,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LCLType, LMessages, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF} Controls, Types, Contnrs,
+  {$IFDEF FPC}LCLIntf, LCLType, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$ELSE} Windows, Messages, {$ENDIF} Classes, Controls, Types, Contnrs,
   DAV_VSTCustomModule;
 
 type
@@ -130,7 +130,7 @@ type
     procedure SetAnchoredWindow(hWindow: HWND; Anchor: TAnchors);
     procedure SetCurrentSize(Width, Height: Integer);
     procedure SetEditorHwnd(HwndEditor: HWND);
-  published
+
     property Effect: TCustomVSTModule read FEffect write SetEffect;
     property Constraints: TSizeConstraints read FConstraints;
   end;
@@ -143,7 +143,7 @@ function ChildWindowProc(hWindow: HWND; Msg: UINT; wParam: WPARAM; lParam: LPARA
 implementation
 
 uses
-  SysUtils;
+  {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils;
 
 // replacement for the global vector in the original c++ code
 var
@@ -758,7 +758,7 @@ end;
 procedure TVstWindowSizer.DetectHost;
 var
   szProductName : array[0..255] of AnsiChar;
-  ProductName   : string;
+  ProductName   : AnsiString;
   curHwnd       : HWND;
   curParent     : HWND;
   style         : Integer;
@@ -766,18 +766,18 @@ begin
   if FEditorInfo = nil then exit;
 
   FHostApp := haUnknown;
-  assert(assigned(FEffect));
+  Assert(Assigned(FEffect));
   ProductName := FEffect.HostProduct;
 
   // Some hosts return a string that clearly identifies them...
-  if pos('Cantabile', ProductName) > 0 then FHostApp := haCantabile else
-  if pos('energyXT', ProductName) > 0 then FHostApp := haEnergyXT else
-  if pos('SAVIHost', ProductName) > 0 then FHostApp := haSaviHost else
-  if pos('Melodyne', ProductName) > 0 then FHostApp := haMelodyne else
-  if pos('Cubase', ProductName) > 0 then FHostApp := haCubase else
-  if pos('Tracktion', ProductName) > 0 then FHostApp := haTracktion else
-  if pos('Samplitude', ProductName) > 0 then FHostApp := haSamplitude else
-  if pos('VST Plugin Analyser', ProductName) > 0 then FHostApp := haVSTPluginAnalyzer
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('Cantabile', ProductName) > 0 then FHostApp := haCantabile else
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('energyXT', ProductName) > 0 then FHostApp := haEnergyXT else
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('SAVIHost', ProductName) > 0 then FHostApp := haSaviHost else
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('Melodyne', ProductName) > 0 then FHostApp := haMelodyne else
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('Cubase', ProductName) > 0 then FHostApp := haCubase else
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('Tracktion', ProductName) > 0 then FHostApp := haTracktion else
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('Samplitude', ProductName) > 0 then FHostApp := haSamplitude else
+  if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('VST Plugin Analyser', ProductName) > 0 then FHostApp := haVSTPluginAnalyzer
    else
     begin
        // ...others don't. SONAR, Project 5 and FL return the name of the Cakewalk VST wrapper for all 3
@@ -797,19 +797,19 @@ begin
          if GetClassNameA(curHwnd, szProductName, 256) > 0 then
           begin
            ProductName := szProductName;
-           if pos('Fruity', ProductName) > 0 then
+           if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('Fruity', ProductName) > 0 then
             begin
              FHostApp := haFruityLoops;
              Break;
             end;
 
-           if pos('Project5', ProductName) > 0 then
+           if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('Project5', ProductName) > 0 then
             begin
              FHostApp := haProject5;
              Break;
             end;
 
-           if pos('SONAR', ProductName) > 0 then
+           if {$IFDEF DELPHI14_UP}PosEx{$ELSE}Pos{$ENDIF}('SONAR', ProductName) > 0 then
             begin
              FHostApp := haSONAR;
              Break;

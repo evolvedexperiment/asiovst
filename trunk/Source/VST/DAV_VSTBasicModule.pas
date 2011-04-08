@@ -748,11 +748,8 @@ begin
 end;
 
 function TBasicVSTModule.GetCanHostDo(Text: AnsiString): Integer;
-var
-  str : AnsiString;
 begin
- str := AnsiString(Text);
- Result := CallAudioMaster(amCanDo, 0, 0, PAnsiChar(str));
+ Result := CallAudioMaster(amCanDo, 0, 0, PAnsiChar(Text));
 end;
 
 function TBasicVSTModule.GetHostLanguage: Integer;

@@ -53,6 +53,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     FPixelMap : TGuiCustomPixelMap;
   end;
@@ -70,12 +71,18 @@ uses
 
 procedure TFmSplashScreen.FormCreate(Sender: TObject);
 begin
- FPixelMap := TGuiCustomPixelMap.Create;
+ FPixelMap := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmSplashScreen.FormShow(Sender: TObject);
 begin
  LbTitle.Width := LbTitle.Width + 1;
+ FormResize(Sender);
+end;
+
+procedure TFmSplashScreen.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FPixelMap);
 end;
 
 procedure TFmSplashScreen.FormPaint(Sender: TObject);
