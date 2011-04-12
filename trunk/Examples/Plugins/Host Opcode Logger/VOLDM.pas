@@ -120,12 +120,12 @@ end;
 
 procedure TVOLDataModule.VSTModuleOpen(Sender: TObject);
 begin
- if not Assigned(FOpcodeLog)
-  then Exit;
-
  {$IFDEF UseMessageDialogs}
  ShowMessage('Effect Open');
  {$ENDIF}
+
+ if not Assigned(FOpcodeLog)
+  then Exit;
 
  FOpcodeLog.Add('HostProduct: ' + string(HostProduct));
  FOpcodeLog.Add('HostVendor: ' + string(HostVendor));
@@ -145,90 +145,90 @@ function TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
 var
   ChunkName : TChunkName;
 begin
+ if Assigned(FOpcodeLog) then
+  begin
+   case Opcode of
+    effOpen,
+    effEditClose,
+    effStartProcess,
+    effGetNumProgramCategories,
+    effGetPlugCategory,
+    effIdentify,
+    effStopProcess   :
+     begin
+      FOpcodeLog.Add(Opcode2String(Opcode));
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+    effGetSpeakerArrangement,
+    effSetSpeakerArrangement :
+     begin
+      FOpcodeLog.Add(Opcode2String(Opcode) + 'Input: ' + IntToHex(Integer(Value), 8) +
+        'Output: ' + IntToHex(Integer(Ptr), 8));
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+    effSetSampleRate :
+     begin
+      FOpcodeLog.Add(Opcode2String(Opcode) + ' SampleRate: ' + FloatToStr(Single(Opt)));
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+    effSetBlockSize  :
+     begin
+      FOpcodeLog.Add(Opcode2String(Opcode) + ' BlockSize: ' + IntToStr(Value));
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+    effVendorSpecific :
+     begin
+      ChunkName := TChunkName(Index);
+      if (ChunkName[0] in ['0'..'z']) and
+         (ChunkName[1] in ['0'..'z']) and
+         (ChunkName[2] in ['0'..'z']) and
+         (ChunkName[3] in ['0'..'z'])
+       then FOpcodeLog.Add(Opcode2String(Opcode) +
+              ' Chunkname: ' + string(ChunkName) +
+              ' Value: ' + IntToStr(Value) +
+              ' Pointer: ' + IntToStr(Integer(ptr)) +
+              ' Single: ' + FloatToStr(Single(Opt)))
+       else FOpcodeLog.Add(Opcode2String(Opcode) +
+              ' Index: ' + IntToStr(Index) +
+              ' Value: ' + IntToStr(Value) +
+              ' Pointer: ' + IntToStr(Integer(ptr)) +
+              ' Single: ' + FloatToStr(Single(Opt)));
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+    effIdle:
+      if FLastOpcode <> effIdle
+       then FOpcodeLog.Add(Opcode2String(Opcode))
+       else Exit;
+    effEditIdle:
+      if FLastOpcode <> effEditIdle
+       then FOpcodeLog.Add(Opcode2String(Opcode))
+       else Exit;
+    effCanDo:
+     begin
+      FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' + StrPas(PAnsiChar(Ptr)) + '''');
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+    effClose:
+     begin
+      FOpcodeLog.Add(Opcode2String(Opcode));
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+    else
+     begin
+      FOpcodeLog.Add(Opcode2String(Opcode) +
+        ' Index: ' + IntToStr(Index) +
+        ' Value: ' + IntToStr(Value) +
+        ' Pointer: ' + IntToStr(Integer(ptr)) +
+        ' Single: ' + FloatToStr(Single(Opt)));
+      FOpcodeLog.SaveToFile(FLogFileName);
+     end;
+   end;
+
+   FLastOpcode := Opcode;
+   SyncLogDisplay;
+  end;
+
  Result := inherited HostCallDispatchEffect(Opcode, Index, Value, ptr, opt);
-
- if not Assigned(FOpcodeLog)
-  then Exit;
-
- case Opcode of
-  effOpen,
-  effEditClose,
-  effStartProcess,
-  effGetNumProgramCategories,
-  effGetPlugCategory,
-  effIdentify,
-  effStopProcess   :
-   begin
-    FOpcodeLog.Add(Opcode2String(Opcode));
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
-  effGetSpeakerArrangement,
-  effSetSpeakerArrangement :
-   begin
-    FOpcodeLog.Add(Opcode2String(Opcode) + 'Input: ' + IntToHex(Integer(Value), 8) +
-      'Output: ' + IntToHex(Integer(Ptr), 8));
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
-  effSetSampleRate :
-   begin
-    FOpcodeLog.Add(Opcode2String(Opcode) + ' SampleRate: ' + FloatToStr(Single(Opt)));
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
-  effSetBlockSize  :
-   begin
-    FOpcodeLog.Add(Opcode2String(Opcode) + ' BlockSize: ' + IntToStr(Value));
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
-  effVendorSpecific :
-   begin
-    ChunkName := TChunkName(Index);
-    if (ChunkName[0] in ['0'..'z']) and
-       (ChunkName[1] in ['0'..'z']) and
-       (ChunkName[2] in ['0'..'z']) and
-       (ChunkName[3] in ['0'..'z'])
-     then FOpcodeLog.Add(Opcode2String(Opcode) +
-            ' Chunkname: ' + string(ChunkName) +
-            ' Value: ' + IntToStr(Value) +
-            ' Pointer: ' + IntToStr(Integer(ptr)) +
-            ' Single: ' + FloatToStr(Single(Opt)))
-     else FOpcodeLog.Add(Opcode2String(Opcode) +
-            ' Index: ' + IntToStr(Index) +
-            ' Value: ' + IntToStr(Value) +
-            ' Pointer: ' + IntToStr(Integer(ptr)) +
-            ' Single: ' + FloatToStr(Single(Opt)));
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
-  effIdle:
-    if FLastOpcode <> effIdle
-     then FOpcodeLog.Add(Opcode2String(Opcode))
-     else Exit;
-  effEditIdle:
-    if FLastOpcode <> effEditIdle
-     then FOpcodeLog.Add(Opcode2String(Opcode))
-     else Exit;
-  effCanDo:
-   begin
-    FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' + StrPas(PAnsiChar(Ptr)) + '''');
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
-  effClose:
-   begin
-    FOpcodeLog.Add(Opcode2String(Opcode));
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
-  else
-   begin
-    FOpcodeLog.Add(Opcode2String(Opcode) +
-      ' Index: ' + IntToStr(Index) +
-      ' Value: ' + IntToStr(Value) +
-      ' Pointer: ' + IntToStr(Integer(ptr)) +
-      ' Single: ' + FloatToStr(Single(Opt)));
-    FOpcodeLog.SaveToFile(FLogFileName);
-   end;
- end;
- FLastOpcode := Opcode;
-
- SyncLogDisplay;
 end;
 
 function TVOLDataModule.HostCallGetParameter(const Index: Integer): Single;

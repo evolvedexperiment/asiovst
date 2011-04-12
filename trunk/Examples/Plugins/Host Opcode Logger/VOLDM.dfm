@@ -10,7 +10,7 @@ object VOLDataModule: TVOLDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgramName = 'Init'
   IORatio = 1.000000000000000000
-  UniqueID = 'DVOL'
+  UniqueID = 'DVOl'
   ShellPlugins = <>
   TruncateStrings = True
   Programs = <
