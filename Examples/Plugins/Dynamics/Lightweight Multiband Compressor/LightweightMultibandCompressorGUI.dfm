@@ -47,7 +47,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbLow: TGuiLabel
@@ -64,7 +63,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbLowMid: TGuiLabel
     Left = 139
@@ -80,7 +78,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbHighMid: TGuiLabel
     Left = 275
@@ -96,7 +93,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbHigh: TGuiLabel
     Left = 413
@@ -112,7 +108,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbLowFreqValue: TGuiLabel
     Left = 65
@@ -129,7 +124,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbMidFreqValue: TGuiLabel
     Left = 205
@@ -146,7 +140,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbHighFreqValue: TGuiLabel
     Left = 343
@@ -163,7 +156,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbLowS: TGuiLabel
     Left = 36
@@ -179,7 +171,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -197,7 +188,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -215,7 +205,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -233,7 +222,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -251,7 +239,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -269,7 +256,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -287,7 +273,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -305,7 +290,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -323,7 +307,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -341,7 +324,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -359,7 +341,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -377,7 +358,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     FontOversampling = fo4x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
     Visible = False
     OnClick = LEDSoftClipClick
   end
@@ -387,12 +367,11 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Width = 585
     Height = 92
     Anchors = [akLeft, akRight, akBottom]
-    Caption = 'LowBand'
-    LineColor = 14277598
+    BorderColor = clBtnShadow
+    BorderRadius = 9.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    BorderRadius = 9.000000000000000000
     TabOrder = 1
     UseDockManager = True
     object LbLowThreshold: TGuiLabel
@@ -410,7 +389,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowThresholdValue: TGuiLabel
       Left = 166
@@ -427,7 +405,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowAttack: TGuiLabel
       Left = 16
@@ -444,7 +421,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowAttackValue: TGuiLabel
       Left = 6
@@ -461,7 +437,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowRelease: TGuiLabel
       Left = 90
@@ -478,7 +453,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowReleaseValue: TGuiLabel
       Left = 84
@@ -495,7 +469,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowRatio: TGuiLabel
       Left = 257
@@ -512,7 +485,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowRatioValue: TGuiLabel
       Left = 244
@@ -529,7 +501,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowKnee: TGuiLabel
       Left = 321
@@ -546,7 +517,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowKneeValue: TGuiLabel
       Left = 326
@@ -563,38 +533,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
-    end
-    object GXYLow: TGuiGraphXY
-      Left = 497
-      Top = 10
-      Width = 68
-      Height = 56
-      BorderColor = 14277598
-      BorderRadius = 2
-      FrameColor = 6844281
-      Flags = []
-      SeriesCollection = <
-        item
-          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
-          SeriesClassName = 'TGuiGraphXYFunctionSeries'
-          Series.Color = clWhite
-        end>
-      XAxis.Flags = []
-      XAxis.Granularity = 50.000000000000000000
-      XAxis.Minimum = -90.000000000000000000
-      XAxis.Maximum = 10.000000000000000000
-      XAxis.Lower = -90.000000000000000000
-      XAxis.Upper = 10.000000000000000000
-      YAxis.Flags = []
-      YAxis.Granularity = 50.000000000000000000
-      YAxis.Minimum = -90.000000000000000000
-      YAxis.Maximum = 10.000000000000000000
-      YAxis.Lower = -90.000000000000000000
-      YAxis.Upper = 10.000000000000000000
-      AntiAlias = gaaLinear2x
-      LineColor = 3948356
-      LineWidth = 2
     end
     object LbLowMakeUpGain: TGuiLabel
       Left = 408
@@ -611,7 +549,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMakeUpGainValue: TGuiLabel
       Left = 406
@@ -628,7 +565,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LEDLowAutoGain: TGuiLED
       Left = 494
@@ -657,8 +593,40 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LEDLowAutoGainClick
+    end
+    object GXYLow: TGuiGraphXY
+      Left = 497
+      Top = 10
+      Width = 68
+      Height = 56
+      AntiAlias = True
+      BorderColor = 14277598
+      BorderRadius = 2.000000000000000000
+      BorderWidth = 1.500000000000000000
+      FrameColor = 6844281
+      GridColor = 3619392
+      Flags = []
+      SeriesCollection = <
+        item
+          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
+          SeriesClassName = 'TGuiGraphXYFunctionSeries'
+          Series.Color = clWhite
+          Series.ShadeAlpha = 16
+          Series.Width = 2.000000000000000000
+        end>
+      XAxis.Flags = []
+      XAxis.Granularity = 50.000000000000000000
+      XAxis.Minimum = -90.000000000000000000
+      XAxis.Maximum = 10.000000000000000000
+      XAxis.Lower = -90.000000000000000000
+      XAxis.Upper = 10.000000000000000000
+      YAxis.Flags = []
+      YAxis.Granularity = 50.000000000000000000
+      YAxis.Minimum = -90.000000000000000000
+      YAxis.Maximum = 10.000000000000000000
+      YAxis.Lower = -90.000000000000000000
+      YAxis.Upper = 10.000000000000000000
     end
     object DialLowThreshold: TGuiStitchedDial
       Left = 185
@@ -668,10 +636,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      OnChange = DialThresholdChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialThresholdChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialLowAttack: TGuiStitchedDial
       Left = 25
@@ -681,11 +652,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialAttackChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowRelease: TGuiStitchedDial
       Left = 105
@@ -695,11 +668,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialReleaseChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowRatio: TGuiStitchedDial
       Left = 265
@@ -709,11 +684,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialRatioChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowKnee: TGuiStitchedDial
       Left = 345
@@ -722,10 +699,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
-      OnChange = DialKneeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialKneeChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialLowMakeUpGain: TGuiStitchedDial
       Left = 425
@@ -734,10 +714,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
-      OnChange = DialMakeUpGainChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialMakeUpGainChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object PnLowMidBand: TGuiPanel
@@ -747,12 +730,11 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Width = 585
     Height = 92
     Anchors = [akLeft, akRight, akBottom]
-    Caption = 'LowMidBand'
-    LineColor = 14277598
+    BorderColor = clBtnShadow
+    BorderRadius = 9.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    BorderRadius = 9.000000000000000000
     TabOrder = 3
     UseDockManager = True
     object LbLowMidThreshold: TGuiLabel
@@ -771,7 +753,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidThresholdValue: TGuiLabel
       Tag = 1
@@ -789,7 +770,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidAttack: TGuiLabel
       Tag = 1
@@ -807,7 +787,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidAttackValue: TGuiLabel
       Tag = 1
@@ -825,7 +804,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidRelease: TGuiLabel
       Tag = 1
@@ -843,7 +821,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidReleaseValue: TGuiLabel
       Tag = 1
@@ -861,7 +838,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidRatio: TGuiLabel
       Tag = 1
@@ -879,7 +855,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidRatioValue: TGuiLabel
       Tag = 1
@@ -897,7 +872,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidKnee: TGuiLabel
       Tag = 1
@@ -915,7 +889,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidKneeValue: TGuiLabel
       Tag = 1
@@ -933,39 +906,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
-    end
-    object GXYLowMid: TGuiGraphXY
-      Tag = 1
-      Left = 497
-      Top = 10
-      Width = 68
-      Height = 56
-      BorderColor = 14277598
-      BorderRadius = 2
-      FrameColor = 6844281
-      Flags = []
-      SeriesCollection = <
-        item
-          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
-          SeriesClassName = 'TGuiGraphXYFunctionSeries'
-          Series.Color = clWhite
-        end>
-      XAxis.Flags = []
-      XAxis.Granularity = 50.000000000000000000
-      XAxis.Minimum = -90.000000000000000000
-      XAxis.Maximum = 10.000000000000000000
-      XAxis.Lower = -90.000000000000000000
-      XAxis.Upper = 10.000000000000000000
-      YAxis.Flags = []
-      YAxis.Granularity = 50.000000000000000000
-      YAxis.Minimum = -90.000000000000000000
-      YAxis.Maximum = 10.000000000000000000
-      YAxis.Lower = -90.000000000000000000
-      YAxis.Upper = 10.000000000000000000
-      AntiAlias = gaaLinear2x
-      LineColor = 3948356
-      LineWidth = 2
     end
     object LbLowMidMakeUpGain: TGuiLabel
       Tag = 1
@@ -983,7 +923,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbLowMidMakeUpGainValue: TGuiLabel
       Tag = 1
@@ -1001,7 +940,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LEDLowMidAutoGain: TGuiLED
       Tag = 1
@@ -1032,8 +970,41 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LEDLowMidAutoGainClick
+    end
+    object GXYLowMid: TGuiGraphXY
+      Tag = 1
+      Left = 497
+      Top = 10
+      Width = 68
+      Height = 56
+      AntiAlias = True
+      BorderColor = 14277598
+      BorderRadius = 2.000000000000000000
+      BorderWidth = 1.500000000000000000
+      FrameColor = 6844281
+      GridColor = 3619392
+      Flags = []
+      SeriesCollection = <
+        item
+          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
+          SeriesClassName = 'TGuiGraphXYFunctionSeries'
+          Series.Color = clWhite
+          Series.ShadeAlpha = 16
+          Series.Width = 2.000000000000000000
+        end>
+      XAxis.Flags = []
+      XAxis.Granularity = 50.000000000000000000
+      XAxis.Minimum = -90.000000000000000000
+      XAxis.Maximum = 10.000000000000000000
+      XAxis.Lower = -90.000000000000000000
+      XAxis.Upper = 10.000000000000000000
+      YAxis.Flags = []
+      YAxis.Granularity = 50.000000000000000000
+      YAxis.Minimum = -90.000000000000000000
+      YAxis.Maximum = 10.000000000000000000
+      YAxis.Lower = -90.000000000000000000
+      YAxis.Upper = 10.000000000000000000
     end
     object DialLowMidThreshold: TGuiStitchedDial
       Tag = 1
@@ -1044,10 +1015,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      OnChange = DialThresholdChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialThresholdChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialLowMidAttack: TGuiStitchedDial
       Tag = 1
@@ -1058,11 +1032,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialAttackChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowMidRelease: TGuiStitchedDial
       Tag = 1
@@ -1073,11 +1049,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialReleaseChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowMidRatio: TGuiStitchedDial
       Tag = 1
@@ -1088,11 +1066,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialRatioChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
+      DefaultValue = 0.000000000000000000
     end
     object DialLowMidKnee: TGuiStitchedDial
       Tag = 1
@@ -1102,10 +1082,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
-      OnChange = DialKneeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialKneeChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialLowMidMakeUpGain: TGuiStitchedDial
       Tag = 1
@@ -1115,10 +1098,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
-      OnChange = DialMakeUpGainChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialMakeUpGainChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object PnHighMidBand: TGuiPanel
@@ -1128,12 +1114,11 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Width = 585
     Height = 92
     Anchors = [akLeft, akRight, akBottom]
-    Caption = 'HighMidBand'
-    LineColor = 14277598
+    BorderColor = clBtnShadow
+    BorderRadius = 9.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    BorderRadius = 9.000000000000000000
     TabOrder = 2
     UseDockManager = True
     object LbHighMidThreshold: TGuiLabel
@@ -1152,7 +1137,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidThresholdValue: TGuiLabel
       Tag = 2
@@ -1170,7 +1154,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidAttack: TGuiLabel
       Tag = 2
@@ -1188,7 +1171,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidAttackValue: TGuiLabel
       Tag = 2
@@ -1206,7 +1188,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidRelease: TGuiLabel
       Tag = 2
@@ -1224,7 +1205,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidReleaseValue: TGuiLabel
       Tag = 2
@@ -1242,7 +1222,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidRatio: TGuiLabel
       Tag = 2
@@ -1260,7 +1239,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidRatioValue: TGuiLabel
       Tag = 2
@@ -1278,7 +1256,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidKnee: TGuiLabel
       Tag = 2
@@ -1296,7 +1273,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidKneeValue: TGuiLabel
       Tag = 2
@@ -1314,39 +1290,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
-    end
-    object GXYHighMid: TGuiGraphXY
-      Tag = 2
-      Left = 497
-      Top = 10
-      Width = 68
-      Height = 56
-      BorderColor = 14277598
-      BorderRadius = 2
-      FrameColor = 6844281
-      Flags = []
-      SeriesCollection = <
-        item
-          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
-          SeriesClassName = 'TGuiGraphXYFunctionSeries'
-          Series.Color = clWhite
-        end>
-      XAxis.Flags = []
-      XAxis.Granularity = 50.000000000000000000
-      XAxis.Minimum = -90.000000000000000000
-      XAxis.Maximum = 10.000000000000000000
-      XAxis.Lower = -90.000000000000000000
-      XAxis.Upper = 10.000000000000000000
-      YAxis.Flags = []
-      YAxis.Granularity = 50.000000000000000000
-      YAxis.Minimum = -90.000000000000000000
-      YAxis.Maximum = 10.000000000000000000
-      YAxis.Lower = -90.000000000000000000
-      YAxis.Upper = 10.000000000000000000
-      AntiAlias = gaaLinear2x
-      LineColor = 3948356
-      LineWidth = 2
     end
     object LbHighMidMakeUpGain: TGuiLabel
       Tag = 2
@@ -1364,7 +1307,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMidMakeUpGainValue: TGuiLabel
       Tag = 2
@@ -1382,7 +1324,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LEDHighMidAutoGain: TGuiLED
       Tag = 2
@@ -1413,8 +1354,41 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LEDHighMidAutoGainClick
+    end
+    object GXYHighMid: TGuiGraphXY
+      Tag = 2
+      Left = 497
+      Top = 10
+      Width = 68
+      Height = 56
+      AntiAlias = True
+      BorderColor = 14277598
+      BorderRadius = 2.000000000000000000
+      BorderWidth = 1.500000000000000000
+      FrameColor = 6844281
+      GridColor = 3619392
+      Flags = []
+      SeriesCollection = <
+        item
+          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
+          SeriesClassName = 'TGuiGraphXYFunctionSeries'
+          Series.Color = clWhite
+          Series.ShadeAlpha = 16
+          Series.Width = 2.000000000000000000
+        end>
+      XAxis.Flags = []
+      XAxis.Granularity = 50.000000000000000000
+      XAxis.Minimum = -90.000000000000000000
+      XAxis.Maximum = 10.000000000000000000
+      XAxis.Lower = -90.000000000000000000
+      XAxis.Upper = 10.000000000000000000
+      YAxis.Flags = []
+      YAxis.Granularity = 50.000000000000000000
+      YAxis.Minimum = -90.000000000000000000
+      YAxis.Maximum = 10.000000000000000000
+      YAxis.Lower = -90.000000000000000000
+      YAxis.Upper = 10.000000000000000000
     end
     object DialHighMidThreshold: TGuiStitchedDial
       Tag = 2
@@ -1425,10 +1399,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      OnChange = DialThresholdChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialThresholdChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialHighMidAttack: TGuiStitchedDial
       Tag = 2
@@ -1439,11 +1416,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialAttackChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialHighMidRelease: TGuiStitchedDial
       Tag = 2
@@ -1454,11 +1433,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialReleaseChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialHighMidRatio: TGuiStitchedDial
       Tag = 2
@@ -1469,11 +1450,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialRatioChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
+      DefaultValue = 0.000000000000000000
     end
     object DialHighMidKnee: TGuiStitchedDial
       Tag = 2
@@ -1483,10 +1466,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
-      OnChange = DialKneeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialKneeChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialHighMidMakeUpGain: TGuiStitchedDial
       Tag = 2
@@ -1496,10 +1482,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
-      OnChange = DialMakeUpGainChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialMakeUpGainChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object PnHighBand: TGuiPanel
@@ -1509,12 +1498,11 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Width = 585
     Height = 92
     Anchors = [akLeft, akRight, akBottom]
-    Caption = 'HighBand'
-    LineColor = 14277598
+    BorderColor = clBtnShadow
+    BorderRadius = 9.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clBlack
     ParentColor = True
-    BorderRadius = 9.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object LbHighThreshold: TGuiLabel
@@ -1533,7 +1521,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighThresholdValue: TGuiLabel
       Tag = 3
@@ -1551,7 +1538,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighAttack: TGuiLabel
       Tag = 3
@@ -1569,7 +1555,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighAttackValue: TGuiLabel
       Tag = 3
@@ -1587,7 +1572,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighRelease: TGuiLabel
       Tag = 3
@@ -1605,7 +1589,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighReleaseValue: TGuiLabel
       Tag = 3
@@ -1623,7 +1606,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighRatio: TGuiLabel
       Tag = 3
@@ -1641,7 +1623,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighRatioValue: TGuiLabel
       Tag = 3
@@ -1659,7 +1640,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighKnee: TGuiLabel
       Tag = 3
@@ -1677,7 +1657,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighKneeValue: TGuiLabel
       Tag = 3
@@ -1695,39 +1674,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
-    end
-    object GXYHigh: TGuiGraphXY
-      Tag = 3
-      Left = 497
-      Top = 10
-      Width = 68
-      Height = 56
-      BorderColor = 14277598
-      BorderRadius = 2
-      FrameColor = 6844281
-      Flags = []
-      SeriesCollection = <
-        item
-          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
-          SeriesClassName = 'TGuiGraphXYFunctionSeries'
-          Series.Color = clWhite
-        end>
-      XAxis.Flags = []
-      XAxis.Granularity = 50.000000000000000000
-      XAxis.Minimum = -90.000000000000000000
-      XAxis.Maximum = 10.000000000000000000
-      XAxis.Lower = -90.000000000000000000
-      XAxis.Upper = 10.000000000000000000
-      YAxis.Flags = []
-      YAxis.Granularity = 50.000000000000000000
-      YAxis.Minimum = -90.000000000000000000
-      YAxis.Maximum = 10.000000000000000000
-      YAxis.Lower = -90.000000000000000000
-      YAxis.Upper = 10.000000000000000000
-      AntiAlias = gaaLinear2x
-      LineColor = 3948356
-      LineWidth = 2
     end
     object LbHighMakeUpGain: TGuiLabel
       Tag = 3
@@ -1745,7 +1691,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbHighMakeUpGainValue: TGuiLabel
       Tag = 3
@@ -1763,7 +1708,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LEDHighAutoGain: TGuiLED
       Tag = 3
@@ -1794,8 +1738,41 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       OnClick = LEDHighAutoGainClick
+    end
+    object GXYHigh: TGuiGraphXY
+      Tag = 3
+      Left = 497
+      Top = 10
+      Width = 68
+      Height = 56
+      AntiAlias = True
+      BorderColor = 14277598
+      BorderRadius = 2.000000000000000000
+      BorderWidth = 1.500000000000000000
+      FrameColor = 6844281
+      GridColor = 3619392
+      Flags = []
+      SeriesCollection = <
+        item
+          DisplayName = 'TGuiGraphXYSeriesCollectionItem'
+          SeriesClassName = 'TGuiGraphXYFunctionSeries'
+          Series.Color = clWhite
+          Series.ShadeAlpha = 16
+          Series.Width = 2.000000000000000000
+        end>
+      XAxis.Flags = []
+      XAxis.Granularity = 50.000000000000000000
+      XAxis.Minimum = -90.000000000000000000
+      XAxis.Maximum = 10.000000000000000000
+      XAxis.Lower = -90.000000000000000000
+      XAxis.Upper = 10.000000000000000000
+      YAxis.Flags = []
+      YAxis.Granularity = 50.000000000000000000
+      YAxis.Minimum = -90.000000000000000000
+      YAxis.Maximum = 10.000000000000000000
+      YAxis.Lower = -90.000000000000000000
+      YAxis.Upper = 10.000000000000000000
     end
     object DialHighThreshold: TGuiStitchedDial
       Tag = 3
@@ -1806,10 +1783,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      OnChange = DialThresholdChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialThresholdChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialHighAttack: TGuiStitchedDial
       Tag = 3
@@ -1820,11 +1800,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialAttackChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialAttackChange
+      DefaultValue = 0.000000000000000000
     end
     object DialHighRelease: TGuiStitchedDial
       Tag = 3
@@ -1835,11 +1817,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.299999952316284000
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      OnChange = DialReleaseChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
+      OnChange = DialReleaseChange
+      DefaultValue = 0.000000000000000000
     end
     object DialHighRatio: TGuiStitchedDial
       Tag = 3
@@ -1850,11 +1834,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       CurveMapping = -1.799999952316284000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialRatioChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialRatioChange
+      DefaultValue = 0.000000000000000000
     end
     object DialHighKnee: TGuiStitchedDial
       Tag = 3
@@ -1864,10 +1850,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 10.000000000000000000
-      OnChange = DialKneeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialKneeChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
     object DialHighMakeUpGain: TGuiStitchedDial
       Tag = 3
@@ -1877,10 +1866,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 36
       CurveMapping = -0.800000011920929000
       Max = 60.000000000000000000
-      OnChange = DialMakeUpGainChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialMakeUpGainChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object DialLowFreq: TGuiStitchedDial
@@ -1891,11 +1883,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     CurveMapping = -0.550000011920929000
     Max = 800.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialLowFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialLowFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialMidFreq: TGuiStitchedDial
     Left = 224
@@ -1905,11 +1899,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     CurveMapping = -1.500000000000000000
     Max = 4000.000000000000000000
     Min = 300.000000000000000000
-    OnChange = DialMidFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 300.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialMidFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object DialHighFreq: TGuiStitchedDial
     Left = 354
@@ -1919,11 +1915,13 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     CurveMapping = -1.350000023841858000
     Max = 20000.000000000000000000
     Min = 800.000000000000000000
-    OnChange = DialHighFreqChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 800.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialHighFreqChange
+    DefaultValue = 0.000000000000000000
   end
   object Timer: TTimer
     Interval = 10
@@ -3021,7 +3019,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
           9BA0C66898C64E7D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>

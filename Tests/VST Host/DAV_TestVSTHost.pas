@@ -143,6 +143,7 @@ type
     procedure TestSoundForge10Bug;
     procedure TestTracktion2;
     procedure TestTracktion2Scan;
+    procedure TestVstHost;
   end;
 
   // I/O test methods for VST Plugins
@@ -2301,6 +2302,260 @@ begin
      'effIdentify didn''t return NvEf');
    {$ENDIF}
    VstDispatch(effOpen);
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestVstHost;
+var
+  Data : Pointer;
+  prct : PERect;
+  ve   : TVstEvents;
+  i    : Integer;
+begin
+ FVstHost.VendorString := 'Hermann Seib';
+ FVstHost.ProductString := 'VSTHost';
+
+ with FVstHost[0] do
+  begin
+   // CanDo bypass
+   VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
+
+   // get VST version
+   VstDispatch(effGetVstVersion);
+
+   GetMem(Data, 1024);
+   FillChar(Data^, 1024, 0);
+   try
+    // get speaker arrangement
+    VstDispatch(effGetSpeakerArrangement, 0, Integer(Data), Data);
+
+    // open VST plugin
+    VstDispatch(effOpen);
+
+    // set samplerate
+    VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+    // set blocksize
+    VstDispatch(effSetBlockSize, 0, 11025);
+
+    // CanDo receiveVstMidiEvent
+    VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
+
+    // mains changed
+    VstDispatch(effMainsChanged, 0, 1);
+    VstDispatch(effMainsChanged, 0, 0);
+
+    // set blocksize
+    VstDispatch(effSetBlockSize, 0, 4410);
+
+    // mains changed
+    VstDispatch(effMainsChanged, 0, 1);
+
+    for I := 0 to 1 do
+     begin
+      // get plugin category
+      VstDispatch(effGetPlugCategory);
+
+      // get product string
+      VstDispatch(effGetProductString, 0, 0, Data);
+
+      // get program name
+      VstDispatch(effGetProgramName, 0, 0, Data);
+
+      // get program
+      VstDispatch(effGetProgram);
+     end;
+
+     // start process
+     VstDispatch(effStartProcess);
+
+     // get program name
+     VstDispatch(effGetProgramName, 0, 0, Data);
+
+     // get program
+     VstDispatch(effGetProgram);
+
+     // process events
+     FillChar(ve, SizeOf(TVstEvents), 0);
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // get product string
+     VstDispatch(effGetProductString, 0, 0, Data);
+
+     // get vendor string
+     VstDispatch(effGetVendorString, 0, 0, Data);
+
+     // get program name
+     VstDispatch(effGetProgramName, 0, 0, Data);
+
+     // get program
+     VstDispatch(effGetProgram);
+
+     // get tail size
+     VstDispatch(effGetTailSize);
+
+     // get Program Category Count
+     VstDispatch(effGetNumProgramCategories);
+
+     // get plugin category
+     VstDispatch(effGetPlugCategory);
+
+     // CanDos
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstEvents'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstMidiEvent'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('sendVstTimeInfo'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstEvents'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstMidiEvent'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('receiveVstTimeInfo'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('offline'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('plugAsChannelInsert'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('plugAsSend'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('mixDryWet'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('noRealTime'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('multipass'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('metapass'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('1in1out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('1in2out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('2in1out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('2in2out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('2in4out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('4in2out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('4in4out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('4in8out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('8in4out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('8in8out'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('midiProgramNames'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('conformsToWindowRules'));
+     VstDispatch(effCanDo, 0, 0, PAnsiChar('bypass'));
+
+     // get product string
+     VstDispatch(effGetProductString, 0, 0, Data);
+
+     // get edit rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
+
+     // get edit rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
+
+     // process events
+     FillChar(ve, SizeOf(TVstEvents), 0);
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // edit open
+     with TForm.Create(nil) do
+      try
+       // set initial form size
+       Width := 400;
+       Height := 300;
+
+       // open editor
+       VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+       // process events
+       FillChar(ve, SizeOf(TVstEvents), 0);
+       VstDispatch(effProcessEvents, 0, 0, @ve);
+
+       // get product string
+       VstDispatch(effGetProductString, 0, 0, Data);
+
+       // get program name
+       VstDispatch(effGetProgramName, 0, 0, Data);
+
+       // get program
+       VstDispatch(effGetProgram);
+
+       // get edit rect
+       VstDispatch(effEditGetRect, 0, 0, @prct);
+       VstDispatch(effEditGetRect, 0, 0, @prct);
+       VstDispatch(effEditGetRect, 0, 0, @prct);
+       VstDispatch(effEditGetRect, 0, 0, @prct);
+
+       // set bounds
+       if Assigned(prct)
+        then SetBounds(prct^.Left, prct^.Top, prct^.Right - prct^.Left,
+          prct^.Bottom - prct^.Top);
+
+       // repaint
+       Repaint;
+       Application.ProcessMessages;
+
+       // process events
+       VstDispatch(effProcessEvents, 0, 0, @ve);
+
+       // edit idle
+       VstDispatch(effEditIdle);
+
+       // process events
+       VstDispatch(effProcessEvents, 0, 0, @ve);
+
+       // close
+       VstDispatch(effEditClose);
+      finally
+       Free;
+      end;
+
+     // process events
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     for i := 0 to numParams - 1 do
+      begin
+       // get parameter properties
+       VstDispatch(effGetParameterProperties, i, 0, Data);
+
+       // get parameter name
+       VstDispatch(effGetParamName, i);
+
+       // get parameter label
+       VstDispatch(effGetParamLabel, i);
+
+       // get parameter properties
+       VstDispatch(effGetParameterProperties, i, 0, Data);
+      end;
+
+     for i := 0 to numParams - 1 do
+      begin
+       // get parameter
+       GetParameter(i);
+
+       // get parameter name
+       VstDispatch(effGetParamName, i);
+
+       // get parameter
+       GetParameter(i);
+
+       // get parameter display
+       VstDispatch(effGetParamDisplay, i);
+
+       // get parameter properties
+       VstDispatch(effCanBeAutomated, i);
+      end;
+
+     // get product string
+     VstDispatch(effGetProductString, 0, 0, Data);
+
+     // get program name
+     VstDispatch(effGetProgramName, 0, 0, Data);
+
+     // get program name
+     VstDispatch(effGetProgram);
+
+     // process events
+     FillChar(ve, SizeOf(TVstEvents), 0);
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+   finally
+    Dispose(Data)
+   end;
+
+   // get program
+   VstDispatch(effGetProgram);
+
+   // stop process
+   VstDispatch(effStopProcess);
+
+   // mains changed
+   VstDispatch(effMainsChanged, 0, 1);
+
    VstDispatch(effClose);
   end;
 end;

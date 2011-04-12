@@ -1,4 +1,4 @@
-unit LightweightMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -438,10 +438,26 @@ begin
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
-    0: UpdateLowThreshold;
-    1: UpdateLowMidThreshold;
-    2: UpdateHighMidThreshold;
-    3: UpdateHighThreshold;
+    0: begin
+        UpdateLowThreshold;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateLowMakeUp;
+       end;
+    1: begin
+        UpdateLowMidThreshold;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateLowMidMakeUp;
+       end;
+    2: begin
+        UpdateHighMidThreshold;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateHighMidMakeUp;
+       end;
+    3: begin
+        UpdateHighThreshold;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateHighMakeUp;
+       end;
    end;
 end;
 
@@ -458,10 +474,26 @@ begin
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
-    0: UpdateLowRatio;
-    1: UpdateLowMidRatio;
-    2: UpdateHighMidRatio;
-    3: UpdateHighRatio;
+    0: begin
+        UpdateLowRatio;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateLowMakeUp;
+       end;
+    1: begin
+        UpdateLowMidRatio;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateLowMidMakeUp;
+       end;
+    2: begin
+        UpdateHighMidRatio;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateHighMidMakeUp;
+       end;
+    3: begin
+        UpdateHighRatio;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateHighMakeUp;
+       end;
    end;
 end;
 
@@ -478,10 +510,26 @@ begin
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
-    0: UpdateLowKnee;
-    1: UpdateLowMidKnee;
-    2: UpdateHighMidKnee;
-    3: UpdateHighKnee;
+    0: begin
+        UpdateLowKnee;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateLowMakeUp;
+       end;
+    1: begin
+        UpdateLowMidKnee;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateLowMidMakeUp;
+       end;
+    2: begin
+        UpdateHighMidKnee;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateHighMidMakeUp;
+       end;
+    3: begin
+        UpdateHighKnee;
+        if Parameter[Band * 7 + 10] > 0.5
+         then UpdateHighMakeUp;
+       end;
    end;
 end;
 
