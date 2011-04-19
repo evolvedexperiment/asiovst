@@ -127,11 +127,14 @@ begin
 end;
 
 procedure TSEConvolutionModule.Open;
-{$IFDEF Use_IPPS}
 var
+  SingleImpulse  : Single;
+{$IFDEF Use_IPPS}
+{$IFNDEF Registered}
   VSTHostParams  : TSECallVstHostParams;
-  RegisteredName : array [0..99] of Char;
+  RegisteredName : array [0..99] of AnsiChar;
   ID             : Integer;
+{$ENDIF}
 {$ENDIF}
 begin
  {$IFDEF Use_IPPS}
@@ -147,9 +150,10 @@ begin
     (RegisteredName <> 'Boris Kovalev') and
     (RegisteredName <> 'Victor Pavia') and
     (RegisteredName <> 'Bruno Bordi') and
-    (RegisteredName <> 'Xhun Audio')
+    (RegisteredName <> 'Xhun Audio') and
+    (RegisteredName <> 'Andromeda Audio & Video Design')
   then
-   begin
+   try
     ID := $29A2A826;
     if CSepMagic <> (ID shl 1)
      then raise Exception.Create(RCStrSynthEditOnly);
@@ -157,11 +161,17 @@ begin
 
     if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1
      then raise Exception.Create(RCStrSynthEditOnly)
+   except
+//    on E: Exception do ShowMessage(E.Message);
+    raise;
    end;
  {$ENDIF}
  {$ENDIF}
 
  inherited Open;
+
+ SingleImpulse := 1;
+ FConvolver.LoadImpulseResponse(@SingleImpulse, 1);
 
  // choose which function is used to process audio
  OnProcess := SubProcessBypass;
@@ -250,11 +260,10 @@ end;
 // describe the pins (plugs)
 function TSEConvolutionModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 var
-  str : string;
+  str : AnsiString;
 begin
  Result := True;
- case TSEConvolutionPins(index) of
-  // typical input plug (inputs are listed first)
+ case TSEConvolutionPins(Index) of
   pinInput:
     with Properties^ do
      begin
@@ -265,8 +274,6 @@ begin
       Datatype        := dtFSample;
       DefaultValue    := '0';
      end;
-
-  // typical output plug
   pinOutput:
     with Properties^ do
      begin
@@ -294,7 +301,7 @@ begin
         Direction       := drIn;
         DataType        := dtEnum;
         DefaultValue    := '0';
-        str             := 'range 0,' + IntToStr(FContainedIRs.Count - 1);
+        str             := 'range 0,' + AnsiString(IntToStr(FContainedIRs.Count - 1));
         DatatypeExtra   := PAnsiChar(str);
        end;
      end;
@@ -362,7 +369,6 @@ begin
   pinDesiredLatency : FConvolver.FFTOrder := 6 + FDesiredLatencyIndex;
  end; inherited;
 end;
-
 
 procedure TSEConvolutionModule.LoadIR(FileName: TFileName);
 var

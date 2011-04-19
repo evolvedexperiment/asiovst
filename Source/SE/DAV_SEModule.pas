@@ -354,7 +354,7 @@ type
     property Module: TSEModuleBase read FModule;
     property Value: Single read GetValue;
     property VariableAddress: Pointer read FVariablePtr;
-  published
+
     property DataType: TSEPlugDataType read FDataType;
     property PinID: Integer read FPinIndex;
     property Status: TSEStateType read FStatus;
@@ -441,7 +441,7 @@ type
     property TotalPinCount: Integer read GetTotalPinCount;
     property InputPinCount: Integer read GetInputPinCount;
     property OutputPinCount: Integer read GetOutputPinCount;
-  published
+
     property SampleRate: Single read FSampleRate;
     property BlockSize: Integer read FBlockSize;
 
@@ -476,6 +476,9 @@ function PropertyFlagsToString(Flags: TUgFlags): string;
 function PropertyGUIFlagsToString(Flags: TGuiFlags): string;
 
 implementation
+
+uses
+  AnsiStrings;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -858,7 +861,7 @@ end;
 
 class procedure TSEModuleBase.GetModuleProperties(Properties: PSEModuleProperties);
 var
-  ModuleFileName : array[0..MAX_PATH] of Char;
+  ModuleFileName : array[0..MAX_PATH] of AnsiChar;
 begin
  // describe the plugin, this is the name the end-user will see.
  with Properties^ do
@@ -870,7 +873,7 @@ begin
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
    try
-    GetModuleFileName(HInstance, ModuleFileName, SizeOf(ModuleFileName));
+    GetModuleFileNameA(HInstance, ModuleFileName, SizeOf(ModuleFileName));
 //    FileName := ;
     ID := PAnsiChar(ExtractFileName(ModuleFileName));
    except
@@ -1007,10 +1010,22 @@ begin
 end;
 
 function TSEModuleBase.ResolveFileName(const FileName: TFileName): TFileName;
+{$IFDEF SUPPORTS_UNICODE}
+var
+  AnsiFileName : AnsiString;
+  AnsiResult   : AnsiString;
+{$ENDIF}
 begin
  SetLength(Result, 256);
+{$IFDEF SUPPORTS_UNICODE}
+ AnsiFileName := AnsiString(FileName);
+ CallHost(SEAudioMasterResolveFilename2, Integer(PAnsiChar(AnsiFileName)),
+   Length(Result), PAnsiChar(AnsiResult));
+ Result := string(AnsiResult);
+{$ELSE}
  CallHost(SEAudioMasterResolveFilename2, Integer(PAnsiChar(FileName)),
    Length(Result), PAnsiChar(Result));
+{$ENDIF}
 end;
 
 function TSEModuleBase.ResolveFileName(const Pin: Integer): TFileName;

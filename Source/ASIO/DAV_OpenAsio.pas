@@ -32,25 +32,25 @@ uses
 type
   IOpenASIO = interface(IUnknown)
     function Init(sysHandle: HWnd): TASIOError; stdcall;
-    procedure GetDriverName(name: PChar); stdcall;
-    function GetDriverVersion: longint; stdcall;
-    procedure GetErrorMessage(errorString: PChar); stdcall;
+    procedure GetDriverName(Name: PAnsiChar); stdcall;
+    function GetDriverVersion: LongInt; stdcall;
+    procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
     function Start: TASIOError; stdcall;
     function Stop: TASIOError; stdcall;
-    function GetChannels(out numInputChannels, numOutputChannels: longint): TASIOError; stdcall;
-    function GetLatencies(out inputLatency, outputLatency: longint): TASIOError; stdcall;
-    function GetBufferSize(out minSize, maxSize, preferredSize, granularity: longint): TASIOError; stdcall;
-    function CanSampleRate(sampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetSampleRate(out sampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function SetSampleRate(sampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetClockSources(clocks: PASIOClockSource; out numSources: longint): TASIOError; stdcall;
-    function SetClockSource(reference: longint): HResult; stdcall;
+    function GetChannels(out numInputChannels, numOutputChannels: LongInt): TASIOError; stdcall;
+    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
+    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function GetClockSources(Clocks: PASIOClockSource; out numSources: LongInt): TASIOError; stdcall;
+    function SetClockSource(Reference: LongInt): HResult; stdcall;
     function GetSamplePosition(out sPos: TASIOSamples; out tStamp: TASIOTimeStamp): TASIOError; stdcall;
-    function GetChannelInfo(out info: TASIOChannelInfo): TASIOError; stdcall;
-    function CreateBuffers(bufferInfos: PASIOBufferInfo; numChannels, bufferSize: longint; const callbacks: TASIOCallbacks): TASIOError; stdcall;
+    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
+    function CreateBuffers(BufferInfos: PAsioBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
     function DisposeBuffers: TASIOError; stdcall;
     function ControlPanel: TASIOError; stdcall;
-    function Future(Selector: longint; Optional: Pointer): TASIOError; stdcall;
+    function Future(Selector: LongInt; Optional: Pointer): TASIOError; stdcall;
     function OutputReady: TASIOError; stdcall;
   end;
 

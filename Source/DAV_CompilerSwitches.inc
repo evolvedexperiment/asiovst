@@ -33,7 +33,7 @@
 { Misc. undocumented compiler switches}
 {$DEFINE CheckCRC}
 {-$DEFINE ValidateEveryReadOperation}
-{$DEFINE UseAlignedMemory}
+{-$DEFINE UseAlignedMemory}
 
 
 //////////////////////////////
@@ -97,7 +97,7 @@
   or as 'User' pointer. While the original 'AudioEffectPtr' is reserved to
   store an AudioEffect class instance, the user pointer can be anything.
   By default the user pointer is used.}
-{.$DEFINE UseAudioEffectPtr}
+{-$DEFINE UseAudioEffectPtr}
 
 { Enable this option to create a special "debug.log". While it is not useful
   to be enabled for productional use, it offers some debug possibilities for
