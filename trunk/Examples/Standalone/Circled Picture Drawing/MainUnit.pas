@@ -4,7 +4,13 @@ interface
 
 {$I DAV_Compiler.inc}
 
+// Compiler Switches
+
+{-$DEFINE PUREPASCAL}
 {$DEFINE UseInifiles}
+{$DEFINE UseInline}
+{$DEFINE OptimizedErrorCalculationLoop}
+
 {$IFDEF MSWINDOWS}
 {$DEFINE UseInifiles}
 {$ENDIF}
@@ -12,8 +18,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, ExtCtrls, StdCtrls, ComCtrls, ActnList,
-  DAV_Common, DAV_Types, DAV_ChunkClasses, DAV_DifferentialEvolution,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiFixedPoint, DAV_GuiVector,
+  DAV_Common, DAV_Types, DAV_ChunkClasses, DAV_Bindings, DAV_GuiCommon,
+  DAV_DifferentialEvolution, DAV_GuiPixelMap, DAV_GuiFixedPoint, DAV_GuiVector,
   DAV_GuiVectorPixel, DAV_GuiVectorPixelCircle, DAV_GuiFileFormats, DAV_GuiPng;
 
 type
@@ -187,6 +193,20 @@ type
 var
   FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution;
 
+type
+  TErrorWeighting = function (Current, Reference: TPixel32): Single;
+  TErrorWeightingLoop = function (Current, Reference: PPixel32Array;
+    Size: Integer): Single;
+
+var
+  ErrorWeighting            : TErrorWeighting;
+  BindingErrorWeighting     : TFunctionBinding;
+
+  {$IFDEF OptimizedErrorCalculationLoop}
+  ErrorWeightingLoop        : TErrorWeightingLoop;
+  BindingErrorWeightingLoop : TFunctionBinding;
+  {$ENDIF}
+
 implementation
 
 {$IFDEF FPC}
@@ -198,7 +218,6 @@ implementation
 uses
   Filectrl, Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Approximations,
   DAV_GuiBlend, SettingsUnit, ProgressBarUnit, AdditionalChunks;
-
 
 { TEvolution }
 
@@ -611,7 +630,12 @@ begin
 
    MiSaveDrawing.Enabled := False;
    MiStopContinue.Caption := 'St&op';
-   StatusBar.Panels[0].Text := 'Running';
+   with StatusBar do
+    begin
+     Panels[0].Text := 'Running';
+     Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
+     Panels[2].Text := 'Trials: 0';
+    end;
   end
  else
   begin
@@ -711,13 +735,213 @@ begin
   end;
 end;
 
-function ErrorWeighting(Current, Reference: TPixel32): Single; inline;
+{$IFDEF UseInline}
+function ErrorWeightingInline(Current, Reference: TPixel32): Single; inline;
+var
+  Value : Integer;
+const
+  CScale : Double = 1.5378700499807766243752402921953E-6;
 begin
- Result := (Abs(Reference.B - Current.B) +
-   Abs(Reference.G - Current.G) +
-   Abs(Reference.R - Current.R)) * COne255th;
- Result := 0.1 * Result + 0.9 * Sqr(Result);
+ Value := (Abs(Reference.B - Current.B) + Abs(Reference.G - Current.G) +
+   Abs(Reference.R - Current.R));
+ Result := CScale * (Value * (255 + 9 * Value));
 end;
+{$ENDIF}
+
+function ErrorWeightingNative(Current, Reference: TPixel32): Single;
+var
+  Value : Integer;
+const
+  CSquaredOne255th : Double = 1.5378700499807766243752402921953E-5;
+begin
+ Value := (Abs(Reference.B - Current.B) + Abs(Reference.G - Current.G) +
+   Abs(Reference.R - Current.R));
+ Result := 0.1 * CSquaredOne255th * (Value * (255 + 9 * Value));
+end;
+
+{$IFNDEF PUREPASCAL}
+function ErrorWeightingMMX(Current, Reference: TPixel32): Single;
+const
+  CBitMask : Integer = $00FFFFFF;
+  CScale   : Single  = 1.5378700499807766243752402921953E-6;
+var
+  Data : Integer;
+asm
+  MOVD      MM0, CBitMask
+  MOVD      MM1, EAX
+  PAND      MM1, MM0
+  MOVD      MM2, EDX
+  PAND      MM2, MM0
+  PSADBW    MM1, MM2
+  MOVD      EAX, MM1
+
+  // check if abs sum is zero
+  TEST      EAX, EAX
+  JS        @ZeroResult
+
+  MOV       EDX, EAX
+  IMUL      EAX, 9
+  ADD       EAX, 255
+  IMUL      EAX, EDX
+  MOV       Data, EAX
+  EMMS
+  FILD      Data
+  FMUL      CScale
+
+  POP       ECX
+  POP       EBP
+  RET
+
+@ZeroResult:
+  FLDZ
+end;
+
+function ErrorWeightingSSE(Current, Reference: TPixel32): Single;
+const
+  CBitMask : Integer = $00FFFFFF;
+  CScale   : Single  = 1.5378700499807766243752402921953E-6;
+var
+  Data : Integer;
+asm
+  MOVD      XMM0, CBitMask
+  MOVD      XMM1, EAX
+  PAND      XMM1, XMM0
+  MOVD      XMM2, EDX
+  PAND      XMM2, XMM0
+  PSADBW    XMM1, XMM2
+  MOVD      EAX, XMM1
+
+  // check if abs sum is zero
+  TEST      EAX, EAX
+  JS        @ZeroResult
+
+  MOV       EDX, EAX
+  IMUL      EAX, 9
+  ADD       EAX, 255
+  IMUL      EAX, EDX
+  MOV       Data, EAX
+  FILD      Data
+  FMUL      CScale
+
+  POP       ECX
+  POP       EBP
+  RET
+
+@ZeroResult:
+  FLDZ
+end;
+{$ENDIF}
+
+
+{$IFDEF OptimizedErrorCalculationLoop}
+function ErrorWeightingLoopNative(Current, Reference: PPixel32Array; Size: Integer): Single;
+var
+  I     : Integer;
+  Value : Single;
+begin
+ Result := 0;
+ {$IFDEF UseInlining}
+ for I := 0 to Size - 1
+  do Result := Result + ErrorWeightingInline(Reference^[I], Current^[I])
+ {$ELSE}
+ for I := 0 to Size - 1
+  do Result := Result + ErrorWeighting(Reference^[I], Current^[I])
+ {$ENDIF}
+end;
+
+{$IFNDEF PUREPASCAL}
+function ErrorWeightingLoopMMX(Current, Reference: PPixel32Array; Size: Integer): Single;
+const
+  CBitMask : Integer = $00FFFFFF;
+  CScale   : Single  = 1.5378700499807766243752402921953E-6;
+var
+  Data : Integer;
+asm
+  FLDZ
+  LEA       EAX, EAX + ECX * 4
+  LEA       EDX, EDX + ECX * 4
+  NEG       ECX
+  JNL       @Done
+
+  PUSH      EBX
+
+@Start:
+  MOVD      MM0, CBitMask
+  MOVD      MM1, [EAX + 4 * ECX]
+  PAND      MM1, MM0
+  MOVD      MM2, [EDX + 4 * ECX]
+  PAND      MM2, MM0
+  PSADBW    MM1, MM2
+  MOVD      EBX, MM1
+
+  TEST      EBX, EBX
+  JZ        @Continue
+
+  MOV       Data, EBX
+  IMUL      EBX, 9
+  ADD       EBX, 255
+  IMUL      EBX, Data
+  MOV       Data, EBX
+  EMMS
+  FILD      Data
+  FADDP
+
+@Continue:
+  ADD       ECX, 1
+  JS        @Start
+
+  POP       EBX
+  FMUL      CScale
+
+@Done:
+end;
+
+function ErrorWeightingLoopSSE(Current, Reference: PPixel32Array; Size: Integer): Single;
+const
+  CBitMask : Integer = $00FFFFFF;
+  CScale   : Single  = 1.5378700499807766243752402921953E-6;
+var
+  Data : Integer;
+asm
+  FLDZ
+  LEA       EAX, EAX + ECX * 4
+  LEA       EDX, EDX + ECX * 4
+  NEG       ECX
+  JNL       @Done
+
+  MOVD      XMM0, CBitMask
+  PUSH      EBX
+
+@Start:
+  MOVD      XMM1, [EAX + 4 * ECX]
+  PAND      XMM1, XMM0
+  MOVD      XMM2, [EDX + 4 * ECX]
+  PAND      XMM2, XMM0
+  PSADBW    XMM1, XMM2
+  MOVD      EBX, XMM1
+
+  TEST      EBX, EBX
+  JZ        @Continue
+
+  MOV       Data, EBX
+  IMUL      EBX, 9
+  ADD       EBX, 255
+  IMUL      EBX, Data
+  MOV       Data, EBX
+  FILD      Data
+  FADDP
+
+@Continue:
+  ADD       ECX, 1
+  JS        @Start
+
+  POP       EBX
+  FMUL      CScale
+
+@Done:
+end;
+{$ENDIF}
+{$ENDIF}
 
 procedure TFmPrimitivePictureEvolution.ResetCircles;
 var
@@ -755,8 +979,14 @@ begin
  MiSavePopulation.Enabled := True;
  MiNext.Enabled := True;
  MiBack.Enabled := True;
- StatusBar.Panels[0].Text := 'Running';
- StatusBar.Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
+
+ // update status bar
+ with StatusBar do
+  begin
+   Panels[0].Text := 'Running';
+   Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
+   Panels[2].Text := 'Trials: ' + IntToStr(FTrialCount);
+  end;
 end;
 
 function TFmPrimitivePictureEvolution.CalculateError(Sender: TObject;
@@ -866,8 +1096,19 @@ begin
       then PixelRange[1] := Width * Height
       else Result := Result + FCumulatedError[1, PixelRange[1]];
 
+     {$IFDEF OptimizedErrorCalculationLoop}
+     Result := Result + ErrorWeightingLoop(@PixelData[1, PixelRange[0]],
+       @PixelData[0, PixelRange[0]], PixelRange[1] - PixelRange[0]);
+     {$ELSE}
+
+     {$IFDEF UseInline}
+     for Index := PixelRange[0] to PixelRange[1] - 1
+      do Result := Result + ErrorWeightingInline(PixelData[1, Index], PixelData[0, Index]);
+     {$ELSE}
      for Index := PixelRange[0] to PixelRange[1] - 1
       do Result := Result + ErrorWeighting(PixelData[1, Index], PixelData[0, Index]);
+     {$ENDIF}
+     {$ENDIF}
     end
    else
     begin
@@ -985,8 +1226,18 @@ begin
      PixelData[1] := DataPointer;
 
      Result := 0;
+     {$IFDEF OptimizedErrorCalculationLoop}
+     Result := Result + ErrorWeightingLoop(@PixelData[1, 0], @PixelData[0, 0],
+       Width * Height);
+     {$ELSE}
+     {$IFDEF UseInline}
+     for Index := 0 to Width * Height - 1
+      do Result := Result + ErrorWeightingInline(PixelData[1, Index], PixelData[0, Index]);
+     {$ELSE}
      for Index := 0 to Width * Height - 1
       do Result := Result + ErrorWeighting(PixelData[1, Index], PixelData[0, Index]);
+     {$ENDIF}
+     {$ENDIF}
     end;
   end;
 
@@ -1168,7 +1419,11 @@ begin
    PixelData[1] := DataPointer;
    for Index := 0 to Width * Height - 1 do
     begin
+     {$IFDEF UseInlining}
+     CurrentCost := CurrentCost + ErrorWeightingInline(PixelData[1, Index], PixelData[0, Index]);
+     {$ELSE}
      CurrentCost := CurrentCost + ErrorWeighting(PixelData[1, Index], PixelData[0, Index]);
+     {$ENDIF}
      FCumulatedError[0, Index] := CurrentCost;
     end;
 
@@ -1466,6 +1721,7 @@ end;
 
 procedure TFmPrimitivePictureEvolution.SaveAnimation(FileName: TFileName;
   ScaleFactor: Single; AnimatedCircle: Boolean = False);
+{$DEFINE OnlyFinalBlend}
 var
   Drawing       : TGuiPixelMapMemory;
   BackDraw      : TGuiPixelMapMemory;
@@ -1491,7 +1747,9 @@ begin
    Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
    Drawing.Clear(FBackgroundColor);
    Drawing.MakeOpaque;
+   {$IFNDEF OnlyFinalBlend}
    Drawing.SaveToFile(FileName + '\Frame0.png');
+   {$ENDIF}
 
    Circle := TGuiPixelFilledCircle.Create;
 
@@ -1530,6 +1788,7 @@ begin
           ProgressBar.StepIt;
           Application.ProcessMessages;
 
+          {$IFNDEF OnlyFinalBlend}
           while Circle.GeometricShape.Radius.Fixed < FinalRadius.Fixed do
            begin
             // calculate alpha
@@ -1559,16 +1818,19 @@ begin
             Drawing.Assign(BackDraw);
             Application.ProcessMessages;
            end;
+         {$ENDIF}
 
           // draw desired circle
           Circle.GeometricShape.Radius := FinalRadius;
           Circle.Alpha := FinalAlpha;
           Circle.Draw(Drawing);
 
+          {$IFNDEF OnlyFinalBlend}
           // finalize and save drawing
           Drawing.MakeOpaque;
           Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
           Inc(FrameIndex);
+          {$ENDIF}
 
           ProgressBar.StepIt;
           Application.ProcessMessages;
@@ -1580,11 +1842,13 @@ begin
         TempRect := Rect(0, 0, (Drawing.Width div 4) - 1, Drawing.Height);
         Drawing.FillRect(TempRect, pxShadeBlack32);
 
-        TempRect := Rect(Drawing.Width - (Drawing.Width div 4) + 1, 0, Drawing.Width, Drawing.Height);
+        TempRect := Rect(Drawing.Width - (Drawing.Width div 4) + 1, 0,
+          Drawing.Width, Drawing.Height);
         Drawing.FillRect(TempRect, pxShadeBlack32);
 
         TempRect := Rect((Drawing.Width div 4) - 1, 0,
-          Drawing.Width - (Drawing.Width div 4) + 1, (Drawing.Height div 4) - 1);
+          Drawing.Width - (Drawing.Width div 4) + 1,
+          (Drawing.Height div 4) - 1);
         Drawing.FillRect(TempRect, pxShadeBlack32);
 
         TempRect := Rect((Drawing.Width div 4) - 1,
@@ -1609,6 +1873,7 @@ begin
         Inc(TempRect.Right);
         Inc(TempRect.Bottom);
         Drawing.FrameRect(TempRect, pxShadeWhite32);
+
         Drawing.MakeOpaque;
         Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
         Inc(FrameIndex);
@@ -1806,5 +2071,45 @@ procedure TFmPrimitivePictureEvolution.PaintBoxRefPaint(Sender: TObject);
 begin
  FReference.PaintTo(PaintBoxRef.Canvas);
 end;
+
+procedure BindFunctions;
+begin
+ // create function binding for error weighting function
+ BindingErrorWeighting := TFunctionBinding.Create(@@ErrorWeighting, @ErrorWeightingNative);
+ with BindingErrorWeighting do
+  begin
+   Add(@ErrorWeightingNative);
+   {$IFNDEF PUREPASCAL}
+   Add(@ErrorWeightingMMX, [pfSSE2]);
+   Add(@ErrorWeightingSSE, [pfSSE2]);
+   {$ENDIF}
+   RebindProcessorSpecific;
+  end;
+
+ // create function binding for error weighting function
+ BindingErrorWeightingLoop := TFunctionBinding.Create(@@ErrorWeightingLoop, @ErrorWeightingLoopNative);
+ with BindingErrorWeightingLoop do
+  begin
+   Add(@ErrorWeightingLoopNative);
+   {$IFNDEF PUREPASCAL}
+   Add(@ErrorWeightingLoopMMX, [pfMMX]);
+   Add(@ErrorWeightingLoopSSE, [pfSSE2]);
+   {$ENDIF}
+   RebindProcessorSpecific;
+  end;
+end;
+
+procedure UnbindFunctions;
+begin
+ FreeAndNil(BindingErrorWeighting);
+ FreeAndNil(BindingErrorWeightingLoop);
+end;
+
+initialization
+  BindFunctions;
+
+finalization
+  UnbindFunctions;
+
 
 end.
