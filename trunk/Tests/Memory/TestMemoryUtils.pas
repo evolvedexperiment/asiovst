@@ -47,6 +47,7 @@ type
   published
     procedure TestGetAlignedMemory;
     procedure TestReallocateAlignedMemory;
+    procedure TestSmallBlocks;
   end;
 
 implementation
@@ -89,6 +90,16 @@ begin
    CheckEquals(0, Integer(Data) and $F);
   end;
  ReallocateAlignedMemory(Data, 0);
+end;
+
+procedure TTestMemoryUtils.TestSmallBlocks;
+var
+  Data  : Pointer;
+begin
+ Data := nil;
+ GetAlignedMemory(Data, $10);
+ ReallocateAlignedMemory(Data, $20);
+ FreeAlignedMemory(Data);
 end;
 
 initialization

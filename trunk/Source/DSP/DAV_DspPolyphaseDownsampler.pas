@@ -35,6 +35,7 @@ unit DAV_DspPolyphaseDownsampler;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{-$UNDEF UseAlignedMemory}
 
 uses
   Classes, DAV_Types, DAV_MemoryUtils, DAV_DspPolyphaseFilter;
@@ -55,6 +56,8 @@ type
     procedure PopStates; virtual; abstract;
   public
     constructor Create; override;
+    constructor Create(const NumberOfCoefficients: Integer;
+      const Transition: Double); override;
   end;
 
   TPolyphaseDownsampler32 = class(TCustomPolyphaseDownsampler)
@@ -82,6 +85,8 @@ type
     procedure ChooseProcedures; override;
   public
     constructor Create; override;
+    constructor Create(const NumberOfCoefficients: Integer;
+      const Transition: Double); override;
     destructor Destroy; override;
 
     procedure ClearBuffers; override;
@@ -122,6 +127,8 @@ type
     procedure ChooseProcedures; override;
   public
     constructor Create; override;
+    constructor Create(const NumberOfCoefficients: Integer;
+      const Transition: Double); override;
     destructor Destroy; override;
 
     procedure ClearBuffers; override;
@@ -154,6 +161,15 @@ begin
  ClearBuffers;
 end;
 
+constructor TCustomPolyphaseDownsampler.Create(
+  const NumberOfCoefficients: Integer; const Transition: Double);
+begin
+ inherited;
+ AllocateBuffer;
+ ChooseProcedures;
+ ClearBuffers;
+end;
+
 procedure TCustomPolyphaseDownsampler.NumberOfCoeffsChanged;
 begin
  inherited;
@@ -166,6 +182,15 @@ end;
 { TPolyphaseDownsampler32 }
 
 constructor TPolyphaseDownsampler32.Create;
+begin
+ FX := nil;
+ FY := nil;
+ FStateStack := nil;
+ inherited;
+end;
+
+constructor TPolyphaseDownsampler32.Create(const NumberOfCoefficients: Integer;
+  const Transition: Double);
 begin
  FX := nil;
  FY := nil;
@@ -728,6 +753,15 @@ end;
 { TPolyphaseDownsampler64 }
 
 constructor TPolyphaseDownsampler64.Create;
+begin
+ FX := nil;
+ FY := nil;
+ FStateStack := nil;
+ inherited;
+end;
+
+constructor TPolyphaseDownsampler64.Create(const NumberOfCoefficients: Integer;
+  const Transition: Double);
 begin
  FX := nil;
  FY := nil;

@@ -236,6 +236,7 @@ resourcestring
   RCStrVSTPluginNotFound = 'VST Plugin not found: %s';
   RCStrVSTPluginDoesNotExists = 'Specified VST plugin does not exist: %s';
   RCStrErrorOpeningPlugin = 'Error opening plugin: %d';
+  RCStrErrorOpeningPluginAfterClose = 'Error opening plugin: %d (after closing)';
   RCStrVendorProduct = 'Delphi ASIO & VST Project';
 
 const
@@ -426,6 +427,8 @@ const
 begin
  for SequenceIndex := 0 to Length(CInstantCount) - 1 do
   begin
+   Assert(FVstHost.VstPlugIns.Count = 1);
+
    // open instances
    for InstanceIndex := 1 to CInstantCount[SequenceIndex] do
     with FVstHost.VstPlugIns.Add do
@@ -433,7 +436,9 @@ begin
       LoadFromFile(FVstHost[0].DLLFileName);
       Open;
      except
-      Fail(Format(RCStrErrorOpeningPlugin, [InstanceIndex]));
+      if SequenceIndex = 1
+       then Fail(Format(RCStrErrorOpeningPluginAfterClose, [InstanceIndex]))
+       else Fail(Format(RCStrErrorOpeningPlugin, [InstanceIndex]));
      end;
 
    // close and delete random instances
@@ -4003,8 +4008,13 @@ end;
 procedure TVSTProcessThread.Execute;
 begin
  repeat
-  FVSTPlugin.Process32Replacing(@FInput[0], @FOutput[0], FBlocksize);
-  inc(FProcessedBlocks)
+  try
+   FVSTPlugin.Process32Replacing(@FInput[0], @FOutput[0], FBlocksize);
+   Inc(FProcessedBlocks)
+  except
+   Terminate;
+   raise;
+  end;
  until Terminated;
 end;
 
@@ -4111,8 +4121,10 @@ begin
  with FVstHost[0] do
   repeat
    for ParamNo := 0 to numParams - 1
-    do Parameter[ParamNo] := random;
-  until FVstProcessThread.ProcessedBlocks > 10;
+    do Parameter[ParamNo] := Random;
+  until FVstProcessThread.Terminated or (FVstProcessThread.ProcessedBlocks > 10);
+ if (FVstProcessThread.ProcessedBlocks <= 10)
+  then Fail('Processing crashed!');
 end;
 
 procedure TVstPluginIOThreadTests.TestSamplerateChangesWhileProcessing;
@@ -4120,7 +4132,10 @@ begin
  with FVstHost[0] do
   repeat
    SetSamplerate(10000 + random(100000));
-  until FVstProcessThread.ProcessedBlocks > 4;
+  until FVstProcessThread.Terminated or (FVstProcessThread.ProcessedBlocks > 4);
+
+ if (FVstProcessThread.ProcessedBlocks <= 4)
+  then Fail('Processing crashed!');
 end;
 
 procedure TVstPluginIOThreadTests.TestProcessCallWhileProcessing;
@@ -4128,7 +4143,10 @@ begin
  with FVstHost[0] do
   repeat
    Process(nil, nil, 0);
-  until FVstProcessThread.ProcessedBlocks > 4;
+  until FVstProcessThread.Terminated or (FVstProcessThread.ProcessedBlocks > 4);
+
+ if (FVstProcessThread.ProcessedBlocks <= 4)
+  then Fail('Processing crashed!');
 end;
 
 { TTestVstSuite }

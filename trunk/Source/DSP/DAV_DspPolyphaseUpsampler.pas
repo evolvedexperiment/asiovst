@@ -35,6 +35,7 @@ unit DAV_DspPolyphaseUpsampler;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{-$UNDEF UseAlignedMemory}
 
 uses
   Classes, DAV_Types, DAV_MemoryUtils, DAV_DspPolyphaseFilter;
@@ -53,6 +54,8 @@ type
     procedure PopStates; virtual; abstract;
   public
     constructor Create; override;
+    constructor Create(const NumberOfCoefficients: Integer;
+      const Transition: Double); override;
   end;
 
   TPolyphaseUpsampler32 = class(TCustomPolyphaseUpsampler)
@@ -73,6 +76,8 @@ type
     procedure ChooseProcedures; override;
   public
     constructor Create; override;
+    constructor Create(const NumberOfCoefficients: Integer;
+      const Transition: Double); override;
     destructor Destroy; override;
 
     procedure ClearBuffers; override;
@@ -103,6 +108,8 @@ type
     procedure ChooseProcedures; override;
   public
     constructor Create; override;
+    constructor Create(const NumberOfCoefficients: Integer;
+      const Transition: Double); override;
     destructor Destroy; override;
 
     procedure ClearBuffers; override;
@@ -128,6 +135,15 @@ begin
  ClearBuffers;
 end;
 
+constructor TCustomPolyphaseUpsampler.Create(
+  const NumberOfCoefficients: Integer; const Transition: Double);
+begin
+ inherited;
+ AllocateBuffer;
+ ChooseProcedures;
+ ClearBuffers;
+end;
+
 procedure TCustomPolyphaseUpsampler.NumberOfCoeffsChanged;
 begin
  inherited;
@@ -140,6 +156,15 @@ end;
 { TPolyphaseUpsampler32 }
 
 constructor TPolyphaseUpsampler32.Create;
+begin
+ FX          := nil;
+ FY          := nil;
+ FStateStack := nil;
+ inherited;
+end;
+
+constructor TPolyphaseUpsampler32.Create(const NumberOfCoefficients: Integer;
+  const Transition: Double);
 begin
  FX          := nil;
  FY          := nil;
@@ -669,6 +694,15 @@ end;
 { TPolyphaseUpsampler64 }
 
 constructor TPolyphaseUpsampler64.Create;
+begin
+ FX          := nil;
+ FY          := nil;
+ FStateStack := nil;
+ inherited;
+end;
+
+constructor TPolyphaseUpsampler64.Create(const NumberOfCoefficients: Integer;
+  const Transition: Double);
 begin
  FX          := nil;
  FY          := nil;

@@ -56,7 +56,9 @@ type
 
     property Coefficients: PDAVDoubleFixedArray read FCoefficients;
   public
-    constructor Create; virtual;
+    constructor Create; overload; virtual;
+    constructor Create(const NumberOfCoefficients: Integer;
+      const Transition: Double); overload; virtual;
     destructor Destroy; override;
 
     procedure SetCoefficients(const Coefficients: TDAVDoubleDynArray); overload; virtual;
@@ -71,10 +73,20 @@ implementation
 
 constructor TCustomPolyphaseFilter.Create;
 begin
- inherited;
+ inherited Create;
  FCoefficients := nil;
  FTransition := 0.1;
  FNumberOfCoeffs := 8;
+ NumberOfCoeffsChanged;
+end;
+
+constructor TCustomPolyphaseFilter.Create(const NumberOfCoefficients: Integer;
+  const Transition: Double);
+begin
+ inherited Create;
+ FCoefficients := nil;
+ FTransition := Transition;
+ FNumberOfCoeffs := NumberOfCoefficients;
  NumberOfCoeffsChanged;
 end;
 
@@ -100,7 +112,7 @@ end;
 procedure TCustomPolyphaseFilter.SetCoefficients(const Coefficients: TDAVDoubleDynArray);
 begin
   // make sure the coefficients are not empty
-  assert(Length(Coefficients) > 0);
+  Assert(Length(Coefficients) > 0);
 
   // check if the number of coeffitients changed
   if FNumberOfCoeffs <> Length(Coefficients) then
@@ -110,7 +122,7 @@ begin
    end;
 
   // actually copy the coefficients
-  move(Coefficients[0], FCoefficients[0], FNumberOfCoeffs * SizeOf(Double));
+  Move(Coefficients[0], FCoefficients[0], FNumberOfCoeffs * SizeOf(Double));
 end;
 
 procedure TCustomPolyphaseFilter.SetCoefficients(
