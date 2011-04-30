@@ -87,7 +87,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, AnsiStrings, DAV_Common, DAV_VSTModuleWithPrograms;
+  Math, {$IFDEF SUPPORTS_UNICODE} AnsiStrings, {$ENDIF} DAV_Common;
 
 procedure TWeightingFiltersDataModule.VSTModuleCreate(Sender: TObject);
 begin
