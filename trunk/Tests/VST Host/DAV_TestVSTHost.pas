@@ -4010,7 +4010,7 @@ begin
  repeat
   try
    FVSTPlugin.Process32Replacing(@FInput[0], @FOutput[0], FBlocksize);
-   Inc(FProcessedBlocks)
+   Inc(FProcessedBlocks);
   except
    Terminate;
    raise;
@@ -4117,21 +4117,28 @@ end;
 procedure TVstPluginIOThreadTests.TestRandomParameterChangesWhileProcessing;
 var
   ParamNo : Integer;
+  Channel : Integer;
+  Sample  : Integer;
 begin
  with FVstHost[0] do
   repeat
    for ParamNo := 0 to numParams - 1
     do Parameter[ParamNo] := Random;
   until FVstProcessThread.Terminated or (FVstProcessThread.ProcessedBlocks > 10);
- if (FVstProcessThread.ProcessedBlocks <= 10)
+
+ if (not Assigned(FVstProcessThread)) or (FVstProcessThread.ProcessedBlocks <= 10)
   then Fail('Processing crashed!');
+
+ for Channel := 0 to Length(FVstProcessThread.FInput) - 1 do
+  for Sample := 0 to FBlockSize - 1 do
+   CheckEquals(FVstProcessThread.FInput[Channel]^[Sample], 0);
 end;
 
 procedure TVstPluginIOThreadTests.TestSamplerateChangesWhileProcessing;
 begin
  with FVstHost[0] do
   repeat
-   SetSamplerate(10000 + random(100000));
+   SetSamplerate(10000 + Random(100000));
   until FVstProcessThread.Terminated or (FVstProcessThread.ProcessedBlocks > 4);
 
  if (FVstProcessThread.ProcessedBlocks <= 4)

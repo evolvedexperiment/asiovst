@@ -3,9 +3,7 @@ library VSTPascalScript;
 
 uses
   FastMM4,  // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
-  madExcept,// either download madExcept or remove mad* if there is an error here
-  madLinkDisAsm,
+  FastMove,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,
@@ -25,8 +23,9 @@ begin
  end;
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports
+  Main name 'main',
+  Main name 'VSTPluginMain';
 
 begin
 end.

@@ -1890,7 +1890,7 @@ procedure TCustomVstPlugIn.Open;
 var
   tmp : AnsiString;
 begin
- if not FLoaded then exit;
+ if not FLoaded then Exit;
  if FActive then Close;
 
  FActive   := True;
@@ -2038,7 +2038,7 @@ begin
   then FVstEffect.Process64Replacing(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
-procedure TCustomVstPlugIn.SetParameter(Index:Integer; Parameter: Single);
+procedure TCustomVstPlugIn.SetParameter(Index: Integer; Parameter: Single);
 begin
  {$IFDEF Debug64}
  AddDebugMessage('Set Parameter');

@@ -1502,7 +1502,7 @@ var
 {$ENDIF}
 begin
  {$IFNDEF PUREPASCAL}
- GetAlignedMemory(AlphaPointer, 256 * 4 * SizeOf(Cardinal));
+ GetAlignedMemory(AlphaPointer, 256 * 8 * SizeOf(Cardinal));
 
  P := AlphaPointer;
  for I := 0 to 255 do

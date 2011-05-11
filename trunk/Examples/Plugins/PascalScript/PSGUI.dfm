@@ -24,8 +24,6 @@ object FmPascalScript: TFmPascalScript
     Height = 3
     Cursor = crVSplit
     Align = alBottom
-    ExplicitTop = 0
-    ExplicitWidth = 288
   end
   object SynEdit: TSynEdit
     Left = 0
@@ -80,14 +78,14 @@ object FmPascalScript: TFmPascalScript
     TabOrder = 2
     object ToolButton1: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton1'
       Style = tbsSeparator
     end
     object BtRun: TButton
       Left = 4
-      Top = 2
+      Top = 0
       Width = 75
       Height = 22
       Action = ACCompile
@@ -95,7 +93,7 @@ object FmPascalScript: TFmPascalScript
     end
     object ToolButton2: TToolButton
       Left = 79
-      Top = 2
+      Top = 0
       Width = 25
       Caption = 'ToolButton2'
       ImageIndex = 0
@@ -103,7 +101,7 @@ object FmPascalScript: TFmPascalScript
     end
     object BtLoadScript: TButton
       Left = 104
-      Top = 2
+      Top = 0
       Width = 94
       Height = 22
       Caption = '&Load Script...'
@@ -112,7 +110,7 @@ object FmPascalScript: TFmPascalScript
     end
     object ToolButton3: TToolButton
       Left = 198
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton3'
       ImageIndex = 1
@@ -120,7 +118,7 @@ object FmPascalScript: TFmPascalScript
     end
     object BtSaveScript: TButton
       Left = 202
-      Top = 2
+      Top = 0
       Width = 96
       Height = 22
       Caption = '&Save Script...'

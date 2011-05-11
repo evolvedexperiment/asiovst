@@ -1545,6 +1545,6 @@ initialization
   ProcessorInfo := TProcessorInfo.Create;
 
 finalization
-  ProcessorInfo.Free;
+  FreeAndNil(ProcessorInfo);
 
 end.
