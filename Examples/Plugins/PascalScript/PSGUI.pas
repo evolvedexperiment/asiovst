@@ -81,7 +81,7 @@ uses
 resourcestring
   STR_SUCCESSFULLY_COMPILED = 'Succesfully compiled';
 
-function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedure; const ProcDecl: string): Boolean;
+function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedure; const ProcDecl: AnsiString): Boolean;
 begin
  if Proc.Name = 'VSTPROCESSSAMPLE' then
   begin
@@ -98,7 +98,7 @@ end;
 
 procedure TFmPascalScript.ACCompileExecute(Sender: TObject);
 var
-  str : string;
+  str : AnsiString;
   i   : Integer;
 begin
  DebugBox.Items.Clear;
@@ -107,7 +107,7 @@ begin
    do DebugBox.Items.Add(fCompiler.Msg[i].MessageToString)
  else
   begin
-   fCompiler.GetOutput(str);
+   FCompiler.GetOutput(str);
    TPascalScriptDataModule(Owner).ByteCode := str;
    TPascalScriptDataModule(Owner).ScriptCode := SynEdit.Lines.Text;
    DebugBox.Items.Add(STR_SUCCESSFULLY_COMPILED);
@@ -128,8 +128,8 @@ end;
 
 procedure TFmPascalScript.FormCreate(Sender: TObject);
 begin
- fCompiler := TPSPascalCompiler.Create; // create an instance of the compiler.
- with fCompiler do
+ FCompiler := TPSPascalCompiler.Create; // create an instance of the compiler.
+ with FCompiler do
   begin
    OnExportCheck := ScriptOnExportCheck; // Assign the onExportCheck event.
    AllowNoBegin := True;

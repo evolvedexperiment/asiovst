@@ -801,7 +801,7 @@ begin
  else
   try
    for Y := Rect.Top to Rect.Bottom - 1
-    do BlendPixelLine(Color, @FDataPointer[Y * Width + Rect.Left], Rect.Bottom - Rect.Top);
+    do BlendPixelLine(Color, @FDataPointer[Y * Width + Rect.Left], Rect.Right - Rect.Left);
   finally
    EMMS;
   end;
@@ -817,9 +817,8 @@ begin
     do FDataPointer[Y * Width + X] := Color
  else
   try
-   for Y := Top to Bottom - 1 do
-    for X := Left to Right - 1
-     do BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
+   for Y := Top to Bottom - 1
+    do BlendPixelLine(Color, @FDataPointer[Y * Width + Left], Right - Left);
   finally
    EMMS;
   end;

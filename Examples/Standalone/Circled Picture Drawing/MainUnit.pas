@@ -837,7 +837,6 @@ end;
 function ErrorWeightingLoopNative(Current, Reference: PPixel32Array; Size: Integer): Single;
 var
   I     : Integer;
-  Value : Single;
 begin
  Result := 0;
  {$IFDEF UseInlining}
@@ -996,7 +995,10 @@ var
   PixelData     : array [0..1] of PPixel32Array;
   PixelRange    : array [0..1] of Integer;
   CircleIndex   : Integer;
-  Index, Offset : Integer;
+  Offset        : Integer;
+  {$IFNDEF OptimizedErrorCalculationLoop}
+  Index         : Integer;
+  {$ENDIF}
   NewOffset     : Integer;
 begin
  Assert(FReference <> nil);
@@ -1958,11 +1960,13 @@ var
   DrawingHR : TGuiPixelMapMemory;
   Circle    : TGuiPixelFilledCircle;
   Index     : Integer;
+const
+  CScaleFactor = 4;
 begin
  try
   DrawingHR := TGuiPixelMapMemory.Create;
-  DrawingHR.Width := 4 * FBestDrawing.Width;
-  DrawingHR.Height := 4 * FBestDrawing.Height;
+  DrawingHR.Width := CScaleFactor * FBestDrawing.Width;
+  DrawingHR.Height := CScaleFactor * FBestDrawing.Height;
   DrawingHR.Clear(FBackgroundColor);
 
   Circle := TGuiPixelFilledCircle.Create;
@@ -1972,11 +1976,13 @@ begin
      begin
       Circle.Assign(FCircles[Index]);
       with Circle do
-       begin
-        GeometricShape.Radius := FixedMul(GeometricShape.Radius, 4 shl 8);
-        GeometricShape.CenterX := FixedMul(GeometricShape.CenterX, 4 shl 8);
-        GeometricShape.CenterY := FixedMul(GeometricShape.CenterY, 4 shl 8);
+       try
+        GeometricShape.Radius := FixedMul(GeometricShape.Radius, CScaleFactor shl 8);
+        GeometricShape.CenterX := FixedMul(GeometricShape.CenterX, CScaleFactor shl 8);
+        GeometricShape.CenterY := FixedMul(GeometricShape.CenterY, CScaleFactor shl 8);
         Draw(DrawingHR);
+       except
+        raise Exception.CreateFmt('Error drawing circle %d', [Index + 1]);
        end;
      end;
   finally

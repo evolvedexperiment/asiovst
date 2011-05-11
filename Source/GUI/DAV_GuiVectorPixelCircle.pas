@@ -351,6 +351,8 @@ begin
            ConvertToFixed24Dot8Point(X)), FixedSqrt(
            FixedSub(SqrRadMinusOne, SqrYDist)))) + 1;
 
+         Assert(PixelLineCount > 0);
+
          if X + PixelLineCount > XRange[1] then
           begin
            BlendPixelLine(CombColor, @ScnLne[X], (XRange[1] - X) + 1);

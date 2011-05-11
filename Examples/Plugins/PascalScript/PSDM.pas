@@ -51,13 +51,13 @@ type
     procedure VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
   private
     FPascalScriptExecuter : TPSExec;
-    FByteCode             : string;
-    FScriptCode           : string;
+    FByteCode             : AnsiString;
+    FScriptCode           : AnsiString;
     FVSTProcessSample     : TVSTProcessSample;
-    procedure SetByteCode(const Value: string);
+    procedure SetByteCode(const Value: AnsiString);
   public
-    property ByteCode : string read FByteCode write SetByteCode;
-    property ScriptCode : string read FScriptCode write FScriptCode;
+    property ByteCode: AnsiString read FByteCode write SetByteCode;
+    property ScriptCode: AnsiString read FScriptCode write FScriptCode;
   end;
 
 implementation
@@ -79,6 +79,14 @@ end;
 procedure TPascalScriptDataModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FPascalScriptExecuter);
+end;
+
+procedure TPascalScriptDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+begin
+ GUI := TFmPascalScript.Create(Self);
+ if Length(FScriptCode) > 0 then
+  with TFmPascalScript(GUI)
+   do SynEdit.LineText := FScriptCode;
 end;
 
 procedure TPascalScriptDataModule.VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
@@ -119,7 +127,7 @@ begin
   end;
 end;
 
-procedure TPascalScriptDataModule.SetByteCode(const Value: string);
+procedure TPascalScriptDataModule.SetByteCode(const Value: AnsiString);
 begin
  if FByteCode <> Value then
   begin
@@ -131,14 +139,6 @@ begin
     FVSTProcessSample := nil;
    end;
   end;
-end;
-
-procedure TPascalScriptDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmPascalScript.Create(Self);
- if Length(FScriptCode) > 0 then
-  with TFmPascalScript(GUI)
-   do SynEdit.LineText := FScriptCode;
 end;
 
 procedure TPascalScriptDataModule.VSTModuleProcess(const Inputs,

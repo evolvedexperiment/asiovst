@@ -35,10 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, SyncObjs, Dialogs, DAV_Types, DAV_Complex, 
-  DAV_DspAnalogueFilterPrototypes, DAV_DspWindowFunctions, DAV_DspConvolution, 
-  DAV_DspFftReal2Complex,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, Dialogs, DAV_Types, DAV_Complex, DAV_DspWindowFunctions,
+  DAV_DspAnalogueFilterPrototypes, DAV_DspConvolution, DAV_DspFftReal2Complex,
   {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, DAV_DspWindowFunctionsAdvanced,
   {$ENDIF} {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 

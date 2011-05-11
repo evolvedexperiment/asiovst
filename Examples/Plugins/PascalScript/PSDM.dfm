@@ -8,9 +8,7 @@ object PascalScriptDataModule: TPascalScriptDataModule
   ProductName = 'DAV Tools Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'PVST'
@@ -23,10 +21,11 @@ object PascalScriptDataModule: TPascalScriptDataModule
       OnStoreChunk = VPSStoreChunk
     end>
   ParameterProperties = <>
+  ParameterCategories = <>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   Left = 218
   Top = 81
   Height = 150
