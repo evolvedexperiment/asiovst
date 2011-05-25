@@ -19,8 +19,10 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   DAV_Common, DAV_Types, DAV_ChunkClasses, DAV_Bindings, DAV_GuiCommon,
-  DAV_DifferentialEvolution, DAV_GuiPixelMap, DAV_GuiFixedPoint, DAV_GuiVector,
-  DAV_GuiVectorPixel, DAV_GuiVectorPixelCircle, DAV_GuiFileFormats, DAV_GuiPng;
+  DAV_DifferentialEvolution, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFixedPoint,
+  DAV_GuiVector, DAV_GuiVectorPixel, DAV_GuiFilters, DAV_GuiFiltersBlur,
+  DAV_GuiVectorPixelCircle, DAV_GuiVectorPixelLine, DAV_GuiFileFormats,
+  DAV_GuiPng;
 
 type
   TEvolutionThread = class(TThread)
@@ -40,13 +42,17 @@ type
     MiEvolve: TMenuItem;
     MiExit: TMenuItem;
     MiFile: TMenuItem;
+    MiLoadPopulation: TMenuItem;
+    MiLog: TMenuItem;
     MiNext: TMenuItem;
     MiOpenBest: TMenuItem;
     MiOpenDrawing: TMenuItem;
     MiOpenReference: TMenuItem;
     MiSaveAnimation: TMenuItem;
     MiSaveDrawing: TMenuItem;
+    MiSaveFramed: TMenuItem;
     MiSaveHighResolution: TMenuItem;
+    MiSavePopulation: TMenuItem;
     MiSaveResult: TMenuItem;
     MiSettings: TMenuItem;
     MiStart: TMenuItem;
@@ -55,6 +61,8 @@ type
     N2: TMenuItem;
     N3: TMenuItem;
     N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
     OpenDialog: TOpenDialog;
     OpenDialogPrimitives: TOpenDialog;
     PaintBoxDraw: TPaintBox;
@@ -62,10 +70,12 @@ type
     SaveDialog: TSaveDialog;
     SaveDialogPrimitives: TSaveDialog;
     StatusBar: TStatusBar;
-    MiSavePopulation: TMenuItem;
-    N5: TMenuItem;
-    MiLoadPopulation: TMenuItem;
-    MiSaveFramed: TMenuItem;
+    MiDisplay: TMenuItem;
+    MiCrosshair: TMenuItem;
+    MiCurrentBestCost: TMenuItem;
+    N7: TMenuItem;
+    MiCostMap: TMenuItem;
+    MiPreviousBest: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -89,6 +99,11 @@ type
     procedure MiStopContinueClick(Sender: TObject);
     procedure PaintBoxDrawPaint(Sender: TObject);
     procedure PaintBoxRefPaint(Sender: TObject);
+    procedure MiLogClick(Sender: TObject);
+    procedure MiCrosshairClick(Sender: TObject);
+    procedure MiCurrentBestCostClick(Sender: TObject);
+    procedure MiCostMapClick(Sender: TObject);
+    procedure MiPreviousBestClick(Sender: TObject);
   private
     FWorstCost               : Double;
     FMaximumCost             : Double;
@@ -99,28 +114,36 @@ type
     FDrawing                 : TGuiCustomPixelMap;
     FNewDrawing              : TGuiCustomPixelMap;
     FBestDrawing             : TGuiCustomPixelMap;
+    FCostMap                 : TGuiCustomByteMap;
     FBackgroundColor         : TPixel32;
     FIniFileName             : TFileName;
     FDiffEvol                : TDifferentialEvolution;
     FEvolution               : TEvolutionThread;
     FCircles                 : array of TGuiPixelFilledCircle;
+    FArea                    : Integer;
     FCurrentCircle           : Integer;
     FCurrentOrder            : Integer;
     FTrialCount              : Integer;
     FTrialsPerCircle         : Integer;
+    FMaximumDimension        : Integer;
     FUpdateTrials            : Integer;
     FTrialsSinceUpdate       : Integer;
     FInitialSeed             : Integer;
     FNumberOfCircles         : Integer;
     FCrossover               : Single;
     FAutoNextTrial           : Boolean;
+    FReinitializeCount       : Integer;
+    FReInitializeIndex       : Integer;
     FCorrectColor            : Boolean;
     FCorrectRadius           : Boolean;
     FCorrectPosition         : Boolean;
     FCorrectInvisibleCircles : Boolean;
+    FCostScale               : Single;
+    FCostLog                 : TStringList;
     FRandomCircle            : Boolean;
     FRandomOrder             : Boolean;
     FChangeOrder             : Boolean;
+    FReduceHighCosts         : Boolean;
     FWeightDither            : Boolean;
     FAutoInitialSeed         : Boolean;
     FWeight                  : Single;
@@ -129,6 +152,7 @@ type
     FDrawDraft               : Boolean;
     FCirclesPerSecond        : Integer;
     FTimeStamp               : Int64;
+    FPreferedPosition        : TPoint;
     procedure SetInitialSeed(const Value: Integer);
     procedure SetTrialsPerCircle(const Value: Integer);
     procedure SetUpdateTrials(const Value: Integer);
@@ -138,6 +162,7 @@ type
     procedure SetBest(const Value: Single);
     procedure SetAdditional(const Value: Single);
     procedure SetRandomOrder(const Value: Boolean);
+    procedure SetReduceHighCosts(const Value: Boolean);
   protected
     {$IFDEF DARWIN}
     AppMenu     : TMenuItem;
@@ -145,6 +170,10 @@ type
     AppSep1Cmd  : TMenuItem;
     AppPrefCmd  : TMenuItem;
     {$ENDIF}
+    procedure AddCostLogString(Value: string);
+    procedure Reinitialization;
+    procedure NextTrial;
+    procedure ReduceHighCostsChanged; virtual;
     procedure ResetCircles;
     procedure SaveDrawingBackup;
     procedure SavePopulationBackup(FileName: TFileName);
@@ -161,9 +190,10 @@ type
       PixelMap: TGuiCustomPixelMap);
   public
     function CalculateError(Sender: TObject; var Population: TDifferentialEvolutionPopulation): Double;
+    procedure CalculateCostMap;
     procedure LoadReference(FileName: TFileName);
     procedure Evolve;
-    procedure InitializeEvolution(InitializePopulation: Boolean = True);
+    procedure UpdateOptimizerSettings;
     procedure StartOptimization(InitializePopulation: Boolean = True);
     procedure DrawResults;
 
@@ -184,6 +214,8 @@ type
     property NumberOfCircles: Integer read FNumberOfCircles write SetNumberOfCircles;
     property RandomCircle: Boolean read FRandomCircle write FRandomCircle;
     property RandomOrder: Boolean read FRandomOrder write SetRandomOrder;
+    property ReduceHighCosts: Boolean read FReduceHighCosts write SetReduceHighCosts;
+    property ReinitializationCount: Integer read FReinitializeCount write FReinitializeCount;
     property TrialsPerCircle: Integer read FTrialsPerCircle write SetTrialsPerCircle;
     property UpdateTrials: Integer read FUpdateTrials write SetUpdateTrials;
     property Weight: Single read FWeight write SetWeight;
@@ -217,7 +249,7 @@ implementation
 
 uses
   Filectrl, Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Approximations,
-  DAV_GuiBlend, SettingsUnit, ProgressBarUnit, AdditionalChunks;
+  DAV_GuiBlend, SettingsUnit, ProgressBarUnit, AdditionalChunks, CostLogUnit;
 
 { TEvolution }
 
@@ -272,15 +304,19 @@ begin
  Randomize;
 
  // initialize default values
- FIniFileName :=  ExtractFilePath(ParamStr(0)) + 'CPD.ini';
+ FIniFileName := ExtractFilePath(ParamStr(0)) + 'CPD.ini';
  FAutoNextTrial := True;
  FAutoInitialSeed := False;
+ FReinitializeCount := 3;
+ FReInitializeIndex := 0;
  FInitialSeed := 1000;
  FTrialsPerCircle := 3000;
  FTrialsSinceUpdate := 30;
  FNumberOfCircles := 1;
  FWeight := 0.7;
  FBest := 0;
+ FArea := 1;
+ FCostScale := 1;
  FAdditional := 0;
  FDrawDraft := False;
  FRandomCircle := False;
@@ -290,6 +326,7 @@ begin
  FCorrectRadius := True;
  FCorrectPosition := True;
  FCorrectInvisibleCircles := True;
+ FReduceHighCosts := False;
 
  FBackgroundColor.ARGB := $FFFFFFFF;
 
@@ -298,10 +335,16 @@ begin
  FDrawing := TGuiPixelMapMemory.Create;
  FNewDrawing := TGuiPixelMapMemory.Create;
  FBestDrawing := TGuiPixelMapMemory.Create;
+ FCostMap := TGuiByteMapMemory.Create;
 
  // set paintboxes to opaque
  PaintBoxRef.ControlStyle := PaintBoxDraw.ControlStyle + [csOpaque];
  PaintBoxDraw.ControlStyle := PaintBoxDraw.ControlStyle + [csOpaque];
+
+ // create cost log
+ FCostLog := TStringList.Create;
+ if FileExists(ExtractFilePath(ParamStr(0)) + 'Costs.log')
+  then FCostLog.LoadFromFile(ExtractFilePath(ParamStr(0)) + 'Costs.log');
 
  // create and initialize differential evolution optimizer
  FDiffEvol := TDifferentialEvolution.Create(Self);
@@ -360,14 +403,19 @@ begin
  for Index := 0 to Length(FCircles) - 1
   do FreeAndNil(FCircles[Index]);
 
- // free all pixel maps
+ // free all pixel and byte maps
  FreeAndNil(FReference);
  FreeAndNil(FDrawing);
  FreeAndNil(FNewDrawing);
+ FreeAndNil(FBestDrawing);
+ FreeAndNil(FCostMap);
+
+ // store cost log
+ FCostLog.SaveToFile(ExtractFilePath(ParamStr(0)) + 'Costs.log');
 
  // free misc.
- FreeAndNil(FBestDrawing);
  FreeAndNil(FDiffEvol);
+ FreeAndNil(FCostLog);
 end;
 
 procedure TFmPrimitivePictureEvolution.FormShow(Sender: TObject);
@@ -387,6 +435,7 @@ begin
    FCrossover := 0.01 * ReadInteger('Settings', 'Crossover', Round(100 * FCrossover));
    FWeight := 0.01 * ReadInteger('Settings', 'Weight', Round(100 * FWeight));
    FBest := 0.01 * ReadInteger('Settings', 'Best', Round(100 * FBest));
+   FReinitializeCount := ReadInteger('Settings', 'Reinitialization Count', FReinitializeCount);
    FWeightDither := ReadBool('Settings', 'Weight Dither', FWeightDither);
    FChangeOrder := ReadBool('Settings', 'Change Order', FChangeOrder);
    FRandomOrder := ReadBool('Settings', 'Random Order', FRandomOrder);
@@ -394,6 +443,7 @@ begin
    FCorrectRadius := ReadBool('Settings', 'Correct Radius', FCorrectRadius);
    FCorrectPosition := ReadBool('Settings', 'Correct Position', FCorrectPosition);
    FCorrectInvisibleCircles := ReadBool('Settings', 'Correct Invisible Circles', FCorrectInvisibleCircles);
+   FReduceHighCosts := ReadBool('Settings', 'Reduce High Costs', FReduceHighCosts);
    FRandomCircle := ReadBool('Settings', 'Random Circle', FRandomCircle);
 
    NumberOfCircles := ReadInteger('Settings', 'Number of Circles', FNumberOfCircles);
@@ -418,6 +468,7 @@ begin
    FCrossover := 0.01 * StrToInt(Prefs.GetAppString('Settings:Crossover');
    FWeight := 0.01 * StrToInt(Prefs.GetAppString('Settings:Weight');
    FBest := 0.01 * StrToInt(Prefs.GetAppString('Settings:Best');
+   FReinitializeCount := StrToInt(Prefs.GetAppString('Settings:Reinitialization Count');
    FWeightDither := ReadBool('Settings', 'Weight Dither', FWeightDither);
    FChangeOrder := ReadBool('Settings', 'Change Order', FChangeOrder);
    FRandomOrder := ReadBool('Settings', 'Random Order', FRandomOrder);
@@ -425,6 +476,7 @@ begin
    FCorrectRadius := ReadBool('Settings', 'Correct Radius', FCorrectRadius);
    FCorrectPosition := ReadBool('Settings', 'Correct Position', FCorrectPosition);
    FCorrectInvisibleCircles := ReadBool('Settings', 'Correct Invisible Circles', FCorrectInvisibleCircles);
+   FReduceHighCosts := ReadBool('Settings', 'Reduce High Costs', FReduceHighCosts);
    FRandomCircle := ReadBool('Settings', 'Random Circle', FRandomCircle);
 
    NumberOfCircles := StrToInt(Prefs.GetAppString('Settings:Number of Circles');
@@ -493,6 +545,26 @@ procedure TFmPrimitivePictureEvolution.MiCopyReferenceClick(Sender: TObject);
 begin
  FDrawing.Assign(FReference);
  FBestDrawing.Assign(FReference);
+ if MiCostMap.Checked or FReduceHighCosts
+  then CalculateCostMap;
+ PaintBoxDraw.Invalidate;
+end;
+
+procedure TFmPrimitivePictureEvolution.MiCostMapClick(Sender: TObject);
+begin
+ (Sender As TMenuItem).Checked := True;
+ if MiCostMap.Checked then CalculateCostMap;
+ PaintBoxDraw.Invalidate;
+end;
+
+procedure TFmPrimitivePictureEvolution.MiCrosshairClick(Sender: TObject);
+begin
+ MiCrosshair.Checked := not MiCrosshair.Checked;
+end;
+
+procedure TFmPrimitivePictureEvolution.MiCurrentBestCostClick(Sender: TObject);
+begin
+ (Sender As TMenuItem).Checked := True;
  PaintBoxDraw.Invalidate;
 end;
 
@@ -592,6 +664,12 @@ begin
   end;
 end;
 
+procedure TFmPrimitivePictureEvolution.MiLogClick(Sender: TObject);
+begin
+ FmCostLog.LogCost.Lines.Assign(FCostLog);
+ FmCostLog.Show;
+end;
+
 procedure TFmPrimitivePictureEvolution.MiSaveResultClick(Sender: TObject);
 begin
  with SaveDialog do
@@ -617,6 +695,12 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFmPrimitivePictureEvolution.MiPreviousBestClick(Sender: TObject);
+begin
+ (Sender As TMenuItem).Checked := True;
+ PaintBoxDraw.Invalidate;
 end;
 
 procedure TFmPrimitivePictureEvolution.MiStopContinueClick(Sender: TObject);
@@ -693,6 +777,21 @@ end;
 procedure TFmPrimitivePictureEvolution.SetRandomOrder(const Value: Boolean);
 begin
  FRandomOrder := (FNumberOfCircles = 1) and Value;
+end;
+
+procedure TFmPrimitivePictureEvolution.SetReduceHighCosts(const Value: Boolean);
+begin
+ if FReduceHighCosts <> Value then
+  begin
+   FReduceHighCosts := Value;
+   ReduceHighCostsChanged;
+  end;
+end;
+
+procedure TFmPrimitivePictureEvolution.ReduceHighCostsChanged;
+begin
+ if FReduceHighCosts
+  then CalculateCostMap;
 end;
 
 procedure TFmPrimitivePictureEvolution.SetTrialsPerCircle(const Value: Integer);
@@ -959,7 +1058,11 @@ begin
  ResetCircles;
 
  // initialize evolution
- InitializeEvolution(InitializePopulation);
+ UpdateOptimizerSettings;
+ if InitializePopulation
+  then FDiffEvol.Initialize;
+ CalculateStaticCosts;
+ FTrialCount := 0;
 
  if Assigned(FEvolution) then
   begin
@@ -988,6 +1091,99 @@ begin
   end;
 end;
 
+procedure TFmPrimitivePictureEvolution.UpdateOptimizerSettings;
+var
+  Index : Integer;
+begin
+  // calculate maximum radius
+ FMaximumRadius := 1.5 * FMaximumDimension;
+ if FMaximumRadius < 1 then FMaximumRadius := 1;
+
+ with FDiffEvol do
+  begin
+   CrossOver := FCrossover;
+   PopulationCount := FInitialSeed;
+   for Index := 0 to FNumberOfCircles - 1 do
+    begin
+     MinConstraints[7 * Index + 0] := -0.5 * FReference.Width;
+     MaxConstraints[7 * Index + 0] :=  1.5 * FReference.Width;
+     MinConstraints[7 * Index + 1] := -0.5 * FReference.Height;
+     MaxConstraints[7 * Index + 1] :=  1.5 * FReference.Height;
+     MinConstraints[7 * Index + 2] :=  1;
+     MaxConstraints[7 * Index + 2] :=  0.5 * FMaximumRadius;
+     MinConstraints[7 * Index + 3] :=  0;
+     MaxConstraints[7 * Index + 3] :=  1;
+     MinConstraints[7 * Index + 4] :=  0;
+     MaxConstraints[7 * Index + 4] :=  1;
+     MinConstraints[7 * Index + 5] :=  0;
+     MaxConstraints[7 * Index + 5] :=  1;
+     MinConstraints[7 * Index + 6] :=  0;
+     MaxConstraints[7 * Index + 6] :=  1;
+    end;
+  end;
+end;
+
+procedure TFmPrimitivePictureEvolution.CalculateCostMap;
+var
+  x, y      : Integer;
+  Error     : Single;
+  PixelData : array [0..1] of PPixel32Array;
+  ByteData  : PByteArray;
+  ErrorByte : Byte;
+begin
+ for y := 0 to FCostMap.Height - 1 do
+  begin
+   PixelData[0] := FReference.ScanLine[y];
+   PixelData[1] := FDrawing.ScanLine[y];
+   ByteData := FCostMap.ScanLine[y];
+
+   for x := 0 to FCostMap.Width - 1 do
+    begin
+     {$IFDEF UseInline}
+     Error := ErrorWeightingInline(PixelData[1, x], PixelData[0, x]);
+     {$ELSE}
+     Error := ErrorWeighting(PixelData[1, x], PixelData[0, x]);
+     {$ENDIF}
+     ByteData[x] := Limit(Round(Error * $FF), 0, $FF);
+    end;
+  end;
+
+ for x := 0 to 1 do
+  begin
+   with TGuiStackBlurFilter.Create do
+   try
+    Radius := 0.01 * FMaximumDimension;
+    Filter(FCostMap);
+   finally
+    Free;
+   end;
+
+   with TGuiNormalizeFilter.Create do
+   try
+    Filter(FCostMap);
+   finally
+    Free;
+   end;
+  end;
+
+ FPreferedPosition.X := 0;
+ FPreferedPosition.Y := 0;
+ ErrorByte := FCostMap.DataPointer^[0];
+ for y := 0 to FCostMap.Height - 1 do
+  begin
+   ByteData := FCostMap.ScanLine[y];
+   for x := 0 to FCostMap.Width - 1 do
+    begin
+     if ByteData^[x] > ErrorByte then
+      begin
+       FPreferedPosition.X := x;
+       FPreferedPosition.Y := y;
+       ErrorByte := ByteData^[x];
+      end;
+    end;
+  end;
+end;
+
 function TFmPrimitivePictureEvolution.CalculateError(Sender: TObject;
   var Population: TDifferentialEvolutionPopulation): Double;
 var
@@ -996,6 +1192,7 @@ var
   PixelRange    : array [0..1] of Integer;
   CircleIndex   : Integer;
   Offset        : Integer;
+  Radius        : Single;
   {$IFNDEF OptimizedErrorCalculationLoop}
   Index         : Integer;
   {$ENDIF}
@@ -1005,12 +1202,18 @@ begin
  Assert(FDrawing <> nil);
  Assert(FNewDrawing <> nil);
  Assert(FBestDrawing <> nil);
+ Radius := 1;
 
  with FNewDrawing do
   begin
    Assert(FReference.Width * FReference.Height = Width * Height);
    Assert(FDrawing.Width * FDrawing.Height = Width * Height);
    Assert(FNewDrawing.Width * FNewDrawing.Height = Width * Height);
+
+   // eventually calculate radius
+   if FReduceHighCosts
+    then Radius := Sqrt(Sqr(Population[0] - FPreferedPosition.X) +
+      Sqr(Population[1] - FPreferedPosition.Y));
 
    if FNumberOfCircles = 1 then
     begin
@@ -1033,13 +1236,24 @@ begin
          if (Population[1] > Height) and (Population[2] < Population[1] - Height)
           then Population[1] := (Height + Population[2]) - Random * (Height - Population[2]);
         end;
+
+       if FReduceHighCosts then
+        begin
+         if Radius > 0.1 * FMaximumDimension then
+          begin
+           Population[0] := FPreferedPosition.X + 0.5 * (Population[0] - FPreferedPosition.X);
+           Population[1] := FPreferedPosition.Y + 0.5 * (Population[1] - FPreferedPosition.Y);
+           Radius := Sqrt(Sqr(Population[0] - FPreferedPosition.X) +
+             Sqr(Population[1] - FPreferedPosition.Y));
+          end;
+        end;
       end;
 
      // eventually correct radius
      if FCorrectRadius then
       begin
-       if (Population[2] < 1) or (Population[2] > FMaximumRadius)
-        then Population[2] := 1 + Random * (FMaximumRadius - 1);
+       if (Population[2] < 0.5) or (Population[2] > FMaximumRadius)
+        then Population[2] := 0.5 + Random * (FMaximumRadius - 1);
 
        if FCorrectInvisibleCircles then
         begin
@@ -1243,6 +1457,11 @@ begin
     end;
   end;
 
+ // Result := Result * FCostScale; // <- do NOT use with current optimization
+
+ if FReduceHighCosts and (Radius > 0.02 * FMaximumDimension)
+  then Result := Result + (Radius - 0.02 * FMaximumDimension); // FArea *
+
  {$IFDEF UseApproximation}
  Result := 10 * FastLog2ContinousError4(1E-30 + Result);
  {$ELSE}
@@ -1335,8 +1554,40 @@ var
   NewTimeStamp : Int64;
   Frequency    : Int64;
   CircsPerSec  : Double;
+  BestPop      : TDifferentialEvolutionPopulation;
 begin
- DrawPopulation(FDiffEvol.GetBestPopulation, FBestDrawing);
+ BestPop := FDiffEvol.GetBestPopulation;
+ DrawPopulation(BestPop, FBestDrawing);
+
+ if MiCrosshair.Checked then
+  with TGuiPixelThinLine.Create do
+   try
+    Color := clRed;
+    Alpha := 192;
+
+    GeometricShape.XA := ConvertToFixed24Dot8Point(BestPop[0] - BestPop[2] - Max(BestPop[2], 10));
+    GeometricShape.XB := ConvertToFixed24Dot8Point(BestPop[0] - BestPop[2] - 2);
+    GeometricShape.YA := ConvertToFixed24Dot8Point(BestPop[1]);
+    GeometricShape.YB := ConvertToFixed24Dot8Point(BestPop[1]);
+    Draw(FBestDrawing);
+
+    GeometricShape.XA := ConvertToFixed24Dot8Point(BestPop[0] + BestPop[2] + Max(BestPop[2], 10));
+    GeometricShape.XB := ConvertToFixed24Dot8Point(BestPop[0] + BestPop[2] + 2);
+    Draw(FBestDrawing);
+
+    GeometricShape.YA := ConvertToFixed24Dot8Point(BestPop[1] - BestPop[2] - Max(BestPop[2], 10));
+    GeometricShape.YB := ConvertToFixed24Dot8Point(BestPop[1] - BestPop[2] - 2);
+    GeometricShape.XA := ConvertToFixed24Dot8Point(BestPop[0]);
+    GeometricShape.XB := ConvertToFixed24Dot8Point(BestPop[0]);
+    Draw(FBestDrawing);
+
+    GeometricShape.YA := ConvertToFixed24Dot8Point(BestPop[1] + BestPop[2] + Max(BestPop[2], 10));
+    GeometricShape.YB := ConvertToFixed24Dot8Point(BestPop[1] + BestPop[2] + 2);
+    Draw(FBestDrawing);
+   finally
+    Free;
+   end;
+
  StatusBar.Panels[2].Text := 'Trials: ' + IntToStr(FTrialCount);
  StatusBar.Panels[3].Text := 'Costs: ' + FloatToStrF(FDiffEvol.GetBestCost - FMaximumCost, ffGeneral, 5, 5);
  StatusBar.Panels[4].Text := 'Global Costs: ' + FloatToStrF(FDiffEvol.GetBestCost, ffGeneral, 5, 5);
@@ -1350,45 +1601,6 @@ begin
  FTimeStamp := NewTimeStamp;
 
  PaintBoxDraw.Invalidate;
-end;
-
-procedure TFmPrimitivePictureEvolution.InitializeEvolution(InitializePopulation: Boolean = True);
-var
-  Index : Integer;
-begin
- // calculate maximum radius
- FMaximumRadius := 1.5 * Max(Width, Height);
- if FMaximumRadius < 1 then FMaximumRadius := 1;
-
- FTrialCount := 0;
-
- if InitializePopulation then
-  begin
-   with FDiffEvol do
-    begin
-     CrossOver := FCrossover;
-     PopulationCount := FInitialSeed;
-     for Index := 0 to FNumberOfCircles - 1 do
-      begin
-       MinConstraints[7 * Index + 0] := -0.5 * FReference.Width;
-       MaxConstraints[7 * Index + 0] :=  1.5 * FReference.Width;
-       MinConstraints[7 * Index + 1] := -0.5 * FReference.Height;
-       MaxConstraints[7 * Index + 1] :=  1.5 * FReference.Height;
-       MinConstraints[7 * Index + 2] :=  1;
-       MaxConstraints[7 * Index + 2] :=  0.5 * FMaximumRadius;
-       MinConstraints[7 * Index + 3] :=  0;
-       MaxConstraints[7 * Index + 3] :=  1;
-       MinConstraints[7 * Index + 4] :=  0;
-       MaxConstraints[7 * Index + 4] :=  1;
-       MinConstraints[7 * Index + 5] :=  0;
-       MaxConstraints[7 * Index + 5] :=  1;
-       MinConstraints[7 * Index + 6] :=  0;
-       MaxConstraints[7 * Index + 6] :=  1;
-      end;
-     Initialize;
-    end;
-  end;
- CalculateStaticCosts;
 end;
 
 procedure TFmPrimitivePictureEvolution.CalculateStaticCosts;
@@ -1509,12 +1721,74 @@ begin
   end;
 end;
 
+procedure TFmPrimitivePictureEvolution.NextTrial;
+var
+  Index : Integer;
+begin
+ Inc(FReInitializeIndex);
+
+ // randomize best population
+ if FReInitializeIndex < FReInitializeCount then
+  with FDiffEvol do
+   begin
+    for Index := 0 to VariableCount - 1
+     do BestPopulation[Index] := MinConstraints[Index] *
+       (MaxConstraints[Index] - MinConstraints[Index]);
+   end
+ else
+  begin
+   FReInitializeIndex := 0;
+   FDiffEvol.Initialize;
+  end;
+ FTrialCount := 0;
+end;
+
+
+procedure TFmPrimitivePictureEvolution.AddCostLogString(Value: string);
+begin
+ Value := 'Circle ' + IntToStr(Length(FCircles)) + ': ' + Value;
+ FCostLog.Add(Value);
+ if FmCostLog.Visible
+  then FmCostLog.LogCost.Lines.Add(Value);
+end;
+
+procedure TFmPrimitivePictureEvolution.Reinitialization;
+begin
+ // store cost to cost log
+ AddCostLogString('Reinitialization');
+ FTrialCount := 0;
+ FReInitializeIndex := 0;
+ FDiffEvol.Initialize;
+end;
+
 procedure TFmPrimitivePictureEvolution.Evolve;
 var
   BestCosts      : Double;
   BestPopulation : TDifferentialEvolutionPopulation;
   Index          : Integer;
+label
+  DiffPop;
 begin
+ if (FReInitializeIndex > 0) and (FTrialCount >= 0) and
+   (FLastBestCosts = FMaximumCost) then
+  begin
+   // get best population and draw best to new drawing
+   BestPopulation := FDiffEvol.GetBestPopulation;
+
+   if (FTrialCount >= FTrialsPerCircle) then
+    begin
+     Reinitialization;
+     goto DiffPop;
+    end;
+
+   for Index := 0 to FDiffEvol.PopulationCount - 1 do
+    if not CompareMem(@BestPopulation[0], @FDiffEvol.Population[Index][0],
+      FDiffEvol.VariableCount * SizeOf(Double)) then goto DiffPop;
+
+   Reinitialization;
+   DiffPop:
+  end;
+
  if AcBack.Checked and AcNext.Checked then
   begin
    AcNext.Checked := False;
@@ -1524,8 +1798,18 @@ begin
   ((FTrialsSinceUpdate >= (0.25 * FTrialsPerCircle)) and
   (FLastBestCosts - FMaximumCost < 0) and FAutoNextTrial) then
   begin
+   // store cost to cost log
+   if FReInitializeIndex > 0
+    then AddCostLogString(FloatToStr(FDiffEvol.GetBestCost - FMaximumCost) + ' (' +
+      IntToStr(FTrialCount) + ' Trials) *')
+    else AddCostLogString(FloatToStr(FDiffEvol.GetBestCost - FMaximumCost) + ' (' +
+      IntToStr(FTrialCount) + ' Trials)');
+
+   // get best population and draw best to new drawing
    BestPopulation := FDiffEvol.GetBestPopulation;
    DrawPopulation(BestPopulation, FDrawing);
+   if MiCostMap.Checked or FReduceHighCosts
+    then CalculateCostMap;
 
    SetLength(FCircles, Length(FCircles) + FNumberOfCircles);
 
@@ -1551,7 +1835,8 @@ begin
    // update status bar
    StatusBar.Panels[1].Text := 'Circles: ' + IntToStr(FCurrentCircle + FNumberOfCircles);
 
-   InitializeEvolution;
+   NextTrial;
+   CalculateStaticCosts;
    AcNext.Checked := False;
   end else
  if AcBack.Checked then
@@ -1562,10 +1847,16 @@ begin
      for Index := FCurrentCircle to Length(FCircles) - 1
       do FreeAndNil(FCircles[Index]);
      SetLength(FCircles, FCurrentCircle + 1);
-     InitializeEvolution;
+
+     FTrialCount := 0;
+     FDiffEvol.Initialize;
+     CalculateStaticCosts;
     end;
    AcBack.Checked := False;
   end;
+
+ // store cost log
+ FCostLog.SaveToFile('Costs.log');
 
  Randomize;
  Inc(FTrialCount);
@@ -1593,24 +1884,31 @@ begin
  FReference.LoadFromFile(FileName);
  with FDrawing do
   begin
-   Width := FReference.Width;
-   Height := FReference.Height;
+   SetSize(FReference.Width, FReference.Height);
    Clear(FBackgroundColor);
   end;
 
  with FNewDrawing do
   begin
-   Width := FReference.Width;
-   Height := FReference.Height;
+   SetSize(FReference.Width, FReference.Height);
    Clear(FBackgroundColor);
   end;
 
  with FBestDrawing do
   begin
-   Width := FReference.Width;
-   Height := FReference.Height;
+   SetSize(FReference.Width, FReference.Height);
    Clear(FBackgroundColor);
   end;
+
+ with FCostMap do
+  begin
+   SetSize(FReference.Width, FReference.Height);
+   Clear;
+  end;
+
+ FMaximumDimension := Max(FReference.Width, FReference.Height);
+ FArea := (FReference.Width * FReference.Height);
+ FCostScale := 1 / FArea;
 
  PaintBoxRef.Width := FReference.Width;
  PaintBoxRef.Height := FReference.Height;
@@ -1694,6 +1992,9 @@ begin
      end;
    end;
 
+  if MiCostMap.Checked or FReduceHighCosts
+   then CalculateCostMap;
+
   // eventually create current circle
   if Assigned(FEvolution) then
    begin
@@ -1704,7 +2005,11 @@ begin
     FreeAndNil(FEvolution);
    end;
 
-  InitializeEvolution;
+  FTrialCount := 0;
+  UpdateOptimizerSettings;
+  FDiffEvol.Initialize;
+  CalculateStaticCosts;
+
   FEvolution := TEvolutionThread.Create(True);
   FEvolution.Priority := tpLower;
   FEvolution.Start;
@@ -2070,7 +2375,12 @@ end;
 
 procedure TFmPrimitivePictureEvolution.PaintBoxDrawPaint(Sender: TObject);
 begin
- FBestDrawing.PaintTo(PaintBoxDraw.Canvas);
+ if MiCurrentBestCost.Checked
+  then FBestDrawing.PaintTo(PaintBoxDraw.Canvas);
+ if MiPreviousBest.Checked
+  then FDrawing.PaintTo(PaintBoxDraw.Canvas);
+ if MiCostMap.Checked
+  then FCostMap.PaintTo(PaintBoxDraw.Canvas);
 end;
 
 procedure TFmPrimitivePictureEvolution.PaintBoxRefPaint(Sender: TObject);

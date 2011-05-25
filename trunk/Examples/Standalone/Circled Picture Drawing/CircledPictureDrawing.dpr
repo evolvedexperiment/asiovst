@@ -12,7 +12,8 @@ uses
   MainUnit in 'MainUnit.pas' {FmPrimitivePictureEvolution},
   SettingsUnit in 'SettingsUnit.pas' {FmSettings},
   ProgressBarUnit in 'ProgressBarUnit.pas' {FmProgressBar},
-  AdditionalChunks in 'AdditionalChunks.pas';
+  AdditionalChunks in 'AdditionalChunks.pas',
+  CostLogUnit in 'CostLogUnit.pas' {FmCostLog};
 
 {$IFDEF RELEASE}
 {$SetPEFlags 1}
@@ -27,6 +28,7 @@ begin
   {$ENDIF}
   Application.Title := 'Primitive Picture Evolution';
   Application.CreateForm(TFmPrimitivePictureEvolution, FmPrimitivePictureEvolution);
+  Application.CreateForm(TFmCostLog, FmCostLog);
   Application.Run;
 end.
 

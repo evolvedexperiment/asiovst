@@ -153,8 +153,43 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
       object N4: TMenuItem
         Caption = '-'
       end
+      object MiLog: TMenuItem
+        Caption = 'Log'
+        ShortCut = 123
+        OnClick = MiLogClick
+      end
+      object N6: TMenuItem
+        Caption = '-'
+      end
       object MiSettings: TMenuItem
         Action = AcSettings
+      end
+    end
+    object MiDisplay: TMenuItem
+      Caption = '&Display'
+      object MiCurrentBestCost: TMenuItem
+        Caption = 'Current Best'
+        Checked = True
+        RadioItem = True
+        OnClick = MiCurrentBestCostClick
+      end
+      object MiPreviousBest: TMenuItem
+        Caption = 'Previous Best'
+        RadioItem = True
+        OnClick = MiPreviousBestClick
+      end
+      object MiCostMap: TMenuItem
+        Caption = 'Cost Map'
+        RadioItem = True
+        OnClick = MiCostMapClick
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
+      object MiCrosshair: TMenuItem
+        Caption = 'Crosshair'
+        Checked = True
+        OnClick = MiCrosshairClick
       end
     end
   end

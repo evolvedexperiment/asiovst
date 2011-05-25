@@ -13,36 +13,39 @@ type
     BtApply: TButton;
     BtCancel: TButton;
     BtOK: TButton;
+    CbAutoInitialSeed: TCheckBox;
     CbAutoTrials: TCheckBox;
+    CbChangeOrder: TCheckBox;
     CbCorrectColor: TCheckBox;
     CbCorrectInvisible: TCheckBox;
     CbCorrectPosition: TCheckBox;
     CbCorrectRadius: TCheckBox;
     CbRandomCircle: TCheckBox;
-    GbPrimitives: TGroupBox;
+    CbRandomOrder: TCheckBox;
+    CbReduceHighCosts: TCheckBox;
+    CbWeightDither: TCheckBox;
     GbModifications: TGroupBox;
     GbOptimizer: TGroupBox;
+    GbPrimitives: TGroupBox;
     GbTrials: TGroupBox;
+    Label1: TLabel;
+    LbAdditional: TLabel;
+    LbBest: TLabel;
     LbCircleCount: TLabel;
     LbCrossover: TLabel;
     LbInitialSeed: TLabel;
+    LbReinitializationCount: TLabel;
     LbTrialsPerCircle: TLabel;
     LbUpdateTrials: TLabel;
-    SePrimitiveCount: TSpinEdit;
+    SeAdditional: TSpinEdit;
+    SeBest: TSpinEdit;
     SeCrossover: TSpinEdit;
     SeInitialSeed: TSpinEdit;
+    SePrimitiveCount: TSpinEdit;
+    SeReinitialization: TSpinEdit;
     SeTrialsPerCircle: TSpinEdit;
     SeUpdateTrials: TSpinEdit;
-    Label1: TLabel;
     SeWeight: TSpinEdit;
-    CbWeightDither: TCheckBox;
-    LbBest: TLabel;
-    SeBest: TSpinEdit;
-    CbChangeOrder: TCheckBox;
-    CbRandomOrder: TCheckBox;
-    LbAdditional: TLabel;
-    SeAdditional: TSpinEdit;
-    CbAutoInitialSeed: TCheckBox;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtApplyClick(Sender: TObject);
@@ -50,6 +53,11 @@ type
     procedure CbAutoInitialSeedClick(Sender: TObject);
     procedure SePrimitiveCountChange(Sender: TObject);
     procedure SeSettingsPress(Sender: TObject; var Key: Char);
+    procedure SomethingChange(Sender: TObject);
+  private
+    FSomethingChanged : Boolean;
+  protected
+    procedure SomethingChanged; virtual;
   public
     procedure LoadSettings;
     procedure SaveSettings;
@@ -78,6 +86,7 @@ begin
   end;
 *)
  LoadSettings;
+ BtApply.Enabled := False;
 end;
 
 procedure TFmSettings.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -108,6 +117,7 @@ begin
  SeInitialSeed.Enabled := not CbAutoInitialSeed.Checked;
  if CbAutoInitialSeed.Checked
   then SeInitialSeed.Value := 10 * 7 * SePrimitiveCount.Value;
+ SomethingChanged;
 end;
 
 procedure TFmSettings.LoadSettings;
@@ -123,6 +133,7 @@ begin
    SeWeight.Value := ReadInteger('Settings', 'Weight', SeWeight.Value);
    SeBest.Value := ReadInteger('Settings', 'Best', SeBest.Value);
    SeAdditional.Value := ReadInteger('Settings', 'Additional', SeAdditional.Value);
+   SeReinitialization.Value := ReadInteger('Settings', 'Reinitialization Count', SeReinitialization.Value);
    SePrimitiveCount.Value := ReadInteger('Settings', 'Number of Circles', SePrimitiveCount.Value);
    CbCorrectColor.Checked := ReadBool('Settings', 'Correct Color', CbCorrectColor.Checked);
    CbCorrectPosition.Checked := ReadBool('Settings', 'Correct Position', CbCorrectPosition.Checked);
@@ -132,6 +143,7 @@ begin
    CbWeightDither.Checked := ReadBool('Settings', 'Weight Dither', CbWeightDither.Checked);
    CbChangeOrder.Checked := ReadBool('Settings', 'Change Order', CbChangeOrder.Checked);
    CbRandomOrder.Checked := ReadBool('Settings', 'Random Order', CbRandomOrder.Checked);
+   CbReduceHighCosts.Checked := ReadBool('Settings', 'Reduce High Costs', CbReduceHighCosts.Checked);
 
    // update GUI
    SeInitialSeed.Enabled := not CbAutoInitialSeed.Checked;
@@ -157,6 +169,7 @@ begin
    WriteInteger('Settings', 'Weight', SeWeight.Value);
    WriteInteger('Settings', 'Best', SeBest.Value);
    WriteInteger('Settings', 'Additional', SeAdditional.Value);
+   WriteInteger('Settings', 'Reinitialization Count', SeReinitialization.Value);
    WriteInteger('Settings', 'Number of Circles', SePrimitiveCount.Value);
    WriteBool('Settings', 'Correct Color', CbCorrectColor.Checked);
    WriteBool('Settings', 'Correct Position', CbCorrectPosition.Checked);
@@ -166,6 +179,7 @@ begin
    WriteBool('Settings', 'Weight Dither', CbWeightDither.Checked);
    WriteBool('Settings', 'Change Order', CbChangeOrder.Checked);
    WriteBool('Settings', 'Random Order', CbRandomOrder.Checked);
+   WriteBool('Settings', 'Reduce High Costs', CbReduceHighCosts.Checked);
 
    // update program settings
    AutoNextTrial := CbAutoTrials.Checked;
@@ -178,6 +192,7 @@ begin
    Weight := 0.01 * SeWeight.Value;
    Best := 0.01 * SeBest.Value;
    Additional := 0.01 * SeAdditional.Value;
+   ReinitializationCount := SeReinitialization.Value;
    WeightDither := CbWeightDither.Checked;
    ChangeOrder := CbChangeOrder.Checked;
    CorrectColor := CbCorrectColor.Checked;
@@ -186,6 +201,8 @@ begin
    CorrectInvisible := CbCorrectInvisible.Checked;
    RandomCircle := CbRandomCircle.Checked;
    RandomOrder := CbRandomOrder.Checked;
+   ReduceHighCosts := CbReduceHighCosts.Checked;
+   BtApply.Enabled := False;
   finally
    Free;
   end;
@@ -197,6 +214,7 @@ begin
   then SeInitialSeed.Value := 10 * 7 * SePrimitiveCount.Value;
  CbChangeOrder.Enabled := SePrimitiveCount.Value > 1;
  CbRandomOrder.Enabled := not CbChangeOrder.Enabled;
+ SomethingChanged;
 end;
 
 procedure TFmSettings.SeSettingsPress(Sender: TObject; var Key: Char);
@@ -206,6 +224,17 @@ begin
     SaveSettings;
     ModalResult := mrOk;
   end;
+end;
+
+procedure TFmSettings.SomethingChange(Sender: TObject);
+begin
+ SomethingChanged;
+end;
+
+procedure TFmSettings.SomethingChanged;
+begin
+ FSomethingChanged := True;
+ BtApply.Enabled := True;
 end;
 
 end.
