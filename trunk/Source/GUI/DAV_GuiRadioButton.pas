@@ -635,7 +635,7 @@ begin
     else raise Exception.Create('Unknown justify');
    end;
    {$ENDIF}
-   OffsetY := FixedMul(ConvertToFixed24Dot8Point(Height - 1), CFixed24Dot8Half);
+   OffsetY := FixedMul(ConvertToFixed24Dot8Point(Integer(Height - 1)), CFixed24Dot8Half);
 
    for Y := FixedRound(FixedSub(OffsetY, Radius)) to FixedRound(FixedAdd(OffsetY, Radius)) do
     begin

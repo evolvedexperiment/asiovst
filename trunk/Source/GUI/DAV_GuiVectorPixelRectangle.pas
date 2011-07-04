@@ -504,7 +504,7 @@ begin
      // check whether rounded border offset needs to be applied
      if (MinYDistance < RoundedRadius) then
       begin
-       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(RoundedRadius - MinYDistance));
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(Integer(RoundedRadius - MinYDistance)));
        SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RoundedRadius)), SqrYDist);
        Assert(SqrDist.Fixed >= 0);
        XOffset := RoundedRadius - FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
@@ -600,7 +600,7 @@ begin
     then YRange[0] := FixedFloor(OriginalTop)
     else YRange[0] := 0;
 
-   if OriginalBottom.Fixed < ConvertToFixed24Dot8Point(Height - 1).Fixed
+   if OriginalBottom.Fixed < ConvertToFixed24Dot8Point(Integer(Height - 1)).Fixed
     then YRange[1] := FixedCeil(OriginalBottom)
     else YRange[1] := Height - 1;
 
@@ -609,9 +609,9 @@ begin
     then XRange[0] := OriginalLeft
     else XRange[0].Fixed := 0;
 
-   if OriginalRight.Fixed < ConvertToFixed24Dot8Point(Width - 1).Fixed
+   if OriginalRight.Fixed < ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed
     then XRange[1] := OriginalRight
-    else XRange[1] := ConvertToFixed24Dot8Point(Width - 1);
+    else XRange[1] := ConvertToFixed24Dot8Point(Integer(Width - 1));
 
    // eventually limit round radius
    if FixedAdd(RoundedRadius, RoundedRadius).Fixed > FixedSub(OriginalRight, OriginalLeft).Fixed
@@ -894,12 +894,12 @@ begin
      // check whether rounded border offset needs to be applied
      if (MinYDistance < RoundedRadius) then
       begin
-       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(RoundedRadius - MinYDistance));
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(Integer(RoundedRadius - MinYDistance)));
        SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RoundedRadius)), SqrYDist);
        Assert(SqrDist.Fixed >= 0);
        XOffset := FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
 
-       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(RoundedRadius - MinYDistance));
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(Integer(RoundedRadius - MinYDistance)));
        SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RadiusMinusOne)), SqrYDist);
        if SqrDist.Fixed < 0 then SqrDist.Fixed := 0;
        XCount := XOffset - FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
@@ -1019,7 +1019,7 @@ begin
     then YRange[0] := FixedFloor(OriginalTop)
     else YRange[0] := 0;
 
-   if OriginalBottom.Fixed < ConvertToFixed24Dot8Point(Height - 1).Fixed
+   if OriginalBottom.Fixed < ConvertToFixed24Dot8Point(Integer(Height - 1)).Fixed
     then YRange[1] := FixedCeil(OriginalBottom)
     else YRange[1] := Height - 1;
 
@@ -1028,9 +1028,9 @@ begin
     then XRange[0] := OriginalLeft
     else XRange[0].Fixed := 0;
 
-   if OriginalRight.Fixed < ConvertToFixed24Dot8Point(Width - 1).Fixed
+   if OriginalRight.Fixed < ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed
     then XRange[1] := OriginalRight
-    else XRange[1] := ConvertToFixed24Dot8Point(Width - 1);
+    else XRange[1] := ConvertToFixed24Dot8Point(Integer(Width - 1));
 
    // eventually limit round radius
    if FixedAdd(RoundedRadius, RoundedRadius).Fixed > FixedSub(OriginalRight, OriginalLeft).Fixed

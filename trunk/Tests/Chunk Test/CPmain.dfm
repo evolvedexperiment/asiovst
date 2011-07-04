@@ -51,6 +51,7 @@ object FmChunkParser: TFmChunkParser
       end
       object MIExit: TMenuItem
         Caption = 'E&xit'
+        OnClick = MIExitClick
       end
     end
   end

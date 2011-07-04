@@ -27,18 +27,18 @@ type
     AnalyserChart: TChart;
     ASIOHost: TASIOHost;
     BarSeries: TBarSeries;
-    Bt_Analyse: TButton;
-    Bt_CP: TButton;
+    BtAnalyse: TButton;
+    BtControlPanel: TButton;
     ChannelBox: TComboBox;
     DriverCombo: TComboBox;
-    Lb_Channels: TLabel;
-    Lb_dB: TLabel;
-    Lb_Drivername: TLabel;
-    LbFullscale: TLabel;
+    LbChannels: TLabel;
+    LbFullScaleUnit: TLabel;
+    LbDriverName: TLabel;
+    LbFullScale: TLabel;
     LbSpeed: TLabel;
-    RB_Fast: TRadioButton;
-    RB_Medium: TRadioButton;
-    RB_Slow: TRadioButton;
+    RbFast: TRadioButton;
+    RbMedium: TRadioButton;
+    RbSlow: TRadioButton;
     SEFullscaleGain: TSpinEdit;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
@@ -49,13 +49,13 @@ type
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BSDownSampled(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure Bt_AnalyseClick(Sender: TObject);
-    procedure Bt_CPClick(Sender: TObject);
+    procedure BtAnalyseClick(Sender: TObject);
+    procedure BtControlPanelClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
-    procedure Lb_DrivernameClick(Sender: TObject);
-    procedure RB_FastClick(Sender: TObject);
-    procedure RB_MediumClick(Sender: TObject);
-    procedure RB_SlowClick(Sender: TObject);
+    procedure LbDriverNameClick(Sender: TObject);
+    procedure RbFastClick(Sender: TObject);
+    procedure RbMediumClick(Sender: TObject);
+    procedure RbSlowClick(Sender: TObject);
     procedure SEFullscaleGainChange(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
@@ -92,7 +92,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Inifiles, Registry;
+  Inifiles, Registry, DAV_Common;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
@@ -238,19 +238,19 @@ begin
  result := ASIOHost.SampleRate;
 end;
 
-procedure TFmAnalyser.RB_FastClick(Sender: TObject);
+procedure TFmAnalyser.RbFastClick(Sender: TObject);
 begin
  FSpeedConst[0] := 0.99;
  CalculateSmoothingFactor;
 end;
 
-procedure TFmAnalyser.RB_MediumClick(Sender: TObject);
+procedure TFmAnalyser.RbMediumClick(Sender: TObject);
 begin
  FSpeedConst[0] := 0.999;
  CalculateSmoothingFactor;
 end;
 
-procedure TFmAnalyser.RB_SlowClick(Sender: TObject);
+procedure TFmAnalyser.RbSlowClick(Sender: TObject);
 begin
  FSpeedConst[0] := 0.9999;
  CalculateSmoothingFactor;
@@ -292,43 +292,43 @@ procedure TFmAnalyser.DriverComboChange(Sender: TObject);
 var
   i : Integer;
 begin
- Bt_CP.Enabled := False;
- Bt_Analyse.Enabled := False;
+ BtControlPanel.Enabled := False;
+ BtAnalyse.Enabled := False;
  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
  if DriverCombo.ItemIndex >= 0 then
   begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
    for i := 0 to ASIOHost.InputChannelCount - 1
-    do ChannelBox.Items.Add(ASIOHost.InputChannelInfos[i].name);
+    do ChannelBox.Items.Add(string(ASIOHost.InputChannelInfos[i].name));
    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
     try
      WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
     finally
      Free;
     end;
-   Bt_CP.Enabled := True;
-   Bt_Analyse.Enabled := True;
+   BtControlPanel.Enabled := True;
+   BtAnalyse.Enabled := True;
    ChannelBox.ItemIndex := 0;
   end;
 end;
 
-procedure TFmAnalyser.Bt_CPClick(Sender: TObject);
+procedure TFmAnalyser.BtControlPanelClick(Sender: TObject);
 begin
  ASIOHost.ControlPanel;
 end;
 
-procedure TFmAnalyser.Bt_AnalyseClick(Sender: TObject);
+procedure TFmAnalyser.BtAnalyseClick(Sender: TObject);
 begin
- if Bt_Analyse.Caption = 'Analyse' then
+ if BtAnalyse.Caption = 'Analyse' then
   begin
    ASIOHost.Active := True; // Start Audio
-   Bt_Analyse.Caption := 'Stop';
+   BtAnalyse.Caption := 'Stop';
   end
  else
   begin
    ASIOHost.Active := False; // Stop Audio
-   Bt_Analyse.Caption := 'Analyse';
+   BtAnalyse.Caption := 'Analyse';
   end;
  Timer.Enabled := ASIOHost.Active;
 end;
@@ -365,9 +365,7 @@ begin
  UpdateBarGraph;
 end;
 
-procedure TFmAnalyser.Lb_DrivernameClick(Sender: TObject);
-var
-  i : Integer;
+procedure TFmAnalyser.LbDriverNameClick(Sender: TObject);
 begin
  if FDownSampleCount > 0
   then FDownSampleCount := -1
@@ -404,7 +402,7 @@ end;
 procedure TFmAnalyser.BSDownSampled(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  i, j, r : Integer;
+  i, j    : Integer;
   d, z, s : Double;
 const
   cDenorm = 1E-32;

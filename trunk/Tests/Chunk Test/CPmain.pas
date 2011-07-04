@@ -19,6 +19,7 @@ type
     Memo: TMemo;
     procedure MIOpenClick(Sender: TObject);
     procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
+    procedure MIExitClick(Sender: TObject);
   private
     procedure LoadFile(FileName: TFileName);
   public
@@ -36,32 +37,37 @@ function ChunknameValidASCII(ChunkName: TChunkName): Boolean;
 var
   CharPos : Byte;
 begin
- result := True;
+ Result := True;
  for CharPos := 0 to 3 do
   case ChunkName[CharPos] of
    #0, #$21..#$7F : ;
    else
     begin
-     result := False;
+     Result := False;
      Exit;
     end;
   end;
 end;
 
-function ValidASCIIString(str: string): Boolean;
+function ValidASCIIString(Value: string): Boolean;
 var
   CharPos : Byte;
 begin
- result := True;
- for CharPos := 1 to Length(str) do
-  case str[CharPos] of
+ Result := True;
+ for CharPos := 1 to Length(Value) do
+  case Value[CharPos] of
    #$20..#$7F : ;
    else
     begin
-     result := False;
-     if str[CharPos] = #12 then Exit;
+     Result := False;
+     if Value[CharPos] = #12 then Exit;
     end;
   end;
+end;
+
+procedure TFmChunkParser.MIExitClick(Sender: TObject);
+begin
+ Close;
 end;
 
 procedure TFmChunkParser.MIOpenClick(Sender: TObject);
@@ -72,7 +78,7 @@ end;
 
 procedure TFmChunkParser.TreeViewChange(Sender: TObject; Node: TTreeNode);
 var
-  str : string;
+  Str : string;
 begin
  if TObject(Node.Data) is TUnknownChunk then
   with TUnknownChunk(Node.Data) do
@@ -81,18 +87,19 @@ begin
     Memo.Lines.Add('chunk name: ' + ChunkName);
     Memo.Lines.Add('chunk size: ' + IntToStr(DataStream.Size));
     DataStream.Position := 0;
-    SetLength(str, DataStream.Size);
-    DataStream.Read(str[1], DataStream.Size);
-    if ValidASCIIString(str)
-     then Memo.Lines.Add('chunk data as string: ' + str);
+    SetLength(Str, DataStream.Size);
+    DataStream.Read(Str[1], DataStream.Size);
+    if ValidASCIIString(Str)
+     then Memo.Lines.Add('chunk data as string: ' + Str);
    end;
 end;
 
 procedure TFmChunkParser.LoadFile(FileName: TFileName);
 var
-  ChunkName : TChunkName;
-  ChunkSize : Cardinal;
-  FS        : TFileStream;
+  ChunkName    : TChunkName;
+  ChunkSize    : Cardinal;
+  UnknwonChunk : TUnknownChunk;
+  FS           : TFileStream;
 
   procedure MirrorChunkToTreeview(Chunk: TUnknownChunkContainer; TreeNode: TTreeNode);
   var
@@ -140,13 +147,34 @@ begin
 
      TreeView.Items.AddObject(TTreeNode.Create(TreeView.Items), ChunkName, FChunkContainer);
      MirrorChunkToTreeview(FChunkContainer, TreeView.Items[0]);
+    end else
+   if (ChunkName = 'MThd') then
+    begin
+     // read chunk size
+     Read(ChunkSize, 4);
+     Flip32(ChunkSize);
+     FS.Position := FS.Position + ChunkSize;
+
+     // clear old data
+     TreeView.Items.Clear;
+     FreeAndNil(FChunkContainer);
+
+     while FS.Position < FS.Size do
+      begin
+       UnknwonChunk := TUnknownChunk.Create;
+       UnknwonChunk.ChunkFlags := [cfReversedByteOrder];
+       UnknwonChunk.LoadFromStream(FS);
+
+       TreeView.Items.AddObject(TTreeNode.Create(TreeView.Items),
+         UnknwonChunk.ChunkName, UnknwonChunk);
+      end;
     end
    else
     begin
      // read chunk size
      Read(ChunkSize, 4);
 
-     if ChunkName = 'FORM'
+     if (ChunkName = 'FORM')
       then Flip32(ChunkSize);
 
      if (ChunkName[1] = 'W') and (ChunkName[2] = 'S')

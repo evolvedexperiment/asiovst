@@ -34,7 +34,7 @@ interface
 
 {$I DAV_Compiler.inc}
 {$IFDEF DELPHI10_UP}
-{-$DEFINE MemoryAlreadyAligned}
+{$DEFINE MemoryAlreadyAligned}
 {$ENDIF}
 
 uses
@@ -51,8 +51,9 @@ type
   PtrUInt = Cardinal;
 {$ENDIF}
 
+{$IFNDEF MemoryAlreadyAligned}
 var
-  UnalignedMemoryList : TList;
+  GUnalignedMemoryList : TList;
 
 function GetUnalignedPointer(P: Pointer): Pointer;
 var
@@ -60,10 +61,10 @@ var
 begin
  Result := nil;
 
- for Index := 0 to UnalignedMemoryList.Count - 1 do
-  if P = Pointer(PtrUInt(UnalignedMemoryList.Items[Index]) and (not $F)) then
+ for Index := 0 to GUnalignedMemoryList.Count - 1 do
+  if P = Pointer(PtrUInt(GUnalignedMemoryList.Items[Index]) and (not $F)) then
    begin
-    Result := UnalignedMemoryList.Items[Index];
+    Result := GUnalignedMemoryList.Items[Index];
     Exit;
    end;
 end;
@@ -73,13 +74,14 @@ var
   Index : Integer;
 begin
  Result := -1;
- for Index := 0 to UnalignedMemoryList.Count - 1 do
-  if P = Pointer(PtrUInt(UnalignedMemoryList.Items[Index]) and (not $F)) then
+ for Index := 0 to GUnalignedMemoryList.Count - 1 do
+  if P = Pointer(PtrUInt(GUnalignedMemoryList.Items[Index]) and (not $F)) then
    begin
     Result := Index;
     Exit;
    end;
 end;
+{$ENDIF}
 
 procedure GetAlignedMemory(var P; Size: Integer);
 var
@@ -105,10 +107,10 @@ begin
    // check if memory is still unaligned
 //   if (Cardinal(P) and $F) <> 0 then
     begin
-     Assert(Assigned(UnalignedMemoryList));
+     Assert(Assigned(GUnalignedMemoryList));
 
      // add unaligned pointer to the unaligned memory list
-     UnalignedMemoryList.Add(Ptr);
+     GUnalignedMemoryList.Add(Ptr);
 
      // assign aligned pointer
      Ptr := Pointer(PtrUInt(Ptr) and (not $F));
@@ -142,7 +144,7 @@ begin
   end;
 
  {$IFNDEF MemoryAlreadyAligned}
- Assert(Assigned(UnalignedMemoryList));
+ Assert(Assigned(GUnalignedMemoryList));
  Index := GetUnalignedPointerIndex(Ptr);
  {$ENDIF}
 
@@ -154,13 +156,13 @@ begin
    ReallocMem(Ptr, Size + $F);
 
    if (Index >= 0)
-    then UnalignedMemoryList.Items[Index] := Ptr
-    else UnalignedMemoryList.Add(Ptr);
+    then GUnalignedMemoryList.Items[Index] := Ptr
+    else GUnalignedMemoryList.Add(Ptr);
 
    Ptr := Pointer(PtrUInt(Ptr) and (not $F));
   end else
  if (Index >= 0)
-  then UnalignedMemoryList.Delete(Index);
+  then GUnalignedMemoryList.Delete(Index);
  {$ENDIF}
 
  Assert(PtrUInt(Ptr) and $F = 0);
@@ -173,14 +175,14 @@ var
 {$ENDIF}
 begin
  {$IFNDEF MemoryAlreadyAligned}
- Assert(Assigned(UnalignedMemoryList));
- for Index := 0 to UnalignedMemoryList.Count - 1 do
+ Assert(Assigned(GUnalignedMemoryList));
+ for Index := 0 to GUnalignedMemoryList.Count - 1 do
   begin
    // check if P is alread the unaligned pointer
-   if P = UnalignedMemoryList.Items[Index] then
+   if P = GUnalignedMemoryList.Items[Index] then
     begin
      // delete unaligned pointer from list
-     UnalignedMemoryList.Delete(Index);
+     GUnalignedMemoryList.Delete(Index);
 
      // dispose memory & exit
      FreeMem(P);
@@ -188,13 +190,13 @@ begin
     end;
 
    // check if P is alread the unaligned pointer
-   if P = Pointer(PtrUInt(UnalignedMemoryList.Items[Index]) and (not $F)) then
+   if P = Pointer(PtrUInt(GUnalignedMemoryList.Items[Index]) and (not $F)) then
     begin
      // store unaligned pointer
-     P := UnalignedMemoryList.Items[Index];
+     P := GUnalignedMemoryList.Items[Index];
 
      // delete unaligned pointer from list
-     UnalignedMemoryList.Delete(Index);
+     GUnalignedMemoryList.Delete(Index);
 
      // dispose memory & exit
      FreeMem(P);
@@ -205,11 +207,24 @@ begin
  FreeMem(P);
 end;
 
+procedure InitializeMemoryUtils;
+begin
+ {$IFNDEF MemoryAlreadyAligned}
+ GUnalignedMemoryList := TList.Create;
+ {$ENDIF}
+end;
+
+procedure FinalizeMemoryUtils;
+begin
+ {$IFNDEF MemoryAlreadyAligned}
+ FreeAndNil(GUnalignedMemoryList);
+ {$ENDIF}
+end;
 
 initialization
-  UnalignedMemoryList := TList.Create;
+  InitializeMemoryUtils;
 
 finalization
-  FreeAndNil(UnalignedMemoryList);
+  FinalizeMemoryUtils;
 
 end.

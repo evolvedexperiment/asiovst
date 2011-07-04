@@ -20,14 +20,14 @@ object FmAnalyser: TFmAnalyser
     326)
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LbDriverName: TLabel
     Left = 7
     Top = 12
     Width = 31
     Height = 13
     Caption = 'Driver:'
   end
-  object Lb_Channels: TLabel
+  object LbChannels: TLabel
     Left = 7
     Top = 36
     Width = 77
@@ -48,22 +48,21 @@ object FmAnalyser: TFmAnalyser
     Height = 13
     Caption = 'Fullscale = '
   end
-  object Lb_dB: TLabel
+  object LbFullScaleUnit: TLabel
     Left = 322
     Top = 64
     Width = 13
     Height = 13
     Caption = 'dB'
   end
-  object DriverCombo: TComboBox
+  object CbDriver: TComboBox
     Left = 64
     Top = 7
     Width = 273
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
-    OnChange = DriverComboChange
+    OnChange = CbDriverChange
   end
   object BtControlPanel: TButton
     Left = 350
@@ -75,13 +74,12 @@ object FmAnalyser: TFmAnalyser
     TabOrder = 1
     OnClick = BtControlPanelClick
   end
-  object ChannelBox: TComboBox
+  object CbChannel: TComboBox
     Left = 104
     Top = 32
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
   end
   object BtAnalyse: TButton
@@ -95,16 +93,16 @@ object FmAnalyser: TFmAnalyser
     TabOrder = 3
     OnClick = BtAnalyseClick
   end
-  object RB_Fast: TRadioButton
+  object RbFast: TRadioButton
     Left = 49
     Top = 63
     Width = 40
     Height = 17
     Caption = '&Fast'
     TabOrder = 4
-    OnClick = RB_FastClick
+    OnClick = RbFastClick
   end
-  object RB_Medium: TRadioButton
+  object RbMedium: TRadioButton
     Left = 91
     Top = 63
     Width = 55
@@ -113,16 +111,16 @@ object FmAnalyser: TFmAnalyser
     Checked = True
     TabOrder = 5
     TabStop = True
-    OnClick = RB_MediumClick
+    OnClick = RbMediumClick
   end
-  object RB_Slow: TRadioButton
+  object RbSlow: TRadioButton
     Left = 150
     Top = 63
     Width = 46
     Height = 17
     Caption = '&Slow'
     TabOrder = 6
-    OnClick = RB_SlowClick
+    OnClick = RbSlowClick
   end
   object SEFullscaleGain: TSpinEdit
     Left = 262
@@ -156,18 +154,16 @@ object FmAnalyser: TFmAnalyser
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnDblClick = AnalyserChartDblClick
     object BarSeries: TBarSeries
-      Marks.ArrowLength = 20
+      Marks.Arrow.Visible = True
+      Marks.Callout.Brush.Color = clBlack
+      Marks.Callout.Arrow.Visible = True
       Marks.Visible = False
-      SeriesColor = clRed
       ShowInLegend = False
+      Gradient.Direction = gdTopBottom
       MultiBar = mbNone
-      XValues.DateTime = False
       XValues.Name = 'X'
-      XValues.Multiplier = 1.000000000000000000
       XValues.Order = loAscending
-      YValues.DateTime = False
       YValues.Name = 'Balken'
-      YValues.Multiplier = 1.000000000000000000
       YValues.Order = loNone
     end
   end

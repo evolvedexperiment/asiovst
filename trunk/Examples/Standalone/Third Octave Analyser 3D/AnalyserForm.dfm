@@ -61,7 +61,6 @@ object FmAnalyser: TFmAnalyser
     Width = 288
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = CbDriverChange
   end
@@ -81,7 +80,6 @@ object FmAnalyser: TFmAnalyser
     Width = 246
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
   end
   object BtAnalyse: TButton
@@ -146,6 +144,7 @@ object FmAnalyser: TFmAnalyser
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
     OnMouseWheel = GLSceneViewerMouseWheel
+    TabOrder = 8
   end
   object ASIOHost: TAsioHost
     AsioTime.Speed = 1.000000000000000000
@@ -183,7 +182,7 @@ object FmAnalyser: TFmAnalyser
     end
     object GLCamera: TGLCamera
       DepthOfView = 100.000000000000000000
-      FocalLength = 93.140060424804690000
+      FocalLength = 93.140060424804680000
       Position.Coordinates = {000000000000803F0000A0400000803F}
     end
   end
