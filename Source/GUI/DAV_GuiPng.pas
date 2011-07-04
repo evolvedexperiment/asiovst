@@ -155,19 +155,25 @@ type
     property PrimaryChromaticitiesChunk: TChunkPngPrimaryChromaticities read FChromaChunk write SetChromaChunk;
   end;
 
+  TPngStorageFormat = (psfAuto, psfGrayscale, psfPalette, psfRGB, psfRGBA);
   TPortableNetworkGraphicPixel32 = class(TPortableNetworkGraphic)
   private
+    FStorageFormat : TPngStorageFormat;
     procedure AssignPropertiesFromPixelMap(PixelMap: TGuiCustomPixelMap);
+    procedure SetStorageFormat(const Value: TPngStorageFormat);
   protected
     procedure ReadData(Stream: TStream); virtual;
     procedure WriteData(Stream: TStream); virtual;
     procedure DefineProperties(Filer: TFiler); override;
     function PixelmapScanline(Bitmap: TObject; Y: Integer): Pointer; virtual;
   public
+    constructor Create; override;
     procedure AssignTo(Dest: TPersistent); override;
     procedure Assign(Source: TPersistent); override;
 
     procedure DrawToPixelMap(PixelMap: TGuiCustomPixelMap); virtual;
+
+    property StorageFormat: TPngStorageFormat read FStorageFormat write SetStorageFormat default psfAuto;
   end;
 
 (*
@@ -210,7 +216,6 @@ uses
   DAV_Common, DAV_GuiPngCoder, DAV_GuiPngResourceStrings;
 
 type
-  TPalette24 = array of TRGB24;
   TCrcTable = array [0..255] of Cardinal;
   PCrcTable = ^TCrcTable;
 
@@ -2040,6 +2045,12 @@ end;
 
 { TPortableNetworkGraphicPixel32 }
 
+constructor TPortableNetworkGraphicPixel32.Create;
+begin
+ inherited;
+ FStorageFormat := psfAuto;
+end;
+
 procedure TPortableNetworkGraphicPixel32.Assign(Source: TPersistent);
 var
   EncoderClass : TCustomPngEncoderClass;
@@ -2154,62 +2165,88 @@ begin
    // check every pixel in the bitmap for the use of the alpha channel,
    // whether the image is grayscale or whether the colors can be stored
    // as a palette (and build the palette at the same time
-   for Index := 0 to Width * Height - 1 do
-    begin
-     Color := DataPointer[Index];
+   if FStorageFormat = psfAuto then
+    for Index := 0 to Width * Height - 1 do
+     begin
+      Color := DataPointer[Index];
 
-     // check whether the palette is empty
-     if Length(TempPalette) = 0 then
-      begin
-       IsAlpha := Color.A < 255 ;
+      // check whether the palette is empty
+      if Length(TempPalette) = 0 then
+       begin
+        IsAlpha := Color.A < 255 ;
 
-       // eventually store first alpha component
-       if IsAlpha
-        then TempAlpha := Color.A;
+        // eventually store first alpha component
+        if IsAlpha
+         then TempAlpha := Color.A;
 
-       SetLength(TempPalette, 1);
-       TempPalette[0].R := Color.R;
-       TempPalette[0].G := Color.G;
-       TempPalette[0].B := Color.B;
-       IsGrayScale := (Color.R = Color.G) and
-         (Color.B = Color.G);
-      end
-     else
-      begin
-       // check alpha channel
-       if (Color.A < 255) then
-        begin
-         if IsAlpha then
-          if IsPalette and (TempAlpha <> Color.A)
-           then IsPalette := False else
-          else TempAlpha := Color.A;
+        SetLength(TempPalette, 1);
+        TempPalette[0].R := Color.R;
+        TempPalette[0].G := Color.G;
+        TempPalette[0].B := Color.B;
+        IsGrayScale := (Color.R = Color.G) and
+          (Color.B = Color.G);
+       end
+      else
+       begin
+        // check alpha channel
+        if (Color.A < 255) then
+         begin
+          if IsAlpha then
+           if IsPalette and (TempAlpha <> Color.A)
+            then IsPalette := False else
+           else TempAlpha := Color.A;
 
-         IsAlpha := True;
-        end;
-       if ColorIndexInPalette(Color, TempPalette) < 0 then
-        begin
-         if IsPalette then
-          if (Length(TempPalette) < 256) then
-           begin
-            SetLength(TempPalette, Length(TempPalette) + 1);
-            TempPalette[Length(TempPalette) - 1].R := Color.R;
-            TempPalette[Length(TempPalette) - 1].G := Color.G;
-            TempPalette[Length(TempPalette) - 1].B := Color.B;
-            if IsGrayScale and not ((Color.R = Color.G) and
-              (Color.B = Color.G))
-             then IsGrayScale := False;
-           end
-          else IsPalette := False
-         else
-          if not ((Color.R = Color.G) and
-            (Color.B = Color.G))
-           then IsGrayScale := False;
-        end;
-      end;
+          IsAlpha := True;
+         end;
+        if ColorIndexInPalette(Color, TempPalette) < 0 then
+         begin
+          if IsPalette then
+           if (Length(TempPalette) < 256) then
+            begin
+             SetLength(TempPalette, Length(TempPalette) + 1);
+             TempPalette[Length(TempPalette) - 1].R := Color.R;
+             TempPalette[Length(TempPalette) - 1].G := Color.G;
+             TempPalette[Length(TempPalette) - 1].B := Color.B;
+             if IsGrayScale and not ((Color.R = Color.G) and
+               (Color.B = Color.G))
+              then IsGrayScale := False;
+            end
+           else IsPalette := False
+          else
+           if not ((Color.R = Color.G) and
+             (Color.B = Color.G))
+            then IsGrayScale := False;
+         end;
+       end;
 
-     if IsAlpha and (not IsPalette) and (not IsGrayScale)
-      then Break;
-    end;
+      if IsAlpha and (not IsPalette) and (not IsGrayScale)
+       then Break;
+     end
+   else
+    if FStorageFormat = psfGrayscale then
+     begin
+      IsAlpha := False;
+      IsPalette := False;
+      IsGrayscale := True;
+     end else
+    if FStorageFormat = psfPalette then
+     begin
+      IsAlpha := False;
+      IsPalette := True;
+      IsGrayscale := False;
+     end else
+    if FStorageFormat = psfRGB then
+     begin
+      IsAlpha := False;
+      IsPalette := False;
+      IsGrayscale := False;
+     end else
+    if FStorageFormat = psfRGBA then
+     begin
+      IsAlpha := True;
+      IsPalette := False;
+      IsGrayscale := False;
+     end;
 
    // set image header
    with ImageHeader do
@@ -2396,6 +2433,12 @@ end;
 procedure TPortableNetworkGraphicPixel32.ReadData(Stream: TStream);
 begin
  LoadFromStream(Stream);
+end;
+
+procedure TPortableNetworkGraphicPixel32.SetStorageFormat(
+  const Value: TPngStorageFormat);
+begin
+  FStorageFormat := Value;
 end;
 
 procedure TPortableNetworkGraphicPixel32.WriteData(Stream: TStream);

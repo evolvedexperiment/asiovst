@@ -1,5 +1,4 @@
 object PluginDataModule: TPluginDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsProgramChunks]
   Version = '1.0'
   EffectName = 'Notepad'
@@ -30,6 +29,7 @@ object PluginDataModule: TPluginDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnAfterProgramChange = VSTModuleAfterProgramChange
+  OnProcess32Replacing = VSTModuleProcess32Replacing
   Left = 392
   Top = 88
   Height = 150

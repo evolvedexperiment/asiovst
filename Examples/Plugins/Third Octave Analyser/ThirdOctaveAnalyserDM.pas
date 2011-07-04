@@ -36,7 +36,8 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilterChebyshevType1;
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilterChebyshevType1,
+  DAV_CustomDataContainer, DAV_DataContainerThirdOctave;
 
 const
   CNumFrequencies = 32;
@@ -60,11 +61,11 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDownsampled(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterSmoothChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFullscaleGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDownsamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterDownsamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FUseDownsampling: Boolean;
     function GetBandReserve: Single;
@@ -78,10 +79,10 @@ type
     FDownSampleMax   : Integer;
     FBandReserve     : Double;
 
-    FFilterArray     : array [0..cNumFrequencies - 1] of TDownsampleFilterRecord;
+    FFilterArray     : array [0..CNumFrequencies - 1] of TDownsampleFilterRecord;
     FFSGain          : Single;
     FSpeedConst      : array [0..1] of Single;
-//    FDSSpeedConsts   : array [0..cNumFrequencies - 1] of Single;
+//    FDSSpeedConsts   : array [0..CNumFrequencies - 1] of Single;
     procedure UpdateFilters; virtual;
     procedure DownsamplingChanged; virtual;
   public

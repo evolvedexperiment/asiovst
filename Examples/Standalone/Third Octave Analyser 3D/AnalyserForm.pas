@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   ComCtrls, ExtCtrls, Spin, Math, TeEngine, Series, TeeProcs, Chart,
   DAV_ASIOHost, DAV_Types, DAV_DspFilterChebyshevType1, GLScene, GLObjects,
-  GLMisc, GLWin32Viewer, GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLWin32Viewer, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 const
   CNumHistory = 5;
@@ -106,7 +106,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Inifiles, Registry, VectorGeometry;
+  Inifiles, Registry, VectorGeometry, DAV_Common;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
@@ -118,10 +118,10 @@ begin
  FSpeedConst[1] := 1 - FSpeedConst[0];
  FHistoryCount := 0;
  FFSGain := SEFullscaleGain.Value;
- DriverCombo.Items := ASIOHost.DriverList;
+ CbDriver.Items := ASIOHost.DriverList;
 
  // make sure any ASIO driver is present
- if DriverCombo.Items.Count = 0 then
+ if CbDriver.Items.Count = 0 then
   try
    raise Exception.Create('No ASIO Driver present! Application Terminated!');
   except
@@ -179,9 +179,9 @@ begin
   try
    Left := ReadInteger('Layout', 'Audio Left', Left);
    Top := ReadInteger('Layout', 'Audio Top', Top);
-   DriverCombo.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-   if DriverCombo.ItemIndex >= 0 then DriverComboChange(DriverCombo);
-   ChannelBox.ItemIndex := ReadInteger('Audio', 'Channels', 0);
+   CbDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
+   if CbDriver.ItemIndex >= 0 then CbDriverChange(CbDriver);
+   CbChannel.ItemIndex := ReadInteger('Audio', 'Channels', 0);
    SEFullscaleGain.Value := ReadInteger('Audio', 'Fullscale Gain', 0);
   finally
    Free;
@@ -195,8 +195,8 @@ begin
   try
    WriteInteger('Layout', 'Audio Left', Left);
    WriteInteger('Layout', 'Audio Top', Top);
-   WriteInteger('Audio', 'ASIO Driver', DriverCombo.ItemIndex);
-   WriteInteger('Audio', 'Channels', ChannelBox.ItemIndex);
+   WriteInteger('Audio', 'ASIO Driver', CbDriver.ItemIndex);
+   WriteInteger('Audio', 'Channels', CbChannel.ItemIndex);
    WriteInteger('Audio', 'Fullscale Gain', SEFullscaleGain.Value);
   finally
    Free;
@@ -399,24 +399,24 @@ procedure TFmAnalyser.CbDriverChange(Sender: TObject);
 var
   i : Integer;
 begin
- Bt_CP.Enabled := False;
- Bt_Analyse.Enabled := False;
- DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
- if DriverCombo.ItemIndex >= 0 then
+ BtControlPanel.Enabled := False;
+ BtAnalyse.Enabled := False;
+ CbDriver.ItemIndex := CbDriver.Items.IndexOf(CbDriver.Text);
+ if CbDriver.ItemIndex >= 0 then
   begin
-   ASIOHost.DriverIndex := DriverCombo.ItemIndex;
-   ChannelBox.Clear;
+   ASIOHost.DriverIndex := CbDriver.ItemIndex;
+   CbChannel.Clear;
    for i := 0 to ASIOHost.InputChannelCount - 1
-    do ChannelBox.Items.Add(ASIOHost.InputChannelInfos[i].name);
+    do CbChannel.Items.Add(ASIOHost.InputChannelInfos[i].name);
    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
     try
-     WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
+     WriteInteger('Audio', 'Asio Driver', CbDriver.ItemIndex);
     finally
      Free;
     end;
-   Bt_CP.Enabled := True;
-   Bt_Analyse.Enabled := True;
-   ChannelBox.ItemIndex := 0;
+   BtControlPanel.Enabled := True;
+   BtAnalyse.Enabled := True;
+   CbChannel.ItemIndex := 0;
   end;
 end;
 
@@ -427,15 +427,15 @@ end;
 
 procedure TFmAnalyser.BtAnalyseClick(Sender: TObject);
 begin
- if Bt_Analyse.Caption = 'Analyse' then
+ if BtAnalyse.Caption = 'Analyse' then
   begin
    ASIOHost.Active := True; // Start Audio
-   Bt_Analyse.Caption := 'Stop';
+   BtAnalyse.Caption := 'Stop';
   end
  else
   begin
    ASIOHost.Active := False; // Stop Audio
-   Bt_Analyse.Caption := 'Analyse';
+   BtAnalyse.Caption := 'Analyse';
   end;
  Timer.Enabled := ASIOHost.Active;
 end;

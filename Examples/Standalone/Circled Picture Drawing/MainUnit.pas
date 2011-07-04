@@ -163,6 +163,8 @@ type
     procedure SetAdditional(const Value: Single);
     procedure SetRandomOrder(const Value: Boolean);
     procedure SetReduceHighCosts(const Value: Boolean);
+    function GetImageHeight: Integer;
+    function GetImageWidth: Integer;
   protected
     {$IFDEF DARWIN}
     AppMenu     : TMenuItem;
@@ -183,7 +185,7 @@ type
     procedure SaveDrawingHR(FileName: TFileName);
     procedure SaveDrawingFramed(FileName: TFileName);
     procedure SaveAnimation(FileName: TFileName; ScaleFactor: Single;
-      AnimatedCircle: Boolean = False);
+      AnimatedCircle: Boolean = False; Halflife: Integer = 0);
     procedure LoadDrawing(FileName: TFileName);
     procedure LoadBest(FileName: TFileName);
     procedure DrawPopulation(Population: TDifferentialEvolutionPopulation;
@@ -220,6 +222,9 @@ type
     property UpdateTrials: Integer read FUpdateTrials write SetUpdateTrials;
     property Weight: Single read FWeight write SetWeight;
     property WeightDither: Boolean read FWeightDither write FWeightDither;
+
+    property ImageWidth: Integer read GetImageWidth;
+    property ImageHeight: Integer read GetImageHeight;
   end;
 
 var
@@ -248,8 +253,9 @@ implementation
 {$ENDIF}
 
 uses
-  Filectrl, Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Approximations,
-  DAV_GuiBlend, SettingsUnit, ProgressBarUnit, AdditionalChunks, CostLogUnit;
+  Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Approximations,
+  DAV_GuiBlend, SettingsUnit, ProgressBarUnit, AdditionalChunks, CostLogUnit,
+  SaveAnimationUnit;
 
 { TEvolution }
 
@@ -489,6 +495,16 @@ begin
  {$ENDIF}
 end;
 
+function TFmPrimitivePictureEvolution.GetImageHeight: Integer;
+begin
+ Result := FReference.Height;
+end;
+
+function TFmPrimitivePictureEvolution.GetImageWidth: Integer;
+begin
+ Result := FReference.Width;
+end;
+
 procedure TFmPrimitivePictureEvolution.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
@@ -629,12 +645,15 @@ begin
 end;
 
 procedure TFmPrimitivePictureEvolution.MiSaveAnimationClick(Sender: TObject);
-var
-  Dir : string;
 begin
- Dir := ExtractFileDir(ParamStr(0));
- if SelectDirectory(Dir, [sdAllowCreate, sdPerformCreate, sdPrompt], 0)
-  then SaveAnimation(Dir, 2, True);
+ with TFmSaveAnimation.Create(Self) do
+  try
+   if (ShowModal = mrOK) and DirectoryExists(EdDirectory.Text)
+    then SaveAnimation(EdDirectory.Text, SEScale.Value * 0.01,
+      CbCircleAnimation.Checked, SEHalfLife.Value);
+  finally
+   Free;
+  end;
 end;
 
 procedure TFmPrimitivePictureEvolution.MiSaveHighResolutionClick(Sender: TObject);
@@ -1130,6 +1149,7 @@ var
   PixelData : array [0..1] of PPixel32Array;
   ByteData  : PByteArray;
   ErrorByte : Byte;
+  PosData   : array of TPoint;
 begin
  for y := 0 to FCostMap.Height - 1 do
   begin
@@ -1166,22 +1186,30 @@ begin
    end;
   end;
 
- FPreferedPosition.X := 0;
- FPreferedPosition.Y := 0;
- ErrorByte := FCostMap.DataPointer^[0];
+ SetLength(PosData, 0);
+ ErrorByte := 0;
  for y := 0 to FCostMap.Height - 1 do
   begin
    ByteData := FCostMap.ScanLine[y];
    for x := 0 to FCostMap.Width - 1 do
     begin
+     if ByteData^[x] = ErrorByte then
+      begin
+       SetLength(PosData, Length(PosData) + 1);
+       PosData[Length(PosData) - 1].X := x;
+       PosData[Length(PosData) - 1].Y := y;
+      end else
      if ByteData^[x] > ErrorByte then
       begin
-       FPreferedPosition.X := x;
-       FPreferedPosition.Y := y;
+       SetLength(PosData, 1);
+       PosData[0].X := x;
+       PosData[0].Y := y;
        ErrorByte := ByteData^[x];
       end;
     end;
   end;
+
+ FPreferedPosition := PosData[Random(Length(PosData))];
 end;
 
 function TFmPrimitivePictureEvolution.CalculateError(Sender: TObject;
@@ -1460,7 +1488,7 @@ begin
  // Result := Result * FCostScale; // <- do NOT use with current optimization
 
  if FReduceHighCosts and (Radius > 0.02 * FMaximumDimension)
-  then Result := Result + (Radius - 0.02 * FMaximumDimension); // FArea *
+  then Result := Result + 0.1 * (Radius - 0.02 * FMaximumDimension); // FArea *
 
  {$IFDEF UseApproximation}
  Result := 10 * FastLog2ContinousError4(1E-30 + Result);
@@ -2027,8 +2055,8 @@ begin
 end;
 
 procedure TFmPrimitivePictureEvolution.SaveAnimation(FileName: TFileName;
-  ScaleFactor: Single; AnimatedCircle: Boolean = False);
-{$DEFINE OnlyFinalBlend}
+  ScaleFactor: Single; AnimatedCircle: Boolean = False; Halflife: Integer = 0);
+{-$DEFINE OnlyFinalBlend} // define this only in case the final blend is wrong
 var
   Drawing       : TGuiPixelMapMemory;
   BackDraw      : TGuiPixelMapMemory;
@@ -2042,6 +2070,8 @@ var
   FixedOneThird : TFixed24Dot8Point;
   TempRect      : TRect;
   FinalAlpha    : Byte;
+  HalfLifePos   : Single;
+  HalfLifeIndex : Integer;
 const
   pxShadeBlack32 : TPixel32 = (ARGB : $10000000);
   pxShadeWhite32 : TPixel32 = (ARGB : $0FFFFFFF);
@@ -2068,8 +2098,10 @@ begin
     begin
      // initialize
      FixedOneThird := ConvertToFixed24Dot8Point(0.3333);
-     FrameIndex := 0;
+     FrameIndex := 1;
      ProgressBar.Max := 2 * Length(FCircles) + 41;
+     HalfLifePos := 0;
+     HalfLifeIndex := 0;
 
      // create temporary drawing
      BackDraw := TGuiPixelMapMemory.Create;
@@ -2101,8 +2133,31 @@ begin
             // calculate alpha
             Circle.Alpha := Round(FinalAlpha * (Circle.GeometricShape.Radius.Fixed / FinalRadius.Fixed)) and $FF;
 
-            // render circle
-            Circle.Draw(Drawing);
+            if (Halflife = 0) or (HalfLifePos <= 1) then
+             begin
+              // render circle
+              Circle.Draw(Drawing);
+
+              // finalize and save drawing
+              if not Drawing.Equals(BackDraw) then
+               begin
+                Drawing.MakeOpaque;
+                Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+
+                // advance frame index
+                Inc(FrameIndex);
+
+                // reset drawing
+                Drawing.Assign(BackDraw);
+               end;
+             end;
+
+            Inc(HalfLifeIndex);
+            if Halflife > 0 then
+             begin
+              if HalfLifePos > 1 then HalfLifePos := HalfLifePos - 1;
+              HalfLifePos := HalfLifePos + 1 - (Halflife / (Halflife + HalfLifeIndex));
+             end;
 
             // advance radius
             with Circle.GeometricShape do
@@ -2112,17 +2167,6 @@ begin
               Radius := FixedAdd(Radius, CFixed24Dot8One);
              end;
 
-            // finalize and save drawing
-            Drawing.MakeOpaque;
-            if not Drawing.Equals(BackDraw) then
-             begin
-              Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
-              Inc(FrameIndex);
-             end
-            else Continue;
-
-            // reset drawing
-            Drawing.Assign(BackDraw);
             Application.ProcessMessages;
            end;
          {$ENDIF}
@@ -2132,12 +2176,23 @@ begin
           Circle.Alpha := FinalAlpha;
           Circle.Draw(Drawing);
 
-          {$IFNDEF OnlyFinalBlend}
-          // finalize and save drawing
-          Drawing.MakeOpaque;
-          Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
-          Inc(FrameIndex);
-          {$ENDIF}
+          if (Halflife = 0) or (HalfLifePos <= 1) then
+           begin
+            {$IFNDEF OnlyFinalBlend}
+            // finalize and save drawing
+            Drawing.MakeOpaque;
+            Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+            {$ENDIF}
+
+            Inc(FrameIndex);
+           end;
+
+          Inc(HalfLifeIndex);
+          if Halflife > 0 then
+           begin
+            if HalfLifePos > 1 then HalfLifePos := HalfLifePos - 1;
+            HalfLifePos := HalfLifePos + 1 - (Halflife / (Halflife + HalfLifeIndex));
+           end;
 
           ProgressBar.StepIt;
           Application.ProcessMessages;
@@ -2182,7 +2237,7 @@ begin
         Drawing.FrameRect(TempRect, pxShadeWhite32);
 
         Drawing.MakeOpaque;
-        Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex + 1) + '.png');
+        Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
         Inc(FrameIndex);
 
         ProgressBar.StepIt;

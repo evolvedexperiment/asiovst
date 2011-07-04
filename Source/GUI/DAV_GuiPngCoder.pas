@@ -2099,11 +2099,13 @@ end;
 function TCustomPngNonInterlacedEncoder.ColorInPalette(
   Color: TBGR32): Integer;
 var
+  Palette : PPalette24;
   Color24 : TRGB24;
 begin
+ Palette := FPalette.PaletteEntriesPointer;
  for Result := 0 to FPalette.Count - 1 do
   begin
-   Color24 := FPalette.PaletteEntry[Result];
+   Color24 := Palette^[Result];
    if (Color.R = Color24.R) and
       (Color.G = Color24.G) and
       (Color.B = Color24.B)

@@ -22,15 +22,15 @@ object FmAnalyser: TFmAnalyser
     326)
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LbDriverName: TLabel
     Left = 7
     Top = 12
     Width = 31
     Height = 13
     Caption = 'Driver:'
-    OnClick = Lb_DrivernameClick
+    OnClick = LbDriverNameClick
   end
-  object Lb_Channels: TLabel
+  object LbChannels: TLabel
     Left = 7
     Top = 36
     Width = 77
@@ -44,14 +44,14 @@ object FmAnalyser: TFmAnalyser
     Height = 13
     Caption = 'Speed:'
   end
-  object LbFullscale: TLabel
+  object LbFullScale: TLabel
     Left = 205
     Top = 64
     Width = 53
     Height = 13
     Caption = 'Fullscale = '
   end
-  object Lb_dB: TLabel
+  object LbFullScaleUnit: TLabel
     Left = 322
     Top = 64
     Width = 13
@@ -64,11 +64,10 @@ object FmAnalyser: TFmAnalyser
     Width = 273
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
-  object Bt_CP: TButton
+  object BtControlPanel: TButton
     Left = 350
     Top = 8
     Width = 91
@@ -76,7 +75,7 @@ object FmAnalyser: TFmAnalyser
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = Bt_CPClick
+    OnClick = BtControlPanelClick
   end
   object ChannelBox: TComboBox
     Left = 104
@@ -84,10 +83,9 @@ object FmAnalyser: TFmAnalyser
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
   end
-  object Bt_Analyse: TButton
+  object BtAnalyse: TButton
     Left = 350
     Top = 32
     Width = 91
@@ -96,18 +94,18 @@ object FmAnalyser: TFmAnalyser
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = Bt_AnalyseClick
+    OnClick = BtAnalyseClick
   end
-  object RB_Fast: TRadioButton
+  object RbFast: TRadioButton
     Left = 49
     Top = 63
     Width = 40
     Height = 17
     Caption = '&Fast'
     TabOrder = 4
-    OnClick = RB_FastClick
+    OnClick = RbFastClick
   end
-  object RB_Medium: TRadioButton
+  object RbMedium: TRadioButton
     Left = 91
     Top = 63
     Width = 55
@@ -116,16 +114,16 @@ object FmAnalyser: TFmAnalyser
     Checked = True
     TabOrder = 5
     TabStop = True
-    OnClick = RB_MediumClick
+    OnClick = RbMediumClick
   end
-  object RB_Slow: TRadioButton
+  object RbSlow: TRadioButton
     Left = 150
     Top = 63
     Width = 46
     Height = 17
     Caption = '&Slow'
     TabOrder = 6
-    OnClick = RB_SlowClick
+    OnClick = RbSlowClick
   end
   object SEFullscaleGain: TSpinEdit
     Left = 262
@@ -158,18 +156,16 @@ object FmAnalyser: TFmAnalyser
     TabOrder = 8
     Anchors = [akLeft, akTop, akRight, akBottom]
     object BarSeries: TBarSeries
-      Marks.ArrowLength = 20
+      Marks.Arrow.Visible = True
+      Marks.Callout.Brush.Color = clBlack
+      Marks.Callout.Arrow.Visible = True
       Marks.Visible = False
-      SeriesColor = clRed
       ShowInLegend = False
+      Gradient.Direction = gdTopBottom
       MultiBar = mbNone
-      XValues.DateTime = False
       XValues.Name = 'X'
-      XValues.Multiplier = 1.000000000000000000
       XValues.Order = loAscending
-      YValues.DateTime = False
       YValues.Name = 'Balken'
-      YValues.Multiplier = 1.000000000000000000
       YValues.Order = loNone
     end
   end

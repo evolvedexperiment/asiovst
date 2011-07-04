@@ -105,13 +105,17 @@ type
     property Data: TMemoryStream read FData;
   end;
 
+  TPalette24 = array of TRGB24;
+  PPalette24 = PRGB24Array;
+
   TChunkPngPalette = class(TCustomChunkPngWithHeader)
   private
-    FPaletteEntries : array of TRGB24;
+    FPaletteEntries : TPalette24;
     function GetPaletteEntry(Index: Integer): TRGB24;
     function GetCount: Integer;
     procedure SetCount(const Value: Integer);
     procedure SetPaletteEntry(Index: Integer; const Value: TRGB24);
+    function GetPaletteEntriesPointer: PPalette24;
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure PaletteEntriesChanged; virtual;
@@ -121,6 +125,7 @@ type
     procedure SaveToStream(Stream: TStream); override;
 
     property PaletteEntry[Index: Integer]: TRGB24 read GetPaletteEntry write SetPaletteEntry; default;
+    property PaletteEntriesPointer: PPalette24 read GetPaletteEntriesPointer;
     property Count: Integer read GetCount write SetCount;
   end;
 
@@ -906,6 +911,11 @@ end;
 class function TChunkPngPalette.GetClassChunkName: TChunkName;
 begin
  Result := 'PLTE';
+end;
+
+function TChunkPngPalette.GetPaletteEntriesPointer: PPalette24;
+begin
+ Result := @FPaletteEntries[0];
 end;
 
 function TChunkPngPalette.GetPaletteEntry(Index: Integer): TRGB24;

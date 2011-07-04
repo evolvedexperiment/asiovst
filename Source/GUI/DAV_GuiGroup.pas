@@ -973,7 +973,7 @@ begin
    // set other local variables
    RadiusFixed := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
-   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   WidthMinusOne := ConvertToFixed24Dot8Point(Integer(Width - 1));
    HeaderHeight.Fixed := ConvertToFixed24Dot8Point(FHeaderHeight).Fixed;
    HeaderWidth.Fixed := ConvertToFixed24Dot8Point(FHeaderWidth).Fixed;
 
@@ -1077,7 +1077,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -1087,7 +1087,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -1137,7 +1137,7 @@ begin
       end;
 
      // check upper/lower half and eventually precalculate y-border distance
-     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     Temp := ConvertToFixed24Dot8Point(Integer(Height - 1));
      IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
        (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
      if IsUpperLowerHalf
@@ -1220,7 +1220,7 @@ begin
       end;
 
      // check upper/lower half and eventually precalculate y-border distance
-     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     Temp := ConvertToFixed24Dot8Point(Integer(Height - 1));
      IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
        (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
      if IsUpperLowerHalf then
@@ -1329,7 +1329,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -1339,7 +1339,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -1675,7 +1675,7 @@ begin
    // set other local variables
    RadiusFixed := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
-   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   WidthMinusOne := ConvertToFixed24Dot8Point(Integer(Width - 1));
    HeaderWidth.Fixed := ConvertToFixed24Dot8Point(FHeaderWidth).Fixed +
      3 * BorderWidthFixed.Fixed;
 
@@ -1716,7 +1716,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      X := XRange[0];
      while X <= XRange[1] do
       begin
@@ -1727,7 +1727,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -1782,7 +1782,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -1792,7 +1792,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -1844,7 +1844,7 @@ begin
       end;
 
      // check upper/lower half and eventually precalculate y-border distance
-     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     Temp := ConvertToFixed24Dot8Point(Integer(Height - 1));
      IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
        (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
      if IsUpperLowerHalf then
@@ -1999,7 +1999,7 @@ begin
    // set other local variables
    RadiusFixed := ConvertToFixed24Dot8Point(Min(FBorderRadius, Min(FHeaderHeight, 0.5 * Min(Width, Height))) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
-   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   WidthMinusOne := ConvertToFixed24Dot8Point(Integer(Width - 1));
    HeaderHeight.Fixed := ConvertToFixed24Dot8Point(FHeaderHeight).Fixed +
      2 * BorderWidthFixed.Fixed;
 
@@ -2040,7 +2040,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -2050,7 +2050,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -2093,7 +2093,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -2103,7 +2103,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -2151,7 +2151,7 @@ begin
       end;
 
      // check upper/lower half and eventually precalculate y-border distance
-     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     Temp := ConvertToFixed24Dot8Point(Integer(Height - 1));
      IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
        (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
      if IsUpperLowerHalf then
@@ -2457,7 +2457,7 @@ begin
    for Y := XRange[0] to XRange[1] - 1 do
     begin
      ScnLne[0] := Scanline[Y];
-     YFixed := ConvertToFixed24Dot8Point(Y - FYOffset);
+     YFixed := ConvertToFixed24Dot8Point(Integer(Y - FYOffset));
 
      X := FixedFloor(BorderWidthFixed);
      BlendPixelLine(BorderColor, @ScnLne[0][0], X);
@@ -2475,7 +2475,7 @@ begin
      begin
       ScnLne[0] := Scanline[FYOffset + Y];
       ScnLne[1] := Scanline[Height - Y - 1];
-      YFixed := ConvertToFixed24Dot8Point(Y - FYOffset);
+      YFixed := ConvertToFixed24Dot8Point(Integer(Y - FYOffset));
 
       X := FixedFloor(BorderWidthFixed);
       BlendPixelLine(BorderColor, @ScnLne[0][0], X);
@@ -2537,7 +2537,7 @@ begin
     end;
 
 
-   CenterX := FixedAdd(CenterX, ConvertToFixed24Dot8Point(FTextWidth - 1));
+   CenterX := FixedAdd(CenterX, ConvertToFixed24Dot8Point(Integer(FTextWidth - 1)));
    CenterX.Frac := 0;
 
    // calculate affected scanlines

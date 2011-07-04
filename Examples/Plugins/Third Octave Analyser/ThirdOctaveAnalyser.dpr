@@ -2,9 +2,9 @@
 library ThirdOctaveAnalyser;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
-  madExcept, // either download madExcept or remove mad* if there is an error here
+  FastMM4,
+  FastMove,
+  madExcept,
   madLinkDisAsm,
   madListProcesses,
   madListModules,
@@ -12,7 +12,10 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   ThirdOctaveAnalyserDM in 'ThirdOctaveAnalyserDM.pas' {ThirdOctaveAnalyserModule: TVSTModule},
-  ThirdOctaveAnalyserGUI in 'ThirdOctaveAnalyserGUI.pas' {FmThirdOctaveAnalyser};
+  ThirdOctaveAnalyserGUI in 'ThirdOctaveAnalyserGUI.pas' {FmThirdOctaveAnalyser},
+  DAV_ThirdOctaveAnalyser in '..\..\..\Source\DAV_ThirdOctaveAnalyser.pas',
+  DAV_ThirdOctaveAnalyserFilter in '..\..\..\Source\DAV_ThirdOctaveAnalyserFilter.pas',
+  DAV_ThirdOctaveAnalyserFFT in '..\..\..\Source\DAV_ThirdOctaveAnalyserFFT.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

@@ -458,16 +458,16 @@ function FrequencyToBark(Frequency: Single): Single;
 begin
  if (Frequency < 0) then Frequency := 0;
  Frequency := Frequency * 0.001;
- Result := 13.0 * arctan(0.76 * Frequency) +
-   3.5 * arctan(sqr(Frequency * 0.1333333333333333));
+ Result := 13.0 * ArcTan(0.76 * Frequency) +
+   3.5 * ArcTan(Sqr(Frequency * 0.1333333333333333));
 end;
 
 function FrequencyToBark(Frequency: Double): Double;
 begin
  if (Frequency < 0) then Frequency := 0;
  Frequency := Frequency * 0.001;
- Result := 13.0 * arctan(0.76 * Frequency) +
-   3.5 * arctan(sqr(Frequency / 7.5));
+ Result := 13.0 * ArcTan(0.76 * Frequency) +
+   3.5 * ArcTan(Sqr(Frequency / 7.5));
 end;
 
 
@@ -482,12 +482,12 @@ end;
 
 function Frequency2CriticalBandwidth(Frequency: Single): Single;
 begin
- Result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency * 0.001), 0.69);
+ Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
 end;
 
 function Frequency2CriticalBandwidth(Frequency: Double): Double;
 begin
- Result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency * 0.001), 0.69);
+ Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
 end;
 
 

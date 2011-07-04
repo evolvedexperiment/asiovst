@@ -1,4 +1,4 @@
-unit PluginDM;
+unit DAV_CustomDataContainer;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -30,115 +30,83 @@ unit PluginDM;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-{$I DAV_Compiler.inc}
-
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, DAV_ChunkClasses, DAV_Types, DAV_VSTModule;
+  Classes, DAV_Types, DAV_Classes;
 
 type
-  TTextChunk = class(TCustomTextChunk)
-  public
-    class function GetClassChunkName : TChunkName; override;
-  end;
-
-  TPluginDataModule = class(TVSTModule)
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleAfterProgramChange(Sender: TObject);
-    procedure VSTModuleProcess32Replacing(const Inputs,
-      Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  TCustomDataContainer = class(TPersistent)
   private
-    FChunk : TTextChunk;
-    function GetText: AnsiString;
-    procedure SetText(const Value: AnsiString);
+    function GetData(Index: Integer): Double;
+    procedure SetData(Index: Integer; const Value: Double);
+  protected
+    FData  : PDAVDoubleFixedArray;
+    FCount : Integer;
+    procedure AllocateMemory; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
-    property Text: AnsiString read GetText write SetText;
+    constructor Create; virtual;
+    destructor Destroy; override;
+
+    property Data[Index: Integer]: Double read GetData write SetData;
+    property DataPointer: PDAVDoubleFixedArray read FData;
+    property Count: Integer read FCount;
   end;
 
 implementation
 
-{$IFDEF FPC}
-{$R *.lfm}
-{$ELSE}
-{$R *.dfm}
-{$ENDIF}
-
 uses
-  Editor;
+  SysUtils;
 
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
-{ TTextChunk }
+{ TCustomDataContainer }
 
-class function TTextChunk.GetClassChunkName: TChunkName;
+constructor TCustomDataContainer.Create;
 begin
- Result := 'text';
+ inherited;
 end;
 
-
-{ TPluginDataModule }
-
-procedure TPluginDataModule.VSTModuleOpen(Sender: TObject);
+destructor TCustomDataContainer.Destroy;
 begin
- // set editor form class
- EditorFormClass := TFmNotepad;
-
- // create custom chunk
- FChunk := TTextChunk.Create;
+ Dispose(FData);
+ inherited;
 end;
 
-procedure TPluginDataModule.VSTModuleClose(Sender: TObject);
+procedure TCustomDataContainer.AllocateMemory;
 begin
- // free custom chunk
- FreeAndNil(FChunk);
+ ReallocMem(FData, FCount * SizeOf(Double));
 end;
 
-function TPluginDataModule.GetText: AnsiString;
+procedure TCustomDataContainer.AssignTo(Dest: TPersistent);
 begin
-  with Programs[CurrentProgram] do
-  begin
-   // locate the beginning of the chunk
-   Chunk.Seek(0, soFromBeginning);
-
-   // check if chunk is valid
-   if Chunk.Size > 8
-    then FChunk.LoadFromStream(Chunk)
-    else FChunk.Text := '';
-
-   // return text
-   Result := string(FChunk.Text);
-  end;
+ if Dest is TCustomDataContainer then
+  with TCustomDataContainer(Dest) do
+   begin
+    FCount := Self.FCount;
+    AllocateMemory;
+    Move(Self.FData^, FData^, FCount * SizeOf(Double));
+   end
+ else inherited;
 end;
 
-procedure TPluginDataModule.SetText(const Value: AnsiString);
+function TCustomDataContainer.GetData(Index: Integer): Double;
 begin
-  with Programs[CurrentProgram] do
-  begin
-   // locate the beginning of the chunk
-   Chunk.Seek(0, soFromBeginning);
-
-   // assign text
-   FChunk.Text := Value;
-
-   // save text to stream
-   FChunk.SaveToStream(Chunk)
-  end;
+ if (Index >= 0) and (Index < FCount)
+  then Result := FData[Index]
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TPluginDataModule.VSTModuleAfterProgramChange(Sender: TObject);
+procedure TCustomDataContainer.SetData(Index: Integer; const Value: Double);
 begin
- // change notepad display
- if EditorForm is TFmNotepad then
-  with TFmNotepad(EditorForm)
-   do MeNotepad.Lines.Text := Text;
-end;
-
-procedure TPluginDataModule.VSTModuleProcess32Replacing(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-begin
-  //
+ if (Index >= 0) and (Index < FCount)
+  then FData[Index] := Value
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 end.
+

@@ -13,7 +13,8 @@ uses
   SettingsUnit in 'SettingsUnit.pas' {FmSettings},
   ProgressBarUnit in 'ProgressBarUnit.pas' {FmProgressBar},
   AdditionalChunks in 'AdditionalChunks.pas',
-  CostLogUnit in 'CostLogUnit.pas' {FmCostLog};
+  CostLogUnit in 'CostLogUnit.pas' {FmCostLog},
+  SaveAnimationUnit in 'SaveAnimationUnit.pas' {FmSaveAnimation};
 
 {$IFDEF RELEASE}
 {$SetPEFlags 1}
