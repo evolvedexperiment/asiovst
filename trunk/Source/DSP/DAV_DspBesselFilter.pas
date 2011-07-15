@@ -284,7 +284,7 @@ end;
 
 function CalculateBesselFactor(Order, Term : Integer): Double;
 begin
- result := Factorial(2 * Order - Term) / (IntPower(2, Order - Term) * Factorial(Term) * Factorial(Order - Term));
+ Result := Factorial(Integer(2 * Order - Term)) / (IntPower(2, Order - Term) * Factorial(Integer(Term)) * Factorial(Integer(Order - Term)));
 end;
 
 procedure TBesselLowpassFilter.CalculateCoefficients;
