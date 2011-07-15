@@ -73,10 +73,9 @@ object ChebyshevLPModule: TChebyshevLPModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 1027
   Top = 158

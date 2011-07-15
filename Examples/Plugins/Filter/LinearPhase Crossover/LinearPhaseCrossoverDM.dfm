@@ -1,5 +1,4 @@
 object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'

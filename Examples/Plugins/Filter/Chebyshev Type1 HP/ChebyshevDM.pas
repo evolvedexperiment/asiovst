@@ -72,14 +72,15 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, ChebyshevGUI;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math, DAV_Common,
+  ChebyshevGUI;
   
 procedure TChebyshevHPModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FFilter, numInputs);
  for Channel := 0 to Length(FFilter) - 1 do
   begin
@@ -169,15 +170,15 @@ end;
 procedure TChebyshevHPModule.ParameterRippleDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4);
+ PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4));
 end;
 
 procedure TChebyshevHPModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
-  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
-  else PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4)
+  then PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4))
+  else PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4));
 end;
 
 procedure TChebyshevHPModule.ParameterFrequencyLabel(
@@ -191,7 +192,7 @@ end;
 procedure TChebyshevHPModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 
@@ -208,8 +209,8 @@ begin
  if Str = '' then Exit;
 
  // process unit extensions
- if Pos('k', Str) > 0 then Mult := 1E3 else
- if Pos('m', Str) > 0 then Mult := 1E-3
+ if AnsiPos(AnsiString('k'), Str) > 0 then Mult := 1E3 else
+ if AnsiPos(AnsiString('m'), Str) > 0 then Mult := 1E-3
   else Mult := 1;
 
  Indxes[0] := 1;
@@ -225,7 +226,7 @@ begin
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
 
  try
-  Value := Mult * StrToFloat(Str);
+  Value := Mult * StrToFloat(string(Str));
  except
  end;
 end;
@@ -252,7 +253,7 @@ begin
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
 
  try
-  Value := Round(StrToFloat(Str));
+  Value := Round(StrToFloat(string(Str)));
  except
  end;
 end;

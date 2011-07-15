@@ -94,7 +94,7 @@ procedure TParametriQLiteDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel, Band : Integer;
 begin
- FGains[0] := 0.01125;
+ FGains[0] := 0.0225;
  FGains[1] := 100;
  for Channel := 0 to Length(FFilters) - 1 do
   begin
@@ -149,7 +149,7 @@ begin
  Parameter[29] := 12000;
  Parameter[30] := 2;
  Parameter[31] := 0;
- Parameter[32] := 3;
+ Parameter[64] := 3;
  Parameter[33] := 0;
  SetProgramParameters(0, FParameter);
  SetProgramParameters(1, FParameter);
@@ -166,75 +166,6 @@ begin
    do FreeAndNil(FFilters[Channel, Band]);
 end;
 
-procedure TParametriQLiteDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  Sample  : Integer;
-  Channel : Integer;
-  Band    : Integer;
-  Temp    : TDAV2DoubleArray;
-const
-  CPeakRelease : Single = 0.99999;
-begin
- for Channel := 0 to Length(FFilters) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    // Peak Meter (Input)
-    Temp[0] := CHalf32 * (abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
-    FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + abs(Temp[0]));
-
-    FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
-    for Band := 0 to Length(FFilters[Channel]) - 1 do
-     with FFilters[Channel, Band] do
-      begin
-       Temp[0] := ProcessSample64(Temp[0]);
-       Temp[1] := ProcessSample64(Temp[1]);
-      end;
-    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
-    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
-    Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
-
-    // Peak Meter (Output)
-    Temp[1] := CHalf32 * (abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
-    FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + abs(Temp[1]));
-   end;
-end;
-
-procedure TParametriQLiteDataModule.VSTModuleProcessDoubleReplacing(
-  const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
-  const SampleFrames: Integer);
-var
-  Sample  : Integer;
-  Channel : Integer;
-  Band    : Integer;
-  Temp    : TDAV2DoubleArray;
-const
-  CPeakRelease : Single = 0.99999;
-begin
- for Channel := 0 to Length(FFilters) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    // Peak Meter (Input)
-    Temp[0] := CHalf32 * (abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
-    FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + abs(Temp[0]));
-
-    FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
-    for Band := 0 to Length(FFilters[Channel]) - 1 do
-     with FFilters[Channel, Band] do
-      begin
-       Temp[0] := ProcessSample64(Temp[0]);
-       Temp[1] := ProcessSample64(Temp[1]);
-      end;
-    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
-    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
-    Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
-
-    // Peak Meter (Output)
-    Temp[1] := CHalf32 * (abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
-    FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + abs(Temp[1]));
-   end;
-end;
-
 procedure TParametriQLiteDataModule.VSTModuleResume(Sender: TObject);
 var
   Channel : Integer;
@@ -242,36 +173,13 @@ var
 begin
  for Channel := 0 to Length(FFilters) - 1 do
   begin
-   if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].ResetStates
-   if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].ResetStates
+   if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].ResetStates;
+   if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].ResetStates;
 
    for Band := 0 to Length(FFilters[Channel]) - 1 do
     if Assigned(FFilters[Channel, Band])
      then FFilters[Channel, Band].ResetStates;
   end;
-end;
-
-procedure TParametriQLiteDataModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
-var
-  Channel, Band : Integer;
-  Transition    : Single;
-begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FFilters) - 1 do
-   begin
-    // calculate up/downsampler transition bandwidth
-    if 20000 / Abs(SampleRate) < 0.5
-     then Transition := 20000 / Abs(SampleRate)
-     else Transition := 0.499;
-
-    if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
-    if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
-
-    for Band := 0 to Length(FFilters[Channel]) - 1 do
-     if Assigned(FFilters[Channel, Band])
-      then FFilters[Channel, Band].SampleRate := Abs(SampleRate);
-   end;
 end;
 
 procedure TParametriQLiteDataModule.ParameterGainChange(
@@ -291,7 +199,7 @@ end;
 procedure TParametriQLiteDataModule.ParameterInputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FGains[0] := 0.01125 * dB_to_Amp(Value);
+ FGains[0] := 0.0225 * dB_to_Amp(Value);
 end;
 
 procedure TParametriQLiteDataModule.ParameterOutputChange(
@@ -444,6 +352,98 @@ begin
  // update GUI
  if EditorForm is TFmParametriQLite
   then TFmParametriQLite(EditorForm).UpdateBandwidth(Band);
+end;
+
+procedure TParametriQLiteDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  Channel, Band : Integer;
+  Transition    : Single;
+begin
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FFilters) - 1 do
+   begin
+    // calculate up/downsampler transition bandwidth
+    if 20000 / Abs(SampleRate) < 0.5
+     then Transition := 20000 / Abs(SampleRate)
+     else Transition := 0.499;
+
+    if Assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
+    if Assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
+
+    for Band := 0 to Length(FFilters[Channel]) - 1 do
+     if Assigned(FFilters[Channel, Band])
+      then FFilters[Channel, Band].SampleRate := Abs(SampleRate);
+   end;
+end;
+
+procedure TParametriQLiteDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Channel : Integer;
+  Band    : Integer;
+  Temp    : TDAV2DoubleArray;
+const
+  CPeakRelease : Single = 0.99999;
+begin
+ for Channel := 0 to Length(FFilters) - 1 do
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    // Peak Meter (Input)
+    Temp[0] := CHalf64 * (Abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
+    FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + Abs(Temp[0]));
+
+    FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
+    for Band := 0 to Length(FFilters[Channel]) - 1 do
+     with FFilters[Channel, Band] do
+      begin
+       Temp[0] := ProcessSample64(Temp[0]);
+       Temp[1] := ProcessSample64(Temp[1]);
+      end;
+    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
+    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
+    Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
+
+    // Peak Meter (Output)
+    Temp[1] := CHalf64 * (Abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
+    FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + Abs(Temp[1]));
+   end;
+end;
+
+procedure TParametriQLiteDataModule.VSTModuleProcessDoubleReplacing(
+  const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
+  const SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Channel : Integer;
+  Band    : Integer;
+  Temp  : TDAV2DoubleArray;
+const
+  CPeakRelease : Single = 0.99999;
+begin
+ for Channel := 0 to Length(FFilters) - 1 do
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    // Peak Meter (Input)
+    Temp[0] := CHalf64 * (Abs(Inputs[Channel, Sample]) - FPeaks[Channel, 0]);
+    FPeaks[Channel, 0] := CPeakRelease * (FPeaks[Channel, 0] + Temp[0] + Abs(Temp[0]));
+
+    FUpSampler[Channel].ProcessSample(FGains[0] * Inputs[Channel, Sample] + CDenorm64, Temp);
+    for Band := 0 to Length(FFilters[Channel]) - 1 do
+     with FFilters[Channel, Band] do
+      begin
+       Temp[0] := ProcessSample64(Temp[0]);
+       Temp[1] := ProcessSample64(Temp[1]);
+      end;
+    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
+    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
+    Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
+
+    // Peak Meter (Output)
+    Temp[1] := CHalf64 * (Abs(Outputs[Channel, Sample]) - FPeaks[Channel, 1]);
+    FPeaks[Channel, 1] := CPeakRelease * (FPeaks[Channel, 1] + Temp[1] + Abs(Temp[1]));
+   end;
 end;
 
 end.

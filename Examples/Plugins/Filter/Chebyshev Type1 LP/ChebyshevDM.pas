@@ -43,7 +43,6 @@ type
   TChebyshevLPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -76,14 +75,14 @@ implementation
 {$ENDIF}
 
 uses
-  Math, ChebyshevGUI;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math, ChebyshevGUI;
 
 procedure TChebyshevLPModule.VSTModuleOpen(Sender: TObject);
 var
   ch : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FFilter, numInputs);
  for ch := 0 to Length(FFilter) - 1 do
   begin
@@ -106,6 +105,9 @@ begin
    Parameter[1] := 1;
    Parameter[2] := 4;
   end;
+
+  // set editor class
+  EditorFormClass := TFmChebyshev;
 end;
 
 procedure TChebyshevLPModule.VSTModuleClose(Sender: TObject);
@@ -115,12 +117,6 @@ begin
  for Channel := 0 to Length(FFilter) - 1
   do FreeAndNil(FFilter[Channel]);
 // FreeAndNil(FResizer);
-end;
-
-procedure TChebyshevLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmChebyshev.Create(Self);
 end;
 
 procedure TChebyshevLPModule.ParamRippleChange(Sender: TObject;
@@ -162,8 +158,8 @@ begin
  if Str = '' then Exit;
 
  // process unit extensions
- if Pos('k', Str) > 0 then Mult := 1E3 else
- if Pos('m', Str) > 0 then Mult := 1E-3
+ if AnsiPos(AnsiString('k'), Str) > 0 then Mult := 1E3 else
+ if AnsiPos(AnsiString('m'), Str) > 0 then Mult := 1E-3
   else Mult := 1;
 
  Indxes[0] := 1;
@@ -179,7 +175,7 @@ begin
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
 
  try
-  Value := Mult * StrToFloat(Str);
+  Value := Mult * StrToFloat(string(Str));
  except
  end;
 end;
@@ -207,7 +203,7 @@ begin
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
 
  try
-  Value := Round(StrToFloat(Str));
+  Value := Round(StrToFloat(string(Str)));
  except
  end;
 end;
@@ -215,15 +211,15 @@ end;
 procedure TChebyshevLPModule.ParamOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TChebyshevLPModule.ParamFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
-  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
-  else PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4)
+  then PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4))
+  else PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4));
 end;
 
 procedure TChebyshevLPModule.ParamFrequencyChange(Sender: TObject;

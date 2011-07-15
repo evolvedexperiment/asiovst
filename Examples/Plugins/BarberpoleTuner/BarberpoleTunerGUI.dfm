@@ -1,32 +1,36 @@
 object FmBarberpoleTuner: TFmBarberpoleTuner
   Left = 218
-  Height = 90
   Top = 77
-  Width = 274
   BorderStyle = bsNone
   Caption = 'Barberpole Tuner'
   ClientHeight = 90
   ClientWidth = 274
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = True
   OnCreate = FormCreate
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '0.9.29'
+  PixelsPerInch = 96
+  TextHeight = 13
   object LbDisplay: TGuiLabel
     Left = 8
-    Height = 17
     Top = 8
     Width = 137
+    Height = 17
     Alignment = taCenter
     Caption = 'Barberpole Tuner'
-    Font.CharSet = ANSI_CHARSET
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsUnderline]
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 0
   end
 end

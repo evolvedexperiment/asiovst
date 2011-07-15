@@ -102,7 +102,7 @@ end;
 procedure TLinearPhaseCrossoverModule.VSTModuleOpen(Sender: TObject);
 begin
  {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  ReallocMem(FFilterFreq[1], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
@@ -113,7 +113,7 @@ begin
  FillChar(FSignalFreq[0]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq[1]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq[0], BlockModeSize * SizeOf(Single));
  ReallocMem(FFilterFreq[1], BlockModeSize * SizeOf(Single));
@@ -124,7 +124,7 @@ begin
  FillChar(FSignalFreq[0]^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq[1]^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq[0], BlockModeSize * SizeOf(Single));
  ReallocMem(FFilterFreq[1], BlockModeSize * SizeOf(Single));
@@ -238,7 +238,7 @@ end;
 procedure TLinearPhaseCrossoverModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := IntToStr(round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TLinearPhaseCrossoverModule.ParameterFrequencyDisplay(
@@ -248,7 +248,7 @@ var
 begin
  Freq := Parameter[Index];
  if Freq >= 1000
-  then Predefined := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3));
 end;
 
 procedure TLinearPhaseCrossoverModule.ParameterFrequencyLabel(

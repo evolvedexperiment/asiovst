@@ -19,34 +19,6 @@ object FmCombo: TFmCombo
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
-  object SBModel: TGuiSelectBox
-    Left = 82
-    Top = 8
-    Width = 183
-    Height = 25
-    AntiAlias = gaaLinear4x
-    ArrowColor = 4227200
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
-    Font.Height = -21
-    Font.Name = 'Trebuchet MS'
-    Font.Style = []
-    ItemIndex = -1
-    Items.Strings = (
-      'D.I.'
-      'Speaker Sim'
-      'Radio'
-      'MB 1"'
-      'MB 8"'
-      '4x12 ^'
-      '4x12 >')
-    LineColor = 2039583
-    LineWidth = 2
-    ParentFont = False
-    BorderRadius = 8
-    SelectBoxColor = 4227200
-    OnChange = SBModelChange
-  end
   object GuiLED: TGuiLED
     Left = 271
     Top = 8
@@ -83,16 +55,44 @@ object FmCombo: TFmCombo
     FontIndex = 0
     OnClick = LbStereoClick
   end
+  object SBModel: TGuiSelectBox
+    Left = 82
+    Top = 8
+    Width = 183
+    Height = 25
+    ArrowColor = clMaroon
+    BorderColor = 2039583
+    BorderRadius = 8.000000000000000000
+    BorderWidth = 2.000000000000000000
+    ButtonColor = 4227200
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clMaroon
+    Font.Height = -21
+    Font.Name = 'Trebuchet MS'
+    Font.Style = []
+    ItemIndex = -1
+    Items.Strings = (
+      'D.I.'
+      'Speaker Sim'
+      'Radio'
+      'MB 1"'
+      'MB 8"'
+      '4x12 ^'
+      '4x12 >')
+    ParentFont = False
+    SelectBoxColor = 4227200
+    OnChange = SBModelChange
+  end
   object PnControls: TGuiPanel
     Left = 8
     Top = 39
     Width = 361
     Height = 125
     BorderColor = 2039583
+    BorderRadius = 8.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 4227200
     ParentColor = True
-    BorderRadius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick
@@ -250,6 +250,7 @@ object FmCombo: TFmCombo
       Width = 64
       Height = 64
       CurveMapping = -1.750000000000000000
+      DefaultValue = 10.000000000000000000
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -258,7 +259,6 @@ object FmCombo: TFmCombo
       Value = 10.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialFreqChange
-      DefaultValue = 0.000000000000000000
     end
     object DialResonance: TGuiStitchedDial
       Left = 288

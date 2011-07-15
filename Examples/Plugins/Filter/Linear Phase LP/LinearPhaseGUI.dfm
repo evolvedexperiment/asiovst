@@ -22,9 +22,8 @@ object FmLinearPhase: TFmLinearPhase
     Width = 95
     Height = 21
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = 'Frequency'
-    Shadow.Color = clBlack
+    FontOversampling = fo4x
   end
   object LbFrequencyValue: TGuiLabel
     Left = 10
@@ -32,9 +31,8 @@ object FmLinearPhase: TFmLinearPhase
     Width = 89
     Height = 22
     Alignment = taCenter
-    FontOversampling = fo4x
     Caption = '20 kHz'
-    Shadow.Color = clBlack
+    FontOversampling = fo4x
     OnDblClick = DialFrequencyDblClick
   end
   object DialFrequency: TGuiStitchedDial
@@ -45,11 +43,13 @@ object FmLinearPhase: TFmLinearPhase
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialFrequencyChange
-    ImageIndex = 0
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
+    ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialFrequencyChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <

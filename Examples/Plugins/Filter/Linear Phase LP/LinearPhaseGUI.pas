@@ -37,8 +37,9 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
-  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiStitchedControls,
+  DAV_GuiStitchedPngList, DAV_GuiStitchedDial, DAV_GuiImageControl,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmLinearPhase = class(TForm)
@@ -65,7 +66,8 @@ implementation
 {$ENDIF}
 
 uses
-  LinearPhaseDM, DAV_VSTModuleWithPrograms;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
+  DAV_VSTModuleWithPrograms, LinearPhaseDM;
 
 procedure TFmLinearPhase.FormShow(Sender: TObject);
 begin
@@ -98,7 +100,7 @@ begin
  with TLinearPhaseDataModule(Owner) do
   if (Key = #13) and Assigned(FEdValue) then
    try
-    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    StringToParameter(FEdValue.Tag, AnsiString(FEdValue.Text));
     FreeAndNil(FEdValue);
    except
    end;

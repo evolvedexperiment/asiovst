@@ -40,7 +40,8 @@ uses
   DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiVUMeter, DAV_GuiEQGraph, 
   DAV_GuiPixelMap, DAV_GuiStitchedSwitch, DAV_GuiStitchedDisplay, 
   DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial, 
-  DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiImageControl;
+  DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiImageControl,
+  DAV_GuiFont;
 
 type
   TFmParametriQLite = class(TForm)
@@ -227,8 +228,13 @@ type
     function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure FormResize(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure CurrentPlotMouseEnter(Sender: TObject);
+    procedure CurrentPlotMouseLeave(Sender: TObject);
+    function GetCurrentFilterGain(Sender: TObject;
+      const Frequency: Single): Single;
   private
     FBackground : TGuiCustomPixelMap;
+    FCurrent    : Integer;
   public
     procedure UpdateGain(const Index: Integer);
     procedure UpdateBandwidth(const Index: Integer);
@@ -325,6 +331,16 @@ begin
    for Band := 1 to 7
     do Result := Result * Filter[Band].MagnitudeSquared(0.5 * Frequency);
    Result := 10 * FastLog10MinError5(Result);
+  end;
+end;
+
+function TFmParametriQLite.GetCurrentFilterGain(Sender: TObject;
+  const Frequency: Single): Single;
+begin
+ with TParametriQLiteDataModule(Owner) do
+  begin
+   Result := 10 * FastLog10MinError5(
+     Filter[FCurrent].MagnitudeSquared(0.5 * Frequency));
   end;
 end;
 
@@ -436,7 +452,7 @@ var
 begin
  with TParametriQLiteDataModule(Owner) do
   begin
-   FilterType          := round(Parameter[PopupFilter.Tag * 4 + 4]);
+   FilterType          := Round(Parameter[PopupFilter.Tag * 4 + 4]);
    MIBypass.Checked    := FilterType = 0;
    MIPeak.Checked      := FilterType = 1;
    MILowshelf.Checked  := FilterType = 2;
@@ -461,7 +477,7 @@ begin
     then PeakLevel := InputPeakLevel
     else PeakLevel := OutputPeakLevel;
 
-   VUMeter.GlyphIndex := round((25 + Limit(PeakLevel, -25, 0)) * VUMeter.GlyphCount * COne25th);
+   VUMeter.GlyphIndex := Round((25 + Limit(PeakLevel, -25, 0)) * VUMeter.GlyphCount * COne25th);
   end;
 end;
 
@@ -512,7 +528,7 @@ begin
         end;
    end;
   end;
- GuiEQGraph.ChartChanged;
+ GuiEQGraph.UpdateGraph;
 end;
 
 procedure TFmParametriQLite.UpdateBandwidth(const Index: Integer);
@@ -562,7 +578,7 @@ begin
         end;
    end;
   end;
- GuiEQGraph.ChartChanged;
+ GuiEQGraph.UpdateGraph;
 end;
 
 procedure TFmParametriQLite.UpdateGain(const Index: Integer);
@@ -612,7 +628,7 @@ begin
         end;
    end;
   end;
- GuiEQGraph.ChartChanged;
+ GuiEQGraph.UpdateGraph;
 end;
 
 procedure TFmParametriQLite.UpdateFilterType(const Index: Integer);
@@ -620,17 +636,28 @@ begin
  with TParametriQLiteDataModule(Owner) do
   begin
    case Index of
-    0 : LbTypeValue1.Caption := ParameterDisplay[Index * 4 + 4];
-    1 : LbTypeValue2.Caption := ParameterDisplay[Index * 4 + 4];
-    2 : LbTypeValue3.Caption := ParameterDisplay[Index * 4 + 4];
-    3 : LbTypeValue4.Caption := ParameterDisplay[Index * 4 + 4];
-    4 : LbTypeValue5.Caption := ParameterDisplay[Index * 4 + 4];
-    5 : LbTypeValue6.Caption := ParameterDisplay[Index * 4 + 4];
-    6 : LbTypeValue7.Caption := ParameterDisplay[Index * 4 + 4];
-    7 : LbTypeValue8.Caption := ParameterDisplay[Index * 4 + 4];
+    0 : LbTypeValue1.Caption := string(ParameterDisplay[Index * 4 + 4]);
+    1 : LbTypeValue2.Caption := string(ParameterDisplay[Index * 4 + 4]);
+    2 : LbTypeValue3.Caption := string(ParameterDisplay[Index * 4 + 4]);
+    3 : LbTypeValue4.Caption := string(ParameterDisplay[Index * 4 + 4]);
+    4 : LbTypeValue5.Caption := string(ParameterDisplay[Index * 4 + 4]);
+    5 : LbTypeValue6.Caption := string(ParameterDisplay[Index * 4 + 4]);
+    6 : LbTypeValue7.Caption := string(ParameterDisplay[Index * 4 + 4]);
+    7 : LbTypeValue8.Caption := string(ParameterDisplay[Index * 4 + 4]);
    end;
   end;
- GuiEQGraph.ChartChanged;
+ GuiEQGraph.UpdateGraph;
+end;
+
+procedure TFmParametriQLite.CurrentPlotMouseEnter(Sender: TObject);
+begin
+ GuiEQGraph.FilterSeries[1].Visible := True;
+ FCurrent := TComponent(Sender).Tag - 1;
+end;
+
+procedure TFmParametriQLite.CurrentPlotMouseLeave(Sender: TObject);
+begin
+ GuiEQGraph.FilterSeries[1].Visible := False;
 end;
 
 procedure TFmParametriQLite.DialFreqChange(Sender: TObject);

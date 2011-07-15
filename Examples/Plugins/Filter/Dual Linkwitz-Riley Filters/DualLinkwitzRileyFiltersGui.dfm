@@ -43,6 +43,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Top = 175
     Width = 220
     Height = 53
+    AntiAlias = True
     BorderColor = 15659506
     BorderRadius = 7.000000000000000000
     BorderWidth = 2.000000000000000000
@@ -52,8 +53,10 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = 15659506
         LineWidth = 2.000000000000000000
-        OnGetFilterGain = GuiEQGraphGetFilterGain
+        Visible = True
+        OnGetFilterGain = GetFilterGain
       end>
+    FontOversampling = fo4x
     GraphColorDark = 5991539
     GraphColorLight = 6978950
     XAxis.LabelPosition = xlpBottom

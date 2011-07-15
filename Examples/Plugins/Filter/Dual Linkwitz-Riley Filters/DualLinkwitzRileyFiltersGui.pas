@@ -113,7 +113,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    function GuiEQGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
+    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure DialDblClick(Sender: TObject);
     procedure DialHighpassFrequencyChange(Sender: TObject);
     procedure DialHighpassFrequencyMouseEnter(Sender: TObject);
@@ -240,7 +240,7 @@ begin
   then FreeAndNil(FEdValue);
 end;
 
-function TFmLinkwitzRiley.GuiEQGraphGetFilterGain(Sender: TObject;
+function TFmLinkwitzRiley.GetFilterGain(Sender: TObject;
   const Frequency: Single): Single;
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
@@ -349,7 +349,7 @@ end;
 procedure TFmLinkwitzRiley.EQGraphUpdateTimer(Sender: TObject);
 begin
  EQGraphUpdate.Enabled := False;
- GuiEQGraph.ChartChanged;
+ GuiEQGraph.UpdateGraph;
 end;
 
 procedure TFmLinkwitzRiley.DialHighpassFrequencyChange(Sender: TObject);

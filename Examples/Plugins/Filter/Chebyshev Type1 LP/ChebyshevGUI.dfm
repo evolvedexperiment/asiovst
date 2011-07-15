@@ -57,10 +57,10 @@ object FmChebyshev: TFmChebyshev
     Height = 129
     Anchors = [akLeft, akTop, akRight, akBottom]
     BorderColor = 10526927
+    BorderRadius = 8.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
-    BorderRadius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick
@@ -178,6 +178,7 @@ object FmChebyshev: TFmChebyshev
       Height = 64
       Color = 1315880
       CurveMapping = -2.099999904632568000
+      DefaultValue = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ParentColor = False
@@ -187,7 +188,6 @@ object FmChebyshev: TFmChebyshev
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialFrequencyChange
-      DefaultValue = 0.000000000000000000
     end
     object DialRipple: TGuiStitchedDial
       Left = 102
@@ -196,6 +196,7 @@ object FmChebyshev: TFmChebyshev
       Height = 64
       Color = 1315880
       CurveMapping = -2.750000000000000000
+      DefaultValue = 0.001000000047497451
       Max = 10.000000000000000000
       Min = 0.001000000047497451
       ParentColor = False
@@ -205,7 +206,6 @@ object FmChebyshev: TFmChebyshev
       Value = 0.001000000047497451
       WheelStep = 1.000000000000000000
       OnChange = DialRippleChange
-      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 190

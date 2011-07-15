@@ -111,7 +111,7 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterFilterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(2 * Round(0.5 * Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(2 * Round(0.5 * Parameter[Index])));
 end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterOversampleChange(

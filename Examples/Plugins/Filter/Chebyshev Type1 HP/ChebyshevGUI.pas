@@ -83,6 +83,7 @@ implementation
 {$ENDIF}
 
 uses
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
   DAV_VSTModuleWithPrograms, ChebyshevDM;
 
 procedure TFmChebyshev.FormDestroy(Sender: TObject);
@@ -230,7 +231,7 @@ begin
  with TChebyshevHPModule(Owner) do
   if (Key = #13) and Assigned(FEdValue) then
    try
-    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    StringToParameter(FEdValue.Tag, AnsiString(FEdValue.Text));
     FreeAndNil(FEdValue);
    except
    end;

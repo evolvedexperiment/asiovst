@@ -35,30 +35,6 @@ object FmSubBoost: TFmSubBoost
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
   end
-  object SBType: TGuiSelectBox
-    Left = 205
-    Top = 9
-    Width = 124
-    Height = 22
-    AntiAlias = gaaLinear4x
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 13948116
-    Font.Height = -11
-    Font.Name = 'Verdana'
-    Font.Style = []
-    ItemIndex = -1
-    Items.Strings = (
-      'Distort'
-      'Divide'
-      'Invert'
-      'Key Osc.')
-    LineColor = 13948116
-    LineWidth = 2
-    ParentFont = False
-    BorderRadius = 5
-    SelectBoxColor = 2105376
-    OnChange = SBTypeChange
-  end
   object LbType: TGuiLabel
     Left = 160
     Top = 11
@@ -93,16 +69,41 @@ object FmSubBoost: TFmSubBoost
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
   end
+  object SBType: TGuiSelectBox
+    Left = 205
+    Top = 9
+    Width = 124
+    Height = 22
+    ArrowColor = 13948116
+    BorderColor = 13948116
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 2.000000000000000000
+    ButtonColor = 2105376
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 13948116
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = []
+    ItemIndex = -1
+    Items.Strings = (
+      'Distort'
+      'Divide'
+      'Invert'
+      'Key Osc.')
+    ParentFont = False
+    SelectBoxColor = 2105376
+    OnChange = SBTypeChange
+  end
   object GuiPanel1: TGuiPanel
     Left = 8
     Top = 37
     Width = 321
     Height = 84
     BorderColor = clBtnShadow
+    BorderRadius = 7.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True
-    BorderRadius = 7.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object DialLevel: TGuiDial
@@ -317,10 +318,10 @@ object FmSubBoost: TFmSubBoost
     Width = 129
     Height = 84
     BorderColor = clBtnShadow
+    BorderRadius = 7.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 2105376
     ParentColor = True
-    BorderRadius = 7.000000000000000000
     TabOrder = 1
     UseDockManager = True
     object DialInputFilter: TGuiDial

@@ -1,6 +1,6 @@
 object FmParametriQLite: TFmParametriQLite
-  Left = 286
-  Top = 77
+  Left = 333
+  Top = 140
   BorderStyle = bsNone
   Caption = 'Parametri-Q Lite'
   ClientHeight = 348
@@ -1447,16 +1447,33 @@ object FmParametriQLite: TFmParametriQLite
     Top = 36
     Width = 197
     Height = 77
-    AntiAlias = gaaLinear4x
+    AntiAlias = True
     BorderColor = 4342593
-    BorderRadius = 2
+    BorderRadius = 2.000000000000000000
+    BorderWidth = 1.000000000000000000
     ColorChart = 2171424
     FilterSeries = <
       item
-        DisplayName = 'TGuiEQGraphSeriesCollectionItem'
+        DisplayName = 'Main'
         Color = 9145737
+        LineWidth = 2.000000000000000000
+        Visible = True
         OnGetFilterGain = GetFilterGain
+      end
+      item
+        DisplayName = 'Current'
+        Alpha = 127
+        Color = 5855832
+        LineWidth = 1.000000000000000000
+        Visible = False
+        OnGetFilterGain = GetCurrentFilterGain
       end>
+    FontOversampling = fo4x
+    FontShadow.Blur = 1.500000000000000000
+    FontShadow.OffsetX = 0
+    FontShadow.OffsetY = 0
+    FontShadow.Saturation = 1.500000000000000000
+    FontShadow.Visible = True
     GraphColorDark = 4342593
     GraphColorLight = 2960940
     XAxis.LabelPosition = xlpBottom
@@ -1470,8 +1487,8 @@ object FmParametriQLite: TFmParametriQLite
     YAxis.MaximumGridLines = 4
     Color = 1447701
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -5
+    Font.Color = 12106167
+    Font.Height = -7
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentColor = False
@@ -1483,6 +1500,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1491,7 +1509,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW1: TGuiStitchedDial
     Tag = 1
@@ -1500,6 +1519,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1508,7 +1528,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain1: TGuiStitchedDial
     Tag = 1
@@ -1523,6 +1544,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
@@ -1533,6 +1556,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1541,7 +1565,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW2: TGuiStitchedDial
     Tag = 2
@@ -1550,6 +1575,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1558,7 +1584,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain2: TGuiStitchedDial
     Tag = 2
@@ -1573,6 +1600,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
@@ -1583,6 +1612,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1591,7 +1621,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW3: TGuiStitchedDial
     Tag = 3
@@ -1600,6 +1631,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1608,7 +1640,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain3: TGuiStitchedDial
     Tag = 3
@@ -1623,6 +1656,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
@@ -1633,6 +1668,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1641,7 +1677,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW4: TGuiStitchedDial
     Tag = 4
@@ -1650,6 +1687,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1658,7 +1696,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain4: TGuiStitchedDial
     Tag = 4
@@ -1673,6 +1712,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
@@ -1683,6 +1724,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1691,7 +1733,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW5: TGuiStitchedDial
     Tag = 5
@@ -1700,6 +1743,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1708,7 +1752,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain5: TGuiStitchedDial
     Tag = 5
@@ -1723,6 +1768,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
@@ -1733,6 +1780,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1741,7 +1789,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW6: TGuiStitchedDial
     Tag = 6
@@ -1750,6 +1799,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1758,7 +1808,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain6: TGuiStitchedDial
     Tag = 6
@@ -1773,6 +1824,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
@@ -1783,6 +1836,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1791,7 +1845,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW7: TGuiStitchedDial
     Tag = 7
@@ -1800,6 +1855,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1808,7 +1864,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain7: TGuiStitchedDial
     Tag = 7
@@ -1823,6 +1880,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end
@@ -1833,6 +1892,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -2.099999904632568000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1841,7 +1901,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFreqChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialBW8: TGuiStitchedDial
     Tag = 8
@@ -1850,6 +1911,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 48
     Height = 48
     CurveMapping = -1.000000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -1858,7 +1920,8 @@ object FmParametriQLite: TFmParametriQLite
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBWChange
-    DefaultValue = 0.000000000000000000
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
   end
   object DialGain8: TGuiStitchedDial
     Tag = 8
@@ -1873,6 +1936,8 @@ object FmParametriQLite: TFmParametriQLite
     ImageIndex = 1
     WheelStep = 1.000000000000000000
     OnChange = DialGainChange
+    OnMouseEnter = CurrentPlotMouseEnter
+    OnMouseLeave = CurrentPlotMouseLeave
     DefaultValue = 0.000000000000000000
     Value = 0.000000000000000000
   end

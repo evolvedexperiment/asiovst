@@ -162,27 +162,6 @@ object FmReverb: TFmReverb
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 1
-    object SBPreset: TGuiSelectBox
-      Left = 51
-      Top = 2
-      Width = 156
-      Height = 19
-      Alignment = taLeftJustify
-      AntiAlias = gaaLinear4x
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ItemIndex = -1
-      Items.Strings = (
-        'Random 23')
-      LineColor = clSilver
-      ParentFont = False
-      BorderRadius = 4
-      SelectBoxColor = 2960685
-      OnChange = SBPresetChange
-    end
     object LbPreset: TGuiLabel
       Left = 8
       Top = 2
@@ -199,6 +178,28 @@ object FmReverb: TFmReverb
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
+    end
+    object SBPreset: TGuiSelectBox
+      Left = 51
+      Top = 2
+      Width = 156
+      Height = 19
+      Alignment = taLeftJustify
+      BorderColor = 5855577
+      BorderRadius = 4.000000000000000000
+      BorderWidth = 1.500000000000000000
+      ButtonColor = 14803425
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ItemIndex = -1
+      Items.Strings = (
+        'Random 23')
+      ParentFont = False
+      SelectBoxColor = 2960685
+      OnChange = SBPresetChange
     end
     object BtAB: TGuiButton
       Left = 213

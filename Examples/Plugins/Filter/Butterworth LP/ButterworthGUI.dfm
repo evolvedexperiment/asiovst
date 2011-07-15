@@ -46,10 +46,10 @@ object FmButterworth: TFmButterworth
     Width = 184
     Height = 129
     BorderColor = 10526927
+    BorderRadius = 8.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 1315880
     ParentColor = True
-    BorderRadius = 8.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PnControlsClick
@@ -146,6 +146,7 @@ object FmButterworth: TFmButterworth
       Height = 64
       Color = 1315880
       CurveMapping = -2.099999904632568000
+      DefaultValue = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ParentColor = False
@@ -155,7 +156,6 @@ object FmButterworth: TFmButterworth
       Value = 1000.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialFrequencyChange
-      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 104
@@ -179,17 +179,20 @@ object FmButterworth: TFmButterworth
     Top = 179
     Width = 184
     Height = 56
-    AntiAlias = gaaLinear4x
+    AntiAlias = True
     BorderColor = 10526927
-    BorderRadius = 8
-    BorderWidth = 2
+    BorderRadius = 8.000000000000000000
+    BorderWidth = 2.000000000000000000
     ColorChart = 1315880
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = 10526927
+        LineWidth = 2.000000000000000000
+        Visible = False
         OnGetFilterGain = GetFilterGain
       end>
+    FontOversampling = fo4x
     GraphColorDark = 4145018
     GraphColorLight = 2829139
     XAxis.LabelPosition = xlpBottom

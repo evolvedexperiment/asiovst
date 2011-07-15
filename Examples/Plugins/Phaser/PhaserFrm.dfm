@@ -11460,6 +11460,7 @@ object PhaserForm: TPhaserForm
     Max = 1000.000000000000000000
     ParentColor = False
     Value = 50.000000000000000000
+    ShowText = True
     SlideColor = 1529213
     OnChange = SBFeedbackChange
   end
@@ -11476,6 +11477,7 @@ object PhaserForm: TPhaserForm
     Max = 1000.000000000000000000
     ParentColor = False
     Value = 50.000000000000000000
+    ShowText = True
     SlideColor = 1529213
     OnChange = SBMinimumChange
   end
@@ -11492,6 +11494,7 @@ object PhaserForm: TPhaserForm
     Max = 1000.000000000000000000
     ParentColor = False
     Value = 50.000000000000000000
+    ShowText = True
     SlideColor = 1529213
     OnChange = SBMaximumChange
   end
@@ -11508,6 +11511,7 @@ object PhaserForm: TPhaserForm
     Max = 10000.000000000000000000
     ParentColor = False
     Value = 50.000000000000000000
+    ShowText = True
     SlideColor = 1529213
     OnChange = SBRateChange
   end
@@ -11524,6 +11528,7 @@ object PhaserForm: TPhaserForm
     Max = 1300.000000000000000000
     ParentColor = False
     Value = 50.000000000000000000
+    ShowText = True
     SlideColor = 1529213
     OnChange = SBDepthChange
   end
@@ -11541,6 +11546,7 @@ object PhaserForm: TPhaserForm
     Min = 1.000000000000000000
     ParentColor = False
     Value = 5.000000000000000000
+    ShowText = True
     SlideColor = 1529213
     OnChange = SBStagesChange
   end

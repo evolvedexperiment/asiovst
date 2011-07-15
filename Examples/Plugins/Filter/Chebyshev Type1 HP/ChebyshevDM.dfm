@@ -1,5 +1,4 @@
 object ChebyshevHPModule: TChebyshevHPModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chebyshev Lowpass Filter'
@@ -80,8 +79,8 @@ object ChebyshevHPModule: TChebyshevHPModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 694
   Top = 85

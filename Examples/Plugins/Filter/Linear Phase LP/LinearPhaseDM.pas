@@ -82,7 +82,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, LinearPhaseGUI;
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} LinearPhaseGUI;
 
 procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -166,7 +166,7 @@ var
   WindowIndex : Integer;
   Text        : AnsiString;
 begin
- Text := Trim(ParameterString);
+ Text := Trim(ParameterString) ;
  for WindowIndex := 0 to Length(GWindowFunctions) - 1 do
   if Text = GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName then
    begin

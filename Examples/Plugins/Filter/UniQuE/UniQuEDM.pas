@@ -283,7 +283,7 @@ end;
 
 procedure TUniQuEDataModule.ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TUniQuEDataModule.ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
