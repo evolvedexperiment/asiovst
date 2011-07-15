@@ -1,6 +1,6 @@
 object FmESTP: TFmESTP
-  Left = 299
-  Top = 51
+  Left = 394
+  Top = 68
   Caption = 'Equal Spaced Thick Polyline'
   ClientHeight = 290
   ClientWidth = 411

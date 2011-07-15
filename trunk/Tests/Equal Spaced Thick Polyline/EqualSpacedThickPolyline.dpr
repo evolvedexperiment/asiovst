@@ -4,7 +4,8 @@ uses
   FastMM4,
   Forms,
   MainUnit in 'MainUnit.pas' {FmESTP},
-  Magnifier in 'Magnifier.pas' {FmMagnifier};
+  Magnifier in 'Magnifier.pas' {FmMagnifier},
+  DAV_GuiVectorPixelGraph in '..\..\Source\GUI\DAV_GuiVectorPixelGraph.pas';
 
 {$R *.res}
 

@@ -87,7 +87,7 @@ type
     procedure SetLineWidth(const Value: TFixed24Dot8Point);
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    procedure WidthChanged; virtual;
+    procedure LineWidthChanged; virtual;
   public
     property LineWidth: TFixed24Dot8Point read FLineWidth write SetLineWidth;
   end;
@@ -212,7 +212,7 @@ end;
 
 { TCustomGuiPixelFramePrimitive }
 
-procedure TCustomGuiPixelFramePrimitive.WidthChanged;
+procedure TCustomGuiPixelFramePrimitive.LineWidthChanged;
 begin
  Changed;
 end;
@@ -234,7 +234,7 @@ begin
  if FLineWidth.Fixed <> Value.Fixed then
   begin
    FLineWidth.Fixed := Value.Fixed;
-   WidthChanged;
+   LineWidthChanged;
   end;
 end;
 

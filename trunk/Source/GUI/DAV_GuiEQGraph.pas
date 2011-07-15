@@ -36,9 +36,9 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_GuiCommon,
-  DAV_GuiBaseControl, DAV_GuiCustomControl, DAV_GuiPixelMap,
-  DAV_GuiFont, DAV_GuiShadow;
+  Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_Types, DAV_GuiCommon,
+  DAV_GuiBaseControl, DAV_GuiCustomControl, DAV_GuiPixelMap, DAV_GuiFont,
+  DAV_GuiShadow, DAV_GuiFixedPoint, DAV_GuiVector, DAV_GuiVectorPixelGraph;
 
 type
   TGuiEQGraph = class;
@@ -191,9 +191,16 @@ type
     FColor           : TColor;
     FLineWidth       : Single;
     FAlpha           : Byte;
+    FESP             : TGuiPixelEquallySpacedPolyline;
+    FDataCache       : PFixed24Dot8PointArray;
+    FDataCacheSize   : Integer;
+    FVisible         : Boolean;
     procedure SetColor(const Value: TColor);
     procedure SetLineWidth(const Value: Single);
     procedure SetAlpha(const Value: Byte);
+    procedure SetOnGetFilterGain(const Value: TGetFilterGainEvent);
+    procedure SetVisible(const Value: Boolean);
+    procedure BuildDataCache;
   protected
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
@@ -201,19 +208,27 @@ type
     procedure AlphaChanged; virtual;
     procedure ColorChanged; virtual;
     procedure LineWidthChanged; virtual;
+    procedure VisibleChanged; virtual;
     procedure Changed; virtual;
+    procedure OnGetFilterGainChanged; virtual;
+
+    function GetZeroHandler(Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point;
+    function GetValueHandler(Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point;
 
     procedure PaintToGraphAntialias(const Graph: TCustomGuiEQGraph; const PixelMap: TGuiCustomPixelMap); virtual;
     procedure PaintToGraphDraft(const Graph: TCustomGuiEQGraph; const PixelMap: TGuiCustomPixelMap); virtual;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
+
+    procedure DataChanged; virtual;
   published
     property DisplayName;
     property Alpha: Byte read FAlpha write SetAlpha default $FF;
     property Color: TColor read FColor write SetColor default clRed;
     property LineWidth: Single read FLineWidth write SetLineWidth;
-    property OnGetFilterGain: TGetFilterGainEvent read FOnGetFilterGain write FOnGetFilterGain;
+    property Visible: Boolean read FVisible write SetVisible default True;
+    property OnGetFilterGain: TGetFilterGainEvent read FOnGetFilterGain write SetOnGetFilterGain;
   end;
 
   TGuiEQGraphSeriesCollection = class(TOwnedCollection)
@@ -252,9 +267,12 @@ type
     FGuiFont          : TGuiOversampledGDIFont;
     FYAxis            : TGuiEQGraphYAxis;
     FXAxis            : TGuiEQGraphXAxis;
-    FAlpha: Byte;
-    FAntiAlias: Boolean;
+    FAlpha            : Byte;
+    FAntiAlias        : Boolean;
     function GetFontShadow: TGuiShadow;
+    function GetOversampling: TFontOversampling;
+    function GetGraphWidth: Integer;
+    function GetGraphHeight: Integer;
     procedure SetAutoColor(const Value: Boolean);
     procedure SetBorderColor(const Value: TColor);
     procedure SetBorderRadius(const Value: Single);
@@ -269,6 +287,7 @@ type
     procedure SetShowGrid(const Value: Boolean);
     procedure SetAlpha(const Value: Byte);
     procedure SetAntiAlias(const Value: Boolean);
+    procedure SetOversampling(const Value: TFontOversampling);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure AlphaChanged; virtual;
@@ -298,16 +317,17 @@ type
     property Alpha: Byte read FAlpha write SetAlpha default $FF;
     property AntiAlias: Boolean read FAntiAlias write SetAntiAlias default False;
     property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
+    property FontOversampling: TFontOversampling read GetOversampling write SetOversampling default foNone;
+    property FontShadow: TGuiShadow read GetFontShadow write SetFontShadow;
     property GraphColorDark: TColor read FGraphColorDark write SetGraphColorDark default $303030;
     property GraphColorLight: TColor read FGraphColorLight write SetGraphColorLight default $606060;
+    property GraphWidth: Integer read GetGraphWidth;
+    property GraphHeight: Integer read GetGraphHeight;
     property ColorChart: TColor read FChartColor write SetChartColor;
     property BorderRadius: Single read FBorderRadius write SetBorderRadius;
     property BorderWidth: Single read FBorderWidth write SetBorderWidth;
     property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
     property ShowGrid: Boolean read FShowGrid write SetShowGrid default True;
-
-    property FontShadow: TGuiShadow read GetFontShadow write SetFontShadow;
-
     property FilterSeries: TGuiEQGraphSeriesCollection read FFilterSeries write SetFilterSeries;
     property YAxis: TGuiEQGraphYAxis read FYAxis write SetYAxis;
     property XAxis: TGuiEQGraphXAxis read FXAxis write SetXAxis;
@@ -317,12 +337,16 @@ type
 
   TGuiEQGraph = class(TCustomGuiEQGraph)
   published
+    property Alpha;
     property AutoColor;
+    property AntiAlias;
     property BorderColor;
     property BorderRadius;
     property BorderWidth;
     property ColorChart;
     property FilterSeries;
+    property FontOversampling;
+    property FontShadow;
     property GraphColorDark;
     property GraphColorLight;
     property ShowGrid;
@@ -373,7 +397,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_GuiBlend, DAV_GuiFixedPoint, DAV_Approximations;
+  Math, DAV_Common, DAV_GuiBlend, DAV_Approximations;
 
 { TCustomGuiEQGraphAxis }
 
@@ -757,14 +781,64 @@ constructor TGuiEQGraphSeriesCollectionItem.Create(Collection: TCollection);
 begin
  inherited;
  FDisplayName := ClassName;
+ FESP := TGuiPixelEquallySpacedPolyline.Create;
+
+ with FESP do
+  begin
+   GeometricShape.OnGetValue := GetZeroHandler;
+   Color := clRed;
+   Alpha := $FF;
+   LineWidth := CFixed24Dot8Two;
+   Assert(Collection.Owner is TCustomGuiEQGraph);
+   GeometricShape.SetAllMargins(Trunc(
+     TCustomGuiEQGraph(Collection.Owner).BorderWidth));
+  end;
+
  FColor := clRed;
  FAlpha := $FF;
  FLineWidth := 2;
+ FVisible := True;
 end;
 
 destructor TGuiEQGraphSeriesCollectionItem.Destroy;
 begin
+ FreeAndNil(FESP);
  inherited;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.DataChanged;
+begin
+ BuildDataCache;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.BuildDataCache;
+var
+  DataIndex : Integer;
+  Level     : Single;
+  Freq      : Single;
+begin
+ Assert(Collection.Owner is TCustomGuiEQGraph);
+ FDataCacheSize := TCustomGuiEQGraph(Collection.Owner).GraphWidth;
+ ReallocMem(FDataCache, FDataCacheSize * SizeOf(TFixed24Dot8Point));
+
+ with TCustomGuiEQGraph(Collection.Owner) do
+  if Assigned(FOnGetFilterGain) then
+   for DataIndex := 0 to FDataCacheSize - 1 do
+    begin
+     Freq := FXAxis.LinearToLogarithmicFrequency(DataIndex / GraphWidth);
+     Level := FOnGetFilterGain(Self, Freq);
+     FDataCache[DataIndex] := ConvertToFixed24Dot8Point(((YAxis.UpperLevel - Level) / YAxis.Range) * GraphHeight);
+    end
+  else
+   begin
+    FDataCache[0] := ConvertToFixed24Dot8Point((YAxis.UpperLevel / YAxis.Range) * GraphHeight);
+    for DataIndex := 1 to FDataCacheSize - 1
+     do FDataCache[DataIndex] := FDataCache[0];
+   end;
+
+ // strategy for implicit oversampling: scan with higher resolution (eg. 0.25px)
+ // and use the highest if the average is above the last value or use the lowest
+ // in case the average is below the last value.
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.AssignTo(Dest: TPersistent);
@@ -773,8 +847,9 @@ begin
   with TGuiEQGraphSeriesCollectionItem(Dest) do
    begin
     FColor           := Self.FColor;
-    FLineWidth       := Self.LineWidth;
+    FLineWidth       := Self.FLineWidth;
     FDisplayName     := Self.FDisplayName;
+    FVisible         := Self.FVisible;
     FOnGetFilterGain := Self.FOnGetFilterGain;
    end
  else inherited;
@@ -782,27 +857,44 @@ end;
 
 procedure TGuiEQGraphSeriesCollectionItem.ColorChanged;
 begin
+ FESP.Color := Color;
  Changed;
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.LineWidthChanged;
 begin
+ FESP.LineWidth := ConvertToFixed24Dot8Point(FLineWidth);
  Changed;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.OnGetFilterGainChanged;
+begin
+ if Assigned(FOnGetFilterGain)
+  then FESP.GeometricShape.OnGetValue := GetValueHandler
+  else FESP.GeometricShape.OnGetValue := GetZeroHandler;
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.PaintToGraphAntialias(
   const Graph: TCustomGuiEQGraph; const PixelMap: TGuiCustomPixelMap);
 begin
- // yet todo
+ if Visible
+  then FESP.Draw(PixelMap);
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.PaintToGraphDraft(
   const Graph: TCustomGuiEQGraph; const PixelMap: TGuiCustomPixelMap);
 begin
- // yet todo
+ if Visible
+  then FESP.DrawDraft(PixelMap);
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.AlphaChanged;
+begin
+ FESP.Alpha := Alpha;
+ Changed;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.VisibleChanged;
 begin
  Changed;
 end;
@@ -816,6 +908,31 @@ end;
 function TGuiEQGraphSeriesCollectionItem.GetDisplayName: string;
 begin
  Result := FDisplayName;
+end;
+
+function TGuiEQGraphSeriesCollectionItem.GetZeroHandler(Sender: TObject;
+  PixelPosition: Integer): TFixed24Dot8Point;
+begin
+ Assert(Collection.Owner is TCustomGuiEQGraph);
+ with TCustomGuiEQGraph(Collection.Owner) do
+  begin
+   Result := ConvertToFixed24Dot8Point((YAxis.UpperLevel / YAxis.Range) * GraphHeight);
+  end;
+end;
+
+function TGuiEQGraphSeriesCollectionItem.GetValueHandler(Sender: TObject;
+  PixelPosition: Integer): TFixed24Dot8Point;
+var
+  Level : Single;
+  Freq  : Single;
+begin
+ Assert(Collection.Owner is TCustomGuiEQGraph);
+ with TCustomGuiEQGraph(Collection.Owner) do
+  begin
+   Freq := FXAxis.LinearToLogarithmicFrequency(PixelPosition / Width);
+   Level := FOnGetFilterGain(Self, Freq);
+   Result := ConvertToFixed24Dot8Point(((YAxis.UpperLevel - Level) / YAxis.Range) * GraphHeight);
+  end;
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.SetDisplayName(const Value: string);
@@ -833,6 +950,25 @@ begin
   begin
    FLineWidth := Value;
    LineWidthChanged;
+  end;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.SetOnGetFilterGain(
+  const Value: TGetFilterGainEvent);
+begin
+ if @FOnGetFilterGain <> @Value then
+  begin
+   FOnGetFilterGain := Value;
+   OnGetFilterGainChanged;
+  end;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.SetVisible(const Value: Boolean);
+begin
+ if FVisible <> Value then
+  begin
+   FVisible := Value;
+   VisibleChanged;
   end;
 end;
 
@@ -978,6 +1114,7 @@ end;
 procedure TCustomGuiEQGraph.SetFontShadow(const Value: TGuiShadow);
 begin
  FGuiFont.Shadow.Assign(Value);
+ BackBufferChanged;
 end;
 
 procedure TCustomGuiEQGraph.SetChartColor(const Value: TColor);
@@ -1059,6 +1196,12 @@ begin
    FGraphColorLight := Value;
    GraphColorLightChanged;
   end;
+end;
+
+procedure TCustomGuiEQGraph.SetOversampling(const Value: TFontOversampling);
+begin
+ FGuiFont.FontOversampling := Value;
+ BackBufferChanged;
 end;
 
 procedure TCustomGuiEQGraph.SetShowGrid(const Value: Boolean);
@@ -1154,7 +1297,7 @@ begin
    // set other local variables
    Radius := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
-   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   WidthMinusOne := ConvertToFixed24Dot8Point(Integer(Width - 1));
 
    // precalculate radius variables
    RadMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
@@ -1190,7 +1333,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -1200,7 +1343,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -1234,7 +1377,6 @@ begin
       end;
     end;
 
-
    for Y := FixedRound(Radius) to Height - 1 - FixedRound(Radius) do
     begin
      ScnLne[0] := Scanline[Y];
@@ -1249,7 +1391,7 @@ begin
       end;
 
      // check upper/lower half and eventually precalculate y-border distance
-     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     Temp := ConvertToFixed24Dot8Point(Integer(Height - 1));
      IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
        (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
      if IsUpperLowerHalf then
@@ -1335,6 +1477,7 @@ end;
 procedure TCustomGuiEQGraph.RenderGrid(PixelMap: TGuiCustomPixelMap);
 var
   i, j, w, h  : Integer;
+  TextSize    : TSize;
   Rct         : TRect;
   Txt         : string;
   Temp        : Single;
@@ -1346,13 +1489,6 @@ begin
  with PixelMap do
   begin
    Rct := Rect(0, 0, Width, Height);
-
-(*
-   Brush.Color := FChartColor;
-   Brush.Style := bsSolid;
-
-   Pen.Width := FOSFactor;
-*)
    InflateRect(Rct, -Trunc(FBorderWidth), -Trunc(FBorderWidth));
 
    // add top margin to half height as offset
@@ -1416,8 +1552,7 @@ begin
        Round(Rct.Bottom - i), LineColor);
     end;
 
-(*
-   Brush.Color := FChartColor;
+//   Brush.Color := FChartColor;
 //   Brush.Style := bsClear;
 
    //////////////////////
@@ -1439,6 +1574,7 @@ begin
         end;
       end;
 
+     DrawLabel := True;
      case FXAxis.LabelPosition of
       xlpBottom :
        begin
@@ -1456,8 +1592,9 @@ begin
             if FXAxis.UnitPosition = upValue
              then Txt := Txt + ' Hz';
 
-            h := Rct.Bottom - TextHeight(Txt) - FOSFactor * (FBorderWidth div 2);
-            TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * Base) * Wdth) - TextWidth(Txt) div 2, h, Txt);
+            TextSize := FGuiFont.TextExtent(Txt);
+            h := Round(Rct.Bottom - TextSize.cy - 1);
+            FGuiFont.TextOut(Txt, PixelMap, Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * Base) * Wdth) - (TextSize.cx div 2), h);
            end;
           Inc(j);
           if j >= 10 then
@@ -1483,8 +1620,9 @@ begin
             if FXAxis.UnitPosition = upValue
              then Txt := Txt + ' Hz';
 
-            h := Rct.Top + FOSFactor * (FBorderWidth div 2);
-            TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * Base) * Wdth) - TextWidth(Txt) div 2, h, Txt);
+            TextSize := FGuiFont.TextExtent(Txt);
+            h := Round(Rct.Top + 1);
+            FGuiFont.TextOut(Txt, PixelMap, Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * Base) * Wdth) - (TextSize.cx div 2), h);
            end;
           Inc(j);
           if j >= 10 then
@@ -1505,16 +1643,18 @@ begin
 
        while Temp < UpperLevel do
         begin
-         i := Round(((Temp - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
+         i := Round(((Temp - LowerLevel) / Range) * (Rct.Bottom - Rct.Top));
 
          Txt := FloatToStrF(Temp, ffGeneral, 5, 5);
 
          // modify text
-         if (Temp >= 0) then Txt := '+' + Txt;
+         if (Temp > 0) then Txt := '+' + Txt else
+         if (Temp = 0) then Txt := ' ' + Txt;
          if UnitPosition = upValue
           then Txt := Txt + ' dB';
 
-         TextOut(Rct.Left + FOSFactor * (FBorderWidth div 2), Round(Rct.Bottom - i) - TextHeight(Txt) div 2, Txt);
+         TextSize := FGuiFont.TextExtent(Txt);
+         FGuiFont.TextOut(Txt, PixelMap, Round(Rct.Left), Round(Rct.Bottom - i - 0.5 * TextSize.cy));
          Temp := Temp + Granularity;
         end;
       end;
@@ -1534,12 +1674,11 @@ begin
          if UnitPosition = upValue
           then Txt := Txt + ' dB';
 
-         TextOut(Round(Rct.Right - FOSFactor * (FBorderWidth div 2) - TextWidth(Txt)), Round(Rct.Bottom - i) - TextHeight(Txt) div 2, Txt);
+         FGuiFont.TextOut(Txt, PixelMap, Round(Rct.Right - 1 - 0.5 * TextSize.cx), Round(Rct.Bottom - i - 0.5 * TextSize.cy));
          Temp := Temp + Granularity;
         end;
       end;
    end;
-*)
   end;
 end;
 
@@ -1553,41 +1692,6 @@ begin
  else
   for SeriesIndex := 0 to FFilterSeries.Count - 1
    do FFilterSeries[SeriesIndex].PaintToGraphDraft(Self, PixelMap)
-(*
-
-var
-  FilterIndex : Integer;
-  PixelIndex  : Integer;
-  Offset      : Single;
-  Temp        : Single;
-  YValue      : Single;
-begin
- with PixelMap do
-  begin
-   Offset := FBorderWidth;
-   for FilterIndex := 0 to FFilterSeries.Count - 1 do
-    with FFilterSeries[FilterIndex] do
-     begin
-{
-      Pen.Color := Color;
-      Pen.Width := LineWidth * FOSFactor;
-      if Assigned(FOnGetFilterGain) then
-       begin
-        YValue := FOnGetFilterGain(Self, FXAxis.LowerFrequency);
-        MoveTo(FOSFactor, Round((Height - Offset) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) + Offset div 2));
-        Temp := 1 / (Width - 2 * FOSFactor);
-        for PixelIndex := FOSFactor + 1 to Width - FOSFactor - 1 do
-         begin
-
-          YValue := FOnGetFilterGain(Self, FXAxis.LinearToLogarithmicFrequency((PixelIndex - FOSFactor) * Temp));
-          LineTo(PixelIndex, Round((Height - Offset) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) + Offset div 2));
-         end;
-       end;
-}
-     end;
-
-  end;
-*)
 end;
 
 procedure TCustomGuiEQGraph.BorderColorChanged;
@@ -1608,11 +1712,27 @@ end;
 procedure TCustomGuiEQGraph.CMFontChanged(var Message: {$IFDEF LCL}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
  FGuiFont.Font.Assign(Font);
+ BackBufferChanged;
 end;
 
 function TCustomGuiEQGraph.GetFontShadow: TGuiShadow;
 begin
  Result := FGuiFont.Shadow;
+end;
+
+function TCustomGuiEQGraph.GetGraphHeight: Integer;
+begin
+ Result := Height - 2 * Trunc(FBorderWidth);
+end;
+
+function TCustomGuiEQGraph.GetGraphWidth: Integer;
+begin
+ Result := Width - 2 * Trunc(FBorderWidth);
+end;
+
+function TCustomGuiEQGraph.GetOversampling: TFontOversampling;
+begin
+ Result := FGuiFont.FontOversampling;
 end;
 
 procedure TCustomGuiEQGraph.GraphColorDarkChanged;

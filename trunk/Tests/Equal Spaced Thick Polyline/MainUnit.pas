@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, StdCtrls, Menus, ComCtrls, ActnList, DAV_GuiByteMap,
   DAV_GuiPixelMap, DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiSlider,
-  DAV_GuiFilters;
+  DAV_GuiFilters, DAV_GuiVectorPixelGraph, DAV_GuiFixedPoint;
 
 type
   TFmESTP = class(TForm)
@@ -69,7 +69,12 @@ type
     FLineWidth      : Single;
     FPaintBoxUpdate : Boolean;
     FPointArray     : array of Double;
+
+    FESPL           : TGuiPixelEquallySpacedPolyline;
     procedure SetLineWidth(const Value: Single);
+
+    function GetValueHandler(Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point;
+
     procedure ScenarioPeakLine1;
     procedure ScenarioPeakLine2;
     procedure ScenarioPeakLine3;
@@ -88,6 +93,7 @@ type
     procedure RenderPolyline;
     procedure RenderPolyline2Pixel;
     procedure RenderPolylineDraft;
+    procedure RenderExternalPolyline;
   public
     property LineWidth: Single read FLineWidth write SetLineWidth;
     property PixelMap: TGuiCustomPixelMap read FPixelMap;
@@ -101,12 +107,18 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, DAV_Types, DAV_Common, DAV_GuiCommon, DAV_GuiFixedPoint, DAV_GuiBlend,
+  Math, DAV_Types, DAV_Common, DAV_GuiCommon, DAV_GuiBlend,
   DAV_MemoryUtils, Magnifier;
 
 procedure TFmESTP.FormCreate(Sender: TObject);
 begin
  FPixelMap := TGuiPixelMapMemory.Create;
+ FESPL := TGuiPixelEquallySpacedPolyline.Create;
+ FESPL.Color := clWhite;
+ FESPL.Alpha := $FF;
+ FESPL.LineWidth := ConvertToFixed24Dot8Point(2);
+ FESPL.GeometricShape.OnGetValue := GetValueHandler;
+
  FPaintBoxUpdate := True;
  PaintBox.ControlStyle := PaintBox.ControlStyle + [csOpaque];
  FLineWidth := 2;
@@ -114,6 +126,7 @@ end;
 
 procedure TFmESTP.FormDestroy(Sender: TObject);
 begin
+ FreeAndNil(FESPL);
  FreeAndNil(FPixelMap);
 end;
 
@@ -132,6 +145,14 @@ begin
    ScenarioStandard;
    FPaintBoxUpdate := True;
   end;
+end;
+
+function TFmESTP.GetValueHandler(Sender: TObject;
+  PixelPosition: Integer): TFixed24Dot8Point;
+begin
+ if (PixelPosition > 0) and (PixelPosition < Length(FPointArray))
+  then Result := ConvertToFixed24Dot8Point(FPointArray[PixelPosition])
+  else Result := ConvertToFixed24Dot8Point(0.5 * FPixelMap.Height);
 end;
 
 procedure TFmESTP.ScenarioStandard;
@@ -449,9 +470,10 @@ procedure TFmESTP.PaintBoxPaint(Sender: TObject);
 begin
  if FPaintBoxUpdate then
   begin
-   RenderNewPolyline;
+//   RenderNewPolyline;
 //   RenderReferencePolyline;
 //   RenderPolyline;
+   RenderExternalPolyline;
 
    with FmMagnifier do
     if Visible then
@@ -472,13 +494,15 @@ end;
 
 
 {$DEFINE DrawSolid}
-{$DEFINE DrawAntialiasedBorder}
-{$DEFINE DrawAntialiasedLines}
+{-$DEFINE DrawAntialiasedBorder}
+{-$DEFINE DrawAntialiasedLines}
 
-{$DEFINE DrawInnerHalfLines}
-{$DEFINE DrawOuterHalfLines}
+{-$DEFINE DrawInnerHalfLines}
+{-$DEFINE DrawOuterHalfLines}
 
-{$DEFINE DrawHalo}
+{-$DEFINE DrawHalo}
+
+
 
 {-$DEFINE ShowCenter}
 {-$DEFINE ShowHalfLine}
@@ -683,6 +707,16 @@ begin
 
    MakeOpaque;
   end;
+end;
+
+
+procedure TFmESTP.RenderExternalPolyline;
+begin
+ // clear
+ FPaintBoxUpdate := False;
+ FPixelMap.FillRect(FPixelMap.ClientRect, pxBlack32);
+
+ FESPL.Draw(FPixelMap);
 end;
 
 
@@ -1013,31 +1047,38 @@ end;
 
 procedure TFmESTP.RenderPolyline;
 var
-  Distance        : Double;
-  IntLineWdth     : Double;
-  RadiusMinusHalf : Double;
-  CurrentValue    : Double;
-  YDestPos        : Double;
-  YSrcPos         : Double;
-  YSplitPos       : Double;
-  Delta           : Double;
-  WidthScale      : Double;
-  TempDouble      : Double;
+  InternalLineWidth : Double;
+  Radius            : Double;
+  SolidRangeCount   : Integer;
+  TotalRangeCount   : Integer;
 
-  YRange          : array [0..1] of Integer;
-  SolidRange      : array [0..1] of Integer;
-  NewYRange       : array [0..1] of Integer;
-  IntegerRadiusX  : Integer;
-  IntegerRadiusY  : Integer;
-  NewSolid        : Integer;
-  x, y            : Integer;
-  PtIndex         : Integer;
+  Distance          : Double;
+  IntLineWdth       : Double;
+  RadiusMinusHalf   : Double;
+  CurrentValue      : Double;
+  YDestPos          : Double;
+  YSrcPos           : Double;
+  YSplitPos         : Double;
+  Delta             : Double;
+  WidthScale        : Double;
+  TempDouble        : Double;
 
-  YValues         : array of Double;
-  VertLine        : PByteArray;
-  PointPtr        : PDAVDoubleFixedArray;
-  PxColor         : TPixel32;
-  LeftRightIdx    : Integer;
+  YRange            : array [0..1] of Integer;
+  SolidRange        : array [0..1] of Integer;
+  NewYRange         : array [0..1] of Integer;
+  IntegerRadiusX    : Integer;
+  IntegerRadiusY    : Integer;
+  NewSolid          : Integer;
+  x, y              : Integer;
+  PtIndex           : Integer;
+
+  YValues           : array of Double;
+  CircleValues      : array of Double;
+
+  VertLine          : PByteArray;
+  PointPtr          : PDAVDoubleFixedArray;
+  PxColor           : TPixel32;
+  LeftRightIdx      : Integer;
 
   procedure AddToSolidRange(Lower, Upper: Integer);
   begin
@@ -1078,7 +1119,14 @@ begin
   begin
    FillRect(ClientRect, pxBlack32);
 
+   // set local variables
    PxColor := pxWhite32;
+   InternalLineWidth := Max(FLineWidth, 0);
+   Radius := 0.5 * InternalLineWidth;
+   SolidRangeCount := 2 + Trunc(RadiusMinusHalf);
+   TotalRangeCount := 1 + Ceil(RadiusMinusHalf);
+
+   // old
    IntLineWdth := Max(FLineWidth - 1, 0);
    RadiusMinusHalf := 0.5 * IntLineWdth;
 
@@ -1088,8 +1136,15 @@ begin
     IntegerRadiusX := 1 + Ceil(RadiusMinusHalf);
     IntegerRadiusY := 2 + Trunc(RadiusMinusHalf);
     SetLength(YValues, 1 + 2 * IntegerRadiusX);
+    SetLength(CircleValues, IntegerRadiusX - 1);
     Assert(Length(YValues) mod 2 = 1);
     PointPtr := @YValues[IntegerRadiusX];
+
+    // initialize circle values
+    for PtIndex := 0 to Length(CircleValues) - 1 do
+     begin
+      CircleValues[PtIndex] := Sqrt(Sqr(RadiusMinusHalf) - Sqr(PtIndex));
+     end;
 
     // fill additional points
     for PtIndex := 0 to IntegerRadiusX - 1
@@ -1108,6 +1163,10 @@ begin
 
       // clear vertical line array
       FillChar(VertLine^, Height, 0);
+
+      ///////////////////
+      // start drawing //
+      ///////////////////
 
       // calculate solid range
       CurrentValue := PointPtr^[0];
@@ -1137,6 +1196,9 @@ begin
             end;
          end;
        end;
+
+
+
 
 
       {$IFDEF DrawAntialiasedBorder}
@@ -1902,6 +1964,7 @@ end;
 procedure TFmESTP.SlLineWidthChange(Sender: TObject);
 begin
  LineWidth := SlLineWidth.Value;
+ FESPL.LineWidth := ConvertToFixed24Dot8Point(SlLineWidth.Value);
  UpdateStatusInformation;
 end;
 

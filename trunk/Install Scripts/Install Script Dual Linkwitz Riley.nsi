@@ -110,6 +110,8 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\DualLinkwitzRileyFilters.dll" "..\Bin\Dual Linkwitz-Riley Filters.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
   File "..\Bin\Dual Linkwitz-Riley Filters.dll"
 
