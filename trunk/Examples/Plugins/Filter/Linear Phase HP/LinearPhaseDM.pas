@@ -82,7 +82,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, LinearPhaseGUI, DAV_VSTParameters;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math, DAV_VSTParameters,
+  LinearPhaseGUI;
 
 procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
 begin

@@ -82,6 +82,7 @@ implementation
 {$ENDIF}
 
 uses
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
   DAV_VSTModuleWithPrograms, ButterworthDM;
 
 procedure TFmButterworth.FormDestroy(Sender: TObject);
@@ -165,7 +166,7 @@ begin
  with TButterworthHPModule(Owner) do
   if (Key = #13) and Assigned(FEdValue) then
    try
-    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    StringToParameter(FEdValue.Tag, AnsiString(FEdValue.Text));
     FreeAndNil(FEdValue);
    except
    end;
@@ -210,7 +211,7 @@ end;
 procedure TFmButterworth.EQGraphUpdateTimer(Sender: TObject);
 begin
  Timer.Enabled := False;
- GuiEQGraph.ChartChanged;
+ GuiEQGraph.UpdateGraph;
 end;
 
 procedure TFmButterworth.EQGraphUpdate;

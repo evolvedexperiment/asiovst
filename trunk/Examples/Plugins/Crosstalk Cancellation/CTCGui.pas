@@ -108,7 +108,8 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms, CTCDM;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common,
+  DAV_GuiCommon, DAV_VSTModuleWithPrograms, CTCDM;
 
 procedure TFmCTC.FormCreate(Sender: TObject);
 begin
@@ -270,7 +271,7 @@ begin
   begin
    if Round(10 * Parameter[0]) <> SbSpeakerDistance.Value
     then SbSpeakerDistance.Value := Round(10 * Parameter[0]);
-   LbSpeakerDistanceValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbSpeakerDistanceValue.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
 
@@ -280,7 +281,7 @@ begin
   begin
    if Round(10 * Parameter[1]) <> SbListenerDistance.Value
     then SbListenerDistance.Value := Round(10 * Parameter[1]);
-   LbListenerDistanceValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+   LbListenerDistanceValue.Caption := string(ParameterDisplay[1] + ' ' + ParameterLabel[1]);
   end;
 end;
 
@@ -305,7 +306,7 @@ begin
   begin
    if Round(10 * Parameter[3]) <> SbAttenuation.Value
     then SbAttenuation.Value := Round(10 * Parameter[3]);
-   LbAttenuationValue.Caption := ParameterDisplay[3] + ' dB';
+   LbAttenuationValue.Caption := string(ParameterDisplay[3] + ' dB');
   end;
 end;
 
@@ -329,7 +330,7 @@ begin
   begin
    if Round(10000 * FreqLogToLinear(Parameter[5])) <> SbFilterFrequency.Value
     then SbFilterFrequency.Value := Round(10000 * FreqLogToLinear(Parameter[5]));
-   LbFilterFrequencyValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
+   LbFilterFrequencyValue.Caption := string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
   end;
 end;
 
@@ -339,7 +340,7 @@ begin
   begin
    if Round(10 * Parameter[6]) <> SbFilterGain.Value
     then SbFilterGain.Value := Round(10 * Parameter[6]);
-   LbFilterGainValue.Caption := ParameterDisplay[6] + ' dB';
+   LbFilterGainValue.Caption := string(ParameterDisplay[6] + ' dB');
   end;
 end;
 
@@ -349,7 +350,7 @@ begin
   begin
    if Round(10 * Parameter[7]) <> SbOutputGain.Value
     then SbOutputGain.Value := Round(10 * Parameter[7]);
-   LbOutputGainValue.Caption := ParameterDisplay[7] + ' dB';
+   LbOutputGainValue.Caption := string(ParameterDisplay[7] + ' dB');
   end;
 end;
 

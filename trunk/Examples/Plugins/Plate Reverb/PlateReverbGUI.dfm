@@ -20,18 +20,18 @@ object FmPlateReverb: TFmPlateReverb
     Top = 88
     Width = 434
     Height = 23
-    LineColor = clWhite
+    BorderColor = clBtnShadow
+    BorderRadius = 9.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clWhite
     ParentColor = True
-    BorderRadius = 9.000000000000000000
     TabOrder = 2
     UseDockManager = True
     Transparent = True
     object LbDry: TGuiLabel
-      Left = 4
+      Left = 6
       Top = 3
-      Width = 48
+      Width = 44
       Height = 17
       Margins.Bottom = 0
       Alignment = taCenter
@@ -190,27 +190,6 @@ object FmPlateReverb: TFmPlateReverb
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 1
-    object SBPreset: TGuiSelectBox
-      Left = 51
-      Top = 2
-      Width = 156
-      Height = 19
-      Alignment = taLeftJustify
-      AntiAlias = gaaLinear4x
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ItemIndex = -1
-      Items.Strings = (
-        'Random 23')
-      LineColor = clSilver
-      ParentFont = False
-      BorderRadius = 6
-      SelectBoxColor = 2960685
-      OnChange = SBPresetChange
-    end
     object LbPreset: TGuiLabel
       Left = 8
       Top = 2
@@ -227,6 +206,29 @@ object FmPlateReverb: TFmPlateReverb
       FontOversampling = fo4x
       ParentFont = False
     end
+    object SBPreset: TGuiSelectBox
+      Left = 51
+      Top = 2
+      Width = 156
+      Height = 19
+      Alignment = taLeftJustify
+      ArrowColor = 5855577
+      BorderColor = 5855577
+      BorderRadius = 6.000000000000000000
+      BorderWidth = 2.000000000000000000
+      ButtonColor = 14803425
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ItemIndex = -1
+      Items.Strings = (
+        'Random 23')
+      ParentFont = False
+      SelectBoxColor = 2960685
+      OnChange = SBPresetChange
+    end
     object BtAB: TGuiButton
       Left = 213
       Top = 2
@@ -235,6 +237,7 @@ object FmPlateReverb: TFmPlateReverb
       Alignment = taCenter
       BorderColor = 5855577
       BorderWidth = 1.500000000000000000
+      BorderRadius = 4.000000000000000000
       ButtonColor = 14803425
       Caption = 'a <> b'
       Font.Charset = DEFAULT_CHARSET
@@ -243,7 +246,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Name = 'Tahoma'
       Font.Style = []
       FontOversampling = fo4x
-      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
     end
@@ -255,6 +257,7 @@ object FmPlateReverb: TFmPlateReverb
       Alignment = taCenter
       BorderColor = 5855577
       BorderWidth = 1.500000000000000000
+      BorderRadius = 4.000000000000000000
       ButtonColor = 14803425
       Caption = 'about'
       Font.Charset = DEFAULT_CHARSET
@@ -263,7 +266,6 @@ object FmPlateReverb: TFmPlateReverb
       Font.Name = 'Tahoma'
       Font.Style = []
       FontOversampling = fo4x
-      BorderRadius = 4.000000000000000000
       Shadow.Blur = 4.000000000000000000
       Transparent = False
       OnClick = BtAboutClick
@@ -275,10 +277,13 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     Max = 100.000000000000000000
-    OnChange = DialDryChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDryChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialWet: TGuiStitchedDial
     Left = 70
@@ -286,10 +291,13 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     Max = 100.000000000000000000
-    OnChange = DialWetChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialWetChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialPreDelay: TGuiStitchedDial
     Left = 124
@@ -297,10 +305,13 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     Max = 100.000000000000000000
-    OnChange = DialPreDelayChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialPreDelayChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialDampingFrequency: TGuiStitchedDial
     Left = 232
@@ -310,11 +321,13 @@ object FmPlateReverb: TFmPlateReverb
     CurveMapping = -2.000000000000000000
     Max = 13500.000000000000000000
     Min = 135.000000000000000000
-    OnChange = DialDampingFrequencyChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 135.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialDampingFrequencyChange
+    DefaultValue = 0.000000000000000000
   end
   object DialInputDiffusion: TGuiStitchedDial
     Left = 286
@@ -322,10 +335,13 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     Max = 100.000000000000000000
-    OnChange = DialInputDiffusionChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialInputDiffusionChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialDecayDiffusion: TGuiStitchedDial
     Left = 340
@@ -333,10 +349,13 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     Max = 100.000000000000000000
-    OnChange = DialDecayDiffusionChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDecayDiffusionChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialDecay: TGuiStitchedDial
     Left = 178
@@ -344,10 +363,13 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     Max = 100.000000000000000000
-    OnChange = DialDecayChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDecayChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialModulation: TGuiStitchedDial
     Left = 394
@@ -355,10 +377,13 @@ object FmPlateReverb: TFmPlateReverb
     Width = 48
     Height = 48
     Max = 100.000000000000000000
-    OnChange = DialDecayDiffusionChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialDecayDiffusionChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <

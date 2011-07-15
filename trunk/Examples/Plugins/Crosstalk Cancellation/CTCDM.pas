@@ -79,7 +79,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, CTCGui;
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common, CTCGui;
 
 procedure TCTCDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -147,8 +147,8 @@ procedure TCTCDataModule.ParamDistanceDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 100
-  then PreDefined := FloatToStrF(RoundTo(0.01 * Parameter[Index], -2),
-                       ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(
+    RoundTo(0.01 * Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TCTCDataModule.ParamDistanceLabel(Sender: TObject;
@@ -206,8 +206,8 @@ procedure TCTCDataModule.ParameterFilterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
-  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 3, 3))
+  else PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3));
 end;
 
 procedure TCTCDataModule.ParameterFilterFrequencyLabel(

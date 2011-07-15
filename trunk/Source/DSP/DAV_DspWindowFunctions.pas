@@ -86,7 +86,7 @@ type
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual; abstract;
     procedure CalculateWindowInfo; virtual;
 
-    class function GetWindowFunctionName: string; virtual; abstract;
+    class function GetWindowFunctionName: AnsiString; virtual; abstract;
   published
     property Start: Integer read FStart write SetWinStart default 0;      // Window Start
     property Length: Integer read FLength write SetWinLength;             // Window Length
@@ -118,7 +118,7 @@ type
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
 
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
   TWindowFunctionTriangle = class(TCustomWindowFunction)
@@ -131,7 +131,7 @@ type
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
 
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
   TWindowFunctionCosine = class(TCustomWindowFunction)
@@ -144,7 +144,7 @@ type
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
 
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
   TWindowFunctionWithParameter = class(TWindowFunctionCustomFactor)
@@ -164,7 +164,7 @@ type
   public
     constructor Create; override;
 
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
   TWindowFunctionHanning = class(TCustomWindowFunction)
@@ -177,7 +177,7 @@ type
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
 
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
   TWindowFunctionCosineTerm = class(TCustomWindowFunction)
@@ -206,13 +206,13 @@ type
   TWindowFunctionHamming = class(TWindowFunctionCosineTerm)
   public
     constructor Create; override;
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
   TWindowFunctionBlackman = class(TWindowFunctionCosineTerm)
   public
     constructor Create; override;
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
   TWindowFunctionWelch = class(TCustomWindowFunction)
@@ -224,7 +224,7 @@ type
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
 
-    class function GetWindowFunctionName: string; override;
+    class function GetWindowFunctionName: AnsiString; override;
   end;
 
 var
@@ -935,7 +935,7 @@ begin
  Result := 1;
 end;
 
-class function TWindowFunctionRectangle.GetWindowFunctionName: string;
+class function TWindowFunctionRectangle.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Rectangle';
 end;
@@ -1014,7 +1014,7 @@ begin
  FSidelobe     := -26.53;
 end;
 
-class function TWindowFunctionTriangle.GetWindowFunctionName: string;
+class function TWindowFunctionTriangle.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Triangle';
 end;
@@ -1307,7 +1307,7 @@ begin
  Result := Sin(0.5 * PI * Pos);
 end;
 
-class function TWindowFunctionCosine.GetWindowFunctionName: string;
+class function TWindowFunctionCosine.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Cosine';
 end;
@@ -1595,7 +1595,7 @@ begin
   else Result := Power(sin(PI * Pos) / (PI * (1 - Pos)), FAlpha);
 end;
 
-class function TWindowFunctionLanczos.GetWindowFunctionName: string;
+class function TWindowFunctionLanczos.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Lanczos';
 end;
@@ -2095,7 +2095,7 @@ begin
  Result := CHalf64 * (1 - Cos(Pi * Pos));
 end;
 
-class function TWindowFunctionHanning.GetWindowFunctionName: string;
+class function TWindowFunctionHanning.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Hanning';
 end;
@@ -2346,7 +2346,7 @@ begin
  CosineTerms := 2;
 end;
 
-class function TWindowFunctionHamming.GetWindowFunctionName: string;
+class function TWindowFunctionHamming.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Hanning';
 end;
@@ -2366,7 +2366,7 @@ begin
  CosineTerms   := 3;
 end;
 
-class function TWindowFunctionBlackman.GetWindowFunctionName: string;
+class function TWindowFunctionBlackman.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Blackman';
 end;
@@ -2382,7 +2382,7 @@ begin
  FFirstMinimum := 2.859;
 end;
 
-class function TWindowFunctionWelch.GetWindowFunctionName: string;
+class function TWindowFunctionWelch.GetWindowFunctionName: AnsiString;
 begin
  Result := 'Welch';
 end;

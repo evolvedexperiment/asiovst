@@ -65,63 +65,6 @@ object FmSpinBugLite: TFmSpinBugLite
     StitchKind = skHorizontal
     WheelStep = 1.000000000000000000
   end
-  object SelectType: TGuiSelectBox
-    Left = 45
-    Top = 8
-    Width = 89
-    Height = 25
-    AntiAlias = gaaLinear4x
-    ArrowColor = clWhite
-    ButtonColor = 271837
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ItemIndex = -1
-    Items.Strings = (
-      'stereo a'
-      'stereo b'
-      'stereo c'
-      'stereo d'
-      'mono'
-      'mono l'
-      'mono r'
-      'm+s'
-      'special'
-      'old one')
-    LineColor = clWhite
-    ParentFont = False
-    BorderRadius = 4
-    SelectBoxColor = 271837
-    OnChange = SelectTypeChange
-  end
-  object SelectColour: TGuiSelectBox
-    Left = 58
-    Top = 39
-    Width = 108
-    Height = 25
-    AntiAlias = gaaLinear4x
-    ArrowColor = clWhite
-    ButtonColor = 271837
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ItemIndex = -1
-    Items.Strings = (
-      'rough'
-      'firm'
-      'medium'
-      'soft'
-      'smooth')
-    LineColor = clWhite
-    ParentFont = False
-    BorderRadius = 4
-    SelectBoxColor = 271837
-    OnChange = SelectColourChange
-  end
   object LbType: TGuiLabel
     Left = 8
     Top = 12
@@ -201,5 +144,60 @@ object FmSpinBugLite: TFmSpinBugLite
     Shadow.Color = 216826
     Shadow.Saturation = 1.000000000000000000
     Shadow.Visible = True
+  end
+  object SelectType: TGuiSelectBox
+    Left = 45
+    Top = 8
+    Width = 89
+    Height = 25
+    ArrowColor = clWhite
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 2.000000000000000000
+    ButtonColor = 271837
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ItemIndex = -1
+    Items.Strings = (
+      'stereo a'
+      'stereo b'
+      'stereo c'
+      'stereo d'
+      'mono'
+      'mono l'
+      'mono r'
+      'm+s'
+      'special'
+      'old one')
+    ParentFont = False
+    SelectBoxColor = 271837
+    OnChange = SelectTypeChange
+  end
+  object SelectColour: TGuiSelectBox
+    Left = 58
+    Top = 39
+    Width = 108
+    Height = 25
+    ArrowColor = clWhite
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 2.000000000000000000
+    ButtonColor = 271837
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ItemIndex = -1
+    Items.Strings = (
+      'rough'
+      'firm'
+      'medium'
+      'soft'
+      'smooth')
+    ParentFont = False
+    SelectBoxColor = 271837
+    OnChange = SelectColourChange
   end
 end

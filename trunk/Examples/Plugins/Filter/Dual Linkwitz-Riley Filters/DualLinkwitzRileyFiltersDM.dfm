@@ -1,4 +1,6 @@
 object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'DualLinkwitzRileyFilters'
@@ -122,7 +124,6 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessBandpass
   OnProcess32Replacing = VSTModuleProcessBandpass
   OnResume = VSTModuleResume

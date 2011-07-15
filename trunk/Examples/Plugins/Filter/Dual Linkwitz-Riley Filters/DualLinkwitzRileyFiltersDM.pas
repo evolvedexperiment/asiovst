@@ -36,16 +36,17 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
   DAV_DspFilterButterworth, DAV_DspFilterLinkwitzRiley;
 
 type
   TProcessMode = (pmBypass, pmLowpass, pmHighpass, pmBandpass);
 
   TDualLinkwitzRileyFiltersModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessLowpass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -60,14 +61,14 @@ type
     procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure StringOrderToParameter(Sender: TObject; const Index: Integer;
-      const ParameterString: AnsiString; var Value: Single);
+    procedure StringOrderToParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
     procedure VSTModuleResume(Sender: TObject);
   private
-    FLowpass     : array of array [0..1] of TButterworthLowPassFilter;
-    FHighpass    : array of array [0..1] of TButterworthHighPassFilter;
-    FSign        : Single;
-    FProcessMode : TProcessMode;
+    FCriticalSection : TCriticalSection;
+    FLowpass         : array of array [0..1] of TButterworthLowPassFilter;
+    FHighpass        : array of array [0..1] of TButterworthHighPassFilter;
+    FSign            : Single;
+    FProcessMode     : TProcessMode;
     function GetHighpass(Channel, Index: Integer): TButterworthHighPassFilter;
     function GetLowpass(Channel, Index: Integer): TButterworthLowPassFilter;
   public
@@ -93,7 +94,18 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, DAV_Common, DAV_Approximations, DualLinkwitzRileyFiltersGui;
+  Registry, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
+  DAV_Common, DAV_Approximations, DualLinkwitzRileyFiltersGui;
+
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleOpen(Sender: TObject);
 var
@@ -147,6 +159,9 @@ begin
    Parameter[3] := 2;
    Parameter[4] := 3;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmLinkwitzRiley;
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleClose(Sender: TObject);
@@ -155,21 +170,15 @@ var
 begin
  for Channel := 0 to Length(FLowpass) - 1 do
   begin
-   FreeAndNil(FLowpass[0]);
-   FreeAndNil(FLowpass[1]);
+   FreeAndNil(FLowpass[Channel, 0]);
+   FreeAndNil(FLowpass[Channel, 1]);
   end;
 
  for Channel := 0 to Length(FHighpass) - 1 do
   begin
-   FreeAndNil(FHighpass[0]);
-   FreeAndNil(FHighpass[1]);
+   FreeAndNil(FHighpass[Channel, 0]);
+   FreeAndNil(FHighpass[Channel, 1]);
   end;
-end;
-
-procedure TDualLinkwitzRileyFiltersModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- Gui := TFmLinkwitzRiley.Create(Self);
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.LoadLow(Index: Integer);
@@ -209,7 +218,7 @@ var
 begin
  with ParameterProperties[Index] do
   begin
-   ProcStr := Trim(ParameterString);
+   ProcStr := AnsiString(Trim(string(ParameterString)));
 
    Indxes[0] := 1;
    while (Indxes[0] <= Length(ProcStr)) and
@@ -297,7 +306,7 @@ end;
 procedure TDualLinkwitzRileyFiltersModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(12 * Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(12 * Round(Parameter[Index])));
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.ParameterFrequencyDisplay(
@@ -307,7 +316,7 @@ var
 begin
  Freq := Parameter[Index];
  if Freq >= 1000
-  then Predefined := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3));
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.ParameterFrequencyLabel(
@@ -320,14 +329,19 @@ end;
 procedure TDualLinkwitzRileyFiltersModule.ParameterTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FProcessMode := TProcessMode(Round(Limit(Value, 0, 4)));
- case FProcessMode of
-  pmBypass   : OnProcess := VSTModuleProcessBypass;
-  pmLowpass  : OnProcess := VSTModuleProcessLowpass;
-  pmHighpass : OnProcess := VSTModuleProcessHighpass;
-  pmBandpass : OnProcess := VSTModuleProcessBandpass;
+ FCriticalSection.Enter;
+ try
+  FProcessMode := TProcessMode(Round(Limit(Value, 0, 4)));
+  case FProcessMode of
+   pmBypass   : OnProcess := VSTModuleProcessBypass;
+   pmLowpass  : OnProcess := VSTModuleProcessLowpass;
+   pmHighpass : OnProcess := VSTModuleProcessHighpass;
+   pmBandpass : OnProcess := VSTModuleProcessBandpass;
+  end;
+  OnProcess32Replacing := OnProcess;
+ finally
+  FCriticalSection.Leave;
  end;
- OnProcess32Replacing := OnProcess;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -337,7 +351,7 @@ end;
 procedure TDualLinkwitzRileyFiltersModule.ParameterTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0: PreDefined := 'Bypass';
   1: PreDefined := 'Highcut';
   2: PreDefined := 'Lowcut';
@@ -350,14 +364,19 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterLowpassFrequencyChange(
 var
   Channel : Integer;
 begin
- if Length(FLowpass) > 0 then
-  for Channel := 0 to Length(FLowpass) - 1 do
-   begin
-    if Assigned(FLowpass[Channel][0])
-     then FLowpass[Channel][0].Frequency := Value;
-    if Assigned(FLowpass[Channel][1])
-     then FLowpass[Channel][1].Frequency := Value;
-   end;
+ FCriticalSection.Enter;
+ try
+  if Length(FLowpass) > 0 then
+   for Channel := 0 to Length(FLowpass) - 1 do
+    begin
+     if Assigned(FLowpass[Channel][0])
+      then FLowpass[Channel][0].Frequency := Value;
+     if Assigned(FLowpass[Channel][1])
+      then FLowpass[Channel][1].Frequency := Value;
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -369,14 +388,19 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterLowpassOrderChange(
 var
   Channel: Integer;
 begin
- if Length(FLowpass) > 0 then
-  for Channel := 0 to Length(FLowpass) - 1 do
-   begin
-    if Assigned(FLowpass[Channel][0])
-     then FLowpass[Channel][0].Order := round(Value);
-    if Assigned(FLowpass[Channel][1])
-     then FLowpass[Channel][1].Order := round(Value);
-   end;
+ FCriticalSection.Enter;
+ try
+  if Length(FLowpass) > 0 then
+   for Channel := 0 to Length(FLowpass) - 1 do
+    begin
+     if Assigned(FLowpass[Channel][0])
+      then FLowpass[Channel][0].Order := Round(Value);
+     if Assigned(FLowpass[Channel][1])
+      then FLowpass[Channel][1].Order := Round(Value);
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -388,14 +412,19 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterHighpassFrequencyChange(
 var
   Channel: Integer;
 begin
- if Length(FHighpass) > 0 then
-  for Channel := 0 to Length(FHighpass) - 1 do
-   begin
-    if Assigned(FHighpass[Channel][0])
-     then FHighpass[Channel][0].Frequency := Value;
-    if Assigned(FHighpass[Channel][1])
-     then FHighpass[Channel][1].Frequency := Value;
-   end;
+ FCriticalSection.Enter;
+ try
+  if Length(FHighpass) > 0 then
+   for Channel := 0 to Length(FHighpass) - 1 do
+    begin
+     if Assigned(FHighpass[Channel][0])
+      then FHighpass[Channel][0].Frequency := Value;
+     if Assigned(FHighpass[Channel][1])
+      then FHighpass[Channel][1].Frequency := Value;
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -407,16 +436,20 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterHighpassOrderChange(
 var
   Channel: Integer;
 begin
- if Length(FHighpass) > 0 then
-  for Channel := 0 to Length(FHighpass) - 1 do
-   begin
-    if Assigned(FHighpass[Channel][0])
-     then FHighpass[Channel][0].Order := round(Value);
-    if Assigned(FHighpass[Channel][1])
-     then FHighpass[Channel][1].Order := round(Value);
-   end;
-
- FSign := 1 - 2 * (round(Value) mod 2);
+ FCriticalSection.Enter;
+ try
+  if Length(FHighpass) > 0 then
+   for Channel := 0 to Length(FHighpass) - 1 do
+    begin
+     if Assigned(FHighpass[Channel][0])
+      then FHighpass[Channel][0].Order := Round(Value);
+     if Assigned(FHighpass[Channel][1])
+      then FHighpass[Channel][1].Order := Round(Value);
+    end;
+  FSign := 1 - 2 * (Round(Value) mod 2);
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -427,16 +460,21 @@ procedure TDualLinkwitzRileyFiltersModule.VSTModuleResume(Sender: TObject);
 var
   Channel: Integer;
 begin
- for Channel := 0 to Length(FLowpass) - 1 do
-  begin
-   if Assigned(FLowpass[Channel][0]) then FLowpass[Channel][0].ResetStates;
-   if Assigned(FLowpass[Channel][1]) then FLowpass[Channel][1].ResetStates;
-  end;
- for Channel := 0 to Length(FHighpass) - 1 do
-  begin
-   if Assigned(FHighpass[Channel][0]) then FHighpass[Channel][0].ResetStates;
-   if Assigned(FHighpass[Channel][1]) then FHighpass[Channel][1].ResetStates;
-  end;
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FLowpass) - 1 do
+   begin
+    if Assigned(FLowpass[Channel][0]) then FLowpass[Channel][0].ResetStates;
+    if Assigned(FLowpass[Channel][1]) then FLowpass[Channel][1].ResetStates;
+   end;
+  for Channel := 0 to Length(FHighpass) - 1 do
+   begin
+    if Assigned(FHighpass[Channel][0]) then FHighpass[Channel][0].ResetStates;
+    if Assigned(FHighpass[Channel][1]) then FHighpass[Channel][1].ResetStates;
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -444,23 +482,28 @@ procedure TDualLinkwitzRileyFiltersModule.VSTModuleSampleRateChange(Sender: TObj
 var
   Channel: Integer;
 begin
- if Abs(SampleRate) > 0 then
-  begin
-   for Channel := 0 to Length(FLowpass) - 1 do
-    begin
-     if Assigned(FLowpass[Channel][0])
-      then FLowpass[Channel][0].SampleRate := Abs(SampleRate);
-     if Assigned(FLowpass[Channel][1])
-      then FLowpass[Channel][1].SampleRate := Abs(SampleRate);
-    end;
-   for Channel := 0 to Length(FHighpass) - 1 do
-    begin
-     if Assigned(FHighpass[Channel][0])
-      then FHighpass[Channel][0].SampleRate := Abs(SampleRate);
-     if Assigned(FHighpass[Channel][1])
-      then FHighpass[Channel][1].SampleRate := Abs(SampleRate);
-    end;
-  end;
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   begin
+    for Channel := 0 to Length(FLowpass) - 1 do
+     begin
+      if Assigned(FLowpass[Channel][0])
+       then FLowpass[Channel][0].SampleRate := Abs(SampleRate);
+      if Assigned(FLowpass[Channel][1])
+       then FLowpass[Channel][1].SampleRate := Abs(SampleRate);
+     end;
+    for Channel := 0 to Length(FHighpass) - 1 do
+     begin
+      if Assigned(FHighpass[Channel][0])
+       then FHighpass[Channel][0].SampleRate := Abs(SampleRate);
+      if Assigned(FHighpass[Channel][1])
+       then FHighpass[Channel][1].SampleRate := Abs(SampleRate);
+     end;
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBypass(const Inputs,
@@ -468,8 +511,13 @@ procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBypass(const Inputs,
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FLowpass) - 1
-  do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FLowpass) - 1
+   do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessLowpass(const Inputs,
@@ -477,10 +525,15 @@ procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessLowpass(const Inputs,
 var
   Sample, Channel : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for Channel := 0 to Length(FLowpass) - 1
-   do Outputs[Channel, Sample] := FLowpass[Channel][0].ProcessSample64(
-        FLowpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   for Channel := 0 to Length(FLowpass) - 1
+    do Outputs[Channel, Sample] := FLowpass[Channel][0].ProcessSample64(
+         FLowpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessHighpass(const Inputs,
@@ -488,10 +541,15 @@ procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessHighpass(const Inputs,
 var
   Sample, Channel : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for Channel := 0 to Length(FLowpass) - 1
-   do Outputs[Channel, Sample] := FSign * FHighpass[Channel][0].ProcessSample64(
-        FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   for Channel := 0 to Length(FLowpass) - 1
+    do Outputs[Channel, Sample] := FSign * FHighpass[Channel][0].ProcessSample64(
+         FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBandpass(const Inputs,
@@ -499,14 +557,19 @@ procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBandpass(const Inputs,
 var
   Sample, Channel : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for Channel := 0 to Length(FLowpass) - 1 do
-   begin
-    Outputs[Channel, Sample] := FSign * FLowpass[Channel][0].ProcessSample64(
-      FLowpass[Channel][1].ProcessSample64(
-      FHighpass[Channel][0].ProcessSample64(
-      FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]))));
-   end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   for Channel := 0 to Length(FLowpass) - 1 do
+    begin
+     Outputs[Channel, Sample] := FSign * FLowpass[Channel][0].ProcessSample64(
+       FLowpass[Channel][1].ProcessSample64(
+       FHighpass[Channel][0].ProcessSample64(
+       FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]))));
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.
