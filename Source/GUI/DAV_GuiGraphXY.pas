@@ -889,7 +889,7 @@ begin
        end;
 
       // calculate width scale (0 < x <= 1)
-      WidthScale := FixedSub(RadiusMinusHalf, ConvertToFixed24Dot8Point(IntegerRadiusX - 2));
+      WidthScale := FixedSub(RadiusMinusHalf, ConvertToFixed24Dot8Point(Integer(IntegerRadiusX - 2)));
 
       if IntegerRadiusY = IntegerRadiusX then
        for LeftRightIdx := 0 to 1 do
@@ -1743,7 +1743,7 @@ begin
    // set other local variables
    Radius := ConvertToFixed24Dot8Point(Min(FBorderRadius, 0.5 * Min(Width, Height)) + 1);
    BorderWidthFixed := ConvertToFixed24Dot8Point(Max(FBorderWidth, 1));
-   WidthMinusOne := ConvertToFixed24Dot8Point(Width - 1);
+   WidthMinusOne := ConvertToFixed24Dot8Point(Integer(Width - 1));
 
    // precalculate radius variables
    RadMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
@@ -1779,7 +1779,7 @@ begin
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Width - 1), Temp));
+     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -1789,7 +1789,7 @@ begin
         then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8Point(Width - 1).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -1838,7 +1838,7 @@ begin
       end;
 
      // check upper/lower half and eventually precalculate y-border distance
-     Temp := ConvertToFixed24Dot8Point(Height - 1);
+     Temp := ConvertToFixed24Dot8Point(Integer(Height - 1));
      IsUpperLowerHalf := (YFixed.Fixed < BorderWidthFixed.Fixed) or
        (YFixed.Fixed > Temp.Fixed - BorderWidthFixed.Fixed);
      if IsUpperLowerHalf then

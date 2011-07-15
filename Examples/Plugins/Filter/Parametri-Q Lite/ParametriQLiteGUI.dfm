@@ -1457,7 +1457,6 @@ object FmParametriQLite: TFmParametriQLite
         DisplayName = 'Main'
         Color = 9145737
         LineWidth = 2.000000000000000000
-        Visible = True
         OnGetFilterGain = GetFilterGain
       end
       item

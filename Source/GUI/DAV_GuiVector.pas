@@ -196,12 +196,26 @@ type
 
   TGuiEquallySpacedPolyline = class(TGuiCustomGeometricShape)
   private
-    FOnGetValue: TGetValueEvent;
+    FOnGetValue   : TGetValueEvent;
+    FMarginBottom : Integer;
+    FMarginTop    : Integer;
+    FMarginLeft   : Integer;
+    FMarginRight  : Integer;
+    procedure SetMarginBottom(const Value: Integer);
+    procedure SetMarginLeft(const Value: Integer);
+    procedure SetMarginRight(const Value: Integer);
+    procedure SetMarginTop(const Value: Integer);
   protected
     procedure AssignTo(Dest: TPersistent); override;
+    procedure MarginChanged; virtual;
   public
     constructor Create; override;
+    procedure SetAllMargins(Value: Integer);
 
+    property MarginLeft: Integer read FMarginLeft write SetMarginLeft;
+    property MarginTop: Integer read FMarginTop write SetMarginTop;
+    property MarginRight: Integer read FMarginRight write SetMarginRight;
+    property MarginBottom: Integer read FMarginBottom write SetMarginBottom;
     property OnGetValue: TGetValueEvent read FOnGetValue write FOnGetValue;
   end;
 
@@ -645,7 +659,61 @@ end;
 
 constructor TGuiEquallySpacedPolyline.Create;
 begin
+  inherited;
+end;
 
+procedure TGuiEquallySpacedPolyline.MarginChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiEquallySpacedPolyline.SetAllMargins(Value: Integer);
+begin
+ if (FMarginTop <> Value) or (FMarginLeft <> Value) or
+   (FMarginRight <> Value) or (FMarginBottom <> Value) then
+  begin
+   FMarginTop := Value;
+   FMarginLeft := Value;
+   FMarginRight := Value;
+   FMarginBottom := Value;
+   MarginChanged;
+  end;
+end;
+
+procedure TGuiEquallySpacedPolyline.SetMarginBottom(const Value: Integer);
+begin
+ if FMarginBottom <> Value then
+  begin
+   FMarginBottom := Value;
+   MarginChanged;
+  end;
+end;
+
+procedure TGuiEquallySpacedPolyline.SetMarginLeft(const Value: Integer);
+begin
+ if FMarginLeft <> Value then
+  begin
+   FMarginLeft := Value;
+   MarginChanged;
+  end;
+end;
+
+procedure TGuiEquallySpacedPolyline.SetMarginRight(const Value: Integer);
+begin
+ if FMarginRight <> Value then
+  begin
+   FMarginRight := Value;
+   MarginChanged;
+  end;
+end;
+
+procedure TGuiEquallySpacedPolyline.SetMarginTop(const Value: Integer);
+begin
+ if FMarginTop <> Value then
+  begin
+   FMarginTop := Value;
+   MarginChanged;
+  end;
 end;
 
 procedure TGuiEquallySpacedPolyline.AssignTo(Dest: TPersistent);
