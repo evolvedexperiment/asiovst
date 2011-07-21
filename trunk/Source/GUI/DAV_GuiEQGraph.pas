@@ -47,19 +47,24 @@ type
   TXAxisLabelFrequency = (xlfDecade, xlfThirdDecade, xlfAuto);
   TUnitPosition = (upValue, upSide);
 
+  TMouseAction = (maShift, maZoom);
+  TMouseActions = set of TMouseAction;
+
   TGetFilterGainEvent = function(Sender: TObject; const Frequency: Single): Single of object;
 
   TCustomGuiEQGraph = class;
 
   TCustomGuiEQGraphAxis = class(TPersistent)
   private
+    FMouseActions    : TMouseActions;
     procedure SetUnitPosition(const Value: TUnitPosition);
   protected
-    FOwner        : TCustomGuiEQGraph;
-    FUpper        : Single;
-    FLower        : Single;
-    FRange        : Single;
-    FUnitPosition : TUnitPosition;
+    FOwner           : TCustomGuiEQGraph;
+    FUpper           : Single;
+    FLower           : Single;
+    FRange           : Single;
+    FRangeReciprocal : Single;
+    FUnitPosition    : TUnitPosition;
     procedure AssignTo(Dest: TPersistent); override;
     procedure Changed; virtual;
     procedure CalculateRange;
@@ -67,7 +72,15 @@ type
     procedure UnitPositionChanged; virtual;
   public
     constructor Create(AOwner: TCustomGuiEQGraph); virtual;
+
+    procedure ShiftByPixel(Pixel: Integer); virtual; abstract;
+    procedure ZoomAroundPixel(Pixel: Integer; Scale: Single); virtual; abstract;
+    procedure ZoomInByPixel(StartPixel, EndPixel: Integer); virtual; abstract;
+    procedure ZoomLowerByPixel(StartPixel, EndPixel: Integer); virtual; abstract;
+
     property Range: Single read FRange;
+    property RangeReciprocal: Single read FRangeReciprocal;
+    property MouseActions: TMouseActions read FMouseActions write FMouseActions;
     property UnitPosition: TUnitPosition read FUnitPosition write SetUnitPosition default upValue;
   end;
 
@@ -114,6 +127,13 @@ type
     function FastLinearToLogarithmicFrequency(Value: Single): Single;
     function FastLogarithmicFrequencyToLinear(Value: Single): Single;
 
+    function FrequencyAtPixel(Pixel: Integer): Single;
+
+    procedure ShiftByPixel(Pixel: Integer); override;
+    procedure ZoomAroundPixel(Pixel: Integer; Scale: Single); override;
+    procedure ZoomInByPixel(StartPixel, EndPixel: Integer); override;
+    procedure ZoomLowerByPixel(StartPixel, EndPixel: Integer); override;
+
     property UpperFrequency: Single read FUpper write SetUpperFrequency;
     property LowerFrequency: Single read FLower write SetLowerFrequency;
     property LabelPosition: TXAxisLabelPosition read FLabelPosition write SetLabelPosition default xlpNone;
@@ -158,6 +178,13 @@ type
   public
     constructor Create(AOwner: TCustomGuiEQGraph); override;
 
+    procedure SetLevels(Lower, Upper: Single);
+    procedure ShiftByPixel(Pixel: Integer); override;
+    procedure ZoomAroundPixel(Pixel: Integer; Scale: Single); override;
+    procedure ZoomInByPixel(StartPixel, EndPixel: Integer); override;
+    procedure ZoomLowerByPixel(StartPixel, EndPixel: Integer); override;
+    function LevelAtPixel(Pixel: Integer): Single;
+
     property UpperLevel: Single read FUpper write SetUpperLevel;
     property LowerLevel: Single read FLower write SetLowerLevel;
 
@@ -179,6 +206,7 @@ type
     property Granularity;
     property MaximumGridLines;
     property UnitPosition;
+    property MouseActions;
   end;
 
 
@@ -192,7 +220,7 @@ type
     FLineWidth       : Single;
     FAlpha           : Byte;
     FESP             : TGuiPixelEquallySpacedPolyline;
-    FDataCache       : PFixed24Dot8PointArray;
+    FDataCache       : PDAVDoubleFixedArray;
     FDataCacheSize   : Integer;
     FVisible         : Boolean;
     procedure SetColor(const Value: TColor);
@@ -200,7 +228,6 @@ type
     procedure SetAlpha(const Value: Byte);
     procedure SetOnGetFilterGain(const Value: TGetFilterGainEvent);
     procedure SetVisible(const Value: Boolean);
-    procedure BuildDataCache;
   protected
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
@@ -211,6 +238,9 @@ type
     procedure VisibleChanged; virtual;
     procedure Changed; virtual;
     procedure OnGetFilterGainChanged; virtual;
+
+    procedure CalculateDataCache;
+    procedure DataCacheChanged;
 
     function GetZeroHandler(Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point;
     function GetValueHandler(Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point;
@@ -251,24 +281,25 @@ type
 
   TCustomGuiEQGraph = class(TGuiCustomControl)
   private
-    FAutoColor        : Boolean;
-    FShowGrid         : Boolean;
-    FChartColor       : TColor;
-    FBorderRadius     : Single;
-    FBorderWidth      : Single;
-    FBorderColor      : TColor;
-    FGraphColorDark   : TColor;
-    FGraphColorLight  : TColor;
+    FAutoColor          : Boolean;
+    FShowGrid           : Boolean;
+    FChartColor         : TColor;
+    FBorderRadius       : Single;
+    FBorderWidth        : Single;
+    FBorderColor        : TColor;
+    FGraphColorDark     : TColor;
+    FGraphColorLight    : TColor;
 
-    FOnPaint          : TNotifyEvent;
+    FOnPaint            : TNotifyEvent;
 
-    FFilterSeries     : TGuiEQGraphSeriesCollection;
+    FFilterSeries       : TGuiEQGraphSeriesCollection;
 
-    FGuiFont          : TGuiOversampledGDIFont;
-    FYAxis            : TGuiEQGraphYAxis;
-    FXAxis            : TGuiEQGraphXAxis;
-    FAlpha            : Byte;
-    FAntiAlias        : Boolean;
+    FGuiFont            : TGuiOversampledGDIFont;
+    FYAxis              : TGuiEQGraphYAxis;
+    FXAxis              : TGuiEQGraphXAxis;
+    FAlpha              : Byte;
+    FAntiAlias          : Boolean;
+    FLastMouseCursorPos : TPoint;
     function GetFontShadow: TGuiShadow;
     function GetOversampling: TFontOversampling;
     function GetGraphWidth: Integer;
@@ -308,6 +339,11 @@ type
     procedure RenderSeries(PixelMap: TGuiCustomPixelMap); virtual;
     procedure UpdateBuffer; override;
     procedure UpdateBackBuffer; override;
+
+    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+      MousePos: TPoint): Boolean; override;
+    procedure MouseMove(Shift: TShiftState; X: Integer; Y: Integer); override;
+    procedure Resize; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -409,7 +445,8 @@ end;
 
 procedure TCustomGuiEQGraphAxis.Changed;
 begin
- FOwner.BufferChanged;
+// FOwner.BufferChanged;
+ FOwner.BackBufferChanged;
 end;
 
 procedure TCustomGuiEQGraphAxis.RangeChanged;
@@ -448,6 +485,9 @@ end;
 procedure TCustomGuiEQGraphAxis.CalculateRange;
 begin
  FRange := FUpper - FLower;
+ if FRange <> 0
+  then FRangeReciprocal := 1 / FRange
+  else FRangeReciprocal := 1;
 end;
 
 
@@ -510,6 +550,47 @@ begin
  Writer.WriteFloat(FUpper);
 end;
 
+procedure TCustomGuiEQGraphXAxis.ShiftByPixel(Pixel: Integer);
+var
+  ShiftFrequency : Single;
+begin
+  ShiftFrequency := Power(2, -Pixel / FOwner.GraphHeight * FLog2Ratio);
+
+  FLower := ShiftFrequency * FLower;
+  FUpper := ShiftFrequency * FUpper;
+
+  RangeChanged;
+  CalculateUpperFrequencyReciprocal;
+  CalculateLowerFrequencyReciprocal;
+  CalculateFrequencyRangeRatios;
+  Changed;
+end;
+
+procedure TCustomGuiEQGraphXAxis.ZoomAroundPixel(Pixel: Integer; Scale: Single);
+var
+  Frequency : Single;
+begin
+ if Scale = 1 then Exit;
+ Frequency := FrequencyAtPixel(Pixel);
+(*
+ FLower := Level - Scale * (Level - FLower);
+ FUpper := Level + Scale * (FUpper - Level);
+*)
+ RangeChanged;
+ Changed;
+end;
+
+procedure TCustomGuiEQGraphXAxis.ZoomInByPixel(StartPixel, EndPixel: Integer);
+begin
+ // yet todo
+end;
+
+procedure TCustomGuiEQGraphXAxis.ZoomLowerByPixel(StartPixel,
+  EndPixel: Integer);
+begin
+
+end;
+
 function TCustomGuiEQGraphXAxis.LogarithmicFrequencyToLinear(Value: Double): Double;
 begin
  Result := Log2(Value * FInvLower) * FInvLog2Ratio;
@@ -528,6 +609,12 @@ end;
 function TCustomGuiEQGraphXAxis.FastLinearToLogarithmicFrequency(Value: Single): Single;
 begin
  Result := FastPower2MinError3(Value * FLog2Ratio) * FLower;
+end;
+
+function TCustomGuiEQGraphXAxis.FrequencyAtPixel(Pixel: Integer): Single;
+begin
+ Result := LinearToLogarithmicFrequency((Pixel - Trunc(FOwner.BorderWidth)) /
+   FOwner.GraphWidth);
 end;
 
 procedure TCustomGuiEQGraphXAxis.SetLabelFrequency(
@@ -677,6 +764,16 @@ begin
   end;
 end;
 
+procedure TCustomGuiEQGraphYAxis.ShiftByPixel(Pixel: Integer);
+var
+  ShiftLevel : Single;
+begin
+  ShiftLevel := Pixel * FRange / FOwner.GraphHeight;
+  FLower := FLower + ShiftLevel;
+  FUpper := FUpper + ShiftLevel;
+  Changed;
+end;
+
 procedure TCustomGuiEQGraphYAxis.SetAutoGranularity(const Value: Boolean);
 begin
  if FAutoGranularity <> Value then
@@ -707,6 +804,21 @@ begin
   end;
 end;
 
+procedure TCustomGuiEQGraphYAxis.SetLevels(Lower, Upper: Single);
+begin
+ // ensure that upper is above lower
+ if FLower > FUpper
+  then raise Exception.Create('Lower above Upper');
+
+ if (FUpper <> Upper) or (FLower <> Lower) then
+  begin
+   FUpper := Upper;
+   FLower := Lower;
+   RangeChanged;
+   Changed;
+  end;
+end;
+
 procedure TCustomGuiEQGraphYAxis.AutoGranularityChanged;
 begin
  if FAutoGranularity
@@ -724,10 +836,59 @@ begin
  Changed;
 end;
 
+function TCustomGuiEQGraphYAxis.LevelAtPixel(Pixel: Integer): Single;
+var
+  Ratio : Single;
+begin
+ Ratio := (Pixel - Trunc(FOwner.BorderWidth)) / FOwner.GraphHeight;
+ Result := UpperLevel - Ratio * Range;
+end;
+
 procedure TCustomGuiEQGraphYAxis.UpperLevelChanged;
 begin
  RangeChanged;
  Changed;
+end;
+
+procedure TCustomGuiEQGraphYAxis.ZoomAroundPixel(Pixel: Integer; Scale: Single);
+var
+  Level : Single;
+begin
+ if Scale = 1 then Exit;
+ Level := LevelAtPixel(Pixel);
+ FLower := Level - Scale * (Level - FLower);
+ FUpper := Level + Scale * (FUpper - Level);
+ RangeChanged;
+ Changed;
+end;
+
+procedure TCustomGuiEQGraphYAxis.ZoomLowerByPixel(StartPixel, EndPixel: Integer);
+var
+  Level : Single;
+  Ratio : Single;
+begin
+ Level := LevelAtPixel(StartPixel);
+ Ratio := FOwner.GraphHeight / (EndPixel - Trunc(FOwner.BorderWidth));
+ LowerLevel := FUpper + Ratio * (Level - FUpper);
+end;
+
+procedure TCustomGuiEQGraphYAxis.ZoomInByPixel(StartPixel, EndPixel: Integer);
+var
+  Level : Single;
+  Ratio : Single;
+begin
+ if EndPixel > StartPixel then
+  begin
+   Level := LevelAtPixel(StartPixel);
+   Ratio := FOwner.GraphHeight / (EndPixel - Trunc(FOwner.BorderWidth));
+   LowerLevel := FUpper + Ratio * (Level - FUpper);
+  end else
+ if EndPixel < StartPixel then
+  begin
+   Level := LevelAtPixel(StartPixel);
+   Ratio := FOwner.GraphHeight / ((EndPixel - Trunc(FOwner.BorderWidth)) - FOwner.GraphHeight);
+   UpperLevel := FLower + Ratio * (FLower - Level);
+  end;
 end;
 
 procedure TCustomGuiEQGraphYAxis.LowerLevelChanged;
@@ -765,7 +926,7 @@ var
   GranularityScale : Single;
 begin
  RoughGranularity := Range / FMaximumGridLines;
- GranularityBase  := Trunc(Log10(abs(RoughGranularity)));
+ GranularityBase  := Trunc(Log10(Abs(RoughGranularity)));
  GranularityScale := IntPower(10, GranularityBase);
 
  FGranularity := GranularityScale * (Trunc(RoughGranularity / GranularityScale) + 1);
@@ -806,35 +967,38 @@ begin
  inherited;
 end;
 
-procedure TGuiEQGraphSeriesCollectionItem.DataChanged;
-begin
- BuildDataCache;
-end;
-
-procedure TGuiEQGraphSeriesCollectionItem.BuildDataCache;
+procedure TGuiEQGraphSeriesCollectionItem.DataCacheChanged;
 var
-  DataIndex : Integer;
-  Level     : Single;
-  Freq      : Single;
+  NewDataSize : Integer;
 begin
  Assert(Collection.Owner is TCustomGuiEQGraph);
- FDataCacheSize := TCustomGuiEQGraph(Collection.Owner).GraphWidth;
- ReallocMem(FDataCache, FDataCacheSize * SizeOf(TFixed24Dot8Point));
+ NewDataSize := TCustomGuiEQGraph(Collection.Owner).GraphWidth;
 
+ if FDataCacheSize <> NewDataSize then
+  begin
+   FDataCacheSize := NewDataSize;
+   ReallocMem(FDataCache, FDataCacheSize * SizeOf(Double));
+   CalculateDataCache;
+  end;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.DataChanged;
+begin
+ CalculateDataCache;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.CalculateDataCache;
+var
+  DataIndex : Integer;
+  Freq      : Single;
+begin
  with TCustomGuiEQGraph(Collection.Owner) do
   if Assigned(FOnGetFilterGain) then
    for DataIndex := 0 to FDataCacheSize - 1 do
     begin
      Freq := FXAxis.LinearToLogarithmicFrequency(DataIndex / GraphWidth);
-     Level := FOnGetFilterGain(Self, Freq);
-     FDataCache[DataIndex] := ConvertToFixed24Dot8Point(((YAxis.UpperLevel - Level) / YAxis.Range) * GraphHeight);
-    end
-  else
-   begin
-    FDataCache[0] := ConvertToFixed24Dot8Point((YAxis.UpperLevel / YAxis.Range) * GraphHeight);
-    for DataIndex := 1 to FDataCacheSize - 1
-     do FDataCache[DataIndex] := FDataCache[0];
-   end;
+     FDataCache[DataIndex] := FOnGetFilterGain(Self, Freq);
+    end;
 
  // strategy for implicit oversampling: scan with higher resolution (eg. 0.25px)
  // and use the highest if the average is above the last value or use the lowest
@@ -916,7 +1080,7 @@ begin
  Assert(Collection.Owner is TCustomGuiEQGraph);
  with TCustomGuiEQGraph(Collection.Owner) do
   begin
-   Result := ConvertToFixed24Dot8Point((YAxis.UpperLevel / YAxis.Range) * GraphHeight);
+   Result := ConvertToFixed24Dot8Point((YAxis.UpperLevel * YAxis.RangeReciprocal) * GraphHeight);
   end;
 end;
 
@@ -928,11 +1092,19 @@ var
 begin
  Assert(Collection.Owner is TCustomGuiEQGraph);
  with TCustomGuiEQGraph(Collection.Owner) do
+  if (PixelPosition >= 0) and (PixelPosition < FDataCacheSize)
+   then Result := ConvertToFixed24Dot8Point(((YAxis.UpperLevel - FDataCache[PixelPosition]) * YAxis.RangeReciprocal) * GraphHeight)
+   else Result.Fixed := 0;
+
+(*
+ Assert(Collection.Owner is TCustomGuiEQGraph);
+ with TCustomGuiEQGraph(Collection.Owner) do
   begin
    Freq := FXAxis.LinearToLogarithmicFrequency(PixelPosition / Width);
    Level := FOnGetFilterGain(Self, Freq);
    Result := ConvertToFixed24Dot8Point(((YAxis.UpperLevel - Level) / YAxis.Range) * GraphHeight);
   end;
+*)
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.SetDisplayName(const Value: string);
@@ -1508,14 +1680,14 @@ begin
          Temp := Temp + Granularity;
          Continue;
         end;
-       PixelMap.Line(Rct.Left,  Round(Rct.Bottom - i), Rct.Right,
-         Round(Rct.Bottom - i), LineColor);
+       PixelMap.HorizontalLine(Rct.Left,  Rct.Right, Round(Rct.Bottom - i),
+         LineColor);
        Temp := Temp + Granularity;
       end;
     end;
 
    // draw x-axis grid lines
-   i := Round(IntPower(10, Trunc(Log10(abs(FXAxis.LowerFrequency)))));
+   i := Round(IntPower(10, Trunc(Log10(Abs(FXAxis.LowerFrequency)))));
    j := Round(FXAxis.LowerFrequency / i);
    if j = FXAxis.LowerFrequency / i then
     begin
@@ -1532,7 +1704,7 @@ begin
    while j * i < FXAxis.UpperFrequency do
     begin
      w := Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth);
-     PixelMap.Line(w, Rct.Top, w, Rct.Bottom, LineColor);
+     PixelMap.VerticalLine(w, Rct.Top, Rct.Bottom, LineColor);
      Inc(j);
      if j >= 10 then
       begin
@@ -1545,11 +1717,11 @@ begin
 
    // draw y-axis center line
    with FYAxis do
-    begin
-     LineColor := ConvertColor(FGraphColorDark);
-     i := Round(((0 - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
-     PixelMap.Line(Rct.Left,  Round(Rct.Bottom - i), Rct.Right,
-       Round(Rct.Bottom - i), LineColor);
+    if (LowerLevel < 0) and (UpperLevel > 0) then
+     begin
+      LineColor := ConvertColor(FGraphColorDark);
+      i := Round(((0 - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
+      PixelMap.HorizontalLine(Rct.Left,  Rct.Right, Rct.Bottom - i, LineColor);
     end;
 
 //   Brush.Color := FChartColor;
@@ -1562,7 +1734,7 @@ begin
    // draw x-axis label
    with FXAxis do
     begin
-     Base := Round(IntPower(10, Trunc(Log10(abs(FXAxis.LowerFrequency)))));
+     Base := Round(IntPower(10, Trunc(Log10(Abs(FXAxis.LowerFrequency)))));
      j := Round(FXAxis.LowerFrequency / Base);
      if j = FXAxis.LowerFrequency / Base then
       begin
@@ -1694,6 +1866,17 @@ begin
    do FFilterSeries[SeriesIndex].PaintToGraphDraft(Self, PixelMap)
 end;
 
+procedure TCustomGuiEQGraph.Resize;
+var
+  SeriesIndex : Integer;
+begin
+  inherited;
+
+  // calculate data cache
+  for SeriesIndex := 0 to FFilterSeries.Count - 1
+   do FFilterSeries[SeriesIndex].DataCacheChanged;
+end;
+
 procedure TCustomGuiEQGraph.BorderColorChanged;
 begin
  BufferChanged;
@@ -1743,6 +1926,42 @@ end;
 procedure TCustomGuiEQGraph.GraphColorLightChanged;
 begin
  BufferChanged;
+end;
+
+procedure TCustomGuiEQGraph.MouseMove(Shift: TShiftState; X, Y: Integer);
+begin
+ if ssRight in Shift then
+  begin
+   if (Abs(Y - FLastMouseCursorPos.Y) > 0) then
+    begin
+     if (maZoom in YAxis.FMouseActions) and (ssCtrl in Shift)
+      then YAxis.ZoomLowerByPixel(FLastMouseCursorPos.Y, Y) else
+     if (maShift in YAxis.FMouseActions)
+      then YAxis.ShiftByPixel(Y - FLastMouseCursorPos.Y);
+    end;
+
+   if (Abs(X - FLastMouseCursorPos.X) > 0) then
+    begin
+     if (maZoom in YAxis.FMouseActions) and (ssCtrl in Shift)
+      then XAxis.ZoomAroundPixel(X, Power(1.01, (X - FLastMouseCursorPos.X)))
+      else
+     if (maShift in YAxis.FMouseActions)
+      then XAxis.ShiftByPixel(X - FLastMouseCursorPos.X);
+    end;
+  end;
+
+ inherited;
+
+ FLastMouseCursorPos := Point(X, Y);
+end;
+
+function TCustomGuiEQGraph.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+  MousePos: TPoint): Boolean;
+begin
+ if (maZoom in YAxis.FMouseActions) and (MousePos.X < 32)
+  then YAxis.ZoomAroundPixel(MousePos.Y, Power(1.01, WheelDelta));
+
+ inherited;
 end;
 
 end.

@@ -12,10 +12,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   ThirdOctaveAnalyserDM in 'ThirdOctaveAnalyserDM.pas' {ThirdOctaveAnalyserModule: TVSTModule},
-  ThirdOctaveAnalyserGUI in 'ThirdOctaveAnalyserGUI.pas' {FmThirdOctaveAnalyser},
-  DAV_ThirdOctaveAnalyser in '..\..\..\Source\DAV_ThirdOctaveAnalyser.pas',
-  DAV_ThirdOctaveAnalyserFilter in '..\..\..\Source\DAV_ThirdOctaveAnalyserFilter.pas',
-  DAV_ThirdOctaveAnalyserFFT in '..\..\..\Source\DAV_ThirdOctaveAnalyserFFT.pas';
+  ThirdOctaveAnalyserGUI in 'ThirdOctaveAnalyserGUI.pas' {FmThirdOctaveAnalyser};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

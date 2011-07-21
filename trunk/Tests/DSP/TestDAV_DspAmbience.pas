@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  TestFramework, DAV_DspFilterLinkwitzRiley, DAV_Common, DAV_DspFilterButterworth, 
+  TestFramework, DAV_Common, DAV_DspFilterLinkwitzRiley, DAV_DspFilterButterworth,
   DAV_DspFilter, DAV_DspAmbience;
 
 type

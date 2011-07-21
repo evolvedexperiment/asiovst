@@ -27,30 +27,30 @@ object FmThirdOctaveAnalyser: TFmThirdOctaveAnalyser
     Height = 13
     Caption = 'Speed:'
   end
-  object LbFullscale: TLabel
+  object LbFullScale: TLabel
     Left = 205
     Top = 8
     Width = 54
     Height = 13
     Caption = 'Fullscale = '
   end
-  object Lb_dB: TLabel
+  object LbFullScaleUnit: TLabel
     Left = 322
     Top = 8
     Width = 12
     Height = 13
     Caption = 'dB'
   end
-  object RB_Fast: TRadioButton
+  object RbFast: TRadioButton
     Left = 50
     Top = 7
     Width = 40
     Height = 17
     Caption = '&Fast'
     TabOrder = 0
-    OnClick = RB_FastClick
+    OnClick = RbFastClick
   end
-  object RB_Medium: TRadioButton
+  object RbMedium: TRadioButton
     Left = 92
     Top = 7
     Width = 55
@@ -59,16 +59,16 @@ object FmThirdOctaveAnalyser: TFmThirdOctaveAnalyser
     Checked = True
     TabOrder = 1
     TabStop = True
-    OnClick = RB_MediumClick
+    OnClick = RbMediumClick
   end
-  object RB_Slow: TRadioButton
+  object RbSlow: TRadioButton
     Left = 151
     Top = 7
     Width = 46
     Height = 17
     Caption = '&Slow'
     TabOrder = 2
-    OnClick = RB_SlowClick
+    OnClick = RbSlowClick
   end
   object SEFullscaleGain: TSpinEdit
     Left = 262
@@ -101,18 +101,16 @@ object FmThirdOctaveAnalyser: TFmThirdOctaveAnalyser
     TabOrder = 4
     Anchors = [akLeft, akTop, akRight, akBottom]
     object BarSeries: TBarSeries
-      Marks.ArrowLength = 20
+      Marks.Arrow.Visible = True
+      Marks.Callout.Brush.Color = clBlack
+      Marks.Callout.Arrow.Visible = True
       Marks.Visible = False
-      SeriesColor = clRed
       ShowInLegend = False
+      Gradient.Direction = gdTopBottom
       MultiBar = mbNone
-      XValues.DateTime = False
       XValues.Name = 'X'
-      XValues.Multiplier = 1.000000000000000000
       XValues.Order = loAscending
-      YValues.DateTime = False
       YValues.Name = 'Balken'
-      YValues.Multiplier = 1.000000000000000000
       YValues.Order = loNone
     end
   end

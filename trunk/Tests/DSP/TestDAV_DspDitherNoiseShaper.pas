@@ -100,7 +100,6 @@ procedure TestTDitherNoiseShaper32.TestProcessFloat;
 var
   Input  : Double;
   Sample : Integer;
-  Thres  : Double;
 const
   CSampleFrames = 1000;
 begin
@@ -130,9 +129,9 @@ begin
    Limit := True;
 
    // process very loud random noise (will clip for sure!)
-   for Sample := 0 to CSampleFrames do ProcessFloat(100 * random);
+   for Sample := 0 to CSampleFrames do ProcessFloat(100 * Random);
 
-   CheckFalse(IsNan(ProcessFloat(100 * random)), 'Return value is not a number');
+   CheckFalse(IsNan(ProcessFloat(100 * Random)), 'Return value is not a number');
 
    CheckTrue(ProcessInteger(Input) <> Input);
   end;

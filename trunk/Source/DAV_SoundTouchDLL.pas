@@ -179,7 +179,7 @@ type
   // Returns nonzero if there aren't any samples available for outputting.
   TSoundTouchIsEmpty = function (Handle: TSoundTouchHandle): Integer; stdcall;
 
-  TSoundTouch = class
+  TSoundTouch = class(TObject)
   private
     FHandle     : TSoundTouchHandle;
     FRate       : Single;
@@ -208,7 +208,7 @@ type
     procedure TempoChanged; virtual;
     procedure RateChanged; virtual;
   public
-    class function GetVersionString: string;
+    class function GetVersionString: AnsiString;
     class function GetVersionId: Cardinal;
     constructor Create; virtual;
     destructor Destroy; override;
@@ -221,7 +221,7 @@ type
     function SetSetting(const SettingId: Integer; const Value: Integer): Boolean;
     function GetSetting(const SettingId: Integer): Integer;
 
-    property VersionString: string read GetVersionString;
+    property VersionString: AnsiString read GetVersionString;
     property VersionID: Cardinal read GetVersionId;
     property Channels: Cardinal read FChannels write SetChannels;
     property Rate: Single read FRate write SetRate;
@@ -332,7 +332,7 @@ begin
  Result := SoundTouchGetVersionId;
 end;
 
-class function TSoundTouch.GetVersionString: string;
+class function TSoundTouch.GetVersionString: AnsiString;
 begin
  Result := StrPas(SoundTouchGetVersionString);
 end;

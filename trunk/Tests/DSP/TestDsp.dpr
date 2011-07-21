@@ -1,14 +1,34 @@
 program TestDsp;
-{
 
-  Delphi DUnit-Testprojekt
-  -------------------------
-  Dieses Projekt enthält das DUnit-Test-Framework und die GUI/Konsolen-Test-Runner.
-  Zum Verwenden des Konsolen-Test-Runners fügen Sie den konditinalen Definitionen  
-  in den Projektoptionen "CONSOLE_TESTRUNNER" hinzu. Ansonsten wird standardmäßig 
-  der GUI-Test-Runner verwendet.
-
-}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 {$IFDEF CONSOLE_TESTRUNNER}
 {$APPTYPE CONSOLE}
@@ -24,7 +44,7 @@ uses
   DAV_DspBarberpole in '..\..\Source\DSP\DAV_DspBarberpole.pas',
   DAV_DspBarberpoleTuner in '..\..\Source\DSP\DAV_DspBarberpoleTuner.pas',
   DAV_DspBesselFilter in '..\..\Source\DSP\DAV_DspBesselFilter.pas',
-  DAV_DspBuildingBlocks in '..\..\Source\DSP\DAV_DspBuildingBlocks.pas' {$R *.RES},
+  DAV_DspBuildingBlocks in '..\..\Source\DSP\DAV_DspBuildingBlocks.pas',
   DAV_DspChorus in '..\..\Source\DSP\DAV_DspChorus.pas',
   DAV_DspCircularBuffer in '..\..\Source\DSP\DAV_DspCircularBuffer.pas',
   DAV_DspConvolution in '..\..\Source\DSP\DAV_DspConvolution.pas',
@@ -43,6 +63,9 @@ uses
   DAV_DspFilterSpectralDelay in '..\..\Source\DSP\DAV_DspFilterSpectralDelay.pas',
   DAV_DspLeslie in '..\..\Source\DSP\DAV_DspLeslie.pas',
   DAV_DspSoundTouch in '..\..\Source\DSP\DAV_DspSoundTouch.pas',
+  DAV_DspThirdOctaveAnalyser in '..\..\Source\DSP\DAV_DspThirdOctaveAnalyser.pas',
+  DAV_DspThirdOctaveAnalyserFFT in '..\..\Source\DSP\DAV_DspThirdOctaveAnalyserFFT.pas',
+  DAV_DspThirdOctaveAnalyserFilter in '..\..\Source\DSP\DAV_DspThirdOctaveAnalyserFilter.pas',
   DAV_DspWaveshaper in '..\..\Source\DSP\DAV_DspWaveshaper.pas',
   TestDAV_DspAmbience in 'TestDAV_DspAmbience.pas',
   TestDAV_DspAudioToMidiTrigger in 'TestDAV_DspAudioToMidiTrigger.pas',
@@ -67,9 +90,9 @@ uses
   TestDAV_DspFilterLinkwitzRiley in 'TestDAV_DspFilterLinkwitzRiley.pas',
   TestDAV_DspFilterSpectralDelay in 'TestDAV_DspFilterSpectralDelay.pas',
   TestDAV_DspLeslie in 'TestDAV_DspLeslie.pas',
+  TestDAV_ThirdOctaveAnalyserFilter in 'TestDAV_ThirdOctaveAnalyserFilter.pas',
   TestDAV_DspSoundTouch in 'TestDAV_DspSoundTouch.pas',
-  TestDAV_DspWaveshaper in 'TestDAV_DspWaveshaper.pas' {$R *.RES},
-  TestDAV_BlockRoutines in 'TestDAV_BlockRoutines.pas';
+  TestDAV_DspWaveshaper in 'TestDAV_DspWaveshaper.pas';
 
 {$R *.RES}
 
