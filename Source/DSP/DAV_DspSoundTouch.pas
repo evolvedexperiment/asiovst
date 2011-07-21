@@ -65,7 +65,7 @@ type
     procedure TempoChanged; virtual;
     procedure RateChanged; virtual;
   public
-    class function GetVersionString: string;
+    class function GetVersionString: AnsiString;
     class function GetVersionId: Cardinal;
     constructor Create; override;
     destructor Destroy; override;
@@ -78,7 +78,7 @@ type
     function SetSetting(const SettingId: Integer; const Value: Integer): Boolean;
     function GetSetting(const SettingId: Integer): Integer;
 
-    property VersionString: string read GetVersionString;
+    property VersionString: AnsiString read GetVersionString;
     property VersionID: Cardinal read GetVersionId;
     property Channels: Cardinal read FChannels write SetChannels;
     property Rate: Single read FRate write SetRate;
@@ -161,7 +161,7 @@ begin
  Result := SoundTouchGetVersionId;
 end;
 
-class function TDspSoundTouch.GetVersionString: string;
+class function TDspSoundTouch.GetVersionString: AnsiString;
 begin
  Result := StrPas(SoundTouchGetVersionString);
 end;

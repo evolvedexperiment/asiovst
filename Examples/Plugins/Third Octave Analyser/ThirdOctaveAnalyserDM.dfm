@@ -1,4 +1,6 @@
 object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Third Octave Analyser'
@@ -81,9 +83,8 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnProcess = VSTModuleProcessNormal
-  OnProcess32Replacing = VSTModuleProcessNormal
-  OnSampleRateChange = VSTModuleSampleRateChange
+  OnProcess = VSTModuleProcessReplacing
+  OnProcess32Replacing = VSTModuleProcessReplacing
   Left = 286
   Top = 81
   Height = 150

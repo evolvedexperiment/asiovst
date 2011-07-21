@@ -1,15 +1,38 @@
 unit TestDAV_DspFilterSpectralDelay;
-{
 
-  Delphi DUnit Testfall
-  ----------------------
-  Diese Unit enthält ein Codegerüst einer Testfallklasse, das vom Testfall-Experten
-  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der 
-  getesteten Unit korrekt eingerichtet und aufgerufen werden.
-
-}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   TestFramework, Classes, DAV_DspFilterSpectralDelay, DAV_DspFilter,
@@ -17,7 +40,7 @@ uses
 
 type
   // Test methods for class TSpectralDelayFilter
-  TestTSpectralDelayFilter = class(TTestCase)
+  TestSpectralDelayFilter = class(TTestCase)
   strict private
     FSpectralDelayFilter: TSpectralDelayFilter;
   public
@@ -39,17 +62,17 @@ implementation
 uses
   SysUtils;
 
-procedure TestTSpectralDelayFilter.SetUp;
+procedure TestSpectralDelayFilter.SetUp;
 begin
  FSpectralDelayFilter := TSpectralDelayFilter.Create;
 end;
 
-procedure TestTSpectralDelayFilter.TearDown;
+procedure TestSpectralDelayFilter.TearDown;
 begin
  FreeAndNil(FSpectralDelayFilter);
 end;
 
-procedure TestTSpectralDelayFilter.TestProcessSample32;
+procedure TestSpectralDelayFilter.TestProcessSample32;
 var
   ReturnValue : Single;
   Input       : Single;
@@ -59,7 +82,7 @@ begin
  // TODO: Validate method results
 end;
 
-procedure TestTSpectralDelayFilter.TestProcessSample64;
+procedure TestSpectralDelayFilter.TestProcessSample64;
 var
   ReturnValue: Double;
   Input: Double;
@@ -69,7 +92,7 @@ begin
  // TODO: Validate method results
 end;
 
-procedure TestTSpectralDelayFilter.TestMagnitudeLog10;
+procedure TestSpectralDelayFilter.TestMagnitudeLog10;
 var
   ReturnValue: Double;
   Frequency: Double;
@@ -79,7 +102,7 @@ begin
  // TODO: Validate method results
 end;
 
-procedure TestTSpectralDelayFilter.TestMagnitudeSquared;
+procedure TestSpectralDelayFilter.TestMagnitudeSquared;
 var
   ReturnValue: Double;
   Frequency: Double;
@@ -89,25 +112,25 @@ begin
  // TODO: Validate method results
 end;
 
-procedure TestTSpectralDelayFilter.TestReset;
+procedure TestSpectralDelayFilter.TestReset;
 begin
  FSpectralDelayFilter.Reset;
  // TODO: Validate method results
 end;
 
-procedure TestTSpectralDelayFilter.TestResetStates;
+procedure TestSpectralDelayFilter.TestResetStates;
 begin
  FSpectralDelayFilter.ResetStates;
  // TODO: Validate method results
 end;
 
-procedure TestTSpectralDelayFilter.TestResetStatesInt64;
+procedure TestSpectralDelayFilter.TestResetStatesInt64;
 begin
  FSpectralDelayFilter.ResetStatesInt64;
  // TODO: Validate method results
 end;
 
-procedure TestTSpectralDelayFilter.TestPushPopStates;
+procedure TestSpectralDelayFilter.TestPushPopStates;
 begin
  FSpectralDelayFilter.PushStates;
  FSpectralDelayFilter.PopStates;
@@ -116,6 +139,6 @@ end;
 
 initialization
  // Alle Testfälle beim Test-Runner registrieren
- RegisterTest(TestTSpectralDelayFilter.Suite);
+ RegisterTest(TestSpectralDelayFilter.Suite);
 
 end.

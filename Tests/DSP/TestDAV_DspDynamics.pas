@@ -279,8 +279,8 @@ begin
  with FSimpleDirectGate do
   begin
    Threshold_dB := -10;
-   CheckTrue(abs(TranslatePeakToGain(0.5) - 1) < 1E-15);
-   CheckTrue(abs(TranslatePeakToGain(0.25)) < 1E-15);
+   CheckTrue(Abs(TranslatePeakToGain(0.5) - 1) < 1E-15);
+   CheckTrue(Abs(TranslatePeakToGain(0.25)) < 1E-15);
   end;
 end;
 
@@ -328,8 +328,8 @@ begin
   begin
    Threshold_dB := -6;
    CheckEquals(ProcessSample64(0), 0, 'Error: Processing silence <> 0');
-   CheckTrue(abs(ProcessSample64(1) - 1) < 1E-1);
-   CheckTrue(abs(ProcessSample64(0.01)) < 1E-3);
+   CheckTrue(Abs(ProcessSample64(1) - 1) < 1E-1);
+   CheckTrue(Abs(ProcessSample64(0.01)) < 1E-3);
   end;
 end;
 
@@ -341,9 +341,9 @@ begin
    InputSample(0);
    CheckEquals(GainSample(0), 0);
    InputSample(1);
-   CheckTrue(abs(GainSample(1) - 1) < 1E-1);
+   CheckTrue(Abs(GainSample(1) - 1) < 1E-1);
    InputSample(0.1);
-   CheckTrue(abs(ProcessSample64(0.01)) < 1E-3);
+   CheckTrue(Abs(ProcessSample64(0.01)) < 1E-3);
   end;
 end;
 
@@ -352,8 +352,8 @@ begin
  with FSoftDirectGate do
   begin
    Threshold_dB := -10;
-   CheckTrue(abs(TranslatePeakToGain(0.5) - 1) < 1E-1);
-   CheckTrue(abs(TranslatePeakToGain(0.01)) < 1E-3);
+   CheckTrue(Abs(TranslatePeakToGain(0.5) - 1) < 1E-1);
+   CheckTrue(Abs(TranslatePeakToGain(0.01)) < 1E-3);
   end;
 end;
 
@@ -379,8 +379,8 @@ begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
    CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
-   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
@@ -389,7 +389,7 @@ begin
  with FBrickwallLimiter do
   begin
    Threshold_dB := 0;
-   CheckTrue(abs(TranslatePeakToGain(0.5) - 1) < 1E-15);
+   CheckTrue(Abs(TranslatePeakToGain(0.5) - 1) < 1E-15);
   end;
 end;
 
@@ -398,9 +398,9 @@ begin
  with FBrickwallLimiter do
   begin
    Threshold_dB := -10;
-   CheckTrue(abs(CharacteristicCurve_dB(0) + 10) < 1E-5);
-   CheckTrue(abs(CharacteristicCurve_dB(-10) + 10) < 1E-5);
-   CheckTrue(abs(CharacteristicCurve_dB(-20) + 20) < 1E-5);
+   CheckTrue(Abs(CharacteristicCurve_dB(0) + 10) < 1E-5);
+   CheckTrue(Abs(CharacteristicCurve_dB(-10) + 10) < 1E-5);
+   CheckTrue(Abs(CharacteristicCurve_dB(-20) + 20) < 1E-5);
   end;
 end;
 
@@ -426,8 +426,8 @@ begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
    CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
-   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
@@ -436,7 +436,7 @@ begin
  with FSoftBrickwallLimiter do
   begin
    Threshold_dB := 0;
-   CheckTrue(abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
+   CheckTrue(Abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
   end;
 end;
 
@@ -458,7 +458,7 @@ begin
  with FSimpleSoftBrickwallLimiter do
   begin
    Threshold_dB := 0;
-   CheckTrue(abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
+   CheckTrue(Abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
   end;
 end;
 
@@ -484,20 +484,17 @@ begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
    CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
-   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
 procedure TestTLimiter.TestTranslatePeakToGain;
-var
-  ReturnValue: Double;
-  PeakLevel: Double;
 begin
  with FLimiter do
   begin
    Threshold_dB := 0;
-   CheckTrue(abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
+   CheckTrue(Abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
   end;
 end;
 
@@ -509,7 +506,7 @@ begin
   begin
    Threshold_dB := -10;
    ReturnValue := CharacteristicCurve(0);
-   CheckTrue(abs(ReturnValue) < 1E-9, 'CharacteristicCurve(0) <> 0!' );
+   CheckTrue(Abs(ReturnValue) < 1E-9, 'CharacteristicCurve(0) <> 0!' );
   end;
 end;
 
@@ -535,19 +532,19 @@ begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
    CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
-   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
 procedure TestTSoftKneeLimiter.TestTranslatePeakToGain;
-var
-  ReturnValue: Double;
-  PeakLevel: Double;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FSoftKneeLimiter.TranslatePeakToGain(PeakLevel);
-  // TODO: Validate method results
+ with FSoftKneeLimiter do
+  begin
+   Threshold_dB := 0;
+   Fail('Test not specified yet!');
+   CheckTrue(Abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
+  end;
 end;
 
 
@@ -582,8 +579,8 @@ begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
    CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
-   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
@@ -628,8 +625,8 @@ begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
    CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
-   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
@@ -797,8 +794,8 @@ begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
    CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
-   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(Abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
