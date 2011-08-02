@@ -91,7 +91,7 @@ Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\SE Module Screenshot Tool.pdf"
+  File "..\Manuals\SE Module Screenshot Tool.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM PRODUCT_DIR_REGKEY "" $INSTDIR
