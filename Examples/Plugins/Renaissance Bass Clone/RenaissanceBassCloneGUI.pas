@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiLevelMeter;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiLevelMeter;
 
 type
   TFmRenaissanceBassClone = class(TForm)

@@ -47,7 +47,6 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -70,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  ChorusGUI, DAV_Approximations, DAV_VSTCustomModule;
+  DAV_Approximations, ChorusGUI;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -173,17 +172,14 @@ begin
    Parameter[3] :=  72.7;
    Parameter[4] :=  33.6;
   end;
+
+  EditorFormClass := TFmChorus;
 end;
 
 procedure TChorusModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FChorus[0]);
  FreeAndNil(FChorus[1]);
-end;
-
-procedure TChorusModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmChorus.Create(Self);
 end;
 
 function TChorusModule.GetChorus(Index: Integer): TDspChorus32;

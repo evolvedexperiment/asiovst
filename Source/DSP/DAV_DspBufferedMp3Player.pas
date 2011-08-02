@@ -439,21 +439,29 @@ begin
    begin
     ReallocMem(FInterpolationBuffer[0], 1 * SizeOf(Single));
     ReallocMem(FInterpolationBuffer[1], 1 * SizeOf(Single));
+    FillChar(FInterpolationBuffer[0]^, SizeOf(Single), 0);
+    FillChar(FInterpolationBuffer[1]^, SizeOf(Single), 0);
    end;
   biLinear:
    begin
     ReallocMem(FInterpolationBuffer[0], 2 * SizeOf(Single));
     ReallocMem(FInterpolationBuffer[1], 2 * SizeOf(Single));
+    FillChar(FInterpolationBuffer[0]^, 2 * SizeOf(Single), 0);
+    FillChar(FInterpolationBuffer[1]^, 2 * SizeOf(Single), 0);
    end;
   biHermite:
    begin
     ReallocMem(FInterpolationBuffer[0], 4 * SizeOf(Single));
     ReallocMem(FInterpolationBuffer[1], 4 * SizeOf(Single));
+    FillChar(FInterpolationBuffer[0]^, 4 * SizeOf(Single), 0);
+    FillChar(FInterpolationBuffer[1]^, 4 * SizeOf(Single), 0);
    end;
   biBSpline6Point5thOrder:
    begin
     ReallocMem(FInterpolationBuffer[0], 6 * SizeOf(Single));
     ReallocMem(FInterpolationBuffer[1], 6 * SizeOf(Single));
+    FillChar(FInterpolationBuffer[0]^, 6 * SizeOf(Single), 0);
+    FillChar(FInterpolationBuffer[1]^, 6 * SizeOf(Single), 0);
    end;
  end;
 end;

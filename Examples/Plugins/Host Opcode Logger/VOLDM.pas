@@ -70,7 +70,8 @@ implementation
 {$ENDIF}
 
 uses
-  {$IFDEF UseMessageDialogs}Dialogs, {$ENDIF} VOLGUI;
+  {$IFDEF UseMessageDialogs}Dialogs, {$ENDIF}
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} VOLGUI;
 
 procedure TVOLDataModule.VSTModuleCreate(Sender: TObject);
 var
@@ -197,15 +198,13 @@ begin
      end;
     effIdle:
       if FLastOpcode <> effIdle
-       then FOpcodeLog.Add(Opcode2String(Opcode))
-       else Exit;
+       then FOpcodeLog.Add(Opcode2String(Opcode));
     effEditIdle:
       if FLastOpcode <> effEditIdle
-       then FOpcodeLog.Add(Opcode2String(Opcode))
-       else Exit;
+       then FOpcodeLog.Add(Opcode2String(Opcode));
     effCanDo:
      begin
-      FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' + StrPas(PAnsiChar(Ptr)) + '''');
+      FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' + string(StrPas(PAnsiChar(Ptr))) + '''');
       FOpcodeLog.SaveToFile(FLogFileName);
      end;
     effClose:

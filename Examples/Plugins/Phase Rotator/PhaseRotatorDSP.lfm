@@ -1,73 +1,78 @@
 object PhaseRotatorModule: TPhaseRotatorModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
+  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Phase Rotator'
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  SampleRate = 44100.000000000000000000
+  SampleRate = 44100
   CurrentProgramName = 'Default'
-  IORatio = 1.000000000000000000
+  IORatio = 1
   UniqueID = 'PhRo'
   ShellPlugins = <>
-  Programs = <
+  Programs = <  
     item
       DisplayName = 'Default'
       VSTModule = Owner
     end>
-  ParameterProperties = <
+  ParameterProperties = <  
     item
       Curve = ctLogarithmic
-      CurveFactor = 1000.000000000000000000
+      CurveFactor = 1000
       DisplayName = 'Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
-      LargeStepFloat = 2.000000000000000000
-      Max = 20000.000000000000000000
+      LargeStepFloat = 2
+      Max = 20000
       MaxInteger = 20000
-      Min = 20.000000000000000000
+      Min = 20
       MinInteger = 20
       ReportVST2Properties = True
       ShortLabel = 'Freq.'
-      SmallStepFloat = 0.500000000000000000
-      StepFloat = 1.000000000000000000
+      SmallStepFloat = 0.5
+      SmoothingFactor = 0
+      StepFloat = 1
       Units = 'Hz'
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
-    end
+    end  
     item
       Curve = ctLogarithmic
-      CurveFactor = 2.000000000000000000
+      CurveFactor = 2
       DisplayName = 'Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 2.000000000000000000
+      LargeStepFloat = 2
       LargeStepInteger = 2
-      Max = 8.000000000000000000
+      Max = 8
       MaxInteger = 8
+      Min = 0
       ReportVST2Properties = True
       ShortLabel = 'Order'
-      SmallStepFloat = 1.000000000000000000
-      StepFloat = 1.000000000000000000
+      SmallStepFloat = 1
+      SmoothingFactor = 0
+      StepFloat = 1
       VSTModule = Owner
       OnParameterChange = ParameterOrderChange
       OnCustomParameterDisplay = ParameterOrderDisplay
-    end
+    end  
     item
-      CurveFactor = 1.000000000000000000
+      CurveFactor = 1
       DisplayName = 'Bandwidth'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 2.000000000000000000
-      Max = 10.000000000000000000
+      LargeStepFloat = 2
+      Max = 10
       MaxInteger = 10
-      Min = 0.009999999776482582
+      Min = 0.00999999977648
       ReportVST2Properties = True
       ShortLabel = 'BW'
-      SmallStepFloat = 0.500000000000000000
-      StepFloat = 1.000000000000000000
+      SmallStepFloat = 0.5
+      SmoothingFactor = 0
+      StepFloat = 1
       Units = 'Oct'
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
@@ -77,12 +82,13 @@ object PhaseRotatorModule: TPhaseRotatorModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnProcess = VSTModuleProcess
-  OnProcess32Replacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
+  OnResume = DataModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 81
+  left = 218
+  top = 81
   Height = 150
+  HorizontalOffset = 529
+  VerticalOffset = 307
   Width = 215
 end

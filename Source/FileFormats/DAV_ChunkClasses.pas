@@ -1035,7 +1035,8 @@ begin
 
      // read checksum
      FDataStream.Read(CheckSum, 4);
-     Assert(Checksum = SubChunk.CalculateChecksum);
+     if Checksum <> SubChunk.CalculateChecksum
+      then raise Exception.Create('Checksum Error');
     end;
   end;
 end;

@@ -1826,7 +1826,14 @@ begin
           then Txt := Txt + ' dB';
 
          TextSize := FGuiFont.TextExtent(Txt);
-         FGuiFont.TextOut(Txt, PixelMap, Round(Rct.Left), Round(Rct.Bottom - i - 0.5 * TextSize.cy));
+         Base := Round(Rct.Left);
+
+         // apply font shadow offset
+         with FGuiFont.Shadow do
+         if Visible
+          then Base := Base + Max(0, Round(Blur - OffsetX));
+
+         FGuiFont.TextOut(Txt, PixelMap, Base, Round(Rct.Bottom - i - 0.5 * TextSize.cy));
          Temp := Temp + Granularity;
         end;
       end;
@@ -1961,7 +1968,7 @@ begin
  if (maZoom in YAxis.FMouseActions) and (MousePos.X < 32)
   then YAxis.ZoomAroundPixel(MousePos.Y, Power(1.01, WheelDelta));
 
- inherited;
+ Result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
 end;
 
 end.

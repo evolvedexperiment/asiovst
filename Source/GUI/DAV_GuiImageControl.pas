@@ -35,9 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
-  {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiCustomControl;
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Graphics, Forms, SysUtils, Controls, Contnrs, DAV_GuiPixelMap,
+  DAV_GuiCustomControl;
 
 type
   // forward declarations
@@ -160,7 +160,7 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_GuiBlend;
+  DAV_GuiBlend;
 
 
 { TGuiStitchedImageCollection }

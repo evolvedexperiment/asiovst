@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Graphics, SysUtils, DAV_Classes, DAV_ChunkClasses, DAV_GuiCommon,
-  DAV_GuiPngChunks, DAV_GuiPngTypes;
+  Classes, Graphics, SysUtils, DAV_Classes, DAV_GuiCommon, DAV_GuiPngChunks,
+  DAV_GuiPngTypes;
 
 type
   TCustomPngCoder = class

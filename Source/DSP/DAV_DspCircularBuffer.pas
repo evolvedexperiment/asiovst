@@ -646,7 +646,7 @@ begin
    Move(FBuffer[1]^[FReadBufferPos], Right^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 

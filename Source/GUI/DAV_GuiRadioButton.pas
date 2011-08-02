@@ -575,7 +575,6 @@ var
   SqrRadMinusInner  : TFixed24Dot8Point;
   RadMinusInnerOne  : TFixed24Dot8Point;
   Temp              : TFixed24Dot8Point;
-  CombAlpha         : Integer;
 begin
  with Buffer do
   begin

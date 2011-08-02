@@ -42,7 +42,7 @@ uses
 type
   TGuiCustomFilter = class(TPersistent)
   public
-    constructor Create; virtual; abstract;
+    constructor Create; virtual;
 
     procedure Filter(ByteMap: TGuiCustomByteMap); overload; virtual; abstract;
     procedure Filter(PixelMap: TGuiCustomPixelMap); overload; virtual; abstract;
@@ -120,6 +120,12 @@ type
     property Value: Single read FValue write SetValue;
   end;
 
+  TGuiNormalizeFilter = class(TGuiCustomFilter)
+  public
+    procedure Filter(ByteMap: TGuiCustomByteMap); override;
+    procedure Filter(PixelMap: TGuiCustomPixelMap); override;
+  end;
+
   TGuiEmbossFilter = class(TGuiCustomFilter)
   public
     procedure Filter(ByteMap: TGuiCustomByteMap); override;
@@ -142,6 +148,14 @@ implementation
 
 uses
   Math, DAV_Math;
+
+
+{ TGuiCustomFilter }
+
+constructor TGuiCustomFilter.Create;
+begin
+ inherited Create;
+end;
 
 
 { TGuiCustomBlurFilter }
@@ -445,6 +459,156 @@ begin
    ValueChanged;
   end;
 end;
+
+
+{ TGuiNormalizeFilter }
+
+procedure TGuiNormalizeFilter.Filter(ByteMap: TGuiCustomByteMap);
+var
+  x, y   : Integer;
+  Mn, Mx : Byte;
+  ptr    : PByteArray;
+  Scale  : Single;
+begin
+ // scan minimum and maximum
+ Mn := ByteMap.DataPointer^[0];
+ Mx := Mn;
+
+ ptr := ByteMap.Scanline[0];
+ for x := 1 to ByteMap.Width - 1 do
+  if ptr[x] > Mx then Mx := ptr[x] else
+  if ptr[x] < Mn then Mn := ptr[x];
+
+ for y := 1 to ByteMap.Height - 1 do
+  begin
+   ptr := ByteMap.Scanline[y];
+   for x := 0 to ByteMap.Width - 1 do
+    if ptr[x] > Mx then Mx := ptr[x] else
+    if ptr[x] < Mn then Mn := ptr[x];
+  end;
+
+ // check whether the minimum is also the maximum
+ if Mx = Mn then Exit;
+
+ // calculate scale factor
+ Scale := 255 / (Mx - Mn);
+
+ // apply scale factor
+ for y := 0 to ByteMap.Height - 1 do
+  begin
+   ptr := ByteMap.Scanline[y];
+   for x := 0 to ByteMap.Width - 1 do
+    ptr[x] := Round((ptr[x] - Mn) * Scale);
+  end;
+end;
+
+procedure TGuiNormalizeFilter.Filter(PixelMap: TGuiCustomPixelMap);
+var
+  x, y     : Integer;
+  RMn, RMx : Byte;
+  GMn, GMx : Byte;
+  BMn, BMx : Byte;
+  AMn, AMx : Byte;
+  ptr      : PPixel32Array;
+  Scale    : Single;
+begin
+ // scan minimum and maximum
+ RMn := PixelMap.DataPointer^[0].R;
+ RMx := RMn;
+ GMn := PixelMap.DataPointer^[0].G;
+ GMx := GMn;
+ BMn := PixelMap.DataPointer^[0].B;
+ BMx := BMn;
+ AMn := PixelMap.DataPointer^[0].A;
+ AMx := AMn;
+
+ ptr := PixelMap.Scanline[0];
+ for x := 1 to PixelMap.Width - 1 do
+  begin
+   if ptr[x].R > RMx then RMx := ptr[x].R else
+   if ptr[x].R < RMn then RMn := ptr[x].R;
+   if ptr[x].G > GMx then GMx := ptr[x].G else
+   if ptr[x].G < GMn then GMn := ptr[x].G;
+   if ptr[x].B > BMx then BMx := ptr[x].B else
+   if ptr[x].B < BMn then BMn := ptr[x].B;
+   if ptr[x].A > AMx then AMx := ptr[x].A else
+   if ptr[x].A < AMn then AMn := ptr[x].A;
+  end;
+
+ for y := 1 to PixelMap.Height - 1 do
+  begin
+   ptr := PixelMap.Scanline[y];
+   for x := 0 to PixelMap.Width - 1 do
+    begin
+     if ptr[x].R > RMx then RMx := ptr[x].R else
+     if ptr[x].R < RMn then RMn := ptr[x].R;
+     if ptr[x].G > GMx then GMx := ptr[x].G else
+     if ptr[x].G < GMn then GMn := ptr[x].G;
+     if ptr[x].B > BMx then BMx := ptr[x].B else
+     if ptr[x].B < BMn then BMn := ptr[x].B;
+     if ptr[x].A > AMx then AMx := ptr[x].A else
+     if ptr[x].A < AMn then AMn := ptr[x].A;
+    end;
+  end;
+
+ // check whether the minimum is also the maximum
+ if AMx > AMn then
+  begin
+   // calculate scale factor
+   Scale := 255 / (AMx - AMn);
+
+   // apply scale factor
+   for y := 0 to PixelMap.Height - 1 do
+    begin
+     ptr := PixelMap.Scanline[y];
+     for x := 0 to PixelMap.Width - 1
+      do ptr[x].A := Round((ptr[x].A - AMn) * Scale);
+    end;
+  end;
+
+ if RMx > RMn then
+  begin
+   // calculate scale factor
+   Scale := 255 / (RMx - RMn);
+
+   // apply scale factor
+   for y := 0 to PixelMap.Height - 1 do
+    begin
+     ptr := PixelMap.Scanline[y];
+     for x := 0 to PixelMap.Width - 1
+      do ptr[x].R := Round((ptr[x].R - RMn) * Scale);
+    end;
+  end;
+
+ if GMx > GMn then
+  begin
+   // calculate scale factor
+   Scale := 255 / (GMx - GMn);
+
+   // apply scale factor
+   for y := 0 to PixelMap.Height - 1 do
+    begin
+     ptr := PixelMap.Scanline[y];
+     for x := 0 to PixelMap.Width - 1
+      do ptr[x].G := Round((ptr[x].G - GMn) * Scale);
+    end;
+  end;
+
+ if BMx > BMn then
+  begin
+   // calculate scale factor
+   Scale := 255 / (BMx - BMn);
+
+   // apply scale factor
+   for y := 0 to PixelMap.Height - 1 do
+    begin
+     ptr := PixelMap.Scanline[y];
+     for x := 0 to PixelMap.Width - 1
+      do ptr[x].B := Round((ptr[x].B - BMn) * Scale);
+    end;
+  end;
+end;
+
 
 { TGuiEmbossFilter }
 

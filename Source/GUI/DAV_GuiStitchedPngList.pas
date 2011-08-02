@@ -75,7 +75,7 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_GuiBlend;
+  DAV_GuiBlend;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';

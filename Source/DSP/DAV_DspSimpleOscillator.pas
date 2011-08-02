@@ -254,7 +254,7 @@ end;
 
 function TCustomSimpleOscillator32.GetPhase: Single;
 begin
- result := -ArcTan2(FPosition.Re, -FPosition.Im);
+ Result := -ArcTan2(FPosition.Re, -FPosition.Im);
 end;
 
 procedure TCustomSimpleOscillator32.Reset;
@@ -337,7 +337,7 @@ end;
 
 function TCustomSimpleOscillator64.GetPhase: Double;
 begin
- result := -ArcTan2(FPosition.Re, -FPosition.Im);
+ Result := -ArcTan2(FPosition.Re, -FPosition.Im);
 end;
 
 procedure TCustomSimpleOscillator64.Reset;
