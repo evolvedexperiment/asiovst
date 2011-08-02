@@ -4,10 +4,8 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, StdCtrls, Controls, DAV_Types, DAV_VSTModule, DAV_GuiPng, DAV_GuiLabel,  
-  DAV_GuiBaseControl, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, 
-  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiCustomControl,
-  DAV_GuiGraphicControl;
+  Forms, StdCtrls, Controls, DAV_GuiPng, DAV_GuiLabel, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedDial;
 
 type
   TFmPhaseRotator = class(TForm)
@@ -48,10 +46,11 @@ implementation
 {$ENDIF}
 
 uses
-  PhaseRotatorDSP, DAV_VSTModuleWithPrograms;
+  PhaseRotatorDSP;
 
 procedure TFmPhaseRotator.FormShow(Sender: TObject);
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner)
   do DialStages.Max := ParameterProperties[1].Max;
  UpdateFrequency;
@@ -95,6 +94,7 @@ end;
 
 procedure TFmPhaseRotator.DialFrequencyChange(Sender: TObject);
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner) do
   begin
    if Parameter[0] <> DialFrequency.Value
@@ -126,6 +126,7 @@ end;
 
 procedure TFmPhaseRotator.DialStagesChange(Sender: TObject);
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner) do
   begin
    if Parameter[1] <> Round(DialStages.Value)
@@ -157,6 +158,7 @@ end;
 
 procedure TFmPhaseRotator.EdValueKeyPress(Sender: TObject; var Key: Char);
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner) do
   if (Key = #13) and Assigned(FEdValue) then
    try
@@ -168,6 +170,7 @@ end;
 
 procedure TFmPhaseRotator.DialBandwidthChange(Sender: TObject);
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner) do
   begin
    if Parameter[2] <> DialBandwidth.Value
@@ -177,6 +180,7 @@ end;
 
 procedure TFmPhaseRotator.UpdateFrequency;
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner) do
   begin
    if DialFrequency.Value <> Parameter[0]
@@ -188,6 +192,7 @@ end;
 
 procedure TFmPhaseRotator.UpdateStages;
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner) do
   begin
    if DialStages.Value <> Parameter[1]
@@ -199,6 +204,7 @@ end;
 
 procedure TFmPhaseRotator.UpdateBandwidth;
 begin
+ Assert(Owner is TPhaseRotatorModule);
  with TPhaseRotatorModule(Owner) do
   begin
    if DialBandwidth.Value <> Parameter[2]

@@ -14,8 +14,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   RingModulatorDM in 'RingModulatorDM.pas' {RingModulatorDataModule: TVSTModule},
-  RingModulatorGUI in 'RingModulatorGUI.pas', DAV_Common_Lazarus,
-  DAV_DSP_Lazarus, DAV_VSTPlugin_Lazarus {FmRingModulator};
+  RingModulatorGUI in 'RingModulatorGUI.pas' {FmRingModulator};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

@@ -35,9 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, Messages,
-  {$ENDIF} Classes, Graphics, Forms, SysUtils, Controls, Contnrs,
-  DAV_GuiCommon, DAV_GuiStitchedControls;
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiStitchedControls;
 
 type
   TQuantizeValueEvent = procedure(Sender: TObject; var Value: Double) of object;
@@ -66,7 +65,6 @@ type
     procedure SetValue(Value: Single);
     procedure SetDefaultValue(Value: Single);
 
-    function PositionToAngle: Single;
     function GetNormalizedValue: Single;
     function CalculateValueFromNormalizedPosition: Double;
     function MapNormalizedValueToNormalizedPosition(Value: Double): Double;
@@ -272,11 +270,6 @@ begin
   FNormalizedPosition := Limit(FNormalizedPosition + Amount, 0, 1);
 
  Value := CalculateValueFromNormalizedPosition;
-end;
-
-function TCustomGuiStitchedDial.PositionToAngle: Single;
-begin
- Result := (FValue - Min) * 360 * FRangeReciprocal;
 end;
 
 function TCustomGuiStitchedDial.CalculateValueFromNormalizedPosition: Double;

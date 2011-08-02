@@ -55,7 +55,8 @@ type
     FDefaultValue    : Single;
     FDigits          : Integer;
     FDirection       : TSliderDirection;
-    FMinimum, FMaximum       : Single;
+    FMinimum         : Single;
+    FMaximum         : Single;
     FShowText        : Boolean;
     FSlideColor      : TColor;
     FValue           : Single;

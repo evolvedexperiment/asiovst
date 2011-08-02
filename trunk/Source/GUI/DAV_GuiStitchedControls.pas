@@ -35,9 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, SysUtils, Controls, Contnrs,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiCustomControl, DAV_GuiImageControl;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, Messages, {$ENDIF} Classes, Graphics,
+  SysUtils, Controls, DAV_GuiCommon, DAV_GuiImageControl;
 
 type
   TGuiStitchKind = (skHorizontal, skVertical);
@@ -103,7 +102,7 @@ type
 
     procedure Changed; reintroduce; virtual;
     procedure DefaultGlyphIndexChanged; virtual;
-    procedure DoAutoSize; virtual;
+    procedure DoAutomaticResize; virtual;
     procedure GlyphIndexChanged; virtual;
     procedure ImageItemChanged; override;
     procedure UpdateBuffer; override;
@@ -200,7 +199,7 @@ begin
     if FDefaultGlyphIndex >= FGlyphCount then DefaultGlyphIndex := FGlyphCount - 1;
     if FGlyphIndex >= FGlyphCount then GlyphIndex := FGlyphCount - 1;
 
-    if FAutoSize then DoAutoSize;
+    if FAutoSize then DoAutomaticResize;
    end;
 end;
 
@@ -210,7 +209,7 @@ var
 begin
  for Index := 0 to FLinkedControls.Count - 1 do
   with TGuiCustomStitchedControl(FLinkedControls[Index]) do
-   if FAutoSize then DoAutoSize;
+   if FAutoSize then DoAutomaticResize;
 end;
 
 procedure TGuiCustomStitchedCollectionItem.SetGlyphCount(const Value: Integer);
@@ -278,7 +277,7 @@ begin
  inherited;
 end;
 
-procedure TGuiCustomStitchedControl.DoAutoSize;
+procedure TGuiCustomStitchedControl.DoAutomaticResize;
 begin
  if Assigned(FImageItem) then
   with StitchedImageItem do
@@ -336,7 +335,7 @@ begin
   if FAutoSize <> Value then
   begin
     FAutoSize := Value;
-    if Autosize then DoAutoSize;
+    if Autosize then DoAutomaticResize;
   end;
 end;
 

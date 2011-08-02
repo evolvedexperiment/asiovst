@@ -491,7 +491,7 @@ var
 begin
  try
   {$IFDEF DebugLog}
-  AddLogMessage('Destroy');
+  AddLogMessage('TBasicVSTModule.Destroy');
   if Assigned(FLog) then FLog.SaveToFile(CDebugLogFile);
   {$ENDIF}
   for Index := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[Index]);
@@ -538,7 +538,7 @@ begin
  if CallAudioMaster(amVersion) = 0
   then raise EVstError.Create('AudioMaster Error');
 
- {$IFDEF DebugLog} AddLogMessage('After check audiomaster version'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('-> After check audiomaster version'); {$ENDIF}
 
  {$IFNDEF UseAudioEffectPtr}
  GetMem(HostProduct, 256);
@@ -548,7 +548,7 @@ begin
   FUseAudioEffectPtr := (StrPos('energyXT', HostProduct) <> nil) or
     (StrPos('Sound Forge Pro 10.0', HostProduct) <> nil);
 
-  {$IFDEF DebugLog} AddLogMessage('Get Host Product String'); {$ENDIF}
+  {$IFDEF DebugLog} AddLogMessage('-> Get Host Product String'); {$ENDIF}
 
   if FUseAudioEffectPtr then
    with FEffect do
@@ -570,7 +570,7 @@ function TBasicVSTModule.CallAudioMaster(const Opcode: TAudioMasterOpcode;
   const Ptr: Pointer = nil; const Opt: Single = 0): TVstIntPtr;
 begin
  {$IFDEF DebugLog}
- AddLogMessage('TBasicVSTModule.CallAudioMaster, Opcode: ' +
+ AddLogMessage('TBasicVSTModule.CallAudioMaster; Opcode: ' +
    IntToStr(Integer(Opcode)));
  {$ENDIF}
 
@@ -730,11 +730,14 @@ end;
 
 function TBasicVSTModule.GetHostProductString(const Text: PAnsiChar): Boolean;
 begin
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.GetHostProductString: Before AudioMaster Call'); {$ENDIF}
+ {$IFDEF DebugLog}
+ AddLogMessage('TBasicVSTModule.GetHostProductString;');
+ AddLogMessage('--> Before AudioMaster Call');
+ {$ENDIF}
 
  Result := CallAudioMaster(amGetProductString, 0, 0, Text) <> 0;
 
- {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.GetHostProductString: After AudioMaster Call'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('--> After AudioMaster Call'); {$ENDIF}
 end;
 
 function TBasicVSTModule.GetHostVendorVersion: Integer;

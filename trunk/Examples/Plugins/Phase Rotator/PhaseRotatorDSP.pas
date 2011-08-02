@@ -6,15 +6,16 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, SyncObjs, DAV_Types, DAV_DspFilter, DAV_DspFilterBasics, DAV_VSTModule, 
-  DAV_VSTEffect;
+  Forms, SyncObjs, DAV_Types, DAV_DspFilterBasics, DAV_VSTModule, DAV_VSTEffect;
 
 type
+  { TPhaseRotatorModule }
   TPhaseRotatorModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure DataModuleResume(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; const MidiEvent: TVstMidiEvent);
@@ -59,14 +60,15 @@ begin
   try
    RootKey := HKEY_CURRENT_USER;
    if OpenKey(CRegKeyRoot, False) then
-    begin
+    try
      if ValueExists('Maximum Stages') then
       begin
        MaxStages := StrToInt(ReadString('Maximum Stages'));
        if MaxStages > ParameterProperties[1].Min
         then ParameterProperties[1].Max := MaxStages;
       end;
-    end
+    except
+    end;
   finally
    Free;
   end;
@@ -102,13 +104,13 @@ begin
     end;
   end;
 
- // set editor form class
- EditorFormClass := TFmPhaseRotator;
-
  // initialize default parameters
  Parameter[0] := 200;
  Parameter[1] := 2;
  Parameter[2] := 1.4;
+
+ // set editor form class
+ EditorFormClass := TFmPhaseRotator;
 end;
 
 procedure TPhaseRotatorModule.VSTModuleClose(Sender: TObject);
@@ -119,6 +121,22 @@ begin
  for ChannelIndex := 0 to Length(FAllpass) - 1 do
   for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1
    do FreeAndNil(FAllpass[ChannelIndex, BandIndex]);
+end;
+
+procedure TPhaseRotatorModule.DataModuleResume(Sender: TObject);
+var
+  ChannelIndex : Integer;
+  BandIndex    : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FAllpass) - 1 do
+   for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
+    if Assigned(FAllpass[ChannelIndex, BandIndex])
+      then FAllpass[ChannelIndex, BandIndex].ResetStates;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaseRotatorModule.ParameterFrequencyDisplay(Sender: TObject;
@@ -153,10 +171,15 @@ var
   ChannelIndex : Integer;
   BandIndex    : Integer;
 begin
- for ChannelIndex := 0 to Length(FAllpass) - 1 do
-  for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
-   if Assigned(FAllpass[ChannelIndex, BandIndex])
-    then FAllpass[ChannelIndex, BandIndex].Bandwidth := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FAllpass) - 1 do
+   for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
+    if Assigned(FAllpass[ChannelIndex, BandIndex])
+     then FAllpass[ChannelIndex, BandIndex].Bandwidth := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmPhaseRotator
@@ -169,10 +192,15 @@ var
   ChannelIndex : Integer;
   BandIndex    : Integer;
 begin
- for ChannelIndex := 0 to Length(FAllpass) - 1 do
-  for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
-   if Assigned(FAllpass[ChannelIndex, BandIndex])
-    then FAllpass[ChannelIndex, BandIndex].Frequency := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FAllpass) - 1 do
+   for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
+    if Assigned(FAllpass[ChannelIndex, BandIndex])
+     then FAllpass[ChannelIndex, BandIndex].Frequency := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmPhaseRotator
@@ -182,7 +210,12 @@ end;
 procedure TPhaseRotatorModule.ParameterOrderChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FOrder := Round(Value);
+ FCriticalSection.Enter;
+ try
+  FOrder := Round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmPhaseRotator
@@ -195,11 +228,16 @@ var
   ChannelIndex : Integer;
   BandIndex    : Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for ChannelIndex := 0 to Length(FAllpass) - 1 do
-   for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
-    if Assigned(FAllpass[ChannelIndex, BandIndex])
-     then FAllpass[ChannelIndex, BandIndex].SampleRate := Abs(SampleRate);
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FAllpass) - 1 do
+    for BandIndex := 0 to Length(FAllpass[ChannelIndex]) - 1 do
+     if Assigned(FAllpass[ChannelIndex, BandIndex])
+      then FAllpass[ChannelIndex, BandIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaseRotatorModule.VSTModuleProcess(const Inputs,
@@ -210,14 +248,19 @@ var
   BandIndex    : Integer;
   Data         : Double;
 begin
- for ChannelIndex := 0 to Length(FAllpass) - 1 do
-  for SampleIndex := 0 to SampleFrames - 1 do
-   begin
-    Data := Inputs[ChannelIndex, SampleIndex];
-    for BandIndex := 0 to FOrder - 1
-     do Data := FAllpass[ChannelIndex, BandIndex].ProcessSample64(Data);
-    Outputs[ChannelIndex, SampleIndex] := Data;
-   end;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FAllpass) - 1 do
+   for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+     Data := Inputs[ChannelIndex, SampleIndex];
+     for BandIndex := 0 to FOrder - 1
+      do Data := FAllpass[ChannelIndex, BandIndex].ProcessSample64(Data);
+     Outputs[ChannelIndex, SampleIndex] := Data;
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TPhaseRotatorModule.VSTModuleProcessMidi(Sender: TObject;

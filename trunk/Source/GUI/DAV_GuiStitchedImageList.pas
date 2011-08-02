@@ -51,10 +51,10 @@ type
 
   TGuiStitchedImageList = class(TGuiCustomStitchedList)
   private
-    function GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
+    function GetStitchedItems(Index: Integer): TGuiStitchedImageCollectionItem;
   protected
     function GetCount: Integer; override;
-    property Items[Index: Integer]: TGuiStitchedImageCollectionItem read GetItems; default;
+    property Items[Index: Integer]: TGuiStitchedImageCollectionItem read GetStitchedItems; default;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -87,7 +87,7 @@ begin
  Result := FStitchedCollection.Count;
 end;
 
-function TGuiStitchedImageList.GetItems(Index: Integer): TGuiStitchedImageCollectionItem;
+function TGuiStitchedImageList.GetStitchedItems(Index: Integer): TGuiStitchedImageCollectionItem;
 begin
  if (Index >= 0) and (Index < FStitchedCollection.Count)
   then Result := TGuiStitchedImageCollectionItem(FStitchedCollection[Index])

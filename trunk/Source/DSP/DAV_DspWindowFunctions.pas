@@ -478,7 +478,7 @@ begin
        FSpkCorFakSq := FSpkCorFakSq - CurWinVal * CurWinVal;
       end;
     end;
-   FSpkCorFakSq := sqrt(FEffLength / FSpkCorFakSq);
+   FSpkCorFakSq := Sqrt(FEffLength / FSpkCorFakSq);
   end;
  Result := FSpkCorFak;
 end;
@@ -689,7 +689,7 @@ begin
              Data[p1] := Data[p1] * CurWinVal;
              Data[p2] := Data[p2] * CurWinVal;
              inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2 < 0 then p2 := SampleCount;
+             Dec(p2); if p2 < 0 then p2 := SampleCount;
             end;
           end;
         end;
@@ -813,7 +813,7 @@ begin
           FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
           Data[p1] := Data[p1] * CurWinVal;
           Data[p2] := Data[p2] * CurWinVal;
-          inc(p1); dec(p2);
+          inc(p1); Dec(p2);
          end;
        end
        else // Wrap around
@@ -870,7 +870,7 @@ begin
              Data[p1] := Data[p1] * CurWinVal;
              Data[p2] := Data[p2] * CurWinVal;
              inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2 <     0 then p2 := SampleCount;
+             Dec(p2); if p2 <     0 then p2 := SampleCount;
             end;
           end;
         end;
@@ -913,7 +913,7 @@ begin
      end;
  end;
 
- FSpkCorFakSq := sqrt(FEffLength / FSpkCorFakSq);
+ FSpkCorFakSq := Sqrt(FEffLength / FSpkCorFakSq);
  FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 end;
 
@@ -1283,7 +1283,7 @@ begin
     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-2*FEffLengthRnd;
    end;
  end;
- ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
+ ParamRec.SpuaredCorrectionFactor := Sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
  FillWithZeroes(Data,StartPos,EndPos,SampleCount);
 
  FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
@@ -1420,7 +1420,7 @@ begin
    end;
  end;
 
- ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
+ ParamRec.SpuaredCorrectionFactor := Sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
  FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 
  FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
@@ -1536,7 +1536,7 @@ begin
    end;
  end;
 
- ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
+ ParamRec.SpuaredCorrectionFactor := Sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
  FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 
  FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
@@ -1718,7 +1718,7 @@ begin
       ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-2*FEffLengthRnd;
      end;
    end;
-  ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
+  ParamRec.SpuaredCorrectionFactor := Sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
  end;
  FillWithZeroes(Data,StartPos,EndPos,SampleCount);
 
@@ -1757,11 +1757,11 @@ begin
  cs     := cos(Pi * Pos);
  i      := FCosineTerms - 1;
  Result := FCoefPointer^[i];
- dec(i);
+ Dec(i);
  while i >= 0 do
   begin
    Result := Result * cs + FCoefPointer^[i];
-   dec(i)
+   Dec(i)
   end;
 end;
 
@@ -1878,7 +1878,7 @@ begin
      ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - 2 * FEffLengthRnd;
     end;
  end;
- ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
+ ParamRec.SpuaredCorrectionFactor := Sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
  FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 
  FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
@@ -2518,7 +2518,7 @@ begin
              Data[p1] := Data[p1] * CurWinVal;
              Data[p2] := Data[p2] * CurWinVal;
              inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2<0 then p2 := SampleCount;
+             Dec(p2); if p2<0 then p2 := SampleCount;
             end;
           end;
         end;
@@ -2538,7 +2538,7 @@ begin
       FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
      end;
  end;
- FSpkCorFakSq := sqrt(FEffLength/FSpkCorFakSq);
+ FSpkCorFakSq := Sqrt(FEffLength/FSpkCorFakSq);
  FillWithZeroes(Data,StartPos,EndPos,SampleCount);
 end;
 
@@ -2590,7 +2590,7 @@ var
      FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
      Data[p1] := Data[p1] * CurWinVal;
      Data[p2] := Data[p2] * CurWinVal;
-     inc(p1); dec(p2);
+     inc(p1); Dec(p2);
     end;
   end;
 
@@ -2669,7 +2669,7 @@ begin
              Data[p1] := Data[p1] * CurWinVal;
              Data[p2] := Data[p2] * CurWinVal;
              inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2<0 then p2 := SampleCount;
+             Dec(p2); if p2<0 then p2 := SampleCount;
             end;
           end;
         end;
@@ -2689,7 +2689,7 @@ begin
       FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
      end;
  end;
- FSpkCorFakSq := sqrt(FEffLength/FSpkCorFakSq);
+ FSpkCorFakSq := Sqrt(FEffLength/FSpkCorFakSq);
  FillWithZeroes(Data,StartPos,EndPos,SampleCount);
 end;
 

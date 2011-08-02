@@ -45,11 +45,12 @@ begin
     TGuiCorrelationMeter, TGuiDial, TGuiDialEx, TGuiDialImageList,
     TGuiDialImageRenderer, TGuiDialMetal, TGuiDynamicWaveform, TGuiEQGraph,
     TGuiEQSlide, TGuiFader, TGuiFontList, TGuiGraphXY, TGuiGroup, TGuiGroupTop,
-    TGuiGroupSide, TGuiGroupSimple, TGuiInscription, TGuiImageList, TGuiLabel,
-    TGuiLED, TGuiMediaButton, TGuiMidiKeys, TGuiControlsRadioButton,
-    TGuiPaintBox, TGuiPanel, TGuiPngList, TGuiSelectBox, TGuiSlider,
-    TGuiStaticWaveform, TGuiSwitch, TGuiVUMeter {$IFNDEF FPC}, TGuiLevelMeter,
-    TGuiColorLevelMeter, TGuiModular, TGuiBackground, TGuiControlsEdit {$ENDIF}]);
+    TGuiGroupSide, TGuiGroupSimple, TGuiInscription, TGuiIntegerBox,
+    TGuiImageList, TGuiLabel, TGuiLED, TGuiMediaButton, TGuiMidiKeys,
+    TGuiControlsRadioButton, TGuiPaintBox, TGuiPanel, TGuiPngList,
+    TGuiSelectBox, TGuiSlider, TGuiStaticWaveform, TGuiSwitch, TGuiVUMeter
+    {$IFNDEF FPC}, TGuiLevelMeter, TGuiColorLevelMeter, TGuiModular,
+    TGuiBackground, TGuiControlsEdit {$ENDIF}]);
 
   RegisterComponents('ASIO/VST GUI Stitched', [
     TGuiStitchedButton, TGuiStitchedDial, TGuiStitchedDisplay,

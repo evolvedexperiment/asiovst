@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <PathDelim Value="\"/>
     <Name Value="DAV_DSP_Lazarus"/>
+    <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
       <Version Value="10"/>
       <PathDelim Value="\"/>
@@ -23,6 +24,9 @@
         <SmartLinkUnit Value="True"/>
       </CodeGeneration>
       <Other>
+        <CompilerMessages>
+          <UseMsgFile Value="True"/>
+        </CompilerMessages>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
@@ -251,7 +255,8 @@
       </Item4>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)\"/>
+      <IncludePath Value="..\Source"/>
+      <UnitPath Value="$(PkgOutDir);..\Source\DSP"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
