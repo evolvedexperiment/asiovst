@@ -141,7 +141,7 @@ Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Chebyshev Exciter Manual.pdf"
+  File "..\Manuals\Chebyshev Exciter Manual.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR

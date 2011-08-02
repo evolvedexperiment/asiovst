@@ -142,7 +142,7 @@ Section "Barberpole Tuner Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Barberpole Tuner.pdf"
+  File "..\Manuals\Barberpole Tuner.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR

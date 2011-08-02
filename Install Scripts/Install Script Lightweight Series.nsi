@@ -165,11 +165,11 @@ Section "Manuals" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Lightweight Limiter Manual.pdf"
-  File "..\Bin\Lightweight Gate Manual.pdf"
-  File "..\Bin\Lightweight Compressor Manual.pdf"
-  File "..\Bin\Lightweight Feedback Compressor Manual.pdf"
-  File "..\Bin\Lightweight Multiband Compressor Manual.pdf"
+  File "..\Manuals\Lightweight Limiter Manual.pdf"
+  File "..\Manuals\Lightweight Gate Manual.pdf"
+  File "..\Manuals\Lightweight Compressor Manual.pdf"
+  File "..\Manuals\Lightweight Feedback Compressor Manual.pdf"
+  File "..\Manuals\Lightweight Multiband Compressor Manual.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR

@@ -95,7 +95,7 @@ Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Tests\VST Host\VST-Plugin Unit Test.pdf"
+  File "..\Manuals\VST Host\VST-Plugin Unit Test.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR

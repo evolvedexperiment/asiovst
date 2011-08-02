@@ -146,7 +146,7 @@ Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\2-Band Distortion.pdf"
+  File "..\Manuals\2-Band Distortion.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR

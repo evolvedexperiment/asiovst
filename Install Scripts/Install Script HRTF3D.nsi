@@ -140,7 +140,7 @@ Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\HRTF3D Manual.pdf"
+  File "..\Manuals\HRTF3D Manual.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM PRODUCT_DIR_REGKEY "" $INSTDIR
