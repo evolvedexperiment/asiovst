@@ -554,7 +554,7 @@ end;
 destructor TDelayLineSamples.Destroy;
 begin
  if Assigned(FBuffer)
-  then Dispose(FBuffer);
+  then FreeMem(FBuffer);
  inherited;
 end;
 

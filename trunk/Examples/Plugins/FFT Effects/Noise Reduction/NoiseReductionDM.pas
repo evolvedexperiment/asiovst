@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,
-  DAV_DspDelayLines, DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions,
-  DAV_VSTModule {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF};
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Forms,
+  SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDelayLines,
+  DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions
+  {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF};
 
 type
   TNoiseReductionModule = class(TVSTModule)
@@ -45,7 +46,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -81,8 +81,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Math, NoiseReductionGui, DAV_VSTModuleWithPrograms,
-  DAV_VSTCustomModule;
+  SysUtils, NoiseReductionGui;
 
 procedure TNoiseReductionModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -173,6 +172,8 @@ begin
    Parameter[6] := 0.5;
    Parameter[7] := 0;
   end;
+
+ EditorFormClass := TFmNoiseReduction;
 end;
 
 procedure TNoiseReductionModule.VSTModuleClose(Sender: TObject);
@@ -184,11 +185,6 @@ begin
 
  for Channel := 0 to Length(FAdditionalDelay) - 1
   do FreeAndNil(FAdditionalDelay[Channel]);
-end;
-
-procedure TNoiseReductionModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmNoiseReduction.Create(Self);
 end;
 
 procedure TNoiseReductionModule.ParameterThresholdChange(
@@ -260,7 +256,7 @@ procedure TNoiseReductionModule.ParameterTimeLabel(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
 if Parameter[Index] < 1
-  then PreDefined := 'µs'
+  then PreDefined := 'Âµs'
   else PreDefined := 'ms';
 end;
 

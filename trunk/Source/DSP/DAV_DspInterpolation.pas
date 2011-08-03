@@ -36,7 +36,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  DAV_Types;
+  DAV_Types, DAV_Complex;
 
 function Hermite1(const Fractional: Single; const Data: TDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function Hermite1(const Fractional: Double; const Data: TDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
@@ -48,8 +48,8 @@ function Hermite4(const Fractional: Single; const Data: TDAV4SingleArray): Singl
 function Hermite4(const Fractional: Double; const Data: TDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function Hermite32_asm(const Fractional: Single; Pntr: PDAV4SingleArray): Single;
 function Hermite64_asm(const Fractional: Double; Pntr: PDAV4DoubleArray): Double;
-function Hermite32I_asm(const Fractional: Single; Pntr: PDAVSingleFixedArray): Single;
-function Hermite64I_asm(const Fractional: Double; Pntr: PDAVDoubleFixedArray): Double;
+function Hermite32I_asm(const Fractional: Single; Pntr: PDAVComplexSingleFixedArray): Single;
+function Hermite64I_asm(const Fractional: Double; Pntr: PDAVComplexDoubleFixedArray): Double;
 function LinearInterpolation(const Fractional: Single; const Data: TDAV2SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function LinearInterpolation(const Fractional: Double; const Data: TDAV2DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function LinearInterpolation(const Fractional: Single; const Data: PDAV2SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
@@ -72,6 +72,9 @@ const
   COneSixth64 : Double = 1/6;
 
 implementation
+
+uses
+  SysUtils;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -183,10 +186,10 @@ asm
 end;
 {$ENDIF}
 
-function Hermite32I_asm(const Fractional: Single; Pntr: PDAVSingleFixedArray): Single;
+function Hermite32I_asm(const Fractional: Single; Pntr: PDAVComplexSingleFixedArray): Single;
 {$IFDEF PUREPASCAL}
 begin
-
+  raise Exception.Create('not implemented yet');
 end;
 {$ELSE}
 asm
@@ -216,10 +219,10 @@ asm
 end;
 {$ENDIF}
 
-function Hermite64I_asm(const Fractional: Double; Pntr: PDAVDoubleFixedArray): Double;
+function Hermite64I_asm(const Fractional: Double; Pntr: PDAVComplexDoubleFixedArray): Double;
 {$IFDEF PUREPASCAL}
 begin
-
+  raise Exception.Create('not implemented yet');
 end;
 {$ELSE}
 asm

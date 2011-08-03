@@ -25,10 +25,10 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DependencyCheckOutputName>..\..\..\Bin\BarberpoleFlanger.dll</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\Bin\VST\32-Bit\BarberpoleFlanger.dll</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_ExeOutput>..\..\..\Bin\</DCC_ExeOutput>
+			<DCC_ExeOutput>..\..\..\Bin\VST\32-Bit\</DCC_ExeOutput>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
 			<DCC_Platform>x86</DCC_Platform>
