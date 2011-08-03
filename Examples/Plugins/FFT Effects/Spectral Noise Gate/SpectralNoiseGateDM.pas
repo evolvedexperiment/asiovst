@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,
-  DAV_DspDelayLines, DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF} Classes,
+  Forms, SyncObjs, DAV_Types, DAV_Complex, DAV_DspDelayLines,
+  DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions,
   DAV_VSTModule {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF};
 
 type

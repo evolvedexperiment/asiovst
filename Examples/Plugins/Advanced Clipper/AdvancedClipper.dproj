@@ -27,10 +27,10 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_DebugDCUs>true</DCC_DebugDCUs>
 			<DCC_UsePackage>vclx;vcl;vclimg;dbrtl;Rave77VCL;bdertl;rtl;vclactnband;vcldb;vcldbx;vcltouch;xmlrtl;dsnap;dsnapcon;TeeUI;TeeDB;Tee;adortl;IndyCore;IndySystem;IndyProtocols;VclSmp;vclribbon;DbxClientDriver;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;dbxcds;dbexpress;SynEdit_R2010;vclie;madBasic_;madDisAsm_;madExcept_;VPR_D2010;GR32_RS2010;ScrCamD14_Package;GR32_DSGN_RS2010;mpCPUInfoPkg;mpCommonPkg;mpAsioPkg;GR32_AddOn_RS2010;GR32_Controls_D14;MFControls;DAV_Common_D14;VirtualTreesD14;VstHostOlePackage;FlatControls;ActiveX;GLScene_RunTime;GLS_Computing_RunTime;GLCg_RunTime;GLSS_BASS;GLSS_OpenAL;DAV_DSP_D14;DAV_ASIOHost_D14;DAV_SEHost_D14;DAV_VSTHost_D14;DAV_GUI_D14;DAV_Modular_D14;XmlComponents_D7;OmniThreadLibraryRuntime2010;GR32_Charts_D14;JclDeveloperTools;Jcl;JclVcl;JclContainers;JvCore;JvSystem;JvStdCtrls;JvAppFrm;JvBands;JvDB;JvDlgs;JvBDE;JvControls;JvCmp;JvCrypt;JvCustom;JvDocking;JvDotNetCtrls;JvGlobus;JvHMI;JvJans;JvManagedThreads;JvMM;JvNet;JvPageComps;JvPascalInterpreter;JvPluginSystem;JvPrintPreview;JvRuntimeDesign;JvTimeFramework;JvWizards;JvXPCtrls</DCC_UsePackage>
-			<DCC_DependencyCheckOutputName>..\..\..\Bin\AdvancedClipper.dll</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\Bin\VST\32-Bit\AdvancedClipper.dll</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_ExeOutput>..\..\..\Bin\</DCC_ExeOutput>
+			<DCC_ExeOutput>..\..\..\Bin\VST\32-Bit\</DCC_ExeOutput>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
 			<DCC_Platform>x86</DCC_Platform>

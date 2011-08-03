@@ -103,7 +103,7 @@ type
     procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32);
     procedure VerticalLine(X, FromY, ToY: Integer; Color: TPixel32);
     procedure Assign(Source: TPersistent); override;
-    function Equals(Obj: TObject): Boolean; {$IFDEF DELPHI14_UP} override; {$ENDIF}
+    function Equals(Obj: TObject): Boolean; {$IFDEF FPC} override; {$ENDIF} {$IFDEF DELPHI14_UP} override; {$ENDIF}
 
     property DataPointer: PPixel32Array read GetDataPointer;
     property Pixel[X, Y: Integer]: TPixel32 read GetPixel write SetPixel;
