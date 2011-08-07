@@ -35,11 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Menus, DAV_GuiPixelMap, DAV_GuiPanel,
-  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED,
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
-  DAV_GuiCustomControl, DAV_GuiGraphicControl, DAV_GuiImageControl;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls, Menus,
+  DAV_GuiPixelMap, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiGroup, DAV_GuiEQGraph,
+  DAV_GuiLED, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
 
 type
   TFmLinkwitzRiley = class(TForm)
@@ -163,7 +162,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Registry, DAV_GuiCommon, DAV_VSTModuleWithPrograms, 
+  Math, Registry, DAV_GuiCommon,
   DualLinkwitzRileyFiltersDM;
 
 resourcestring
@@ -263,7 +262,11 @@ var
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
+   {$IFDEF FPC}
+   if ssAlt in GetKeyShiftState
+   {$ELSE}
    if ssAlt in KeyboardStateToShiftState
+   {$ENDIF}
     then NewValue := RoundFrequency(DialLowpassFrequency.Value)
     else NewValue := DialLowpassFrequency.Value;
 
@@ -349,6 +352,7 @@ end;
 procedure TFmLinkwitzRiley.EQGraphUpdateTimer(Sender: TObject);
 begin
  EQGraphUpdate.Enabled := False;
+ GuiEQGraph.FilterSeries[0].DataChanged;
  GuiEQGraph.UpdateGraph;
 end;
 
@@ -358,7 +362,11 @@ var
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
+   {$IFDEF FPC}
+   if ssAlt in GetKeyShiftState
+   {$ELSE}
    if ssAlt in KeyboardStateToShiftState
+   {$ENDIF}
     then NewValue := RoundFrequency(DialHighpassFrequency.Value)
     else NewValue := DialHighpassFrequency.Value;
 
@@ -576,9 +584,12 @@ end;
 
 procedure TFmLinkwitzRiley.UpdateEQGraph;
 begin
- if FDirectUpdate
-  then GuiEQGraph.Invalidate
-  else EQGraphUpdate.Enabled := True;
+ if FDirectUpdate then
+  begin
+   GuiEQGraph.FilterSeries[0].DataChanged;
+   GuiEQGraph.UpdateGraph;
+  end
+ else EQGraphUpdate.Enabled := True;
 end;
 
 end.

@@ -10,7 +10,6 @@ object ConvoFXLiteDataModule: TConvoFXLiteDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   BlockSize = 8192
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   BlockModeSize = 8192
   InitialDelay = 2048
@@ -25,7 +24,6 @@ object ConvoFXLiteDataModule: TConvoFXLiteDataModule
   ParameterProperties = <
     item
       CanBeAutomated = False
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Latency Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -43,7 +41,6 @@ object ConvoFXLiteDataModule: TConvoFXLiteDataModule
     end
     item
       CanBeAutomated = False
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Maximum IR Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -61,7 +58,6 @@ object ConvoFXLiteDataModule: TConvoFXLiteDataModule
       OnParameterChange = ParameterMaximumIROrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'IR Selected'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -79,7 +75,6 @@ object ConvoFXLiteDataModule: TConvoFXLiteDataModule
       OnParameterChange = ParameterIRChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -119,7 +114,6 @@ object ConvoFXLiteDataModule: TConvoFXLiteDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange

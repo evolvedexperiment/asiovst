@@ -1675,7 +1675,28 @@ procedure SingleToInt16LSB_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount
 const
   CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push   ebx
+ {$IFDEF CPUx86_64}
+ push   RBX
+ fld    CScaler                // move to register for speed
+ fld    CFloatToSmall              // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld   [RAX + 4 * ECX - 4].Single
+  fmul  st(0), st(1)
+
+  imul  ebx, RandSeed, $08088405
+  inc   ebx
+  mov   RandSeed, ebx
+  fild  RandSeed
+  fmul  st(0), st(3)
+  faddp
+
+  fistp word ptr [edx + 2 * ecx - 2]
+ loop   @start
+ ffree  st(0)                // free after loop has finished
+ ffree  st(1)                // free after loop has finished
+ pop    RBX
+ {$ELSE}
+ push   EBX
  fld    CScaler                // move to register for speed
  fld    CFloatToSmall              // move to register for speed
  @Start:                       // Samplecount already in ecx!
@@ -1693,13 +1714,40 @@ asm
  loop   @start
  ffree  st(0)                // free after loop has finished
  ffree  st(1)                // free after loop has finished
- pop    ebx
+ pop    EBX
+ {$ENDIF}
 end;
 
 procedure SingleToInt16LSB_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
+ {$IFDEF CPUx86_64}
+ push   RBX
+ fld    CScaler                // move to register for speed
+ fld    CFloatToSmall              // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld   [eax + 4 * ecx - 4].Single
+  fmul  st(0), st(1)
+
+  imul  RBX, RandSeed, $08088405
+  inc   RBX
+  mov   RandSeed, Rbx
+  fild  RandSeed
+  imul  Rbx, RandSeed, $08088405
+  inc   Rbx
+  mov   RandSeed, Rbx
+  fild  RandSeed
+  faddp
+  fmul  st(0), st(3)
+  faddp
+
+  fistp word ptr [edx + 2 * ecx - 2]
+ loop   @start
+ ffree  st(0)                // free after loop has finished
+ ffree  st(1)                // free after loop has finished
+ pop    RBX
+ {$ELSE}
  push   ebx
  fld    CScaler                // move to register for speed
  fld    CFloatToSmall              // move to register for speed
@@ -1724,6 +1772,7 @@ asm
  ffree  st(0)                // free after loop has finished
  ffree  st(1)                // free after loop has finished
  pop    ebx
+ {$ENDIF}
 end;
 
 procedure DoubleToInt16LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;

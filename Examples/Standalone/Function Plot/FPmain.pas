@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  DAV_GuiBaseControl, DAV_GuiGraphXY;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, DAV_GuiBaseControl, DAV_GuiGraphXY;
 
 type
   TFmFunctionPlot = class(TForm)

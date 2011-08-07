@@ -35,9 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, SysUtils, Classes, Graphics, Forms, Controls, Menus, StdCtrls,
-  Dialogs, Buttons, Messages, ExtCtrls, ComCtrls, StdActns, ActnList, ToolWin,
-  ImgList, DAV_ASIOHost, DAV_AudioFile, DAV_AudioFileWav;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Graphics, 
+  Forms, Controls, Menus, StdCtrls, Dialogs, Buttons, Messages, ExtCtrls, 
+  ComCtrls, StdActns, ActnList, ToolWin, ImgList, DAV_ASIOHost, DAV_AudioFile, 
+  DAV_AudioFileWav;
 
 type
   TFmAbxMain = class(TForm)

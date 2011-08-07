@@ -123,10 +123,8 @@ type
     procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure ParameterLowAutomate(Sender: TObject;
-      Index: Integer; ParameterValue: Single);
-    procedure ParameterHighAutomate(Sender: TObject;
-      Index: Integer; ParameterValue: Single);
+    procedure ParameterLowAutomate(Sender: TObject; Index: Integer; ParameterValue: Single);
+    procedure ParameterHighAutomate(Sender: TObject; Index: Integer; ParameterValue: Single);
   private
     FLowpass          : array of TLowPassArray;
     FHighpass         : array of THighPassArray;
@@ -227,12 +225,12 @@ begin
          OnParameterChange        := VSTModuleParameterChange;
          OnCustomParameterLabel   := CustomParameterLabel;
          OnCustomParameterDisplay := CustomParameterDisplay;
-         DisplayName              := VstHost[n].GetParamName(i);
+         DisplayName              := string(VstHost[n].GetParamName(i));
         end;
       if PI.numPrograms > 0
        then PI.CurrentProgram := 0;
      end;
-    UniqueID    := 'S' + VstHost[0].UniqueID[1] + VstHost[0].UniqueID[2] + '2';
+    UniqueID    := AnsiChar('S') + VstHost[0].UniqueID[1] + VstHost[0].UniqueID[2] + AnsiChar('2');
     EffectName  := 'Splitted ' + VstHost[0].EffectName;
     ProductName := 'Splitted ' + VstHost[0].ProductString;
     VendorName  := 'Delphi ASIO & VST Packages and ' + VstHost[0].VendorString;
@@ -313,8 +311,8 @@ begin
  FVolumeFactor := 1;
 
  OnProcess := VSTModuleProcess32SplitFrequencySimple;
- OnProcessReplacing := VSTModuleProcess32SplitFrequencySimple;
- OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencySimple;
+ OnProcess32Replacing := VSTModuleProcess32SplitFrequencySimple;
+ OnProcess64Replacing := VSTModuleProcess64SplitFrequencySimple;
  FTempBufferSize := 0;
  FMaximumBlockSize := VstHost.BlockSize;
  FPlugNr := 0;
@@ -889,68 +887,68 @@ begin
  case FSplitType of
      stSimple : begin
                  OnProcess := VSTModuleProcess32SplitFrequencySimple;
-                 OnProcessReplacing := VSTModuleProcess32SplitFrequencySimple;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencySimple;
+                 OnProcess32Replacing := VSTModuleProcess32SplitFrequencySimple;
+                 OnProcess64Replacing := VSTModuleProcess64SplitFrequencySimple;
                 end;
        stLiRi : begin
                  OnProcess := VSTModuleProcess32SplitFrequencyLiRi;
-                 OnProcessReplacing := VSTModuleProcess32SplitFrequencyLiRi;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencyLiRi;
+                 OnProcess32Replacing := VSTModuleProcess32SplitFrequencyLiRi;
+                 OnProcess64Replacing := VSTModuleProcess64SplitFrequencyLiRi;
                 end;
         stDyn : begin
                  OnProcess := VSTModuleProcess32SplitDynamic;
-                 OnProcessReplacing := VSTModuleProcess32SplitDynamic;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitDynamic;
+                 OnProcess32Replacing := VSTModuleProcess32SplitDynamic;
+                 OnProcess64Replacing := VSTModuleProcess64SplitDynamic;
                 end;
   stLeftRight : begin
                  OnProcess := VSTModuleProcess32SplitLeftRight;
-                 OnProcessReplacing := VSTModuleProcess32SplitLeftRight;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitLeftRight;
+                 OnProcess32Replacing := VSTModuleProcess32SplitLeftRight;
+                 OnProcess64Replacing := VSTModuleProcess64SplitLeftRight;
                 end;
          stMS : begin
                  OnProcess := VSTModuleProcess32SplitMidSide;
-                 OnProcessReplacing := VSTModuleProcess32SplitMidSide;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitMidSide;
+                 OnProcess32Replacing := VSTModuleProcess32SplitMidSide;
+                 OnProcess64Replacing := VSTModuleProcess64SplitMidSide;
                 end;
      stSerial : begin
                  OnProcess := VSTModuleProcess32Serial;
-                 OnProcessReplacing := VSTModuleProcess32Serial;
-                 OnProcessDoubleReplacing := VSTModuleProcess64Serial;
+                 OnProcess32Replacing := VSTModuleProcess32Serial;
+                 OnProcess64Replacing := VSTModuleProcess64Serial;
                 end;
   stTransient : begin
                  OnProcess := VSTModuleProcess32SplitTransient;
-                 OnProcessReplacing := VSTModuleProcess32SplitTransient;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitTransient;
+                 OnProcess32Replacing := VSTModuleProcess32SplitTransient;
+                 OnProcess64Replacing := VSTModuleProcess64SplitTransient;
                 end;
     stExciter : begin
                  OnProcess := VSTModuleProcess32SplitExciter;
-                 OnProcessReplacing := VSTModuleProcess32SplitExciter;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitExciter;
+                 OnProcess32Replacing := VSTModuleProcess32SplitExciter;
+                 OnProcess64Replacing := VSTModuleProcess64SplitExciter;
                 end;
         stLFO : begin
                  OnProcess := VSTModuleProcess32SplitLFO;
-                 OnProcessReplacing := VSTModuleProcess32SplitLFO;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitLFO;
+                 OnProcess32Replacing := VSTModuleProcess32SplitLFO;
+                 OnProcess64Replacing := VSTModuleProcess64SplitLFO;
                 end;
      stDynLFO : begin
                  OnProcess := VSTModuleProcess32SplitDynLFO;
-                 OnProcessReplacing := VSTModuleProcess32SplitDynLFO;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitDynLFO;
+                 OnProcess32Replacing := VSTModuleProcess32SplitDynLFO;
+                 OnProcess64Replacing := VSTModuleProcess64SplitDynLFO;
                 end;
        stSpin : begin
                  OnProcess := VSTModuleProcess32SplitSpin;
-                 OnProcessReplacing := VSTModuleProcess32SplitSpin;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitSpin;
+                 OnProcess32Replacing := VSTModuleProcess32SplitSpin;
+                 OnProcess64Replacing := VSTModuleProcess64SplitSpin;
                 end;
      stSingle : begin
                  OnProcess := VSTModuleProcess32SplitSingle;
-                 OnProcessReplacing := VSTModuleProcess32SplitSingle;
-                 OnProcessDoubleReplacing := VSTModuleProcess64SplitSingle;
+                 OnProcess32Replacing := VSTModuleProcess32SplitSingle;
+                 OnProcess64Replacing := VSTModuleProcess64SplitSingle;
                 end;
      stBypass : begin
                  OnProcess := VSTModuleProcess32Bypass;
-                 OnProcessReplacing := VSTModuleProcess32Bypass;
-                 OnProcessDoubleReplacing := VSTModuleProcess64Bypass;
+                 OnProcess32Replacing := VSTModuleProcess32Bypass;
+                 OnProcess64Replacing := VSTModuleProcess64Bypass;
                 end;
  end;
 

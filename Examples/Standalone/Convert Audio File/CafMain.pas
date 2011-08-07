@@ -35,9 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, ComCtrls, StdCtrls, Spin, ExtCtrls, DAV_Types, DAV_AudioFile,
-  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_ChannelDataCoder;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, Menus, ComCtrls, StdCtrls, Spin, ExtCtrls, 
+  DAV_Types, DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF, 
+  DAV_AudioFileAU, DAV_ChannelDataCoder;
 
 type
   TFmConvertAudioFile = class(TForm)

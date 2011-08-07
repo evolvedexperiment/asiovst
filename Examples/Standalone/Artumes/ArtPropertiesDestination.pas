@@ -37,7 +37,8 @@ interface
 {$I Artumes.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs;
 
 type
   TFmDestinationProperties = class(TForm)

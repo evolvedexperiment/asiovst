@@ -1,74 +1,72 @@
 object FmLinkwitzRiley: TFmLinkwitzRiley
   Left = 396
+  Height = 235
   Top = 138
+  Width = 236
   BorderStyle = bsNone
   Caption = 'Dual Linkwitz-Riley Filters'
   ClientHeight = 235
   ClientWidth = 236
   Color = 7373965
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '0.9.31'
   object LbShowFrequencyPlot: TGuiLabel
     Left = 8
+    Height = 29
     Top = 183
     Width = 220
-    Height = 29
     Alignment = taCenter
     Caption = 'Show Frequency Plot'
-    Font.Charset = ANSI_CHARSET
+    Font.CharSet = ANSI_CHARSET
     Font.Color = 15659506
     Font.Height = -24
     Font.Name = 'Times New Roman'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
     Visible = False
     Transparent = True
     OnClick = LbShowFrequencyPlotClick
   end
   object GuiEQGraph: TGuiEQGraph
     Left = 8
+    Height = 53
     Top = 175
     Width = 220
-    Height = 53
     AntiAlias = True
     BorderColor = 15659506
-    BorderRadius = 7.000000000000000000
-    BorderWidth = 2.000000000000000000
+    BorderRadius = 7
+    BorderWidth = 2
     ColorChart = 7373965
-    FilterSeries = <
+    FilterSeries = <    
       item
-        DisplayName = 'Filter'
+        DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = 15659506
-        LineWidth = 2.000000000000000000
-        OnGetFilterGain = GetFilterGain
+        LineWidth = 2
       end>
     FontOversampling = fo4x
+    FontShadow.Blur = 0
+    FontShadow.Saturation = 0
     GraphColorDark = 5991539
     GraphColorLight = 6978950
     XAxis.LabelPosition = xlpBottom
-    XAxis.UpperFrequency = 20000.000000000000000000
-    XAxis.LowerFrequency = 20.000000000000000000
+    XAxis.UpperFrequency = 20000
+    XAxis.LowerFrequency = 20
     YAxis.LabelPosition = ylpLeft
-    YAxis.LowerLevel = -30.000000000000000000
-    YAxis.UpperLevel = 6.000000000000000000
-    YAxis.Granularity = 20.000000000000000000
+    YAxis.LowerLevel = -30
+    YAxis.UpperLevel = 6
+    YAxis.Granularity = 20
     YAxis.MaximumGridLines = 2
     YAxis.MouseActions = []
     Color = 7373965
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 15659506
     Font.Height = -7
     Font.Name = 'Times New Roman'
@@ -78,13 +76,12 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   end
   object GpDualLiknwitzRiley: TGuiGroupTop
     Left = 8
+    Height = 161
     Top = 8
     Width = 220
-    Height = 161
     BorderColor = 15659506
-    BorderWidth = 2.000000000000000000
+    BorderWidth = 2
     Caption = 'Dual Linkwitz-Riley Filters'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 7373965
     Font.Height = -16
     Font.Name = 'Times New Roman'
@@ -92,103 +89,102 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     GroupColor = 7373965
     Native = False
     ParentFont = False
-    BorderRadius = 7.000000000000000000
-    Shadow.Blur = 3.000000000000000000
+    BorderRadius = 7
+    Shadow.Blur = 3
     Shadow.Color = 3226174
     Shadow.Opacity = 100
+    Shadow.Saturation = 0
     Shadow.Visible = True
     TabOrder = 0
     OnClick = GpDualLiknwitzRileyClick
     object LbFrequency: TGuiLabel
       Left = 11
-      Top = 83
-      Width = 48
       Height = 13
+      Top = 70
+      Width = 48
       Alignment = taCenter
       Caption = 'Frequency'
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
-      Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 2.000000000000000000
+      Shadow.Blur = 2
       Shadow.Color = 3226174
+      Shadow.Saturation = 0
       Shadow.Visible = True
       OnClick = GpDualLiknwitzRileyClick
     end
     object LbSlope: TGuiLabel
       Left = 75
-      Top = 83
-      Width = 48
       Height = 13
+      Top = 70
+      Width = 48
       Alignment = taCenter
       Caption = 'Slope'
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = 15659506
       Font.Height = -11
       Font.Name = 'Times New Roman'
-      Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
-      Shadow.Blur = 2.000000000000000000
+      Shadow.Blur = 2
       Shadow.Color = 3226174
+      Shadow.Saturation = 0
       Shadow.Visible = True
       OnClick = GpDualLiknwitzRileyClick
     end
     object LbLowpass: TGuiLabel
       Left = 131
-      Top = 45
-      Width = 59
       Height = 24
+      Top = 32
+      Width = 59
       Alignment = taCenter
       Caption = 'Highcut'
-      Font.Charset = ANSI_CHARSET
+      Font.CharSet = ANSI_CHARSET
       Font.Color = 15659506
       Font.Height = -16
       Font.Name = 'Times New Roman'
-      Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
       PopupMenu = PuPreset
-      Shadow.Blur = 2.000000000000000000
+      Shadow.Blur = 2
       Shadow.Color = 3226174
+      Shadow.Saturation = 0
       Shadow.Visible = True
       OnClick = LedHighCutClick
       OnMouseDown = LbMouseDown
     end
     object LbHighpass: TGuiLabel
       Left = 131
-      Top = 116
-      Width = 59
       Height = 21
+      Top = 103
+      Width = 59
       Alignment = taCenter
       Caption = 'Lowcut'
-      Font.Charset = ANSI_CHARSET
+      Font.CharSet = ANSI_CHARSET
       Font.Color = 15659506
       Font.Height = -16
       Font.Name = 'Times New Roman'
-      Font.Style = []
       FontOversampling = fo4x
       ParentFont = False
       PopupMenu = PuPreset
-      Shadow.Blur = 2.000000000000000000
+      Shadow.Blur = 2
       Shadow.Color = 3226174
+      Shadow.Saturation = 0
       Shadow.Visible = True
       OnClick = LedLowCutClick
       OnMouseDown = LbMouseDown
     end
     object LedHighCut: TGuiLED
       Left = 190
-      Top = 45
-      Width = 19
       Height = 19
-      BorderStrength_Percent = 60.000003814697270000
-      Brightness_Percent = 90.000000000000000000
+      Top = 32
+      Width = 19
+      BorderStrength_Percent = 60.0000038146973
+      Brightness_Percent = 90
       LEDColor = 14870505
-      BorderWidth = 2.299999952316284000
-      Uniformity_Percent = 36.754447937011720000
+      BorderWidth = 2.29999995231628
+      Uniformity_Percent = 36.7544479370117
       Transparent = False
       Color = 7373965
       ParentColor = False
@@ -196,14 +192,14 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
     object LedLowCut: TGuiLED
       Left = 190
-      Top = 116
-      Width = 19
       Height = 19
-      BorderStrength_Percent = 60.000003814697270000
-      Brightness_Percent = 90.000000000000000000
+      Top = 103
+      Width = 19
+      BorderStrength_Percent = 60.0000038146973
+      Brightness_Percent = 90
       LEDColor = 14870505
-      BorderWidth = 2.299999952316284000
-      Uniformity_Percent = 36.754447937011720000
+      BorderWidth = 2.29999995231628
+      Uniformity_Percent = 36.7544479370117
       Transparent = False
       Color = 7373965
       ParentColor = False
@@ -211,55 +207,50 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
     object PnDisplay: TGuiPanel
       Left = 127
-      Top = 81
-      Width = 83
       Height = 17
+      Top = 68
+      Width = 83
       BorderColor = 3226174
-      BorderRadius = 5.000000000000000000
+      BorderRadius = 5
       BorderVisible = False
-      BorderWidth = 2.000000000000000000
+      BorderWidth = 2
       PanelColor = 3226174
-      ParentColor = True
       TabOrder = 0
-      UseDockManager = True
       Transparent = True
-      DesignSize = (
-        83
-        17)
+      UseDockManager = True
       object LbDisplay: TGuiLabel
         Left = 3
+        Height = 13
         Top = 2
         Width = 76
-        Height = 13
         Alignment = taCenter
-        Anchors = [akLeft, akTop, akRight]
+        Anchors = [akTop, akLeft, akRight]
         Caption = 'Value'
         Color = 3226174
-        Font.Charset = DEFAULT_CHARSET
         Font.Color = 15659506
         Font.Height = -11
         Font.Name = 'Times New Roman'
-        Font.Style = []
         FontOversampling = fo4x
         ParentFont = False
-        Shadow.Blur = 4.000000000000000000
+        Shadow.Blur = 4
+        Shadow.Saturation = 0
         OnClick = LbDisplayClick
       end
     end
     object DialLowpassFrequency: TGuiStitchedDial
       Left = 11
-      Top = 29
-      Width = 48
       Height = 48
-      CurveMapping = -2.099999904632568000
-      DefaultValue = 20.000000000000000000
-      Max = 20000.000000000000000000
-      Min = 20.000000000000000000
-      ScrollRange = 400.000000000000000000
+      Top = 16
+      Width = 48
+      CurveMapping = -2.09999990463257
+      DefaultValue = 20
+      Max = 20000
+      Min = 20
+      ScrollRange = 400
       ImageList = GSPL
       ImageIndex = 0
-      Value = 20.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 20
+      WheelStep = 1
       OnChange = DialLowpassFrequencyChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassFrequencyMouseEnter
@@ -267,18 +258,18 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     object DialLowpassSlope: TGuiStitchedDial
       Tag = 1
       Left = 75
-      Top = 29
-      Width = 48
       Height = 48
-      CurveMapping = -1.000000000000000000
-      DefaultValue = 1.000000000000000000
-      Max = 16.000000000000000000
-      Min = 1.000000000000000000
-      ScrollRange = 400.000000000000000000
+      Top = 16
+      Width = 48
+      CurveMapping = -1
+      DefaultValue = 1
+      Max = 16
+      Min = 1
+      ScrollRange = 400
       ImageList = GSPL
       ImageIndex = 0
-      Value = 1.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 1
+      WheelStep = 1
       OnChange = DialLowpassSlopeChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialLowpassSlopeMouseEnter
@@ -286,18 +277,18 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     object DialHighpassFrequency: TGuiStitchedDial
       Tag = 2
       Left = 11
-      Top = 102
-      Width = 48
       Height = 48
-      CurveMapping = -2.099999904632568000
-      DefaultValue = 20.000000000000000000
-      Max = 20000.000000000000000000
-      Min = 20.000000000000000000
-      ScrollRange = 400.000000000000000000
+      Top = 89
+      Width = 48
+      CurveMapping = -2.09999990463257
+      DefaultValue = 20
+      Max = 20000
+      Min = 20
+      ScrollRange = 400
       ImageList = GSPL
       ImageIndex = 0
-      Value = 20.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 20
+      WheelStep = 1
       OnChange = DialHighpassFrequencyChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassFrequencyMouseEnter
@@ -305,18 +296,18 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     object DialHighpassSlope: TGuiStitchedDial
       Tag = 3
       Left = 75
-      Top = 102
-      Width = 48
       Height = 48
-      CurveMapping = -1.000000000000000000
-      DefaultValue = 1.000000000000000000
-      Max = 16.000000000000000000
-      Min = 1.000000000000000000
-      ScrollRange = 400.000000000000000000
+      Top = 89
+      Width = 48
+      CurveMapping = -1
+      DefaultValue = 1
+      Max = 16
+      Min = 1
+      ScrollRange = 400
       ImageList = GSPL
       ImageIndex = 0
-      Value = 1.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 1
+      WheelStep = 1
       OnChange = DialHighpassSlopeChange
       OnMouseDown = DialMouseDown
       OnMouseEnter = DialHighpassSlopeMouseEnter
@@ -324,8 +315,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   end
   object PuFrequency: TPopupMenu
     OnPopup = PuFrequencyPopup
-    Left = 64
-    Top = 80
+    left = 64
+    top = 67
     object Mi16Hz: TMenuItem
       Tag = 16
       Caption = '16 Hz'
@@ -489,8 +480,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   end
   object PuPreset: TPopupMenu
     OnPopup = PuPresetPopup
-    Left = 168
-    Top = 80
+    left = 168
+    top = 67
     object MiLoadHigh: TMenuItem
       Caption = '&Load'
       object MiLoadA: TMenuItem
@@ -559,11 +550,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   object EQGraphUpdate: TTimer
     Interval = 10
     OnTimer = EQGraphUpdateTimer
-    Left = 88
-    Top = 184
+    left = 88
+    top = 184
   end
   object GSPL: TGuiStitchedPNGList
-    StitchedPNGs = <
+    StitchedPNGs = <    
       item
         PortableNetworkGraphic.Data = {
           89504E470D0A1A0A0000000D4948445200000C300000003008060000005D186B
@@ -3226,13 +3217,14 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
           C7477FC97FBFAEFA6FE2CFA1DD78ECBF9BF41F3FFDDDFD3FC9F6DF6AD37F3891
           FB4F36F1E7C8965CE717EC494DE5FF27B2FDA4CB3F51FA3736F1E7C8EE139CBF
           6FD2FFEBA9FF78D60FA57F831728D2B59FB4F9FF2FEE8B0530B6E348BF000000
-          0049454E44AE426082}
+          0049454E44AE426082
+        }
         DisplayName = 'Knob'
         GlyphCount = 65
         Height = 48
         Width = 3120
       end>
-    Left = 120
-    Top = 80
+    left = 120
+    top = 67
   end
 end

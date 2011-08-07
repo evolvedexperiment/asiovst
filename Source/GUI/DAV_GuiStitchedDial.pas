@@ -153,6 +153,10 @@ type
     property OnMouseEnter;
     property OnMouseLeave;
     {$ENDIF}
+    {$IFDEF FPC}
+    property OnMouseEnter;
+    property OnMouseLeave;
+    {$ENDIF}
   end;
 
 implementation

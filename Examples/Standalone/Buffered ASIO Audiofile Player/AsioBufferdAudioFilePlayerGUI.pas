@@ -35,9 +35,10 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, DAV_Types, DAV_ASIOHost, DAV_DspBufferedAudioFilePlayer,
-  DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, DAV_Types, 
+  DAV_ASIOHost, DAV_DspBufferedAudioFilePlayer, DAV_AudioFile, 
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 type
   TFmAsioBufferdAudioFilePlayer = class(TForm)
@@ -157,7 +158,7 @@ end;
 
 procedure TFmAsioBufferdAudioFilePlayer.DriverComboChange(Sender: TObject);
 var
-  i: Integer;
+  ChannelPairIndex: Integer;
 begin
  BtControlPanel.Enabled := False;
  BtStartStop.Enabled := False;
@@ -166,10 +167,10 @@ begin
   begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
-   for i := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
-     ChannelBox.Items.Add(
-       ASIOHost.OutputChannelInfos[2 * i].Name + ' / ' +
-       ASIOHost.OutputChannelInfos[2 * i + 1].Name);
+   for ChannelPairIndex := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
+     ChannelBox.Items.Add(string(
+       ASIOHost.OutputChannelInfos[2 * ChannelPairIndex].Name + ' / ' +
+       ASIOHost.OutputChannelInfos[2 * ChannelPairIndex + 1].Name));
 
    with TIniFile.Create(FIniFile) do
     try

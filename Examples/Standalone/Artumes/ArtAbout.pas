@@ -2,8 +2,9 @@ unit ArtAbout;
 
 interface
 
-uses Windows, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls;
+uses 
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Classes, Graphics, Forms, 
+  Controls, StdCtrls, Buttons, ExtCtrls;
 
 type
   TFmAbout = class(TForm)

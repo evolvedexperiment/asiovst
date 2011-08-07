@@ -20,7 +20,7 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="2" Active="Release">
+    <BuildModes Count="2" Active="Debug">
       <Item1 Name="Release" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -37,6 +37,8 @@
           <Parsing>
             <SyntaxOptions>
               <CStyleOperator Value="False"/>
+              <IncludeAssertionCode Value="True"/>
+              <CPPInline Value="False"/>
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
@@ -71,6 +73,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <HostApplicationFilename Value="C:\Users\Public\Code\VSTPack\Bin\VST\64-Bit\VST-Plugin Unit Test (x64).exe"/>
+        <CommandLineParams Value="&quot;ReverseVerb (x64).dll&quot;"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -90,15 +94,15 @@
         <PackageName Value="DAV_VSTPlugin_Lazarus"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="15">
       <Unit0>
         <Filename Value="ReverseVerb.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="7"/>
-        <CursorPos X="1" Y="10"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="4"/>
+        <CursorPos X="9" Y="18"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -115,11 +119,11 @@
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="ReverseVerbGUI"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="132"/>
         <CursorPos X="26" Y="148"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -133,30 +137,26 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="ReverseVerbVST"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="305"/>
-        <CursorPos X="22" Y="522"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="33"/>
+        <CursorPos X="55" Y="40"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\..\Packages\Lazarus\DAV_DSP_Lazarus.pas"/>
         <UnitName Value="DAV_DSP_Lazarus"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="58" Y="17"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
         <UnitName Value="DAV_GuiPngCoder"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="643"/>
         <CursorPos X="6" Y="662"/>
@@ -164,135 +164,120 @@
         <Bookmarks Count="1">
           <Item0 X="59" Y="643" ID="3"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="25"/>
-        <CursorPos X="12" Y="56"/>
+        <TopLine Value="1"/>
+        <CursorPos X="20" Y="10"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\..\Source\DSP\DAV_DspAnalogueFilterPrototypes.pas"/>
         <UnitName Value="DAV_DspAnalogueFilterPrototypes"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="12"/>
         <CursorPos X="66" Y="28"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\Source\DSP\DAV_DspFilterSimple.pas"/>
         <UnitName Value="DAV_DspFilterSimple"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="148"/>
         <CursorPos X="3" Y="148"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspConvolution.pas"/>
+        <UnitName Value="DAV_DspConvolution"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="55" Y="38"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\..\Source\DAV_CompilerSwitches.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="157"/>
+        <CursorPos X="28" Y="189"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspFftReal2Complex.pas"/>
+        <UnitName Value="DAV_DspFftReal2Complex"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1570"/>
+        <CursorPos X="19" Y="1588"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <UnitName Value="DAV_DspFilterButterworth"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="163"/>
+        <CursorPos X="3" Y="179"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\Source\DAV_BlockProcessing.pas"/>
+        <UnitName Value="DAV_BlockProcessing"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="100"/>
+        <CursorPos X="22" Y="115"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit14>
     </Units>
-    <JumpHistory Count="24" HistoryIndex="23">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
-        <Filename Value="ReverseVerb.lpr"/>
+        <Filename Value="ReverseVerbVST.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="ReverseVerb.lpr"/>
-        <Caret Line="24" Column="10" TopLine="1"/>
+        <Filename Value="ReverseVerbVST.pas"/>
+        <Caret Line="322" Column="25" TopLine="305"/>
       </Position2>
       <Position3>
-        <Filename Value="ReverseVerb.lpr"/>
-        <Caret Line="47" Column="5" TopLine="17"/>
+        <Filename Value="ReverseVerbVST.pas"/>
+        <Caret Line="831" Column="23" TopLine="637"/>
       </Position3>
       <Position4>
-        <Filename Value="ReverseVerbGUI.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="ReverseVerbVST.pas"/>
+        <Caret Line="134" Column="28" TopLine="118"/>
       </Position4>
       <Position5>
-        <Filename Value="ReverseVerb.lpr"/>
-        <Caret Line="16" Column="25" TopLine="1"/>
+        <Filename Value="ReverseVerbVST.pas"/>
+        <Caret Line="41" Column="48" TopLine="24"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\Packages\Lazarus\DAV_DSP_Lazarus.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="ReverseVerbVST.pas"/>
+        <Caret Line="154" Column="54" TopLine="140"/>
       </Position6>
       <Position7>
-        <Filename Value="ReverseVerb.lpr"/>
-        <Caret Line="12" Column="15" TopLine="1"/>
+        <Filename Value="ReverseVerbVST.pas"/>
+        <Caret Line="40" Column="55" TopLine="33"/>
       </Position7>
       <Position8>
-        <Filename Value="ReverseVerbVST.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspConvolution.pas"/>
+        <Caret Line="38" Column="55" TopLine="19"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
-        <Caret Line="641" Column="50" TopLine="625"/>
+        <Filename Value="..\..\..\Source\DAV_BlockProcessing.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position10>
-      <Position11>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
-        <Caret Line="35" Column="13" TopLine="33"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
-        <Caret Line="1" Column="1" TopLine="22"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
-        <Caret Line="46" Column="8" TopLine="22"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
-        <Caret Line="53" Column="18" TopLine="25"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
-        <Caret Line="35" Column="13" TopLine="33"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
-        <Caret Line="641" Column="64" TopLine="626"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
-        <Caret Line="35" Column="14" TopLine="33"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
-        <Caret Line="45" Column="57" TopLine="18"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\..\..\Source\DSP\DAV_DspAnalogueFilterPrototypes.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\..\..\Source\DSP\DAV_DspFilterSimple.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\..\..\Source\DSP\DAV_DspFilterSimple.pas"/>
-        <Caret Line="148" Column="7" TopLine="148"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\..\..\Source\DSP\DAV_DspFilterSimple.pas"/>
-        <Caret Line="154" Column="3" TopLine="154"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\..\Source\GUI\DAV_GuiPngCoder.pas"/>
-        <Caret Line="663" Column="17" TopLine="634"/>
-      </Position24>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -338,6 +323,48 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="8">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <Source Value="ReverseVerbVST.pas"/>
+        <Line Value="168"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <Source Value="ReverseVerbVST.pas"/>
+        <Line Value="185"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <Source Value="ReverseVerb.lpr"/>
+        <Line Value="22"/>
+      </Item3>
+      <Item4>
+        <Kind Value="bpkSource"/>
+        <Source Value="ReverseVerb.lpr"/>
+        <Line Value="28"/>
+      </Item4>
+      <Item5>
+        <Kind Value="bpkSource"/>
+        <Source Value="ReverseVerbVST.pas"/>
+        <Line Value="142"/>
+      </Item5>
+      <Item6>
+        <Kind Value="bpkSource"/>
+        <Source Value="ReverseVerbVST.pas"/>
+        <Line Value="143"/>
+      </Item6>
+      <Item7>
+        <Kind Value="bpkSource"/>
+        <Source Value="ReverseVerb.lpr"/>
+        <Line Value="47"/>
+      </Item7>
+      <Item8>
+        <Kind Value="bpkSource"/>
+        <Source Value="..\..\..\Source\DSP\DAV_DspFftReal2Complex.pas"/>
+        <Line Value="1592"/>
+      </Item8>
+    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

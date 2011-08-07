@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls, Buttons,
-  ExtCtrls, Mask;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Graphics, 
+  Forms, Controls, StdCtrls, Buttons, ExtCtrls, Mask;
 
 type
   TFmResultTableSetup = class(TForm)

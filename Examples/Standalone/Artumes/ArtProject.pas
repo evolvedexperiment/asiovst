@@ -37,9 +37,9 @@ interface
 {$I Artumes.inc}
 
 uses
-  Windows, Classes, SysUtils, Graphics, Forms, Controls, StdCtrls, ExtCtrls,
-  ComCtrls, Menus, Dialogs, ArtItemSource, ArtItemAnalysis, ArtItemDestination,
-  DAV_AudioData;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Classes, SysUtils, Graphics, 
+  Forms, Controls, StdCtrls, ExtCtrls, ComCtrls, Menus, Dialogs, ArtItemSource, 
+  ArtItemAnalysis, ArtItemDestination, DAV_AudioData;
 
 type
   TFmProject = class(TForm)

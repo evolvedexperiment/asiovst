@@ -35,7 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Classes, Graphics, Forms, 
+  Controls, StdCtrls, Buttons, ExtCtrls;
 
 type
   TFmAboutBox = class(TForm)

@@ -3,9 +3,9 @@ unit ArtMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Forms, Controls, Menus, StdCtrls,
-  Dialogs, Buttons, Messages, ExtCtrls, ComCtrls, StdActns, ActnList, ToolWin,
-  ImgList;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Graphics, 
+  Forms, Controls, Menus, StdCtrls, Dialogs, Buttons, Messages, ExtCtrls, 
+  ComCtrls, StdActns, ActnList, ToolWin, ImgList;
 
 type
   TFmArtumes = class(TForm)

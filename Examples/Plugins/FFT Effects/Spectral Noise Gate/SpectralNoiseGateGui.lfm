@@ -1,236 +1,203 @@
 object FmSpectralNoiseGate: TFmSpectralNoiseGate
   Left = 333
+  Height = 123
   Top = 315
+  Width = 431
   BorderStyle = bsNone
   Caption = 'Spectral Noise Gate'
   ClientHeight = 123
   ClientWidth = 431
   Color = clBlack
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = 14277598
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
   OnShow = FormShow
-  PixelsPerInch = 96
+  LCLVersion = '0.9.31'
   object LbThreshold: TGuiLabel
     Left = 6
+    Height = 25
     Top = 8
     Width = 74
-    Height = 25
     Alignment = taCenter
     Caption = 'Threshold'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbFftOrder: TGuiLabel
     Left = 88
+    Height = 25
     Top = 8
     Width = 80
-    Height = 25
     Alignment = taCenter
     Caption = 'FFT Order'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbRatio: TGuiLabel
     Left = 172
+    Height = 25
     Top = 8
     Width = 50
-    Height = 25
     Alignment = taCenter
     Caption = 'Ratio'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbThresholdValue: TGuiLabel
     Left = 6
+    Height = 20
     Top = 66
     Width = 74
-    Height = 20
     Alignment = taCenter
     Caption = '-30 dB'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbFftOrderValue: TGuiLabel
     Left = 98
+    Height = 20
     Top = 66
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '9'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbRatioValue: TGuiLabel
     Left = 167
+    Height = 20
     Top = 66
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '1 : 10'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbKnee: TGuiLabel
     Left = 237
+    Height = 25
     Top = 8
     Width = 50
-    Height = 25
     Alignment = taCenter
     Caption = 'Knee'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbKneeValue: TGuiLabel
     Left = 232
+    Height = 20
     Top = 66
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '1'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbAttack: TGuiLabel
     Left = 301
+    Height = 25
     Top = 8
     Width = 50
-    Height = 25
     Alignment = taCenter
     Caption = 'Attack'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbAttackValue: TGuiLabel
     Left = 296
+    Height = 20
     Top = 66
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '0,5 ms'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbRelease: TGuiLabel
     Left = 360
+    Height = 25
     Top = 8
     Width = 60
-    Height = 25
     Alignment = taCenter
     Caption = 'Release'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbReleaseValue: TGuiLabel
     Left = 360
+    Height = 20
     Top = 66
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '50 ms'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object SbWindowFunction: TGuiSelectBox
     Left = 151
+    Height = 22
     Top = 92
     Width = 272
-    Height = 22
-    AntiAlias = gaaLinear4x
-    ArrowColor = 14606306
-    ButtonColor = clBlack
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ItemIndex = -1
     Items.Strings = (
       'Rectangle'
       'Triangle'
@@ -252,111 +219,140 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
       'Albrecht'
       'Pacman'
       'Gauss'
-      'Kaiser-Bessel')
-    LineColor = 12632777
+      'Kaiser-Bessel'
+    )
+    ArrowColor = 14277598
+    ArrowWidth = 2
+    BackColor = 5462112
+    BorderColor = 14277598
+    BorderRadius = 2
+    BorderWidth = 2
+    ButtonColor = clBlack
+    Font.Color = 14277598
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     ParentFont = False
     SelectBoxColor = clBlack
     OnChange = SbWindowFunctionChange
   end
   object LbWindowFunction: TGuiLabel
     Left = 8
+    Height = 25
     Top = 92
     Width = 137
-    Height = 25
     Caption = 'Window Function:'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -17
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object DialThreshold: TGuiStitchedDial
     Left = 26
+    Height = 36
     Top = 32
     Width = 36
-    Height = 36
-    Max = 6.000000000000000000
-    Min = -96.000000000000000000
-    OnChange = DialThresholdChange
+    CurveMapping = 0
+    DefaultValue = 0
+    Max = 6
+    Min = -96
+    ScrollRange = 400
     ImageList = GSPL
     ImageIndex = 0
-    Value = -30.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = -30
+    WheelStep = 1
+    OnChange = DialThresholdChange
+    DefaultValue = 0
   end
   object DialFftOrder: TGuiStitchedDial
     Left = 111
+    Height = 36
     Top = 32
     Width = 36
-    Height = 36
-    Max = 13.000000000000000000
-    Min = 6.000000000000000000
-    OnChange = DialFftOrderChange
+    CurveMapping = 0
+    DefaultValue = 0
+    Max = 13
+    Min = 6
+    ScrollRange = 400
     ImageList = GSPL
     ImageIndex = 0
-    Value = 9.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 9
+    WheelStep = 1
+    OnChange = DialFftOrderChange
+    DefaultValue = 0
   end
   object DialRatio: TGuiStitchedDial
     Left = 180
+    Height = 36
     Top = 32
     Width = 36
-    Height = 36
-    CurveMapping = -1.799999952316284000
-    Max = 100.000000000000000000
-    Min = 1.000000000000000000
-    OnChange = DialRatioChange
+    CurveMapping = -1.79999995231628
+    DefaultValue = 0
+    Max = 100
+    Min = 1
+    ScrollRange = 400
     ImageList = GSPL
     ImageIndex = 0
-    Value = 10.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 10
+    WheelStep = 1
+    OnChange = DialRatioChange
+    DefaultValue = 0
   end
   object DialKnee: TGuiStitchedDial
     Left = 245
+    Height = 36
     Top = 32
     Width = 36
-    Height = 36
-    CurveMapping = -1.000000000000000000
-    Max = 10.000000000000000000
-    OnChange = DialKneeChange
+    CurveMapping = -1
+    DefaultValue = 0
+    Max = 10
+    Min = 0
+    ScrollRange = 400
     ImageList = GSPL
     ImageIndex = 0
-    Value = 1.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 1
+    WheelStep = 1
+    OnChange = DialKneeChange
+    DefaultValue = 0
   end
   object DialAttack: TGuiStitchedDial
     Left = 309
+    Height = 36
     Top = 32
     Width = 36
-    Height = 36
-    CurveMapping = -1.299999952316284000
-    Max = 100.000000000000000000
-    Min = 0.009999999776482582
-    OnChange = DialAttackChange
+    CurveMapping = -1.29999995231628
+    DefaultValue = 0
+    Max = 100
+    Min = 0.00999999977648
+    ScrollRange = 400
     ImageList = GSPL
     ImageIndex = 0
-    Value = 0.500000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 0.5
+    WheelStep = 1
+    OnChange = DialAttackChange
+    DefaultValue = 0
   end
   object DialRelease: TGuiStitchedDial
     Left = 373
+    Height = 36
     Top = 32
     Width = 36
-    Height = 36
-    CurveMapping = -1.330000042915344000
-    Max = 300.000000000000000000
-    Min = 0.500000000000000000
-    OnChange = DialReleaseChange
+    CurveMapping = -1.33000004291534
+    DefaultValue = 0
+    Max = 300
+    Min = 0.5
+    ScrollRange = 400
     ImageList = GSPL
     ImageIndex = 0
-    Value = 50.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 50
+    WheelStep = 1
+    OnChange = DialReleaseChange
+    DefaultValue = 0
   end
   object GSPL: TGuiStitchedPNGList
-    StitchedPNGs = <
+    StitchedPNGs = <    
       item
         PortableNetworkGraphic.Data = {
           89504E470D0A1A0A0000000D49484452000009240000002408060000009A4DA6
@@ -1442,14 +1438,14 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
           F7C0A2ED8145FB17B9233DA5FF1B3AA5A7F780DE037A0FE83DA0F780DE037A0F
           E83DA0F780DE037A0FE83DA0F780DE037A0FE83DA0F780DE037A0FE83DA0F780
           DE037A0FE83DA0F780DE037A0FE83DA0F780DE037A0FE83DA0F7C0D2DE03FF0F
-          9BA0C66898C64E7D0000000049454E44AE426082}
+          9BA0C66898C64E7D0000000049454E44AE426082
+        }
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>
-    Left = 80
-    Top = 40
+    left = 80
+    top = 40
   end
 end

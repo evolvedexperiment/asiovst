@@ -35,10 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
-  Dialogs, DAV_Types, DAV_DspLightweightDynamics, DAV_DspBarberpoleTuner,
-  DAV_DspFilterButterworth, DAV_ASIOHost, DAV_GuiPixelMap, DAV_GuiLabel,
-  DAV_GuiGraphicControl;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, ExtCtrls, Dialogs, DAV_Types, DAV_ASIOHost,  
+  DAV_DspLightweightDynamics, DAV_DspBarberpoleTuner, DAV_DspFilterButterworth, 
+  DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiGraphicControl;
 
 type
   TGuitarString = (gtLowE, gtA, gtD, gtG, gtH, gtE);

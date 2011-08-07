@@ -35,9 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls,
-  Menus, Spin, ExtCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiGroup, DAV_ChunkClasses, DAV_ChunkPluginGUI, ComCtrls;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Controls, Forms, Dialogs, StdCtrls, Menus, Spin, ComCtrls, ExtCtrls, 
+  DAV_GuiLabel,  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGroup, 
+  DAV_ChunkClasses, DAV_ChunkPluginGUI;
 
 type
   TFmPluginMerger = class(TForm)

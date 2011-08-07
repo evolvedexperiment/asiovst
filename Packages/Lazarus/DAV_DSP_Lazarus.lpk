@@ -23,6 +23,11 @@
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
       </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="True"/>
+        </Debugging>
+      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>

@@ -1,7 +1,6 @@
 object ReverseVerbDataModule: TReverseVerbDataModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  OldCreateOrder = False
   Version = '1.0'
   EffectName = 'ReverseVerb'
   ProductName = 'DAV Effect Examples'
@@ -9,15 +8,39 @@ object ReverseVerbDataModule: TReverseVerbDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100
   BlockSize = 8192
-  CurrentProgramName = 'Default'
+  CurrentProgramName = 'Forward Reverb'
   BlockModeSize = 8192
-  InitialDelay = 69632
+  InitialDelay = 2048
   IORatio = 1
-  UniqueID = 'Conv'
+  UniqueID = 'RevV'
   ShellPlugins = <>
   Programs = <  
     item
-      DisplayName = 'Default'
+      DisplayName = 'Forward Reverb'
+      VSTModule = Owner
+    end  
+    item
+      DisplayName = 'Smooth Backward'
+      VSTModule = Owner
+    end  
+    item
+      DisplayName = 'Rough Backward'
+      VSTModule = Owner
+    end  
+    item
+      DisplayName = 'Mixed Backward'
+      VSTModule = Owner
+    end  
+    item
+      DisplayName = 'Just Backward'
+      VSTModule = Owner
+    end  
+    item
+      DisplayName = 'Short Compressed'
+      VSTModule = Owner
+    end  
+    item
+      DisplayName = 'Dry'
       VSTModule = Owner
     end>
   ParameterProperties = <  
@@ -48,6 +71,7 @@ object ReverseVerbDataModule: TReverseVerbDataModule
       MaxInteger = 6
       Min = -90
       MinInteger = -90
+      ReportVST2Properties = True
       ShortLabel = 'ER Gain'
       SmallStepFloat = 0.5
       SmoothingFactor = 0
@@ -63,8 +87,9 @@ object ReverseVerbDataModule: TReverseVerbDataModule
       LargeStepFloat = 2
       Max = 300
       MaxInteger = 300
-      Min = 3
-      MinInteger = 3
+      Min = 1
+      MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'ER Time'
       SmallStepFloat = 0.5
       SmoothingFactor = 0
@@ -82,6 +107,7 @@ object ReverseVerbDataModule: TReverseVerbDataModule
       MaxInteger = 6
       Min = -90
       MinInteger = -90
+      ReportVST2Properties = True
       ShortLabel = 'Tail Ga'
       SmallStepFloat = 0.5
       SmoothingFactor = 0
@@ -100,6 +126,7 @@ object ReverseVerbDataModule: TReverseVerbDataModule
       MaxInteger = 1000
       Min = 10
       MinInteger = 10
+      ReportVST2Properties = True
       ShortLabel = 'T60'
       SmallStepFloat = 0.5
       SmoothingFactor = 0
@@ -148,16 +175,73 @@ object ReverseVerbDataModule: TReverseVerbDataModule
       VSTModule = Owner
       OnParameterChange = ParameterDirectionChange
       OnCustomParameterDisplay = ParameterDirectionDisplay
+    end  
+    item
+      CurveFactor = 1
+      DisplayName = 'Compressor Threshold'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2
+      Max = 0
+      MaxInteger = 0
+      Min = -60
+      MinInteger = -60
+      ReportVST2Properties = True
+      ShortLabel = 'Thres.'
+      SmallStepFloat = 0.5
+      SmoothingFactor = 0
+      StepFloat = 1
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterThresholdChange
+      Max = 0
+    end  
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100
+      DisplayName = 'Compressor Ratio'
+      Flags = [ppfParameterUsesFloatStep]
+      LargeStepFloat = 2
+      Max = 100
+      Min = 1
+      MinInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Ratio'
+      SmallStepFloat = 0.5
+      SmoothingFactor = 0
+      StepFloat = 1
+      Units = ' : 1'
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorRatioChange
+    end  
+    item
+      CurveFactor = 1
+      DisplayName = 'Output Gain'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2
+      Max = 6
+      MaxInteger = 6
+      Min = -30
+      MinInteger = -30
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.5
+      SmoothingFactor = 0
+      StepFloat = 1
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterOutputGainChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnAfterProgramChange = VSTModuleAfterProgramChange
+  OnBeforeProgramChange = VSTModuleBeforeProgramChange
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnSampleRateChange = VSTModuleSampleRateChange
   left = 191
   top = 76
   Height = 150
-  HorizontalOffset = 515
-  VerticalOffset = 413
+  HorizontalOffset = 449
+  VerticalOffset = 274
   Width = 215
 end

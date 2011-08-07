@@ -36,8 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Messages, Controls, Graphics, ExtCtrls, DAV_GuiBaseControl,
-  DAV_GuiPixelMap;
+  Classes, Messages, Controls, Graphics, ExtCtrls, DAV_GuiPixelMap;
 
 type
   TCustomGuiPanel = class(TCustomPanel)
@@ -126,10 +125,10 @@ type
     property ShowHint;
     property TabOrder;
     property TabStop;
+    property Transparent;
     property UseDockManager;
     property Visible;
     {$IFNDEF FPC}
-    property Transparent;
     property OnCanResize;
     {$ENDIF}
     property OnEndDock;
@@ -159,8 +158,8 @@ type
 implementation
 
 uses
-  Types, SysUtils, Math, DAV_Common, DAV_Math, DAV_Complex, DAV_Approximations,
-  DAV_GuiCommon, DAV_GuiBlend, DAV_GuiFixedPoint;
+  SysUtils, Math, DAV_Math, DAV_Approximations, DAV_GuiCommon, DAV_GuiBlend,
+  DAV_GuiFixedPoint;
 
 
 { TCustomGuiPanel }
@@ -179,10 +178,13 @@ begin
  FBufferChanged := True;
  FTransparent   := False;
  ParentColor    := True;
- ControlStyle   := ControlStyle + [csAcceptsControls, csOpaque];
+ ControlStyle   := ControlStyle + [csAcceptsControls];
 
  {$IFDEF FPC}
  DoubleBuffered := True;
+ ControlStyle   := ControlStyle - [csOpaque];
+ {$ELSE}
+ ControlStyle   := ControlStyle + [csOpaque];
  {$ENDIF}
 
  // set initial bounds
@@ -582,16 +584,18 @@ begin
  inherited;
 
  if Assigned(FBuffer) then
-  if FBuffer.Width <> Width then
-   begin
-    FBuffer.Width := Width;
-    FBufferChanged := True;
-   end;
-  if FBuffer.Height <> Height then
-   begin
-    FBuffer.Height := Height;
-    FBufferChanged := True;
-   end;
+  begin
+   if FBuffer.Width <> Width then
+    begin
+     FBuffer.Width := Width;
+     FBufferChanged := True;
+    end;
+   if FBuffer.Height <> Height then
+    begin
+     FBuffer.Height := Height;
+     FBufferChanged := True;
+    end;
+  end;
 end;
 
 procedure TCustomGuiPanel.CMChanged(var Message: TMessage);

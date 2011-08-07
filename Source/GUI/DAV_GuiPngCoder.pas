@@ -638,7 +638,7 @@ begin
   do CurrentRow[Index] := (CurrentRow[Index] + (CurrentRow[Index - PixelByteSize] + PreviousRow[Index]) shr 1) and $FF;
 end;
 
-function PaethPredictor(a, b, c: Byte): Integer; pascal;
+function PaethPredictor(a, b, c: Byte): Integer; {$IFNDEF CPUx86_64} pascal; {$ENDIF}
 {$IFDEF PUREPASCAL}
 var
   DistA, DistB, DistC: Integer;
@@ -653,6 +653,64 @@ begin
   else Result := c;
 {$ELSE}
 asm
+{$IFDEF CPUx86_64}
+  PUSH    RBX
+
+  // calculate DistA
+  MOVZX   RBX, c
+  MOVZX   RAX, b
+  SUB     RAX, R8
+  MOV     R10, RAX
+  JAE     @PositiveDistA
+  NOT     RAX
+  INC     RAX
+
+  @PositiveDistA:
+
+  // calculate DistB
+  MOVZX   RBX, a
+  SUB     RBX, c
+  MOV     R11, RBX
+  JAE     @PositiveDistB
+  NOT     RBX
+  INC     RBX
+
+  @PositiveDistB:
+
+  // calculate DistC
+  ADD     R10, R11
+  JAE     @PositiveDistC
+  NOT     R10
+  INC     R10
+
+  @PositiveDistC:
+  MOV     R11, RCX
+  MOV     RCX, R10
+
+  MOV     R12, RAX
+  SUB     R12, EBX
+  JA      @NextCheck
+  MOV     R12, EAX
+  SUB     R12, ECX
+  JA      @NextCheck
+
+  MOV     Result, R11
+  JMP     @Done
+
+  @NextCheck:
+  MOV     R12, EBX
+  SUB     R12, ECX
+  JA      @ResultC
+
+  MOV     Result, RDX
+  JMP     @Done
+
+  @ResultC:
+  MOV     Result, R8
+
+  @Done:
+  POP     RBX
+{$ELSE}
   MOVZX   EDX, c
   PUSH    EBX
   MOVZX   EAX, b
@@ -706,6 +764,7 @@ asm
 
 @Done:
   POP     EBX
+{$ENDIF}
 {$ENDIF}
 end;
 

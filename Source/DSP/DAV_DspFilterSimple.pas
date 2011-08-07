@@ -145,7 +145,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Math;
+  SysUtils, DAV_Math;
 
 {$IFDEF HandleDenormals}
 var

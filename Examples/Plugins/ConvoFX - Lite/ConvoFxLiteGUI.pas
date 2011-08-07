@@ -37,7 +37,8 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
-  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList;
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedPngList,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmConvoFXLite = class(TForm)
@@ -72,7 +73,7 @@ implementation
 {$ENDIF}
 
 uses
-  Dialogs, Math, ConvoFXLiteDM, DAV_VSTModuleWithPrograms;
+  Dialogs, Math, DAV_VSTModuleWithPrograms, ConvoFXLiteDM;
 
 procedure TFmConvoFXLite.FormShow(Sender: TObject);
 begin

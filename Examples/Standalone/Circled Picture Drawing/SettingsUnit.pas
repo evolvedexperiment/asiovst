@@ -5,8 +5,8 @@ unit SettingsUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Spin;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF}Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls, Spin;
 
 type
   TFmSettings = class(TForm)

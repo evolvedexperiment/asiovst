@@ -36,10 +36,11 @@ interface
 {$DEFINE Use_IPPS}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, XPMan, Spin, Menus, DAV_Classes, DAV_AudioData,
-  DAV_AudioFile, DAV_AudioFileWav, DAV_AudioFileAIFF, DAV_GuiAudioDataDisplay,
-  DAV_DspFilterChebyshev, DAV_DspFilterChebyshevType1;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls, XPMan, Spin, Menus, 
+  DAV_Classes, DAV_AudioData, DAV_AudioFile, DAV_AudioFileWav, 
+  DAV_AudioFileAIFF, DAV_GuiAudioDataDisplay, DAV_DspFilterChebyshev, 
+  DAV_DspFilterChebyshevType1;
 
 type
   TFmContinousExcitationSignalBuilder = class(TForm)

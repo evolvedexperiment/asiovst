@@ -35,8 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, StdCtrls, ComCtrls, Spin, Grids, Calendar, DAV_Types, DAV_DspHrtf,
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, Menus, StdCtrls, ComCtrls, Spin, Grids, 
+  Calendar, DAV_Types, DAV_DspHrtf,
   DAV_AudioData, DAV_GuiBaseControl, DAV_GuiAudioDataDisplay, DAV_AudioFileWAV,
   DAV_AudioFileAIFF;
 

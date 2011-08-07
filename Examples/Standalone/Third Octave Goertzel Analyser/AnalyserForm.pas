@@ -35,9 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ComCtrls, ExtCtrls, Spin, Math, TeeProcs, TeEngine, Chart, Series,
-  DAV_Types, DAV_Complex, DAV_ASIOHost;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, StdCtrls, ComCtrls, ExtCtrls, Spin, Math, TeeProcs, 
+  TeEngine, Chart, Series, DAV_Types, DAV_Complex, DAV_ASIOHost;
 
 const
   CNumFrequencies = 32;

@@ -17,9 +17,9 @@ object FmConvoFXLite: TFmConvoFXLite
   PixelsPerInch = 96
   TextHeight = 13
   object LbIR: TGuiLabel
-    Left = 27
+    Left = 26
     Top = 8
-    Width = 34
+    Width = 36
     Height = 20
     Alignment = taCenter
     Caption = 'IR'
@@ -31,7 +31,7 @@ object FmConvoFXLite: TFmConvoFXLite
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbIRSelected: TGuiLabel
     Left = 8
@@ -48,13 +48,13 @@ object FmConvoFXLite: TFmConvoFXLite
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
     OnMouseDown = LbIRSelectedMouseDown
   end
   object LbGain: TGuiLabel
-    Left = 96
+    Left = 95
     Top = 8
-    Width = 52
+    Width = 54
     Height = 20
     Alignment = taCenter
     Caption = 'Gain'
@@ -66,7 +66,7 @@ object FmConvoFXLite: TFmConvoFXLite
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbGainValue: TGuiLabel
     Left = 86
@@ -83,12 +83,12 @@ object FmConvoFXLite: TFmConvoFXLite
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbDamp: TGuiLabel
-    Left = 168
+    Left = 167
     Top = 8
-    Width = 64
+    Width = 66
     Height = 24
     Alignment = taCenter
     Caption = 'Damp'
@@ -100,7 +100,7 @@ object FmConvoFXLite: TFmConvoFXLite
     FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object LbDampValue: TGuiLabel
     Left = 164
@@ -114,9 +114,10 @@ object FmConvoFXLite: TFmConvoFXLite
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    FontOversampling = fo3x
     ParentFont = False
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Visible = True
   end
   object DialIR: TGuiStitchedDial
     Left = 8
@@ -125,11 +126,13 @@ object FmConvoFXLite: TFmConvoFXLite
     Height = 72
     Max = 10.000000000000000000
     Min = 1.000000000000000000
-    OnChange = DialIRChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialIRChange
+    DefaultValue = 0.000000000000000000
   end
   object DialGain: TGuiStitchedDial
     Left = 86
@@ -138,10 +141,13 @@ object FmConvoFXLite: TFmConvoFXLite
     Height = 72
     Max = 6.000000000000000000
     Min = -60.000000000000000000
-    OnChange = DialGainChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialGainChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object DialDamp: TGuiStitchedDial
     Left = 164
@@ -151,11 +157,13 @@ object FmConvoFXLite: TFmConvoFXLite
     CurveMapping = -2.099999904632568000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    OnChange = DialDampChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
+    OnChange = DialDampChange
+    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1676,7 +1684,6 @@ object FmConvoFXLite: TFmConvoFXLite
           94D98A2F3845AB7DFDFF01BC87E34BE0DA3E0D0000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 72
         Width = 4680
       end>

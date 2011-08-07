@@ -98,8 +98,8 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="30" Y="18"/>
+        <TopLine Value="14"/>
+        <CursorPos X="1" Y="22"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -120,14 +120,18 @@
       <Unit2>
         <Filename Value="NoiseReductionGui.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FmNoiseReduction"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="NoiseReductionGui"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="21"/>
-        <CursorPos X="71" Y="38"/>
+        <TopLine Value="75"/>
+        <CursorPos X="61" Y="44"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
@@ -199,7 +203,6 @@
       <Unit10>
         <Filename Value="..\..\..\..\Source\GUI\DAV_GuiFont.pas"/>
         <UnitName Value="DAV_GuiFont"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="670"/>

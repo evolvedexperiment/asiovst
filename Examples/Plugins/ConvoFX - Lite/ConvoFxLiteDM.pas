@@ -46,9 +46,9 @@ type
   TImpulseResponseUpdateThread = class;
   TConvoFXLiteDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterMaximumIROrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -56,7 +56,6 @@ type
     procedure ParameterIRChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDampingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FConvolution      : array [0..CNumChannels - 1] of TLowLatencyConvolution32;
     FImpulseResponse  : array [0..CNumChannels - 1] of PDAVSingleFixedArray;
@@ -189,10 +188,6 @@ begin
  for Channel := 0 to Length(FConvolution) - 1
   do FreeAndNil(FConvolution[Channel]);
  FreeAndNil(FDampingFilter);
-end;
-
-procedure TConvoFXLiteDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
 end;
 
 procedure TConvoFXLiteDataModule.ParameterMaximumIROrderChange(

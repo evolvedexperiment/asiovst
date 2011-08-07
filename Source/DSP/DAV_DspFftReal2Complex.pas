@@ -1710,7 +1710,7 @@ begin
     FreqDomain[NbrCoefH].Re := TempBuffer[1][NbrCoefH];
     FreqDomain[NbrCoefH].Im := TempBuffer[1][NbrCoef + NbrCoefH];
 
-    // Others are conjugate complex numbers
+    // others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
      begin
       c := TrigoLUT[NbrCoefH - 4 + i];

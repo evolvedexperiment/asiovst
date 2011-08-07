@@ -35,9 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, ComCtrls, DAV_Types, DAV_DspBufferedMp3Player,
-  DAV_DspBufferedAudioFilePlayer, DAV_ASIOHost;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, ComCtrls, DAV_Types, 
+  DAV_DspBufferedMp3Player, DAV_DspBufferedAudioFilePlayer, DAV_ASIOHost;
 
 type
   TFmSimpleMp3Player = class(TForm)
