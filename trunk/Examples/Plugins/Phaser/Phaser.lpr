@@ -5,8 +5,12 @@ library Phaser;
 
 uses
   Interfaces,
+  Forms,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
+  {$IFDEF MSWINDOWS}
+  DAV_WinAmp,
+  {$ENDIF}
   PhaserDM in 'PhaserDM.pas' {PhaserModule: TPhaserModule},
   PhaserFrm in 'PhaserFrm.pas' {PhaserForm};
 
@@ -15,11 +19,27 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TPhaserModule);
 end;
 
-exports
-  VstPluginMain name 'main',
-  VstPluginMain name 'VSTPluginMain';
+{$IFDEF MSWINDOWS}
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+  Result := WinampDSPModuleHeader(TPhaserModule);
+end;
+{$ENDIF}
 
-{$R *.res}
+exports
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main',
+  VSTPluginMain name 'main_plugin',
+  VSTPluginMain name 'VSTPluginMain',
+{$IFDEF MSWINDOWS}
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
+{$ENDIF}
 
 begin
+ Application.Initialize;
 end.

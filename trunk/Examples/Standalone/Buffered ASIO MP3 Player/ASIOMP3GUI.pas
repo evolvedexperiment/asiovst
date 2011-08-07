@@ -3,8 +3,9 @@ unit ASIOMP3GUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, DAV_Types, DAV_DspBufferedMp3Player, DAV_ASIOHost;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, DAV_Types, 
+  DAV_DspBufferedMp3Player, DAV_ASIOHost;
 
 type
   TFmASIOMP3 = class(TForm)

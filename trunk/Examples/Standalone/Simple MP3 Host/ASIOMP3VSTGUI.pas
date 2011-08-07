@@ -35,10 +35,11 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Menus, ActnList, ToolWin, ActnMan, ActnCtrls, ActnMenus,
-  PlatformDefaultStyleActnCtrls, StdActns, ComCtrls, ImgList, ExtCtrls,
-  DAV_Types, DAV_AsioHost, DAV_MpegAudio, DAV_DspBufferedMp3Player, DAV_VSTHost;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls, Menus, ActnList, ToolWin, 
+  ActnMan, ActnCtrls, ActnMenus, PlatformDefaultStyleActnCtrls, StdActns, 
+  ComCtrls, ImgList, ExtCtrls, DAV_Types, DAV_AsioHost, DAV_MpegAudio, 
+  DAV_DspBufferedMp3Player, DAV_VSTHost;
 
 type
   TFmASIOMP3VST = class(TForm)

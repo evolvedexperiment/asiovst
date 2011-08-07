@@ -3,8 +3,8 @@ unit CostLogUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls;
 
 type
   TFmCostLog = class(TForm)

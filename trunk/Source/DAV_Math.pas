@@ -121,7 +121,7 @@ const
 
 var
   ln10, ln2, ln22, ln2Rez : Double;
-  RandSeed: Longint = 0;
+  GRandSeed: LongInt = 0;
 
 implementation
 
@@ -206,9 +206,9 @@ begin
 end;
 {$ELSE}
 asm
- IMUL  EDX, RandSeed, 08088405H
+ IMUL  EDX, GRandSeed, 08088405H
  INC   EDX
- MOV   RandSeed, EDX
+ MOV   GRandSeed, EDX
  FLD   CTwoMulTwo2Neg32
  PUSH  0
  PUSH  EDX
@@ -1065,7 +1065,7 @@ begin
  ln2Rez   := 1 / ln2;
  ln10     := ln(10);
  Randomize;
- RandSeed := Random(MaxInt);
+ GRandSeed := Random(MaxInt);
 end;
 
 initialization

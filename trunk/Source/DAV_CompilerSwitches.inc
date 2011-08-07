@@ -106,6 +106,12 @@
   The default is disabled.}
 {.$DEFINE DebugLog}
 
+  { By default every opcodes called by the host is logged separately. However,
+    this can blow the log file by a factor of 2. If this switch is enabled,
+    the opcodes will not be logged.
+    The default is disabled.}
+  {.$DEFINE DebugLogSkipOpcodeLogging}
+
 
 //////////////////////////////////
 //  VST Host Compiler Switches  //

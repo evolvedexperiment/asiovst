@@ -5,8 +5,8 @@ unit ProgressBarUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ComCtrls;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, ComCtrls;
 
 type
   TFmProgressBar = class(TForm)

@@ -434,17 +434,29 @@ begin
  SetLength(FInterpolationBuffer, ChannelCount);
  case FInterpolation of
   biNone:
-   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[ChannelIndex], 1 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1 do
+    begin
+     ReallocMem(FInterpolationBuffer[ChannelIndex], 1 * SizeOf(Single));
+     FillChar(FInterpolationBuffer[ChannelIndex]^, 1 * SizeOf(Single), 0);
+    end;
   biLinear:
-   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[ChannelIndex], 2 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1 do
+    begin
+     ReallocMem(FInterpolationBuffer[ChannelIndex], 2 * SizeOf(Single));
+     FillChar(FInterpolationBuffer[ChannelIndex]^, 2 * SizeOf(Single), 0);
+    end;
   biHermite:
-   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[ChannelIndex], 4 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1 do
+    begin
+     ReallocMem(FInterpolationBuffer[ChannelIndex], 4 * SizeOf(Single));
+     FillChar(FInterpolationBuffer[ChannelIndex]^, 4 * SizeOf(Single), 0);
+    end;
   biBSpline6Point5thOrder:
-   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[ChannelIndex], 6 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1 do
+    begin
+     ReallocMem(FInterpolationBuffer[ChannelIndex], 6 * SizeOf(Single));
+     FillChar(FInterpolationBuffer[ChannelIndex]^, 6 * SizeOf(Single), 0);
+    end;
  end;
 end;
 

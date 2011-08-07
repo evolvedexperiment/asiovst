@@ -14,8 +14,8 @@ uses
   {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ReverseVerbVST in 'ReverseVerbVST.pas' {ReverseVerbDataModule: TVSTModule},
-  ReverseVerbGUI in 'ReverseVerbGUI.pas' {FmReverseVerb};
+  ReverseVerbVST in 'ReverseVerbVST.pas' {ReverseVerbDataModule: TVSTModule};
+//  ReverseVerbGUI in 'ReverseVerbGUI.pas' {FmReverseVerb};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

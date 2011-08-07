@@ -35,9 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Dialogs,
-  Graphics, StdCtrls, DAV_Types, DAV_ASIOHost, DAV_GuiPixelMap, DAV_GuiCommon,
-  DAV_GuiGraphicControl, DAV_GuiLabel, DAV_GuiButton, DAV_GuiLED;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Forms, Controls, ExtCtrls, Dialogs, Graphics, StdCtrls, DAV_Types, 
+  DAV_ASIOHost, DAV_GuiPixelMap, DAV_GuiCommon, DAV_GuiGraphicControl, 
+  DAV_GuiLabel, DAV_GuiButton, DAV_GuiLED;
 
 type
   TStorageThread = class(TThread)

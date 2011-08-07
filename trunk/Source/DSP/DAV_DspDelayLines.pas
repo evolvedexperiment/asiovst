@@ -424,8 +424,8 @@ end;
 
 constructor TCustomDelayLineSamples64.Create(const BufferSize: Integer = 0);
 begin
- inherited Create(BufferSize);
  FBuffer := nil;
+ inherited Create(BufferSize);
  ClearBuffer;
 end;
 
@@ -546,8 +546,8 @@ end;
 
 constructor TDelayLineSamples.Create(const BufferSize: Integer = 0);
 begin
- inherited Create(BufferSize);
  FBuffer := nil;
+ inherited Create(BufferSize);
  ClearBuffer;
 end;
 
@@ -850,8 +850,8 @@ end;
 
 constructor TDelayLineFractional32.Create(const FractionalBufferSize: Double = 0);
 begin
- inherited Create(Trunc(FractionalBufferSize));
  FBuffer := nil;
+ inherited Create(Trunc(FractionalBufferSize));
  FIntBuffer[3] := 0;
 end;
 
@@ -914,8 +914,8 @@ end;
 
 constructor TDelayLineFractional64.Create(const FractionalBufferSize: Double = 0);
 begin
- inherited Create(Trunc(FractionalBufferSize));
  FBuffer := nil;
+ inherited Create(Trunc(FractionalBufferSize));
  FIntBuffer[3] := 0;
 end;
 

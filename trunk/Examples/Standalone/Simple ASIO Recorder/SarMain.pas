@@ -35,10 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, DAV_Types, DAV_DspBufferedAudioFileRecorder,
-  DAV_ASIOHost, DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF,
-  DAV_AudioFileAU;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls, DAV_Types, 
+  DAV_DspBufferedAudioFileRecorder, DAV_ASIOHost, DAV_AudioFile, 
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 type
   TFmRecordAudio = class(TForm)

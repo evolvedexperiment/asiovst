@@ -32,11 +32,11 @@ object FmSplitter: TFmSplitter
     Width = 588
     Height = 37
     Align = alTop
+    BorderColor = clBtnShadow
+    BorderRadius = 2.000000000000000000
     BorderVisible = False
-    Caption = 'PnControl'
-    Color = 7701642
-    LineColor = clBlack
     BorderWidth = 2.000000000000000000
+    Color = 7701642
     PanelColor = 7701642
     TabOrder = 0
     UseDockManager = True
@@ -76,7 +76,6 @@ object FmSplitter: TFmSplitter
       FontOversampling = fo2x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object DialSplitOrder: TGuiDial
       Left = 194
@@ -114,9 +113,8 @@ object FmSplitter: TFmSplitter
       FontOversampling = fo2x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
-    object GuiLEDFontOversampling: TGuiLED
+    object GuiLEDOversampling: TGuiLED
       Left = 257
       Top = 9
       Width = 20
@@ -127,14 +125,14 @@ object FmSplitter: TFmSplitter
       BorderWidth = 2.400000095367432000
       Uniformity_Percent = 36.754447937011720000
       Transparent = False
-      OnClick = GuiLEDFontOversamplingClick
+      OnClick = GuiLEDOversamplingClick
     end
-    object LbFontOversampling: TGuiLabel
+    object LbOversampling: TGuiLabel
       Left = 279
       Top = 9
       Width = 97
       Height = 20
-      Caption = 'FontOversampling:'
+      Caption = 'Oversampling:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -16
@@ -143,10 +141,9 @@ object FmSplitter: TFmSplitter
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
-      OnClick = GuiLEDFontOversamplingClick
+      OnClick = GuiLEDOversamplingClick
     end
-    object LbFontOversamplingFactor: TGuiLabel
+    object LbOversamplingFactor: TGuiLabel
       Left = 411
       Top = 9
       Width = 33
@@ -160,10 +157,9 @@ object FmSplitter: TFmSplitter
       FontOversampling = fo2x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Visible = False
     end
-    object DialFontOversampling: TGuiDial
+    object DialOversampling: TGuiDial
       Left = 386
       Top = 9
       Width = 20
@@ -176,7 +172,7 @@ object FmSplitter: TFmSplitter
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialFontOversamplingChange
+      OnChange = DialOversamplingChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -191,15 +187,6 @@ object FmSplitter: TFmSplitter
       Top = 6
       Width = 89
       Height = 26
-      AntiAlias = gaaLinear4x
-      ArrowColor = 6450289
-      ButtonColor = 6450289
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      ItemIndex = -1
       Items.Strings = (
         'Split A'
         'Split B'
@@ -212,10 +199,19 @@ object FmSplitter: TFmSplitter
         'Spin'
         'Single'
         'Bypass')
-      LineColor = clBlack
-      LineWidth = 2
+      ArrowColor = clBlack
+      BackColor = 6450289
+      BorderColor = clBlack
+      BorderRadius = 4.000000000000000000
+      BorderWidth = 1.500000000000000000
+      ButtonColor = 6450289
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      FontOversampling = fo4x
       ParentFont = False
-      BorderRadius = 4
       SelectBoxColor = 7701642
       OnChange = SBModeChange
     end
@@ -227,6 +223,7 @@ object FmSplitter: TFmSplitter
       Alignment = taCenter
       BorderColor = clBlack
       BorderWidth = 1.500000000000000000
+      BorderRadius = 4.000000000000000000
       ButtonColor = 1625885
       Caption = 'Low'
       Font.Charset = DEFAULT_CHARSET
@@ -234,10 +231,8 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
-      BorderRadius = 4.000000000000000000
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtLowClick
     end
@@ -249,6 +244,7 @@ object FmSplitter: TFmSplitter
       Alignment = taCenter
       BorderColor = clBlack
       BorderWidth = 1.500000000000000000
+      BorderRadius = 4.000000000000000000
       ButtonColor = 6450289
       Caption = 'High'
       Font.Charset = DEFAULT_CHARSET
@@ -256,10 +252,8 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      FontFontOversampling = fo4x
-      BorderRadius = 4.000000000000000000
+      FontOversampling = fo4x
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
       Transparent = False
       OnClick = BtHighClick
     end

@@ -3,7 +3,8 @@ unit BMTestDoubleU;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Controls, Forms, Dialogs, StdCtrls;
 
 type
   TBufferMathForm = class(TForm)

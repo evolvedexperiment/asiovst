@@ -30,7 +30,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="21">
+    <Files Count="22">
       <Item1>
         <Filename Value="..\..\Source\DAV_Common.pas"/>
         <UnitName Value="DAV_Common"/>
@@ -116,6 +116,10 @@
         <Filename Value="..\..\Source\FileFormats\DAV_MpegAudio.pas"/>
         <UnitName Value="DAV_MpegAudio"/>
       </Item21>
+      <Item22>
+        <Filename Value="..\..\Source\DAV_Math.pas"/>
+        <UnitName Value="DAV_Math"/>
+      </Item22>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">

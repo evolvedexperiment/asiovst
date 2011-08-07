@@ -179,7 +179,7 @@ begin
   begin
    if SbHighpassType.ItemIndex <> Round(Parameter[1])
     then SbHighpassType.ItemIndex := Round(Parameter[1]);
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -188,7 +188,7 @@ begin
  with THumRemovalModule(Owner) do
   begin
    LedHighpassActive.Brightness_Percent := Limit(10 + 80 * Parameter[0], 10, 90);
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -199,7 +199,7 @@ begin
    if DialHighpassFrequency.Value <> Parameter[2]
     then DialHighpassFrequency.Value := Parameter[2];
    LbHighpassFrequencyValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -210,7 +210,7 @@ begin
    if DialHighpassOrder.Value <> Parameter[3]
     then DialHighpassOrder.Value := Parameter[3];
    LbHighpassOrderValue.Caption := ParameterDisplay[3];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -221,7 +221,7 @@ begin
    if DialFundamentalFrequency.Value <> Parameter[4]
     then DialFundamentalFrequency.Value := Parameter[4];
    LbFundamentalFrequencyValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -232,7 +232,7 @@ begin
    if DialNotchBandwidth.Value <> Parameter[5]
     then DialNotchBandwidth.Value := Parameter[5];
    LbNotchBandwidthValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 

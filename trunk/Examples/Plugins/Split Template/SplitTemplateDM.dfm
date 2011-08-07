@@ -1,5 +1,4 @@
 object SplitTemplateDataModule: TSplitTemplateDataModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -124,8 +123,8 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     end
     item
       CurveFactor = 1.000000000000000000
-      Category = 'FontOversampling'
-      DisplayName = 'FontOversampling'
+      Category = 'Oversampling'
+      DisplayName = 'Oversampling'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -136,8 +135,8 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParamFontOversamplingChange
-      OnCustomParameterDisplay = ParamFontOversamplingDisplay
+      OnParameterChange = ParamOversamplingChange
+      OnCustomParameterDisplay = ParamOversamplingDisplay
     end
     item
       CurveFactor = 1.000000000000000000
@@ -164,7 +163,11 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       VSTModule = Owner
     end
     item
-      DisplayName = 'FontOversampling'
+      DisplayName = 'Oversampling'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Oversampling'
       VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen

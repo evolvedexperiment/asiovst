@@ -3,8 +3,9 @@ unit AbxTestEQGain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, AbxTest, ComCtrls, StdCtrls, DAV_DspFilterBasics;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, AbxTest, ComCtrls, StdCtrls, 
+  DAV_DspFilterBasics;
 
 type
   TFmAbxTestEqGain = class(TFmAbxTest)

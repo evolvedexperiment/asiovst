@@ -37,9 +37,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_VSTCustomModule,
-  DAV_DspConvolution, DAV_DspFilterButterworth, DAV_DspDelayLines,
-  DAV_DspLightweightDynamics;
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspConvolution,
+  DAV_DspFilterButterworth, DAV_DspDelayLines, DAV_DspLightweightDynamics;
 
 const
   CNumChannels = 2;
@@ -55,7 +54,8 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-
+    procedure VSTModuleBeforeProgramChange(Sender: TObject);
+    procedure VSTModuleAfterProgramChange(Sender: TObject);
     procedure VSTModuleProcessForward(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBackward(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
@@ -77,7 +77,7 @@ type
     FConvolution      : array [0..CNumChannels - 1] of TLowLatencyConvolution32;
     FImpulseResponse  : array [0..CNumChannels - 1] of PDAVSingleFixedArray;
     FBackwardIR       : array [0..CNumChannels - 1] of PDAVSingleFixedArray;
-    FDelay            : array [0..CNumChannels - 1, 0..1] of TDelayLineSamples;
+    FDelay            : array [0..CNumChannels - 1, 0..1] of TDelayLineSamples32;
     FCompressor       : array [0..CNumChannels - 1] of TLightweightSoftKneeCompressor;
     FTempBuffer       : PDAVSingleFixedArray;
     FTempBufferSize   : Integer;
@@ -129,8 +129,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common,
-  DAV_Math, DAV_HalfFloat, DAV_DspInterpolation, DAV_Approximations;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common,
+  DAV_Math, DAV_HalfFloat, DAV_Approximations;
 //  ReverseVerbGUI;
 
 { TImpulseResponseUpdateThread }
@@ -166,6 +166,11 @@ end;
 procedure TReverseVerbDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
+ FImpulseResponse[0] := nil;
+ FImpulseResponse[1] := nil;
+ FBackwardIR[0] := nil;
+ FBackwardIR[1] := nil;
+ FTempBuffer := nil;
 end;
 
 procedure TReverseVerbDataModule.VSTModuleDestroy(Sender: TObject);
@@ -193,10 +198,10 @@ begin
   end;
  for ChannelIndex := 0 to Length(FDelay) - 1 do
   begin
-   FDelay[ChannelIndex, 0] := TDelayLineSamples.Create(FIRLength - 1);
-   FDelay[ChannelIndex, 1] := TDelayLineSamples.Create(FConvolution[ChannelIndex].Latency);
+   FDelay[ChannelIndex, 0] := TDelayLineSamples32.Create(FIRLength - 1);
+   FDelay[ChannelIndex, 1] := TDelayLineSamples32.Create(FConvolution[ChannelIndex].Latency);
   end;
- for ChannelIndex := 0 to Length(FDelay) - 1 do
+ for ChannelIndex := 0 to Length(FCompressor) - 1 do
   begin
    FCompressor[ChannelIndex] := TLightweightSoftKneeCompressor.Create;
    FCompressor[ChannelIndex].SampleRate := SampleRate;
@@ -233,7 +238,7 @@ begin
  Parameter[6] := 0;
  Parameter[7] := 0;
  Parameter[8] := 1;
- Parameter[9] := -3;
+ Parameter[9] := -8;
 
  with Programs[0] do
   begin
@@ -246,7 +251,7 @@ begin
    Parameter[6] := 0;
    Parameter[7] := 0;
    Parameter[8] := 1;
-   Parameter[9] := -3;
+   Parameter[9] := -4;
   end;
 
  with Programs[1] do
@@ -260,7 +265,7 @@ begin
    Parameter[6] := 1;
    Parameter[7] := 0;
    Parameter[8] := 1;
-   Parameter[9] := -16;
+   Parameter[9] := -12.7;
   end;
  with Programs[2] do
   begin
@@ -273,7 +278,7 @@ begin
    Parameter[6] := 1;
    Parameter[7] := 0;
    Parameter[8] := 1;
-   Parameter[9] := -5;
+   Parameter[9] := -2;
   end;
  with Programs[3] do
   begin
@@ -286,7 +291,7 @@ begin
    Parameter[6] := 1;
    Parameter[7] := 0;
    Parameter[8] := 1;
-   Parameter[9] := -4;
+   Parameter[9] := -4.5;
   end;
  with Programs[4] do
   begin
@@ -299,7 +304,7 @@ begin
    Parameter[6] := 1;
    Parameter[7] := 0;
    Parameter[8] := 1;
-   Parameter[9] := -11;
+   Parameter[9] := -11.5;
   end;
  with Programs[5] do
   begin
@@ -312,7 +317,7 @@ begin
    Parameter[6] := 1;
    Parameter[7] := -9;
    Parameter[8] := 8;
-   Parameter[9] := -7;
+   Parameter[9] := -6;
   end;
  with Programs[6] do
   begin
@@ -331,6 +336,16 @@ begin
 
  // set editor class
 // EditorFormClass := TFmReverseVerb;
+end;
+
+procedure TReverseVerbDataModule.VSTModuleAfterProgramChange(Sender: TObject);
+begin
+ EndUpdate;
+end;
+
+procedure TReverseVerbDataModule.VSTModuleBeforeProgramChange(Sender: TObject);
+begin
+ BeginUpdate;
 end;
 
 procedure TReverseVerbDataModule.VSTModuleBlockSizeChange(Sender: TObject;
@@ -358,11 +373,11 @@ begin
  FreeAndNil(FIRUpdateThread);
  {$ENDIF}
 
- Dispose(FImpulseResponse[0]);
- Dispose(FImpulseResponse[1]);
- Dispose(FBackwardIR[0]);
- Dispose(FBackwardIR[1]);
- Dispose(FTempBuffer);
+ if Assigned(FImpulseResponse[0]) then Dispose(FImpulseResponse[0]);
+ if Assigned(FImpulseResponse[1]) then Dispose(FImpulseResponse[1]);
+ if Assigned(FBackwardIR[0]) then Dispose(FBackwardIR[0]);
+ if Assigned(FBackwardIR[1]) then Dispose(FBackwardIR[1]);
+ if Assigned(FTempBuffer) then Dispose(FTempBuffer);
 
  for ChannelIndex := 0 to Length(FConvolution) - 1
   do FreeAndNil(FConvolution[ChannelIndex]);
@@ -371,6 +386,8 @@ begin
    FreeAndNil(FDelay[ChannelIndex, 0]);
    FreeAndNil(FDelay[ChannelIndex, 1]);
   end;
+ for ChannelIndex := 0 to Length(FCompressor) - 1
+  do FreeAndNil(FCompressor[ChannelIndex]);
  FreeAndNil(FDampingFilter);
 end;
 
@@ -432,6 +449,8 @@ begin
    // calculate first part of IR (without any tail influence)
    for SampleIndex := 1 to TailStart div 2 - 1 do
     begin
+     Assert(SampleIndex < FIRLength);
+
      // calculate early reflections
      if SampleIndex = NextSample then
       begin
@@ -452,6 +471,8 @@ begin
    // calculate second part of IR (with starting tail)
    for SampleIndex := TailStart div 2 to TailStart - 1 do
     begin
+     Assert(SampleIndex < FIRLength);
+
      // calculate tail
      s := Sqr((SampleIndex - TailStart div 2) * TailScale);
      IR[SampleIndex] := 0.5 * (s + Sqr(Sqr(s))) * TailGain * ExpGain * (Random - Random);
@@ -475,10 +496,13 @@ begin
 
    for SampleIndex := TailStart to FIRLength - 1 do
     begin
+     Assert(SampleIndex < FIRLength);
+
+     // calculate tail
      ExpGain := ExpGain * T60Factor;
      IR[SampleIndex] := TailGain * ExpGain * (Random - Random);
      s := 0.1 * Sqr(Sqr((FIRLength - SampleIndex) * Scale));
-     IR[SampleIndex] := s * IR[SampleIndex]  +
+     IR[SampleIndex] := CDenorm32 + s * IR[SampleIndex]  +
        (1 - s) * FDampingFilter.ProcessSample64(IR[SampleIndex]);
     end;
 

@@ -35,9 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiPanel,
-  DAV_GuiLED, DAV_GuiGraphicControl;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, 
+  Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, 
+  DAV_GuiPixelMap, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiLED, 
+  DAV_GuiGraphicControl;
 
 type
   TFmSurvey = class(TForm)

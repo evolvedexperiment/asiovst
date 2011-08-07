@@ -621,21 +621,28 @@ end;
 
 function TGuiCustomPixelMap.GetPixel(X, Y: Integer): TPixel32;
 begin
+ Assert((Y >= 0) and (Y < Height));
+ Assert((X >= 0) and (X < Width));
  Result := FDataPointer^[Y * Width + X];
 end;
 
 function TGuiCustomPixelMap.GetPixelPointer(X, Y: Integer): PPixel32;
 begin
+ Assert((Y >= 0) and (Y < Height));
+ Assert((X >= 0) and (X < Width));
  Result := @FDataPointer^[Y * Width + X];
 end;
 
 function TGuiCustomPixelMap.GetScanLine(Y: Integer): PPixel32Array;
 begin
+ Assert((Y >= 0) and (Y < Height));
  Result := @FDataPointer^[Y * Width];
 end;
 
 procedure TGuiCustomPixelMap.SetPixel(X, Y: Integer; const Value: TPixel32);
 begin
+ Assert((Y >= 0) and (Y < Height));
+ Assert((X >= 0) and (X < Width));
  BlendPixelInplace(Value, FDataPointer[Y * Width + X]);
 end;
 

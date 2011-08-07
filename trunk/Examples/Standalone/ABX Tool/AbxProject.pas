@@ -38,10 +38,11 @@ interface
 {-$DEFINE ExcelExport}
 
 uses
-  Windows, Classes, Graphics, SysUtils, Forms, Controls, StdCtrls, ComCtrls,
-  Grids, DB, kbmMemTable, kbmMemBinaryStreamFormat, kbmMemCSVStreamFormat,
-  rs, rs_std, {$IFDEF ExcelExport}Dataset2Excel, {$ENDIF}
-  DAV_Types, DAV_AudioData, DAV_AudioFile, DAV_AudioFileWAV, AbxChunks, Menus;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Classes, Graphics, SysUtils, 
+  Forms, Controls, StdCtrls, ComCtrls, Grids, DB, kbmMemTable, 
+  kbmMemBinaryStreamFormat, kbmMemCSVStreamFormat, rs, rs_std, 
+  {$IFDEF ExcelExport}Dataset2Excel, {$ENDIF} DAV_Types, DAV_AudioData, 
+  DAV_AudioFile, DAV_AudioFileWAV, AbxChunks, Menus;
 
 type
   TFmProject = class(TForm)

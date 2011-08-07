@@ -35,8 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls,
-  DAV_GuiBaseControl, DAV_ChunkClasses, DAV_ChunkPluginGUI;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Messages, SysUtils, Classes,
+  Controls, Forms, Dialogs, StdCtrls, DAV_GuiBaseControl, DAV_ChunkClasses,
+  DAV_ChunkPluginGUI;
 
 type
   TFmSplitPluginCreator = class(TForm)
@@ -70,7 +71,38 @@ implementation
 uses
   IniFiles, ShellAPI, DAV_DLLResources;
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
+
+procedure TFmSplitPluginCreator.FormCreate(Sender: TObject);
+begin
+ {$IFDEF Registered}
+ EdPluginB.Enabled := True;
+ {$ENDIF}
+ with TIniFile.Create('SplitPluginCreator.ini') do
+  try
+   EdPluginA.Text := ReadString('Last State','Plugin A', EdPluginA.Text);
+   if EdPluginB.Enabled
+    then EdPluginB.Text := ReadString('Last State','Plugin B', EdPluginB.Text)
+    else EdPluginB.Text := 'please donate to unlock this feature';
+  finally
+   Free;
+  end;
+end;
+
+procedure TFmSplitPluginCreator.FormDestroy(Sender: TObject);
+begin
+ with TIniFile.Create('SplitPluginCreator.ini') do
+  try
+   WriteString('Last State','Plugin A', EdPluginA.Text);
+   WriteString('Last State','Plugin B', EdPluginB.Text);
+  finally
+   Free;
+  end;
+end;
 
 procedure TFmSplitPluginCreator.SavePlugin(FileName: TFileName);
 var
@@ -175,30 +207,6 @@ begin
    if Execute then
     with Sender as TEdit
      do Text := FileName;
-  finally
-   Free;
-  end;
-end;
-
-procedure TFmSplitPluginCreator.FormCreate(Sender: TObject);
-begin
- with TIniFile.Create('SplitPluginCreator.ini') do
-  try
-   EdPluginA.Text := ReadString('Last State','Plugin A', EdPluginA.Text);
-   if EdPluginB.Enabled
-    then EdPluginB.Text := ReadString('Last State','Plugin B', EdPluginB.Text)
-    else EdPluginB.Text := 'please donate to unlock this feature';
-  finally
-   Free;
-  end;
-end;
-
-procedure TFmSplitPluginCreator.FormDestroy(Sender: TObject);
-begin
- with TIniFile.Create('SplitPluginCreator.ini') do
-  try
-   WriteString('Last State','Plugin A', EdPluginA.Text);
-   WriteString('Last State','Plugin B', EdPluginB.Text);
   finally
    Free;
   end;

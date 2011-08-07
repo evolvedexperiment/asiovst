@@ -223,6 +223,8 @@ object ReverseVerbDataModule: TReverseVerbDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnAfterProgramChange = VSTModuleAfterProgramChange
+  OnBeforeProgramChange = VSTModuleBeforeProgramChange
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcessForward
   OnProcess32Replacing = VSTModuleProcessForward

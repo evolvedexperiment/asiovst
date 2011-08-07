@@ -37,8 +37,9 @@ interface
 {$I Artumes.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ArtItemAnalysis, ArtFrameAnalysisThirdOctave;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, 
+  ArtItemAnalysis, ArtFrameAnalysisThirdOctave;
 
 type
   TFmAnalysisProperties = class(TForm)

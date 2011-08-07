@@ -16,13 +16,13 @@ interface
 {$ENDIF}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, ExtCtrls, StdCtrls, ComCtrls, ActnList,
-  DAV_Common, DAV_Types, DAV_ChunkClasses, DAV_Bindings, DAV_GuiCommon,
-  DAV_DifferentialEvolution, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiFixedPoint,
-  DAV_GuiVector, DAV_GuiVectorPixel, DAV_GuiFilters, DAV_GuiFiltersBlur,
-  DAV_GuiVectorPixelCircle, DAV_GuiVectorPixelLine, DAV_GuiFileFormats,
-  DAV_GuiPng;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, Menus, ExtCtrls, StdCtrls, ComCtrls, 
+  ActnList, DAV_Common, DAV_Types, DAV_ChunkClasses, DAV_Bindings, 
+  DAV_GuiCommon, DAV_DifferentialEvolution, DAV_GuiPixelMap, DAV_GuiByteMap, 
+  DAV_GuiFixedPoint, DAV_GuiVector, DAV_GuiVectorPixel, DAV_GuiFilters, 
+  DAV_GuiFiltersBlur, DAV_GuiVectorPixelCircle, DAV_GuiVectorPixelLine, 
+  DAV_GuiFileFormats, DAV_GuiPng;
 
 type
   TEvolutionThread = class(TThread)

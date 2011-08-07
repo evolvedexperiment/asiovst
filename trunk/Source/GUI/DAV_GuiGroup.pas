@@ -7,8 +7,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
-  DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiByteMap, DAV_GuiShadow,
-  DAV_GuiVectorPixelCircle;
+  DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiShadow;
 
 type
   TCustomGuiGroup = class(TCustomGroupBox)
@@ -31,20 +30,30 @@ type
     procedure SetBorderRadius(Value: Single);
     procedure SetShadow(const Value: TGUIShadow);
     procedure SetTransparent(const Value: Boolean);
+    {$IFDEF FPC}
+    function GetCanvas: TCanvas;
+    {$ENDIF}
   protected
     FBuffer           : TGuiCustomPixelMap;
     FBackBuffer       : TGuiCustomPixelMap;
     FUpdateBuffer     : Boolean;
     FUpdateBackBuffer : Boolean;
     FGuiFont          : TGuiOversampledGDIFont;
+    {$IFDEF FPC}
+    FCanvas           : TControlCanvas;
+    {$ENDIF}
 
-    procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
     procedure CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_COLORCHANGED;
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF}); message CM_FONTCHANGED;
     procedure CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF}); message CM_TEXTCHANGED;
-    procedure CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
     procedure WMMove(var Message: TWMMove); message WM_MOVE;
+    {$IFDEF FPC}
+    procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
+    {$ELSE}
+    procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
+    procedure CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
+    {$ENDIF}
 
     procedure AlphaChanged; virtual;
     procedure BorderColorChanged; virtual;
@@ -52,7 +61,7 @@ type
     procedure Click; override;
     procedure NativeChanged; virtual;
     procedure RoundRadiusChanged; virtual;
-    procedure TextChanged; virtual;
+    procedure TextChanged; {$IFDEF FPC} override; {$ELSE} virtual; {$ENDIF}
     procedure TransparentChanged; virtual;
 
     procedure BufferChanged; virtual;
@@ -64,10 +73,18 @@ type
     procedure CreateParams(var Params: TCreateParams); override;
     procedure Loaded; override;
     procedure Resize; override;
+
     procedure Paint; {$IFDEF FPC} virtual; {$ELSE} override; {$ENDIF}
 
     procedure RenderGroupBox(PixelMap: TGuiCustomPixelMap); virtual; abstract;
     procedure RenderCaption(PixelMap: TGuiCustomPixelMap); virtual; abstract;
+
+    {$IFDEF FPC}
+    procedure PaintWindow(DC: HDC); override;
+
+    property Canvas: TCanvas read GetCanvas;
+    {$ENDIF}
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -376,7 +393,7 @@ type
 implementation
 
 uses
-  Math, DAV_Math, DAV_Complex, DAV_Approximations, DAV_GuiBlend,
+  Math, DAV_Math, DAV_Approximations, DAV_GuiBlend,
   DAV_GuiFixedPoint;
 
 { TCustomGuiGroup }
@@ -385,10 +402,14 @@ constructor TCustomGuiGroup.Create(AOwner: TComponent);
 begin
  inherited;
 
- ControlStyle   := ControlStyle + [csAcceptsControls, csReplicatable, csOpaque];
-
+ ControlStyle   := ControlStyle + [csAcceptsControls, csReplicatable];
  {$IFDEF FPC}
  DoubleBuffered := True;
+ FCanvas := TControlCanvas.Create;
+ TControlCanvas(FCanvas).Control := Self;
+ ControlStyle   := ControlStyle - [csOpaque];
+ {$ELSE}
+ ControlStyle   := ControlStyle + [csOpaque];
  {$ENDIF}
 
  // create buffers (& set size)
@@ -429,6 +450,10 @@ end;
 
 destructor TCustomGuiGroup.Destroy;
 begin
+ {$IFDEF FPC}
+ FreeAndNil(FCanvas);
+ {$ENDIF}
+
  // free buffers
  FreeAndNil(FBuffer);
  FreeAndNil(FBackBuffer);
@@ -458,8 +483,10 @@ begin
     if Assigned(FOnPaint)
      then FOnPaint(Self);
 
-    {$IFNDEF FPC}
     if Assigned(FBuffer)
+    {$IFDEF FPC}
+     then FBuffer.PaintTo(Canvas, -2, -16);
+    {$ELSE}
      then FBuffer.PaintTo(Canvas);
     {$ENDIF}
    end;
@@ -490,6 +517,29 @@ begin
   end;
 end;
 
+{$IFDEF FPC}
+function TCustomGuiGroup.GetCanvas: TCanvas;
+begin
+  Result := FCanvas;
+end;
+
+procedure TCustomGuiGroup.PaintWindow(DC: HDC);
+begin
+  FCanvas.Lock;
+  try
+    FCanvas.Handle := DC;
+    try
+      Paint;
+    finally
+      FCanvas.Handle := 0;
+    end;
+  finally
+    FCanvas.Unlock;
+  end;
+  inherited;
+end;
+{$ENDIF}
+
 procedure TCustomGuiGroup.WMMove(var Message: TWMMove);
 begin
  inherited;
@@ -506,6 +556,16 @@ begin
   then BackBufferChanged;
 end;
 
+{$IFDEF FPC}
+procedure TCustomGuiGroup.LMPaint(var Message: TLMPaint);
+begin
+  Include(FControlState, csCustomPaint);
+  inherited;
+  Exclude(FControlState, csCustomPaint);
+end;
+
+{$ELSE}
+
 procedure TCustomGuiGroup.CMDialogChar(var Message: TCMDialogChar);
 begin
  with Message do
@@ -516,6 +576,15 @@ begin
    end;
 end;
 
+procedure TCustomGuiGroup.CMSysColorChange(var Message: TMessage);
+begin
+ inherited;
+
+ BufferChanged;
+end;
+
+{$ENDIF}
+
 procedure TCustomGuiGroup.CMEnabledChanged(var Message: TMessage);
 begin
  inherited;
@@ -525,13 +594,6 @@ end;
 procedure TCustomGuiGroup.CMFontChanged(var Message: TMessage);
 begin
  FGuiFont.Font.Assign(Font);
-end;
-
-procedure TCustomGuiGroup.CMSysColorChange(var Message: TMessage);
-begin
- inherited;
-
- BufferChanged;
 end;
 
 procedure TCustomGuiGroup.CMTextChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TWmNoParams{$ENDIF});
@@ -927,26 +989,22 @@ begin
 end;
 
 procedure TGuiGroup.RenderCaption(PixelMap: TGuiCustomPixelMap);
-var
-  TextSize : TSize;
 begin
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtent(Caption);
    FGuiFont.TextOut(Caption, PixelMap, Round(FBorderWidth + FBorderRadius), Round(FBorderWidth));
   end;
 end;
 
 procedure TGuiGroup.RenderGroupBox(PixelMap: TGuiCustomPixelMap);
 var
-  X, Y, Offset         : Integer;
+  X, Y                : Integer;
   XRange               : array [0..1] of Integer;
   ScnLne               : array [0..1] of PPixel32Array;
   PanelColor           : TPixel32;
   BorderColor          : TPixel32;
   CombColor            : TPixel32;
   IsUpperLowerHalf     : Boolean;
-  IsHeader             : Boolean;
   HeaderHeight         : TFixed24Dot8Point;
   HeaderWidth          : TFixed24Dot8Point;
   RadiusFixed          : TFixed24Dot8Point;
@@ -1078,6 +1136,8 @@ begin
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
      XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8Point(Integer(Width - 1)), Temp));
+     if XRange[0] < 0 then XRange[0] := 0;
+
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8Point(X);
@@ -1117,12 +1177,11 @@ begin
           CombColor.A := Temp.Fixed;
          end;
 
+       Assert(X < Width);
        BlendPixelInplace(CombColor, ScnLne[0][X]);
        EMMS;
       end;
     end;
-
-
 
    for Y := FixedRound(RadiusFixed) to FixedRound(HeaderHeight) - 1 do
     begin
@@ -1203,8 +1262,6 @@ begin
       end;
     end;
    EMMS;
-
-
 
    for Y := FixedRound(HeaderHeight) to Height - 1 - FixedRound(RadiusFixed) do
     begin
@@ -1642,14 +1699,13 @@ end;
 
 procedure TGuiGroupSide.RenderGroupBox(PixelMap: TGuiCustomPixelMap);
 var
-  X, Y, Offset         : Integer;
+  X, Y                 : Integer;
   XRange               : array [0..1] of Integer;
   ScnLne               : PPixel32Array;
   PanelColor           : TPixel32;
   BorderColor          : TPixel32;
   CombColor            : TPixel32;
   IsUpperLowerHalf     : Boolean;
-  HeaderHeight         : TFixed24Dot8Point;
   HeaderWidth          : TFixed24Dot8Point;
   RadiusFixed          : TFixed24Dot8Point;
   XStart               : TFixed24Dot8Point;
@@ -1966,7 +2022,7 @@ end;
 
 procedure TGuiGroupTop.RenderGroupBox(PixelMap: TGuiCustomPixelMap);
 var
-  X, Y, Offset         : Integer;
+  X, Y                 : Integer;
   XRange               : array [0..1] of Integer;
   ScnLne               : PPixel32Array;
   PanelColor           : TPixel32;
@@ -1974,7 +2030,6 @@ var
   CombColor            : TPixel32;
   IsUpperLowerHalf     : Boolean;
   HeaderHeight         : TFixed24Dot8Point;
-  HeaderWidth          : TFixed24Dot8Point;
   RadiusFixed          : TFixed24Dot8Point;
   XStart               : TFixed24Dot8Point;
   BorderWidthFixed     : TFixed24Dot8Point;
@@ -2292,12 +2347,10 @@ end;
 
 procedure TGuiGroupSimple.RenderCaption(PixelMap: TGuiCustomPixelMap);
 var
-  TextSize : TSize;
-  XPos     : Integer;
+  XPos : Integer;
 begin
  if Assigned(FGuiFont) then
   begin
-   TextSize := FGuiFont.TextExtent(Caption);
    XPos := Round(Max(FBorderRadius, FBorderWidth) + 1.5 * FBorderWidth);
    FGuiFont.TextOut(Caption, PixelMap, XPos, 0);
   end;

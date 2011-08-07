@@ -35,8 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, DAV_Types, DAV_AsioHost, DAV_MpegAudio;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, StdCtrls, DAV_Types, DAV_AsioHost, 
+  DAV_MpegAudio;
 
 type
   TFmASIOMP3 = class(TForm)

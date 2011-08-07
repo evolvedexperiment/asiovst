@@ -36,11 +36,13 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
-  DAV_DspFilterButterworth, DAV_DspFilterLinkwitzRiley;
+  SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
+  DAV_DspFilterButterworth;
 
 type
   TProcessMode = (pmBypass, pmLowpass, pmHighpass, pmBandpass);
+
+  { TDualLinkwitzRileyFiltersModule }
 
   TDualLinkwitzRileyFiltersModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
@@ -129,11 +131,6 @@ begin
    FHighpass[Channel][1] := TButterworthHighPassFilter.Create;
    FHighpass[Channel][1].SampleRate := SampleRate;
   end;
-
- {$IFDEF FPC}
- OnProcess := VSTModuleProcess;
- OnProcessReplacing := VSTModuleProcess;
- {$ENDIF}
 
  FSign := 1;
  Parameter[0] := 10000;

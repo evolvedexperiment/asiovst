@@ -35,8 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ComCtrls, StdCtrls, DAV_VSTHost, DAV_SEHost, XPMan;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, Menus, ComCtrls, StdCtrls, XPMan, 
+  DAV_VSTHost, DAV_SEHost;
 
 type
   TFmVST2SEM = class(TForm)

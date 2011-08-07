@@ -36,9 +36,9 @@ interface
 {$DEFINE Use_IPPS}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, StdCtrls, Spin, DAV_GuiAudioDataDisplay, ComCtrls,
-  DAV_DspHrtf, DAV_AudioData, DAV_DspFftReal2Complex
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, Menus, StdCtrls, Spin, ComCtrls,
+  DAV_GuiAudioDataDisplay, DAV_DspHrtf, DAV_AudioData, DAV_DspFftReal2Complex
   {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS, DAV_Classes{$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 

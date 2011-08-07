@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ToolWin, ComCtrls, ExtCtrls, DAV_Types, DAV_VSTHost,
-  DAV_MidiFile, DAV_AsioHost, DAV_DspBufferedMp3Player;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, Menus, ToolWin, ComCtrls, ExtCtrls, 
+  DAV_Types, DAV_VSTHost, DAV_MidiFile, DAV_AsioHost, DAV_DspBufferedMp3Player;
 
 type
   TFmVstPresetDesigner = class(TForm)

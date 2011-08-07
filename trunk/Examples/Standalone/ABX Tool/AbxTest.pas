@@ -35,8 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ComCtrls, StdCtrls, DAV_Types, DAV_ASIOHost, DAV_AudioData;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls, DAV_Types, 
+  DAV_ASIOHost, DAV_AudioData;
 
 type
   TXAssignment = (xaXisA = 1, xaXisB = 2);

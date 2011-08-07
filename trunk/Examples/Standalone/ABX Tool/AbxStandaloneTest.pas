@@ -35,10 +35,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ComCtrls, StdCtrls, DAV_Types, DAV_ASIOHost, DAV_AudioData, DAV_AudioFile,
-  DAV_AudioFileWav, AbxChunks, kbmMemCSVStreamFormat, kbmMemTable,
-  kbmMemBinaryStreamFormat, DB;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
+  Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls, 
+  DAV_Types, DAV_ASIOHost, DAV_AudioData, DAV_AudioFile, DAV_AudioFileWav, 
+  AbxChunks, kbmMemCSVStreamFormat, kbmMemTable, kbmMemBinaryStreamFormat, DB;
 
 type
   TXAssignment = (xaXisA = 1, xaXisB = 2);
