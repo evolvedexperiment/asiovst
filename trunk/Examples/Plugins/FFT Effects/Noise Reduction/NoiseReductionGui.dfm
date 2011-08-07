@@ -330,6 +330,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Width = 36
     Height = 36
     CurveMapping = -1.799999952316284000
+    DefaultValue = 1.000000000000000000
     Max = 100.000000000000000000
     Min = 1.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -338,7 +339,6 @@ object FmNoiseReduction: TFmNoiseReduction
     Value = 9.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialRatioChange
-    DefaultValue = 0.000000000000000000
   end
   object DialKnee: TGuiStitchedDial
     Left = 158
@@ -361,6 +361,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Width = 36
     Height = 36
     CurveMapping = -1.299999952316284000
+    DefaultValue = 0.009999999776482582
     Max = 100.000000000000000000
     Min = 0.009999999776482582
     ScrollRange = 400.000000000000000000
@@ -369,7 +370,6 @@ object FmNoiseReduction: TFmNoiseReduction
     Value = 10.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialAttackChange
-    DefaultValue = 0.000000000000000000
   end
   object DialRelease: TGuiStitchedDial
     Left = 290
@@ -377,6 +377,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Width = 36
     Height = 36
     CurveMapping = -1.330000042915344000
+    DefaultValue = 0.500000000000000000
     Max = 300.000000000000000000
     Min = 0.500000000000000000
     ScrollRange = 400.000000000000000000
@@ -385,7 +386,6 @@ object FmNoiseReduction: TFmNoiseReduction
     Value = 1.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialReleaseChange
-    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <

@@ -32,7 +32,7 @@ unit DAV_DspSpectralNoiseReduction;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_Types, DAV_Classes, DAV_Complex, DAV_DspSpectralEffects,

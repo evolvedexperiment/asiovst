@@ -35,9 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFilter,
-  DAV_DspFilterBasics, DAV_DspFilterButterworth, DAV_DspFilterChebyshev,
-  DAV_DspFilterChebyshevType1, DAV_DspFilterChebyshevType2;
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DspFilterBasics,
+  DAV_DspFilterButterworth, DAV_DspFilterChebyshevType1,
+  DAV_DspFilterChebyshevType2;
 
 type
   TDspHumRemoval = class(TDspSampleRatePersistent, IDspProcessor32)

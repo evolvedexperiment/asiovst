@@ -32,7 +32,7 @@ unit DAV_DspChorus;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_Types, DAV_Classes, DAV_DspLFO;
@@ -821,4 +821,4 @@ initialization
   RegisterDspProcessors32([TDspChorus32, TDspChorus]);
   RegisterDspProcessors64([TDspChorus64, TDspChorus]);
 
-end.
+end.

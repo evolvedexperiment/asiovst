@@ -36,7 +36,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="51">
+    <Files Count="68">
       <Item1>
         <Filename Value="..\..\Resources\DAV_DspRegister.lrs"/>
         <Type Value="LRS"/>
@@ -242,6 +242,74 @@
         <Filename Value="..\..\Source\DSP\DAV_DspR128.pas"/>
         <UnitName Value="DAV_DspR128"/>
       </Item51>
+      <Item52>
+        <Filename Value="..\..\Source\DSP\DAV_DspSpectralEffects.pas"/>
+        <UnitName Value="DAV_DspSpectralEffects"/>
+      </Item52>
+      <Item53>
+        <Filename Value="..\..\Source\DSP\DAV_DspSpectralFilters.pas"/>
+        <UnitName Value="DAV_DspSpectralFilters"/>
+      </Item53>
+      <Item54>
+        <Filename Value="..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas"/>
+        <UnitName Value="DAV_DspSpectralNoiseReduction"/>
+      </Item54>
+      <Item55>
+        <Filename Value="..\..\Source\DSP\DAV_DspChorus.pas"/>
+        <UnitName Value="DAV_DspChorus"/>
+      </Item55>
+      <Item56>
+        <Filename Value="..\..\Source\DSP\DAV_DspDelayLines.pas"/>
+        <UnitName Value="DAV_DspDelayLines"/>
+      </Item56>
+      <Item57>
+        <Filename Value="..\..\Source\DSP\DAV_DspDynamicLimiters.pas"/>
+        <UnitName Value="DAV_DspDynamicLimiters"/>
+      </Item57>
+      <Item58>
+        <Filename Value="..\..\Source\DSP\DAV_DspDynamicLookaheadLimiter.pas"/>
+        <UnitName Value="DAV_DspDynamicLookaheadLimiter"/>
+      </Item58>
+      <Item59>
+        <Filename Value="..\..\Source\DSP\DAV_DspExciter.pas"/>
+        <UnitName Value="DAV_DspExciter"/>
+      </Item59>
+      <Item60>
+        <Filename Value="..\..\Source\DSP\DAV_DspFilterTransform.pas"/>
+        <UnitName Value="DAV_DspFilterTransform"/>
+      </Item60>
+      <Item61>
+        <Filename Value="..\..\Source\DSP\DAV_DspFrequencyShifter.pas"/>
+        <UnitName Value="DAV_DspFrequencyShifter"/>
+      </Item61>
+      <Item62>
+        <Filename Value="..\..\Source\DSP\DAV_DspHumRemoval.pas"/>
+        <UnitName Value="DAV_DspHumRemoval"/>
+      </Item62>
+      <Item63>
+        <Filename Value="..\..\Source\DSP\DAV_DspLeslie.pas"/>
+        <UnitName Value="DAV_DspLeslie"/>
+      </Item63>
+      <Item64>
+        <Filename Value="..\..\Source\DSP\DAV_DspLorenzOscilator.pas"/>
+        <UnitName Value="DAV_DspLorenzOscilator"/>
+      </Item64>
+      <Item65>
+        <Filename Value="..\..\Source\DSP\DAV_DspModDelay.pas"/>
+        <UnitName Value="DAV_DspModDelay"/>
+      </Item65>
+      <Item66>
+        <Filename Value="..\..\Source\DSP\DAV_DspNoiseShapingFilterDesigner.pas"/>
+        <UnitName Value="DAV_DspNoiseShapingFilterDesigner"/>
+      </Item66>
+      <Item67>
+        <Filename Value="..\..\Source\DSP\DAV_DspParametricEQ.pas"/>
+        <UnitName Value="DAV_DspParametricEQ"/>
+      </Item67>
+      <Item68>
+        <Filename Value="..\..\Source\DSP\DAV_DspPinkNoiseGenerator.pas"/>
+        <UnitName Value="DAV_DspPinkNoiseGenerator"/>
+      </Item68>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="4">

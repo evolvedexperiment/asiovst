@@ -37,8 +37,9 @@ interface
 {$DEFINE NoInvalidOpcodes}
 
 uses
-  {$IFDEF FPC}fpcunit, testutils, testregistry, {$ELSE} TestFramework, Windows,
-  {$ENDIF} Graphics, Registry, Classes, Contnrs, SysUtils, Messages, Dialogs,
+  {$IFDEF FPC}fpcunit, testutils, testregistry,
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF} {$ELSE} TestFramework, Windows, {$ENDIF}
+  Graphics, Registry, Classes, SysUtils, Dialogs,
   DAV_Types, DAV_VSTHost;
 
 type

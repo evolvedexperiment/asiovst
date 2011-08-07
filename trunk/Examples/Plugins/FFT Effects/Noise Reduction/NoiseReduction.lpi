@@ -42,13 +42,16 @@
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="True"/>
+              <GenerateDwarf Value="True"/>
+              <UseHeaptrc Value="True"/>
             </Debugging>
-            <LinkSmart Value="True"/>
             <Options>
               <Win32>
                 <GraphicApplication Value="True"/>
@@ -73,6 +76,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <HostApplicationFilename Value="C:\Users\Public\Code\VSTPack\Bin\VST\64-Bit\VST-Plugin Unit Test (x64).exe"/>
+        <CommandLineParams Value="&quot;Noise Reduction (x64).dll&quot;"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -92,29 +97,30 @@
         <PackageName Value="DAV_GUI_Lazarus"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="24">
       <Unit0>
         <Filename Value="NoiseReduction.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="14"/>
         <CursorPos X="1" Y="22"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="NoiseReductionDM.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="NoiseReductionModule"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="NoiseReductionDM"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="37"/>
-        <CursorPos X="60" Y="53"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="375"/>
+        <CursorPos X="14" Y="391"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -124,14 +130,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NoiseReductionGui"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="75"/>
-        <CursorPos X="61" Y="44"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <TopLine Value="101"/>
+        <CursorPos X="5" Y="101"/>
+        <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
@@ -173,10 +175,12 @@
       <Unit7>
         <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
         <UnitName Value="DAV_DspFilterButterworth"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1234"/>
         <CursorPos X="44" Y="1250"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit7>
       <Unit8>
@@ -203,70 +207,238 @@
       <Unit10>
         <Filename Value="..\..\..\..\Source\GUI\DAV_GuiFont.pas"/>
         <UnitName Value="DAV_GuiFont"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="670"/>
         <CursorPos X="4" Y="672"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\Lazarus\lcl\graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="523"/>
         <CursorPos X="14" Y="539"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <UnitName Value="DAV_VSTHost"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2012"/>
+        <CursorPos X="1" Y="2028"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralEffects.pas"/>
+        <UnitName Value="DAV_DspSpectralEffects"/>
+        <EditorIndex Value="10"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="35"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralFilters.pas"/>
+        <UnitName Value="DAV_DspSpectralFilters"/>
+        <EditorIndex Value="11"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="8" Y="35"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\..\..\..\Source\DAV_Compiler.inc"/>
+        <EditorIndex Value="13"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas"/>
+        <UnitName Value="DAV_DspSpectralNoiseReduction"/>
+        <EditorIndex Value="12"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="68" Y="40"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspChorus.pas"/>
+        <UnitName Value="DAV_DspChorus"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="35"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspDynamicLookaheadLimiter.pas"/>
+        <UnitName Value="DAV_DspDynamicLookaheadLimiter"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="8" Y="35"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspExciter.pas"/>
+        <UnitName Value="DAV_DspExciter"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="23"/>
+        <CursorPos X="3" Y="40"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspPolyphaseHilbert.pas"/>
+        <UnitName Value="DAV_DspPolyphaseHilbert"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="317"/>
+        <CursorPos X="18" Y="333"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspModDelay.pas"/>
+        <UnitName Value="DAV_DspModDelay"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="126"/>
+        <CursorPos X="13" Y="142"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspParametricEQ.pas"/>
+        <UnitName Value="DAV_DspParametricEQ"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="22"/>
+        <CursorPos X="12" Y="38"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspHumRemoval.pas"/>
+        <UnitName Value="DAV_DspHumRemoval"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="22"/>
+        <CursorPos X="56" Y="44"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit23>
     </Units>
-    <JumpHistory Count="11" HistoryIndex="10">
+    <JumpHistory Count="21" HistoryIndex="20">
       <Position1>
         <Filename Value="NoiseReductionDM.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Caret Line="171" Column="34" TopLine="156"/>
       </Position1>
       <Position2>
         <Filename Value="NoiseReductionDM.pas"/>
-        <Caret Line="83" Column="36" TopLine="68"/>
+        <Caret Line="391" Column="14" TopLine="375"/>
       </Position2>
       <Position3>
-        <Filename Value="NoiseReductionDM.pas"/>
-        <Caret Line="38" Column="58" TopLine="22"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="2013" Column="60" TopLine="1987"/>
       </Position3>
       <Position4>
         <Filename Value="NoiseReductionDM.pas"/>
-        <Caret Line="105" Column="3" TopLine="102"/>
+        <Caret Line="391" Column="14" TopLine="375"/>
       </Position4>
       <Position5>
-        <Filename Value="NoiseReductionDM.pas"/>
-        <Caret Line="40" Column="56" TopLine="25"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="2033" Column="17" TopLine="2012"/>
       </Position5>
       <Position6>
-        <Filename Value="NoiseReductionDM.pas"/>
-        <Caret Line="84" Column="13" TopLine="68"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralEffects.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position6>
       <Position7>
-        <Filename Value="NoiseReductionGui.pas"/>
-        <Caret Line="36" Column="61" TopLine="10"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralFilters.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position7>
       <Position8>
-        <Filename Value="NoiseReductionGui.pas"/>
-        <Caret Line="95" Column="3" TopLine="79"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralFilters.pas"/>
+        <Caret Line="35" Column="5" TopLine="19"/>
       </Position8>
       <Position9>
-        <Filename Value="NoiseReductionGui.pas"/>
-        <Caret Line="40" Column="46" TopLine="24"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\..\..\Source\GUI\DAV_GuiFont.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas"/>
+        <Caret Line="40" Column="68" TopLine="19"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\..\..\Source\GUI\DAV_GuiFont.pas"/>
-        <Caret Line="686" Column="34" TopLine="670"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspChorus.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position11>
+      <Position12>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspDynamicLookaheadLimiter.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="1250" Column="44" TopLine="1234"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspExciter.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspExciter.pas"/>
+        <Caret Line="38" Column="36" TopLine="22"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspPolyphaseHilbert.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspModDelay.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspParametricEQ.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspHumRemoval.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspHumRemoval.pas"/>
+        <Caret Line="40" Column="3" TopLine="23"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspHumRemoval.pas"/>
+        <Caret Line="49" Column="43" TopLine="22"/>
+      </Position21>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -317,6 +489,13 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <Source Value="NoiseReductionDM.pas"/>
+        <Line Value="386"/>
+      </Item1>
+    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

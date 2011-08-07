@@ -35,9 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses 
-  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DspFilterButterworth,
-  DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics,
-  DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilterButterworth,
+  DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_DspPolyphaseUpsampler,
+  DAV_DspPolyphaseDownsampler;
 
 type
   TCustomExciter = class(TDspSampleRatePersistent, IDspProcessor32,
