@@ -26,7 +26,7 @@ uses
 {$ENDIF}
   DAV_TestVSTHost in 'DAV_TestVSTHost.pas';
 
-{*.res}
+{$R *.res}
 
 begin
   Application.Initialize;

@@ -1,4 +1,4 @@
-unit NoiseReductionDM;
+﻿unit NoiseReductionDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -81,7 +81,8 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, NoiseReductionGui;
+  SysUtils, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
+  NoiseReductionGui;
 
 procedure TNoiseReductionModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -95,7 +96,7 @@ end;
 
 procedure TNoiseReductionModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  Assert(numInputs = numOutputs);
 
@@ -103,12 +104,12 @@ begin
    1 shl (ParameterProperties[1].MaxInteger - 1);
 
  SetLength(FNoiseReduction, numInputs);
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel] := TNoiseReduction32.Create;
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1
+  do FNoiseReduction[ChannelIndex] := TNoiseReduction32.Create;
 
  SetLength(FAdditionalDelay, numInputs);
- for Channel := 0 to Length(FAdditionalDelay) - 1
-  do FAdditionalDelay[Channel] := TDelayLineSamples32.Create(512);
+ for ChannelIndex := 0 to Length(FAdditionalDelay) - 1
+  do FAdditionalDelay[ChannelIndex] := TDelayLineSamples32.Create(512);
 
  with ParameterProperties[2] do
   begin
@@ -165,7 +166,11 @@ begin
   begin
    Parameter[0] := 13;
    Parameter[1] := 9;
+   {$IFDEF Use_IPPS}
    Parameter[2] := 11;
+   {$ELSE}
+   Parameter[2] := 4;
+   {$ENDIF}
    Parameter[3] := 100;
    Parameter[4] := 0;
    Parameter[5] := 0.01;
@@ -173,24 +178,25 @@ begin
    Parameter[7] := 0;
   end;
 
+ // set editor class
  EditorFormClass := TFmNoiseReduction;
 end;
 
 procedure TNoiseReductionModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FreeAndNil(FNoiseReduction[Channel]);
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1
+  do FreeAndNil(FNoiseReduction[ChannelIndex]);
 
- for Channel := 0 to Length(FAdditionalDelay) - 1
-  do FreeAndNil(FAdditionalDelay[Channel]);
+ for ChannelIndex := 0 to Length(FAdditionalDelay) - 1
+  do FreeAndNil(FAdditionalDelay[ChannelIndex]);
 end;
 
 procedure TNoiseReductionModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FIsMatching := Value > 0.5;
 
@@ -199,8 +205,9 @@ begin
   then FSamplesCaptured := 0;
 
  // mark noise reduction for matching
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel].Match := FIsMatching;
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+  if Assigned(FNoiseReduction[ChannelIndex])
+   then FNoiseReduction[ChannelIndex].Match := FIsMatching;
 
  // update GUI
  if EditorForm is TFmNoiseReduction
@@ -210,12 +217,13 @@ end;
 procedure TNoiseReductionModule.ParameterWindowFunctionChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FNoiseReduction) - 1
-   do FNoiseReduction[Channel].WindowFunctionClass := GWindowFunctions[Round(Parameter[Index])];
+  for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+   if Assigned(FNoiseReduction[ChannelIndex])
+    then FNoiseReduction[ChannelIndex].WindowFunctionClass := GWindowFunctions[Round(Parameter[Index])];
  finally
   FCriticalSection.Leave;
  end;
@@ -234,10 +242,11 @@ end;
 procedure TNoiseReductionModule.ParameterThresholdOffsetChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel].ThresholdOffset := Value;
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+  if Assigned(FNoiseReduction[ChannelIndex])
+   then FNoiseReduction[ChannelIndex].ThresholdOffset := Value;
 
  // update GUI
  if EditorForm is TFmNoiseReduction
@@ -248,8 +257,8 @@ procedure TNoiseReductionModule.ParameterTimeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1
-  then PreDefined := FloatToStrF(Parameter[Index] * 1E3, ffGeneral, 3, 1)
-  else PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 3, 1);
+  then PreDefined := AnsiString(FloatToStrF(Parameter[Index] * 1E3, ffGeneral, 3, 1))
+  else PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 3, 1));
 end;
 
 procedure TNoiseReductionModule.ParameterTimeLabel(
@@ -268,7 +277,7 @@ end;
 procedure TNoiseReductionModule.Parameter2DigitDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 3, 1);
+ PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 3, 1));
 end;
 
 procedure TNoiseReductionModule.ParameterFftOrderChange(
@@ -279,13 +288,15 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FNoiseReduction) - 1
-   do FNoiseReduction[Channel].FFTOrder := Round(Value);
+  for Channel := 0 to Length(FNoiseReduction) - 1 do
+   if Assigned(FNoiseReduction[Channel])
+    then FNoiseReduction[Channel].FFTOrder := Round(Value);
 
   Delay := InitialDelay - (1 shl Round(Value - 1) + 1 shl (Round(Value) - 2));
 
-  for Channel := 0 to Length(FAdditionalDelay) - 1
-   do FAdditionalDelay[Channel].BufferSize := Delay;
+  for Channel := 0 to Length(FAdditionalDelay) - 1 do
+   if Assigned(FAdditionalDelay[Channel])
+    then FAdditionalDelay[Channel].BufferSize := Delay;
  finally
   FCriticalSection.Leave;
  end;
@@ -298,16 +309,17 @@ end;
 procedure TNoiseReductionModule.ParameterFftOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TNoiseReductionModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel].Ratio := 1 / Value;
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+  if Assigned(FNoiseReduction[ChannelIndex])
+   then FNoiseReduction[ChannelIndex].Ratio := 1 / Value;
 
  // update GUI
  if EditorForm is TFmNoiseReduction
@@ -317,10 +329,11 @@ end;
 procedure TNoiseReductionModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel].Knee := Value;
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+  if Assigned(FNoiseReduction[ChannelIndex])
+   then FNoiseReduction[ChannelIndex].Knee := Value;
 
  // update GUI
  if EditorForm is TFmNoiseReduction
@@ -330,10 +343,11 @@ end;
 procedure TNoiseReductionModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel].Attack := Value;
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+  if Assigned(FNoiseReduction[ChannelIndex])
+   then FNoiseReduction[ChannelIndex].Attack := Value;
 
  // update GUI
  if EditorForm is TFmNoiseReduction
@@ -343,10 +357,11 @@ end;
 procedure TNoiseReductionModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel].Release := Value;
+ for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+  if Assigned(FNoiseReduction[ChannelIndex])
+   then FNoiseReduction[ChannelIndex].Release := Value;
 
  // update GUI
  if EditorForm is TFmNoiseReduction
@@ -356,27 +371,29 @@ end;
 procedure TNoiseReductionModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FNoiseReduction) - 1
-   do FNoiseReduction[Channel].SampleRate := Abs(SampleRate);
+  for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+   if Assigned(FNoiseReduction[ChannelIndex])
+    then FNoiseReduction[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 procedure TNoiseReductionModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FNoiseReduction) - 1 do
+  for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
    begin
-    FNoiseReduction[Channel].ProcessBlock(@Inputs[Channel, 0],
-      @Outputs[Channel, 0], SampleFrames);
-    FAdditionalDelay[Channel].ProcessBlock32(@Outputs[Channel, 0],
-      SampleFrames);
-
+    if Assigned(FNoiseReduction[ChannelIndex])
+      then FNoiseReduction[ChannelIndex].ProcessBlock(@Inputs[ChannelIndex, 0],
+        @Outputs[ChannelIndex, 0], SampleFrames);
+    if Assigned(FAdditionalDelay[ChannelIndex])
+      then FAdditionalDelay[ChannelIndex].ProcessBlock32(@Outputs[ChannelIndex, 0],
+        SampleFrames);
    end;
  finally
   FCriticalSection.Leave;

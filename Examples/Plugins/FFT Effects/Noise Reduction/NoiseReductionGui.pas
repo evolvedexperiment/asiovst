@@ -35,7 +35,8 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiLED, DAV_GuiPng,
-  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiStitchedControls, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmNoiseReduction = class(TForm)
@@ -188,7 +189,7 @@ begin
    if DialThresholdOffset.Value <> Parameter[0]
     then DialThresholdOffset.Value := Parameter[0];
 
-   LbThresholdOffsetValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbThresholdOffsetValue.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
 
@@ -216,7 +217,7 @@ begin
   begin
    if DialRatio.Value <> Parameter[3]
     then DialRatio.Value := Parameter[3];
-   LbRatioValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
+   LbRatioValue.Caption := string(ParameterDisplay[3] + ' ' + ParameterLabel[3]);
   end;
 end;
 
@@ -226,7 +227,7 @@ begin
   begin
    if DialKnee.Value <> Parameter[4]
     then DialKnee.Value := Parameter[4];
-   LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
+   LbKneeValue.Caption := string(ParameterDisplay[4] + ' ' + ParameterLabel[4]);
   end;
 end;
 
@@ -236,7 +237,7 @@ begin
   begin
    if DialAttack.Value <> Parameter[5]
     then DialAttack.Value := Parameter[5];
-   LbAttackValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
+   LbAttackValue.Caption := string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
   end;
 end;
 
@@ -246,7 +247,7 @@ begin
   begin
    if DialRelease.Value <> Parameter[6]
     then DialRelease.Value := Parameter[6];
-   LbReleaseValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
+   LbReleaseValue.Caption := string(ParameterDisplay[6] + ' ' + ParameterLabel[6]);
   end;
 end;
 
