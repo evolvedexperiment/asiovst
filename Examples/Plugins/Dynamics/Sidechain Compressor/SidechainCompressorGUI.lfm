@@ -206,6 +206,33 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Transparent = False
     OnClick = LEDStereoClick
   end
+  object GuiGraphXY: TGuiGraphXY
+    Left = 276
+    Top = 145
+    Width = 165
+    Height = 165
+    BorderColor = 9681911
+    FrameColor = 6322591
+    SeriesCollection = <
+      item
+        DisplayName = 'TGuiGraphXYSeriesCollectionItem'
+        SeriesClassName = 'TGuiGraphXYFunctionSeries'
+        Series.Color = 9681911
+      end>
+    XAxis.Granularity = 20.000000000000000000
+    XAxis.Minimum = -66.000000000000000000
+    XAxis.Maximum = 6.000000000000000000
+    XAxis.Lower = -66.000000000000000000
+    XAxis.Upper = 6.000000000000000000
+    YAxis.Granularity = 20.000000000000000000
+    YAxis.Minimum = -66.000000000000000000
+    YAxis.Maximum = 6.000000000000000000
+    YAxis.Lower = -66.000000000000000000
+    YAxis.Upper = 6.000000000000000000
+    Color = 4341035
+    LineColor = 6322591
+    LineWidth = 2
+  end
   object LbHold: TGuiLabel
     Left = 8
     Top = 145
@@ -345,36 +372,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Uniformity_Percent = 50.000000000000000000
     Transparent = False
     OnClick = LEDSideChainClick
-  end
-  object GuiGraphXY: TGuiGraphXY
-    Left = 276
-    Top = 145
-    Width = 165
-    Height = 165
-    BorderColor = 9681911
-    BorderRadius = 2.000000000000000000
-    BorderWidth = 1.500000000000000000
-    FrameColor = 6322591
-    GridColor = 6322591
-    SeriesCollection = <
-      item
-        DisplayName = 'TGuiGraphXYSeriesCollectionItem'
-        SeriesClassName = 'TGuiGraphXYFunctionSeries'
-        Series.Color = 9681911
-        Series.ShadeAlpha = 0
-        Series.Width = 2.000000000000000000
-      end>
-    XAxis.Granularity = 20.000000000000000000
-    XAxis.Minimum = -66.000000000000000000
-    XAxis.Maximum = 6.000000000000000000
-    XAxis.Lower = -66.000000000000000000
-    XAxis.Upper = 6.000000000000000000
-    YAxis.Granularity = 20.000000000000000000
-    YAxis.Minimum = -66.000000000000000000
-    YAxis.Maximum = 6.000000000000000000
-    YAxis.Lower = -66.000000000000000000
-    YAxis.Upper = 6.000000000000000000
-    Color = 4341035
   end
   object PnTitle: TPanel
     Left = 0
@@ -742,14 +739,12 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Width = 165
     Height = 69
     BorderColor = 9681911
-    BorderRadius = 2.000000000000000000
-    BorderWidth = 1.500000000000000000
+    BorderRadius = 2
     ColorChart = 4341035
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = 9681911
-        LineWidth = 2.000000000000000000
         OnGetFilterGain = GetFilterGain
       end>
     GraphColorDark = 6322591
@@ -764,7 +759,6 @@ object FmSidechainCompressor: TFmSidechainCompressor
     YAxis.Granularity = 10.000000000000000000
     YAxis.MaximumGridLines = 4
     YAxis.UnitPosition = upSide
-    YAxis.MouseActions = []
     Color = 5196083
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 9681911
@@ -801,16 +795,17 @@ object FmSidechainCompressor: TFmSidechainCompressor
     SlideColor = 6322591
     OnChange = SliderMixChange
   end
-  object PnPlugin: TGuiPanel
+  object GuiPanel1: TGuiPanel
     Left = 135
     Top = 38
     Width = 265
     Height = 20
-    BorderColor = 9681911
-    BorderRadius = 3.000000000000000000
-    BorderWidth = 1.500000000000000000
+    Caption = 'GuiPanel1'
+    LineColor = 9681911
+    BorderWidth = 2.000000000000000000
     PanelColor = 4341035
     ParentColor = True
+    BorderRadius = 3.000000000000000000
     TabOrder = 14
     UseDockManager = True
     DesignSize = (

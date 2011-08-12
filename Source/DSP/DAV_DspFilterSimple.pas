@@ -521,7 +521,7 @@ end;
 function TFirstOrderHighcutFilter.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Input  := FFilterGain * Input;
+ Input  := FFilterGain * Input {$IFDEF HandleDenormals} + CDenorm32 {$ENDIF};
  Result := Input + FState;
  FState := Input + FCoeff * Result;
 {$ELSE}
@@ -544,7 +544,7 @@ end;
 function TFirstOrderHighcutFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- Input  := FFilterGain * Input;
+ Input  := FFilterGain * Input {$IFDEF HandleDenormals} + CDenorm32 {$ENDIF};
  Result := Input + FState;
  FState := Input + FCoeff * Result;
 {$ELSE}

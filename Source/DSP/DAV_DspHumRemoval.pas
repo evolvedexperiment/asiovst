@@ -49,7 +49,7 @@ type
     FFundamentalFrequency : Single;
     FBandwidth            : Single;
     FDcFilterActive       : Boolean;
-    FAttenuation: Single;
+    FAttenuation          : Single;
     procedure SetHighpassFilterType(const Value: TOrderFilterClass);
     procedure SetNotchFilterCount(const Value: Integer);
     procedure SetFundamentalFrequency(const Value: Single);

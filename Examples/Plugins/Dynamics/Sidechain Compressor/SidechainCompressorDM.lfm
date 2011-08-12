@@ -1,4 +1,5 @@
 object SidechainCompressorDataModule: TSidechainCompressorDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -379,10 +380,11 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnEditOpen = VSTModuleEditOpen
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcessMono
-  OnProcess32Replacing = VSTModuleProcessMono
   OnProcessMidi = VSTModuleProcessMidi
+  OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   OnStartProcess = VSTModuleStartProcess
   OnStopProcess = VSTModuleStopProcess

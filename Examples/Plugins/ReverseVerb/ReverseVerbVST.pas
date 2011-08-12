@@ -38,7 +38,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspConvolution,
-  DAV_DspFilterButterworth, DAV_DspDelayLines, DAV_DspLightweightDynamics;
+  DAV_DspFilterSimple, DAV_DspDelayLines, DAV_DspLightweightDynamics;
 
 const
   CNumChannels = 2;
@@ -90,7 +90,7 @@ type
     FT60Factor        : Single;
     FDamping          : Single;
     FOutputGain       : Single;
-    FDampingFilter    : TButterworthLowpassFilter;
+    FDampingFilter    : TFirstOrderHighcutFilter;
     FCriticalSection  : TCriticalSection;
     {$IFNDEF DirectUpdate}
     FIRUpdateThread   : TImpulseResponseUpdateThread;
@@ -223,7 +223,7 @@ begin
  FillChar(FTempBuffer^, FTempBufferSize * SizeOf(Single), 0);
 
  // create damping filter
- FDampingFilter := TButterworthLowpassFilter.Create(1);
+ FDampingFilter := TFirstOrderHighcutFilter.Create;
  {$IFNDEF DirectUpdate}
  FIRUpdateThread := TImpulseResponseUpdateThread.Create(Self);
  {$ENDIF}
@@ -407,25 +407,27 @@ end;
 procedure TReverseVerbDataModule.UpdateImpulseResponse;
 var
   SampleIndex  : Integer;
+  ChannelIndex : Integer;
   Offset       : Integer;
   NextSample   : Integer;
-  s, Scale     : Single;
+  Current      : Double;
+  Weight       : Double;
   TailScale    : Single;
+  Scale        : Single;
   T60Factor    : Single;
   ExpGain      : Single;
   ERGain       : Single;
   TailGain     : Single;
-  ChannelIndex : Integer;
   TailStart    : Integer;
-  IR           : PDAVSingleFixedArray;
+  IR, BackIR   : PDAVSingleFixedArray;
 const
   CRandomSeed : array [0..7] of Cardinal = ($DEADBEEF, $C0DEAFFE, $31607037,
     $CAFEBABE, $BADCAB1E, $C001D00D, $C0CAC01A, $DD511FE);
 begin
  // initialize algorithm
+ if FIRLength = 0 then Exit;
  Scale := 1 / FIRLength;
- TailStart := Round(FERTime * SampleRate);
- if TailStart >= FIRLength then TailStart := FIRLength - 1;
+ TailStart := Limit(Round(FERTime * SampleRate), 1, FIRLength - 1);
  TailScale := 2 / TailStart;
  TailGain := FTail;
  ERGain := FEarlyReflections;
@@ -440,8 +442,10 @@ begin
    FDampingFilter.ResetStates;
    RandSeed := CRandomSeed[ChannelIndex mod 8];
    IR := @FImpulseResponse[ChannelIndex]^[0];
-   ExpGain := 1;
+   BackIR := @FBackwardIR[ChannelIndex]^[0];
+   ExpGain := T60Factor;
    IR[0] := 0;
+   Current := 0;
 
    // select first ER sample with pre delay
    NextSample := Random(100 + TailStart div 3) div 3;
@@ -454,15 +458,17 @@ begin
      // calculate early reflections
      if SampleIndex = NextSample then
       begin
-       IR[SampleIndex] := ERGain * ExpGain * (Random - Random);
+       Current := ERGain * ExpGain * (Random - Random);
        Offset := Random((TailStart - SampleIndex) div 3) div 3;
        NextSample := SampleIndex + 1 + Offset;
       end else IR[SampleIndex] := 0;
 
      // calculate damping
-     s := 0.1 * Sqr(Sqr((FIRLength - SampleIndex) * Scale));
-     IR[SampleIndex] := s * IR[SampleIndex]  +
-       (1 - s) * FDampingFilter.ProcessSample64(IR[SampleIndex]);
+     Weight := 0.1 * Sqr(Sqr((FIRLength - SampleIndex) * Scale));
+     Assert(Weight <= 1);
+     IR[SampleIndex] := Weight * Current  +
+       (1 - Weight) * FDampingFilter.ProcessSample64(Current);
+     BackIR^[FIRLength - 1 - SampleIndex] := IR[SampleIndex];
 
      // calculate exponential decay
      ExpGain := ExpGain * T60Factor;
@@ -474,21 +480,23 @@ begin
      Assert(SampleIndex < FIRLength);
 
      // calculate tail
-     s := Sqr((SampleIndex - TailStart div 2) * TailScale);
-     IR[SampleIndex] := 0.5 * (s + Sqr(Sqr(s))) * TailGain * ExpGain * (Random - Random);
+     Weight := Sqr((SampleIndex - TailStart div 2) * TailScale);
+     Current := 0.5 * (Weight + Sqr(Sqr(Weight))) * TailGain * ExpGain * (Random - Random);
 
      // calculate early reflections
      if SampleIndex = NextSample then
       begin
-       IR[SampleIndex] := IR[SampleIndex] + (1 - Sqr(s)) * ERGain * ExpGain * (Random - Random);
+       Current := Current + (1 - Sqr(Weight)) * ERGain * ExpGain * (Random - Random);
        Offset := Random((TailStart - SampleIndex) div 3) div 3;
        NextSample := SampleIndex + 1 + Offset;
       end;
 
      // calculate damping
-     s := 0.1 * Sqr(Sqr((FIRLength - SampleIndex) * Scale));
-     IR[SampleIndex] := s * IR[SampleIndex]  +
-       (1 - s) * FDampingFilter.ProcessSample64(IR[SampleIndex]);
+     Weight := 0.1 * Sqr(Sqr((FIRLength - SampleIndex) * Scale));
+     Assert(Weight <= 1);
+     IR[SampleIndex] := Weight * Current  +
+       (1 - Weight) * FDampingFilter.ProcessSample64(Current);
+     BackIR^[FIRLength - 1 - SampleIndex] := IR[SampleIndex];
 
      // calculate exponential decay
      ExpGain := ExpGain * T60Factor;
@@ -499,16 +507,16 @@ begin
      Assert(SampleIndex < FIRLength);
 
      // calculate tail
-     ExpGain := ExpGain * T60Factor;
-     IR[SampleIndex] := TailGain * ExpGain * (Random - Random);
-     s := 0.1 * Sqr(Sqr((FIRLength - SampleIndex) * Scale));
-     IR[SampleIndex] := CDenorm32 + s * IR[SampleIndex]  +
-       (1 - s) * FDampingFilter.ProcessSample64(IR[SampleIndex]);
-    end;
+     Current := TailGain * ExpGain * (Random - Random);
+     Weight := 0.1 * Sqr(Sqr((FIRLength - SampleIndex) * Scale));
+     Assert(Weight <= 1);
+     IR[SampleIndex] := CDenorm32 + Weight * Current  +
+       (1 - Weight) * FDampingFilter.ProcessSample64(Current);
+     BackIR^[FIRLength - 1 - SampleIndex] := IR[SampleIndex];
 
-   // calculate backward IR
-   for SampleIndex := 0 to FIRLength - 1
-    do FBackwardIR[ChannelIndex]^[SampleIndex] := IR^[FIRLength - 1 - SampleIndex];
+     // calculate exponential decay
+     ExpGain := ExpGain * T60Factor;
+    end;
   end;
 end;
 
@@ -544,8 +552,14 @@ begin
 end;
 
 procedure TReverseVerbDataModule.CalculateT60FadeFactor;
+var
+  Temp : Single;
 begin
- FT60Factor := FastPower10ContinousError3(-3 / (SampleRate * FT60));
+ Temp := Abs(SampleRate * FT60);
+ if Temp <> 0
+  then Temp := -3 / (SampleRate * FT60)
+  else Temp := -20;
+ FT60Factor := FastPower10ContinousError3(Temp);
 end;
 
 procedure TReverseVerbDataModule.ParameterDirectChange(

@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Forms,
   SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDelayLines,
   DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions
-  {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF};
+  {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF},
+  DAV_VSTCustomModule;
 
 type
   TNoiseReductionModule = class(TVSTModule)
@@ -87,6 +88,12 @@ uses
 procedure TNoiseReductionModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
+
+ with ParameterProperties[2] do
+  begin
+   Max := Length(GWindowFunctions) - 1;
+   MaxInteger := Length(GWindowFunctions) - 1;
+  end;
 end;
 
 procedure TNoiseReductionModule.VSTModuleDestroy(Sender: TObject);
@@ -110,12 +117,6 @@ begin
  SetLength(FAdditionalDelay, numInputs);
  for ChannelIndex := 0 to Length(FAdditionalDelay) - 1
   do FAdditionalDelay[ChannelIndex] := TDelayLineSamples32.Create(512);
-
- with ParameterProperties[2] do
-  begin
-   Max := Length(GWindowFunctions) - 1;
-   MaxInteger := Length(GWindowFunctions) - 1;
-  end;
 
  FEditorRect.Bottom := 147;
  FEditorRect.Right := 348;
@@ -218,12 +219,17 @@ procedure TNoiseReductionModule.ParameterWindowFunctionChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   ChannelIndex : Integer;
+  WindowIndex  : Integer;
 begin
  FCriticalSection.Enter;
  try
+  WindowIndex := Round(Parameter[Index]);
+  if (WindowIndex < 0) or (WindowIndex >= Length(GWindowFunctions))
+   then WindowIndex := 0;
+
   for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
    if Assigned(FNoiseReduction[ChannelIndex])
-    then FNoiseReduction[ChannelIndex].WindowFunctionClass := GWindowFunctions[Round(Parameter[Index])];
+    then FNoiseReduction[ChannelIndex].WindowFunctionClass := GWindowFunctions[WindowIndex];
  finally
   FCriticalSection.Leave;
  end;

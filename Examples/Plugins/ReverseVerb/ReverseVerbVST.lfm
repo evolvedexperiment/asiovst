@@ -1,6 +1,7 @@
 object ReverseVerbDataModule: TReverseVerbDataModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
+  OldCreateOrder = False
   Version = '1.0'
   EffectName = 'ReverseVerb'
   ProductName = 'DAV Effect Examples'
