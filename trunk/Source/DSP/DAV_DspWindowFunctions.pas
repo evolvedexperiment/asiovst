@@ -292,7 +292,7 @@ begin
   then
    begin
     FEffLength    := (0.5 - 0.005 * FTukey) * FLength;
-    FEffLengthRnd := round(FEffLength - 0.49999999999);  // FPU friendly trunc
+    FEffLengthRnd := Round(FEffLength - 0.49999999999);  // FPU friendly trunc
     if FEffLength > 0.5 then
      if FBartlett
       then FEffLengthReci := 1 /  FEffLength
@@ -302,7 +302,7 @@ begin
   else
    begin
     FEffLength    := (1 - 0.01 * FTukey) * FLength;
-    FEffLengthRnd := round(FEffLength);
+    FEffLengthRnd := Round(FEffLength);
     if FEffLength > 0 then
      if FBartlett
       then FEffLengthReci := 1 /  FEffLength
@@ -472,7 +472,7 @@ begin
     begin
      FSpkCorFak   := 2 * FSpkCorFak;
      FSpkCorFakSq := 2 * FSpkCorFakSq;
-     if (round(2 * FEffLength - 0.5) mod 2) > 0 then // remove sample in the middle if necessary
+     if (Round(2 * FEffLength - 0.5) mod 2) > 0 then // remove sample in the middle if necessary
       begin
        FSpkCorFak   := FSpkCorFak - CurWinVal;
        FSpkCorFakSq := FSpkCorFakSq - CurWinVal * CurWinVal;
@@ -1031,7 +1031,7 @@ begin
   then
    begin
     FEffLength    := (0.5 - 0.005 * FTukey) * FLength;
-    FEffLengthRnd := round(FEffLength - 0.49999999999);       // FPU friendly trunc
+    FEffLengthRnd := Round(FEffLength - 0.49999999999);       // FPU friendly trunc
     if FBartlett
      then FEffLengthReci := 1 / FEffLength else
     if FEffLength > 0.5
@@ -1041,7 +1041,7 @@ begin
   else
    begin
     FEffLength    := (1 - 0.01 * FTukey) * FLength;
-    FEffLengthRnd := round(FEffLength);
+    FEffLengthRnd := Round(FEffLength);
     if FBartlett
      then FEffLengthReci := 1 / (FEffLength - 0.5) else
     if FEffLength > 0
@@ -1126,7 +1126,7 @@ begin
    end;
  wsSymmetric:
    begin
-    if (StartPos + FEffLengthRnd<SampleCount) and (EndPos - FEffLengthRnd >= 0)
+    if (StartPos + FEffLengthRnd < SampleCount) and (EndPos - FEffLengthRnd >= 0)
      then DoWinLoopTriangle32Symmetric(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
      else // Wrap around
       begin
@@ -1650,9 +1650,9 @@ begin
 
  if FAlt then
   case Slope of
-   wsSymmetric : FenstereDoubles       (0,1,FStart,SampleCount,FLength,@ParamRec.SpectrumCorrectionFactor,FInvert,1,Data,round(2*FEffLength));
-   wsLeft      : FenstereDoublesFlanke (0,1,FStart,SampleCount,FLength,@ParamRec.SpectrumCorrectionFactor,False,1,Data,round(FEffLength));
-   wsRight     : FenstereDoublesFlanke (0,1,FStart,SampleCount,FLength,@ParamRec.SpectrumCorrectionFactor,True,1,Data,round(FEffLength));
+   wsSymmetric : FenstereDoubles       (0,1,FStart,SampleCount,FLength,@ParamRec.SpectrumCorrectionFactor,FInvert,1,Data,Round(2*FEffLength));
+   wsLeft      : FenstereDoublesFlanke (0,1,FStart,SampleCount,FLength,@ParamRec.SpectrumCorrectionFactor,False,1,Data,Round(FEffLength));
+   wsRight     : FenstereDoublesFlanke (0,1,FStart,SampleCount,FLength,@ParamRec.SpectrumCorrectionFactor,True,1,Data,Round(FEffLength));
   end
  else
   begin
@@ -1841,7 +1841,7 @@ begin
     end;
   wsSymmetric:
     begin
-     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos - FEffLengthRnd >= 0)
+     if (StartPos + FEffLengthRnd < SampleCount) and (EndPos - FEffLengthRnd >= 0)
       then FCosSymLoop32(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
       else // Wrap around
        begin
@@ -2130,7 +2130,7 @@ begin
    SpectrumCorrectionFactor := 0;
    SpuaredCorrectionFactor  := 0;
    GetSinCos(PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
-   CoefficientPointer := @cHanning;
+   CoefficientPointer := @CHanning;
    if FBartlett then
     case FWinSlope of
      wsLeft  : begin ComplexPosition.Im :=  ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
@@ -2246,7 +2246,7 @@ begin
    SpectrumCorrectionFactor := 0;
    SpuaredCorrectionFactor := 0;
    GetSinCos(PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
-   CoefficientPointer := @cHanning;
+   CoefficientPointer := @CHanning;
    if FBartlett then
     case FWinSlope of
      wsLeft  : begin ComplexPosition.Im :=  ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
@@ -2342,7 +2342,7 @@ begin
  FBandwidth := 1.303;
  FSidelobe := -42.68;
  FFirstMinimum := 4;
- FCoefPointer := @cHamming[0];
+ FCoefPointer := @CHamming[0];
  CosineTerms := 2;
 end;
 
@@ -2359,7 +2359,7 @@ end;
 constructor TWindowFunctionBlackman.Create;
 begin
  inherited;
- FCoefPointer  := @cBlackman[0];
+ FCoefPointer  := @CBlackman[0];
  FBandwidth    := 1.644;
  FSidelobe     := -58.11;
  FFirstMinimum := 6;

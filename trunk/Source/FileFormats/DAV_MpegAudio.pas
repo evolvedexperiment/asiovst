@@ -3499,7 +3499,7 @@ begin
     begin
      FBitStream.Stream.Seek(-3, soFromCurrent);
      FBitStream.Stream.Read(FId3Tag, SizeOf(FId3Tag));
-     assert(FId3Tag.Magic = 'TAG')
+     Assert(FId3Tag.Magic = 'TAG')
     end;
   end;
 

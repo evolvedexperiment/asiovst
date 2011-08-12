@@ -75,8 +75,10 @@ object NoiseReductionModule: TNoiseReductionModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Window Function'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 2.000000000000000000
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
       Max = 1.000000000000000000
+      MaxInteger = 1
       ReportVST2Properties = True
       ShortLabel = 'Window'
       SmallStepFloat = 1.000000000000000000

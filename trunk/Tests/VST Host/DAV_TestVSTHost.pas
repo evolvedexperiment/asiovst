@@ -3976,7 +3976,7 @@ begin
 
    // check output buffer is silence as well
    if (FOutput[0]^[Blocksize - 1] = 0) then
-    for ChannelIndex := 0 to Length(FInput) - 1 do
+    for ChannelIndex := 0 to Length(FOutput) - 1 do
      for SampleIndex := 0 to FBlockSize - 1
       do Check(FOutput[ChannelIndex]^[SampleIndex] = 0, 'Potential reset issue');
 

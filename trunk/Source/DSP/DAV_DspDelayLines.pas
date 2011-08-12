@@ -141,7 +141,7 @@ type
   published
     property BufferSize;
     property BufferFloatType: TBufferFloatType read FBufferFloatType write SetBufferFloatType;
-    property BytesPerSample: Integer read FBytesPerSample; 
+    property BytesPerSample: Integer read FBytesPerSample;
   end;
 
   TDelayLineSamples32 = class(TCustomDelayLineSamples32)

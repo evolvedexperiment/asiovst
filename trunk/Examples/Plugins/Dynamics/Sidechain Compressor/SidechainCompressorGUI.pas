@@ -38,13 +38,13 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, ExtCtrls, Dialogs, DAV_Types, DAV_VSTModule, DAV_VstHost, 
   DAV_GuiLabel, DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiSlider, DAV_GuiEQGraph, 
-  DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiGraphicControl;
+  DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiGraphicControl, DAV_GuiCustomControl;
 
 type
   TFmSidechainCompressor = class(TForm)
     GuiEQGraph: TGuiEQGraph;
     GuiGraphXY: TGuiGraphXY;
-    GuiPanel1: TGuiPanel;
+    PnPlugin: TGuiPanel;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
     LbAutoMakeUpGain: TGuiLabel;
@@ -225,7 +225,7 @@ procedure TFmSidechainCompressor.SliderLowcutFrequencyChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[0] := SliderLowcutFrequency.Position;
+   Parameter[0] := SliderLowcutFrequency.Value;
   end;
 end;
 
@@ -233,7 +233,7 @@ procedure TFmSidechainCompressor.SliderLowcutOrderChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[1] := SliderLowcutOrder.Position;
+   Parameter[1] := SliderLowcutOrder.Value;
   end;
 end;
 
@@ -241,7 +241,7 @@ procedure TFmSidechainCompressor.SliderHighcutFrequencyChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[2] := SliderHighcutFrequency.Position;
+   Parameter[2] := SliderHighcutFrequency.Value;
   end;
 end;
 
@@ -249,7 +249,7 @@ procedure TFmSidechainCompressor.SliderHighcutOrderChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[3] := SliderHighcutOrder.Position;
+   Parameter[3] := SliderHighcutOrder.Value;
   end;
 end;
 
@@ -257,7 +257,7 @@ procedure TFmSidechainCompressor.SliderAttackChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[4] := SliderAttack.Position;
+   Parameter[4] := SliderAttack.Value;
   end;
 end;
 
@@ -265,7 +265,7 @@ procedure TFmSidechainCompressor.SliderHoldChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[5] := SliderHold.Position;
+   Parameter[5] := SliderHold.Value;
   end;
 end;
 
@@ -273,7 +273,7 @@ procedure TFmSidechainCompressor.SliderReleaseChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[6] := SliderRelease.Position;
+   Parameter[6] := SliderRelease.Value;
   end;
 end;
 
@@ -281,7 +281,7 @@ procedure TFmSidechainCompressor.SliderThresholdChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[7] := SliderThreshold.Position;
+   Parameter[7] := SliderThreshold.Value;
   end;
 end;
 
@@ -295,7 +295,7 @@ procedure TFmSidechainCompressor.SliderRatioChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[8] := SliderRatio.Position;
+   Parameter[8] := SliderRatio.Value;
   end;
 end;
 
@@ -303,7 +303,7 @@ procedure TFmSidechainCompressor.SliderKneeChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[9] := SliderKnee.Position;
+   Parameter[9] := SliderKnee.Value;
   end;
 end;
 
@@ -311,7 +311,7 @@ procedure TFmSidechainCompressor.SliderMakeUpGainChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[10] := SliderMakeUpGain.Position;
+   Parameter[10] := SliderMakeUpGain.Value;
   end;
 end;
 
@@ -344,7 +344,7 @@ procedure TFmSidechainCompressor.SliderMixChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[14] := SliderMix.Position;
+   Parameter[14] := SliderMix.Value;
   end;
 end;
 
@@ -363,10 +363,10 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Frequency := Parameter[0];
-   if Frequency <> SliderLowcutFrequency.Position
-    then SliderLowcutFrequency.Position := Frequency;
+   if Frequency <> SliderLowcutFrequency.Value
+    then SliderLowcutFrequency.Value := Frequency;
    LbLowcutFrequencyValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -377,10 +377,10 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Order := Round(Parameter[1]);
-   if Order <> Round(SliderLowcutOrder.Position)
-    then SliderLowcutOrder.Position := Order;
+   if Order <> Round(SliderLowcutOrder.Value)
+    then SliderLowcutOrder.Value := Order;
    LbLowcutOrderValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -391,10 +391,10 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Frequency := Parameter[2];
-   if Frequency <> SliderHighcutFrequency.Position
-    then SliderHighcutFrequency.Position := Frequency;
+   if Frequency <> SliderHighcutFrequency.Value
+    then SliderHighcutFrequency.Value := Frequency;
    LbHighcutFrequencyValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -405,10 +405,10 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Order := Round(Parameter[3]);
-   if Order <> Round(SliderHighcutOrder.Position)
-    then SliderHighcutOrder.Position := Order;
+   if Order <> Round(SliderHighcutOrder.Value)
+    then SliderHighcutOrder.Value := Order;
    LbHighcutOrderValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
-   GuiEQGraph.ChartChanged;
+   GuiEQGraph.UpdateGraph;
   end;
 end;
 
@@ -419,8 +419,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Attack := Parameter[4];
-   if Attack <> SliderAttack.Position
-    then SliderAttack.Position := Attack;
+   if Attack <> SliderAttack.Value
+    then SliderAttack.Value := Attack;
    LbAttackValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
   end;
 end;
@@ -432,8 +432,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Hold := Parameter[5];
-   if Hold <> SliderHold.Position
-    then SliderHold.Position := Hold;
+   if Hold <> SliderHold.Value
+    then SliderHold.Value := Hold;
    LbHoldValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
   end;
 end;
@@ -445,8 +445,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Release := Parameter[6];
-   if Release <> SliderRelease.Position
-    then SliderRelease.Position := Release;
+   if Release <> SliderRelease.Value
+    then SliderRelease.Value := Release;
    LbReleaseValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
   end;
 end;
@@ -458,8 +458,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[7];
-   if Threshold <> SliderThreshold.Position
-    then SliderThreshold.Position := Threshold;
+   if Threshold <> SliderThreshold.Value
+    then SliderThreshold.Value := Threshold;
    LbThresholdValue.Caption := ParameterDisplay[7] + ' ' + ParameterLabel[7];
    GuiGraphXY.UpdateGraph;
   end;
@@ -472,8 +472,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[8];
-   if Ratio <> SliderRatio.Position
-    then SliderRatio.Position := Ratio;
+   if Ratio <> SliderRatio.Value
+    then SliderRatio.Value := Ratio;
    LbRatioValue.Caption := ParameterDisplay[8] + ' : 1';
    GuiGraphXY.UpdateGraph;
   end;
@@ -486,8 +486,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Knee := Parameter[9];
-   if Knee <> SliderKnee.Position
-    then SliderKnee.Position := Knee;
+   if Knee <> SliderKnee.Value
+    then SliderKnee.Value := Knee;
    LbKneeValue.Caption := ParameterDisplay[9] + ' ' + ParameterLabel[9];
    GuiGraphXY.UpdateGraph;
   end;
@@ -500,8 +500,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    MakeUp := SidechainCompressor[0].MakeUpGain_dB;
-   if MakeUp <> SliderMakeUpGain.Position
-    then SliderMakeUpGain.Position := MakeUp;
+   if MakeUp <> SliderMakeUpGain.Value
+    then SliderMakeUpGain.Value := MakeUp;
    LbMakeUpGainValue.Caption := ParameterDisplay[10] + ' ' + ParameterLabel[10];
    GuiGraphXY.UpdateGraph;
   end;
@@ -564,8 +564,8 @@ begin
  with TSidechainCompressorDataModule(Owner) do
   begin
    Mix := Parameter[14];
-   if Mix <> SliderMix.Position
-    then SliderMix.Position := Mix;
+   if Mix <> SliderMix.Value
+    then SliderMix.Value := Mix;
    LbMixValue.Caption := ParameterDisplay[14] + ' ' + ParameterLabel[14];
   end;
 end;

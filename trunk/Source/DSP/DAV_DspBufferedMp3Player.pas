@@ -302,7 +302,7 @@ end;
 
 procedure TBufferThread.CalculateTimeOut;
 begin
- FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
+ FTimeOut := Round(1000 * FStreamBufSize / FSampleRate);
 end;
 
 procedure TBufferThread.SampleRateChanged;

@@ -221,9 +221,9 @@ end;
 procedure TCustomSpectralEffect32.PerformSpectralEffect(SignalIn,
   SignalOut: PDAVSingleFixedArray);
 begin
- FFft.PerformFFT(FSignalFreq, SignalIn);
+ Fft.PerformFFT(FSignalFreq, SignalIn);
  PerformSpectralEffect(FSignalFreq);
- FFft.PerformIFFT(FSignalFreq, SignalOut);
+ Fft.PerformIFFT(FSignalFreq, SignalOut);
 end;
 
 procedure TCustomSpectralEffect32.ProcessBlock(const Input,

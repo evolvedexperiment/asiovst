@@ -255,7 +255,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_BlockProcessing, DAV_Approximations;
+  Math, SysUtils, DAV_Common, DAV_BlockProcessing, DAV_Approximations;
 
 { TCustomNoiseReduction32 }
 
@@ -303,6 +303,7 @@ end;
 procedure TCustomNoiseReduction32.SetWindowClass(
   const Value: TWindowFunctionClass);
 begin
+ Assert(Value <> nil);
  if FWindowClass <> Value then
   begin
    FWindowClass := Value;
@@ -318,13 +319,14 @@ begin
 
  FWindowFunction := FWindowClass.Create;
 
- with FWindowFunction do
-  begin
-   Start := 0;
-   Slope := wsSymmetric;
-  end;
+ if Assigned(FWindowFunction) then
+  with FWindowFunction do
+   begin
+    Start := 0;
+    Slope := wsSymmetric;
+   end;
 
- if assigned(OldWindow) then
+ if Assigned(OldWindow) then
   begin
    FWindowFunction.Length := OldWindow.Length;
    FreeAndNil(OldWindow);
@@ -449,7 +451,7 @@ var
 begin
  // dispose unused Gates
  for Bin := Fft.BinCount to Length(FGates) - 1 do
-  if assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
+  if Assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
 
  SetLength(FGates, Fft.BinCount);
 
@@ -648,7 +650,7 @@ begin
 
   // dispose unused Gates
  for Bin := Fft.BinCount to Length(FGates) - 1 do
-  if assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
+  if Assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
 
  SetLength(FGates, Fft.BinCount);
 
@@ -700,7 +702,7 @@ begin
    SignalOut^[Sample] := Scale * SignalOut^[FFFTSizeHalf + Sample] +
      (1 - Scale) * FAddTimeBuffer^[FFFTSizeHalf + Sample];
   end;
-end;
+ end;
 
 procedure TNoiseReduction32.BuildFilter(Spectrum: PDAVComplexSingleFixedArray);
 var
@@ -716,6 +718,7 @@ begin
  // DC bin
  FGates[0].InputSample(COffset + Sqr(Spectrum^[0].Re));
  FFilter^[0].Re := FGates[0].GainSample(1);
+ Assert(not (IsNan(FFilter^[0].Re)));
  if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
 
  // other bins
@@ -723,14 +726,16 @@ begin
   begin
    FGates[Bin].InputSample(COffset + Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im));
    FFilter^[Bin].Re := FGates[Bin].GainSample(1);
-   if abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
+   Assert(not (IsNan(FFilter^[Bin].Re)));
+   if Abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
    FFilter^[Bin].Im := 0;
   end;
 
  // Nyquist bin
  FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
- FFilter^[Half].Im := FGates[Half].GainSample(1);
- if abs(FFilter^[Half].Im) > 1 then FFilter^[Half].Im := 0;
+ FFilter^[0].Im := FGates[Half].GainSample(1);
+ Assert(not (IsNan(FFilter^[0].Im)));
+ if Abs(FFilter^[0].Im) > 1 then FFilter^[0].Im := 0;
 
  FFft.PerformIFFT(FFilter, FFilterIR);
 
@@ -948,7 +953,7 @@ begin
    Slope := wsSymmetric;
   end;
 
- if assigned(OldWindow) then
+ if Assigned(OldWindow) then
   begin
    FWindowFunction.Length := OldWindow.Length;
    FreeAndNil(OldWindow);
@@ -1073,7 +1078,7 @@ var
 begin
  // dispose unused Gates
  for Bin := Fft.BinCount to Length(FGates) - 1 do
-  if assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
+  if Assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
 
  SetLength(FGates, Fft.BinCount);
 

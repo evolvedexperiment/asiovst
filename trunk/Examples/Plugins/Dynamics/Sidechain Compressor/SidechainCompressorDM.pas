@@ -46,7 +46,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMonoSoftClip(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -204,12 +203,16 @@ begin
  Programs[0].SetParameters(FParameter);
  for Channel := 1 to numPrograms - 1
   do Programs[Channel].SetParameters(CPresets[Channel]);
+
+ // set GUI editor form class
+ EditorFormClass := TFmSidechainCompressor;
 end;
 
 procedure TSidechainCompressorDataModule.VSTModuleBlockSizeChange(
   Sender: TObject; const BlockSize: Integer);
 begin
- FVstHost.BlockSize := BlockSize;
+ if Assigned(FVstHost)
+  then FVstHost.BlockSize := BlockSize;
 end;
 
 procedure TSidechainCompressorDataModule.VSTModuleClose(Sender: TObject);
@@ -233,11 +236,6 @@ begin
   do FreeAndNil(FHighcut[Channel]);
 
  FreeAndNil(FVstHost);
-end;
-
-procedure TSidechainCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmSidechainCompressor.Create(Self);
 end;
 
 function TSidechainCompressorDataModule.EvaluateCharacteristic(
@@ -266,7 +264,7 @@ begin
        1 : OnProcess := VSTModuleProcessStereoSoftClip;
       end;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 function TSidechainCompressorDataModule.GetSidechainCompressor(Index: Integer): TCustomKneeCompressor;
@@ -472,13 +470,13 @@ procedure TSidechainCompressorDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 1000
-  then PreDefined := FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4);
+  then PreDefined := AnsiString(FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4));
 end;
 
 procedure TSidechainCompressorDataModule.ParameterSlopeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]) * 6);
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index]) * 6));
 end;
 
 procedure TSidechainCompressorDataModule.ParameterTimeDisplay(
@@ -488,16 +486,16 @@ var
 begin
  Val := Parameter[Index];
  if Val < 1
-  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
+  then PreDefined := AnsiString(FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3)) else
  if Val < 1000
-  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3))
+  else PreDefined := AnsiString(FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3));
 end;
 
 procedure TSidechainCompressorDataModule.ParameterMakeUpGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TSidechainCompressorDataModule.ParameterLowcutFrequencyChange(
@@ -573,19 +571,19 @@ end;
 procedure TSidechainCompressorDataModule.ParameterThresholdDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TSidechainCompressorDataModule.ParameterRatioDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TSidechainCompressorDataModule.ParameterKneeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TSidechainCompressorDataModule.ParameterOnOffDisplay(

@@ -450,23 +450,40 @@ end;
 
 constructor TFFTLUTListObject.Create(const xFFTSize: Integer);
 
-  function calcExt(Value: Integer): Integer;
+  function CalcExt(Value: Integer): Integer;
+  {$IFDEF PUREPASCAL}
+  begin
+    Result := Round(Log2(Value));
+  {$ELSE}
   asm
-    xor ECX, ECX
-    @Start:
-      inc ECX
-      test EAX,$2
-      jnz @End
-      shr EAX,1
+    {$IFDEF CPUx86_64}
+    XOR     EAX, EAX
+@Start:
+    INC     EAX
+    TEST    ECX, $2
+    JNZ     @End
+    SHR     ECX, 1
 
-      jmp @Start
-    @End:
-    MOV result.Integer, ECX
+    JMP     @Start
+@End:
+    {$ELSE}
+    XOR     ECX, ECX
+@Start:
+    INC     ECX
+    TEST    EAX, $2
+    JNZ     @End
+    SHR     EAX, 1
+
+    JMP     @Start
+@End:
+    MOV     Result, ECX
+    {$ENDIF}
+  {$ENDIF}
   end;
 
 begin
   FFftSize := xFFTSize;
-  if FFftSize > 1 then FBrLUT := TFFTLUTBitReversed.Create(calcExt(FFftSize));
+  if FFftSize > 1 then FBrLUT := TFFTLUTBitReversed.Create(CalcExt(FFftSize));
 end;
 
 destructor TFFTLUTListObject.Destroy;
@@ -573,21 +590,21 @@ end;
 
 procedure DoTrigoLUT(Bits: Integer);
 var
-  level, i  : Integer;
-  len, offs : Integer;
-  mul       : Extended;
+  Level, i  : Integer;
+  Len, Offs : Integer;
+  Mul       : Extended;
 begin
   if (Bits > TrigoLvl) then
    begin
     ReallocMem(TrigoLUT, ((1 shl (Bits - 1)) - 4) * SizeOf(Double));
 
-    for level := TrigoLvl to Bits - 1 do
+    for Level := TrigoLvl to Bits - 1 do
      begin
-      len  := 1 shl (level - 1);
-      offs := (len - 4);
-      mul  := PI / (len shl 1);
-      for i := 0 to len - 1
-       do TrigoLUT[i + offs] := cos(i * mul);
+      Len  := 1 shl (Level - 1);
+      Offs := (Len - 4);
+      Mul  := PI / (Len shl 1);
+      for i := 0 to Len - 1
+       do TrigoLUT[i + Offs] := cos(i * Mul);
      end;
 
     TrigoLvl := Bits;
@@ -743,7 +760,7 @@ begin
 end;
 {$ELSE}
 asm
- FLD [TimeDomain].Single
+ FLD  [TimeDomain].Single
  FSTP [FreqDomain].Single
 end;
 {$ENDIF}
@@ -774,12 +791,12 @@ begin
 end;
 {$ELSE}
 asm
- FLD  [TimeDomain     ].Single
- FLD   st(0)
- FADD [TimeDomain + $4].Single
- FSTP [FreqDomain     ].Single
- FSUB [TimeDomain + $4].Single
- FSTP [FreqDomain + $4].Single
+  FLD     [TimeDomain     ].Single
+  FLD     ST(0)
+  FADD    [TimeDomain + $4].Single
+  FSTP    [FreqDomain     ].Single
+  FSUB    [TimeDomain + $4].Single
+  FSTP    [FreqDomain + $4].Single
 end;
 {$ENDIF}
 
@@ -796,12 +813,12 @@ begin
 end;
 {$ELSE}
 asm
- FLD  [TimeDomain     ].Single
- FLD   st(0)
- FADD [TimeDomain + $4].Single
- FSTP [FreqDomain     ].Single
- FSUB [TimeDomain + $4].Single
- FSTP [FreqDomain + $4].Single
+  FLD     [TimeDomain     ].Single
+  FLD     ST(0)
+  FADD    [TimeDomain + $4].Single
+  FSTP    [FreqDomain     ].Single
+  FSUB    [TimeDomain + $4].Single
+  FSTP    [FreqDomain + $4].Single
 end;
 {$ENDIF}
 
@@ -832,8 +849,8 @@ asm
  FADD    [TimeDomain + $8].Single
  FLD     [TimeDomain + $4].Single
  FADD    [TimeDomain + $C].Single
- FLD     st(0)
- FADD    st(0), st(2)
+ FLD     ST(0)
+ FADD    ST(0), ST(2)
  FSTP    [FreqDomain     ].Single
  FSUBP
  FSTP    [FreqDomain + $8].Single
@@ -868,8 +885,8 @@ asm
  FADD [TimeDomain + $8].Single
  FLD  [TimeDomain + $4].Single
  FADD [TimeDomain + $C].Single
- FLD   st(0)
- FADD  st(0),st(2)
+ FLD   ST(0)
+ FADD  ST(0),st(2)
  FSTP [FreqDomain     ].Single
  FSUBP
  FSTP [FreqDomain + $8].Single
@@ -957,13 +974,13 @@ begin
   repeat
     Dec(ci, 4);
 
-    BitPos[0] := fBitRevLUT.LUT[ci    ];
-    BitPos[1] := fBitRevLUT.LUT[ci + 1];
+    BitPos[0] := FBitRevLUT.LUT[ci    ];
+    BitPos[1] := FBitRevLUT.LUT[ci + 1];
     TempBuffer[0][ci + 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci + 2];
-    BitPos[1] := fBitRevLUT.LUT[ci + 3];
+    BitPos[0] := FBitRevLUT.LUT[ci + 2];
+    BitPos[1] := FBitRevLUT.LUT[ci + 3];
     TempBuffer[0][ci + 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -1057,13 +1074,13 @@ begin
   // first and second pass at once
   ci := fFFTSize;
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
     FreqDomain[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FreqDomain[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -1134,26 +1151,26 @@ begin
   // first and second pass at once
   ci := fFFTSize;
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
     FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     FBuffer[ci - 4] := s + c;
     FBuffer[ci - 2] := s - c;
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 8];
-    BitPos[1] := fBitRevLUT.LUT[ci - 7];
+    BitPos[0] := FBitRevLUT.LUT[ci - 8];
+    BitPos[1] := FBitRevLUT.LUT[ci - 7];
     FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 6];
-    BitPos[1] := fBitRevLUT.LUT[ci - 5];
+    BitPos[0] := FBitRevLUT.LUT[ci - 6];
+    BitPos[1] := FBitRevLUT.LUT[ci - 5];
     FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -1283,33 +1300,35 @@ var
   Pass, ci, i : Integer;
   NbrCoef     : Integer;
   NbrCoefH    : Integer;
-  BitPos      : Array [0..1] of Integer;
+  BitPos      : array [0..1] of Integer;
   c, s, v     : Double;
-  TempBuffer  : Array [0..2] of PDAVSingleFixedArray;
+  TempBuffer  : array [0..2] of PDAVSingleFixedArray;
 begin
   // first and second pass at once
-  ci := fFFTSize;
+  ci := FFFTSize;
+
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
+
     FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     FBuffer[ci - 4] := s + c;
     FBuffer[ci - 2] := s - c;
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 8];
-    BitPos[1] := fBitRevLUT.LUT[ci - 7];
+    BitPos[0] := FBitRevLUT.LUT[ci - 8];
+    BitPos[1] := FBitRevLUT.LUT[ci - 7];
     FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 6];
-    BitPos[1] := fBitRevLUT.LUT[ci - 5];
+    BitPos[0] := FBitRevLUT.LUT[ci - 6];
+    BitPos[1] := FBitRevLUT.LUT[ci - 5];
     FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -1447,13 +1466,13 @@ begin
   // first and second pass at once
   ci := fFFTSize;
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
     FreqDomain[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FreqDomain[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -1597,13 +1616,13 @@ begin
   repeat
     Dec(ci, 4);
 
-    BitPos[0] := fBitRevLUT.LUT[ci    ];
-    BitPos[1] := fBitRevLUT.LUT[ci + 1];
+    BitPos[0] := FBitRevLUT.LUT[ci    ];
+    BitPos[1] := FBitRevLUT.LUT[ci + 1];
     TempBuffer[0][ci + 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci + 2];
-    BitPos[1] := fBitRevLUT.LUT[ci + 3];
+    BitPos[0] := FBitRevLUT.LUT[ci + 2];
+    BitPos[1] := FBitRevLUT.LUT[ci + 3];
     TempBuffer[0][ci + 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -1771,7 +1790,7 @@ end;
 {$ELSE}
 asm
  FLD  [FreqDomain    ].Single
- FLD  st(0)
+ FLD  ST(0)
  FADD [FreqDomain + 4].Single
  FSTP [TimeDomain    ].Single
  FSUB [FreqDomain + 4].Single
@@ -1793,7 +1812,7 @@ end;
 {$ELSE}
 asm
  FLD  [FreqDomain].Single
- FLD  st(0)
+ FLD  ST(0)
  FADD [FreqDomain + 4].Single
  FSTP [TimeDomain    ].Single
  FSUB [FreqDomain + 4].Single
@@ -1823,21 +1842,21 @@ const
 asm
  FLD  [FreqDomain +  8].Single
  FLD  [FreqDomain].Single
- FLD  st(0)
- FADD st(0),st(2)
- fxch st(2)
+ FLD  ST(0)
+ FADD ST(0),st(2)
+ FXCH ST(2)
  FSUBP                         // b1, b0
  FLD  [FreqDomain + 12].Single // f3, b1, b0
- fmul c2                       // 2 * f3, b1, b0
- FLD  st(0)                    // 2 * f3, 2 * f3, b1, b0
- FADD st(0),st(2)              // b1 + 2 * f3, 2 * f3, b1, b0
+ FMUL c2                       // 2 * f3, b1, b0
+ FLD  ST(0)                    // 2 * f3, 2 * f3, b1, b0
+ FADD ST(0),st(2)              // b1 + 2 * f3, 2 * f3, b1, b0
  FSTP [TimeDomain +  4].Single // 2 * f3, b1, b0
  FSUBP                         // b1 - 2 * f3, b0
  FSTP [TimeDomain+ 12].Single  // b0
  FLD  [FreqDomain +  4].Single // f1, b0
- fmul c2                       // 2 * f1, b0
- FLD  st(0)                    // 2 * f1, 2 * f1, b0
- FADD st(0),st(2)              // 2 * f1 + b0, 2 * f1, b0
+ FMUL c2                       // 2 * f1, b0
+ FLD  ST(0)                    // 2 * f1, 2 * f1, b0
+ FADD ST(0),st(2)              // 2 * f1 + b0, 2 * f1, b0
  FSTP [TimeDomain].Single      // 2 * f1, b0
  FSUBP                         // b0 - 2 * f1
  FSTP [TimeDomain +  8].Single
@@ -1867,21 +1886,21 @@ const
 asm
  FLD  [FreqDomain +  8].Single
  FLD  [FreqDomain].Single
- FLD  st(0)
- FADD st(0),st(2)
- fxch st(2)
+ FLD  ST(0)
+ FADD ST(0),st(2)
+ FXCH ST(2)
  FSUBP                         // b1, b0
  FLD  [FreqDomain + 12].Single // f3, b1, b0
- fmul c2                       // 2 * f3, b1, b0
- FLD  st(0)                    // 2 * f3, 2 * f3, b1, b0
- FADD st(0), st(2)             // b1 + 2 * f3, 2 * f3, b1, b0
+ FMUL c2                       // 2 * f3, b1, b0
+ FLD  ST(0)                    // 2 * f3, 2 * f3, b1, b0
+ FADD ST(0), ST(2)             // b1 + 2 * f3, 2 * f3, b1, b0
  FSTP [TimeDomain +  4].Single // 2 * f3, b1, b0
  FSUBP                         // b1 - 2 * f3, b0
  FSTP [TimeDomain + 12].Single // b0
  FLD  [FreqDomain +  4].Single // f1, b0
- fmul c2                       // 2 * f1, b0
- FLD  st(0)                    // 2 * f1, 2 * f1, b0
- FADD st(0),st(2)              // 2 * f1 + b0, 2 * f1, b0
+ FMUL c2                       // 2 * f1, b0
+ FLD  ST(0)                    // 2 * f1, 2 * f1, b0
+ FADD ST(0),st(2)              // 2 * f1 + b0, 2 * f1, b0
  FSTP [TimeDomain].Single      // 2 * f1, b0
  FSUBP                         // b0 - 2 * f1
  FSTP [TimeDomain + 8].Single
@@ -2026,20 +2045,20 @@ begin
     Tmp[1] := FBuffer[ci + 1] * 2;
     Tmp[3] := FBuffer[ci + 3] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
     Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
     Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
     Tmp[1] := FBuffer[ci + 5] * 2;
     Tmp[3] := FBuffer[ci + 7] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2138,20 +2157,20 @@ begin
     Tmp[2] := FBuffer[ci + 1] * 2;
     Tmp[3] := FBuffer[ci + 3] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[1] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[1] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[1] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[1] - Tmp[3];
 
     Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
     Tmp[1] := FBuffer[ci + 4] - FBuffer[ci + 6];
     Tmp[2] := FBuffer[ci + 5] * 2;
     Tmp[3] := FBuffer[ci + 7] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[1] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[1] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[1] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[1] - Tmp[3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2300,20 +2319,20 @@ begin
     Tmp[1] := TempBuffer[1][ci + 1] * 2;
     Tmp[3] := TempBuffer[1][ci + 3] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
     Tmp[0] := TempBuffer[1][ci + 4] + TempBuffer[1][ci + 6];
     Tmp[2] := TempBuffer[1][ci + 4] - TempBuffer[1][ci + 6];
     Tmp[1] := TempBuffer[1][ci + 5] * 2;
     Tmp[3] := TempBuffer[1][ci + 7] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2463,20 +2482,20 @@ begin
     Tmp[2] := TempBuffer[1][ci + 1] * 2;
     Tmp[3] := TempBuffer[1][ci + 3] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[1] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[1] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[1] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[1] - Tmp[3];
 
     Tmp[0] := TempBuffer[1][ci + 4] + TempBuffer[1][ci + 6];
     Tmp[1] := TempBuffer[1][ci + 4] - TempBuffer[1][ci + 6];
     Tmp[2] := TempBuffer[1][ci + 5] * 2;
     Tmp[3] := TempBuffer[1][ci + 7] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[2];
-    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[1] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[1] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[2];
+    TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[1] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[1] - Tmp[3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2629,20 +2648,20 @@ begin
     Tmp[1] := FBuffer[ci + 1] * 2;
     Tmp[3] := FBuffer[ci + 3] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
     Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
     Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
     Tmp[1] := FBuffer[ci + 5] * 2;
     Tmp[3] := FBuffer[ci + 7] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2788,20 +2807,20 @@ begin
     Tmp[1] := FBuffer[ci + 1] * 2;
     Tmp[3] := FBuffer[ci + 3] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
     Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
     Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
     Tmp[1] := FBuffer[ci + 5] * 2;
     Tmp[3] := FBuffer[ci + 7] * 2;
 
-    TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+    TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+    TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2980,7 +2999,7 @@ end;
 {$ELSE}
 asm
  FLD   [TimeDomain].Double
- FLD   st(0)
+ FLD   ST(0)
  FADD  [TimeDomain + $8].Double
  FSTP  [FreqDomain].Double
  FSUB  [TimeDomain + $8].Double
@@ -3001,7 +3020,7 @@ end;
 {$ELSE}
 asm
  FLD   [TimeDomain].Double
- FLD   st(0)
+ FLD   ST(0)
  FADD  [TimeDomain + $8].Double
  FSTP  [FreqDomain].Double
  FSUB  [TimeDomain + $8].Double
@@ -3035,8 +3054,8 @@ asm
  FADD  [TimeDomain + $10].Double
  FLD   [TimeDomain +  $8].Double
  FADD  [TimeDomain + $18].Double
- FLD   st(0)
- FADD  st(0),st(2)
+ FLD   ST(0)
+ FADD  ST(0),st(2)
  FSTP  [FreqDomain].Double
  FSUBP
  FSTP  [FreqDomain + $10].Double
@@ -3069,8 +3088,8 @@ asm
  FADD  [TimeDomain + $10].Double
  FLD   [TimeDomain +  $8].Double
  FADD  [TimeDomain + $18].Double
- FLD   st(0)
- FADD  st(0),st(2)
+ FLD   ST(0)
+ FADD  ST(0),st(2)
  FSTP  [FreqDomain].Double
  FSUBP
  FSTP  [FreqDomain + $10].Double
@@ -3146,13 +3165,13 @@ begin
   // first and second pass at once
   ci := fFFTSize;
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
     FreqDomain[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FreqDomain[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -3249,13 +3268,13 @@ begin
   repeat
     Dec(ci, 4);
 
-    BitPos[0] := fBitRevLUT.LUT[ci    ];
-    BitPos[1] := fBitRevLUT.LUT[ci + 1];
+    BitPos[0] := FBitRevLUT.LUT[ci    ];
+    BitPos[1] := FBitRevLUT.LUT[ci + 1];
     TempBuffer[ci + 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci + 2];
-    BitPos[1] := fBitRevLUT.LUT[ci + 3];
+    BitPos[0] := FBitRevLUT.LUT[ci + 2];
+    BitPos[1] := FBitRevLUT.LUT[ci + 3];
     TempBuffer[ci + 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -3354,26 +3373,26 @@ begin
   // first and second pass at once
   ci := fFFTSize;
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
     FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     FBuffer[ci - 4] := s + c;
     FBuffer[ci - 2] := s - c;
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 8];
-    BitPos[1] := fBitRevLUT.LUT[ci - 7];
+    BitPos[0] := FBitRevLUT.LUT[ci - 8];
+    BitPos[1] := FBitRevLUT.LUT[ci - 7];
     FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 6];
-    BitPos[1] := fBitRevLUT.LUT[ci - 5];
+    BitPos[0] := FBitRevLUT.LUT[ci - 6];
+    BitPos[1] := FBitRevLUT.LUT[ci - 5];
     FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -3510,26 +3529,26 @@ begin
   // first and second pass at once
   ci := fFFTSize;
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
     FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     FBuffer[ci - 4] := s + c;
     FBuffer[ci - 2] := s - c;
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 8];
-    BitPos[1] := fBitRevLUT.LUT[ci - 7];
+    BitPos[0] := FBitRevLUT.LUT[ci - 8];
+    BitPos[1] := FBitRevLUT.LUT[ci - 7];
     FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 6];
-    BitPos[1] := fBitRevLUT.LUT[ci - 5];
+    BitPos[0] := FBitRevLUT.LUT[ci - 6];
+    BitPos[1] := FBitRevLUT.LUT[ci - 5];
     FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -3667,13 +3686,13 @@ begin
   // first and second pass at once
   ci := fFFTSize;
   repeat
-    BitPos[0] := fBitRevLUT.LUT[ci - 4];
-    BitPos[1] := fBitRevLUT.LUT[ci - 3];
+    BitPos[0] := FBitRevLUT.LUT[ci - 4];
+    BitPos[1] := FBitRevLUT.LUT[ci - 3];
     FreqDomain[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci - 2];
-    BitPos[1] := fBitRevLUT.LUT[ci - 1];
+    BitPos[0] := FBitRevLUT.LUT[ci - 2];
+    BitPos[1] := FBitRevLUT.LUT[ci - 1];
     FreqDomain[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -3817,13 +3836,13 @@ begin
   repeat
     Dec(ci, 4);
 
-    BitPos[0] := fBitRevLUT.LUT[ci    ];
-    BitPos[1] := fBitRevLUT.LUT[ci + 1];
+    BitPos[0] := FBitRevLUT.LUT[ci    ];
+    BitPos[1] := FBitRevLUT.LUT[ci + 1];
     TempBuffer[0][ci + 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    BitPos[0] := fBitRevLUT.LUT[ci + 2];
-    BitPos[1] := fBitRevLUT.LUT[ci + 3];
+    BitPos[0] := FBitRevLUT.LUT[ci + 2];
+    BitPos[1] := FBitRevLUT.LUT[ci + 3];
     TempBuffer[0][ci + 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
@@ -3987,7 +4006,7 @@ end;
 {$ELSE}
 asm
  FLD  [FreqDomain].Double
- FLD  st(0)
+ FLD  ST(0)
  FADD [FreqDomain + 8].Double
  FSTP [TimeDomain].Double
  FSUB [FreqDomain + 8].Double
@@ -4007,7 +4026,7 @@ end;
 {$ELSE}
 asm
  FLD  [FreqDomain].Double
- FLD  st(0)
+ FLD  ST(0)
  FADD [FreqDomain + 8].Double
  FSTP [TimeDomain].Double
  FSUB [FreqDomain + 8].Double
@@ -4036,21 +4055,21 @@ const
 asm
  FLD  [FreqDomain + $10].Double
  FLD  [FreqDomain].Double
- FLD  st(0)
- FADD st(0), st(2)
- fxch st(2)
+ FLD  ST(0)
+ FADD ST(0), ST(2)
+ FXCH ST(2)
  FSUBP
  FLD  [FreqDomain + $18].Double
- fmul c2
- FLD  st(0)
- FADD st(0), st(2)
+ FMUL c2
+ FLD  ST(0)
+ FADD ST(0), ST(2)
  FSTP [TimeDomain + $8].Double
  FSUBP
  FSTP [TimeDomain + $18].Double
  FLD  [FreqDomain + $8].Double
- fmul c2
- FLD  st(0)
- FADD st(0), st(2)
+ FMUL c2
+ FLD  ST(0)
+ FADD ST(0), ST(2)
  FSTP [TimeDomain].Double
  FSUBP
  FSTP [TimeDomain + $10].Double
@@ -4078,21 +4097,21 @@ const
 asm
  FLD   [FreqDomain + $10].Double
  FLD   [FreqDomain].Double
- FLD   st(0)
- FADD  st(0), st(2)
- fxch  st(2)
+ FLD   ST(0)
+ FADD  ST(0), ST(2)
+ FXCH  ST(2)
  FSUBP
  FLD   [FreqDomain + $18].Double
- fmul  c2
- FLD   st(0)
- FADD  st(0), st(2)
+ FMUL  c2
+ FLD   ST(0)
+ FADD  ST(0), ST(2)
  FSTP  [TimeDomain +  $8].Double
  FSUBP
  FSTP  [TimeDomain + $18].Double
  FLD   [FreqDomain +  $8].Double
- fmul  c2
- FLD   st(0)
- FADD  st(0), st(2)
+ FMUL  c2
+ FLD   ST(0)
+ FADD  ST(0), ST(2)
  FSTP  [TimeDomain].Double
  FSUBP
  FSTP  [TimeDomain + $10].Double
@@ -4261,20 +4280,20 @@ begin
    Tmp[1] := TempBuffer[1][ci + 1] * 2;
    Tmp[3] := TempBuffer[1][ci + 3] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
    Tmp[0] := TempBuffer[1][ci + 4] + TempBuffer[1][ci + 6];
    Tmp[2] := TempBuffer[1][ci + 4] - TempBuffer[1][ci + 6];
    Tmp[1] := TempBuffer[1][ci + 5] * 2;
    Tmp[3] := TempBuffer[1][ci + 7] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
    Inc(ci, 8);
  until (ci >= fFFTSize);
@@ -4378,20 +4397,20 @@ begin
    Tmp[1] := TempBuffer[1][ci + 1] * 2;
    Tmp[3] := TempBuffer[1][ci + 3] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
    Tmp[0] := TempBuffer[1][ci + 4] + TempBuffer[1][ci + 6];
    Tmp[2] := TempBuffer[1][ci + 4] - TempBuffer[1][ci + 6];
    Tmp[1] := TempBuffer[1][ci + 5] * 2;
    Tmp[3] := TempBuffer[1][ci + 7] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
    Inc(ci, 8);
  until (ci >= fFFTSize);
@@ -4496,20 +4515,20 @@ begin
    Tmp[1] := FBuffer[ci + 1] * 2;
    Tmp[3] := FBuffer[ci + 3] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
    Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
    Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
    Tmp[1] := FBuffer[ci + 5] * 2;
    Tmp[3] := FBuffer[ci + 7] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
    Inc(ci, 8);
  until (ci >= fFFTSize);
@@ -4612,20 +4631,20 @@ begin
    Tmp[1] := FBuffer[ci + 1] * 2;
    Tmp[3] := FBuffer[ci + 3] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
    Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
    Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
    Tmp[1] := FBuffer[ci + 5] * 2;
    Tmp[3] := FBuffer[ci + 7] * 2;
 
-   TimeDomain[fBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
-   TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
-   TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
+   TimeDomain[FBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
+   TimeDomain[FBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
    Inc(ci, 8);
  until (ci >= fFFTSize);
