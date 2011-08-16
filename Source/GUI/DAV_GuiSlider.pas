@@ -61,6 +61,7 @@ type
     FSlideColor      : TColor;
     FValue           : Single;
     FCaption         : TCaption;
+    FReadOnly        : Boolean;
     FOnGetText       : TSliderGetTextEvent;
     FOnChange        : TNotifyEvent;
     FOnPaint         : TNotifyEvent;
@@ -121,6 +122,7 @@ type
     property Direction: TSliderDirection read FDirection write SetDirection default sdLeftToRight;
     property Max: Single read FMaximum write SetMax;
     property Min: Single read FMinimum write SetMin;
+    property ReadOnly: Boolean read FReadOnly write FReadOnly;
     property Value: Single read FValue write SetValue;
     property SlideColor: TColor read FSlideColor write SetSlideColor default $303030;
     property ShowText: Boolean read FShowText write SetShowText default False;
@@ -201,6 +203,7 @@ type
     property FontShadow;
     property Max;
     property Min;
+    property ReadOnly;
     property ParentColor;
     property ParentShowHint;
     property PopupMenu;
@@ -658,7 +661,7 @@ procedure TCustomGuiSliderGDI.MouseDown(Button: TMouseButton; Shift: TShiftState
 var
   NormalizedPosition : Single;
 begin
- if Button = mbLeft then
+ if (not FReadOnly) and (Button = mbLeft) then
   begin
    NormalizedPosition := X / (Width - 1);
    Value := Limit(FMinimum + MapValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
@@ -671,7 +674,7 @@ procedure TCustomGuiSliderGDI.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   NormalizedPosition : Single;
 begin
- if ssLeft in Shift then
+ if (not FReadOnly) and (ssLeft in Shift) then
   begin
    NormalizedPosition := X / (Width - 1);
    Value := Limit(FMinimum + MapValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);

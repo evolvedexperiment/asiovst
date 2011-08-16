@@ -92,45 +92,45 @@ begin
 {$ELSE}
 asm
  // DC
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add   eax, 4
- add   edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [EAX].Single
+ ADD   EAX, 4
+ ADD   EDX, 4
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add   eax, 4
- add   edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [EAX].Single
+ ADD   EAX, 4
+ ADD   EDX, 4
 
- dec   ecx
+ DEC   ECX
 @Start:
-  fld   [eax    ].Single  // A.Re
-  fld   [eax + 4].Single  // A.Im, A.Re
-  fld   [edx    ].Single  // B.Re, A.Im, A.Re
-  fld   [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fsubp st(1), st(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp  [eax    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch  st(2)             // A.Im, B.Re, B.Im, A.Re
-  fmulp                   // A.Im * B.Re, B.Im, A.Re
-  fxch  st(2)             // B.Im, A.Re, A.Im * B.Re
-  fmulp                   // B.Im * A.Re, A.Im * B.Re
-  faddp st(1), st(0)      // A.Im * B.Re + A.Re * B.Im
-  fstp  [eax + 4].Single  // A.Im := A.Im * B.Re + A.Re * B.Im
-  add   eax, 8
-  add   edx, 8
- loop @Start
+  FLD   [EAX    ].Single  // A.Re
+  FLD   [EAX + 4].Single  // A.Im, A.Re
+  FLD   [EDX    ].Single  // B.Re, A.Im, A.Re
+  FLD   [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP  [EAX    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH  ST(2)             // A.Im, B.Re, B.Im, A.Re
+  FMULP                   // A.Im * B.Re, B.Im, A.Re
+  FXCH  ST(2)             // B.Im, A.Re, A.Im * B.Re
+  FMULP                   // B.Im * A.Re, A.Im * B.Re
+  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
+  FSTP  [EAX + 4].Single  // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD   EAX, 8
+  ADD   EDX, 8
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [EAX].Single
 {$ENDIF}
 end;
 
@@ -151,48 +151,48 @@ asm
  mov ebx, OutBuffer
 
  // DC
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [ebx].Single
- add eax, 4
- add ebx, 4
- add edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [ebx].Single
+ ADD EAX, 4
+ ADD ebx, 4
+ ADD EDX, 4
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [ebx].Single
- add eax, 4
- add ebx, 4
- add edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [ebx].Single
+ ADD EAX, 4
+ ADD ebx, 4
+ ADD EDX, 4
 
- dec ecx
+ DEC ECX
 @Start:
-  fld   [eax    ].Single  // A.Re
-  fld   [eax + 4].Single  // A.Im, A.Re
-  fld   [edx    ].Single  // B.Re, A.Im, A.Re
-  fld   [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fsubp st(1), st(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp  [ebx    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch  st(2)             // A.Im, B.Re, B.Im, A.Re
-  fmulp                   // A.Im * B.Re, B.Im, A.Re
-  fxch  st(2)             // B.Im, A.Re, A.Im * B.Re
-  fmulp                   // B.Im * A.Re, A.Im * B.Re
-  faddp st(1), st(0)      // A.Im * B.Re + A.Re * B.Im
-  fstp [ebx + 4].Single   // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 8
-  add ebx, 8
-  add edx, 8
- loop @Start
+  FLD   [EAX    ].Single  // A.Re
+  FLD   [EAX + 4].Single  // A.Im, A.Re
+  FLD   [EDX    ].Single  // B.Re, A.Im, A.Re
+  FLD   [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP  [ebx    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH  ST(2)             // A.Im, B.Re, B.Im, A.Re
+  FMULP                   // A.Im * B.Re, B.Im, A.Re
+  FXCH  ST(2)             // B.Im, A.Re, A.Im * B.Re
+  FMULP                   // B.Im * A.Re, A.Im * B.Re
+  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
+  FSTP [ebx + 4].Single   // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD EAX, 8
+  ADD ebx, 8
+  ADD EDX, 8
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [ebx].Single
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [ebx].Single
 
  pop ebx
 {$ENDIF}
@@ -212,45 +212,45 @@ begin
 {$ELSE}
 asm
  // DC
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [eax].Double
- add eax, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [EAX].Double
+ ADD EAX, 8
+ ADD EDX, 8
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [eax].Double
- add eax, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [EAX].Double
+ ADD EAX, 8
+ ADD EDX, 8
 
- dec ecx
+ DEC ECX
 @Start:
-  fld   [eax    ].Double  // A.Re
-  fld   [eax + 8].Double  // A.Im, A.Re
-  fld   [edx    ].Double  // B.Re, A.Im, A.Re
-  fld   [edx + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fsubp st(1), st(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp [eax    ].Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch st(2)              // A.Im, B.Re, B.Im, A.Re
-  fmulp                   // A.Im * B.Re, B.Im, A.Re
-  fxch st(2)              // B.Im, A.Re, A.Im * B.Re
-  fmulp                   // B.Im * A.Re, A.Im * B.Re
-  faddp st(1), st(0)      // A.Im * B.Re + A.Re * B.Im
-  fstp [eax + 8].Double   // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 16
-  add edx, 16
- loop @Start
+  FLD   [EAX    ].Double  // A.Re
+  FLD   [EAX + 8].Double  // A.Im, A.Re
+  FLD   [EDX    ].Double  // B.Re, A.Im, A.Re
+  FLD   [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP [EAX    ].Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH ST(2)              // A.Im, B.Re, B.Im, A.Re
+  FMULP                   // A.Im * B.Re, B.Im, A.Re
+  FXCH ST(2)              // B.Im, A.Re, A.Im * B.Re
+  FMULP                   // B.Im * A.Re, A.Im * B.Re
+  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
+  FSTP [EAX + 8].Double   // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD EAX, 16
+  ADD EDX, 16
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [eax].Double
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [EAX].Double
 {$ENDIF}
 end;
 
@@ -271,48 +271,48 @@ asm
  mov ebx, OutBuffer
 
  // DC
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [ebx].Double
- add eax, 8
- add ebx, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [ebx].Double
+ ADD EAX, 8
+ ADD ebx, 8
+ ADD EDX, 8
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [ebx].Double
- add eax, 8
- add ebx, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [ebx].Double
+ ADD EAX, 8
+ ADD ebx, 8
+ ADD EDX, 8
 
- dec ecx
+ DEC ECX
 @Start:
-  fld   [eax    ].Double  // A.Re
-  fld   [eax + 8].Double  // A.Im, A.Re
-  fld   [edx    ].Double  // B.Re, A.Im, A.Re
-  fld   [edx + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld   st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul  st(0), st(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fsubp st(1), st(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp  [ebx    ].Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch  st(2)             // A.Im, B.Re, B.Im, A.Re
-  fmulp                   // A.Im * B.Re, B.Im, A.Re
-  fxch  st(2)             // B.Im, A.Re, A.Im * B.Re
-  fmulp                   // B.Im * A.Re, A.Im * B.Re
-  faddp st(1), st(0)      // A.Im * B.Re + A.Re * B.Im
-  fstp  [ebx + 8].Double  // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 16
-  add ebx, 16
-  add edx, 16
- loop @Start
+  FLD   [EAX    ].Double  // A.Re
+  FLD   [EAX + 8].Double  // A.Im, A.Re
+  FLD   [EDX    ].Double  // B.Re, A.Im, A.Re
+  FLD   [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP  [ebx    ].Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH  ST(2)             // A.Im, B.Re, B.Im, A.Re
+  FMULP                   // A.Im * B.Re, B.Im, A.Re
+  FXCH  ST(2)             // B.Im, A.Re, A.Im * B.Re
+  FMULP                   // B.Im * A.Re, A.Im * B.Re
+  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
+  FSTP  [ebx + 8].Double  // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD EAX, 16
+  ADD ebx, 16
+  ADD EDX, 16
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [ebx].Double
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [ebx].Double
 
  pop ebx
 {$ENDIF}
@@ -331,45 +331,45 @@ begin
 {$ELSE}
 asm
  // DC
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add eax, 4
- add edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [EAX].Single
+ ADD EAX, 4
+ ADD EDX, 4
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add eax, 4
- add edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [EAX].Single
+ ADD EAX, 4
+ ADD EDX, 4
 
- dec ecx
+ DEC ECX
 @Start:
-  fld [eax    ].Single  // A.Re
-  fld [eax + 4].Single  // A.Im, A.Re
-  fld [edx    ].Single  // B.Re, A.Im, A.Re
-  fld [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp [eax    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
-  fmulp                 // A.Im * B.Re, B.Im, A.Re
-  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
-  fmulp                 // B.Im * A.Re, A.Im * B.Re
-  fsubp                 // A.Im * B.Re - A.Re * B.Im
-  fstp [eax + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 8
-  add edx, 8
- loop @Start
+  FLD [EAX    ].Single  // A.Re
+  FLD [EAX + 4].Single  // A.Im, A.Re
+  FLD [EDX    ].Single  // B.Re, A.Im, A.Re
+  FLD [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP [EAX    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
+  FMULP                 // A.Im * B.Re, B.Im, A.Re
+  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
+  FMULP                 // B.Im * A.Re, A.Im * B.Re
+  FSUBP                 // A.Im * B.Re - A.Re * B.Im
+  FSTP [EAX + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD EAX, 8
+  ADD EDX, 8
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [EAX].Single
  {$ENDIF}
 end;
 
@@ -390,48 +390,48 @@ asm
  mov ebx, OutBuffer
 
  // DC
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [ebx].Single
- add eax, 4
- add ebx, 4
- add edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [ebx].Single
+ ADD EAX, 4
+ ADD ebx, 4
+ ADD EDX, 4
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [ebx].Single
- add eax, 4
- add ebx, 4
- add edx, 4
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [ebx].Single
+ ADD EAX, 4
+ ADD ebx, 4
+ ADD EDX, 4
 
- dec ecx
+ DEC ECX
 @Start:
-  fld [eax    ].Single  // A.Re
-  fld [eax + 4].Single  // A.Im, A.Re
-  fld [edx    ].Single  // B.Re, A.Im, A.Re
-  fld [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp [ebx    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
-  fmulp                 // A.Im * B.Re, B.Im, A.Re
-  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
-  fmulp                 // B.Im * A.Re, A.Im * B.Re
-  fsubp                 // A.Im * B.Re + A.Re * B.Im
-  fstp [ebx + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 8
-  add ebx, 8
-  add edx, 8
- loop @Start
+  FLD [EAX    ].Single  // A.Re
+  FLD [EAX + 4].Single  // A.Im, A.Re
+  FLD [EDX    ].Single  // B.Re, A.Im, A.Re
+  FLD [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP [ebx    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
+  FMULP                 // A.Im * B.Re, B.Im, A.Re
+  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
+  FMULP                 // B.Im * A.Re, A.Im * B.Re
+  FSUBP                 // A.Im * B.Re + A.Re * B.Im
+  FSTP [ebx + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD EAX, 8
+  ADD ebx, 8
+  ADD EDX, 8
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [ebx].Single
+ FLD   [EAX].Single
+ FMUL  [EDX].Single
+ FSTP  [ebx].Single
 
  pop ebx
  {$ENDIF}
@@ -450,45 +450,45 @@ begin
 {$ELSE}
 asm
  // DC
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [eax].Double
- add eax, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [EAX].Double
+ ADD EAX, 8
+ ADD EDX, 8
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [eax].Double
- add eax, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [EAX].Double
+ ADD EAX, 8
+ ADD EDX, 8
 
- dec ecx
+ DEC ECX
 @Start:
-  fld [eax    ].Double  // A.Re
-  fld [eax + 8].Double  // A.Im, A.Re
-  fld [edx    ].Double  // B.Re, A.Im, A.Re
-  fld [edx + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp [eax    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
-  fmulp                 // A.Im * B.Re, B.Im, A.Re
-  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
-  fmulp                 // B.Im * A.Re, A.Im * B.Re
-  fsubp                 // A.Im * B.Re + A.Re * B.Im
-  fstp [eax + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 16
-  add edx, 16
- loop @Start
+  FLD [EAX    ].Double  // A.Re
+  FLD [EAX + 8].Double  // A.Im, A.Re
+  FLD [EDX    ].Double  // B.Re, A.Im, A.Re
+  FLD [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP [EAX    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
+  FMULP                 // A.Im * B.Re, B.Im, A.Re
+  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
+  FMULP                 // B.Im * A.Re, A.Im * B.Re
+  FSUBP                 // A.Im * B.Re + A.Re * B.Im
+  FSTP [EAX + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD EAX, 16
+  ADD EDX, 16
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [eax].Double
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [EAX].Double
  {$ENDIF}
 end;
 
@@ -509,48 +509,48 @@ asm
  mov ebx, OutBuffer
 
  // DC
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [ebx].Double
- add eax, 8
- add ebx, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [ebx].Double
+ ADD EAX, 8
+ ADD ebx, 8
+ ADD EDX, 8
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [ebx].Double
- add eax, 8
- add ebx, 8
- add edx, 8
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [ebx].Double
+ ADD EAX, 8
+ ADD ebx, 8
+ ADD EDX, 8
 
- dec ecx
+ DEC ECX
 @Start:
-  fld [eax    ].Double  // A.Re
-  fld [eax + 8].Double  // A.Im, A.Re
-  fld [edx    ].Double  // B.Re, A.Im, A.Re
-  fld [edx + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp [ebx    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
-  fmulp                 // A.Im * B.Re, B.Im, A.Re
-  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
-  fmulp                 // B.Im * A.Re, A.Im * B.Re
-  fsubp                 // A.Im * B.Re + A.Re * B.Im
-  fstp [ebx + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 16
-  add ebx, 16
-  add edx, 16
- loop @Start
+  FLD [EAX    ].Double  // A.Re
+  FLD [EAX + 8].Double  // A.Im, A.Re
+  FLD [EDX    ].Double  // B.Re, A.Im, A.Re
+  FLD [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FSTP [ebx    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
+  FMULP                 // A.Im * B.Re, B.Im, A.Re
+  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
+  FMULP                 // B.Im * A.Re, A.Im * B.Re
+  FSUBP                 // A.Im * B.Re + A.Re * B.Im
+  FSTP [ebx + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
+  ADD EAX, 16
+  ADD ebx, 16
+  ADD EDX, 16
+ LOOP @Start
 
  // Nyquist
- fld   [eax].Double
- fmul  [edx].Double
- fstp  [ebx].Double
+ FLD   [EAX].Double
+ FMUL  [EDX].Double
+ FSTP  [ebx].Double
 
  pop ebx
  {$ENDIF}
@@ -580,22 +580,22 @@ asm
  push EDX
  fldz                            // DC
  @CalcDCLoop:
-   dec EDX
+   DEC EDX
    fadd  [EAX + 4 * EDX].Single  // DC = DC + Value
  jnz @CalcDCLoop
- pop edx
+ pop EDX
 
  mov  [ESP - 4], EDX
  fild [ESP - 4].Integer          // Length, DC
- fdivp st(1), st(0)              // RealDC = DC / Length
+ fdivp ST(1), ST(0)              // RealDC = DC / Length
 
  @SubstractDCLoop:
-   dec EDX
-   fld  [EAX + 4 * edx].Single   // Value, RealDC
-   fsub st(0), st(1)             // Value-RealDC, RealDC
-   fstp  [EAX + 4 * edx].Single  // RealDC
+   DEC EDX
+   FLD  [EAX + 4 * EDX].Single   // Value, RealDC
+   fsub ST(0), ST(1)             // Value-RealDC, RealDC
+   FSTP  [EAX + 4 * EDX].Single  // RealDC
  jnz @SubstractDCLoop
- fstp st(0)                      // clear stack
+ FSTP ST(0)                      // clear stack
 
  @End:
 end;
@@ -618,28 +618,28 @@ begin
 end;
 {$ELSE}
 asm
- test edx,edx
+ test EDX,EDX
  jz @End
 
- push edx
+ push EDX
  fldz                            // DC
  @CalcDCLoop:
-   dec edx
-   fadd  [eax + 8 * edx].Double  // DC = DC + Value
+   DEC EDX
+   fadd  [EAX + 8 * EDX].Double  // DC = DC + Value
  jnz @CalcDCLoop
- pop edx
+ pop EDX
 
- mov [esp - 4], edx
+ mov [esp - 4], EDX
  fild [esp - 4].Integer          // Length, DC
- fdivp st(1), st(0)              // RealDC = DC / Length
+ fdivp ST(1), ST(0)              // RealDC = DC / Length
 
  @SubstractDCLoop:
-   dec edx
-   fld  [eax + 8 * edx].Double  // Value, RealDC
-   fsub st(0), st(1)            // Value-RealDC, RealDC
-   fstp  [eax + 8 * edx].Double // RealDC
+   DEC EDX
+   FLD  [EAX + 8 * EDX].Double  // Value, RealDC
+   fsub ST(0), ST(1)            // Value-RealDC, RealDC
+   FSTP  [EAX + 8 * EDX].Double // RealDC
  jnz @SubstractDCLoop
- fstp st(0)                     // clear stack
+ FSTP ST(0)                     // clear stack
 
  @End:
 end;
@@ -656,9 +656,9 @@ end;
 {$ELSE}
 asm
 @Start:
- fld  [eax + ecx * 4 - 4].Single
- fstp [edx + ecx * 8 - 8].Double
- loop @Start
+ FLD  [EAX + ECX * 4 - 4].Single
+ FSTP [EDX + ECX * 8 - 8].Double
+ LOOP @Start
 end;
 {$ENDIF}
 
@@ -673,9 +673,9 @@ end;
 {$ELSE}
 asm
 @Start:
- fld [eax + ecx * 8 - 8].Double
- fstp [edx + ecx * 4 - 4].Single
- loop @Start
+ FLD [EAX + ECX * 8 - 8].Double
+ FSTP [EDX + ECX * 4 - 4].Single
+ LOOP @Start
 end;
 {$ENDIF}
 
@@ -755,34 +755,34 @@ begin
 end;
 {$ELSE}
 asm
- test edx,edx
+ test EDX,EDX
  jz @End
 
- mov result,edx                // Result := edx
- dec edx
+ mov result,EDX                // Result := EDX
+ DEC EDX
  jnz @End                      // only one sample -> exit!
- fld  [eax+4*edx].Single       // Value
+ FLD  [EAX+4*EDX].Single       // Value
  fabs                          // |Value| = Max
 
  @FindMaxLoop:
-   fld  [eax+4*edx-4].Single   // Value, Max
+   FLD  [EAX+4*EDX-4].Single   // Value, Max
    fabs                        // |Value|, Max
 
-   fcomi st(0), st(1)          // |Value| <-> Max ?
+   fcomi ST(0), ST(1)          // |Value| <-> Max ?
    fstsw ax                    // ax = FPU Status Word
    sahf                        // ax -> EFLAGS register
    jae @NextSample             // if |Value| <-> Max then next sample!
-   fxch                        // OldMax, |Value|
-   mov result,edx              // Result := edx
+   FXCH                        // OldMax, |Value|
+   mov result,EDX              // Result := EDX
 
    @NextSample:
-   fstp st(0)                  // Value, Max
-   dec edx
+   FSTP ST(0)                  // Value, Max
+   DEC EDX
  jnz @FindMaxLoop
 
- mov edx,result              // edx := Result
- sub edx,1                   // edx := edx - 1  -> index starts at 0!
- mov result,edx              // Result := edx
+ mov EDX,result              // EDX := Result
+ sub EDX,1                   // EDX := EDX - 1  -> index starts at 0!
+ mov result,EDX              // Result := EDX
 
  @End:
 end;
@@ -811,34 +811,34 @@ begin
 end;
 {$ELSE}
 asm
- test edx,edx
+ test EDX,EDX
  jz @End
 
- mov result,edx                // Result := edx
- dec edx
+ mov result,EDX                // Result := EDX
+ DEC EDX
  jz @End                       // only one sample -> exit!
- fld  [eax+8*edx].Double       // Value
+ FLD  [EAX+8*EDX].Double       // Value
  fabs                          // |Value| = Max
 
  @FindMaxLoop:
-   fld  [eax+8*edx-8].Double   // Value, Max
+   FLD  [EAX+8*EDX-8].Double   // Value, Max
    fabs                        // |Value|, Max
 
-   fcomi st(0), st(1)          // |Value| <-> Max ?
+   fcomi ST(0), ST(1)          // |Value| <-> Max ?
    fstsw ax                    // ax = FPU Status Word
    sahf                        // ax -> EFLAGS register
    jae @NextSample             // if |Value| <-> Max then next sample!
-   fxch                        // OldMax, |Value|
-   mov result,edx              // Result := edx
+   FXCH                        // OldMax, |Value|
+   mov result,EDX              // Result := EDX
 
    @NextSample:
-   fstp st(0)                  // Value, Max
-   dec edx
+   FSTP ST(0)                  // Value, Max
+   DEC EDX
  jnz @FindMaxLoop
 
- mov edx,result              // edx := Result
- sub edx,1                   // edx := edx - 1  -> index starts at 0!
- mov result,edx              // Result := edx
+ mov EDX,result              // EDX := Result
+ sub EDX,1                   // EDX := EDX - 1  -> index starts at 0!
+ mov result,EDX              // Result := EDX
 
  @End:
 end;
@@ -925,14 +925,14 @@ begin
   P := Data[(StartSample + EndSample) shr 1];
   repeat
     while Data[I] < P do Inc(I);
-    while Data[J] > P do Dec(J);
+    while Data[J] > P do DEC(J);
      if I <= J then
       begin
        T := Data[I];
        Data[I] := Data[J];
        Data[J] := T;
        Inc(I);
-       Dec(J);
+       DEC(J);
       end;
     until I > J;
    if StartSample < J then QuickSort32(Data, StartSample, J);
@@ -951,14 +951,14 @@ begin
   P := Data[(StartSample + EndSample) shr 1];
   repeat
     while Data[I] < P do Inc(I);
-    while Data[J] > P do Dec(J);
+    while Data[J] > P do DEC(J);
      if I <= J then
       begin
        T := Data[I];
        Data[I] := Data[J];
        Data[J] := T;
        Inc(I);
-       Dec(J);
+       DEC(J);
       end;
     until I > J;
    if StartSample < J then QuickSort64(Data, StartSample, J);
@@ -977,7 +977,7 @@ begin
   P := Data[(StartSample + EndSample) shr 1];
   repeat
    while Data[I] < P do Inc(I);
-   while Data[J] > P do Dec(J);
+   while Data[J] > P do DEC(J);
     if I <= J then
      begin
       T := Data[I];
@@ -987,7 +987,7 @@ begin
       Positions[I] := Positions[J];
       Positions[J] := K;
       Inc(I);
-      Dec(J);
+      DEC(J);
      end;
    until I > J;
 
@@ -1007,7 +1007,7 @@ begin
   P := Positions[(StartSample + EndSample) shr 1];
   repeat
     while Positions[I] < P do Inc(I);
-    while Positions[J] > P do Dec(J);
+    while Positions[J] > P do DEC(J);
      if I <= J then
       begin
        T := Data[I];
@@ -1017,7 +1017,7 @@ begin
        Positions[I] := Positions[J];
        Positions[J] := K;
        Inc(I);
-       Dec(J);
+       DEC(J);
       end;
     until I > J;
    if StartSample < J then ReorderPositions(Data, StartSample, J, Positions);
@@ -1036,7 +1036,7 @@ begin
   P := Data[(StartSample + EndSample) shr 1];
   repeat
    while Data[I] < P do Inc(I);
-   while Data[J] > P do Dec(J);
+   while Data[J] > P do DEC(J);
     if I <= J then
      begin
       T := Data[I];
@@ -1046,7 +1046,7 @@ begin
       Positions[I] := Positions[J];
       Positions[J] := K;
       Inc(I);
-      Dec(J);
+      DEC(J);
      end;
    until I > J;
 
@@ -1066,7 +1066,7 @@ begin
   P := Positions[(StartSample + EndSample) shr 1];
   repeat
     while Positions[I] < P do Inc(I);
-    while Positions[J] > P do Dec(J);
+    while Positions[J] > P do DEC(J);
      if I <= J then
       begin
        T := Data[I];
@@ -1076,7 +1076,7 @@ begin
        Positions[I] := Positions[J];
        Positions[J] := K;
        Inc(I);
-       Dec(J);
+       DEC(J);
       end;
     until I > J;
    if StartSample < J then ReorderPositions(Data, StartSample, J, Positions);
