@@ -77,11 +77,11 @@ begin
   end;
 {$ELSE}
 asm
- @Start:
-   FLD  [Destination + 4 * ECX - 4].Single
-   FADD [Source      + 4 * ECX - 4].Single
-   FSTP [Destination + 4 * ECX - 4].Single
- LOOP @Start
+  @Start:
+    FLD  [Destination + 4 * ECX - 4].Single
+    FADD [Source      + 4 * ECX - 4].Single
+    FSTP [Destination + 4 * ECX - 4].Single
+  LOOP @Start
 {$ENDIF}
 end;
 
@@ -98,11 +98,11 @@ begin
   end;
 {$ELSE}
 asm
- @Start:
-   FLD  [Destination + 8 * ECX - 8].Double
-   FADD [Source      + 8 * ECX - 8].Double
-   FSTP [Destination + 8 * ECX - 8].Double
- LOOP @Start
+  @Start:
+    FLD  [Destination + 8 * ECX - 8].Double
+    FADD [Source      + 8 * ECX - 8].Double
+    FSTP [Destination + 8 * ECX - 8].Double
+  LOOP @Start
 {$ENDIF}
 end;
 
@@ -119,11 +119,11 @@ begin
   end;
 {$ELSE}
 asm
- @Start:
-   FLD  [Destination + 4 * ECX - 4].Single
-   FSUB [Source      + 4 * ECX - 4].Single
-   FSTP [Destination + 4 * ECX - 4].Single
- LOOP @Start
+  @Start:
+    FLD  [Destination + 4 * ECX - 4].Single
+    FSUB [Source      + 4 * ECX - 4].Single
+    FSTP [Destination + 4 * ECX - 4].Single
+  LOOP @Start
 {$ENDIF}
 end;
 
@@ -140,11 +140,11 @@ begin
   end;
 {$ELSE}
 asm
- @Start:
-   FLD   [Destination + 8 * ECX - 8].Double
-   FSUB  [Source      + 8 * ECX - 8].Double
-   FSTP  [Destination + 8 * ECX - 8].Double
- LOOP    @Start
+  @Start:
+    FLD   [Destination + 8 * ECX - 8].Double
+    FSUB  [Source      + 8 * ECX - 8].Double
+    FSTP  [Destination + 8 * ECX - 8].Double
+  LOOP    @Start
 {$ENDIF}
 end;
 

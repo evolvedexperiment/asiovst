@@ -833,7 +833,7 @@ begin
  if not FNative then
   begin
    inherited SetChecked(Value);
-   Invalidate;
+   BufferChanged(False, True);
   end else
  if FFlatChecked <> Value then
   begin

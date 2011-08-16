@@ -45,6 +45,7 @@ const
 type
   TConvoFxDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -55,7 +56,6 @@ type
     procedure ParameterIRChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDampingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FConvolution     : array [0..CNumChannels - 1] of TLowLatencyConvolution32;
     FImpulseResponse : array [0..CNumChannels - 1] of PDAVSingleFixedArray;
@@ -78,8 +78,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_Math, DAV_HalfFloat, DAV_DspInterpolation, DAV_VSTCustomModule,
-  ConvoFxGUI;
+  Math, DAV_Common, DAV_Math, DAV_HalfFloat, DAV_DspInterpolation, 
+  DAV_VSTCustomModule, ConvoFxGUI;
 
 procedure TConvoFxDataModule.VSTModuleCreate(Sender: TObject);
 begin

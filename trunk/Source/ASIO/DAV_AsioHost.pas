@@ -1980,5 +1980,6 @@ initialization
  PMBufSwitch.Msg := PM_BufferSwitch;
  PMBufSwitchTimeInfo.Msg := PM_BufferSwitchTimeInfo;
  PMReset.Msg := PM_Reset;
+ IsMultiThread := True;
 
 end.
