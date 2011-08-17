@@ -407,16 +407,17 @@ begin
   end;
 {$ELSE}
 asm
- AND    ECX, ECX
- JZ     @Done
- FLD     Value.Double
- @Start:
-   FLD   [Destination + 4 * ECX - 4].Single
-   FMUL  ST(0), ST(1)
-   FSTP  [Destination + 4 * ECX - 4].Single
- LOOP    @Start
- FSTP    ST(0)
- @Done:
+  MOV    ECX, Count
+  AND    ECX, ECX
+  JZ     @Done
+  FLD    Value.Single
+  @Start:
+    FLD   [Destination + 4 * ECX - 4].Single
+    FMUL  ST(0), ST(1)
+    FSTP  [Destination + 4 * ECX - 4].Single
+  LOOP    @Start
+  FSTP    ST(0)
+  @Done:
 {$ENDIF}
 end;
 
