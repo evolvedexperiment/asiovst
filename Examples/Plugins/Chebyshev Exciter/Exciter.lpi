@@ -8,6 +8,7 @@
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <Runnable Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
@@ -18,8 +19,54 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="1" Active="Default">
-      <Item1 Name="Default" Default="True"/>
+    <BuildModes Count="2" Active="Release">
+      <Item1 Name="Release" Default="True"/>
+      <Item2 Name="Debug">
+        <CompilerOptions>
+          <Version Value="10"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\..\Bin\VST\64-Bit\Exciter (x64).dll"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>
+            <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
+            <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <CStyleOperator Value="False"/>
+              <IncludeAssertionCode Value="True"/>
+              <CPPInline Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="True"/>
+              <GenerateDwarf Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <UseMsgFile Value="True"/>
+            </CompilerMessages>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -43,52 +90,68 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="31"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="22"/>
       </Unit0>
       <Unit1>
         <Filename Value="ExciterDM.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="ExciterDataModule"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="ExciterDM"/>
         <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="257"/>
-        <CursorPos X="1" Y="283"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="39"/>
+        <CursorPos X="3" Y="44"/>
+        <UsageCount Value="22"/>
       </Unit1>
       <Unit2>
         <Filename Value="ExciterGUI.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FmExciter"/>
         <HasResources Value="True"/>
-        <UsageCount Value="20"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ExciterGUI"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="85"/>
+        <CursorPos X="60" Y="104"/>
+        <UsageCount Value="22"/>
       </Unit2>
       <Unit3>
         <Filename Value="../\Barberpole Shifter\ConverterBackup\DAV_WinAmp.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="22"/>
       </Unit3>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\Bin\VST\64-Bit\Exciter (x64).dll"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
-      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <UseAnsiStrings Value="False"/>
+        <CStyleOperator Value="False"/>
+        <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <Optimizations>
+        <OptimizationLevel Value="3"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
         <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
@@ -99,6 +162,9 @@
       </Options>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>

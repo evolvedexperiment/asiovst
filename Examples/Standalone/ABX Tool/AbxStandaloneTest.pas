@@ -36,9 +36,10 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
-  Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls, 
-  DAV_Types, DAV_ASIOHost, DAV_AudioData, DAV_AudioFile, DAV_AudioFileWav, 
-  AbxChunks, kbmMemCSVStreamFormat, kbmMemTable, kbmMemBinaryStreamFormat, DB;
+  Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls, DB,
+  kbmMemCSVStreamFormat, kbmMemTable, kbmMemBinaryStreamFormat, DAV_Classes,
+  DAV_Types, DAV_ASIOHost, DAV_AudioData, DAV_AudioFile, DAV_AudioFileWav,
+  AbxChunks;
 
 type
   TXAssignment = (xaXisA = 1, xaXisB = 2);

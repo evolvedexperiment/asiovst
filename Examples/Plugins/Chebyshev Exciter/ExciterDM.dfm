@@ -1,4 +1,6 @@
 object ExciterDataModule: TExciterDataModule
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Exciter'
@@ -88,10 +90,10 @@ object ExciterDataModule: TExciterDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 84
