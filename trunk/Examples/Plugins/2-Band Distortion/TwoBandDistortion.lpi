@@ -26,7 +26,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\TwoBandDistortion.x64.dll" ApplyConventions="False"/>
+            <Filename Value="..\..\..\Bin\VST\64-Bit\2-Band Distortion.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -72,7 +72,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\TwoBandDistortion.x64.dll" ApplyConventions="False"/>
+            <Filename Value="..\..\..\Bin\VST\64-Bit\2-Band Distortion.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -88,6 +88,9 @@
           </Parsing>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="2"/>
+            </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
@@ -103,6 +106,9 @@
             </Options>
           </Linking>
           <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
             <CompilerMessages>
               <UseMsgFile Value="True"/>
             </CompilerMessages>
@@ -177,8 +183,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TwoBandDistortionGUI"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="23"/>
         <CursorPos X="73" Y="39"/>
         <UsageCount Value="24"/>
@@ -293,6 +297,7 @@
         <TopLine Value="433"/>
         <CursorPos X="32" Y="448"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\..\..\GR32\Source\GR32_Rasterizers.pas"/>
@@ -301,6 +306,7 @@
         <TopLine Value="164"/>
         <CursorPos X="3" Y="180"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\..\..\..\GR32\Source\GR32_Resamplers.pas"/>
@@ -309,6 +315,7 @@
         <TopLine Value="646"/>
         <CursorPos X="15" Y="646"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\Lazarus\fpc\2.5.1\source\rtl\inc\systemh.inc"/>
@@ -324,6 +331,7 @@
         <TopLine Value="360"/>
         <CursorPos X="3" Y="376"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\..\..\..\GR32\Source\GR32_Polygons.pas"/>
@@ -332,6 +340,7 @@
         <TopLine Value="209"/>
         <CursorPos X="3" Y="237"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\..\..\..\GR32\Source\GR32_Containers.pas"/>
@@ -340,6 +349,7 @@
         <TopLine Value="1"/>
         <CursorPos X="25" Y="27"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\..\..\..\GR32\Source\GR32_Dsgn_Bitmap.pas"/>
@@ -351,6 +361,7 @@
         <TopLine Value="51"/>
         <CursorPos X="53" Y="68"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
         <Filename Value="..\..\..\..\..\..\Christian\AppData\Local\Opera\Opera\temporary_downloads\MpuProcessTools.pas"/>
@@ -368,6 +379,7 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit24>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
@@ -376,7 +388,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\2-Band Distortion (x64).dll" ApplyConventions="False"/>
+      <Filename Value="..\..\..\Bin\VST\64-Bit\2-Band Distortion.dll" ApplyConventions="False"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>
@@ -392,6 +404,9 @@
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <Optimizations>
+        <OptimizationLevel Value="2"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -407,6 +422,9 @@
       </Options>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>

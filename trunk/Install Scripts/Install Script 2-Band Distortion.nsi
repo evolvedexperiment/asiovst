@@ -112,12 +112,12 @@ Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\VST\32-Bit\TwoBandDistortion.dll" "..\Bin\VST\32-Bit\2-Band Distortion.dll"'  
-  !system 'copy "..\Bin\VST\64-Bit\TwoBandDistortion.x64.dll" "..\Bin\VST\64-Bit\2-Band Distortion (x64).dll"'  
+  !system 'copy "..\Bin\VST\64-Bit\TwoBandDistortion.dll" "..\Bin\VST\64-Bit\2-Band Distortion.dll"'  
 
   ${If} ${RunningX64}
-  File "..\Bin\64-Bit\2-Band Distortion (x64).dll"
+  File "..\Bin\VST\64-Bit\2-Band Distortion.dll"
   ${Else}
-  File "..\Bin\32-Bit\2-Band Distortion.dll"
+  File "..\Bin\VST\32-Bit\2-Band Distortion.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -200,7 +200,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   ${If} ${RunningX64}
-  Delete "$INSTDIR\2-Band Distortion.x64.dll"
+  Delete "$INSTDIR\2-Band Distortion.dll"
   ${Else}
   Delete "$INSTDIR\2-Band Distortion.dll"
   ${Endif}

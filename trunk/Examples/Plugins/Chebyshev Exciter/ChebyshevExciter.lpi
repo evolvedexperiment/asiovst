@@ -26,7 +26,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\VST\64-Bit\Chebyshev Exciter (x64).dll"/>
+            <Filename Value="..\..\..\Bin\VST\64-Bit\Chebyshev Exciter.dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>
@@ -91,7 +91,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="31"/>
-        <UsageCount Value="93"/>
+        <UsageCount Value="94"/>
       </Unit0>
       <Unit1>
         <Filename Value="ExciterDM.pas"/>
@@ -103,7 +103,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="39"/>
         <CursorPos X="3" Y="44"/>
-        <UsageCount Value="93"/>
+        <UsageCount Value="94"/>
       </Unit1>
       <Unit2>
         <Filename Value="ExciterGUI.pas"/>
@@ -114,12 +114,12 @@
         <UnitName Value="ExciterGUI"/>
         <TopLine Value="159"/>
         <CursorPos X="51" Y="169"/>
-        <UsageCount Value="93"/>
+        <UsageCount Value="94"/>
       </Unit2>
       <Unit3>
         <Filename Value="../\Barberpole Shifter\ConverterBackup\DAV_WinAmp.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="93"/>
+        <UsageCount Value="94"/>
       </Unit3>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>

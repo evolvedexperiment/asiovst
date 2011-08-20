@@ -1,6 +1,7 @@
 object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
+  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'TwoBand Distortion'
@@ -118,7 +119,9 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
+  OnProcess = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
+  OnResume = VSTModuleResume
   left = 218
   top = 81
   Height = 150
