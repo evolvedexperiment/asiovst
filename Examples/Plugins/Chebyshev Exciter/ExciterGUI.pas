@@ -163,14 +163,18 @@ var
 begin
  with Owner as TExciterDataModule do
   begin
-   DesiredOrder := round(DialOrder.Value);
+   DesiredOrder := Round(DialOrder.Value);
    CurrentOrder := ParameterByName['Order'];
-   if round(CurrentOrder) = DesiredOrder then
+   if DesiredOrder <> CurrentOrder
+    then ParameterByName['Order'] := CurrentOrder;
+(*
+   if Round(CurrentOrder) = DesiredOrder then
     if DialOrder.Value < CurrentOrder
      then ParameterByName['Order'] := DesiredOrder - 1 else
     if DialOrder.Value > CurrentOrder
      then ParameterByName['Order'] := DesiredOrder + 1 else
    else ParameterByName['Order'] := DesiredOrder;
+*)
   end;
 end;
 

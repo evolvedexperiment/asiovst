@@ -12,6 +12,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
+      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -99,11 +100,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="ExciterDM"/>
-        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="39"/>
         <CursorPos X="3" Y="44"/>
         <UsageCount Value="22"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="ExciterGUI.pas"/>
@@ -112,10 +114,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ExciterGUI"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="85"/>
-        <CursorPos X="60" Y="104"/>
+        <TopLine Value="159"/>
+        <CursorPos X="51" Y="169"/>
         <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="../\Barberpole Shifter\ConverterBackup\DAV_WinAmp.pas"/>
@@ -123,7 +129,12 @@
         <UsageCount Value="22"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="ExciterGUI.pas"/>
+        <Caret Line="104" Column="60" TopLine="85"/>
+      </Position1>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="10"/>

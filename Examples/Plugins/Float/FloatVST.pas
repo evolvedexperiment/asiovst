@@ -3,13 +3,12 @@ unit FloatVST;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_HalfFloat, DAV_MiniFloat;
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes,
+  Forms, DAV_Types, DAV_VSTModule, DAV_HalfFloat, DAV_MiniFloat;
 
 type
   TFloatModule = class(TVSTModule)
-    procedure ParameterFloatBitsDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure ParameterFloatBitsChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess32_8(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess32_16(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess32_32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -17,11 +16,42 @@ type
     procedure VSTModuleProcess64_16(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64_32(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64_64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure ParameterFloatBitsDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFloatBitsChange(Sender: TObject; const Index: Integer; var Value: Single);
   end;
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
+
+procedure TFloatModule.VSTModuleOpen(Sender: TObject);
+begin
+  Parameter[0] := 2;
+
+  with Programs[0] do
+  begin
+    Parameter[0] := 2;
+  end;
+
+  with Programs[1] do
+  begin
+    Parameter[0] := 0;
+  end;
+
+  with Programs[2] do
+  begin
+    Parameter[0] := 1;
+  end;
+
+  with Programs[3] do
+  begin
+    Parameter[0] := 2;
+  end;
+end;
 
 procedure TFloatModule.ParameterFloatBitsChange(
   Sender: TObject; const Index: Integer; var Value: Single);
@@ -123,16 +153,9 @@ end;
 
 procedure TFloatModule.VSTModuleProcess32_32(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  SampleIndex : Integer;
 begin
-  for SampleIndex := 0 to SampleFrames - 1 do
-  begin
-    Outputs[0, SampleIndex] := FastHalfFloatToSingle(SingleToHalfFloat(
-      Inputs[0, SampleIndex]));
-    Outputs[1, SampleIndex] := FastHalfFloatToSingle(SingleToHalfFloat(
-      Inputs[1, SampleIndex]));
-  end;
+  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
+  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TFloatModule.VSTModuleProcess64_32(const Inputs,
@@ -152,9 +175,6 @@ end;
 
 procedure TFloatModule.VSTModuleProcess64_64(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-var
-  SampleIndex : Integer;
-  Value       : Single;
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));

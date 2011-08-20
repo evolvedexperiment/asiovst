@@ -58,13 +58,13 @@ var
 begin
  // Get the sign bit. Shift it for later use without further modification
  if Value < 0
-  then SignInt := 1 shl 8
+  then SignInt := (1 shl 7)
   else SignInt := 0;
 
  // The magnitude must fit in 15 bits to avoid overflow
- if (abs(Value) > 1)
+ if (Abs(Value) > 1)
   then IntValue := $7FFF
-  else IntValue := round($7FFF * abs(Value));
+  else IntValue := Round($7FFF * abs(Value));
 
  // Finding the "exponent"
  // Bits:
@@ -84,7 +84,7 @@ begin
  while ((IntValue and ExpMask) = 0) and (Exponent > 0) do
   begin
    ExpMask := ExpMask shr 1;
-   dec(Exponent);
+   Dec(Exponent);
   end;
 
  // The last part - the "mantissa"
@@ -196,7 +196,7 @@ begin
   then Data := Data shl (Exponent - 1);
 
  Result := Data * CScale;
- if sign <> 0 then Result := -Result;
+ if Sign <> 0 then Result := -Result;
 end;
 
 end.
