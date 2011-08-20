@@ -22,7 +22,7 @@ resourcestring
 
 {-$DEFINE Alternative}
 
-procedure RenderScreenshot(FileName: TFileName);
+procedure RenderScreenshot(FileName: TFileName; OutputFileName: TFileName = '');
 var
   Form      : TForm;
   Bitmap    : TBitmap;
@@ -89,7 +89,9 @@ begin
        with Png do
         try
          Png.Assign(Bitmap);
-         Png.SaveToFile(FileName + '.png');
+         if OutputFileName = ''
+          then OutputFileName := ChangeFileExt(FileName, '.png');
+         Png.SaveToFile(OutputFileName);
         finally
          FreeAndNil(Png);
         end;
@@ -118,7 +120,7 @@ begin
  Writeln(RCStrAbout);
 
  if FileExists(ParamStr(1))
-  then RenderScreenshot(ParamStr(1))
+  then RenderScreenshot(ParamStr(1), ParamStr(2))
   else
    if FindFirst('*.dll', faAnyFile, SR) = 0 then
     try

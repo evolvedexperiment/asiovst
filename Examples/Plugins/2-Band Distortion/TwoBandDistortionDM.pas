@@ -35,16 +35,19 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  Classes, SysUtils, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
-  DAV_DspFilterLinkwitzRiley;
+  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} Classes, SysUtils, Forms,
+  SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspFilterLinkwitzRiley, DAV_VSTCustomModule;
 
 type
+
+  { TTwoBandDistortionDataModule }
+
   TTwoBandDistortionDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -276,6 +279,19 @@ begin
                                  FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
      {$ENDIF}
    end;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TTwoBandDistortionDataModule.VSTModuleResume(Sender: TObject);
+begin
+ FCriticalSection.Enter;
+ try
+  if Assigned(FLinkwitzRiley[0])
+   then FLinkwitzRiley[0].ResetStates;
+  if Assigned(FLinkwitzRiley[1])
+   then FLinkwitzRiley[1].ResetStates;
  finally
   FCriticalSection.Leave;
  end;

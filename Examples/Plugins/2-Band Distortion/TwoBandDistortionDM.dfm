@@ -1,5 +1,4 @@
 object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -116,6 +115,7 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81

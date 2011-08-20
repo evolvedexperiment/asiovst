@@ -56,8 +56,10 @@ type
   public
     constructor Create(const Order: Integer = 4); reintroduce; virtual;
     destructor Destroy; override;
+
     procedure ProcessSample(const Input: Single; out Low, High: Single); overload;
     procedure ProcessSample(const Input: Double; out Low, High: Double); overload;
+    procedure ResetStates; virtual;
   published
     property Frequency: Single read FFrequency write SetFrequency;
     property Order: Integer read FOrder write SetOrder;
@@ -156,6 +158,12 @@ begin
  FSplit.ProcessSample(Input, Low, High);
  Low  := FLowpass.ProcessSample64(Low);
  High := FHighpass.ProcessSample64(FSign * High);
+end;
+
+procedure TLinkwitzRiley.ResetStates;
+begin
+ FLowpass.ResetStates;
+ FHighpass.ResetStates;
 end;
 
 procedure TLinkwitzRiley.SampleRateChanged;
