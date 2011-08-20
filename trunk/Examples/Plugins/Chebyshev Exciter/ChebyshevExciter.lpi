@@ -26,7 +26,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\VST\64-Bit\Exciter (x64).dll"/>
+            <Filename Value="..\..\..\Bin\VST\64-Bit\Chebyshev Exciter (x64).dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>
@@ -42,6 +42,7 @@
           </Parsing>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
             <Optimizations>
               <OptimizationLevel Value="0"/>
             </Optimizations>
@@ -85,12 +86,12 @@
     </RequiredPackages>
     <Units Count="4">
       <Unit0>
-        <Filename Value="Exciter.lpr"/>
+        <Filename Value="ChebyshevExciter.lpr"/>
         <IsPartOfProject Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="31"/>
-        <UsageCount Value="92"/>
+        <UsageCount Value="93"/>
       </Unit0>
       <Unit1>
         <Filename Value="ExciterDM.pas"/>
@@ -102,7 +103,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="39"/>
         <CursorPos X="3" Y="44"/>
-        <UsageCount Value="92"/>
+        <UsageCount Value="93"/>
       </Unit1>
       <Unit2>
         <Filename Value="ExciterGUI.pas"/>
@@ -111,16 +112,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ExciterGUI"/>
-        <IsVisibleTab Value="True"/>
-        <WindowIndex Value="0"/>
         <TopLine Value="159"/>
         <CursorPos X="51" Y="169"/>
-        <UsageCount Value="92"/>
+        <UsageCount Value="93"/>
       </Unit2>
       <Unit3>
         <Filename Value="../\Barberpole Shifter\ConverterBackup\DAV_WinAmp.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="92"/>
+        <UsageCount Value="93"/>
       </Unit3>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
@@ -129,7 +128,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\VST\64-Bit\Exciter (x64).dll"/>
+      <Filename Value="..\..\..\Bin\VST\64-Bit\Chebyshev Exciter.dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>
@@ -144,6 +143,7 @@
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="x86_64"/>
       <Optimizations>
         <OptimizationLevel Value="3"/>
       </Optimizations>

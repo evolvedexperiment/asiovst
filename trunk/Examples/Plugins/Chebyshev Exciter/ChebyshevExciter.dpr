@@ -1,14 +1,14 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library Exciter;
-
-{$I DAV_Compiler.inc}
+library ChebyshevExciter;
 
 uses
-  Interfaces,
-  Forms,
-  {$IFDEF MSWINDOWS}
+  FastMM4, // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
   DAV_WinAmp,
-  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   ExciterDM in 'ExciterDM.pas' {ExciterDataModule: TVSTModule},
@@ -19,27 +19,15 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TExciterDataModule);
 end;
 
-{$IFDEF MSWINDOWS}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
-  Result := WinampDSPModuleHeader(TExciterDataModule);
+ Result := WinampDSPModuleHeader(TExciterDataModule);
 end;
-{$ENDIF}
 
 exports
-{$IFDEF DARWIN}  {OS X entry points}
-  VSTPluginMain name '_main',
-  VSTPluginMain name '_main_macho',
-  VSTPluginMain name '_VSTPluginMain';
-{$ELSE}
-  VSTPluginMain name 'main',
-  VSTPluginMain name 'main_plugin',
-  VSTPluginMain name 'VSTPluginMain',
-{$IFDEF MSWINDOWS}
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain',
   WinampDSPGetHeader name 'winampDSPGetHeader2';
-{$ENDIF}
-{$ENDIF}
 
 begin
- Application.Initialize;
 end.
