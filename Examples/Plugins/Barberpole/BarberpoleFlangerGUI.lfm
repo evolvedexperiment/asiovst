@@ -1,252 +1,246 @@
 object FmBarberpoleFlanger: TFmBarberpoleFlanger
   Left = 396
+  Height = 115
   Top = 84
+  Width = 247
   BorderStyle = bsNone
   Caption = 'Simple Shepard'
   ClientHeight = 115
   ClientWidth = 247
   Color = clBlack
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = 14277598
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  OldCreateOrder = False
-  Scaled = False
   OnShow = FormShow
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '0.9.31'
   object LbSpeed: TGuiLabel
     Left = 68
+    Height = 24
     Top = 34
     Width = 52
-    Height = 24
     Alignment = taCenter
     Caption = 'Speed'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbStages: TGuiLabel
     Left = 6
+    Height = 24
     Top = 34
     Width = 56
-    Height = 24
     Alignment = taCenter
     Caption = 'Stages'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbDepth: TGuiLabel
     Left = 128
+    Height = 24
     Top = 34
     Width = 50
-    Height = 24
     Alignment = taCenter
     Caption = 'Depth'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbMix: TGuiLabel
     Left = 197
+    Height = 24
     Top = 34
     Width = 34
-    Height = 24
     Alignment = taCenter
     Caption = 'Mix'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbSpeedValue: TGuiLabel
     Left = 64
+    Height = 20
     Top = 92
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '0,2 Hz'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbStagesValue: TGuiLabel
     Left = 18
+    Height = 20
     Top = 92
     Width = 32
-    Height = 20
     Alignment = taCenter
     Caption = '2'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbDepthValue: TGuiLabel
     Left = 123
+    Height = 20
     Top = 92
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '50 %'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbMixValue: TGuiLabel
     Left = 183
+    Height = 20
     Top = 92
     Width = 60
-    Height = 20
     Alignment = taCenter
     Caption = '2 %'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -16
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object LbAlgorithm: TGuiLabel
     Left = 8
+    Height = 23
     Top = 8
     Width = 85
-    Height = 23
     Caption = 'Algorithm:'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
     Font.Height = -19
     Font.Name = 'Tahoma'
-    Font.Style = []
     FontOversampling = fo4x
     ParentFont = False
-    Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
+    Shadow.Blur = 4
+    Shadow.Saturation = 0
   end
   object SBAlgorithm: TGuiSelectBox
     Left = 99
+    Height = 23
     Top = 8
     Width = 132
-    Height = 23
-    AntiAlias = gaaLinear4x
-    ArrowColor = 14277598
-    ButtonColor = clBlack
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -16
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ItemIndex = -1
     Items.Strings = (
       'Up'
       'Down'
       'Up (Inv.)'
-      'Down (Inv.)')
-    LineColor = 14277598
-    LineWidth = 2
-    ParentFont = False
+      'Down (Inv.)'
+    )
+    ArrowColor = 14277598
+    BackColor = 6646644
+    BorderColor = 14277598
     BorderRadius = 4
+    BorderWidth = 1.70000004768372
+    ButtonColor = clBlack
+    Font.Color = 14277598
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    ParentFont = False
     SelectBoxColor = 2829619
     OnChange = SBAlgorithmChange
   end
   object DialSpeed: TGuiStitchedDial
     Left = 76
+    Height = 36
     Top = 58
     Width = 36
-    Height = 36
-    CurveMapping = -1.799999952316284000
-    Max = 10.000000000000000000
-    Min = 0.009999999776482582
-    OnChange = DialSpeedChange
+    CurveMapping = -1.79999995231628
+    DefaultValue = 0
+    Max = 10
+    Min = 0.00999999977648
+    ScrollRange = 400
     ImageList = DSIL
     ImageIndex = 0
-    Value = 0.200000002980232200
-    WheelStep = 1.000000000000000000
+    Value = 0.20000000298023
+    WheelStep = 1
+    OnChange = DialSpeedChange
+    DefaultValue = 0
   end
   object DialStages: TGuiStitchedDial
     Left = 16
+    Height = 36
     Top = 58
     Width = 36
-    Height = 36
-    Max = 8.000000000000000000
-    Min = 1.000000000000000000
-    OnChange = DialStagesChange
+    CurveMapping = 0
+    DefaultValue = 0
+    Max = 8
+    Min = 1
+    ScrollRange = 400
     ImageList = DSIL
     ImageIndex = 0
-    Value = 2.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 2
+    WheelStep = 1
+    OnChange = DialStagesChange
+    DefaultValue = 0
   end
   object DialDepth: TGuiStitchedDial
     Left = 136
+    Height = 36
     Top = 58
     Width = 36
-    Height = 36
-    Max = 100.000000000000000000
-    OnChange = DialDepthChange
+    CurveMapping = 0
+    DefaultValue = 0
+    Max = 100
+    Min = 0
+    ScrollRange = 400
     ImageList = DSIL
     ImageIndex = 0
-    Value = 50.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 50
+    WheelStep = 1
+    OnChange = DialDepthChange
+    DefaultValue = 0
   end
   object DialMix: TGuiStitchedDial
     Left = 196
+    Height = 36
     Top = 58
     Width = 36
-    Height = 36
-    Max = 100.000000000000000000
-    OnChange = DialMixChange
+    CurveMapping = 0
+    DefaultValue = 0
+    Max = 100
+    Min = 0
+    ScrollRange = 400
     ImageList = DSIL
     ImageIndex = 0
-    Value = 2.000000000000000000
-    WheelStep = 1.000000000000000000
+    Value = 2
+    WheelStep = 1
+    OnChange = DialMixChange
+    DefaultValue = 0
   end
   object DSIL: TGuiStitchedPNGList
-    StitchedPNGs = <
+    StitchedPNGs = <    
       item
         PortableNetworkGraphic.Data = {
           89504E470D0A1A0A0000000D49484452000009240000002408060000009A4DA6
@@ -1332,14 +1326,14 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
           F7C0A2ED8145FB17B9233DA5FF1B3AA5A7F780DE037A0FE83DA0F780DE037A0F
           E83DA0F780DE037A0FE83DA0F780DE037A0FE83DA0F780DE037A0FE83DA0F780
           DE037A0FE83DA0F780DE037A0FE83DA0F780DE037A0FE83DA0F7C0D2DE03FF0F
-          9BA0C66898C64E7D0000000049454E44AE426082}
+          9BA0C66898C64E7D0000000049454E44AE426082
+        }
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 36
         Width = 2340
       end>
-    Left = 56
-    Top = 48
+    left = 56
+    top = 48
   end
 end

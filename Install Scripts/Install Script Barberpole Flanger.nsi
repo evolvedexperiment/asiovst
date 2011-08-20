@@ -8,6 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------
@@ -65,8 +66,8 @@ SetCompressor lzma
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -110,10 +111,12 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\BarberpoleFlanger.dll" "..\Bin\Barberpole Flanger.dll"'  
+  !system 'copy "..\Bin\VST\32-Bit\BarberpoleFlanger.dll" "..\Bin\VST\32-Bit\Barberpole Flanger.dll"'  
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Barberpole Flanger.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\VST\64-Bit\Barberpole Flanger.dll"
+  ${Else}
+  File "..\Bin\VST\32-Bit\Barberpole Flanger.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -129,13 +132,13 @@ Section "VST-Plugin" SecVstPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Flanger.exe"
-
 SectionEnd
 
 Section "Manual" SecManual
@@ -149,7 +152,6 @@ Section "Manual" SecManual
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Flanger.exe"
-
 SectionEnd
   
 
@@ -163,11 +165,15 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
+
 
 ;--------------------------------
 ;Descriptions
