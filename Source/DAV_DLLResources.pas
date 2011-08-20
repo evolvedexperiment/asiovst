@@ -453,7 +453,7 @@ begin
    end;
 
  if isNumeric
-  then Result := StrToInt(s)
+  then Result := StrToInt(string(s))
   else Result := -1
 end;
 
@@ -1821,7 +1821,7 @@ var
     p: PWideChar;
   begin
     if IdorName
-     then Result := IntToStr(n)
+     then Result := AnsiString(IntToStr(n))
      else
       begin
        p := PWideChar(PAnsiChar(Section.FRawData.Memory) + (n and $7fffffff));
@@ -1871,8 +1871,9 @@ var
         DataEntry := PResourceDataEntry(PAnsiChar(Section.FRawData.Memory) +
           Entry^.RVA);
         Details := TResourceDetails.CreateResourceDetails(Self,
-          lang, Name, tp, DataEntry^.Size, PAnsiChar(Section.FRawData.Memory) +
-          DataEntry^.OffsetToData - Section.FSectionHeader.VirtualAddress);
+          lang, string(Name), string(tp), DataEntry^.Size,
+          PAnsiChar(Section.FRawData.Memory) + DataEntry^.OffsetToData -
+          Section.FSectionHeader.VirtualAddress);
         Details.CodePage := DataEntry^.CodePage;
         Details.Characteristics := Table^.Characteristics;
         Details.DataVersion :=
@@ -1964,7 +1965,7 @@ var
   i           : Integer;
   Details     : TResourceDetails;
   Section     : TImageSection;
-  root        : TResourceNode;
+  Root        : TResourceNode;
   versMajor   : Word;
   versMinor   : Word;
   TimeStamp   : DWORD;
@@ -2034,12 +2035,12 @@ var
     procedure SaveNode(i: Integer);
     begin
       if node.Nodes[i].IntID then // Id is a simple integer
-        Entry.Name := StrToInt(node.Nodes[i].Id)
+        Entry.Name := StrToInt(string(node.Nodes[i].Id))
       else
        begin
         // Id is an offset to a name in the name table.
         Entry.Name := NameOffset + NamePos + $80000000;
-        w := node.Nodes[i].Id;
+        w := string(node.Nodes[i].Id);
         wl := Length(node.Nodes[i].Id);
         Move(wl, nameTable[NamePos], SizeOf(wl));
         Inc(NamePos, SizeOf(wl));
@@ -2111,7 +2112,7 @@ begin { Encode }
  Section := GetResourceSection(Offset);
 
  // Get the Details in a tree structure
- root := nil;
+ Root := nil;
  Data := nil;
  deTable := nil;
  Zeros := nil;
@@ -2120,12 +2121,13 @@ begin { Encode }
   for i := 0 to FDetailList.Count - 1 do
    begin
     Details := TResourceDetails(FDetailList.Items[i]);
-    if root = nil
-     then root := TResourceNode.Create(Details.ResourceType,
-            Details.ResourceName, Details.ResourceLanguage, Details.Data,
-            Details.CodePage)
-     else root.Add(Details.ResourceType, Details.ResourceName,
+    if Root = nil
+     then Root := TResourceNode.Create(AnsiString(Details.ResourceType),
+            AnsiString(Details.ResourceName),
             Details.ResourceLanguage, Details.Data, Details.CodePage)
+     else Root.Add(AnsiString(Details.ResourceType),
+            AnsiString(Details.ResourceName), Details.ResourceLanguage,
+            Details.Data, Details.CodePage)
    end;
 
   // Save elements of their original EXE
@@ -2142,7 +2144,7 @@ begin { Encode }
   deOffset   := Offset;
   DataSize   := 0;
 
-  GetNameTableSize(root);  // Calculate sizes and offsets of the name table,
+  GetNameTableSize(Root);  // Calculate sizes and offsets of the name table,
                            // the data entry table and the size of the data.
 
   // Calculate the data Offset.  Must be aligned.
@@ -2163,7 +2165,7 @@ begin { Encode }
   GetMem(Data, DataSize);
   GetMem(deTable, deSize);
 
-  SaveToSection(root);               // Do the work.
+  SaveToSection(Root);               // Do the work.
 
   // Save the tables
   Section.FRawData.Write(deTable^, deSize);
@@ -2188,7 +2190,7 @@ begin { Encode }
   FreeMem(nameTable);
   FreeMem(deTable);
   FreeMem(Data);
-  FreeAndNil(root);
+  FreeAndNil(Root);
  end
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -2222,7 +2224,7 @@ var
   Index : Integer;
 begin
  for Index := 0 to Count - 1 do
-  if IntToStr(ALang) = Nodes[Index].Id then
+  if IntToStr(ALang) = string(Nodes[Index].Id) then
    begin
     Nodes[Index].Data := aData;
     Exit;
@@ -2230,7 +2232,7 @@ begin
 
  Inc(Count);
  SetLength(Nodes, Count);
- Nodes[Count - 1].Id := IntToStr(ALang);
+ Nodes[Count - 1].Id := AnsiString(IntToStr(ALang));
  Nodes[Count - 1].IntID := True;
  Nodes[Count - 1].Leaf := True;
  Nodes[Count - 1].Data := aData;
@@ -2273,7 +2275,7 @@ constructor TResourceNode.CreateLangNode(ALang: Integer; aData: TMemoryStream;
 begin
  Count := 1;
  SetLength(Nodes, 1);
- Nodes[0].Id := IntToStr(ALang);
+ Nodes[0].Id := AnsiString(IntToStr(ALang));
  Nodes[Count - 1].IntID := True;
  Nodes[0].Leaf := True;
  Nodes[0].Data := aData;
@@ -2316,7 +2318,7 @@ begin
    end;
 
  if Result
-  then Result := IntToStr(StrToInt(Nodes[idx].Id)) = Nodes[idx].Id;
+  then Result := AnsiString(IntToStr(StrToInt(string(Nodes[idx].Id)))) = Nodes[idx].Id;
 end;
 
 function TPEResourceModule.AddResource(Details: TResourceDetails): Integer;
