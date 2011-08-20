@@ -35,10 +35,13 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspBarberpole;
+  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
+  SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspBarberpole;
 
 type
+
+  { TBarberpoleFlangerModule }
+
   TBarberpoleFlangerModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);

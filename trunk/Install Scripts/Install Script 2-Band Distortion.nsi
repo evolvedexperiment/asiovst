@@ -112,7 +112,6 @@ Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\VST\32-Bit\TwoBandDistortion.dll" "..\Bin\VST\32-Bit\2-Band Distortion.dll"'  
-  !system 'copy "..\Bin\VST\64-Bit\TwoBandDistortion.dll" "..\Bin\VST\64-Bit\2-Band Distortion.dll"'  
 
   ${If} ${RunningX64}
   File "..\Bin\VST\64-Bit\2-Band Distortion.dll"
@@ -198,12 +197,7 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
-  ${If} ${RunningX64}
   Delete "$INSTDIR\2-Band Distortion.dll"
-  ${Else}
-  Delete "$INSTDIR\2-Band Distortion.dll"
-  ${Endif}
   Delete "$INSTDIR\2-Band Distortion.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
