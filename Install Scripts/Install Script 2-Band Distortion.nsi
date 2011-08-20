@@ -24,7 +24,7 @@ SetCompressor lzma
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "Delphi ASIO & VST Packages"
+  BrandingText "Delphi ASIO && VST Project"
 
   ; Turn on the xp style of drawing
   XPStyle ON
@@ -111,13 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\TwoBandDistortion.dll" "..\Bin\2-Band Distortion.dll"'  
-  !system 'copy "..\Bin\TwoBandDistortion.x64.dll" "..\Bin\2-Band Distortion.x64.dll"'  
+  !system 'copy "..\Bin\VST\32-Bit\TwoBandDistortion.dll" "..\Bin\VST\32-Bit\2-Band Distortion.dll"'  
+  !system 'copy "..\Bin\VST\64-Bit\TwoBandDistortion.x64.dll" "..\Bin\VST\64-Bit\2-Band Distortion (x64).dll"'  
 
   ${If} ${RunningX64}
-  File "..\Bin\2-Band Distortion.x64.dll"
+  File "..\Bin\64-Bit\2-Band Distortion (x64).dll"
   ${Else}
-  File "..\Bin\2-Band Distortion.dll"
+  File "..\Bin\32-Bit\2-Band Distortion.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

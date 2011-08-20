@@ -8,6 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"                           
+  !include "x64.nsh"
 
 
 ;--------------------------------
@@ -38,7 +39,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Exciter"
+  !define PRODUCT_NAME "Chebyshev Exciter"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -65,8 +66,8 @@ SetCompressor lzma
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -110,10 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\ChebyshevExciter.dll" "..\Bin\Chebyshev Exciter.dll"'
+  !system 'copy "..\Bin\VST\32-Bit\ChebyshevExciter.dll" "..\Bin\VST\32-Bit\Chebyshev Exciter.dll"'
+  !system 'copy "..\Bin\VST\64-Bit\ChebyshevExciter.dll" "..\Bin\VST\64-Bit\Chebyshev Exciter.dll"'
   
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Chebyshev Exciter.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\VST\64-Bit\Chebyshev Exciter.dll"
+  ${Else}
+  File "..\Bin\VST\32-Bit\Chebyshev Exciter.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -129,25 +133,26 @@ Section "VST-Plugin" SecVSTPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Exciter.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Chebyshev_Exciter.exe"
 SectionEnd
 
 Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Manuals\Chebyshev Exciter Manual.pdf"
+  File "..\Manuals\Chebyshev Exciter.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Exciter.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Chebyshev_Exciter.exe"
 SectionEnd
 
 
@@ -161,26 +166,25 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
 
 
 ;--------------------------------
-;Language Strings
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Exciter VST Plugin"
-
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Exciter VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "Exciter Manual"
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Chebyshev Exciter VST Plugin"
+
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Chebyshev Exciter VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Chebyshev Exciter Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -195,8 +199,12 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Exciter.dll"
-  Delete "$INSTDIR\Exciter Manual.pdf"
+  ${If} ${RunningX64}
+  Delete "$INSTDIR\Chebyshev Exciter.dll"
+  ${Else}
+  Delete "$INSTDIR\Chebyshev Exciter.dll"
+  ${Endif}
+  Delete "$INSTDIR\Chebyshev Exciter.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
