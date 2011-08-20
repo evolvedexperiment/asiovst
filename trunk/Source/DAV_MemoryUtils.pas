@@ -40,7 +40,7 @@ interface
 uses
   Classes, SysUtils;
 
-procedure GetAlignedMemory(var P; Size: Integer);
+procedure GetAlignedMemory(out P; Size: Integer);
 procedure ReallocateAlignedMemory(var P; Size: Integer);
 procedure FreeAlignedMemory(P: Pointer);
 
@@ -83,7 +83,7 @@ begin
 end;
 {$ENDIF}
 
-procedure GetAlignedMemory(var P; Size: Integer);
+procedure GetAlignedMemory(out P; Size: Integer);
 var
   Ptr : Pointer absolute P;
 begin
@@ -116,9 +116,9 @@ begin
      Ptr := Pointer(PtrUInt(Ptr) and (not $F));
     end;
   end;
- {$ENDIF}
 
  Assert(Cardinal(P) and $F = 0);
+ {$ENDIF}
 end;
 
 procedure ReallocateAlignedMemory(var P; Size: Integer);
@@ -163,9 +163,9 @@ begin
   end else
  if (Index >= 0)
   then GUnalignedMemoryList.Delete(Index);
- {$ENDIF}
 
  Assert(PtrUInt(Ptr) and $F = 0);
+ {$ENDIF}
 end;
 
 procedure FreeAlignedMemory(P: Pointer);
