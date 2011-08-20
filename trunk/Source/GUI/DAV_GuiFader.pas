@@ -107,6 +107,7 @@ type
 
   TGuiFader = class(TGuiCustomFader)
   published
+    property Anchors;
     property Color;
     property Orientation;
     property ImageIndex;
@@ -116,6 +117,22 @@ type
     property Minimum;
     property Maximum;
     property Value;
+    property Enabled;
+    property Visible;
+
+    property OnChange;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnMouseMove;
+    property OnMouseDown;
+    property OnMouseUp;
+    property OnClick;
+    property OnDblClick;
+    property OnEnter;
+    property OnExit;
+    property OnKeyUp;
+    property OnKeyDown;
+    property OnKeyPress;
   end;
 
 implementation
@@ -203,8 +220,8 @@ begin
    foVertical :
     begin
      if Assigned(FImageItem)
-      then NormalizedPosition := Limit((Y - FImageItem.Height div 2) / (Height - FImageItem.Height - 1), 0, 1)
-      else NormalizedPosition := Limit(Y / (Height - 1), 0, 1);
+      then NormalizedPosition := 1 - Limit((Y - FImageItem.Height div 2) / (Height - FImageItem.Height - 1), 0, 1)
+      else NormalizedPosition := 1 - Limit(Y / (Height - 1), 0, 1);
      Value := Limit(FMinimum + MapNormalizedPositionToNormalizedValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
     end;
   end;
@@ -228,8 +245,8 @@ begin
    foVertical :
     begin
      if Assigned(FImageItem)
-      then NormalizedPosition := Limit((Y - FImageItem.Height div 2) / (Height - FImageItem.Height - 1), 0, 1)
-      else NormalizedPosition := Limit(Y / (Height - 1), 0, 1);
+      then NormalizedPosition := 1 - Limit((Y - FImageItem.Height div 2) / (Height - FImageItem.Height - 1), 0, 1)
+      else NormalizedPosition := 1 - Limit(Y / (Height - 1), 0, 1);
      Value := Limit(FMinimum + MapNormalizedPositionToNormalizedValue(NormalizedPosition) * (FMaximum - FMinimum), FMinimum, FMaximum);
     end;
   end;
@@ -293,6 +310,8 @@ begin
  // calculate new normalized position
  FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
  BufferChanged;
+ if Assigned(FOnChange)
+  then FOnChange(Self);
 end;
 
 procedure TGuiCustomFader.CalculateExponentialCurveMapping;
@@ -391,7 +410,8 @@ begin
 
       Offset := (Self.Height - FImageItem.Height) div 2;
       Assert(NormalizedValue <= 1);
-      YOff := Round(NormalizedValue * (Self.Width - Width));
+      YOff := Round(MapNormalizedValueToNormalizedPosition(NormalizedValue) *
+        (Self.Width - Width));
 
       if Offset > 0 then
        for Y := 0 to FImageItem.Height - 1 do
@@ -415,7 +435,8 @@ begin
        end;
 
       Offset := (Self.Width - FImageItem.Width) div 2;
-      YOff := Round(NormalizedValue * (Self.Height - PixelMap.Height));
+      YOff := Round((1 - MapNormalizedValueToNormalizedPosition(NormalizedValue)) *
+        (Self.Height - PixelMap.Height));
 
       if Offset > 0 then
        for Y := 0 to FImageItem.Height - 1 do

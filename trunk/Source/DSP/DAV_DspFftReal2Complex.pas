@@ -108,6 +108,7 @@ type
   public
     constructor Create(const xFFTSize: Integer);
     destructor Destroy; override;
+
     property BRLUT: TFFTLUTBitReversed read FBrLUT write FBrLUT;
     property FFTSize: Integer read FFftSize write FFftSize;
   end;
@@ -259,10 +260,7 @@ var
 
 constructor TFftReal2Complex.Create;
 begin
-  inherited;
-  FAutoScaleType := astDivideNoDivByAny;
-  FOrder := 13;
-  CalculateOrderDependentValues;
+  Create(13);
 end;
 
 constructor TFftReal2Complex.Create(const Order: Byte);
@@ -399,6 +397,7 @@ begin
   if Assigned(FOnSizeChanged) then FOnSizeChanged(Self);
 end;
 
+
 { TFFTLUTBitReversed }
 
 constructor TFFTLUTBitReversed.Create(const BitCount: Integer);
@@ -489,6 +488,7 @@ end;
 destructor TFFTLUTListObject.Destroy;
 begin
   FreeAndNil(FBrLUT);
+  inherited;
 end;
 
 procedure TFFTLUTListObject.AssignTo(Dest: TPersistent);
@@ -519,7 +519,8 @@ begin
     TFFTLUTListObject(LUTList.Items[0]).Free;
     LUTList.Delete(0);
    end;
-  LUTList.Free;
+  FreeAndNil(LUTList);
+  Dispose(TrigoLUT);
 end;
 
 { TFftReal2ComplexNative }
@@ -567,8 +568,8 @@ end;
 
 procedure TFftReal2ComplexNative.FFTOrderChanged;
 var
-  i: Integer;
-  tmp: TFFTLUTListObject;
+  i   : Integer;
+  tmp : TFFTLUTListObject;
 begin
   inherited;
   CalculateTrigoLUT;
@@ -576,7 +577,7 @@ begin
     if TFFTLUTListObject(LUTList.Items[i]).FFTSize = FFftSize then
      begin
       FBitRevLUT := TFFTLUTListObject(LUTList.Items[i]).BRLUT;
-      break;
+      Break;
      end;
   if i >= LUTList.Count then
    begin
@@ -622,7 +623,7 @@ end;
 
 destructor TFftReal2ComplexNativeFloat32.Destroy;
 begin
-  Dispose(FBuffer);
+  FreeMem(FBuffer);
   inherited;
 end;
 
@@ -746,7 +747,7 @@ var
   i : Integer;
   s : Double;
 begin
- s :=  sqrt(1 / FFTSize);
+ s := Sqrt(1 / FFTSize);
  for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
 end;
 
@@ -962,9 +963,9 @@ var
   NbrCoef    : Integer;
   NbrCoefH   : Integer;
   NbrCoefD   : Integer;
-  BitPos     : Array [0..1] of Integer;
+  BitPos     : array [0..1] of Integer;
   c, s, v    : Double;
-  TempBuffer : Array [0..2] of PDAVSingleFixedArray;
+  TempBuffer : array [0..2] of PDAVSingleFixedArray;
 
 begin
   TempBuffer[0] := @FreqDomain[0];
@@ -1066,9 +1067,9 @@ var
   ci, i      : Integer;
   NbrCoef    : Integer;
   NbrCoefH   : Integer;
-  BitPos     : Array [0..1] of Integer;
+  BitPos     : array [0..1] of Integer;
   c, s, v    : Double;
-  TempBuffer : Array [0..2] of PDAVSingleFixedArray;
+  TempBuffer : array [0..2] of PDAVSingleFixedArray;
 
 begin
   // first and second pass at once
@@ -1144,9 +1145,9 @@ var
   Pass, ci, i : Integer;
   NbrCoef     : Integer;
   NbrCoefH    : Integer;
-  BitPos      : Array [0..1] of Integer;
+  BitPos      : array [0..1] of Integer;
   c, s, v     : Double;
-  TempBuffer  : Array [0..2] of PDAVSingleFixedArray;
+  TempBuffer  : array [0..2] of PDAVSingleFixedArray;
 begin
   // first and second pass at once
   ci := fFFTSize;
@@ -1459,9 +1460,9 @@ var
   Pass, ci, i : Integer;
   NbrCoef     : Integer;
   NbrCoefH    : Integer;
-  BitPos      : Array [0..1] of Integer;
+  BitPos      : array [0..1] of Integer;
   c, s, v     : Double;
-  TempBuffer  : Array [0..2] of PDAVSingleFixedArray;
+  TempBuffer  : array [0..2] of PDAVSingleFixedArray;
 begin
   // first and second pass at once
   ci := fFFTSize;
@@ -1605,8 +1606,8 @@ var
   NbrCoefH    : Integer;
   NbrCoefD    : Integer;
   c, s, v     : Double;
-  BitPos      : Array [0..1] of Integer;
-  TempBuffer  : Array [0..2] of PDAVSingleFixedArray;
+  BitPos      : array [0..1] of Integer;
+  TempBuffer  : array [0..2] of PDAVSingleFixedArray;
 begin
   TempBuffer[0] := @FreqDomain[0];
   TempBuffer[1] := @FBuffer[0];
@@ -1824,7 +1825,7 @@ procedure TFftReal2ComplexNativeFloat32.PerformIFFTTwo32(
   const FreqDomain, TimeDomain: PDAVSingleFixedArray);
 {$IFDEF PUREPASCAL}
 var
-  Tmp : Array [0..1] of Double;
+  Tmp : array [0..1] of Double;
   FD  : PDAV4SingleArray absolute FreqDomain;
   TD  : PDAV4SingleArray absolute TimeDomain;
 begin
@@ -1868,7 +1869,7 @@ procedure TFftReal2ComplexNativeFloat32.PerformIFFTTwo32(
   const TimeDomain: PDAVSingleFixedArray);
 {$IFDEF PUREPASCAL}
 var
-  Tmp : Array [0..1] of Double;
+  Tmp : array [0..1] of Double;
   FD  : PDAV2ComplexSingleArray absolute FreqDomain;
   TD  : PDAV4SingleArray absolute TimeDomain;
 begin
@@ -1984,7 +1985,7 @@ var
   NbrCoefD : Integer;
   ci       : Integer;
   c, s     : Double;
-  Tmp      : Array [0..3] of Double;
+  Tmp      : array [0..3] of Double;
 begin
   // Do the transformation in several passes
 
@@ -2072,7 +2073,7 @@ var
   NbrCoefH : Integer;
   ci       : Integer;
   c, s     : Double;
-  Tmp      : Array [0..3] of Double;
+  Tmp      : array [0..3] of Double;
 begin
   // Do the transformation in several passes
 
@@ -2184,8 +2185,8 @@ var
   NbrCoefH    : Integer;
   NbrCoefD    : Integer;
   i, ci       : Integer;
-  Tmp         : Array [0..3] of Double;
-  TempBuffer  : Array [0..2] of PDAVSingleFixedArray;
+  Tmp         : array [0..3] of Double;
+  TempBuffer  : array [0..2] of PDAVSingleFixedArray;
 begin
   // Do the transformation in several passes
 
@@ -2342,9 +2343,9 @@ procedure TFftReal2ComplexNativeFloat32.PerformIFFTEven32(
   const FreqDomain: PDAVComplexSingleFixedArray;
   const TimeDomain: PDAVSingleFixedArray);
 var
-  Tmp         : Array [0..3] of Double;
+  Tmp         : array [0..3] of Double;
   ci, i       : Integer;
-  TempBuffer  : Array [0..2] of PDAVSingleFixedArray;
+  TempBuffer  : array [0..2] of PDAVSingleFixedArray;
   NbrCoef     : Integer;
   NbrCoefH    : Integer;
   NbrCoefD    : Integer;
@@ -2510,8 +2511,8 @@ var
   NbrCoefH     : Integer;
   NbrCoefD     : Integer;
   i, ci        : Integer;
-  Tmp          : Array [0..3] of Single;
-  TempBuffer   : Array [0..2] of PDAVSingleFixedArray;
+  Tmp          : array [0..3] of Single;
+  TempBuffer   : array [0..2] of PDAVSingleFixedArray;
 begin
   // Do the transformation in several passes
 
@@ -2677,8 +2678,8 @@ var
   NbrCoefD     : Integer;
   tof, i, ci   : Integer;
   c, s, vr, vi : Double;
-  Tmp          : Array [0..3] of Single;
-  TempBuffer   : Array [0..2] of PDAVSingleFixedArray;
+  Tmp          : array [0..3] of Single;
+  TempBuffer   : array [0..2] of PDAVSingleFixedArray;
 begin
   // first pass
   NbrCoef := 1 shl (FOrder - 1);
@@ -3159,7 +3160,7 @@ var
   ci        : Integer;
   NbrCoef   : Integer;
   NbrCoefH  : Integer;
-  BitPos    : Array [0..1] of Integer;
+  BitPos    : array [0..1] of Integer;
   c, s, v   : Double;
 begin
   // first and second pass at once
@@ -3258,7 +3259,7 @@ var
   NbrCoef    : Integer;
   NbrCoefH   : Integer;
   c, s, v    : Double;
-  BitPos     : Array [0..1] of Integer;
+  BitPos     : array [0..1] of Integer;
   TempBuffer : PDAVDoubleFixedArray;
 begin
   TempBuffer := @FreqDomain[0];
@@ -3366,9 +3367,9 @@ var
   Pass, ci, i : Integer;
   NbrCoef     : Integer;
   NbrCoefH    : Integer;
-  BitPos      : Array [0..1] of Integer;
+  BitPos      : array [0..1] of Integer;
   c, s, v     : Double;
-  TempBuffer  : Array [0..2] of PDAVDoubleFixedArray;
+  TempBuffer  : array [0..2] of PDAVDoubleFixedArray;
 begin
   // first and second pass at once
   ci := fFFTSize;
@@ -3522,9 +3523,9 @@ var
   Pass, ci, i : Integer;
   NbrCoef     : Integer;
   NbrCoefH    : Integer;
-  BitPos      : Array [0..1] of Integer;
+  BitPos      : array [0..1] of Integer;
   c, s, v     : Double;
-  TempBuffer  : Array [0..2] of PDAVDoubleFixedArray;
+  TempBuffer  : array [0..2] of PDAVDoubleFixedArray;
 begin
   // first and second pass at once
   ci := fFFTSize;
@@ -3679,9 +3680,9 @@ var
   Pass, ci, i : Integer;
   NbrCoef     : Integer;
   NbrCoefH    : Integer;
-  BitPos      : Array [0..1] of Integer;
+  BitPos      : array [0..1] of Integer;
   c, s, v     : Double;
-  TempBuffer  : Array [0..2] of PDAVDoubleFixedArray;
+  TempBuffer  : array [0..2] of PDAVDoubleFixedArray;
 begin
   // first and second pass at once
   ci := fFFTSize;
@@ -3825,8 +3826,8 @@ var
   NbrCoefH    : Integer;
   NbrCoefD    : Integer;
   c, s, v     : Double;
-  BitPos      : Array [0..1] of Integer;
-  TempBuffer  : Array [0..2] of PDAVDoubleFixedArray;
+  BitPos      : array [0..1] of Integer;
+  TempBuffer  : array [0..2] of PDAVDoubleFixedArray;
 begin
   TempBuffer[0] := @FreqDomain[0];
   TempBuffer[1] := @FBuffer[0];
@@ -4037,7 +4038,7 @@ end;
 procedure TFftReal2ComplexNativeFloat64.PerformIFFTTwo64(const FreqDomain: PDAVComplexDoubleFixedArray; const TimeDomain: PDAVDoubleFixedArray);
 {$IFDEF PUREPASCAL}
 var
-  Tmp : Array [0..1] of Double;
+  Tmp : array [0..1] of Double;
   FD  : PDAV2ComplexDoubleArray absolute FreqDomain;
   TD  : PDAV4DoubleArray absolute TimeDomain;
 begin
@@ -4079,7 +4080,7 @@ end;
 procedure TFftReal2ComplexNativeFloat64.PerformIFFTTwo64(const FreqDomain, TimeDomain: PDAVDoubleFixedArray);
 {$IFDEF PUREPASCAL}
 var
-  Tmp : Array [0..1] of Double;
+  Tmp : array [0..1] of Double;
   FD  : PDAV4DoubleArray absolute FreqDomain;
   TD  : PDAV4DoubleArray absolute TimeDomain;
 begin
@@ -4192,8 +4193,8 @@ var
   NbrCoefD      : Integer;
   tof, i, ci    : Integer;
   c, s, vr, vi  : Double;
-  Tmp           : Array [0..3] of Double;
-  TempBuffer    : Array [0..2] of PDAVDoubleFixedArray;
+  Tmp           : array [0..3] of Double;
+  TempBuffer    : array [0..2] of PDAVDoubleFixedArray;
 begin
  TempBuffer[0] := @FreqDomain[0];
  TempBuffer[1] := @TimeDomain[0];
@@ -4309,8 +4310,8 @@ var
   NbrCoefD      : Integer;
   tof, i, ci    : Integer;
   c, s, vr, vi  : Double;
-  Tmp           : Array [0..3] of Double;
-  TempBuffer    : Array [0..2] of PDAVDoubleFixedArray;
+  Tmp           : array [0..3] of Double;
+  TempBuffer    : array [0..2] of PDAVDoubleFixedArray;
 begin
  TempBuffer[0] := @FreqDomain[0];
  TempBuffer[1] := @TimeDomain[0];
@@ -4426,8 +4427,8 @@ var
   NbrCoefD      : Integer;
   tof, i, ci    : Integer;
   c, s, vr, vi  : Double;
-  Tmp           : Array [0..3] of Double;
-  TempBuffer    : Array [0..2] of PDAVDoubleFixedArray;
+  Tmp           : array [0..3] of Double;
+  TempBuffer    : array [0..2] of PDAVDoubleFixedArray;
 begin
  TempBuffer[0] := @FreqDomain[0];
  TempBuffer[1] := @FBuffer[0];
@@ -4542,8 +4543,8 @@ var
   NbrCoefD      : Integer;
   tof, i, ci    : Integer;
   c, s, vr, vi  : Double;
-  Tmp           : Array [0..3] of Double;
-  TempBuffer    : Array [0..2] of PDAVDoubleFixedArray;
+  Tmp           : array [0..3] of Double;
+  TempBuffer    : array [0..2] of PDAVDoubleFixedArray;
 begin
  TempBuffer[0] := @FreqDomain[0];
  TempBuffer[1] := @FBuffer[0];
@@ -4571,14 +4572,14 @@ begin
 
     for i := 1 to NbrCoefH - 1 do
      begin
-      TempBuffer[1][ci+i] := TempBuffer[0][ci+i] + TempBuffer[0][ci + NbrCoef-i];    // + sfr [NbrCoef - i]
-      TempBuffer[1][ci+i+NbrCoefH] := TempBuffer[0][ci + NbrCoef+i] - TempBuffer[0][ci + NbrCoef+NbrCoef - i];
+      TempBuffer[1][ci + i] := TempBuffer[0][ci + i] + TempBuffer[0][ci + NbrCoef-i];    // + sfr [NbrCoef - i]
+      TempBuffer[1][ci + i + NbrCoefH] := TempBuffer[0][ci + NbrCoef+i] - TempBuffer[0][ci + NbrCoef+NbrCoef - i];
 
       c := TrigoLUT[tof            + i]; // cos (i*PI/NbrCoef);
-      s := TrigoLUT[tof+NbrCoefH - i]; // sin (i*PI/NbrCoef);
+      s := TrigoLUT[tof + NbrCoefH - i]; // sin (i*PI/NbrCoef);
 
-      vr := TempBuffer[0][ci + i] - TempBuffer[0][ci + NbrCoef-i];    // - sfr [NbrCoef - i]
-      vi := TempBuffer[0][ci + NbrCoef+i] + TempBuffer[0][ci + NbrCoef+NbrCoef - i];
+      vr := TempBuffer[0][ci + i] - TempBuffer[0][ci + NbrCoef - i];    // - sfr [NbrCoef - i]
+      vi := TempBuffer[0][ci + NbrCoef + i] + TempBuffer[0][ci + NbrCoef+NbrCoef - i];
 
       TempBuffer[1][ci + NbrCoef+i] := vr * c + vi * s;
       TempBuffer[1][ci + NbrCoef + NbrCoefH+i] := vi * c - vr * s;

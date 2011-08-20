@@ -185,7 +185,7 @@ begin
  Result := '';
  for i := 0 to Length(GAudioFileFormats) - 1 do
   with GAudioFileFormats[i]
-   do Result := Result + Description + ' (*' + DefaultExtension + ') |' +
+   do Result := Result + Description + ' (*' + DefaultExtension + ') |*' +
      DefaultExtension + '|';
 
  // remove last separator

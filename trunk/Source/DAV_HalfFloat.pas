@@ -31,7 +31,7 @@ function FastSingleToHalfFloat(const Value: Single): THalfFloat;
 var
   IntCast : Integer absolute Value;
 begin
- result := ((IntCast shr 16) and $8000) or
+ Result := ((IntCast shr 16) and $8000) or
            ((((IntCast and $7F800000) - $38000000) shr 13) and $7C00) or
            ((IntCast shr 13) and $3FF);
 
@@ -91,7 +91,7 @@ function SingleToHalfFloat(const Value: Single): THalfFloat;
 var
   IntCast: Integer absolute Value;
 begin
- result := GBaseTable[(IntCast shr 23) and $1FF] + ((IntCast and $7FFFFF) shr GShiftTable[(IntCast shr 23) and $1FF]);
+ Result := GBaseTable[(IntCast shr 23) and $1FF] + ((IntCast and $7FFFFF) shr GShiftTable[(IntCast shr 23) and $1FF]);
 end;
 
 function HalfFloatToSingle(const Value: THalfFloat): Single;

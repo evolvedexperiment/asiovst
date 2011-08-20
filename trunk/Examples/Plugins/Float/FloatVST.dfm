@@ -14,6 +14,18 @@ object FloatModule: TFloatModule
     item
       DisplayName = 'Default'
       VSTModule = Owner
+    end
+    item
+      DisplayName = '8-Bit'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = '16-Bit'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = '32-Bit'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
@@ -32,6 +44,7 @@ object FloatModule: TFloatModule
       OnCustomParameterDisplay = ParameterFloatBitsDisplay
     end>
   ParameterCategories = <>
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess32_8
   OnProcess32Replacing = VSTModuleProcess32_8
   OnProcess64Replacing = VSTModuleProcess64_8

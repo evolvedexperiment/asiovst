@@ -1,256 +1,257 @@
 object FmExciter: TFmExciter
   Left = 392
+  Height = 129
   Top = 203
+  Width = 319
   BorderStyle = bsNone
   Caption = 'Exciter'
   ClientHeight = 129
   ClientWidth = 319
   Color = 4144959
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  OldCreateOrder = False
-  Scaled = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow
-  DesignSize = (
-    319
-    129)
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '0.9.31'
   object PnControl: TGuiPanel
     Left = 8
+    Height = 113
     Top = 8
     Width = 303
-    Height = 113
-    Anchors = [akLeft, akTop, akRight]
+    Anchors = [akTop, akLeft, akRight]
     BorderColor = clWhite
-    BorderWidth = 2.000000000000000000
+    BorderRadius = 13
+    BorderWidth = 2
     PanelColor = 6908265
-    ParentColor = True
-    BorderRadius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object LbFreq: TGuiLabel
       Left = 16
+      Height = 19
       Top = 6
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = 'Frequency'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object LbFreqValue: TGuiLabel
       Left = 16
+      Height = 19
       Top = 88
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = '8 kHz'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object LbShape: TGuiLabel
       Left = 156
+      Height = 19
       Top = 6
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = 'Shape'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object LbShapeValue: TGuiLabel
       Left = 156
+      Height = 19
       Top = 88
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = '50%'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object LbMix: TGuiLabel
       Left = 226
+      Height = 19
       Top = 6
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = 'Mix'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object LbMixValue: TGuiLabel
       Left = 226
+      Height = 19
       Top = 88
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = '50%'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object LbOrderValue: TGuiLabel
       Left = 86
+      Height = 19
       Top = 88
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = '4'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object LbOrder: TGuiLabel
       Left = 86
+      Height = 19
       Top = 6
       Width = 64
-      Height = 19
       Alignment = taCenter
       Caption = 'Order'
       Color = 6908265
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
-      Font.Style = []
       FontOversampling = fo3x
       ParentFont = False
-      Shadow.Blur = 4.000000000000000000
+      Shadow.Blur = 4
       Shadow.Color = 4144959
+      Shadow.Saturation = 0
       Shadow.Visible = True
     end
     object DialTune: TGuiStitchedDial
       Left = 16
+      Height = 64
       Top = 24
       Width = 64
-      Height = 64
       Color = 6908265
-      CurveMapping = -1.200000047683716000
-      Max = 16000.000000000000000000
-      Min = 1000.000000000000000000
-      OnChange = DialTuneChange
+      CurveMapping = -1.20000004768372
+      DefaultValue = 0
+      Max = 16000
+      Min = 1000
       ParentColor = False
+      ScrollRange = 400
       ImageList = DSPL
       ImageIndex = 0
-      Value = 8000.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 8000
+      WheelStep = 1
+      OnChange = DialTuneChange
+      DefaultValue = 0
     end
     object DialShape: TGuiStitchedDial
       Left = 156
+      Height = 64
       Top = 24
       Width = 64
-      Height = 64
       Color = 6908265
-      Max = 100.000000000000000000
-      OnChange = DialShapeChange
+      CurveMapping = 0
+      DefaultValue = 0
+      Max = 100
+      Min = 0
       ParentColor = False
+      ScrollRange = 400
       ImageList = DSPL
       ImageIndex = 0
-      Value = 50.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 50
+      WheelStep = 1
+      OnChange = DialShapeChange
+      DefaultValue = 0
     end
     object DialMix: TGuiStitchedDial
       Left = 226
+      Height = 64
       Top = 24
       Width = 64
-      Height = 64
       Color = 6908265
-      Max = 100.000000000000000000
-      OnChange = DialMixChange
+      CurveMapping = 0
+      DefaultValue = 0
+      Max = 100
+      Min = 0
       ParentColor = False
+      ScrollRange = 400
       ImageList = DSPL
       ImageIndex = 0
-      Value = 50.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 50
+      WheelStep = 1
+      OnChange = DialMixChange
+      DefaultValue = 0
     end
     object DialOrder: TGuiStitchedDial
       Left = 86
+      Height = 64
       Top = 24
       Width = 64
-      Height = 64
       Color = 6908265
-      CurveMapping = -0.660000026226043700
-      Max = 8.000000000000000000
-      Min = 2.000000000000000000
-      OnChange = DialOrderChange
+      CurveMapping = -0.66000002622604
+      DefaultValue = 0
+      Max = 8
+      Min = 2
       ParentColor = False
+      ScrollRange = 400
       ImageList = DSPL
       ImageIndex = 0
-      Value = 4.000000000000000000
-      WheelStep = 1.000000000000000000
+      Value = 4
+      WheelStep = 1
+      OnChange = DialOrderChange
+      DefaultValue = 0
     end
   end
   object DSPL: TGuiStitchedPNGList
-    StitchedPNGs = <
+    StitchedPNGs = <    
       item
         PortableNetworkGraphic.Data = {
           89504E470D0A1A0A0000000D4948445200001040000000400806000000049FB5
@@ -876,14 +877,14 @@ object FmExciter: TFmExciter
           18000360000C8001300006C00018000360000C8001300006C00018000360000C
           8001300006C00018000360000C8001300006C00018000360000C8001300006C0
           0018000360000C8001300006C00018703B06FE1F98DE2AB4D47F643700000000
-          49454E44AE426082}
+          49454E44AE426082
+        }
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 64
         Width = 4160
       end>
-    Left = 152
-    Top = 64
+    left = 152
+    top = 64
   end
 end
