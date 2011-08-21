@@ -140,6 +140,7 @@ object ChorusModule: TChorusModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
+  OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81

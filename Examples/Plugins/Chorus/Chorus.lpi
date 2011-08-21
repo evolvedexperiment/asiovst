@@ -7,6 +7,7 @@
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -26,7 +27,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\Chorus (x64).dll"/>
+            <Filename Value="..\..\..\Bin\VST\64-Bit\Chorus.dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -41,6 +42,11 @@
               <CPPInline Value="False"/>
             </SyntaxOptions>
           </Parsing>
+          <CodeGeneration>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="True"/>
@@ -106,7 +112,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\Chorus (x64).dll"/>
+      <Filename Value="..\..\..\Bin\VST\64-Bit\Chorus.dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>
@@ -120,6 +126,12 @@
         <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <Optimizations>
+        <OptimizationLevel Value="2"/>
+      </Optimizations>
+    </CodeGeneration>
     <Linking>
       <Debugging>
         <UseLineInfoUnit Value="False"/>
@@ -134,6 +146,9 @@
       </Options>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
