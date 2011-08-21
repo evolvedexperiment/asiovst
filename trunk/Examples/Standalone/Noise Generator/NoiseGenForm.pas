@@ -152,7 +152,7 @@ begin
  for Channel := 0 to ASIOHost.BufferSize - 1 do
   begin
    for Sample := 0 to ASIOHost.OutputChannelCount - 1
-    do OutBuffer[Sample, Channel] := (2 * random - 1) * FVol;
+    do OutBuffer[Channel, Sample] := (Random - Random) * FVol;
   end;
 end;
 
@@ -164,7 +164,7 @@ begin
  for Channel := 0 to ASIOHost.BufferSize - 1 do
   begin
    for Sample := 0 to ASIOHost.OutputChannelCount - 1
-    do OutBuffer[Sample, Channel] := (2 * random - 1) * FVol;
+    do OutBuffer[Channel, Sample] := (Random - Random) * FVol;
   end;
 end;
 
