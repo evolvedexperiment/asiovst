@@ -52,6 +52,7 @@ type
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriftChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleResume(Sender: TObject);
   private
     FChorus          : array [0..1] of TDspChorus32;
     FCriticalSection : TCriticalSection;
@@ -302,6 +303,17 @@ begin
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FastTanhContinousError4(FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TChorusModule.VSTModuleResume(Sender: TObject);
+begin
+ FCriticalSection.Enter;
+ try
+  if Assigned(FChorus[0]) then FChorus[0].Reset;
+  if Assigned(FChorus[1]) then FChorus[1].Reset;
  finally
   FCriticalSection.Leave;
  end;

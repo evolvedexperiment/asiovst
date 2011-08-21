@@ -8,6 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------
@@ -65,8 +66,8 @@ SetCompressor lzma
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -107,13 +108,15 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\NoiseReduction.dll" "..\Bin\Noise Reduction.dll"'  
+  !system 'copy "..\Bin\VST\32-Bit\NoiseReduction.dll" "..\Bin\VST\32-Bit\Noise Reduction.dll"'  
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Noise Reduction.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\VST\64-Bit\Noise Reduction.dll"
+  ${Else}
+  File "..\Bin\VST\32-Bit\Noise Reduction.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -129,6 +132,7 @@ Section "VST-Plugin" SecVSTPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -155,14 +159,17 @@ SectionEnd
 ;Installer Functions
 
 Function BugReportPatch
-  ${If} ${SectionIsSelected} ${SecVSTPlugin}
+  ${If} ${SectionIsSelected} ${SecVstPlugin}
   Goto IsVST
   ${EndIf}
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
@@ -175,12 +182,12 @@ FunctionEnd
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Noise Reduction VST Plugin"
 
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Noise Reduction VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Noise Reduction VST Plugin"
   LangString DESC_SecManual ${LANG_ENGLISH} "Noise Reduction Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -190,7 +197,6 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\Noise Reduction.dll"
   Delete "$INSTDIR\Noise Reduction.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
