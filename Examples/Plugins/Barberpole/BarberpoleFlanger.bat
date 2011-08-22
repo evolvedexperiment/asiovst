@@ -4,5 +4,5 @@
 @move "..\..\..\Bin\VST\32-Bit\Barberpole Flanger.png" "..\..\..\Screenshots\Barberpole Flanger.png"
 @7z a "..\..\..\Archive\BarberpoleFlanger.7z" "..\..\..\Bin\VST\*\Barberpole Flanger.dll" "..\..\..\Manuals\Barberpole Flanger.pdf" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Barberpole Flanger.nsi"
-@ftps -s:"..\..\..\Release Scripts\BarberpoleFlanger.ftp"
-@WinSCP -script="..\..\..\Release Scripts\BarberpoleFlanger.scp"
+@ftps -s:"..\..\..\Release Scripts\Barberpole Flanger.ftp"
+@WinSCP -script="..\..\..\Release Scripts\Barberpole Flanger.scp"

@@ -245,8 +245,8 @@ var
 begin
  Attack := Parameter[index];
  if Attack < 1000
-  then PreDefined := FloatToStrF(Attack, ffGeneral, 3, 2)
-  else PreDefined := FloatToStrF(Attack * 1E-3, ffGeneral, 3, 2);
+  then PreDefined := AnsiString(FloatToStrF(Attack, ffGeneral, 3, 2))
+  else PreDefined := AnsiString(FloatToStrF(Attack * 1E-3, ffGeneral, 3, 2));
 end;
 
 procedure TBassExtenderModule.ParamReleaseDisplay(
@@ -256,8 +256,8 @@ var
 begin
  Release := Parameter[index];
  if Release < 1000
-  then PreDefined := FloatToStrF(Release, ffGeneral, 3, 2)
-  else PreDefined := FloatToStrF(Release * 1E-3, ffGeneral, 3, 2);
+  then PreDefined := AnsiString(FloatToStrF(Release, ffGeneral, 3, 2))
+  else PreDefined := AnsiString(FloatToStrF(Release * 1E-3, ffGeneral, 3, 2));
 end;
 
 procedure TBassExtenderModule.ParamRatioDisplay(
@@ -265,7 +265,7 @@ procedure TBassExtenderModule.ParamRatioDisplay(
 begin
  if Parameter[Index] = 1000
   then PreDefined := '1 : oo'
-  else PreDefined := '1 : ' + FloatToStrF(Parameter[Index], ffGeneral, 3, 5);
+  else PreDefined := '1 : ' + AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 3, 5));
 end;
 
 procedure TBassExtenderModule.ParamThresholdChange(
@@ -340,7 +340,7 @@ end;
 procedure TBassExtenderModule.ParamSplitOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(round(2 * Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(round(2 * Parameter[Index])));
 end;
 
 procedure TBassExtenderModule.ParamFreqDisplay(
@@ -350,8 +350,8 @@ var
 begin
  Freq := Parameter[Index];
  if Freq < 1000
-  then Predefined := FloatToStrF(Freq, ffGeneral, 4, 4)
-  else Predefined := FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4);
+  then Predefined := AnsiString(FloatToStrF(Freq, ffGeneral, 4, 4))
+  else Predefined := AnsiString(FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4));
 end;
 
 procedure TBassExtenderModule.ParamFreqLabel(
