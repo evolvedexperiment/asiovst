@@ -1,0 +1,8 @@
+@copy "..\..\..\Bin\VST\32-Bit\BassExtender.dll" "..\..\..\Bin\VST\32-Bit\Bass Extender.dll"
+@"..\..\..\Bin\VST-Plugin Unit Test (command line).exe" "..\..\..\Bin\VST\32-Bit\Bass Extender.dll"
+@"..\..\..\Bin\VstPluginScreenshotTool.exe" "..\..\..\Bin\VST\32-Bit\Bass Extender.dll"
+@move "..\..\..\Bin\VST\32-Bit\Bass Extender.png" "..\..\..\Screenshots\Bass Extender.png"
+@7z a "..\..\..\Archive\BassExtender.7z" "..\..\..\Bin\VST\*\Bass Extender.dll" "..\..\..\Bin\License.txt" "..\..\..\Manuals\Bass Extender.pdf"
+@makensis /V2 "..\..\..\Install Scripts\Install Script Bass Extender.nsi"
+@ftps -s:"..\..\..\Release Scripts\Bass Extender.ftp"
+@WinSCP -script="..\..\..\Release Scripts\Bass Extender.scp"

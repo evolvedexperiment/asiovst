@@ -115,7 +115,7 @@ Section "VST-Plugin" SecVstPlugin
   !system 'copy "..\Bin\VST\64-Bit\ChebyshevWaveshaper.dll" "..\Bin\VST\64-Bit\Chebyshev Waveshaper.dll"'
 
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Chebyshev Exciter.dll"
+  File "..\Bin\VST\64-Bit\Chebyshev Waveshaper.dll"
   ${Else}
   File "..\Bin\VST\32-Bit\Chebyshev Waveshaper.dll"
 
@@ -168,9 +168,9 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ChebyshevWaveshaper VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Chebyshev Waveshaper VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "ChebyshevWaveshaper VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Chebyshev Waveshaper VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

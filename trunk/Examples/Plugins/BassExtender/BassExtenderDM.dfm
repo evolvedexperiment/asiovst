@@ -1,5 +1,4 @@
 object BassExtenderModule: TBassExtenderModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Bass Extender'
