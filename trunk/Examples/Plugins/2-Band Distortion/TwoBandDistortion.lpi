@@ -160,7 +160,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="59" Y="22"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -170,10 +170,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="TwoBandDistortionDM"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="249"/>
-        <CursorPos X="32" Y="270"/>
-        <UsageCount Value="24"/>
+        <TopLine Value="90"/>
+        <CursorPos X="35" Y="111"/>
+        <UsageCount Value="26"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -185,7 +186,7 @@
         <UnitName Value="TwoBandDistortionGUI"/>
         <TopLine Value="23"/>
         <CursorPos X="73" Y="39"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>

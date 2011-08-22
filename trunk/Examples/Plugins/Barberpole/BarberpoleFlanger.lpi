@@ -11,7 +11,6 @@
       </Flags>
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -85,12 +84,10 @@
       <Unit0>
         <Filename Value="BarberpoleFlanger.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="6" Y="4"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="21"/>
       </Unit0>
       <Unit1>
         <Filename Value="BarberpoleFlangerDM.pas"/>
@@ -100,13 +97,10 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="BarberpoleFlangerDM"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="30"/>
-        <CursorPos X="63" Y="39"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="21"/>
       </Unit1>
       <Unit2>
         <Filename Value="BarberpoleFlangerGUI.pas"/>
@@ -115,70 +109,18 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="BarberpoleFlangerGUI"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="48" Y="22"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="21"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\DAV_WinAmp.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="12" HistoryIndex="11">
-      <Position1>
-        <Filename Value="BarberpoleFlangerGUI.pas"/>
-        <Caret Line="80" Column="1" TopLine="61"/>
-      </Position1>
-      <Position2>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="71" Column="1" TopLine="52"/>
-      </Position2>
-      <Position3>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="38" Column="61" TopLine="33"/>
-      </Position3>
-      <Position4>
-        <Filename Value="BarberpoleFlangerGUI.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
-      </Position4>
-      <Position5>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="268" Column="55" TopLine="222"/>
-      </Position6>
-      <Position7>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="57" Column="16" TopLine="38"/>
-      </Position7>
-      <Position8>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="254" Column="29" TopLine="246"/>
-      </Position8>
-      <Position9>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="44" Column="15" TopLine="43"/>
-      </Position9>
-      <Position10>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="281" Column="5" TopLine="253"/>
-      </Position10>
-      <Position11>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position11>
-      <Position12>
-        <Filename Value="BarberpoleFlangerDM.pas"/>
-        <Caret Line="29" Column="63" TopLine="1"/>
-      </Position12>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="10"/>

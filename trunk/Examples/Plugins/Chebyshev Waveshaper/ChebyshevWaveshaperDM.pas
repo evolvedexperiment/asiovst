@@ -36,13 +36,16 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspWaveshaper;
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspWaveshaper, DAV_VSTCustomModule;
 
 const
   CHarmCount : Integer = 24;
   CdBMin : Single = -140;
 
 type
+
+  { TChebyshevWaveshaperDataModule }
+
   TChebyshevWaveshaperDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
