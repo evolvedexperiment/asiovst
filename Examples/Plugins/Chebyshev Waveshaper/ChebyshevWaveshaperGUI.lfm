@@ -1,24 +1,19 @@
 object FmChebyshevWaveshaper: TFmChebyshevWaveshaper
   Left = 286
+  Height = 211
   Top = 81
+  Width = 334
   BorderStyle = bsNone
   Caption = 'Chebyshev Waveshaper'
-  ClientHeight = 211
-  ClientWidth = 334
   Color = 7630168
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  OldCreateOrder = False
-  Scaled = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '0.9.31'
   object GSPL: TGuiStitchedPNGList
-    StitchedPNGs = <
+    StitchedPNGs = <    
       item
         PortableNetworkGraphic.Data = {
           89504E470D0A1A0A0000000D4948445200000C300000003008060000005D186B
@@ -853,14 +848,14 @@ object FmChebyshevWaveshaper: TFmChebyshevWaveshaper
           01C580624031A018500C280614038A01C580624031A018500C280614038A01C5
           8062A0BC3150C7C70BFAF5F2803C200FC803F2803C200FC803F2803C200FC803
           F2803C200FC803F2803C200FC803F2803C200F44F6C0FF07454A2DC85664E9A5
-          0000000049454E44AE426082}
+          0000000049454E44AE426082
+        }
         DisplayName = 'Dial'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end>
-    Left = 40
-    Top = 24
+    left = 40
+    top = 24
   end
 end

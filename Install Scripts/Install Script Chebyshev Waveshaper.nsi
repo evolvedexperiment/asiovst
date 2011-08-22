@@ -8,6 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------
@@ -65,8 +66,8 @@ SetCompressor lzma
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -110,10 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\ChebyshevWaveshaper.dll" "..\Bin\Chebyshev Waveshaper.dll"'
+  !system 'copy "..\Bin\VST\32-Bit\ChebyshevWaveshaper.dll" "..\Bin\VST\32-Bit\Chebyshev Waveshaper.dll"'
+  !system 'copy "..\Bin\VST\64-Bit\ChebyshevWaveshaper.dll" "..\Bin\VST\64-Bit\Chebyshev Waveshaper.dll"'
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Chebyshev Waveshaper.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\VST\64-Bit\Chebyshev Exciter.dll"
+  ${Else}
+  File "..\Bin\VST\32-Bit\Chebyshev Waveshaper.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -129,6 +133,7 @@ Section "VST-Plugin" SecVstPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -148,8 +153,11 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
@@ -175,8 +183,11 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
+  ${If} ${RunningX64}
   Delete "$INSTDIR\Chebyshev Waveshaper.dll"
+  ${Else}
+  Delete "$INSTDIR\Chebyshev Waveshaper.dll"
+  ${Endif}
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
