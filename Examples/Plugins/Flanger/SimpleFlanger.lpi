@@ -20,8 +20,52 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="1" Active="Default">
-      <Item1 Name="Default" Default="True"/>
+    <BuildModes Count="2" Active="Debug">
+      <Item1 Name="Release" Default="True"/>
+      <Item2 Name="Debug">
+        <CompilerOptions>
+          <Version Value="10"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\..\..\Bin\VST\64-Bit\Flanger.dll"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="..\..\..\source"/>
+            <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
+            <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <CStyleOperator Value="False"/>
+              <IncludeAssertionCode Value="True"/>
+              <CPPInline Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <UseMsgFile Value="True"/>
+            </CompilerMessages>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -33,107 +77,140 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
+    <RequiredPackages Count="5">
+      <Item1>
+        <PackageName Value="DAV_GUI_Lazarus"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="DAV_DSP_Lazarus"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
+    </RequiredPackages>
     <Units Count="4">
       <Unit0>
         <Filename Value="SimpleFlanger.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="58" Y="24"/>
+        <CursorPos X="14" Y="10"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="SimpleFlangerDM.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="SimpleFlangerModule"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="SimpleFlangerDM"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="106"/>
+        <CursorPos X="41" Y="72"/>
         <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="SimpleFlangerGUI.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="SimpleFlangerGUI"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="23"/>
+        <CursorPos X="3" Y="40"/>
         <UsageCount Value="24"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
         <UnitName Value="DAV_VSTModuleLazIDE"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="117"/>
         <CursorPos X="1" Y="133"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="12" HistoryIndex="11">
+    <JumpHistory Count="11" HistoryIndex="10">
       <Position1>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="153" Column="17" TopLine="137"/>
+        <Filename Value="SimpleFlanger.lpr"/>
+        <Caret Line="31" Column="63" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <Filename Value="SimpleFlanger.lpr"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="185" Column="44" TopLine="174"/>
-      </Position3>
-      <Position4>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="3" Column="8" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="83" Column="112" TopLine="66"/>
-      </Position5>
-      <Position6>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="80" Column="20" TopLine="74"/>
-      </Position6>
-      <Position7>
-        <Filename Value="SimpleFlanger.lpr"/>
-        <Caret Line="31" Column="63" TopLine="1"/>
-      </Position7>
-      <Position8>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="83" Column="28" TopLine="67"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="105" Column="50" TopLine="88"/>
-      </Position9>
-      <Position10>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
-        <Caret Line="109" Column="21" TopLine="93"/>
-      </Position10>
-      <Position11>
-        <Filename Value="SimpleFlanger.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position11>
-      <Position12>
         <Filename Value="SimpleFlanger.lpr"/>
         <Caret Line="13" Column="1" TopLine="1"/>
-      </Position12>
+      </Position3>
+      <Position4>
+        <Filename Value="SimpleFlanger.lpr"/>
+        <Caret Line="28" Column="27" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="SimpleFlanger.lpr"/>
+        <Caret Line="26" Column="43" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="SimpleFlangerDM.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position6>
+      <Position7>
+        <Filename Value="SimpleFlangerDM.pas"/>
+        <Caret Line="73" Column="29" TopLine="57"/>
+      </Position7>
+      <Position8>
+        <Filename Value="SimpleFlangerGUI.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="SimpleFlangerGUI.pas"/>
+        <Caret Line="74" Column="9" TopLine="58"/>
+      </Position9>
+      <Position10>
+        <Filename Value="SimpleFlangerGUI.pas"/>
+        <Caret Line="40" Column="3" TopLine="23"/>
+      </Position10>
+      <Position11>
+        <Filename Value="SimpleFlangerGUI.pas"/>
+        <Caret Line="39" Column="31" TopLine="23"/>
+      </Position11>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\Bin\VST\64-Bit\Flanger.dll"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\source"/>
       <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
-      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <UseAnsiStrings Value="False"/>
+        <CStyleOperator Value="False"/>
+        <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <Optimizations>
+        <OptimizationLevel Value="2"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -149,6 +226,9 @@
       </Options>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>

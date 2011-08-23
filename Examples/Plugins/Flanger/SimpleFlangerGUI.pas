@@ -36,8 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Controls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, 
-  DAV_GuiPng, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, 
+  Forms, Controls, DAV_GuiLabel, DAV_GuiPng, DAV_GuiStitchedPngList,
   DAV_GuiStitchedDial;
 
 type
@@ -71,7 +70,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_VSTModuleWithPrograms, SimpleFlangerDM;
+  Math, SimpleFlangerDM;
 
 procedure TFmSimpleFlanger.FormShow(Sender: TObject);
 begin
