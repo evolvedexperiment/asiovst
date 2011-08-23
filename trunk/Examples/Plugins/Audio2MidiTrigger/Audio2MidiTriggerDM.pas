@@ -35,19 +35,17 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspAudioToMidiTrigger;
+  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
+  DAV_Types, DAV_VSTModule, DAV_DspAudioToMidiTrigger;
 
 type
   TAudio2MidiTriggerModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMidiNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMidiNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterMidiNoteChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterIntervalChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterVelocityShiftChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -67,7 +65,7 @@ implementation
 {$ENDIF}
 
 uses
-  Audio2MidiTriggerGui, DAV_Common, DAV_VSTBasicModule;
+  DAV_Common, DAV_VSTBasicModule;
 
 procedure TAudio2MidiTriggerModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -82,21 +80,20 @@ begin
   end;
  FMidiNote := 64;
 
+ // initialize parameters
  Parameter[0] := -30;
  Parameter[1] :=   0;
  Parameter[2] :=  20;
  Parameter[3] :=  64;
  Parameter[4] :=   0;
+
+ // set editor GUI
+ // EditorFormClass := TFmAudio2MidiTrigger;
 end;
 
 procedure TAudio2MidiTriggerModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FAudio2MidiTrigger);
-end;
-
-procedure TAudio2MidiTriggerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmAudio2MidiTrigger.Create(Self);
 end;
 
 procedure TAudio2MidiTriggerModule.ParameterIntervalChange(
@@ -128,9 +125,9 @@ begin
 end;
 
 procedure TAudio2MidiTriggerModule.ParameterMidiNoteDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(FMidiNote);
+ PreDefined := AnsiString(IntToStr(FMidiNote));
 end;
 
 procedure TAudio2MidiTriggerModule.ParameterVelocityShiftChange(
