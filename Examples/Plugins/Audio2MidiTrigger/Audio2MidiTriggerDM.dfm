@@ -1,5 +1,4 @@
 object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
-  OldCreateOrder = True
   Version = '1.0'
   EffectName = 'Audio to Midi Trigger'
   ProductName = 'DAV Effect Examples'
@@ -106,7 +105,6 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange

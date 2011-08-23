@@ -1,0 +1,8 @@
+@copy "..\..\..\Bin\VST\32-Bit\Audio2MidiTrigger.DLL" "..\..\..\Bin\VST\32-Bit\Audio2Midi Trigger.DLL"
+@"..\..\..\Bin\VST-Plugin Unit Test (command line).exe" "..\..\..\Bin\VST\32-Bit\Audio2Midi Trigger.DLL"
+@"..\..\..\Bin\VST\32-Bit\VstPluginScreenshotTool.exe" "..\..\..\Bin\VST\32-Bit\Audio2Midi Trigger.DLL"
+@move "..\..\..\Bin\VST\32-Bit\Audio2Midi Trigger.png" "..\..\..\Screenshots\Audio2Midi Trigger.png"
+@7z.exe a "..\..\..\Archive\Audio2MidiTrigger.7z" "..\..\..\Bin\VST\*\Audio2Midi Trigger.dll" "..\..\..\Manuals\Audio2Midi Trigger.pdf" "..\..\..\Bin\License.txt"
+@makensis.exe /V2 "..\..\..\Install Scripts\Install Script Audio2Midi Trigger.nsi"
+@ftps -s:"..\..\..\Release Scripts\Audio2Midi Trigger.ftp"
+@WinSCP -script="..\..\..\Release Scripts\Audio2Midi Trigger.scp"
