@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspVibrato;
+  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Forms,
+  SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspVibrato;
 
 type
   TSimpleFlangerModule = class(TVSTModule)
@@ -47,7 +47,6 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -70,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Approximations, DAV_VSTCustomModule, SimpleFlangerGUI;
+  Math, DAV_Approximations, SimpleFlangerGUI;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -123,6 +122,9 @@ begin
    Parameter[1] :=  0.62;
    Parameter[2] := 50;
   end;
+
+ // set editor GUI form
+ EditorFormClass := TFmSimpleFlanger;
 end;
 
 procedure TSimpleFlangerModule.VSTModuleClose(Sender: TObject);
@@ -131,11 +133,6 @@ var
 begin
  for Channel := 0 to Length(FVibrato) - 1
   do FreeAndNil(FVibrato[Channel]);
-end;
-
-procedure TSimpleFlangerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmSimpleFlanger.Create(Self);
 end;
 
 function TSimpleFlangerModule.GetFlanger(Index: Integer): TDspVibrato32;
