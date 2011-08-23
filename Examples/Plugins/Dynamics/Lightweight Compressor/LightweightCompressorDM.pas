@@ -143,12 +143,12 @@ end;
 
 procedure TLightweightCompressorDataModule.ChooseProcess;
 begin
- case round(Parameter[7]) of
-  0 : case round(Parameter[6]) of
+ case Round(Parameter[7]) of
+  0 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMono;
        1 : OnProcess := VSTModuleProcessStereo;
       end;
-  1 : case round(Parameter[6]) of
+  1 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMonoSoftClip;
        1 : OnProcess := VSTModuleProcessStereoSoftClip;
       end;
@@ -243,7 +243,7 @@ procedure TLightweightCompressorDataModule.ParameterAutoMakeUpGainChange(
 begin
  if Assigned(FCompressor[0]) then
   begin
-   FCompressor[0].AutoMakeUp := Boolean(round(Value));
+   FCompressor[0].AutoMakeUp := Boolean(Round(Value));
    FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
   end;
 
@@ -277,16 +277,16 @@ var
 begin
  Val := Parameter[Index];
  if Val < 1
-  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
+  then PreDefined := AnsiString(FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3)) else
  if Val < 1000
-  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3))
+  else PreDefined := AnsiString(FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3));
 end;
 
 procedure TLightweightCompressorDataModule.ParameterMakeUpGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TLightweightCompressorDataModule.ParameterMakeUpGainChange(
@@ -306,25 +306,25 @@ end;
 procedure TLightweightCompressorDataModule.ParameterThresholdDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TLightweightCompressorDataModule.ParameterRatioDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TLightweightCompressorDataModule.ParameterKneeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TLightweightCompressorDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;

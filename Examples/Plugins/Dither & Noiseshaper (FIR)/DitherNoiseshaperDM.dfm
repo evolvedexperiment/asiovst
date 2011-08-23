@@ -9,7 +9,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DiNo'
@@ -29,7 +28,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Bit Depth'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -49,7 +47,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       OnCustomParameterDisplay = ParameterBitDepthDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limit'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -66,7 +63,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dither Type'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -83,7 +79,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       OnCustomParameterDisplay = ParameterDitherTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dither Amplitude'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -99,7 +94,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       OnParameterChange = ParameterDitherChangeAmplitude
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Noiseshaper Type'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -118,10 +112,9 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81

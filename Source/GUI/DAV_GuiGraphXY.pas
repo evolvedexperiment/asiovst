@@ -1932,7 +1932,6 @@ var
   PixelRange   : Integer;
   TextSize     : TSize;
   ZeroPos      : TPoint;
-  str          : string;
 const
   TextXMargin = 2;
 begin
