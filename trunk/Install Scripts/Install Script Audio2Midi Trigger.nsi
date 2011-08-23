@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;DitherNoiseshaper Installer
+;Audio2Midi Trigger Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -8,14 +8,15 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------
 ;General
 
   ;Name and file
-  Name "DitherNoiseshaper Installer"
-  OutFile "DitherNoiseshaper_Install.exe"
+  Name "Audio2Midi Trigger Installer"
+  OutFile "Audio2Midi_Trigger_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -38,7 +39,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "DitherNoiseshaper"
+  !define PRODUCT_NAME "Audio2Midi Trigger"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -65,10 +66,11 @@ SetCompressor lzma
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
 
 ;--------------------------------
 ;Installer Functions
@@ -109,8 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\DitherNoiseshaper.dll"
+  !system 'copy "..\Bin\VST\32-Bit\Audio2MidiTrigger.dll" "..\Bin\VST\32-Bit\Audio2Midi Trigger.dll"'  
+  !system 'copy "..\Bin\VST\64-Bit\Audio2MidiTrigger.dll" "..\Bin\VST\64-Bit\Audio2Midi Trigger.dll"'  
+   
+  ${If} ${RunningX64}
+  File "..\Bin\VST\64-Bit\Audio2Midi Trigger.dll"
+  ${Else}
+  File "..\Bin\VST\32-Bit\Audio2Midi Trigger.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -118,7 +125,7 @@ Section "VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\DitherNoiseshaper.dll" 
+  StrCpy $0 "$INSTDIR\Audio2Midi Trigger.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -126,12 +133,13 @@ Section "VST-Plugin" SecVstPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Dither_Noiseshaper.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Audio2Midi_Trigger.exe"
 SectionEnd
 
 
@@ -145,8 +153,11 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
@@ -157,9 +168,9 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "DitherNoiseshaper VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Audio2Midi Trigger VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "DitherNoiseshaper VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Audio2Midi Trigger VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -172,8 +183,11 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\DitherNoiseshaper.dll"
+  ${If} ${RunningX64}
+  Delete "$INSTDIR\Audio2Midi Trigger.dll"
+  ${Else}
+  Delete "$INSTDIR\Audio2Midi Trigger.dll"
+  ${Endif}
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

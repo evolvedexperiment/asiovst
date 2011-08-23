@@ -214,7 +214,7 @@ begin
    Attack := Parameter[0];
    if Attack <> DialAttack.Value
     then DialAttack.Value := Attack;
-   LbAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbAttackValue.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
 
@@ -227,7 +227,7 @@ begin
    Release := Parameter[1];
    if Release <> DialRelease.Value
     then DialRelease.Value := Release;
-   LbReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+   LbReleaseValue.Caption := string(ParameterDisplay[1] + ' ' + ParameterLabel[1]);
   end;
 end;
 
@@ -240,7 +240,7 @@ begin
    Knee := Parameter[4];
    if Knee <> DialKnee.Value
     then DialKnee.Value := Knee;
-   LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
+   LbKneeValue.Caption := string(ParameterDisplay[4] + ' ' + ParameterLabel[4]);
    GuiGraphXY.UpdateGraph;
   end;
 end;
@@ -254,7 +254,7 @@ begin
    MakeUp := LightweightCompressor[0].MakeUpGain_dB;
    if MakeUp <> DialMakeUpGain.Value
     then DialMakeUpGain.Value := MakeUp;
-   LbMakeUpGainValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
+   LbMakeUpGainValue.Caption := string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
    GuiGraphXY.UpdateGraph;
   end;
 end;
@@ -268,7 +268,7 @@ begin
    Ratio := Parameter[3];
    if Ratio <> DialRatio.Value
     then DialRatio.Value := Ratio;
-   LbRatioValue.Caption := ParameterDisplay[3] + ' : 1';
+   LbRatioValue.Caption := string(ParameterDisplay[3] + ' : 1');
    GuiGraphXY.UpdateGraph;
   end;
 end;
@@ -282,7 +282,7 @@ begin
    Threshold := Parameter[2];
    if Threshold <> DialThreshold.Value
     then DialThreshold.Value := Threshold;
-   LbThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbThresholdValue.Caption := string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
    GuiGraphXY.UpdateGraph;
   end;
 end;

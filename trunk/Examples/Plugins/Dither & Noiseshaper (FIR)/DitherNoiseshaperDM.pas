@@ -44,20 +44,18 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParameterBitDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterDitherTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterNoiseshaperTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterNoiseshaperTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterNoiseshaperTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterDitherChangeAmplitude(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterDitherTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
+    procedure ParameterDitherTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FDitherNoiseshaper : array of TDitherNoiseShaper32;
     FCriticalSection   : TCriticalSection;
@@ -91,16 +89,21 @@ procedure TDitherNoiseshaperModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FDitherNoiseshaper, numInputs);
  for Channel := 0 to Length(FDitherNoiseshaper) - 1
   do FDitherNoiseshaper[Channel] := TDitherNoiseShaper32.Create;
+
+ // initialize parameters
  Parameter[0] := 16;
  Parameter[1] := 1;
  Parameter[2] := 2;
  Parameter[3] := 1;
  Parameter[4] := 0;
+
+ // set editor form class
+ EditorFormClass := TFmDitherNoiseshaper;
 end;
 
 procedure TDitherNoiseshaperModule.VSTModuleClose(Sender: TObject);
@@ -111,20 +114,14 @@ begin
   do FreeAndNil(FDitherNoiseshaper[Channel]);
 end;
 
-procedure TDitherNoiseshaperModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmDitherNoiseshaper.Create(Self);
-end;
-
 procedure TDitherNoiseshaperModule.ParameterDitherTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
-   then FDitherNoiseshaper[Channel].DitherType := TDitherType(round(Value));
+  if Assigned(FDitherNoiseshaper[Channel])
+   then FDitherNoiseshaper[Channel].DitherType := TDitherType(Round(Value));
 
  // eventually update editor
  if EditorForm is TFmDitherNoiseshaper
@@ -137,7 +134,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
+  if Assigned(FDitherNoiseshaper[Channel])
    then FDitherNoiseshaper[Channel].DitherAmplitude := Value;
 
  // eventually update editor
@@ -151,7 +148,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
+  if Assigned(FDitherNoiseshaper[Channel])
    then FDitherNoiseshaper[Channel].Limit := Boolean(Round(Value));
 
  // eventually update editor
@@ -164,7 +161,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
+  if Assigned(FDitherNoiseshaper[Channel])
    then FDitherNoiseshaper[Channel].BitDepth := Round(Value);
 
  // eventually update editor
@@ -177,7 +174,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
+  if Assigned(FDitherNoiseshaper[Channel])
    then FDitherNoiseshaper[Channel].NoiseshaperType := TNoiseshaperType(Round(Value));
 
  // eventually update editor
@@ -186,21 +183,21 @@ begin
 end;
 
 procedure TDitherNoiseshaperModule.ParameterBitDepthDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 procedure TDitherNoiseshaperModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 const
-  COnOff :array [0..1] of string = ('Off', 'On');
+  COnOff :array [0..1] of AnsiString = ('Off', 'On');
 begin
- PreDefined := COnOff[round(Parameter[Index])];
+ PreDefined := COnOff[Round(Parameter[Index])];
 end;
 
 procedure TDitherNoiseshaperModule.ParameterDitherTypeDisplay(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  case TDitherType(Round(Parameter[Index])) of
         dtNone : PreDefined := 'None';
@@ -211,7 +208,7 @@ begin
  end;
 end;
 
-procedure TDitherNoiseshaperModule.ParameterNoiseshaperTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TDitherNoiseshaperModule.ParameterNoiseshaperTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case TNoiseShaperType(Round(Parameter[Index])) of
               nsNone : PreDefined := 'None';
@@ -269,7 +266,7 @@ procedure TDitherNoiseshaperModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  try
-  if ((abs(SampleRate) / 44100)) - 1 > 0.1
+  if ((Abs(SampleRate) / 44100)) - 1 > 0.1
    then raise Exception.Create(ECStrOnly44100)
  except
   on E: Exception do MessageDlg(E.Message, mtError, [mbOK], 0);

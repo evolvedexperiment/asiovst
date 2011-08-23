@@ -35,8 +35,8 @@ unit DitherNoiseshaperGUI;
 interface
 
 uses
-  Windows, Messages, Classes, Forms, Controls, StdCtrls, Spin, DAV_Types,
-  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Forms,
+  Controls, StdCtrls, Spin, DAV_GuiDial;
 
 type
   TFmDitherNoiseshaper = class(TForm)
