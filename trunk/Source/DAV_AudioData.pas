@@ -962,8 +962,8 @@ end;
 
 function TCustomAudioChannel.GetAudioDataCollection: TCustomAudioDataCollection;
 begin
- assert(Collection is TCustomAudioChannels);
- assert(TCustomAudioChannels(Collection).GetOwner is TCustomAudioDataCollection);
+ Assert(Collection is TCustomAudioChannels);
+ Assert(TCustomAudioChannels(Collection).GetOwner is TCustomAudioDataCollection);
  Result := TCustomAudioDataCollection(TCustomAudioChannels(GetOwner).GetOwner);
 end;
 
@@ -990,7 +990,7 @@ begin
  inherited;
  if AudioDataCollection.ExternalData then
   begin
-   assert(AudioDataCollection is TCustomAudioDataCollection32);
+   Assert(AudioDataCollection is TCustomAudioDataCollection32);
    with TCustomAudioDataCollection32(AudioDataCollection)
     do FChannelData := TAudioData32.Create(FChannelDataPointerList[FChannels.Count - 1]);
   end
@@ -1101,7 +1101,7 @@ begin
  inherited;
  if AudioDataCollection.ExternalData then
   begin
-   assert(AudioDataCollection is TCustomAudioDataCollection64);
+   Assert(AudioDataCollection is TCustomAudioDataCollection64);
    with TCustomAudioDataCollection64(AudioDataCollection)
     do FChannelData := TAudioData64.Create(FChannelDataPointerList[FChannels.Count - 1]);
   end
@@ -1350,13 +1350,13 @@ end;
 
 procedure TCustomAudioDataCollection.SampleFramesChanged;
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to FChannels.Count - 1 do
+ for ChannelIndex := 0 to FChannels.Count - 1 do
   begin
-   assert(FChannels.Items[ch] is TCustomAudioChannel);
-   if TCustomAudioChannel(FChannels.Items[ch]).SampleCount <> FSampleFrames
-    then TCustomAudioChannel(FChannels.Items[ch]).SampleCountChanged;
+   Assert(FChannels.Items[ChannelIndex] is TCustomAudioChannel);
+   if TCustomAudioChannel(FChannels.Items[ChannelIndex]).SampleCount <> FSampleFrames
+    then TCustomAudioChannel(FChannels.Items[ChannelIndex]).SampleCountChanged;
   end;
 end;
 
@@ -1574,14 +1574,14 @@ end;
 procedure TCustomAudioDataCollection32.DataDecoding(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 var
-  Channel  : Cardinal;
+  Channel : Cardinal;
+  Coder32 : TCustomChannel32DataCoder absolute Coder;
 begin
- assert(Coder is TCustomChannel32DataCoder);
- with TCustomChannel32DataCoder(Coder) do
-  for Channel := 0 to ChannelCount - 1
-   do Move(ChannelPointer[Channel]^[0],
-        ChannelList[Channel].ChannelDataPointer^[Position],
-        SampleFrames * SizeOf(Single));
+ Assert(Coder is TCustomChannel32DataCoder);
+ for Channel := 0 to ChannelCount - 1
+  do Move(Coder32.ChannelPointer[Channel]^[0],
+       ChannelList[Channel].ChannelDataPointer^[Position],
+       Coder.SampleFrames * SizeOf(Single));
  // Position := Position + Coder.SampleFrames; // not necessary, incremented by caller!
 end;
 
@@ -1590,7 +1590,7 @@ procedure TCustomAudioDataCollection32.DataEncoding(Sender: TObject;
 var
   Channel  : Cardinal;
 begin
- assert(Coder is TCustomChannel32DataCoder);
+ Assert(Coder is TCustomChannel32DataCoder);
  with TCustomChannel32DataCoder(Coder) do
   for Channel := 0 to ChannelCount - 1
    do Move(ChannelList[Channel].ChannelDataPointer^[Position],

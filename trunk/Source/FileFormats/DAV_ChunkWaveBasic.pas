@@ -995,8 +995,7 @@ begin
      Read(FFormatSpecific[0], FormatSpecificBytes);
     end;
 
-
-   // move position to the end of this chunk
+   // Move position to the end of this chunk
    Position := Position + FChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word) - FormatSpecificBytes;
   end;
 end;
@@ -1031,9 +1030,9 @@ end;
 function TFormatChunk.GetFormatTag: TWavEncoding;
 begin
  // check if extensible format
- if (FWaveFormatRecord.FormatTag <> $FFFE) or not assigned(FFormatExtensible)
+ if (FWaveFormatRecord.FormatTag <> $FFFE) or not Assigned(FFormatExtensible)
   then Result := TWavEncoding(FWaveFormatRecord.FormatTag)
-  else move(FFormatExtensible^.GUID, Result, SizeOf(Word));
+  else Move(FFormatExtensible^.GUID, Result, SizeOf(Word));
 end;
 
 function TFormatChunk.GetValidBitsPerSample: Word;
@@ -1086,9 +1085,9 @@ end;
 procedure TFormatChunk.SetFormatTag(const Value: TWavEncoding);
 begin
  // ensure that the extensible format is used correctly 
- if assigned(FFormatExtensible) then
+ if Assigned(FFormatExtensible) then
   begin
-   // move current format tag to extensible format tag
+   // Move current format tag to extensible format tag
    Move(Value, FFormatExtensible.GUID, SizeOf(Word));
   end
  else
@@ -1098,7 +1097,7 @@ begin
      // allocate memory for extensible format
      ReallocMem(FFormatExtensible, SizeOf(TWavFormatChunkExtensible));
 
-     // move current format tag to extensible format tag
+     // Move current format tag to extensible format tag
      Move(FWaveFormatRecord.FormatTag, FFormatExtensible.GUID, SizeOf(Word));
     end;
    FWaveFormatRecord.FormatTag := Word(Value);

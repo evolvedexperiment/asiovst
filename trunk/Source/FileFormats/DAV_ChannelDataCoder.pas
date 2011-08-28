@@ -418,7 +418,7 @@ end;
 
 function TCustomChannelDataCoder.CorrectBlocksize(const Value: Cardinal): Cardinal;
 begin
- result := Value;
+ Result := Value;
 end;
 
 procedure TCustomChannelDataCoder.SetBlockSize(Value: Cardinal);
@@ -459,7 +459,7 @@ begin
  inherited;
  if Dest is TCustomChannel32DataCoder then
   begin
-   assert(Length(FChannelArray) = Length(TCustomChannel32DataCoder(Dest).FChannelArray));
+   Assert(Length(FChannelArray) = Length(TCustomChannel32DataCoder(Dest).FChannelArray));
    for Channel := 0 to Length(FChannelArray) - 1 do
     begin
      Move(FChannelArray[Channel, 0],
@@ -469,7 +469,7 @@ begin
   end else
  if Dest is TCustomChannel64DataCoder then
   begin
-   assert(Length(FChannelArray) = Length(TCustomChannel64DataCoder(Dest).FChannelArray));
+   Assert(Length(FChannelArray) = Length(TCustomChannel64DataCoder(Dest).FChannelArray));
    for Channel := 0 to Length(FChannelArray) - 1 do
     for Sample := 0 to FSampleFrames - 1
      do TCustomChannel64DataCoder(Dest).FChannelArray[Channel, Sample] := FChannelArray[Channel, Sample];
@@ -574,7 +574,7 @@ begin
      else FScaleFactor[0] := (1 shl (FBits - 1)) - 1;
     FScaleFactor[1] := 1 / FScaleFactor[0];
    end;
-  else assert(False);
+  else Assert(False);
  end;
 end;
 
@@ -600,7 +600,7 @@ var
   Granularity : Cardinal;
 begin
  Granularity := ChannelCount * FSampleSize;
- result := Granularity * (Value div Granularity);
+ Result := Granularity * (Value div Granularity);
 end;
 
 procedure TCustomChannel32DataCoderFixedPoint.CalculateBlockSize;
@@ -652,7 +652,7 @@ end;
 
 function TCustomChannel32DataCoderFixedPoint.SampleToByte(Sample: Cardinal): Cardinal;
 begin
- result := Sample * FSampleSize;
+ Result := Sample * FSampleSize;
 end;
 
 { TChannel32DataCoderFixedPoint }
@@ -724,8 +724,8 @@ var
   Channel : Cardinal;
   DataInt : Integer;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  case SampleSize of
   1: for Sample := 0 to FSampleFrames - 1 do
       for Channel := 0 to FChannelCount - 1
@@ -750,8 +750,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  case SampleSize of
   1: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
@@ -843,7 +843,7 @@ begin
 
  // The a-law byte bit arrangement is SEEEMMMM (Sign, Exponent, and Mantissa.)
  // Last is to flip every other bit, and the sign bit ($D5 = 1101 0101)
- result := ((SignInt or (Exponent shl 4) or (Mantissa and $0F))) xor $D5;
+ Result := ((SignInt or (Exponent shl 4) or (Mantissa and $0F))) xor $D5;
 end;
 
 procedure TChannel32DataCoderALaw.InterleaveData;
@@ -851,8 +851,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Sample := 0 to FSampleFrames - 1 do
   for Channel := 0 to FChannelCount - 1
    do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := EncodeALaw(FChannelArray[Channel]^[Sample]);
@@ -877,7 +877,7 @@ begin
  Exponent := (Input and $70) shr 4;
 
  //Pull out the four bits of data and shift the data four bits to the left
- //Add 8 to put the result in the middle of the range (like adding a half)
+ //Add 8 to put the Result in the middle of the range (like adding a half)
  Data := ((Input and $0F) shl 4) + 8;
 
  //If the exponent is not 0, then we know the four bits followed a 1,
@@ -897,8 +897,8 @@ begin
  if (Exponent > 1)
   then Data := Data shl (Exponent - 1);
 
- result := Data * CScale;
- if sign <> 0 then result := -result;
+ Result := Data * CScale;
+ if sign <> 0 then Result := -Result;
 end;
 
 const
@@ -943,8 +943,8 @@ var
 const
   CScale: Single = 3.0518509475997192297128208258309e-5;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do FChannelArray[Channel]^[Sample] := CALawDecompressTable[PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel]] * CScale;
@@ -1000,7 +1000,7 @@ begin
  InputInt := InputInt + cBias;
  Exponent := CMuLawCompressTable[(InputInt shr 7) and $FF];
  Mantissa := (InputInt shr (Exponent + 3)) and $0F;
- result := not (Sign or (Exponent shl 4) or Mantissa);
+ Result := not (Sign or (Exponent shl 4) or Mantissa);
 end;
 
 procedure TChannel32DataCoderMuLaw.InterleaveData;
@@ -1008,8 +1008,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Sample := 0 to FSampleFrames - 1 do
   for Channel := 0 to FChannelCount - 1
    do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := LinearToMuLawSample(FChannelArray[Channel]^[Sample]);
@@ -1058,8 +1058,8 @@ var
 const
   CScale: Single = 3.0518509475997192297128208258309e-5;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do FChannelArray[Channel]^[Sample] := CMuLawDecompressTable[(PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel])] * CScale;
@@ -1095,8 +1095,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(THalfFloat)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(THalfFloat)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do FChannelArray[Channel]^[Sample] := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel]);
@@ -1116,7 +1116,7 @@ end;
 
 function TChannel32DataCoderFloat16.SampleToByte(Sample: Cardinal): Cardinal;
 begin
- result := Sample * SizeOf(THalfFloat);
+ Result := Sample * SizeOf(THalfFloat);
 end;
 
 { TChannel32DataCoderFloat32 }
@@ -1135,8 +1135,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do PDAVSingleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := FChannelArray[Channel]^[Sample];
@@ -1147,8 +1147,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do FChannelArray[Channel]^[Sample] := PDAVSingleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel];
@@ -1167,7 +1167,7 @@ end;
 
 function TChannel32DataCoderFloat32.SampleToByte(Sample: Cardinal): Cardinal;
 begin
- result := Sample * SizeOf(Single);
+ Result := Sample * SizeOf(Single);
 end;
 
 procedure TChannel32DataCoderFloat32.ChannelCountChanged;
@@ -1198,8 +1198,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do PDAVDoubleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := FChannelArray[Channel]^[Sample];
@@ -1210,8 +1210,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do FChannelArray[Channel]^[Sample] := PDAVDoubleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel];
@@ -1231,7 +1231,7 @@ end;
 
 function TChannel32DataCoderFloat64.SampleToByte(Sample: Cardinal): Cardinal;
 begin
- result := Sample * SizeOf(Double);
+ Result := Sample * SizeOf(Double);
 end;
 
 { TCustomADPCMChannel32DataCoder }
@@ -1643,14 +1643,14 @@ begin
  inherited;
  if Dest is TCustomChannel32DataCoder then
   begin
-   assert(Length(FChannelArray) = Length(TCustomChannel32DataCoder(Dest).FChannelArray));
+   Assert(Length(FChannelArray) = Length(TCustomChannel32DataCoder(Dest).FChannelArray));
    for Channel := 0 to Length(FChannelArray) - 1 do
     for Sample := 0 to FSampleFrames - 1
      do TCustomChannel32DataCoder(Dest).FChannelArray[Channel, Sample] := FChannelArray[Channel, Sample];
   end else
  if Dest is TCustomChannel64DataCoder then
   begin
-   assert(Length(FChannelArray) = Length(TCustomChannel64DataCoder(Dest).FChannelArray));
+   Assert(Length(FChannelArray) = Length(TCustomChannel64DataCoder(Dest).FChannelArray));
    for Channel := 0 to Length(FChannelArray) - 1 do
     begin
      Move(FChannelArray[Channel, 0],
@@ -1680,7 +1680,7 @@ function TCustomChannel64DataCoder.GetChannelPointer(
   Index: Integer): PDAVDoubleFixedArray;
 begin
  if Index in [0..Length(FChannelArray) - 1]
-  then result := FChannelArray[Index]
+  then Result := FChannelArray[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
@@ -1746,7 +1746,7 @@ begin
      else FScaleFactor[0] := (1 shl (FBits - 1)) - 1;
     FScaleFactor[1] := 1 / FScaleFactor[0];
    end;
-  else assert(False);
+  else Assert(False);
  end;
 end;
 
@@ -1772,7 +1772,7 @@ var
   Granularity : Cardinal;
 begin
  Granularity := ChannelCount * FSampleSize;
- result := Granularity * (Value div Granularity);
+ Result := Granularity * (Value div Granularity);
 end;
 
 procedure TCustomChannel64DataCoderFixedPoint.CalculateSampleFrames;
@@ -1830,7 +1830,7 @@ end;
 function TCustomChannel64DataCoderFixedPoint.SampleToByte(
   Sample: Cardinal): Cardinal;
 begin
- result := Sample * FSampleSize;
+ Result := Sample * FSampleSize;
 end;
 
 { TChannel64DataCoderFixedPoint }
@@ -1902,8 +1902,8 @@ var
   Channel : Cardinal;
   DataInt : Integer;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  case SampleSize of
   1: for Sample := 0 to FSampleFrames - 1 do
       for Channel := 0 to FChannelCount - 1
@@ -1928,8 +1928,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  case SampleSize of
   1: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
@@ -1965,8 +1965,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do PDAVSingleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := FChannelArray[Channel]^[Sample];
@@ -1977,8 +1977,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do FChannelArray[Channel]^[Sample] := PDAVSingleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel];
@@ -1997,7 +1997,7 @@ end;
 
 function TChannel64DataCoderFloat32.SampleToByte(Sample: Cardinal): Cardinal;
 begin
- result := Sample * SizeOf(Single);
+ Result := Sample * SizeOf(Single);
 end;
 
 procedure TChannel64DataCoderFloat32.ChannelCountChanged;
@@ -2028,8 +2028,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do PDAVDoubleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := FChannelArray[Channel]^[Sample];
@@ -2040,8 +2040,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Double)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do FChannelArray[Channel]^[Sample] := PDAVDoubleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel];
@@ -2061,7 +2061,7 @@ end;
 
 function TChannel64DataCoderFloat64.SampleToByte(Sample: Cardinal): Cardinal;
 begin
- result := Sample * SizeOf(Double);
+ Result := Sample * SizeOf(Double);
 end;
 
 end.

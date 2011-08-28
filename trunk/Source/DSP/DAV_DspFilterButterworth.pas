@@ -99,7 +99,8 @@ type
     procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
   end;
 
-  TCustomButterworthSplitBandFilter = class(TCustomButterworthFilter)
+  TCustomButterworthSplitBandFilter = class(TCustomButterworthFilter,
+    IDspSplitter32, IDspSplitter64)
   protected
     FKs      : Double;
     FHPState : array [0..63] of Double;
@@ -108,9 +109,9 @@ type
     constructor Create(const Order: Integer = 0); override;
 
     procedure CalculateCoefficients; override;
-    procedure ProcessSample(Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
-    procedure ProcessSample(Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
-    function ProcessSample64(Input: Double): Double; override;
+    procedure ProcessSample32(Input: Single; out Lowpass, Highpass: Single); virtual;
+    procedure ProcessSample64(Input: Double; out Lowpass, Highpass: Double); reintroduce; overload; virtual;
+    function ProcessSample64(Input: Double): Double; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
     procedure ResetStates; override;
@@ -977,7 +978,7 @@ begin
   end;
 end;
 
-procedure TCustomButterworthSplitBandFilter.ProcessSample(Input: Single; out Lowpass,
+procedure TCustomButterworthSplitBandFilter.ProcessSample32(Input: Single; out Lowpass,
   Highpass: Single);
 {$IFDEF PUREPASCAL}
 var
@@ -1112,7 +1113,7 @@ asm
  {$ENDIF}
 end;
 
-procedure TCustomButterworthSplitBandFilter.ProcessSample(Input: Double; out Lowpass,
+procedure TCustomButterworthSplitBandFilter.ProcessSample64(Input: Double; out Lowpass,
   Highpass: Double);
 {$IFDEF PUREPASCAL}
 var

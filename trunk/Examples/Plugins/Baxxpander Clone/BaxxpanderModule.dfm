@@ -1,5 +1,4 @@
 object BaxxpanderModule: TBaxxpanderModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1'
   EffectName = 'Baxxpander'

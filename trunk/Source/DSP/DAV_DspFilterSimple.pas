@@ -161,6 +161,7 @@ constructor TCustomFirstOrderFilter.Create;
 begin
  inherited;
  FState := 0;
+ CalculateCoefficients;
 end;
 
 procedure TCustomFirstOrderFilter.AssignTo(Dest: TPersistent);

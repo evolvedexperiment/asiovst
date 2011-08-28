@@ -88,6 +88,7 @@ type
 
     procedure CalculateRange; virtual;
     procedure CalculateExponentialCurveMapping;
+    procedure CalculateGlyphIndex;
     procedure CurveMappingChanged; virtual;
     procedure DefaultValueChanged; virtual;
     procedure MaximumChanged; virtual;
@@ -282,6 +283,23 @@ begin
    MapNormalizedPositionToNormalizedValue(FNormalizedPosition) * FRange;
 end;
 
+procedure TCustomGuiStitchedDial.CalculateGlyphIndex;
+var
+  NewGlyphIndex : Integer;
+begin
+ // calculate new normalized position
+ FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
+
+ // calculate matching glyph index
+ // NOTE: The glyphs are not spaced equally across the entire range
+ if Assigned(FImageItem) then
+  begin
+   NewGlyphIndex := Round(FNormalizedPosition * (StitchedImageItem.GlyphCount - 1));
+   if NewGlyphIndex <> GlyphIndex
+    then GlyphIndex := NewGlyphIndex else
+  end;
+end;
+
 function TCustomGuiStitchedDial.MapNormalizedValueToNormalizedPosition(
   Value: Double): Double;
 begin
@@ -399,6 +417,7 @@ end;
 procedure TCustomGuiStitchedDial.CurveMappingChanged;
 begin
  CalculateExponentialCurveMapping;
+ CalculateGlyphIndex;
  if FLockCount = 0
   then BufferChanged;
 end;
@@ -422,6 +441,7 @@ procedure TCustomGuiStitchedDial.MaximumChanged;
 begin
  if FValue > FMaximum then FValue := FMaximum;
  CalculateRange;
+ CalculateGlyphIndex;
  if FLockCount = 0
   then BufferChanged;
 end;
@@ -430,28 +450,18 @@ procedure TCustomGuiStitchedDial.MinimumChanged;
 begin
  if FValue < FMinimum then FValue := FMinimum;
  CalculateRange;
+ CalculateGlyphIndex;
  if FLockCount = 0
   then BufferChanged;
 end;
 
 procedure TCustomGuiStitchedDial.ValueChanged;
-var
-  NewGlyphIndex : Integer;
 begin
- // calculate new normalized position
- FNormalizedPosition := MapNormalizedValueToNormalizedPosition(NormalizedValue);
+ CalculateGlyphIndex;
 
- // calculate matching glyph index
- // NOTE: The glyphs are not spaced equally across the entire range
- if Assigned(FImageItem) then
-  begin
-   NewGlyphIndex := Round(FNormalizedPosition * (StitchedImageItem.GlyphCount - 1));
-   if NewGlyphIndex <> GlyphIndex
-    then GlyphIndex := NewGlyphIndex else
-   if not (csLoading in ComponentState) then
-    if Assigned(FOnChange)
-     then FOnChange(Self);
-  end;
+ if not (csLoading in ComponentState) then
+  if Assigned(FOnChange)
+   then FOnChange(Self);
 
  if FLockCount = 0
   then BufferChanged;

@@ -1276,9 +1276,9 @@ begin
 end;
 
 procedure TCustomAsioHostBasic.BufferSwitchTimeInfo(Index: Integer;
- const params: TAsioTime);
+  const Params: TAsioTime);
 begin
- if FDriver = nil then exit;
+ if FDriver = nil then Exit;
  PMUpdSamplePos.wParam := params.TimeInfo.samplePosition.hi;
  PMUpdSamplePos.LParam := params.TimeInfo.samplePosition.lo;
  Dispatch(PMUpdSamplePos);
