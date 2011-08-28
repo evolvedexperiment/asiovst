@@ -193,7 +193,7 @@ begin
  for Channel := 0 to Length(FButterworthSplitter) - 1 do
   for Sample := 0 to SampleFrames - 1 do
    begin
-    FButterworthSplitter[Channel].ProcessSample(Inputs[Channel, Sample], Low, High);
+    FButterworthSplitter[Channel].ProcessSample32(Inputs[Channel, Sample], Low, High);
     Outputs[Channel, Sample] := FGains[0] * Inputs[Channel, Sample] +
                                 FGains[1] * Low + FGains[2] * High;
    end;
@@ -208,7 +208,7 @@ begin
  for Channel := 0 to Length(FButterworthSplitter) - 1 do
   for Sample := 0 to SampleFrames - 1 do
    begin
-    FButterworthSplitter[Channel].ProcessSample(Inputs[Channel, Sample], Low, High);
+    FButterworthSplitter[Channel].ProcessSample32(Inputs[Channel, Sample], Low, High);
     Outputs[Channel, Sample] := FGains[0] * Inputs[Channel, Sample] +
                                 FGains[3] * FastTanhContinousError5(FGains[4] * Low) + FGains[2] * High;
    end;

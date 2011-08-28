@@ -41,7 +41,8 @@ uses
 type
   THighpassSelect = (hpDC, hp1stOrder, hp2ndOrder);
 
-  TCustomPsychoAcousticBassEnhancer = class(TDspSampleRatePersistent, IDspProcessor32)
+  TCustomPsychoAcousticBassEnhancer = class(TDspSampleRatePersistent,
+    IDspProcessor32, IDspProcessor64)
   private
     FFrequency : Single;
     procedure SetFrequency(const Value: Single);
@@ -51,7 +52,9 @@ type
     constructor Create; override;
 
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
+    function ProcessSample64(Input: Double): Double; virtual;
 
     property Frequency: Single read FFrequency write SetFrequency;
   end;
@@ -247,10 +250,25 @@ end;
 procedure TCustomPsychoAcousticBassEnhancer.ProcessBlock32(
   const Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
-  Sample: Integer;
+  SampleIndex: Integer;
 begin
- for Sample := 0 to SampleCount - 1
-  do Data[Sample] := ProcessSample32(Data[Sample]);
+ for SampleIndex := 0 to SampleCount - 1
+  do Data[SampleIndex] := ProcessSample32(Data[SampleIndex]);
+end;
+
+procedure TCustomPsychoAcousticBassEnhancer.ProcessBlock64(
+  const Data: PDAVDoubleFixedArray; SampleCount: Integer);
+var
+  SampleIndex: Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1
+  do Data[SampleIndex] := ProcessSample64(Data[SampleIndex]);
+end;
+
+function TCustomPsychoAcousticBassEnhancer.ProcessSample64(
+  Input: Double): Double;
+begin
+ Result := ProcessSample32(Input);
 end;
 
 procedure TCustomPsychoAcousticBassEnhancer.SetFrequency(const Value: Single);
@@ -426,7 +444,7 @@ begin
  continue;
 *)
 
- FCrossover.ProcessSample(FGains[0] * Input, Low, High);
+ FCrossover.ProcessSample32(FGains[0] * Input, Low, High);
 
  Harmonic := Limit(0.5 * FLimiter.ProcessSample64(4 *
              FHighpass.ProcessSample64(
@@ -475,7 +493,7 @@ function TCustomDownsampledHarmonicBass.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
 begin
- FCrossover.ProcessSample(FGains[0] * Input, Low, High);
+ FCrossover.ProcessSample32(FGains[0] * Input, Low, High);
 
  Move(FLastInputSamples[1], FLastInputSamples[0], 3 * SizeOf(Single));
  FLastInputSamples[3] := Low;
@@ -627,7 +645,7 @@ function TCustomLinkwitzBass.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
 begin
- FCrossover.ProcessSample(FGains[0] * Input, Low, High);
+ FCrossover.ProcessSample32(FGains[0] * Input, Low, High);
 
  Harmonic := Limit(0.5 * FDrive* FLimiter.ProcessSample64(4 *
          FHighpass.ProcessSample64(
@@ -739,7 +757,7 @@ function TCustomResurrectionBass.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
 begin
- FCrossover.ProcessSample(Input, Low, High);
+ FCrossover.ProcessSample32(Input, Low, High);
 
  Harmonic := FGains[0] * Low;
  Harmonic := FHighpass.ProcessSample64(0.2 + Harmonic * (1 - 0.4 * Harmonic));

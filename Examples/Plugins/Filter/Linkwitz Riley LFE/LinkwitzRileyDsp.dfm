@@ -1,17 +1,15 @@
-object ButterworthSplitterModule: TButterworthSplitterModule
-  OldCreateOrder = False
+object LinkwitzRileyModule: TLinkwitzRileyModule
   Version = '1.0'
-  EffectName = 'ButterworthSplitter'
-  ProductName = 'DAV Filter Examples'
+  EffectName = 'Linkwitz-Riley LFE'
+  ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  TailSize = 131072
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in2out]
   SampleRate = 44100.000000000000000000
-  numInputs = 1
+  numInputs = 6
+  numOutputs = 6
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'LiRi'
+  UniqueID = 'LLFE'
   ShellPlugins = <>
   Programs = <
     item
@@ -21,37 +19,33 @@ object ButterworthSplitterModule: TButterworthSplitterModule
   ParameterProperties = <
     item
       Curve = ctLogarithmic
-      CurveFactor = 10000.000000000000000000
+      CurveFactor = 12.000000000000000000
       DisplayName = 'Frequency'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
-      Max = 20000.000000000000000000
-      MaxInteger = 20000
-      Min = 2.000000000000000000
-      MinInteger = 2
+      Max = 240.000000000000000000
+      MaxInteger = 240
+      Min = 20.000000000000000000
+      MinInteger = 20
       ReportVST2Properties = True
-      ShortLabel = 'Freq'
+      ShortLabel = 'Freq.'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
-      OnCustomParameterLabel = ParameterFrequencyLabel
-      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
-      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
-      LargeStepFloat = 1.000000000000000000
-      LargeStepInteger = 1
-      Max = 16.000000000000000000
-      MaxInteger = 16
-      Min = 1.000000000000000000
-      MinInteger = 1
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 4.000000000000000000
+      MaxInteger = 4
       ReportVST2Properties = True
       ShortLabel = 'Order'
-      SmallStepFloat = 1.000000000000000000
+      SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterOrderChange
@@ -63,7 +57,7 @@ object ButterworthSplitterModule: TButterworthSplitterModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
+  Left = 218
   Top = 77
   Height = 150
   Width = 215

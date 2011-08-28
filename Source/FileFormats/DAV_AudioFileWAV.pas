@@ -594,7 +594,7 @@ end;
 
 procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Byte);
 begin
- // assert stream is empty
+ // Assert stream is empty
  if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
@@ -636,7 +636,7 @@ var
 begin
  WordValue := Word(IntLimit(Value, 0, 65536));
 
- // assert stream is empty
+ // Assert stream is empty
  if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
@@ -730,7 +730,7 @@ end;
 
 procedure TCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
 begin
- // assert stream is empty
+ // Assert stream is empty
  if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
@@ -907,7 +907,7 @@ end;
 
 procedure TCustomAudioFileWAV.SetSampleRate(const Value: Double);
 begin
- // assert stream is empty
+ // Assert stream is empty
  if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
@@ -1448,7 +1448,7 @@ begin
    if FBlockSize <= 0
     then DataDecoder.SampleFrames := SampleFrames;
 
-   assert(FAudioDataPosition > 0);
+   Assert(FAudioDataPosition > 0);
    Position := FAudioDataPosition + 8 + DataDecoder.SampleToByte(SamplePosition);
 
    if Assigned(FOnBeginRead)
@@ -1535,11 +1535,11 @@ begin
 
  with Stream do
   begin
-   assert(FAudioDataPosition > 0);
+   Assert(FAudioDataPosition > 0);
    Position := FAudioDataPosition;
 
    Read(ChunkName, 4);
-   assert(ChunkName = 'data');
+   Assert(ChunkName = 'data');
 
    Read(ChunkSize, 4);
 
@@ -1568,7 +1568,7 @@ begin
     finally
      FreeAndNil(DataDecoder);
     end;
-   assert((Stream.Position - FAudioDataPosition - 8) <= ChunkSize);
+   Assert((Stream.Position - FAudioDataPosition - 8) <= ChunkSize);
   end;
 end;
 
@@ -1617,7 +1617,7 @@ begin
      FreeAndNil(DataEncoder);
     end;
 
-   assert(Position = ChunkEnd);
+   Assert(Position = ChunkEnd);
    Position := ChunkEnd;
   end;
 end;

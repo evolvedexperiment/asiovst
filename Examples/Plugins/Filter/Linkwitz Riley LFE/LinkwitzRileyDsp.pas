@@ -1,4 +1,4 @@
-unit LinkwitzRileyDM;
+unit LinkwitzRileyDsp;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -35,23 +35,20 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFilterLinkwitzRiley;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  Forms, DAV_Types, DAV_VSTModule, DAV_DspFilterButterworth;
 
 type
   TLinkwitzRileyModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FLinkwitzRiley : array of TLinkwitzRiley;
+    FButterworthCascade : array [0..1] of TButterworthLowPassFilter;
   public
   end;
 
@@ -63,99 +60,87 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
+uses
+  LinkwitzRileyGUI;
+
 procedure TLinkwitzRileyModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel: Integer;
+  BandIndex : Integer;
 begin
- Assert(numOutputs = 2 * numInputs);
- SetLength(FLinkwitzRiley, numInputs);
- for Channel := 0 to Length(FLinkwitzRiley) - 1 do
+ for BandIndex := 0 to Length(FButterworthCascade) - 1 do
   begin
-   FLinkwitzRiley[Channel] := TLinkwitzRiley.Create;
-   FLinkwitzRiley[Channel].SampleRate := SampleRate;
+   FButterworthCascade[BandIndex] := TButterworthLowPassFilter.Create(2);
+   FButterworthCascade[BandIndex].SampleRate := SampleRate;;
   end;
 
- {$IFDEF FPC}
- OnProcess := VSTModuleProcess;
- OnProcessReplacing := VSTModuleProcess;
- {$ENDIF}
-
- Parameter[0] := 1000;
+ // initialize parameters
+ Parameter[0] := 100;
  Parameter[1] := 2;
+
+ // set editor form class
+ EditorFormClass := TFmLinkwitzRiley;
 end;
 
 procedure TLinkwitzRileyModule.VSTModuleClose(Sender: TObject);
 var
-  Channel: Integer;
+  BandIndex : Integer;
 begin
- for Channel := 0 to Length(FLinkwitzRiley) - 1
-  do FreeAndNil(FLinkwitzRiley[Channel]);
+ for BandIndex := 0 to Length(FButterworthCascade) - 1
+  do FreeAndNil(FButterworthCascade[BandIndex]);
 end;
 
 procedure TLinkwitzRileyModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := IntToStr(2 * round(Parameter[Index]));
-end;
-
-procedure TLinkwitzRileyModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-var
-  Freq : Single;
-begin
- Freq := Parameter[Index];
- if Freq >= 1000
-  then Predefined := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3);
-end;
-
-procedure TLinkwitzRileyModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-begin
- if Parameter[Index] >= 1000
-  then PreDefined := 'kHz';
+ PreDefined := IntToStr(2 * Round(Parameter[Index]));
 end;
 
 procedure TLinkwitzRileyModule.ParameterFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel: Integer;
+  BandIndex : Integer;
 begin
- for Channel := 0 to Length(FLinkwitzRiley) - 1 do
-  if Assigned(FLinkwitzRiley[Channel])
-   then FLinkwitzRiley[Channel].Frequency := Value;
+ for BandIndex := 0 to Length(FButterworthCascade) - 1 do
+  if Assigned(FButterworthCascade[BandIndex])
+   then FButterworthCascade[BandIndex].Frequency := Value;
 end;
 
 procedure TLinkwitzRileyModule.ParameterOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel: Integer;
+  BandIndex : Integer;
 begin
- for Channel := 0 to Length(FLinkwitzRiley) - 1 do
-  if Assigned(FLinkwitzRiley[Channel])
-   then FLinkwitzRiley[Channel].Order := round(Value);
+ for BandIndex := 0 to Length(FButterworthCascade) - 1 do
+  if Assigned(FButterworthCascade[BandIndex])
+   then FButterworthCascade[BandIndex].Order := Round(Value);
 end;
 
 procedure TLinkwitzRileyModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
-var
-  Channel: Integer;
 begin
  if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FLinkwitzRiley) - 1 do
-   if assigned(FLinkwitzRiley[Channel])
-    then FLinkwitzRiley[Channel].SampleRate := Abs(SampleRate);
+  begin
+   if Assigned(FButterworthCascade[0]) then FButterworthCascade[0].SampleRate := SampleRate;
+   if Assigned(FButterworthCascade[1]) then FButterworthCascade[1].SampleRate := SampleRate;
+  end;
 end;
 
 procedure TLinkwitzRileyModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample, Channel: Integer;
+  ChannelIndex : Integer;
+  SamplelIndex : Integer;
 begin
- // CDenorm32 +
- for Sample := 0 to SampleFrames - 1 do
-  for Channel := 0 to Length(FLinkwitzRiley) - 1
-   do FLinkwitzRiley[Channel].ProcessSample32(Inputs[Channel, Sample],
-        Outputs[2 * Channel, Sample], Outputs[2 * Channel + 1, Sample])
+ for ChannelIndex := 0 to numInputs - 1 do
+  begin
+   if ChannelIndex = 3 then
+    for SamplelIndex := 0 to SampleFrames - 1 do
+     begin
+      Outputs[ChannelIndex, SamplelIndex] := FButterworthCascade[0].ProcessSample64(
+        FButterworthCascade[1].ProcessSample64(Inputs[ChannelIndex, SamplelIndex]));
+     end
+   else Move(Inputs[ChannelIndex, 0], Outputs[ChannelIndex, 0], SampleFrames * SizeOf(Single));
+  end;
 end;
 
 end.

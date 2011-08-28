@@ -117,7 +117,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FLinkwitzRiley) - 1 do
    begin
-    FLinkwitzRiley[Channel].ProcessSample(Inputs[Channel, Sample], Low, High);
+    FLinkwitzRiley[Channel].ProcessSample64(Inputs[Channel, Sample], Low, High);
     Outputs[Channel, Sample] := (1 - FSignalMix) * Low + FSignalMix * High;
    end;
 end;
@@ -125,7 +125,7 @@ end;
 procedure TLinkwitzRileySeparatedModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := IntToStr(12 * round(Parameter[Index]));
+ Predefined := IntToStr(12 * Round(Parameter[Index]));
 end;
 
 procedure TLinkwitzRileySeparatedModule.ParameterFrequencyDisplay(

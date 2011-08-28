@@ -47,9 +47,9 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FButterworthSplitter : array of TButterworthSplitBandFilter;
   public
@@ -99,22 +99,22 @@ procedure TButterworthSplitterModule.VSTModuleProcess(const Inputs,
 var
   Sample, Channel: Integer;
 begin
- {$IFDEF Debug} AddLogMessage('VSTModuleProcess'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('VSTModuleProcess'); {$ENDIF}
  // CDenorm32 +
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FButterworthSplitter) - 1
-   do FButterworthSplitter[Channel].ProcessSample(Inputs[Channel, Sample],
+   do FButterworthSplitter[Channel].ProcessSample32(Inputs[Channel, Sample],
         Outputs[2 * Channel, Sample], Outputs[2 * Channel + 1, Sample])
 end;
 
 procedure TButterworthSplitterModule.ParameterOrderDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  Predefined := IntToStr(round(Parameter[Index]));
 end;
 
 procedure TButterworthSplitterModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Freq : Single;
 begin
@@ -124,7 +124,7 @@ begin
 end;
 
 procedure TButterworthSplitterModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := 'kHz';

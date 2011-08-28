@@ -150,6 +150,16 @@ type
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64: Double;
   end;
+
+  IDspSplitter32 = interface(IInterface)
+    ['{C2751A2B-CDB7-45A6-A498-65AAB2556C62}'] // unique GUID
+    procedure ProcessSample32(Input: Single; out OutputA, OutputB: Single);
+  end;
+
+  IDspSplitter64 = interface(IInterface)
+    ['{AC181993-E8EE-4D0B-9E41-D3F362A58E57}'] // unique GUID
+    procedure ProcessSample64(Input: Double; out OutputA, OutputB: Double);
+  end;
   {.$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'AudioComponent classes'} {$ENDIF}

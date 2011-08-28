@@ -38,7 +38,8 @@ uses
   Classes, DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DspFilterButterworth;
 
 type
-  TLinkwitzRiley = class(TDspSampleRatePersistent)
+  TLinkwitzRiley = class(TDspSampleRatePersistent, IDspSplitter32,
+    IDspSplitter64)
   private
     FLowpass    : TButterworthLowpassFilter;
     FHighpass   : TButterworthHighpassFilter;
@@ -57,8 +58,8 @@ type
     constructor Create(const Order: Integer = 4); reintroduce; virtual;
     destructor Destroy; override;
 
-    procedure ProcessSample(const Input: Single; out Low, High: Single); overload;
-    procedure ProcessSample(const Input: Double; out Low, High: Double); overload;
+    procedure ProcessSample32(Input: Single; out Low, High: Single); virtual;
+    procedure ProcessSample64(Input: Double; out Low, High: Double); virtual;
     procedure ResetStates; virtual;
   published
     property Frequency: Single read FFrequency write SetFrequency;
@@ -144,18 +145,18 @@ begin
  FSign := 1 - 2 * (FOrder mod 2);
 end;
 
-procedure TLinkwitzRiley.ProcessSample(const Input: Single; out Low,
+procedure TLinkwitzRiley.ProcessSample32(Input: Single; out Low,
   High: Single);
 begin
- FSplit.ProcessSample(Input, Low, High);
+ FSplit.ProcessSample32(Input, Low, High);
  Low  := FLowpass.ProcessSample64(Low - CDenorm32);
  High := FHighpass.ProcessSample64(FSign * High - CDenorm32);
 end;
 
-procedure TLinkwitzRiley.ProcessSample(const Input: Double; out Low,
+procedure TLinkwitzRiley.ProcessSample64(Input: Double; out Low,
   High: Double);
 begin
- FSplit.ProcessSample(Input, Low, High);
+ FSplit.ProcessSample64(Input, Low, High);
  Low  := FLowpass.ProcessSample64(Low);
  High := FHighpass.ProcessSample64(FSign * High);
 end;
