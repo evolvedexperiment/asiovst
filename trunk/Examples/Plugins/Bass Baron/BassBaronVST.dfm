@@ -2,7 +2,7 @@ object BassBaronModule: TBassBaronModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Bass Baron'
   ProductName = 'DAV Effect Examples'

@@ -55,7 +55,6 @@ type
     FCartChunk         : TCartChunk;
     FChunkList         : TChunkList;
     FBytesPerSample    : Integer;
-    FAudioDataPosition : Cardinal;
     FFormatChunkFound  : Boolean;
     function GetTitle: string;
     function GetArtist: string;
@@ -112,6 +111,7 @@ type
     function GetSubChunkCount: Cardinal;
     function GetTypicalAudioDataPosition: Cardinal;
   protected
+    FAudioDataPosition : Cardinal;
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
     function GetChannels: Cardinal; override;

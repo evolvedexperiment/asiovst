@@ -52,7 +52,7 @@ type
 
   TCustomAudioFile = class(TInterfacedPersistent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
   private
-    FStreamOwned : Boolean;
+    FStreamOwned  : Boolean;
   protected
     FOnEncode     : TCodingEvent;
     FOnDecode     : TCodingEvent;

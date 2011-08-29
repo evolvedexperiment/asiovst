@@ -153,8 +153,8 @@ type
 
   TVstPluginIOTests = class(TCustomTestVstPlugin)
   private
-    FInput     : array of PDavSingleFixedArray;
-    FOutput    : array of PDavSingleFixedArray;
+    FInput     : array of PDAVSingleFixedArray;
+    FOutput    : array of PDAVSingleFixedArray;
     FBlockSize : Integer;
     procedure SetBlockSize(const Value: Integer);
     procedure SetupBuffers;
@@ -172,6 +172,7 @@ type
     procedure TestHandleNANs;
     procedure TestProcess;
     procedure TestProcess64Replacing;
+    procedure TestCompare32BitAnd64BitProcessing;
     procedure TestMainsChanged;
     procedure TestSmallBlocksizes;
     procedure TestSampleRateDependency;
@@ -227,8 +228,8 @@ procedure InitializeVstPluginTests;
 implementation
 
 uses
-  Math, Forms, Controls, {$IFNDEF CONSOLE_TESTRUNNER} SplashScreen, {$ENDIF}
-  DAV_VSTEffect;
+  Math, Forms, Controls, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
+  {$IFNDEF CONSOLE_TESTRUNNER} SplashScreen, {$ENDIF} DAV_VSTEffect;
 
 resourcestring
   RCStrWrongCategory = 'Plugin has the wrong category for this test';
@@ -627,7 +628,7 @@ begin
  // test very long CanDo text!
  TestCanDo := '';
  for CharCnt := 0 to 1111
-  do TestCanDo := TestCanDo + Char(1 + Random(200));
+  do TestCanDo := TestCanDo + AnsiChar(1 + Random(200));
  FVstHost[0].VstCanDo(TestCanDo);
 end;
 
@@ -3611,7 +3612,7 @@ begin
    SetLength(FInput, numInputs);
    for Channel := 0 to numInputs - 1 do
     begin
-     GetMem(FInput[Channel], FBlocksize * SizeOf(Single));
+     ReallocMem(FInput[Channel], FBlocksize * SizeOf(Single));
      FillChar(FInput[Channel]^[0], FBlocksize * SizeOf(Single), 0);
     end;
 
@@ -3619,7 +3620,7 @@ begin
    SetLength(FOutput, numOutputs);
    for Channel := 0 to numOutputs - 1 do
     begin
-     GetMem(FOutput[Channel], FBlocksize * SizeOf(Single));
+     ReallocMem(FOutput[Channel], FBlocksize * SizeOf(Single));
      FillChar(FOutput[Channel]^[0], FBlocksize * SizeOf(Single), 0);
     end;
   end;
@@ -3810,6 +3811,80 @@ begin
   end;
 end;
 
+procedure TVstPluginIOTests.TestCompare32BitAnd64BitProcessing;
+var
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+  Input64      : array of PDAVDoubleFixedArray;
+  Output64     : array of PDAVDoubleFixedArray;
+  Value32      : Single;
+begin
+ with FVstHost[0] do
+  begin
+   // check whether
+   if not (effFlagsCanDoubleReplacing in FVstHost[0].EffectOptions) then
+    begin
+     Status('Plugin only supports 32-Bit processing!');
+     Exit;
+    end;
+
+   // set blocksize to process 2 seconds of audio
+   BlockSize := 10 * Round(FVstHost.VstTimeInfo.SampleRate);
+
+   // generate random input
+   for ChannelIndex := 0 to Length(FInput) - 1 do
+    for SampleIndex := 0 to FBlockSize - 1
+     do FInput[ChannelIndex]^[SampleIndex] := Random - Random;
+
+   // clear output buffer
+   for ChannelIndex := 0 to Length(FOutput) - 1
+    do FillChar(FOutput[ChannelIndex]^, FBlockSize * SizeOf(Single), 0);
+
+   try
+    SetLength(Input64, Length(FInput));
+    for ChannelIndex := 0 to Length(FOutput) - 1 do
+     begin
+      GetMem(Input64[ChannelIndex], FBlocksize * SizeOf(Double));
+      for SampleIndex := 0 to FBlocksize - 1
+       do Input64[ChannelIndex]^[SampleIndex] := FInput[ChannelIndex]^[SampleIndex];
+     end;
+
+    SetLength(Output64, Length(FOutput));
+    for ChannelIndex := 0 to Length(FOutput) - 1 do
+     begin
+      GetMem(Output64[ChannelIndex], FBlocksize * SizeOf(Double));
+      FillChar(Output64[ChannelIndex]^[0], FBlocksize * SizeOf(Double), 0);
+     end;
+
+    MainsChanged(True);
+
+    // process data
+    Process32Replacing(@FInput[0], @FOutput[0], FBlockSize);
+    Process64Replacing(@Input64[0], @Output64[0], FBlockSize);
+
+    MainsChanged(False);
+
+    // check output buffer is silence as well
+    if (FOutput[0]^[Blocksize - 1] = 0) then
+     for ChannelIndex := 0 to Length(FOutput) - 1 do
+      for SampleIndex := 0 to FBlockSize - 1 do
+       begin
+        Value32 := Output64[ChannelIndex]^[SampleIndex];
+        Check(FOutput[ChannelIndex]^[SampleIndex] = Value32,
+          '64-Bit processing delivers a different output');
+       end;
+
+   finally
+    // free memory
+    for ChannelIndex := 0 to Length(Input64) - 1
+     do FreeMem(Input64[ChannelIndex]);
+
+    for ChannelIndex := 0 to Length(Output64) - 1
+     do FreeMem(Output64[ChannelIndex]);
+   end;
+  end;
+end;
+
 procedure TVstPluginIOTests.TestSampleRateDependency;
 var
   Channel  : Integer;
@@ -3946,7 +4021,7 @@ begin
    MainsChanged(True);
 
    // generate random input
-   for ChannelIndex := 0 to Length(FOutput) - 1 do
+   for ChannelIndex := 0 to Length(FInput) - 1 do
     for SampleIndex := 0 to FBlockSize - 1
      do FInput[ChannelIndex]^[SampleIndex] := 2 * Random - 1;
 
