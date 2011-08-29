@@ -318,7 +318,7 @@ type
     procedure MainsChanged(const IsOn: Boolean);
     procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-    procedure Process64Replacing(Inputs, Outputs: ppDouble; SampleFrames: Integer); virtual;
+    procedure Process64Replacing(Inputs, Outputs: PPDouble; SampleFrames: Integer); virtual;
     procedure Process32Replacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure SaveBank(FileName: TFileName); overload;
     procedure SaveBank(Stream: TStream); overload;

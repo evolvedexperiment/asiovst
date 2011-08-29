@@ -93,7 +93,7 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-						<Parameters Name="RunParams">C:\Code\ALCCIS\trunk\Bin\ALCCIS.dll</Parameters>
+						<Parameters Name="RunParams">C:\Users\Public\Code\VSTPack\Bin\VST\32-Bit\BassBaron.dll</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
