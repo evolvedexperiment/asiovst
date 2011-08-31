@@ -55,7 +55,23 @@ type
     property ImageList;
     property ImageIndex;
     property Transparent;
+
+    property OnDblClick;
     property OnChange;
+    property OnClick;
+    property OnMouseDown;
+    property OnMouseUp;
+    property OnMouseMove;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnKeyDown;
+    property OnKeyUp;
+    property OnKeyPress;
+    property OnEnter;
+    property OnExit;
+    property OnMouseWheel;
+    property OnMouseWheelUp;
+    property OnMouseWheelDown;
   end;
 
 implementation

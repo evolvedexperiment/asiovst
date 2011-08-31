@@ -396,9 +396,13 @@ type
 
     // File I/O
     procedure LoadFromFile(const FileName: TFileName); virtual;
-    procedure SaveToFile(const FileName: TFileName); virtual;
+    procedure SaveToFile(const FileName: TFileName); overload; virtual;
+    procedure SaveToFile(const FileName: TFileName; BitsPerSample: Byte;
+      Encoding: TAudioEncoding = aeInteger); overload; virtual;
     procedure LoadFromStream(const Stream: TStream); virtual;
-    procedure SaveToStream(const Stream: TStream); virtual;
+    procedure SaveToStream(const Stream: TStream); overload; virtual;
+    procedure SaveToStream(const Stream: TStream; BitsPerSample: Byte;
+      Encoding: TAudioEncoding = aeInteger); overload; virtual;
 
     property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames default 0;
     property Channels: TCustomAudioChannels read FChannels write FChannels;
@@ -1405,24 +1409,77 @@ begin
   end;
 end;
 
-procedure TCustomAudioDataCollection.SaveToStream(const Stream: TStream);
+
+procedure TCustomAudioDataCollection.SaveToFile(const FileName: TFileName);
+begin
+  SaveToFile(FileName, 24);
+end;
+
+procedure TCustomAudioDataCollection.SaveToFile(const FileName: TFileName;
+  BitsPerSample: Byte; Encoding: TAudioEncoding = aeInteger);
 var
-  i : Integer;
+  FileFormatIndex : Integer;
+  AudioFile       : TCustomAudioFile;
 begin
  if Length(GAudioFileFormats) = 0
   then raise Exception.Create(RCStrNoAudioFileFormat);
 
- for i := 0 to Length(GAudioFileFormats) - 1 do
-  if True then
+ for FileFormatIndex := 0 to Length(GAudioFileFormats) - 1 do
+  if LowerCase(ExtractFileExt(FileName)) = GAudioFileFormats[FileFormatIndex].DefaultExtension then
    begin
-    with GAudioFileFormats[i].Create do
+    AudioFile := GAudioFileFormats[FileFormatIndex].Create;
+    with AudioFile do
      try
       SampleFrames  := Self.SampleFrames;
       ChannelCount  := Self.ChannelCount;
       OnEncode      := DataEncoding;
+      if Supports(AudioFile, IAudioFileBitsPerSample) then
+        (AudioFile as IAudioFileBitsPerSample).BitsPerSample := BitsPerSample;
+      if Supports(AudioFile, IAudioFileEncoding) then
+        (AudioFile as IAudioFileEncoding).AudioEncoding := Encoding;
+
+      SaveToFile(FileName);
+     finally
+      FreeAndNil(AudioFile);
+     end;
+    Exit;
+   end;
+
+ raise Exception.CreateFmt('Could not save file %s!', [FileName]);
+end;
+
+procedure TCustomAudioDataCollection.SaveToStream(const Stream: TStream);
+begin
+  SaveToStream(Stream, 24);
+end;
+
+procedure TCustomAudioDataCollection.SaveToStream(const Stream: TStream;
+  BitsPerSample: Byte; Encoding: TAudioEncoding = aeInteger);
+var
+  FileFormatIndex : Integer;
+  AudioFile       : TCustomAudioFile;
+begin
+ if Length(GAudioFileFormats) = 0
+  then raise Exception.Create(RCStrNoAudioFileFormat);
+
+ for FileFormatIndex := 0 to Length(GAudioFileFormats) - 1 do
+  if True then
+   begin
+    AudioFile := GAudioFileFormats[FileFormatIndex].Create;
+    with AudioFile do
+     try
+      SampleFrames  := Self.SampleFrames;
+      ChannelCount  := Self.ChannelCount;
+      OnEncode      := DataEncoding;
+
+      if Supports(AudioFile, IAudioFileBitsPerSample) then
+        (AudioFile as IAudioFileBitsPerSample).BitsPerSample := BitsPerSample;
+      if Supports(AudioFile, IAudioFileEncoding) then
+        (AudioFile as IAudioFileEncoding).AudioEncoding := Encoding;
+
       SaveToStream(Stream);
      finally
-      Free;
+      FreeAndNil(AudioFile);
      end;
     Exit;
    end;
@@ -1457,31 +1514,6 @@ begin
 
  // no file format found
  raise Exception.CreateFmt('Could not load file %s!', [FileName]);
-end;
-
-procedure TCustomAudioDataCollection.SaveToFile(const FileName: TFileName);
-var
-  i : Integer;
-begin
- if Length(GAudioFileFormats) = 0
-  then raise Exception.Create(RCStrNoAudioFileFormat);
-
- for i := 0 to Length(GAudioFileFormats) - 1 do
-  if LowerCase(ExtractFileExt(FileName)) = GAudioFileFormats[i].DefaultExtension then
-   begin
-    with GAudioFileFormats[i].Create do
-     try
-      SampleFrames  := Self.SampleFrames;
-      ChannelCount  := Self.ChannelCount;
-      OnEncode      := DataEncoding;
-      SaveToFile(FileName);
-     finally
-      Free;
-     end;
-    Exit;
-   end;
-
- raise Exception.CreateFmt('Could not save file %s!', [FileName]);
 end;
 
 procedure TCustomAudioDataCollection.SetChannelCount(const Value: Integer);
@@ -1588,13 +1620,13 @@ end;
 procedure TCustomAudioDataCollection32.DataEncoding(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 var
-  Channel  : Cardinal;
+  Channel : Cardinal;
+  Coder32 : TCustomChannel32DataCoder absolute Coder;
 begin
  Assert(Coder is TCustomChannel32DataCoder);
- with TCustomChannel32DataCoder(Coder) do
-  for Channel := 0 to ChannelCount - 1
-   do Move(ChannelList[Channel].ChannelDataPointer^[Position],
-        ChannelPointer[Channel]^[0], SampleFrames * SizeOf(Single));
+ for Channel := 0 to ChannelCount - 1
+  do Move(ChannelList[Channel].ChannelDataPointer^[Position],
+       Coder32.ChannelPointer[Channel]^[0], Coder32.SampleFrames * SizeOf(Single));
  // Position := Position + Coder.SampleFrames; // not necessary, incremented by caller!
 end;
 

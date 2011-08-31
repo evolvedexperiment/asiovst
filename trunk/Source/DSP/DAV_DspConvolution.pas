@@ -195,6 +195,7 @@ type
   public
     constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
     destructor Destroy; override;
+
     procedure FFTOrderChanged; virtual;
     procedure PerformConvolution(const SignalIn, SignalOut: PDAVSingleFixedArray); virtual;
     procedure CalculateIRSpectrums(const IR: PDAVSingleFixedArray);
@@ -275,6 +276,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
     procedure ProcessBlock(const Left, Right: PDAVSingleFixedArray; const SampleFrames: Integer); reintroduce; virtual;
   end;
 
@@ -1017,13 +1019,15 @@ end;
 
 destructor TLowLatencyConvolutionStage32.Destroy;
 var
-  i : Integer;
+  PartIndex : Integer;
 begin
- Dispose(FSignalFreq);
- Dispose(FConvolvedTime);
- for i := 0 to Length(FIRSpectrums) - 1
-  do Dispose(FIRSpectrums[i]);
+ FreeMem(FSignalFreq);
+ FreeMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ FreeMem(FConvolvedTime);
+ for PartIndex := 0 to Length(FIRSpectrums) - 1
+  do Dispose(FIRSpectrums[PartIndex]);
  FreeAndNil(FFft);
+
  inherited;
 end;
 

@@ -249,9 +249,17 @@ begin
 end;
 
 procedure TFmFloatMix.EdLevelChange(Sender: TObject);
+var
+  Text  : string;
+  dBPos : Integer;
 begin
   EdLevel.OnChange := nil;
-  FdLevel.Value := StrToFloat(EdLevel.Text);
+  Text := EdLevel.Text;
+  dBPos := Pos('dB', Text);
+  if dBPos > 0 then
+    Delete(Text, dBPos, 2);
+
+  FdLevel.Value := StrToFloat(Trim(Text));
   EdLevel.OnChange := EdLevelChange;
 end;
 
@@ -323,4 +331,3 @@ begin
 end;
 
 end.
-

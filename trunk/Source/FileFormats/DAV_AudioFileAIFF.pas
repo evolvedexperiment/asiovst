@@ -43,7 +43,8 @@ type
     acsAudioRecording, acsComment, acsInstrument);
   TAiffChunkScans = set of TAiffChunkScan;
 
-  TCustomAudioFileAIFF = class(TCustomAudioFile)
+  TCustomAudioFileAIFF = class(TCustomAudioFile, IAudioFileBitsPerSample,
+    IAudioFileEncoding)
   private
     FIsCompressed        : Boolean;
     FChunkSize           : Cardinal;

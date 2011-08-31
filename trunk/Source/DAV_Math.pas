@@ -108,6 +108,10 @@ procedure Balance(A : PDAVSingleFixedMatrix; LowIndex, HighIndex : Integer;
 procedure Balance(A : PDAVDoubleFixedMatrix; LowIndex, HighIndex : Integer;
   out IndexLow, IndexHigh: Integer; Scale: PDAVDoubleFixedArray); overload;
 
+procedure QuickSort32(SortData: PDAVSingleFixedArray; L, R: Integer);
+procedure QuickSort64(SortData: PDAVDoubleFixedArray; L, R: Integer);
+function Median(Data: array of Single): Single; overload;
+function Median(Data: array of Double): Double; overload;
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 function RelativeAngle(X1, Y1, X2, Y2: Integer): Single;
@@ -1021,6 +1025,76 @@ begin
      end;
    end;
  until Conv;
+end;
+
+procedure QuickSort32(SortData: PDAVSingleFixedArray; L, R: Integer);
+var
+  I, J : Integer;
+  P, T : Double;
+begin
+ repeat
+  I := L;
+  J := R;
+  P := SortData[(L + R) shr 1];
+  repeat
+    while SortData[I] < P do Inc(I);
+    while SortData[J] > P do Dec(J);
+     if I <= J then
+      begin
+       T := SortData[I];
+       SortData[I] := SortData[J];
+       SortData[J] := T;
+       Inc(I);
+       Dec(J);
+      end;
+    until I > J;
+   if L < J then QuickSort32(SortData, L, J);
+   L := I;
+  until I >= R;
+end;
+
+procedure QuickSort64(SortData: PDAVDoubleFixedArray; L, R: Integer);
+var
+  I, J: Integer;
+  P, T: Double;
+begin
+ repeat
+  I := L;
+  J := R;
+  P := SortData[(L + R) shr 1];
+  repeat
+    while SortData[I] < P do Inc(I);
+    while SortData[J] > P do Dec(J);
+     if I <= J then
+      begin
+       T := SortData[I];
+       SortData[I] := SortData[J];
+       SortData[J] := T;
+       Inc(I);
+       Dec(J);
+      end;
+    until I > J;
+   if L < J then QuickSort64(SortData, L, J);
+   L := I;
+  until I >= R;
+end;
+
+function Median(Data: array of Single): Single;
+begin
+  QuickSort32(@Data[0], 0, Length(Data));
+  if Length(Data) mod 2 = 1 then
+    Result := Data[Length(Data) div 2]
+  else
+    Result := 0.5 * Data[(Length(Data) div 2)] + Data[(Length(Data) div 2) - 1];
+end;
+
+function Median(Data: array of Double): Double;
+begin
+  QuickSort64(@Data[0], 0, Length(Data));
+  if Length(Data) mod 2 = 1 then
+    Result := Data[Length(Data) div 2]
+  else
+    Result := 0.5 * Data[(Length(Data) div 2)] + Data[(Length(Data) div 2) - 1];
 end;
 
 function RadToDeg(const Radians: Extended): Extended;

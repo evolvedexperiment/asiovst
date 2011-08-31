@@ -123,6 +123,7 @@ type
     property OnPaint;
 
     property Align;
+    property Action;
     property Anchors;
     property Color;
     property Constraints;

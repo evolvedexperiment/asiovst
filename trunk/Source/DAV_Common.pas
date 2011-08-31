@@ -1006,7 +1006,7 @@ end;
 procedure FastAbs(var Value: TDAV4SingleArray); overload;
 {$IFDEF PUREPASCAL}
 var
-  i : Array [0..3] of Integer absolute Value;
+  i : array [0..3] of Integer absolute Value;
 begin
  i[0] := i[0] and $7FFFFFFF;
  i[1] := i[1] and $7FFFFFFF;
@@ -1015,18 +1015,18 @@ begin
 end;
 {$ELSE}
 asm
- fld  [eax].Single
- fabs
- fstp [eax].Single
- fld  [eax +  4].Single
- fabs
- fstp [eax +  4].Single
- fld  [eax +  8].Single
- fabs
- fstp [eax +  8].Single
- fld  [eax + 12].Single
- fabs
- fstp [eax + 12].Single
+ FLD  [EAX].Single
+ FABS
+ FSTP [EAX].Single
+ FLD  [EAX +  4].Single
+ FABS
+ FSTP [EAX +  4].Single
+ FLD  [EAX +  8].Single
+ FABS
+ FSTP [EAX +  8].Single
+ FLD  [EAX + 12].Single
+ FABS
+ FSTP [EAX + 12].Single
 end;
 {$ENDIF}
 
@@ -1036,15 +1036,15 @@ var
 const
   CBitMask = $80000000;
 begin
- i := Cardinal((@Value)^) xor CBitMask;
+  i := Cardinal((@Value)^) xor CBitMask;
 end;
 
 function FastMod(const Arg1, Arg2: Single): Single;
 var
   Norm : Single;
 begin
- Norm := Arg1 / Arg2;
- Result := (Norm - round(Norm - 0.5)) * Arg2
+  Norm := Arg1 / Arg2;
+  Result := (Norm - Round(Norm - 0.5)) * Arg2
 end;
 
 

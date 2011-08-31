@@ -50,6 +50,23 @@ type
                     aeMuLaw = 7, aeALaw = 8, aeOther = 9);
   {$ENDIF}
 
+  IAudioFileBitsPerSample = interface(IInterface)
+    ['{1BB97B83-7F50-4BD7-9634-37F4399EA6FC}']
+    procedure SetBitsPerSample(const Value: Byte);
+    function GetBitsPerSample: Byte;
+
+    property BitsPerSample:Byte read GetBitsPerSample write SetBitsPerSample;
+  end;
+
+  IAudioFileEncoding = interface(IInterface)
+    ['{AD47E7BE-3DCB-4140-8008-A475618F68B0}']
+    procedure SetEncoding(const Value: TAudioEncoding);
+    function GetEncoding: TAudioEncoding;
+
+    property AudioEncoding:TAudioEncoding read GetEncoding write SetEncoding;
+  end;
+
+
   TCustomAudioFile = class(TInterfacedPersistent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
   private
     FStreamOwned  : Boolean;
