@@ -212,13 +212,16 @@ begin
   mmioSeek(FMM, 0, SEEK_END);
 
   if (mmioAscend(FMM, @FPck, 0) <> 0)
-   then raise EWaveIOError.Create('Error 06: Cannot ascend chunk.');
+   then raise EWaveIOError.Create('Error 06: Cannot ascend chunk');
 
   if (mmioAscend(FMM, @FPckRIFF, 0) <> 0)
-   then raise EWaveIOError.Create('Error 07: Cannot ascend chunk.');
+   then raise EWaveIOError.Create('Error 07: Cannot ascend chunk');
 
   if (mmioFlush(FMM, 0) <> 0)
-   then raise EWaveIOError.Create('Error 08: Cannot flush.');
+   then raise EWaveIOError.Create('Error 08: Cannot flush');
+   
+  if (mmioClose(FMM, 0) <> 0)
+   then raise EWaveIOError.Create('Error 09: Cannot close');
 
   inherited Destroy;
 end;
