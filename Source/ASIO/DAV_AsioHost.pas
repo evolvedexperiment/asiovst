@@ -879,7 +879,7 @@ begin
      except
       FDriverIndex := -1;
       ResetDriverSpecificData;
-      Exit;
+      raise;
      end;
 
      if Assigned(FDriver) then

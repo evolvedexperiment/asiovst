@@ -3548,97 +3548,99 @@ var
   Nibbles   : array [0..3] of Byte;
 begin
  with FBitStream.Stream do
- while Position < FID3v2TagEnd do
-  begin
-   Read(ChunkName, SizeOf(TChunkName));
-   Read(Nibbles, SizeOf(Nibbles));
-   Read(Flags, SizeOf(Word));
+  while Position < FID3v2TagEnd do
+   try
+    Read(ChunkName, SizeOf(TChunkName));
+    Read(Nibbles, SizeOf(Nibbles));
+    Read(Flags, SizeOf(Word));
 
-   if ((Flags[0] and $1F) <> 0) or (Flags[1] and $1F <> 0)
-    then raise Exception.Create('ID3v2 Tag Error!');
+    if ((Flags[0] and $1F) <> 0) or (Flags[1] and $1F <> 0)
+     then raise Exception.Create('ID3v2 Tag Error!');
 
-   if ChunkName = #0#0#0#0 then Exit;
+    if ChunkName = #0#0#0#0 then Exit;
 
-   ChunkSize := Nibbles[0] shl 21 + Nibbles[1] shl 14 + Nibbles[2] shl 7 + Nibbles[3];
-   if ChunkName = 'AENC' then else  //  [#sec4.20 Audio encryption]
-   if ChunkName = 'APIC' then else  //  [#sec4.15 Attached picture]
-   if ChunkName = 'COMM' then else  //  [#sec4.11 Comments]
-   if ChunkName = 'COMR' then else  //  [#sec4.25 Commercial frame]
-   if ChunkName = 'ENCR' then else  //  [#sec4.26 Encryption method registration]
-   if ChunkName = 'EQUA' then else  //  [#sec4.13 Equalization]
-   if ChunkName = 'ETCO' then else  //  [#sec4.6 Event timing codes]
-   if ChunkName = 'GEOB' then else  //  [#sec4.16 General encapsulated object]
-   if ChunkName = 'GRID' then else  //  [#sec4.27 Group identification registration]
-   if ChunkName = 'IPLS' then else  //  [#sec4.4 Involved people list]
-   if ChunkName = 'LINK' then else  //  [#sec4.21 Linked information]
-   if ChunkName = 'MCDI' then else  //  [#sec4.5 Music CD identifier]
-   if ChunkName = 'MLLT' then else  //  [#sec4.7 MPEG location lookup table]
-   if ChunkName = 'OWNE' then else  //  [#sec4.24 Ownership frame]
-   if ChunkName = 'PRIV' then ReadPrivate(ChunkSize) else  //  [#sec4.28 Private frame]
-   if ChunkName = 'PCNT' then else  //  [#sec4.17 Play counter]
-   if ChunkName = 'POPM' then else  //  [#sec4.18 Popularimeter]
-   if ChunkName = 'POSS' then else  //  [#sec4.22 Position synchronisation frame]
-   if ChunkName = 'RBUF' then else  //  [#sec4.19 Recommended buffer size]
-   if ChunkName = 'RVAD' then else  //  [#sec4.12 Relative volume adjustment]
-   if ChunkName = 'RVRB' then else  //  [#sec4.14 Reverb]
-   if ChunkName = 'SYLT' then else  //  [#sec4.10 Synchronized lyric/text]
-   if ChunkName = 'SYTC' then else  //  [#sec4.8 Synchronized tempo codes]
-   if ChunkName = 'TALB' then ReadAlbumTitle(ChunkSize) else  //  [#TALB Album/Movie/Show title]
-   if ChunkName = 'TBPM' then else  //  [#TBPM BPM (beats per minute)]
-   if ChunkName = 'TCOM' then else  //  [#TCOM Composer]
-   if ChunkName = 'TCON' then ReadContentType(ChunkSize) else  //  [#TCON Content type]
-   if ChunkName = 'TCOP' then else  //  [#TCOP Copyright message]
-   if ChunkName = 'TDAT' then else  //  [#TDAT Date]
-   if ChunkName = 'TDLY' then else  //  [#TDLY Playlist delay]
-   if ChunkName = 'TENC' then else  //  [#TENC Encoded by]
-   if ChunkName = 'TEXT' then else  //  [#TEXT Lyricist/Text writer]
-   if ChunkName = 'TFLT' then else  //  [#TFLT File type]
-   if ChunkName = 'TIME' then else  //  [#TIME Time]
-   if ChunkName = 'TIT1' then else  //  [#TIT1 Content group description]
-   if ChunkName = 'TIT2' then ReadTitle(ChunkSize) else  //  [#TIT2 Title/songname/content description]
-   if ChunkName = 'TIT3' then else  //  [#TIT3 Subtitle/Description refinement]
-   if ChunkName = 'TKEY' then else  //  [#TKEY Initial key]
-   if ChunkName = 'TLAN' then ReadLanguage(ChunkSize) else  //  [#TLAN Language(s)]
-   if ChunkName = 'TLEN' then else  //  [#TLEN Length]
-   if ChunkName = 'TMED' then else  //  [#TMED Media type]
-   if ChunkName = 'TOAL' then else  //  [#TOAL Original album/movie/show title]
-   if ChunkName = 'TOFN' then else  //  [#TOFN Original filename]
-   if ChunkName = 'TOLY' then else  //  [#TOLY Original lyricist(s)/text writer(s)]
-   if ChunkName = 'TOPE' then else  //  [#TOPE Original artist(s)/performer(s)]
-   if ChunkName = 'TORY' then else  //  [#TORY Original release year]
-   if ChunkName = 'TOWN' then else  //  [#TOWN File owner/licensee]
-   if ChunkName = 'TPE1' then ReadMainArtist(ChunkSize) else  //  [#TPE1 Lead performer(s)/Soloist(s)]
-   if ChunkName = 'TPE2' then ReadBand(ChunkSize) else  //  [#TPE2 Band/orchestra/accompaniment]
-   if ChunkName = 'TPE3' then else  //  [#TPE3 Conductor/performer refinement]
-   if ChunkName = 'TPE4' then else  //  [#TPE4 Interpreted, remixed, or otherwise modified by]
-   if ChunkName = 'TPOS' then else  //  [#TPOS Part of a set]
-   if ChunkName = 'TPUB' then ReadPublisher(ChunkSize) else  //  [#TPUB Publisher]
-   if ChunkName = 'TRCK' then ReadTrackNumber(ChunkSize) else  //  [#TRCK Track number/Position in set]
-   if ChunkName = 'TRDA' then else  //  [#TRDA Recording dates]
-   if ChunkName = 'TRSN' then else  //  [#TRSN Internet radio station name]
-   if ChunkName = 'TRSO' then else  //  [#TRSO Internet radio station owner]
-   if ChunkName = 'TSIZ' then else  //  [#TSIZ Size]
-   if ChunkName = 'TSRC' then else  //  [#TSRC ISRC (international standard recording code)]
-   if ChunkName = 'TSSE' then else  //  [#TSEE Software/Hardware and settings used for encoding]
-   if ChunkName = 'TYER' then ReadYear(ChunkSize) else  //  [#TYER Year]
-   if ChunkName = 'TXXX' then else  //  [#TXXX User defined text information frame]
-   if ChunkName = 'UFID' then else  //  [#sec4.1 Unique file identifier]
-   if ChunkName = 'USER' then else  //  [#sec4.23 Terms of use]
-   if ChunkName = 'USLT' then else  //  [#sec4.9 Unsychronized lyric/text transcription]
-   if ChunkName = 'WCOM' then else  //  [#WCOM Commercial information]
-   if ChunkName = 'WCOP' then else  //  [#WCOP Copyright/Legal information]
-   if ChunkName = 'WOAF' then else  //  [#WOAF Official audio file webpage]
-   if ChunkName = 'WOAR' then else  //  [#WOAR Official artist/performer webpage]
-   if ChunkName = 'WOAS' then else  //  [#WOAS Official audio source webpage]
-   if ChunkName = 'WORS' then else  //  [#WORS Official internet radio station homepage]
-   if ChunkName = 'WPAY' then else  //  [#WPAY Payment]
-   if ChunkName = 'WPUB' then else  //  [#WPUB Publishers official webpage]
-   if ChunkName = 'WXXX' then else; //  [#WXXX User defined URL link frame]
+    ChunkSize := Nibbles[0] shl 21 + Nibbles[1] shl 14 + Nibbles[2] shl 7 + Nibbles[3];
+    if ChunkName = 'AENC' then else  //  [#sec4.20 Audio encryption]
+    if ChunkName = 'APIC' then else  //  [#sec4.15 Attached picture]
+    if ChunkName = 'COMM' then else  //  [#sec4.11 Comments]
+    if ChunkName = 'COMR' then else  //  [#sec4.25 Commercial frame]
+    if ChunkName = 'ENCR' then else  //  [#sec4.26 Encryption method registration]
+    if ChunkName = 'EQUA' then else  //  [#sec4.13 Equalization]
+    if ChunkName = 'ETCO' then else  //  [#sec4.6 Event timing codes]
+    if ChunkName = 'GEOB' then else  //  [#sec4.16 General encapsulated object]
+    if ChunkName = 'GRID' then else  //  [#sec4.27 Group identification registration]
+    if ChunkName = 'IPLS' then else  //  [#sec4.4 Involved people list]
+    if ChunkName = 'LINK' then else  //  [#sec4.21 Linked information]
+    if ChunkName = 'MCDI' then else  //  [#sec4.5 Music CD identifier]
+    if ChunkName = 'MLLT' then else  //  [#sec4.7 MPEG location lookup table]
+    if ChunkName = 'OWNE' then else  //  [#sec4.24 Ownership frame]
+    if ChunkName = 'PRIV' then ReadPrivate(ChunkSize) else  //  [#sec4.28 Private frame]
+    if ChunkName = 'PCNT' then else  //  [#sec4.17 Play counter]
+    if ChunkName = 'POPM' then else  //  [#sec4.18 Popularimeter]
+    if ChunkName = 'POSS' then else  //  [#sec4.22 Position synchronisation frame]
+    if ChunkName = 'RBUF' then else  //  [#sec4.19 Recommended buffer size]
+    if ChunkName = 'RVAD' then else  //  [#sec4.12 Relative volume adjustment]
+    if ChunkName = 'RVRB' then else  //  [#sec4.14 Reverb]
+    if ChunkName = 'SYLT' then else  //  [#sec4.10 Synchronized lyric/text]
+    if ChunkName = 'SYTC' then else  //  [#sec4.8 Synchronized tempo codes]
+    if ChunkName = 'TALB' then ReadAlbumTitle(ChunkSize) else  //  [#TALB Album/Movie/Show title]
+    if ChunkName = 'TBPM' then else  //  [#TBPM BPM (beats per minute)]
+    if ChunkName = 'TCOM' then else  //  [#TCOM Composer]
+    if ChunkName = 'TCON' then ReadContentType(ChunkSize) else  //  [#TCON Content type]
+    if ChunkName = 'TCOP' then else  //  [#TCOP Copyright message]
+    if ChunkName = 'TDAT' then else  //  [#TDAT Date]
+    if ChunkName = 'TDLY' then else  //  [#TDLY Playlist delay]
+    if ChunkName = 'TENC' then else  //  [#TENC Encoded by]
+    if ChunkName = 'TEXT' then else  //  [#TEXT Lyricist/Text writer]
+    if ChunkName = 'TFLT' then else  //  [#TFLT File type]
+    if ChunkName = 'TIME' then else  //  [#TIME Time]
+    if ChunkName = 'TIT1' then else  //  [#TIT1 Content group description]
+    if ChunkName = 'TIT2' then ReadTitle(ChunkSize) else  //  [#TIT2 Title/songname/content description]
+    if ChunkName = 'TIT3' then else  //  [#TIT3 Subtitle/Description refinement]
+    if ChunkName = 'TKEY' then else  //  [#TKEY Initial key]
+    if ChunkName = 'TLAN' then ReadLanguage(ChunkSize) else  //  [#TLAN Language(s)]
+    if ChunkName = 'TLEN' then else  //  [#TLEN Length]
+    if ChunkName = 'TMED' then else  //  [#TMED Media type]
+    if ChunkName = 'TOAL' then else  //  [#TOAL Original album/movie/show title]
+    if ChunkName = 'TOFN' then else  //  [#TOFN Original filename]
+    if ChunkName = 'TOLY' then else  //  [#TOLY Original lyricist(s)/text writer(s)]
+    if ChunkName = 'TOPE' then else  //  [#TOPE Original artist(s)/performer(s)]
+    if ChunkName = 'TORY' then else  //  [#TORY Original release year]
+    if ChunkName = 'TOWN' then else  //  [#TOWN File owner/licensee]
+    if ChunkName = 'TPE1' then ReadMainArtist(ChunkSize) else  //  [#TPE1 Lead performer(s)/Soloist(s)]
+    if ChunkName = 'TPE2' then ReadBand(ChunkSize) else  //  [#TPE2 Band/orchestra/accompaniment]
+    if ChunkName = 'TPE3' then else  //  [#TPE3 Conductor/performer refinement]
+    if ChunkName = 'TPE4' then else  //  [#TPE4 Interpreted, remixed, or otherwise modified by]
+    if ChunkName = 'TPOS' then else  //  [#TPOS Part of a set]
+    if ChunkName = 'TPUB' then ReadPublisher(ChunkSize) else  //  [#TPUB Publisher]
+    if ChunkName = 'TRCK' then ReadTrackNumber(ChunkSize) else  //  [#TRCK Track number/Position in set]
+    if ChunkName = 'TRDA' then else  //  [#TRDA Recording dates]
+    if ChunkName = 'TRSN' then else  //  [#TRSN Internet radio station name]
+    if ChunkName = 'TRSO' then else  //  [#TRSO Internet radio station owner]
+    if ChunkName = 'TSIZ' then else  //  [#TSIZ Size]
+    if ChunkName = 'TSRC' then else  //  [#TSRC ISRC (international standard recording code)]
+    if ChunkName = 'TSSE' then else  //  [#TSEE Software/Hardware and settings used for encoding]
+    if ChunkName = 'TYER' then ReadYear(ChunkSize) else  //  [#TYER Year]
+    if ChunkName = 'TXXX' then else  //  [#TXXX User defined text information frame]
+    if ChunkName = 'UFID' then else  //  [#sec4.1 Unique file identifier]
+    if ChunkName = 'USER' then else  //  [#sec4.23 Terms of use]
+    if ChunkName = 'USLT' then else  //  [#sec4.9 Unsychronized lyric/text transcription]
+    if ChunkName = 'WCOM' then else  //  [#WCOM Commercial information]
+    if ChunkName = 'WCOP' then else  //  [#WCOP Copyright/Legal information]
+    if ChunkName = 'WOAF' then else  //  [#WOAF Official audio file webpage]
+    if ChunkName = 'WOAR' then else  //  [#WOAR Official artist/performer webpage]
+    if ChunkName = 'WOAS' then else  //  [#WOAS Official audio source webpage]
+    if ChunkName = 'WORS' then else  //  [#WORS Official internet radio station homepage]
+    if ChunkName = 'WPAY' then else  //  [#WPAY Payment]
+    if ChunkName = 'WPUB' then else  //  [#WPUB Publishers official webpage]
+    if ChunkName = 'WXXX' then else; //  [#WXXX User defined URL link frame]
 
-   if ChunkSize = 0
-    then Exit
-    else Position := Position + ChunkSize;
-  end;
+    if ChunkSize = 0
+     then Exit
+     else Position := Position + ChunkSize;
+   except
+     Break;
+   end;
 end;
 
 procedure TCustomMpegAudio.ReadAlbumTitle(ChunkSize: Integer);

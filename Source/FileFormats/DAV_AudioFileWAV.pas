@@ -45,7 +45,8 @@ type
   TWaveChunkType = (ctFormat, ctFact, ctData);
   TWaveChunkTypes = set of TWaveChunkType;
 
-  TCustomAudioFileWAV = class(TCustomAudioFile)
+  TCustomAudioFileWAV = class(TCustomAudioFile, IAudioFileBitsPerSample,
+    IAudioFileEncoding)
   private
     FChunkSize         : Cardinal;
     FTotalSampleFrames : Cardinal;

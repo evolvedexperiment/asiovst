@@ -113,20 +113,20 @@ type
     function  IsInputConnected(const Input: Integer): Boolean; virtual;
     function  IsOutputConnected(const Output: Integer): Boolean; virtual;
 
-    procedure WantEvents(const Filter: Integer);  // filter is currently ignored, midi channel data only (default) virtual void wantEvents (long filter = 1); default is 1 for this!
-    function  GetTimeInfo(const Filter: Integer): PVstTimeInfo; virtual;  // returns const VstTimeInfo* (or 0 if not supported) filter should contain a mask indicating which fields are requested (see valid masks in aeffectx.h), as some items may require extensive conversions
-    procedure SetTimeInfo(const Filter: Integer; var VstTimeInfo: PVstTimeInfo); virtual;
-    function  TempoAt(const pos: Integer): Integer; virtual; // returns tempo (in bpm * 10000) at sample frame location <pos>
+    procedure WantEvents(const Filter: TVstIntPtr);  // filter is currently ignored, midi channel data only (default) virtual void wantEvents (long filter = 1); default is 1 for this!
+    function  GetTimeInfo(const Filter: TVstIntPtr): PVstTimeInfo; virtual;  // returns const VstTimeInfo* (or 0 if not supported) filter should contain a mask indicating which fields are requested (see valid masks in aeffectx.h), as some items may require extensive conversions
+    procedure SetTimeInfo(const Filter: TVstIntPtr; var VstTimeInfo: PVstTimeInfo); virtual;
+    function  TempoAt(const Pos: TVstIntPtr): TVstIntPtr; virtual; // returns tempo (in bpm * 10000) at sample frame location <pos>
     function  SendVstEventsToHost(var Events: TVstEvents): Boolean;  // True: success
 
     function  GetNumAutomatableParameters: Integer; virtual;
     procedure SetParameterAutomated(const Index: Integer; const Value: Single); virtual;
-    function  GetParameterQuantization: Integer; virtual; // returns the Integer Value for +1.0 representation, or 1 if full single float precision is maintained in automation. parameter Index in <Value> (-1: all, any)
+    function  GetParameterQuantization: TVstIntPtr; virtual; // returns the Integer Value for +1.0 representation, or 1 if full single float precision is maintained in automation. parameter Index in <Value> (-1: all, any)
 
-    function  GetInputLatency: Integer; virtual;
-    function  GetOutputLatency: Integer; virtual;
-    function  GetPreviousPlug(const Input: Integer): PVSTEffect; virtual;  // input can be -1 in which case the first found is returned
-    function  GetNextPlug(const Output: Integer): PVSTEffect; virtual;     // output can be -1 in which case the first found is returned
+    function  GetInputLatency: TVstIntPtr; virtual;
+    function  GetOutputLatency: TVstIntPtr; virtual;
+    function  GetPreviousPlug(const Input: TVstIntPtr): PVSTEffect; virtual;  // input can be -1 in which case the first found is returned
+    function  GetNextPlug(const Output: TVstIntPtr): PVSTEffect; virtual;     // output can be -1 in which case the first found is returned
 
     function  WillProcessReplacing: Integer; virtual; // returns 0: not implemented, 1: replacing, 2: accumulating
     function  GetCurrentProcessLevel: Integer; virtual;  // returns: 0: not supported, 1: currently in user thread (gui) 2: currently in audio thread or irq (where Process is called) 3: currently in 'sequencer' thread or irq (midi, timer etc) 4: currently offline Processing and thus in user thread other: not defined, but probably pre-empting user thread.
@@ -134,7 +134,7 @@ type
 
     function  OfflineRead(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean; virtual;
     function  OfflineWrite(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption): Boolean; virtual;
-    function  OfflineStart(var AudioFile: TVstAudioFile; const numAudioFiles, numNewAudioFiles: Integer): Boolean; virtual;
+    function  OfflineStart(var AudioFile: TVstAudioFile; const numAudioFiles: Integer; const numNewAudioFiles: TVstIntPtr): Boolean; virtual;
     function  OfflineGetCurrentPass: Integer; virtual;
     function  OfflineGetCurrentMetaPass: Integer; virtual;
 
@@ -143,7 +143,7 @@ type
     function  GetHostVendorString(const Text: PAnsiChar): Boolean; virtual;  // fills <Text> with a string identifying the vendor (max 64 char)
     function  GetHostProductString(const Text: PAnsiChar): Boolean; virtual; // fills <Text> with a string with product name (max 64 char)
     function  GetHostVendorVersion: Integer; virtual;  // returns vendor-specific version
-    function  HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer; virtual;  // no definition
+    function  HostVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const ptrArg: Pointer; const floatArg: Single): Integer; virtual;  // no definition
     function  GetCanHostDo(Text: AnsiString): Integer; virtual;  // see 'hostCanDos' in audioeffectx.cpp returns 0: don't know (default), 1: yes, -1: no
     function  GetHostLanguage: Integer; virtual;   // returns VstHostLanguage
     function  OpenWindow(const aWindow: PVstWindow): Pointer; virtual;  // create new window
@@ -618,22 +618,22 @@ begin
  Result := (CallAudioMaster(amPinConnected, Output, 1) = 0);
 end;
 
-procedure TBasicVSTModule.WantEvents(const Filter: Integer);
+procedure TBasicVSTModule.WantEvents(const Filter: TVstIntPtr);
 begin
  CallAudioMaster(amWantMidi, 0, Filter);
 end;
 
-function TBasicVSTModule.GetTimeInfo(const Filter: Integer): PVstTimeInfo;
+function TBasicVSTModule.GetTimeInfo(const Filter: TVstIntPtr): PVstTimeInfo;
 begin
  Result := PVstTimeInfo(CallAudioMaster(amGetTime, 0, Filter));
 end;
 
-procedure TBasicVSTModule.SetTimeInfo(const Filter: Integer; var VstTimeInfo: PVstTimeInfo);
+procedure TBasicVSTModule.SetTimeInfo(const Filter: TVstIntPtr; var VstTimeInfo: PVstTimeInfo);
 begin
  CallAudioMaster(amSetTime, 0, Filter, @VstTimeInfo);
 end;
 
-function TBasicVSTModule.TempoAt(const Pos: Integer): Integer;
+function TBasicVSTModule.TempoAt(const Pos: TVstIntPtr): TVstIntPtr;
 begin
  Result := CallAudioMaster(amTempoAt, 0, Pos);
 end;
@@ -653,27 +653,27 @@ begin
  CallAudioMaster(amAutomate, Index, 0, nil, Value);
 end;
 
-function TBasicVSTModule.GetParameterQuantization: Integer;
+function TBasicVSTModule.GetParameterQuantization: TVstIntPtr;
 begin
  Result := CallAudioMaster(amGetParameterQuantization);
 end;
 
-function TBasicVSTModule.GetInputLatency: Integer;
+function TBasicVSTModule.GetInputLatency: TVstIntPtr;
 begin
  Result := CallAudioMaster(amGetInputLatency);
 end;
 
-function TBasicVSTModule.GetOutputLatency: Integer;
+function TBasicVSTModule.GetOutputLatency: TVstIntPtr;
 begin
  Result := CallAudioMaster(amGetOutputLatency);
 end;
 
-function TBasicVSTModule.GetPreviousPlug(const Input: Integer): PVSTEffect;
+function TBasicVSTModule.GetPreviousPlug(const Input: TVstIntPtr): PVSTEffect;
 begin
  Result := PVSTEffect(CallAudioMaster(amGetPreviousPlug, 0, Input));
 end;
 
-function TBasicVSTModule.GetNextPlug(const Output: Integer): PVSTEffect;
+function TBasicVSTModule.GetNextPlug(const Output: TVstIntPtr): PVSTEffect;
 begin
  Result := PVSTEffect(CallAudioMaster(amGetNextPlug, 0, Output));
 end;
@@ -695,15 +695,16 @@ end;
 
 function TBasicVSTModule.OfflineRead(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean;
 begin
- Result := CallAudioMaster(amOfflineRead, Integer(ReadSource), Integer(Option), @Offline) <> 0;
+ Result := CallAudioMaster(amOfflineRead, Integer(ReadSource), TVstIntPtr(Option), @Offline) <> 0;
 end;
 
 function TBasicVSTModule.OfflineWrite(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption): Boolean;
 begin
- Result := CallAudioMaster(amOfflineWrite, 0, Integer(Option), @Offline) <> 0;
+ Result := CallAudioMaster(amOfflineWrite, 0, TVstIntPtr(Option), @Offline) <> 0;
 end;
 
-function TBasicVSTModule.OfflineStart(var AudioFile: TVstAudioFile; const numAudioFiles, numNewAudioFiles: Integer): Boolean;
+function TBasicVSTModule.OfflineStart(var AudioFile: TVstAudioFile;
+  const numAudioFiles: Integer; const numNewAudioFiles: TVstIntPtr): Boolean;
 begin
  Result := CallAudioMaster(amOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile) <> 0;
 end;
@@ -745,9 +746,11 @@ begin
  Result := CallAudioMaster(amGetVendorVersion);
 end;
 
-function TBasicVSTModule.HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
+function TBasicVSTModule.HostVendorSpecific(const Index: Integer;
+  const Value: TVstIntPtr; const PtrArg: Pointer;
+  const FloatArg: Single): Integer;
 begin
- Result := CallAudioMaster(amVendorSpecific, Arg1, Arg2, ptrArg, floatArg);
+ Result := CallAudioMaster(amVendorSpecific, Index, Value, ptrArg, floatArg);
 end;
 
 function TBasicVSTModule.GetCanHostDo(Text: AnsiString): Integer;

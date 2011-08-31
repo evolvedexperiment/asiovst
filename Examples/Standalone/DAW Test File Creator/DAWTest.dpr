@@ -5,11 +5,12 @@ program DAWTest;
 uses
   SysUtils, Math, Classes, DAV_Types, DAV_Common, DAV_DspSimpleOscillator,
   DAV_AudioData, DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF,
-  DAV_DifferentialEvolution, DAV_ChunkClasses;
+  DAV_DifferentialEvolution, DAV_ChunkClasses, DAV_Approximations;
 
 type
-  TTestType = (ttGeneric, ttExtreme, ttOptimized);
+  TTestType = (ttGeneric, ttExtreme, ttOptimized, ttFile);
   TWeight = Double;
+  PWeight = ^TWeight;
   TWeightArray = array of TWeight;
 
   TWeightChunk = class (TDefinedChunk)
@@ -20,6 +21,7 @@ type
     class function GetClassChunkName : TChunkName; override;
 
     procedure AssignWeight(Weight: TWeightArray);
+    procedure AssignToWeight(var Weight: TWeightArray);
 
     procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -47,6 +49,7 @@ var
   SineFrequency    : Single = 1000;
   MasterSampleRate : Single = 44100;
   Duration         : Single = 1;
+  WeightFileName   : TFileName;
   SampleCount      : Integer;
 
 { TWeightOptimizer }
@@ -67,6 +70,7 @@ procedure CalculateDifferences(Weights: TWeightArray; out AverageDifference,
 var
   FileIndex    : Integer;
   FileIndexMax : Integer;
+  WeightRev    : PWeight;
   SampleIndex  : Integer;
   Value        : array [0..1] of Single;
   Difference   : Extended;
@@ -79,14 +83,16 @@ begin
   with TCustomSimpleOscillator64.Create do
   try
     Frequency := SineFrequency;
-    for SampleIndex := 0 to SampleCount - 1 do
+    for SampleIndex := 0 to (SampleCount div 4) - 1 do
     begin
       Value[0] := 0;
       Value[1] := 0;
+      WeightRev := @Weights[FileIndexMax];
       for FileIndex := 0 to FileIndexMax do
       begin
         Value[0] := Value[0] + Sine * Weights[FileIndex];
-        Value[1] := Value[1] + Sine * Weights[FileIndexMax - FileIndex];
+        Value[1] := Value[1] + Sine * WeightRev^;
+        Dec(WeightRev);
       end;
 
       Difference := Abs(Value[0] - Value[1]);
@@ -99,6 +105,7 @@ begin
   finally
     Free;
   end;
+
   AverageDifference := DiffSum / SampleCount;
   Assert(AverageDifference <= MaximumDifference);
 end;
@@ -135,7 +142,7 @@ begin
   end;
 
   CalculateDifferences(FWeights, AvgDiff, MaxDiff);
-  Result := -(AvgDiff + SampleCount * MaxDiff);
+  Result := -(AvgDiff + 2 * MaxDiff) * SampleCount;
 end;
 
 
@@ -149,6 +156,15 @@ end;
 class function TWeightChunk.GetClassChunkName: TChunkName;
 begin
   Result := 'DAWC';
+end;
+
+procedure TWeightChunk.AssignToWeight(var Weight: TWeightArray);
+var
+  Index : Integer;
+begin
+ SetLength(Weight, Length(FWeightData));
+ for Index := 0 to Length(FWeightData) - 1 do
+   Weight[Index] := FWeightData[Index];
 end;
 
 procedure TWeightChunk.AssignWeight(Weight: TWeightArray);
@@ -191,6 +207,7 @@ var
   TempWeight : TWeight;
   MaxDiff    : Extended;
   AvgDiff    : Extended;
+  CurrentKey : Char;
 begin
   Writeln('Running Optimizer (this may take a while)...');
   DiffEvol := TDifferentialEvolution.Create(nil);
@@ -256,6 +273,8 @@ begin
     finally
       Free;
     end;
+    WriteLn('');
+    WriteLn('Please press a key to continue!');
     ReadLn;
   finally
     FreeAndNil(DiffEvol);
@@ -302,6 +321,18 @@ begin
       end;
     ttOptimized :
       CalculateOptimizedWeights(Weights);
+    ttFile :
+      begin
+        if FileExists(WeightFileName) then
+          with TWeightChunk.Create do
+          try
+            LoadFromFile(WeightFileName);
+            AssignToWeight(Weights);
+            NumberOfFiles := Length(Weights);
+          finally
+            Free;
+          end;
+      end;
   end;
 end;
 
@@ -371,7 +402,7 @@ begin
       if FileIndex + 1 < 100 then WavFileName := WavFileName + '0';
       WavFileName := WavFileName + IntToStr(FileIndex + 1) + '.wav';
 
-      SaveToFile(WavFileName);
+      SaveToFile(WavFileName, 32, aeFloat);
     end;
   finally
     if Assigned(InputData) then
@@ -403,6 +434,7 @@ begin
           Writeln('  /l___     Normalize level in dB');
           Writeln('  /n___     Build a specified number of files (Default: /f128)');
           Writeln('  /s___     Specify Sample Rate');
+          Writeln('  /r___     Recall coefficients from specified file');
           Writeln('  /g___     Use test optimized for a maximum error (Parameter: Opt. Steps)');
           Writeln('  /x__      Use extreme test custom tailored for specified bits');
           Result := False;
@@ -450,6 +482,16 @@ begin
           Current := Copy(Current, 3, Length(Current));
           if Current <> '' then
             OptimizeSteps := StrToInt(Current);
+        end;
+      'r' :
+        begin
+          Current := Copy(Current, 3, Length(Current));
+          if Current <> '' then
+          begin
+            WeightFileName := Current;
+            if FileExists(WeightFileName) then
+              TestType := ttFile;
+          end;
         end;
       's' :
         begin
