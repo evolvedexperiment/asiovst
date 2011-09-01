@@ -249,6 +249,7 @@ begin
  inherited;
  FChunkList := TChunkList.Create;
  FAudioDataPosition := 0;
+ FTotalSampleFrames := 0;
  FBytesPerSample := 3; // 24 bit
  FFormatChunk := TFormatChunk.Create;
 end;
@@ -1419,6 +1420,19 @@ begin
     end;
   etALaw: Result := TChannel32DataCoderALaw.Create;
   etMuLaw: Result := TChannel32DataCoderMuLaw.Create;
+  etExtended:
+    // assuming these encodings is plain wrong here!!!
+    case FFormatChunk.BlockAlign div FFormatChunk.Channels of
+      1, 2, 3 :
+        begin
+          Result := TChannel32DataCoderFixedPoint.Create;
+          with TChannel32DataCoderFixedPoint(Result), FFormatChunk
+            do SetBitsAndSampleSize(ValidBitsPerSample, BlockAlign div Channels);
+        end;
+      4 : Result := TChannel32DataCoderFloat32.Create;
+      8 : Result := TChannel32DataCoderFloat64.Create;
+     else Result := nil
+    end;
   else Result := nil;
  end;
 
