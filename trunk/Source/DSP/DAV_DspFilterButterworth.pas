@@ -109,7 +109,7 @@ type
     constructor Create(const Order: Integer = 0); override;
 
     procedure CalculateCoefficients; override;
-    procedure ProcessSample32(Input: Single; out Lowpass, Highpass: Single); virtual;
+    procedure ProcessSample32(Input: Single; out Lowpass, Highpass: Single); reintroduce; overload; virtual;
     procedure ProcessSample64(Input: Double; out Lowpass, Highpass: Double); reintroduce; overload; virtual;
     function ProcessSample64(Input: Double): Double; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;

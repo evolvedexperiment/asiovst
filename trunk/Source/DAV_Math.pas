@@ -400,21 +400,21 @@ end;
 
 function RoundToPowerOf2(const Value: Integer): Integer;
 begin
- Result := round(Log2(Value));
+ Result := Round(Log2(Value));
  Result := (Value shr (Result - 1)) shl (Result - 1);
 end;
 
 function TruncToPowerOf2(const Value: Integer): Integer;
 begin
- result := 1;
- while result <= value do result := result shl 1;
- result := result shr 1;
+ Result := 1;
+ while Result <= Value do Result := Result shl 1;
+ Result := Result shr 1;
 end;
 
 function ExtendToPowerOf2(const Value: Integer): Integer;
 begin
- result := 1;
- while result < value do result := result shl 1;
+ Result := 1;
+ while Result < Value do Result := Result shl 1;
 end;
 
 function TruncLog2(Value : Extended): Integer;
@@ -544,11 +544,11 @@ var
   pix : Double;
 begin
  if (Input = 0)
-  then result := 1
+  then Result := 1
   else
    begin
     pix := PI * Input;
-    result := sin(pix) / pix;
+    Result := sin(pix) / pix;
    end;
 end;
 
@@ -557,11 +557,11 @@ var
   pix : Double;
 begin
  if (Input = 0)
-  then result := 1
+  then Result := 1
   else
    begin
     pix := PI * Input;
-    result := sin(pix) / pix;
+    Result := sin(pix) / pix;
    end;
 end;
 

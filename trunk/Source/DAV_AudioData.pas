@@ -387,6 +387,7 @@ type
     procedure GenerateWhiteNoise(Amplitude: Double); virtual;
     procedure Multiply(Factor: Double); virtual;
     procedure Exponentiate(Exponent: Double); virtual;
+    procedure Trim; virtual; abstract;
     procedure Rectify; virtual;
     procedure RemoveDC; virtual;
     procedure Normalize; virtual;
@@ -429,6 +430,7 @@ type
     property ChannelList[index: Integer]: TAudioChannel32 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); override;
+    procedure Trim; override;
 
     property ChannelDataPointer[Channel: Integer]: PDAVSingleFixedArray read GetChannelDataPointerList;
     property ChannelDataPointerList: Pointer read GetChannelDataPointerListPointer;
@@ -458,6 +460,8 @@ type
 
     property ChannelList[index: Integer]: TAudioChannel64 read GetAudioChannel; default;
   public
+    procedure Trim; override;
+
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); override;
     property ChannelDataPointerList[Channel: Integer]: PDAVDoubleFixedArray read GetChannelDataPointerList;
   end;
@@ -1409,7 +1413,6 @@ begin
   end;
 end;
 
-
 procedure TCustomAudioDataCollection.SaveToFile(const FileName: TFileName);
 begin
   SaveToFile(FileName, 24);
@@ -1430,14 +1433,13 @@ begin
     AudioFile := GAudioFileFormats[FileFormatIndex].Create;
     with AudioFile do
      try
-      SampleFrames  := Self.SampleFrames;
-      ChannelCount  := Self.ChannelCount;
-      OnEncode      := DataEncoding;
       if Supports(AudioFile, IAudioFileBitsPerSample) then
         (AudioFile as IAudioFileBitsPerSample).BitsPerSample := BitsPerSample;
       if Supports(AudioFile, IAudioFileEncoding) then
         (AudioFile as IAudioFileEncoding).AudioEncoding := Encoding;
-
+      SampleFrames  := Self.SampleFrames;
+      ChannelCount  := Self.ChannelCount;
+      OnEncode      := DataEncoding;
       SaveToFile(FileName);
      finally
       FreeAndNil(AudioFile);
@@ -1535,6 +1537,7 @@ begin
   end;
 end;
 
+
 { TCustomAudioDataCollection32 }
 
 constructor TCustomAudioDataCollection32.Create(AOwner: TComponent;
@@ -1610,6 +1613,7 @@ var
   Coder32 : TCustomChannel32DataCoder absolute Coder;
 begin
  Assert(Coder is TCustomChannel32DataCoder);
+ Assert(Channels.Count = Coder.ChannelCount);
  for Channel := 0 to ChannelCount - 1
   do Move(Coder32.ChannelPointer[Channel]^[0],
        ChannelList[Channel].ChannelDataPointer^[Position],
@@ -1629,6 +1633,26 @@ begin
        Coder32.ChannelPointer[Channel]^[0], Coder32.SampleFrames * SizeOf(Single));
  // Position := Position + Coder.SampleFrames; // not necessary, incremented by caller!
 end;
+
+procedure TCustomAudioDataCollection32.Trim;
+var
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+label
+  Done;
+begin
+ SampleIndex := SampleFrames - 1;
+ while SampleIndex >= 0 do
+  begin
+   for ChannelIndex := 0 to FChannels.Count - 1 do
+    if ChannelDataPointer[ChannelIndex]^[SampleIndex] <> 0 then
+     goto Done;
+   Dec(SampleIndex);
+  end;
+Done:
+ SampleFrames := SampleIndex + 1;
+end;
+
 
 { TCustomAudioDataCollection64 }
 
@@ -1702,6 +1726,25 @@ begin
      with TAudioChannel64(FChannels.Items[i])
       do FChannelDataPointerList[i] := ChannelDataPointer;
   end;
+end;
+
+procedure TCustomAudioDataCollection64.Trim;
+var
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+label
+  Done;
+begin
+ SampleIndex := SampleFrames - 1;
+ while SampleIndex > 0 do
+  begin
+   for ChannelIndex := 0 to FChannels.Count - 1 do
+    if FChannelDataPointerList[ChannelIndex]^[SampleIndex] <> 0 then
+     goto Done;
+   Dec(SampleIndex);
+  end;
+Done:
+ SampleFrames := SampleIndex;
 end;
 
 function TCustomAudioDataCollection64.GetAudioChannel(Index: Integer): TAudioChannel64;

@@ -225,19 +225,19 @@ end;
 const
   c1a : Single = 1;
 asm
- mov  ecx, edx
+ MOV  ECX, EDX
 @Start:
- mov  edx, [eax]
- and  edx, $7FFFFFFF
- cmp  edx, c1a
+ MOV  EDX, [EAX]
+ AND  EDX, $7FFFFFFF
+ cmp  EDX, c1a
  jle  @EndLoop
- mov  edx, [eax]
- and  edx, $80000000
- add  edx, c1a
- mov  [eax], edx
+ MOV  EDX, [EAX]
+ AND  EDX, $80000000
+ ADD  EDX, c1a
+ MOV  [EAX], EDX
  @EndLoop:
- add  eax, 4
- loop @Start
+ ADD  EAX, 4
+ LOOP @Start
 end;
 {$ENDIF}
 
@@ -256,22 +256,22 @@ end;
 const
   c05 : Double = 0.5;
 asm
- mov  ecx, edx
+ MOV  ECX, EDX
  fld1
- fld  c05
+ FLD  c05
 @Start:
- fld  [eax + 8 * ecx - 8].Double
- fadd st(0), st(2)
- fabs
- fld  [eax + 8 * ecx - 8].Double
- fsub st(0), st(3)
- fabs
+ FLD  [EAX + 8 * ECX - 8].Double
+ fadd ST(0), ST(2)
+ FABS
+ FLD  [EAX + 8 * ECX - 8].Double
+ fsub ST(0), ST(3)
+ FABS
  fsubp
- fmul st(0), st(1)
- fstp [eax + 8 * ecx - 8].Double
- loop @Start
- fstp st(0)
- fstp st(0)
+ FMUL ST(0), ST(1)
+ FSTP [EAX + 8 * ECX - 8].Double
+ LOOP @Start
+ FSTP ST(0)
+ FSTP ST(0)
 end;
 {$ENDIF}
 
@@ -290,32 +290,32 @@ const
   c3: Single = 3;
   c6: Single = 6;
 asm
- fld c3.Single                      // 3
- fld c6.Single                      // 6, 3
+ FLD c3.Single                      // 3
+ FLD c6.Single                      // 6, 3
  fld1                               // 1, 6, 3
  fld1                               // 1, 1, 6, 3
- faddp                              // 2, 6, 3
+ FADDP                              // 2, 6, 3
 @Start:
- dec  edx
- mov  ecx, [eax + 4 * edx].Integer
- and  ecx, $7FFFFFFF
- mov  [esp - 4], ecx
- fld  [esp - 4].Single              // abs(input), 2, 6, 3
- fld  st(3)                         // 3, abs(input), 2, 6, 3
- fadd  st(0), st(1)                 // 3 + abs(input), abs(input), 2, 6, 3
- fld  st(0)                         // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
- fmul [eax + 4 * edx].Single        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
- fxch st(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
+ DEC  EDX
+ MOV  ECX, [EAX + 4 * EDX].Integer
+ AND  ECX, $7FFFFFFF
+ MOV  [esp - 4], ECX
+ FLD  [esp - 4].Single              // abs(input), 2, 6, 3
+ FLD  ST(3)                         // 3, abs(input), 2, 6, 3
+ fadd  ST(0), ST(1)                 // 3 + abs(input), abs(input), 2, 6, 3
+ FLD  ST(0)                         // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
+ FMUL [EAX + 4 * EDX].Single        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
+ fxch ST(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
  fmulp                              // abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fadd st(0), st(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
+ fadd ST(0), ST(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
  fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
- fmul st(0), st(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
- fstp [eax + 4 * edx].Single        // 2, 6, 3
- test edx, edx
+ FMUL ST(0), ST(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
+ FSTP [EAX + 4 * EDX].Single        // 2, 6, 3
+ test EDX, EDX
  jg   @Start
- fstp st(0)
- fstp st(0)
- fstp st(0)
+ FSTP ST(0)
+ FSTP ST(0)
+ FSTP ST(0)
 {$ENDIF}
 end;
 
@@ -334,34 +334,34 @@ const
   c3: Single = 3;
   c6: Single = 6;
 asm
- fld c3.Single                      // 3
- fld c6.Single                      // 6, 3
+ FLD c3.Single                      // 3
+ FLD c6.Single                      // 6, 3
  fld1                               // 1, 6, 3
  fld1                               // 1, 1, 6, 3
- faddp                              // 2, 6, 3
+ FADDP                              // 2, 6, 3
 @Start:
- dec edx
- mov ecx, [eax + 8 * edx].Integer
- and ecx, $7FFFFFFF
- mov [esp - 8], ecx
- mov ecx, [eax + 4 * edx + 4].Integer
- mov [esp - 4], ecx
- fld [esp - 8].Double               // abs(input), 2, 6, 3
- fld st(3)                          // 3, abs(input), 2, 6, 3
- fadd st(0), st(1)                  // 3 + abs(input), abs(input), 2, 6, 3
- fld st(0)                          // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
- fmul [eax + 8 * edx].Double        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
- fxch st(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
+ DEC EDX
+ MOV ECX, [EAX + 8 * EDX].Integer
+ AND ECX, $7FFFFFFF
+ MOV [esp - 8], ECX
+ MOV ECX, [EAX + 4 * EDX + 4].Integer
+ MOV [esp - 4], ECX
+ FLD [esp - 8].Double               // abs(input), 2, 6, 3
+ FLD ST(3)                          // 3, abs(input), 2, 6, 3
+ fadd ST(0), ST(1)                  // 3 + abs(input), abs(input), 2, 6, 3
+ FLD ST(0)                          // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
+ FMUL [EAX + 8 * EDX].Double        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
+ fxch ST(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
  fmulp                              // abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fadd st(0), st(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
+ fadd ST(0), ST(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
  fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
- fmul st(0), st(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
- fstp [eax + 8 * edx].Double        // 2, 6, 3
- test edx, edx
+ FMUL ST(0), ST(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
+ FSTP [EAX + 8 * EDX].Double        // 2, 6, 3
+ test EDX, EDX
  jg @Start
- fstp st(0)
- fstp st(0)
- fstp st(0)
+ FSTP ST(0)
+ FSTP ST(0)
+ FSTP ST(0)
 {$ENDIF}
 end;
 
@@ -380,20 +380,20 @@ begin
 end;
 {$ELSE}
 asm
- mov  [esp - 4], edx
- fild [esp - 4].Single           // SampleCount
+ MOV  [esp - 4], EDX
+ FILD [esp - 4].Single           // SampleCount
  fld1                            // 1, SampleCount
  fdivrp                          // 1 / SampleCount
 
  @FadeLoop:
-  mov  [esp - 4], edx
-  fild [esp - 4].Single         // SampleIndex, 1 / SampleCount
-  dec  edx
-  fmul st(0), st(1)             // SampleIndex / SampleCount, 1 / SampleCount
-  fmul [eax + 4 * edx].Single   // SampleIndex * Value / SampleCount, 1 / SampleCount
-  fstp [eax + 4 * edx].Single   // write back
- jnz @FadeLoop
- fstp st(0)                      // clear stack
+  MOV  [esp - 4], EDX
+  FILD [esp - 4].Single         // SampleIndex, 1 / SampleCount
+  DEC  EDX
+  FMUL ST(0), ST(1)             // SampleIndex / SampleCount, 1 / SampleCount
+  FMUL [EAX + 4 * EDX].Single   // SampleIndex * Value / SampleCount, 1 / SampleCount
+  FSTP [EAX + 4 * EDX].Single   // write back
+ JNZ @FadeLoop
+ FSTP ST(0)                      // clear stack
 end;
 {$ENDIF}
 
@@ -412,20 +412,20 @@ begin
 end;
 {$ELSE}
 asm
- mov [esp - 4], edx
- fild [esp - 4].Single             // SampleCount
+ MOV [esp - 4], EDX
+ FILD [esp - 4].Single             // SampleCount
  fld1                              // 1, SampleCount
  fdivrp                            // 1 / SampleCount
 
  @FadeLoop:
-   mov [esp - 4], edx
-   fild [esp - 4].Single           // i, 1 / SampleCount
-   fmul st(0), st(1)               // i / SampleCount, 1 / SampleCount
-   dec edx
-   fmul [eax + 8 * edx].Double     // i * Value / SampleCount, 1 / SampleCount
-   fstp [eax + 8 * edx].Double     // write back
- jnz @FadeLoop
- fstp st(0)                        // clear stack
+   MOV [esp - 4], EDX
+   FILD [esp - 4].Single           // i, 1 / SampleCount
+   FMUL ST(0), ST(1)               // i / SampleCount, 1 / SampleCount
+   DEC EDX
+   FMUL [EAX + 8 * EDX].Double     // i * Value / SampleCount, 1 / SampleCount
+   FSTP [EAX + 8 * EDX].Double     // write back
+ JNZ @FadeLoop
+ FSTP ST(0)                        // clear stack
 end;
 {$ENDIF}
 
@@ -444,22 +444,22 @@ begin
 end;
 {$ELSE}
 asm
- mov [esp - 4], edx
- fild [esp - 4].Single               // SampleCount
+ MOV [esp - 4], EDX
+ FILD [esp - 4].Single               // SampleCount
  fld1                                // 1, SampleCount
  fdivrp                              // 1 / SampleCount
 
  @FadeLoop:
-   mov [esp - 4], edx
-   fild [esp - 4].Single             // i, 1 / SampleCount
-   fmul st(0), st(1)                 // i / SampleCount, 1 / SampleCount
+   MOV [esp - 4], EDX
+   FILD [esp - 4].Single             // i, 1 / SampleCount
+   FMUL ST(0), ST(1)                 // i / SampleCount, 1 / SampleCount
    fld1                              // 1, i / SampleCount, 1 / SampleCount
    fsubp                             // 1 - i / SampleCount, 1 / SampleCount
-   dec edx
-   fmul [eax + 4 * edx - 4].Single   // Value * (1 - i / SampleCount), 1 / SampleCount
-   fstp [eax + 4 * edx - 4].Single   // write back
- jnz @FadeLoop
- fstp st(0)                          // clear stack
+   DEC EDX
+   FMUL [EAX + 4 * EDX - 4].Single   // Value * (1 - i / SampleCount), 1 / SampleCount
+   FSTP [EAX + 4 * EDX - 4].Single   // write back
+ JNZ @FadeLoop
+ FSTP ST(0)                          // clear stack
 end;
 {$ENDIF}
 
@@ -478,22 +478,22 @@ begin
 end;
 {$ELSE}
 asm
- mov  [esp - 4], edx
- fild [esp - 4].Single              // SampleCount
+ MOV  [esp - 4], EDX
+ FILD [esp - 4].Single              // SampleCount
  fld1                               // 1, SampleCount
  fdivrp                             // 1 / SampleCount
 
  @FadeLoop:
-   mov  [esp - 4], edx
-   fild [esp - 4].Single            // i, 1 / SampleCount
-   fmul st(0), st(1)                // i / SampleCount, 1 / SampleCount
+   MOV  [esp - 4], EDX
+   FILD [esp - 4].Single            // i, 1 / SampleCount
+   FMUL ST(0), ST(1)                // i / SampleCount, 1 / SampleCount
    fld1                             // 1, i / SampleCount, 1 / SampleCount
    fsubp                            // 1 - i / SampleCount, 1 / SampleCount
-   dec  edx
-   fmul [eax + 8 * edx - 8].Double  // Value * (1 - i / SampleCount), 1 / SampleCount
-   fstp [eax + 8 * edx - 8].Double  // write back
- jnz @FadeLoop
- fstp st(0)                         // clear stack
+   DEC  EDX
+   FMUL [EAX + 8 * EDX - 8].Double  // Value * (1 - i / SampleCount), 1 / SampleCount
+   FSTP [EAX + 8 * EDX - 8].Double  // write back
+ JNZ @FadeLoop
+ FSTP ST(0)                         // clear stack
 end;
 {$ENDIF}
 
@@ -516,28 +516,28 @@ asm
  use unless you rewrite the code! 
 
  fld1
- fld Gradient.Double
- fld ScaleFactor.Double
- mov ecx, eax
+ FLD Gradient.Double
+ FLD ScaleFactor.Double
+ MOV ECX, EAX
 
  @FadeLoop:
-   fld  [ecx + 4 * edx - 4].Single  // Value, ScaleFactor, Gradient, 1
-   fmul st(0), st(1)                // Value * ScaleFactor, ScaleFactor, Gradient, 1
-   fstp [ecx + 4 * edx - 4].Single  // ScaleFactor, Gradient, 1
-   fmul st(0), st(1)                // ScaleFactor * Gradient = ScaleFactor, Gradient, 1
+   FLD  [ECX + 4 * EDX - 4].Single  // Value, ScaleFactor, Gradient, 1
+   FMUL ST(0), ST(1)                // Value * ScaleFactor, ScaleFactor, Gradient, 1
+   FSTP [ECX + 4 * EDX - 4].Single  // ScaleFactor, Gradient, 1
+   FMUL ST(0), ST(1)                // ScaleFactor * Gradient = ScaleFactor, Gradient, 1
 
-   fcomi st(0), st(2)               // ScaleFactor <-> 1 ?
-   fstsw ax                         // ax = FPU Status Word
-   sahf                             // ax -> EFLAGS register
-   jb @FadeLoopEnd                  // if ScaleFactor > 1 then exit!
+   FCOMI ST(0), ST(2)               // ScaleFactor <-> 1 ?
+   FSTSW AX                         // AX = FPU Status Word
+   SAHF                             // AX -> EFLAGS register
+   JB @FadeLoopEnd                  // if ScaleFactor > 1 then exit!
 
-   dec edx
- jnz @FadeLoop
+   DEC EDX
+ JNZ @FadeLoop
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
+ FSTP ST(0)                    // clear stack
+ FSTP ST(0)                    // clear stack
+ FSTP ST(0)                    // clear stack
 {$ENDIF}
 *)
 end;
@@ -561,28 +561,28 @@ asm
  use unless you rewrite the code! 
 
  fld1                                // 1
- fld Gradient.Double                  // Gradient, 1
- fld ScaleFactor.Double           // ScaleFactor, Gradient, 1
- mov ecx, eax                        // ecx = eax
+ FLD Gradient.Double                  // Gradient, 1
+ FLD ScaleFactor.Double           // ScaleFactor, Gradient, 1
+ MOV ECX, EAX                        // ECX = EAX
 
  @FadeLoop:
-   fld  [ecx + 8 * edx - 8].Double   // Value, ScaleFactor, Gradient, 1
-   fmul st(0), st(1)                 // Value * ScaleFactor, ScaleFactor, ...
-   fstp [ecx + 8 * edx - 8].Double   // write back
-   fmul st(0), st(1)                 // Gradient * ScaleFactor, Gradient, 1
+   FLD  [ECX + 8 * EDX - 8].Double   // Value, ScaleFactor, Gradient, 1
+   FMUL ST(0), ST(1)                 // Value * ScaleFactor, ScaleFactor, ...
+   FSTP [ECX + 8 * EDX - 8].Double   // write back
+   FMUL ST(0), ST(1)                 // Gradient * ScaleFactor, Gradient, 1
 
-   fcomi st(0), st(2)                // ScaleFactor <-> 1 ?
-   fstsw ax                          // ax = FPU Status Word
-   sahf                              // ax -> EFLAGS register
-   jb @FadeLoopEnd                   // if ScaleFactor > 1 then Exit!
+   FCOMI ST(0), ST(2)                // ScaleFactor <-> 1 ?
+   FSTSW AX                          // AX = FPU Status Word
+   SAHF                              // AX -> EFLAGS register
+   JB @FadeLoopEnd                   // if ScaleFactor > 1 then Exit!
 
-   dec edx
- jnz @FadeLoop
+   DEC EDX
+ JNZ @FadeLoop
 
  @FadeLoopEnd:
- fstp st(0)                          // clear stack
- fstp st(0)                          // clear stack
- fstp st(0)                          // clear stack
+ FSTP ST(0)                          // clear stack
+ FSTP ST(0)                          // clear stack
+ FSTP ST(0)                          // clear stack
 {$ENDIF}
 *)
 end;
@@ -602,28 +602,28 @@ begin
 {$ELSE}
 asm
  fld1
- fld Gradient.Double
- fld ScaleFactor.Double
- mov ecx, eax                        // ecx = eax
+ FLD Gradient.Double
+ FLD ScaleFactor.Double
+ MOV ECX, EAX                        // ECX = EAX
 
  @FadeLoop:
-   fld  [ecx + 4 * edx - 4].Single   // Value, ScaleFactor
-   fmul st(0), st(1)                 // Value * ScaleFactor, ScaleFactor
-   fstp [ecx + 4 * edx - 4].Single   // write back
-   fadd st(0), st(1)                 // ScaleFactor + Gradient
+   FLD  [ECX + 4 * EDX - 4].Single   // Value, ScaleFactor
+   FMUL ST(0), ST(1)                 // Value * ScaleFactor, ScaleFactor
+   FSTP [ECX + 4 * EDX - 4].Single   // write back
+   fadd ST(0), ST(1)                 // ScaleFactor + Gradient
 
-   fcomi st(0), st(2)                // ScaleFactor <-> 1 ?
-   fstsw ax                          // ax = FPU Status Word
-   sahf                              // ax -> EFLAGS register
-   jb @FadeLoopEnd                   // if ScaleFactor > 1 then exit!
+   FCOMI ST(0), ST(2)                // ScaleFactor <-> 1 ?
+   FSTSW AX                          // AX = FPU Status Word
+   SAHF                              // AX -> EFLAGS register
+   JB @FadeLoopEnd                   // if ScaleFactor > 1 then exit!
 
-   dec edx
- jnz @FadeLoop
+   DEC EDX
+ JNZ @FadeLoop
 
  @FadeLoopEnd:
- fstp st(0)                          // clear stack
- fstp st(0)                          // clear stack
- fstp st(0)                          // clear stack
+ FSTP ST(0)                          // clear stack
+ FSTP ST(0)                          // clear stack
+ FSTP ST(0)                          // clear stack
 {$ENDIF}
 end;
 
@@ -642,28 +642,28 @@ begin
 {$ELSE}
 asm
  fld1
- fld Gradient.Double
- fld ScaleFactor.Double
- mov ecx, eax                      // ecx = eax
+ FLD Gradient.Double
+ FLD ScaleFactor.Double
+ MOV ECX, EAX                      // ECX = EAX
 
  @FadeLoop:
-   fld  [ecx + 8 * edx - 8].Double // Value, ScaleFactor
-   fmul st(0), st(1)                // Value * ScaleFactor, ScaleFactor
-   fstp [ecx + 8 * edx - 8].Double // write back
-   fmul st(0), st(1)                // ScaleFactor + Gradient
+   FLD  [ECX + 8 * EDX - 8].Double // Value, ScaleFactor
+   FMUL ST(0), ST(1)                // Value * ScaleFactor, ScaleFactor
+   FSTP [ECX + 8 * EDX - 8].Double // write back
+   FMUL ST(0), ST(1)                // ScaleFactor + Gradient
 
-   fcomi st(0), st(2)              // ScaleFactor <-> 1 ?
-   fstsw ax                        // ax = FPU Status Word
-   sahf                            // ax -> EFLAGS register
-   jb @FadeLoopEnd                 // if ScaleFactor > 1 then exit!
+   FCOMI ST(0), ST(2)              // ScaleFactor <-> 1 ?
+   FSTSW AX                        // AX = FPU Status Word
+   SAHF                            // AX -> EFLAGS register
+   JB @FadeLoopEnd                 // if ScaleFactor > 1 then exit!
 
-   dec edx
- jnz @FadeLoop
+   DEC EDX
+ JNZ @FadeLoop
 
  @FadeLoopEnd:
- fstp st(0)                        // clear stack
- fstp st(0)                        // clear stack
- fstp st(0)                        // clear stack
+ FSTP ST(0)                        // clear stack
+ FSTP ST(0)                        // clear stack
+ FSTP ST(0)                        // clear stack
 {$ENDIF}
 end;
 
@@ -683,30 +683,30 @@ begin
  Result := -1;
 {$ELSE}
 asm
- fld TriggerFaktor.Double
- mov ecx, eax                  // ecx = eax
+ FLD TriggerFaktor.Double
+ MOV ECX, EAX                  // ECX = EAX
 
  @FadeLoop:
-   fld  [ecx+4*edx-4].Single   // Value, TriggerFaktor
-   fabs                        // |Value|, TriggerFaktor
+   FLD  [ECX+4*EDX-4].Single   // Value, TriggerFaktor
+   FABS                        // |Value|, TriggerFaktor
 
-   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
-   fstp st(0)                  // TriggerFaktor
-   jb @TriggerFound            // if |Value| > TriggerFaktor then exit!
+   FCOMI ST(0), ST(1)          // CurrentFadeFak <-> 1 ?
+   FSTSW AX                    // AX = FPU Status Word
+   SAHF                        // AX -> EFLAGS register
+   FSTP ST(0)                  // TriggerFaktor
+   JB @TriggerFound            // if |Value| > TriggerFaktor then exit!
 
-   dec edx
- jnz @FadeLoop
+   DEC EDX
+ JNZ @FadeLoop
 
- mov Result, -1                // not triggered
- jmp @FadeLoopEnd
+ MOV Result, -1                // not triggered
+ JMP @FadeLoopEnd
 
  @TriggerFound:
- mov Result, edx               // triggered at sample edx
+ MOV Result, EDX               // triggered at sample EDX
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
+ FSTP ST(0)                    // clear stack
 {$ENDIF}
 end;
 
@@ -726,30 +726,30 @@ begin
  Result := -1;
 {$ELSE}
 asm
- fld TriggerFaktor.Double
- mov ecx, eax                  // ecx = eax
+ FLD TriggerFaktor.Double
+ MOV ECX, EAX                  // ECX = EAX
 
  @FadeLoop:
-   fld  [ecx+8*edx-8].Double   // Value, TriggerFaktor
-   fabs                        // |Value|, TriggerFaktor
+   FLD  [ECX+8*EDX-8].Double   // Value, TriggerFaktor
+   FABS                        // |Value|, TriggerFaktor
 
-   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
-   fstp st(0)                  // TriggerFaktor
-   jb @TriggerFound            // if |Value| > TriggerFaktor then exit!
+   FCOMI ST(0), ST(1)          // CurrentFadeFak <-> 1 ?
+   FSTSW AX                    // AX = FPU Status Word
+   SAHF                        // AX -> EFLAGS register
+   FSTP ST(0)                  // TriggerFaktor
+   JB @TriggerFound            // if |Value| > TriggerFaktor then exit!
 
-   dec edx
- jnz @FadeLoop
+   DEC EDX
+ JNZ @FadeLoop
 
- mov Result, -1                // not triggered
- jmp @FadeLoopEnd
+ MOV Result, -1                // not triggered
+ JMP @FadeLoopEnd
 
  @TriggerFound:
- mov Result, edx               // triggered at sample edx
+ MOV Result, EDX               // triggered at sample EDX
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
+ FSTP ST(0)                    // clear stack
 {$ENDIF}
 end;
 
@@ -775,14 +775,14 @@ begin
 end;
 {$ELSE}
 asm
- mov ecx, edx
+ MOV ECX, EDX
 @Start:
- mov dh, [eax + 2]
- mov dl, [eax    ]
- mov [eax + 2], dl
- mov [eax    ], dh
- add  eax, 3
- loop @Start
+ MOV dh, [EAX + 2]
+ MOV dl, [EAX    ]
+ MOV [EAX + 2], dl
+ MOV [EAX    ], dh
+ ADD  EAX, 3
+ LOOP @Start
 end;
 {$ENDIF}
 
@@ -807,12 +807,12 @@ begin
 end;
 {$ELSE}
 asm
- mov ecx, SampleCount
+ MOV ECX, SampleCount
 @Start:
- mov edx, [eax + 4 * ecx - 4]
- bswap edx
- mov [eax + 4 * ecx - 4], edx
- loop @Start
+ MOV EDX, [EAX + 4 * ECX - 4]
+ bswap EDX
+ MOV [EAX + 4 * ECX - 4], EDX
+ LOOP @Start
 end;
 {$ENDIF}
 
@@ -839,18 +839,18 @@ begin
 end;
 {$ELSE}
 asm
- push  ebx
- mov   ecx, SampleCount
+ PUSH  EBX
+ MOV   ECX, SampleCount
 @Start:
- mov   edx, [eax]
- mov   ebx, [eax + 4]
- bswap edx
- bswap ebx
- mov   [eax + 4], edx
- mov   [eax], ebx
- add   eax, 8
- loop  @Start
- pop   ebx
+ MOV   EDX, [EAX]
+ MOV   EBX, [EAX + 4]
+ bswap EDX
+ bswap EBX
+ MOV   [EAX + 4], EDX
+ MOV   [EAX], EBX
+ ADD   EAX, 8
+ LOOP  @Start
+ POP   EBX
 end;
 {$ENDIF}
 
@@ -873,13 +873,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld   CSmallToFloat //for speed
+  FLD   CSmallToFloat //for speed
  @Start:
-  fild  [eax + 2 * ecx - 2].word
-  fmul  st(0), st(1)
-  fstp  [edx + 4 * ecx - 4].Single;
-  loop @Start
-  ffree st(0)
+  FILD  [EAX + 2 * ECX - 2].Word
+  FMUL  ST(0), ST(1)
+  FSTP  [EDX + 4 * ECX - 4].Single;
+  LOOP @Start
+  FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -895,13 +895,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld   CSmallToFloat        //for speed
+  FLD   CSmallToFloat        //for speed
  @Start:
-  fild  [eax + 2 * ecx - 2].Word
-  fmul  st(0), st(1)
-  fstp  [edx + 8 * ecx - 8].Double;
-  loop  @Start
-  ffree st(0)
+  FILD  [EAX + 2 * ECX - 2].Word
+  FMUL  ST(0), ST(1)
+  FSTP  [EDX + 8 * ECX - 8].Double;
+  LOOP  @Start
+  FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -927,25 +927,25 @@ begin
 end;
 {$ELSE}
 asm
- fld   CIntToFloat
- push  ebx
- mov   ecx, SampleCount
+ FLD   CIntToFloat
+ PUSH  EBX
+ MOV   ECX, SampleCount
 
 @Start:
- mov   ebx, [eax]
- shl   ebx, 8
- and   ebx, $FFFFFF00
+ MOV   EBX, [EAX]
+ shl   EBX, 8
+ AND   EBX, $FFFFFF00
 
- mov   [esp - 4], ebx
- fild  [esp - 4].Single
- fmul  st(0), st(1)
+ MOV   [esp - 4], EBX
+ FILD  [esp - 4].Single
+ FMUL  ST(0), ST(1)
 
- fstp  [Target].Single
- add   eax, 3
- add   edx, 4
- loop  @Start
- pop   ebx
- ffree st(0)
+ FSTP  [Target].Single
+ ADD   EAX, 3
+ ADD   EDX, 4
+ LOOP  @Start
+ POP   EBX
+ FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -965,23 +965,23 @@ begin
 end;
 {$ELSE}
 asm
- fld   CIntToFloat
- push  ebx
- mov   ecx, SampleCount
+ FLD   CIntToFloat
+ PUSH  EBX
+ MOV   ECX, SampleCount
 
 @Start:
- mov   ebx, [eax]
- shl   ebx, 8
- and   ebx, $FFFFFF00
- mov   [esp - 4], ebx
- fild  [esp - 4].Single
- fmul  st(0), st(1)
- fstp  [Target].Double
- add   eax, 3
- add   edx, 8
- loop  @Start
- pop   ebx
- ffree st(0)
+ MOV   EBX, [EAX]
+ shl   EBX, 8
+ AND   EBX, $FFFFFF00
+ MOV   [esp - 4], EBX
+ FILD  [esp - 4].Single
+ FMUL  ST(0), ST(1)
+ FSTP  [Target].Double
+ ADD   EAX, 3
+ ADD   EDX, 8
+ LOOP  @Start
+ POP   EBX
+ FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -997,14 +997,14 @@ begin
 end;
 {$ELSE}
 asm
-  fld   CIntToFloat         //for speed
+  FLD   CIntToFloat         //for speed
  @Start:
-  dec   ecx
-  fild  [eax + 4 * ecx].DWord
-  fmul  st(0), st(1)
-  fstp  [edx + 4 * ecx].Single
-  jnz   @Start
-  ffree st(0)
+  DEC   ECX
+  FILD  [EAX + 4 * ECX].DWord
+  FMUL  ST(0), ST(1)
+  FSTP  [EDX + 4 * ECX].Single
+  JNZ   @Start
+  FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -1020,14 +1020,14 @@ begin
 end;
 {$ELSE}
 asm
-  fld   CIntToFloat         //for speed
+  FLD   CIntToFloat         //for speed
  @Start:
-  dec ecx
-  fild  [eax + 4 * ecx].DWord
-  fmul  st(0), st(1)
-  fstp  [edx + 8 * ecx].Double
-  jnz @Start
-  ffree st(0)
+  DEC ECX
+  FILD  [EAX + 4 * ECX].DWord
+  FMUL  ST(0), ST(1)
+  FSTP  [EDX + 8 * ECX].Double
+  JNZ @Start
+  FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -1049,10 +1049,10 @@ end;
 {$ELSE}
 asm
  @Start:
-  dec ecx
-  fld   [eax + 4 * ecx].Single
-  fstp  [edx + 8 * ecx].Double
-  jnz @Start
+  DEC ECX
+  FLD   [EAX + 4 * ECX].Single
+  FSTP  [EDX + 8 * ECX].Double
+  JNZ @Start
 end;
 {$ENDIF}
 
@@ -1069,10 +1069,10 @@ end;
 {$ELSE}
 asm
  @Start:
-  dec ecx
-  fld   [eax+8*ecx].Double
-  fstp  [edx+4*ecx].Single
-  jnz @Start
+  DEC ECX
+  FLD   [EAX+8*ECX].Double
+  FSTP  [EDX+4*ECX].Single
+  JNZ @Start
 end;
 {$ENDIF}
 
@@ -1093,13 +1093,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CSmallToFloat
+  FLD      CSmallToFloat
 @Start:
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop @Start
-  ffree    st(0)
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+4*ECX-4].Single
+  LOOP @Start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1115,13 +1115,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CSmallToFloat
+  FLD      CSmallToFloat
 @Start:
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop @Start
-  ffree    st(0)
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP @Start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1137,13 +1137,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CInt18ToFloat
+  FLD      CInt18ToFloat
 @Start:
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+4*ECX-4].Single
+  LOOP     @start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1159,13 +1159,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CInt18ToFloat
+  FLD      CInt18ToFloat
 @Start:
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop     @start
-  ffree    st(0)
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP     @start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1181,13 +1181,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CInt20ToFloat
+  FLD      CInt20ToFloat
 @Start:
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+4*ECX-4].Single
+  LOOP     @start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1203,13 +1203,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CInt20ToFloat
+  FLD      CInt20ToFloat
 @Start:
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop     @start
-  ffree    st(0)
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP     @start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1225,13 +1225,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CInt24ToFloat
+  FLD      CInt24ToFloat
 @Start:
-  fild     [eax + 4 * ecx - 4].DWord;
-  fmul     st(0), st(1)
-  fstp     [edx + 4 * ecx - 4].Single
-  loop     @start
-  ffree    st(0)
+  FILD     [EAX + 4 * ECX - 4].DWord;
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX + 4 * ECX - 4].Single
+  LOOP     @start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1247,13 +1247,13 @@ begin
 end;
 {$ELSE}
 asm
-  fld      CInt24ToFloat
+  FLD      CInt24ToFloat
 @Start:
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop     @start
-  ffree    st(0)
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP     @start
+  FFREE    ST(0)
 end;
 {$ENDIF}
 
@@ -1270,18 +1270,18 @@ begin
 end;
 {$ELSE}
 asm
-  push ebx
-  fld   CSmallToFloat
+  PUSH EBX
+  FLD   CSmallToFloat
  @Start:
-  mov bx, [eax + 2 * ecx - 2]
+  MOV bx, [EAX + 2 * ECX - 2]
   rol bx, $8
-  mov [eax + 2 * ecx - 2], bx
-  fild  [eax + 2 * ecx - 2].Word
-  fmul  st(0), st(1)
-  fstp  [edx + 4 * ecx - 4].Single
-  loop @start
-  ffree st(0)
-  pop ebx
+  MOV [EAX + 2 * ECX - 2], bx
+  FILD  [EAX + 2 * ECX - 2].Word
+  FMUL  ST(0), ST(1)
+  FSTP  [EDX + 4 * ECX - 4].Single
+  LOOP @start
+  FFREE ST(0)
+  POP EBX
 end;
 {$ENDIF}
 
@@ -1298,18 +1298,18 @@ begin
 end;
 {$ELSE}
 asm
-  push ebx
-  fld   CSmallToFloat
+  PUSH EBX
+  FLD   CSmallToFloat
  @Start:
-  mov bx, [eax+2*ecx-2]
+  MOV bx, [EAX+2*ECX-2]
   rol bx, $8
-  mov [eax+2*ecx-2], bx
-  fild  [eax+2*ecx-2].Word
-  fmul  st(0), st(1)
-  fstp  [edx+8*ecx-8].Double
-  loop @start
-  ffree st(0)
-  pop ebx
+  MOV [EAX+2*ECX-2], bx
+  FILD  [EAX+2*ECX-2].Word
+  FMUL  ST(0), ST(1)
+  FSTP  [EDX+8*ECX-8].Double
+  LOOP @start
+  FFREE ST(0)
+  POP EBX
 end;
 {$ENDIF}
 
@@ -1321,27 +1321,27 @@ begin
 end;
 {$ELSE}
 asm
- fld CInt24ToFloat
- push ebx
+ FLD CInt24ToFloat
+ PUSH EBX
 @Start:
- xor ebx, ebx
+ xor EBX, EBX
 
- mov bl, [eax + 2]
- mov bh, [eax + 1]
- ror ebx, 8
- mov bh, [eax]
- rol ebx, 8
+ MOV bl, [EAX + 2]
+ MOV bh, [EAX + 1]
+ ror EBX, 8
+ MOV bh, [EAX]
+ rol EBX, 8
 
- mov [esp-4], ebx
- fild [esp-4].Single
- fmul  st(0), st(1)
- fstp [Target].Single
- add  eax, 3
- add  Target, 4
- loop @Start
+ MOV [esp-4], EBX
+ FILD [esp-4].Single
+ FMUL  ST(0), ST(1)
+ FSTP [Target].Single
+ ADD  EAX, 3
+ ADD  Target, 4
+ LOOP @Start
 
- pop ebx
- ffree st(0)
+ POP EBX
+ FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -1353,27 +1353,27 @@ begin
 end;
 {$ELSE}
 asm
- fld CInt24ToFloat
- push ebx
+ FLD CInt24ToFloat
+ PUSH EBX
 @Start:
- xor ebx, ebx
+ xor EBX, EBX
 
- mov bl, [eax + 2]
- mov bh, [eax + 1]
- ror ebx, 8
- mov bh, [eax]
- rol ebx, 8
+ MOV bl, [EAX + 2]
+ MOV bh, [EAX + 1]
+ ror EBX, 8
+ MOV bh, [EAX]
+ rol EBX, 8
 
- mov [esp-4], ebx
- fild [esp-4].Single
- fmul  st(0), st(1)
- fstp [Target].Double
- add  eax, 3
- add  Target, 8
- loop @Start
+ MOV [esp-4], EBX
+ FILD [esp-4].Single
+ FMUL  ST(0), ST(1)
+ FSTP [Target].Double
+ ADD  EAX, 3
+ ADD  Target, 8
+ LOOP @Start
 
- pop ebx
- ffree st(0)
+ POP EBX
+ FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -1385,18 +1385,18 @@ begin
 end;
 {$ELSE}
 asm
- push   ebx
- fld    CIntToFloat
+ PUSH   EBX
+ FLD    CIntToFloat
 @Start:
- mov    ebx, [eax+4*ecx-4]
- bswap  ebx
- mov    [eax+4*ecx-4], ebx
- fild   [eax+4*ecx-4].DWord
- fmul   st(0), st(1)
- fstp   [edx+4*ecx-4].Single
- loop   @start
- ffree  st(0)
- pop    ebx
+ MOV    EBX, [EAX+4*ECX-4]
+ bswap  EBX
+ MOV    [EAX+4*ECX-4], EBX
+ FILD   [EAX+4*ECX-4].DWord
+ FMUL   ST(0), ST(1)
+ FSTP   [EDX+4*ECX-4].Single
+ LOOP   @start
+ FFREE  ST(0)
+ POP    EBX
 end;
 {$ENDIF}
 
@@ -1408,18 +1408,18 @@ begin
 end;
 {$ELSE}
 asm
- push   ebx
- fld    CIntToFloat
+ PUSH   EBX
+ FLD    CIntToFloat
 @Start:
- mov    ebx, [eax+4*ecx-4]
- bswap  ebx
- mov    [eax+4*ecx-4], ebx
- fild   [eax+4*ecx-4].DWord
- fmul   st(0), st(1)
- fstp   [edx+8*ecx-8].Double
- loop   @start
- ffree  st(0)
- pop    ebx
+ MOV    EBX, [EAX+4*ECX-4]
+ bswap  EBX
+ MOV    [EAX+4*ECX-4], EBX
+ FILD   [EAX+4*ECX-4].DWord
+ FMUL   ST(0), ST(1)
+ FSTP   [EDX+8*ECX-8].Double
+ LOOP   @start
+ FFREE  ST(0)
+ POP    EBX
 end;
 {$ENDIF}
 
@@ -1431,14 +1431,14 @@ begin
 end;
 {$ELSE}
 asm
- push ebx
- mov ecx, SampleCount
+ PUSH EBX
+ MOV ECX, SampleCount
 @Start:
- mov ebx, [eax+4*ecx-4]
- bswap ebx
- mov [edx+4*ecx-4], ebx
- loop @Start
- pop ebx
+ MOV EBX, [EAX+4*ECX-4]
+ bswap EBX
+ MOV [EDX+4*ECX-4], EBX
+ LOOP @Start
+ POP EBX
 end;
 {$ENDIF}
 
@@ -1450,15 +1450,15 @@ begin
 end;
 {$ELSE}
 asm
- push ebx
+ PUSH EBX
  @Start:
-  mov ebx, [Source+4*SampleCount-4]
-  bswap ebx
-  mov [esp-4], ebx
-  fld   [esp-4].Single
-  fstp  [Target+8*SampleCount-8].Double
-  loop @Start
- pop ebx
+  MOV EBX, [Source+4*SampleCount-4]
+  bswap EBX
+  MOV [esp-4], EBX
+  FLD   [esp-4].Single
+  FSTP  [Target+8*SampleCount-8].Double
+  LOOP @Start
+ POP EBX
 end;
 {$ENDIF}
 
@@ -1482,18 +1482,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CSmallToFloat
+  PUSH     EBX
+  FLD      CSmallToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+4*ECX-4].Single
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1505,18 +1505,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CSmallToFloat
+  PUSH     EBX
+  FLD      CSmallToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1528,18 +1528,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CInt18ToFloat
+  PUSH     EBX
+  FLD      CInt18ToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+4*ECX-4].Single
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1551,18 +1551,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CInt18ToFloat
+  PUSH     EBX
+  FLD      CInt18ToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1574,18 +1574,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CInt20ToFloat
+  PUSH     EBX
+  FLD      CInt20ToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+4*ECX-4].Single
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1597,18 +1597,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CInt20ToFloat
+  PUSH     EBX
+  FLD      CInt20ToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1620,18 +1620,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CInt24ToFloat
+  PUSH     EBX
+  FLD      CInt24ToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+4*ECX-4].Single
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1643,18 +1643,18 @@ begin
 end;
 {$ELSE}
 asm
-  push     ebx
-  fld      CInt24ToFloat
+  PUSH     EBX
+  FLD      CInt24ToFloat
 @Start:
-  mov      ebx, [eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4], ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0), st(1)
-  fstp     [edx+8*ecx-8].Double
-  loop     @start
-  ffree    st(0)
-  pop      ebx
+  MOV      EBX, [EAX+4*ECX-4]
+  bswap    EBX
+  MOV      [EAX+4*ECX-4], EBX
+  FILD     [EAX+4*ECX-4].DWord
+  FMUL     ST(0), ST(1)
+  FSTP     [EDX+8*ECX-8].Double
+  LOOP     @start
+  FFREE    ST(0)
+  POP      EBX
 end;
 {$ENDIF}
 
@@ -1662,13 +1662,13 @@ end;
 
 procedure SingleToInt16LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld      CFloatToSmall    // move to register for speed
-@Start:                // Samplecount already in ecx!
-  fld      [eax + 4 * ecx - 4].Single
-  fmul     st(0), st(1)
-  fistp    word ptr [edx + 2 * ecx - 2]
-  loop     @start
-  ffree    st(0)       // free after loop has finished
+  FLD      CFloatToSmall    // move to register for speed
+@Start:                // Samplecount already in ECX!
+  FLD      [EAX + 4 * ECX - 4].Single
+  FMUL     ST(0), ST(1)
+  fistp    Word ptr [EDX + 2 * ECX - 2]
+  LOOP     @start
+  FFREE    ST(0)       // free after LOOP has finished
 end;
 
 procedure SingleToInt16LSB_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
@@ -1676,45 +1676,45 @@ const
   CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  {$IFDEF CPUx86_64}
- push   RBX
- fld    CScaler                // move to register for speed
- fld    CFloatToSmall              // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [RAX + 4 * ECX - 4].Single
-  fmul  st(0), st(1)
+ PUSH   RBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToSmall              // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [RAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp word ptr [edx + 2 * ecx - 2]
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    RBX
+  fistp Word ptr [EDX + 2 * ECX - 2]
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    RBX
  {$ELSE}
- push   EBX
- fld    CScaler                // move to register for speed
- fld    CFloatToSmall              // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToSmall              // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp word ptr [edx + 2 * ecx - 2]
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    EBX
+  fistp Word ptr [EDX + 2 * ECX - 2]
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
  {$ENDIF}
 end;
 
@@ -1723,120 +1723,123 @@ const
   CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  {$IFDEF CPUx86_64}
- push   RBX
- fld    CScaler                // move to register for speed
- fld    CFloatToSmall              // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   RBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToSmall              // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  RBX, RandSeed, $08088405
-  inc   RBX
-  mov   RandSeed, Rbx
-  fild  RandSeed
-  imul  Rbx, RandSeed, $08088405
-  inc   Rbx
-  mov   RandSeed, Rbx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  RBX, RandSeed, $08088405
+  INC   RBX
+  MOV   RandSeed, Rbx
+  FILD  RandSeed
+  IMUL  Rbx, RandSeed, $08088405
+  INC   Rbx
+  MOV   RandSeed, Rbx
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp word ptr [edx + 2 * ecx - 2]
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    RBX
+  fistp Word ptr [EDX + 2 * ECX - 2]
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    RBX
  {$ELSE}
- push   ebx
- fld    CScaler                // move to register for speed
- fld    CFloatToSmall              // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToSmall              // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp word ptr [edx + 2 * ecx - 2]
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp Word ptr [EDX + 2 * ECX - 2]
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
  {$ENDIF}
 end;
 
 procedure DoubleToInt16LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld      CFloatToSmall    // move to register for speed
-@Start:                // Samplecount already in ecx!
-  fld      [eax + 8 * ecx - 8].Double
-  fmul     st(0), st(1)
-  fistp    word ptr [edx + 2 * ecx - 2]
-  loop     @start
-  ffree    st(0)       // free after loop has finished
+  FLD      CFloatToSmall    // move to register for speed
+@Start:                // Samplecount already in ECX!
+  FLD      [EAX + 8 * ECX - 8].Double
+  FMUL     ST(0), ST(1)
+  fistp    Word ptr [EDX + 2 * ECX - 2]
+  LOOP     @start
+  FFREE    ST(0)       // free after LOOP has finished
 end;
 
 procedure DoubleToInt16LSB_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToSmall               // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld      [eax + 8 * ecx - 8].Double
-  fmul     st(0), st(1)
+{$IFDEF CPUx86_64}
+{$ELSE}
+  PUSH    EBX
+  FLD     Scaler               // move to register for speed
+  FLD     CFloatToSmall        // move to register for speed
+@Start:                        // Samplecount already in ECX!
+  FLD     [EAX + 8 * ECX - 8].Double
+  FMUL    ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov RandSeed, ebx
-  fild  RandSeed
-  fmul st(0), st(3)
-  faddp
+  IMUL    EBX, RandSeed, $08088405
+  INC     EBX
+  MOV     RandSeed, EBX
+  FILD    RandSeed
+  FMUL    ST(0), ST(3)
+  FADDP
 
-  fistp    word ptr [edx + 2 * ecx - 2]
- loop     @start
- fstp     st(0)                // free after loop has finished
- fstp     st(0)                // free after loop has finished
- pop ebx
+  FISTP   Word PTR [EDX + 2 * ECX - 2]
+  LOOP    @Start
+  FSTP    ST(0)                // free after LOOP has finished
+  FSTP    ST(0)                // free after LOOP has finished
+  POP     EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt16LSB_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push ebx
- fld       Scaler              // move to register for speed
- fld       CFloatToSmall            // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld      [eax + 8 * ecx - 8].Double
-  fmul     st(0), st(1)
+  PUSH    EBX
+  FLD     Scaler              // move to register for speed
+  FLD     CFloatToSmall            // move to register for speed
+@Start:                       // Samplecount already in ECX!
+  FLD     [EAX + 8 * ECX - 8].Double
+  FMUL    ST(0), ST(1)
 
-  imul     ebx, RandSeed, $08088405
-  inc      ebx
-  mov      RandSeed, ebx
-  fild     RandSeed
-  imul     ebx, RandSeed, $08088405
-  inc      ebx
-  mov      RandSeed, ebx
-  fild     RandSeed
-  faddp
-  fmul     st(0), st(3)
-  faddp
+  IMUL    EBX, RandSeed, $08088405
+  INC     EBX
+  MOV     RandSeed, EBX
+  FILD    RandSeed
+  IMUL    EBX, RandSeed, $08088405
+  INC     EBX
+  MOV     RandSeed, EBX
+  FILD    RandSeed
+  FADDP
+  FMUL    ST(0), ST(3)
+  FADDP
 
-  fistp    word ptr [edx + 2 * ecx - 2]
- loop      @start
- fstp     st(0)                // free after loop has finished
- fstp     st(0)                // free after loop has finished
- pop ebx
+  fistp   Word ptr [EDX + 2 * ECX - 2]
+ LOOP     @start
+ FSTP     ST(0)                // free after LOOP has finished
+ FSTP     ST(0)                // free after LOOP has finished
+ POP      EBX
 end;
 
 
@@ -1856,22 +1859,22 @@ begin
 end;
 {$ELSE}
 asm
-  push ebx
-  fld   CFloatToInt24         //for speed
+  PUSH EBX
+  FLD   CFloatToInt24         //for speed
  @Start:
-  fld   [eax].Single
-  fmul  st(0), st(1)
+  FLD   [EAX].Single
+  FMUL  ST(0), ST(1)
   fistp [esp - 4].DWord
-  mov   ebx, [esp - 4]        //  ebx = EHEL BHBL
-  and   ebx, $FFFFFF          //  ebx = 00EL BHBL
-  mov   [edx], ebx            // [edx] = 00EL BHBL
+  MOV   EBX, [esp - 4]        //  EBX = EHEL BHBL
+  AND   EBX, $FFFFFF          //  EBX = 00EL BHBL
+  MOV   [EDX], EBX            // [EDX] = 00EL BHBL
 
-  add   eax, 4
-  add   edx, 3
-  dec   ecx
-  jnz   @Start
-  fstp     st(0)               // free after loop has finished
-  pop ebx
+  ADD   EAX, 4
+  ADD   EDX, 3
+  DEC   ECX
+  JNZ   @Start
+  FSTP     ST(0)               // free after LOOP has finished
+  POP EBX
 end;
 {$ENDIF}
 
@@ -1879,176 +1882,176 @@ procedure SingleToInt24LSB_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount
 const
   CScaler : Double = ((1/$10000) / $10000);  // 2^-32
 asm
-  push  ebx
-  fld   CScaler                // move to register for speed
-  fld   CFloatToInt24                 // for speed
+  PUSH  EBX
+  FLD   CScaler                // move to register for speed
+  FLD   CFloatToInt24                 // for speed
  @Start:
-  fld   [eax].DWord
-  fmul  st(0), st(1)
+  FLD   [EAX].DWord
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  CScaler.Double
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  CScaler.Double
+  FADDP
 
   fistp [esp - 4].Single
-  mov   ebx, [esp - 4]
-  mov   [edx], bx
-  ror   ebx, 8
-  mov   [edx + 2], bh
-  add   eax, 4
-  add   edx, 3
-  dec   ecx
-  jnz   @Start
-  fstp  st(0)                  // free after loop has finished
-  fstp  st(0)                  // free after loop has finished
-  pop   ebx
+  MOV   EBX, [esp - 4]
+  MOV   [EDX], bx
+  ror   EBX, 8
+  MOV   [EDX + 2], bh
+  ADD   EAX, 4
+  ADD   EDX, 3
+  DEC   ECX
+  JNZ   @Start
+  FSTP  ST(0)                  // free after LOOP has finished
+  FSTP  ST(0)                  // free after LOOP has finished
+  POP   EBX
 end;
 
 procedure SingleToInt24LSB_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
-  push  ebx
-  fld   CScaler                 // move to register for speed
-  fld   CFloatToInt24                  //for speed
+  PUSH  EBX
+  FLD   CScaler                 // move to register for speed
+  FLD   CFloatToInt24                  //for speed
  @Start:
-  fld   [eax].Single
-  fmul  st(0), st(1)
+  FLD   [EAX].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
   fistp [esp-4].DWord;
-  mov   ebx, [esp - 4]
-  and   ebx, $FFFFFF
-  mov   [edx], ebx
-  add   eax, 4
-  add   edx, 3
-  dec   ecx
-  jnz   @Start
-  fstp  st(0)                   // free after loop has finished
-  fstp  st(0)                   // free after loop has finished
-  pop ebx
+  MOV   EBX, [esp - 4]
+  AND   EBX, $FFFFFF
+  MOV   [EDX], EBX
+  ADD   EAX, 4
+  ADD   EDX, 3
+  DEC   ECX
+  JNZ   @Start
+  FSTP  ST(0)                   // free after LOOP has finished
+  FSTP  ST(0)                   // free after LOOP has finished
+  POP EBX
 end;
 
 procedure DoubleToInt24LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push  ebx
-  fld   CFloatToInt24         //for speed
+  PUSH  EBX
+  FLD   CFloatToInt24         //for speed
  @Start:
-  fld   [eax].Double
-  fmul  st(0), st(1)
+  FLD   [EAX].Double
+  FMUL  ST(0), ST(1)
   fistp [esp - 4].DWord
-  mov   ebx, [esp - 4]
-  and   ebx, $FFFFFF
-  mov   [edx], ebx
-  add   eax, 8
-  add   edx, 3
-  dec   ecx
-  jnz   @Start
-  ffree st(0)
-  pop   ebx
+  MOV   EBX, [esp - 4]
+  AND   EBX, $FFFFFF
+  MOV   [EDX], EBX
+  ADD   EAX, 8
+  ADD   EDX, 3
+  DEC   ECX
+  JNZ   @Start
+  FFREE ST(0)
+  POP   EBX
 end;
 
 procedure DoubleToInt24LSB_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((1/$10000) / $10000);  // 2^-32
 asm
-  push  ebx
-  fld   CScaler               // move to register for speed
-  fld   CFloatToInt24                // for speed
+  PUSH  EBX
+  FLD   CScaler               // move to register for speed
+  FLD   CFloatToInt24                // for speed
  @Start:
-  fld   [eax].Double
-  fmul  st(0), st(1)
+  FLD   [EAX].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  CScaler.Double
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  CScaler.Double
+  FADDP
 
   fistp [esp - 4].DWord;
-  mov   ebx, [esp - 4]
-  and   ebx, $FFFFFF
-  mov   [edx], ebx
-  add   eax, 8
-  add   edx, 3
-  dec   ecx
-  jnz   @Start
-  fstp  st(0)                 // free after loop has finished
-  fstp  st(0)                 // free after loop has finished
-  pop   ebx
+  MOV   EBX, [esp - 4]
+  AND   EBX, $FFFFFF
+  MOV   [EDX], EBX
+  ADD   EAX, 8
+  ADD   EDX, 3
+  DEC   ECX
+  JNZ   @Start
+  FSTP  ST(0)                 // free after LOOP has finished
+  FSTP  ST(0)                 // free after LOOP has finished
+  POP   EBX
 end;
 
 procedure DoubleToInt24LSB_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
-  push  ebx
-  fld   CScaler                 // move to register for speed
-  fld   CFloatToInt24                  //for speed
+  PUSH  EBX
+  FLD   CScaler                 // move to register for speed
+  FLD   CFloatToInt24                  //for speed
  @Start:
-  fld   [eax].Double
-  fmul  st(0), st(1)
+  FLD   [EAX].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
   fistp [esp - 4].Integer
-  mov   ebx, [esp - 4]
-  and   ebx, $FFFFFF
-  mov   [edx], ebx
-  add   eax, 8
-  add   edx, 3
-  dec   ecx
-  jnz   @Start
-  fstp  st(0)               // free after loop has finished
-  fstp  st(0)               // free after loop has finished
-  pop   ebx
+  MOV   EBX, [esp - 4]
+  AND   EBX, $FFFFFF
+  MOV   [EDX], EBX
+  ADD   EAX, 8
+  ADD   EDX, 3
+  DEC   ECX
+  JNZ   @Start
+  FSTP  ST(0)               // free after LOOP has finished
+  FSTP  ST(0)               // free after LOOP has finished
+  POP   EBX
 end;
 
 procedure SingleToInt32LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt         //for speed
+  FLD   CFloatToInt         //for speed
  @Start:
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].Integer
-  loop  @Start
-  ffree st(0)
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX + 4 * ECX - 4].Integer
+  LOOP  @Start
+  FFREE ST(0)
 end;
 
 procedure DoubleToInt32LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt         //for speed
+  FLD   CFloatToInt         //for speed
  @Start:
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].Integer
-  loop  @Start
-  ffree st(0)
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX + 4 * ECX - 4].Integer
+  LOOP  @Start
+  FFREE ST(0)
 end;
 
 procedure SingleToSingleLSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
@@ -2059,17 +2062,17 @@ end;
 procedure DoubleToSingleLSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
  @Start:
-  fld   [Source + 8 * ecx - 8].Double
-  fstp  [Target + 4 * ecx - 4].Single
-  loop @Start
+  FLD   [Source + 8 * ECX - 8].Double
+  FSTP  [Target + 4 * ECX - 4].Single
+  LOOP @Start
 end;
 
 procedure SingleToDoubleLSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
  @Start:
-  fld   [eax + 4 * ecx - 4].Single
-  fstp  [edx + 8 * ecx - 8].Double
-  loop @Start
+  FLD   [EAX + 4 * ECX - 4].Single
+  FSTP  [EDX + 8 * ECX - 8].Double
+  LOOP @Start
 end;
 
 procedure DoubleToDoubleLSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
@@ -2079,555 +2082,555 @@ end;
 
 procedure SingleToInt32LSB16_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld      CFloatToSmall
+  FLD      CFloatToSmall
 @Start:
-  fld      [eax + 4 * ecx - 4].Single
-  fmul     st(0), st(1)
-  fistp    [edx + 4 * ecx - 4].DWord
-  loop @Start
-  ffree    st(0)
+  FLD      [EAX + 4 * ECX - 4].Single
+  FMUL     ST(0), ST(1)
+  fistp    [EDX + 4 * ECX - 4].DWord
+  LOOP @Start
+  FFREE    ST(0)
 end;
 
 procedure SingleToInt32LSB16_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   Scaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
 asm
- push ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToSmall               // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld     [eax + 4 * ecx - 4].Single
-  fmul    st(0), st(1)
+ PUSH EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToSmall               // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD     [EAX + 4 * ECX - 4].Single
+  FMUL    ST(0), ST(1)
 
-  imul    ebx, RandSeed, $08088405
-  inc     ebx
-  mov     RandSeed, ebx
-  fild    RandSeed
-  fmul    st(0), st(3)
-  faddp
+  IMUL    EBX, RandSeed, $08088405
+  INC     EBX
+  MOV     RandSeed, EBX
+  FILD    RandSeed
+  FMUL    ST(0), ST(3)
+  FADDP
 
-  fistp   [edx+4*ecx-4].DWord
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
- pop ebx
+  fistp   [EDX+4*ECX-4].DWord
+ LOOP     @start
+ FFREE    ST(0)                // free after LOOP has finished
+ FFREE    ST(1)                // free after LOOP has finished
+ POP EBX
 end;
 
 procedure SingleToInt32LSB16_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToSmall               // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToSmall               // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure DoubleToInt32LSB16_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToSmall
+  FLD   CFloatToSmall
 @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  loop  @Start
-  ffree st(0)
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  LOOP  @Start
+  FFREE ST(0)
 end;
 
 procedure DoubleToInt32LSB16_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                 // move to register for speed
- fld    CFloatToSmall               // move to register for speed
- @Start:                        // Samplecount already in ecx!
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                 // move to register for speed
+ FLD    CFloatToSmall               // move to register for speed
+ @Start:                        // Samplecount already in ECX!
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx+4*ecx-4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX+4*ECX-4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure DoubleToInt32LSB16_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                 // move to register for speed
- fld    CFloatToSmall               // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                 // move to register for speed
+ FLD    CFloatToSmall               // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure SingleToInt32LSB18_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt18
+  FLD   CFloatToInt18
  @Start:
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].DWord
-  loop  @Start
-  ffree st(0)
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX + 4 * ECX - 4].DWord
+  LOOP  @Start
+  FFREE ST(0)
 end;
 
 procedure SingleToInt32LSB18_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler : Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                 // move to register for speed
- fld    CFloatToInt18                  // move to register for speed
- @Start:                        // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                 // move to register for speed
+ FLD    CFloatToInt18                  // move to register for speed
+ @Start:                        // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure SingleToInt32LSB18_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler : Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                // move to register for speed
- fld    CFloatToInt18                 // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToInt18                 // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure DoubleToInt32LSB18_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt18
+  FLD   CFloatToInt18
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  loop @Start
-  ffree st(0)
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  LOOP @Start
+  FFREE ST(0)
 end;
 
 procedure DoubleToInt32LSB18_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToInt18                  // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToInt18                  // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure DoubleToInt32LSB18_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                 // move to register for speed
- fld    CFloatToInt18                  // move to register for speed
- @Start:                        // Samplecount already in ecx!
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                 // move to register for speed
+ FLD    CFloatToInt18                  // move to register for speed
+ @Start:                        // Samplecount already in ECX!
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                   // free after loop has finished
- ffree  st(1)                   // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                   // free after LOOP has finished
+ FFREE  ST(1)                   // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure SingleToInt32LSB20_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt20
+  FLD   CFloatToInt20
  @Start:
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].DWord
-  loop  @Start
-  ffree st(0)
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX + 4 * ECX - 4].DWord
+  LOOP  @Start
+  FFREE ST(0)
 end;
 
 procedure SingleToInt32LSB20_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                // move to register for speed
- fld    CFloatToInt20                  // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToInt20                  // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure SingleToInt32LSB20_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                // move to register for speed
- fld    CFloatToInt20                 // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToInt20                 // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp [edx + 4 * ecx - 4].DWord
- loop   @start
- ffree  st(0)                // free after loop has finished
- ffree  st(1)                // free after loop has finished
- pop    ebx
+  fistp [EDX + 4 * ECX - 4].DWord
+ LOOP   @start
+ FFREE  ST(0)                // free after LOOP has finished
+ FFREE  ST(1)                // free after LOOP has finished
+ POP    EBX
 end;
 
 procedure DoubleToInt32LSB20_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt20
+  FLD   CFloatToInt20
  @Start:
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].DWord
-  loop  @Start
-  ffree st(0)
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX + 4 * ECX - 4].DWord
+  LOOP  @Start
+  FFREE ST(0)
 end;
 
 procedure DoubleToInt32LSB20_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push   ebx
- fld    CScaler                // move to register for speed
- fld    CFloatToInt20                 // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
+ PUSH   EBX
+ FLD    CScaler                // move to register for speed
+ FLD    CFloatToInt20                 // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp   [edx + 4 * ecx - 4].DWord
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
- pop ebx
+  fistp   [EDX + 4 * ECX - 4].DWord
+ LOOP     @start
+ FFREE    ST(0)                // free after LOOP has finished
+ FFREE    ST(1)                // free after LOOP has finished
+ POP EBX
 end;
 
 procedure DoubleToInt32LSB20_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToInt20                  // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld      [eax+8*ecx-8].Double
-  fmul     st(0), st(1)
+ PUSH EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToInt20                  // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD      [EAX + 8 * ECX - 8].Double
+  FMUL     ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL ST(0), ST(3)
+  FADDP
 
-  fistp   [edx+4*ecx-4].DWord
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
- pop ebx
+  fistp   [EDX+4*ECX-4].DWord
+ LOOP     @start
+ FFREE    ST(0)                // free after LOOP has finished
+ FFREE    ST(1)                // free after LOOP has finished
+ POP EBX
 end;
 
 procedure SingleToInt32LSB24_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt24
+  FLD   CFloatToInt24
  @Start:
-  fld   [eax+4*ecx-4].Single
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  loop @Start
-  ffree st(0)
+  FLD   [EAX+4*ECX-4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  LOOP @Start
+  FFREE ST(0)
 end;
 
 procedure SingleToInt32LSB24_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToInt24                  // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld      [eax+4*ecx-4].Single
-  fmul     st(0), st(1)
+ PUSH EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToInt24                  // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD      [EAX+4*ECX-4].Single
+  FMUL     ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov RandSeed, ebx
-  fild  RandSeed
-  fmul st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV RandSeed, EBX
+  FILD  RandSeed
+  FMUL ST(0), ST(3)
+  FADDP
 
-  fistp   [edx+4*ecx-4].DWord
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
- pop ebx
+  fistp   [EDX+4*ECX-4].DWord
+ LOOP     @start
+ FFREE    ST(0)                // free after LOOP has finished
+ FFREE    ST(1)                // free after LOOP has finished
+ POP EBX
 end;
 
 procedure SingleToInt32LSB24_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToInt24                  // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld      [eax+4*ecx-4].Single
-  fmul     st(0), st(1)
+ PUSH EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToInt24                  // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD      [EAX+4*ECX-4].Single
+  FMUL     ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL ST(0), ST(3)
+  FADDP
 
-  fistp   [edx+4*ecx-4].DWord
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
- pop ebx
+  fistp   [EDX+4*ECX-4].DWord
+ LOOP     @start
+ FFREE    ST(0)                // free after LOOP has finished
+ FFREE    ST(1)                // free after LOOP has finished
+ POP EBX
 end;
 
 procedure DoubleToInt32LSB24_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CFloatToInt24
+  FLD   CFloatToInt24
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  loop @Start
-  ffree st(0)
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  LOOP @Start
+  FFREE ST(0)
 end;
 
 procedure DoubleToInt32LSB24_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
- push ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToInt24                  // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld      [eax+8*ecx-8].Double
-  fmul     st(0), st(1)
+ PUSH EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToInt24                  // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD      [EAX + 8 * ECX - 8].Double
+  FMUL     ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov RandSeed, ebx
-  fild  RandSeed
-  fmul st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV RandSeed, EBX
+  FILD  RandSeed
+  FMUL ST(0), ST(3)
+  FADDP
 
-  fistp   [edx+4*ecx-4].DWord
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
- pop ebx
+  fistp   [EDX+4*ECX-4].DWord
+ LOOP     @start
+ FFREE    ST(0)                // free after LOOP has finished
+ FFREE    ST(1)                // free after LOOP has finished
+ POP EBX
 end;
 
 procedure DoubleToInt32LSB24_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
- push ebx
- fld    Scaler                 // move to register for speed
- fld    CFloatToInt24                  // move to register for speed
- @Start:                       // Samplecount already in ecx!
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
+ PUSH EBX
+ FLD    Scaler                 // move to register for speed
+ FLD    CFloatToInt24                  // move to register for speed
+ @Start:                       // Samplecount already in ECX!
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
 
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  imul  ebx, RandSeed, $08088405
-  inc   ebx
-  mov   RandSeed, ebx
-  fild  RandSeed
-  faddp
-  fmul  st(0), st(3)
-  faddp
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  IMUL  EBX, RandSeed, $08088405
+  INC   EBX
+  MOV   RandSeed, EBX
+  FILD  RandSeed
+  FADDP
+  FMUL  ST(0), ST(3)
+  FADDP
 
-  fistp   [edx+4*ecx-4].DWord
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
- pop ebx
+  fistp   [EDX+4*ECX-4].DWord
+ LOOP     @start
+ FFREE    ST(0)                // free after LOOP has finished
+ FFREE    ST(1)                // free after LOOP has finished
+ POP EBX
 end;
 
 procedure SingleToInt16MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-   push ebx
-   fld      CFloatToSmall
+   PUSH EBX
+   FLD      CFloatToSmall
  @Start:
-   fld      [eax+4*ecx-4].Single
-   fmul     st(0), st(1)
-   fistp    word ptr [edx+2*ecx-2]
-   mov      bx, [edx+2*ecx-2]
+   FLD      [EAX+4*ECX-4].Single
+   FMUL     ST(0), ST(1)
+   fistp    Word ptr [EDX+2*ECX-2]
+   MOV      bx, [EDX+2*ECX-2]
    rol      bx, $8
-   mov      [edx+2*ecx-2], bx
-   loop @Start
-   ffree    st(0)
-   pop ebx
+   MOV      [EDX+2*ECX-2], bx
+   LOOP @Start
+   FFREE    ST(0)
+   POP EBX
 end;
 
 procedure DoubleToInt16MSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-   push ebx
-   fld      CFloatToSmall
+   PUSH EBX
+   FLD      CFloatToSmall
  @Start:
-   fld      [eax+8*ecx-8].Double
-   fmul     st(0), st(1)
-   fistp    word ptr [edx+2*ecx-2]
-   mov      bx, [edx+2*ecx-2]
+   FLD      [EAX + 8 * ECX - 8].Double
+   FMUL     ST(0), ST(1)
+   fistp    Word ptr [EDX+2*ECX-2]
+   MOV      bx, [EDX+2*ECX-2]
    rol      bx, $8
-   mov      [edx+2*ecx-2], bx
-   loop @Start
-   ffree    st(0)
-   pop ebx
+   MOV      [EDX+2*ECX-2], bx
+   LOOP @Start
+   FFREE    ST(0)
+   POP EBX
 end;
 
 procedure SingleToInt24MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
@@ -2644,34 +2647,34 @@ end;
 
 procedure SingleToInt32MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToInt         //for speed
+  PUSH EBX
+  FLD   CFloatToInt         //for speed
  @Start:
-  fld   [eax+4*ecx-4].Single
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord;
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  ffree st(0)
-  pop ebx
+  FLD   [EAX+4*ECX-4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord;
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FFREE ST(0)
+  POP EBX
 end;
 
 procedure DoubleToInt32MSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToInt         //for speed
+  PUSH EBX
+  FLD   CFloatToInt         //for speed
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  ffree st(0)
-  pop ebx
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FFREE ST(0)
+  POP EBX
 end;
 
 procedure SingleToSingleMSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
@@ -2688,15 +2691,15 @@ begin
 end;
 {$ELSE}
 asm
- push ebx
+ PUSH EBX
  @Start:
-  fld   [Source+8*SampleCount-8].Double
-  fstp  [Target+4*SampleCount-4].Single
-  mov ebx, [Target+4*SampleCount-4]
-  bswap ebx
-  mov [Target+4*SampleCount-4], ebx
-  loop @Start
- pop ebx
+  FLD   [Source+8*SampleCount-8].Double
+  FSTP  [Target+4*SampleCount-4].Single
+  MOV EBX, [Target+4*SampleCount-4]
+  bswap EBX
+  MOV [Target+4*SampleCount-4], EBX
+  LOOP @Start
+ POP EBX
 end;
 {$ENDIF}
 
@@ -2714,130 +2717,130 @@ end;
 
 procedure SingleToInt32MSB16_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToSmall
+  PUSH EBX
+  FLD   CFloatToSmall
  @Start:
-  fld   [eax+4*ecx-4].Single
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  fstp st(0)
-  pop ebx
+  FLD   [EAX+4*ECX-4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FSTP ST(0)
+  POP EBX
 end;
 
 procedure DoubleToInt32MSB16_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToSmall
+  PUSH EBX
+  FLD   CFloatToSmall
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  fstp st(0)
-  pop ebx
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FSTP ST(0)
+  POP EBX
 end;
 
 procedure SingleToInt32MSB18_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToInt18
+  PUSH EBX
+  FLD   CFloatToInt18
  @Start:
-  fld   [eax+4*ecx-4].Single
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  ffree st(0)
-  pop ebx
+  FLD   [EAX+4*ECX-4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FFREE ST(0)
+  POP EBX
 end;
 
 procedure DoubleToInt32MSB18_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToInt18
+  PUSH EBX
+  FLD   CFloatToInt18
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  ffree st(0)
-  pop ebx
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FFREE ST(0)
+  POP EBX
 end;
 
 procedure SingleToInt32MSB20_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToInt20
+  PUSH EBX
+  FLD   CFloatToInt20
  @Start:
-  fld   [eax+4*ecx-4].Single
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  ffree st(0)
-  pop ebx
+  FLD   [EAX+4*ECX-4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FFREE ST(0)
+  POP EBX
 end;
 
 procedure DoubleToInt32MSB20_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push ebx
-  fld   CFloatToInt20
+  PUSH EBX
+  FLD   CFloatToInt20
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0), st(1)
-  fistp [edx+4*ecx-4].DWord
-  mov ebx, [edx+4*ecx-4]
-  bswap ebx
-  mov [edx+4*ecx-4], ebx
-  loop @Start
-  ffree st(0)
-  pop ebx
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX+4*ECX-4].DWord
+  MOV EBX, [EDX+4*ECX-4]
+  bswap EBX
+  MOV [EDX+4*ECX-4], EBX
+  LOOP @Start
+  FFREE ST(0)
+  POP EBX
 end;
 
 procedure SingleToInt32MSB24_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push  ebx
-  fld   CFloatToInt24
+  PUSH  EBX
+  FLD   CFloatToInt24
  @Start:
-  fld   [eax + 4 * ecx - 4].Single
-  fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].DWord
-  mov   ebx, [edx + 4 * ecx - 4]
-  bswap ebx
-  mov   [edx + 4 * ecx - 4], ebx
-  loop  @Start
-  ffree st(0)
-  pop   ebx
+  FLD   [EAX + 4 * ECX - 4].Single
+  FMUL  ST(0), ST(1)
+  fistp [EDX + 4 * ECX - 4].DWord
+  MOV   EBX, [EDX + 4 * ECX - 4]
+  bswap EBX
+  MOV   [EDX + 4 * ECX - 4], EBX
+  LOOP  @Start
+  FFREE ST(0)
+  POP   EBX
 end;
 
 procedure DoubleToInt32MSB24_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  push  ebx
-  fld   CFloatToInt24
+  PUSH  EBX
+  FLD   CFloatToInt24
  @Start:
-  fld   [eax + 8 * ecx - 8].Double
-  fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].DWord
-  mov   ebx, [edx + 4 * ecx - 4]
-  bswap ebx
-  mov   [edx + 4 * ecx - 4], ebx
-  loop  @Start
-  ffree st(0)
-  pop   ebx
+  FLD   [EAX + 8 * ECX - 8].Double
+  FMUL  ST(0), ST(1)
+  fistp [EDX + 4 * ECX - 4].DWord
+  MOV   EBX, [EDX + 4 * ECX - 4]
+  bswap EBX
+  MOV   [EDX + 4 * ECX - 4], EBX
+  LOOP  @Start
+  FFREE ST(0)
+  POP   EBX
 end;
 
 function ClipCheckInt16LSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
@@ -2975,27 +2978,27 @@ begin
 end;
 {$ELSE}
 asm
- mov Result, 1                 // Annahme, es klippt!
- mov ecx, eax                  // ecx = eax
- xor eax, eax
+ MOV Result, 1                 // Annahme, es klippt!
+ MOV ECX, EAX                  // ECX = EAX
+ xor EAX, EAX
  fld1
  @FadeLoop:
-   fld  [ecx+4*edx-4].Single   // Value, CurrentFadeFak
-   fabs
-   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
+   FLD  [ECX+4*EDX-4].Single   // Value, CurrentFadeFak
+   FABS
+   FCOMI ST(0), ST(1)          // CurrentFadeFak <-> 1 ?
 {
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
+   FSTSW AX                    // AX = FPU Status Word
+   SAHF                        // AX -> EFLAGS register
 }
-   fstp st(0)                  // clear stack
+   FSTP ST(0)                  // clear stack
    ja @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
 
-   dec edx
- jnz @FadeLoop
- mov Result, 0                 // na gut, klippt doch nicht :-/
+   DEC EDX
+ JNZ @FadeLoop
+ MOV Result, 0                 // na gut, klippt doch nicht :-/
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
+ FSTP ST(0)                    // clear stack
 end;
 {$ENDIF}
 
@@ -3017,27 +3020,27 @@ begin
 end;
 {$ELSE}
 asm
- mov Result, 1                 // Annahme, es klippt!
- mov ecx, eax                  // ecx = eax
- xor eax, eax
+ MOV Result, 1                 // Annahme, es klippt!
+ MOV ECX, EAX                  // ECX = EAX
+ xor EAX, EAX
  fld1
  @FadeLoop:
-   fld  [ecx+8*edx-8].Double   // Value, CurrentFadeFak
-   fabs
-   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
+   FLD  [ECX+8*EDX-8].Double   // Value, CurrentFadeFak
+   FABS
+   FCOMI ST(0), ST(1)          // CurrentFadeFak <-> 1 ?
 {
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
+   FSTSW AX                    // AX = FPU Status Word
+   SAHF                        // AX -> EFLAGS register
 }
-   fstp st(0)                  // clear stack
+   FSTP ST(0)                  // clear stack
    ja @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
 
-   dec edx
- jnz @FadeLoop
- mov Result, 0                 // na gut, klippt doch nicht :-/
+   DEC EDX
+ JNZ @FadeLoop
+ MOV Result, 0                 // na gut, klippt doch nicht :-/
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
+ FSTP ST(0)                    // clear stack
 end;
 {$ENDIF}
 
@@ -3193,43 +3196,43 @@ end;
 procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
 asm
 @Start:
-  fld   [eax + 4 * ecx - 4].Single
-  fadd  [edx + 4 * ecx - 4].Single
-  fstp  [edx + 4 * ecx - 4].Single
-  loop @Start
+  FLD   [EAX + 4 * ECX - 4].Single
+  fadd  [EDX + 4 * ECX - 4].Single
+  FSTP  [EDX + 4 * ECX - 4].Single
+  LOOP @Start
 end;
 
 procedure MixBuffers_FPU(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
 asm
 @Start:
-  fld   [eax + 8 * ecx - 8].Double
-  fadd  [edx + 8 * ecx - 8].Double
-  fstp  [edx + 8 * ecx - 8].Double
-  loop @Start
+  FLD   [EAX + 8 * ECX - 8].Double
+  fadd  [EDX + 8 * ECX - 8].Double
+  FSTP  [EDX + 8 * ECX - 8].Double
+  LOOP @Start
 end;
 
 procedure Volume_FPU(Data:PSingle; Volume:Single; SampleCount:Integer); overload;
 asm
- mov ecx, SampleCount
- fld Volume.Single
+  MOV     ECX, SampleCount
+  FLD     Volume.Single
 @Start:
- fld [eax + 4 * ecx - 4].Single
- fmul st(0), st(1)
- fstp [eax + 4 * ecx - 4].Single
- loop @Start
- fstp st(0)
+  FLD     [EAX + 4 * ECX - 4].Single
+  FMUL    ST(0), ST(1)
+  FSTP    [EAX + 4 * ECX - 4].Single
+  LOOP    @Start
+  FSTP    ST(0)
 end;
 
 procedure Volume_FPU(Data:PDouble; Volume:Double; SampleCount:Integer); overload;
 asm
- mov ecx, SampleCount
- fld Volume.Double
+  MOV     ECX, SampleCount
+  FLD     Volume.Double
 @Start:
- fld [eax+8*ecx-8].Double
- fmul st(0), st(1)
- fstp [eax+8*ecx-8].Double
- loop @Start
- fstp st(0)
+  FLD     [EAX + 8 * ECX - 8].Double
+  FMUL    ST(0), ST(1)
+  FSTP    [EAX + 8 * ECX - 8].Double
+  LOOP    @Start
+  FSTP    ST(0)
 end;
 
 {$IFNDEF DELPHI5}
@@ -3244,17 +3247,17 @@ const
   mm1pos : array[0..3] of Single = (1, 1, 1, 1);
   mm1neg : array[0..3] of Single = (-1, -1, -1, -1);
 asm
- mov ecx, edx
- push ecx
- shr ecx, 4  // number of large iterations = number of elements / 16
- jz @SkipLargeAddLoop
- movups xmm0, mm1pos
- movups xmm1, mm1neg
+ MOV ECX, EDX
+ PUSH ECX
+ SHR ECX, 4  // number of large iterations = number of elements / 16
+ JZ @SkipLargeAddLoop
+ MOVUPS xmm0, mm1pos
+ MOVUPS xmm1, mm1neg
 @LargeAddLoop:
- movups xmm2, [eax   ]
- movups xmm3, [eax+$10]
- movups xmm4, [eax+$20]
- movups xmm5, [eax+$30]
+ MOVUPS xmm2, [EAX   ]
+ MOVUPS xmm3, [EAX+$10]
+ MOVUPS xmm4, [EAX+$20]
+ MOVUPS xmm5, [EAX+$30]
  minps xmm2, xmm0
  minps xmm3, xmm0
  minps xmm4, xmm0
@@ -3263,30 +3266,30 @@ asm
  maxps xmm3, xmm1
  maxps xmm4, xmm1
  maxps xmm5, xmm1
- movups [eax    ], xmm2
- movups [eax+$10], xmm3
- movups [eax+$20], xmm4
- movups [eax+$30], xmm5
- add eax, $40
- loop @LargeAddLoop
+ MOVUPS [EAX    ], xmm2
+ MOVUPS [EAX+$10], xmm3
+ MOVUPS [EAX+$20], xmm4
+ MOVUPS [EAX+$30], xmm5
+ ADD EAX, $40
+ LOOP @LargeAddLoop
 
 @SkipLargeAddLoop:
- pop ecx
- and ecx, $0000000F
- jz @EndAdd
+ POP ECX
+ AND ECX, $0000000F
+ JZ @EndAdd
 
 @SmallAddLoop:
- mov edx, [eax]
- and edx, $7FFFFFFF
- cmp edx, c1a
+ MOV EDX, [EAX]
+ AND EDX, $7FFFFFFF
+ cmp EDX, c1a
  jle @Weiter
- mov edx, [eax]
- and edx, $80000000
- add edx, c1a
- mov [eax], edx
+ MOV EDX, [EAX]
+ AND EDX, $80000000
+ ADD EDX, c1a
+ MOV [EAX], EDX
 @Weiter:
- add eax, 4
- loop @SmallAddLoop
+ ADD EAX, 4
+ LOOP @SmallAddLoop
 
 @EndAdd:
 end;
@@ -3301,178 +3304,178 @@ const
   mmc6   : array[0..3] of Single = (6, 6, 6, 6);
 // a := abs(x); b := 3+a; Result := (x*b)/(a*b+6);
 asm
- mov ecx, edx
- push ecx
- shr ecx, 2  // number of large iterations = number of elements / 16
- jz @SkipLargeAddLoop
- movups xmm0, mm1sgn
- movups xmm1, mmc3
- movups xmm2, mmc6
- movups xmm3, mmc2
+ MOV ECX, EDX
+ PUSH ECX
+ SHR ECX, 2  // number of large iterations = number of elements / 16
+ JZ @SkipLargeAddLoop
+ MOVUPS xmm0, mm1sgn
+ MOVUPS xmm1, mmc3
+ MOVUPS xmm2, mmc6
+ MOVUPS xmm3, mmc2
 @LargeAddLoop:
- movups xmm4, [eax]  // xmm3 = x
+ MOVUPS xmm4, [EAX]  // xmm3 = x
  movaps xmm5, xmm4   // xmm4 = x
  andps xmm5, xmm0    // xmm4 = |x|
  movaps xmm6, xmm5   // xmm5 = |x|
  addps xmm5, xmm1    // xmm4 = |x|+3
- mulps xmm4, xmm5    // xmm3 = x*(|x|+3)
- mulps xmm6, xmm5    // xmm5 = |x|*(|x|+3)
+ MULPS xmm4, xmm5    // xmm3 = x*(|x|+3)
+ MULPS xmm6, xmm5    // xmm5 = |x|*(|x|+3)
  addps xmm6, xmm2    // xmm5 = |x|*(|x|+3) + 6
  divps xmm4, xmm6    // xmm4 = x*(|x|+3)/(|x|*(|x|+3)+6)
- mulps xmm4, xmm3    // xmm4 = 2*(x*(|x|+3)/(|x|*(|x|+3)+6))
- movups [eax], xmm4
+ MULPS xmm4, xmm3    // xmm4 = 2*(x*(|x|+3)/(|x|*(|x|+3)+6))
+ MOVUPS [EAX], xmm4
 
- add eax, $10
- loop @LargeAddLoop
+ ADD EAX, $10
+ LOOP @LargeAddLoop
 
 @SkipLargeAddLoop:
- pop ecx
- and ecx, $00000003
- jz @EndAdd
+ POP ECX
+ AND ECX, $00000003
+ JZ @EndAdd
 
  fld1
  fld1
- faddp
+ FADDP
 
 @SmallAddLoop:
- fld [eax].Single
- fabs
- fld c3
- fadd st(0), st(1)
- fld st(0)
- fmul [eax].Single
- fxch st(2)
+ FLD [EAX].Single
+ FABS
+ FLD c3
+ fadd ST(0), ST(1)
+ FLD ST(0)
+ FMUL [EAX].Single
+ fxch ST(2)
  fmulp
  fadd c6.Single
  fdiv
- fmul st(0), st(1)
- fstp [eax].Single
- add eax, 4
- loop @SmallAddLoop
- ffree st(0)
+ FMUL ST(0), ST(1)
+ FSTP [EAX].Single
+ ADD EAX, 4
+ LOOP @SmallAddLoop
+ FFREE ST(0)
 @EndAdd:
 end;
 
 procedure SingleToSingle_SSE(Source: PSingle; Target: Pointer; SampleCount: LongInt);   // IEEE 754 32 bit float
 asm
- push ecx
- shr ecx, 5  // number of large iterations = number of elements / 16
- jz @SkipLargeAddLoop
+ PUSH ECX
+ SHR ECX, 5  // number of large iterations = number of elements / 16
+ JZ @SkipLargeAddLoop
 @LargeAddLoop:
- prefetcht0 [eax+$80]
- movups xmm0, [eax    ]
- movups xmm1, [eax+$10]
- movups xmm2, [eax+$20]
- movups xmm3, [eax+$30]
- movups xmm4, [eax+$40]
- movups xmm5, [eax+$50]
- movups xmm6, [eax+$60]
- movups xmm7, [eax+$70]
+ prefetcht0 [EAX+$80]
+ MOVUPS xmm0, [EAX    ]
+ MOVUPS xmm1, [EAX+$10]
+ MOVUPS xmm2, [EAX+$20]
+ MOVUPS xmm3, [EAX+$30]
+ MOVUPS xmm4, [EAX+$40]
+ MOVUPS xmm5, [EAX+$50]
+ MOVUPS xmm6, [EAX+$60]
+ MOVUPS xmm7, [EAX+$70]
 
  // TODO!!!
 
- movups [edx    ], xmm0
- movups [edx+$10], xmm1
- movups [edx+$20], xmm2
- movups [edx+$30], xmm3
- movups [edx+$40], xmm4
- movups [edx+$50], xmm5
- movups [edx+$60], xmm6
- movups [edx+$70], xmm7
+ MOVUPS [EDX    ], xmm0
+ MOVUPS [EDX+$10], xmm1
+ MOVUPS [EDX+$20], xmm2
+ MOVUPS [EDX+$30], xmm3
+ MOVUPS [EDX+$40], xmm4
+ MOVUPS [EDX+$50], xmm5
+ MOVUPS [EDX+$60], xmm6
+ MOVUPS [EDX+$70], xmm7
 
- add eax, $80
- add edx, $80
- loop @LargeAddLoop
+ ADD EAX, $80
+ ADD EDX, $80
+ LOOP @LargeAddLoop
 
 @SkipLargeAddLoop:
- pop ecx
- and ecx, $0000001F
- jz @EndAdd
+ POP ECX
+ AND ECX, $0000001F
+ JZ @EndAdd
 
- shr ecx, 2 // number of small iterations = (number of elements modulo 16) / 4
+ SHR ECX, 2 // number of small iterations = (number of elements modulo 16) / 4
 
 @SmallAddLoop:
- movups xmm0, [eax]
- movups [edx], xmm0
+ MOVUPS xmm0, [EAX]
+ MOVUPS [EDX], xmm0
 
- add eax, 16
- add edx, 16
- dec ecx
- jnz @SmallAddLoop
+ ADD EAX, 16
+ ADD EDX, 16
+ DEC ECX
+ JNZ @SmallAddLoop
 
 @EndAdd:
 end;
 
 procedure SingleToInt32LSB_SSE(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
- movups xmm7, CFloatToInt4
+ MOVUPS xmm7, CFloatToInt4
 
- push ecx
- shr ecx, 4  // number of large iterations = number of elements / 16
- jz @SkipLargeAddLoop
+ PUSH ECX
+ SHR ECX, 4  // number of large iterations = number of elements / 16
+ JZ @SkipLargeAddLoop
 @LargeAddLoop:
- movlps xmm0, [eax]
- prefetcht0 [eax+64]
- mulps xmm0, xmm7
- cvttps2pi mm0, xmm0
- movlps xmm1, [eax+8]
- mulps xmm1, xmm7
- cvttps2pi mm1, xmm1
+ movlps xmm0, [EAX]
+ prefetcht0 [EAX+64]
+ MULPS xmm0, xmm7
+ cvttps2pi MM0, xmm0
+ movlps xmm1, [EAX+8]
+ MULPS xmm1, xmm7
+ cvttps2pi MM1, xmm1
 
- movlps xmm2, [eax+16]
- mulps xmm2, xmm7
- cvttps2pi mm2, xmm2
- movlps xmm3, [eax+24]
- mulps xmm3, xmm7
- cvttps2pi mm3, xmm3
+ movlps xmm2, [EAX+16]
+ MULPS xmm2, xmm7
+ cvttps2pi MM2, xmm2
+ movlps xmm3, [EAX+24]
+ MULPS xmm3, xmm7
+ cvttps2pi MM3, xmm3
 
- movlps xmm4, [eax+32]
- mulps xmm4, xmm7
- cvttps2pi mm4, xmm4
- movlps xmm5, [eax+40]
- mulps xmm5, xmm7
+ movlps xmm4, [EAX+32]
+ MULPS xmm4, xmm7
+ cvttps2pi MM4, xmm4
+ movlps xmm5, [EAX+40]
+ MULPS xmm5, xmm7
  cvttps2pi mm5, xmm5
 
- movlps xmm6, [eax+48]
- mulps xmm6, xmm7
+ movlps xmm6, [EAX+48]
+ MULPS xmm6, xmm7
  cvttps2pi mm6, xmm6
- movlps xmm6, [eax+56]
- mulps xmm6, xmm7
+ movlps xmm6, [EAX+56]
+ MULPS xmm6, xmm7
  cvttps2pi mm7, xmm6
 
- movntq [edx], mm0
- movntq [edx+8], mm1
- movntq [edx+16], mm2
- movntq [edx+24], mm3
- movntq [edx+32], mm4
- movntq [edx+40], mm5
- movntq [edx+48], mm6
- movntq [edx+56], mm7
+ movntq [EDX], MM0
+ movntq [EDX+8], MM1
+ movntq [EDX+16], MM2
+ movntq [EDX+24], MM3
+ movntq [EDX+32], MM4
+ movntq [EDX+40], mm5
+ movntq [EDX+48], mm6
+ movntq [EDX+56], mm7
 
- add eax, 64
- add edx, 64
- dec ecx
- jnz @LargeAddLoop
+ ADD EAX, 64
+ ADD EDX, 64
+ DEC ECX
+ JNZ @LargeAddLoop
 
 @SkipLargeAddLoop:
- pop ecx
- and ecx, $0000000F
- jz @EndAdd
+ POP ECX
+ AND ECX, $0000000F
+ JZ @EndAdd
 
- shr ecx, 2 // number of small iterations = (number of elements modulo 16) / 4
+ SHR ECX, 2 // number of small iterations = (number of elements modulo 16) / 4
 
 @SmallAddLoop:
- movlps xmm0, [eax]
- mulps xmm0, xmm7
- cvttps2pi mm0, xmm0
- movlps xmm1, [eax+8]
- mulps xmm1, xmm7
- cvttps2pi mm1, xmm1
+ movlps xmm0, [EAX]
+ MULPS xmm0, xmm7
+ cvttps2pi MM0, xmm0
+ movlps xmm1, [EAX+8]
+ MULPS xmm1, xmm7
+ cvttps2pi MM1, xmm1
 
- add eax, 16
- add edx, 16
- dec ecx
- jnz @SmallAddLoop
+ ADD EAX, 16
+ ADD EDX, 16
+ DEC ECX
+ JNZ @SmallAddLoop
 
 @EndAdd:
  emms
@@ -3480,41 +3483,41 @@ end;
 
 procedure MixBuffers_SSE(Data:PSingle; MixBuffer:PSingle; SampleCount:Integer);
 asm
- push ecx
- shr ecx, 4  // number of large iterations = number of elements / 16
- jz @SkipLargeAddLoop
+ PUSH ECX
+ SHR ECX, 4  // number of large iterations = number of elements / 16
+ JZ @SkipLargeAddLoop
 @LargeAddLoop:
-  movups xmm0, [eax    ]
-  movups xmm1, [eax+$10]
-  movups xmm2, [eax+$20]
-  movups xmm3, [eax+$30]
-  movups xmm4, [edx    ]
-  movups xmm5, [edx+$10]
-  movups xmm6, [edx+$20]
-  movups xmm7, [edx+$30]
+  MOVUPS xmm0, [EAX    ]
+  MOVUPS xmm1, [EAX+$10]
+  MOVUPS xmm2, [EAX+$20]
+  MOVUPS xmm3, [EAX+$30]
+  MOVUPS xmm4, [EDX    ]
+  MOVUPS xmm5, [EDX+$10]
+  MOVUPS xmm6, [EDX+$20]
+  MOVUPS xmm7, [EDX+$30]
   addps xmm0, xmm4
   addps xmm1, xmm5
   addps xmm2, xmm6
   addps xmm3, xmm7
-  movups [edx    ], xmm0
-  movups [edx+$10], xmm1
-  movups [edx+$20], xmm2
-  movups [edx+$30], xmm3
-  add eax, 64
-  add edx, 64
-  dec ecx
-  jnz @LargeAddLoop
+  MOVUPS [EDX    ], xmm0
+  MOVUPS [EDX+$10], xmm1
+  MOVUPS [EDX+$20], xmm2
+  MOVUPS [EDX+$30], xmm3
+  ADD EAX, 64
+  ADD EDX, 64
+  DEC ECX
+  JNZ @LargeAddLoop
 
 @SkipLargeAddLoop:
-  pop ecx
-  and ecx, $0000000F
-  jz @EndAdd
+  POP ECX
+  AND ECX, $0000000F
+  JZ @EndAdd
 
 @AddLoop:
-  fld   [eax+4*ecx-4].Single
-  fadd  [edx+4*ecx-4].Single
-  fstp  [edx+4*ecx-4].Single
-  loop @AddLoop
+  FLD   [EAX+4*ECX-4].Single
+  fadd  [EDX+4*ECX-4].Single
+  FSTP  [EDX+4*ECX-4].Single
+  LOOP @AddLoop
 
 @EndAdd:
 end;
@@ -3522,60 +3525,60 @@ end;
 {$IFNDEF FPC}
 procedure Volume_SSE(Data:PSingle; Volume:Single; SampleCount:Integer);
 asm
-  mov   ecx, SampleCount
+  MOV   ECX, SampleCount
   movss xmm4, Volume.Single
   shufps xmm4, xmm4, 0h
 
-  push ecx
-  shr ecx, 4
-  jz @SkipHugeLoop
+  PUSH ECX
+  SHR ECX, 4
+  JZ @SkipHugeLoop
 @HugeLoop:
-  movups  xmm0, [eax]
-  mulps  xmm0, xmm4
-  movups  xmm1, [eax+16]
-  mulps  xmm1, xmm4
-  movups  xmm2, [eax+32]
-  mulps  xmm2, xmm4
-  movups  xmm3, [eax+48]
-  mulps  xmm3, xmm4
+  MOVUPS  xmm0, [EAX]
+  MULPS  xmm0, xmm4
+  MOVUPS  xmm1, [EAX+16]
+  MULPS  xmm1, xmm4
+  MOVUPS  xmm2, [EAX+32]
+  MULPS  xmm2, xmm4
+  MOVUPS  xmm3, [EAX+48]
+  MULPS  xmm3, xmm4
 
-  movups  [eax], xmm0
-  movups  [eax+16], xmm1
-  movups  [eax+32], xmm2
-  movups  [eax+48], xmm3
-  add   eax, 64
-  loop  @HugeLoop
+  MOVUPS  [EAX], xmm0
+  MOVUPS  [EAX+16], xmm1
+  MOVUPS  [EAX+32], xmm2
+  MOVUPS  [EAX+48], xmm3
+  ADD   EAX, 64
+  LOOP  @HugeLoop
 
 @SkipHugeLoop:
-  pop ecx
-  and ecx, $0000000F
-  jz @EndSmallLoop
+  POP ECX
+  AND ECX, $0000000F
+  JZ @EndSmallLoop
 
-  push ecx
-  shr ecx, 2
-  jz @SkipLargeLoop
+  PUSH ECX
+  SHR ECX, 2
+  JZ @SkipLargeLoop
 @LargeLoop:
-  movups  xmm0, [eax]
-  mulps  xmm0, xmm4
-  movups  [eax], xmm0
-  add   eax, 16
-  loop  @LargeLoop
+  MOVUPS  xmm0, [EAX]
+  MULPS  xmm0, xmm4
+  MOVUPS  [EAX], xmm0
+  ADD   EAX, 16
+  LOOP  @LargeLoop
 
 @SkipLargeLoop:
-  pop ecx
-  and ecx, $00000003
-  jz @EndSmallLoop
+  POP ECX
+  AND ECX, $00000003
+  JZ @EndSmallLoop
 
-  fld Volume.Single
+  FLD Volume.Single
 @SmallLoop:
-  fld [eax].Single
-  fmul st(0), st(1)
-  fstp [eax].Single
-  add eax, 4
-  loop  @SmallLoop
+  FLD [EAX].Single
+  FMUL ST(0), ST(1)
+  FSTP [EAX].Single
+  ADD EAX, 4
+  LOOP  @SmallLoop
 
 @EndSmallLoop:
-  ffree st(0)
+  FFREE ST(0)
 end;
 {$ENDIF}
 
@@ -3615,466 +3618,466 @@ procedure SingleToInt16LSB_3DNow(Source: PSingle; Target: Pointer; SampleCount: 
 var
   temp64 : array[0..1] of Integer;
 asm
-  femms                     // Fast MMX Enter/Leave
-  shr       ecx, 3          // Unroll the loop by 8
-  movq      mm4, mmDivSmall // use mm1 as 1/high(Integer) divider
-  prefetch  [eax]           // Holds the total mmx0..7 line in cache
+  FEMMS                     // Fast MMX Enter/Leave
+  SHR       ECX, 3          // Unroll the LOOP by 8
+  MOVQ      MM4, mmDivSmall // use MM1 as 1/high(Integer) divider
+  PREFETCH  [EAX]           // Holds the total mmx0..7 line in cache
                             // until modified and written
   @Loop2:
-  movq      mm0, [eax]      // Spl1 | Spl2
-  movq      mm1, [eax + 8]  // Spl3 | Spl4
-  movq      mm2, [eax +16]  // Spl5 | Spl7
-  movq      mm3, [eax +24]  // Spl7 | Spl8
-  pfmul     mm0, mm4        // Multiply by Low(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  pf2id     mm0, mm0        // convert to FP
-  pf2id     mm1, mm1
-  pf2id     mm2, mm2
-  pf2id     mm3, mm3
-  movq      [temp64], mm0
-//  mov       [edx], temp64;
-  movq      temp64, mm1
-  movq      temp64, mm2
-  movq      temp64, mm3
+  MOVQ      MM0, [EAX]      // Spl1 | Spl2
+  MOVQ      MM1, [EAX + 8]  // Spl3 | Spl4
+  MOVQ      MM2, [EAX +16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX +24]  // Spl7 | Spl8
+  PFMUL     MM0, MM4        // Multiply by Low(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  PF2ID     MM0, MM0        // convert to FP
+  PF2ID     MM1, MM1
+  PF2ID     MM2, MM2
+  PF2ID     MM3, MM3
+  MOVQ      [temp64], MM0
+//  MOV       [EDX], temp64;
+  MOVQ      temp64, MM1
+  MOVQ      temp64, MM2
+  MOVQ      temp64, MM3
 {
-  movq      [edx]   , mm0   // Store Sample back to RAM
-  movq      [edx+ 8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
+  MOVQ      [EDX]   , MM0   // Store Sample back to RAM
+  MOVQ      [EDX+ 8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
 }
-  add       eax, 32
-  add       edx, 32
-  prefetch  [eax]           // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                     // Fast MMX Enter/Leave
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCH  [EAX]           // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                     // Fast MMX Enter/Leave
 end;
 
 procedure SingleToInt32LSB_3DNow(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
-  femms                     // Fast MMX Enter/Leave
-  shr       ecx, 3          // Unroll the loop by 8
-  movq      mm4, mmDivInt   // use mm1 as 1/high(Integer) divider
-  prefetch [eax]            // Holds the total mmx0..7 line in cache
+  FEMMS                     // Fast MMX Enter/Leave
+  SHR       ECX, 3          // Unroll the LOOP by 8
+  MOVQ      MM4, mmDivInt   // use MM1 as 1/high(Integer) divider
+  PREFETCH [EAX]            // Holds the total mmx0..7 line in cache
                             // until modified and written
   @Loop2:
-  movq      mm0, [eax]      // Spl1 | Spl2
-  movq      mm1, [eax + 8]  // Spl3 | Spl4
-  movq      mm2, [eax +16]  // Spl5 | Spl7
-  movq      mm3, [eax +24]  // Spl7 | Spl8
-  pfmul     mm0, mm4        // Multiply by Low(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  pf2id     mm0, mm0        // convert to FP
-  pf2id     mm1, mm1
-  pf2id     mm2, mm2
-  pf2id     mm3, mm3
-  movq      [edx]   , mm0   // Store Sample back to RAM
-  movq      [edx+ 8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetch  [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]      // Spl1 | Spl2
+  MOVQ      MM1, [EAX + 8]  // Spl3 | Spl4
+  MOVQ      MM2, [EAX +16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX +24]  // Spl7 | Spl8
+  PFMUL     MM0, MM4        // Multiply by Low(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  PF2ID     MM0, MM0        // convert to FP
+  PF2ID     MM1, MM1
+  PF2ID     MM2, MM2
+  PF2ID     MM3, MM3
+  MOVQ      [EDX]   , MM0   // Store Sample back to RAM
+  MOVQ      [EDX+ 8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCH  [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure SingleToInt32LSB16_3DNow(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
-  femms                     // Fast MMX Enter/Leave
-  shr       ecx, 3          // Unroll the loop by 8
-  movq      mm4, mmDivInt16 // use mm1 as 1/high(Integer) divider
-  prefetch [eax]            // Holds the total mmx0..7 line in cache
+  FEMMS                     // Fast MMX Enter/Leave
+  SHR       ECX, 3          // Unroll the LOOP by 8
+  MOVQ      MM4, mmDivInt16 // use MM1 as 1/high(Integer) divider
+  PREFETCH [EAX]            // Holds the total mmx0..7 line in cache
                             // until modified and written
   @Loop2:
-  movq      mm0, [eax]      // Spl1 | Spl2
-  movq      mm1, [eax + 8]  // Spl3 | Spl4
-  movq      mm2, [eax +16]  // Spl5 | Spl7
-  movq      mm3, [eax +24]  // Spl7 | Spl8
-  pfmul     mm0, mm4        // Multiply by Low(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  pf2id     mm0, mm0        // convert to FP
-  pf2id     mm1, mm1
-  pf2id     mm2, mm2
-  pf2id     mm3, mm3
-  movq      [edx]   , mm0   // Store Sample back to RAM
-  movq      [edx+ 8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetch  [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]      // Spl1 | Spl2
+  MOVQ      MM1, [EAX + 8]  // Spl3 | Spl4
+  MOVQ      MM2, [EAX +16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX +24]  // Spl7 | Spl8
+  PFMUL     MM0, MM4        // Multiply by Low(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  PF2ID     MM0, MM0        // convert to FP
+  PF2ID     MM1, MM1
+  PF2ID     MM2, MM2
+  PF2ID     MM3, MM3
+  MOVQ      [EDX]   , MM0   // Store Sample back to RAM
+  MOVQ      [EDX+ 8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCH  [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure SingleToInt32LSB18_3DNow(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
-  femms                     // Fast MMX Enter/Leave
-  shr       ecx, 3          // Unroll the loop by 8
-  movq      mm4, mmDivInt18 // use mm1 as 1/high(Integer) divider
-  prefetch [eax]            // Holds the total mmx0..7 line in cache
+  FEMMS                     // Fast MMX Enter/Leave
+  SHR       ECX, 3          // Unroll the LOOP by 8
+  MOVQ      MM4, mmDivInt18 // use MM1 as 1/high(Integer) divider
+  PREFETCH [EAX]            // Holds the total mmx0..7 line in cache
                             // until modified and written
   @Loop2:
-  movq      mm0, [eax]      // Spl1 | Spl2
-  movq      mm1, [eax + 8]  // Spl3 | Spl4
-  movq      mm2, [eax +16]  // Spl5 | Spl7
-  movq      mm3, [eax +24]  // Spl7 | Spl8
-  pfmul     mm0, mm4        // Multiply by Low(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  pf2id     mm0, mm0        // convert to FP
-  pf2id     mm1, mm1
-  pf2id     mm2, mm2
-  pf2id     mm3, mm3
-  movq      [edx]   , mm0   // Store Sample back to RAM
-  movq      [edx+ 8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetch  [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]      // Spl1 | Spl2
+  MOVQ      MM1, [EAX + 8]  // Spl3 | Spl4
+  MOVQ      MM2, [EAX +16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX +24]  // Spl7 | Spl8
+  PFMUL     MM0, MM4        // Multiply by Low(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  PF2ID     MM0, MM0        // convert to FP
+  PF2ID     MM1, MM1
+  PF2ID     MM2, MM2
+  PF2ID     MM3, MM3
+  MOVQ      [EDX]   , MM0   // Store Sample back to RAM
+  MOVQ      [EDX+ 8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCH  [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure SingleToInt32LSB20_3DNow(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
-  femms                     // Fast MMX Enter/Leave
-  shr       ecx, 3          // Unroll the loop by 8
-  movq      mm4, mmDivInt20 // use mm1 as 1/high(Integer) divider
-  prefetch [eax]            // Holds the total mmx0..7 line in cache
+  FEMMS                     // Fast MMX Enter/Leave
+  SHR       ECX, 3          // Unroll the LOOP by 8
+  MOVQ      MM4, mmDivInt20 // use MM1 as 1/high(Integer) divider
+  PREFETCH [EAX]            // Holds the total mmx0..7 line in cache
                             // until modified and written
   @Loop2:
-  movq      mm0, [eax]      // Spl1 | Spl2
-  movq      mm1, [eax + 8]  // Spl3 | Spl4
-  movq      mm2, [eax +16]  // Spl5 | Spl7
-  movq      mm3, [eax +24]  // Spl7 | Spl8
-  pfmul     mm0, mm4        // Multiply by Low(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  pf2id     mm0, mm0        // convert to FP
-  pf2id     mm1, mm1
-  pf2id     mm2, mm2
-  pf2id     mm3, mm3
-  movq      [edx]   , mm0   // Store Sample back to RAM
-  movq      [edx+ 8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetch  [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]      // Spl1 | Spl2
+  MOVQ      MM1, [EAX + 8]  // Spl3 | Spl4
+  MOVQ      MM2, [EAX +16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX +24]  // Spl7 | Spl8
+  PFMUL     MM0, MM4        // Multiply by Low(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  PF2ID     MM0, MM0        // convert to FP
+  PF2ID     MM1, MM1
+  PF2ID     MM2, MM2
+  PF2ID     MM3, MM3
+  MOVQ      [EDX]   , MM0   // Store Sample back to RAM
+  MOVQ      [EDX+ 8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCH  [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure SingleToInt32LSB24_3DNow(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
-  femms                     // Fast MMX Enter/Leave
-  shr       ecx, 3          // Unroll the loop by 8
-  movq      mm4, mmDivInt24 // use mm1 as 1/high(Integer) divider
-  prefetch [eax]            // Holds the total mmx0..7 line in cache
+  FEMMS                     // Fast MMX Enter/Leave
+  SHR       ECX, 3          // Unroll the LOOP by 8
+  MOVQ      MM4, mmDivInt24 // use MM1 as 1/high(Integer) divider
+  PREFETCH [EAX]            // Holds the total mmx0..7 line in cache
                             // until modified and written
   @Loop2:
-  movq      mm0, [eax]      // Spl1 | Spl2
-  movq      mm1, [eax + 8]  // Spl3 | Spl4
-  movq      mm2, [eax +16]  // Spl5 | Spl7
-  movq      mm3, [eax +24]  // Spl7 | Spl8
-  pfmul     mm0, mm4        // Multiply by Low(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  pf2id     mm0, mm0        // convert to FP
-  pf2id     mm1, mm1
-  pf2id     mm2, mm2
-  pf2id     mm3, mm3
-  movq      [edx]   , mm0   // Store Sample back to RAM
-  movq      [edx+ 8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetch  [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]      // Spl1 | Spl2
+  MOVQ      MM1, [EAX + 8]  // Spl3 | Spl4
+  MOVQ      MM2, [EAX +16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX +24]  // Spl7 | Spl8
+  PFMUL     MM0, MM4        // Multiply by Low(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  PF2ID     MM0, MM0        // convert to FP
+  PF2ID     MM1, MM1
+  PF2ID     MM2, MM2
+  PF2ID     MM3, MM3
+  MOVQ      [EDX]   , MM0   // Store Sample back to RAM
+  MOVQ      [EDX+ 8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCH  [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure ToInt16LSB_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
-  femms                    // Fast MMX Enter/Leave
-  shr       ecx, 3         // unroll the loop by 8
-  movq      mm4, mmSmall   // use mm4 as 1/high(Integer) divider
-  prefetchw [eax]          // give the mmu a heads-up, 
+  FEMMS                    // Fast MMX Enter/Leave
+  SHR       ECX, 3         // unroll the LOOP by 8
+  MOVQ      MM4, mmSmall   // use MM4 as 1/high(Integer) divider
+  PREFETCHW [EAX]          // give the mmu a heads-up,
                            // load the total line of mmx0..7 data in the cache
                            // and prepare for modification. (If I understand AMD correctly)
   @Loop2:
-  movq      mm0, [eax]     // Spl1 | Spl2
-  movq      mm1, [eax+8]   // Spl3 | Spl4
-  movq      mm2, [eax+16]  // Spl5 | Spl7
-  movq      mm3, [eax+24]  // Spl7 | Spl8
-  pi2fd     mm0, mm0       // convert to FP
-  pi2fd     mm1, mm1
-  pi2fd     mm2, mm2
-  pi2fd     mm3, mm3
-  pfmul     mm0, mm4       // divide by high(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  movq      [edx], mm0     // Store Sample back to RAM
-  movq      [edx+8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]     // Spl1 | Spl2
+  MOVQ      MM1, [EAX+8]   // Spl3 | Spl4
+  MOVQ      MM2, [EAX+16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX+24]  // Spl7 | Spl8
+  PI2FD     MM0, MM0       // convert to FP
+  PI2FD     MM1, MM1
+  PI2FD     MM2, MM2
+  PI2FD     MM3, MM3
+  PFMUL     MM0, MM4       // divide by high(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  MOVQ      [EDX], MM0     // Store Sample back to RAM
+  MOVQ      [EDX+8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure Int32LSBToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
-  femms                    // Fast MMX Enter/Leave
-  shr       ecx, 3         // unroll the loop by 8
-  movq      mm4, mmInt     // use mm4 as 1/high(Integer) divider
-  prefetchw [eax]          // give the mmu a heads-up, 
+  FEMMS                    // Fast MMX Enter/Leave
+  SHR       ECX, 3         // unroll the LOOP by 8
+  MOVQ      MM4, mmInt     // use MM4 as 1/high(Integer) divider
+  PREFETCHW [EAX]          // give the mmu a heads-up,
                            // load the total line of mmx0..7 data in the cache
                            // and prepare for modification. (If I understand AMD correctly)
   @Loop2:
-  movq      mm0, [eax]     // Spl1 | Spl2
-  movq      mm1, [eax+8]   // Spl3 | Spl4
-  movq      mm2, [eax+16]  // Spl5 | Spl7
-  movq      mm3, [eax+24]  // Spl7 | Spl8
-  pi2fd     mm0, mm0       // convert to FP
-  pi2fd     mm1, mm1
-  pi2fd     mm2, mm2
-  pi2fd     mm3, mm3
-  pfmul     mm0, mm4       // divide by high(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  movq      [edx], mm0     // Store Sample back to RAM
-  movq      [edx+8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]     // Spl1 | Spl2
+  MOVQ      MM1, [EAX+8]   // Spl3 | Spl4
+  MOVQ      MM2, [EAX+16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX+24]  // Spl7 | Spl8
+  PI2FD     MM0, MM0       // convert to FP
+  PI2FD     MM1, MM1
+  PI2FD     MM2, MM2
+  PI2FD     MM3, MM3
+  PFMUL     MM0, MM4       // divide by high(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  MOVQ      [EDX], MM0     // Store Sample back to RAM
+  MOVQ      [EDX+8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure Int32LSB16ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
-  femms                    // Fast MMX Enter/Leave
-  shr       ecx, 3         // unroll the loop by 8
-  movq      mm4, mmInt16   // use mm4 as 1/high(Integer) divider
-  prefetchw [eax]          // give the mmu a heads-up, 
+  FEMMS                    // Fast MMX Enter/Leave
+  SHR       ECX, 3         // unroll the LOOP by 8
+  MOVQ      MM4, mmInt16   // use MM4 as 1/high(Integer) divider
+  PREFETCHW [EAX]          // give the mmu a heads-up,
                            // load the total line of mmx0..7 data in the cache
                            // and prepare for modification. (If I understand AMD correctly)
   @Loop2:
-  movq      mm0, [eax]     // Spl1 | Spl2
-  movq      mm1, [eax+8]   // Spl3 | Spl4
-  movq      mm2, [eax+16]  // Spl5 | Spl7
-  movq      mm3, [eax+24]  // Spl7 | Spl8
-  pi2fd     mm0, mm0       // convert to FP
-  pi2fd     mm1, mm1
-  pi2fd     mm2, mm2
-  pi2fd     mm3, mm3
-  pfmul     mm0, mm4       // divide by high(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  movq      [edx], mm0     // Store Sample back to RAM
-  movq      [edx+8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]     // Spl1 | Spl2
+  MOVQ      MM1, [EAX+8]   // Spl3 | Spl4
+  MOVQ      MM2, [EAX+16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX+24]  // Spl7 | Spl8
+  PI2FD     MM0, MM0       // convert to FP
+  PI2FD     MM1, MM1
+  PI2FD     MM2, MM2
+  PI2FD     MM3, MM3
+  PFMUL     MM0, MM4       // divide by high(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  MOVQ      [EDX], MM0     // Store Sample back to RAM
+  MOVQ      [EDX+8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure Int32LSB18ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
-  femms                    // Fast MMX Enter/Leave
-  shr       ecx, 3         // unroll the loop by 8
-  movq      mm4, mmInt18   // use mm4 as 1/high(Integer) divider
-  prefetchw [eax]          // give the mmu a heads-up, 
+  FEMMS                    // Fast MMX Enter/Leave
+  SHR       ECX, 3         // unroll the LOOP by 8
+  MOVQ      MM4, mmInt18   // use MM4 as 1/high(Integer) divider
+  PREFETCHW [EAX]          // give the mmu a heads-up,
                            // load the total line of mmx0..7 data in the cache
                            // and prepare for modification. (If I understand AMD correctly)
   @Loop2:
-  movq      mm0, [eax]     // Spl1 | Spl2
-  movq      mm1, [eax+8]   // Spl3 | Spl4
-  movq      mm2, [eax+16]  // Spl5 | Spl7
-  movq      mm3, [eax+24]  // Spl7 | Spl8
-  pi2fd     mm0, mm0       // convert to FP
-  pi2fd     mm1, mm1
-  pi2fd     mm2, mm2
-  pi2fd     mm3, mm3
-  pfmul     mm0, mm4       // divide by high(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  movq      [edx], mm0     // Store Sample back to RAM
-  movq      [edx+8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]     // Spl1 | Spl2
+  MOVQ      MM1, [EAX+8]   // Spl3 | Spl4
+  MOVQ      MM2, [EAX+16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX+24]  // Spl7 | Spl8
+  PI2FD     MM0, MM0       // convert to FP
+  PI2FD     MM1, MM1
+  PI2FD     MM2, MM2
+  PI2FD     MM3, MM3
+  PFMUL     MM0, MM4       // divide by high(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  MOVQ      [EDX], MM0     // Store Sample back to RAM
+  MOVQ      [EDX+8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure Int32LSB20ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
-  femms                    // Fast MMX Enter/Leave
-  shr       ecx, 3         // unroll the loop by 8
-  movq      mm4, mmInt20   // use mm4 as 1/high(Integer) divider
-  prefetchw [eax]          // give the mmu a heads-up, 
+  FEMMS                    // Fast MMX Enter/Leave
+  SHR       ECX, 3         // unroll the LOOP by 8
+  MOVQ      MM4, mmInt20   // use MM4 as 1/high(Integer) divider
+  PREFETCHW [EAX]          // give the mmu a heads-up,
                            // load the total line of mmx0..7 data in the cache
                            // and prepare for modification. (If I understand AMD correctly)
   @Loop2:
-  movq      mm0, [eax]     // Spl1 | Spl2
-  movq      mm1, [eax+8]   // Spl3 | Spl4
-  movq      mm2, [eax+16]  // Spl5 | Spl7
-  movq      mm3, [eax+24]  // Spl7 | Spl8
-  pi2fd     mm0, mm0       // convert to FP
-  pi2fd     mm1, mm1
-  pi2fd     mm2, mm2
-  pi2fd     mm3, mm3
-  pfmul     mm0, mm4       // divide by high(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  movq      [edx], mm0     // Store Sample back to RAM
-  movq      [edx+8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]     // Spl1 | Spl2
+  MOVQ      MM1, [EAX+8]   // Spl3 | Spl4
+  MOVQ      MM2, [EAX+16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX+24]  // Spl7 | Spl8
+  PI2FD     MM0, MM0       // convert to FP
+  PI2FD     MM1, MM1
+  PI2FD     MM2, MM2
+  PI2FD     MM3, MM3
+  PFMUL     MM0, MM4       // divide by high(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  MOVQ      [EDX], MM0     // Store Sample back to RAM
+  MOVQ      [EDX+8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure Int32LSB24ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
-  femms                    // Fast MMX Enter/Leave
-  shr       ecx, 3         // unroll the loop by 8
-  movq      mm4, mmInt24   // use mm4 as 1/high(Integer) divider
-  prefetchw [eax]          // give the mmu a heads-up, 
+  FEMMS                    // Fast MMX Enter/Leave
+  SHR       ECX, 3         // unroll the LOOP by 8
+  MOVQ      MM4, mmInt24   // use MM4 as 1/high(Integer) divider
+  PREFETCHW [EAX]          // give the mmu a heads-up,
                            // load the total line of mmx0..7 data in the cache
                            // and prepare for modification. (If I understand AMD correctly)
   @Loop2:
-  movq      mm0, [eax]     // Spl1 | Spl2
-  movq      mm1, [eax+8]   // Spl3 | Spl4
-  movq      mm2, [eax+16]  // Spl5 | Spl7
-  movq      mm3, [eax+24]  // Spl7 | Spl8
-  pi2fd     mm0, mm0       // convert to FP
-  pi2fd     mm1, mm1
-  pi2fd     mm2, mm2
-  pi2fd     mm3, mm3
-  pfmul     mm0, mm4       // divide by high(Integer)
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  movq      [edx], mm0     // Store Sample back to RAM
-  movq      [edx+8], mm1
-  movq      [edx+16], mm2
-  movq      [edx+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]          // Inform mmu about next Sample Position
-  loop      @Loop2
-  femms                    // Fast MMX Enter/Leave
+  MOVQ      MM0, [EAX]     // Spl1 | Spl2
+  MOVQ      MM1, [EAX+8]   // Spl3 | Spl4
+  MOVQ      MM2, [EAX+16]  // Spl5 | Spl7
+  MOVQ      MM3, [EAX+24]  // Spl7 | Spl8
+  PI2FD     MM0, MM0       // convert to FP
+  PI2FD     MM1, MM1
+  PI2FD     MM2, MM2
+  PI2FD     MM3, MM3
+  PFMUL     MM0, MM4       // divide by high(Integer)
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  MOVQ      [EDX], MM0     // Store Sample back to RAM
+  MOVQ      [EDX+8], MM1
+  MOVQ      [EDX+16], MM2
+  MOVQ      [EDX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]          // Inform mmu about next Sample Position
+  LOOP      @Loop2
+  FEMMS                    // Fast MMX Enter/Leave
 end;
 
 procedure MixBuffers_3DNow(Data:PSingle; MixBuffer:PSingle; SampleCount:Integer);
 asm
-  femms
-  shr       ecx, 3
-  prefetchw [eax]
+  FEMMS
+  SHR       ECX, 3
+  PREFETCHW [EAX]
 @Start:
-  movq      mm0, [eax]
-  movq      mm1, [eax+8]
-  movq      mm2, [eax+16]
-  movq      mm3, [eax+24]
-  movq      mm4, [edx]
-  movq      mm5, [edx+8]
-  movq      mm6, [edx+16]
-  movq      mm7, [edx+24]
-  pfadd     mm4, mm0
-  pfadd     mm5, mm1
-  pfadd     mm6, mm2
-  pfadd     mm7, mm3
-  movq      [edx], mm4
-  movq      [edx+8], mm5
-  movq      [edx+16], mm6
-  movq      [edx+24], mm7
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]          // Inform mmu about next Sample Position
-  loop  @Start
-  femms
+  MOVQ      MM0, [EAX]
+  MOVQ      MM1, [EAX+8]
+  MOVQ      MM2, [EAX+16]
+  MOVQ      MM3, [EAX+24]
+  MOVQ      MM4, [EDX]
+  MOVQ      mm5, [EDX+8]
+  MOVQ      mm6, [EDX+16]
+  MOVQ      mm7, [EDX+24]
+  pfadd     MM4, MM0
+  pfadd     mm5, MM1
+  pfadd     mm6, MM2
+  pfadd     mm7, MM3
+  MOVQ      [EDX], MM4
+  MOVQ      [EDX+8], mm5
+  MOVQ      [EDX+16], mm6
+  MOVQ      [EDX+24], mm7
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]          // Inform mmu about next Sample Position
+  LOOP  @Start
+  FEMMS
 end;
 
 procedure Volume_3DNow(Data: PSingle; Volume: Single; SampleCount: Integer);
 var volArray : array[0..1] of Single;
 asm
-  fld       Volume.Single
+  FLD       Volume.Single
   fst       [volArray].Single
   fst       [volArray+4].Single
-  mov       ecx, SampleCount
-  shr       ecx, 3
-  push      ecx
-  jz        @SkipLargeLoop
+  MOV       ECX, SampleCount
+  SHR       ECX, 3
+  PUSH      ECX
+  JZ        @SkipLargeLoop
 
-  femms
-  movq      mm4, volArray
+  FEMMS
+  MOVQ      MM4, volArray
 
-  prefetchw [eax]
+  PREFETCHW [EAX]
 @LargeLoop:
-  movq      mm0, [eax]
-  movq      mm1, [eax+8]
-  movq      mm2, [eax+16]
-  movq      mm3, [eax+24]
-  pfmul     mm0, mm4
-  pfmul     mm1, mm4
-  pfmul     mm2, mm4
-  pfmul     mm3, mm4
-  movq      [eax], mm0
-  movq      [eax+8], mm1
-  movq      [eax+16], mm2
-  movq      [eax+24], mm3
-  add       eax, 32
-  add       edx, 32
-  prefetchw [eax]
-  loop      @LargeLoop
-  femms
+  MOVQ      MM0, [EAX]
+  MOVQ      MM1, [EAX+8]
+  MOVQ      MM2, [EAX+16]
+  MOVQ      MM3, [EAX+24]
+  PFMUL     MM0, MM4
+  PFMUL     MM1, MM4
+  PFMUL     MM2, MM4
+  PFMUL     MM3, MM4
+  MOVQ      [EAX], MM0
+  MOVQ      [EAX+8], MM1
+  MOVQ      [EAX+16], MM2
+  MOVQ      [EAX+24], MM3
+  ADD       EAX, 32
+  ADD       EDX, 32
+  PREFETCHW [EAX]
+  LOOP      @LargeLoop
+  FEMMS
 @SkipLargeLoop:
-  pop ecx
-  and ecx, $00000007
-  jz @EndSmallLoop
+  POP ECX
+  and ECX, $00000007
+  JZ @EndSmallLoop
 
-  fld Volume.Single
+  FLD Volume.Single
 @SmallLoop:
-  fld [eax].Single
-  fmul st(0), st(1)
-  fstp [eax].Single
-  add eax, 4
-  loop  @SmallLoop
+  FLD [EAX].Single
+  FMUL ST(0), ST(1)
+  FSTP [EAX].Single
+  ADD EAX, 4
+  LOOP  @SmallLoop
 
 @EndSmallLoop:
-  ffree st(0)
+  FFREE ST(0)
 end;
 
 {$ENDIF}
