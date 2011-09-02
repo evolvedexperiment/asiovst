@@ -710,7 +710,9 @@
       {$ENDIF BCB}
       {$IFDEF CPUX64}
         {$DEFINE 64BIT}
-        {$DEFINE CPU64} 
+        {$DEFINE CPU64}
+        {$UNDEF CPU32}
+        {$DEFINE PUREPASCAL}
       {$ELSE}
         {$DEFINE 32BIT}
         {$DEFINE CPU32}
@@ -721,16 +723,25 @@
 
     {$IFDEF UNKNOWN_COMPILER_VERSION} // adjust for newer version (always use latest version)
       {$DEFINE BDS}
-      {$DEFINE BDS8}
-      {$DEFINE COMPILER15}
+      {$DEFINE BDS9}
+      {$DEFINE COMPILER16}
       {$IFDEF BCB}
-        {$DEFINE BCB15}
+        {$DEFINE BCB16}
       {$ELSE}
-        {$DEFINE DELPHI15}
+        {$DEFINE DELPHI16}
         {$DEFINE DELPHIXE} // synonym to DELPHI14
-        {$DEFINE DELPHICOMPILER15}
+        {$DEFINE DELPHIXE2}
+        {$DEFINE DELPHICOMPILER16}
       {$ENDIF BCB}
-      {$DEFINE RTL220_UP}
+      {$IFDEF CPUX64}
+        {$DEFINE 64BIT}
+        {$DEFINE CPU64}
+        {$DEFINE PUREPASCAL}
+      {$ELSE}
+        {$DEFINE 32BIT}
+        {$DEFINE CPU32}
+      {$ENDIF}
+      {$DEFINE RTL230_UP}
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF}
 
