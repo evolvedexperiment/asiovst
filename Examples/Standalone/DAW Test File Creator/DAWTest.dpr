@@ -3,6 +3,7 @@ program DAWTest;
 {$I DAV_Compiler.inc}
 {$APPTYPE CONSOLE}
 {$DEFINE PrintWeightsToFile}
+{$DEFINE DisplayPerformance}
 
 uses
   {$IFNDEF FPC} Windows, {$ENDIF} SysUtils, Math, Classes, DAV_Types,
@@ -32,7 +33,9 @@ type
 
   TWeightOptimizer = class
   private
-    FWeights : TWeightArray;
+    FWeights      : TWeightArray;
+    FTimeStamp    : TTime;
+    FCalculations : Integer;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -47,7 +50,7 @@ var
   TestBits         : Integer = 32;
   OptimizeSteps    : Integer = 0;
   GenericScale     : Single = 0.95;
-  FullScaleLevel   : Single = 0.97;
+  FullScaleLevel   : Single = 0.999;
   InputFileName    : TFileName;
   SineFrequency    : Single = 1000;
   MasterSampleRate : Single = 44100;
@@ -105,6 +108,8 @@ end;
 constructor TWeightOptimizer.Create;
 begin
   inherited;
+  FTimeStamp := Now;
+  FCalculations := 0;
   SetLength(FWeights, NumberOfFiles);
 end;
 
@@ -113,37 +118,86 @@ begin
   inherited;
 end;
 
+{-$DEFINE PUREPASCAL}
+function CalculateCurrentDifference(SineValue: Double; Weights: PWeight;
+  Count: Integer): Extended; register;
+{$IFDEF PUREPASCAL}
+var
+  Value   : array [0..1] of Single;
+  WeightX : PWeight;
+begin
+  Value[0] := 0;
+  Value[1] := 0;
+  WeightX := Weights;
+  Inc(WeightX, Count - 1);
+  repeat
+    Value[0] := Value[0] + SineValue * Weights^;
+    Value[1] := Value[1] + SineValue * WeightX^;
+    Inc(Weights);
+    Dec(WeightX);
+    Dec(Count);
+  until Count <= 0;
+  Result := Abs(Value[0] - Value[1]);
+{$ELSE}
+asm
+  PUSH    EDI
+  FLD     SineValue              // load sine value to ST(0)
+  XOR     ECX, ECX               // set ECX to zero
+  PUSH    ECX                    // reserve 4 bytes on stack
+  PUSH    ECX                    // reserve another 4 bytes on stack
+
+  MOV     ECX, EDX               // copy count to ECX
+  LEA     EAX, EAX + ECX * 8     // offset data[0] pointer in EAX
+  NEG     ECX                    // negate ECX
+  JNL     @Done
+
+  MOV     EDX, EAX               // copy data[0] pointer to EDX
+  SUB     EDX, 8                 // set data[1] pointer
+  MOV     EDI, ESP               // assign EDI to ESP
+@Start:
+  FLD     [EAX + ECX * 8].Double // load weight
+  FMUL    ST(0), ST(1)           // multiply with sine value
+  FADD    [EDI].Single           // add value[0] and weighted sine
+  FSTP    [EDI].Single           // store to
+
+  FLD     [EDX].Double           // load weight
+  FMUL    ST(0), ST(1)           // multiply with sine value
+  FADD    [EDI + 4].Single       // add value[1] and weighted sine
+  FSTP    [EDI + 4].Single       // store to
+
+  SUB     EDX, 8
+  ADD     ECX, 1
+  JS      @Start
+
+  FLD     [ESP].Single           // load value[0]
+  FSUB    [ESP + 4].Single       // add value[1]
+  FABS                           // absolute value
+
+@Done:
+  FSTP    ST(1)                  // free stack
+  ADD     ESP, 8                 // restore stack pointer
+  POP     EDI
+{$ENDIF}
+end;
+
 procedure CalculateDifferences(Weights: TWeightArray; out AverageDifference,
   MaximumDifference: Extended);
 var
-  FileIndex    : Integer;
-  FileIndexMax : Integer;
-  WeightRev    : PWeight;
   SampleIndex  : Integer;
-  Value        : array [0..1] of Single;
   Difference   : Extended;
   DiffSum      : Extended;
 begin
-  FileIndexMax := NumberOfFiles - 1;
   DiffSum := 0;
   MaximumDifference := 0;
+  if NumberOfFiles - 1 <= 0 then
+    Exit;
 
   with TCustomSimpleOscillator64.Create do
   try
     Frequency := SineFrequency;
-    for SampleIndex := 0 to (SampleCount div 4) - 1 do
+    for SampleIndex := 0 to SampleCount - 1 do
     begin
-      Value[0] := 0;
-      Value[1] := 0;
-      WeightRev := @Weights[FileIndexMax];
-      for FileIndex := 0 to FileIndexMax do
-      begin
-        Value[0] := Value[0] + Sine * Weights[FileIndex];
-        Value[1] := Value[1] + Sine * WeightRev^;
-        Dec(WeightRev);
-      end;
-
-      Difference := Abs(Value[0] - Value[1]);
+      Difference := CalculateCurrentDifference(Sine, @Weights[0], NumberOfFiles);
       DiffSum := DiffSum + Difference;
       if Difference > MaximumDifference then
         MaximumDifference := Difference;
@@ -197,7 +251,7 @@ begin
     if Population[FileIndex] > 1 then
       Population[FileIndex] := 1;
     if Population[FileIndex] < 0 then
-      Population[FileIndex] := random;
+      Population[FileIndex] := Random;
 
     FWeights[FileIndex + 1] := FWeights[FileIndex] * Population[FileIndex];
     WeightSum := WeightSum + FWeights[FileIndex];
@@ -214,6 +268,7 @@ begin
 
   CalculateDifferences(FWeights, AvgDiff, MaxDiff);
   Result := -(AvgDiff + 2 * MaxDiff) * SampleCount;
+  Inc(FCalculations);
 end;
 
 
@@ -323,7 +378,12 @@ begin
 
       if (Costs <> LastCosts) or ((TimeStamp[1] - TimeStamp[0]) > 1E-4) then
       begin
-        WriteLn('Trial #' + IntToStr(Trial) + ', Costs: ' + FloatToStr(-Costs));
+        WriteLn('Trial #' + IntToStr(Trial) + ', Costs: ' + FloatToStr(-Costs)
+        {$IFDEF DisplayPerformance}
+          + ' Performance: ' + FloatToStrF(WeigthOpt.FCalculations /
+            (86400 * (TimeStamp[1] - WeigthOpt.FTimeStamp)), ffGeneral, 4, 4)
+        {$ENDIF}
+        );
         if (OptimizeSteps = 0) and (Costs <> LastCosts) then
         begin
           CalculateWeightsFromPopulation(Weights, DiffEvol.GetBestPopulation);
@@ -597,8 +657,6 @@ begin
   // initialize SampleCount
   SampleCount := Round(Duration * MasterSampleRate);
 end;
-
-{$R *.res}
 
 begin
   try
