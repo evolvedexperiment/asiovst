@@ -49,7 +49,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParamCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamTransitionChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -179,7 +179,7 @@ begin
    do UpdateCoeffs;
 end;
 
-procedure TOversampledTanhModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TOversampledTanhModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
   Sample  : Integer;

@@ -44,7 +44,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterGuitarStringChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
@@ -146,7 +146,7 @@ begin
 end;
 
 procedure TBarberpoleTunerDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, c1 : Integer;
   Signal     : Single;

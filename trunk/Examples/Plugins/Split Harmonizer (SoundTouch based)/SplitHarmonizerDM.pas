@@ -49,10 +49,10 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessReplacing64LR(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessReplacing64MS(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessReplacing64LR(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessReplacing64MS(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterDelayAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDelayBChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -427,7 +427,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessLR(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
   Sample  : Integer;
@@ -461,7 +461,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64LR(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
   Sample  : Integer;
@@ -495,7 +495,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessMS(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
   Sample  : Integer;
@@ -530,7 +530,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64MS(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
   Sample  : Integer;

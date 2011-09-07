@@ -46,7 +46,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterSmoothChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFullscaleGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDownsamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -195,7 +195,7 @@ begin
 end;
 
 procedure TThirdOctaveAnalyserModule.VSTModuleProcessReplacing(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin

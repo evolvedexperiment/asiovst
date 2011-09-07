@@ -64,8 +64,8 @@ type
   TfReeverbVST = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure VSTModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const sampleframes: Integer);
+    procedure VSTModuleProcessReplacing(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const sampleframes: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWetChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -388,7 +388,7 @@ begin
  end;
 end;
 
-procedure TfReeverbVST.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+procedure TfReeverbVST.VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const sampleframes: Integer);
 var
   OutL, OutR, Inp    : Single;
   SampleIndex, Index : Integer;
@@ -421,7 +421,7 @@ begin
  end;
 end;
 
-procedure TfReeverbVST.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TfReeverbVST.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   OutL, OutR, Inp    : Single;
   SampleIndex, Index : Integer;

@@ -43,7 +43,7 @@ const
 type
   TThruZeroDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject;const SampleRate: Single);
@@ -135,7 +135,7 @@ begin
  if assigned(FBuffer[1]) then Dispose(FBuffer[1]);
 end;
 
-procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample                  : Integer;
   a, b, f, f1, f2, ph     : Single;

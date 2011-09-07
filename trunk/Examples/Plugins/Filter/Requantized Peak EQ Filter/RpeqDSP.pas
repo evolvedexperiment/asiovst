@@ -23,7 +23,7 @@ type
 
   TRpeqModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray;
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
       const SampleFrames: Integer);
     procedure ParameterBitDepthChange(Sender: TObject;
       const Index: Integer; var Value: Single);
@@ -133,7 +133,7 @@ begin
 end;
 
 procedure TRpeqModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

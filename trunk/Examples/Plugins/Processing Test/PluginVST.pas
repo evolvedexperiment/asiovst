@@ -42,8 +42,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParameterFreqDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFreqLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFreq32Change(Sender: TObject; const Index: Integer; var Value: Single);
@@ -117,7 +117,7 @@ begin
 end;
 
 procedure TProcessingTestModule.VSTModuleProcess32Replacing(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin
@@ -130,7 +130,7 @@ begin
 end;
 
 procedure TProcessingTestModule.VSTModuleProcess64Replacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin

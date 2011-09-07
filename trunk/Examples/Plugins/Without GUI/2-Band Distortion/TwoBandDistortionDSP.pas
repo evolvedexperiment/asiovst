@@ -45,8 +45,8 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamLowDistChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHighDistChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -200,7 +200,7 @@ begin
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
@@ -229,7 +229,7 @@ begin
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleProcessDoubleReplacing(
-  const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray;
   const SampleFrames: Integer);
 var
   SampleIndex  : Integer;

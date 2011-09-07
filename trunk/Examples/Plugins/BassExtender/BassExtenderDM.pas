@@ -43,14 +43,14 @@ type
   TBassExtenderModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessMS64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessLight32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessLight64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessLightMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessLightMS64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMS32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMS64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLight32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLight64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLightMS32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLightMS64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParamAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -435,7 +435,7 @@ begin
   then TFmBassExtender(EditorForm).UpdateSplitFrequency;
 end;
 
-procedure TBassExtenderModule.VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TBassExtenderModule.VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
@@ -457,7 +457,7 @@ begin
 end;
 
 procedure TBassExtenderModule.VSTModuleProcess64(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
@@ -478,7 +478,7 @@ begin
    end;
 end;
 
-procedure TBassExtenderModule.VSTModuleProcessMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TBassExtenderModule.VSTModuleProcessMS32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   L, H, M, S  : Double;
@@ -510,7 +510,7 @@ begin
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessMS64(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   L, H, M, S  : Double;
@@ -541,7 +541,7 @@ begin
   end;
 end;
 
-procedure TBassExtenderModule.VSTModuleProcessLight32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TBassExtenderModule.VSTModuleProcessLight32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
@@ -561,7 +561,7 @@ begin
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessLight64(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
@@ -580,7 +580,7 @@ begin
    end;
 end;
 
-procedure TBassExtenderModule.VSTModuleProcessLightMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TBassExtenderModule.VSTModuleProcessLightMS32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   L, H, M, S  : Double;
@@ -612,7 +612,7 @@ begin
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessLightMS64(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   L, H, M, S  : Double;

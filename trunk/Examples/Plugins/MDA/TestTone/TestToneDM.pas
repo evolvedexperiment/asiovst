@@ -41,7 +41,7 @@ type
   TTestToneDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
@@ -190,7 +190,7 @@ begin
 end;
 
 procedure TTestToneDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, st, m  : Integer;
   a, b, x, l, r  : Single;

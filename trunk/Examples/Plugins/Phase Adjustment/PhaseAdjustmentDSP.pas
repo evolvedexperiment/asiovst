@@ -47,7 +47,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterPhaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSuppressRingingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterSuppressRingingChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -277,7 +277,7 @@ begin
 end;
 
 procedure TPhaseAdjustmentModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
  FCriticalSection.Enter;
  try

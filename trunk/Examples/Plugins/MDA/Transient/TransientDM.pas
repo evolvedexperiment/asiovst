@@ -41,7 +41,7 @@ type
   TTransientDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChangeHold(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -135,7 +135,7 @@ begin
 end;
 
 procedure TTransientDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
 begin

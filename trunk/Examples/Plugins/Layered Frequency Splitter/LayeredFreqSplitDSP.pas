@@ -42,7 +42,7 @@ type
   TLayeredFreqSplitModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray;
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
       const SampleFrames: Integer);
     procedure ParameterLayersChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -131,7 +131,7 @@ begin
 end;
 
 procedure TLayeredFreqSplitModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;

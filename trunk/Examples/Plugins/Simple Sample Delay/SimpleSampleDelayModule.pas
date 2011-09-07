@@ -42,8 +42,8 @@ type
   TSimpleSampleDelayVST = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -214,7 +214,7 @@ begin
   then TFmSimpleSampleDelay(EditorForm).UpdateDryMix;
 end;
 
-procedure TSimpleSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TSimpleSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin
@@ -236,7 +236,7 @@ begin
 end;
 
 procedure TSimpleSampleDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin

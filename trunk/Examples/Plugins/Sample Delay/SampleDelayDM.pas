@@ -43,7 +43,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterSamplesLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSamplesRightChange(
       Sender: TObject; const Index: Integer; var Value: Single);
@@ -132,7 +132,7 @@ begin
 end;
 
 procedure TSampleDelayDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample  : Integer;
   Channel : Integer;

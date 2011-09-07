@@ -41,7 +41,7 @@ type
   TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);
 
   TSubSynthDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -150,7 +150,7 @@ begin
 end;
 
 procedure TSubSynthDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   fi, fo       : Single;
   f1, f2       : Single;

@@ -45,7 +45,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowFunctionChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -168,7 +168,7 @@ begin
 end;
 
 procedure TSpectralSelfFilterModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
 begin

@@ -45,7 +45,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterLowpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLowpassLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterLowpassChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -294,7 +294,7 @@ begin
 end;
 
 procedure TModDelay2Module.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin

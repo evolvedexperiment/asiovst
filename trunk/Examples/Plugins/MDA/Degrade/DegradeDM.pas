@@ -39,7 +39,7 @@ uses
 
 type
   TDegradeDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterNonLinearChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -149,7 +149,7 @@ begin
 end;
 
 procedure TDegradeDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample     : Integer;
   l, l2      : Single;

@@ -44,8 +44,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleProcessLowQuality(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessHighQuality(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLowQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessHighQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterQualityDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -262,7 +262,7 @@ begin
  FTune := Power(10, 0.60206 * FTune);
 end;
 
-procedure TRePsychoDataModule.VSTModuleProcessLowQuality(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TRePsychoDataModule.VSTModuleProcessLowQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
   Left   : Single;
@@ -326,7 +326,7 @@ begin
  FState[0]  := State;
 end;
 
-procedure TRePsychoDataModule.VSTModuleProcessHighQuality(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TRePsychoDataModule.VSTModuleProcessHighQuality(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
   Left, Right : Single;

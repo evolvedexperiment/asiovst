@@ -51,13 +51,13 @@ type
     procedure VSTModuleEditTop(Sender: TObject);
     procedure VSTModuleGetVU(var VU: Single);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleStartProcess(Sender: TObject);
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     function VSTModuleCanDo(Sender: TObject; const CanDoText: string): Integer;
@@ -239,17 +239,17 @@ begin
 end;
 
 procedure TWrapperDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 begin
  VstHost[0].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames);
 end;
 
-procedure TWrapperDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TWrapperDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
  VstHost[0].Process(@Inputs[0], @Outputs[0], SampleFrames);
 end;
 
-procedure TWrapperDataModule.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TWrapperDataModule.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
  VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames);
 end;

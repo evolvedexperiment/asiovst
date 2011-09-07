@@ -42,7 +42,7 @@ type
   TAudio2MidiTriggerModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMidiNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -151,7 +151,7 @@ begin
 end;
 
 procedure TAudio2MidiTriggerModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin

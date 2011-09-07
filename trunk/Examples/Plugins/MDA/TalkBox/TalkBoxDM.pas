@@ -46,7 +46,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterCarierSelectChange(
@@ -212,7 +212,7 @@ begin
  g := sqrt(e);
 end;
 
-procedure TTalkBoxDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TTalkBoxDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample        : Integer;
   p, q, dr, FX  : Single;

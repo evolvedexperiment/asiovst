@@ -41,8 +41,8 @@ type
   TImageMode = (imSMLR, imMSLR, imLRLR, imLRMS);
   TImageDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterSWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSPanChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -244,7 +244,7 @@ begin
 end;
 
 procedure TImageDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -256,7 +256,7 @@ begin
 end;
 
 procedure TImageDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin

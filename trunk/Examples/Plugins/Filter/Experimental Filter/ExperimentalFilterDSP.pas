@@ -18,7 +18,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(
       Sender: TObject; const Index: Integer; var Value: Single);
@@ -157,7 +157,7 @@ begin
 end;
 
 procedure TExperimentalFilterModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
