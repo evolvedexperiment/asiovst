@@ -42,8 +42,8 @@ type
   TPhaserModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure PMDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PMFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PMMinimumChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -173,7 +173,7 @@ begin
   then TPhaserForm(EditorForm).UpdateStages;
 end;
 
-procedure TPhaserModule.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TPhaserModule.VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -184,7 +184,7 @@ begin
   end;
 end;
 
-procedure TPhaserModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TPhaserModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample: Integer;
 begin

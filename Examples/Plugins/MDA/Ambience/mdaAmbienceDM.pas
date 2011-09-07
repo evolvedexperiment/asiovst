@@ -44,8 +44,8 @@ const
 type
   TmdaAmbienceDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParamSizeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHFDampChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -147,7 +147,7 @@ begin
 end;
 
 procedure TmdaAmbienceDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   r    : Double;
   t, f,
@@ -222,7 +222,7 @@ begin
 end;
 
 procedure TmdaAmbienceDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   r    : Double;
   t, f,

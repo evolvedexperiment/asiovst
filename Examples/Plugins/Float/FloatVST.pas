@@ -9,13 +9,13 @@ uses
 type
   TFloatModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess32_8(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32_16(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32_32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64_8(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64_16(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64_32(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64_64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32_8(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32_16(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32_32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64_8(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64_16(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64_32(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64_64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParameterFloatBitsDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFloatBitsChange(Sender: TObject; const Index: Integer; var Value: Single);
   end;
@@ -93,7 +93,7 @@ begin
 end;
 
 procedure TFloatModule.VSTModuleProcess32_8(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   Value       : TMiniFloat;
@@ -108,7 +108,7 @@ begin
 end;
 
 procedure TFloatModule.VSTModuleProcess64_8(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   Value       : TMiniFloat;
@@ -123,7 +123,7 @@ begin
 end;
 
 procedure TFloatModule.VSTModuleProcess32_16(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   Value       : THalfFloat;
@@ -138,7 +138,7 @@ begin
 end;
 
 procedure TFloatModule.VSTModuleProcess64_16(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin
@@ -152,14 +152,14 @@ begin
 end;
 
 procedure TFloatModule.VSTModuleProcess32_32(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TFloatModule.VSTModuleProcess64_32(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
   Value       : Single;
@@ -174,7 +174,7 @@ begin
 end;
 
 procedure TFloatModule.VSTModuleProcess64_64(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));

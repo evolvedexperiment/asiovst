@@ -42,7 +42,7 @@ type
   TDelayDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -147,7 +147,7 @@ begin
  //if(Parameter[2] > 0.99) { fbk=0.5; FWet=0.0; } //freeze
 end;
 
-procedure TDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
   i, l, r, s  : Integer;

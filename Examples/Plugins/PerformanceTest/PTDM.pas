@@ -42,8 +42,8 @@ type
   TPerformanceTestModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; SampleFrames: Integer);
   private
     function GetProcessorCycles: Double;
   public
@@ -205,14 +205,14 @@ begin
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcess(
-  const Inputs, Outputs: TDAVArrayOfSingleDynArray; SampleFrames: Integer);
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcessDoubleReplacing(
-  const Inputs, Outputs: TDAVArrayOfDoubleDynArray; SampleFrames: Integer);
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; SampleFrames: Integer);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Double));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));

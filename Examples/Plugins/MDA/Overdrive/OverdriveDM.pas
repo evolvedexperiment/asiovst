@@ -41,7 +41,7 @@ uses
 type
   TOverdriveDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMuffleChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -87,7 +87,7 @@ begin
 end;
 
 procedure TOverdriveDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
   State  : array [0..1] of Double;

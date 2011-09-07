@@ -43,7 +43,7 @@ type
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VST2ModuleOpen(Sender: TObject);
     procedure VST2ModuleClose(Sender: TObject);
-    procedure VST2ModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VST2ModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VST2ModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamAzimuthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -130,7 +130,7 @@ begin
 end;
 
 procedure TVSTHRTF3DModule.VST2ModuleProcess(
-  const Inputs, Outputs: TDAVArrayOfSingleDynArray;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
   const SampleFrames: Integer);
 var
   Channel : Integer;

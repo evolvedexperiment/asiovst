@@ -44,7 +44,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
     procedure ParameterMaximumIROrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLatencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -146,7 +146,7 @@ begin
 end;
 
 procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
  // lock processing
  while FSemaphore > 0 do;

@@ -77,7 +77,7 @@ type
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
   private
@@ -345,7 +345,7 @@ begin
 end;
 
 procedure TPianoDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   event, frame, frames, v : Integer;
   x, l, r : Single;

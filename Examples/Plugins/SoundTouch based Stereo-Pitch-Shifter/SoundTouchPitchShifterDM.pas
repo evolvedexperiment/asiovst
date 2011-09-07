@@ -43,7 +43,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterPitchFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleBlockSizeChange(Sender: TObject;
@@ -115,7 +115,7 @@ begin
 end;
 
 procedure TSoundTouchPitchShifterModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
  FDataCoder.BlockSize := 2 * SampleFrames * SizeOf(Single);
  Move(Inputs[0, 0], FDataCoder.ChannelPointer[0]^, SampleFrames * SizeOf(Single));

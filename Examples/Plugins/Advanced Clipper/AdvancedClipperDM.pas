@@ -45,8 +45,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParaOSFactor1Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOSFactor2Change(Sender: TObject; const Index: Integer; var Value: Single);
@@ -384,7 +384,7 @@ begin
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex   : Integer;
   SampleIndex    : Integer;
@@ -442,7 +442,7 @@ begin
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleProcessDoubleReplacing(
-  const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray;
   const SampleFrames: Integer);
 var
   ChannelIndex   : Integer;

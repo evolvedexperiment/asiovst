@@ -56,8 +56,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleBeforeProgramChange(Sender: TObject);
     procedure VSTModuleAfterProgramChange(Sender: TObject);
-    procedure VSTModuleProcessForward(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessBackward(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessForward(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBackward(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterDirectChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -786,7 +786,7 @@ begin
 end;
 
 procedure TReverseVerbDataModule.VSTModuleProcessBackward(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;
@@ -820,7 +820,7 @@ begin
 end;
 
 procedure TReverseVerbDataModule.VSTModuleProcessForward(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

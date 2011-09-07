@@ -46,7 +46,7 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FIR           : array [0..3, 0..1] of PDAVSingleFixedArray;
@@ -212,7 +212,7 @@ begin
 end;
 
 procedure TQuadropolisDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
   Bin     : Integer;

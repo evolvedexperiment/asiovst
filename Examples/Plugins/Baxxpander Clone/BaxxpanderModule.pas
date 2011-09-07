@@ -43,8 +43,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessSaturated(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessSaturated(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterDryWetChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -185,7 +185,7 @@ begin
 end;
 
 procedure TBaxxpanderModule.VSTModuleProcessNormal(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
   Low, High       : Single;
@@ -200,7 +200,7 @@ begin
 end;
 
 procedure TBaxxpanderModule.VSTModuleProcessSaturated(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
   Low, High       : Single;

@@ -41,7 +41,7 @@ uses
 type
   TDX10DataModule = class(TVSTModule)
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer;
       var vLabel, shortLabel: string;
@@ -220,7 +220,7 @@ begin
  FDeltaLFO := 628.3 * ifs * 25 * sqr(Parameter[15]); // these params not in original DX10
 end;
 
-procedure TDX10DataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDX10DataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   event, frame, frames, v : Integer;
   o, x, e, mw, w, m       : Single;

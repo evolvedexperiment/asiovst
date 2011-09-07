@@ -43,7 +43,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -105,7 +105,7 @@ begin
 end;
 
 procedure TRoundPanDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample     : Integer;
   a, ph, dph : Double;

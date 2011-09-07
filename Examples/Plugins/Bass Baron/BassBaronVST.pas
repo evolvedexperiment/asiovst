@@ -46,8 +46,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBassMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHfLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -455,7 +455,7 @@ begin
 end;
 
 procedure TBassBaronModule.VSTModuleProcess32(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex   : Integer;
   SampleIndex    : Integer;
@@ -473,7 +473,7 @@ begin
 end;
 
 procedure TBassBaronModule.VSTModuleProcess64(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

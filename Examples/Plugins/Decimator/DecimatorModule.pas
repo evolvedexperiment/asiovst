@@ -43,8 +43,8 @@ type
   TVSTDecimator = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure ParameterSampleRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBitsChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -248,7 +248,7 @@ end;
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTDecimator.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVSTDecimator.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex :Integer;
 begin
@@ -317,7 +317,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TVSTDecimator.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin

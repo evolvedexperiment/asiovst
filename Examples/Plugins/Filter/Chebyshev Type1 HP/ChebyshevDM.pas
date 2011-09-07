@@ -44,8 +44,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRippleChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -276,7 +276,7 @@ end;
 // process
 
 procedure TChebyshevHPModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample  : Integer;
   Channel : Integer;
@@ -287,7 +287,7 @@ begin
 end;
 
 procedure TChebyshevHPModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample  : Integer;
   Channel : Integer;

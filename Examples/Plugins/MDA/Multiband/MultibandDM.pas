@@ -40,7 +40,7 @@ uses
 type
   TMultibandDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -149,7 +149,7 @@ begin
 end;
 
 procedure TMultibandDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample              : Integer;
   a, b, c, d, m, h, s : Single;

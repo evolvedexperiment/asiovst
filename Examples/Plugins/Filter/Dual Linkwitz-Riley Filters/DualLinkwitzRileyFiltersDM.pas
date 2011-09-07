@@ -50,10 +50,10 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessLowpass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessHighpass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessBandpass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLowpass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessHighpass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBandpass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterLowpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLowpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -504,7 +504,7 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBypass(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
 begin
@@ -518,7 +518,7 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessLowpass(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
 begin
@@ -534,7 +534,7 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessHighpass(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
 begin
@@ -550,7 +550,7 @@ begin
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBandpass(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
 begin

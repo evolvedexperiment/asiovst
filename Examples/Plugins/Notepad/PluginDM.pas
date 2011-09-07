@@ -49,7 +49,7 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleAfterProgramChange(Sender: TObject);
     procedure VSTModuleProcess32Replacing(const Inputs,
-      Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
   private
     FChunk : TTextChunk;
     function GetText: AnsiString;
@@ -136,7 +136,7 @@ begin
 end;
 
 procedure TPluginDataModule.VSTModuleProcess32Replacing(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
   //
 end;

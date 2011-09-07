@@ -47,7 +47,7 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterPanChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -615,7 +615,7 @@ begin
 end;
 
 procedure TPartyDelayDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample   : Integer;
   Band     : Integer;

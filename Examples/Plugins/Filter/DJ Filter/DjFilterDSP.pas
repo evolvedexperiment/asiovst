@@ -47,7 +47,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParamLowChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMidChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHigh(Sender: TObject; const Index: Integer; var Value: Single);
@@ -177,7 +177,7 @@ begin
 end;
 
 procedure TDjFilterDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex, SampleIndex : Integer;
 begin

@@ -48,8 +48,8 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDouble(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDouble(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParamVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHarmDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamHarmLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -182,7 +182,7 @@ begin
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;
@@ -198,7 +198,7 @@ begin
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcessDouble(
-  const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray;
   const SampleFrames: Integer);
 var
   ChannelIndex : Integer;

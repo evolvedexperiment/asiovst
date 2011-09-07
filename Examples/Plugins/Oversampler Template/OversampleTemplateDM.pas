@@ -58,8 +58,8 @@ type
     procedure VSTModuleOfflineNotify(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 
-    procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64OversampleSingle(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64OversampleSingle(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 
     procedure VSTModuleProcessEvents(Sender: TObject; const Events: TVstEvents);
     procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
@@ -936,7 +936,7 @@ asm
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleProcess32OversampleSingle(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel, Sample : Integer;
 begin
@@ -1004,7 +1004,7 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleProcess64OversampleSingle(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Channel, Sample  : Integer;
 begin

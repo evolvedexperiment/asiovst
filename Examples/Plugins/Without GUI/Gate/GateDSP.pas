@@ -43,7 +43,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const sampleframes: Integer);
     procedure SGDMThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
@@ -109,7 +109,7 @@ begin
 end;
 
 procedure TGateDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;

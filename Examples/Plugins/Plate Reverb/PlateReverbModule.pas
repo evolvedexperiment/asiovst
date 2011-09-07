@@ -45,8 +45,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessReplacing(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterPreDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -275,7 +275,7 @@ begin
   then TFmPlateReverb(EditorForm).UpdateDecayDiffusion;
 end;
 
-procedure TPlateReverbVST.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TPlateReverbVST.VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   i: Integer;
 begin
@@ -294,7 +294,7 @@ begin
  end;
 end;
 
-procedure TPlateReverbVST.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TPlateReverbVST.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   i: Integer;
 begin

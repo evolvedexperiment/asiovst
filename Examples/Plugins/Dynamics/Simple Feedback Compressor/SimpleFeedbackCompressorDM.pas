@@ -44,7 +44,7 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure SLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -168,7 +168,7 @@ begin
 end;
 
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   i : Integer;
 begin

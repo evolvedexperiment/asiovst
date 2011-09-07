@@ -45,7 +45,7 @@ type
   TDetuneDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure DetuneDataModulePrograms1Initialize(Sender: TObject);
     procedure DetuneDataModulePrograms2Initialize(Sender: TObject);
@@ -175,7 +175,7 @@ begin
  Programs[2].Parameter[1] := 0.7;
 end;
 
-procedure TDetuneDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDetuneDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample, p0, p1i, p2i  : Integer;
   x, w, y, p1, p1f, d1  : Single;

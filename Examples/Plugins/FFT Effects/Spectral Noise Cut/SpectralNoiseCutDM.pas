@@ -42,7 +42,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection  : TCriticalSection;
@@ -109,7 +109,7 @@ begin
 end;
 
 procedure TSpectralNoiseCutModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Channel : Integer;
 begin

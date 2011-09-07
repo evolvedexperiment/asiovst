@@ -39,7 +39,7 @@ uses
 
 type
   TTrackerDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleOpen(Sender: TObject);
@@ -142,7 +142,7 @@ begin
 end;
 
 procedure TTrackerDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample                 : Integer;
   a, b, x, t, p, dp,

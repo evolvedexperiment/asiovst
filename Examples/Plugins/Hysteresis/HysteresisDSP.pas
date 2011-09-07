@@ -11,7 +11,7 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterInputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputChange(Sender: TObject;
       const Index: Integer; var Value: Single);
@@ -70,7 +70,7 @@ begin
 end;
 
 procedure THysteresisModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

@@ -50,7 +50,7 @@ type
     procedure ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParamPowerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPhaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPadChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -322,7 +322,7 @@ begin
 end;
 
 procedure TUniQuEDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   ChannelIndex, SampleIndex : Integer;
 begin

@@ -43,8 +43,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcessGateCompressorLimiter(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessGateCompressorLimiterSoftClip(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessGateCompressorLimiter(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessGateCompressorLimiterSoftClip(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterCompressorAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCompressorAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -448,7 +448,7 @@ begin
 end;
 
 procedure TLightweightDynamicsDataModule.VSTModuleProcessGateCompressorLimiter(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   AbsInp : array [0..1] of Single;
   Sample : Integer;
@@ -506,7 +506,7 @@ begin
 end;
 
 procedure TLightweightDynamicsDataModule.VSTModuleProcessGateCompressorLimiterSoftClip(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   AbsInp : array [0..1] of Single;
   Sample : Integer;

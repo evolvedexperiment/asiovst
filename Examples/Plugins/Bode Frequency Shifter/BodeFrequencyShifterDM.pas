@@ -44,9 +44,9 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -228,7 +228,7 @@ begin
 end;
 
 procedure TBodeFrequencyShifterDataModule.VSTModuleProcessMono(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample   : Integer;
   Up, Down : Single;
@@ -246,7 +246,7 @@ begin
 end;
 
 procedure TBodeFrequencyShifterDataModule.VSTModuleProcessStereo(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample   : Integer;
   Up, Down : Single;
@@ -267,7 +267,7 @@ begin
 end;
 
 procedure TBodeFrequencyShifterDataModule.VSTModuleProcessMultiChannel(
-  const Inputs, Outputs: TDAVArrayOfSingleDynArray;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
   const SampleFrames: Integer);
 var
   Channel  : Integer;

@@ -46,16 +46,16 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcessNetwork(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessJC(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessPC(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessBlendA(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessBlendB(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacingNetwork(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacingJC(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacingPC(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacingBlendA(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacingBlendB(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessNetwork(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessJC(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessPC(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBlendA(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBlendB(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingNetwork(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingJC(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingPC(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingBlendA(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingBlendB(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure ParamT60Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamAlgorithmChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -133,7 +133,7 @@ const
   CFixMix: array [0..1] of Single = (0.2, 0.8);
 
 procedure TStkReverbModule.VSTModuleProcessNetwork(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -152,7 +152,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessJC(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -171,7 +171,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessPC(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -190,7 +190,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessBlendA(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -210,7 +210,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessBlendB(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -230,7 +230,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessDoubleReplacingNetwork(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -249,7 +249,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessDoubleReplacingJC(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -268,7 +268,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessDoubleReplacingPC(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -287,7 +287,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessDoubleReplacingBlendA(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -307,7 +307,7 @@ begin
 end;
 
 procedure TStkReverbModule.VSTModuleProcessDoubleReplacingBlendB(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin

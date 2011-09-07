@@ -42,7 +42,7 @@ type
   TBeatBoxDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDynamicsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -219,7 +219,7 @@ begin
  FRecx   := FRec;
 end;
 
-procedure TBeatBoxDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TBeatBoxDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample           : Integer;
   a, b, e, o       : Single;

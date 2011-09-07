@@ -47,8 +47,8 @@ type
   TVTVSTModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -539,7 +539,7 @@ begin
   with TFmVT(EditorForm) do UpdateGain;
 end;
 
-procedure TVTVSTModule.VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVTVSTModule.VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex: Cardinal;
 begin
@@ -564,7 +564,7 @@ begin
  end;
 end;
 
-procedure TVTVSTModule.VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVTVSTModule.VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex: Cardinal;
 begin

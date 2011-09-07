@@ -8,7 +8,7 @@ uses
 
 type
   TGainedDifferenceModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray;
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
       const SampleFrames: Integer);
     procedure ParameterGainChange(
       Sender: TObject; const Index: Integer; var Value: Single);
@@ -42,7 +42,7 @@ begin
 end;
 
 procedure TGainedDifferenceModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   SampleIndex : Integer;
 begin

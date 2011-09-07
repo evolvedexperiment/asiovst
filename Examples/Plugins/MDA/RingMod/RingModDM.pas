@@ -42,7 +42,7 @@ type
   TRingModDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FPhi      : Single;
@@ -80,7 +80,7 @@ begin
 end;
 
 procedure TRingModDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
   g, fb  : Single;
