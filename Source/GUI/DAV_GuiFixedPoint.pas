@@ -34,6 +34,7 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+
 { A fixed-point type }
 
 type
@@ -320,9 +321,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EAX, A
-  IMUL    B
-  SHRD    EAX, EDX, 8
+  MOV     RAX, RCX
+  IMUL    RDX
+  SHRD    RAX, RDX, 8
   {$ELSE}
   IMUL    B
   SHRD    A, B, 8
@@ -339,9 +340,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EAX, A
-  IMUL    B
-  SHRD    EAX, EDX, 16
+  MOV     RAX, RCX
+  IMUL    RDX
+  SHRD    RAX, RDX, 16
   {$ELSE}
   IMUL    B
   SHRD    A, B, 16
@@ -358,9 +359,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EAX, A
-  IMUL    B
-  SHRD    EAX, EDX, 8
+  MOV     RAX, RCX
+  IMUL    RDX
+  SHRD    RAX, RDX, 8
   {$ELSE}
   IMUL    B
   SHRD    A, B, 8
@@ -377,9 +378,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EAX, A
-  IMUL    B
-  SHRD    EAX, EDX, 16
+  MOV     RAX, RCX
+  IMUL    RDX
+  SHRD    RAX, RDX, 16
   {$ELSE}
   IMUL    B
   SHRD    A, B, 16
@@ -396,9 +397,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EAX, A
-  IMUL    B
-  SHRD    EAX, EDX, 8
+  MOV     RAX, RCX
+  IMUL    RDX
+  SHRD    RAX, RDX, 8
   {$ELSE}
   IMUL    B
   SHRD    A, B, 8
@@ -415,12 +416,12 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EDX, B
+  MOV     RAX, RCX
+  MOV     RCX, RDX
   CDQ
-  SHLD    B, A, 16
-  SHL     A, 16
-  MOV     EAX, A
-  IDIV    EDX
+  SHLD    RDX, RAX, 16
+  SHL     RAX, 16
+  IDIV    RDX
   {$ELSE}
   MOV     ECX, B
   CDQ
@@ -440,12 +441,12 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EDX, B
+  MOV     RAX, RCX
+  MOV     RCX, RDX
   CDQ
-  SHLD    B, A, 8
-  SHL     A, 8
-  MOV     EAX, A
-  IDIV    EDX
+  SHLD    RDX, RAX, 8
+  SHL     RAX, 8
+  IDIV    RDX
   {$ELSE}
   MOV     ECX, B
   CDQ
@@ -465,12 +466,12 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EDX, B
+  MOV     RAX, RCX
+  MOV     RCX, RDX
   CDQ
-  SHLD    B, A, 16
-  SHL     A, 16
-  MOV     EAX, A
-  IDIV    EDX
+  SHLD    RDX, RAX, 16
+  SHL     RAX, 16
+  IDIV    RDX
   {$ELSE}
   MOV     ECX, B
   CDQ
@@ -490,12 +491,12 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     EDX, B
+  MOV     RAX, RCX
+  MOV     RCX, RDX
   CDQ
-  SHLD    B, A, 8
-  SHL     A, 8
-  MOV     EAX, A
-  IDIV    EDX
+  SHLD    RDX, RAX, 8
+  SHL     RAX, 8
+  IDIV    RDX
   {$ELSE}
   MOV     ECX, B
   CDQ
@@ -517,9 +518,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  XOR     EAX, EAX
-  MOV     EDX, 1
-  IDIV    ECX
+  XOR     RAX, RAX
+  MOV     RDX, 1
+  IDIV    RCX
   {$ELSE}
   MOV     ECX, Value
   XOR     EAX, EAX
@@ -540,10 +541,10 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  XOR     EAX, EAX
-  MOV     EDX, 1
-  IDIV    ECX
-  SHR     EAX, 16
+  XOR     RAX, RAX
+  MOV     RDX, 1
+  IDIV    RCX
+  SHR     RAX, 16
   {$ELSE}
   MOV     ECX, Value
   XOR     EAX, EAX
@@ -563,9 +564,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  IMUL    Value, Value
-  SHRD    Value, EDX, 16
-  MOV     Result, Value
+  IMUL    RCX, RCX
+  SHRD    RCX, RDX, 16
+  MOV     RAX, RCX
   {$ELSE}
   IMUL    Value
   SHRD    EAX, EDX, 16
@@ -582,9 +583,9 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  IMUL    Value, Value
-  SHRD    Value, EDX, 8
-  MOV     Result, Value
+  IMUL    RCX, RCX
+  SHRD    RCX, RDX, 8
+  MOV     RAX, RCX
   {$ELSE}
   IMUL    Value
   SHRD    EAX, EDX, 8
@@ -603,29 +604,27 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     ECX, Value
-  XOR     Value, Value
-  MOV     R10, $40000000
-@Step1:
+  XOR     EAX, EAX
+  MOV     R8D, $40000000
+
+  @Step1:
   MOV     EDX, ECX
-  SUB     EDX, R10
+  SUB     EDX, R8D
   JL      @Step2
-  SUB     EDX, Value
+  SUB     EDX, EAX
   JL      @Step2
   MOV     ECX, EDX
-  SHR     Value, 1
-  OR      Value, R10
-  SHR     R10, 2
+  SHR     EAX, 1
+  OR      EAX, R8D
+  SHR     R8D, 2
   JNZ     @Step1
   JMP     @Step3
 @Step2:
-  SHR     Value, 1
-  SHR     R10, 2
+  SHR     EAX, 1
+  SHR     R8D, 2
   JNZ     @Step1
 @Step3:
-  SHL     Value, 8
-  MOV     Result, Value
-
+  SHL     EAX, 8
   {$ELSE}
   PUSH    EBX
   MOV     ECX, Value
@@ -665,54 +664,51 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  MOV     ECX, Value
   XOR     EAX, EAX
-  MOV     R10, $40000000
+  MOV     R8D, $40000000
 
 @Step1:
   MOV     EDX, ECX
-  SUB     EDX, R10
+  SUB     EDX, R8D
   JB      @Step2
-  SUB     EDX, Value
+  SUB     EDX, EAX
   JB      @Step2
   MOV     ECX, EDX
-  SHR     Value, 1
-  OR      Value, R10
-  SHR     R10, 2
+  SHR     EAX, 1
+  OR      EAX, R8D
+  SHR     R8D, 2
   JNZ     @Step1
   JZ      @Step3
 
 @Step2:
-  SHR     Value, 1
-  SHR     R10, 2
+  SHR     EAX, 1
+  SHR     R8D, 2
   JNZ     @Step1
 
 @Step3:
-  MOV     R10, $00004000
-  SHL     Value, 16
+  MOV     R8D, $00004000
+  SHL     EAX, 16
   SHL     ECX, 16
 
 @Step4:
   MOV     EDX, ECX
-  SUB     EDX, R10
+  SUB     EDX, R8D
   jb      @Step5
-  SUB     EDX, Value
+  SUB     EDX, EAX
   jb      @Step5
   MOV     ECX, EDX
-  SHR     Value, 1
-  OR      Value, R10
-  SHR     R10, 2
+  SHR     EAX, 1
+  OR      EAX, R8D
+  SHR     R8D, 2
   JNZ     @Step4
   JMP     @Step6
 
 @Step5:
-  SHR     Value, 1
-  SHR     R10, 2
+  SHR     EAX, 1
+  SHR     R8D, 2
   JNZ     @Step4
 
 @Step6:
-  MOV     Result, Value
-
   {$ELSE}
   PUSH    EBX
   MOV     ECX, Value
@@ -778,47 +774,47 @@ begin
 asm
   {$IFDEF CPUx86_64}
   XOR     EAX, EAX
-  MOV     R10, $40000000
+  MOV     R8D, $40000000
 
 @Step1:
   MOV     EDX, ECX
-  SUB     EDX, R10
+  SUB     EDX, R8D
   JB      @Step2
   SUB     EDX, EAX
   JB      @Step2
   MOV     ECX, EDX
   SHR     EAX, 1
-  OR      EAX, R10
-  SHR     R10, 2
+  OR      EAX, R8D
+  SHR     R8D, 2
   JNZ     @Step1
   JZ      @Step3
 
 @Step2:
   SHR     EAX, 1
-  SHR     R10, 2
+  SHR     R8D, 2
   JNZ     @Step1
 
 @Step3:
-  MOV     R10, $00004000
+  MOV     R8D, $00004000
   SHL     EAX, 16
   SHL     ECX, 16
 
 @Step4:
   MOV     EDX, ECX
-  SUB     EDX, R10
+  SUB     EDX, R8D
   jb      @Step5
   SUB     EDX, EAX
-  jb      @Step5
+  JB      @Step5
   MOV     ECX, EDX
   SHR     EAX, 1
-  OR      EAX, R10
-  SHR     R10, 2
+  OR      EAX, R8D
+  SHR     R8D, 2
   JNZ     @Step4
   JMP     @Step6
 
 @Step5:
   SHR     EAX, 1
-  SHR     R10, 2
+  SHR     R8D, 2
   JNZ     @Step4
 
 @Step6:
@@ -856,7 +852,7 @@ asm
 @Step4:
   MOV     EDX, ECX
   SUB     EDX, EBX
-  jb      @Step5
+  JB      @Step5
   SUB     EDX, EAX
   jb      @Step5
   MOV     ECX, EDX

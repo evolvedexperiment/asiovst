@@ -41,6 +41,10 @@ interface
 {-$DEFINE AlternativeSSE2}
 {-$DEFINE PUREPASCAL}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   SysUtils, DAV_GuiCommon, DAV_Bindings;
 

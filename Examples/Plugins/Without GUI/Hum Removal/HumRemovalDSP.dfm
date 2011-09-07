@@ -143,10 +143,12 @@ object HumRemovalModule: THumRemovalModule
     item
       CurveFactor = 1.000000000000000000
       DisplayName = 'Capture Hum Profile'
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Profile'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -167,8 +169,6 @@ object HumRemovalModule: THumRemovalModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

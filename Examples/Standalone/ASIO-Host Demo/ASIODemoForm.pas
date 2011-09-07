@@ -170,6 +170,7 @@ end;
 
 procedure TFmASIO.BtControlPanelClick(Sender: TObject);
 begin
+ ASIOHost.Active := False;
  ASIOHost.ControlPanel;
 end;
 
@@ -191,15 +192,15 @@ end;
 
 procedure TFmASIO.BtStartStopClick(Sender: TObject);
 begin
- if BtStartStop.Caption = 'Start Audio' then
+ if BtStartStop.Caption = '&Start Audio' then
   begin
    ASIOHost.Active := True; // Start Audio
-   BtStartStop.Caption := 'Stop Audio';
+   BtStartStop.Caption := '&Stop Audio';
   end
  else
   begin
    ASIOHost.Active := False; // Stop Audio
-   BtStartStop.Caption := 'Start Audio';
+   BtStartStop.Caption := '&Start Audio';
   end;
 end;
 
@@ -300,7 +301,8 @@ end;
 
 procedure TFmASIO.ASIOHostReset(Sender: TObject);
 begin
- ASIOHost.Active := True;
+ if BtStartStop.Caption = '&Stop Audio'
+  then ASIOHost.Active := True;
 end;
 
 {$IFDEF FPC}

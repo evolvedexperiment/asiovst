@@ -1,9 +1,13 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library HumRemoval;
 
+{$I DAV_Compiler.inc}
+
 uses
+  {$IFDEF CPU32}
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
+  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   HumRemovalDSP in 'HumRemovalDSP.pas' {HumRemovalModule: TVSTModule};

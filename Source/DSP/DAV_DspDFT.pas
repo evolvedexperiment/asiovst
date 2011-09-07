@@ -33,7 +33,14 @@ unit DAV_DspDFT;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
+
+{$IFDEF FPC}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
 
 uses
   DAV_Types, DAV_Complex;

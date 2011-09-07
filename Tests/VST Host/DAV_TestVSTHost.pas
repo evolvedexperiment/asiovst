@@ -104,7 +104,9 @@ type
   published
     procedure TestMultipleOpenCloseCycles;
     {$IFNDEF FPC}
+    {$IFNDEF CPU64}
     procedure TestLoadVSTPluginFromResource;
+    {$ENDIF}
     {$ENDIF}
     procedure TestInactiveParameterSweeps;
     procedure TestInactiveSamplerateChanges;
@@ -634,7 +636,8 @@ end;
 
 procedure TVstPluginPerverseTests.TestInvalidOpcodes;
 var
-  i  : Integer;
+  i     : Integer;
+  VstID : Integer;
 begin
  with FVstHost[0] do
   for i := 0 to 1 do
@@ -667,10 +670,9 @@ begin
     VstDispatch(effBeginLoadBank);
     VstDispatch(effGetParameterProperties);
     VstDispatch(effOpen);
-    {$IFNDEF FPC}
-    CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
+
+    CheckEquals(CEffectIdentity, TChunkName(Integer(VstDispatch(effIdentify))),
       'effIdentify didn''t return NvEf');
-    {$ENDIF}
    except
     on E: Exception do Fail(E.Message);
    end;
@@ -1042,6 +1044,7 @@ begin
 end;
 
 {$IFNDEF FPC}
+{$IFNDEF CPU64}
 procedure TVstPluginPerverseTests.TestLoadVSTPluginFromResource;
 var
   FileName   : TFileName;
@@ -1063,6 +1066,7 @@ begin
    Fail('Error: Failed to load DLL file, probably in use');
   end;
 end;
+{$ENDIF}
 {$ENDIF}
 
 
@@ -1310,10 +1314,8 @@ begin
  with FVstHost[0] do
   begin
    // check identify is fEvN
-   {$IFNDEF FPC}
-   CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
+   CheckEquals(CEffectIdentity, TChunkName(Integer(VstDispatch(effIdentify))),
      'effIdentify didn''t return NvEf');
-   {$ENDIF}
 
    // get vst version
    VstDispatch(effGetVstVersion);
@@ -2103,10 +2105,8 @@ begin
 
  with FVstHost[0] do
   begin
-   {$IFNDEF FPC}
-   CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
+   CheckEquals(CEffectIdentity, TChunkName(Integer(VstDispatch(effIdentify))),
      'effIdentify didn''t return NvEf');
-   {$ENDIF}
 
    // set samplerate
    VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
@@ -2304,10 +2304,8 @@ begin
  with FVstHost[0] do
   begin
    VstDispatch(effGetPlugCategory);
-   {$IFNDEF FPC}
-   CheckEquals(CEffectIdentity, TChunkName(VstDispatch(effIdentify)),
+   CheckEquals(CEffectIdentity, TChunkName(Integer(VstDispatch(effIdentify))),
      'effIdentify didn''t return NvEf');
-   {$ENDIF}
    VstDispatch(effOpen);
    VstDispatch(effClose);
   end;

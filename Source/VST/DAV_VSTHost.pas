@@ -3559,7 +3559,7 @@ procedure TCustomVstPlugIn.LoadFromFile(const FileName: TFilename);
 var
   Buf : array [0..255] of AnsiChar;
   LE  : Integer;
-  str : string;
+  str : AnsiString;
 {$ENDIF}
 
 {$IFDEF jBridge}
@@ -3628,8 +3628,8 @@ begin
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nil, LE, 0, @Buf[0], SizeOf(Buf), nil);
       if Buf = '' then
        begin
-        str := IntToStr(LE) + string(StrPas(Buf));
-        raise Exception.Create(str);
+        str := IntToStr(LE) + AnsiString(StrPas(Buf));
+        raise Exception.Create(string(str));
        end else raise Exception.Create(string(StrPas(Buf)));
      end;
     {$ENDIF}

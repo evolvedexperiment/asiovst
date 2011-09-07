@@ -3,11 +3,13 @@ program CircledPictureDrawing;
 {$I DAV_Compiler.inc}
 
 uses
+(*
   FastMM4,
   FastMove,
   madExcept,
   madLinkDisAsm,
   madListModules,
+*)
   Forms,
   MainUnit in 'MainUnit.pas' {FmPrimitivePictureEvolution},
   SettingsUnit in 'SettingsUnit.pas' {FmSettings},

@@ -34,6 +34,10 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   Classes, Graphics, SysUtils, DAV_Classes, DAV_GuiCommon, DAV_GuiPngChunks,
   DAV_GuiPngTypes;

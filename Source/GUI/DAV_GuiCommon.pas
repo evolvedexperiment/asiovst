@@ -34,6 +34,10 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
   {$ELSE} Windows, Messages, {$ENDIF}
@@ -918,13 +922,17 @@ begin
   if Color < 0 then Color := GetSysColor(Color and $000000FF);
 
 {$IFDEF WIN_COLOR_FIX}
-  Result := $FF000000;
+  Result.ARGB := $FF000000;
   I := (Color and $00FF0000) shr 16;
-  if I <> 0 then Result := Result or TPixel32(Integer(I) - 1);
+  if I <> 0 then Result.ARGB := Result.ARGB or TPixel32(Integer(I) - 1).ARGB;
   I := Color and $0000FF00;
-  if I <> 0 then Result := Result or TPixel32(Integer(I) - $00000100);
+  if I <> 0 then Result.ARGB := Result.ARGB or TPixel32(Integer(I) - $00000100).ARGB;
   I := Color and $000000FF;
-  if I <> 0 then Result := Result or TPixel32(Integer(I) - 1) shl 16;
+  if I <> 0 then Result.ARGB := Result.ARGB or TPixel32(Integer(I) - 1).ARGB shl 16;
+{$ELSE}
+{$IFDEF PUREPASCAL}
+  Result.ARGB := $FF shl 24 + (Color and $FF0000) shr 16 + (Color and $FF00) +
+    (Color and $FF) shl 16;
 {$ELSE}
   asm
    MOV    EAX, Color
@@ -933,6 +941,7 @@ begin
    ROR    EAX, 8
    MOV    Result, EAX
   end;
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -943,7 +952,7 @@ begin
 end;
 
 function ConvertColor(Color: TPixel32): TColor;
-{$IFNDEF TARGET_x86}
+{$IFDEF PUREPASCAL}
 begin
  Result := ((Color.ARGB and $00FF0000) shr 16) or
             (Color.ARGB and $0000FF00) or

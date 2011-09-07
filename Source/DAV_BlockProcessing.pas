@@ -79,6 +79,10 @@ implementation
 uses
   Math;
 
+{$IFDEF CPUx86_64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
 procedure ComplexMultiplyBlock32(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
 {$IFDEF PUREPASCAL}
 var

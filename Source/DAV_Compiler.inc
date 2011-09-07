@@ -415,6 +415,11 @@
   XPLATFORM_RTL                  The RTL supports crossplatform function names (e.g. RaiseLastOSError) (D6+/BCB6+/FPC)
   SUPPORTS_UNICODE               string type is aliased to an unicode string (WideString or UnicodeString) (DX.NET, D12+)
   SUPPORTS_UNICODE_STRING        Compiler supports UnicodeString (D12+)
+  SUPPORTS_INT_ALIASES           Types Int8, Int16, Int32, UInt8, UInt16 and UInt32 are defined in the unit System (D12+)
+  HAS_UNIT_RTTI                  Unit RTTI is available (D14+)
+  SUPPORTS_CAST_INTERFACE_TO_OBJ The compiler supports casts from interfaces to objects (D14+)
+  SUPPORTS_DELAYED_LOADING       The compiler generates stubs for delaying imported function loads (D14+)
+  HAS_UNIT_SYSTEM_UITYPES        Unit System.UITypes is available (D16+)
 
 
 - Compiler Settings
@@ -711,8 +716,8 @@
       {$IFDEF CPUX64}
         {$DEFINE 64BIT}
         {$DEFINE CPU64}
+        {$DEFINE CPUx86_64}
         {$UNDEF CPU32}
-        {$DEFINE PUREPASCAL}
       {$ELSE}
         {$DEFINE 32BIT}
         {$DEFINE CPU32}
@@ -736,7 +741,6 @@
       {$IFDEF CPUX64}
         {$DEFINE 64BIT}
         {$DEFINE CPU64}
-        {$DEFINE PUREPASCAL}
       {$ELSE}
         {$DEFINE 32BIT}
         {$DEFINE CPU32}
@@ -1265,6 +1269,11 @@
   {$DEFINE SUPPORTS_UINT64}
 {$ENDIF RTL220_UP}
 
+{$IFDEF RTL230_UP}
+  {$DEFINE HAS_UNITSCOPE}
+  {$DEFINE HAS_UNIT_SYSTEM_UITYPES}
+{$ENDIF RTL230_UP}
+
 {------------------------------------------------------------------------------}
 { Cross-platform related defines                                               }
 {------------------------------------------------------------------------------}
@@ -1279,7 +1288,7 @@
 {$ENDIF}
 
 {$IFDEF CPUx86_64}
-  {$DEFINE PUREPASCAL}
+  {-$DEFINE PUREPASCAL}
   {$DEFINE LITTLE_ENDIAN}
 {$ENDIF}
 
@@ -1345,3 +1354,4 @@
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
 {$IFDEF DELPHI7_UP} {$ELSE} {$UNDEF UseNativeTypes} {$ENDIF}
+{$IFDEF CPU64} {$UNDEF Use_IPPS} {$ENDIF}

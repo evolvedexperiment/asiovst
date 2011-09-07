@@ -44,7 +44,8 @@ interface
 {-$DEFINE PUREPASCAL}
 
 uses
-  {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common, DAV_ProcessorInfo;
+  {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common, DAV_Types,
+  DAV_ProcessorInfo;
 
 type
   TProcessorType = (ptFPU, ptSSE, pt3DNow);
@@ -177,14 +178,10 @@ uses
 
 {$IFNDEF FPU}
 type
-  TWrdArray  = Array[0..0] of SmallInt;
+  TWrdArray  = array[0..0] of SmallInt;
   PWrdArray  = ^TWrdArray;
-  TDblArray  = Array[0..0] of Double;
-  PDblArray  = ^TDblArray;
-  TntgrArray = Array[0..0] of Integer;
+  TntgrArray = array[0..0] of Integer;
   PntgrArray = ^TntgrArray;
-  TSnglArray = Array[0..0] of Single;
-  PSnglArray = ^TSnglArray;
 {$ENDIF}
 
 const
@@ -205,8 +202,9 @@ const
   CIntToFloat4  : array[0..3] of Single = (1 / $7FFFFFFF, 1 / $7FFFFFFF,
     1 / $7FFFFFFF, 1 / $7FFFFFFF);
 
+{-$IFDEF }
 var
-  RandSeed : LongInt;
+  RandSeed : NativeInt;
 {$WARNINGS OFF}
 
 
@@ -229,8 +227,8 @@ asm
 @Start:
  MOV  EDX, [EAX]
  AND  EDX, $7FFFFFFF
- cmp  EDX, c1a
- jle  @EndLoop
+ CMP  EDX, c1a
+ JLE  @EndLoop
  MOV  EDX, [EAX]
  AND  EDX, $80000000
  ADD  EDX, c1a
@@ -257,16 +255,16 @@ const
   c05 : Double = 0.5;
 asm
  MOV  ECX, EDX
- fld1
+ FLD1
  FLD  c05
 @Start:
  FLD  [EAX + 8 * ECX - 8].Double
- fadd ST(0), ST(2)
+ FADD ST(0), ST(2)
  FABS
  FLD  [EAX + 8 * ECX - 8].Double
  fsub ST(0), ST(3)
  FABS
- fsubp
+ FSUBP
  FMUL ST(0), ST(1)
  FSTP [EAX + 8 * ECX - 8].Double
  LOOP @Start
@@ -292,24 +290,24 @@ const
 asm
  FLD c3.Single                      // 3
  FLD c6.Single                      // 6, 3
- fld1                               // 1, 6, 3
- fld1                               // 1, 1, 6, 3
+ FLD1                               // 1, 6, 3
+ FLD1                               // 1, 1, 6, 3
  FADDP                              // 2, 6, 3
 @Start:
  DEC  EDX
  MOV  ECX, [EAX + 4 * EDX].Integer
  AND  ECX, $7FFFFFFF
- MOV  [esp - 4], ECX
- FLD  [esp - 4].Single              // abs(input), 2, 6, 3
- FLD  ST(3)                         // 3, abs(input), 2, 6, 3
- fadd  ST(0), ST(1)                 // 3 + abs(input), abs(input), 2, 6, 3
- FLD  ST(0)                         // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
- FMUL [EAX + 4 * EDX].Single        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
- fxch ST(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
- fmulp                              // abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fadd ST(0), ST(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
- FMUL ST(0), ST(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
+ MOV  [ESP - 4], ECX
+ FLD  [ESP - 4].Single              // Abs(input), 2, 6, 3
+ FLD  ST(3)                         // 3, Abs(input), 2, 6, 3
+ FADD  ST(0), ST(1)                 // 3 + Abs(input), Abs(input), 2, 6, 3
+ FLD  ST(0)                         // 3 + Abs(input), 3 + Abs(input), Abs(input), 2, 6, 3
+ FMUL [EAX + 4 * EDX].Single        // input*(3 + Abs(input)), 3 + Abs(input), Abs(input), 2, 6, 3
+ FXCH ST(2)                         // Abs(input), 3 + Abs(input), input*(3 + Abs(input)), 2, 6, 3
+ FMULP                              // Abs(input)* (3 + Abs(input)), input*(3 + Abs(input)), 2, 6, 3
+ FADD ST(0), ST(3)                  // 6 + Abs(input)* (3 + Abs(input)), input*(3 + Abs(input)), 2, 6, 3
+ FDIV                               // 6 + Abs(input)* (3 + Abs(input)) / input*(3 + Abs(input)), 2, 6, 3
+ FMUL ST(0), ST(1)                  // 2 * (6 + Abs(input)* (3 + Abs(input)) / input*(3 + Abs(input))), 2, 6, 3
  FSTP [EAX + 4 * EDX].Single        // 2, 6, 3
  test EDX, EDX
  jg   @Start
@@ -336,26 +334,26 @@ const
 asm
  FLD c3.Single                      // 3
  FLD c6.Single                      // 6, 3
- fld1                               // 1, 6, 3
- fld1                               // 1, 1, 6, 3
+ FLD1                               // 1, 6, 3
+ FLD1                               // 1, 1, 6, 3
  FADDP                              // 2, 6, 3
 @Start:
  DEC EDX
  MOV ECX, [EAX + 8 * EDX].Integer
  AND ECX, $7FFFFFFF
- MOV [esp - 8], ECX
+ MOV [ESP - 8], ECX
  MOV ECX, [EAX + 4 * EDX + 4].Integer
- MOV [esp - 4], ECX
- FLD [esp - 8].Double               // abs(input), 2, 6, 3
- FLD ST(3)                          // 3, abs(input), 2, 6, 3
- fadd ST(0), ST(1)                  // 3 + abs(input), abs(input), 2, 6, 3
- FLD ST(0)                          // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
- FMUL [EAX + 8 * EDX].Double        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
- fxch ST(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
- fmulp                              // abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fadd ST(0), ST(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
- FMUL ST(0), ST(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
+ MOV [ESP - 4], ECX
+ FLD [ESP - 8].Double               // Abs(input), 2, 6, 3
+ FLD ST(3)                          // 3, Abs(input), 2, 6, 3
+ FADD ST(0), ST(1)                  // 3 + Abs(input), Abs(input), 2, 6, 3
+ FLD ST(0)                          // 3 + Abs(input), 3 + Abs(input), Abs(input), 2, 6, 3
+ FMUL [EAX + 8 * EDX].Double        // input*(3 + Abs(input)), 3 + Abs(input), Abs(input), 2, 6, 3
+ FXCH ST(2)                         // Abs(input), 3 + Abs(input), input*(3 + Abs(input)), 2, 6, 3
+ FMULP                              // Abs(input)* (3 + Abs(input)), input*(3 + Abs(input)), 2, 6, 3
+ FADD ST(0), ST(3)                  // 6 + Abs(input)* (3 + Abs(input)), input*(3 + Abs(input)), 2, 6, 3
+ FDIV                               // 6 + Abs(input)* (3 + Abs(input)) / input*(3 + Abs(input)), 2, 6, 3
+ FMUL ST(0), ST(1)                  // 2 * (6 + Abs(input)* (3 + Abs(input)) / input*(3 + Abs(input))), 2, 6, 3
  FSTP [EAX + 8 * EDX].Double        // 2, 6, 3
  test EDX, EDX
  jg @Start
@@ -380,14 +378,14 @@ begin
 end;
 {$ELSE}
 asm
- MOV  [esp - 4], EDX
- FILD [esp - 4].Single           // SampleCount
- fld1                            // 1, SampleCount
- fdivrp                          // 1 / SampleCount
+ MOV  [ESP - 4], EDX
+ FILD [ESP - 4].Single           // SampleCount
+ FLD1                            // 1, SampleCount
+ FDIVRP                          // 1 / SampleCount
 
  @FadeLoop:
-  MOV  [esp - 4], EDX
-  FILD [esp - 4].Single         // SampleIndex, 1 / SampleCount
+  MOV  [ESP - 4], EDX
+  FILD [ESP - 4].Single         // SampleIndex, 1 / SampleCount
   DEC  EDX
   FMUL ST(0), ST(1)             // SampleIndex / SampleCount, 1 / SampleCount
   FMUL [EAX + 4 * EDX].Single   // SampleIndex * Value / SampleCount, 1 / SampleCount
@@ -412,14 +410,14 @@ begin
 end;
 {$ELSE}
 asm
- MOV [esp - 4], EDX
- FILD [esp - 4].Single             // SampleCount
- fld1                              // 1, SampleCount
- fdivrp                            // 1 / SampleCount
+ MOV [ESP - 4], EDX
+ FILD [ESP - 4].Single             // SampleCount
+ FLD1                              // 1, SampleCount
+ FDIVRP                            // 1 / SampleCount
 
  @FadeLoop:
-   MOV [esp - 4], EDX
-   FILD [esp - 4].Single           // i, 1 / SampleCount
+   MOV [ESP - 4], EDX
+   FILD [ESP - 4].Single           // i, 1 / SampleCount
    FMUL ST(0), ST(1)               // i / SampleCount, 1 / SampleCount
    DEC EDX
    FMUL [EAX + 8 * EDX].Double     // i * Value / SampleCount, 1 / SampleCount
@@ -444,17 +442,17 @@ begin
 end;
 {$ELSE}
 asm
- MOV [esp - 4], EDX
- FILD [esp - 4].Single               // SampleCount
- fld1                                // 1, SampleCount
- fdivrp                              // 1 / SampleCount
+ MOV [ESP - 4], EDX
+ FILD [ESP - 4].Single               // SampleCount
+ FLD1                                // 1, SampleCount
+ FDIVRP                              // 1 / SampleCount
 
  @FadeLoop:
-   MOV [esp - 4], EDX
-   FILD [esp - 4].Single             // i, 1 / SampleCount
+   MOV [ESP - 4], EDX
+   FILD [ESP - 4].Single             // i, 1 / SampleCount
    FMUL ST(0), ST(1)                 // i / SampleCount, 1 / SampleCount
-   fld1                              // 1, i / SampleCount, 1 / SampleCount
-   fsubp                             // 1 - i / SampleCount, 1 / SampleCount
+   FLD1                              // 1, i / SampleCount, 1 / SampleCount
+   FSUBP                             // 1 - i / SampleCount, 1 / SampleCount
    DEC EDX
    FMUL [EAX + 4 * EDX - 4].Single   // Value * (1 - i / SampleCount), 1 / SampleCount
    FSTP [EAX + 4 * EDX - 4].Single   // write back
@@ -478,17 +476,17 @@ begin
 end;
 {$ELSE}
 asm
- MOV  [esp - 4], EDX
- FILD [esp - 4].Single              // SampleCount
- fld1                               // 1, SampleCount
- fdivrp                             // 1 / SampleCount
+ MOV  [ESP - 4], EDX
+ FILD [ESP - 4].Single              // SampleCount
+ FLD1                               // 1, SampleCount
+ FDIVRP                             // 1 / SampleCount
 
  @FadeLoop:
-   MOV  [esp - 4], EDX
-   FILD [esp - 4].Single            // i, 1 / SampleCount
+   MOV  [ESP - 4], EDX
+   FILD [ESP - 4].Single            // i, 1 / SampleCount
    FMUL ST(0), ST(1)                // i / SampleCount, 1 / SampleCount
-   fld1                             // 1, i / SampleCount, 1 / SampleCount
-   fsubp                            // 1 - i / SampleCount, 1 / SampleCount
+   FLD1                             // 1, i / SampleCount, 1 / SampleCount
+   FSUBP                            // 1 - i / SampleCount, 1 / SampleCount
    DEC  EDX
    FMUL [EAX + 8 * EDX - 8].Double  // Value * (1 - i / SampleCount), 1 / SampleCount
    FSTP [EAX + 8 * EDX - 8].Double  // write back
@@ -515,7 +513,7 @@ asm
  This assembler snippet unfortunately processes the signal backwards. Do not
  use unless you rewrite the code! 
 
- fld1
+ FLD1
  FLD Gradient.Double
  FLD ScaleFactor.Double
  MOV ECX, EAX
@@ -529,7 +527,7 @@ asm
    FCOMI ST(0), ST(2)               // ScaleFactor <-> 1 ?
    FSTSW AX                         // AX = FPU Status Word
    SAHF                             // AX -> EFLAGS register
-   JB @FadeLoopEnd                  // if ScaleFactor > 1 then exit!
+   JB @FadeLoopEnd                  // if ScaleFactor > 1 then Exit!
 
    DEC EDX
  JNZ @FadeLoop
@@ -560,7 +558,7 @@ asm
  This assembler snippet unfortunately processes the signal backwards. Do not
  use unless you rewrite the code! 
 
- fld1                                // 1
+ FLD1                                // 1
  FLD Gradient.Double                  // Gradient, 1
  FLD ScaleFactor.Double           // ScaleFactor, Gradient, 1
  MOV ECX, EAX                        // ECX = EAX
@@ -601,7 +599,7 @@ begin
   end;
 {$ELSE}
 asm
- fld1
+ FLD1
  FLD Gradient.Double
  FLD ScaleFactor.Double
  MOV ECX, EAX                        // ECX = EAX
@@ -610,12 +608,12 @@ asm
    FLD  [ECX + 4 * EDX - 4].Single   // Value, ScaleFactor
    FMUL ST(0), ST(1)                 // Value * ScaleFactor, ScaleFactor
    FSTP [ECX + 4 * EDX - 4].Single   // write back
-   fadd ST(0), ST(1)                 // ScaleFactor + Gradient
+   FADD ST(0), ST(1)                 // ScaleFactor + Gradient
 
    FCOMI ST(0), ST(2)                // ScaleFactor <-> 1 ?
    FSTSW AX                          // AX = FPU Status Word
    SAHF                              // AX -> EFLAGS register
-   JB @FadeLoopEnd                   // if ScaleFactor > 1 then exit!
+   JB @FadeLoopEnd                   // if ScaleFactor > 1 then Exit!
 
    DEC EDX
  JNZ @FadeLoop
@@ -636,12 +634,12 @@ begin
   begin
    Data^ := Data^ * ScaleFactor;
    ScaleFactor := ScaleFactor + Gradient;
-   if ScaleFactor > 1 then exit;
+   if ScaleFactor > 1 then Exit;
    Inc(Data);
   end;
 {$ELSE}
 asm
- fld1
+ FLD1
  FLD Gradient.Double
  FLD ScaleFactor.Double
  MOV ECX, EAX                      // ECX = EAX
@@ -655,7 +653,7 @@ asm
    FCOMI ST(0), ST(2)              // ScaleFactor <-> 1 ?
    FSTSW AX                        // AX = FPU Status Word
    SAHF                            // AX -> EFLAGS register
-   JB @FadeLoopEnd                 // if ScaleFactor > 1 then exit!
+   JB @FadeLoopEnd                 // if ScaleFactor > 1 then Exit!
 
    DEC EDX
  JNZ @FadeLoop
@@ -673,10 +671,10 @@ var
   SampleIndex : Integer;
 begin
  Result := 0;
- for SampleIndex := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if abs(Data^)>TriggerFaktor
-    then exit
+   if Abs(Data^)>TriggerFaktor
+    then Exit
     else Inc(Result);
    Inc(Data);
   end;
@@ -694,7 +692,7 @@ asm
    FSTSW AX                    // AX = FPU Status Word
    SAHF                        // AX -> EFLAGS register
    FSTP ST(0)                  // TriggerFaktor
-   JB @TriggerFound            // if |Value| > TriggerFaktor then exit!
+   JB @TriggerFound            // if |Value| > TriggerFaktor then Exit!
 
    DEC EDX
  JNZ @FadeLoop
@@ -716,10 +714,10 @@ var
   SampleIndex : Integer;
 begin
  Result := 0;
- for SampleIndex := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if abs(Data^)>TriggerFaktor
-    then exit
+   if Abs(Data^)>TriggerFaktor
+    then Exit
     else Inc(Result);
    Inc(Data);
   end;
@@ -737,7 +735,7 @@ asm
    FSTSW AX                    // AX = FPU Status Word
    SAHF                        // AX -> EFLAGS register
    FSTP ST(0)                  // TriggerFaktor
-   JB @TriggerFound            // if |Value| > TriggerFaktor then exit!
+   JB @TriggerFound            // if |Value| > TriggerFaktor then Exit!
 
    DEC EDX
  JNZ @FadeLoop
@@ -757,7 +755,7 @@ end;
 procedure ReverseEndian3(Data: Pointer; SampleCount: LongInt);
 {$IFDEF PUREPASCAL}
 type
-  TByte3Array = Array [0..2] of Byte;
+  TByte3Array = array [0..2] of Byte;
   PByte3Array = ^TByte3Array;
 var
   BufArray    : PByte3Array absolute Data;
@@ -790,7 +788,7 @@ end;
 procedure ReverseEndian4(Data: Pointer; SampleCount: LongInt);
 {$IFDEF PUREPASCAL}
 type
-  TByte4Array = Array [0..3] of Byte;
+  TByte4Array = array [0..3] of Byte;
   PByte4Array = ^TByte4Array;
 var
   BufArray    : PByte4Array absolute Data;
@@ -810,7 +808,7 @@ asm
  MOV ECX, SampleCount
 @Start:
  MOV EDX, [EAX + 4 * ECX - 4]
- bswap EDX
+ BSWAP EDX
  MOV [EAX + 4 * ECX - 4], EDX
  LOOP @Start
 end;
@@ -820,7 +818,7 @@ end;
 procedure ReverseEndian8(Data: Pointer; SampleCount: LongInt);
 {$IFDEF PUREPASCAL}
 type
-  TByte4Array = Array [0..7] of Byte;
+  TByte4Array = array [0..7] of Byte;
   PByte4Array = ^TByte4Array;
 var
   BufArray    : PByte4Array absolute Data;
@@ -844,8 +842,8 @@ asm
 @Start:
  MOV   EDX, [EAX]
  MOV   EBX, [EAX + 4]
- bswap EDX
- bswap EBX
+ BSWAP EDX
+ BSWAP EBX
  MOV   [EAX + 4], EDX
  MOV   [EAX], EBX
  ADD   EAX, 8
@@ -887,7 +885,7 @@ procedure Int16LSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: Lo
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PWrdArray absolute Source;
-  TargetArray : PDblArray absolute Target;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1
@@ -910,7 +908,7 @@ procedure Int24LSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: Lo
 var
   SourceInt   : PInteger absolute Source;
   SourceByte  : PByte absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   SampleIndex : Integer;
 
 // Bytes
@@ -936,8 +934,8 @@ asm
  shl   EBX, 8
  AND   EBX, $FFFFFF00
 
- MOV   [esp - 4], EBX
- FILD  [esp - 4].Single
+ MOV   [ESP - 4], EBX
+ FILD  [ESP - 4].Single
  FMUL  ST(0), ST(1)
 
  FSTP  [Target].Single
@@ -954,7 +952,7 @@ procedure Int24LSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: Lo
 var
   SourceInt   : PInteger absolute Source;
   SourceByte  : PByte absolute Source;
-  TargetArray : PDblArray absolute Target;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1 do
@@ -973,8 +971,8 @@ asm
  MOV   EBX, [EAX]
  shl   EBX, 8
  AND   EBX, $FFFFFF00
- MOV   [esp - 4], EBX
- FILD  [esp - 4].Single
+ MOV   [ESP - 4], EBX
+ FILD  [ESP - 4].Single
  FMUL  ST(0), ST(1)
  FSTP  [Target].Double
  ADD   EAX, 3
@@ -989,11 +987,11 @@ procedure Int32LSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: Lo
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1
-  do TargetArray[SampleIndex] := SourceArray[SampleIndex]*CIntToFloat;
+  do TargetArray[SampleIndex] := SourceArray[SampleIndex] * CIntToFloat;
 end;
 {$ELSE}
 asm
@@ -1012,11 +1010,11 @@ procedure Int32LSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: Lo
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PDblArray absolute Target;
-  i           : Integer;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
+  SampleIndex : Integer;
 begin
- for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i] * CIntToFloat;
+ for SampleIndex := 0 to SampleCount - 1
+  do TargetArray[SampleIndex] := SourceArray[SampleIndex] * CIntToFloat;
 end;
 {$ELSE}
 asm
@@ -1033,18 +1031,18 @@ end;
 
 procedure SingleLSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt); overload;
 begin
- move(Source^, Target^, SampleCount*SizeOf(Single));
+ Move(Source^, Target^, SampleCount * SizeOf(Single));
 end;
 
 procedure SingleLSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: LongInt); overload;
 {$IFDEF PUREPASCAL}
 var
-  SourceArray : PSnglArray absolute Source;
-  TargetArray : PDblArray absolute Target;
-  i           : Integer;
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
+  SampleIndex : Integer;
 begin
- for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i];
+ for SampleIndex := 0 to SampleCount - 1
+  do TargetArray[SampleIndex] := SourceArray[SampleIndex];
 end;
 {$ELSE}
 asm
@@ -1059,8 +1057,8 @@ end;
 procedure DoubleLSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt); overload;
 {$IFDEF PUREPASCAL}
 var
-  SourceArray : PDblArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1078,14 +1076,14 @@ end;
 
 procedure DoubleLSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: LongInt); overload;
 begin
- move(Source^, Target^, SampleCount*SizeOf(Double));
+ Move(Source^, Target^, SampleCount*SizeOf(Double));
 end;
 
 procedure Int32LSB16ToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt); overload; // 32 bit data with 16 bit alignment
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1095,7 +1093,7 @@ end;
 asm
   FLD      CSmallToFloat
 @Start:
-  FILD     [EAX+4*ECX-4].DWord
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+4*ECX-4].Single
   LOOP @Start
@@ -1107,7 +1105,7 @@ procedure Int32LSB16ToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: 
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PDblArray absolute Target;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1117,7 +1115,7 @@ end;
 asm
   FLD      CSmallToFloat
 @Start:
-  FILD     [EAX+4*ECX-4].DWord
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
   LOOP @Start
@@ -1129,7 +1127,7 @@ procedure Int32LSB18ToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: 
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1139,10 +1137,10 @@ end;
 asm
   FLD      CInt18ToFloat
 @Start:
-  FILD     [EAX+4*ECX-4].DWord
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+4*ECX-4].Single
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
 end;
 {$ENDIF}
@@ -1151,7 +1149,7 @@ procedure Int32LSB18ToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: 
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PDblArray absolute Target;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1161,10 +1159,10 @@ end;
 asm
   FLD      CInt18ToFloat
 @Start:
-  FILD     [EAX+4*ECX-4].DWord
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
 end;
 {$ENDIF}
@@ -1173,7 +1171,7 @@ procedure Int32LSB20ToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: 
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1183,10 +1181,10 @@ end;
 asm
   FLD      CInt20ToFloat
 @Start:
-  FILD     [EAX+4*ECX-4].DWord
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+4*ECX-4].Single
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
 end;
 {$ENDIF}
@@ -1195,7 +1193,7 @@ procedure Int32LSB20ToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: 
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PDblArray absolute Target;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1205,10 +1203,10 @@ end;
 asm
   FLD      CInt20ToFloat
 @Start:
-  FILD     [EAX+4*ECX-4].DWord
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
 end;
 {$ENDIF}
@@ -1217,7 +1215,7 @@ procedure Int32LSB24ToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: 
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1230,7 +1228,7 @@ asm
   FILD     [EAX + 4 * ECX - 4].DWord;
   FMUL     ST(0), ST(1)
   FSTP     [EDX + 4 * ECX - 4].Single
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
 end;
 {$ENDIF}
@@ -1239,7 +1237,7 @@ procedure Int32LSB24ToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: 
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute Source;
-  TargetArray : PDblArray absolute Target;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
@@ -1249,10 +1247,10 @@ end;
 asm
   FLD      CInt24ToFloat
 @Start:
-  FILD     [EAX+4*ECX-4].DWord
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
 end;
 {$ENDIF}
@@ -1261,7 +1259,7 @@ procedure Int16MSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: Lo
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PWrdArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  TargetArray : PDAVSingleFixedArray absolute Target;
   i           : Integer;
 begin
  ReverseEndian4(Source, SampleCount div 2);
@@ -1273,13 +1271,13 @@ asm
   PUSH EBX
   FLD   CSmallToFloat
  @Start:
-  MOV bx, [EAX + 2 * ECX - 2]
-  rol bx, $8
-  MOV [EAX + 2 * ECX - 2], bx
+  MOV BX, [EAX + 2 * ECX - 2]
+  ROL BX, $8
+  MOV [EAX + 2 * ECX - 2], BX
   FILD  [EAX + 2 * ECX - 2].Word
   FMUL  ST(0), ST(1)
   FSTP  [EDX + 4 * ECX - 4].Single
-  LOOP @start
+  LOOP @Start
   FFREE ST(0)
   POP EBX
 end;
@@ -1289,7 +1287,7 @@ procedure Int16MSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: Lo
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PWrdArray absolute Source;
-  TargetArray : PDblArray absolute Target;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
   i           : Integer;
 begin
  ReverseEndian4(Source, SampleCount div 2);
@@ -1301,13 +1299,13 @@ asm
   PUSH EBX
   FLD   CSmallToFloat
  @Start:
-  MOV bx, [EAX+2*ECX-2]
-  rol bx, $8
-  MOV [EAX+2*ECX-2], bx
+  MOV BX, [EAX+2*ECX-2]
+  ROL BX, $8
+  MOV [EAX+2*ECX-2], BX
   FILD  [EAX+2*ECX-2].Word
   FMUL  ST(0), ST(1)
   FSTP  [EDX+8*ECX-8].Double
-  LOOP @start
+  LOOP @Start
   FFREE ST(0)
   POP EBX
 end;
@@ -1330,10 +1328,10 @@ asm
  MOV bh, [EAX + 1]
  ror EBX, 8
  MOV bh, [EAX]
- rol EBX, 8
+ ROL EBX, 8
 
- MOV [esp-4], EBX
- FILD [esp-4].Single
+ MOV [ESP-4], EBX
+ FILD [ESP-4].Single
  FMUL  ST(0), ST(1)
  FSTP [Target].Single
  ADD  EAX, 3
@@ -1362,10 +1360,10 @@ asm
  MOV bh, [EAX + 1]
  ror EBX, 8
  MOV bh, [EAX]
- rol EBX, 8
+ ROL EBX, 8
 
- MOV [esp-4], EBX
- FILD [esp-4].Single
+ MOV [ESP-4], EBX
+ FILD [ESP-4].Single
  FMUL  ST(0), ST(1)
  FSTP [Target].Double
  ADD  EAX, 3
@@ -1388,13 +1386,13 @@ asm
  PUSH   EBX
  FLD    CIntToFloat
 @Start:
- MOV    EBX, [EAX+4*ECX-4]
- bswap  EBX
- MOV    [EAX+4*ECX-4], EBX
- FILD   [EAX+4*ECX-4].DWord
+ MOV    EBX, [EAX + 4 * ECX - 4]
+ BSWAP  EBX
+ MOV    [EAX + 4 * ECX - 4], EBX
+ FILD   [EAX + 4 * ECX - 4].DWord
  FMUL   ST(0), ST(1)
  FSTP   [EDX+4*ECX-4].Single
- LOOP   @start
+ LOOP   @Start
  FFREE  ST(0)
  POP    EBX
 end;
@@ -1411,13 +1409,13 @@ asm
  PUSH   EBX
  FLD    CIntToFloat
 @Start:
- MOV    EBX, [EAX+4*ECX-4]
- bswap  EBX
- MOV    [EAX+4*ECX-4], EBX
- FILD   [EAX+4*ECX-4].DWord
+ MOV    EBX, [EAX + 4 * ECX - 4]
+ BSWAP  EBX
+ MOV    [EAX + 4 * ECX - 4], EBX
+ FILD   [EAX + 4 * ECX - 4].DWord
  FMUL   ST(0), ST(1)
  FSTP   [EDX+8*ECX-8].Double
- LOOP   @start
+ LOOP   @Start
  FFREE  ST(0)
  POP    EBX
 end;
@@ -1426,7 +1424,7 @@ end;
 procedure SingleMSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt); overload;
 {$IFDEF PUREPASCAL}
 begin
- move(Source^, Target^, SampleCount*SizeOf(Single));
+ Move(Source^, Target^, SampleCount*SizeOf(Single));
  ReverseEndian4(Target, SampleCount);
 end;
 {$ELSE}
@@ -1434,8 +1432,8 @@ asm
  PUSH EBX
  MOV ECX, SampleCount
 @Start:
- MOV EBX, [EAX+4*ECX-4]
- bswap EBX
+ MOV EBX, [EAX + 4 * ECX - 4]
+ BSWAP EBX
  MOV [EDX+4*ECX-4], EBX
  LOOP @Start
  POP EBX
@@ -1453,9 +1451,9 @@ asm
  PUSH EBX
  @Start:
   MOV EBX, [Source+4*SampleCount-4]
-  bswap EBX
-  MOV [esp-4], EBX
-  FLD   [esp-4].Single
+  BSWAP EBX
+  MOV [ESP-4], EBX
+  FLD   [ESP-4].Single
   FSTP  [Target+8*SampleCount-8].Double
   LOOP @Start
  POP EBX
@@ -1470,7 +1468,7 @@ end;
 
 procedure DoubleMSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: LongInt); overload;
 begin
- move(Source^, Target^, SampleCount*SizeOf(Double));
+ Move(Source^, Target^, SampleCount*SizeOf(Double));
  ReverseEndian8(Target, SampleCount);
 end;
 
@@ -1485,13 +1483,13 @@ asm
   PUSH     EBX
   FLD      CSmallToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+4*ECX-4].Single
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1508,13 +1506,13 @@ asm
   PUSH     EBX
   FLD      CSmallToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1531,13 +1529,13 @@ asm
   PUSH     EBX
   FLD      CInt18ToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+4*ECX-4].Single
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1554,13 +1552,13 @@ asm
   PUSH     EBX
   FLD      CInt18ToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1577,13 +1575,13 @@ asm
   PUSH     EBX
   FLD      CInt20ToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+4*ECX-4].Single
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1600,13 +1598,13 @@ asm
   PUSH     EBX
   FLD      CInt20ToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1623,13 +1621,13 @@ asm
   PUSH     EBX
   FLD      CInt24ToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+4*ECX-4].Single
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1646,13 +1644,13 @@ asm
   PUSH     EBX
   FLD      CInt24ToFloat
 @Start:
-  MOV      EBX, [EAX+4*ECX-4]
-  bswap    EBX
-  MOV      [EAX+4*ECX-4], EBX
-  FILD     [EAX+4*ECX-4].DWord
+  MOV      EBX, [EAX + 4 * ECX - 4]
+  BSWAP    EBX
+  MOV      [EAX + 4 * ECX - 4], EBX
+  FILD     [EAX + 4 * ECX - 4].DWord
   FMUL     ST(0), ST(1)
   FSTP     [EDX+8*ECX-8].Double
-  LOOP     @start
+  LOOP     @Start
   FFREE    ST(0)
   POP      EBX
 end;
@@ -1661,44 +1659,74 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure SingleToInt16LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetByte   : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PSmallInt(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall);
+   Inc(TargetByte, 2);
+  end;
+{$ELSE}
 asm
-  FLD      CFloatToSmall    // move to register for speed
+  FLD      CFloatToSmall    // Move to register for speed
 @Start:                // Samplecount already in ECX!
   FLD      [EAX + 4 * ECX - 4].Single
   FMUL     ST(0), ST(1)
-  fistp    Word ptr [EDX + 2 * ECX - 2]
-  LOOP     @start
+  FISTP    Word ptr [EDX + 2 * ECX - 2]
+  LOOP     @Start
   FFREE    ST(0)       // free after LOOP has finished
+{$ENDIF}
 end;
 
 procedure SingleToInt16LSB_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PSmallInt(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (2 * Random - 1));
+   Inc(TargetByte, 2);
+  end;
+{$ELSE}
 asm
- {$IFDEF CPUx86_64}
- PUSH   RBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToSmall              // move to register for speed
- @Start:                       // Samplecount already in ECX!
-  FLD   [RAX + 4 * ECX - 4].Single
+  {$IFDEF CPUx86_64}
+  // RCX : Source
+  // RDX : Target
+  // R8  : SampleCount
+
+  PUSH   RBX
+  FLD    CScaler                // Move to register for speed
+  FLD    CFloatToSmall          // Move to register for speed
+@Start:                        // Samplecount already in ECX!
+  FLD   [RAX + 4 * RCX - 4].Single
   FMUL  ST(0), ST(1)
 
-  IMUL  EBX, RandSeed, $08088405
-  INC   EBX
-  MOV   RandSeed, EBX
+  IMUL  RBX, RandSeed, $08088405
+  INC   RBX
+  MOV   RandSeed, RBX
   FILD  RandSeed
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp Word ptr [EDX + 2 * ECX - 2]
- LOOP   @start
- FFREE  ST(0)                // free after LOOP has finished
- FFREE  ST(1)                // free after LOOP has finished
- POP    RBX
- {$ELSE}
- PUSH   EBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToSmall              // move to register for speed
+  FISTP Word ptr [EDX + 2 * ECX - 2]
+  LOOP   @Start
+  FFREE  ST(0)                // free after LOOP has finished
+  FFREE  ST(1)                // free after LOOP has finished
+  POP    RBX
+  {$ELSE}
+  PUSH   EBX
+  FLD    CScaler                // Move to register for speed
+  FLD    CFloatToSmall          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -1710,22 +1738,40 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp Word ptr [EDX + 2 * ECX - 2]
- LOOP   @start
- FFREE  ST(0)                // free after LOOP has finished
- FFREE  ST(1)                // free after LOOP has finished
- POP    EBX
- {$ENDIF}
+  FISTP Word ptr [EDX + 2 * ECX - 2]
+  LOOP   @Start
+  FFREE  ST(0)                // free after LOOP has finished
+  FFREE  ST(1)                // free after LOOP has finished
+  POP    EBX
+  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure SingleToInt16LSB_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PSmallInt(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (Random - Random));
+   Inc(TargetByte, 2);
+  end;
+{$ELSE}
 asm
  {$IFDEF CPUx86_64}
+ // RCX : Source
+ // RDX : Target
+ // R8  : SampleCount
+
  PUSH   RBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToSmall              // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToSmall          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -1742,15 +1788,15 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp Word ptr [EDX + 2 * ECX - 2]
- LOOP   @start
+  FISTP Word ptr [EDX + 2 * ECX - 2]
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    RBX
  {$ELSE}
  PUSH   EBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToSmall              // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToSmall              // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -1767,33 +1813,65 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp Word ptr [EDX + 2 * ECX - 2]
- LOOP   @start
+  FISTP Word ptr [EDX + 2 * ECX - 2]
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure DoubleToInt16LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PSmallInt(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall);
+   Inc(TargetByte, 2);
+  end;
+{$ELSE}
 asm
-  FLD      CFloatToSmall    // move to register for speed
-@Start:                // Samplecount already in ECX!
+  FLD      CFloatToSmall // Move to register for speed
+@Start:                  // Samplecount already in ECX!
   FLD      [EAX + 8 * ECX - 8].Double
   FMUL     ST(0), ST(1)
-  fistp    Word ptr [EDX + 2 * ECX - 2]
-  LOOP     @start
-  FFREE    ST(0)       // free after LOOP has finished
+  FISTP    Word ptr [EDX + 2 * ECX - 2]
+  LOOP     @Start
+  FFREE    ST(0)         // free after LOOP has finished
+{$ENDIF}
 end;
 
 procedure DoubleToInt16LSB_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PSmallInt(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (2 * Random - 1));
+   Inc(TargetByte, 2);
+  end;
+{$ELSE}
 asm
 {$IFDEF CPUx86_64}
+ // RCX : Source
+ // RDX : Target
+ // R8  : SampleCount
+
 {$ELSE}
   PUSH    EBX
-  FLD     Scaler               // move to register for speed
-  FLD     CFloatToSmall        // move to register for speed
+  FLD     CScaler              // Move to register for speed
+  FLD     CFloatToSmall        // Move to register for speed
 @Start:                        // Samplecount already in ECX!
   FLD     [EAX + 8 * ECX - 8].Double
   FMUL    ST(0), ST(1)
@@ -1811,14 +1889,55 @@ asm
   FSTP    ST(0)                // free after LOOP has finished
   POP     EBX
 {$ENDIF}
+{$ENDIF}
 end;
 
 procedure DoubleToInt16LSB_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PSmallInt(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (Random - Random));
+   Inc(TargetByte, 2);
+  end;
+{$ELSE}
 asm
+{$IFDEF CPUx86_64}
+  PUSH    RBX
+  FLD     CScaler              // Move to register for speed
+  FLD     CFloatToSmall            // Move to register for speed
+@Start:                       // Samplecount already in ECX!
+  FLD     [RAX + 8 * RCX - 8].Double
+  FMUL    ST(0), ST(1)
+
+  IMUL    RBX, RandSeed, $08088405
+  INC     RBX
+  MOV     RandSeed, RBX
+  FILD    RandSeed
+  IMUL    RBX, RandSeed, $08088405
+  INC     RBX
+  MOV     RandSeed, RBX
+  FILD    RandSeed
+  FADDP
+  FMUL    ST(0), ST(3)
+  FADDP
+  FISTP   Word ptr [RDX + 2 * RCX - 2]
+  LOOP    @Start
+  FSTP    ST(0)                // free after LOOP has finished
+  FSTP    ST(0)                // free after LOOP has finished
+  POP     RBX
+
+{$ELSE}
   PUSH    EBX
-  FLD     Scaler              // move to register for speed
-  FLD     CFloatToSmall            // move to register for speed
+  FLD     CScaler             // Move to register for speed
+  FLD     CFloatToSmall       // Move to register for speed
 @Start:                       // Samplecount already in ECX!
   FLD     [EAX + 8 * ECX - 8].Double
   FMUL    ST(0), ST(1)
@@ -1835,11 +1954,13 @@ asm
   FMUL    ST(0), ST(3)
   FADDP
 
-  fistp   Word ptr [EDX + 2 * ECX - 2]
- LOOP     @start
- FSTP     ST(0)                // free after LOOP has finished
- FSTP     ST(0)                // free after LOOP has finished
- POP      EBX
+  FISTP   Word ptr [EDX + 2 * ECX - 2]
+  LOOP    @Start
+  FSTP    ST(0)                // free after LOOP has finished
+  FSTP    ST(0)                // free after LOOP has finished
+  POP     EBX
+{$ENDIF}
+{$ENDIF}
 end;
 
 
@@ -1847,14 +1968,14 @@ end;
 procedure SingleToInt24LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 {$IFDEF PUREPASCAL}
 var
-  SourceArray : PSnglArray absolute Source;
-  TargetInt   : PByte absolute Target;
-  i           : Integer;
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
 begin
- for i := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   PInteger(TargetInt)^ := Round(SourceArray^[i] * CFloatToInt24);
-   Inc(TargetInt, 3);
+   PInteger(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24);
+   Inc(TargetByte, 3);
   end;
 end;
 {$ELSE}
@@ -1864,8 +1985,8 @@ asm
  @Start:
   FLD   [EAX].Single
   FMUL  ST(0), ST(1)
-  fistp [esp - 4].DWord
-  MOV   EBX, [esp - 4]        //  EBX = EHEL BHBL
+  FISTP [ESP - 4].DWord
+  MOV   EBX, [ESP - 4]        //  EBX = EHEL BHBL
   AND   EBX, $FFFFFF          //  EBX = 00EL BHBL
   MOV   [EDX], EBX            // [EDX] = 00EL BHBL
 
@@ -1881,9 +2002,22 @@ end;
 procedure SingleToInt24LSB_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler : Double = ((1/$10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetByte, 3);
+  end;
+{$ELSE}
 asm
   PUSH  EBX
-  FLD   CScaler                // move to register for speed
+  FLD   CScaler                // Move to register for speed
   FLD   CFloatToInt24                 // for speed
  @Start:
   FLD   [EAX].DWord
@@ -1896,9 +2030,9 @@ asm
   FMUL  CScaler.Double
   FADDP
 
-  fistp [esp - 4].Single
-  MOV   EBX, [esp - 4]
-  MOV   [EDX], bx
+  FISTP [ESP - 4].Single
+  MOV   EBX, [ESP - 4]
+  MOV   [EDX], BX
   ror   EBX, 8
   MOV   [EDX + 2], bh
   ADD   EAX, 4
@@ -1908,14 +2042,28 @@ asm
   FSTP  ST(0)                  // free after LOOP has finished
   FSTP  ST(0)                  // free after LOOP has finished
   POP   EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt24LSB_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (Random - Random));
+   Inc(TargetByte, 3);
+  end;
+{$ELSE}
 asm
   PUSH  EBX
-  FLD   CScaler                 // move to register for speed
+  FLD   CScaler                 // Move to register for speed
   FLD   CFloatToInt24                  //for speed
  @Start:
   FLD   [EAX].Single
@@ -1933,8 +2081,8 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [esp-4].DWord;
-  MOV   EBX, [esp - 4]
+  FISTP [ESP-4].DWord;
+  MOV   EBX, [ESP - 4]
   AND   EBX, $FFFFFF
   MOV   [EDX], EBX
   ADD   EAX, 4
@@ -1944,17 +2092,30 @@ asm
   FSTP  ST(0)                   // free after LOOP has finished
   FSTP  ST(0)                   // free after LOOP has finished
   POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt24LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24);
+   Inc(TargetByte, 3);
+  end;
+{$ELSE}
 asm
   PUSH  EBX
   FLD   CFloatToInt24         //for speed
  @Start:
   FLD   [EAX].Double
   FMUL  ST(0), ST(1)
-  fistp [esp - 4].DWord
-  MOV   EBX, [esp - 4]
+  FISTP [ESP - 4].DWord
+  MOV   EBX, [ESP - 4]
   AND   EBX, $FFFFFF
   MOV   [EDX], EBX
   ADD   EAX, 8
@@ -1963,14 +2124,28 @@ asm
   JNZ   @Start
   FFREE ST(0)
   POP   EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt24LSB_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((1/$10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetByte, 3);
+  end;
+{$ELSE}
 asm
   PUSH  EBX
-  FLD   CScaler               // move to register for speed
+  FLD   CScaler               // Move to register for speed
   FLD   CFloatToInt24                // for speed
  @Start:
   FLD   [EAX].Double
@@ -1983,8 +2158,8 @@ asm
   FMUL  CScaler.Double
   FADDP
 
-  fistp [esp - 4].DWord;
-  MOV   EBX, [esp - 4]
+  FISTP [ESP - 4].DWord;
+  MOV   EBX, [ESP - 4]
   AND   EBX, $FFFFFF
   MOV   [EDX], EBX
   ADD   EAX, 8
@@ -1994,14 +2169,28 @@ asm
   FSTP  ST(0)                 // free after LOOP has finished
   FSTP  ST(0)                 // free after LOOP has finished
   POP   EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt24LSB_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetByte  : PByte absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetByte)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (Random - Random));
+   Inc(TargetByte, 3);
+  end;
+{$ELSE}
 asm
   PUSH  EBX
-  FLD   CScaler                 // move to register for speed
+  FLD   CScaler                 // Move to register for speed
   FLD   CFloatToInt24                  //for speed
  @Start:
   FLD   [EAX].Double
@@ -2019,8 +2208,8 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [esp - 4].Integer
-  MOV   EBX, [esp - 4]
+  FISTP [ESP - 4].Integer
+  MOV   EBX, [ESP - 4]
   AND   EBX, $FFFFFF
   MOV   [EDX], EBX
   ADD   EAX, 8
@@ -2030,28 +2219,55 @@ asm
   FSTP  ST(0)               // free after LOOP has finished
   FSTP  ST(0)               // free after LOOP has finished
   POP   EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt         //for speed
  @Start:
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX + 4 * ECX - 4].Integer
+  FISTP [EDX + 4 * ECX - 4].Integer
   LOOP  @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt         //for speed
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX + 4 * ECX - 4].Integer
+  FISTP [EDX + 4 * ECX - 4].Integer
   LOOP  @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure SingleToSingleLSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
@@ -2060,19 +2276,39 @@ begin
 end;
 
 procedure DoubleToSingleLSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetArray : PDAVSingleFixedArray absolute Target;
+begin
+ for SampleIndex := 0 to SampleCount - 1
+  do TargetArray^[SampleIndex] := SourceArray^[SampleIndex];
+{$ELSE}
 asm
  @Start:
   FLD   [Source + 8 * ECX - 8].Double
   FSTP  [Target + 4 * ECX - 4].Single
   LOOP @Start
+{$ENDIF}
 end;
 
 procedure SingleToDoubleLSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetArray : PDAVDoubleFixedArray absolute Target;
+begin
+ for SampleIndex := 0 to SampleCount - 1
+  do TargetArray^[SampleIndex] := SourceArray^[SampleIndex];
+{$ELSE}
 asm
  @Start:
   FLD   [EAX + 4 * ECX - 4].Single
   FSTP  [EDX + 8 * ECX - 8].Double
   LOOP @Start
+{$ENDIF}
 end;
 
 procedure DoubleToDoubleLSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
@@ -2081,23 +2317,49 @@ begin
 end;
 
 procedure SingleToInt32LSB16_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD      CFloatToSmall
 @Start:
   FLD      [EAX + 4 * ECX - 4].Single
   FMUL     ST(0), ST(1)
-  fistp    [EDX + 4 * ECX - 4].DWord
+  FISTP    [EDX + 4 * ECX - 4].DWord
   LOOP @Start
   FFREE    ST(0)
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB16_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
-  Scaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
+  CScaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToSmall               // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToSmall          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD     [EAX + 4 * ECX - 4].Single
   FMUL    ST(0), ST(1)
@@ -2109,19 +2371,34 @@ asm
   FMUL    ST(0), ST(3)
   FADDP
 
-  fistp   [EDX+4*ECX-4].DWord
- LOOP     @start
+  FISTP   [EDX+4*ECX-4].DWord
+ LOOP     @Start
  FFREE    ST(0)                // free after LOOP has finished
  FFREE    ST(1)                // free after LOOP has finished
  POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB16_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToSmall               // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToSmall          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -2138,31 +2415,58 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB16_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToSmall
 @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   LOOP  @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB16_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                 // move to register for speed
- FLD    CFloatToSmall               // move to register for speed
+ FLD    CScaler                 // Move to register for speed
+ FLD    CFloatToSmall               // Move to register for speed
  @Start:                        // Samplecount already in ECX!
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
@@ -2174,20 +2478,34 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX+4*ECX-4].DWord
- LOOP   @start
+  FISTP [EDX+4*ECX-4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB16_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToSmall +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                 // move to register for speed
- FLD    CFloatToSmall               // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToSmall          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
@@ -2204,31 +2522,58 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB18_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt18);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt18
  @Start:
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX + 4 * ECX - 4].DWord
+  FISTP [EDX + 4 * ECX - 4].DWord
   LOOP  @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB18_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
   CScaler : Double = ((1.0/$10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt18 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                 // move to register for speed
- FLD    CFloatToInt18                  // move to register for speed
+ FLD    CScaler                 // Move to register for speed
+ FLD    CFloatToInt18           // Move to register for speed
  @Start:                        // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -2240,20 +2585,34 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB18_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler : Double = ((0.5/$10000) / $10000);  // 2^-32
+  CScaler : Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt18 +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToInt18                 // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt18          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -2270,30 +2629,58 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB18_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt18);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt18
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   LOOP @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB18_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt18 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToInt18                  // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt18          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
@@ -2305,20 +2692,34 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB18_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt18 +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                 // move to register for speed
- FLD    CFloatToInt18                  // move to register for speed
+ FLD    CScaler                 // Move to register for speed
+ FLD    CFloatToInt18                  // Move to register for speed
  @Start:                        // Samplecount already in ECX!
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
@@ -2335,31 +2736,58 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                   // free after LOOP has finished
  FFREE  ST(1)                   // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB20_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt20);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt20
  @Start:
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX + 4 * ECX - 4].DWord
+  FISTP [EDX + 4 * ECX - 4].DWord
   LOOP  @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB20_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt20 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToInt20                  // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt20                  // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -2371,20 +2799,34 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB20_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt20 +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToInt20                 // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt20                 // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
@@ -2401,31 +2843,58 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp [EDX + 4 * ECX - 4].DWord
- LOOP   @start
+  FISTP [EDX + 4 * ECX - 4].DWord
+ LOOP   @Start
  FFREE  ST(0)                // free after LOOP has finished
  FFREE  ST(1)                // free after LOOP has finished
  POP    EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB20_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt20);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt20
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX + 4 * ECX - 4].DWord
+  FISTP [EDX + 4 * ECX - 4].DWord
   LOOP  @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB20_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 const
-  CScaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+  CScaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt20 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH   EBX
- FLD    CScaler                // move to register for speed
- FLD    CFloatToInt20                 // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt20                 // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
@@ -2437,19 +2906,34 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp   [EDX + 4 * ECX - 4].DWord
- LOOP     @start
+  FISTP   [EDX + 4 * ECX - 4].DWord
+ LOOP     @Start
  FFREE    ST(0)                // free after LOOP has finished
  FFREE    ST(1)                // free after LOOP has finished
  POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB20_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt20 +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToInt20                  // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt20          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD      [EAX + 8 * ECX - 8].Double
   FMUL     ST(0), ST(1)
@@ -2466,32 +2950,60 @@ asm
   FMUL ST(0), ST(3)
   FADDP
 
-  fistp   [EDX+4*ECX-4].DWord
- LOOP     @start
+  FISTP   [EDX + 4 * ECX - 4].DWord
+ LOOP     @Start
  FFREE    ST(0)                // free after LOOP has finished
  FFREE    ST(1)                // free after LOOP has finished
  POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB24_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt24
  @Start:
-  FLD   [EAX+4*ECX-4].Single
+  FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   LOOP @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB24_UDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
- PUSH EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToInt24                  // move to register for speed
+ PUSH   EBX
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt24          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
-  FLD      [EAX+4*ECX-4].Single
+  FLD      [EAX + 4 * ECX - 4].Single
   FMUL     ST(0), ST(1)
 
   IMUL  EBX, RandSeed, $08088405
@@ -2501,21 +3013,36 @@ asm
   FMUL ST(0), ST(3)
   FADDP
 
-  fistp   [EDX+4*ECX-4].DWord
- LOOP     @start
+  FISTP   [EDX+4*ECX-4].DWord
+ LOOP     @Start
  FFREE    ST(0)                // free after LOOP has finished
  FFREE    ST(1)                // free after LOOP has finished
  POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32LSB24_TDF_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVSingleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToInt24                  // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt24          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
-  FLD      [EAX+4*ECX-4].Single
+  FLD      [EAX + 4 * ECX - 4].Single
   FMUL     ST(0), ST(1)
 
   IMUL  EBX, RandSeed, $08088405
@@ -2530,30 +3057,58 @@ asm
   FMUL ST(0), ST(3)
   FADDP
 
-  fistp   [EDX+4*ECX-4].DWord
- LOOP     @start
+  FISTP   [EDX+4*ECX-4].DWord
+ LOOP     @Start
  FFREE    ST(0)                // free after LOOP has finished
  FFREE    ST(1)                // free after LOOP has finished
  POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB24_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24);
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
   FLD   CFloatToInt24
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   LOOP @Start
   FFREE ST(0)
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB24_UDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (2 * Random - 1));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToInt24                  // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt24          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD      [EAX + 8 * ECX - 8].Double
   FMUL     ST(0), ST(1)
@@ -2565,19 +3120,34 @@ asm
   FMUL ST(0), ST(3)
   FADDP
 
-  fistp   [EDX+4*ECX-4].DWord
- LOOP     @start
+  FISTP   [EDX+4*ECX-4].DWord
+ LOOP     @Start
  FFREE    ST(0)                // free after LOOP has finished
  FFREE    ST(1)                // free after LOOP has finished
  POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32LSB24_TDF_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
-const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
+const
+  CScaler: Double = ((0.5 / $10000) / $10000);  // 2^-32
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PDAVDoubleFixedArray absolute Source;
+  TargetInt   : PInteger absolute Target;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   PInteger(TargetInt)^ := Round(SourceArray^[SampleIndex] * CFloatToInt24 +
+     CScaler * (Random - Random));
+   Inc(TargetInt);
+  end;
+{$ELSE}
 asm
  PUSH EBX
- FLD    Scaler                 // move to register for speed
- FLD    CFloatToInt24                  // move to register for speed
+ FLD    CScaler                // Move to register for speed
+ FLD    CFloatToInt24          // Move to register for speed
  @Start:                       // Samplecount already in ECX!
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
@@ -2594,43 +3164,56 @@ asm
   FMUL  ST(0), ST(3)
   FADDP
 
-  fistp   [EDX+4*ECX-4].DWord
- LOOP     @start
+  FISTP   [EDX+4*ECX-4].DWord
+ LOOP     @Start
  FFREE    ST(0)                // free after LOOP has finished
  FFREE    ST(1)                // free after LOOP has finished
  POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt16MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ SingleToInt16LSB_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Source, SampleCount div 2);
+{$ELSE}
 asm
    PUSH EBX
    FLD      CFloatToSmall
  @Start:
-   FLD      [EAX+4*ECX-4].Single
+   FLD      [EAX + 4 * ECX - 4].Single
    FMUL     ST(0), ST(1)
-   fistp    Word ptr [EDX+2*ECX-2]
-   MOV      bx, [EDX+2*ECX-2]
-   rol      bx, $8
-   MOV      [EDX+2*ECX-2], bx
+   FISTP    Word ptr [EDX+2*ECX-2]
+   MOV      BX, [EDX+2*ECX-2]
+   ROL      BX, $8
+   MOV      [EDX+2*ECX-2], BX
    LOOP @Start
    FFREE    ST(0)
    POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt16MSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ DoubleToInt16LSB_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Source, SampleCount div 2);
+{$ELSE}
 asm
-   PUSH EBX
+   PUSH     EBX
    FLD      CFloatToSmall
  @Start:
    FLD      [EAX + 8 * ECX - 8].Double
    FMUL     ST(0), ST(1)
-   fistp    Word ptr [EDX+2*ECX-2]
-   MOV      bx, [EDX+2*ECX-2]
-   rol      bx, $8
-   MOV      [EDX+2*ECX-2], bx
+   FISTP    Word ptr [EDX+2*ECX-2]
+   MOV      BX, [EDX+2*ECX-2]
+   ROL      BX, $8
+   MOV      [EDX+2*ECX-2], BX
    LOOP @Start
    FFREE    ST(0)
    POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt24MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
@@ -2646,40 +3229,52 @@ begin
 end;
 
 procedure SingleToInt32MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ SingleToInt32LSB_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToInt         //for speed
  @Start:
-  FLD   [EAX+4*ECX-4].Single
+  FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord;
+  FISTP [EDX+4*ECX-4].DWord;
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FFREE ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32MSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ DoubleToInt32LSB_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToInt         //for speed
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FFREE ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToSingleMSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 begin
- move(Source^, Target^, SampleCount * SizeOf(Single));
+ Move(Source^, Target^, SampleCount * SizeOf(Single));
  ReverseEndian4(Target, SampleCount);
 end;
 
@@ -2688,20 +3283,21 @@ procedure DoubleToSingleMSB_FPU(Source: PDouble; Target: Pointer; SampleCount: L
 begin
  DoubleLSBToSingle_FPU(Source, Target, SampleCount);
  ReverseEndian4(Target, SampleCount);
-end;
 {$ELSE}
 asm
- PUSH EBX
- @Start:
-  FLD   [Source+8*SampleCount-8].Double
-  FSTP  [Target+4*SampleCount-4].Single
-  MOV EBX, [Target+4*SampleCount-4]
-  bswap EBX
-  MOV [Target+4*SampleCount-4], EBX
-  LOOP @Start
- POP EBX
-end;
+  PUSH    EBX
+
+@Start:
+  FLD     [Source + 8 * SampleCount - 8].Double
+  FSTP    [Target + 4 * SampleCount - 4].Single
+  MOV     EBX, [Target + 4 * SampleCount - 4]
+  BSWAP   EBX
+  MOV     [Target + 4 * SampleCount - 4], EBX
+  LOOP    @Start
+
+  POP     EBX
 {$ENDIF}
+end;
 
 procedure SingleToDoubleMSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 begin
@@ -2711,136 +3307,184 @@ end;
 
 procedure DoubleToDoubleMSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 begin
- move(Source^, Target^, SampleCount * SizeOf(Double));
+ Move(Source^, Target^, SampleCount * SizeOf(Double));
  ReverseEndian8(Target, SampleCount);
 end;
 
 procedure SingleToInt32MSB16_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ SingleToInt32LSB16_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToSmall
  @Start:
-  FLD   [EAX+4*ECX-4].Single
+  FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FSTP ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32MSB16_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ DoubleToInt32LSB16_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToSmall
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FSTP ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32MSB18_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ SingleToInt32LSB18_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToInt18
  @Start:
-  FLD   [EAX+4*ECX-4].Single
+  FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FFREE ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32MSB18_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ DoubleToInt32LSB18_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToInt18
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FFREE ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32MSB20_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ SingleToInt32LSB20_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToInt20
  @Start:
-  FLD   [EAX+4*ECX-4].Single
+  FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FFREE ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32MSB20_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ DoubleToInt32LSB20_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH EBX
   FLD   CFloatToInt20
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX+4*ECX-4].DWord
+  FISTP [EDX+4*ECX-4].DWord
   MOV EBX, [EDX+4*ECX-4]
-  bswap EBX
+  BSWAP EBX
   MOV [EDX+4*ECX-4], EBX
   LOOP @Start
   FFREE ST(0)
   POP EBX
+{$ENDIF}
 end;
 
 procedure SingleToInt32MSB24_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ SingleToInt32LSB24_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH  EBX
   FLD   CFloatToInt24
  @Start:
   FLD   [EAX + 4 * ECX - 4].Single
   FMUL  ST(0), ST(1)
-  fistp [EDX + 4 * ECX - 4].DWord
+  FISTP [EDX + 4 * ECX - 4].DWord
   MOV   EBX, [EDX + 4 * ECX - 4]
-  bswap EBX
+  BSWAP EBX
   MOV   [EDX + 4 * ECX - 4], EBX
   LOOP  @Start
   FFREE ST(0)
   POP   EBX
+{$ENDIF}
 end;
 
 procedure DoubleToInt32MSB24_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
+{$IFDEF PUREPASCAL}
+begin
+ DoubleToInt32LSB24_FPU(Source, Target, SampleCount);
+ ReverseEndian4(Target, SampleCount);
+{$ELSE}
 asm
   PUSH  EBX
   FLD   CFloatToInt24
  @Start:
   FLD   [EAX + 8 * ECX - 8].Double
   FMUL  ST(0), ST(1)
-  fistp [EDX + 4 * ECX - 4].DWord
+  FISTP [EDX + 4 * ECX - 4].DWord
   MOV   EBX, [EDX + 4 * ECX - 4]
-  bswap EBX
+  BSWAP EBX
   MOV   [EDX + 4 * ECX - 4], EBX
   LOOP  @Start
   FFREE ST(0)
   POP   EBX
+{$ENDIF}
 end;
 
 function ClipCheckInt16LSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
@@ -2849,7 +3493,7 @@ var
   Value       : PSmallInt absolute Source;
 begin
  Result := False;
- for SampleIndex := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
    if (Value^ = $7FFF) or (Value^ = $8000) then
     begin
@@ -2897,91 +3541,95 @@ end;
 
 function ClipCheckInt32LSB16_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
 var
-  i : Integer;
-  v : PInteger absolute Source;
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $7FFF) or (v^ = $8000) then
+   if (IntCast^ = $7FFF) or (IntCast^ = $8000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt32LSB18_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $1FFFF) or (v^ = $20000) then
+   if (IntCast^ = $1FFFF) or (IntCast^ = $20000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt32LSB20_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $7FFFF) or (v^ = $80000) then
+   if (IntCast^ = $7FFFF) or (IntCast^ = $80000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt32LSB24_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $7FFFFF) or (v^ = $800000) then
+   if (IntCast^ = $7FFFFF) or (IntCast^ = $800000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckSingleLSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
 {$IFDEF PUREPASCAL}
-var i : Integer;
-    v : PSingle absolute Source;
+var
+  SampleIndex : Integer;
+  SingleCast  : PSingle absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^>1) or (v^<1) then
+   if (SingleCast^ > 1) or (SingleCast^ < 1) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(SingleCast);
   end;
 end;
 {$ELSE}
 asm
- MOV Result, 1                 // Annahme, es klippt!
- MOV ECX, EAX                  // ECX = EAX
- xor EAX, EAX
- fld1
+ MOV     Result, 1                 // Annahme, es klippt!
+ MOV     ECX, EAX                  // ECX = EAX
+ XOR     EAX, EAX
+ FLD1
  @FadeLoop:
    FLD  [ECX+4*EDX-4].Single   // Value, CurrentFadeFak
    FABS
@@ -2991,7 +3639,7 @@ asm
    SAHF                        // AX -> EFLAGS register
 }
    FSTP ST(0)                  // clear stack
-   ja @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+   JA @FadeLoopEnd             // if CurrentFadeFak > 1 then Exit!
 
    DEC EDX
  JNZ @FadeLoop
@@ -3004,18 +3652,19 @@ end;
 
 function ClipCheckDoubleLSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
 {$IFDEF PUREPASCAL}
-var i : Integer;
-    v : PDouble absolute Source;
+var
+  SampleIndex : Integer;
+  DoubleCast  : PDouble absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^>1) or (v^<1) then
+   if (DoubleCast^ > 1) or (DoubleCast^ < 1) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(DoubleCast);
   end;
 end;
 {$ELSE}
@@ -3023,7 +3672,7 @@ asm
  MOV Result, 1                 // Annahme, es klippt!
  MOV ECX, EAX                  // ECX = EAX
  xor EAX, EAX
- fld1
+ FLD1
  @FadeLoop:
    FLD  [ECX+8*EDX-8].Double   // Value, CurrentFadeFak
    FABS
@@ -3033,7 +3682,7 @@ asm
    SAHF                        // AX -> EFLAGS register
 }
    FSTP ST(0)                  // clear stack
-   ja @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+   ja @FadeLoopEnd             // if CurrentFadeFak > 1 then Exit!
 
    DEC EDX
  JNZ @FadeLoop
@@ -3045,173 +3694,215 @@ end;
 {$ENDIF}
 
 function ClipCheckInt16MSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PSmallInt absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PSmallInt absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $FF7F) or (v^ = $0080) then
+   if (IntCast^ = $FF7F) or (IntCast^ = $0080) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt24MSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
-    b : PByte absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
+  ByteCast    : PByte absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
    // ToDo BitReverse!!
-   if (v^ = $7FFFFF) or (v^ = $800000) then
+   if (IntCast^ = $7FFFFF) or (IntCast^ = $800000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(b, 3);
+   Inc(ByteCast, 3);
   end;
 end;
 
 function ClipCheckInt32MSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $FFFFF7F) or (v^ = $80) then
+   if (IntCast^ = $FFFFF7F) or (IntCast^ = $80) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt32MSB16_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $7FFF) or (v^ = $8000) then
+   if (IntCast^ = $7FFF) or (IntCast^ = $8000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt32MSB18_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $1FFFF) or (v^ = $20000) then
+   if (IntCast^ = $1FFFF) or (IntCast^ = $20000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt32MSB20_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $7FFFF) or (v^ = $80000) then
+   if (IntCast^ = $7FFFF) or (IntCast^ = $80000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckInt32MSB24_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PInteger absolute Source;
+var
+  SampleIndex : Integer;
+  IntCast     : PInteger absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
-   if (v^ = $7FFFFF) or (v^ = $800000) then
+   if (IntCast^ = $7FFFFF) or (IntCast^ = $800000) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(IntCast);
   end;
 end;
 
 function ClipCheckSingleMSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
-var i : Integer;
-    v : PSingle absolute Source;
+var
+  SampleIndex : Integer;
+  SingleCast  : PSingle absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount-1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
    // ToDo ByteSwap here
-   if (v^>1) or (v^<1) then
+   if (SingleCast^ > 1) or (SingleCast^ < 1) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(SingleCast);
   end;
 end;
 
 function ClipCheckDoubleMSB_FPU(Source: Pointer; SampleCount: LongInt): Boolean;
 var
-  i : Integer;
-  v : PDouble absolute Source;
+  SampleIndex : Integer;
+  DoubleCast  : PDouble absolute Source;
 begin
  Result := False;
- for i := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   begin
    // ToDo ByteSwap here
-   if (v^ > 1) or (v^ < 1) then
+   if (DoubleCast^ > 1) or (DoubleCast^ < 1) then
     begin
      Result := True;
      Exit;
     end;
-   Inc(v);
+   Inc(DoubleCast);
   end;
 end;
 
 procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   MixBuffer^ := MixBuffer^ + Data^;
+   Inc(MixBuffer);
+   Inc(Data);
+  end;
+{$ELSE}
 asm
 @Start:
   FLD   [EAX + 4 * ECX - 4].Single
-  fadd  [EDX + 4 * ECX - 4].Single
+  FADD  [EDX + 4 * ECX - 4].Single
   FSTP  [EDX + 4 * ECX - 4].Single
   LOOP @Start
+{$ENDIF}
 end;
 
 procedure MixBuffers_FPU(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   MixBuffer^ := MixBuffer^ + Data^;
+   Inc(MixBuffer);
+   Inc(Data);
+  end;
+{$ELSE}
 asm
 @Start:
   FLD   [EAX + 8 * ECX - 8].Double
-  fadd  [EDX + 8 * ECX - 8].Double
+  FADD  [EDX + 8 * ECX - 8].Double
   FSTP  [EDX + 8 * ECX - 8].Double
   LOOP @Start
+{$ENDIF}
 end;
 
-procedure Volume_FPU(Data:PSingle; Volume:Single; SampleCount:Integer); overload;
+procedure Volume_FPU(Data: PSingle; Volume: Single; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Data^ := Volume * Data^;
+   Inc(Data);
+  end;
+{$ELSE}
 asm
   MOV     ECX, SampleCount
   FLD     Volume.Single
@@ -3221,9 +3912,20 @@ asm
   FSTP    [EAX + 4 * ECX - 4].Single
   LOOP    @Start
   FSTP    ST(0)
+{$ENDIF}
 end;
 
-procedure Volume_FPU(Data:PDouble; Volume:Double; SampleCount:Integer); overload;
+procedure Volume_FPU(Data: PDouble; Volume: Double; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Data^ := Volume * Data^;
+   Inc(Data);
+  end;
+{$ELSE}
 asm
   MOV     ECX, SampleCount
   FLD     Volume.Double
@@ -3233,8 +3935,10 @@ asm
   FSTP    [EAX + 8 * ECX - 8].Double
   LOOP    @Start
   FSTP    ST(0)
+{$ENDIF}
 end;
 
+{$IFNDEF PUREPASCAL}
 {$IFNDEF DELPHI5}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3247,42 +3951,42 @@ const
   mm1pos : array[0..3] of Single = (1, 1, 1, 1);
   mm1neg : array[0..3] of Single = (-1, -1, -1, -1);
 asm
- MOV ECX, EDX
- PUSH ECX
- SHR ECX, 4  // number of large iterations = number of elements / 16
- JZ @SkipLargeAddLoop
- MOVUPS xmm0, mm1pos
- MOVUPS xmm1, mm1neg
+ MOV     ECX, EDX
+ PUSH    ECX
+ SHR     ECX, 4  // number of large iterations = number of elements / 16
+ JZ      @SkipLargeAddLoop
+ MOVUPS  XMM0, mm1pos
+ MOVUPS  XMM1, mm1neg
 @LargeAddLoop:
- MOVUPS xmm2, [EAX   ]
- MOVUPS xmm3, [EAX+$10]
- MOVUPS xmm4, [EAX+$20]
- MOVUPS xmm5, [EAX+$30]
- minps xmm2, xmm0
- minps xmm3, xmm0
- minps xmm4, xmm0
- minps xmm5, xmm0
- maxps xmm2, xmm1
- maxps xmm3, xmm1
- maxps xmm4, xmm1
- maxps xmm5, xmm1
- MOVUPS [EAX    ], xmm2
- MOVUPS [EAX+$10], xmm3
- MOVUPS [EAX+$20], xmm4
- MOVUPS [EAX+$30], xmm5
- ADD EAX, $40
+ MOVUPS  XMM2, [EAX   ]
+ MOVUPS  XMM3, [EAX+$10]
+ MOVUPS  XMM4, [EAX+$20]
+ MOVUPS  XMM5, [EAX+$30]
+ MINPS   XMM2, XMM0
+ MINPS   XMM3, XMM0
+ MINPS   XMM4, XMM0
+ MINPS   XMM5, XMM0
+ MAXPS   XMM2, XMM1
+ MAXPS   XMM3, XMM1
+ MAXPS   XMM4, XMM1
+ MAXPS   XMM5, XMM1
+ MOVUPS  [EAX    ], XMM2
+ MOVUPS  [EAX+$10], XMM3
+ MOVUPS  [EAX+$20], XMM4
+ MOVUPS  [EAX+$30], XMM5
+ ADD     EAX, $40
  LOOP @LargeAddLoop
 
 @SkipLargeAddLoop:
- POP ECX
- AND ECX, $0000000F
- JZ @EndAdd
+ POP     ECX
+ AND     ECX, $0000000F
+ JZ      @EndAdd
 
 @SmallAddLoop:
- MOV EDX, [EAX]
- AND EDX, $7FFFFFFF
- cmp EDX, c1a
- jle @Weiter
+ MOV     EDX, [EAX]
+ AND     EDX, $7FFFFFFF
+ CMP EDX, c1a
+ JLE @Weiter
  MOV EDX, [EAX]
  AND EDX, $80000000
  ADD EDX, c1a
@@ -3302,28 +4006,28 @@ const
   mmc2   : array[0..3] of Single = (2, 2, 2, 2);
   mmc3   : array[0..3] of Single = (3, 3, 3, 3);
   mmc6   : array[0..3] of Single = (6, 6, 6, 6);
-// a := abs(x); b := 3+a; Result := (x*b)/(a*b+6);
+// a := Abs(x); b := 3+a; Result := (x*b)/(a*b+6);
 asm
  MOV ECX, EDX
  PUSH ECX
  SHR ECX, 2  // number of large iterations = number of elements / 16
  JZ @SkipLargeAddLoop
- MOVUPS xmm0, mm1sgn
- MOVUPS xmm1, mmc3
- MOVUPS xmm2, mmc6
- MOVUPS xmm3, mmc2
+ MOVUPS XMM0, mm1sgn
+ MOVUPS XMM1, mmc3
+ MOVUPS XMM2, mmc6
+ MOVUPS XMM3, mmc2
 @LargeAddLoop:
- MOVUPS xmm4, [EAX]  // xmm3 = x
- movaps xmm5, xmm4   // xmm4 = x
- andps xmm5, xmm0    // xmm4 = |x|
- movaps xmm6, xmm5   // xmm5 = |x|
- addps xmm5, xmm1    // xmm4 = |x|+3
- MULPS xmm4, xmm5    // xmm3 = x*(|x|+3)
- MULPS xmm6, xmm5    // xmm5 = |x|*(|x|+3)
- addps xmm6, xmm2    // xmm5 = |x|*(|x|+3) + 6
- divps xmm4, xmm6    // xmm4 = x*(|x|+3)/(|x|*(|x|+3)+6)
- MULPS xmm4, xmm3    // xmm4 = 2*(x*(|x|+3)/(|x|*(|x|+3)+6))
- MOVUPS [EAX], xmm4
+ MOVUPS XMM4, [EAX]  // XMM3 = x
+ MOVAPS XMM5, XMM4   // XMM4 = x
+ andps XMM5, XMM0    // XMM4 = |x|
+ MOVAPS XMM6, XMM5   // XMM5 = |x|
+ ADDPS XMM5, XMM1    // XMM4 = |x|+3
+ MULPS XMM4, XMM5    // XMM3 = x*(|x|+3)
+ MULPS XMM6, XMM5    // XMM5 = |x|*(|x|+3)
+ ADDPS XMM6, XMM2    // XMM5 = |x|*(|x|+3) + 6
+ divps XMM4, XMM6    // XMM4 = x*(|x|+3)/(|x|*(|x|+3)+6)
+ MULPS XMM4, XMM3    // XMM4 = 2*(x*(|x|+3)/(|x|*(|x|+3)+6))
+ MOVUPS [EAX], XMM4
 
  ADD EAX, $10
  LOOP @LargeAddLoop
@@ -3333,21 +4037,21 @@ asm
  AND ECX, $00000003
  JZ @EndAdd
 
- fld1
- fld1
+ FLD1
+ FLD1
  FADDP
 
 @SmallAddLoop:
  FLD [EAX].Single
  FABS
  FLD c3
- fadd ST(0), ST(1)
+ FADD ST(0), ST(1)
  FLD ST(0)
  FMUL [EAX].Single
- fxch ST(2)
- fmulp
- fadd c6.Single
- fdiv
+ FXCH ST(2)
+ FMULP
+ FADD c6.Single
+ FDIV
  FMUL ST(0), ST(1)
  FSTP [EAX].Single
  ADD EAX, 4
@@ -3363,25 +4067,25 @@ asm
  JZ @SkipLargeAddLoop
 @LargeAddLoop:
  prefetcht0 [EAX+$80]
- MOVUPS xmm0, [EAX    ]
- MOVUPS xmm1, [EAX+$10]
- MOVUPS xmm2, [EAX+$20]
- MOVUPS xmm3, [EAX+$30]
- MOVUPS xmm4, [EAX+$40]
- MOVUPS xmm5, [EAX+$50]
- MOVUPS xmm6, [EAX+$60]
- MOVUPS xmm7, [EAX+$70]
+ MOVUPS XMM0, [EAX    ]
+ MOVUPS XMM1, [EAX+$10]
+ MOVUPS XMM2, [EAX+$20]
+ MOVUPS XMM3, [EAX+$30]
+ MOVUPS XMM4, [EAX+$40]
+ MOVUPS XMM5, [EAX+$50]
+ MOVUPS XMM6, [EAX+$60]
+ MOVUPS XMM7, [EAX+$70]
 
  // TODO!!!
 
- MOVUPS [EDX    ], xmm0
- MOVUPS [EDX+$10], xmm1
- MOVUPS [EDX+$20], xmm2
- MOVUPS [EDX+$30], xmm3
- MOVUPS [EDX+$40], xmm4
- MOVUPS [EDX+$50], xmm5
- MOVUPS [EDX+$60], xmm6
- MOVUPS [EDX+$70], xmm7
+ MOVUPS [EDX    ], XMM0
+ MOVUPS [EDX+$10], XMM1
+ MOVUPS [EDX+$20], XMM2
+ MOVUPS [EDX+$30], XMM3
+ MOVUPS [EDX+$40], XMM4
+ MOVUPS [EDX+$50], XMM5
+ MOVUPS [EDX+$60], XMM6
+ MOVUPS [EDX+$70], XMM7
 
  ADD EAX, $80
  ADD EDX, $80
@@ -3395,8 +4099,8 @@ asm
  SHR ECX, 2 // number of small iterations = (number of elements modulo 16) / 4
 
 @SmallAddLoop:
- MOVUPS xmm0, [EAX]
- MOVUPS [EDX], xmm0
+ MOVUPS XMM0, [EAX]
+ MOVUPS [EDX], XMM0
 
  ADD EAX, 16
  ADD EDX, 16
@@ -3408,49 +4112,49 @@ end;
 
 procedure SingleToInt32LSB_SSE(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
- MOVUPS xmm7, CFloatToInt4
+ MOVUPS XMM7, CFloatToInt4
 
  PUSH ECX
  SHR ECX, 4  // number of large iterations = number of elements / 16
  JZ @SkipLargeAddLoop
 @LargeAddLoop:
- movlps xmm0, [EAX]
+ MOVLPS XMM0, [EAX]
  prefetcht0 [EAX+64]
- MULPS xmm0, xmm7
- cvttps2pi MM0, xmm0
- movlps xmm1, [EAX+8]
- MULPS xmm1, xmm7
- cvttps2pi MM1, xmm1
+ MULPS XMM0, XMM7
+ CVTTPS2PI MM0, XMM0
+ MOVLPS XMM1, [EAX+8]
+ MULPS XMM1, XMM7
+ CVTTPS2PI MM1, XMM1
 
- movlps xmm2, [EAX+16]
- MULPS xmm2, xmm7
- cvttps2pi MM2, xmm2
- movlps xmm3, [EAX+24]
- MULPS xmm3, xmm7
- cvttps2pi MM3, xmm3
+ MOVLPS XMM2, [EAX+16]
+ MULPS XMM2, XMM7
+ CVTTPS2PI MM2, XMM2
+ MOVLPS XMM3, [EAX+24]
+ MULPS XMM3, XMM7
+ CVTTPS2PI MM3, XMM3
 
- movlps xmm4, [EAX+32]
- MULPS xmm4, xmm7
- cvttps2pi MM4, xmm4
- movlps xmm5, [EAX+40]
- MULPS xmm5, xmm7
- cvttps2pi mm5, xmm5
+ MOVLPS XMM4, [EAX+32]
+ MULPS XMM4, XMM7
+ CVTTPS2PI MM4, XMM4
+ MOVLPS XMM5, [EAX+40]
+ MULPS XMM5, XMM7
+ CVTTPS2PI mm5, XMM5
 
- movlps xmm6, [EAX+48]
- MULPS xmm6, xmm7
- cvttps2pi mm6, xmm6
- movlps xmm6, [EAX+56]
- MULPS xmm6, xmm7
- cvttps2pi mm7, xmm6
+ MOVLPS XMM6, [EAX+48]
+ MULPS XMM6, XMM7
+ CVTTPS2PI mm6, XMM6
+ MOVLPS XMM6, [EAX+56]
+ MULPS XMM6, XMM7
+ CVTTPS2PI mm7, XMM6
 
- movntq [EDX], MM0
- movntq [EDX+8], MM1
- movntq [EDX+16], MM2
- movntq [EDX+24], MM3
- movntq [EDX+32], MM4
- movntq [EDX+40], mm5
- movntq [EDX+48], mm6
- movntq [EDX+56], mm7
+ MOVNTQ [EDX], MM0
+ MOVNTQ [EDX+8], MM1
+ MOVNTQ [EDX+16], MM2
+ MOVNTQ [EDX+24], MM3
+ MOVNTQ [EDX+32], MM4
+ MOVNTQ [EDX+40], mm5
+ MOVNTQ [EDX+48], mm6
+ MOVNTQ [EDX+56], mm7
 
  ADD EAX, 64
  ADD EDX, 64
@@ -3465,12 +4169,12 @@ asm
  SHR ECX, 2 // number of small iterations = (number of elements modulo 16) / 4
 
 @SmallAddLoop:
- movlps xmm0, [EAX]
- MULPS xmm0, xmm7
- cvttps2pi MM0, xmm0
- movlps xmm1, [EAX+8]
- MULPS xmm1, xmm7
- cvttps2pi MM1, xmm1
+ MOVLPS XMM0, [EAX]
+ MULPS XMM0, XMM7
+ CVTTPS2PI MM0, XMM0
+ MOVLPS XMM1, [EAX+8]
+ MULPS XMM1, XMM7
+ CVTTPS2PI MM1, XMM1
 
  ADD EAX, 16
  ADD EDX, 16
@@ -3478,7 +4182,7 @@ asm
  JNZ @SmallAddLoop
 
 @EndAdd:
- emms
+ EMMS
 end;
 
 procedure MixBuffers_SSE(Data:PSingle; MixBuffer:PSingle; SampleCount:Integer);
@@ -3487,22 +4191,22 @@ asm
  SHR ECX, 4  // number of large iterations = number of elements / 16
  JZ @SkipLargeAddLoop
 @LargeAddLoop:
-  MOVUPS xmm0, [EAX    ]
-  MOVUPS xmm1, [EAX+$10]
-  MOVUPS xmm2, [EAX+$20]
-  MOVUPS xmm3, [EAX+$30]
-  MOVUPS xmm4, [EDX    ]
-  MOVUPS xmm5, [EDX+$10]
-  MOVUPS xmm6, [EDX+$20]
-  MOVUPS xmm7, [EDX+$30]
-  addps xmm0, xmm4
-  addps xmm1, xmm5
-  addps xmm2, xmm6
-  addps xmm3, xmm7
-  MOVUPS [EDX    ], xmm0
-  MOVUPS [EDX+$10], xmm1
-  MOVUPS [EDX+$20], xmm2
-  MOVUPS [EDX+$30], xmm3
+  MOVUPS XMM0, [EAX    ]
+  MOVUPS XMM1, [EAX+$10]
+  MOVUPS XMM2, [EAX+$20]
+  MOVUPS XMM3, [EAX+$30]
+  MOVUPS XMM4, [EDX    ]
+  MOVUPS XMM5, [EDX+$10]
+  MOVUPS XMM6, [EDX+$20]
+  MOVUPS XMM7, [EDX+$30]
+  ADDPS XMM0, XMM4
+  ADDPS XMM1, XMM5
+  ADDPS XMM2, XMM6
+  ADDPS XMM3, XMM7
+  MOVUPS [EDX    ], XMM0
+  MOVUPS [EDX+$10], XMM1
+  MOVUPS [EDX+$20], XMM2
+  MOVUPS [EDX+$30], XMM3
   ADD EAX, 64
   ADD EDX, 64
   DEC ECX
@@ -3514,8 +4218,8 @@ asm
   JZ @EndAdd
 
 @AddLoop:
-  FLD   [EAX+4*ECX-4].Single
-  fadd  [EDX+4*ECX-4].Single
+  FLD   [EAX + 4 * ECX - 4].Single
+  FADD  [EDX+4*ECX-4].Single
   FSTP  [EDX+4*ECX-4].Single
   LOOP @AddLoop
 
@@ -3526,26 +4230,26 @@ end;
 procedure Volume_SSE(Data:PSingle; Volume:Single; SampleCount:Integer);
 asm
   MOV   ECX, SampleCount
-  movss xmm4, Volume.Single
-  shufps xmm4, xmm4, 0h
+  movss XMM4, Volume.Single
+  shufps XMM4, XMM4, 0h
 
   PUSH ECX
   SHR ECX, 4
   JZ @SkipHugeLoop
 @HugeLoop:
-  MOVUPS  xmm0, [EAX]
-  MULPS  xmm0, xmm4
-  MOVUPS  xmm1, [EAX+16]
-  MULPS  xmm1, xmm4
-  MOVUPS  xmm2, [EAX+32]
-  MULPS  xmm2, xmm4
-  MOVUPS  xmm3, [EAX+48]
-  MULPS  xmm3, xmm4
+  MOVUPS  XMM0, [EAX]
+  MULPS  XMM0, XMM4
+  MOVUPS  XMM1, [EAX+16]
+  MULPS  XMM1, XMM4
+  MOVUPS  XMM2, [EAX+32]
+  MULPS  XMM2, XMM4
+  MOVUPS  XMM3, [EAX+48]
+  MULPS  XMM3, XMM4
 
-  MOVUPS  [EAX], xmm0
-  MOVUPS  [EAX+16], xmm1
-  MOVUPS  [EAX+32], xmm2
-  MOVUPS  [EAX+48], xmm3
+  MOVUPS  [EAX], XMM0
+  MOVUPS  [EAX+16], XMM1
+  MOVUPS  [EAX+32], XMM2
+  MOVUPS  [EAX+48], XMM3
   ADD   EAX, 64
   LOOP  @HugeLoop
 
@@ -3558,9 +4262,9 @@ asm
   SHR ECX, 2
   JZ @SkipLargeLoop
 @LargeLoop:
-  MOVUPS  xmm0, [EAX]
-  MULPS  xmm0, xmm4
-  MOVUPS  [EAX], xmm0
+  MOVUPS  XMM0, [EAX]
+  MULPS  XMM0, XMM4
+  MOVUPS  [EAX], XMM0
   ADD   EAX, 16
   LOOP  @LargeLoop
 
@@ -4081,6 +4785,7 @@ asm
 end;
 
 {$ENDIF}
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Selection ////////////////////////////////////
@@ -4242,6 +4947,7 @@ end;
 
 procedure Use_SSE;
 begin
+ {$IFNDEF PUREPASCAL}
  {$IFNDEF DELPHI5}
 // ToInt32LSB.oc32 := SingleToInt32LSB_SSE;
  MixBuffers.mb32   := MixBuffers_SSE;
@@ -4251,10 +4957,12 @@ begin
  Volume.v32        := Volume_SSE;
  {$ENDIF}
  {$ENDIF}
+ {$ENDIF}
 end;
 
 procedure Use_3DNow;
 begin
+ {$IFNDEF PUREPASCAL}
  {$IFNDEF DELPHI5}
 {
  ToInt16LSB := SingleToInt16LSB_3DNow;
@@ -4274,6 +4982,7 @@ begin
  FromInt32LSB24.ic32 := Int32LSB24ToSingle_3DNow;
  MixBuffers.mb32     := MixBuffers_3DNow;
  Volume.v32          := Volume_3DNow;
+ {$ENDIF}
  {$ENDIF}
 end;
 

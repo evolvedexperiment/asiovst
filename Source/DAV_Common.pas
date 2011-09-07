@@ -600,19 +600,22 @@ end;                                                             // e^(x) = 2^(l
 //                                                       //
 ///////////////////////////////////////////////////////////
 
+{$IFDEF CPUx86_64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
 function SqrAmp2dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := 10 * Log10(Value);
-end;
 {$ELSE}
 asm
- fldlg2
- fld Value
- fyl2x
- fmul CTen32
-end;
+  FLDLG2
+  FLD     Value
+  FYL2X
+  FMUL    CTen32
 {$ENDIF}
+end;
 
 function SqrAmp2dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
@@ -621,10 +624,10 @@ begin
 end;
 {$ELSE}
 asm
- fldlg2
- fld Value
- fyl2x
- fmul CTen64
+ FLDLG2
+ FLD     Value
+ FYL2X
+ FMUL    CTen64
 end;
 {$ENDIF}
 
@@ -635,10 +638,10 @@ begin
 end;
 {$ELSE}
 asm
- fldlg2
- fld Value
- fyl2x
- fmul CTwenty32
+ FLDLG2
+ FLD Value
+ FYL2X
+ FMUL CTwenty32
 end;
 {$ENDIF}
 
@@ -649,10 +652,10 @@ begin
 end;
 {$ELSE}
 asm
- fldlg2
- fld Value
- fyl2x
- fmul CTwenty64
+ FLDLG2
+ FLD Value
+ FYL2X
+ FMUL CTwenty64
 end;
 {$ENDIF}
 
@@ -666,25 +669,25 @@ begin
 end;
 {$ELSE}
 asm
- fldlg2
- fld    [eax].Single
- fyl2x
- fmul   CTwenty32.Double
+ FLDLG2
+ FLD    [eax].Single
+ FYL2X
+ FMUL   CTwenty32.Double
  fstp   [eax].Single
- fldlg2
- fld    [eax + 4].Single
- fyl2x
- fmul   CTwenty32.Double
+ FLDLG2
+ FLD    [eax + 4].Single
+ FYL2X
+ FMUL   CTwenty32.Double
  fstp   [eax + 4].Single
- fldlg2
- fld    [eax + 8].Single
- fyl2x
- fmul   CTwenty32.Double
+ FLDLG2
+ FLD    [eax + 8].Single
+ FYL2X
+ FMUL   CTwenty32.Double
  fstp   [eax + 8].Single
- fldlg2
- fld    [eax + 12].Single
- fyl2x
- fmul   CTwenty32.Double
+ FLDLG2
+ FLD    [eax + 12].Single
+ FYL2X
+ FMUL   CTwenty32.Double
  fstp   [eax + 12].Single
 end;
 {$ENDIF}
@@ -705,11 +708,11 @@ end;
 const
   fltl2: Single = 6.907755279;
 asm
- fld     Value.Single
- fmul    fltl2
+ FLD     Value.Single
+ FMUL    fltl2
  fldl2e
- fmul
- fld     st(0)
+ FMUL
+ FLD     st(0)
  frndint
  fsub    st(1), st
  fxch    st(1)
@@ -718,7 +721,7 @@ asm
  fadd
  fscale
  fstp    st(1)
- fmul CTwenty64.Double
+ FMUL CTwenty64.Double
 end;
 {$ENDIF}
 
@@ -731,11 +734,11 @@ end;
 const
   fltl2: Double = 6.907755279;
 asm
- fld     Value.Double
- fmul    fltl2
+ FLD     Value.Double
+ FMUL    fltl2
  fldl2e
- fmul
- fld     st(0)
+ FMUL
+ FLD     st(0)
  frndint
  fsub    st(1), st
  fxch    st(1)
@@ -744,7 +747,7 @@ asm
  fadd
  fscale
  fstp    st(1)
- fmul CTwenty64.Double
+ FMUL CTwenty64.Double
 end;
 {$ENDIF}
 
@@ -759,10 +762,10 @@ end;
 {$ELSE}
 asm
  fldln2
- fld Value.Single
- fmul fltl1
- fyl2x
- fmul fltl2
+ FLD Value.Single
+ FMUL fltl1
+ FYL2X
+ FMUL fltl2
 end;
 {$ENDIF}
 
@@ -777,10 +780,10 @@ end;
 {$ELSE}
 asm
  fldln2
- fld Value.Double
- fmul fltl1
- fyl2x
- fmul fltl2
+ FLD Value.Double
+ FMUL fltl1
+ FYL2X
+ FMUL fltl2
 end;
 {$ENDIF}
 
@@ -965,8 +968,8 @@ end;
 {$ELSE}
 var i : Integer;
 asm
- fld Value.Single
- fld Value.Single
+ FLD Value.Single
+ FLD Value.Single
  fsub CHalf64
  frndint
  fsubp
@@ -981,8 +984,8 @@ end;
 {$ELSE}
 var i : Integer;
 asm
- fld Value.Double
- fld Value.Double
+ FLD Value.Double
+ FLD Value.Double
  fsub CHalf64
  frndint
  fsubp
@@ -1057,7 +1060,7 @@ begin
 end;
 {$ELSE}
 asm
- fld   Value.Single
+ FLD   Value.Single
  fadd  st(0), st(0)
  fadd  CHalf32
  fistp Result.Integer
@@ -1072,7 +1075,7 @@ begin
 end;
 {$ELSE}
 asm
- fld   Value.Double
+ FLD   Value.Double
  fadd  st(0), st(0)
  fadd  CHalf32
  fistp Result.Integer
@@ -1095,7 +1098,7 @@ end;
 {$ELSE}
 asm
  @Start:
- fld   [eax].Single
+ FLD   [eax].Single
  fadd  st(0), st(0)
  fadd  CHalf32
  fistp [edx].Integer
@@ -1113,7 +1116,7 @@ begin
 end;
 {$ELSE}
 asm
- fld   Value.Single
+ FLD   Value.Single
  fadd  st(0), st(0)
  fsub  CHalf32
  fistp Result.Integer
@@ -1128,7 +1131,7 @@ begin
 end;
 {$ELSE}
 asm
- fld   Value.Double
+ FLD   Value.Double
  fadd  st(0), st(0)
  fsub  CHalf32
  fistp Result.Integer
@@ -1151,7 +1154,7 @@ end;
 {$ELSE}
 asm
  @Start:
- fld [eax].Single
+ FLD [eax].Single
  fadd  st(0), st(0)
  fsub  CHalf32
  fistp [edx].Integer
@@ -1171,7 +1174,7 @@ begin
 end;
 {$ELSE}
 asm
- fld   Value.Single
+ FLD   Value.Single
  fadd  st(0), st(0)
  fsubr CMinusHalf32
  fistp Result.Integer
@@ -1187,7 +1190,7 @@ begin
 end;
 {$ELSE}
 asm
- fld   Value.Double
+ FLD   Value.Double
  fadd  st(0), st(0)
  fsubr CMinusHalf32
  fistp Result.Integer
@@ -1211,7 +1214,7 @@ end;
 {$ELSE}
 asm
  @Start:
- fld   [eax].Single
+ FLD   [eax].Single
  fadd  st(0), st(0)
  fsubr CMinusHalf32
  fistp [edx].Integer
@@ -1234,7 +1237,7 @@ end;
 var
   IntCast : Integer absolute Value;
 asm
- fld   Value.Single
+ FLD   Value.Single
  fadd  st(0), st(0)
  fabs
  fadd  CMinusHalf32
@@ -1256,7 +1259,7 @@ end;
 var
   ByteCast : array [0..7] of Byte absolute Value;
 asm
- fld   Value.Double
+ FLD   Value.Double
  fadd  st(0), st(0)
  fabs
  fadd  CMinusHalf32
@@ -1277,7 +1280,7 @@ begin
 end;
 {$ELSE}
 asm
- fld Sample.Single
+ FLD Sample.Single
  frndint
  fistp Result.Integer
 end;
@@ -1290,7 +1293,7 @@ begin
 end;
 {$ELSE}
 asm
- fld Sample.Double
+ FLD Sample.Double
  frndint
  fistp Result.Integer
 end;
@@ -1468,8 +1471,8 @@ begin
 end;
 {$ELSE}
 asm
- fld     DWORD PTR [EBP + $08]
- fld     DWORD PTR [EBP + $0C]
+ FLD     DWORD PTR [EBP + $08]
+ FLD     DWORD PTR [EBP + $0C]
  fcomi   st(0), st(1)
  fcmovnb st(0), st(1)
  ffree   st(1)
@@ -1485,8 +1488,8 @@ begin
 end;
 {$ELSE}
 asm
- fld     DWORD PTR [EBP + $0C]
- fld     DWORD PTR [EBP + $08]
+ FLD     DWORD PTR [EBP + $0C]
+ FLD     DWORD PTR [EBP + $08]
  fcomi   st(0), st(1)
  fcmovnb st(0), st(1)
  ffree   st(1)

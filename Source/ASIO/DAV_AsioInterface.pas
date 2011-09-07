@@ -50,7 +50,7 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 uses
   Windows, ActiveX, DAV_ASIO;
 
@@ -115,7 +115,8 @@ function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: TStdCallAsio
 
 implementation
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
+{$IFDEF CPU32}
 const
   baQueryInterface    = 0;
   baAddRef            = 4;
@@ -141,6 +142,34 @@ const
   baControlPanel      = 84;
   baFuture            = 88;
   baOutputReady       = 92;
+{$ENDIF}
+{$IFDEF CPUx86_64}
+const
+  baQueryInterface    = $0;
+  baAddRef            = $8;
+  baRelease           = $10;
+  baInit              = $18;
+  baGetDriverName     = $20;
+  baGetDriverVersion  = $28;
+  baGetErrorMessage   = $30;
+  baStart             = $38;
+  baStop              = $40;
+  baGetChannels       = $48;
+  baGetLatencies      = $50;
+  baGetBufferSize     = $58;
+  baCanSampleRate     = $60;
+  baGetSampleRate     = $68;
+  baSetSampleRate     = $70;
+  baGetClockSources   = $78;
+  baSetClockSource    = $80;
+  baGetSamplePosition = $88;
+  baGetChannelInfo    = $90;
+  baCreateBuffers     = $98;
+  baDisposeBuffers    = $A0;
+  baControlPanel      = $A8;
+  baFuture            = $B0;
+  baOutputReady       = $B8;
+{$ENDIF}
 
 constructor TStdCallAsio.Create(AsioCLSID: TClsID; var Success: Boolean);
 begin
@@ -158,418 +187,556 @@ begin
 end;
 
 function TStdCallAsio.Init(SysHandle: HWND): TASIOBool; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR SysHandle
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baInit]
-end;
+{$IFDEF sPUREPASCAL}
+begin
+  ASIODriverInterface.Init(SysHandle);
 {$ELSE}
 asm
- PUSH DWORD PTR SysHandle
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baInit]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baInit]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR SysHandle
+{$IFDEF FPC}
+  MOV     ECX, SELF
+{$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
 {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baInit]
+{$ENDIF}
+{$ENDIF}
+end;
 
 procedure TStdCallAsio.GetDriverName(Name: PAnsiChar); assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR Name
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetDriverName]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  ASIODriverInterface.GetDriverName(Name);
 {$ELSE}
 asm
- PUSH DWORD PTR Name
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetDriverName]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetDriverName]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR Name
+{$IFDEF FPC}
+  MOV     ECX, SELF
+{$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
 {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetDriverName]
+{$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.GetDriverVersion: LongInt; assembler;
-{$IFDEF FPC}
-asm
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetDriverVersion]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetDriverVersion;
 {$ELSE}
 asm
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetDriverVersion]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetDriverVersion]
+{$ELSE}
+  // x86 (32-Bit)
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetDriverVersion]
 {$ENDIF}
+{$ENDIF}
+end;
 
 procedure TStdCallAsio.GetErrorMessage(ErrorString: PAnsiChar); assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR ErrorString
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetErrorMessage]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  ASIODriverInterface.GetErrorMessage(ErrorString);
 {$ELSE}
 asm
- PUSH DWORD PTR ErrorString
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetErrorMessage]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetErrorMessage]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR ErrorString
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetErrorMessage]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.Start: TASIOError; assembler;
-{$IFDEF FPC}
-asm
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baStart]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.Start;
 {$ELSE}
 asm
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baStart]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baStart]
+{$ELSE}
+  // x86 (32-Bit)
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baStart]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.Stop: TASIOError; assembler;
-{$IFDEF FPC}
-asm
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baStop]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.Stop;
 {$ELSE}
 asm
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baStop]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baStop]
+{$ELSE}
+  // x86 (32-Bit)
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baStop]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR NumOutputChannels
- PUSH DWORD PTR NumInputChannels
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetChannels]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetChannels(NumInputChannels, NumOutputChannels);
 {$ELSE}
 asm
- PUSH DWORD PTR NumOutputChannels
- PUSH DWORD PTR NumInputChannels
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetChannels]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetChannels]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR NumOutputChannels
+  PUSH    DWORD PTR NumInputChannels
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetChannels]
 {$ENDIF}
+{$ENDIF}
+end;
 
-function TStdCallAsio.GetLatencies(out InputLatency, OutputLatency:LongInt): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR outputLatency
- PUSH DWORD PTR InputLatency
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetLatencies]
-end;
+function TStdCallAsio.GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; assembler;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetLatencies(InputLatency, OutputLatency);
 {$ELSE}
 asm
- PUSH DWORD PTR outputLatency
- PUSH DWORD PTR InputLatency
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetLatencies]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetLatencies]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR OutputLatency
+  PUSH    DWORD PTR InputLatency
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetLatencies]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR Granularity
- PUSH DWORD PTR PreferredSize
- PUSH DWORD PTR MaxSize
- PUSH DWORD PTR MinSize
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetBufferSize]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetBufferSize(MinSize, MaxSize, PreferredSize, Granularity);
 {$ELSE}
 asm
- PUSH DWORD PTR Granularity
- PUSH DWORD PTR PreferredSize
- PUSH DWORD PTR MaxSize
- PUSH DWORD PTR MinSize
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetBufferSize]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetBufferSize]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR Granularity
+  PUSH    DWORD PTR PreferredSize
+  PUSH    DWORD PTR MaxSize
+  PUSH    DWORD PTR MinSize
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetBufferSize]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR [SampleRate + 4]
- PUSH DWORD PTR SampleRate
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baCanSampleRate]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.CanSampleRate(SampleRate);
 {$ELSE}
 asm
- PUSH DWORD PTR [SampleRate + 4]
- PUSH DWORD PTR SampleRate
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baCanSampleRate]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+(*
+  PUSH    QWORD PTR [SampleRate + 4]
+  PUSH    QWORD PTR SampleRate
+*)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baCanSampleRate]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR [SampleRate + 4]
+  PUSH    DWORD PTR SampleRate
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baCanSampleRate]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR SampleRate
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetSampleRate]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetSampleRate(SampleRate);
 {$ELSE}
 asm
- PUSH DWORD PTR SampleRate
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetSampleRate]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetSampleRate]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR SampleRate
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetSampleRate]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR [SampleRate + 4]
- PUSH DWORD PTR SampleRate
- MOV ECX, DWORD PTR SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baSetSampleRate]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.SetSampleRate(SampleRate);
 {$ELSE}
 asm
- PUSH DWORD PTR [SampleRate + 4]
- PUSH DWORD PTR SampleRate
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baSetSampleRate]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baSetSampleRate]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR [SampleRate + 4]
+  PUSH    DWORD PTR SampleRate
+  {$IFDEF FPC}
+  MOV     ECX, DWORD PTR SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baSetSampleRate]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR NumSources
- PUSH DWORD PTR Clocks
- MOV ECX, DWORD PTR SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetClockSources]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetClockSources(Clocks, NumSources);
 {$ELSE}
 asm
- PUSH DWORD PTR NumSources
- PUSH DWORD PTR Clocks
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetClockSources]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetClockSources]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR NumSources
+  PUSH    DWORD PTR Clocks
+  {$IFDEF FPC}
+  MOV     ECX, DWORD PTR SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetClockSources]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.SetClockSource(Reference: LongInt): TAsioError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR Reference
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baSetClockSource]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.SetClockSource(Reference);
 {$ELSE}
 asm
- PUSH DWORD PTR Reference
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baSetClockSource]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baSetClockSource]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR Reference
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baSetClockSource]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.GetSamplePosition(out SamplePosition: TASIOSamples;
   out TimeStamp: TASIOTimeStamp): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR TimeStamp
- PUSH DWORD PTR SamplePosition
- MOV ECX,DWORD PTR SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetSamplePosition]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetSamplePosition(SamplePosition, TimeStamp);
 {$ELSE}
 asm
- PUSH DWORD PTR TimeStamp
- PUSH DWORD PTR SamplePosition
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetSamplePosition]
-end;
+{$IFDEF CPUx86_64}
+  // x86 (64-Bit)
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetSamplePosition]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR TimeStamp
+  PUSH    DWORD PTR SamplePosition
+  {$IFDEF FPC}
+  MOV     ECX, DWORD PTR SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetSamplePosition]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR Info
- MOV ECX,DWORD PTR SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetChannelInfo]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.GetChannelInfo(Info);
 {$ELSE}
 asm
- PUSH DWORD PTR Info
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baGetChannelInfo]
-end;
+{$IFDEF CPUx86_64}
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baGetChannelInfo]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR Info
+  {$IFDEF FPC}
+  MOV     ECX, DWORD PTR SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baGetChannelInfo]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR Callbacks
- PUSH DWORD PTR BufferSize
- PUSH DWORD PTR NumChannels
- PUSH DWORD PTR BufferInfos
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baCreateBuffers]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
 {$ELSE}
 asm
- PUSH DWORD PTR Callbacks
- PUSH DWORD PTR BufferSize
- PUSH DWORD PTR NumChannels
- PUSH DWORD PTR BufferInfos
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baCreateBuffers]
-end;
+{$IFDEF CPUx86_64}
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baCreateBuffers]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR Callbacks
+  PUSH    DWORD PTR BufferSize
+  PUSH    DWORD PTR NumChannels
+  PUSH    DWORD PTR BufferInfos
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baCreateBuffers]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.DisposeBuffers: TASIOError; assembler;
-{$IFDEF FPC}
-asm
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baDisposeBuffers]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.DisposeBuffers;
 {$ELSE}
 asm
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baDisposeBuffers]
-end;
+{$IFDEF CPUx86_64}
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baDisposeBuffers]
+{$ELSE}
+  // x86 (32-Bit)
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baDisposeBuffers]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.ControlPanel: TASIOError; assembler;
-{$IFDEF FPC}
-asm
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baControlPanel]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.ControlPanel;
 {$ELSE}
 asm
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baControlPanel]
-end;
+{$IFDEF CPUx86_64}
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baControlPanel]
+{$ELSE}
+  // x86 (32-Bit)
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baControlPanel]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.Future(Selector: LongInt; Opt: Pointer): TASIOError; assembler;
-{$IFDEF FPC}
-asm
- PUSH DWORD PTR Opt
- PUSH DWORD PTR Selector
- MOV ECX, SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baFuture]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.Future(Selector, Opt);
 {$ELSE}
 asm
- PUSH DWORD PTR Opt
- PUSH DWORD PTR Selector
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baFuture]
-end;
+{$IFDEF CPUx86_64}
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baFuture]
+{$ELSE}
+  // x86 (32-Bit)
+  PUSH    DWORD PTR Opt
+  PUSH    DWORD PTR Selector
+  {$IFDEF FPC}
+  MOV     ECX, SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baFuture]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function TStdCallAsio.OutputReady: TASIOError; assembler;
-{$IFDEF FPC}
-asm
- MOV ECX, DWORD PTR SELF
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baOutputReady]
-end;
+{$IFDEF PUREPASCAL}
+begin
+  Result := ASIODriverInterface.OutputReady;
 {$ELSE}
 asm
- MOV ECX, DWORD PTR [SELF]
- MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX, DWORD PTR [ECX]
- CALL DWORD PTR [EAX + baOutputReady]
-end;
+{$IFDEF CPUx86_64}
+  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+  MOV     RAX, [RAX]
+  CALL    QWORD PTR [RAX + baOutputReady]
+{$ELSE}
+  // x86 (32-Bit)
+  {$IFDEF FPC}
+  MOV     ECX, DWORD PTR SELF
+  {$ELSE}
+  MOV     ECX, DWORD PTR [SELF]
+  {$ENDIF}
+  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+  MOV     EAX, DWORD PTR [ECX]
+  CALL    DWORD PTR [EAX + baOutputReady]
 {$ENDIF}
+{$ENDIF}
+end;
 
 function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: IStdCallAsio): Boolean; overload;
 var
@@ -601,9 +768,10 @@ begin
  end;
 end;
 
+{$ENDIF}
+
 initialization
 
 finalization
-{$ENDIF}
 
 end.

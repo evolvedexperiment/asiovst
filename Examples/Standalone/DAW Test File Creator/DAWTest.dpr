@@ -347,6 +347,9 @@ begin
   else
     WriteLn('Running Optimizer (this may take a while)...');
   DiffEvol := TDifferentialEvolution.Create(nil);
+  DiffEvol.GainBest := 0.1;
+  DiffEvol.CrossOver := 0.5;
+
   WeigthOpt := TWeightOptimizer.Create;
   try
     DiffEvol.VariableCount := NumberOfFiles - 1;
