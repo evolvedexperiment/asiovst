@@ -40,6 +40,10 @@ interface
   {$DEFINE PUREPASCAL} // for OSX use pure pascal code
 {$ENDIF}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   DAV_Types, DAV_Complex;

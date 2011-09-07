@@ -394,12 +394,11 @@ const
 function HuffmanDecoder(HuffmanCodeTable: PHuffmanCodeTable;
   var x, y, v, w: Integer; BitReverse: TBitReserve): Integer;
 var
-  Level: THuffBits;
-  Point: Cardinal;
-  Error: Cardinal;
+  Level : THuffBits;
+  Point : Cardinal;
 begin
  Point := 0;
- Error := 1;
+ Result := 1;  // error code
  Level := CDMask;
 
  if (HuffmanCodeTable.Val = nil) then
@@ -424,7 +423,7 @@ begin
     x := HuffmanCodeTable.Val[Point, 1] shr 4;
     y := HuffmanCodeTable.Val[Point, 1] and $f;
 
-    Error := 0;
+    Result := 0;
     Break;
   end;
 
@@ -480,7 +479,7 @@ begin
    // Reverse x and y here to make test bitstream work.
 
    if (HuffmanCodeTable.LinBits <> 0) then
-    if (Integer(HuffmanCodeTable.XLength-1) = x)
+    if (Integer(HuffmanCodeTable.XLength - 1) = x)
      then x := x + Integer(BitReverse.GetBits(HuffmanCodeTable.LinBits));
 
    if (x <> 0) then
@@ -488,15 +487,13 @@ begin
      then x := -x;
 
    if (HuffmanCodeTable.LinBits <> 0) then
-    if (Integer(HuffmanCodeTable.YLength-1) = y)
+    if (Integer(HuffmanCodeTable.YLength - 1) = y)
      then y := y + Integer(BitReverse.GetBits(HuffmanCodeTable.LinBits));
 
    if (y <> 0) then
     if (BitReverse.Get1Bit <> 0)
      then y := -y;
   end;
-
- Result := Error;
 end;
 
 procedure SetHuffTable(GHuffmanCodeTable: PHuffmanCodeTable;

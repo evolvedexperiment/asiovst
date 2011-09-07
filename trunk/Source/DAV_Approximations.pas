@@ -33,7 +33,15 @@ unit DAV_Approximations;
 interface
 
 {$I DAV_Compiler.inc}
-{$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
+
+{$IFDEF FPC}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 
 uses
   DAV_Common, {$IFDEF FPC} LCLIntf; {$ELSE}

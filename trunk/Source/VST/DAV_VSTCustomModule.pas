@@ -14,8 +14,8 @@ uses
 type
 //  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
 
-  TProcessAudioEvent       = procedure(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer) of object;
-  TProcessDoubleEvent      = procedure(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
+  TProcessAudio32Event     = procedure(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer) of object;
+  TProcessAudio64Event     = procedure(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer) of object;
   TGetVUEvent              = procedure(var VU: Single) of object;
   TBlockSizeChangeEvent    = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent   = procedure(Sender: TObject; const SampleRate: Single) of object;
@@ -93,9 +93,9 @@ type
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
     procedure SetKeysRequired(const Value: Boolean);
     procedure ReadOnlyString(s: string); virtual;
-    procedure SetOnProcessEx(const Value: TProcessAudioEvent);
-    procedure SetOnProcess32ReplacingEx(const Value: TProcessAudioEvent);
-    procedure SetOnProcess64ReplacingEx(const Value: TProcessDoubleEvent);
+    procedure SetOnProcessEx(const Value: TProcessAudio32Event);
+    procedure SetOnProcess32ReplacingEx(const Value: TProcessAudio32Event);
+    procedure SetOnProcess64ReplacingEx(const Value: TProcessAudio64Event);
     procedure SetSampleRate(const Value: Single);
     procedure SetPluginFlags(newFlags : TEffFlags);
     procedure SetInitialDelay(const Delay: Integer);
@@ -116,9 +116,9 @@ type
     FOnEditOpen             : TGetEditorEvent;
     FOnEditGetSize          : TOnEditGetSize;
     FOnOpen                 : TNotifyEvent;
-    FOnProcess64ReplacingEx : TProcessDoubleEvent;
-    FOnProcessEx            : TProcessAudioEvent;
-    FOnProcess32ReplacingEx : TProcessAudioEvent;
+    FOnProcess64ReplacingEx : TProcessAudio64Event;
+    FOnProcessEx            : TProcessAudio32Event;
+    FOnProcess32ReplacingEx : TProcessAudio32Event;
     FProductName            : AnsiString;
     FSampleRate             : Single;
 
@@ -160,9 +160,9 @@ type
     procedure InitialDelayChanged; virtual;
 
     function HostCallDispatchEffect(const Opcode : TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
-    procedure HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
-    procedure HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
+    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); override;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); override;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); override;
 
     // HostCalls, protected methods that can be overwritten, but shall remain
     // hidden, since the user should not be able to call them directly!
@@ -297,9 +297,9 @@ type
     property OnInputProperties: TOnGetChannelPropertiesEvent read FOnGetInputProperties write FOnGetInputProperties;
     property OnOutputProperties: TOnGetChannelPropertiesEvent read FOnGetOutputProperties write FOnGetOutputProperties;
 
-    property OnProcess: TProcessAudioEvent read FOnProcessEx write SetOnProcessEx;
-    property OnProcess32Replacing: TProcessAudioEvent read FOnProcess32ReplacingEx write SetOnProcess32ReplacingEx;
-    property OnProcess64Replacing: TProcessDoubleEvent read FOnProcess64ReplacingEx write SetOnProcess64ReplacingEx;
+    property OnProcess: TProcessAudio32Event read FOnProcessEx write SetOnProcessEx;
+    property OnProcess32Replacing: TProcessAudio32Event read FOnProcess32ReplacingEx write SetOnProcess32ReplacingEx;
+    property OnProcess64Replacing: TProcessAudio64Event read FOnProcess64ReplacingEx write SetOnProcess64ReplacingEx;
   end;
 
 
@@ -308,8 +308,8 @@ implementation
 {$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
 
 uses
-  {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils, Math,
-  {$IFDEF PUREPASCAL}DAV_BufferMathPascal{$ELSE}DAV_BufferMathAsm{$ENDIF};
+  {$IFDEF HAS_UNIT_ANSISTRINGS}AnsiStrings, {$ENDIF} SysUtils, Math,
+  DAV_BlockArithmetrics;
 
 constructor TCustomVSTModule.Create(AOwner: TComponent);
 begin
@@ -365,44 +365,46 @@ begin
 end;
 *)
 
-procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  Ins     : TDAVArrayOfSingleDynArray absolute Inputs;
-  Outs    : TDAVArrayOfSingleDynArray absolute Outputs;
-  OutsTmp : TDAVArrayOfSingleDynArray;
-  i, j    : Integer;
+  OutsTmp      : TDAVArrayOfSingleFixedArray;
+  ChannelIndex : Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallProcess'); {$ENDIF}
  if Assigned(FOnProcessEx)
-  then FOnProcessEx(Ins, Outs, SampleFrames)
+  then FOnProcessEx(Inputs, Outputs, SampleFrames)
   else if Assigned(FOnProcess32ReplacingEx) then
    begin
-    SetLength(OutsTmp, FEffect.NumOutputs, SampleFrames);
-    ClearArrays(OutsTmp, FEffect.NumOutputs, SampleFrames);
-    FOnProcess32ReplacingEx(Ins, OutsTmp, SampleFrames);
-    for i := 0 to FEffect.NumOutputs - 1 do
-     for j := 0 to SampleFrames - 1
-      do Outs[i, j] := Outs[i, j] + OutsTmp[i, j];
+    SetLength(OutsTmp, FEffect.NumOutputs);
+    for ChannelIndex := 0 to FEffect.NumOutputs - 1 do
+     begin
+      GetMem(OutsTmp[ChannelIndex], SampleFrames * SizeOf(Single));
+      FillChar(OutsTmp[ChannelIndex]^, SampleFrames * SizeOf(Single), 0);
+     end;
+    FOnProcess32ReplacingEx(Inputs, OutsTmp, SampleFrames);
+    for ChannelIndex := 0 to FEffect.NumOutputs - 1 do
+     begin
+      BlockAdditionInplace32(@Outputs[ChannelIndex]^[0], @OutsTmp[ChannelIndex]^[0], SampleFrames);
+      FreeMem(OutsTmp[ChannelIndex]);
+     end;
    end;
 end;
 
-procedure TCustomVSTModule.HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
-var
-  Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
-  Outs : TDAVArrayOfSingleDynArray absolute Outputs;
+procedure TCustomVSTModule.HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 begin
 // {$IFDEF DebugLog} AddLogMessage('--> TCustomVSTModule.HostCallProcess32Replacing'); {$ENDIF}
  if Assigned(FOnProcess32ReplacingEx)
-  then FOnProcess32ReplacingEx(Ins, Outs, SampleFrames);
+  then FOnProcess32ReplacingEx(Inputs, Outputs, SampleFrames);
 end;
 
-procedure TCustomVSTModule.HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
+procedure TCustomVSTModule.HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
   Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
   Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallProcess64Replacing'); {$ENDIF}
- if Assigned(FOnProcess64ReplacingEx) then FOnProcess64ReplacingEx(Ins, Outs,SampleFrames);
+ if Assigned(FOnProcess64ReplacingEx)
+  then FOnProcess64ReplacingEx(Inputs, Outputs,SampleFrames);
 end;
 
 function TCustomVSTModule.GetHostProduct: AnsiString;
@@ -1229,7 +1231,7 @@ begin
 end;
 
 procedure TCustomVSTModule.SetOnProcess64ReplacingEx(
-  const Value: TProcessDoubleEvent);
+  const Value: TProcessAudio64Event);
 begin
  if @FOnProcess64ReplacingEx <> @Value then
   begin
@@ -1238,7 +1240,7 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.SetOnProcessEx(const Value: TProcessAudioEvent);
+procedure TCustomVSTModule.SetOnProcessEx(const Value: TProcessAudio32Event);
 begin
  if @FOnProcessEx <> @Value then
   begin
@@ -1248,7 +1250,7 @@ begin
 end;
 
 procedure TCustomVSTModule.SetOnProcess32ReplacingEx(
-  const Value: TProcessAudioEvent);
+  const Value: TProcessAudio32Event);
 begin
  if @FOnProcess32ReplacingEx <> @Value then
   begin

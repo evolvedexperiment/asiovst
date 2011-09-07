@@ -64,6 +64,10 @@ implementation
 uses
   DAV_Bindings;
 
+{$IFDEF CPUx86_64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
 procedure BlockAdditionInplace32Native(Destination, Source: PSingle; Count: Integer);
 {$IFDEF PUREPASCAL}
 var

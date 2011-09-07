@@ -122,14 +122,14 @@ type
   published
     property OnCalculateCosts: TDifferentialEvolutionEvent read FOnCalculateCosts write FOnCalculateCosts;
     property OnInitPopulation: TDifferentialEvolutionEvent read FOnInitPopulation write FOnInitPopulation;
-    property PopulationCount :Integer read FPopulationCount write SetPopulationCount;
-    property VariableCount :Integer read FVariableCount write SetVariableCount;
-    property GainBest :Double read FGainBest write SetGainBest;
-    property GainR1 :Double read FGainR1 write SetGainR1;
-    property GainR2 :Double read FGainR2 write SetGainR2;
-    property GainR3 :Double read FGainR3 write SetGainR3;
-    property CrossOver :Double read FCrossOver write SetCrossOver;
-    property AutoInitialize : Boolean read FAutoInitialize write FAutoInitialize;
+    property PopulationCount: Integer read FPopulationCount write SetPopulationCount;
+    property VariableCount: Integer read FVariableCount write SetVariableCount;
+    property GainBest: Double read FGainBest write SetGainBest;
+    property GainR1: Double read FGainR1 write SetGainR1;
+    property GainR2: Double read FGainR2 write SetGainR2;
+    property GainR3: Double read FGainR3 write SetGainR3;
+    property CrossOver: Double read FCrossOver write SetCrossOver;
+    property AutoInitialize: Boolean read FAutoInitialize write FAutoInitialize;
   end;
 
 implementation

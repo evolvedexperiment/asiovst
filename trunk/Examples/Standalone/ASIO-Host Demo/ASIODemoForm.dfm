@@ -65,7 +65,6 @@ object FmASIO: TFmASIO
     Width = 273
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -74,7 +73,7 @@ object FmASIO: TFmASIO
     Top = 7
     Width = 121
     Height = 21
-    Caption = 'Control Panel'
+    Caption = '&Control Panel'
     Enabled = False
     TabOrder = 1
     OnClick = BtControlPanelClick
@@ -85,7 +84,6 @@ object FmASIO: TFmASIO
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
@@ -94,7 +92,7 @@ object FmASIO: TFmASIO
     Top = 32
     Width = 121
     Height = 21
-    Caption = 'Start Audio'
+    Caption = '&Start Audio'
     Default = True
     Enabled = False
     TabOrder = 3

@@ -245,9 +245,9 @@ type
     function HostCallGetNumMidiInputChannels   (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; virtual;
     function HostCallGetNumMidiOutputChannels  (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; virtual;
 
-    procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); virtual; abstract;
 
     function  HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; virtual;
     function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
@@ -296,26 +296,26 @@ procedure SetParameterFuncUserPtr(const Effect: PVSTEffect; const Index: Integer
 
 // checks (just in case)
 procedure ProcessFuncCheck(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 procedure Process32ReplacingFuncCheck(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 procedure Process64ReplacingFuncCheck(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 
 procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 procedure Process64ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 
 {$IFNDEF UseAudioEffectPtr}
 procedure ProcessFuncUserPtr(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 {$ENDIF}
 
 // Dummy calls
@@ -395,7 +395,7 @@ begin
  case Which of
    0 : begin
         GetMem(Result, SizeOf(TWinAmpDSPModule));
-        Result^.Description := PChar(WAVstModule.GetStaticDescription);
+        Result^.Description := PAnsiChar(AnsiString(WAVstModule.GetStaticDescription));
         Result^.Init := Init;
         Result^.Config := Config;
         Result^.ModifySamples := ModifySamplesDummy;
@@ -414,7 +414,7 @@ begin
    begin
     Version     := $20;
     Key         := $21;
-    Description := PChar(WAVstModule.GetStaticDescription);
+    Description := PAnsiChar(AnsiString(WAVstModule.GetStaticDescription));
     GetModule   := GetWinampModule;
    end;
   Result := @WADSPHeader;
@@ -1480,7 +1480,7 @@ end;
 {$DEFINE PUREPASCAL}
 {$ENDIF}
 
-procedure ProcessFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 begin
  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
@@ -1492,7 +1492,7 @@ begin
   {$ENDIF}
 end;
 
-procedure Process32ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure Process32ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 begin
  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
@@ -1504,7 +1504,7 @@ begin
   {$ENDIF}
 end;
 
-procedure Process64ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+procedure Process64ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 begin
  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
@@ -1516,7 +1516,11 @@ begin
   {$ENDIF}
 end;
 
-procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+{$IFDEF CPUx86_64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
+procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1568,7 +1572,7 @@ asm
 end;
 {$ENDIF}
 
-procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1621,7 +1625,7 @@ end;
 {$ENDIF}
 
 procedure Process64ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
-  const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1674,7 +1678,7 @@ end;
 {$ENDIF}
 
 {$IFNDEF UseAudioEffectPtr}
-procedure ProcessFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1726,7 +1730,7 @@ asm
 end;
 {$ENDIF}
 
-procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1777,7 +1781,7 @@ asm
 end;
 {$ENDIF}
 
-procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency

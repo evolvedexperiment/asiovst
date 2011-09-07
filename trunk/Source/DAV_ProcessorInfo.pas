@@ -541,12 +541,39 @@ end;
 
 procedure CallCPUID(ValueEAX, ValueECX: Cardinal; out ReturnedEAX, ReturnedEBX,
   ReturnedECX, ReturnedEDX);
-begin
- asm
+asm
   {$IFDEF CPU32}
   // save context
   PUSH    EDI
   PUSH    EBX
+  MOV     EDI, ReturnedEAX
+
+  // init parameters
+  MOV     ECX, ValueECX
+
+  // CPUID
+  DB      0FH
+  DB      0A2H
+
+  // store results
+  MOV     Cardinal PTR [EDI], EAX
+  MOV     EDI, ReturnedEBX
+  MOV     Cardinal PTR [EDI], EBX
+  MOV     EDI, ReturnedECX
+  MOV     Cardinal PTR [EDI], ECX
+  MOV     EDI, ReturnedEDX
+  MOV     Cardinal PTR [EDI], EDX
+
+  // restore context
+  POP     EBX
+  POP     EDI
+  {$ENDIF CPU32}
+
+  // yet to be tested...
+  {$IFDEF CPU64}
+  // save context
+  PUSH    RDI
+  PUSH    RBX
 
   // init parameters
   MOV     EAX, ValueEAX
@@ -557,46 +584,17 @@ begin
   DB      0A2H
 
   // store results
-  MOV     EDI, ReturnedEAX
-  MOV     Cardinal PTR [EDI], EAX
-  MOV     EAX, ReturnedEBX
-  MOV     EDI, ReturnedECX
-  MOV     Cardinal PTR [EAX], EBX
-  MOV     Cardinal PTR [EDI], ECX
-  MOV     EAX, ReturnedEDX
-  MOV     Cardinal PTR [EAX], EDX
-
-  // restore context
-  POP     EBX
-  POP     EDI
-  {$ENDIF CPU32}
-
-  // yet to be tested...
-  {$IFDEF CPU64}
-  // save context
-  PUSH    RBX
-
-  // init parameters
-  MOV     EAX, ValueEAX
-  MOV     ECX, ValueECX
-
-  // CPUID
-  CPUID
-
-  // store results
-  MOV     R8, ReturnedEAX
-  MOV     R9, ReturnedEBX
-  MOV     R10, ReturnedECX
-  MOV     R11, ReturnedEDX
-  MOV     Cardinal PTR [R8], EAX
-  MOV     Cardinal PTR [R9], EBX
-  MOV     Cardinal PTR [R10], ECX
-  MOV     Cardinal PTR [R11], EDX
+  MOV     [R8], RAX
+  MOV     [R9], RBX
+  MOV     RDI, ReturnedECX
+  MOV     [RDI], RCX
+  MOV     RDI, ReturnedEDX
+  MOV     [RDI], RDX
 
   // restore context
   POP     RBX
+  POP     RDI
   {$ENDIF CPU64}
- end;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -77,9 +77,14 @@ type
   PDAVDoubleDynMatrix = ^TDAVDoubleDynMatrix;
 
   TDAVSingleFixedMatrix = array [0..0, 0..0] of Single;
-  PDAVSingleFixedMatrix = ^TDAVSingleDynMatrix;
+  PDAVSingleFixedMatrix = ^TDAVSingleFixedMatrix;
   TDAVDoubleFixedMatrix = array [0..0, 0..0] of Double;
-  PDAVDoubleFixedMatrix = ^TDAVDoubleDynMatrix;
+  PDAVDoubleFixedMatrix = ^TDAVDoubleFixedMatrix;
+
+  TDAVSingleFixedPointerArray = array [0..0] of PDAVSingleFixedArray;
+  PDAVSingleFixedPointerArray = ^TDAVSingleFixedPointerArray;
+  TDAVDoubleFixedPointerArray = array [0..0] of PDAVDoubleFixedArray;
+  PDAVDoubleFixedPointerArray = ^TDAVDoubleFixedPointerArray;
 
   TDAV2SingleArray = array [0..1] of Single;
   PDAV2SingleArray = ^TDAV2SingleArray;

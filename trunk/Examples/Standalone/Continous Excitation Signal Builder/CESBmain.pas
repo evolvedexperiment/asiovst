@@ -33,7 +33,7 @@ unit CESBmain;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$DEFINE Use_IPPS}
+{-$DEFINE Use_IPPS}
 
 uses
   {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 

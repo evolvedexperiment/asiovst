@@ -981,7 +981,7 @@ begin
      FBitIndex := 0;
      Inc(FWordPointer);
     end;
-    exit;
+    Exit;
   end;
 
  {$IFDEF LITTLE_ENDIAN}
@@ -1024,7 +1024,7 @@ begin
 //  if ((HeaderString and $0000FFFF) = $0000FFFF) then Sync := False;
 
   if not Sync
-   then FStream.Seek(-3, soFromCurrent); // rewind 3 bytes in the file so we can try to sync again, if successful set result to True
+   then FStream.Seek(-3, soFromCurrent); // rewind 3 bytes in the file so we can try to sync again, if successful set Result to True
  until Sync or (not Result);
 
  if not Result then Exit;
@@ -1051,7 +1051,7 @@ var
   {$ENDIF}
 begin
  // read bytesize bytes from the file, placing the number of bytes
- // actually read in numread and setting result to True if
+ // actually read in numread and setting Result to True if
  // successful
  NumRead := FStream.Read(FBuffer^, ByteSize);
 
@@ -1264,7 +1264,7 @@ end;
 
 function THeader.MSPerFrame: Single;
 begin
- Result := CmsPerFramearray [FLayer - 1, FSampleFrequency];
+ Result := CmsPerFramearray[FLayer - 1, FSampleFrequency];
 end;
 
 function THeader.ReadHeader(Stream: TBitStream; var CRC: TCRC16): Boolean;
@@ -1646,7 +1646,7 @@ begin
    Filter1.InputSample(Sample, FSubBandNumber);
   end;
  Inc(FSampleNumber);
- Result:=(FSampleNumber=3);
+ Result := (FSampleNumber=3);
 end;
 
 procedure TSubBandLayer2.ReadAllocation(Stream: TBitStream; Header: THeader; CRC: TCRC16);
@@ -1681,7 +1681,7 @@ begin
 
  FSampleNumber := 0;
  Inc(FGroupNumber);
- Result:=(FGroupnumber=12);
+ Result := (FGroupnumber=12);
 end;
 
 procedure TSubBandLayer2.ReadScaleFactor(Stream: TBitStream;
@@ -1775,7 +1775,7 @@ begin
     end;
   end;
  Inc(FSampleNumber);
- Result:=(FSampleNumber = 3);
+ Result := (FSampleNumber = 3);
 end;
 
 procedure TSubbandLayer2IntensityStereo.ReadScaleFactor(Stream: TBitStream; Header: THeader);
@@ -2142,7 +2142,11 @@ var
   Index, t_index    : Integer;
   GlobalGain        : Single;
   xr1d              : PDAV1024SingleArray;
+  {$IFDEF CPU64}
+  abv, idx          : Integer;
+  {$ELSE}
   abv, idx          : Cardinal;
+  {$ENDIF}
 begin
  GranuleInfo := @FSideInfo.Channel[Channel].Granule[Granule];
  Cb := 0;
@@ -2166,7 +2170,7 @@ begin
    else NextCbBoundary := sfBandIndex[FSFreq].Long[1];  // LONG blocks: 0,1,3
 
  // Compute overall (global) scaling.
- GlobalGain := Power(2.0 , (0.25 * (GranuleInfo.GlobalGain - 210.0)));
+ GlobalGain := Power(2.0, (0.25 * (GranuleInfo.GlobalGain - 210.0)));
 
  for j := 0 to FNonZero[Channel] - 1 do
   begin
@@ -3759,27 +3763,27 @@ end;
 
 function TCustomMpegAudio.GetAlbum: string;
 begin
- result := PChar(@FId3Tag.Album[1]);
+ Result := PAnsiChar(@FId3Tag.Album[1]);
 end;
 
 function TCustomMpegAudio.GetArtist: string;
 begin
- result := PChar(@FId3Tag.Artist[1]);
+ Result := PAnsiChar(@FId3Tag.Artist[1]);
 end;
 
 function TCustomMpegAudio.GetComment: string;
 begin
- result := PChar(@FId3Tag.Comment[1]);
+ Result := PAnsiChar(@FId3Tag.Comment[1]);
 end;
 
 function TCustomMpegAudio.GetGenre: TMusicGenre;
 begin
- result := TMusicGenre(FId3Tag.Genre);
+ Result := TMusicGenre(FId3Tag.Genre);
 end;
 
 function TCustomMpegAudio.GetTitle: string;
 begin
- result := PChar(@FId3Tag.Title[1]);
+ Result := PAnsiChar(@FId3Tag.Title[1]);
 end;
 
 function TCustomMpegAudio.GetTotalLength: Single;
@@ -3798,7 +3802,7 @@ end;
 
 function TCustomMpegAudio.GetYear: string;
 begin
- Result := PChar(@FId3Tag.Year[1]);
+ Result := PAnsiChar(@FId3Tag.Year[1]);
 end;
 
 end.
