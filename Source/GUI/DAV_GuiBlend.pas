@@ -39,11 +39,6 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 {-$DEFINE AlternativeSSE2}
-{-$DEFINE PUREPASCAL}
-
-{$IFDEF CPUx86_64}
-  {$DEFINE PUREPASCAL}
-{$ENDIF}
 
 uses
   SysUtils, DAV_GuiCommon, DAV_Bindings;
@@ -143,6 +138,56 @@ begin
   end;
 {$ELSE}
 asm
+{$IFDEF CPUx86_64}
+  CMP     ECX, $FF000000
+  JNC     @Done
+
+  TEST    ECX, $FF000000
+  JZ      @CopyPixel
+
+  MOV     EAX, ECX
+  SHR     RCX, 24
+
+  MOV     R8D, EAX
+  AND     EAX, $00FF00FF
+  AND     R8D, $FF00FF00
+  IMUL    EAX, ECX
+  SHR     R8D, 8
+  IMUL    R8D, ECX
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
+  ADD     R8D, CBias
+  AND     R8D, $FF00FF00
+  OR      EAX, R8D
+
+  XOR     ECX, $000000FF
+  MOV     R8D, EDX
+  AND     EDX, $00FF00FF
+  AND     R8D, $FF00FF00
+  IMUL    EDX, ECX
+  SHR     R8D, 8
+  IMUL    R8D, ECX
+  ADD     EDX, CBias
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
+  ADD     R8D, CBias
+  AND     R8D, $FF00FF00
+  OR      R8D, EDX
+
+  ADD     EAX, R8D
+  OR      EAX, $FF000000
+
+  RET
+
+@CopyPixel:
+  MOV     EAX, EDX
+  OR      EAX, $FF000000
+
+@Done:
+  RET
+{$ENDIF}
+{$IFDEF CPU32}
   CMP     EAX, $FF000000
   JNC     @Done
 
@@ -194,6 +239,7 @@ asm
 @Done:
   RET
 {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlendPixelInplaceNative(Foreground: TPixel32; var Background: TPixel32);
@@ -223,6 +269,58 @@ begin
  Background.ARGB := (Background.ARGB + Foreground.ARGB) or $FF000000;
 {$ELSE}
 asm
+{$IFDEF CPUx86_64}
+  TEST    ECX, $FF000000
+  JZ      @Done
+
+  MOV     EAX, ECX
+  SHR     ECX, 24
+
+  CMP     ECX, $FF
+  JZ      @CopyPixel
+
+  MOV     R8D, EAX
+  AND     EAX, $00FF00FF
+  AND     R8D, $FF00FF00
+  IMUL    EAX, ECX
+  SHR     R8D, 8
+  IMUL    R8D, ECX
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
+  ADD     R8D, CBias
+  AND     R8D, $FF00FF00
+  OR      EAX, R8D
+
+  MOV     R9D, [RDX]
+  XOR     ECX, $000000FF
+  MOV     R8D, R9D
+  AND     R9D, $00FF00FF
+  AND     R8D, $FF00FF00
+  IMUL    R9D, ECX
+  SHR     R8D, 8
+  IMUL    R8D, ECX
+  ADD     R9D, CBias
+  AND     R9D, $FF00FF00
+  SHR     R9D, 8
+  ADD     R8D, CBias
+  AND     R8D, $FF00FF00
+  OR      R8D, R9D
+
+  ADD     EAX, R8D
+  OR      EAX, $FF000000
+  MOV     [RDX], EAX
+
+  RET
+
+@CopyPixel:
+  OR      EAX, $FF000000
+  MOV     [RDX], EAX
+
+@Done:
+  RET
+{$ENDIF}
+{$IFDEF CPU32}
   TEST    EAX, $FF000000
   JZ      @Done
 
@@ -248,11 +346,7 @@ asm
   AND     EBX, $FF00FF00
   OR      EAX, EBX
 
-  {$IFDEF CPUx86_64}
-  MOV     ESI, [RDX]
-  {$ELSE}
   MOV     ESI, [EDX]
-  {$ENDIF}
   XOR     ECX, $000000FF
   MOV     EBX, ESI
   AND     ESI, $00FF00FF
@@ -269,11 +363,7 @@ asm
 
   ADD     EAX, EBX
   OR      EAX, $FF000000
-  {$IFDEF CPUx86_64}
-  MOV     [RDX], EAX
-  {$ELSE}
   MOV     [EDX], EAX
-  {$ENDIF}
 
   POP     ESI
   POP     EBX
@@ -281,14 +371,11 @@ asm
 
 @CopyPixel:
   OR      EAX, $FF000000
-  {$IFDEF CPUx86_64}
-  MOV     [RDX], EAX
-  {$ELSE}
   MOV     [EDX], EAX
-  {$ENDIF}
 
 @Done:
   RET
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -303,6 +390,79 @@ begin
   end;
 {$ELSE}
 asm
+{$IFDEF CPUx86_64}
+  TEST    R8D, R8D
+  JZ      @Done
+
+  TEST    ECX, $FF000000
+  JZ      @Done
+
+  PUSH    RDI
+  MOV     RDI, RDX
+
+  MOV     R9D, ECX
+  SHR     R9D, 24
+
+  CMP     R9D, $FF
+  JZ      @CopyPixel
+
+  MOV     EAX, ECX
+  AND     ECX, $00FF00FF
+  AND     EAX, $FF00FF00
+  IMUL    ECX, R9D
+  SHR     EAX, 8
+  IMUL    EAX, R9D
+  ADD     ECX, CBias
+  AND     ECX, $FF00FF00
+  SHR     ECX, 8
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  OR      ECX, EAX
+  XOR     R9D, $000000FF
+
+@LoopStart:
+
+  MOV     EDX, [RDI]
+  MOV     EAX, EDX
+  AND     EDX, $00FF00FF
+  AND     EAX, $FF00FF00
+  IMUL    EDX, R9D
+  SHR     EAX, 8
+  IMUL    EAX, R9D
+  ADD     EDX, CBias
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  OR      EAX, EDX
+
+  ADD     EAX, ECX
+
+  OR      EAX, $FF000000
+  MOV     [RDI], EAX
+
+@NextPixel:
+  ADD     RDI, 4
+
+  DEC     R8D
+  JNZ     @LoopStart
+
+  POP     RDI
+
+@Done:
+  RET
+
+@CopyPixel:
+  MOV     [RDI], ECX
+  ADD     RDI, 4
+
+  DEC     R8D
+  JNZ     @CopyPixel
+
+  POP     RDI
+{$ENDIF}
+
+{$IFDEF CPU32}
   TEST    ECX, ECX
   JZ      @Done
 
@@ -337,11 +497,7 @@ asm
 
 @LoopStart:
 
-  {$IFDEF CPUx86_64}
-  MOV     EDX, [RDI]
-  {$ELSE}
   MOV     EDX, [EDI]
-  {$ENDIF}
   MOV     EBX, EDX
   AND     EDX, $00FF00FF
   AND     EBX, $FF00FF00
@@ -358,11 +514,7 @@ asm
   ADD     EBX, EAX
 
   OR      EBX, $FF000000
-  {$IFDEF CPUx86_64}
-  MOV     [RDI], EBX
-  {$ELSE}
   MOV     [EDI], EBX
-  {$ENDIF}
 
 @NextPixel:
   ADD     EDI, 4
@@ -378,11 +530,7 @@ asm
   RET
 
 @CopyPixel:
-  {$IFDEF CPUx86_64}
-  MOV     [RDI], EAX
-  {$ELSE}
   MOV     [EDI], EAX
-  {$ENDIF}
   ADD     EDI, 4
 
   DEC     ECX
@@ -391,6 +539,7 @@ asm
   POP     EDI
   POP     ESI
   POP     EBX
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -406,6 +555,76 @@ begin
   end;
 {$ELSE}
 asm
+{$IFDEF CPUx86_64}
+  TEST    R8D, R8D
+  JZ      @Done
+
+  PUSH    RDI
+
+  MOV     R9, RCX
+  MOV     RDI, RDX
+
+@LoopStart:
+  MOV     ECX, [RSI]
+  TEST    ECX, $FF000000
+  JZ      @NextPixel
+
+  PUSH    R8
+
+  MOV     R8D, ECX
+  SHR     R8D, 24
+
+  CMP     R8D, $FF
+  JZ      @CopyPixel
+
+  MOV     EAX, ECX
+  AND     ECX, $00FF00FF
+  AND     EAX, $FF00FF00
+  IMUL    ECX, R8D
+  SHR     EAX, 8
+  IMUL    EAX, R8D
+  ADD     ECX, CBias
+  AND     ECX, $FF00FF00
+  SHR     ECX, 8
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  OR      ECX, EAX
+
+  MOV     EDX, [RDI]
+  XOR     R8D, $000000FF
+  MOV     EAX, EDX
+  AND     EDX, $00FF00FF
+  AND     EAX, $FF00FF00
+  IMUL    EDX, R8D
+  SHR     EAX, 8
+  IMUL    EAX, R8D
+  ADD     EDX, CBias
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  OR      EAX, EDX
+
+  ADD     ECX, EAX
+@CopyPixel:
+  OR      ECX, $FF000000
+  MOV     [RDI], ECX
+  POP     R8
+
+@NextPixel:
+  ADD     R9, 4
+  ADD     RDI, 4
+
+  DEC     R8D
+  JNZ     @LoopStart
+
+  POP     RDI
+
+@Done:
+  RET
+{$ENDIF}
+
+{$IFDEF CPU32}
   TEST    ECX, ECX
   JZ      @Done
 
@@ -417,11 +636,7 @@ asm
   MOV     EDI, EDX
 
 @LoopStart:
-  {$IFDEF CPUx86_64}
-  MOV     EAX, [RSI]
-  {$ELSE}
   MOV     EAX, [ESI]
-  {$ENDIF}
   TEST    EAX, $FF000000
   JZ      @NextPixel
 
@@ -446,11 +661,7 @@ asm
   AND     EBX, $FF00FF00
   OR      EAX, EBX
 
-  {$IFDEF CPUx86_64}
-  MOV     EDX, [RDI]
-  {$ELSE}
   MOV     EDX, [EDI]
-  {$ENDIF}
   XOR     ECX, $000000FF
   MOV     EBX, EDX
   AND     EDX, $00FF00FF
@@ -468,11 +679,7 @@ asm
   ADD     EAX, EBX
 @CopyPixel:
   OR      EAX, $FF000000
-  {$IFDEF CPUx86_64}
-  MOV     [RDI], EAX
-  {$ELSE}
   MOV     [EDI], EAX
-  {$ENDIF}
   POP     ECX
 
 @NextPixel:
@@ -488,6 +695,7 @@ asm
 
 @Done:
   RET
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -510,11 +718,51 @@ begin
   end;
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  JRCXZ   @Copy
-  {$ELSE}
+{$IFDEF CPUx86_64}
+  TEST    R8,R8
+  JZ      @Copy
+
+  CMP     R8D, $FF
+  JE      @Done
+
+  MOV     EAX, ECX
+  AND     EAX, $00FF00FF
+  AND     ECX, $FF00FF00
+  IMUL    EAX, R8D
+  SHR     ECX, 8
+  IMUL    ECX, R8D
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
+  ADD     ECX, CBias
+  AND     ECX, $FF00FF00
+  OR      EAX, ECX
+
+  XOR     R8D, $000000FF
+  MOV     ECX, EDX
+  AND     EDX, $00FF00FF
+  AND     ECX, $FF00FF00
+  IMUL    EDX, R8D
+  SHR     ECX, 8
+  IMUL    ECX, R8D
+  ADD     EDX, CBias
+  AND     EDX, $FF00FF00
+  SHR     EDX, 8
+  ADD     ECX, CBias
+  AND     ECX, $FF00FF00
+  OR      ECX, EDX
+
+  ADD     EAX, ECX
+  RET
+
+@Copy:
+  MOV     EAX, EDX
+@Done:
+  RET
+{$ENDIF}
+
+{$IFDEF CPU32}
   JCXZ    @Copy
-  {$ENDIF}
 
   CMP     ECX, $FF
   JE      @Done
@@ -558,6 +806,7 @@ asm
 @Done:
   RET
 {$ENDIF}
+{$ENDIF}
 end;
 
 procedure CombinePixelInplaceNative(ForeGround: TPixel32; var Background: TPixel32; Weight: Cardinal);
@@ -579,11 +828,54 @@ begin
   end;
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  JRCXZ   @Done
-  {$ELSE}
+{$IFDEF CPUx86_64}
+  TEST    R8,R8
+  JZ      @Done
+
+  CMP     R8D, $FF
+  JZ      @Copy
+
+  MOV     EAX, ECX
+  AND     EAX, $00FF00FF
+  AND     ECX, $FF00FF00
+  IMUL    EAX, R8D
+  SHR     ECX, 8
+  IMUL    ECX, R8D
+  ADD     EAX, CBias
+  AND     EAX, $FF00FF00
+  SHR     EAX, 8
+  ADD     ECX, CBias
+  AND     ECX, $FF00FF00
+  OR      EAX, ECX
+
+  MOV     R9D, [RDX]
+  XOR     R8D, $000000FF
+  MOV     ECX, R9D
+  AND     R9D, $00FF00FF
+  AND     ECX, $FF00FF00
+  IMUL    R9D, R8D
+  SHR     ECX, 8
+  IMUL    ECX, R8D
+  ADD     R9D, CBias
+  AND     R9D, $FF00FF00
+  SHR     R9D, 8
+  ADD     ECX, CBias
+  AND     ECX, $FF00FF00
+  OR      ECX, R9D
+
+  ADD     EAX, ECX
+
+  MOV     [RDX], EAX
+@Done:
+  RET
+
+@Copy:
+  MOV     [RDX], ECX
+  RET
+{$ENDIF}
+
+{$IFDEF CPU32}
   JCXZ    @Done
-  {$ENDIF}
 
   CMP     ECX, $FF
   JZ      @Copy
@@ -632,6 +924,7 @@ asm
   MOV     [EDX], EAX
   RET
 {$ENDIF}
+{$ENDIF}
 end;
 
 procedure CombinePixelLineNative(Foreground: TPixel32; Destination: PPixel32;
@@ -658,6 +951,76 @@ begin
   end;
 {$ELSE}
 asm
+{$IFDEF CPUx86_64}
+  // Probably contain a bug!!!
+  TEST      R8D, R8D
+  JZ        @Done
+
+  TEST      R9D, R9D
+  JZ        @LoopEnd
+
+  CMP       R9D, $FF
+  JZ        @DoneMove       // R9D = 255  =>  copy src to dst
+
+  PUSH      RDI
+  PUSH      RSI
+
+@LoopStart:
+  PUSH      RCX
+  MOV       RDI, [RCX]
+  AND       RCX, $00FF00FF
+  AND       RDI, $FF00FF00
+  IMUL      RCX, R9D
+  SHR       RDI, 8
+  IMUL      RDI, R9D
+  ADD       RCX, CBias
+  AND       RCX, $FF00FF00
+  SHR       RCX, 8
+  ADD       RDI, CBias
+  AND       RDI, $FF00FF00
+  OR        RCX, RDI
+
+  MOV       RSI, [RDX]
+  XOR       R9D, $000000FF
+  MOV       RDI, RSI
+  AND       RSI, $00FF00FF
+  AND       RDI, $FF00FF00
+  IMUL      RSI, R9D
+  SHR       RDI, 8
+  IMUL      RDI, R9D
+  ADD       RSI, CBias
+  AND       RSI, $FF00FF00
+  SHR       RSI, 8
+  ADD       RDI, CBias
+  AND       RDI, $FF00FF00
+  OR        RDI, RSI
+
+  ADD       RCX, RDI
+
+  MOV       [RDX], RCX
+
+  POP       RCX
+  ADD       RCX, 4
+  ADD       RDX, 4
+
+  DEC       R8D
+  JNZ       @LoopStart
+
+@LoopEnd:
+  POP       RSI
+  POP       RDI
+
+  POP       RBP
+@Done:
+  RET       $0004
+
+@DoneMove:
+  SHL       R8D, 2
+  CALL      Move
+{$ENDIF}
+
+{$IFDEF CPU32}
+  // Probably contain a bug!!!
   TEST      ECX, ECX
   JZ        @Done
 
@@ -728,6 +1091,7 @@ asm
   CALL      Move
   POP       EBX
 {$ENDIF}
+{$ENDIF}
 end;
 
 function MergePixelNative(Foreground, Background: TPixel32): TPixel32;
@@ -776,6 +1140,7 @@ end;
 
 { MMX Functions }
 
+
 {$IFNDEF PUREPASCAL}
 
 procedure EMMSMMX;
@@ -785,6 +1150,27 @@ end;
 
 function BlendPixelMMX(Foreground, Background: TPixel32): TPixel32;
 asm
+{$IFDEF CPUx86_64}
+  MOVD      MM0, ECX
+  PXOR      MM3, MM3
+  MOVD      MM2, EDX
+  PUNPCKLBW MM0, MM3
+  MOV       RAX, BiasPointer
+  PUNPCKLBW MM2, MM3
+  MOVQ      MM1, MM0
+  PUNPCKHWD MM1, MM1
+  PSUBW     MM0, MM2
+  PUNPCKHDQ MM1, MM1
+  PSLLW     MM2, 8
+  PMULLW    MM0, MM1
+  PADDW     MM2, [RAX]
+  PADDW     MM2, MM0
+  PSRLW     MM2, 8
+  PACKUSWB  MM2, MM3
+  MOVD      EAX, MM2
+{$ENDIF}
+
+{$IFDEF CPU32}
   MOVD      MM0, EAX
   PXOR      MM3, MM3
   MOVD      MM2, EDX
@@ -802,10 +1188,43 @@ asm
   PSRLW     MM2, 8
   PACKUSWB  MM2, MM3
   MOVD      EAX, MM2
+{$ENDIF}
 end;
 
 procedure BlendPixelInplaceMMX(Foreground: TPixel32; var Background: TPixel32);
 asm
+{$IFDEF CPUx86_64}
+  TEST      ECX, $FF000000
+  JZ        @Done
+  CMP       ECX, $FF000000
+  JNC       @Copy
+
+  PXOR      MM3, MM3
+  MOVD      MM0, ECX
+  MOVD      MM2, [RDX]
+  PUNPCKLBW MM0, MM3
+  MOV       RAX, BiasPointer
+  PUNPCKLBW MM2, MM3
+  MOVQ      MM1, MM0
+  PUNPCKHWD MM1, MM1
+  PSUBW     MM0, MM2
+  PUNPCKHDQ MM1, MM1
+  PSLLW     MM2, 8
+  PMULLW    MM0, MM1
+  PADDW     MM2, [RAX]
+  PADDW     MM2, MM0
+  PSRLW     MM2, 8
+  PACKUSWB  MM2, MM3
+  MOVD      [RDX], MM2
+
+@Done:
+  RET
+
+@Copy:
+  MOV       [RDX], ECX
+{$ENDIF}
+
+{$IFDEF CPU32}
   TEST      EAX, $FF000000
   JZ        @Done
   CMP       EAX, $FF000000
@@ -834,21 +1253,17 @@ asm
 
 @Copy:
   MOV       [EDX], EAX
+{$ENDIF}
 end;
 
 procedure BlendLineMMX(Source, Destination: PPixel32; Count: Integer);
 asm
-  TEST      ECX, ECX
+{$IFDEF CPUx86_64}
+  TEST      R8D, R8D
   JZ        @Done
 
-  PUSH      ESI
-  PUSH      EDI
-
-  MOV       ESI, EAX
-  MOV       EDI, EDX
-
 @LoopStart:
-  MOV       EAX, [ESI]
+  MOV       EAX, [RCX]
   TEST      EAX, $FF000000
   JZ        @NextPixel
   CMP       EAX, $FF000000
@@ -856,7 +1271,53 @@ asm
 
   MOVD      MM0, EAX
   PXOR      MM3, MM3
-  MOVD      MM2, [EDI]
+  MOVD      MM2, [RDX]
+  PUNPCKLBW MM0, MM3
+  MOV       RAX, BiasPointer
+  PUNPCKLBW MM2, MM3
+  MOVQ      MM1, MM0
+  PUNPCKHWD MM1, MM1
+  PSUBW     MM0, MM2
+  PUNPCKHDQ MM1, MM1
+  PSLLW     MM2, 8
+  PMULLW    MM0, MM1
+  PADDW     MM2, [RAX]
+  PADDW     MM2, MM0
+  PSRLW     MM2, 8
+  PACKUSWB  MM2, MM3
+  MOVD      EAX, MM2
+
+@CopyPixel:
+  MOV       [RDX], EAX
+
+@NextPixel:
+  ADD       RCX, 4
+  ADD       RDX, 4
+
+  DEC       R8D
+  JNZ       @LoopStart
+
+@Done:
+  RET
+{$ENDIF}
+
+{$IFDEF CPU32}
+  TEST      ECX, ECX
+  JZ        @Done
+
+  PUSH      EDI
+  MOV       EDI, EAX
+
+@LoopStart:
+  MOV       EAX, [EDI]
+  TEST      EAX, $FF000000
+  JZ        @NextPixel
+  CMP       EAX, $FF000000
+  JNC       @CopyPixel
+
+  MOVD      MM0, EAX
+  PXOR      MM3, MM3
+  MOVD      MM2, [EDX]
   PUNPCKLBW MM0, MM3
   MOV       EAX, BiasPointer
   PUNPCKLBW MM2, MM3
@@ -873,24 +1334,49 @@ asm
   MOVD      EAX, MM2
 
 @CopyPixel:
-  MOV       [EDI], EAX
+  MOV       [EDX], EAX
 
 @NextPixel:
-  ADD       ESI, 4
   ADD       EDI, 4
+  ADD       EDX, 4
 
   DEC       ECX
   JNZ       @LoopStart
 
   POP       EDI
-  POP       ESI
 
 @Done:
   RET
+{$ENDIF}
 end;
 
 function CombinePixelMMX(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
 asm
+{$IFDEF CPUx86_64}
+  MOVD      MM1, ECX
+  PXOR      MM0, MM0
+  SHL       R8, 4
+
+  MOVD      MM2, EDX
+  PUNPCKLBW MM1, MM0
+  PUNPCKLBW MM2, MM0
+
+  ADD       R8, AlphaPointer
+
+  PSUBW     MM1, MM2
+  PMULLW    MM1, [R8]
+  PSLLW     MM2, 8
+
+  MOV       RAX, BiasPointer
+
+  PADDW     MM2, [RAX]
+  PADDW     MM1, MM2
+  PSRLW     MM1, 8
+  PACKUSWB  MM1, MM0
+  MOVD      EAX, MM1
+{$ENDIF}
+
+{$IFDEF CPU32}
   MOVD      MM1, EAX
   PXOR      MM0, MM0
   SHL       ECX, 4
@@ -912,15 +1398,50 @@ asm
   PSRLW     MM1, 8
   PACKUSWB  MM1, MM0
   MOVD      EAX, MM1
+{$ENDIF}
 end;
 
 procedure CombinePixelInplaceMMX(F: TPixel32; var B: TPixel32; W: TPixel32);
 asm
-  {$IFDEF CPUx86_64}
-  JRCXZ     @Done
-  {$ELSE}
+{$IFDEF CPUx86_64}
+  TEST      R8, R8
+  JZ        @Done
+
+  CMP       R8D, $FF
+  JZ        @Copy
+
+  MOVD      MM1, ECX
+  PXOR      MM0, MM0
+
+  SHL       R8, 4
+
+  MOVD      MM2, [RDX]
+  PUNPCKLBW MM1, MM0
+  PUNPCKLBW MM2, MM0
+
+  ADD       R8, AlphaPointer
+
+  PSUBW     MM1, MM2
+  PMULLW    MM1, [R8]
+  PSLLW     MM2, 8
+
+  MOV       RAX, BiasPointer
+
+  PADDW     MM2, [RAX]
+  PADDW     MM1, MM2
+  PSRLW     MM1, 8
+  PACKUSWB  MM1, MM0
+  MOVD      [RDX], MM1
+
+@Done:
+  RET
+
+@Copy:
+  MOV       [RDX], ECX
+{$ENDIF}
+
+{$IFDEF CPU32}
   JCXZ      @Done
-  {$ENDIF}
 
   CMP       ECX, $FF
   JZ        @Copy
@@ -953,11 +1474,61 @@ asm
 
 @Copy:
   MOV       [EDX], EAX
+{$ENDIF}
 end;
 
 procedure CombineLineMMX(Source, Destination: PPixel32; Count: Integer;
   Weight: Cardinal);
 asm
+{$IFDEF CPUx86_64}
+  TEST      R8D, R8D
+  JZ        @Done
+
+  TEST      R9D, R9D
+  JZ        @LoopEnd        // R9D is zero
+
+  CMP       R9B, $FF
+  JZ        @DoneMove       // R9D = 255  =>  copy src to dst
+
+  SHL       R9, 4
+  ADD       R9, AlphaPointer
+  MOVQ      MM3, QWORD PTR [R9]
+  MOV       RAX, BiasPointer
+  MOVQ      MM4, QWORD PTR [RAX]
+
+@LoopStart:
+  MOVD      MM1, [RCX]
+  PXOR      MM0, MM0
+  MOVD      MM2, [RDX]
+  PUNPCKLBW MM1, MM0
+  PUNPCKLBW MM2, MM0
+
+  PSUBW     MM1, MM2
+  PMULLW    MM1, MM3
+  PSLLW     MM2, 8
+
+  PADDW     MM2, MM4
+  PADDW     MM1, MM2
+  PSRLW     MM1, 8
+  PACKUSWB  MM1, MM0
+  MOVD      [RDX], MM1
+
+  ADD       RCX, 4
+  ADD       RDX, 4
+
+  DEC       R8D
+  JNZ       @LoopStart
+@LoopEnd:
+  POP       RBP
+@Done:
+  RET       $0004
+
+@DoneMove:
+  SHL       R8D, 2
+  CALL      Move
+{$ENDIF}
+
+{$IFDEF CPU32}
   TEST      ECX, ECX
   JZ        @Done
 
@@ -1008,6 +1579,7 @@ asm
   SHL       ECX, 2
   CALL      Move
   POP       EBX
+{$ENDIF}
 end;
 
 (*
@@ -1071,9 +1643,57 @@ end;
 
 { SSE2 }
 
-{$IFNDEF CPUx86_64}
 function BlendPixelSSE2(Foreground, Background: TPixel32): TPixel32;
 asm
+{$IFDEF CPUx86_64}
+
+{$IFDEF AlternativeSSE2}
+  MOVD      XMM0, ECX         // XMM0 contains foreground
+  PXOR      XMM3, XMM3        // XMM3 is zero
+  PUNPCKLBW XMM0, XMM3        // stretch foreground
+  MOVD      XMM1, EDX         // XMM1 contains background
+  PUNPCKLWD XMM0, XMM3        // stretch foreground (even further)
+  MOV       RAX,  ScaleBiasPointer
+  PSHUFD    XMM2, XMM0, $FF   // XMM2 contains foreground alpha
+  PUNPCKLBW XMM1, XMM3        // stretch background
+  PMULLD    XMM2, [RAX]       // scale alpha
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
+  PMULLD    XMM0, XMM2        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
+  PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, [RAX + $10] // add bias
+  PADDD     XMM0, XMM1        // add background to weighted difference
+  PSRLD     XMM0, 24          // shift right XMM0
+  PACKUSWB  XMM0, XMM3        // pack data
+  PACKUSWB  XMM0, XMM3        // pack data
+  MOVD      EAX, XMM0         // return result
+
+{$ELSE}
+
+  MOVD      XMM0, ECX
+  PXOR      XMM3, XMM3
+  MOVD      XMM2, EDX
+  PUNPCKLBW XMM0, XMM3
+  MOV       RAX,  BiasPointer
+  PUNPCKLBW XMM2, XMM3
+  MOVQ      XMM1, XMM0
+  PUNPCKLBW XMM1, XMM3
+  PUNPCKHWD XMM1, XMM1
+  PSUBW     XMM0, XMM2
+  PUNPCKHDQ XMM1, XMM1
+  PSLLW     XMM2, 8
+  PMULLW    XMM0, XMM1
+  PADDW     XMM2, [RAX]
+  PADDW     XMM2, XMM0
+  PSRLW     XMM2, 8
+  PACKUSWB  XMM2, XMM3
+  MOVD      EAX,  XMM2
+{$ENDIF}
+
+{$ENDIF}
+
+{$IFDEF CPU32}
+
 {$IFDEF AlternativeSSE2}
   MOVD      XMM0, EAX         // XMM0 contains foreground
   PXOR      XMM3, XMM3        // XMM3 is zero
@@ -1116,10 +1736,72 @@ asm
   PACKUSWB  XMM2, XMM3
   MOVD      EAX, XMM2
 {$ENDIF}
+
+{$ENDIF}
 end;
 
 procedure BlendPixelInplaceSSE2(Foreground: TPixel32; var Background: TPixel32);
 asm
+{$IFDEF CPUx86_64}
+
+  TEST      ECX, $FF000000
+  JZ        @Done
+  CMP       ECX, $FF000000
+  JNC       @Copy
+
+{$IFDEF AlternativeSSE2}
+  MOVD      XMM0, ECX         // XMM0 contains foreground
+  PXOR      XMM3, XMM3        // XMM3 is zero
+  PUNPCKLBW XMM0, XMM3        // stretch foreground
+  MOVD      XMM1, [RDX]       // XMM1 contains background
+  PUNPCKLWD XMM0, XMM3        // stretch foreground (even further)
+  MOV       RAX,  ScaleBiasPointer
+  PSHUFD    XMM2, XMM0, $FF   // XMM2 contains foreground alpha
+  PUNPCKLBW XMM1, XMM3        // stretch background
+  PMULLD    XMM2, [RAX]       // scale alpha
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
+  PMULLD    XMM0, XMM2        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
+  PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, [RAX + $10] // add bias
+  PADDD     XMM0, XMM1        // add background to weighted difference
+  PSRLD     XMM0, 24          // shift right XMM0
+  PACKUSWB  XMM0, XMM3        // pack data
+  PACKUSWB  XMM0, XMM3        // pack data
+  MOVD      [RDX], XMM0       // return result
+
+{$ELSE}
+
+  PXOR      XMM3, XMM3
+  MOVD      XMM0, ECX
+  MOVD      XMM2, [RDX]
+  PUNPCKLBW XMM0, XMM3
+  MOV       RAX,  BiasPointer
+  PUNPCKLBW XMM2, XMM3
+  MOVQ      XMM1, XMM0
+  PUNPCKLBW XMM1, XMM3
+  PUNPCKHWD XMM1, XMM1
+  PSUBW     XMM0, XMM2
+  PUNPCKHDQ XMM1, XMM1
+  PSLLW     XMM2, 8
+  PMULLW    XMM0, XMM1
+  PADDW     XMM2, [RAX]
+  PADDW     XMM2, XMM0
+  PSRLW     XMM2, 8
+  PACKUSWB  XMM2, XMM3
+  MOVD      [RDX], XMM2
+{$ENDIF}
+
+@Done:
+  RET
+
+@Copy:
+  MOV       [RDX], ECX
+
+{$ENDIF}
+
+{$IFDEF CPU32}
+
   TEST      EAX, $FF000000
   JZ        @Done
   CMP       EAX, $FF000000
@@ -1173,10 +1855,94 @@ asm
 
 @Copy:
   MOV       [EDX], EAX
+
+{$ENDIF}
 end;
 
 procedure BlendPixelLineSSE2(Foreground: TPixel32; Destination: PPixel32; Count: Integer);
 asm
+{$IFDEF CPUx86_64}
+  TEST      R8D, R8D
+  JZ        @Done
+
+  TEST      ECX, $FF000000
+  JZ        @Done
+
+  MOV       RAX, RCX
+  SHR       EAX, 24
+
+  CMP       EAX, $FF
+  JZ        @CopyPixel
+
+{$IFDEF AlternativeSSE2}
+  MOVD      XMM4, ECX         // XMM4 contains foreground
+  PXOR      XMM3, XMM3        // XMM3 is zero
+  PUNPCKLBW XMM4, XMM3        // stretch foreground
+  PUNPCKLWD XMM4, XMM3        // stretch foreground (even further)
+  MOV       RAX,  ScaleBiasPointer
+  PSHUFD    XMM5, XMM4, $FF   // XMM2 contains foreground alpha
+  PMULLD    XMM5, [RAX]       // scale alpha
+
+@LoopStart:
+  MOVD      XMM1, [RDX]       // XMM1 contains background
+  PUNPCKLBW XMM1, XMM3        // stretch background
+  PUNPCKLWD XMM1, XMM3        // stretch background (even further)
+  MOVDQA    XMM0, XMM4        // XMM0 = stretched foreground
+  PSUBD     XMM0, XMM1        // XMM0 = XMM0 - XMM1 (= foreground - background)
+  PMULLD    XMM0, XMM5        // XMM0 = XMM0 * XMM2 (= alpha - (  "  )        )
+  PSLLD     XMM1, 24          // shift left XMM1 (background)
+  PADDD     XMM0, [RAX + $10] // add bias
+  PADDD     XMM0, XMM1        // add background to weighted difference
+  PSRLD     XMM0, 24          // shift right XMM0
+  PACKUSWB  XMM0, XMM3        // pack data
+  PACKUSWB  XMM0, XMM3        // pack data
+  MOVD      [RDX], XMM0       // return result
+
+{$ELSE}
+
+  MOVD      XMM4, ECX
+  PXOR      XMM3, XMM3
+  PUNPCKLBW XMM4, XMM3
+  MOV       RAX,  BiasPointer
+
+@LoopStart:
+
+  MOVD      XMM2, [RDX]
+  PUNPCKLBW XMM2, XMM3
+  MOVQ      XMM1, XMM4
+  PUNPCKLBW XMM1, XMM3
+  PUNPCKHWD XMM1, XMM1
+  MOVQ      XMM0, XMM4
+  PSUBW     XMM0, XMM2
+  PUNPCKHDQ XMM1, XMM1
+  PSLLW     XMM2, 8
+  PMULLW    XMM0, XMM1
+  PADDW     XMM2, [RAX]
+  PADDW     XMM2, XMM0
+  PSRLW     XMM2, 8
+  PACKUSWB  XMM2, XMM3
+  MOVD      [RDX], XMM2
+
+{$ENDIF}
+
+@NextPixel:
+  ADD     RDX, 4
+
+  DEC     R8D
+  JNZ     @LoopStart
+
+@Done:
+  RET
+
+@CopyPixel:
+  MOV     [RDX], ECX
+  ADD     RDX, 4
+
+  DEC     R8D
+  JNZ     @CopyPixel
+{$ENDIF}
+
+{$IFDEF CPU32}
   TEST      ECX, ECX
   JZ        @Done
 
@@ -1254,32 +2020,26 @@ asm
   RET
 
 @CopyPixel:
-  {$IFDEF CPUx86_64}
-  MOV     [RDX], EAX
-  {$ELSE}
   MOV     [EDX], EAX
-  {$ENDIF}
   ADD     EDX, 4
 
   DEC     ECX
   JNZ     @CopyPixel
 
   POP     EBX
+{$ENDIF}
 end;
 
 procedure BlendLineSSE2(Source, Destination: PPixel32; Count: Integer);
 asm
-  TEST      ECX, ECX
+{$IFDEF CPUx86_64}
+  TEST      R8D, R8D
   JZ        @Done
 
-  PUSH      ESI
-  PUSH      EDI
-
-  MOV       ESI, EAX
-  MOV       EDI, EDX
+  MOV       RDX, RDX
 
 @LoopStart:
-  MOV       EAX, [ESI]
+  MOV       EAX, [RCX]
   TEST      EAX, $FF000000
   JZ        @NextPixel
   CMP       EAX, $FF000000
@@ -1287,7 +2047,55 @@ asm
 
   MOVD      XMM0, EAX
   PXOR      XMM3, XMM3
-  MOVD      XMM2, [EDI]
+  MOVD      XMM2, [RDX]
+  PUNPCKLBW XMM0, XMM3
+  MOV       RAX,  BiasPointer
+  PUNPCKLBW XMM2, XMM3
+  MOVQ      XMM1, XMM0
+  PUNPCKLBW XMM1, XMM3
+  PUNPCKHWD XMM1, XMM1
+  PSUBW     XMM0, XMM2
+  PUNPCKHDQ XMM1, XMM1
+  PSLLW     XMM2, 8
+  PMULLW    XMM0, XMM1
+  PADDW     XMM2, [RAX]
+  PADDW     XMM2, XMM0
+  PSRLW     XMM2, 8
+  PACKUSWB  XMM2, XMM3
+  MOVD      EAX,  XMM2
+
+@CopyPixel:
+  MOV       [RDX], EAX
+
+@NextPixel:
+  ADD       RCX, 4
+  ADD       RDX, 4
+
+  DEC       R8D
+  JNZ       @LoopStart
+
+@Done:
+  RET
+{$ENDIF}
+
+{$IFDEF CPU32}
+  TEST      ECX, ECX
+  JZ        @Done
+
+  PUSH      EDI
+
+  MOV       EDI, EAX
+
+@LoopStart:
+  MOV       EAX, [EDI]
+  TEST      EAX, $FF000000
+  JZ        @NextPixel
+  CMP       EAX, $FF000000
+  JNC       @CopyPixel
+
+  MOVD      XMM0, EAX
+  PXOR      XMM3, XMM3
+  MOVD      XMM2, [EDX]
   PUNPCKLBW XMM0, XMM3
   MOV       EAX,  BiasPointer
   PUNPCKLBW XMM2, XMM3
@@ -1305,25 +2113,49 @@ asm
   MOVD      EAX,  XMM2
 
 @CopyPixel:
-  MOV       [EDI], EAX
+  MOV       [EDX], EAX
 
 @NextPixel:
-  ADD       ESI, 4
   ADD       EDI, 4
+  ADD       EDX, 4
 
   DEC       ECX
   JNZ       @LoopStart
 
   POP       EDI
-  POP       ESI
 
 @Done:
   RET
-end;
 {$ENDIF}
+end;
 
 function CombinePixelSSE2(ForeGround, Background: TPixel32; Weight: TPixel32): TPixel32;
 asm
+{$IFDEF CPUx86_64}
+  MOVD      XMM1, ECX
+  PXOR      XMM0, XMM0
+  SHL       R8, 4
+
+  MOVD      XMM2, EDX
+  PUNPCKLBW XMM1, XMM0
+  PUNPCKLBW XMM2, XMM0
+
+  ADD       R8, AlphaPointer
+
+  PSUBW     XMM1, XMM2
+  PMULLW    XMM1, [R8]
+  PSLLW     XMM2, 8
+
+  MOV       RAX, BiasPointer
+
+  PADDW     XMM2, [RAX]
+  PADDW     XMM1, XMM2
+  PSRLW     XMM1, 8
+  PACKUSWB  XMM1, XMM0
+  MOVD      EAX, XMM1
+{$ENDIF}
+
+{$IFDEF CPU32}
   MOVD      XMM1, EAX
   PXOR      XMM0, XMM0
   SHL       ECX, 4
@@ -1345,15 +2177,50 @@ asm
   PSRLW     XMM1, 8
   PACKUSWB  XMM1, XMM0
   MOVD      EAX, XMM1
+{$ENDIF}
 end;
 
 procedure CombinePixelInplaceSSE2(F: TPixel32; var B: TPixel32; W: TPixel32);
 asm
-  {$IFDEF CPUx86_64}
-  JRCXZ   @Done
-  {$ELSE}
-  JCXZ    @Done
-  {$ENDIF}
+{$IFDEF CPUx86_64}
+  TEST      R8, R8
+  JZ        @Done
+
+  CMP       R8D, $FF
+  JZ        @Copy
+
+  MOVD      XMM1, ECX
+  PXOR      XMM0, XMM0
+
+  SHL       R8, 4
+
+  MOVD      XMM2, [RDX]
+  PUNPCKLBW XMM1, XMM0
+  PUNPCKLBW XMM2, XMM0
+
+  ADD       R8, AlphaPointer
+
+  PSUBW     XMM1, XMM2
+  PMULLW    XMM1, [R8]
+  PSLLW     XMM2, 8
+
+  MOV       RAX, BiasPointer
+
+  PADDW     XMM2, [RAX]
+  PADDW     XMM1, XMM2
+  PSRLW     XMM1, 8
+  PACKUSWB  XMM1, XMM0
+  MOVD      [RDX], XMM1
+
+@Done:
+  RET
+
+@Copy:
+  MOV       [RDX], ECX
+{$ENDIF}
+
+{$IFDEF CPU32}
+  JCXZ      @Done
 
   CMP       ECX, $FF
   JZ        @Copy
@@ -1386,6 +2253,7 @@ asm
 
 @Copy:
   MOV       [EDX], EAX
+{$ENDIF}
 end;
 
 {$IFNDEF CPUx86_64}
@@ -1502,7 +2370,7 @@ procedure CreateTables;
 var
   I : Integer;
   L : Longword;
-  P : ^Longword;
+  P : PLongword;
 {$ENDIF}
 begin
  {$IFNDEF PUREPASCAL}
@@ -1521,7 +2389,9 @@ begin
    P^ := L;
    Inc(P);
   end;
- BiasPointer := Pointer(Integer(AlphaPointer) + $FF * 4 * SizeOf(Cardinal));
+ P := AlphaPointer;
+ Inc(P, $FF * 4);
+ BiasPointer := P;
  Assert(PCardinal(BiasPointer)^ = $00FF00FF);
 
  {$IFDEF AlternativeSSE2}
@@ -1578,10 +2448,8 @@ begin
   begin
    Add(@BlendPixelNative);
    {$IFNDEF PUREPASCAL}
-   Add(@BlendPixelMMX, [pfMMX]);
-   {$IFNDEF CPUx86_64}
+//   Add(@BlendPixelMMX, [pfMMX]);
    Add(@BlendPixelSSE2, [pfSSE2]);
-   {$ENDIF}
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1595,9 +2463,7 @@ begin
    Add(@BlendPixelInplaceNative);
    {$IFNDEF PUREPASCAL}
    Add(@BlendPixelInplaceMMX, [pfMMX]);
-   {$IFNDEF CPUx86_64}
    Add(@BlendPixelInplaceSSE2, [pfSSE2]);
-   {$ENDIF}
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -1625,9 +2491,7 @@ begin
    Add(@BlendLineNative);
    {$IFNDEF PUREPASCAL}
    Add(@BlendLineMMX, [pfMMX]);
-   {$IFNDEF CPUx86_64}
    Add(@BlendLineSSE2, [pfSSE2]);
-   {$ENDIF}
    {$ENDIF}
    RebindProcessorSpecific;
   end;
