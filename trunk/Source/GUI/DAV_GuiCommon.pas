@@ -34,10 +34,6 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-{$IFDEF CPUx86_64}
-  {$DEFINE PUREPASCAL}
-{$ENDIF}
-
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
   {$ELSE} Windows, Messages, {$ENDIF}
@@ -913,6 +909,13 @@ begin
  {$ENDIF}
 end;
 
+{$IFDEF PUREPASCAL}
+{$DEFINE USENATIVECODE}
+{$ENDIF}
+{$IFDEF CPUx86_64}
+{$DEFINE USENATIVECODE}
+{$ENDIF}
+
 function ConvertColor(Color: TColor): TPixel32;
 {$IFDEF WIN_COLOR_FIX}
 var
@@ -930,7 +933,7 @@ begin
   I := Color and $000000FF;
   if I <> 0 then Result.ARGB := Result.ARGB or TPixel32(Integer(I) - 1).ARGB shl 16;
 {$ELSE}
-{$IFDEF PUREPASCAL}
+{$IFDEF USENATIVECODE}
   Result.ARGB := $FF shl 24 + (Color and $FF0000) shr 16 + (Color and $FF00) +
     (Color and $FF) shl 16;
 {$ELSE}
@@ -959,9 +962,13 @@ begin
            ((Color.ARGB and $000000FF) shl 16);
 {$ELSE}
 asm
- ROL    EAX, 8
- XOR    AL, AL
- BSWAP  EAX
+{$IFDEF TARGET_x64}
+        MOV     EAX, ECX
+{$ENDIF}
+        // the alpha channel byte is set to zero!
+        ROL     EAX, 8  // ABGR  ->  BGRA
+        XOR     AL, AL  // BGRA  ->  BGR0
+        BSWAP   EAX     // BGR0  ->  0RGB
 {$ENDIF}
 end;
 

@@ -522,20 +522,23 @@ asm
   SETNZ   Result         // set result
   {$ENDIF CPU32}
 
-  // yet to be tested...
   {$IFDEF CPU64}
-  PUSHFQ                 // save EFLAGS to stack
-  POP     RAX            // store EFLAGS in EAX
-  MOV     RCX, RAX       // save in EDX for later testing
-  XOR     RAX, CFlag     // flip ID bit in EFLAGS
-  AND     RCX, CFlag
-  PUSH    RAX            // save new EFLAGS Value on stack
-  POPFQ                  // replace current EFLAGS Value
-  PUSHFQ                 // get new EFLAGS
-  POP     RAX            // store new EFLAGS in EAX
-  AND     RAX, CFlag
-  XOR     RAX, RCX       // check if ID bit changed
-  SETNZ   Result         // set result
+  MOV       EDX, False
+  PUSHFQ
+  POP       RAX
+  MOV       ECX, EAX
+  XOR       EAX, $00200000
+  PUSH      RAX
+  POPFQ
+  PUSHFQ
+  POP       RAX
+  XOR       ECX, EAX
+  JZ        @NotFound
+  MOV       EDX, True
+@NotFound:
+  PUSH      RAX
+  POPFQ
+  MOV       EAX, EDX
   {$ENDIF CPU64}
 end;
 
@@ -580,16 +583,15 @@ asm
   MOV     ECX, ValueECX
 
   // CPUID
-  DB      0FH
-  DB      0A2H
+  CPUID
 
   // store results
-  MOV     [R8], RAX
-  MOV     [R9], RBX
+  MOV     [R8], EAX
+  MOV     [R9], EBX
   MOV     RDI, ReturnedECX
-  MOV     [RDI], RCX
+  MOV     [RDI], ECX
   MOV     RDI, ReturnedEDX
-  MOV     [RDI], RDX
+  MOV     [RDI], EDX
 
   // restore context
   POP     RBX
