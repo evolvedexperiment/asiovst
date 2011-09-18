@@ -25,7 +25,6 @@ package DAV_VSTHost_D16;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
   DAV_Common_D16,
   DAV_VstPlugin_D16;

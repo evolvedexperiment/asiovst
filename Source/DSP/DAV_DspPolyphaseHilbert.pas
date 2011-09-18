@@ -36,6 +36,10 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   DAV_Types, DAV_DspPolyphaseFilter;
 

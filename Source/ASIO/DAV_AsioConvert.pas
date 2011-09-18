@@ -34,6 +34,8 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$DEFINE PUREPASCAL}
+
 {$IFDEF DELPHI6_UP}
 {$WARN UNIT_PLATFORM OFF}
 {$WARN SYMBOL_PLATFORM OFF}
@@ -834,23 +836,37 @@ begin
    b := BufArray[3]; BufArray[3] := BufArray[4]; BufArray[4] := b;
    Inc(BufByte, 8);
   end;
-end;
 {$ELSE}
 asm
- PUSH  EBX
- MOV   ECX, SampleCount
+{$IFDEF CPU32}
+  PUSH  EBX
+  MOV   ECX, SampleCount
 @Start:
- MOV   EDX, [EAX]
- MOV   EBX, [EAX + 4]
- BSWAP EDX
- BSWAP EBX
- MOV   [EAX + 4], EDX
- MOV   [EAX], EBX
- ADD   EAX, 8
- LOOP  @Start
- POP   EBX
-end;
+  MOV   EDX, [EAX]
+  MOV   EBX, [EAX + 4]
+  BSWAP EDX
+  BSWAP EBX
+  MOV   [EAX + 4], EDX
+  MOV   [EAX], EBX
+  ADD   EAX, 8
+  LOOP  @Start
+  POP   EBX
 {$ENDIF}
+{$IFDEF CPU64}
+  MOV   RAX, RCX
+  MOV   RCX, RDX
+@Start:
+  MOV   EDX, [RAX]
+  MOV   R8D, [RAX + 4]
+  BSWAP EDX
+  BSWAP R8D
+  MOV   [RAX + 4], EDX
+  MOV   [RAX], R8D
+  ADD   RAX, 8
+  LOOP  @Start
+{$ENDIF}
+{$ENDIF}
+end;
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// FPU ////////////////////////////////////////

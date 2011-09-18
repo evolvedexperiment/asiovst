@@ -61,9 +61,11 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF MSWINDOWS}Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF} {$IFDEF MSWINDOWS} Registry, {$ENDIF}
-  Contnrs, SysUtils, Classes, Graphics, {$IFDEF VstHostGUI} Controls, Forms,
-  StdCtrls, ComCtrls, Dialogs,{$ENDIF} DAV_Types, DAV_VSTEffect,
-  DAV_VSTOfflineTask {$IFDEF MemDLL}, DAV_DLLLoader{$ENDIF};
+  Contnrs, SysUtils, Classes, {$IFDEF VstHostGUI} {$IFDEF FMX} FMX.Types,
+  FMX.Dialogs, FMX.Controls, FMX.Forms, FMX.Platform, {$IFDEF MSWINDOWS}
+  FMX.Platform.Win, {$ENDIF} {$ELSE} Controls, Forms, StdCtrls, ComCtrls,
+  Dialogs, {$ENDIF} {$ENDIF} DAV_Types, DAV_VSTEffect, DAV_VSTOfflineTask
+  {$IFDEF MemDLL}, DAV_DLLLoader{$ENDIF};
 
 const
   CDefaultBlockSize = 2048;
@@ -80,9 +82,13 @@ type
   TVstOfflineEvent = procedure(Sender: TObject; VstOfflineTaskPointer: PVstOfflineTaskRecord) of object;
   TVSTGetTempoAtSamplePositionEvent = function(Sender: TObject; SamplePosition: Integer): Double of object;
   {$IFDEF VstHostGUI}
-  TVstShowEditEvent = procedure(Sender: TObject; Control: TWinControl) of object;
   TGUIStyle = (gsDefault, gsParameterList, gsParameterSelector,
     gsCustom);
+  {$IFDEF FMX}
+  TVstShowEditEvent = procedure(Sender: TObject; Control: TFmxHandle) of object;
+  {$ELSE}
+  TVstShowEditEvent = procedure(Sender: TObject; Control: TWinControl) of object;
+  {$ENDIF}
   {$ENDIF}
 
   // Reaper Extension Callbacks
@@ -100,12 +106,11 @@ type
   TAudioIsRunning = function: Integer;
 
   THostCanDo = (hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
-                hcdReceiveVstEvents, hcdReceiveVstMidiEvent,
-                hcdReceiveVstTimeInfo, hcdReportConnectionChanges,
-                hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing,
-                hcdOffline, hcdSupplyIdle, hcdSupportShell, // 'shell' handling via uniqueID as suggested by Waves
-                hcdOpenFileSelector, hcdCloseFileSelector, hcdEditFile,
-                hcdShellCategory, hcdStartStopProcess);
+    hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo,
+    hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow,
+    hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdSupportShell, // 'shell' handling via uniqueID as suggested by Waves
+    hcdOpenFileSelector, hcdCloseFileSelector, hcdEditFile, hcdShellCategory,
+    hcdStartStopProcess);
   THostCanDos = set of THostCanDo;
 
   TKnobMode = (knCircular, knCircularRelativ, knLinear);
@@ -144,8 +149,8 @@ type
     {$IFDEF VstHostGUI}
     FGUIControlCreated             : Boolean;
     FGUIStyle                      : TGUIStyle;
-    FOnCloseEdit                   : TNotifyEvent;
     FOnShowEdit                    : TVstShowEditEvent;
+    FOnCloseEdit                   : TNotifyEvent;
     {$ENDIF}
     FOnAfterLoad                   : TNotifyEvent;
     FOnAMAutomate                  : TVstAutomateEvent;
@@ -194,24 +199,30 @@ type
     {$IFDEF VstHostGUI}
     function CalculateGuiRectList: ERect;
     function CalculateGuiRectSelector: ERect;
-    procedure FormCloseHandler(Sender: TObject; var Action: TCloseAction);
+    procedure EditActivateHandler(Sender: TObject);
+    procedure EditDeactivateHandler(Sender: TObject);
+    procedure UpdateParameterOnGui(ParameterIndex: Integer);
+    procedure SetGUIStyle(const Value: TGUIStyle);
+    {$IFNDEF FMX}
     procedure ControlChangeList(Sender: TObject);
     procedure ControlChangeSelector(Sender: TObject);
     procedure GuiParameterChangeList(Sender: TObject);
     procedure GuiParameterChangeSelector(Sender: TObject);
-    procedure EditActivateHandler(Sender: TObject);
-    procedure EditDeactivateHandler(Sender: TObject);
-    procedure SetGUIStyle(const Value: TGUIStyle);
-    procedure UpdateParameterOnGui(ParameterIndex: Integer);
+    procedure FormCloseHandler(Sender: TObject; var Action: TCloseAction);
+    {$ENDIF}
     {$ENDIF}
   protected
     {$IFDEF VstHostGUI}
+    {$IFDEF FMX}
+    FGUIControl  : TFmxHandle;
+    {$ELSE}
     FGUIControl  : TWinControl;
     FGUIElements : TObjectList;
-    procedure EditClose;
     procedure ShowHostGuiSelector(Control: TWinControl);
     procedure ShowHostGuiList(Control: TWinControl);
     procedure ShowHostGuiCustom(Control: TWinControl);
+    {$ENDIF}
+    procedure EditClose;
     {$ENDIF}
     procedure AssignTo(Dest: TPersistent); override;
 
@@ -344,10 +355,14 @@ type
     function EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
     function EditKeyUp(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
     function EditOpen(const Handle: THandle): Integer;
-    procedure RenderEditorToBitmap(Bitmap: TBitmap);
     procedure SetEditKnobMode(Mode : TKnobMode);
-    procedure ShowEdit(Control: TWinControl); overload;
+    {$IFDEF FMX}
+    procedure ShowEdit(Control: TFmxHandle); overload;
+    {$ELSE}
+    procedure RenderEditorToBitmap(Bitmap: TBitmap);
     procedure ShowEdit; overload;
+    procedure ShowEdit(Control: TWinControl); overload;
+    {$ENDIF}
     {$ENDIF}
 
     property Parameter[Index: Integer]: Single read GetParameter write SetParameter;
@@ -377,8 +392,12 @@ type
     property EditVisible: Boolean read FEditOpen;
     property EffectName: AnsiString read GetEffectName;
     {$IFDEF VstHostGUI}
+    {$IFDEF FMX}
+    property GUIControl: TFmxHandle read FGUIControl;
+    {$ELSE}
     property GUIControl: TWinControl read FGUIControl;
-    property GUIStyle : TGUIStyle read FGUIStyle write SetGUIStyle default gsDefault;
+    {$ENDIF}
+    property GUIStyle: TGUIStyle read FGUIStyle write SetGUIStyle default gsDefault;
     {$ENDIF}
     property Loaded: Boolean read FLoaded stored False;
     property PlugCategory: TVstPluginCategory read FPlugCategory stored False;
@@ -461,8 +480,8 @@ type
     property OnVendorSpecific;
     {$IFDEF VstHostGUI}
     property GUIStyle;
-    property OnCloseEdit;
     property OnShowEdit;
+    property OnCloseEdit;
     {$ENDIF}
   end;
 
@@ -685,8 +704,10 @@ var
   GHostList    : TObjectList;
   {$ENDIF}
   {$IFDEF VstHostGUI}
+  {$IFNDEF FMX}
   GHostDialog  : TCommonDialog;
   GHostWindows : TObjectList;
+  {$ENDIF}
   {$ENDIF}
 
   {$IFDEF Debug64}
@@ -711,7 +732,6 @@ end;
 function WhatIfNoEntry: Integer;
 begin
  raise Exception.Create(RStrNoEntryPoint);
- Result := 1;
 end;
 
 function String2Language(LanguageString : string): TVSTHostLanguage;
@@ -1056,6 +1076,7 @@ begin
    amOpenWindow                  : if Assigned(ptr) then
                                     begin
                                     {$IFDEF VstHostGUI}
+                                    {$IFNDEF FMX}
                                      with (GHostWindows.Items[GHostWindows.Add(TForm.Create(Host))] as TForm) do
                                       begin
                                        Caption := string(PVstWindow(ptr).title);
@@ -1071,6 +1092,7 @@ begin
                                       end;
                                      ShowMessage('Please contact me if this happens: Christian@Aixcoustic.com');
 //                                               PVstWindow(ptr).winHandle := (GHostWindows.Items[i] as TForm).Handle;
+                                     {$ENDIF}
                                      {$ENDIF}
                                     end;
    amCloseWindow                 : begin
@@ -1089,6 +1111,7 @@ begin
                                     then Plugin.AudioMasterEndEdit(Index);
    amOpenFileSelector            : begin
                                     {$IFDEF VstHostGUI}
+                                    {$IFNDEF FMX}
                                     if (ptr <> nil) and not Assigned(GHostDialog) then
                                      begin
                                       case PVstFileSelect(ptr).Command of
@@ -1158,9 +1181,11 @@ begin
                                       Result := Integer(True);
                                      end;
                                     {$ENDIF}
+                                    {$ENDIF}
                                    end;
    amCloseFileSelector           : begin
                                     {$IFDEF VstHostGUI}
+                                    {$IFNDEF FMX}
                                     if Assigned(GHostDialog) then
                                      case PVstFileSelect(ptr).Command of
                                       kVstFileLoad:
@@ -1178,6 +1203,7 @@ begin
                                       else
                                        {$IFDEF Debug} raise Exception.Create('TODO: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !') {$ENDIF Debug};
                                      end;
+                                    {$ENDIF}
                                     {$ENDIF}
                                    end;
     amEditFile                   : {$IFDEF Debug} raise Exception.Create('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
@@ -1367,7 +1393,7 @@ begin
 
    if ValueExists('VstPluginsPath')
     then FPlugInDir := ReadString('VstPluginsPath')
-    {$IFDEF VstHostGUI} else FPlugInDir := ExtractFileDir(Application.ExeName){$ENDIF};
+    {$IFDEF VstHostGUI} {$IFNDEF FMX} else FPlugInDir := ExtractFileDir(Application.ExeName){$ENDIF}{$ENDIF};
    CloseKey;
   finally
    Free;
@@ -1750,8 +1776,10 @@ begin
    try
     {$IFDEF VstHostGUI}
     if EditVisible then CloseEdit;
+    {$IFNDEF FMX}
     if Assigned(GUIControl) and FGUIControlCreated
      then FreeAndNil(FGUIControl);
+    {$ENDIF}
     {$ENDIF}
    finally
     Unload;
@@ -1761,8 +1789,10 @@ begin
    try
     {$IFDEF VstHostGUI}
     if EditVisible then CloseEdit;
+    {$IFNDEF FMX}
     if Assigned(GUIControl) and FGUIControlCreated
      then FreeAndNil(FGUIControl);
+    {$ENDIF}
     {$ENDIF}
    finally
     FreeAndNil(FInternalDllLoader);
@@ -1799,13 +1829,10 @@ begin
    FOnAMWantMidi                  := Self.FOnAMWantMidi;
    FOnProcessEvents               := Self.FOnProcessEvents;
    FOnVendorSpecific              := Self.FOnVendorSpecific;
+   FDisplayName                   := Self.FDisplayName;
    {$IFDEF VstHostGUI}
    FOnCloseEdit                   := Self.FOnCloseEdit;
    FOnShowEdit                    := Self.FOnShowEdit;
-   {$ENDIF}
-
-   FDisplayName                   := Self.FDisplayName;
-   {$IFDEF VstHostGUI}
    FGUIStyle                      := Self.FGUIStyle;
    {$ENDIF}
 
@@ -2243,9 +2270,17 @@ begin
                else theRect := CalculateGuiRectList;
   gsParameterList : theRect := CalculateGuiRectList;
   gsParameterSelector : theRect := CalculateGuiRectSelector;
+  {$IFDEF FMX}
+  gsCustom :
+    if FGUIControl <> 0 then
+     with Platform.FindForm(FGUIControl) do
+      theRect := Rect(0, 0, Width, Height)
+     else theRect := Rect(0, 0, 0, 0);
+  {$ELSE}
   gsCustom : if Assigned(FGUIControl)
               then theRect := Rect(0, 0, FGUIControl.Width, FGUIControl.Height)
               else theRect := Rect(0, 0, 0, 0);
+  {$ENDIF}
  end;
  {$ELSE}
  theRect := Rect(0, 0, 0, 0);
@@ -2301,6 +2336,58 @@ begin
  EditDeActivate;
 end;
 
+{$IFDEF FMX}
+procedure TCustomVstPlugIn.ShowEdit(Control: TFmxHandle);
+begin
+ if not Active
+  then raise Exception.Create('Plugin not active!');
+
+ if Control = 0
+  then raise Exception.Create('Control must exist!');
+ if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault) then
+  begin
+   if not FEditOpen then
+    begin
+     EditOpen(FmxHandleToHWND(Control));
+     FGUIControl := Control;
+     EditIdle;
+    end;
+//  else raise Exception.Create('Editor is already open!');
+  end
+ else // VST plugin has no GUI itself
+  raise Exception.Create('Not implemented yet');
+
+ if Assigned(FOnShowEdit) then FOnShowEdit(Self, GUIControl);
+end;
+
+{$ELSE}
+
+procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
+begin
+ if not Active
+  then raise Exception.Create('Plugin not active!');
+
+ if Control = nil
+  then raise Exception.Create('Control must exist!');
+ if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault) then
+  begin
+   if not FEditOpen then
+    begin
+     EditOpen(Control.Handle);
+     FGUIControl := Control;
+     EditIdle;
+    end;
+//  else raise Exception.Create('Editor is already open!');
+  end
+ else // VST plugin has no GUI itself
+  case FGUIStyle of
+   gsDefault, gsParameterList: ShowHostGuiList(Control);
+   gsParameterSelector: ShowHostGuiSelector(Control);
+   gsCustom: ShowHostGuiCustom(Control);
+  end;
+ if Assigned(FOnShowEdit) then FOnShowEdit(Self, GUIControl);
+end;
+
 procedure TCustomVstPlugIn.ShowEdit;
 var
   rct : TRect;
@@ -2329,32 +2416,6 @@ begin
      ClientHeight := rct.Bottom - rct.Top;
     end; 
   end;
-end;
-
-procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
-begin
- if not Active
-  then raise Exception.Create('Plugin not active!');
-
- if Control = nil
-  then raise Exception.Create('Control must exist!');
- if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault) then
-  begin
-   if not FEditOpen then
-    begin
-     EditOpen(Control.Handle);
-     FGUIControl := Control;
-     EditIdle;
-    end;
-//  else raise Exception.Create('Editor is already open!');
-  end
- else // VST plugin has no GUI itself
-  case FGUIStyle of
-   gsDefault, gsParameterList: ShowHostGuiList(Control);
-   gsParameterSelector: ShowHostGuiSelector(Control);
-   gsCustom: ShowHostGuiCustom(Control);
-  end;
- if Assigned(FOnShowEdit) then FOnShowEdit(Self, GUIControl);
 end;
 
 procedure TCustomVstPlugIn.ShowHostGuiSelector(Control: TWinControl);
@@ -2632,6 +2693,7 @@ begin
    except
    end;
 end;
+{$ENDIF}
 
 procedure TCustomVstPlugIn.EditClose;
 begin
@@ -2646,23 +2708,29 @@ begin
  if not Assigned(FVstEffect) then Exit;
  try
   if Assigned(FOnCloseEdit) then FOnCloseEdit(Self);
-  if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault)
-   then EditClose else
-   if Assigned(FGUIElements)
+  if (effFlagsHasEditor in FVstEffect.EffectFlags) {$IFNDEF FMX} and (FGUIStyle = gsDefault) {$ENDIF}
+   then EditClose
+  {$IFNDEF FMX}
+   else if Assigned(FGUIElements)
     then FreeAndNil(FGUIElements);
   if Assigned(GUIControl) and FGUIControlCreated
    then FreeAndNil(FGUIControl); //and (not FExternalForm) then
+  {$ENDIF}
  finally
   FEditOpen := False;
  end;
 end;
 
+{$IFNDEF FMX}
 procedure TCustomVstPlugIn.FormCloseHandler(Sender: TObject; var Action: TCloseAction);
 begin
  CloseEdit;
+ {$IFNDEF FMX}
  if Assigned(GUIControl)
   then FreeAndNil(FGUIControl);
+ {$ENDIF}
 end;
+{$ENDIF}
 
 function TCustomVstPlugIn.EditIdle: Integer;
 begin
@@ -3342,9 +3410,11 @@ begin
   then FOnAMAutomate(Self, Index, Value);
 
  {$IFDEF VstHostGUI}
+ {$IFNDEF FMX}
  // eventually update GUI
  if Assigned(FGUIElements)
   then UpdateParameterOnGui(Index);
+ {$ENDIF}
  {$ENDIF}
 end;
 
@@ -3376,12 +3446,14 @@ begin
   then Result := False else
  if Pos('WUSIK', UpperCase(string(VendorString))) > 0
   then Result := False else
+ {$IFNDEF FMX}
  if Assigned(GUIControl) then
   begin
    GUIControl.ClientWidth := Width;
    GUIControl.ClientHeight := Height;
    Result := True;
   end;
+ {$ENDIF}
  {$ENDIF}
 end;
 
@@ -3391,9 +3463,11 @@ begin
   then FOnAMUpdateDisplay(Self);
 
  {$IFDEF VstHostGUI}
+ {$IFNDEF FMX}
  // eventually update all GUI elements
  if Assigned(FGUIElements)
   then UpdateParameterOnGui(-1);
+ {$ENDIF}
  {$ENDIF}
 end;
 
@@ -3452,6 +3526,7 @@ var
   ParamIndex : Integer;
   SB         : TScrollBar;
 begin
+ {$IFNDEF FMX}
  case FGUIStyle of
   gsDefault, gsParameterList :
    if ParameterIndex >= 0 then
@@ -3470,6 +3545,7 @@ begin
        string(GetParamLabel(ParameterIndex));
     end;
  end;
+ {$ENDIF}
 end;
 {$ENDIF}
 
@@ -3628,7 +3704,7 @@ begin
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nil, LE, 0, @Buf[0], SizeOf(Buf), nil);
       if Buf = '' then
        begin
-        str := IntToStr(LE) + AnsiString(StrPas(Buf));
+        str := AnsiString(IntToStr(LE)) + StrPas(Buf);
         raise Exception.Create(string(str));
        end else raise Exception.Create(string(StrPas(Buf)));
      end;
@@ -4118,7 +4194,9 @@ initialization
   GHostList    := TObjectList.Create(False);
   {$ENDIF}
   {$IFDEF VstHostGUI}
+  {$IFNDEF FMX}
   GHostWindows := TObjectList.Create;
+  {$ENDIF}
   {$ENDIF}
 
   {$IFDEF Debug64}
@@ -4127,7 +4205,9 @@ initialization
 
 finalization
   {$IFDEF VstHostGUI}
+  {$IFNDEF FMX}
   FreeAndNil(GHostWindows);
+  {$ENDIF}
   {$ENDIF}
   {$IFDEF SearchPluginAndHost}
   FreeAndNil(GHostList);

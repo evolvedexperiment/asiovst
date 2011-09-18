@@ -37,6 +37,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 {-$UNDEF UseAlignedMemory}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   Classes, DAV_Types, DAV_MemoryUtils, DAV_DspPolyphaseFilter;
 

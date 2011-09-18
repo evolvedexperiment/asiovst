@@ -498,7 +498,7 @@ end;
 
 function SiliconDiode(Voltage: Double): Double;
 begin
- Result := 40.6728602E-9 * (exp(17.7493332 * (Voltage + 0.3)) - 1);
+ Result := 40.6728602E-9 * (Exp(17.7493332 * (Voltage + 0.3)) - 1);
 end;
 
 
@@ -670,25 +670,25 @@ end;
 {$ELSE}
 asm
  FLDLG2
- FLD    [eax].Single
+ FLD    [EAX].Single
  FYL2X
  FMUL   CTwenty32.Double
- fstp   [eax].Single
+ FSTP   [EAX].Single
  FLDLG2
- FLD    [eax + 4].Single
+ FLD    [EAX + 4].Single
  FYL2X
  FMUL   CTwenty32.Double
- fstp   [eax + 4].Single
+ FSTP   [EAX + 4].Single
  FLDLG2
- FLD    [eax + 8].Single
+ FLD    [EAX + 8].Single
  FYL2X
  FMUL   CTwenty32.Double
- fstp   [eax + 8].Single
+ FSTP   [EAX + 8].Single
  FLDLG2
- FLD    [eax + 12].Single
+ FLD    [EAX + 12].Single
  FYL2X
  FMUL   CTwenty32.Double
- fstp   [eax + 12].Single
+ FSTP   [EAX + 12].Single
 end;
 {$ENDIF}
 
@@ -710,18 +710,18 @@ const
 asm
  FLD     Value.Single
  FMUL    fltl2
- fldl2e
+ FLDL2E
  FMUL
- FLD     st(0)
- frndint
- fsub    st(1), st
- fxch    st(1)
- f2xm1
- fld1
- fadd
- fscale
- fstp    st(1)
- FMUL CTwenty64.Double
+ FLD     ST(0)
+ FRNDINT
+ FSUB    ST(1), ST
+ FXCH    ST(1)
+ F2XM1
+ FLD1
+ FADD
+ FSCALE
+ FSTP    ST(1)
+ FMUL    CTwenty64.Double
 end;
 {$ENDIF}
 
@@ -736,17 +736,17 @@ const
 asm
  FLD     Value.Double
  FMUL    fltl2
- fldl2e
+ FLDL2E
  FMUL
- FLD     st(0)
- frndint
- fsub    st(1), st
- fxch    st(1)
- f2xm1
- fld1
- fadd
- fscale
- fstp    st(1)
+ FLD     ST(0)
+ FRNDINT
+ FSUB    ST(1), ST
+ FXCH    ST(1)
+ F2XM1
+ FLD1
+ FADD
+ FSCALE
+ FSTP    ST(1)
  FMUL CTwenty64.Double
 end;
 {$ENDIF}
@@ -761,11 +761,11 @@ begin
 end;
 {$ELSE}
 asm
- fldln2
- FLD Value.Single
- FMUL fltl1
+ FLDLN2
+ FLD     Value.Single
+ FMUL    fltl1
  FYL2X
- FMUL fltl2
+ FMUL    fltl2
 end;
 {$ENDIF}
 
@@ -779,11 +779,11 @@ begin
 end;
 {$ELSE}
 asm
- fldln2
- FLD Value.Double
- FMUL fltl1
+ FLDLN2
+ FLD     Value.Double
+ FMUL    fltl1
  FYL2X
- FMUL fltl2
+ FMUL    fltl2
 end;
 {$ENDIF}
 
@@ -966,13 +966,12 @@ begin
  Result := Value - Round(Value - 0.5);
 end;
 {$ELSE}
-var i : Integer;
 asm
- FLD Value.Single
- FLD Value.Single
- fsub CHalf64
- frndint
- fsubp
+ FLD     Value.Single
+ FLD     Value.Single
+ FSUB    CHalf64
+ FRNDINT
+ FSUBP
 end;
 {$ENDIF}
 
@@ -982,13 +981,12 @@ begin
  Result := Value - Round(Value - 0.5);
 end;
 {$ELSE}
-var i : Integer;
 asm
- FLD Value.Double
- FLD Value.Double
- fsub CHalf64
- frndint
- fsubp
+ FLD     Value.Double
+ FLD     Value.Double
+ FSUB    CHalf64
+ FRNDINT
+ FSUBP
 end;
 {$ENDIF}
 
@@ -1060,11 +1058,11 @@ begin
 end;
 {$ELSE}
 asm
- FLD   Value.Single
- fadd  st(0), st(0)
- fadd  CHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
+ FLD     Value.Single
+ FADD    ST(0), ST(0)
+ FADD    CHalf32
+ FISTP   Result.Integer
+ SAR     Result.Integer, 1
 end;
 {$ENDIF}
 
@@ -1075,11 +1073,11 @@ begin
 end;
 {$ELSE}
 asm
- FLD   Value.Double
- fadd  st(0), st(0)
- fadd  CHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
+ FLD     Value.Double
+ FADD    ST(0), ST(0)
+ FADD    CHalf32
+ FISTP   Result.Integer
+ SAR     Result.Integer, 1
 end;
 {$ENDIF}
 
@@ -1098,14 +1096,14 @@ end;
 {$ELSE}
 asm
  @Start:
- FLD   [eax].Single
- fadd  st(0), st(0)
- fadd  CHalf32
- fistp [edx].Integer
- sar   [edx].Integer, 1
- add   eax,4
- add   edx,4
- loop  @Start
+ FLD     [EAX].Single
+ FADD    ST(0), ST(0)
+ FADD    CHalf32
+ FISTP   [EDX].Integer
+ SAR     [EDX].Integer, 1
+ ADD     EAX,4
+ ADD     EDX,4
+ LOOP    @Start
 end;
 {$ENDIF}
 
@@ -1116,11 +1114,11 @@ begin
 end;
 {$ELSE}
 asm
- FLD   Value.Single
- fadd  st(0), st(0)
- fsub  CHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
+ FLD     Value.Single
+ FADD    ST(0), ST(0)
+ FSUB    CHalf32
+ FISTP   Result.Integer
+ SAR     Result.Integer, 1
 end;
 {$ENDIF}
 
@@ -1131,11 +1129,11 @@ begin
 end;
 {$ELSE}
 asm
- FLD   Value.Double
- fadd  st(0), st(0)
- fsub  CHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
+ FLD     Value.Double
+ FADD    ST(0), ST(0)
+ FSUB    CHalf32
+ FISTP   Result.Integer
+ SAR     Result.Integer, 1
 end;
 {$ENDIF}
 
@@ -1154,14 +1152,14 @@ end;
 {$ELSE}
 asm
  @Start:
- FLD [eax].Single
- fadd  st(0), st(0)
- fsub  CHalf32
- fistp [edx].Integer
- sar   [edx].Integer, 1
- add eax,4
- add edx,4
- loop    @Start
+ FLD     [EAX].Single
+ FADD    ST(0), ST(0)
+ FSUB    CHalf32
+ FISTP   [EDX].Integer
+ SAR     [EDX].Integer, 1
+ ADD     EAX, 4
+ ADD     EDX, 4
+ LOOP    @Start
 end;
 {$ENDIF}
 
@@ -1174,12 +1172,12 @@ begin
 end;
 {$ELSE}
 asm
- FLD   Value.Single
- fadd  st(0), st(0)
- fsubr CMinusHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
- neg   Result.Integer
+ FLD     Value.Single
+ FADD    ST(0), ST(0)
+ FSUBR   CMinusHalf32
+ FISTP   Result.Integer
+ SAR     Result.Integer, 1
+ NEG     Result.Integer
 end;
 {$ENDIF}
 
@@ -1190,12 +1188,12 @@ begin
 end;
 {$ELSE}
 asm
- FLD   Value.Double
- fadd  st(0), st(0)
- fsubr CMinusHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
- neg   Result.Integer
+ FLD      Value.Double
+ FADD     ST(0), ST(0)
+ FSUBR    CMinusHalf32
+ FISTP    Result.Integer
+ SAR      Result.Integer, 1
+ NEG      Result.Integer
 end;
 {$ENDIF}
 
@@ -1214,15 +1212,15 @@ end;
 {$ELSE}
 asm
  @Start:
- FLD   [eax].Single
- fadd  st(0), st(0)
- fsubr CMinusHalf32
- fistp [edx].Integer
- sar   [edx].Integer, 1
- neg   [edx].Integer
- add   eax, 4
- add   edx, 4
- loop  @Start
+ FLD     [EAX].Single
+ FADD    ST(0), ST(0)
+ FSUBR   CMinusHalf32
+ FISTP   [EDX].Integer
+ SAR     [EDX].Integer, 1
+ NEG     [EDX].Integer
+ ADD     EAX, 4
+ ADD     EDX, 4
+ LOOP    @Start
 end;
 {$ENDIF}
 
@@ -1238,15 +1236,15 @@ var
   IntCast : Integer absolute Value;
 asm
  FLD   Value.Single
- fadd  st(0), st(0)
- fabs
- fadd  CMinusHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
- test  IntCast, $80000000
- jz @done
- neg Result.Integer
- @done:
+ FADD  ST(0), ST(0)
+ FABS
+ FADD  CMinusHalf32
+ FISTP Result.Integer
+ SAR   Result.Integer, 1
+ TEST  IntCast, $80000000
+ JZ @Done
+ NEG Result.Integer
+ @Done:
 end;
 {$ENDIF}
 
@@ -1260,15 +1258,15 @@ var
   ByteCast : array [0..7] of Byte absolute Value;
 asm
  FLD   Value.Double
- fadd  st(0), st(0)
- fabs
- fadd  CMinusHalf32
- fistp Result.Integer
- sar   Result.Integer, 1
- test  ByteCast[4].Integer, $80000000
- jz    @done
- neg   Result.Integer
- @done:
+ FADD  ST(0), ST(0)
+ FABS
+ FADD  CMinusHalf32
+ FISTP Result.Integer
+ SAR   Result.Integer, 1
+ TEST  ByteCast[4].Integer, $80000000
+ JZ    @Done
+ NEG   Result.Integer
+ @Done:
 end;
 {$ENDIF}
 
@@ -1281,8 +1279,8 @@ end;
 {$ELSE}
 asm
  FLD Sample.Single
- frndint
- fistp Result.Integer
+ FRNDINT
+ FISTP Result.Integer
 end;
 {$ENDIF}
 
@@ -1294,8 +1292,8 @@ end;
 {$ELSE}
 asm
  FLD Sample.Double
- frndint
- fistp Result.Integer
+ FRNDINT
+ FISTP Result.Integer
 end;
 {$ENDIF}
 
@@ -1473,9 +1471,9 @@ end;
 asm
  FLD     DWORD PTR [EBP + $08]
  FLD     DWORD PTR [EBP + $0C]
- fcomi   st(0), st(1)
- fcmovnb st(0), st(1)
- ffree   st(1)
+ FCOMI   ST(0), ST(1)
+ FCMOVNB ST(0), ST(1)
+ FFREE   ST(1)
 end;
 {$ENDIF}
 
@@ -1490,9 +1488,9 @@ end;
 asm
  FLD     DWORD PTR [EBP + $0C]
  FLD     DWORD PTR [EBP + $08]
- fcomi   st(0), st(1)
- fcmovnb st(0), st(1)
- ffree   st(1)
+ FCOMI   ST(0), ST(1)
+ FCMOVNB ST(0), ST(1)
+ FFREE   ST(1)
 end;
 {$ENDIF}
 
@@ -1528,7 +1526,7 @@ begin
    PushEax         := $50;
    Jump.Opcode     := $FF;
    Jump.ModRm      := $25;
-   Jump.PTarget    := @jump.Target;
+   Jump.PTarget    := @Jump.Target;
    Jump.Target     := MethodAddr;
   end;
 end;

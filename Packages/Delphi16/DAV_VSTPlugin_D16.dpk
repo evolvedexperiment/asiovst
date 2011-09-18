@@ -28,7 +28,6 @@ package DAV_VSTPlugin_D16;
 
 requires
   rtl,
-  vcl,
   designide,
   DAV_Common_D16;
 

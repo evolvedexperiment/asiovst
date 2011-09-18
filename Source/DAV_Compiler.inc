@@ -171,6 +171,7 @@
   DELPHICOMPILER12     Defined when compiling with Delphi Personality of BDS 6.0
   DELPHICOMPILER14     Defined when compiling with Delphi Personality of BDS 7.0
   DELPHICOMPILER15     Defined when compiling with Delphi XE
+  DELPHICOMPILER16     Defined when compiling with Delphi XE2
   DELPHICOMPILER1_UP   Defined when compiling with Delphi 1 or higher
   DELPHICOMPILER2_UP   Defined when compiling with Delphi 2 or higher
   DELPHICOMPILER3_UP   Defined when compiling with Delphi 3 or higher
@@ -786,7 +787,7 @@
 {------------------------------------------------------------------------------}
 
 {$IFDEF DELPHI16_UP}
-  {$DEFINE DELPHIXE2_UP} // synonym to DELPHI15_UP
+  {$DEFINE DELPHIXE2_UP} // synonym to DELPHI16_UP
   {$DEFINE DELPHI15_UP}
 {$ENDIF}
 

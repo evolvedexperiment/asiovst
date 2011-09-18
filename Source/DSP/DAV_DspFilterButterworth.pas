@@ -37,6 +37,9 @@ interface
 {$IFDEF Darwin}
   {$DEFINE PUREPASCAL} // for OSX use pure pascal code
 {$ENDIF}
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
 
 uses
   Classes, DAV_Classes, DAV_Complex, DAV_DspFilter;

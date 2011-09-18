@@ -105,6 +105,7 @@ procedure TFmVSTEditor.FormCreate(Sender: TObject);
 var
   theRect             : TRect;
   i                   : Integer;
+  str                 : string;
   s, p                : AnsiString;
   ContainedVSTPlugins : TStringList;
   RS                  : TResourceStream;
@@ -156,36 +157,36 @@ begin
    ShowEdit(VSTPanel);
    Idle;
    EditIdle;
-   Caption :=  GetVendorString + ' ' + GetEffectName;
+   Caption := string(GetVendorString + ' ' + GetEffectName);
   end;
  CBPreset.Clear;
 
  for i := 0 to VstHost[0].numPrograms - 1 do
   begin
    VstHost[0].GetProgramNameIndexed(-1, i, p);
-   s := IntToStr(i);
+   s := AnsiString(IntToStr(i));
    if i < 10 then s := '00' + s else
    if i < 100 then s := '0' + s;
    s := s + ' - ' + p;
-   CBPreset.Items.Add(s)
+   CBPreset.Items.Add(string(s));
   end;
  CBPreset.ItemIndex := 0;
 
- s := VstHost[0].GetProgramName;
- s := IntToStr(CBPreset.ItemIndex) + ' - ' + s;
- if CBPreset.ItemIndex < 10 then s := '00' + s else
- if CBPreset.ItemIndex < 100 then s := '0' + s;
- if (CBPreset.Text <> s) then
+ str := string(VstHost[0].GetProgramName);
+ str := IntToStr(CBPreset.ItemIndex) + ' - ' + str;
+ if CBPreset.ItemIndex < 10 then str := '00' + str else
+ if CBPreset.ItemIndex < 100 then str := '0' + str;
+ if (CBPreset.Text <> str) then
   begin
-   CBPreset.Text := s;
+   CBPreset.Text := str;
    for i := 0 to VstHost[0].numPrograms - 1 do
     begin
      VstHost[0].CurrentProgram := i;
-     s := VstHost[0].GetProgramName;
-     s := IntToStr(i) + ' - ' + s;
-     if i < 10 then s := '00' + s else
-     if i < 100 then s := '0' + s;
-     CBPreset.Items[i] := s;
+     str := string(VstHost[0].GetProgramName);
+     str := IntToStr(i) + ' - ' + str;
+     if i < 10 then str := '00' + str else
+     if i < 100 then str := '0' + str;
+     CBPreset.Items[i] := str;
     end;
    VstHost[0].CurrentProgram := 0;
    CBPreset.ItemIndex := 0;

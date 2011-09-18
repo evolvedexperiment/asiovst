@@ -58,6 +58,7 @@ type
     procedure DataCountChanged; virtual;
   public
     constructor Create; overload;
+    constructor Create(VariableCount: Integer); overload;
     constructor Create(const DiffEvolPopulation: TDifferentialEvolutionPopulation; Cost: Double); overload;
 
     property Cost: Double read FCost write FCost;
@@ -141,6 +142,7 @@ resourcestring
   RCStrCrossOverBoundError = 'CrossOver must be 0 <= x <= 1';
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrConstraintsError = 'Min < Max, please!';
+  RCStrVariableCountMismatch = 'Variable count mismatch';
 
 { TEvaluatedPopulation }
 
@@ -151,11 +153,18 @@ begin
  FValidCostFlag := False;
 end;
 
+constructor TEvaluatedPopulation.Create(VariableCount: Integer);
+begin
+ Create;
+ SetLength(FData, VariableCount);
+end;
+
 constructor TEvaluatedPopulation.Create(const DiffEvolPopulation: TDifferentialEvolutionPopulation; Cost: Double);
 begin
  inherited Create;
  FCost := Cost;
  FData := DiffEvolPopulation;
+ FValidCostFlag := True;
 end;
 
 function TEvaluatedPopulation.GetData(Index: Integer): Double;
@@ -392,6 +401,14 @@ begin
     begin
      for VariableIndex := 0 to FVariableCount - 1
       do FCurrentGeneration[0].FData[VariableIndex] := FBestPopulation[VariableIndex];
+
+     // evaluate the best population cost and set best population index
+     if Assigned(FOnCalculateCosts) then
+      begin
+       FBestPopulationIndex := 0;
+       FCurrentGeneration[0].FCost := FOnCalculateCosts(Self, FCurrentGeneration[0].FData);
+       FCurrentGeneration[0].FValidCostFlag := True;
+      end;
     end;
   end;
 end;
@@ -472,7 +489,7 @@ begin
   begin
    if Length(Value) = VariableCount
     then Move(Value, FCurrentGeneration[Index].FData[0], VariableCount * SizeOf(Double))
-    else raise Exception.Create('Variable count mismatch');
+    else raise Exception.Create(RCStrVariableCountMismatch);
   end
  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
@@ -497,9 +514,9 @@ begin
  SetLength(FBestPopulation, FVariableCount);
  for Index := 0 to FVariableCount - 1 do
   begin
-   FMinConstraints[Index]  := -100;
-   FMaxConstraints[Index]  :=  100;
-   FBestPopulation[Index] :=    0;
+   FMinConstraints[Index] := -100;
+   FMaxConstraints[Index] := 100;
+   FBestPopulation[Index] := 0;
   end;
  RecreatePopulation;
 end;
@@ -649,15 +666,12 @@ begin
  for Index := 0 to FPopulationCount - 1 do
   begin
    if not Assigned(FCurrentGeneration[Index])
-    then FCurrentGeneration[Index] := TEvaluatedPopulation.Create
+    then FCurrentGeneration[Index] := TEvaluatedPopulation.Create(FVariableCount)
     else FCurrentGeneration[Index].FValidCostFlag := False;
 
    if not Assigned(FNextGeneration[Index])
-    then FNextGeneration[Index] := TEvaluatedPopulation.Create
+    then FNextGeneration[Index] := TEvaluatedPopulation.Create(FVariableCount)
     else FNextGeneration[Index].FValidCostFlag := False;
-
-   SetLength(FCurrentGeneration[Index].FData, FVariableCount);
-   SetLength(FNextGeneration[Index].FData, FVariableCount);
   end;
 
  if AutoInitialize

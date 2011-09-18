@@ -92,16 +92,16 @@ begin
     CBInput.Clear;
     for i := 0 to (InputChannelCount div 2) - 1 do
      begin
-      CBInput.Items.Add(
-        InputChannelInfos[2 * i].name + ' / ' +
-        InputChannelInfos[2 * i + 1].name);
+      CBInput.Items.Add(string(
+        AnsiString(InputChannelInfos[2 * i].name) + ' / ' +
+        AnsiString(InputChannelInfos[2 * i + 1].name)));
      end;
     CBOutput.Clear;
     for i := 0 to (OutputChannelCount div 2) - 1 do
      begin
-      CBOutput.Items.Add(
-        OutputChannelInfos[2 * i].name + ' / ' +
-        OutputChannelInfos[2 * i + 1].name);
+      CBOutput.Items.Add(string(
+        AnsiString(OutputChannelInfos[2 * i].name) + ' / ' +
+        AnsiString(OutputChannelInfos[2 * i + 1].name)));
      end;
     CBInput.ItemIndex := 0;
     CBOutput.ItemIndex := 0;

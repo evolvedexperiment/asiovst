@@ -34,6 +34,10 @@ interface
 
 {$I DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   {$IFDEF FPC}LCLIntf, Types, {$ELSE}Windows, {$ENDIF} Math, DAV_Types;
 

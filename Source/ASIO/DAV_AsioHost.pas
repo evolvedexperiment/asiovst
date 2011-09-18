@@ -46,7 +46,7 @@ uses
   {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_AsioInterface {$ENDIF},
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAV_ASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF}
-  SysUtils, Classes, Controls, DAV_Types, DAV_Asio, DAV_AsioList,
+  SysUtils, Classes, DAV_Types, DAV_Asio, DAV_AsioList,
   DAV_AsioConvert, DAV_AsioGenerator;
 
 const

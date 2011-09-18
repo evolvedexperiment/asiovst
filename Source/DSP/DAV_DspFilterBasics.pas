@@ -37,6 +37,10 @@ interface
 uses
   Classes, DAV_Classes, DAV_DspFilter;
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 type
   TBasicGainFilter = class(TBiquadIIRFilter, IDspProcessor32,
     IDspProcessor64)
@@ -591,4 +595,4 @@ initialization
     TBasicHighcutFilter, TBasicLowcutFilter, TBasicBandpassFilter,
     TBasicNotchFilter]);
 
-end.
+end.

@@ -34,6 +34,10 @@ interface
 
 {$I DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
 var
   BlockAdditionInplace32 : procedure(Destination, Source: PSingle; Count: Integer);
   BlockAdditionInplace64 : procedure(Destination, Source: PDouble; Count: Integer);
@@ -64,28 +68,32 @@ implementation
 uses
   DAV_Bindings;
 
-{$IFDEF CPUx86_64}
-{$DEFINE PUREPASCAL}
-{$ENDIF}
-
 procedure BlockAdditionInplace32Native(Destination, Source: PSingle; Count: Integer);
 {$IFDEF PUREPASCAL}
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ + Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ + Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
-  @Start:
-    FLD  [Destination + 4 * ECX - 4].Single
-    FADD [Source      + 4 * ECX - 4].Single
-    FSTP [Destination + 4 * ECX - 4].Single
-  LOOP @Start
+  LEA     EAX, EAX + ECX * 4
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
+
+@Start:
+  FLD     [EAX + ECX * 4].Single
+  FADD    [EDX + ECX * 4].Single
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
+
+@Done:
 {$ENDIF}
 end;
 
@@ -94,19 +102,27 @@ procedure BlockAdditionInplace64Native(Destination, Source: PDouble; Count: Inte
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ + Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ + Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
-  @Start:
-    FLD  [Destination + 8 * ECX - 8].Double
-    FADD [Source      + 8 * ECX - 8].Double
-    FSTP [Destination + 8 * ECX - 8].Double
-  LOOP @Start
+  LEA     EAX, EAX + ECX * 8
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+
+@Start:
+  FLD     [EAX + ECX * 8].Double
+  FADD    [EDX + ECX * 8].Double
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
+
+@Done:
 {$ENDIF}
 end;
 
@@ -115,19 +131,27 @@ procedure BlockSubtractInplace32Native(Destination, Source: PSingle; Count: Inte
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ - Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ - Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
-  @Start:
-    FLD  [Destination + 4 * ECX - 4].Single
-    FSUB [Source      + 4 * ECX - 4].Single
-    FSTP [Destination + 4 * ECX - 4].Single
-  LOOP @Start
+  LEA     EAX, EAX + ECX * 4
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
+
+@Start:
+  FLD     [EAX + ECX * 4].Single
+  FSUB    [EDX + ECX * 4].Single
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
+
+@Done:
 {$ENDIF}
 end;
 
@@ -136,19 +160,27 @@ procedure BlockSubtractInplace64Native(Destination, Source: PDouble; Count: Inte
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ - Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ - Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
-  @Start:
-    FLD   [Destination + 8 * ECX - 8].Double
-    FSUB  [Source      + 8 * ECX - 8].Double
-    FSTP  [Destination + 8 * ECX - 8].Double
-  LOOP    @Start
+  LEA     EAX, EAX + ECX * 8
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+
+@Start:
+  FLD     [EAX + ECX * 8].Double
+  FSUB    [EDX + ECX * 8].Double
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
+
+@Done:
 {$ENDIF}
 end;
 
@@ -157,24 +189,27 @@ procedure BlockReverseSubtractInplace32Native(Destination, Source: PSingle; Coun
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Source^ - Destination^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Source^ - Destination^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- AND     ECX, ECX
- JZ      @Done
+  LEA     EAX, EAX + ECX * 4
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
 
- @Start:
- FLD    [Source      + 4 * ECX - 4].Single
- FSUB   [Destination + 4 * ECX - 4].Single
- FSTP   [Destination + 4 * ECX - 4].Single
- LOOP   @Start
+@Start:
+  FLD     [EDX + ECX * 4].Single
+  FSUB    [EAX + ECX * 4].Single
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
 
- @Done:
+@Done:
 {$ENDIF}
 end;
 
@@ -183,24 +218,27 @@ procedure BlockReverseSubtractInplace64Native(Destination, Source: PDouble; Coun
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Source^ - Destination^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Source^ - Destination^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- AND     ECX, ECX
- JZ      @Done
+  LEA     EAX, EAX + ECX * 8
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
 
- @Start:
- FLD     [Source      + 8 * ECX - 8].Double
- FSUB    [Destination + 8 * ECX - 8].Double
- FSTP    [Destination + 8 * ECX - 8].Double
- LOOP    @Start
+@Start:
+  FLD     [EDX + ECX * 8].Double
+  FSUB    [EAX + ECX * 8].Double
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
 
- @Done:
+@Done:
  {$ENDIF}
 end;
 
@@ -209,25 +247,28 @@ procedure BlockOffsetInplace32Native(Destination: PSingle; Value: Single; Count:
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ + Value;
-   Inc(Destination);
+    Destination^ := Destination^ + Value;
+    Inc(Destination);
   end;
 {$ELSE}
 asm
- AND     ECX, ECX
- JZ      @Done
- FLD     Value.Single
+  LEA     EAX, EAX + ECX * 4
+  NEG     ECX
+  JNL     @Done
 
- @Start:
- FLD     [Destination + 4 * ECX - 4].Single
- FADD    ST(0), ST(1)
- FSTP    [Destination + 4 * ECX - 4].Single
- LOOP    @Start
+  FLD     Value.Single
 
- FSTP    ST(0)
- @Done:
+@Start:
+  FLD     [EAX + ECX * 4].Single
+  FADD    ST(0), ST(1)
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    ST(0)
+@Done:
 {$ENDIF}
 end;
 
@@ -236,25 +277,28 @@ procedure BlockOffsetInplace64Native(Destination: PDouble; Value: Double; Count:
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ + Value;
-   Inc(Destination);
+    Destination^ := Destination^ + Value;
+    Inc(Destination);
   end;
 {$ELSE}
 asm
- AND     ECX, ECX
- JZ      @Done
- FLD     Value.Double
+  LEA     EAX, EAX + ECX * 8
+  NEG     ECX
+  JNL     @Done
 
- @Start:
- FLD     [Destination + 8 * ECX - 8].Double
- FADD    ST(0), ST(1)
- FSTP    [Destination + 8 * ECX - 8].Double
- LOOP    @Start
+  FLD     Value.Single
 
- FSTP    ST(0)
- @Done:
+@Start:
+  FLD     [EAX + ECX * 8].Double
+  FADD    ST(0), ST(1)
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    ST(0)
+@Done:
 {$ENDIF}
 end;
 
@@ -263,24 +307,27 @@ procedure BlockMultiplyInplace32Native(Destination, Source: PSingle; Count: Inte
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ * Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ * Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- AND     ECX, ECX
- JZ      @Done
+  LEA     EAX, EAX + ECX * 4
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
 
- @Start:
- FLD     [Destination + 4 * ECX - 4].Single
- FMUL    [Source      + 4 * ECX - 4].Single
- FSTP    [Destination + 4 * ECX - 4].Single
- LOOP    @Start
+@Start:
+  FLD     [EAX + ECX * 4].Single
+  FMUL    [EDX + ECX * 4].Single
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
 
- @Done:
+@Done:
 {$ENDIF}
 end;
 
@@ -289,24 +336,27 @@ procedure BlockMultiplyInplace64Native(Destination, Source: PDouble; Count: Inte
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ * Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ * Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- AND     ECX, ECX
- JZ      @Done
+  LEA     EAX, EAX + ECX * 8
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
 
- @Start:
- FLD     [Destination + 8 * ECX - 8].Double
- FMUL    [Source      + 8 * ECX - 8].Double
- FSTP    [Destination + 8 * ECX - 8].Double
- LOOP    @Start
+@Start:
+  FLD     [EAX + ECX * 8].Single
+  FMUL    [EDX + ECX * 8].Single
+  FSTP    [EAX + ECX * 8].Single
+  ADD     ECX, 1
+  JS      @Start
 
- @Done:
+@Done:
 {$ENDIF}
 end;
 
@@ -315,24 +365,27 @@ procedure BlockDivideInplace32Native(Destination, Source: PSingle; Count: Intege
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ / Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ / Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- AND     ECX, ECX
- JZ      @Done
+  LEA     EAX, EAX + ECX * 4
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
 
- @Start:
- FLD     [Destination + 4 * ECX - 4].Single
- FDIV    [Source      + 4 * ECX - 4].Single
- FSTP    [Destination + 4 * ECX - 4].Single
- LOOP    @Start
+@Start:
+  FLD     [EAX + ECX * 4].Single
+  FDIV    [EDX + ECX * 4].Single
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
 
- @Done:
+@Done:
 {$ENDIF}
 end;
 
@@ -341,19 +394,27 @@ procedure BlockDivideInplace64Native(Destination, Source: PDouble; Count: Intege
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ / Source^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Destination^ / Source^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- @Start:
-   FLD  [Destination + 8 * ECX - 8].Double
-   FDIV [Source      + 8 * ECX - 8].Double
-   FSTP [Destination + 8 * ECX - 8].Double
- LOOP @Start
+  LEA     EAX, EAX + ECX * 8
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+
+@Start:
+  FLD     [EAX + ECX * 8].Double
+  FDIV    [EDX + ECX * 8].Double
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
+
+@Done:
 {$ENDIF}
 end;
 
@@ -362,19 +423,27 @@ procedure BlockReverseDivideInplace32Native(Destination, Source: PSingle; Count:
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Source^ / Destination^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Source^ / Destination^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- @Start:
-   FLD  [Source      + 4 * ECX - 4].Single
-   FDIV [Destination + 4 * ECX - 4].Single
-   FSTP [Destination + 4 * ECX - 4].Single
- LOOP @Start
+  LEA     EAX, EAX + ECX * 4
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
+
+@Start:
+  FLD     [EDX + ECX * 4].Single
+  FDIV    [EAX + ECX * 4].Single
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
+
+@Done:
 {$ENDIF}
 end;
 
@@ -383,19 +452,27 @@ procedure BlockReverseDivideInplace64Native(Destination, Source: PDouble; Count:
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Source^ / Destination^;
-   Inc(Destination);
-   Inc(Source);
+    Destination^ := Source^ / Destination^;
+    Inc(Destination);
+    Inc(Source);
   end;
 {$ELSE}
 asm
- @Start:
-   FLD  [Source      + 8 * ECX - 8].Double
-   FDIV [Destination + 8 * ECX - 8].Double
-   FSTP [Destination + 8 * ECX - 8].Double
- LOOP @Start
+  LEA     EAX, EAX + ECX * 8
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+
+@Start:
+  FLD     [EDX + ECX * 8].Double
+  FDIV    [EAX + ECX * 8].Double
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
+
+@Done:
 {$ENDIF}
 end;
 
@@ -404,24 +481,28 @@ procedure BlockScaleInplace32Native(Destination: PSingle; Value: Single; Count: 
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ * Value;
-   Inc(Destination);
+    Destination^ := Destination^ * Value;
+    Inc(Destination);
   end;
 {$ELSE}
 asm
-  MOV    ECX, Count
-  AND    ECX, ECX
-  JZ     @Done
-  FLD    Value.Single
-  @Start:
-    FLD   [Destination + 4 * ECX - 4].Single
-    FMUL  ST(0), ST(1)
-    FSTP  [Destination + 4 * ECX - 4].Single
-  LOOP    @Start
+  LEA     EAX, EAX + ECX * 4
+  NEG     ECX
+  JNL     @Done
+
+  FLD     Value.Single
+
+@Start:
+  FLD     [EAX + ECX * 4].Single
+  FMUL    ST(0), ST(1)
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
+
   FSTP    ST(0)
-  @Done:
+@Done:
 {$ENDIF}
 end;
 
@@ -430,122 +511,143 @@ procedure BlockScaleInplace64Native(Destination: PDouble; Value: Double; Count: 
 var
   Index: Integer;
 begin
- for Index := Count - 1 downto 0 do
+  for Index := Count - 1 downto 0 do
   begin
-   Destination^ := Destination^ * Value;
-   Inc(Destination);
+    Destination^ := Destination^ * Value;
+    Inc(Destination);
   end;
 {$ELSE}
 asm
- AND    ECX, ECX
- JZ     @Done
- FLD     Value.Double
- @Start:
-   FLD   [Destination + 8 * ECX - 8].Double
-   FMUL  ST(0), ST(1)
-   FSTP  [Destination + 8 * ECX - 8].Double
- LOOP    @Start
- FSTP    ST(0)
- @Done:
+  LEA     EAX, EAX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+
+  FLD     Value.Single
+
+@Start:
+  FLD     [EAX + ECX * 8].Double
+  FMUL    ST(0), ST(1)
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    ST(0)
+@Done:
 {$ENDIF}
 end;
 
 procedure BindFunctions;
 begin
- // Block Inplace Addition Binding (32 bit)
- with TFunctionBinding.Create(@@BlockAdditionInplace32, @BlockAdditionInplace32Native) do
+  // Block Inplace Addition Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockAdditionInplace32,
+    @BlockAdditionInplace32Native) do
   begin
-   Add(@BlockAdditionInplace32Native);
+    Add(@BlockAdditionInplace32Native);
   end;
 
- // Block Inplace Addition Binding (64 bit)
- with TFunctionBinding.Create(@@BlockAdditionInplace64, @BlockAdditionInplace64Native) do
+  // Block Inplace Addition Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockAdditionInplace64,
+    @BlockAdditionInplace64Native) do
   begin
-   Add(@BlockAdditionInplace64Native);
+    Add(@BlockAdditionInplace64Native);
   end;
 
- // Block Inplace Subtraction Binding (32 bit)
- with TFunctionBinding.Create(@@BlockSubtractInplace32, @BlockSubtractInplace32Native) do
+  // Block Inplace Subtraction Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockSubtractInplace32,
+    @BlockSubtractInplace32Native) do
   begin
-   Add(@BlockSubtractInplace32Native);
+    Add(@BlockSubtractInplace32Native);
   end;
 
- // Block Inplace Subtraction Binding (64 bit)
- with TFunctionBinding.Create(@@BlockSubtractInplace64, @BlockSubtractInplace64Native) do
+  // Block Inplace Subtraction Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockSubtractInplace64,
+    @BlockSubtractInplace64Native) do
   begin
-   Add(@BlockSubtractInplace64Native);
+    Add(@BlockSubtractInplace64Native);
   end;
 
- // Block Inplace Reverse Subtraction Binding (32 bit)
- with TFunctionBinding.Create(@@BlockReverseSubtractInplace32, @BlockReverseSubtractInplace32Native) do
+  // Block Inplace Reverse Subtraction Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockReverseSubtractInplace32,
+    @BlockReverseSubtractInplace32Native) do
   begin
-   Add(@BlockReverseSubtractInplace32Native);
+    Add(@BlockReverseSubtractInplace32Native);
   end;
 
- // Block Inplace Reverse Subtraction Binding (64 bit)
- with TFunctionBinding.Create(@@BlockReverseSubtractInplace64, @BlockReverseSubtractInplace64Native) do
+  // Block Inplace Reverse Subtraction Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockReverseSubtractInplace64,
+    @BlockReverseSubtractInplace64Native) do
   begin
-   Add(@BlockReverseSubtractInplace64Native);
+    Add(@BlockReverseSubtractInplace64Native);
   end;
 
- // Block Inplace Offset Binding (32 bit)
- with TFunctionBinding.Create(@@BlockOffsetInplace32, @BlockOffsetInplace32Native) do
+  // Block Inplace Offset Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockOffsetInplace32,
+    @BlockOffsetInplace32Native) do
   begin
-   Add(@BlockOffsetInplace32Native);
+    Add(@BlockOffsetInplace32Native);
   end;
 
- // Block Inplace Offset Binding (64 bit)
- with TFunctionBinding.Create(@@BlockOffsetInplace64, @BlockOffsetInplace64Native) do
+  // Block Inplace Offset Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockOffsetInplace64,
+    @BlockOffsetInplace64Native) do
   begin
-   Add(@BlockOffsetInplace64Native);
+    Add(@BlockOffsetInplace64Native);
   end;
 
- // Block Inplace Multiply Binding (32 bit)
- with TFunctionBinding.Create(@@BlockMultiplyInplace32, @BlockMultiplyInplace32Native) do
+  // Block Inplace Multiply Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockMultiplyInplace32,
+    @BlockMultiplyInplace32Native) do
   begin
-   Add(@BlockMultiplyInplace32Native);
+    Add(@BlockMultiplyInplace32Native);
   end;
 
- // Block Inplace Multiply Binding (64 bit)
- with TFunctionBinding.Create(@@BlockMultiplyInplace64, @BlockMultiplyInplace64Native) do
+  // Block Inplace Multiply Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockMultiplyInplace64,
+    @BlockMultiplyInplace64Native) do
   begin
-   Add(@BlockMultiplyInplace64Native);
+    Add(@BlockMultiplyInplace64Native);
   end;
 
- // Block Inplace Divide Binding (32 bit)
- with TFunctionBinding.Create(@@BlockDivideInplace32, @BlockDivideInplace32Native) do
+  // Block Inplace Divide Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockDivideInplace32,
+    @BlockDivideInplace32Native) do
   begin
-   Add(@BlockDivideInplace32Native);
+    Add(@BlockDivideInplace32Native);
   end;
 
- // Block Inplace Divide Binding (64 bit)
- with TFunctionBinding.Create(@@BlockDivideInplace64, @BlockDivideInplace64Native) do
+  // Block Inplace Divide Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockDivideInplace64,
+    @BlockDivideInplace64Native) do
   begin
-   Add(@BlockDivideInplace64Native);
+    Add(@BlockDivideInplace64Native);
   end;
 
- // Block Inplace Reverse Divide Binding (32 bit)
- with TFunctionBinding.Create(@@BlockReverseDivideInplace32, @BlockReverseDivideInplace32Native) do
+  // Block Inplace Reverse Divide Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockReverseDivideInplace32,
+    @BlockReverseDivideInplace32Native) do
   begin
-   Add(@BlockReverseDivideInplace32Native);
+    Add(@BlockReverseDivideInplace32Native);
   end;
 
- // Block Inplace Reverse Divide Binding (64 bit)
- with TFunctionBinding.Create(@@BlockReverseDivideInplace64, @BlockReverseDivideInplace64Native) do
+  // Block Inplace Reverse Divide Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockReverseDivideInplace64,
+    @BlockReverseDivideInplace64Native) do
   begin
-   Add(@BlockReverseDivideInplace64Native);
+    Add(@BlockReverseDivideInplace64Native);
   end;
 
- // Block Inplace Scale Binding (32 bit)
- with TFunctionBinding.Create(@@BlockScaleInplace32, @BlockScaleInplace32Native) do
+  // Block Inplace Scale Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockScaleInplace32,
+    @BlockScaleInplace32Native) do
   begin
-   Add(@BlockScaleInplace32Native);
+    Add(@BlockScaleInplace32Native);
   end;
 
- // Block Inplace Scale Binding (64 bit)
- with TFunctionBinding.Create(@@BlockScaleInplace64, @BlockScaleInplace64Native) do
+  // Block Inplace Scale Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockScaleInplace64,
+    @BlockScaleInplace64Native) do
   begin
-   Add(@BlockScaleInplace64Native);
+    Add(@BlockScaleInplace64Native);
   end;
 
 end;

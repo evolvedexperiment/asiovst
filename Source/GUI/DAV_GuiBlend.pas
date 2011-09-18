@@ -967,37 +967,37 @@ asm
 
 @LoopStart:
   PUSH      RCX
-  MOV       RDI, [RCX]
-  AND       RCX, $00FF00FF
-  AND       RDI, $FF00FF00
-  IMUL      RCX, R9D
-  SHR       RDI, 8
-  IMUL      RDI, R9D
-  ADD       RCX, CBias
-  AND       RCX, $FF00FF00
-  SHR       RCX, 8
-  ADD       RDI, CBias
-  AND       RDI, $FF00FF00
-  OR        RCX, RDI
+  MOV       EDI, [RCX]
+  AND       ECX, $00FF00FF
+  AND       EDI, $FF00FF00
+  IMUL      ECX, R9D
+  SHR       EDI, 8
+  IMUL      EDI, R9D
+  ADD       ECX, CBias
+  AND       ECX, $FF00FF00
+  SHR       ECX, 8
+  ADD       EDI, CBias
+  AND       EDI, $FF00FF00
+  OR        ECX, EDI
 
-  MOV       RSI, [RDX]
+  MOV       ESI, [RDX]
   XOR       R9D, $000000FF
-  MOV       RDI, RSI
-  AND       RSI, $00FF00FF
-  AND       RDI, $FF00FF00
-  IMUL      RSI, R9D
-  SHR       RDI, 8
-  IMUL      RDI, R9D
-  ADD       RSI, CBias
-  AND       RSI, $FF00FF00
-  SHR       RSI, 8
-  ADD       RDI, CBias
-  AND       RDI, $FF00FF00
-  OR        RDI, RSI
+  MOV       EDI, ESI
+  AND       ESI, $00FF00FF
+  AND       EDI, $FF00FF00
+  IMUL      ESI, R9D
+  SHR       EDI, 8
+  IMUL      EDI, R9D
+  ADD       ESI, CBias
+  AND       ESI, $FF00FF00
+  SHR       ESI, 8
+  ADD       EDI, CBias
+  AND       EDI, $FF00FF00
+  OR        EDI, ESI
 
-  ADD       RCX, RDI
+  ADD       ECX, EDI
 
-  MOV       [RDX], RCX
+  MOV       [RDX], ECX
 
   POP       RCX
   ADD       RCX, 4
