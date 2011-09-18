@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library SmoothMultibandCompressor;
 
+{$I DAV_Compiler.inc}
+
 {$R 'SmoothMultibandCompressor.res' 'SmoothMultibandCompressor.rc'}
 
 uses

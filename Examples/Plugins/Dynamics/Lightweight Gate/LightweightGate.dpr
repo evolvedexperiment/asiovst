@@ -1,7 +1,7 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library LightweightGate;
 
-
+{$I DAV_Compiler.inc}
 
 uses
   FastMM4,

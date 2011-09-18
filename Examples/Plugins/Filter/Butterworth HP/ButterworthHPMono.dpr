@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library ButterworthHPMono;
 
+{$I DAV_Compiler.inc}
+
 {$IFNDEF Wrapper}
 
 uses

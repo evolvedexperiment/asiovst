@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library BarberpoleTuner;
 
+{$I DAV_Compiler.inc}
+
 uses
   FastMM4, // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
