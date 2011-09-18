@@ -34,6 +34,10 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   DAV_Types, DAV_Classes, DAV_DspDelayLines, DAV_DspFilterSimple,
   DAV_DspLFO, DAV_DspFilterButterworth;

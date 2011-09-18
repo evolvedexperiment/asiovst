@@ -26,7 +26,6 @@ package DAV_SEHost_D16;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
   DAV_Common_D16;
 

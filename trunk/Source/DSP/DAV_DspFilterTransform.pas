@@ -49,14 +49,14 @@ implementation
 
 uses
   Math, DAV_Math, DAV_DspFftReal2Complex
-  {$IFNDEF FPC}, DAV_DspFftReal2ComplexIpps{$ENDIF};
+  {$IFDEF USE_IPPS}, DAV_DspFftReal2ComplexIpps{$ENDIF};
 
 procedure MakeLinearPhase32(const FilterKernel: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  {$IFDEF FPC}
-  FFT         : TFftReal2ComplexNativeFloat32;
-  {$ELSE}
+  {$IFDEF USE_IPPS}
   FFT         : TFftReal2ComplexIPPSFloat32;
+  {$ELSE}
+  FFT         : TFftReal2ComplexNativeFloat32;
   {$ENDIF}
   TimeDomain  : PDAVSingleFixedArray;
   FreqDomain  : PDAVComplexSingleFixedArray;
@@ -65,10 +65,12 @@ begin
  i   := ExtendToPowerOf2(SampleFrames);
  i   := Round(Log2(i));
 
- {$IFDEF FPC}
- FFT := TFftReal2ComplexNativeFloat32.Create(i);
- {$ELSE}
+  {$IFDEF USE_IPPS}
  FFT := TFftReal2ComplexIPPSFloat32.Create(i);
+ FFT.DataOrder := doComplex;
+ {$ELSE}
+ FFT := TFftReal2ComplexNativeFloat32.Create(i);
+ FFT.DataOrder := doPackedComplex;
  {$ENDIF}
  with FFT do
   try
@@ -111,10 +113,10 @@ end;
 
 procedure MakeLinearPhase64(const FilterKernel: PDAVDoubleFixedArray; const SampleFrames: Integer);
 var
-  {$IFDEF FPC}
-  FFT         : TFftReal2ComplexNativeFloat64;
-  {$ELSE}
+  {$IFDEF USE_IPPS}
   FFT         : TFftReal2ComplexIPPSFloat64;
+  {$ELSE}
+  FFT         : TFftReal2ComplexNativeFloat64;
   {$ENDIF}
   TimeDomain  : PDAVDoubleFixedArray;
   FreqDomain  : PDAVComplexDoubleFixedArray;
@@ -122,10 +124,12 @@ var
 begin
  i   := ExtendToPowerOf2(SampleFrames);
  i   := Round(Log2(i));
- {$IFDEF FPC}
- FFT := TFftReal2ComplexNativeFloat64.Create(i);
- {$ELSE}
+  {$IFDEF USE_IPPS}
  FFT := TFftReal2ComplexIPPSFloat64.Create(i);
+ FFT.DataOrder := doComplex;
+ {$ELSE}
+ FFT := TFftReal2ComplexNativeFloat64.Create(i);
+ FFT.DataOrder := doPackedComplex;
  {$ENDIF}
  with FFT do
   try
@@ -168,10 +172,10 @@ end;
 
 procedure MakeMinimumPhase32(const FilterKernel : PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  {$IFDEF FPC}
-  FFT         : TFftReal2ComplexNativeFloat32;
-  {$ELSE}
+  {$IFDEF USE_IPPS}
   FFT         : TFftReal2ComplexIPPSFloat32;
+  {$ELSE}
+  FFT         : TFftReal2ComplexNativeFloat32;
   {$ENDIF}
   TimeDomain  : PDAVSingleFixedArray;
   FreqDomain  : PDAVComplexSingleFixedArray;
@@ -181,10 +185,12 @@ begin
  // Choose an FFT size larger than needed to achieve more accuracy
  i   := ExtendToPowerOf2(3 * SampleFrames);
  i   := round(Log2(i));
- {$IFDEF FPC}
- FFT := TFftReal2ComplexNativeFloat32.Create(i);
- {$ELSE}
+  {$IFDEF USE_IPPS}
  FFT := TFftReal2ComplexIPPSFloat32.Create(i);
+ FFT.DataOrder := doComplex;
+ {$ELSE}
+ FFT := TFftReal2ComplexNativeFloat32.Create(i);
+ FFT.DataOrder := doPackedComplex;
  {$ENDIF}
  with FFT do
   try
@@ -252,10 +258,10 @@ end;
 
 procedure MakeMinimumPhase64(const FilterKernel : PDAVDoubleFixedArray; const SampleFrames: Integer);
 var
-  {$IFDEF FPC}
-  FFT         : TFftReal2ComplexNativeFloat64;
-  {$ELSE}
+  {$IFDEF USE_IPPS}
   FFT         : TFftReal2ComplexIPPSFloat64;
+  {$ELSE}
+  FFT         : TFftReal2ComplexNativeFloat64;
   {$ENDIF}
   TimeDomain  : PDAVDoubleFixedArray;
   FreqDomain  : PDAVComplexDoubleFixedArray;
@@ -265,10 +271,12 @@ begin
  // Choose an FFT size larger than needed to achieve more accuracy
  i   := ExtendToPowerOf2(3 * SampleFrames);
  i   := round(Log2(i));
- {$IFDEF FPC}
- FFT := TFftReal2ComplexNativeFloat64.Create(i);
- {$ELSE}
+  {$IFDEF USE_IPPS}
  FFT := TFftReal2ComplexIPPSFloat64.Create(i);
+ FFT.DataOrder := doComplex;
+ {$ELSE}
+ FFT := TFftReal2ComplexNativeFloat64.Create(i);
+ FFT.DataOrder := doPackedComplex;
  {$ENDIF}
  with FFT do
   try

@@ -7,7 +7,9 @@ uses
   {$IFDEF FPC}
   Interfaces,
   {$ELSE}
+  {$IFNDEF COMPILER16_UP}
   FastMove,
+  {$ENDIF}
   {$ENDIF}
   SysUtils, Math, DAV_AudioFile, DAV_AudioFileWAV,
   DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_MpegAudio, DAV_DspR128,

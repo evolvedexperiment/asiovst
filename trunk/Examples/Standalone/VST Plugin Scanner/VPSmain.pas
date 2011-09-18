@@ -204,7 +204,7 @@ begin
      FLoadTime := (B - A) / C * 1000;
 
      // additional check if thread is terminated
-     if Terminated then exit;
+     if Terminated then Exit;
 
      if Loaded then
       begin
@@ -227,7 +227,7 @@ begin
       end;
     except
     end;
-   sleep(1);
+   Sleep(1);
   until Terminated or (FFileName = '');
 end;
 {$ENDIF}

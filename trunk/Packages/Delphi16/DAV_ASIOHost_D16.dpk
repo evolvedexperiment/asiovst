@@ -26,7 +26,6 @@ package DAV_ASIOHost_D16;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
   designide,
   DAV_Common_D16;

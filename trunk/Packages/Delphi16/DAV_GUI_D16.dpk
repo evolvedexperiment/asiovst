@@ -26,7 +26,6 @@ package DAV_GUI_D16;
 
 requires
   rtl,
-  vcl,
   DAV_Common_D16,
   DAV_DSP_D16,
   DAV_VSTPlugin_D16;

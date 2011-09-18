@@ -750,7 +750,7 @@ begin
   Result := Assigned(ASIODriver);
  except
   Result := False;
-end;
+ end;
 end;
 
 function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: TStdCallAsio): Boolean; overload;

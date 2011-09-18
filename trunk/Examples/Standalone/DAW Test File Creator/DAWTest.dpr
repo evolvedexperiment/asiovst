@@ -20,6 +20,7 @@ type
   TWeightChunk = class (TDefinedChunk)
   private
     FWeightData : array of Extended;
+    function GetCount: Integer;
   public
     constructor Create; override;
     class function GetClassChunkName : TChunkName; override;
@@ -29,6 +30,8 @@ type
 
     procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromStream(Stream: TStream); override;
+
+    property Count: Integer read GetCount;
   end;
 
   TWeightOptimizer = class
@@ -68,6 +71,11 @@ end;
 class function TWeightChunk.GetClassChunkName: TChunkName;
 begin
   Result := 'DAWC';
+end;
+
+function TWeightChunk.GetCount: Integer;
+begin
+  Result := Length(FWeightData);
 end;
 
 procedure TWeightChunk.AssignToWeight(var Weight: TWeightArray);
@@ -116,9 +124,13 @@ end;
 destructor TWeightOptimizer.Destroy;
 begin
   inherited;
+//  SetLength(FWeights, 0);
 end;
 
-{-$DEFINE PUREPASCAL}
+{$IFDEF CPUX64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
 function CalculateCurrentDifference(SineValue: Double; Weights: PWeight;
   Count: Integer): Extended; register;
 {$IFDEF PUREPASCAL}
@@ -140,6 +152,42 @@ begin
   Result := Abs(Value[0] - Value[1]);
 {$ELSE}
 asm
+{$IFDEF CPUX64}
+  not fully tested
+  XORPS     XMM1, XMM1                   // Value[0] := 0;
+  XORPS     XMM2, XMM2                   // Value[1] := 0;
+  LEA       RDX, RDX + R8D * 8           // offset data[0] pointer in ECX
+
+  NEG       R8D                          // negate R8D
+  JNL       @Done
+
+  LEA       RAX, RDX - 8                 // copy data[0] to data[1]
+@Start:
+  MOVQ      XMM3, [RDX + R8D * 8].Double // load weight
+  MULPD     XMM3, XMM0                   // multiply with sine value
+  CVTSS2SD  XMM4, XMM1                   // convert value[0] to double
+  ADDPD     XMM4, XMM3                   // add value
+  CVTSD2SS  XMM1, XMM4                   // convert value[0] to double
+
+  MOVQ      XMM3, [RAX].Double           // load weight
+  MULPD     XMM3, XMM0                   // multiply with sine value
+  CVTSS2SD  XMM4, XMM2                   // convert value[0] to double
+  ADDPD     XMM4, XMM3                   // add value
+  CVTSD2SS  XMM2, XMM4                   // convert value[0] to double
+
+  SUB       RAX, 8
+  ADD       R8D, 1
+  JS        @Start
+
+  CVTSS2SD  XMM0, XMM1                   // convert value[0] to double
+  CVTSS2SD  XMM1, XMM2                   // convert value[1] to double
+  SUBPS     XMM0, XMM1                   // calculate difference
+
+
+@Done:
+  FSTP      ST(1)                        // free stack
+  ADD       ESP, 8                       // restore stack pointer
+{$ELSE}
   PUSH    EDI
   FLD     SineValue              // load sine value to ST(0)
   XOR     ECX, ECX               // set ECX to zero
@@ -170,13 +218,14 @@ asm
   JS      @Start
 
   FLD     [ESP].Single           // load value[0]
-  FSUB    [ESP + 4].Single       // add value[1]
+  FSUB    [ESP + 4].Single       // sub value[1]
   FABS                           // absolute value
 
 @Done:
   FSTP    ST(1)                  // free stack
   ADD     ESP, 8                 // restore stack pointer
   POP     EDI
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -249,8 +298,11 @@ begin
   for FileIndex := 0 to NumberOfFiles - 2 do
   begin
     if Population[FileIndex] > 1 then
-      Population[FileIndex] := 1;
-    if Population[FileIndex] < 0 then
+      if Random(100) = 0 then
+        Population[FileIndex] := 1 - 0.01 * Random
+      else
+        Population[FileIndex] := 1
+    else if Population[FileIndex] < 0 then
       Population[FileIndex] := Random;
 
     FWeights[FileIndex + 1] := FWeights[FileIndex] * Population[FileIndex];
@@ -342,16 +394,17 @@ var
   AvgDiff      : Extended;
   WeightFile   : TFileName;
 begin
-  if OptimizeSteps = 0 then
-    WriteLn('Running Optimizer (endlessly, break by pressing [CTRL]+C)')
-  else
-    WriteLn('Running Optimizer (this may take a while)...');
   DiffEvol := TDifferentialEvolution.Create(nil);
-  DiffEvol.GainBest := 0.1;
-  DiffEvol.CrossOver := 0.5;
-
   WeigthOpt := TWeightOptimizer.Create;
   try
+    if OptimizeSteps = 0 then
+      WriteLn('Running Optimizer (endlessly, break by pressing [CTRL]+C)')
+    else
+      WriteLn('Running Optimizer (this may take a while)...');
+
+    // setup optimizer
+    DiffEvol.GainBest := 0.3;
+    DiffEvol.CrossOver := (NumberOfFiles - 1) / NumberOfFiles;
     DiffEvol.VariableCount := NumberOfFiles - 1;
     DiffEvol.PopulationCount := Round(10 * (NumberOfFiles + 1000 / NumberOfFiles));
     for FileIndex := 0 to DiffEvol.VariableCount - 1 do
@@ -359,8 +412,22 @@ begin
       DiffEvol.MinConstraints[FileIndex] := 0;
       DiffEvol.MaxConstraints[FileIndex] := 1;
     end;
-    DiffEvol.Initialize(True);
+
+    // eventually load best
+    if FileExists(WeightFileName) then
+      with TWeightChunk.Create do
+      try
+        LoadFromFile(WeightFileName);
+        AssignToWeight(Weights);
+        Assert(DiffEvol.VariableCount = Length(Weights) - 1);
+        for FileIndex := 0 to DiffEvol.VariableCount - 1 do
+          DiffEvol.BestPopulation[FileIndex] := Weights[FileIndex + 1] / Weights[FileIndex];
+      finally
+        Free;
+      end;
+
     DiffEvol.OnCalculateCosts := WeigthOpt.CalculateCostEvent;
+    DiffEvol.Initialize(True);
 
     LastCosts := 0;
     TimeStamp[0] := Now;
@@ -618,11 +685,24 @@ begin
       'n' :
         begin
           Current := Copy(Current, 3, Length(Current));
-          NumberOfFiles := StrToInt(Current);
+          if FileExists(Current) then
+          begin
+            WeightFileName := Current;
+            with TWeightChunk.Create do
+            try
+              LoadFromFile(Current);
+              NumberOfFiles := Count;
+            finally
+              Free;
+            end
+          end
+          else if Current <> '' then
+            NumberOfFiles := StrToInt(Current);
         end;
       'o' :
         begin
           TestType := ttOptimized;
+
           Current := Copy(Current, 3, Length(Current));
           if Current <> '' then
             OptimizeSteps := StrToInt(Current);

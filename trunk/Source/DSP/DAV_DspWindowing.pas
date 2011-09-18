@@ -247,7 +247,6 @@ begin
  ApplyBlackmanHarrisWindow(@Data[0], Length(Data));
 end;
 
-
 function Io(const Value: Double): Double;
 var
   y, de : Double;
@@ -297,7 +296,23 @@ begin
 end;
 
 procedure DoWinLoopCos2T32Forward(StartAdr: PDAVSingleFixedArray; var ParameterRecord: TParameterRecord; SampleCount: Integer);
-{$IFNDEF PUREPASCAL}
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  with ParameterRecord do
+   begin
+    CurrentValue := (CoefficientPointer[0] - PDAV2DoubleArray(CoefficientPointer)^[1] * ComplexPosition.Im);
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end
+{$ELSE}
 asm
  OR ECX, ECX
  JNG @exit
@@ -349,8 +364,11 @@ asm
  FSTP [EDX + 40].Double  // SpuaredCorrectionFactor
  POP EBX
  @Exit:
+{$ENDIF}
 end;
-{$ELSE}
+
+procedure DoWinLoopCos2T64Forward(StartAdr: PDAVDoubleFixedArray; var ParameterRecord: TParameterRecord; SampleCount: Integer);
+{$IFDEF PUREPASCAL}
 var
   SampleIndex  : Integer;
   CurrentValue : Double;
@@ -366,11 +384,7 @@ begin
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
     ComplexPosition.Re := CurrentValue;
    end
-end;
-{$ENDIF}
-
-procedure DoWinLoopCos2T64Forward(StartAdr: PDAVDoubleFixedArray; var ParameterRecord: TParameterRecord; SampleCount: Integer);
-{$IFNDEF PUREPASCAL}
+{$ELSE}
 asm
  OR ECX, ECX
  JNG @exit
@@ -422,25 +436,8 @@ asm
  FSTP [EDX + 40].Double  // SpuaredCorrectionFactor
  POP EBX
  @Exit:
-end;
-{$ELSE}
-var
-  SampleIndex  : Integer;
-  CurrentValue : Double;
-begin
- for SampleIndex := 0 to SampleCount - 1 do
-  with ParameterRecord do
-   begin
-    CurrentValue := (CoefficientPointer[0] - PDAV2DoubleArray(CoefficientPointer)^[1] * ComplexPosition.Im);
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
-    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
-    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
-    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := CurrentValue;
-   end
-end;
 {$ENDIF}
+end;
 
 procedure DoWinLoopCos2T32Symmetric(StartAdr: PDAVSingleFixedArray; var ParameterRecord: TParameterRecord; SampleCount: Integer; EndAdr: PDAVSingleFixedArray);
 {$IFNDEF PUREPASCAL}

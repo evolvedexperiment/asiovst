@@ -1,12 +1,16 @@
 program VSTPluginScanner;
 
+{$I DAV_Compiler.inc}
+
 uses
+{$IFNDEF COMPILER16_UP}
   FastMM4,
   FastMove,
   madExcept,
   madLinkDisAsm,
   madListProcesses,
   madListModules,
+{$ENDIF}
   Forms,
   VPSmain in 'VPSmain.pas' {FmVSTPluginScanner};
 

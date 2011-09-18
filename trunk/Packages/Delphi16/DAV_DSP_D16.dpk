@@ -25,7 +25,6 @@ package DAV_DSP_D16;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
   DAV_Common_D16;
 
