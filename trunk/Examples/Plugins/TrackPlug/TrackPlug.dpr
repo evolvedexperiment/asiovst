@@ -1,8 +1,7 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library TrackPlug;
 
-// if the file below is missing please execute the batch file in this
-// directory first to compile the resource file
+{$I DAV_Compiler.inc}
 
 uses
   FastMM4, // either download the library or comment if there is an error here

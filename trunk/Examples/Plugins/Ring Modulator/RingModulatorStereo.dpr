@@ -2,6 +2,9 @@
 library RingModulatorStereo;
 
 {$IFNDEF Wrapper}
+
+{$I DAV_Compiler.inc}
+
 {$R 'RingModulator.res' 'RingModulator.rc'}
 
 uses

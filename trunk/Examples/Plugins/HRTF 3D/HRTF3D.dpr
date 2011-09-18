@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library HRTF3D;
 
+{$I DAV_Compiler.inc}
+
 // if the file below is missing please execute the batch file in this
 // directory first to compile the resource file
 

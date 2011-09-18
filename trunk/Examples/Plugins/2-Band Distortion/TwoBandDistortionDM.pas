@@ -230,7 +230,7 @@ procedure TTwoBandDistortionDataModule.VSTModuleProcess(const Inputs,
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
-  Low, High    : Double;
+  Low, High    : Single;
 begin
  FCriticalSection.Enter;
  try
@@ -238,15 +238,16 @@ begin
    for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
     begin
      // using Linkwitz-Riley TwoBand filters
-     FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
+     FLinkwitzRiley[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, SampleIndex], Low, High);
 
-     {$IFDEF FPC}
+     {$IFDEF CPU64}
      Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  +
-       FastTanhOpt5Term(FLowMix[1]  * Low) +  FHighMix[0] * High +
+       FastTanhOpt5Term(FLowMix[1] * Low) +  FHighMix[0] * High +
        FastTanhOpt5Term(FHighMix[1] * High);
      {$ELSE}
-     Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  + FastTanhOpt5TermFPU(FLowMix[1]  * Low) +
-                                 FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
+     Outputs[ChannelIndex, SampleIndex] := FLowMix[0] * Low +
+       FastTanhOpt5TermFPU(FLowMix[1] * Low) + FHighMix[0] * High +
+       FastTanhOpt5TermFPU(FHighMix[1] * High);
      {$ENDIF}
    end;
  finally
@@ -268,15 +269,16 @@ begin
    for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
     begin
      // using Linkwitz-Riley filters
-     FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
+     FLinkwitzRiley[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex], Low, High);
 
-     {$IFDEF FPC}
+     {$IFDEF CPU64}
      Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  +
        FastTanhOpt5Term(FLowMix[1]  * Low) +  FHighMix[0] * High +
        FastTanhOpt5Term(FHighMix[1] * High);
      {$ELSE}
-     Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  + FastTanhOpt5TermFPU(FLowMix[1]  * Low) +
-                                 FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
+     Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  +
+       FastTanhOpt5TermFPU(FLowMix[1] * Low) + FHighMix[0] * High +
+       FastTanhOpt5TermFPU(FHighMix[1] * High);
      {$ENDIF}
    end;
  finally
