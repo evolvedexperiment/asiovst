@@ -745,12 +745,15 @@ begin
 end;
 
 procedure TCustomVstParameterProperties.WriteVSTXML;
+{$IFNDEF FMX}
 {$IFNDEF FPC}
 var
   s : AnsiString;
   b : PAnsiChar;
 {$ENDIF}
+{$ENDIF}
 begin
+  {$IFNDEF FMX}
   {$IFNDEF FPC}
   GetMem(b, 255);
   try
@@ -760,6 +763,7 @@ begin
    FreeMem(b);
   end;
   WriteVSTXML(Copy(string(s), 1, Pos('.dll', string(s)) - 1) + '.VSTXML');
+  {$ENDIF}
   {$ENDIF}
 end;
 
