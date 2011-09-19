@@ -39,6 +39,10 @@ type
 
   TOnGetChannelPropertiesEvent = function(Sender: TObject; const Index: Integer; var VstPinProperties: TVstPinProperties): Boolean of object;
 
+  {$IFDEF FMX}
+  TFormClass = class of TForm;
+  {$ENDIF}
+
   TCustomVSTModule = class(TBasicVSTModule)
   private
     FAbout                  : string;
@@ -650,11 +654,17 @@ begin
      Result := 1;
      with FEditorForm do
       begin
+       {$IFDEF FMX}
+       Visible := True;
+       SetBounds(0, 0, Width, Height);
+       Invalidate;
+       {$ELSE}
        ParentWindow := HWnd(ptr);
        Visible := True;
        BorderStyle := bsNone;
        SetBounds(0, 0, Width, Height);
        Invalidate;
+       {$ENDIF}
       end;
     except
     end;
@@ -1019,6 +1029,7 @@ begin
    if Assigned(EditorForm) then
     begin
      a := KeyCodeToInteger(keyCode);
+     {$IFNDEF FMX}
      if Assigned(EditorForm.ActiveControl)
       then Hndl := EditorForm.ActiveControl.Handle
       else Hndl := EditorForm.Handle;
@@ -1035,6 +1046,7 @@ begin
       then SendMessage(Hndl, LM_KEYDOWN, a,b)
       else SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
      SendMessage(Hndl, LM_CHAR, a, b);
+     {$ENDIF}
      {$ENDIF}
 
      if Assigned(FOnKeyDown) then FOnKeyDown(Self, keyCode);
@@ -1067,6 +1079,7 @@ begin
    if Assigned(EditorForm) then
     begin
      a := KeyCodeToInteger(keyCode);
+     {$IFNDEF FMX}
      if Assigned(EditorForm.ActiveControl)
       then Hndl := EditorForm.ActiveControl.Handle
       else Hndl := EditorForm.Handle;
@@ -1081,6 +1094,7 @@ begin
      if (keyCode.modifier and 2) <> 0
       then SendMessage(Hndl, LM_KEYUP, a,b)
       else SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
+     {$ENDIF}
      {$ENDIF}
 
      if Assigned(FOnKeyUp) then FOnKeyUp(Self, keyCode);

@@ -33,6 +33,9 @@ unit DAV_DspBesselFilter;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{$IFDEF CPUX64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
 
 uses
   Classes, DAV_Classes, DAV_Common, DAV_DspFilter;
@@ -107,7 +110,7 @@ end;
 
 class function TCustomBesselFilter.GetMaxOrder: Cardinal;
 begin
- result := 64;
+ Result := 64;
 end;
 
 procedure TCustomBesselFilter.Reset;
@@ -173,13 +176,13 @@ function TCustomBesselFilter.Real(const Frequency: Double): Double;
 var
   Temp : Double;
 begin
- Complex(Frequency, result, Temp);
+ Complex(Frequency, Result, Temp);
 end;
 
 function TCustomBesselFilter.Imaginary(const Frequency: Double): Double;
 var Temp : Double;
 begin
- Complex(Frequency, Temp, result);
+ Complex(Frequency, Temp, Result);
 end;
 
 procedure TCustomBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
@@ -236,7 +239,7 @@ end;
 
 function TCustomBesselFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
- result := 20 * Log10(MagnitudeSquared(Frequency));
+ Result := 20 * Log10(MagnitudeSquared(Frequency));
 end;
 
 function TCustomBesselFilter.Phase(const Frequency: Double): Double;
@@ -377,7 +380,7 @@ begin
    Nom := Nom * sw * fAB[4*i] * 2 * (fAB[4*i+3] - 1) * (cw + 1);
    Den := Den * fAB[4*i] * (2 * fAB[4*i+2] * (1 + cw) + cw * (2 * fAB[4*i+3] * (cw + 1) + 2 * (1 + cw)));
   end;
- Result:=ArcTan2(Nom,Den);
+ Result := ArcTan2(Nom,Den);
 *)
 end;
 
@@ -386,10 +389,10 @@ function TBesselLowpassFilter.ProcessSample64(Input: Double): Double;
 var
   i : Integer;
 begin
- result    := FA[0] * Input + FState[0];
+ Result := FA[0] * Input + FState[0];
  for i := 1 to FOrder - 1
-  do FState[i - 1] := FA[i] * Input + FB[i - 1] * result + FState[i];
- FState[FOrder - 1] := FA[FOrder] * Input + FB[FOrder - 1] * result;
+  do FState[i - 1] := FA[i] * Input + FB[i - 1] * Result + FState[i];
+ FState[FOrder - 1] := FA[FOrder] * Input + FB[FOrder - 1] * Result;
 end;
 {$ELSE}
 asm
@@ -484,10 +487,10 @@ function TBesselHighpassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
- result    := FA[0] * Input + FState[0];
+ Result    := FA[0] * Input + FState[0];
  for i := 1 to FOrder - 1
-  do FState[i - 1] := FA[i] * Input + FB[i - 1] * result + FState[i];
- FState[FOrder - 1] := FA[FOrder] * Input + FB[FOrder - 1] * result;
+  do FState[i - 1] := FA[i] * Input + FB[i - 1] * Result + FState[i];
+ FState[FOrder - 1] := FA[FOrder] * Input + FB[FOrder - 1] * Result;
 end;
 {$ELSE}
 asm
