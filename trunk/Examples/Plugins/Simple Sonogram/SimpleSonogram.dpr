@@ -6,9 +6,11 @@ library SimpleSonogram;
 uses
   FastMM4, // either download the library or comment if there is an error here
   FastMove,
-  madExcept,
+  {$IFDEF UseMadExcept}
+  madExcept, // either download madExcept or remove mad* if there is an error here
   madLinkDisAsm,
   madListModules,
+  {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

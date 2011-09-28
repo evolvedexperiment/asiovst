@@ -6,8 +6,10 @@ library Baxxpander;
 uses
   FastMM4,
   FastMove,
-  madExcept,
+  {$IFDEF UseMadExcept}
+  madExcept, // either download madExcept or remove mad* if there is an error here
   madLinkDisAsm,
+  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   BaxxpanderModule in 'BaxxpanderModule.pas' {BaxxpanderModule: TVSTModule},
