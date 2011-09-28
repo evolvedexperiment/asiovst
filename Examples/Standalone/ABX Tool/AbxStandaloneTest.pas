@@ -180,7 +180,7 @@ begin
     then MessageDlg(FAbxContainer.Notes, mtInformation, [mbOK], 0);
 
    // eventually load audio stream
-   if assigned(FAbxContainer.AudioStreamA)
+   if Assigned(FAbxContainer.AudioStreamA)
     then AdcA.LoadFromStream(FAbxContainer.AudioStreamA)
     else raise Exception.Create(RCStrReferenceANotPresent);
 
