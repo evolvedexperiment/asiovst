@@ -257,7 +257,7 @@ end;
 destructor TCustomAudioFileWAV.Destroy;
 begin
  // make sure a data chunk is written and the file is valid
- if Assigned(FStream) then
+ if False and Assigned(FStream) then
   begin
    if EmptyData then
     begin

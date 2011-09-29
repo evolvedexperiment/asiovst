@@ -463,6 +463,7 @@
   {$DEFINE CPUASM} // FPC defines CPU32, CPU64 and Unix automatically
 
   {$IFDEF Darwin}
+    {$DEFINE MACOS}
     {-$DEFINE PUREPASCAL} // for OSX use pure pascal code
   {$ENDIF}
 {$ENDIF}
@@ -1289,7 +1290,7 @@
 {$ENDIF}
 
 {$IFDEF CPUx86_64}
-  {-$DEFINE PUREPASCAL}
+  {$DEFINE PUREPASCAL}
   {$DEFINE LITTLE_ENDIAN}
 {$ENDIF}
 

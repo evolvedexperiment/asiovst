@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, {$ELSE}Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, {$ELSE} {$IFDEF MSWindows} Windows, {$ENDIF} {$ENDIF}
   Classes, SysUtils, DAV_Types, DAV_ChunkClasses, DAV_ChunkWaveBasic,
   DAV_WaveFileTypes;
 

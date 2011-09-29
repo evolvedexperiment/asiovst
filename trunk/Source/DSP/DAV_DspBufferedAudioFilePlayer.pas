@@ -201,7 +201,9 @@ begin
 
  // initialize reload thread
  FBufferThread := TReloadThread.Create(Self);
+ {$IFDEF MSWindows}
  FBufferThread.Priority := tpNormal;
+ {$ENDIF}
 
  CalculateSampleRateRatio;
  InterpolationChanged;
@@ -261,7 +263,7 @@ begin
   begin
    Result := True;
 
-   if assigned(FAudioFile) then
+   if Assigned(FAudioFile) then
     begin
      FAudioFile.OnDecode := DecodeHandler;
      FSubBlockPosition := 0;
@@ -291,7 +293,7 @@ begin
  AudioFileClass := FileNameToFormat(FileName);
  if Assigned(AudioFileClass) then
   begin
-   if assigned(FAudioFile)
+   if Assigned(FAudioFile)
     then FreeAndNil(FAudioFile);
 
    FAudioFile := AudioFileClass.Create(FileName);
@@ -308,7 +310,7 @@ begin
  AudioFileClass := StreamToFormat(Stream);
  if Assigned(AudioFileClass) then
   begin
-   if assigned(FAudioFile)
+   if Assigned(FAudioFile)
     then FreeAndNil(FAudioFile);
 
    FAudioFile := AudioFileClass.Create(Stream);
