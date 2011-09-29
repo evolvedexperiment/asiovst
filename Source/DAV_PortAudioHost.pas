@@ -306,6 +306,7 @@ begin
       SampleFormat := paFloat32 + paNonInterleaved;
       FInputLatency := DevInfo.DefaultLowInputLatency;
       SuggestedLatency := FInputLatency;
+      HostApiSpecificStreamInfo := nil;
     end
   else
     SetLength(FInputBuffers, 0);
@@ -325,6 +326,7 @@ begin
       SampleFormat := paFloat32 + paNonInterleaved;
       FOutputLatency := DevInfo.DefaultLowOutputLatency;
       SuggestedLatency := FOutputLatency;
+      HostApiSpecificStreamInfo := nil;
     end
   else
     SetLength(FOutputBuffers, 0);
