@@ -38,7 +38,7 @@ interface
 uses
   {$IFDEF FPC} LCLType, Buttons, {$ELSE} Windows, {$ENDIF} Forms, Classes,
   Controls, StdCtrls, DAV_Complex, DAV_Types, DAV_DspSimpleOscillator,
-  DAV_PortAudioHost, DAV_PortAudioBinding;
+  DAV_PortAudioHost, DAV_PortAudioTypes;
 
 type
   TFmPortAudio = class(TForm)
@@ -68,7 +68,7 @@ type
     procedure AmplitudeChanged; virtual;
     procedure FrequencyChanged; virtual;
   public
-    FPortAudio  : TPortAudio;
+    FPortAudio  : TPortAudioHost;
     FOscillator : TSimpleOscillator64;
     FFreq, FAmp : Double;
   published
@@ -95,7 +95,7 @@ resourcestring
 
 procedure TFmPortAudio.FormCreate(Sender: TObject);
 begin
- FPortAudio := TPortAudio.Create;
+ FPortAudio := TPortAudioHost.Create;
  FPortAudio.OnSampleRateChanged := PortAudioSampleRateChanged;
  FPortAudio.OnStreamCallback := PortAudioCallback;
  DriverCombo.Items := FPortAudio.OutputDeviceList;
@@ -175,12 +175,12 @@ procedure TFmPortAudio.BtStartStopClick(Sender: TObject);
 begin
  if BtStartStop.Caption = '&Start Audio' then
   begin
-   FPortAudio.Active := True; // Start Audio
+   FPortAudio.Start; // Start Audio
    BtStartStop.Caption := '&Stop Audio';
   end
  else
   begin
-   FPortAudio.Active := False; // Stop Audio
+   FPortAudio.Abort; // Stop Audio
    BtStartStop.Caption := '&Start Audio';
   end;
 end;
@@ -248,6 +248,7 @@ begin
     do OutBuffer[ChannelIndex, Sample] := FOscillator.Sine;
    FOscillator.CalculateNextSample;
   end;
+  Result := paContinue;
 end;
 
 procedure TFmPortAudio.PortAudioReset(Sender: TObject);

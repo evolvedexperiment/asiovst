@@ -185,14 +185,14 @@ end;
 
 function StreamToFormat(Stream: TStream): TAudioFileClass;
 var
-  i : Integer;
+  Index : Integer;
 begin
  Result := nil;
  if not Assigned(Stream) then Exit;
 
- for i := 0 to Length(GAudioFileFormats) - 1 do
-  if GAudioFileFormats[i].CanLoad(Stream)
-   then Result := GAudioFileFormats[i];
+ for Index := 0 to Length(GAudioFileFormats) - 1 do
+  if GAudioFileFormats[Index].CanLoad(Stream)
+   then Result := GAudioFileFormats[Index];
 end;
 
 function GetSimpleFileFilter: string;

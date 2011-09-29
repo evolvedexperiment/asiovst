@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  SysUtils, Classes, DAV_Types, DAV_PortAudioBinding;
+  SysUtils, Classes, DAV_Types, {$IFDEF MSWindows} DAV_PortAudioBinding, {$ENDIF}
+  {$IFDEF MacOS} DAV_PortAudioBindingStatic, {$ENDIF} DAV_PortAudioTypes;
 
 type
   EPortAudio = class(Exception);
@@ -44,7 +45,7 @@ type
     TimeInfo: PPaStreamCallbackTimeInfo;
     StatusFlags: TPaStreamCallbackFlags): LongInt of object;
 
-  TPortAudio = class
+  TPortAudioHost = class
   private
     FInputDevice         : LongInt;
     FOutputDevice        : LongInt;
@@ -114,16 +115,17 @@ type
     property OnStreamCallback: TPortAudioStreamCallbackEvent read FOnStreamCallback write FOnStreamCallback;
   end;
 
-
-
 implementation
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  RCStrPortAudioIsCurrent = 'PortAudio is current active';
+  RCStrInvalidIndex = 'Invalid Index (%d)';
+  RCStrVersionNotSupported = 'Version not supported (%s)';
 
-{ TPortAudio }
+{ TPortAudioHost }
 
-constructor TPortAudio.Create;
+constructor TPortAudioHost.Create;
 var
   PaError   : TPaError;
 begin
@@ -132,7 +134,7 @@ begin
 
   inherited;
   if Pa_GetVersion < 1899 then
-    raise EPortAudio.CreateFmt('Version not supported (%s)', [Pa_GetVersionText]);
+    raise EPortAudio.CreateFmt(RCStrVersionNotSupported, [Pa_GetVersionText]);
 
   PaError := Pa_Initialize;
 
@@ -150,7 +152,7 @@ begin
   UpdateOutputStreamParameters;
 end;
 
-destructor TPortAudio.Destroy;
+destructor TPortAudioHost.Destroy;
 var
   PaError : TPaError;
 begin
@@ -166,7 +168,7 @@ begin
   inherited;
 end;
 
-function TPortAudio.GetActive: Boolean;
+function TPortAudioHost.GetActive: Boolean;
 var
   PaError : TPaError;
 begin
@@ -183,22 +185,22 @@ begin
     Result := False;
 end;
 
-function TPortAudio.GetDefaultInputDevice: LongInt;
+function TPortAudioHost.GetDefaultInputDevice: LongInt;
 begin
   Result := Pa_GetDefaultInputDevice;
 end;
 
-function TPortAudio.GetDefaultOutputDevice: LongInt;
+function TPortAudioHost.GetDefaultOutputDevice: LongInt;
 begin
   Result := Pa_GetDefaultOutputDevice;
 end;
 
-function TPortAudio.GetDeviceCount: LongInt;
+function TPortAudioHost.GetDeviceCount: LongInt;
 begin
   Result := Pa_GetDeviceCount;
 end;
 
-function TPortAudio.GetDeviceInfo(Index: Integer): PPaDeviceInfo;
+function TPortAudioHost.GetDeviceInfo(Index: Integer): PPaDeviceInfo;
 begin
   if (Index >= 0) and (Index < DeviceCount) then
     Result := Pa_GetDeviceInfo(Index)
@@ -206,7 +208,7 @@ begin
     raise EPortAudio.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-function TPortAudio.GetHostApiInfo(Index: Integer): PPaHostApiInfo;
+function TPortAudioHost.GetHostApiInfo(Index: Integer): PPaHostApiInfo;
 begin
   if (Index >= 0) and (Index < HostApiCount) then
     Result := Pa_GetHostApiInfo(Index)
@@ -214,7 +216,7 @@ begin
     raise EPortAudio.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TPortAudio.InputDeviceChanged;
+procedure TPortAudioHost.InputDeviceChanged;
 begin
   UpdateInputStreamParameters;
 end;
@@ -226,11 +228,11 @@ begin
   Assert(Assigned(UserData));
 
   // call object callback
-  Result := TPortAudio(UserData).StreamCallback(Input, Output, FrameCount,
+  Result := TPortAudioHost(UserData).StreamCallback(Input, Output, FrameCount,
     TimeInfo, StatusFlags);
 end;
 
-procedure TPortAudio.Open;
+procedure TPortAudioHost.Open;
 var
   PaError    : TPaError;
   StreamInfo : PPaStreamInfo;
@@ -239,7 +241,7 @@ begin
   ISP := nil;
   if FInputDevice >= 0 then
     ISP := @FInputStreamParameters;
-  OSP := 0;
+  OSP := nil;
   if FOutputDevice >= 0 then
     OSP := @FOutputStreamParameters;
   PaError := Pa_OpenStream(FStream, ISP, OSP, FSampleRate, 64,
@@ -268,7 +270,7 @@ begin
     FOutputLatency := StreamInfo.OutputLatency;
 end;
 
-procedure TPortAudio.Close;
+procedure TPortAudioHost.Close;
 var
   PaError : TPaError;
 begin
@@ -279,15 +281,18 @@ begin
     // raise any error with the correct error text
     if PaError <> 0 then
       raise EPortAudio.Create(string(Pa_GetErrorText(PaError)));
+
+    // clear stream pointer
+    FStream := nil;
   end;
 end;
 
-procedure TPortAudio.OutputDeviceChanged;
+procedure TPortAudioHost.OutputDeviceChanged;
 begin
   UpdateOutputStreamParameters;
 end;
 
-procedure TPortAudio.UpdateInputStreamParameters;
+procedure TPortAudioHost.UpdateInputStreamParameters;
 var
   DevInfo : PPaDeviceInfo;
 begin
@@ -306,7 +311,7 @@ begin
     SetLength(FInputBuffers, 0);
 end;
 
-procedure TPortAudio.UpdateOutputStreamParameters;
+procedure TPortAudioHost.UpdateOutputStreamParameters;
 var
   DevInfo : PPaDeviceInfo;
 begin
@@ -325,23 +330,23 @@ begin
     SetLength(FOutputBuffers, 0);
 end;
 
-function TPortAudio.GetHostApiCount: LongInt;
+function TPortAudioHost.GetHostApiCount: LongInt;
 begin
   Result := Pa_GetHostApiCount;
 end;
 
-function TPortAudio.GetHostApiDefaultIndex: LongInt;
+function TPortAudioHost.GetHostApiDefaultIndex: LongInt;
 begin
   Result := Pa_GetDefaultHostApi;
 end;
 
-procedure TPortAudio.SampleRateChanged;
+procedure TPortAudioHost.SampleRateChanged;
 begin
   if Assigned(FOnSampleRateChanged) then
     FOnSampleRateChanged(Self);
 end;
 
-procedure TPortAudio.SetActive(const Value: Boolean);
+procedure TPortAudioHost.SetActive(const Value: Boolean);
 begin
   if Active <> Value then
   begin
@@ -352,13 +357,13 @@ begin
   end;
 end;
 
-procedure TPortAudio.SetInputDevice(const Value: LongInt);
+procedure TPortAudioHost.SetInputDevice(const Value: LongInt);
 begin
   if Active then
-    EPortAudio.Create('PortAudio is current active');
+    raise EPortAudio.Create(RCStrPortAudioIsCurrent);
 
   if (Value < -1) or (Value >= DeviceCount) then
-    raise EPortAudio.CreateFmt('Invalid Index (%d)', [Value]);
+    raise EPortAudio.CreateFmt(RCStrInvalidIndex, [Value]);
 
   if FInputDevice <> Value then
   begin
@@ -367,13 +372,13 @@ begin
   end;
 end;
 
-procedure TPortAudio.SetOutputDevice(const Value: LongInt);
+procedure TPortAudioHost.SetOutputDevice(const Value: LongInt);
 begin
   if Active then
-    EPortAudio.Create('PortAudio is current active');
+    raise EPortAudio.Create(RCStrPortAudioIsCurrent);
 
   if (Value < -1) or (Value >= DeviceCount) then
-    raise EPortAudio.CreateFmt('Invalid Index (%d)', [Value]);
+    raise EPortAudio.CreateFmt(RCStrInvalidIndex, [Value]);
 
   if FOutputDevice <> Value then
   begin
@@ -382,10 +387,10 @@ begin
   end;
 end;
 
-procedure TPortAudio.SetSampleRate(const Value: Double);
+procedure TPortAudioHost.SetSampleRate(const Value: Double);
 begin
   if Active then
-    EPortAudio.Create('PortAudio is current active');
+    EPortAudio.Create(RCStrPortAudioIsCurrent);
 
   if FSampleRate <> Value then
   begin
@@ -394,7 +399,7 @@ begin
   end;
 end;
 
-procedure TPortAudio.Start;
+procedure TPortAudioHost.Start;
 var
   PaError : TPaError;
 begin
@@ -409,7 +414,7 @@ begin
   end
 end;
 
-procedure TPortAudio.Stop;
+procedure TPortAudioHost.Stop;
 var
   PaError : TPaError;
 begin
@@ -424,7 +429,7 @@ begin
   end;
 end;
 
-function TPortAudio.StreamCallback(Input, Output: Pointer;
+function TPortAudioHost.StreamCallback(Input, Output: Pointer;
   FrameCount: NativeUInt; TimeInfo: PPaStreamCallbackTimeInfo;
   StatusFlags: TPaStreamCallbackFlags): LongInt;
 begin
@@ -442,7 +447,7 @@ begin
     Result := paContinue;
 end;
 
-procedure TPortAudio.Abort;
+procedure TPortAudioHost.Abort;
 var
   PaError : TPaError;
 begin
@@ -457,7 +462,7 @@ begin
   end;
 end;
 
-procedure TPortAudio.UpdateDeviceList;
+procedure TPortAudioHost.UpdateDeviceList;
 var
   Index   : Integer;
   DevInfo : PPaDeviceInfo;
@@ -470,11 +475,13 @@ begin
   begin
     DevInfo := DeviceInfo[Index];
     HostApi := HostApiInfo[DevInfo^.HostApi];
-    FDeviceList.Add(HostApi^.Name + ': ' + DevInfo^.Name);
+    FDeviceList.Add(string(HostApi^.Name) + ': ' + string(DevInfo^.Name));
     if DevInfo.MaxInputChannels > 0 then
-      FInputDeviceList.AddObject(HostApi^.Name + ': ' + DevInfo^.Name, TObject(Index));
+      FInputDeviceList.AddObject(string(HostApi^.Name) + ': ' +
+        string(DevInfo^.Name), TObject(Index));
     if DevInfo.MaxOutputChannels > 0 then
-      FOutputDeviceList.AddObject(HostApi^.Name + ': ' + DevInfo^.Name, TObject(Index));
+      FOutputDeviceList.AddObject(string(HostApi^.Name) + ': ' +
+        string(DevInfo^.Name), TObject(Index));
   end;
 end;
 
