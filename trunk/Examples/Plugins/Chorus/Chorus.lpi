@@ -27,7 +27,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\VST\64-Bit\Chorus.dll"/>
+            <Filename Value="..\..\..\Bin\Win64\VST\Chorus.dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -112,7 +112,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\VST\64-Bit\Chorus.dll"/>
+      <Filename Value="..\..\..\Bin\Win64\VST\Chorus.dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>

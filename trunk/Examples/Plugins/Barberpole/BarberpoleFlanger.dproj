@@ -46,10 +46,10 @@
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;VCL;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)</DCC_DcuOutput>
-			<DCC_DependencyCheckOutputName>..\..\..\Bin\VST\32-Bit\BarberpoleFlanger.dll</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\Bin\Win32\VST\BarberpoleFlanger.dll</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_ExeOutput>..\..\..\Bin\VST\32-Bit\</DCC_ExeOutput>
+			<DCC_ExeOutput>..\..\..\Bin\Win32\VST\</DCC_ExeOutput>
 			<DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
 			<DCC_Platform>x86</DCC_Platform>
 			<DCC_N>true</DCC_N>
