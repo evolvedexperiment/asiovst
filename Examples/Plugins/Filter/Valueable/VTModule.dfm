@@ -1,5 +1,4 @@
 object VTVSTModule: TVTVSTModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
@@ -154,8 +153,6 @@ object VTVSTModule: TVTVSTModule
   OnProcess = VSTModuleProcessStereo
   OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 248
-  Top = 106
   Height = 150
   Width = 215
 end

@@ -76,12 +76,9 @@ object LinkwitzRileySeparatedModule: TLinkwitzRileySeparatedModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

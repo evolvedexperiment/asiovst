@@ -32,7 +32,7 @@
           <SearchPaths>
             <IncludeFiles Value="..\..\..\..\Source"/>
             <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\DSP;..\..\..\..\Source\VST;..\..\..\..\Source\Math"/>
-            <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="..\..\..\UnitCache\$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -68,7 +68,7 @@
           <SearchPaths>
             <IncludeFiles Value="..\..\..\..\Source"/>
             <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\DSP;..\..\..\..\Source\VST;..\..\..\..\Source\Math"/>
-            <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="..\..\..\..\UnitCache\$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -110,7 +110,7 @@
           <SearchPaths>
             <IncludeFiles Value="..\..\..\..\Source"/>
             <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\DSP;..\..\..\..\Source\VST;..\..\..\..\Source\Math"/>
-            <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="..\..\..\..\UnitCache\$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -190,7 +190,7 @@
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source"/>
       <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\DSP;..\..\..\..\Source\VST;..\..\..\..\Source\Math"/>
-      <UnitOutputDirectory Value="..\..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\..\UnitCache\$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

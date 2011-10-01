@@ -43,7 +43,6 @@ type
   TLinkwitzRileySeparatedModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -89,9 +88,13 @@ begin
  OnProcessReplacing := VSTModuleProcess;
  {$ENDIF}
 
+ // initialize parameters
  Parameter[0] := 1000;
  Parameter[1] := 2;
  Parameter[2] := 0;
+
+ // set editor GUI
+ EditorFormClass := TFmLinkwitzRiley;
 end;
 
 procedure TLinkwitzRileySeparatedModule.VSTModuleClose(Sender: TObject);
@@ -100,12 +103,6 @@ var
 begin
  for Channel := 0 to Length(FLinkwitzRiley) - 1
   do FreeAndNil(FLinkwitzRiley[Channel]);
-end;
-
-procedure TLinkwitzRileySeparatedModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- Gui := TFmLinkwitzRiley.Create(Self);
 end;
 
 procedure TLinkwitzRileySeparatedModule.VSTModuleProcess(const Inputs,
@@ -125,7 +122,7 @@ end;
 procedure TLinkwitzRileySeparatedModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := IntToStr(12 * Round(Parameter[Index]));
+ Predefined := AnsiString(IntToStr(12 * Round(Parameter[Index])));
 end;
 
 procedure TLinkwitzRileySeparatedModule.ParameterFrequencyDisplay(
@@ -135,7 +132,7 @@ var
 begin
  Freq := Parameter[Index];
  if Freq >= 1000
-  then Predefined := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3);
+  then Predefined := AnsiString(FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3));
 end;
 
 procedure TLinkwitzRileySeparatedModule.ParameterFrequencyLabel(

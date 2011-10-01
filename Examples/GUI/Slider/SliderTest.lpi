@@ -82,7 +82,7 @@
     <SearchPaths>
       <IncludeFiles Value="..\..\..\source"/>
       <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\Math;..\..\..\Source\DSP;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
-      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\UnitCache\$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

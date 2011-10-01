@@ -29,7 +29,7 @@
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
             <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\DSP;..\..\..\Source\Math;..\..\..\Source\GUI;..\..\..\Source\FileFormats"/>
-            <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="..\..\..\UnitCache\$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -145,7 +145,7 @@
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>
       <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\VST;..\..\..\Source\DSP;..\..\..\Source\Math"/>
-      <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\UnitCache\$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

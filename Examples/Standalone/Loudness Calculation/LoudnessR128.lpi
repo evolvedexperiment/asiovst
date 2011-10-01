@@ -77,7 +77,7 @@
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source;$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\..\..\Source;..\..\..\Source\DSP;..\..\..\Source\FileFormats"/>
-      <UnitOutputDirectory Value="..\..\..\Precompiles\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\UnitCache\$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
