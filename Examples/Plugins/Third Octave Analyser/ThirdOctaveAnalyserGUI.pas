@@ -37,7 +37,8 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, ExtCtrls, TeEngine, Series, Controls, TeeProcs, Chart, StdCtrls, Spin, 
-  DAV_Types, DAV_VSTModule, DAV_DspThirdOctaveAnalyserFilter;
+  DAV_Types, DAV_VSTModule, DAV_DspThirdOctaveAnalyserFilter,
+  DAV_DspThirdOctaveAnalyser;
 
 type
   TFmThirdOctaveAnalyser = class(TForm)

@@ -45,7 +45,6 @@ const
 
 type
   TChunkDemoDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
@@ -103,6 +102,7 @@ begin
    FPitchShifter[Channel].Stages := 2;
   end;
 
+ // initialize default parameters
  Parameter[0] := 50;
  Parameter[1] := 50;
  Parameter[2] := 50;
@@ -122,6 +122,9 @@ begin
    Parameter[2] := 40;
    Parameter[3] := 60;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmChunkDemo;
 end;
 
 procedure TChunkDemoDataModule.VSTModuleClose(Sender: TObject);
@@ -135,11 +138,6 @@ begin
    FreeAndNil(FCrossover[Channel]);
    FreeAndNil(FAliasFilter[Channel]);
   end;
-end;
-
-procedure TChunkDemoDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmChunkDemo.Create(Self);
 end;
 
 procedure TChunkDemoDataModule.ParameterBetaChange(
@@ -230,8 +228,8 @@ begin
  Assert(CNumChannels = 2);
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FCrossover[0].ProcessSample(Inputs[0, Sample], Low[0], High[0]);
-   FCrossover[1].ProcessSample(Inputs[1, Sample], Low[1], High[1]);
+   FCrossover[0].ProcessSample32(Inputs[0, Sample], Low[0], High[0]);
+   FCrossover[1].ProcessSample32(Inputs[1, Sample], Low[1], High[1]);
    FState[0] := FPitchShifter[0].ProcessSample32(FAliasFilter[0].ProcessSample64(FState[0] + High[0]));
    FState[1] := FPitchShifter[1].ProcessSample32(FAliasFilter[1].ProcessSample64(FState[1] + High[1]));
 

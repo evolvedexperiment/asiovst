@@ -61,16 +61,16 @@ type
     FPitchFactor         : Single;
     FInterpolationBuffer : array of PDAV8SingleArray;
 
-    FAudioFile        : TCustomAudioFile;
-    FBuffer           : TCircularMultiBuffer32;
-    FBufferSize       : Integer;
-    FSampleRate       : Single;
-    FStreamBuffer     : TDAVArrayOfSingleFixedArray;
-    FStreamBufSize    : Integer;
-    FTimeOut          : Integer;
+    FAudioFile           : TCustomAudioFile;
+    FBuffer              : TCircularMultiBuffer32;
+    FBufferSize          : Integer;
+    FSampleRate          : Single;
+    FStreamBuffer        : TDAVArrayOfSingleFixedArray;
+    FStreamBufSize       : Integer;
+    FTimeOut             : Integer;
 
-    FCurrentPosition  : Integer;
-    FSubBlockPosition : Integer;
+    FCurrentPosition     : Integer;
+    FSubBlockPosition    : Integer;
     function GetBufferFill: Single;
     procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
     procedure SetBlockSize(Value: Integer);

@@ -237,45 +237,43 @@ begin
 end;
 
 function Saturate(Input, Limit: Single): Single;
-{$IFNDEF FPC}
+{$IFDEF PUREPASCAL}
+begin
+ Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
+{$ELSE}
 const
   CGrdDiv : Double = 0.5;
 asm
- fld Input.Single
- fadd Limit
- fabs
- fld Input.Single
- fsub Limit
- fabs
- fsubp
- fmul CGrdDiv;
+ FLD     Input.Single
+ FADD    Limit
+ FABS
+ FLD     Input.Single
+ FSUB    Limit
+ FABS
+ FSUBP
+ FMUL    CGrdDiv;
 // Result := CGrdDiv * (Abs(Input + Limit) - Abs(Input - Limit));
-end;
-{$ELSE}
-begin
- Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
-end;
 {$ENDIF}
+end;
 
 function Saturate(Input, Limit: Double): Double;
-{$IFNDEF FPC}
+{$IFDEF PUREPASCAL}
+begin
+ Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
+{$ELSE}
 const
   CGrdDiv : Double = 0.5;
 asm
- fld Input.Double
- fadd Limit.Double
- fabs
- fld Input.Double
- fsub Limit.Double
- fabs
- fsubp
- fmul CGrdDiv;
-end;
-{$ELSE}
-begin
- Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
-end;
+ FLD     Input.Double
+ FADD    Limit.Double
+ FABS
+ FLD     Input.Double
+ FSUB    Limit.Double
+ FABS
+ FSUBP
+ FMUL    CGrdDiv;
 {$ENDIF}
+end;
 
 function Saturate2(Input, Limit: Single): Single;
 begin
@@ -322,6 +320,7 @@ begin
    Result := Parameter + (Input - Parameter) / (1 + c * c);
   end;
 end;
+
 
 { TChebyshevWaveshaper }
 
@@ -523,6 +522,7 @@ begin
   end;
  inherited;
 end;
+
 
 { TChebyshevWaveshaperSquarelShape }
 

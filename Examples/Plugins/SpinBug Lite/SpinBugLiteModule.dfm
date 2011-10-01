@@ -1,5 +1,4 @@
 object SpinBugLiteModule: TSpinBugLiteModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SpinBug Lite'
@@ -118,12 +117,9 @@ object SpinBugLiteModule: TSpinBugLiteModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTEditOpen
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 285
-  Top = 161
   Height = 194
   Width = 241
 end
