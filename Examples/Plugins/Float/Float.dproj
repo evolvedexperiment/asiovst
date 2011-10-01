@@ -20,8 +20,8 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DependencyCheckOutputName>..\..\..\Bin\VST\32-Bit\Float.dll</DCC_DependencyCheckOutputName>
-			<DCC_ExeOutput>..\..\..\Bin\VST\32-Bit\</DCC_ExeOutput>
+			<DCC_DependencyCheckOutputName>..\..\..\Bin\Win32\VST\Float.dll</DCC_DependencyCheckOutputName>
+			<DCC_ExeOutput>..\..\..\Bin\Win32\VST\</DCC_ExeOutput>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<GenDll>true</GenDll>
 			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)</DCC_DcuOutput>

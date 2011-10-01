@@ -23,7 +23,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\..\Bin\VST\64-Bit\Dual Linkwitz Riley Filter (x64).dll"/>
+            <Filename Value="..\..\..\..\Bin\Win64\VST\Dual Linkwitz Riley Filter (x64).dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>
@@ -196,7 +196,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\..\Bin\VST\64-Bit\Dual Linkwitz Riley Filter (x64).dll"/>
+      <Filename Value="..\..\..\..\Bin\Win64\VST\Dual Linkwitz Riley Filter (x64).dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>

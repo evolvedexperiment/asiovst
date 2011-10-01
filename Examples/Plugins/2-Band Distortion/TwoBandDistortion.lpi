@@ -26,7 +26,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\VST\64-Bit\2-Band Distortion.dll" ApplyConventions="False"/>
+            <Filename Value="..\..\..\Bin\Win64\VST\2-Band Distortion.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -72,7 +72,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\VST\64-Bit\2-Band Distortion.dll" ApplyConventions="False"/>
+            <Filename Value="..\..\..\Bin\Win64\VST\2-Band Distortion.dll" ApplyConventions="False"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -389,7 +389,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\VST\64-Bit\2-Band Distortion.dll" ApplyConventions="False"/>
+      <Filename Value="..\..\..\Bin\Win64\VST\2-Band Distortion.dll" ApplyConventions="False"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>

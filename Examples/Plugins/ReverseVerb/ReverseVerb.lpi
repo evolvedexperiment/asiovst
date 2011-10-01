@@ -27,7 +27,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\VST\64-Bit\ReverseVerb (x64).dll"/>
+            <Filename Value="..\..\..\Bin\Win64\VST\ReverseVerb (x64).dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -77,7 +77,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <HostApplicationFilename Value="C:\Users\Public\Code\VSTPack\Bin\VST\64-Bit\VST-Plugin Unit Test (x64).exe"/>
+        <HostApplicationFilename Value="C:\Users\Public\Code\VSTPack\Bin\Win64\VST\VST-Plugin Unit Test (x64).exe"/>
         <CommandLineParams Value="&quot;ReverseVerb (x64).dll&quot;"/>
       </local>
     </RunParams>
@@ -380,7 +380,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\VST\64-Bit\ReverseVerb (x64).dll"/>
+      <Filename Value="..\..\..\Bin\Win64\VST\ReverseVerb (x64).dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>

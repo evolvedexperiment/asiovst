@@ -25,7 +25,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\..\Bin\VST\64-Bit\"/>
+            <Filename Value="..\..\..\..\Bin\Win64\VST\"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>
@@ -75,9 +75,9 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <HostApplicationFilename Value="C:\Users\Public\Code\VSTPack\Bin\VST\64-Bit\VST-Plugin Unit Test (x64).exe"/>
+        <HostApplicationFilename Value="C:\Users\Public\Code\VSTPack\Bin\Win64\VST\VST-Plugin Unit Test (x64).exe"/>
         <CommandLineParams Value="&quot;Noise Reduction (x64).dll&quot;"/>
-        <WorkingDirectory Value="C:\Users\Public\Code\VSTPack\Bin\VST\64-Bit\"/>
+        <WorkingDirectory Value="C:\Users\Public\Code\VSTPack\Bin\Win64\VST\"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -360,7 +360,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\..\Bin\VST\64-Bit\Noise Reduction (x64).dll"/>
+      <Filename Value="..\..\..\..\Bin\Win64\VST\Noise Reduction (x64).dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>

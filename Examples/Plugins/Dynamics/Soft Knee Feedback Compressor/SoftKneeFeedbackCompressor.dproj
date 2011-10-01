@@ -21,13 +21,13 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_DcuOutput>..\..\..\..\UnitCache\$(Platform)</DCC_DcuOutput>
-			<DCC_DependencyCheckOutputName>..\..\..\..\Bin\VST\32-Bit\SoftKneeFeedbackCompressor.dll</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\Bin\Win32\VST\SoftKneeFeedbackCompressor.dll</DCC_DependencyCheckOutputName>
 			<DCC_UnitSearchPath>..\..\..\..\source;..\..\..\..\source\ASIO;..\..\..\..\source\DSP;..\..\..\..\source\GUI;..\..\..\..\source\Math;..\..\..\..\source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_MapFile>3</DCC_MapFile>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
-			<DCC_ExeOutput>..\..\..\..\Bin\VST\32-Bit\</DCC_ExeOutput>
+			<DCC_ExeOutput>..\..\..\..\Bin\Win32\VST\</DCC_ExeOutput>
 			<DCC_Platform>x86</DCC_Platform>
 			<DCC_N>true</DCC_N>
 			<DCC_K>false</DCC_K>

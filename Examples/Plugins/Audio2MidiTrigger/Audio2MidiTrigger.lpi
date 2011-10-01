@@ -25,7 +25,7 @@
           <Version Value="10"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\..\..\Bin\VST\64-Bit\Audio2Midi Trigger.dll"/>
+            <Filename Value="..\..\..\Bin\Win64\VST\Audio2Midi Trigger.dll"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="..\..\..\Source"/>
@@ -139,7 +139,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\VST\64-Bit\Audio2Midi Trigger.dll"/>
+      <Filename Value="..\..\..\Bin\Win64\VST\Audio2Midi Trigger.dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source"/>

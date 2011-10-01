@@ -230,7 +230,7 @@
     <Version Value="10"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\..\Bin\VST\64-Bit\Spectral Noise Gate (x64).dll"/>
+      <Filename Value="..\..\..\..\Bin\Win64\VST\Spectral Noise Gate (x64).dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>
