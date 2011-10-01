@@ -228,7 +228,7 @@
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source;$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\..\..\..\Source;..\..\..\..\Source\VST;..\..\..\..\Source\DSP;..\..\..\..\Source\Math"/>
-      <UnitOutputDirectory Value="..\..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\..\..\..\UnitCache\$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

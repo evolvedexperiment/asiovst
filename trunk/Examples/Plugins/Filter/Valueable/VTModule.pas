@@ -124,105 +124,151 @@ asm
     ffree st(0)
 end;
 
+{$IFNDEF CPU64}
 procedure ConvolveIR_X87large(InOutBuffer, IRBuffer: PSingle;
   samples: Integer; Current: Single);
 asm
-    fld   Current.Single
+    fld     Current.Single
 
-    push ecx
-    shr ecx,2
-    jz @SkipLargeAddLoop
+    push    ecx
+    shr     ecx, 2
+    jz      @SkipLargeAddLoop
     @LargeLoop:
-    fld   [edx].Single
-    fmul  st(0),st(1)
-    fld   [eax].Single
+    fld     [edx].Single
+    fmul    st(0),st(1)
+    fld     [eax].Single
     faddp
-    fstp [eax].Single
-    fld   [edx+4].Single
-    fmul  st(0),st(1)
-    fld   [eax+4].Single
+    fstp    [eax].Single
+    fld     [edx+4].Single
+    fmul    st(0),st(1)
+    fld     [eax+4].Single
     faddp
-    fstp [eax+4].Single
-    fld   [edx+8].Single
-    fmul  st(0),st(1)
-    fld   [eax+8].Single
+    fstp    [eax+4].Single
+    fld     [edx+8].Single
+    fmul    st(0),st(1)
+    fld     [eax+8].Single
     faddp
-    fstp [eax+8].Single
-    fld   [edx+12].Single
-    fmul  st(0),st(1)
-    fld   [eax+12].Single
+    fstp    [eax+8].Single
+    fld     [edx+12].Single
+    fmul    st(0),st(1)
+    fld     [eax+12].Single
     faddp
-    fstp [eax+12].Single
+    fstp    [eax+12].Single
 
-    add   eax, 16
-    add   edx, 16
-    loop  @LargeLoop
+    add     eax, 16
+    add     edx, 16
+    loop    @LargeLoop
 
     @SkipLargeAddLoop:
-    pop ecx
-    and ecx,$00000003
+    pop     ecx
+    and     ecx,$00000003
     jz @EndSmallLoop
 
     @SmallLoop:
-    fld   [edx].Single
-    fmul  st(0),st(1)
-    fld   [eax].Single
+    fld     [edx].Single
+    fmul    st(0),st(1)
+    fld     [eax].Single
     faddp
-    fstp [eax].Single
+    fstp    [eax].Single
 
-    add   eax, 4
-    add   edx, 4
-    loop  @SmallLoop
+    add     eax, 4
+    add     edx, 4
+    loop    @SmallLoop
 
     @EndSmallLoop:
-    ffree st(0)
+    ffree   st(0)
 end;
+{$ENDIF}
 
 procedure ConvolveIR_X87SSE(InOutBuffer, IRBuffer: PSingle;
   samples: Integer; Current: Single);
 asm
-    push ecx
-    shr ecx,3
-    jz @SkipLargeAddLoop
+{$IFDEF CPU64}
+    push    R8
+    shr     R8,3
+    JZ      @SkipLargeAddLoop
 
-    movss xmm7, Current
-    shufps xmm7, xmm7, 0h
+    MOVSS   XMM7, Current
+    SHUFPS  XMM7, XMM7, 0h
     @LargeLoop:
-    movups xmm0,[edx]
-    mulps xmm0,xmm7
-    movups xmm1,[eax]
-    addps xmm0,xmm1
-    movups [eax],xmm0
+    MOVUPS  XMM0,[EDX]
+    MULPS   XMM0,XMM7
+    MOVUPS  XMM1,[EAX]
+    ADDPS   XMM0,XMM1
+    MOVUPS  [EAX],XMM0
 
-    movups xmm2,[edx+16]
-    mulps xmm2,xmm7
-    movups xmm3,[eax+16]
-    addps xmm2,xmm3
-    movups [eax+16],xmm2
+    MOVUPS  XMM2,[EDX+16]
+    MULPS   XMM2,XMM7
+    MOVUPS  XMM3,[EAX+16]
+    ADDPS   XMM2,XMM3
+    MOVUPS  [EAX+16],XMM2
 
-    add   eax, 32
-    add   edx, 32
-    loop  @LargeLoop
+    ADD     EAX, 32
+    ADD     EDX, 32
+    LOOP    @LargeLoop
 
     @SkipLargeAddLoop:
-    pop ecx
-    and ecx,$00000007
-    jz @EndSmallLoop
+    pop     R8
+    and     R8,$00000007
+    JZ      @EndSmallLoop
 
-    fld   Current.Single
+    FLD     Current.Single
     @SmallLoop:
-    fld   [edx].Single
-    fmul  st(0),st(1)
-    fld   [eax].Single
-    faddp
-    fstp [eax].Single
+    FLD     [EDX].Single
+    FMUL    ST(0),ST(1)
+    FLD     [EAX].Single
+    FADDP
+    FSTP    [EAX].Single
 
-    add   eax, 4
-    add   edx, 4
-    loop  @SmallLoop
+    ADD     EAX, 4
+    ADD     EDX, 4
+    LOOP    @SmallLoop
 
     @EndSmallLoop:
-    ffree st(0)
+{$ELSE}
+    push    ecx
+    shr     ecx,3
+    jz      @SkipLargeAddLoop
+
+    movss   xmm7, Current
+    shufps  xmm7, xmm7, 0h
+    @LargeLoop:
+    movups  xmm0,[edx]
+    mulps   xmm0,xmm7
+    movups  xmm1,[eax]
+    addps   xmm0,xmm1
+    movups  [eax],xmm0
+
+    movups  xmm2,[edx+16]
+    mulps   xmm2,xmm7
+    movups  xmm3,[eax+16]
+    addps   xmm2,xmm3
+    movups  [eax+16],xmm2
+
+    add     eax, 32
+    add     edx, 32
+    loop    @LargeLoop
+
+    @SkipLargeAddLoop:
+    pop     ecx
+    and     ecx,$00000007
+    jz      @EndSmallLoop
+
+    fld     Current.Single
+    @SmallLoop:
+    fld     [edx].Single
+    fmul    st(0),st(1)
+    fld     [eax].Single
+    faddp
+    fstp    [eax].Single
+
+    add     eax, 4
+    add     edx, 4
+    loop    @SmallLoop
+
+    @EndSmallLoop:
+    ffree   st(0)
+{$ENDIF}
 end;
 
 procedure TVTVSTModule.VSTModuleCreate(Sender: TObject);
