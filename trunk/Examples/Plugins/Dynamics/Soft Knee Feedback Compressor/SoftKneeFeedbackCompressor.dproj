@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{DB617C99-4D12-4B2C-B527-2519F164B227}</ProjectGuid>
 			<MainSource>SoftKneeFeedbackCompressor.dpr</MainSource>
@@ -20,7 +20,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DcuOutput>..\..\..\..\Precompiles\</DCC_DcuOutput>
+			<DCC_DcuOutput>..\..\..\..\UnitCache\$(Platform)</DCC_DcuOutput>
 			<DCC_DependencyCheckOutputName>..\..\..\..\Bin\VST\32-Bit\SoftKneeFeedbackCompressor.dll</DCC_DependencyCheckOutputName>
 			<DCC_UnitSearchPath>..\..\..\..\source;..\..\..\..\source\ASIO;..\..\..\..\source\DSP;..\..\..\..\source\GUI;..\..\..\..\source\Math;..\..\..\..\source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_MapFile>3</DCC_MapFile>

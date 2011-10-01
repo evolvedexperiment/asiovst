@@ -126,7 +126,7 @@ end;
 
 function TThirdOctaveAnalyserModule.GetBandRMS(Index: Integer): Single;
 begin
- Result := FFilterAnalysis.BandRMS[Index];
+ Result := FFilterAnalysis.BandData[Index];
 end;
 
 procedure TThirdOctaveAnalyserModule.ParameterDownsamplingChange(

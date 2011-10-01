@@ -100,13 +100,13 @@ object FmThirdOctaveAnalyser: TFmThirdOctaveAnalyser
     View3DWalls = False
     TabOrder = 4
     Anchors = [akLeft, akTop, akRight, akBottom]
+    ColorPaletteIndex = 13
     object BarSeries: TBarSeries
       Marks.Arrow.Visible = True
       Marks.Callout.Brush.Color = clBlack
       Marks.Callout.Arrow.Visible = True
       Marks.Visible = False
       ShowInLegend = False
-      Gradient.Direction = gdTopBottom
       MultiBar = mbNone
       XValues.Name = 'X'
       XValues.Order = loAscending

@@ -85,8 +85,6 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcessReplacing
   OnProcess32Replacing = VSTModuleProcessReplacing
-  Left = 286
-  Top = 81
   Height = 150
   Width = 215
 end

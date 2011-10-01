@@ -1,5 +1,4 @@
 object ChunkDemoDataModule: TChunkDemoDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsProgramChunks]
   Version = '1.0'
   EffectName = 'ChunkDemo'
@@ -81,13 +80,10 @@ object ChunkDemoDataModule: TChunkDemoDataModule
   OnGetChunkParameter = VSTModuleGetChunkParameter
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 77
   Height = 150
   Width = 215
 end
