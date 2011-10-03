@@ -111,13 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\Audio2MidiTrigger.dll" "..\Bin\VST\32-Bit\Audio2Midi Trigger.dll"'  
-  !system 'copy "..\Bin\VST\64-Bit\Audio2MidiTrigger.dll" "..\Bin\VST\64-Bit\Audio2Midi Trigger.dll"'  
+  !system 'copy "..\Bin\Win32\VST\Audio2MidiTrigger.dll" "..\Bin\Win32\VST\Audio2Midi Trigger.dll"'  
+  !system 'copy "..\Bin\Win64\VST\Audio2MidiTrigger.dll" "..\Bin\Win64\VST\Audio2Midi Trigger.dll"'  
    
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Audio2Midi Trigger.dll"
+  File "..\Bin\Win64\VST\Audio2Midi Trigger.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Audio2Midi Trigger.dll"
+  File "..\Bin\Win32\VST\Audio2Midi Trigger.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

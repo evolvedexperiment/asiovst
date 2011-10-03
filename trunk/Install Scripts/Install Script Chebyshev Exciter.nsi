@@ -111,13 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\ChebyshevExciter.dll" "..\Bin\VST\32-Bit\Chebyshev Exciter.dll"'
-  !system 'copy "..\Bin\VST\64-Bit\ChebyshevExciter.dll" "..\Bin\VST\64-Bit\Chebyshev Exciter.dll"'
+  !system 'copy "..\Bin\Win32\VST\ChebyshevExciter.dll" "..\Bin\Win32\VST\Chebyshev Exciter.dll"'
+  !system 'copy "..\Bin\Win64\VST\ChebyshevExciter.dll" "..\Bin\Win64\VST\Chebyshev Exciter.dll"'
   
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Chebyshev Exciter.dll"
+  File "..\Bin\Win64\VST\Chebyshev Exciter.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Chebyshev Exciter.dll"
+  File "..\Bin\Win32\VST\Chebyshev Exciter.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

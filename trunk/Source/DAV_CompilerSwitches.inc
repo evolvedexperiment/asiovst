@@ -187,3 +187,6 @@
   adapter in order to use this. Otherwise only an emulation will be used. This
   emulation is very slow!
   The default is disabled.}
+
+
+{-$DEFINE UseMadExcept}

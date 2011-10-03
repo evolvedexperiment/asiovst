@@ -111,13 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\BassExtender.dll" "..\Bin\VST\32-Bit\Bass Extender.dll"'  
-  !system 'copy "..\Bin\VST\64-Bit\BassExtender.dll" "..\Bin\VST\64-Bit\Bass Extender.dll"'  
+  !system 'copy "..\Bin\Win32\VST\BassExtender.dll" "..\Bin\Win32\VST\Bass Extender.dll"'  
+  !system 'copy "..\Bin\Win64\VST\BassExtender.dll" "..\Bin\Win64\VST\Bass Extender.dll"'  
    
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Bass Extender.dll"
+  File "..\Bin\Win64\VST\Bass Extender.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Bass Extender.dll"
+  File "..\Bin\Win32\VST\Bass Extender.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

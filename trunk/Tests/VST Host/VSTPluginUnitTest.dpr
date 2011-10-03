@@ -7,8 +7,8 @@ program VSTPluginUnitTest;
 {$ENDIF}
 
 uses
-  {$IFNDEF Compiler16}
   FastMM4,
+  {$IFDEF UseFastMove}
   FastMove,
   {$ENDIF}
   Forms,

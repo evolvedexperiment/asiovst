@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} FastMove, Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Forms, DAV_Types, DAV_DspPolyphaseHilbert, DAV_VSTModule,
   DAV_DspLFO;
 

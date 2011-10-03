@@ -111,12 +111,12 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\AdvancedClipper.dll" "..\Bin\VST\32-Bit\Advanced Clipper.dll"'  
+  !system 'copy "..\Bin\Win32\VST\AdvancedClipper.dll" "..\Bin\Win32\VST\Advanced Clipper.dll"'  
    
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Advanced Clipper.dll"
+  File "..\Bin\Win64\VST\Advanced Clipper.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Advanced Clipper.dll"
+  File "..\Bin\Win32\VST\Advanced Clipper.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

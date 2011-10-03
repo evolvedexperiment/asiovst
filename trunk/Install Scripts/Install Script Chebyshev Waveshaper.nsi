@@ -111,13 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\ChebyshevWaveshaper.dll" "..\Bin\VST\32-Bit\Chebyshev Waveshaper.dll"'
-  !system 'copy "..\Bin\VST\64-Bit\ChebyshevWaveshaper.dll" "..\Bin\VST\64-Bit\Chebyshev Waveshaper.dll"'
+  !system 'copy "..\Bin\Win32\VST\ChebyshevWaveshaper.dll" "..\Bin\Win32\VST\Chebyshev Waveshaper.dll"'
+  !system 'copy "..\Bin\Win64\VST\ChebyshevWaveshaper.dll" "..\Bin\Win64\VST\Chebyshev Waveshaper.dll"'
 
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Chebyshev Waveshaper.dll"
+  File "..\Bin\Win64\VST\Chebyshev Waveshaper.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Chebyshev Waveshaper.dll"
+  File "..\Bin\Win32\VST\Chebyshev Waveshaper.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
