@@ -8,6 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------
@@ -42,6 +43,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -64,6 +66,7 @@ SetCompressor lzma
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
 
+
 ;--------------------------------
 ;Languages
  
@@ -77,10 +80,14 @@ SetCompressor lzma
 Section "VST-Plugin Scanner" SecProgramFiles
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VSTPluginUnitScanner.exe" "..\Bin\VST-Plugin Scanner.exe"'  
+  !system 'copy "..\Bin\Win32\VSTPluginUnitScanner.exe" "..\Bin\Win32\VST-Plugin Scanner.exe"'  
+  !system 'copy "..\Bin\Win64\VSTPluginUnitScanner.exe" "..\Bin\Win64\VST-Plugin Scanner.exe"'  
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\VST-Plugin Scanner.exe"
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST-Plugin Scanner.exe"
+  ${Else}
+  File "..\Bin\Win32\VST-Plugin Scanner.exe"
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR

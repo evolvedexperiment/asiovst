@@ -111,12 +111,12 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\BarberpoleFlanger.dll" "..\Bin\VST\32-Bit\Barberpole Flanger.dll"'  
+  !system 'copy "..\Bin\Win32\VST\BarberpoleFlanger.dll" "..\Bin\Win32\VST\Barberpole Flanger.dll"'  
 
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Barberpole Flanger.dll"
+  File "..\Bin\Win64\VST\Barberpole Flanger.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Barberpole Flanger.dll"
+  File "..\Bin\Win32\VST\Barberpole Flanger.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

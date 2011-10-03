@@ -111,12 +111,12 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\NoiseReduction.dll" "..\Bin\VST\32-Bit\Noise Reduction.dll"'  
+  !system 'copy "..\Bin\Win32\VST\NoiseReduction.dll" "..\Bin\Win32\VST\Noise Reduction.dll"'  
 
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Noise Reduction.dll"
+  File "..\Bin\Win64\VST\Noise Reduction.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Noise Reduction.dll"
+  File "..\Bin\Win32\VST\Noise Reduction.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

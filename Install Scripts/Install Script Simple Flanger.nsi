@@ -111,13 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\SimpleFlanger.dll" "..\Bin\Flanger.dll"'  
-  !system 'copy "..\Bin\VST\64-Bit\SimpleFlanger.dll" "..\Bin\VST\64-Bit\Flanger.dll"'  
+  !system 'copy "..\Bin\Win32\VST\SimpleFlanger.dll" "..\Bin\Flanger.dll"'  
+  !system 'copy "..\Bin\Win64\VST\SimpleFlanger.dll" "..\Bin\Win64\VST\Flanger.dll"'  
 
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Flanger.dll"
+  File "..\Bin\Win64\VST\Flanger.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Flanger.dll"
+  File "..\Bin\Win32\VST\Flanger.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

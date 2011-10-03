@@ -262,8 +262,6 @@ object BassExtenderModule: TBassExtenderModule
   OnProcess = VSTModuleProcess32
   OnProcess32Replacing = VSTModuleProcess32
   OnProcess64Replacing = VSTModuleProcess64
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

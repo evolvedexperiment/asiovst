@@ -8,6 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------
@@ -79,10 +80,14 @@ SetCompressor lzma
 Section "VST-Plugin Unit Test" SecProgramFiles
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VSTPluginUnitTest.exe" "..\Bin\VST-Plugin Unit Test.exe"'  
+  !system 'copy "..\Bin\Win32\VSTPluginUnitTest.exe" "..\Bin\Win32\VST-Plugin Unit Test.exe"'  
+  !system 'copy "..\Bin\Win64\VSTPluginUnitTest.exe" "..\Bin\Win64\VST-Plugin Unit Test.exe"'  
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\VST-Plugin Unit Test.exe"
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST-Plugin Unit Test.exe"
+  ${Else}
+  File "..\Bin\Win32\VST-Plugin Unit Test.exe"
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -94,8 +99,7 @@ SectionEnd
 Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Manuals\VST Host\VST-Plugin Unit Test.pdf"
+  File "..\Manuals\VST-Plugin Unit Test.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR

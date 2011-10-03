@@ -58,9 +58,9 @@ type
   end;
 
   TISHMisc = packed record
-    case Integer of
-      0: (PhysicalAddress: LongWord);
-      1: (VirtualSize: LongWord);
+    case Byte of
+      0: (PhysicalAddress: NativeInt);
+      1: (VirtualSize: NativeInt);
   end;
 
   PImageSectionHeaders = ^TImageSectionHeaders;
@@ -79,7 +79,7 @@ type
 
   PImageBaseRelocation = ^TImageBaseRelocation;
   TImageBaseRelocation = packed record
-    VirtualAddress : LongWord;
+    VirtualAddress : NativeInt;
     SizeOfBlock    : LongWord;
   end;
 
@@ -93,7 +93,7 @@ type
   TSections = array of TSection;
 
   TDLLEntryProc = function(hinstDLL: HMODULE; dwReason: LongWord;
-    lpvReserved: Pointer): Boolean; StdCall;
+    lpvReserved: Pointer): Boolean; stdcall;
 
   TNameOrID = (niName, niID);
 
@@ -571,7 +571,7 @@ var
   ImageNTHeaders: TImageNTHeaders;
   OldProtect: LongWord;
 
-  function ConvertPointer(RVA: LongWord): Pointer;
+  function ConvertPointer(RVA: NativeInt): Pointer;
   var
     I: Integer;
   begin
@@ -593,10 +593,10 @@ var
      begin
       FillChar(ImageNTHeaders, SizeOf(TImageNTHeaders), #0);
       if Stream.Read(ImageDOSHeader, SizeOf(TImageDOSHeader)) <> SizeOf(TImageDOSHeader) then exit;
-      if ImageDOSHeader.Signature <> $5A4D then exit;
+      if ImageDOSHeader.Signature <> $5A4D then Exit;
       if Stream.Seek(ImageDOSHeader.LFAOffset, soFrombeginning) <> LongInt(ImageDOSHeader.LFAOffset) then exit;
       if Stream.Read(ImageNTHeaders.Signature, SizeOf(LongWord)) <> SizeOf(LongWord) then exit;
-      if ImageNTHeaders.Signature <> $00004550 then exit;
+      if ImageNTHeaders.Signature <> $00004550 then Exit;
       if Stream.Read(ImageNTHeaders.FileHeader, SizeOf(TImageFileHeader)) <> SizeOf(TImageFileHeader) then exit;
       if ImageNTHeaders.FileHeader.Machine <> $14C then exit;
       if Stream.Read(ImageNTHeaders.OptionalHeader, ImageNTHeaders.FileHeader.SizeOfOptionalHeader) <> ImageNTHeaders.FileHeader.SizeOfOptionalHeader then exit;
@@ -837,7 +837,7 @@ var
   begin
     Result := False;
     @FDLLProc := ConvertPointer(ImageNTHeaders.OptionalHeader.AddressOfEntryPoint);
-    if FDLLProc(CARDINAL(FImageBase), DLL_PROCESS_ATTACH, nil)
+    if FDLLProc(HMODULE(FImageBase), DLL_PROCESS_ATTACH, nil)
      then Result := True;
   end;
 

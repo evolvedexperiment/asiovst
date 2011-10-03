@@ -111,13 +111,13 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\VST\32-Bit\DitherNoiseshaper.dll" "..\Bin\VST\32-Bit\Dither & Noiseshaper.dll"'  
-  !system 'copy "..\Bin\VST\64-Bit\DitherNoiseshaper.dll" "..\Bin\VST\64-Bit\Dither & Noiseshaper.dll"'  
+  !system 'copy "..\Bin\Win32\VST\DitherNoiseshaper.dll" "..\Bin\Win32\VST\Dither & Noiseshaper.dll"'  
+  !system 'copy "..\Bin\Win64\VST\DitherNoiseshaper.dll" "..\Bin\Win64\VST\Dither & Noiseshaper.dll"'  
    
   ${If} ${RunningX64}
-  File "..\Bin\VST\64-Bit\Dither & Noiseshaper.dll"
+  File "..\Bin\Win64\VST\Dither & Noiseshaper.dll"
   ${Else}
-  File "..\Bin\VST\32-Bit\Dither & Noiseshaper.dll"
+  File "..\Bin\Win32\VST\Dither & Noiseshaper.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall

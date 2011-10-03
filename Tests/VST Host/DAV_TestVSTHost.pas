@@ -37,10 +37,9 @@ interface
 {$DEFINE NoInvalidOpcodes}
 
 uses
-  {$IFDEF FPC}fpcunit, testutils, testregistry,
-  {$IFDEF MSWINDOWS} Windows, {$ENDIF} {$ELSE} TestFramework, Windows, {$ENDIF}
-  Graphics, Registry, Classes, SysUtils, Dialogs,
-  DAV_Types, DAV_VSTHost;
+  {$IFDEF FPC}fpcunit, testutils, testregistry, {$ELSE} TestFramework, {$ENDIF}
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF}   Graphics, Registry, Classes, SysUtils,
+  Dialogs, DAV_Types, DAV_VSTHost;
 
 type
   TTestVstSuite = class(TTestSuite)
@@ -104,9 +103,7 @@ type
   published
     procedure TestMultipleOpenCloseCycles;
     {$IFNDEF FPC}
-    {$IFNDEF CPU64}
     procedure TestLoadVSTPluginFromResource;
-    {$ENDIF}
     {$ENDIF}
     procedure TestInactiveParameterSweeps;
     procedure TestInactiveSamplerateChanges;
@@ -505,24 +502,24 @@ begin
        if ppfParameterUsesFloatStep in PP.Flags then
          CheckTrue(PP.LargeStepFloat >= PP.SmallStepFloat,
            'LargeStepFloat < SmallStepFloat! Parameter ' + IntToStr(Param) +
-           ' (' + PP.ParamLabel + ', ' + PP.ShortLabel + ') SmallStepFloat: ' +
-           FloatToStr(PP.SmallStepFloat) + ' LargeStepFloat: ' +
-           FloatToStr(PP.LargeStepFloat));
+           ' (' + string(PP.ParamLabel) + ', ' + string(PP.ShortLabel) +
+           ') SmallStepFloat: ' + FloatToStr(PP.SmallStepFloat) +
+           ' LargeStepFloat: ' + FloatToStr(PP.LargeStepFloat));
 
        // check integer steps
        if ppfParameterUsesIntStep in PP.Flags then
          CheckTrue(PP.LargeStepInteger >= PP.StepInteger,
            'LargeStepInteger < StepInteger! Parameter ' + IntToStr(Param) +
-           ' (' + PP.ParamLabel + ', ' + PP.ShortLabel + ') StepInteger: ' +
-           IntToStr(PP.StepInteger) + ' LargeStepInteger: ' +
-           IntToStr(PP.LargeStepInteger));
+           ' (' + string(PP.ParamLabel) + ', ' + string(PP.ShortLabel) +
+           ') StepInteger: ' + IntToStr(PP.StepInteger) +
+           ' LargeStepInteger: ' + IntToStr(PP.LargeStepInteger));
 
        // check integer min/max
        if ppfParameterUsesIntegerMinMax in PP.Flags then
          CheckTrue(PP.MaxInteger >= PP.MinInteger, 'MaxInteger < MinInteger!' +
-           ' Parameter ' + IntToStr(Param) + ' (' + PP.ParamLabel +
-           ', ' + PP.ShortLabel + ') MinInteger: ' + IntToStr(PP.MaxInteger) +
-           ' MaxInteger: ' + IntToStr(PP.MinInteger));
+           ' Parameter ' + IntToStr(Param) + ' (' + string(PP.ParamLabel) +
+           ', ' + string(PP.ShortLabel) + ') MinInteger: ' +
+           IntToStr(PP.MaxInteger) + ' MaxInteger: ' + IntToStr(PP.MinInteger));
 
        // check future equals zero
        CheckTrue(PP.Future[0] = #0, 'Parameter ' +
@@ -636,8 +633,7 @@ end;
 
 procedure TVstPluginPerverseTests.TestInvalidOpcodes;
 var
-  i     : Integer;
-  VstID : Integer;
+  i : Integer;
 begin
  with FVstHost[0] do
   for i := 0 to 1 do
@@ -1044,7 +1040,6 @@ begin
 end;
 
 {$IFNDEF FPC}
-{$IFNDEF CPU64}
 procedure TVstPluginPerverseTests.TestLoadVSTPluginFromResource;
 var
   FileName   : TFileName;
@@ -1066,7 +1061,6 @@ begin
    Fail('Error: Failed to load DLL file, probably in use');
   end;
 end;
-{$ENDIF}
 {$ENDIF}
 
 
