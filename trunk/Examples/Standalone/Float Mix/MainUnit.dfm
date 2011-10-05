@@ -218,6 +218,6 @@ object FmFloatMix: TFmFloatMix
         Width = 22
       end>
     Left = 104
-    Top = 128
+    Top = 80
   end
 end

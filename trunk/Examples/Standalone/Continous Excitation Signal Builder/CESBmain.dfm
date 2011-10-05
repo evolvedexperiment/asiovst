@@ -198,10 +198,6 @@ object FmContinousExcitationSignalBuilder: TFmContinousExcitationSignalBuilder
     TabOrder = 4
     OnClick = BtBuildClick
   end
-  object XPManifest1: TXPManifest
-    Left = 360
-    Top = 48
-  end
   object PuFrequency: TPopupMenu
     BiDiMode = bdLeftToRight
     ParentBiDiMode = False

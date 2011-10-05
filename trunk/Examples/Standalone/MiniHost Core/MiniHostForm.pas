@@ -47,7 +47,7 @@ type
     procedure Stop;
     procedure Load(const Filename: TFileName);
     procedure Unload;
-  published
+
     property SampleRate: Single read FSamplerate write FSamplerate;
     property Speed: Single read FSpeed write FSpeed;
     property Size: Integer read FSize;
@@ -186,7 +186,7 @@ type
     FDownMix        : Boolean;
     FTotalFrames    : Integer;
     FPanel          : TPanel;
-    FTitle          : string;
+    FTitle          : AnsiString;
     FWaveFile       : TWavPlayer;
     FProcessing     : Boolean;
     FAllowed        : Boolean;
@@ -208,7 +208,7 @@ type
     FVSTVol         : Single;
     FInputVol       : Single;
     FCurProg        : Integer;
-    FCurProgName    : string;
+    FCurProgName    : AnsiString;
     FVSTPinProps    : array of TVstPinProperties;
     FNumIn,
     FNumOut         : Integer;
@@ -264,7 +264,7 @@ type
     property MidiFile: TMidiFile read FMidiFile;
   published
     property CurrentProgram: Integer read FCurProg;
-    property CurrentProgramName: string read FCurProgName;
+    property CurrentProgramName: AnsiString read FCurProgName;
     property InputVol: Single read FInputVol write FInputVol;
     property MidiPlaying: Boolean read FMIDIPlaying write FMIDIPlaying;
     property OverallVolume: Single read FOverallVol write FOverallVol;
@@ -1006,7 +1006,7 @@ begin
    s := AnsiString(IntToStr(i));
    if i < 10 then s := '00' + s else
    if i < 100 then s := '0' + s;
-   PresetBox.AddItem(s + ': ' + M.Caption, nil);
+   PresetBox.AddItem(string(s) + ': ' + M.Caption, nil);
   end;
 
  if n >= 0 then PresetBox.ItemIndex := FCurProg;
@@ -1152,7 +1152,7 @@ begin
 
  FPluginLoaded := True;
  FAllowed := True;
- Caption := FTitle;
+ Caption := string(FTitle);
  Left := Screen.Width div 2 - Width div 2;
  Top := Screen.Height div 2 - Height div 2;
  VSTHost[0].CurrentProgram := DefaultProgram;
@@ -1340,9 +1340,9 @@ begin
       Inc(j);
       m.OnClick := SetChannel;
       if Channel < ASIOHost.OutputChannelCount - 1
-       then m.Caption := ASIOHost.OutputChannelInfos[Channel].Name +
-                 ' / ' + ASIOHost.OutputChannelInfos[Channel + 1].Name
-       else m.Caption := ASIOHost.OutputChannelInfos[Channel].name;
+       then m.Caption := string(ASIOHost.OutputChannelInfos[Channel].Name +
+         AnsiString(' / ') + ASIOHost.OutputChannelInfos[Channel + 1].Name)
+       else m.Caption := string(ASIOHost.OutputChannelInfos[Channel].Name);
       MIASIOOutputChannel.Add(m);
      end;
 
@@ -1363,9 +1363,9 @@ begin
       inc(j);
       m.OnClick := SetChannelI;
       if Channel < ASIOHost.InputChannelCount - 1
-       then m.Caption := ASIOHost.InputChannelInfos[Channel].Name
-               + ' / ' + ASIOHost.InputChannelInfos[Channel + 1].Name
-       else m.Caption := ASIOHost.InputChannelInfos[Channel].name;
+       then m.Caption := string(ASIOHost.InputChannelInfos[Channel].Name +
+         AnsiString(' / ') + ASIOHost.InputChannelInfos[Channel + 1].Name)
+       else m.Caption := string(ASIOHost.InputChannelInfos[Channel].Name);
       MIASIOInputChannel.Add(m);
      end;
 
@@ -1687,7 +1687,7 @@ end;
 
 procedure TFmMiniHost.WaveTimerTimer(Sender: TObject);
 var
-  s2, s : string;
+  s2, s : AnsiString;
   i     : Integer;
   e     : single;
 begin
@@ -1762,18 +1762,18 @@ begin
   begin
    FCurProg := i;
    FCurProgName := s;
-   s := IntToStr(FCurProg);
+   s := AnsiString(IntToStr(FCurProg));
    if FCurProg < 10 then s := '00' + s else
    if FCurProg < 100 then s := '0' + s;
    if (PresetBox.items.Count > 0) and (FCurProg>=0) then
     begin
-     PresetBox.Items[FCurProg] := s + ': ' + FCurProgName;
+     PresetBox.Items[FCurProg] := string(s + ': ' + FCurProgName);
      PresetBox.ItemIndex := i;
     end;
    s2 := FTitle;
    if MIShowPreset.Checked
-    then s2 := s2 + ' - ' + s + ': ' + FCurProgName;
-   if caption <> s2 then caption := s2;
+    then s2 := s2 + AnsiString(' - ') + s + AnsiString(': ') + FCurProgName;
+   if Caption <> string(s2) then Caption := string(s2);
   end;
 end;
 
@@ -1871,8 +1871,8 @@ procedure TFmMiniHost.MIRenamePresetClick(Sender: TObject);
 var
   s2, s: string;
 begin
- s := inputbox('Rename Preset', 'New name:', VSTHost[0].GetProgramName);
- VSTHost[0].SetProgramName(s);
+ s := InputBox('Rename Preset', 'New name:', string(VSTHost[0].GetProgramName));
+ VSTHost[0].SetProgramName(AnsiString(s));
  VSTHost[0].Idle;
  VSTHost[0].EditIdle;
 
@@ -2032,15 +2032,15 @@ end;
 
 procedure TFmMiniHost.MIShowPresetClick(Sender: TObject);
 var
-  s: string;
+  s: AnsiString;
 begin
  MIShowPreset.Checked := not MIShowPreset.Checked;
- s := IntToStr(FCurProg);
+ s := AnsiString(IntToStr(FCurProg));
  if FCurProg < 10 then s := '00' + s else
  if FCurProg < 100 then s := '0' + s;
  if MIShowPreset.Checked
-  then Caption := FTitle + ' - ' + s + ': ' + FCurProgName
-  else Caption := FTitle;
+  then Caption := string(FTitle + ' - ' + s + ': ' + FCurProgName)
+  else Caption := string(FTitle);
 end;
 
 procedure TFmMiniHost.StopPlayback1Click(Sender: TObject);
