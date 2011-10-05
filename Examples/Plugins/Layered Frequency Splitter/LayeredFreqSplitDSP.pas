@@ -145,7 +145,7 @@ begin
     Data := Inputs[ChannelIndex, SampleIndex];
     for LayerIndex := 0 to Length(FLinkwitzRileyFilters[ChannelIndex]) - 1 do
      begin
-      FLinkwitzRileyFilters[ChannelIndex, LayerIndex].ProcessSample(Data, Low, High);
+      FLinkwitzRileyFilters[ChannelIndex, LayerIndex].ProcessSample64(Data, Low, High);
       Data := Low + High;
       if LayerIndex = FLayers
        then Outputs[ChannelIndex, SampleIndex] := Data;

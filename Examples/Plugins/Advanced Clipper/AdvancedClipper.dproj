@@ -3,7 +3,7 @@
 			<ProjectGuid>{6EF0140A-3055-4580-A921-CAD8840AF50B}</ProjectGuid>
 			<MainSource>AdvancedClipper.dpr</MainSource>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<TargetedPlatforms>3</TargetedPlatforms>
 			<AppType>Library</AppType>
 			<FrameworkType>None</FrameworkType>

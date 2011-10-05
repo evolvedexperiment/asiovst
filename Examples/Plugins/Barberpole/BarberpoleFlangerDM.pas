@@ -53,8 +53,8 @@ type
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamStagesDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamStagesDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterAlgorithmChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FBarberpole      : array [0..1] of TDspBarberpole32;
@@ -171,9 +171,9 @@ begin
 end;
 
 procedure TBarberpoleFlangerModule.ParamStagesDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TBarberpoleFlangerModule.ParameterAlgorithmChange(
@@ -181,8 +181,8 @@ procedure TBarberpoleFlangerModule.ParameterAlgorithmChange(
 begin
  FCriticalSection.Enter;
  try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].Direction := TBarberpoleDirection(round(Value));
-  if Assigned(FBarberpole[1]) then FBarberpole[1].Direction := TBarberpoleDirection(round(Value));
+  if Assigned(FBarberpole[0]) then FBarberpole[0].Direction := TBarberpoleDirection(Round(Value));
+  if Assigned(FBarberpole[1]) then FBarberpole[1].Direction := TBarberpoleDirection(Round(Value));
  finally
   FCriticalSection.Leave;
  end;
@@ -192,9 +192,9 @@ begin
 end;
 
 procedure TBarberpoleFlangerModule.ParameterAlgorithmDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Up';
   1 : PreDefined := 'Down';
   2 : PreDefined := 'Up (Inv.)';
@@ -207,8 +207,8 @@ procedure TBarberpoleFlangerModule.ParamStagesChange(
 begin
  FCriticalSection.Enter;
  try
-  if Assigned(FBarberpole[0]) then FBarberpole[0].Stages := round(Value);
-  if Assigned(FBarberpole[1]) then FBarberpole[1].Stages := round(Value);
+  if Assigned(FBarberpole[0]) then FBarberpole[0].Stages := Round(Value);
+  if Assigned(FBarberpole[1]) then FBarberpole[1].Stages := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -268,7 +268,7 @@ begin
  try
   for Channel := 0 to Length(FBarberpole) - 1 do
    for Sample := 0 to SampleFrames - 1
-  {$IFDEF FPC}
+  {$IFDEF CPU64}
     do Outputs[Channel, Sample] := FastTanhOpt5Term(FBarberpole[Channel].ProcessSample32(Inputs[Channel, Sample]))
   {$ELSE}
     do Outputs[Channel, Sample] := FastTanhOpt5TermFPU(FBarberpole[Channel].ProcessSample32(Inputs[Channel, Sample]))

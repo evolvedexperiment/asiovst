@@ -30,8 +30,6 @@ object PlugInPlugModule: TPlugInPlugModule
   OnSampleRateChange = VST2ModuleSampleRateChange
   OnStartProcess = VST2ModuleStartProcess
   OnStopProcess = VST2ModuleStopProcess
-  Left = 254
-  Top = 128
   Height = 199
   Width = 283
   object VstHost: TVstHost
