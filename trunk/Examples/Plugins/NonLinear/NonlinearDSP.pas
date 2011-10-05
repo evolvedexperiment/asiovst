@@ -44,7 +44,7 @@ type
   { TVSTOpAmp }
 
   TVSTOpAmp = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: THandle);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
@@ -75,7 +75,7 @@ begin
 end;
 
 procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
+  ParentWindow: THandle);
 begin
  GUI := TVSTGUI.Create(Self);
 
@@ -110,8 +110,6 @@ end;
 
 procedure TVSTOpAmp.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
-var
-  i : Integer;
 begin
  FGain := 2 * dB_to_Amp(Value);
 

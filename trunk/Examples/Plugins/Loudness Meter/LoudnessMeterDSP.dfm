@@ -97,8 +97,6 @@ object LoudnessMeterModule: TLoudnessMeterModule
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 299
-  Top = 51
   Height = 150
   Width = 215
 end

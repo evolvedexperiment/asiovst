@@ -467,7 +467,7 @@ begin
    if Freq <> DialLowFreq.Value
     then DialLowFreq.Value := Freq;
    DialMidFreq.Min := DialLowFreq.Value;
-   LbLowFreqValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbLowFreqValue.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
 
@@ -482,7 +482,7 @@ begin
     then DialMidFreq.Value := Freq;
    DialHighFreq.Min := DialMidFreq.Value;
    DialLowFreq.Max := DialMidFreq.Value;
-   LbMidFreqValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+   LbMidFreqValue.Caption := string(ParameterDisplay[1] + ' ' + ParameterLabel[1]);
   end;
 end;
 
@@ -496,7 +496,7 @@ begin
    if Freq <> DialHighFreq.Value
     then DialHighFreq.Value := Freq;
    DialMidFreq.Max := DialHighFreq.Value;
-   LbHighFreqValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbHighFreqValue.Caption := string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
   end;
 end;
 
@@ -509,7 +509,7 @@ begin
    Attack := Parameter[4];
    if Attack <> DialLowAttack.Value
     then DialLowAttack.Value := Attack;
-   LbLowAttackValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
+   LbLowAttackValue.Caption := string(ParameterDisplay[4] + ' ' + ParameterLabel[4]);
   end;
 end;
 
@@ -522,7 +522,7 @@ begin
    Release := Parameter[5];
    if Release <> DialLowRelease.Value
     then DialLowRelease.Value := Release;
-   LbLowReleaseValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
+   LbLowReleaseValue.Caption := string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
   end;
 end;
 
@@ -535,7 +535,7 @@ begin
    Threshold := Parameter[6];
    if Threshold <> DialLowThreshold.Value
     then DialLowThreshold.Value := Threshold;
-   LbLowThresholdValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
+   LbLowThresholdValue.Caption := string(ParameterDisplay[6] + ' ' + ParameterLabel[6]);
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
 end;
@@ -549,7 +549,7 @@ begin
    Ratio := Parameter[7];
    if Ratio <> DialLowRatio.Value
     then DialLowRatio.Value := Ratio;
-   LbLowRatioValue.Caption := '1 : ' + ParameterDisplay[7];
+   LbLowRatioValue.Caption := string('1 : ' + ParameterDisplay[7]);
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
 end;
@@ -563,7 +563,7 @@ begin
    Knee := Parameter[8];
    if Knee <> DialLowKnee.Value
     then DialLowKnee.Value := Knee;
-   LbLowKneeValue.Caption := ParameterDisplay[8] + ' ' + ParameterLabel[8];
+   LbLowKneeValue.Caption := string(ParameterDisplay[8] + ' ' + ParameterLabel[8]);
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
 end;
@@ -577,7 +577,7 @@ begin
    MakeUp := LightweightMultibandCompressor[0].MakeUpGain_dB;
    if MakeUp <> DialLowMakeUpGain.Value
     then DialLowMakeUpGain.Value := MakeUp;
-   LbLowMakeUpGainValue.Caption := ParameterDisplay[9] + ' ' + ParameterLabel[9];
+   LbLowMakeUpGainValue.Caption := string(ParameterDisplay[9] + ' ' + ParameterLabel[9]);
    GraphNeedUpdate := GraphNeedUpdate + [gLow];
   end;
 end;
@@ -605,7 +605,7 @@ begin
    Attack := Parameter[11];
    if Attack <> DialLowMidAttack.Value
     then DialLowMidAttack.Value := Attack;
-   LbLowMidAttackValue.Caption := ParameterDisplay[11] + ' ' + ParameterLabel[11];
+   LbLowMidAttackValue.Caption := string(ParameterDisplay[11] + ' ' + ParameterLabel[11]);
   end;
 end;
 
@@ -618,7 +618,7 @@ begin
    Release := Parameter[12];
    if Release <> DialLowMidRelease.Value
     then DialLowMidRelease.Value := Release;
-   LbLowMidReleaseValue.Caption := ParameterDisplay[12] + ' ' + ParameterLabel[12];
+   LbLowMidReleaseValue.Caption := string(ParameterDisplay[12] + ' ' + ParameterLabel[12]);
   end;
 end;
 

@@ -1,4 +1,4 @@
-unit LA1701DM;
+﻿unit LA1701DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -43,7 +43,6 @@ type
   TLA1701DataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
@@ -127,17 +126,15 @@ begin
  Parameter[ 9] :=  50;
  Parameter[10] :=  10;
  Parameter[11] :=   1;
+
+ // set editor form class
+ EditorFormClass := TFmLA1701;
 end;
 
 procedure TLA1701DataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FLA1701s);
  FreeAndNil(FHighpass);
-end;
-
-procedure TLA1701DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmLA1701.Create(Self);
 end;
 
 procedure TLA1701DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -292,14 +289,14 @@ end;
 
 procedure TLA1701DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- assert(round(Value) >= 0);
+ assert(Round(Value) >= 0);
  if Assigned(FHighpass)
-  then FHighpass.Order := round(Value);
+  then FHighpass.Order := Round(Value);
 end;
 
 procedure TLA1701DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TLA1701DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -310,7 +307,7 @@ end;
 
 procedure TLA1701DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0: Predefined := 'Input';
   1: Predefined := 'Gain Reduction';
   2: Predefined := 'Output';
@@ -367,7 +364,7 @@ end;
 
 function SimpleDiode(x: Single): Single;
 begin
- Result := 0.5 * (abs(x) + x);
+ Result := 0.5 * (Abs(x) + x);
 end;
 
 procedure TLA1701DataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);

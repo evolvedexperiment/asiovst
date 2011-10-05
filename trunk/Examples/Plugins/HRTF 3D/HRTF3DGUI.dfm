@@ -33,6 +33,7 @@ object VSTGUI: TVSTGUI
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
     OnMouseWheel = FormMouseWheel
+    TabOrder = 0
   end
   object GLScene: TGLScene
     Left = 16
@@ -48,6 +49,7 @@ object VSTGUI: TVSTGUI
       Material.FrontProperties.Ambient.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
       Material.FrontProperties.Emission.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
       Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.ColorFormat = 6408
       Material.FaceCulling = fcNoCull
       Direction.Coordinates = {0000000000000000FFFF7F3F00000000}
       Position.Coordinates = {0000000000000000CDCCCCBD0000803F}
@@ -64,7 +66,7 @@ object VSTGUI: TVSTGUI
     object GLHRTFs: TGLPoints
       NoZWrite = False
       Static = False
-      Size = 3.000000000000000000
+      size = 3.000000000000000000
       Style = psSmooth
       PointParameters.Enabled = True
       PointParameters.PointParams = {00000000000000400000803F}

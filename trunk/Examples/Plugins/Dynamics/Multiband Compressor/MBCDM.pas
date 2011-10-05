@@ -44,7 +44,6 @@ type
   TMBCDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacingLimiter(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
@@ -134,6 +133,8 @@ begin
  FLowState     := bsNone;
  FMidState     := bsNone;
  FHighState    := bsNone;
+
+ // initialize parameters
  Parameter[ 0] := 0;
  Parameter[ 1] := 200;
  Parameter[ 2] := 2;
@@ -154,6 +155,9 @@ begin
  Parameter[17] := 0.01;
  Parameter[18] := 0.1;
  FMeterRelease := 0.9999;
+
+ // set editor form class
+ EditorFormClass := TFmMBC;
 end;
 
 procedure TMBCDataModule.VSTModuleClose(Sender: TObject);
@@ -168,12 +172,6 @@ begin
  FreeAndNil(FLowComp);
  FreeAndNil(FMidComp);
  FreeAndNil(FHighComp);
-end;
-
-procedure TMBCDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmMBC.Create(Self);
 end;
 
 procedure TMBCDataModule.MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -498,10 +496,10 @@ begin
    if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
-   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
-   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
-   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
-   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+   FLowSplit[0].ProcessSample32(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample32(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample32(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample32(M[1], M[1], H[1]);
 
    if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];
@@ -591,10 +589,10 @@ begin
    if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
-   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
-   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
-   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
-   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+   FLowSplit[0].ProcessSample32(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample32(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample32(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample32(M[1], M[1], H[1]);
 
    if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];
@@ -685,10 +683,10 @@ begin
    if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
-   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
-   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
-   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
-   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+   FLowSplit[0].ProcessSample32(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample32(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample32(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample32(M[1], M[1], H[1]);
 
    if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];
@@ -794,10 +792,10 @@ begin
    if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
-   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
-   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
-   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
-   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+   FLowSplit[0].ProcessSample32(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample32(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample32(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample32(M[1], M[1], H[1]);
 
    if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];

@@ -1,4 +1,4 @@
-unit LightweightMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -43,7 +43,6 @@ type
   TLightweightMultibandCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMonoSoftClip(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -127,6 +126,7 @@ begin
    FLinkwitzRiley[Channel, 2].Order := 1;
   end;
 
+ // initialize parameters
  Parameter[ 0] := 300;
  Parameter[ 1] := 800;
  Parameter[ 2] := 3000;
@@ -165,6 +165,9 @@ begin
  for Channel := 1 to numPrograms - 1
   do Programs[Channel].SetParameters(CPresets[Channel]);
 *)
+
+ // set editor class
+ EditorFormClass := TFmLightweightMultibandCompressor;
 end;
 
 procedure TLightweightMultibandCompressorDataModule.VSTModuleClose(Sender: TObject);
@@ -173,11 +176,6 @@ var
 begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
   do FreeAndNil(FLightweightMultibandCompressor[Channel]);
-end;
-
-procedure TLightweightMultibandCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmLightweightMultibandCompressor.Create(Self);
 end;
 
 function TLightweightMultibandCompressorDataModule.EvaluateLowCharacteristic(
@@ -573,16 +571,16 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    // split mid
-   FLinkwitzRiley[0, 1].ProcessSample(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 3]);
-   FLinkwitzRiley[1, 1].ProcessSample(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 3]);
+   FLinkwitzRiley[0, 1].ProcessSample32(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 3]);
+   FLinkwitzRiley[1, 1].ProcessSample32(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 3]);
 
    // split low
-   FLinkwitzRiley[0, 0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
-   FLinkwitzRiley[1, 0].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
+   FLinkwitzRiley[0, 0].ProcessSample32(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
+   FLinkwitzRiley[1, 0].ProcessSample32(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
 
    // split high
-   FLinkwitzRiley[0, 2].ProcessSample(FD[0, 3] - CDenorm32, FD[0, 2], FD[0, 3]);
-   FLinkwitzRiley[1, 2].ProcessSample(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
+   FLinkwitzRiley[0, 2].ProcessSample32(FD[0, 3] - CDenorm32, FD[0, 2], FD[0, 3]);
+   FLinkwitzRiley[1, 2].ProcessSample32(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
 
    // compress & copy gain reduction
    with FLightweightMultibandCompressor[0] do
@@ -622,16 +620,16 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    // split mid
-   FLinkwitzRiley[0, 1].ProcessSample(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 3]);
-   FLinkwitzRiley[1, 1].ProcessSample(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 3]);
+   FLinkwitzRiley[0, 1].ProcessSample32(CDenorm32 + Inputs[0, Sample], FD[0, 1], FD[0, 3]);
+   FLinkwitzRiley[1, 1].ProcessSample32(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 3]);
 
    // split low
-   FLinkwitzRiley[0, 0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
-   FLinkwitzRiley[1, 0].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
+   FLinkwitzRiley[0, 0].ProcessSample32(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
+   FLinkwitzRiley[1, 0].ProcessSample32(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
 
    // split low
-   FLinkwitzRiley[0, 2].ProcessSample(FD[0, 3] - CDenorm32, FD[0, 2], FD[0, 3]);
-   FLinkwitzRiley[1, 2].ProcessSample(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
+   FLinkwitzRiley[0, 2].ProcessSample32(FD[0, 3] - CDenorm32, FD[0, 2], FD[0, 3]);
+   FLinkwitzRiley[1, 2].ProcessSample32(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
 
    // compress
    FLightweightMultibandCompressor[0].ProcessSample64(CHalf32 * (FD[0, 0] + FD[1, 0]));

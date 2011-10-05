@@ -70,8 +70,9 @@ type
 
     FIsRunning           : Boolean;
     FUnitOffset          : Single;
-    procedure PeakLoudnessChanged(Sender: TObject);
-    procedure LoudnessChanged(Sender: TObject);
+    procedure PeakLoudnessChanged(Sender: TObject; Loudness: Single);
+    procedure LoudnessChanged(Sender: TObject; Loudness: Single);
+    function GetTotalSamples: Integer;
   protected
     FCriticalSection  : TCriticalSection;
     function GetLoudness: Single;
@@ -89,7 +90,7 @@ type
     property Loudness: Single read GetLoudness;
     property UnitOffset: Single read FUnitOffset;
     property PeakHold: Single read GetPeakHoldLoudness;
-    property TotalSamples: Integer read FTotalSamples;
+    property TotalSamples: Integer read GetTotalSamples;
   end;
 
 implementation
@@ -199,20 +200,20 @@ begin
  end;
 end;
 
-procedure TLoudnessMeterModule.LoudnessChanged(Sender: TObject);
+procedure TLoudnessMeterModule.LoudnessChanged(Sender: TObject; Loudness: Single);
 begin
  // update parameter
- Parameter[3] := Limit(23 + FR128Stereo.Loudness, -18, 9);
+ Parameter[3] := Limit(23 + Loudness, -18, 9);
 
  // update GUI
  if EditorForm is TFmLoudnessMeter
   then TFmLoudnessMeter(EditorForm).UpdateLoudness;
 end;
 
-procedure TLoudnessMeterModule.PeakLoudnessChanged(Sender: TObject);
+procedure TLoudnessMeterModule.PeakLoudnessChanged(Sender: TObject; Loudness: Single);
 begin
  // update parameter
- Parameter[4] := Limit(23 + FR128Stereo.PeakHold, -18, 9);
+ Parameter[4] := Limit(23 + Loudness, -18, 9);
 
  // update GUI
  if EditorForm is TFmLoudnessMeter
@@ -250,6 +251,11 @@ end;
 function TLoudnessMeterModule.GetPeakHoldLoudness: Single;
 begin
  Result := FR128Stereo.Loudness;
+end;
+
+function TLoudnessMeterModule.GetTotalSamples: Integer;
+begin
+ Result := FR128Stereo.TotalSamples;
 end;
 
 procedure TLoudnessMeterModule.ResetPeak;
@@ -298,7 +304,7 @@ end;
 procedure TLoudnessMeterModule.ParameterPeakMomChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- Value := Limit(23 + FR128Stereo.PeakHold, -18, 9);
+ Value := Limit(23 + FR128Stereo.LoudnessPeak, -18, 9);
 end;
 
 procedure TLoudnessMeterModule.ChooseProcess;

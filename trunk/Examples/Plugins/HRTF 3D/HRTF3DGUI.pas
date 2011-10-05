@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, Dialogs, StdCtrls, DAV_Types, DAV_VSTModule, BaseClasses, 
-  GLScene, GLObjects, GLMisc, GLTexture, GLFile3DS, GLWin32Viewer, 
+  GLScene, GLObjects, GLTexture, GLFile3DS, GLWin32Viewer,
   GLVectorFileObjects, GLCoordinates, GLCrossPlatform;
 
 type
@@ -54,7 +54,6 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure GLIRsRender(Sender: TObject; var rci: TRenderContextInfo);
   private
     FOldMousePoint : TPoint;
     procedure Zoom(Value: Single);
@@ -73,13 +72,13 @@ implementation
 {$ENDIF}
 
 uses
-  Math, VectorGeometry, MeshUtils, Jpeg, TGA, GLFileObj,
-  GLCrossPlatform, VectorLists, HRTF3DModule, DAV_DspHrtf;
+  Math, VectorGeometry, MeshUtils, TGA, GLFileObj, VectorLists, HRTF3DModule,
+  DAV_DspHrtf;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
 var
   rs             : TResourceStream;
-  i, j           : Integer;
+  i              : Integer;
   tris, norms    : TAffineVectorList;
   tex, buf       : TAffineVectorList;
   morphTris      : TAffineVectorList;
@@ -89,7 +88,6 @@ var
   firstRemap     : TIntegerList;
   subdivideRemap : TIntegerList;
   bufRemap       : TIntegerList;
-  t              : Int64;
 begin
  rs := TResourceStream.Create(hInstance, 'Head', '3DS');
  with rs do
@@ -259,7 +257,7 @@ const
   Scale = 1/40;
 var
    originalT2C, normalT2C, normalCameraRight, newPos : TVector;
-   turnNow, pitchNow, dist: Single;
+   pitchNow, dist: Single;
 begin
  if ssLeft in Shift then
   begin
@@ -275,11 +273,11 @@ begin
       else NormalizeVector(normalCameraRight);
      pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
      if not (ssAlt in Shift)
-      then pitchNow := ClampValue(pitchNow + DegToRad(FOldMousePoint.Y - Y), 0.002, PI - 0.77);
+      then pitchNow := ClampValue(pitchNow + Math.DegToRad(FOldMousePoint.Y - Y), 0.002, PI - 0.77);
      SetVector(normalT2C, AbsoluteUp);
      RotateVector(normalT2C, normalCameraRight, -pitchNow);
      if not (ssShift in Shift)
-      then RotateVector(normalT2C, AbsoluteUp, -DegToRad(FOldMousePoint.X - X));
+      then RotateVector(normalT2C, AbsoluteUp, -Math.DegToRad(FOldMousePoint.X - X));
      ScaleVector(normalT2C, dist);
      newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
      if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
@@ -287,8 +285,8 @@ begin
      GLLight.Position.SetVector(newPos);
      with TVSTHRTF3DModule(Self.Owner) do
       begin
-       Parameter[0] := RadToDeg(ArcTan2(Position.Y, Position.X));
-       Parameter[1] := 90 - RadToDeg(pitchNow);
+       Parameter[0] := Math.RadToDeg(Math.ArcTan2(Position.Y, Position.X));
+       Parameter[1] := 90 - Math.RadToDeg(pitchNow);
       end;
     end;
    FOldMousePoint.X := X;
@@ -303,15 +301,12 @@ begin
 end;
 
 procedure TVSTGUI.UpdateAzimuth;
-(*
 const
   Scale = 1/40;
 var
    originalT2C, normalT2C, normalCameraRight, newPos : TVector;
    turnNow, pitchNow, dist: Single;
-*)
 begin
-(*
  with GLSceneViewer.Camera do
   begin
    originalT2C := VectorSubtract(AbsolutePosition, GLDummyCube.AbsolutePosition);
@@ -325,15 +320,14 @@ begin
    pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
    SetVector(normalT2C, AbsoluteUp);
    RotateVector(normalT2C, normalCameraRight, -pitchNow);
-   RotateVector(normalT2C, AbsoluteUp, DegToRad(TVSTHRTF3DModule(Self.Owner).Parameter[0]));
+   RotateVector(normalT2C, AbsoluteUp, Math.DegToRad(TVSTHRTF3DModule(Self.Owner).Parameter[0]));
    ScaleVector(normalT2C, dist);
    newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
    if Assigned(Parent)
     then newPos := Parent.AbsoluteToLocal(newPos);
-   Position.AsVector := newPos;
-   GLLight.Position.SetVector(newPos);
+//   Position.AsVector := newPos;
+//   GLLight.Position.SetVector(newPos);
   end;
-*)
 end;
 
 procedure TVSTGUI.UpdatePolar;
@@ -344,12 +338,6 @@ end;
 procedure TVSTGUI.UpdateRadius;
 begin
 
-end;
-
-procedure TVSTGUI.GLIRsRender(Sender: TObject;
-  var rci: TRenderContextInfo);
-begin
-// Add
 end;
 
 procedure TVSTGUI.GLSceneViewerMouseDown(Sender: TObject;
