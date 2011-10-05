@@ -74,7 +74,8 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations, BassBaronGUI;
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common, 
+  DAV_Approximations, BassBaronGUI;
 
 {$IFDEF FPC}
 {$R *.lfm}

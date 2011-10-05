@@ -23,7 +23,7 @@ begin
     Options := [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing];
     if Execute then
      begin
-      DLLName := FileName;
+      DLLName := FileName;                                ..\..\..\UnitCache\$(Platform)
       with TSaveDialog.Create(nil) do
        try
         DefaultExt := '.DLL';

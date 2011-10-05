@@ -84,7 +84,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_VSTModuleWithPrograms, AdvancedClipperGUI;
+  Math, DAV_Common, DAV_VSTModuleWithPrograms, {$IFDEF HAS_UNIT_ANSISTRINGS} 
+  AnsiStrings, {$ENDIF}AdvancedClipperGUI;
 
 procedure TAdvancedClipperDataModule.VSTModuleCreate(Sender: TObject);
 begin

@@ -311,11 +311,11 @@ begin
       else NormalizeVector(normalCameraRight);
      pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
      if not (ssAlt in Shift)
-      then pitchNow := ClampValue(pitchNow + DegToRad(FOldMousePoint.Y - Y), 0.002, PI - 0.77);
+      then pitchNow := ClampValue(pitchNow + Math.DegToRad(FOldMousePoint.Y - Y), 0.002, PI - 0.77);
      SetVector(normalT2C, AbsoluteUp);
      RotateVector(normalT2C, normalCameraRight, -pitchNow);
      if not (ssShift in Shift)
-      then RotateVector(normalT2C, AbsoluteUp, -DegToRad(FOldMousePoint.X - X));
+      then RotateVector(normalT2C, AbsoluteUp, -Math.DegToRad(FOldMousePoint.X - X));
      ScaleVector(normalT2C, dist);
      newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
      if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
@@ -408,7 +408,7 @@ begin
    ASIOHost.DriverIndex := CbDriver.ItemIndex;
    CbChannel.Clear;
    for i := 0 to ASIOHost.InputChannelCount - 1
-    do CbChannel.Items.Add(ASIOHost.InputChannelInfos[i].name);
+    do CbChannel.Items.Add(string(ASIOHost.InputChannelInfos[i].Name));
    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
     try
      WriteInteger('Audio', 'Asio Driver', CbDriver.ItemIndex);

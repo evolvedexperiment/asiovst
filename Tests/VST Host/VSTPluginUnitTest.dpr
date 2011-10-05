@@ -14,7 +14,9 @@ uses
   Forms,
   TestFramework,
   GUITestRunner,
+{$IFDEF CONSOLE_TESTRUNNER}
   TextTestRunner,
+{$ENDIF}
 {$IFNDEF CONSOLE_TESTRUNNER}
   SplashScreen in 'SplashScreen.pas' {FmSplashScreen},
 {$ENDIF}
@@ -25,8 +27,10 @@ uses
 begin
   Application.Initialize;
   Application.Title := 'VST Plugin Unit Test';
-  if IsConsole
-   then TextTestRunner.RunRegisteredTests
-   else GUITestRunner.RunRegisteredTests;
+{$IFDEF CONSOLE_TESTRUNNER}
+  TextTestRunner.RunRegisteredTests
+{$ELSE}
+  GUITestRunner.RunRegisteredTests;
+{$ENDIF}
 end.
 

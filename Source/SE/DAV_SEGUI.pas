@@ -258,7 +258,7 @@ type
     procedure Init(const AIndex: Integer; const AModule: TSEGUIBase); virtual;
     function GetExtraData: TSeSdkString2;
     procedure SetValueText(var Value: TSeSdkString);
-  published
+
     property PinIndex: Integer read FIndex;
     property ValueAsInteger: Integer read GetValueInt write SetValueInt;
     property ValueAsBoolean: Boolean read GetValueBool write SetValueBool;
@@ -318,7 +318,7 @@ type
 
     property SEGUIStructBase: PSEGUIStructBase read GetSEGUIStructBase;
     property Pin[Index: Integer]: TSEGuiPin read GetPin;
-  published
+
     property OnIdle: TNotifyEvent read FOnIdle write FOnIdle;
     property OnDisconnect: TSEGuiPinIndexEvent read FOnDisconnect write FOnDisconnect;
     property OnPinValueChange: TSEGuiPinEvent read FOnPinValueChange write FOnPinValueChange;
@@ -327,7 +327,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, Types;
 
 var
   StaticPin : TSEGuiPin;

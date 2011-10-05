@@ -484,7 +484,7 @@ object FmLunchBox: TFmLunchBox
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
     VstVersion = 2300
-    Left = 72
+    Left = 56
     Top = 89
   end
   object ASIOHost: TAsioHost
@@ -499,10 +499,6 @@ object FmLunchBox: TFmLunchBox
     OnReset = ASIOHostReset
     OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 104
-    Top = 89
-  end
-  object XPManifest: TXPManifest
-    Left = 40
     Top = 89
   end
   object MainMenu: TMainMenu
@@ -582,21 +578,21 @@ object FmLunchBox: TFmLunchBox
     DefaultExt = 'lunch'
     Filter = 'Beats (*.lunch)|*.lunch|All files (*.*)|*.*'
     Title = 'Load Beat'
-    Left = 136
+    Left = 152
     Top = 89
   end
   object SaveWAVDialog: TSaveDialog
     DefaultExt = 'wav'
     Filter = 'Wave files (*.wav)|*.wav|All files (*.*)|*.*'
     Title = 'Export WAV'
-    Left = 168
+    Left = 200
     Top = 89
   end
   object SaveMIDIDialog: TSaveDialog
     DefaultExt = 'mid'
     Filter = 'MIDI files (*.mid)|*.mid|All files (*.*)|*.*'
     Title = 'Export MID'
-    Left = 200
+    Left = 264
     Top = 89
   end
 end

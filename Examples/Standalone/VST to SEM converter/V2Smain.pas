@@ -81,9 +81,14 @@ var
 implementation
 
 uses
-  FileCtrl, DAV_DLLResources;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} FileCtrl,
+  DAV_DLLResources;
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 procedure TFmVST2SEM.FormShow(Sender: TObject);
 begin
@@ -138,7 +143,7 @@ end;
 
 procedure TFmVST2SEM.OpenVSTFile(FileName: TFileName);
 var
-  str : string;
+  str : AnsiString;
 begin
  try
   FVSTPluginDLL := FileName;
@@ -152,11 +157,11 @@ begin
   str := Trim(VstHost[0].GetEffectName);
   if str = '' then
    begin
-    str := ExtractFileName(FVSTPluginDLL);
-    if Pos('.', str) > 1 then SetLength(str, Pos('.', str) - 1);
+    str := AnsiString(ExtractFileName(FVSTPluginDLL));
+    if Pos(AnsiChar('.'), str) > 1 then SetLength(str, Pos(AnsiChar('.'), str) - 1);
    end;
-  while Pos(' ', str) > 0 do str[Pos(' ', str)] := '_';
-  VstName.Text := Uppercase(str);
+  while Pos(AnsiChar(' '), str) > 0 do str[Pos(AnsiChar(' '), str)] := '_';
+  VstName.Text := string(Uppercase(str));
   MemoName.Clear;
   MemoName.Lines.Add('DAV VST-Wrapper - ' + VstName.Text);
   MemoID.Clear;

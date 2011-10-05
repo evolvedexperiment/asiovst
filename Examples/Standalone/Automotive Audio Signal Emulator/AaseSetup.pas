@@ -114,8 +114,8 @@ begin
     for i := 0 to (OutputChannelCount div 2) - 1 do
      begin
       CBOutput.Items.Add(
-        OutputChannelInfos[2 * i].name + ' / ' +
-        OutputChannelInfos[2 * i + 1].name);
+        string(OutputChannelInfos[2 * i].Name) + ' / ' +
+        string(OutputChannelInfos[2 * i + 1].Name));
      end;
     CBOutput.ItemIndex := 0;
     if Assigned(OnReset)

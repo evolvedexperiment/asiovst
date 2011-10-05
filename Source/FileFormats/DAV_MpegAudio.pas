@@ -3763,17 +3763,17 @@ end;
 
 function TCustomMpegAudio.GetAlbum: string;
 begin
- Result := PAnsiChar(@FId3Tag.Album[1]);
+ Result := string(PAnsiChar(@FId3Tag.Album[1]));
 end;
 
 function TCustomMpegAudio.GetArtist: string;
 begin
- Result := PAnsiChar(@FId3Tag.Artist[1]);
+ Result := string(PAnsiChar(@FId3Tag.Artist[1]));
 end;
 
 function TCustomMpegAudio.GetComment: string;
 begin
- Result := PAnsiChar(@FId3Tag.Comment[1]);
+ Result := string(PAnsiChar(@FId3Tag.Comment[1]));
 end;
 
 function TCustomMpegAudio.GetGenre: TMusicGenre;
@@ -3783,7 +3783,7 @@ end;
 
 function TCustomMpegAudio.GetTitle: string;
 begin
- Result := PAnsiChar(@FId3Tag.Title[1]);
+ Result := string(PAnsiChar(@FId3Tag.Title[1]));
 end;
 
 function TCustomMpegAudio.GetTotalLength: Single;
@@ -3802,7 +3802,7 @@ end;
 
 function TCustomMpegAudio.GetYear: string;
 begin
- Result := PAnsiChar(@FId3Tag.Year[1]);
+ Result := string(PAnsiChar(@FId3Tag.Year[1]));
 end;
 
 end.

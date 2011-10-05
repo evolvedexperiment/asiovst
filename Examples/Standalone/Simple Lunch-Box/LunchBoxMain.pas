@@ -75,7 +75,6 @@ type
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     VstHost: TVstHost;
-    {$IFNDEF FPC}XPManifest: TXPManifest; {$ENDIF}
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
