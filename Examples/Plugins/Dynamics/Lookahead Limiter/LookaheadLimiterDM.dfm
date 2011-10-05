@@ -184,8 +184,6 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
   OnProcess = VSTModuleProcessStereo
   OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 605
-  Top = 240
   Height = 150
   Width = 215
 end

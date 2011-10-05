@@ -43,7 +43,6 @@ type
   TAdhesiveDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessPeakClip(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
@@ -111,6 +110,7 @@ begin
  FFilter.SampleRate := SampleRate;
  FFilter.Order := 3;
 
+ // initialize parameters
  Parameter[ 0] := -22;
  Parameter[ 1] := 16;
  Parameter[ 2] := 10;
@@ -126,16 +126,14 @@ begin
  Programs[0].SetParameters(FParameter);
  for Preset := 1 to numPrograms - 1
   do Programs[Preset].SetParameters(CPresets[Preset]);
+
+ // set editor form class
+ EditorFormClass := TFmAdhesive;
 end;
 
 procedure TAdhesiveDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FCompressor);
-end;
-
-procedure TAdhesiveDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmAdhesive.Create(Self);
 end;
 
 procedure TAdhesiveDataModule.ParameterMixChange(
@@ -172,16 +170,16 @@ var
 begin
  Val := Parameter[Index];
  if Val < 1
-  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
+  then PreDefined := AnsiString(FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3)) else
  if Val < 1000
-  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3))
+  else PreDefined := AnsiString(FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3));
 end;
 
 procedure TAdhesiveDataModule.ParameterMakeUpGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TAdhesiveDataModule.ParameterMakeUpGainChange(
@@ -196,19 +194,19 @@ end;
 procedure TAdhesiveDataModule.ParameterThresholdDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TAdhesiveDataModule.ParameterRatioDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TAdhesiveDataModule.ParameterKneeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TAdhesiveDataModule.ParameterOnOffDisplay(

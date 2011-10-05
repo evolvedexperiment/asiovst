@@ -41,7 +41,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, {$IFDEF MSWINDOWS} Registry, {$ENDIF} DAV_Common, PhaseRotatorGUI;
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF}
+  {$IFDEF MSWINDOWS} Registry, {$ENDIF} DAV_Common, PhaseRotatorGUI;
 
 {$IFDEF MSWINDOWS}
 const
@@ -143,7 +144,7 @@ procedure TPhaseRotatorModule.ParameterFrequencyDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
-  then PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3));
 end;
 
 procedure TPhaseRotatorModule.ParameterFrequencyLabel(Sender: TObject;
@@ -156,13 +157,13 @@ end;
 procedure TPhaseRotatorModule.ParameterOrderDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(2 * Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(2 * Round(Parameter[Index])));
 end;
 
 procedure TPhaseRotatorModule.ParameterBandwidthDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 2, 2);
+ PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 2, 2));
 end;
 
 procedure TPhaseRotatorModule.ParameterBandwidthChange(

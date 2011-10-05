@@ -99,6 +99,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 36
     Height = 36
     CurveMapping = -1.399999976158142000
+    DefaultValue = 20.000000000000000000
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -107,7 +108,6 @@ object FmPhaseRotator: TFmPhaseRotator
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialFrequencyChange
-    DefaultValue = 0.000000000000000000
   end
   object DialStages: TGuiStitchedDial
     Left = 76
@@ -130,6 +130,7 @@ object FmPhaseRotator: TFmPhaseRotator
     Width = 36
     Height = 36
     CurveMapping = -1.500000000000000000
+    DefaultValue = 0.100000001490116100
     Max = 10.000000000000000000
     Min = 0.100000001490116100
     ScrollRange = 400.000000000000000000
@@ -138,7 +139,6 @@ object FmPhaseRotator: TFmPhaseRotator
     Value = 0.100000001490116100
     WheelStep = 1.000000000000000000
     OnChange = DialBandwidthChange
-    DefaultValue = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <

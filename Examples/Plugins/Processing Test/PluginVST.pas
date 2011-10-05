@@ -57,7 +57,7 @@ type
 implementation
 
 uses
-  Math;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} Math;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -90,8 +90,8 @@ var
 begin
  Value := Parameter[Index];
  if Value < 1000
-  then PreDefined := FloatToStrF(RoundTo(Value, -3), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Value, -3), ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(RoundTo(Value, -3), ffGeneral, 3, 3))
+  else PreDefined := AnsiString(FloatToStrF(RoundTo(1E-3 * Value, -3), ffGeneral, 3, 3));
 end;
 
 procedure TProcessingTestModule.ParameterFreqLabel(

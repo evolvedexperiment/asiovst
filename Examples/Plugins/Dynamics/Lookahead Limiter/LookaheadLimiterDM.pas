@@ -88,7 +88,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Approximations, DAV_Common, DAV_VSTModuleWithPrograms,
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF},
+  DAV_Approximations, DAV_Common, DAV_VSTModuleWithPrograms,
   LookaheadLimiterGUI;
 
 procedure TLookaheadLimiterDataModule.VSTModuleCreate(Sender: TObject);

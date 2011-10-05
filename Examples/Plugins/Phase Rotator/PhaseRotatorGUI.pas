@@ -5,7 +5,8 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, StdCtrls, Controls, DAV_GuiPng, DAV_GuiLabel, DAV_GuiStitchedPngList,
-  DAV_GuiStitchedDial;
+  DAV_GuiStitchedDial, DAV_GuiImageControl, DAV_GuiStitchedControls,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmPhaseRotator = class(TForm)
@@ -162,7 +163,7 @@ begin
  with TPhaseRotatorModule(Owner) do
   if (Key = #13) and Assigned(FEdValue) then
    try
-    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    StringToParameter(FEdValue.Tag, AnsiString(FEdValue.Text));
     FreeAndNil(FEdValue);
    except
    end;
@@ -186,7 +187,7 @@ begin
    if DialFrequency.Value <> Parameter[0]
     then DialFrequency.Value := Parameter[0];
 
-   LbFrequencyValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbFrequencyValue.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
 
@@ -198,7 +199,7 @@ begin
    if DialStages.Value <> Parameter[1]
     then DialStages.Value := Parameter[1];
 
-   LbStagesValue.Caption := ParameterDisplay[1];
+   LbStagesValue.Caption := string(ParameterDisplay[1]);
   end;
 end;
 
@@ -210,7 +211,7 @@ begin
    if DialBandwidth.Value <> Parameter[2]
     then DialBandwidth.Value := Parameter[2];
 
-   LbBandwidthValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbBandwidthValue.Caption := string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
   end;
 end;
 

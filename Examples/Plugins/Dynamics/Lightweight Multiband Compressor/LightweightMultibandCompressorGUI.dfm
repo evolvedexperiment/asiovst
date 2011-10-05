@@ -600,7 +600,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 10
       Width = 68
       Height = 56
-      AntiAlias = True
       BorderColor = 14277598
       BorderRadius = 2.000000000000000000
       BorderWidth = 1.500000000000000000
@@ -650,6 +649,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -658,7 +658,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialAttackChange
-      DefaultValue = 0.000000000000000000
     end
     object DialLowRelease: TGuiStitchedDial
       Left = 105
@@ -666,6 +665,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -674,7 +674,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialReleaseChange
-      DefaultValue = 0.000000000000000000
     end
     object DialLowRatio: TGuiStitchedDial
       Left = 265
@@ -682,6 +681,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.799999952316284000
+      DefaultValue = 1.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -690,7 +690,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialRatioChange
-      DefaultValue = 0.000000000000000000
     end
     object DialLowKnee: TGuiStitchedDial
       Left = 345
@@ -978,7 +977,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 10
       Width = 68
       Height = 56
-      AntiAlias = True
       BorderColor = 14277598
       BorderRadius = 2.000000000000000000
       BorderWidth = 1.500000000000000000
@@ -1030,6 +1028,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -1038,7 +1037,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialAttackChange
-      DefaultValue = 0.000000000000000000
     end
     object DialLowMidRelease: TGuiStitchedDial
       Tag = 1
@@ -1047,6 +1045,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -1055,7 +1054,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialReleaseChange
-      DefaultValue = 0.000000000000000000
     end
     object DialLowMidRatio: TGuiStitchedDial
       Tag = 1
@@ -1064,6 +1062,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.799999952316284000
+      DefaultValue = 1.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -1072,7 +1071,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialRatioChange
-      DefaultValue = 0.000000000000000000
     end
     object DialLowMidKnee: TGuiStitchedDial
       Tag = 1
@@ -1362,7 +1360,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 10
       Width = 68
       Height = 56
-      AntiAlias = True
       BorderColor = 14277598
       BorderRadius = 2.000000000000000000
       BorderWidth = 1.500000000000000000
@@ -1414,6 +1411,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -1422,7 +1420,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialAttackChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHighMidRelease: TGuiStitchedDial
       Tag = 2
@@ -1431,6 +1428,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -1439,7 +1437,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialReleaseChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHighMidRatio: TGuiStitchedDial
       Tag = 2
@@ -1448,6 +1445,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.799999952316284000
+      DefaultValue = 1.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -1456,7 +1454,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialRatioChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHighMidKnee: TGuiStitchedDial
       Tag = 2
@@ -1746,7 +1743,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 10
       Width = 68
       Height = 56
-      AntiAlias = True
       BorderColor = 14277598
       BorderRadius = 2.000000000000000000
       BorderWidth = 1.500000000000000000
@@ -1798,6 +1794,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 1000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -1806,7 +1803,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialAttackChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHighRelease: TGuiStitchedDial
       Tag = 3
@@ -1815,6 +1811,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 0.100000001490116100
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
       ScrollRange = 400.000000000000000000
@@ -1823,7 +1820,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 0.100000001490116100
       WheelStep = 1.000000000000000000
       OnChange = DialReleaseChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHighRatio: TGuiStitchedDial
       Tag = 3
@@ -1832,6 +1828,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Width = 36
       Height = 36
       CurveMapping = -1.799999952316284000
+      DefaultValue = 1.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -1840,7 +1837,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialRatioChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHighKnee: TGuiStitchedDial
       Tag = 3
@@ -1881,6 +1877,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Width = 36
     Height = 36
     CurveMapping = -0.550000011920929000
+    DefaultValue = 20.000000000000000000
     Max = 800.000000000000000000
     Min = 20.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1889,7 +1886,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Value = 20.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialLowFreqChange
-    DefaultValue = 0.000000000000000000
   end
   object DialMidFreq: TGuiStitchedDial
     Left = 224
@@ -1897,6 +1893,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Width = 36
     Height = 36
     CurveMapping = -1.500000000000000000
+    DefaultValue = 300.000000000000000000
     Max = 4000.000000000000000000
     Min = 300.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1905,7 +1902,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Value = 300.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialMidFreqChange
-    DefaultValue = 0.000000000000000000
   end
   object DialHighFreq: TGuiStitchedDial
     Left = 354
@@ -1913,6 +1909,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Width = 36
     Height = 36
     CurveMapping = -1.350000023841858000
+    DefaultValue = 800.000000000000000000
     Max = 20000.000000000000000000
     Min = 800.000000000000000000
     ScrollRange = 400.000000000000000000
@@ -1921,7 +1918,6 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Value = 800.000000000000000000
     WheelStep = 1.000000000000000000
     OnChange = DialHighFreqChange
-    DefaultValue = 0.000000000000000000
   end
   object Timer: TTimer
     Interval = 10

@@ -106,13 +106,10 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 618
-  Top = 117
   Height = 150
   Width = 215
 end

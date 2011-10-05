@@ -61,8 +61,6 @@ object ProcessingTestModule: TProcessingTestModule
   OnProcess32Replacing = VSTModuleProcess32Replacing
   OnProcess64Replacing = VSTModuleProcess64Replacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 299
-  Top = 51
   Height = 150
   Width = 215
 end

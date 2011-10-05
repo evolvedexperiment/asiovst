@@ -15,7 +15,6 @@ type
     procedure SKLSoftKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -46,18 +45,15 @@ begin
  Parameter[2] := 5;
  Parameter[3] := 40;
  Parameter[4] := 0;
+
+ // set editor form class
+ EditorFormClass := TEditorForm;
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FSoftKneeLimiters[0]);
  FreeAndNil(FSoftKneeLimiters[1]);
-end;
-
-procedure TSoftKneeLimiterDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TEditorForm.Create(Self);
 end;
 
 procedure TSoftKneeLimiterDataModule.SKLThresholdChange(
@@ -106,7 +102,7 @@ begin
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleProcess(const Inputs, Outputs:
-  TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+  TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   i : Integer;
 begin

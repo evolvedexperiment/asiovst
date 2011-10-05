@@ -1,5 +1,4 @@
 object LA1701DataModule: TLA1701DataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'LA-1701 Leveling Amplifier'
@@ -258,14 +257,11 @@ object LA1701DataModule: TLA1701DataModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSoftBypass = VSTModuleSoftBypass
-  Left = 739
-  Top = 64
   Height = 150
   Width = 215
 end
