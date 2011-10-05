@@ -1,5 +1,4 @@
 object SimpleSampleDelayVST: TSimpleSampleDelayVST
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
@@ -106,12 +105,9 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
-  Left = 248
-  Top = 106
   Height = 150
   Width = 215
 end

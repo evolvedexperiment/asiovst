@@ -49,7 +49,6 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
@@ -139,17 +138,15 @@ begin
    Parameter[0] :=  0.33;
    Parameter[1] :=  12;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmSimpleVibrato;
 end;
 
 procedure TSimpleVibratoModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FVibrato[0]);
  FreeAndNil(FVibrato[1]);
-end;
-
-procedure TSimpleVibratoModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmSimpleVibrato.Create(Self);
 end;
 
 function TSimpleVibratoModule.GetVibrato(Index: Integer): TDspVibrato32;

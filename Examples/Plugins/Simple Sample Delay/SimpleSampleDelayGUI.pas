@@ -129,9 +129,9 @@ procedure TFmSimpleSampleDelay.UpdateDelayLength;
 begin
  with TSimpleSampleDelayVST(Owner) do
   begin
-   if round(Parameter[0]) <> SampleBar.Position
-    then SampleBar.Position := round(Parameter[0]);
-   LbSamples.Caption := 'Delay: ' + IntToStr(round(Parameter[0])) + ' samples ' +
+   if Round(Parameter[0]) <> SampleBar.Position
+    then SampleBar.Position := Round(Parameter[0]);
+   LbSamples.Caption := 'Delay: ' + IntToStr(Round(Parameter[0])) + ' samples ' +
                         '(= ' + FloatToStrF(1000 * Parameter[0] / SampleRate, ffGeneral, 4, 4) + ' ms)';
   end;
 end;
@@ -140,8 +140,8 @@ procedure TFmSimpleSampleDelay.UpdateFeedback;
 begin
  with TSimpleSampleDelayVST(Owner) do
   begin
-   if round(10 * Parameter[1]) <> SBFeedback.Position
-    then SBFeedback.Position := round(10 * Parameter[1]);
+   if Round(10 * Parameter[1]) <> SBFeedback.Position
+    then SBFeedback.Position := Round(10 * Parameter[1]);
    UpdateFeedbackInvert;
    LbFeedbackValue.Caption := 'Feedback: ' + FloatToStrF(Parameter[1], ffGeneral, 3, 3) + ' %';
   end;
@@ -156,8 +156,8 @@ procedure TFmSimpleSampleDelay.UpdateDryMix;
 begin
  with TSimpleSampleDelayVST(Owner) do
   begin
-   if round(10 * Parameter[3]) <> SBDryMix.Position
-    then SBDryMix.Position := round(10 * Parameter[3]);
+   if Round(10 * Parameter[3]) <> SBDryMix.Position
+    then SBDryMix.Position := Round(10 * Parameter[3]);
    LbDryMixValue.Caption := 'Dry Mix: ' + FloatToStrF(Parameter[3], ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -166,8 +166,8 @@ procedure TFmSimpleSampleDelay.UpdateWetMix;
 begin
  with TSimpleSampleDelayVST(Owner) do
   begin
-   if round(10 * Parameter[4]) <> SBWetMix.Position
-    then SBWetMix.Position := round(10 * Parameter[4]);
+   if Round(10 * Parameter[4]) <> SBWetMix.Position
+    then SBWetMix.Position := Round(10 * Parameter[4]);
    LbWetMixValue.Caption := 'Wet Mix: ' + FloatToStrF(Parameter[4], ffGeneral, 3, 3) + ' %';
   end;
 end;

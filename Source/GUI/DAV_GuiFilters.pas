@@ -672,11 +672,10 @@ end;
 
 procedure TGuiSharpenFilter.Filter(ByteMap: TGuiCustomByteMap);
 var
-  y, x      : Integer;
-  n, j      : Integer;
+  y, x, j   : Integer;
   Dest      : PByteArray;
   ByteArray : array [0..7] of Byte;
-  Sum       : Cardinal;
+  Sum, nx   : Cardinal;
   Reference : Byte;
   Temp      : Byte;
 begin
@@ -686,7 +685,7 @@ begin
     Dest := ScanLine[y];
     for x := 0 to Width - 1 do
      begin
-      n := 0;
+      nx := 0;
 
       // get surrounding pixels
       if (y > 0) then
@@ -719,7 +718,7 @@ begin
       // initialize sum
       Sum := 0;
 
-      for j := 0 to n - 1 do
+      for j := 0 to nx - 1 do
        begin
         Temp := ByteArray[j];
         Sum  := Sum + Temp;
@@ -727,7 +726,7 @@ begin
 
       if (Sum = 0)
        then Reference := 0
-       else Reference := (Sum + n shr 1) div n;
+       else Reference := (Sum + nx shr 1) div nx;
 
       Temp := Value[x, y];
       if Reference <> 0
@@ -739,15 +738,15 @@ end;
 
 procedure TGuiSharpenFilter.Filter(PixelMap: TGuiCustomPixelMap);
 var
-  y, x         : Integer;
-  dx, dy, n, j : Integer;
-  Dest         : PPixel32Array;
-  PixelArray   : array [0..7] of TPixel32;
-  SumR, SumG   : Cardinal;
-  SumB, SumA   : Cardinal;
-  RGBdiv       : Cardinal;
-  RefPixel     : TPixel32;
-  TempPixel    : TPixel32;
+  y, x       : Integer;
+  nx, j      : Cardinal;
+  Dest       : PPixel32Array;
+  PixelArray : array [0..7] of TPixel32;
+  SumR, SumG : Cardinal;
+  SumB, SumA : Cardinal;
+  RGBdiv     : Cardinal;
+  RefPixel   : TPixel32;
+  TempPixel  : TPixel32;
 begin
  with PixelMap do
   for y := 0 to Height - 1 do
@@ -755,7 +754,7 @@ begin
     Dest := ScanLine[y];
     for x := 0 to Width - 1 do
      begin
-      n := 0;
+      nx := 0;
 
       // get surrounding pixels
       if (y > 0) then
@@ -792,7 +791,7 @@ begin
       SumA := 0;
       RGBdiv := 0;
 
-      for j := 0 to n - 1 do
+      for j := 0 to nx - 1 do
        begin
         TempPixel := PixelArray[j];
         SumR      := SumR + TempPixel.R * TempPixel.A;
@@ -807,7 +806,7 @@ begin
         RefPixel.R := (SumR + RGBdiv shr 1) div RGBdiv;
         RefPixel.G := (SumG + RGBdiv shr 1) div RGBdiv;
         RefPixel.B := (SumB + RGBdiv shr 1) div RGBdiv;
-        RefPixel.A := (SumA + n shr 1) div n;
+        RefPixel.A := (SumA + nx shr 1) div nx;
        end;
 
       TempPixel := Pixel[x, y];

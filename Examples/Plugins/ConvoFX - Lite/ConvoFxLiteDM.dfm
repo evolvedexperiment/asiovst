@@ -117,8 +117,6 @@ object ConvoFXLiteDataModule: TConvoFXLiteDataModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 191
-  Top = 76
   Height = 150
   Width = 215
 end

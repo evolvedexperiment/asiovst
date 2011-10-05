@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, Graphics, DAV_Types, DAV_VSTModule, DAV_GuiCommon, 
   DAV_GuiLabel, DAV_GuiStitchedControls, DAV_GuiStitchedPngList, 
-  DAV_GuiStitchedDial, DAV_GuiPixelMap;
+  DAV_GuiStitchedDial, DAV_GuiPixelMap, DAV_GuiImageControl,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmFrequencyDomainPitchShifter = class(TForm)
@@ -96,9 +97,9 @@ begin
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
        s[0] := s[1];
-       ScnLn[x].B := round($0F + $0E * s[1]);;
-       ScnLn[x].G := round($12 + $0E * s[1]);;
-       ScnLn[x].R := round($13 + $0E * s[1]);;
+       ScnLn[x].B := Round($0F + $0E * s[1]);;
+       ScnLn[x].G := Round($12 + $0E * s[1]);;
+       ScnLn[x].R := Round($13 + $0E * s[1]);;
       end;
     end;
   end;
@@ -121,7 +122,7 @@ begin
   begin
    if DialSemitones.Value <> Parameter[0]
     then DialSemitones.Value := Parameter[0];
-   SemiTones := round(Parameter[0]);
+   SemiTones := Round(Parameter[0]);
    LbSemitoneValue.Caption := IntToStr(SemiTones) + ' : ' +
      IntToStr(round(100 * (Parameter[0] - SemiTones)));
   end;

@@ -11458,6 +11458,7 @@ object PhaserForm: TPhaserForm
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1000.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -11475,6 +11476,7 @@ object PhaserForm: TPhaserForm
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1000.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -11492,6 +11494,7 @@ object PhaserForm: TPhaserForm
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1000.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -11509,6 +11512,7 @@ object PhaserForm: TPhaserForm
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 10000.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -11526,6 +11530,7 @@ object PhaserForm: TPhaserForm
     Color = 4887551
     DefaultValue = 50.000000000000000000
     Max = 1300.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -11544,6 +11549,7 @@ object PhaserForm: TPhaserForm
     DefaultValue = 5.000000000000000000
     Max = 5.000000000000000000
     Min = 1.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 5.000000000000000000
     ShowText = True

@@ -1,5 +1,4 @@
 object AudioAmeliorationModule: TAudioAmeliorationModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Audio Amelioration'
@@ -242,8 +241,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
   OnProcess = VSTModuleProcessSpeaker
   OnProcess32Replacing = VSTModuleProcessSpeaker
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

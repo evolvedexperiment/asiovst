@@ -128,14 +128,11 @@ object SubBoostDataModule: TSubBoostDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 223
-  Top = 79
   Height = 150
   Width = 215
 end

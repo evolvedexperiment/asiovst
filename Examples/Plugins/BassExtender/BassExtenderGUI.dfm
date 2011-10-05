@@ -25,10 +25,10 @@ object FmBassExtender: TFmBassExtender
     Width = 529
     Height = 271
     BorderColor = 6857659
+    BorderRadius = 13.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 2372409
     ParentColor = True
-    BorderRadius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object LbFrequency: TGuiLabel
@@ -359,6 +359,7 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       CurveMapping = -0.250000000000000000
+      DefaultValue = 16.000000000000000000
       Max = 160.000000000000000000
       Min = 16.000000000000000000
       ParentColor = False
@@ -368,7 +369,6 @@ object FmBassExtender: TFmBassExtender
       Value = 70.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialFrequencyChange
-      DefaultValue = 0.000000000000000000
     end
     object DialOrder: TGuiStitchedDial
       Left = 126
@@ -377,6 +377,7 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       CurveMapping = -0.400000005960464500
+      DefaultValue = 1.000000000000000000
       Max = 6.000000000000000000
       Min = 1.000000000000000000
       ParentColor = False
@@ -386,7 +387,6 @@ object FmBassExtender: TFmBassExtender
       Value = 3.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialOrderChange
-      DefaultValue = 0.000000000000000000
     end
     object DialDivide: TGuiStitchedDial
       Left = 230
@@ -461,6 +461,7 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       CurveMapping = -1.799999952316284000
+      DefaultValue = 1.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       ParentColor = False
@@ -470,7 +471,6 @@ object FmBassExtender: TFmBassExtender
       Value = 6.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialRatioChange
-      DefaultValue = 0.000000000000000000
     end
     object DialAttack: TGuiStitchedDial
       Left = 230
@@ -479,6 +479,7 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       CurveMapping = -2.200000047683716000
+      DefaultValue = 10.000000000000000000
       Max = 100000.000000000000000000
       Min = 10.000000000000000000
       ParentColor = False
@@ -488,7 +489,6 @@ object FmBassExtender: TFmBassExtender
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialAttackChange
-      DefaultValue = 0.000000000000000000
     end
     object DialRelease: TGuiStitchedDial
       Left = 334
@@ -497,6 +497,7 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       Color = 2372409
       CurveMapping = -1.100000023841858000
+      DefaultValue = 20.000000000000000000
       Max = 800.000000000000000000
       Min = 20.000000000000000000
       ParentColor = False
@@ -506,7 +507,6 @@ object FmBassExtender: TFmBassExtender
       Value = 50.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialReleaseChange
-      DefaultValue = 0.000000000000000000
     end
     object DialCompression: TGuiStitchedDial
       Left = 438

@@ -55,12 +55,12 @@ type
     procedure ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamNoiseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure StringToParameterModel(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
+    procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure StringToParameterModel(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single);
   private
     FBufferSize     : Integer;
     FBufferPosition : Integer;
@@ -214,7 +214,7 @@ begin
  r := 0.999;
  j := sqr(r) - 1;
  k := 2 - 2 * sqr(r) * cos(0.647 * Frequency / SampleRate);
- result := (sqrt(sqr(k) - 4 * sqr(j)) - k) / (2 * j);
+ Result := (sqrt(sqr(k) - 4 * sqr(j)) - k) / (2 * j);
 end;
 
 function TComboDataModule.GetModelType: TModelType;
@@ -338,7 +338,7 @@ begin
 end;
 
 procedure TComboDataModule.StringToParameterModel(
-  Sender: TObject; const Index: Integer; const ParameterString: string;
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
   var Value: Single);
 var
   Text : string;
@@ -398,7 +398,7 @@ begin
  if FStereo then FTrim := FTrim * 2;
 end;
 
-procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'D.I.';
@@ -422,7 +422,7 @@ begin
  {$ENDIF}
 end;
 
-procedure TComboDataModule.ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TComboDataModule.ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'STEREO'

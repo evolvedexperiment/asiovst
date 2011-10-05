@@ -166,7 +166,7 @@ var
 begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Stages := round(Value);
+   then FPhaser[Channel].Stages := Round(Value);
 
  // update GUI
  if EditorForm is TPhaserForm

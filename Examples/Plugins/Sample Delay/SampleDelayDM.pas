@@ -38,7 +38,6 @@ uses
 
 type
   TSampleDelayDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
@@ -76,40 +75,40 @@ end;
 
 procedure TSampleDelayDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel: Integer;
+  ChannelIndex: Integer;
 begin
  Assert(numOutputs = numInputs);
  SetLength(FDelayLine, numInputs);
- for Channel := 0 to Length(FDelayLine) - 1
-  do FDelayLine[Channel] := TDelayLineSamples32.Create(1025);
+ for ChannelIndex := 0 to Length(FDelayLine) - 1
+  do FDelayLine[ChannelIndex] := TDelayLineSamples32.Create(1025);
+
+ // set editor form class
+ EditorFormClass := TFmSampleDelay;
 end;
 
 procedure TSampleDelayDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel: Integer;
+  ChannelIndex: Integer;
 begin
- for Channel := 0 to Length(FDelayLine) - 1
-  do FreeAndNil(FDelayLine[Channel]);
-end;
-
-procedure TSampleDelayDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmSampleDelay.Create(Self);
+ for ChannelIndex := 0 to Length(FDelayLine) - 1
+  do FreeAndNil(FDelayLine[ChannelIndex]);
 end;
 
 procedure TSampleDelayDataModule.ParameterSamplesLeftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel: Integer;
+  ChannelIndex: Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FDelayLine) - 1 do
-   if (Channel mod 2 = 0) and Assigned(FDelayLine[Channel])
-    then FDelayLine[Channel].BufferSize := Round(1025 + Value);
+  for ChannelIndex := 0 to Length(FDelayLine) - 1 do
+   if (ChannelIndex mod 2 = 0) and Assigned(FDelayLine[ChannelIndex])
+    then FDelayLine[ChannelIndex].BufferSize := Round(1025 + Value);
  finally
   FCriticalSection.Leave;
  end;
+
+ // eventually update GUI
  if EditorForm is TFmSampleDelay
   then TFmSampleDelay(EditorForm).UpdateSamplesLeft;
 end;
@@ -127,6 +126,8 @@ begin
  finally
   FCriticalSection.Leave;
  end;
+
+ // eventually update GUI
  if EditorForm is TFmSampleDelay
   then TFmSampleDelay(EditorForm).UpdateSamplesRight;
 end;

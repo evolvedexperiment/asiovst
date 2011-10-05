@@ -211,7 +211,6 @@ object FmPartyDelay: TFmPartyDelay
       Width = 148
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 6
       Text = 'None'

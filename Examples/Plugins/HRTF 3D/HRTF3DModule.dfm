@@ -6,7 +6,6 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
   VendorName = 'Christian Budde'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Front'
   InitialDelay = 64
   IORatio = 1.000000000000000000
@@ -27,7 +26,6 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Azimuth'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -45,7 +43,6 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       OnParameterChange = ParamAzimuthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Polar'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -62,7 +59,6 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Radius'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -81,7 +77,6 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Interpolation'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -100,7 +95,6 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       OnCustomParameterDisplay = ParameterInterpolationDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Display HRTFs'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -118,13 +112,10 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
   ParameterCategories = <>
   OnOpen = VST2ModuleOpen
   OnClose = VST2ModuleClose
-  OnEditOpen = VST_EditOpen
   OnParameterChange = VST2ModuleParameterChange
   OnProcess = VST2ModuleProcess
   OnProcess32Replacing = VST2ModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 273
-  Top = 72
   Height = 150
   Width = 215
 end

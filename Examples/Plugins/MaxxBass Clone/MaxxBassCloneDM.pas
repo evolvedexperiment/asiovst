@@ -195,7 +195,7 @@ end;
 procedure THarmonicBassModule.ParameterListenDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Audio';
   1 : PreDefined := 'Original Bass';
   2 : PreDefined := 'HarmonicBass';
@@ -313,7 +313,7 @@ begin
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
    if Assigned(FHarmonicBass[Channel]) then
-    case round(Parameter[8]) of
+    case Round(Parameter[8]) of
      0 : begin
           FHarmonicBass[Channel].OriginalBassLevel := Parameter[6];
           FHarmonicBass[Channel].HarmonicBassLevel := Parameter[7];

@@ -46,7 +46,6 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSemitonesChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamGranularityChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -126,6 +125,9 @@ begin
    Parameter[2] :=  4.5;
    Parameter[3] := 50;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmGranularPitchShifter;
 end;
 
 procedure TGranularPitchShifterModule.VSTModuleClose(Sender: TObject);
@@ -134,15 +136,10 @@ begin
  FreeAndNil(FGranularPitchShifter[1]);
 end;
 
-procedure TGranularPitchShifterModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmGranularPitchShifter.Create(Self);
-end;
-
 function TGranularPitchShifterModule.GetGranularPitchShifter(Index: Integer): TDspGranularPitchShifter32;
 begin
  if Index in [0..1]
-  then result := FGranularPitchShifter[Index]
+  then Result := FGranularPitchShifter[Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 

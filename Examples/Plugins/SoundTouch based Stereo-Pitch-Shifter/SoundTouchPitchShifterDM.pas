@@ -42,7 +42,6 @@ type
   TSoundTouchPitchShifterModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterPitchFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -75,7 +74,12 @@ begin
    Channels := 2;
   end;
  FDataCoder := TChannel32DataCoderFloat32.Create;
+
+ // initialize parameter
  Parameter[0] := 1;
+
+ // set editor form class
+ EditorFormClass := TFmSoundTouchPitchShifter;
 end;
 
 procedure TSoundTouchPitchShifterModule.VSTModuleBlockSizeChange(
@@ -94,7 +98,7 @@ end;
 procedure TSoundTouchPitchShifterModule.ParameterPitchFactorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoundTouch)
+ if Assigned(FSoundTouch)
   then FSoundTouch.Pitch := Power(2, Value / 12);
 
  // update GUI
@@ -102,15 +106,10 @@ begin
   then TFmSoundTouchPitchShifter(EditorForm).UpdateSemitones;
 end;
 
-procedure TSoundTouchPitchShifterModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmSoundTouchPitchShifter.Create(Self);
-end;
-
 procedure TSoundTouchPitchShifterModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FSoundTouch)
+ if Assigned(FSoundTouch)
   then FSoundTouch.SampleRate := SampleRate;
 end;
 

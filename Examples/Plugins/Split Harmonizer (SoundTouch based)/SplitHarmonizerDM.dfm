@@ -1,5 +1,4 @@
 object SplitHarmonizerModule: TSplitHarmonizerModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -286,13 +285,10 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessLR
   OnProcess32Replacing = VSTModuleProcessLR
   OnProcess64Replacing = VSTModuleProcessReplacing64LR
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

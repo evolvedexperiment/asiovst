@@ -98,8 +98,8 @@ procedure TVSTGUI.UpdateGain;
 begin
  with TVSTOpAmp(Owner) do
   begin
-   if round(10 * Parameter[0]) <> SBGain.Position
-    then SBGain.Position := round(10 * Parameter[0]);
+   if Round(10 * Parameter[0]) <> SBGain.Position
+    then SBGain.Position := Round(10 * Parameter[0]);
   end;
 end;
 

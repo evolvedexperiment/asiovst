@@ -163,9 +163,9 @@ begin
  with TBarberpoleTunerDataModule(Owner) do
   for Column := 0 to Barberpole.Width - 3 do
    begin
-    Barberpole.Canvas.Pen.Color := round($70 - $34 * BufferPointer^[Column]) shl 16 +
-                                   round($84 - $48 * BufferPointer^[Column]) shl  8 +
-                                   round($8D - $50 * BufferPointer^[Column]);
+    Barberpole.Canvas.Pen.Color := Round($70 - $34 * BufferPointer^[Column]) shl 16 +
+                                   Round($84 - $48 * BufferPointer^[Column]) shl  8 +
+                                   Round($8D - $50 * BufferPointer^[Column]);
 //    Barberpole.Canvas.Pen.Color := TColor(round($64 + BufferPointer^[Column] * $60));
     Barberpole.Canvas.MoveTo(Column + 1, 1);
     Barberpole.Canvas.LineTo(Column + 1, Barberpole.Height - 1);

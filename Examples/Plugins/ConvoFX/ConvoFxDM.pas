@@ -48,7 +48,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterMaximumIROrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -103,10 +102,15 @@ begin
   end;
  FGain := 1;
  FDampingFilter := TButterworthLowpassFilter.Create(1);
+
+ // initialize parameters
  Parameter[0] := CeilLog2(InitialDelay);
  Parameter[1] := 18;
  Parameter[2] := 1;
  Parameter[3] := 0;
+
+ // set editor form class
+ EditorFormClass := TFmConvoFx;
 end;
 
 procedure TConvoFxDataModule.VSTModuleClose(Sender: TObject);
@@ -115,11 +119,6 @@ var
 begin
  for Channel := 0 to Length(FConvolution) - 1
   do FreeAndNil(FConvolution[Channel]);
-end;
-
-procedure TConvoFxDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmConvoFx.Create(Self);
 end;
 
 procedure TConvoFxDataModule.ParameterMaximumIROrderChange(
@@ -132,7 +131,7 @@ begin
   for Channel := 0 to Length(FConvolution) - 1 do
    if Assigned(FConvolution[Channel]) then
     if Value >= FConvolution[Channel].MinimumIRBlockOrder
-     then FConvolution[Channel].MaximumIRBlockOrder := round(Limit(Value, 7, 20))
+     then FConvolution[Channel].MaximumIRBlockOrder := Round(Limit(Value, 7, 20))
      else Value := FConvolution[Channel].MinimumIRBlockOrder;
  finally
   FCriticalSection.Leave;
@@ -186,7 +185,7 @@ const
     'CT1', 'CT2', 'CV1', 'OS1', 'YS1', 'VS1', 'OC1');
 var
   i, c, r : Integer;
-  ResName : string;
+  ResName : AnsiString;
   HFData  : array [0..2047] of THalfFloat;
   Scale   : Single;
 begin
@@ -318,7 +317,7 @@ begin
        Pos := 0;
        for Sample := 0 to TempSize - 1 do
         begin
-         r := round(Pos - CHalf32);
+         r := Round(Pos - CHalf32);
          Assert(Pos - r >= 0);
          Assert(Pos - r <= 1);
          TempIR^[Sample] := Hermite32_asm(Pos - r, @FImpulseResponse[Channel]^[r]);
@@ -341,11 +340,11 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FConvolution) - 1 do
-   if assigned(FConvolution[Channel]) then
+   if Assigned(FConvolution[Channel]) then
     begin
      if Value > FConvolution[Channel].MaximumIRBlockOrder
       then Value := FConvolution[Channel].MaximumIRBlockOrder;
-     FConvolution[Channel].MinimumIRBlockOrder := round(Value);
+     FConvolution[Channel].MinimumIRBlockOrder := Round(Value);
     end;
  finally
   FCriticalSection.Leave;

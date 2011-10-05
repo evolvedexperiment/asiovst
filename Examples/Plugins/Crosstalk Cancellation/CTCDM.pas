@@ -43,7 +43,6 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
@@ -115,16 +114,14 @@ begin
    Parameter[6] := -10;
    Parameter[7] := -6;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmCTC;
 end;
 
 procedure TCTCDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FCrosstalkCancellation);
-end;
-
-procedure TCTCDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmCTC.Create(Self);
 end;
 
 procedure TCTCDataModule.ParamRecursionStepsChange(

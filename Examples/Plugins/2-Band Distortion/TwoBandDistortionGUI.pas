@@ -37,7 +37,9 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_GuiLabel,
-  DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedPngList, DAV_GuiStitchedDial;
+  DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedPngList, DAV_GuiStitchedDial,
+  DAV_GuiImageControl, DAV_GuiStitchedControls, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmTwoBandDistortion = class(TForm)
@@ -229,7 +231,7 @@ var
 begin
  with Owner as TTwoBandDistortionDataModule do
   begin
-   Order := round(ParameterByName['Order']);
+   Order := Round(ParameterByName['Order']);
    LbOrderValue.Caption := IntToStr(Order);
    if DialOrder.Value <> Order
     then DialOrder.Value := Order;

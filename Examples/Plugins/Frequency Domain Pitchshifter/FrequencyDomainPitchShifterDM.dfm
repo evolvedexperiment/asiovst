@@ -1,5 +1,4 @@
 object FrequencyDomainPitchShifterModule: TFrequencyDomainPitchShifterModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'FrequencyDomainPitchShifter'
@@ -30,12 +29,9 @@ object FrequencyDomainPitchShifterModule: TFrequencyDomainPitchShifterModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

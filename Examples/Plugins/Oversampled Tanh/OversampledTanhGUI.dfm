@@ -35,7 +35,6 @@ object FmOversampledTanh: TFmOversampledTanh
     Top = 8
     Width = 49
     Height = 21
-    ItemHeight = 13
     TabOrder = 0
     Text = '1'
     OnChange = CBCoeffsChange

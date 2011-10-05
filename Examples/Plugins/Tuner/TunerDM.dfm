@@ -9,7 +9,6 @@ object TunerDataModule: TTunerDataModule
   SampleRate = 44100.000000000000000000
   numInputs = 1
   numOutputs = 0
-  CurrentProgram = 0
   CurrentProgramName = 'Classic Tuning'
   IORatio = 1.000000000000000000
   UniqueID = 'Tuna'
@@ -21,7 +20,6 @@ object TunerDataModule: TTunerDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Guitar String'
       LargeStepFloat = 2.000000000000000000
@@ -39,10 +37,7 @@ object TunerDataModule: TTunerDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 81
   Height = 150
   Width = 215
 end

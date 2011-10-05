@@ -74,6 +74,11 @@ object FmSubBoost: TFmSubBoost
     Top = 9
     Width = 124
     Height = 22
+    Items.Strings = (
+      'Distort'
+      'Divide'
+      'Invert'
+      'Key Osc.')
     ArrowColor = 13948116
     BorderColor = 13948116
     BorderRadius = 5.000000000000000000
@@ -84,12 +89,6 @@ object FmSubBoost: TFmSubBoost
     Font.Height = -11
     Font.Name = 'Verdana'
     Font.Style = []
-    ItemIndex = -1
-    Items.Strings = (
-      'Distort'
-      'Divide'
-      'Invert'
-      'Key Osc.')
     ParentFont = False
     SelectBoxColor = 2105376
     OnChange = SBTypeChange

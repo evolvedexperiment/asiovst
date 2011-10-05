@@ -8,7 +8,6 @@ uses
 
 type
   TPulsingDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
@@ -44,10 +43,14 @@ begin
    FPulsing[Channel] := TSymetricPulsing.Create;
   end;
 
+ // initialize parameters
  Parameter[0] := 1000;
  Parameter[1] := 0;
  Parameter[2] := -40;
  Parameter[3] := 400;
+
+ // set editor form class
+ EditorFormClass := TFmPulsing;
 end;
 
 procedure TPulsingDataModule.ParameterPeriodChange(
@@ -56,7 +59,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FPulsing) - 1 do
-  if assigned(FPulsing[Channel]) then
+  if Assigned(FPulsing[Channel]) then
    with FPulsing[Channel] do
     begin
      Period_s := 1E-3 * Value;
@@ -100,11 +103,6 @@ var
 begin
  for Channel := 0 to Length(FPulsing) - 1
   do FreeAndNil(FPulsing[Channel]);
-end;
-
-procedure TPulsingDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmPulsing.Create(Self);
 end;
 
 procedure TPulsingDataModule.VSTModuleSampleRateChange(Sender: TObject;

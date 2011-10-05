@@ -153,7 +153,7 @@ var
 begin
  with TPhaserModule(Owner) do
   begin
-   Depth := round(10 * Parameter[0]);
+   Depth := Round(10 * Parameter[0]);
    if SBDepth.Value <> Depth
     then SBDepth.Value := Depth;
    LbDepthValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + '%';
@@ -166,7 +166,7 @@ var
 begin
  with TPhaserModule(Owner) do
   begin
-   Feedback := round(10 * Parameter[1]);
+   Feedback := Round(10 * Parameter[1]);
    if SBFeedback.Value <> Feedback
     then SBFeedback.Value := Feedback;
    LbFeedbackValue.Caption := FloatToStrF(Parameter[1], ffFixed, 3, 1) + '%';
@@ -179,7 +179,7 @@ var
 begin
  with TPhaserModule(Owner) do
   begin
-   Minimum := round(1000 * FreqLogToLinear(Parameter[2]));
+   Minimum := Round(1000 * FreqLogToLinear(Parameter[2]));
    if SBMinimum.Value <> Minimum
     then SBMinimum.Value := Minimum;
    LbMinimumValue.Caption := FloatToStrF(Parameter[2], ffFixed, 6, 0) + 'Hz';
@@ -192,7 +192,7 @@ var
 begin
  with TPhaserModule(Owner) do
   begin
-   Maximum := round(1000 * FreqLogToLinear(Parameter[3]));
+   Maximum := Round(1000 * FreqLogToLinear(Parameter[3]));
    if SBMaximum.Value <> Maximum
     then SBMaximum.Value := Maximum;
    LbMaximumValue.Caption := FloatToStrF(Parameter[3], ffFixed, 6, 0) + 'Hz';
@@ -205,7 +205,7 @@ var
 begin
  with TPhaserModule(Owner) do
   begin
-   Rate := round(1000 * Parameter[4]);
+   Rate := Round(1000 * Parameter[4]);
    if SBRate.Value <> Rate
     then SBRate.Value := Rate;
    LbRateValue.Caption := FloatToStrF(Parameter[4], ffFixed, 2, 2) + 'Hz';
@@ -218,7 +218,7 @@ var
 begin
  with TPhaserModule(Owner) do
   begin
-   Stages := round(Parameter[5]);
+   Stages := Round(Parameter[5]);
    if SBStages.Value <> Stages
     then SBStages.Value := Stages;
    LbStagesValue.Caption := IntToStr(Stages);

@@ -150,16 +150,6 @@ object FmSpinBugLite: TFmSpinBugLite
     Top = 8
     Width = 89
     Height = 25
-    ArrowColor = clWhite
-    BorderRadius = 4.000000000000000000
-    BorderWidth = 2.000000000000000000
-    ButtonColor = 271837
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ItemIndex = -1
     Items.Strings = (
       'stereo a'
       'stereo b'
@@ -171,15 +161,6 @@ object FmSpinBugLite: TFmSpinBugLite
       'm+s'
       'special'
       'old one')
-    ParentFont = False
-    SelectBoxColor = 271837
-    OnChange = SelectTypeChange
-  end
-  object SelectColour: TGuiSelectBox
-    Left = 58
-    Top = 39
-    Width = 108
-    Height = 25
     ArrowColor = clWhite
     BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
@@ -189,13 +170,30 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    ItemIndex = -1
+    ParentFont = False
+    SelectBoxColor = 271837
+    OnChange = SelectTypeChange
+  end
+  object SelectColour: TGuiSelectBox
+    Left = 58
+    Top = 39
+    Width = 108
+    Height = 25
     Items.Strings = (
       'rough'
       'firm'
       'medium'
       'soft'
       'smooth')
+    ArrowColor = clWhite
+    BorderRadius = 4.000000000000000000
+    BorderWidth = 2.000000000000000000
+    ButtonColor = 271837
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
     ParentFont = False
     SelectBoxColor = 271837
     OnChange = SelectColourChange

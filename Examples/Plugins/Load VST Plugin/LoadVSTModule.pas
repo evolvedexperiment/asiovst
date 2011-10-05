@@ -127,7 +127,7 @@ end;
 function TPlugInPlugModule.VST2ModuleCanDo(Sender: TObject;
   CanDoText: AnsiString): Integer;
 begin
- result := VstHost[0].VstCanDo(CanDoText);
+ Result := VstHost[0].VstCanDo(CanDoText);
 end;
 
 procedure TPlugInPlugModule.VST2ModuleEditTop(Sender: TObject);

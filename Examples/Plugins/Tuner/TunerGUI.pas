@@ -36,7 +36,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, Graphics, Controls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel;
+  Forms, Graphics, Controls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel,
+  DAV_GuiGraphicControl;
 
 type
   TFmTuner = class(TForm)
@@ -97,7 +98,7 @@ begin
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       b := round($9F + $1A * s[1]);
+       b := Round($9F + $1A * s[1]);
        s[0] := s[1];
        Line[x].B := b;
        Line[x].G := b;
@@ -164,7 +165,7 @@ var
 begin
  FNeedlePosition := 0.9 * FNeedlePosition + 0.1 * ((2 * random) - 1);
 
- NeedlePosition := round( (PBDisplay.Width div 2) * FNeedlePosition);
+ NeedlePosition := Round( (PBDisplay.Width div 2) * FNeedlePosition);
  FOldNeedlePosition := NeedlePosition;
 
  with PBDisplay.Canvas do

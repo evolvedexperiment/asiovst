@@ -104,9 +104,9 @@ procedure TVSTGUI.UpdateDelayLength;
 begin
  with TVariableDelayVST(Owner) do
   begin
-   if round(100 * Parameter[0]) <> SampleBar.Position
-    then SampleBar.Position := round(100 * Parameter[0]);
-   LbSamples.Caption := 'Delay: ' + IntToStr(round(Parameter[0])) + ' ms';
+   if Round(100 * Parameter[0]) <> SampleBar.Position
+    then SampleBar.Position := Round(100 * Parameter[0]);
+   LbSamples.Caption := 'Delay: ' + IntToStr(Round(Parameter[0])) + ' ms';
   end;
 end;
 
@@ -114,8 +114,8 @@ procedure TVSTGUI.UpdateDryMix;
 begin
  with TVariableDelayVST(Owner) do
   begin
-   if round(10 * Parameter[1]) <> SBDryMix.Position
-    then SBDryMix.Position := round(10 * Parameter[1]);
+   if Round(10 * Parameter[1]) <> SBDryMix.Position
+    then SBDryMix.Position := Round(10 * Parameter[1]);
    LbDryMixValue.Caption := 'Dry Mix: ' + FloatToStrF(Parameter[1], ffGeneral, 3, 3) + ' %';
   end;
 end;
@@ -124,8 +124,8 @@ procedure TVSTGUI.UpdateWetMix;
 begin
  with TVariableDelayVST(Owner) do
   begin
-   if round(10 * Parameter[2]) <> SBWetMix.Position
-    then SBWetMix.Position := round(10 * Parameter[2]);
+   if Round(10 * Parameter[2]) <> SBWetMix.Position
+    then SBWetMix.Position := Round(10 * Parameter[2]);
    LbWetMixValue.Caption := 'Wet Mix: ' + FloatToStrF(Parameter[2], ffGeneral, 3, 3) + ' %';
   end;
 end;

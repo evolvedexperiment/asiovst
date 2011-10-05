@@ -40,7 +40,6 @@ uses
 
 type
   TSpectralDelayFilterModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -72,11 +71,15 @@ begin
  Assert(numInputs = numOutputs);
  SetLength(FSpectralDelayFilters, numOutputs);
 
- Parameter[0] := 0.9;
- Parameter[1] := 16; 
-
  for Channel := 0 to Length(FSpectralDelayFilters) - 1
   do FSpectralDelayFilters[Channel] := TSpectralDelayFilter.Create;
+
+ // initialize parameters
+ Parameter[0] := 0.9;
+ Parameter[1] := 16;
+
+ // set editor form class
+ EditorFormClass := TFmSpectralDelayFilter;
 end;
 
 procedure TSpectralDelayFilterModule.VSTModuleClose(Sender: TObject);
@@ -84,7 +87,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-  if assigned(FSpectralDelayFilters[Channel])
+  if Assigned(FSpectralDelayFilters[Channel])
    then FreeAndNil(FSpectralDelayFilters[Channel]);
 end;
 
@@ -99,8 +102,8 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-  if assigned(FSpectralDelayFilters[Channel])
-   then FSpectralDelayFilters[Channel].Frequency := sqrt(Value); // * 0.5 * SampleRate;
+  if Assigned(FSpectralDelayFilters[Channel])
+   then FSpectralDelayFilters[Channel].Frequency := Sqrt(Value); // * 0.5 * SampleRate;
 end;
 
 procedure TSpectralDelayFilterModule.ParameterOrderChange(
@@ -111,7 +114,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-   if assigned(FSpectralDelayFilters[Channel])
+   if Assigned(FSpectralDelayFilters[Channel])
     then FSpectralDelayFilters[Channel].FilterCount := Round(Value);
  finally
   FCriticalSection.Leave;
@@ -139,13 +142,8 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FSpectralDelayFilters) - 1 do
-  if assigned(FSpectralDelayFilters[Channel])
+  if Assigned(FSpectralDelayFilters[Channel])
    then FSpectralDelayFilters[Channel].SampleRate := SampleRate;
-end;
-
-procedure TSpectralDelayFilterModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmSpectralDelayFilter.Create(Self);
 end;
 
 end.

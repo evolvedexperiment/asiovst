@@ -71,11 +71,8 @@ object SonogramDataModule: TSonogramDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

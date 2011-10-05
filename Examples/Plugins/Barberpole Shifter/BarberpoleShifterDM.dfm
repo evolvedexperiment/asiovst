@@ -1,5 +1,4 @@
 object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Bode Frequency Shifter'
@@ -87,8 +86,6 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

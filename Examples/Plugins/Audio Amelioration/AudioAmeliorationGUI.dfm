@@ -178,21 +178,20 @@ object FmAudioAmelioration: TFmAudioAmelioration
     BevelInner = bvLowered
     TabOrder = 13
     Anchors = [akLeft, akTop, akRight]
+    ColorPaletteIndex = 13
     object SpectrumBars: TBarSeries
-      Marks.ArrowLength = 20
+      Marks.Arrow.Visible = True
+      Marks.Callout.Brush.Color = clBlack
+      Marks.Callout.Arrow.Visible = True
       Marks.Visible = False
       SeriesColor = clRed
       ShowInLegend = False
       AutoMarkPosition = False
       Dark3D = False
       YOrigin = -100.000000000000000000
-      XValues.DateTime = False
       XValues.Name = 'X'
-      XValues.Multiplier = 1.000000000000000000
       XValues.Order = loAscending
-      YValues.DateTime = False
       YValues.Name = 'Balken'
-      YValues.Multiplier = 1.000000000000000000
       YValues.Order = loNone
     end
   end

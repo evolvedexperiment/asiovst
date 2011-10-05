@@ -240,8 +240,8 @@ procedure TFmSubBoost.UpdateType;
 begin
  with TSubBoostDataModule(Owner) do
   begin
-   if Parameter[0] <> round(SBType.ItemIndex)
-    then SBType.ItemIndex := round(Parameter[0]);
+   if Parameter[0] <> Round(SBType.ItemIndex)
+    then SBType.ItemIndex := Round(Parameter[0]);
   end;
 end;
 

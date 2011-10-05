@@ -381,7 +381,7 @@ begin
     tmp := tmp - k * expct;
 
     // map delta phase into +/- Pi interval
-    qpd := round(tmp / Pi);
+    qpd := Round(tmp / Pi);
     if (qpd >= 0)
      then qpd := (qpd + qpd) and 1
      else qpd := (qpd - qpd) and 1;

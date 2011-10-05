@@ -44,19 +44,17 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterBitDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterDitherTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterNoiseshaperFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDitherChangeAmplitude(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterDitherTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
+    procedure ParameterDitherTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FDitherNoiseshaper : array of TDitherHighShelfNoiseShaper32;
     FCriticalSection   : TCriticalSection;
@@ -85,42 +83,41 @@ end;
 
 procedure TDitherNoiseshaperModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FDitherNoiseshaper, numInputs);
- for Channel := 0 to Length(FDitherNoiseshaper) - 1
-  do FDitherNoiseshaper[Channel] := TDitherHighShelfNoiseShaper32.Create;
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1
+  do FDitherNoiseshaper[ChannelIndex] := TDitherHighShelfNoiseShaper32.Create;
+
+ // initialize parameters
  Parameter[0] := 16;
  Parameter[1] := 1;
  Parameter[2] := 2;
  Parameter[3] := 1;
  Parameter[4] := 14000;
+
+ // set editor form class
+ EditorFormClass := TFmDitherNoiseshaper;
 end;
 
 procedure TDitherNoiseshaperModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FDitherNoiseshaper) - 1
-  do FreeAndNil(FDitherNoiseshaper[Channel]);
-end;
-
-procedure TDitherNoiseshaperModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmDitherNoiseshaper.Create(Self);
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1
+  do FreeAndNil(FDitherNoiseshaper[ChannelIndex]);
 end;
 
 procedure TDitherNoiseshaperModule.ParameterDitherTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
-   then FDitherNoiseshaper[Channel].DitherType := TDitherType(round(Value));
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
+  if Assigned(FDitherNoiseshaper[ChannelIndex])
+   then FDitherNoiseshaper[ChannelIndex].DitherType := TDitherType(round(Value));
 
  // eventually update editor
  if EditorForm is TFmDitherNoiseshaper
@@ -130,11 +127,11 @@ end;
 procedure TDitherNoiseshaperModule.ParameterDitherChangeAmplitude(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
-   then FDitherNoiseshaper[Channel].DitherAmplitude := Value;
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
+  if Assigned(FDitherNoiseshaper[ChannelIndex])
+   then FDitherNoiseshaper[ChannelIndex].DitherAmplitude := Value;
 
  // eventually update editor
  if EditorForm is TFmDitherNoiseshaper
@@ -144,11 +141,11 @@ end;
 procedure TDitherNoiseshaperModule.ParameterLimitChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
-   then FDitherNoiseshaper[Channel].Limit := Boolean(Round(Value));
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
+  if Assigned(FDitherNoiseshaper[ChannelIndex])
+   then FDitherNoiseshaper[ChannelIndex].Limit := Boolean(Round(Value));
 
  // eventually update editor
  if EditorForm is TFmDitherNoiseshaper
@@ -157,11 +154,11 @@ end;
 
 procedure TDitherNoiseshaperModule.ParameterBitDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
-   then FDitherNoiseshaper[Channel].BitDepth := Round(Value);
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
+  if Assigned(FDitherNoiseshaper[ChannelIndex])
+   then FDitherNoiseshaper[ChannelIndex].BitDepth := Round(Value);
 
  // eventually update editor
  if EditorForm is TFmDitherNoiseshaper
@@ -170,11 +167,11 @@ end;
 
 procedure TDitherNoiseshaperModule.ParameterNoiseshaperFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
-   then FDitherNoiseshaper[Channel].Frequency := Value;
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
+  if Assigned(FDitherNoiseshaper[ChannelIndex])
+   then FDitherNoiseshaper[ChannelIndex].Frequency := Value;
 
  // eventually update editor
  if EditorForm is TFmDitherNoiseshaper
@@ -210,14 +207,14 @@ end;
 procedure TDitherNoiseshaperModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
   Sample  : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
+  for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FDitherNoiseshaper[Channel].ProcessFloat(Inputs[Channel, Sample]);
+    do Outputs[ChannelIndex, Sample] := FDitherNoiseshaper[ChannelIndex].ProcessFloat(Inputs[ChannelIndex, Sample]);
  finally
   FCriticalSection.Leave;
  end;
@@ -226,14 +223,14 @@ end;
 procedure TDitherNoiseshaperModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
   Sample  : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
+  for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FDitherNoiseshaper[Channel].ProcessFloat(Inputs[Channel, Sample]);
+    do Outputs[ChannelIndex, Sample] := FDitherNoiseshaper[ChannelIndex].ProcessFloat(Inputs[ChannelIndex, Sample]);
  finally
   FCriticalSection.Leave;
  end;
@@ -242,11 +239,11 @@ end;
 procedure TDitherNoiseshaperModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FDitherNoiseshaper) - 1 do
-  if assigned(FDitherNoiseshaper[Channel])
-   then FDitherNoiseshaper[Channel].SampleRate := SampleRate;
+ for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
+  if Assigned(FDitherNoiseshaper[ChannelIndex])
+   then FDitherNoiseshaper[ChannelIndex].SampleRate := SampleRate;
 end;
 
 end.

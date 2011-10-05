@@ -141,9 +141,9 @@ begin
        Filter[1] := 0.97 * Filter[0] + 0.03 * random;
        Filter[0] := Filter[1];
 
-       ScnLn[x].B := round($70 - $34 * (Filter[1] - h));
-       ScnLn[x].G := round($84 - $48 * (Filter[1] - h));
-       ScnLn[x].R := round($8D - $50 * (Filter[1] - h));
+       ScnLn[x].B := Round($70 - $34 * (Filter[1] - h));
+       ScnLn[x].G := Round($84 - $48 * (Filter[1] - h));
+       ScnLn[x].R := Round($8D - $50 * (Filter[1] - h));
       end;
     end;
   end;

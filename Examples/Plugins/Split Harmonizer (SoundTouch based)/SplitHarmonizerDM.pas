@@ -48,7 +48,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessReplacing64LR(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
@@ -133,6 +132,7 @@ begin
    FLowpassFilter[Channel].SampleRate := SampleRate;
   end;
 
+ // initialize parameters
  Parameter[ 0] := 0;
  Parameter[ 1] := -20;
  Parameter[ 2] := 10;
@@ -151,6 +151,9 @@ begin
  with Programs[1] do SetParameters([0, -9, 13.5, 52.5,   9, 14.1, 50.0, 1, 0, 1, 10, 10, 5]);
  with Programs[2] do SetParameters([1, -6, 23.1, 52.5,   6, 21.6, 50.0, 1, 0, 1, 10, 10, 5]);
  with Programs[3] do SetParameters([0, 16, 48.2, 13.5, -13, 79.1, 63.5, 1, 0, 1, 10, 10, 5]);
+
+ // set editor form class
+ EditorFormClass := TFmSplitHarmonizer;
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleClose(Sender: TObject);
@@ -168,11 +171,6 @@ begin
 
  for Channel := 0 to Length(FLowpassFilter) - 1
   do FreeAndNil(FLowpassFilter[Channel]);
-end;
-
-procedure TSplitHarmonizerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmSplitHarmonizer.Create(Self);
 end;
 
 procedure TSplitHarmonizerModule.ParameterSemiTonesAChange(

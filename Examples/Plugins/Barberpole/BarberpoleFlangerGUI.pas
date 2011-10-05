@@ -96,7 +96,7 @@ procedure TFmBarberpoleFlanger.SBAlgorithmChange(Sender: TObject);
 begin
  with TBarberpoleFlangerModule(Owner) do
   begin
-   if round(Parameter[4]) <> SBAlgorithm.ItemIndex
+   if Round(Parameter[4]) <> SBAlgorithm.ItemIndex
     then Parameter[4] := SBAlgorithm.ItemIndex;
   end;
 end;
@@ -182,7 +182,7 @@ begin
   begin
    if DialStages.Value <> Parameter[0]
     then DialStages.Value := Parameter[0];
-   LbStagesValue.Caption := IntToStr(round(Parameter[0]));
+   LbStagesValue.Caption := IntToStr(Round(Parameter[0]));
   end;
 end;
 
@@ -190,8 +190,8 @@ procedure TFmBarberpoleFlanger.UpdateAlgorithm;
 begin
  with TBarberpoleFlangerModule(Owner) do
   begin
-   if SBAlgorithm.ItemIndex <> round(Parameter[4])
-    then SBAlgorithm.ItemIndex := round(Parameter[4]);
+   if SBAlgorithm.ItemIndex <> Round(Parameter[4])
+    then SBAlgorithm.ItemIndex := Round(Parameter[4]);
   end;
 end;
 

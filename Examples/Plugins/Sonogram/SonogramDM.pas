@@ -43,7 +43,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -97,19 +96,18 @@ begin
    MaxInteger := Length(GWindowFunctions) - 1;
   end;
 
+ // initialize parameters
  Parameter[0] := 10;
  Parameter[1] :=  8;
  Parameter[2] :=  4; 
+
+ // set editor form class
+ EditorFormClass := TFmSonogram;
 end;
 
 procedure TSonogramDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FSonogram);
-end;
-
-procedure TSonogramDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmSonogram.Create(Self);
 end;
 
 procedure TSonogramDataModule.ParameterIntegerDisplay(
