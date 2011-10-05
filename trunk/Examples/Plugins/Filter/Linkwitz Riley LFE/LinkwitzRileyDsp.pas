@@ -61,7 +61,7 @@ implementation
 {$ENDIF}
 
 uses
-  LinkwitzRileyGUI;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} LinkwitzRileyGUI;
 
 procedure TLinkwitzRileyModule.VSTModuleOpen(Sender: TObject);
 var
@@ -92,7 +92,7 @@ end;
 procedure TLinkwitzRileyModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(2 * Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(2 * Round(Parameter[Index])));
 end;
 
 procedure TLinkwitzRileyModule.ParameterFrequencyChange(

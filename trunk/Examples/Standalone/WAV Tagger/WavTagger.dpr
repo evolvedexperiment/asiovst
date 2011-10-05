@@ -6,8 +6,6 @@ program WavTagger;
 uses
   {$IFDEF FPC}
   Interfaces,
-  {$ELSE}
-  FastMove,
   {$ENDIF}
   SysUtils, Classes, Math, DAV_AudioFile, DAV_AudioFileWAV, DAV_ChunkWaveBasic;
 

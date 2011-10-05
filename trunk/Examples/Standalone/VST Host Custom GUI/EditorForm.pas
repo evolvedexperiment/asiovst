@@ -396,7 +396,8 @@ begin
        begin
         Parent := Control; Caption := string(ParameterName[i]) + ':'; Tag := i;
         Width := Canvas.TextWidth(Caption); Alignment := taCenter; Left := 4;
-        Height := 16; Top := 8 + i * (4 + Height); Oversampling := fo3x;
+        Height := 16; Top := 8 + i * (4 + Height);
+        FontOversampling := fo3x;
         Transparent := True;
        end;
       with TGuiLabel(FGUIElements[FGUIElements.Add(TGuiLabel.Create(Control))]) do
@@ -406,7 +407,7 @@ begin
         Width := Canvas.TextWidth(Caption);
         Height  := 16; Left := Control.Width - Left - 72;
         Alignment := taCenter; Width := 65; Top := 8 + i * (4 + Height);
-        Oversampling := fo3x; Transparent := True;
+        FontOversampling := fo3x; Transparent := True;
        end;
 
       j := FGUIElements.Add(TGuiSlider.Create(Control));
@@ -417,7 +418,7 @@ begin
         Name := 'Slider' + IntToStr(I);
         Left := MaxParamWidth + 2; Width := Control.Width - Left - 72;
         Min := 0; Max := 1; TabOrder := 3 + i;
-        Position := Parameter[i];
+        Value := Parameter[i];
         BorderRadius := 5; BorderWidth := 2; 
         Transparent := True;
         OnChange := ControlChangeList;
@@ -440,7 +441,7 @@ begin
  with TGuiSlider(Sender) do
   try
    // convert integer position to float
-   VstHost[0].Parameter[Tag] := Position;
+   VstHost[0].Parameter[Tag] := Value;
 
    // locate value label
    Lbl := TGuiLabel(VstHost[0].GUIControl.FindComponent('GLV' + IntToStr(Tag)));

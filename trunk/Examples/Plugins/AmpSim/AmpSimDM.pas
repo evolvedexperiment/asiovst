@@ -99,7 +99,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Controls, DAV_VSTEffect, DAV_Common, AmpSimGUI;
+  Math, Controls, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} 
+  DAV_VSTEffect, DAV_Common, AmpSimGUI;
 
 procedure TComboDataModule.VSTModuleOpen(Sender: TObject);
 begin

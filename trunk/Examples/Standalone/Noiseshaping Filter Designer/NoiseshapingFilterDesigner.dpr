@@ -3,12 +3,11 @@ program NoiseshapingFilterDesigner;
 {$I DAV_Compiler.inc}
 
 uses
-{$IFNDEF FPC}
-  FastMM4, FastMove,
-{$ELSE}
-  Interfaces,
+  FastMM4,
+  {$IFDEF UseFastMove}
+  FastMove,
+  {$ENDIF}
   Forms,
-{$ENDIF}
   NfdMain in 'NfdMain.pas' {FmNoiseshapingFilterDesigner};
 
 {$R *.res}

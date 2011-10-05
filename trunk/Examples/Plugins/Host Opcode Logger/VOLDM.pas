@@ -44,8 +44,9 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: NativeUInt);
   private
     FOpcodeLog   : TStringList;
     FLastOpcode  : TDispatcherOpcode;
@@ -84,7 +85,11 @@ begin
   {$IFDEF FPC}
   FormatSettings := DefaultFormatSettings;
   {$ELSE}
+  {$IFDEF Compiler16_UP}
+  FormatSettings := TFormatSettings.Create(SysLocale.DefaultLCID);
+  {$ELSE}
   GetLocaleFormatSettings(SysLocale.DefaultLCID, FormatSettings);
+  {$ENDIF}
   {$ENDIF}
   FormatSettings.ShortDateFormat := 'yyyymmdd';
   FormatSettings.LongTimeFormat := 'yyyymmdd';
@@ -119,6 +124,13 @@ begin
  FreeAndNil(FOpcodeLog);
 end;
 
+procedure TVOLDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: NativeUInt);
+begin
+ GUI := TFmVOL.Create(Self);
+ TFmVOL(GUI).MOpcodeLog.Lines.Assign(OpcodeLog);
+end;
+
 procedure TVOLDataModule.VSTModuleOpen(Sender: TObject);
 begin
  {$IFDEF UseMessageDialogs}
@@ -132,12 +144,6 @@ begin
  FOpcodeLog.Add('HostVendor: ' + string(HostVendor));
 
  SyncLogDisplay;
-end;
-
-procedure TVOLDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmVOL.Create(Self);
- TFmVOL(GUI).MOpcodeLog.Lines.Assign(OpcodeLog);
 end;
 
 function TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;

@@ -23,7 +23,7 @@ uses
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  Result := VstModuleMain(AudioMasterCallback, TASIOVSTModule);
-end; C:\Program Files (x86)\madCollection\madExcept\Sources
+end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin

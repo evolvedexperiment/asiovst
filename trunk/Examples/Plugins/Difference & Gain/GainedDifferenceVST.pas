@@ -3,8 +3,7 @@ unit GainedDifferenceVST;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAV_Types, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
 
 type
   TGainedDifferenceModule = class(TVSTModule)
@@ -27,7 +26,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common;
 
 procedure TGainedDifferenceModule.VSTModuleOpen(Sender: TObject);
 begin

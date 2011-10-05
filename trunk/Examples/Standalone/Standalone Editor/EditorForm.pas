@@ -59,7 +59,6 @@ type
     OD: TOpenDialog;
     PUPreset: TPopupMenu;
     SD: TSaveDialog;
-    XPManifest: TXPManifest;
     {$ENDIF}
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

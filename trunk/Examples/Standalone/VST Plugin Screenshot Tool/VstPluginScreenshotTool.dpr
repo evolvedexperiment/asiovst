@@ -19,6 +19,10 @@ resourcestring
   RCStrCapturing = 'Capturing';
   RCStrWrongSyntax = 'Wrong syntax!';
   RCStrAbout = 'Delphi ASIO & VST Project - Vst Plugin Screenshot Tool';
+  RCStrPluginNotActive = 'Plugin not active!';
+  RCStrPluginNoEditor = 'Plugin does not feature an editor!';
+  RCStrWrongParameters = 'Add parameter or move this tool into a directory containing VST plugins';
+  RCStrSelectDirectory = 'Select Directory';
 
 {-$DEFINE Alternative}
 
@@ -26,17 +30,13 @@ procedure RenderScreenshot(FileName: TFileName; OutputFileName: TFileName = '');
 var
   Form      : TForm;
   Bitmap    : TBitmap;
-  {$IFNDEF FPC}
-  Png       : TPNGObject;
-  {$ELSE}
   Png       : TPNGImage;
-  {$ENDIF}
   Rct       : TRect;
 begin
  with TVstHost.Create(nil) do
   try
-   ProductString := RCStrProductString;
-   VendorString := RCStrVendorString;
+   ProductString := AnsiString(RCStrProductString);
+   VendorString := AnsiString(RCStrVendorString);
 
    with VstPlugIns.Add do
     try
@@ -51,10 +51,10 @@ begin
      // activate VST plugin
      Active := True;
      if not Active
-      then raise Exception.Create('Plugin not active!');
+      then raise Exception.Create(RCStrPluginNotActive);
 
      if not (effFlagsHasEditor in VstEffectPointer.EffectFlags)
-      then raise Exception.Create('Plugin does not feature an editor!');
+      then raise Exception.Create(RCStrPluginNoEditor);
 
      // create form for GUI rendering
      Form := TForm.CreateNew(Application);
@@ -81,11 +81,7 @@ begin
       Bitmap := TBitmap.Create;
       try
        RenderEditorToBitmap(Bitmap);
-       {$IFNDEF FPC}
-       Png := TPNGObject.Create;
-       {$ELSE}
        Png := TPNGImage.Create;
-       {$ENDIF}
        with Png do
         try
          Png.Assign(Bitmap);
@@ -134,10 +130,10 @@ begin
    else
     begin
      Writeln(RCStrWrongSyntax);
-     Writeln('Add parameter or move this tool into a directory containing VST plugins');
+     Writeln(RCStrWrongParameters);
 
      Dir := ExtractFileDir(ParamStr(0));
-     SelectDirectory('Select Directory', '', Dir);
+     SelectDirectory(RCStrSelectDirectory, '', Dir);
      if FindFirst(Dir + '\' + '*.dll', faAnyFile, SR) = 0 then
       try
        repeat

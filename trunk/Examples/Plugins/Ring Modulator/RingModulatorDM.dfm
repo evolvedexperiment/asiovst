@@ -51,8 +51,6 @@ object RingModulatorDataModule: TRingModulatorDataModule
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 81
   Height = 150
   Width = 215
 end

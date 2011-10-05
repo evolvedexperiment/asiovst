@@ -151,7 +151,11 @@ type
   private
     FDOSHeader      : TImageDosHeader;
     FCOFFHeader     : TImageFileHeader;
-    FOptionalHeader : PImageOptionalHeader;
+    {$IFDEF CPU64}
+    FOptionalHeader : PImageOptionalHeader64;
+    {$ELSE}
+    FOptionalHeader : PImageOptionalHeader32;
+    {$ENDIF}
     FSectionList    : TObjectList;           // List of TImageSection objects
     FDOSStub        : TMemoryStream;
     FCommentBlock   : PAnsiChar;
@@ -178,7 +182,11 @@ type
   protected
     procedure Decode(memory: pointer; exeSize: Integer); virtual;
     procedure Encode; virtual;
-    property OptionalHeaderPtr: PImageOptionalHeader read FOptionalHeader;
+    {$IFDEF CPU64}
+    property OptionalHeaderPtr: PImageOptionalHeader64 read FOptionalHeader;
+    {$ELSE}
+    property OptionalHeaderPtr: PImageOptionalHeader32 read FOptionalHeader;
+    {$ENDIF}
     function FindDictionaryEntrySection(entryNo: Integer; var Offset: Integer): Integer;
   public
     constructor Create;
@@ -1076,51 +1084,51 @@ end;
 procedure TPEModule.Encode;
 var
   Offset: DWORD;
-  i: Integer;
+  i: NativeInt;
   Section: TImageSection;
-  align: Integer;
-  addrAlign: Integer;
-  address: Integer;
-  alignedSize, AddrAlignedSize: Integer;
-  codeSize, iDataSize, uDataSize, iSize: Integer;
+  Align: Integer;
+  AddrAlign: Integer;
+  Address: NativeInt;
+  AlignedSize, AddrAlignedSize: Integer;
+  CodeSize, IDataSize, UDataSize, iSize: Integer;
 begin
-  codeSize := 0;
-  iDataSize := 0;
-  uDataSize := 0;
-                                               // Use the DOS stub from their .EXE
+  CodeSize := 0;
+  IDataSize := 0;
+  UDataSize := 0;
+
+  // Use the DOS stub from their .EXE
   FDOSHeader._lfanew := SizeOf(FDOSHeader) + FDOSStub.Size;
 
-                                               // Fixup sections count
+  // Fixup sections count
   FCOFFHeader.NumberOfSections := FSectionList.Count;
 
-  iSize := FDOSHeader._lfanew +
-               // File Offset for start of sections
-    SizeOf(DWORD) +                   // NT signature
+  iSize := FDOSHeader._lfanew +  // File Offset for start of sections
+    SizeOf(DWORD) +              // NT signature
     SizeOf(FCOFFHeader) +
     FCOFFHeader.SizeOfOptionalHeader + FSectionList.Count *
     SizeOf(TImageSectionHeader);
 
   Offset := iSize + FCommentSize;
 
-  align := FOptionalHeader^.FileAlignment;
-  addrAlign := FOptionalHeader^.SectionAlignment;
+  Align := FOptionalHeader^.FileAlignment;
+  AddrAlign := FOptionalHeader^.SectionAlignment;
 
-  address := addrAlign;
-  Offset := DWORD((integer(Offset) + align - 1) div align * align);
+  Address := AddrAlign;
+  Offset := DWORD((NativeInt(Offset) + Align - 1) div Align * Align);
 
-                                                // First Section starts at $1000 (when loaded)
-                                                // and at 'offset' in file.
+  // First Section starts at $1000 (when loaded)
+  // and at 'offset' in file.
 
   FOptionalHeader^.SizeOfHeaders :=
-    DWORD((integer(iSize) + align - 1) div align * align);
+    DWORD((integer(iSize) + Align - 1) div Align * Align);
 
   FOptionalHeader^.BaseOfCode := $ffffffff;
   FOptionalHeader^.CheckSum := 0;
                // Calculate it during 'SaveToStream' when
                                                 // we've got all the info.
 
-  iSize := DWORD((integer(iSize) + addrAlign - 1) div
-    addrAlign * addrAlign);
+  iSize := DWORD((integer(iSize) + AddrAlign - 1) div
+    AddrAlign * AddrAlign);
 
   for i := 0 to FSectionList.Count - 1 do
       // Recalculate the Section offsets
@@ -1128,7 +1136,7 @@ begin
     Section := TImageSection(FSectionList[i]);
 
     Section.FSectionHeader.PointerToRawData := Offset;
-    Section.FSectionHeader.VirtualAddress := address;
+    Section.FSectionHeader.VirtualAddress := Address;
 
 // Virtual Size is Size of data in memory, and is not padded to an 'alignment'.
 
@@ -1145,56 +1153,60 @@ begin
     Section.FSectionHeader.Misc.VirtualSize :=
       Section.FRawData.Size + Section.FUninitializedDataSize;
     Section.FSectionHeader.SizeOfRawData :=
-      (Section.FRawData.Size + align - 1) div align * align;
+      (Section.FRawData.Size + Align - 1) div Align * Align;
 
-    alignedSize := (Integer(Section.FSectionHeader.Misc.VirtualSize) +
-      align - 1) div align * align;
+    AlignedSize := (Integer(Section.FSectionHeader.Misc.VirtualSize) +
+      Align - 1) div Align * Align;
     addrAlignedSize := (Integer(Section.FSectionHeader.Misc.VirtualSize) +
-      addrAlign - 1) div addrAlign * addrAlign;
+      AddrAlign - 1) div AddrAlign * AddrAlign;
 
     if (Section.FSectionHeader.Characteristics and
       IMAGE_SCN_MEM_EXECUTE) <> 0 then
      begin
-      Inc(codeSize, alignedSize);
-      if DWORD(address) < FOptionalHeader^.BaseOfCode then
-        FOptionalHeader^.BaseOfCode := address
+      Inc(CodeSize, AlignedSize);
+      if DWORD(Address) < FOptionalHeader^.BaseOfCode then
+        FOptionalHeader^.BaseOfCode := Address
      end
     else
     if (Section.FSectionHeader.Characteristics and
       IMAGE_SCN_CNT_INITIALIZED_DATA) <> 0 then
-      Inc(iDataSize, alignedSize)
+      Inc(IDataSize, AlignedSize)
     else
     if (Section.FSectionHeader.Characteristics and
       IMAGE_SCN_CNT_UNINITIALIZED_DATA) <> 0 then
-      Inc(uDataSize, alignedSize);
+      Inc(UDataSize, AlignedSize);
 
     Inc(iSize, addrAlignedSize);
     Inc(Offset, Section.FSectionHeader.SizeOfRawData);
-    Inc(address, (Integer(Section.FSectionHeader.Misc.VirtualSize) +
-      addrAlign - 1) div addrAlign * addrAlign);
+    Inc(Address, (Integer(Section.FSectionHeader.Misc.VirtualSize) +
+      AddrAlign - 1) div AddrAlign * AddrAlign);
    end;
 
-  FOptionalHeader^.SizeOfCode := codeSize;
-  FOptionalHeader^.SizeOfInitializedData := iDataSize;
-  FOptionalHeader^.SizeOfUninitializedData := uDataSize;
+  FOptionalHeader^.SizeOfCode := CodeSize;
+  FOptionalHeader^.SizeOfInitializedData := IDataSize;
+  FOptionalHeader^.SizeOfUninitializedData := UDataSize;
 
   i := SizeOf(DWORD) +                   // NT signature
     SizeOf(FCOFFHeader) + FCOFFHeader.SizeOfOptionalHeader +
-    codeSize;
+    CodeSize;
 
-  i := (i + addrAlign - 1) div addrAlign * addrAlign;
+  i := (i + AddrAlign - 1) div AddrAlign * AddrAlign;
 
-  // With explorer.exe, codeSize is $14800, i is 148E8, so aligned 'i' is $15000
+  //////////////////////////////////////////////////////////////////////////////
+  // With explorer.exe, CodeSize is $14800, i is 148E8, so aligned 'i' is $15000
   // .. so BaseOfData should be $15000 + BaseOfCode ($1000) = $16000.
-
+  //
   // ... but it's not - it's $15000, which means that the last $8e8 bytes of code
   // should be stampled over by the data!
-
+  //
   // But obviously explorer.exe works, so I'm, missing a trick here.  Never mind - it
   // doesn't do any harm making it $16000 instead, and the formula works for everything
   // else I've tested...
+  //////////////////////////////////////////////////////////////////////////////
 
+  {$IFNDEF CPU64}
   FOptionalHeader^.BaseOfData := FOptionalHeader.BaseOfCode + DWORD(i);
+  {$ENDIF}
 
   FOptionalHeader^.SizeOfImage := iSize;
 end;

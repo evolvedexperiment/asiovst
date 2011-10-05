@@ -68,6 +68,10 @@ uses
 var
   GIniFileName : TFileName;
 
+{$IFDEF CPU64}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
 { TCalculationThread }
 
 constructor TCalculationThread.Create(Files: TStrings);
@@ -200,6 +204,9 @@ begin
   end;
 {$ELSE}
 asm
+{$IFDEF CPU64}
+{$ENDIF}
+{$IFDEF CPU32}
   FLD1                             // ST(0) = 1
   MOV      [ESP - 4], ECX
   FILD     DWORD PTR [ESP - 4]      // store SampleFrames
@@ -271,6 +278,7 @@ asm
   FSTP     QWORD PTR [EAX]
   MOV      EAX, Average
   FSTP     QWORD PTR [EAX]
+{$ENDIF}
 {$ENDIF}
 end;
 {$ENDIF}

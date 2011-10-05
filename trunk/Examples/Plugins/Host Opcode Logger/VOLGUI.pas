@@ -119,7 +119,11 @@ begin
    {$IFDEF FPC}
    FormatSettings := DefaultFormatSettings;
    {$ELSE}
+   {$IFDEF Compiler16_UP}
+   FormatSettings := TFormatSettings.Create(SysLocale.DefaultLCID);
+   {$ELSE}
    GetLocaleFormatSettings(SysLocale.DefaultLCID, FormatSettings);
+   {$ENDIF}
    {$ENDIF}
    FormatSettings.ShortDateFormat := 'yyyymmdd';
    FormatSettings.LongTimeFormat := 'yyyymmdd';

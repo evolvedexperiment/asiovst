@@ -74,8 +74,8 @@ implementation
 {$ENDIF}
 
 uses
-  {$IFNDEF FPC} AnsiStrings, {$ENDIF} DAV_Common, DAV_Approximations,
-  TwoBandDistortionGUI;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common, 
+  DAV_Approximations, TwoBandDistortionGUI;
 
 procedure TTwoBandDistortionDataModule.VSTModuleCreate(Sender: TObject);
 begin

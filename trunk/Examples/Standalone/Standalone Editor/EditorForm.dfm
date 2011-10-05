@@ -142,8 +142,8 @@ object FmVSTEditor: TFmVSTEditor
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
     VstVersion = 2400
-    Left = 96
-    Top = 75
+    Left = 8
+    Top = 35
   end
   object ASIOHost: TAsioHost
     AsioTime.Speed = 1.000000000000000000
@@ -154,16 +154,12 @@ object FmVSTEditor: TFmVSTEditor
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     OnLatencyChanged = ASIOHostReset
     OnReset = ASIOHostReset
-    Left = 124
-    Top = 75
-  end
-  object XPManifest: TXPManifest
-    Left = 152
-    Top = 75
+    Left = 52
+    Top = 35
   end
   object PUPreset: TPopupMenu
-    Left = 180
-    Top = 75
+    Left = 92
+    Top = 35
     object MILoadPreset: TMenuItem
       Caption = '&Load Preset...'
       OnClick = MILoadPresetClick
@@ -177,13 +173,13 @@ object FmVSTEditor: TFmVSTEditor
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 208
-    Top = 75
+    Left = 136
+    Top = 35
   end
   object SD: TSaveDialog
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
-    Left = 236
-    Top = 75
+    Left = 180
+    Top = 35
   end
 end

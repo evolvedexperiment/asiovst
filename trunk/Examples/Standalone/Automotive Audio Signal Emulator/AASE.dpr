@@ -1,8 +1,10 @@
 program AASE;
 
 uses
-  FastMM4,
+  FastMM4, // either download the library or comment if there is an error here
+  {$IFDEF UseFastMove}
   FastMove,
+  {$ENDIF}
   Forms,
   AaseMain in 'AaseMain.pas' {FmAASE},
   AaseSetup in 'AaseSetup.pas';

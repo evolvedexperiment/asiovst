@@ -55,11 +55,11 @@ type
 
     FOnRepaintRequest : TNotifyEvent;
 
-    function GetAbout: string;
+    function GetAbout: AnsiString;
     function GetActive: Boolean;
-    function GetID: string;
+    function GetID: AnsiString;
     function GetMagic: Integer;
-    function GetName: string;
+    function GetName: AnsiString;
     function GetVersion: Integer;
     procedure DisposeStructures;
     procedure SetActive(const Value: Boolean);
@@ -92,11 +92,11 @@ type
     property Properties: TSEModuleProperties read FProperties;
   published
     property Active: Boolean read GetActive write SetActive;
-    property Name: string read GetName;
-    property ID: string read GetID;
+    property Name: AnsiString read GetName;
+    property ID: AnsiString read GetID;
     property Magic: Integer read GetMagic;
     property Version: Integer read GetVersion;
-    property About: string read GetAbout;
+    property About: AnsiString read GetAbout;
 
     property GUIVersion: Integer read GetGUIVersion;
 
@@ -204,63 +204,63 @@ resourcestring
 function HostOpcodeToString(Opcode: TSEHostOpcodes): string;
 begin
  case Opcode of
-  SEAudioMasterSetPinStatus       : result := 'SEAudioMasterSetPinStatus';
-  SEAudioMasterIsPinConnected     : result := 'SEAudioMasterIsPinConnected';
-  SEAudioMasterGetPinInputText    : result := 'SEAudioMasterGetPinInputText';
-  SEAudioMasterGetSampleClock     : result := 'SEAudioMasterGetSampleClock';
-  SEAudioMasterSendMIDI           : result := 'SEAudioMasterSendMIDI';
-  SEAudioMasterGetInputPinCount   : result := 'SEAudioMasterGetInputPinCount';
-  SEAudioMasterGetOutputPinCount  : result := 'SEAudioMasterGetOutputPinCount';
-  SEAudioMasterGetPinVarAddress   : result := 'SEAudioMasterGetPinVarAddress';
-  SEAudioMasterGetBlockStartClock : result := 'SEAudioMasterGetBlockStartClock';
-  SEAudioMasterGetTime            : result := 'SEAudioMasterGetTime';
-  SEAudioMasterSleepMode          : result := 'SEAudioMasterSleepMode';
-  SEAudioMasterGetRegisteredName  : result := 'SEAudioMasterGetRegisteredName';
-  SEAudioMasterGetFirstClone      : result := 'SEAudioMasterGetFirstClone';
-  SEAudioMasterGetNextClone       : result := 'SEAudioMasterGetNextClone';
-  SEAudioMasterGetTotalPinCount   : result := 'SEAudioMasterGetTotalPinCount';
-  SEAudioMasterCallVSTHost        : result := 'SEAudioMasterCallVSTHost';
-  SEAudioMasterResolveFilename    : result := 'SEAudioMasterResolveFilename';
-  SEAudioMasterSendStringToGui    : result := 'SEAudioMasterSendStringToGui';
-  SEAudioMasterGetModuleHandle    : result := 'SEAudioMasterGetModuleHandle';
-  SEAudioMasterAddEvent           : result := 'SEAudioMasterAddEvent';
-  SEAudioMasterCreateSharedLookup : result := 'SEAudioMasterCreateSharedLookup';
-  SEAudioMasterSetPinOutputText   : result := 'SEAudioMasterSetPinOutputText';
-  SEAudioMasterSetProcessFunction : result := 'SEAudioMasterSetProcessFunction';
-  SEAudioMasterResolveFilename2   : result := 'SEAudioMasterResolveFilename2';
-  SEAudioMasterGetSeVersion       : result := 'SEAudioMasterGetSeVersion';
- else result := 'Unknown opcode';
+  SEAudioMasterSetPinStatus       : Result := 'SEAudioMasterSetPinStatus';
+  SEAudioMasterIsPinConnected     : Result := 'SEAudioMasterIsPinConnected';
+  SEAudioMasterGetPinInputText    : Result := 'SEAudioMasterGetPinInputText';
+  SEAudioMasterGetSampleClock     : Result := 'SEAudioMasterGetSampleClock';
+  SEAudioMasterSendMIDI           : Result := 'SEAudioMasterSendMIDI';
+  SEAudioMasterGetInputPinCount   : Result := 'SEAudioMasterGetInputPinCount';
+  SEAudioMasterGetOutputPinCount  : Result := 'SEAudioMasterGetOutputPinCount';
+  SEAudioMasterGetPinVarAddress   : Result := 'SEAudioMasterGetPinVarAddress';
+  SEAudioMasterGetBlockStartClock : Result := 'SEAudioMasterGetBlockStartClock';
+  SEAudioMasterGetTime            : Result := 'SEAudioMasterGetTime';
+  SEAudioMasterSleepMode          : Result := 'SEAudioMasterSleepMode';
+  SEAudioMasterGetRegisteredName  : Result := 'SEAudioMasterGetRegisteredName';
+  SEAudioMasterGetFirstClone      : Result := 'SEAudioMasterGetFirstClone';
+  SEAudioMasterGetNextClone       : Result := 'SEAudioMasterGetNextClone';
+  SEAudioMasterGetTotalPinCount   : Result := 'SEAudioMasterGetTotalPinCount';
+  SEAudioMasterCallVSTHost        : Result := 'SEAudioMasterCallVSTHost';
+  SEAudioMasterResolveFilename    : Result := 'SEAudioMasterResolveFilename';
+  SEAudioMasterSendStringToGui    : Result := 'SEAudioMasterSendStringToGui';
+  SEAudioMasterGetModuleHandle    : Result := 'SEAudioMasterGetModuleHandle';
+  SEAudioMasterAddEvent           : Result := 'SEAudioMasterAddEvent';
+  SEAudioMasterCreateSharedLookup : Result := 'SEAudioMasterCreateSharedLookup';
+  SEAudioMasterSetPinOutputText   : Result := 'SEAudioMasterSetPinOutputText';
+  SEAudioMasterSetProcessFunction : Result := 'SEAudioMasterSetProcessFunction';
+  SEAudioMasterResolveFilename2   : Result := 'SEAudioMasterResolveFilename2';
+  SEAudioMasterGetSeVersion       : Result := 'SEAudioMasterGetSeVersion';
+ else Result := 'Unknown opcode';
  end;
 end;
 { Callbacks }
 
 function SE2AudioMasterCallback(Effect: PSE2ModStructBase; Opcode: TSEHostOpcodes; Index, Value: Integer; Ptr : Pointer; Opt : Single): Integer; cdecl;
 begin
- result := 0;
+ Result := 0;
  if (Effect = nil) or not (TObject(Effect.HostPtr) is TCustomSEHostedModulePart)
   then exit;
 
 {
  with TCustomSEHostedModulePart(Effect.HostPtr) do
   case Opcode of
-   SEAudioMasterSetPinStatus       : result := AMSetPinStatus;
-   SEAudioMasterIsPinConnected     : result := AMIsPinConnected;
-   SEAudioMasterGetPinInputText    : result := AMGetPinInputText;   // gets pointer to plugs input string (DT_TEXT only)
-   SEAudioMasterGetSampleClock     : result := AMGetSampleClock;    // get current sampleclock at block start
-   SEAudioMasterSendMIDI           : result := AMSendMIDI;          // send short MIDI msg
-   SEAudioMasterGetInputPinCount   : result := AMGetInputPinCount;  // total AUDIO ins
-   SEAudioMasterGetOutputPinCount  : result := AMGetOutputPinCount; // total AUDIO outs
-   SEAudioMasterGetPinVarAddress   : result := AMGetPinVarAddress;
-   SEAudioMasterGetBlockStartClock : result := AMGetBlockStartClock;
-   SEAudioMasterGetTime            : result := AMGetTime;
-   SEAudioMasterSleepMode          : result := AMSleepMode;
-   SEAudioMasterGetRegisteredName  : result := AMGetRegisteredName; // limited to 50 characters or less
+   SEAudioMasterSetPinStatus       : Result := AMSetPinStatus;
+   SEAudioMasterIsPinConnected     : Result := AMIsPinConnected;
+   SEAudioMasterGetPinInputText    : Result := AMGetPinInputText;   // gets pointer to plugs input string (DT_TEXT only)
+   SEAudioMasterGetSampleClock     : Result := AMGetSampleClock;    // get current sampleclock at block start
+   SEAudioMasterSendMIDI           : Result := AMSendMIDI;          // send short MIDI msg
+   SEAudioMasterGetInputPinCount   : Result := AMGetInputPinCount;  // total AUDIO ins
+   SEAudioMasterGetOutputPinCount  : Result := AMGetOutputPinCount; // total AUDIO outs
+   SEAudioMasterGetPinVarAddress   : Result := AMGetPinVarAddress;
+   SEAudioMasterGetBlockStartClock : Result := AMGetBlockStartClock;
+   SEAudioMasterGetTime            : Result := AMGetTime;
+   SEAudioMasterSleepMode          : Result := AMSleepMode;
+   SEAudioMasterGetRegisteredName  : Result := AMGetRegisteredName; // limited to 50 characters or less
    (* EXAMPLE CALLING CODE
      name : array [0..49] of Char;
      CallHost(SEAudioMasterGetRegisteredName, 0, 0, @name[0]);
    *)
-   SEAudioMasterGetFirstClone      : result := AMGetFirstClone;
-   SEAudioMasterGetNextClone       : result := AMGetNextClone;
+   SEAudioMasterGetFirstClone      : Result := AMGetFirstClone;
+   SEAudioMasterGetNextClone       : Result := AMGetNextClone;
    (* EXAMPLE CALLING CODE
 
      procedure IterateThroughAllClones;
@@ -283,16 +283,16 @@ begin
         end;
      end;
    *)
-   SEAudioMasterGetTotalPinCount   : result := AMGetTotalPinCount;   // Total pins of all types
-   SEAudioMasterCallSEHost        : result := AMCallSEHost;        // Call VST Host direct (see se_call_vst_host_params struct)
-   SEAudioMasterResolveFilename    : result := AMResolveFilename;    // get full path from a short filename, (int pin_idx, float max_characters, Char *destination)
-   SEAudioMasterSendStringToGui    : result := AMSendStringToGui;    // Reserved for Experimental use (by Jef)
-   SEAudioMasterGetModuleHandle    : result := AMGetModuleHandle;    // Reserved for Experimental use (by Jef)
-   SEAudioMasterAddEvent           : result := AMAddEvent;           // pass SeEvent *, host will copy data from struct. Safe to discard after call.
-   SEAudioMasterCreateSharedLookup : result := AMCreateSharedLookup;
-   SEAudioMasterSetPinOutputText   : result := AMSetPinOutputText;   // sets plug's output string (DT_TEXT only)
-   SEAudioMasterSetProcessFunction : result := AMSetProcessFunction; // sets the current SubProcess function
-   SEAudioMasterResolveFilename2   : result := AMrResolveFilename2;  // get full path from a short filename - UNICODE
+   SEAudioMasterGetTotalPinCount   : Result := AMGetTotalPinCount;   // Total pins of all types
+   SEAudioMasterCallSEHost        : Result := AMCallSEHost;        // Call VST Host direct (see se_call_vst_host_params struct)
+   SEAudioMasterResolveFilename    : Result := AMResolveFilename;    // get full path from a short filename, (int pin_idx, float max_characters, Char *destination)
+   SEAudioMasterSendStringToGui    : Result := AMSendStringToGui;    // Reserved for Experimental use (by Jef)
+   SEAudioMasterGetModuleHandle    : Result := AMGetModuleHandle;    // Reserved for Experimental use (by Jef)
+   SEAudioMasterAddEvent           : Result := AMAddEvent;           // pass SeEvent *, host will copy data from struct. Safe to discard after call.
+   SEAudioMasterCreateSharedLookup : Result := AMCreateSharedLookup;
+   SEAudioMasterSetPinOutputText   : Result := AMSetPinOutputText;   // sets plug's output string (DT_TEXT only)
+   SEAudioMasterSetProcessFunction : Result := AMSetProcessFunction; // sets the current SubProcess function
+   SEAudioMasterResolveFilename2   : Result := AMrResolveFilename2;  // get full path from a short filename - UNICODE
    (* EXAMPLE CALLING CODE
      uses windows;  //for WideCharToMultiByte
 
@@ -310,7 +310,7 @@ begin
      Char ascii_filename[MAX_FILENAME_LENGTH];
      WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_filename, MAX_FILENAME_LENGTH, NULL, NULL);
    *)
-   SEAudioMasterGetSeVersion       : result := AMHostVersion; // returns SE Version number times 100,000 ( e.g. 120000 is V 1.2 )
+   SEAudioMasterGetSeVersion       : Result := AMHostVersion; // returns SE Version number times 100,000 ( e.g. 120000 is V 1.2 )
    else raise Exception.Create('Unknown Opcode');
   end;
 }
@@ -318,37 +318,37 @@ end;
 
 function SEGuiCallback(Effect: PSEGUIStructBase; Opcode: TSEGuiHostOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 begin
- result := 0;
+ Result := 0;
  if (Effect = nil) or not (TObject(Effect.HostPtr) is TCustomSEHostedModulePart)
   then exit;
 
  with TCustomSEHostedModulePart(Effect.HostPtr) do
   case Opcode of
    seGuiHostRequestRepaint         : GuiHostRepaintRequest;
-   seGuiHostGetHandle              : result := GuiHostGetHandle;
-   seGuiHostSendStringToAudio      : result := 0;  // SendStringToAudio test
+   seGuiHostGetHandle              : Result := GuiHostGetHandle;
+   seGuiHostSendStringToAudio      : Result := 0;  // SendStringToAudio test
    seGuiHostSetWindowSize          : GuiHostSetWindowSize(Index, Value);
    seGuiHostSetWindowSizeable      : GuiHostSetWindowSizeable;
-   seGuiHostGetTotalPinCount       : result := GuiHostGetTotalPinCount;
-   seGuiHostPlugSetValText         : result := 0;
-   seGuiHostPlugGetValText         : result := 0;
+   seGuiHostGetTotalPinCount       : Result := GuiHostGetTotalPinCount;
+   seGuiHostPlugSetValText         : Result := 0;
+   seGuiHostPlugGetValText         : Result := 0;
    seGuiHostAddGuiPlug             : GuiHostAddGuiPlug;
-   seGuiRegisterPatchParameter     : result := 0; // Obsolete, use IO_PATCH_STORE or IO_UI_COMMUNICATION_DUAL flags instead. Will crash module on destruction (mayby need Unregister Opcode to fix this)
-   seGuiHostGetFontInfo            : result := 0;
-   seGuiHostSetWindowType          : result := 0; // pass 1 to provide your GuiModule with a 'real' HWND (else SE draws your module on the parent window)
-   seGuiHostGetWindowHandle        : result := 0;
+   seGuiRegisterPatchParameter     : Result := 0; // Obsolete, use IO_PATCH_STORE or IO_UI_COMMUNICATION_DUAL flags instead. Will crash module on destruction (mayby need Unregister Opcode to fix this)
+   seGuiHostGetFontInfo            : Result := 0;
+   seGuiHostSetWindowType          : Result := 0; // pass 1 to provide your GuiModule with a 'real' HWND (else SE draws your module on the parent window)
+   seGuiHostGetWindowHandle        : Result := 0;
    (* example code... (WI is a SEWndInfo pointer )
-     result := HWND(CallHost(seGuiHostGetWindowHandle, WI.context_handle));
+     Result := HWND(CallHost(seGuiHostGetWindowHandle, WI.context_handle));
    *)
-   seGuiHostSetWindowFlags         : result := 0;
-   seGuiHostPlugGetVal             : result := 0;
-   seGuiHostPlugSetVal             : result := 0;
-   seGuiHostPlugSetExtraData       : result := 0;  // sets enum list or file extension (depending on datatype)
+   seGuiHostSetWindowFlags         : Result := 0;
+   seGuiHostPlugGetVal             : Result := 0;
+   seGuiHostPlugSetVal             : Result := 0;
+   seGuiHostPlugSetExtraData       : Result := 0;  // sets enum list or file extension (depending on datatype)
    (* example code...
      // pass pin number and new list
      CallHost(seGuiHostPlugSetExtraData, 4, 0, 'moose, cat, dog', 0);
    *)
-   seGuiHostPlugGetExtraData       : result := 0;  // gets enum list or file extension (depending on datatype). Easier to use SeGuiPin.getExtraData
+   seGuiHostPlugGetExtraData       : Result := 0;  // gets enum list or file extension (depending on datatype). Easier to use SeGuiPin.getExtraData
    (* example code...
      var
        string_length : Integer;
@@ -371,12 +371,12 @@ begin
       Dispose(ascii_text);
      end;
    *)
-   seGuiHostSetCapture             : result := 0; // see SEGUI_base::SetCapture(...)
-   seGuiHostReleaseCapture         : result := 0;
-   seGuiHostGetCapture             : result := 0;
-   seGuiHostCallVSTHost            : result := 0; // pass se_call_vst_host_params structure in Ptr
-   seGuiHostSetIdle                : result := 0; // pass 1 to receive regular calls to OnIdle(), pass zero to cancel
-   seGuiHostGetModuleFilename      : result := 0; // returns full module path
+   seGuiHostSetCapture             : Result := 0; // see SEGUI_base::SetCapture(...)
+   seGuiHostReleaseCapture         : Result := 0;
+   seGuiHostGetCapture             : Result := 0;
+   seGuiHostCallVSTHost            : Result := 0; // pass se_call_vst_host_params structure in Ptr
+   seGuiHostSetIdle                : Result := 0; // pass 1 to receive regular calls to OnIdle(), pass zero to cancel
+   seGuiHostGetModuleFilename      : Result := 0; // returns full module path
    (* example code...
      const
        MAX_STRING_LENGTH : Integer = 300;
@@ -410,10 +410,10 @@ begin
       WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_text, MAX_STRING_LENGTH, nil, nil);
      end;
    *)
-   seGuiHostGetHostType            : result := 0; // return code 0 = unsuported, 1 = module is running in SynthEdit, 2 = Module is in a VST plugin (made with SE)
-   seGuiHostRemoveGuiPlug          : result := 0;
-   seGuiHostGetParentContext       : result := 0; // Get 'handle' of parent window.  This is an SE handle, not an HWND. Use seGuiHostGetWindowHandle to convert.
-   seGuiHostMapWindowPoints        : result := 0; // map a point on one window to the co-ordinate system of a 2nd window
+   seGuiHostGetHostType            : Result := 0; // return code 0 = unsuported, 1 = module is running in SynthEdit, 2 = Module is in a VST plugin (made with SE)
+   seGuiHostRemoveGuiPlug          : Result := 0;
+   seGuiHostGetParentContext       : Result := 0; // Get 'handle' of parent window.  This is an SE handle, not an HWND. Use seGuiHostGetWindowHandle to convert.
+   seGuiHostMapWindowPoints        : Result := 0; // map a point on one window to the co-ordinate system of a 2nd window
    (*
      var
        parent_context : Integer;
@@ -432,7 +432,7 @@ begin
        CallHost(seGuiHostMapWindowPoints, WI.context_handle, parent_context, @offset, 0);
      end;
    *)
-   seGuiHostMapClientPointToScreen : result := 0; // maps a point on your gui to the system screen (absolute co-ords)
+   seGuiHostMapClientPointToScreen : Result := 0; // maps a point on your gui to the system screen (absolute co-ords)
    (*
      // Example: converting a point on your GUI to an absolute co-ordinate. Useful for pop-up menus
      var
@@ -443,7 +443,7 @@ begin
        CallHost(seGuiHostMapClientPointToScreen, WI.context_handle, 0, @offset, 0);
      end;
    *)                              
-   seGuiHostInvalidateRect         : result := 0; // invlalidate (cause redraw) of any SE window
+   seGuiHostInvalidateRect         : Result := 0; // invlalidate (cause redraw) of any SE window
    (*
      var
        n: TRect;
@@ -455,7 +455,7 @@ begin
        CallHost(seGuiHostInvalidateRect, WI.context_handle, 0, @n, 0);
      end;
    *)                              
-   seGuiHostIsGraphInitialsed      : result := 0; // test if pin updates are due to file loading, or from user.
+   seGuiHostIsGraphInitialsed      : Result := 0; // test if pin updates are due to file loading, or from user.
    else raise Exception.Create('Unknown Opcode');
   end; 
 end;
@@ -475,49 +475,49 @@ begin
   else FillChar(FProperties, SizeOf(TSEModuleProperties), 0);
 end;
 
-function TCustomSEHostedModulePart.GetAbout: string;
+function TCustomSEHostedModulePart.GetAbout: AnsiString;
 begin
- result := Properties.About;
+ Result := Properties.About;
 end;
 
 function TCustomSEHostedModulePart.GetActive: Boolean;
 begin
- result := FSE2ModStructBase <> nil;
+ Result := FSE2ModStructBase <> nil;
 end;
 
 function TCustomSEHostedModulePart.GetGUIVersion: Integer;
 begin
  if assigned(FSEGUIStructBase)
-  then result := FSEGUIStructBase.Version
-  else result := -1;
+  then Result := FSEGUIStructBase.Version
+  else Result := -1;
 end;
 
-function TCustomSEHostedModulePart.GetID: string;
+function TCustomSEHostedModulePart.GetID: AnsiString;
 begin
- result := Properties.ID;
+ Result := Properties.ID;
 end;
 
 function TCustomSEHostedModulePart.GetMagic: Integer;
 begin
- result := FSE2ModStructBase.Magic;
+ Result := FSE2ModStructBase.Magic;
 end;
 
-function TCustomSEHostedModulePart.GetName: string;
+function TCustomSEHostedModulePart.GetName: AnsiString;
 begin
- result := Properties.Name;
+ Result := Properties.Name;
 end;
 
 function TCustomSEHostedModulePart.GetPinProperties(Index: Integer;
   var Pin: TSEPinProperties): Boolean;
 begin
  if Active
-  then result := (CallPlugin(seffGetPinProperties, Index, 0, @Pin) <> 0)
-  else result := False
+  then Result := (CallPlugin(seffGetPinProperties, Index, 0, @Pin) <> 0)
+  else Result := False
 end;
 
 function TCustomSEHostedModulePart.GetVersion: Integer;
 begin
- result := FSE2ModStructBase.Version;
+ Result := FSE2ModStructBase.Version;
 end;
 
 procedure TCustomSEHostedModulePart.GuiHostAddGuiPlug;
@@ -527,12 +527,12 @@ end;
 
 function TCustomSEHostedModulePart.GuiHostGetHandle: THandle;
 begin
- result := 0;
+ Result := 0;
 end;
 
 function TCustomSEHostedModulePart.GuiHostGetTotalPinCount: Integer;
 begin
- result := 0; // ToDo
+ Result := 0; // ToDo
 end;
 
 procedure TCustomSEHostedModulePart.GuiHostRepaintRequest;
@@ -603,8 +603,8 @@ begin
   then raise Exception.Create('not used in SDK2')
   else
    if Active
-    then result := CallPlugin(seffIsEventListEmpty) <> 0
-    else result := False;
+    then Result := CallPlugin(seffIsEventListEmpty) <> 0
+    else Result := False;
 end;
 
 procedure TCustomSEHostedModulePart.Open;
@@ -616,8 +616,8 @@ end;
 function TCustomSEHostedModulePart.QueryDebugInfo: Pointer;
 begin
  if Active
-  then result := Pointer(CallPlugin(seffQueryDebugInfo))
-  else result := nil;
+  then Result := Pointer(CallPlugin(seffQueryDebugInfo))
+  else Result := nil;
 end;
 
 procedure TCustomSEHostedModulePart.Resume(Index: Integer = 0);
@@ -640,10 +640,10 @@ function TCustomSEHostedModulePart.CallPlugin(Opcode: TSEPluginModuleOpcodes;
 begin
  try
   if Active
-   then result := FSE2ModStructBase.Dispatcher(FSE2ModStructBase, Opcode, Index, Value, Ptr, Opt)
+   then Result := FSE2ModStructBase.Dispatcher(FSE2ModStructBase, Opcode, Index, Value, Ptr, Opt)
    else raise Exception.Create('SE module part not opened yet');
  except
-  result := 0;
+  Result := 0;
  end;
 end;
 
@@ -726,13 +726,13 @@ end;
 function TCustomSEHostedModule.GetPart(index: Integer): TCustomSEHostedModulePart;
 begin
  if (Index >= 0) and (Index < Length(FParts))
-  then result := FParts[Index]
-  else result := nil;
+  then Result := FParts[Index]
+  else Result := nil;
 end;
 
 function TCustomSEHostedModule.GetPartCount: Integer;
 begin
- result := Length(FParts);
+ Result := Length(FParts);
 end;
 
 procedure TCustomSEHostedModule.LoadFromFile(FileName: TFilename);

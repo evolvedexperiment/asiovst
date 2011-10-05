@@ -667,11 +667,19 @@ begin
   begin
    if not Assigned(FCurrentGeneration[Index])
     then FCurrentGeneration[Index] := TEvaluatedPopulation.Create(FVariableCount)
-    else FCurrentGeneration[Index].FValidCostFlag := False;
+    else
+     begin
+      FCurrentGeneration[Index].DataCount := FVariableCount;
+      FCurrentGeneration[Index].FValidCostFlag := False;
+     end;
 
    if not Assigned(FNextGeneration[Index])
     then FNextGeneration[Index] := TEvaluatedPopulation.Create(FVariableCount)
-    else FNextGeneration[Index].FValidCostFlag := False;
+    else
+     begin
+      FNextGeneration[Index].DataCount := FVariableCount;
+      FNextGeneration[Index].FValidCostFlag := False;
+     end;
   end;
 
  if AutoInitialize

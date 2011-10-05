@@ -92,7 +92,8 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Common, DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, BassExtenderGUI;
+  {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common, 
+  DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, BassExtenderGUI;
 
 procedure TBassExtenderModule.VSTModuleOpen(Sender: TObject);
 var
