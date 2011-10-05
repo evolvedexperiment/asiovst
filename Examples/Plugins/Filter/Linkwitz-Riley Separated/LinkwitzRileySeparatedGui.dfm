@@ -28,21 +28,21 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Width = 210
     Height = 105
     Anchors = [akLeft, akTop, akRight]
-    AntiAlias = gaaLinear4x
+    BorderColor = 3226174
+    BorderWidth = 2.500000000000000000
     Caption = 'Linkwitz Riley'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
+    Font.Color = 15659506
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 15659506
-    HeaderMinWidth = 64
-    LineColor = 15659506
-    OutlineWidth = 3
-    PanelColor = 7373965
+    FontOversampling = fo4x
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    BorderRadius = 7
+    BorderRadius = 7.000000000000000000
     TabOrder = 0
+    Transparent = True
     object LbIFrequency: TGuiLabel
       Left = 11
       Top = 85
@@ -58,7 +58,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbSlope: TGuiLabel
       Left = 81
@@ -75,7 +74,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object LbType: TGuiLabel
       Left = 149
@@ -92,29 +90,28 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       FontOversampling = fo4x
       ParentFont = False
       Shadow.Blur = 4.000000000000000000
-      Shadow.Color = clBlack
     end
     object PnDisplay: TGuiPanel
-      Left = 118
+      Left = 123
       Top = 10
-      Width = 83
+      Width = 78
       Height = 17
-      Caption = 'PnDisplay'
-      LineColor = 5398887
+      BorderColor = clBtnShadow
+      BorderRadius = 5.000000000000000000
+      BorderVisible = False
       BorderWidth = 2.000000000000000000
       PanelColor = 3226174
       ParentColor = True
-      BorderRadius = 5.000000000000000000
       TabOrder = 0
-      UseDockManager = True
       Transparent = True
+      UseDockManager = True
       DesignSize = (
-        83
+        78
         17)
       object LbDisplay: TGuiLabel
         Left = 4
         Top = 2
-        Width = 73
+        Width = 68
         Height = 12
         Alignment = taCenter
         Anchors = [akLeft, akTop, akRight]
@@ -128,7 +125,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         FontOversampling = fo4x
         ParentFont = False
         Shadow.Blur = 4.000000000000000000
-        Shadow.Color = clBlack
       end
     end
     object DialFrequency: TGuiStitchedDial
@@ -137,13 +133,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 48
       CurveMapping = -2.099999904632568000
+      DefaultValue = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      OnChange = DialFrequencyChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 20.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialFrequencyChange
     end
     object DialSlope: TGuiStitchedDial
       Left = 81
@@ -151,13 +149,15 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 48
       CurveMapping = -1.000000000000000000
+      DefaultValue = 1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialSlopeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
+      OnChange = DialSlopeChange
     end
     object DialType: TGuiStitchedDial
       Left = 151
@@ -165,10 +165,13 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Width = 48
       Height = 48
       Max = 1.000000000000000000
-      OnChange = DialTypeChange
+      ScrollRange = 400.000000000000000000
       ImageList = GSPL
       ImageIndex = 0
       WheelStep = 1.000000000000000000
+      OnChange = DialTypeChange
+      DefaultValue = 0.000000000000000000
+      Value = 0.000000000000000000
     end
   end
   object GbFrequencyResponse: TGuiGroup
@@ -177,25 +180,29 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Width = 210
     Height = 105
     Anchors = [akLeft, akTop, akRight]
+    BorderColor = 3226174
+    BorderWidth = 2.500000000000000000
     Caption = 'Frequency Response'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
+    Font.Color = 15659506
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    HeaderMinWidth = 64
-    LineColor = 15659506
+    FontOversampling = fo4x
+    GroupColor = 7373965
+    Native = False
     ParentFont = False
-    BorderRadius = 7
+    BorderRadius = 7.000000000000000000
     TabOrder = 1
+    Transparent = True
     Visible = False
     object GuiEQGraph: TGuiEQGraph
       Left = 7
       Top = 26
-      Width = 187
+      Width = 196
       Height = 72
-      AntiAlias = gaaLinear4x
-      BorderRadius = 5
+      BorderRadius = 5.000000000000000000
+      BorderWidth = 1.500000000000000000
       ColorChart = 3158064
       FilterSeries = <>
       GraphColorLight = 5991539
@@ -204,6 +211,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       YAxis.LowerLevel = -15.000000000000000000
       YAxis.UpperLevel = 15.000000000000000000
       YAxis.Granularity = 4.000000000000000000
+      YAxis.MouseActions = []
       Color = 7373965
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 3158064
@@ -2880,7 +2888,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
           0049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 48
         Width = 3120
       end>

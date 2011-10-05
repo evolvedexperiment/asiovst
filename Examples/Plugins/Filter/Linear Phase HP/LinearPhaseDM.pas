@@ -45,7 +45,6 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -137,10 +136,14 @@ begin
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
 
+ // initialize parameters
  Parameter[0] := 20;
  Parameter[1] := 4;
 
  CalculateFilterKernel;
+
+ // set editor form class
+ EditorFormClass := TFmLinearPhase;
 end;
 
 procedure TLinearPhaseDataModule.VSTModuleClose(Sender: TObject);
@@ -165,7 +168,7 @@ procedure TLinearPhaseDataModule.StringToWindowParameter(
   var Value: Single);
 var
   WindowIndex : Integer;
-  Text        : string;
+  Text        : AnsiString;
 begin
  Text := Trim(ParameterString);
  for WindowIndex := 0 to Length(GWindowFunctions) - 1 do
@@ -247,11 +250,6 @@ begin
   end;
 end;
 
-procedure TLinearPhaseDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmLinearPhase.Create(Self);
-end;
-
 procedure TLinearPhaseDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
@@ -298,7 +296,7 @@ begin
     FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+     do ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
     {$ENDIF}{$ENDIF}
