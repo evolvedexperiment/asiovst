@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Graphics, Controls, ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, 
   DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiStitchedControls, DAV_GuiStitchedDial, 
-  DAV_GuiStitchedPngList;
+  DAV_GuiStitchedPngList, DAV_GuiImageControl, DAV_GuiCustomControl,
+  DAV_GuiGraphicControl;
 
 type
   TFmExciter = class(TForm)
@@ -233,7 +234,7 @@ var
 begin
  with Owner as TExciterDataModule do
   begin
-   Order := round(ParameterByName['Order']);
+   Order := Round(ParameterByName['Order']);
    LbOrderValue.Caption := IntToStr(Order);
    if DialOrder.Value <> Order
     then DialOrder.Value := Order;

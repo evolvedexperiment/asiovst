@@ -1,5 +1,4 @@
 object VSTDecimator: TVSTDecimator
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Decimator'
@@ -175,13 +174,10 @@ object VSTDecimator: TVSTDecimator
       VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcess32Replacing = VSTModuleProcess
-  Left = 243
-  Top = 103
   Height = 152
   Width = 219
 end

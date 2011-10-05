@@ -164,7 +164,7 @@ procedure TChunkDemoDataModule.ParameterGammaChange(
 begin
  FMix[2] := 0.01 * Value;
  FMix[3] := 1 - FMix[2];
- if assigned(FCompressor)
+ if Assigned(FCompressor)
   then FCompressor.MakeUpGain_dB := 0.2 * Value;
 
  Chunk.Position := Index * SizeOf(Single);

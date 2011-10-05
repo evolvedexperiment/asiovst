@@ -44,7 +44,6 @@ type
   TSubBoostDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
@@ -53,10 +52,10 @@ type
     procedure ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -94,6 +93,7 @@ begin
  FOutputFilter := TButterworthLowPassFilter.Create;
  FOutputFilter.Order := 1;
 
+ // initialize parameters
  Parameter[0] :=  0;    // Type
  Parameter[1] := 30;    // Level
  Parameter[2] := 0.6;   // Tune
@@ -102,18 +102,15 @@ begin
  Parameter[5] := 0.65;  // Release
 
  VSTModuleResume(Sender);
+
+ // set editor form class
+ EditorFormClass := TFmSubBoost;
 end;
 
 procedure TSubBoostDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FInputFilter);
  FreeAndNil(FOutputFilter);
-end;
-
-procedure TSubBoostDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmSubBoost.Create(Self);
 end;
 
 procedure TSubBoostDataModule.ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -136,7 +133,7 @@ procedure TSubBoostDataModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if Assigned(FInputFilter)
-  then FInputFilter.Order := round(Value);
+  then FInputFilter.Order := Round(Value);
 end;
 
 procedure TSubBoostDataModule.ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -164,7 +161,7 @@ end;
 
 procedure TSubBoostDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of 
+ case Round(Parameter[Index]) of
   0: PreDefined := 'Distort';
   1: PreDefined := 'Divide';
   2: PreDefined := 'Invert';

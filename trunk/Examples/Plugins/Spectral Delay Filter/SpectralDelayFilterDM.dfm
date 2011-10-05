@@ -14,7 +14,6 @@ object SpectralDelayFilterModule: TSpectralDelayFilterModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tune'
       LargeStepFloat = 2.000000000000000000
@@ -26,7 +25,6 @@ object SpectralDelayFilterModule: TSpectralDelayFilterModule
       OnParameterChange = ParameterTuneChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       LargeStepFloat = 2.000000000000000000
@@ -43,12 +41,9 @@ object SpectralDelayFilterModule: TSpectralDelayFilterModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

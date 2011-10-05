@@ -198,9 +198,9 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FConvolution) - 1 do
-   if assigned(FConvolution[Channel]) then
+   if Assigned(FConvolution[Channel]) then
     if Value >= FConvolution[Channel].MinimumIRBlockOrder
-     then FConvolution[Channel].MaximumIRBlockOrder := round(Limit(Value, 7, 20))
+     then FConvolution[Channel].MaximumIRBlockOrder := Round(Limit(Value, 7, 20))
      else Value := FConvolution[Channel].MinimumIRBlockOrder;
  finally
   FCriticalSection.Leave;
@@ -264,8 +264,8 @@ begin
       if c < FImpulseLength[0] then
        begin
         r := FImpulseLength[0] - c;
-        assert(r > 0);
-        assert(r < Length(HFData));
+        Assert(r > 0);
+        Assert(r < Length(HFData));
         Read(HFData[0], r * 2);
         Scale := 1 / r;
         for i := 0 to r - 1
@@ -291,8 +291,8 @@ begin
       if c < FImpulseLength[1] then
        begin
         r := FImpulseLength[1] - c;
-        assert(r > 0);
-        assert(r < Length(HFData));
+        Assert(r > 0);
+        Assert(r < Length(HFData));
         Read(HFData[0], r * 2);
         Scale := 1 / r;
         for i := 0 to r - 1
@@ -331,15 +331,15 @@ begin
      end
     else
      begin
-      FTempIRSize[Channel] := round((FImpulseLength[Channel] - 4) * SampleRate / CDefaultSampleRate);
+      FTempIRSize[Channel] := Round((FImpulseLength[Channel] - 4) * SampleRate / CDefaultSampleRate);
       Offset := CDefaultSampleRate / SampleRate;
       ReallocMem(FTempIR[Channel], FTempIRSize[Channel] * SizeOf(Single));
       Pos := 0;
       for Sample := 0 to FTempIRSize[Channel] - 1 do
        begin
-        r := round(Pos - CHalf32);
-        assert(Pos - r >= 0);
-        assert(Pos - r <= 1);
+        r := Round(Pos - CHalf32);
+        Assert(Pos - r >= 0);
+        Assert(Pos - r <= 1);
         FTempIR[Channel]^[Sample] := Hermite32_asm(Pos - r, @FImpulseResponse[Channel]^[r]);
         Pos := Pos + Offset;
        end;
@@ -387,11 +387,11 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FConvolution) - 1 do
-   if assigned(FConvolution[Channel]) then
+   if Assigned(FConvolution[Channel]) then
     begin
      if Value > FConvolution[Channel].MaximumIRBlockOrder
       then Value := FConvolution[Channel].MaximumIRBlockOrder;
-     FConvolution[Channel].MinimumIRBlockOrder := round(Value);
+     FConvolution[Channel].MinimumIRBlockOrder := Round(Value);
     end;
  finally
   FCriticalSection.Leave

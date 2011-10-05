@@ -136,7 +136,7 @@ var
 begin
  for Channel := 0 to Length(FFreqShifter) - 1 do
   if Assigned(FFreqShifter[Channel])
-   then FFreqShifter[Channel].CoefficientCount := round(Value);
+   then FFreqShifter[Channel].CoefficientCount := Round(Value);
 end;
 
 procedure TBarberpoleShifterDataModule.ParameterTransitionBWChange(

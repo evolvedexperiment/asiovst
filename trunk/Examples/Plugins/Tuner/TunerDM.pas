@@ -40,8 +40,7 @@ uses
 
 type
   TTunerDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -73,7 +72,16 @@ begin
  FTuner.Release := 1;
  FTuner.SmoothFactor := 0.99;
 
+ // initialize parameters
  Parameter[0] := 2;
+
+ // set editor form class
+ EditorFormClass := TFmTuner;
+end;
+
+procedure TTunerDataModule.VSTModuleClose(Sender: TObject);
+begin
+ FreeAndNil(FTuner);
 end;
 
 procedure TTunerDataModule.ParameterGuitarStringChange(
@@ -81,7 +89,7 @@ procedure TTunerDataModule.ParameterGuitarStringChange(
 var
   CenterFrequency : Single;
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   1 : CenterFrequency := 329.62755691286992973584176104656;
   2 : CenterFrequency := 440;
   3 : CenterFrequency := 587.32953583481512052556602772116;
@@ -95,20 +103,10 @@ begin
  FTuner.MinimumFrequency := 2 * CenterFrequency;
 end;
 
-procedure TTunerDataModule.VSTModuleClose(Sender: TObject);
-begin
- FreeAndNil(FTuner);
-end;
-
-procedure TTunerDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmTuner.Create(Self);
-end;
-
 procedure TTunerDataModule.ParameterNoteDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   1 : PreDefined := 'E';
   2 : PreDefined := 'A';
   3 : PreDefined := 'D';

@@ -30,10 +30,10 @@ object FmExciter: TFmExciter
     Height = 113
     Anchors = [akLeft, akTop, akRight]
     BorderColor = clWhite
+    BorderRadius = 13.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 6908265
     ParentColor = True
-    BorderRadius = 13.000000000000000000
     TabOrder = 0
     UseDockManager = True
     object LbFreq: TGuiLabel
@@ -195,6 +195,7 @@ object FmExciter: TFmExciter
       Height = 64
       Color = 6908265
       CurveMapping = -1.200000047683716000
+      DefaultValue = 1000.000000000000000000
       Max = 16000.000000000000000000
       Min = 1000.000000000000000000
       ParentColor = False
@@ -204,7 +205,6 @@ object FmExciter: TFmExciter
       Value = 8000.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialTuneChange
-      DefaultValue = 0.000000000000000000
     end
     object DialShape: TGuiStitchedDial
       Left = 156
@@ -245,6 +245,7 @@ object FmExciter: TFmExciter
       Height = 64
       Color = 6908265
       CurveMapping = -0.660000026226043700
+      DefaultValue = 2.000000000000000000
       Max = 8.000000000000000000
       Min = 2.000000000000000000
       ParentColor = False
@@ -254,7 +255,6 @@ object FmExciter: TFmExciter
       Value = 4.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialOrderChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object DSPL: TGuiStitchedPNGList

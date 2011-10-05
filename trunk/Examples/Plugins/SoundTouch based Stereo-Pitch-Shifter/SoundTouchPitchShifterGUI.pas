@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, Controls, Graphics, DAV_Types, DAV_VSTModule, DAV_GuiCommon, 
   DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiPng, DAV_GuiStitchedControls, 
-  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiPixelMap;
+  DAV_GuiStitchedDial, DAV_GuiStitchedPngList, DAV_GuiPixelMap,
+  DAV_GuiImageControl, DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmSoundTouchPitchShifter = class(TForm)
@@ -129,7 +130,7 @@ begin
   begin
    if DialSemitones.Value <> Parameter[0]
     then DialSemitones.Value := Parameter[0];
-   SemiTones := round(Parameter[0]);
+   SemiTones := Round(Parameter[0]);
    LbSemitoneValue.Caption := IntToStr(SemiTones) + ' : ' +
      IntToStr(round(100 * (Parameter[0] - SemiTones)));
   end;

@@ -277,7 +277,7 @@ end;
 function TAudioAmeliorationModule.GetBandRMS(Index: Integer): Single;
 begin
  if Index in [0..CNumFrequencies - 1]
-  then result := FFilterArray[Index].RMS
+  then Result := FFilterArray[Index].RMS
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 

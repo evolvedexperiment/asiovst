@@ -98,7 +98,6 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
     Width = 99
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 4
     TabOrder = 2
     Text = 'Fast Gauss'

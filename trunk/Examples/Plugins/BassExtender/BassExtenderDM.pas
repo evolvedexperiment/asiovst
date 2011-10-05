@@ -204,7 +204,7 @@ procedure TBassExtenderModule.ParamOrderChange(Sender: TObject; const Index: Int
 var
   ChannelIndex, Order : Integer;
 begin
- Order := round(Value);
+ Order := Round(Value);
  for ChannelIndex := 0 to 1 do
   begin
    if Assigned(FLowpass[ChannelIndex, 0]) then FLowpass[ChannelIndex, 0].Order  := Order;
@@ -366,7 +366,7 @@ end;
 procedure TBassExtenderModule.ParamModeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0: begin
       OnProcess := VSTModuleProcess32;
       OnProcess32Replacing := VSTModuleProcess32;

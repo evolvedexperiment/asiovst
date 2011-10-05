@@ -40,16 +40,15 @@ uses
 
 type
   TVSTHRTF3DModule = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VST2ModuleOpen(Sender: TObject);
     procedure VST2ModuleClose(Sender: TObject);
     procedure VST2ModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VST2ModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamAzimuthChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterInterpolationDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterInterpolationDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterInterpolationChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterDisplayHRTFsDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterDisplayHRTFsDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FIR           : array [0..1] of PDAVSingleFixedArray;
     FHRTFs        : THrtfs;
@@ -112,6 +111,9 @@ begin
    Parameter[3] := 2;
    Parameter[4] := 2;
   end;
+
+ // set editor form class
+ EditorFormClass := TVSTGUI;
 end;
 
 procedure TVSTHRTF3DModule.VST2ModuleClose(Sender: TObject);
@@ -120,13 +122,6 @@ begin
  Dispose(FIR[1]);
  FreeAndNil(FConvolution);
  FreeAndNil(FHRTFs);
-end;
-
-procedure TVSTHRTF3DModule.VST_EditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTHRTF3DModule.VST2ModuleProcess(
@@ -140,7 +135,7 @@ begin
 end;
 
 procedure TVSTHRTF3DModule.ParameterDisplayHRTFsDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'
@@ -150,8 +145,8 @@ end;
 procedure TVSTHRTF3DModule.ParameterInterpolationChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHRTFs) then
-  case round(Parameter[Index]) of
+ if Assigned(FHRTFs) then
+  case Round(Parameter[Index]) of
    1 : FHRTFs.InterpolationType := itNearest;
    2 : FHRTFs.InterpolationType := itLinear;
    3 : FHRTFs.InterpolationType := itLinear3;
@@ -159,9 +154,9 @@ begin
 end;
 
 procedure TVSTHRTF3DModule.ParameterInterpolationDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   1 : PreDefined := 'Nearest';
   2 : PreDefined := 'Linear (2 Points)';
   3 : PreDefined := 'Linear (3 Points)';
@@ -186,7 +181,7 @@ procedure TVSTHRTF3DModule.VST2ModuleParameterChange(Sender: TObject;
 const
   CDeg2Rad = 2 * Pi / 360;
 begin
- if assigned(FHRTFs) then
+ if Assigned(FHRTFs) then
   begin
    FHRTFs.InterpolateHrir(Parameter[0] * CDeg2Rad,
                           Parameter[1] * CDeg2Rad, FLength, FIR[0], FIR[1]);

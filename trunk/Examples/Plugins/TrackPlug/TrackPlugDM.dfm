@@ -6,7 +6,6 @@ object TrackPlugModule: TTrackPlugModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'TrPl'
@@ -36,7 +35,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterDCFilterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'DC Filter'
       DisplayName = 'DC Filter Order'
@@ -74,7 +72,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Gain'
@@ -110,7 +107,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Type'
@@ -147,7 +143,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Gain'
@@ -183,7 +178,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Type'
@@ -220,7 +214,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Gain'
@@ -256,7 +249,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Type'
@@ -293,7 +285,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Gain'
@@ -329,7 +320,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Type'
@@ -366,7 +356,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Gain'
@@ -402,7 +391,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Type'
@@ -439,7 +427,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 6'
       DisplayName = 'EQ Filter 6 Gain'
@@ -475,7 +462,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 6'
       DisplayName = 'EQ Filter 6 Type'
@@ -512,7 +498,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 7'
       DisplayName = 'EQ Filter 7 Gain'
@@ -548,7 +533,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 7'
       DisplayName = 'EQ Filter 7 Type'
@@ -585,7 +569,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 8'
       DisplayName = 'EQ Filter 8 Gain'
@@ -621,7 +604,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 8'
       DisplayName = 'EQ Filter 8 Type'
@@ -658,7 +640,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterEqFilterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 9'
       DisplayName = 'EQ Filter 9 Gain'
@@ -694,7 +675,6 @@ object TrackPlugModule: TTrackPlugModule
       OnParameterChange = ParameterFilterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 9'
       DisplayName = 'EQ Filter 9 Type'
@@ -712,7 +692,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterEqTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Attack'
@@ -732,7 +711,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Release'
@@ -752,7 +730,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Threshold'
@@ -772,7 +749,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Ratio'
@@ -790,7 +766,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Gate Knee'
@@ -848,7 +823,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Threshold'
@@ -886,7 +860,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Knee'
@@ -904,7 +877,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 MakeUp Gain'
@@ -923,7 +895,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Auto Make Up Gain'
@@ -941,7 +912,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Mix'
@@ -997,7 +967,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Threshold'
@@ -1035,7 +1004,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Knee'
@@ -1053,7 +1021,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 MakeUp Gain'
@@ -1072,7 +1039,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Auto Make Up Gain'
@@ -1090,7 +1056,6 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Mix'
@@ -1144,12 +1109,9 @@ object TrackPlugModule: TTrackPlugModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

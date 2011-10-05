@@ -164,6 +164,11 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Top = 8
     Width = 132
     Height = 23
+    Items.Strings = (
+      'Up'
+      'Down'
+      'Up (Inv.)'
+      'Down (Inv.)')
     ArrowColor = 14277598
     BorderColor = 14277598
     BorderRadius = 4.000000000000000000
@@ -174,12 +179,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
-    ItemIndex = -1
-    Items.Strings = (
-      'Up'
-      'Down'
-      'Up (Inv.)'
-      'Down (Inv.)')
     ParentFont = False
     SelectBoxColor = 2829619
     OnChange = SBAlgorithmChange

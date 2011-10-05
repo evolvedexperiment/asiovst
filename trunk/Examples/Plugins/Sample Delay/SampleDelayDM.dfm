@@ -17,7 +17,6 @@ object SampleDelayDataModule: TSampleDelayDataModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Samples Left'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -35,7 +34,6 @@ object SampleDelayDataModule: TSampleDelayDataModule
       OnParameterChange = ParameterSamplesLeftChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Samples Right'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -55,11 +53,8 @@ object SampleDelayDataModule: TSampleDelayDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 218
-  Top = 77
   Height = 150
   Width = 215
 end

@@ -45,17 +45,16 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterPanChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterPolarityDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterPolarityDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterPolarityChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFilterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterShiftFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyShiftChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -65,7 +64,7 @@ type
     procedure ParameterBalanceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterShiftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -203,6 +202,9 @@ begin
 
  // Mix
  Parameter[70] := 50;
+
+ // set editor form class
+ EditorFormClass := TFmPartyDelay;
 end;
 
 procedure TPartyDelayDataModule.VSTModuleClose(Sender: TObject);
@@ -213,11 +215,6 @@ begin
   do FreeAndNil(FDelayLine[Band]);
  for Band := 0 to Length(FFilter) - 1
   do FreeAndNil(FFilter[Band]);
-end;
-
-procedure TPartyDelayDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmPartyDelay.Create(Self);
 end;
 
 procedure TPartyDelayDataModule.ParameterPanChange(
@@ -237,7 +234,7 @@ begin
 end;
 
 procedure TPartyDelayDataModule.ParameterPolarityDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 0.5
   then PreDefined := '+'
@@ -303,7 +300,7 @@ begin
 end;
 
 procedure TPartyDelayDataModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'
@@ -466,9 +463,9 @@ begin
 end;
 
 procedure TPartyDelayDataModule.ParameterFilterDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'None';
   1 : PreDefined := 'Lowcut';
   2 : PreDefined := 'Lowshelf';

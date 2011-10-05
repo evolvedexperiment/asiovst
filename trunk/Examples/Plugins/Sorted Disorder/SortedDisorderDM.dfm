@@ -34,7 +34,6 @@ object SortedDisorderModule: TSortedDisorderModule
       OnParameterChange = ParameterBlocksizeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -52,11 +51,8 @@ object SortedDisorderModule: TSortedDisorderModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 257
-  Top = 82
   Height = 150
   Width = 215
 end

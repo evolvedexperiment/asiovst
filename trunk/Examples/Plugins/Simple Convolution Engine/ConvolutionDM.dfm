@@ -16,11 +16,8 @@ object ConvolutionDataModule: TConvolutionDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 191
-  Top = 76
   Height = 150
   Width = 215
 end

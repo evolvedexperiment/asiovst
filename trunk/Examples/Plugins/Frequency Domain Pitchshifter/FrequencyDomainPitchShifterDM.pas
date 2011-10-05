@@ -42,7 +42,6 @@ type
   TFrequencyDomainPitchShifterModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterPitchFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -68,31 +67,31 @@ var
 begin
  for ch := 0 to NumInputs - 1
   do FPitchShifter[ch] := TFrequencyDomainPitchShifter32.Create;
+
+ // initialize parameters
  Parameter[0] := 1;
+
+ // set editor form class
+ EditorFormClass := TFmFrequencyDomainPitchShifter;
 end;
 
 procedure TFrequencyDomainPitchShifterModule.ParameterPitchFactorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to NumInputs - 1
-  do FPitchShifter[ch].PitchFactor := Power(2, Value / 12);
+ for ChannelIndex := 0 to NumInputs - 1
+  do FPitchShifter[ChannelIndex].PitchFactor := Power(2, Value / 12);
  if EditorForm is TFmFrequencyDomainPitchShifter
   then TFmFrequencyDomainPitchShifter(EditorForm).UpdateSemitones;
 end;
 
 procedure TFrequencyDomainPitchShifterModule.VSTModuleClose(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to NumInputs - 1
-  do FreeAndNil(FPitchShifter[ch]);
-end;
-
-procedure TFrequencyDomainPitchShifterModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmFrequencyDomainPitchShifter.Create(Self);
+ for ChannelIndex := 0 to NumInputs - 1
+  do FreeAndNil(FPitchShifter[ChannelIndex]);
 end;
 
 procedure TFrequencyDomainPitchShifterModule.VSTModuleProcess(const Inputs,

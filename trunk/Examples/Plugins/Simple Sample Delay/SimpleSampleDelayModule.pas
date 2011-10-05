@@ -41,7 +41,6 @@ uses
 type
   TSimpleSampleDelayVST = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -100,18 +99,15 @@ begin
  Parameter[2] := 0;
  Parameter[3] := 0;
  Parameter[4] := 100;
+
+ // set editor form class
+ EditorFormClass := TFmSimpleSampleDelay;
 end;
 
 procedure TSimpleSampleDelayVST.VSTModuleClose(Sender: TObject);
 begin
  Dispose(FBuffer[0]);
  Dispose(FBuffer[1]);
-end;
-
-procedure TSimpleSampleDelayVST.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmSimpleSampleDelay.Create(Self);
 end;
 
 procedure TSimpleSampleDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);

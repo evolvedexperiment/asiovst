@@ -184,7 +184,7 @@ procedure TFmSpinBugLite.UpdateColour;
 begin
  with Owner as TSpinBugLiteModule do
   begin
-   case round(Parameter[0]) of
+   case Round(Parameter[0]) of
      1 : SelectColour.ItemIndex := 0;
      4 : SelectColour.ItemIndex := 1;
      8 : SelectColour.ItemIndex := 2;
@@ -206,7 +206,7 @@ procedure TFmSpinBugLite.UpdateType;
 begin
  with Owner as TSpinBugLiteModule do
   begin
-   SelectType.ItemIndex := round(Parameter[1]) - 1;
+   SelectType.ItemIndex := Round(Parameter[1]) - 1;
   end;
 end;
 

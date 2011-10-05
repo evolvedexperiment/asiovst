@@ -169,7 +169,7 @@ end;
 
 procedure TQuadropolisDataModule.CalculateFilterKernel;
 begin
- if assigned(FHRTFs) then
+ if Assigned(FHRTFs) then
   with FHRTFs do
    begin
     InterpolateHrir( -45, 0, FLength div 2, FIR[0, 0], FIR[0, 1]);

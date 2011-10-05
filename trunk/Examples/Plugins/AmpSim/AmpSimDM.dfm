@@ -1,5 +1,4 @@
 object ComboDataModule: TComboDataModule
-  OldCreateOrder = True
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'AmpSim'
@@ -158,12 +157,10 @@ object ComboDataModule: TComboDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 864
-  Top = 84
   Height = 150
   Width = 215
 end

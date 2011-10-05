@@ -97,7 +97,7 @@ procedure TFmOversampledTanh.UpdateTransition;
 begin
  with TOversampledTanhModule(Owner) do
   begin
-   TBTransition.Position := round(100 * Parameter[1]);
+   TBTransition.Position := Round(100 * Parameter[1]);
   end;
 end;
 

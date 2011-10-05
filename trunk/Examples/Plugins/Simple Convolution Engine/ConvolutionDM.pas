@@ -45,7 +45,6 @@ type
   TConvolutionDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
   private
     FFilterKernel   : PDAVSingleFixedArray;
@@ -93,6 +92,9 @@ begin
  FFFTSize       := 0;
 
  IRSize := 64;
+
+ // set editor form class
+ EditorFormClass := TFmConvolution;
 end;
 
 procedure TConvolutionDataModule.VSTModuleClose(Sender: TObject);
@@ -105,11 +107,6 @@ begin
  for i := 0 to Length(FSignalTime) - 1
   do Dispose(FSignalTime[i]);
  FreeAndNil(FFft);
-end;
-
-procedure TConvolutionDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmConvolution.Create(Self);
 end;
 
 procedure TConvolutionDataModule.SetIRSize(const Value: Integer);
@@ -126,7 +123,7 @@ var
   i : Integer;
 begin
  i := 1 + CeilLog2(FIRSize);
- if not assigned(FFft)
+ if not Assigned(FFft)
  {$IFDEF Use_IPPS}
   then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
  {$ELSE}
@@ -164,7 +161,7 @@ procedure TConvolutionDataModule.LoadIR(FileName: TFileName);
 var
   ADC : TAudioDataCollection32;
 begin
- if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
+ if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
    while FSemaphore > 0 do;
    inc(FSemaphore);

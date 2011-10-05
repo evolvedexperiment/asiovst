@@ -1,4 +1,4 @@
-unit BassExtenderGUI;
+﻿unit BassExtenderGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -285,7 +285,7 @@ begin
    Balance := ParameterByName['Balance'];
    if DialBalance.Value <> Balance
     then DialBalance.Value := Balance;
-//   Balance := round(1E5 * Balance) * 1E-5;
+//   Balance := Round(1E5 * Balance) * 1E-5;
    LbBalanceValue.Caption := FloatToStrF(RoundTo(Balance, -2), ffGeneral, 3, 4) + '%';
   end;
 end;
@@ -383,7 +383,7 @@ begin
    Order := ParameterByName['Split Order'];
    if DialOrder.Value <> Order
     then DialOrder.Value := Order;
-   LbOrderValue.Caption := IntToStr(2 * round(Order));
+   LbOrderValue.Caption := IntToStr(2 * Round(Order));
   end;
 end;
 
@@ -396,7 +396,7 @@ begin
    Threshold := ParameterByName['Threshold'];
    if DialThreshold.Value <> Threshold
     then DialThreshold.Value := Threshold;
-   Threshold := round(1E4 * Threshold) * 1E-4;
+   Threshold := Round(1E4 * Threshold) * 1E-4;
    LbThresholdValue.Caption := FloatToStrF(RoundTo(Threshold, -2), ffGeneral, 3, 4) + 'dB';
   end;
 end;

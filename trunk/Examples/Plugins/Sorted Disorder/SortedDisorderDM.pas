@@ -40,7 +40,6 @@ uses
 
 type
   TSortedDisorderModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
@@ -90,7 +89,19 @@ begin
    FBuildingBuffer[Channel].BlockSize := 1 shl 8;
   end;
 
+ // initialize parameter
  Parameter[0] := 256;
+
+ // set editor form class
+ EditorFormClass := TFmSortedDisorder;
+end;
+
+procedure TSortedDisorderModule.VSTModuleClose(Sender: TObject);
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to Length(FBuildingBuffer) - 1
+  do FreeAndNil(FBuildingBuffer[Channel]);
 end;
 
 procedure TSortedDisorderModule.ParameterBlocksizeChange(
@@ -119,19 +130,6 @@ begin
  finally
   FCriticalSection.Leave;
  end;
-end;
-
-procedure TSortedDisorderModule.VSTModuleClose(Sender: TObject);
-var
-  Channel : Integer;
-begin
- for Channel := 0 to Length(FBuildingBuffer) - 1
-  do FreeAndNil(FBuildingBuffer[Channel]);
-end;
-
-procedure TSortedDisorderModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmSortedDisorder.Create(Self);
 end;
 
 procedure TSortedDisorderModule.VSTModuleProcess(const Inputs,

@@ -39,17 +39,16 @@ uses
 
 type
   TSonogramDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOverlapFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FCriticalSection : TCriticalSection;
     FSonogram        : TBitmapSonogram32;
@@ -97,19 +96,18 @@ begin
    MaxInteger := Length(GWindowFunctions) - 1;
   end;
 
+ // initialize parameters
  Parameter[0] := 10;
  Parameter[1] :=  8;
- Parameter[2] :=  4; 
+ Parameter[2] :=  4;
+
+ // set editor form class
+ EditorFormClass := TFmSonogram;
 end;
 
 procedure TSonogramDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FSonogram);
-end;
-
-procedure TSonogramDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmSonogram.Create(Self);
 end;
 
 procedure TSonogramDataModule.ParameterIntegerDisplay(

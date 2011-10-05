@@ -79,13 +79,10 @@ object VariableDelayVST: TVariableDelayVST
       VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 248
-  Top = 106
   Height = 150
   Width = 215
 end

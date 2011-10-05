@@ -43,7 +43,6 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
@@ -87,15 +86,13 @@ begin
  FVariDelay[0] := TVariableDelay32Allpass.Create; // Hermite
  FVariDelay[1] := TVariableDelay32Allpass.Create;  // vs. Linear
 
+ // initialize parameters
  Parameter[0] := 100;
  Parameter[1] := 0;
  Parameter[2] := 100;
-end;
 
-procedure TVariableDelayVST.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TVSTGUI.Create(Self);
+ // set editor form class
+ EditorFormClass := TVSTGUI;
 end;
 
 procedure TVariableDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -105,7 +102,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FVariDelay) - 1 do
-   if assigned(FVariDelay[Channel])
+   if Assigned(FVariDelay[Channel])
     then FVariDelay[Channel].Delay := 1E-4 * Value;
  finally
    FCriticalSection.Leave;

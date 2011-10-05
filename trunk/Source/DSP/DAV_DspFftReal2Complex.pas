@@ -966,7 +966,6 @@ var
   ci, i      : Integer;
   NbrCoef    : Integer;
   NbrCoefH   : Integer;
-  NbrCoefD   : Integer;
   BitPos     : array [0..1] of Integer;
   c, s, v    : Double;
   TempBuffer : array [0..2] of PDAVSingleFixedArray;

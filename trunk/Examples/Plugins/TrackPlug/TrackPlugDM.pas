@@ -1,4 +1,4 @@
-unit TrackPlugDM;
+﻿unit TrackPlugDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -42,14 +42,13 @@ uses
 
 type
   TTrackPlugModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure ParameterDcFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDcFilterChangeOrder(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterEqTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterEqTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterEqFilterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterEqFilterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterBandwidthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -62,13 +61,13 @@ type
     procedure ParameterCompressorMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCompressorAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCompressorMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterGateAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -222,6 +221,9 @@ begin
  Parameter[56] := 6;
  Parameter[57] := 0;
  Parameter[58] := 100;
+
+ // set editor form class
+ EditorFormClass := TFmTrackPlug;
 end;
 
 procedure TTrackPlugModule.VSTModuleClose(Sender: TObject);
@@ -247,15 +249,10 @@ begin
    do FreeAndNil(FCompressor[Channel, Band]);
 end;
 
-procedure TTrackPlugModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmTrackPlug.Create(Self);
-end;
-
 function TTrackPlugModule.GetFilter(Index: Integer): TCustomIIRFilter;
 begin
  if (Index >= 0) and (Index < Length(FEqFilter[0]))
-  then result := FEqFilter[0, Index]
+  then Result := FEqFilter[0, Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
@@ -263,7 +260,7 @@ function TTrackPlugModule.GetFilterClass(
   Index: Integer): TBandwidthIIRFilterClass;
 begin
  if (Index >= 0) and (Index < Length(FEqFilter[0]))
-  then result := TBandwidthIIRFilterClass(FEqFilter[0, Index].ClassType)
+  then Result := TBandwidthIIRFilterClass(FEqFilter[0, Index].ClassType)
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
@@ -273,7 +270,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FDCFilter) - 1 do
-  if assigned(FDCFilter[Channel])
+  if Assigned(FDCFilter[Channel])
    then FDCFilter[Channel].Frequency := Value;
 end;
 
@@ -283,14 +280,14 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FDCFilter) - 1 do
-  if assigned(FDCFilter[Channel])
-   then FDCFilter[Channel].Order := round(Value);
+  if Assigned(FDCFilter[Channel])
+   then FDCFilter[Channel].Order := Round(Value);
 end;
 
 procedure TTrackPlugModule.ParameterEqTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : Predefined := 'Bypass';
   1 : Predefined := 'Lowcut';
   2 : Predefined := 'Lowshelf';
@@ -310,7 +307,7 @@ begin
  Band := (Index - 2) div 4;
 
  for Channel := 0 to Length(FEqFilter) - 1 do
-  if assigned(FEqFilter[Channel, Band])
+  if Assigned(FEqFilter[Channel, Band])
    then FEqFilter[Channel, Band].Frequency := Value;
 end;
 
@@ -322,7 +319,7 @@ begin
  Band := (Index - 2) div 4;
 
  for Channel := 0 to Length(FEqFilter) - 1 do
-  if assigned(FEqFilter[Channel, Band])
+  if Assigned(FEqFilter[Channel, Band])
    then FEqFilter[Channel, Band].Gain := Value;
 end;
 
@@ -334,7 +331,7 @@ begin
  Band := (Index - 2) div 4;
 
  for Channel := 0 to Length(FEqFilter) - 1 do
-  if assigned(FEqFilter[Channel, Band])
+  if Assigned(FEqFilter[Channel, Band])
    then FEqFilter[Channel, Band].Bandwidth := Value;
 end;
 
@@ -346,13 +343,13 @@ var
 begin
  if (Index >= 0) and (Index < Length(FEqFilter[0])) then
   for Channel := 0 to Length(FEqFilter) - 1 do
-   if assigned(FEqFilter[Channel, Index]) then
+   if Assigned(FEqFilter[Channel, Index]) then
     if TBandwidthIIRFilterClass(FEqFilter[Channel, Index].ClassType) <> Value then
      begin
       OldFilter := FEqFilter[Channel, Index];
       FEqFilter[Channel, Index] := Value.Create;
       FEqFilter[Channel, Index].Assign(OldFilter);
-      if assigned(OldFilter) then FreeAndNil(OldFilter);
+      if Assigned(OldFilter) then FreeAndNil(OldFilter);
      end else
    else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
@@ -364,8 +361,8 @@ var
 begin
  Band := (Index - 2) div 4;
 
- if assigned(FEqFilter[0, Band]) then
-  case round(Value) of
+ if Assigned(FEqFilter[0, Band]) then
+  case Round(Value) of
     0 : FilterClass[Band] := TBasicGainFilter;
     1 : FilterClass[Band] := TBasicLowcutFilter;
     2 : FilterClass[Band] := TBasicLowShelfFilter;
@@ -385,10 +382,10 @@ begin
  Assert(Index >= 43);
  Band := (Index - 43) div 8;
 
- if assigned(FCompressor[0, Band]) then
+ if Assigned(FCompressor[0, Band]) then
   begin
    FCompressor[0, Band].Attack := Value;
-   if assigned(FCompressor[1, Band])
+   if Assigned(FCompressor[1, Band])
     then FCompressor[1, Band].Attack := FCompressor[0, Band].Attack;
   end;
 end;
@@ -401,10 +398,10 @@ begin
  Assert(Index >= 43);
  Band := (Index - 43) div 8;
 
- if assigned(FCompressor[0, Band]) then
+ if Assigned(FCompressor[0, Band]) then
   begin
    FCompressor[0, Band].Release := Value;
-   if assigned(FCompressor[1, Band])
+   if Assigned(FCompressor[1, Band])
     then FCompressor[1, Band].Release := FCompressor[0, Band].Release;
   end;
 end;
@@ -417,10 +414,10 @@ begin
  Assert(Index >= 43);
  Band := (Index - 43) div 8;
 
- if assigned(FCompressor[0, Band]) then
+ if Assigned(FCompressor[0, Band]) then
   begin
    FCompressor[0, Band].Threshold_dB := Value;
-   if assigned(FCompressor[1, Band])
+   if Assigned(FCompressor[1, Band])
     then FCompressor[1, Band].Threshold_dB := Value;
   end;
 end;
@@ -433,10 +430,10 @@ begin
  Assert(Index >= 43);
  Band := (Index - 43) div 8;
 
- if assigned(FCompressor[0, Band]) then
+ if Assigned(FCompressor[0, Band]) then
   begin
    FCompressor[0, Band].Ratio := Value;
-   if assigned(FCompressor[1, Band])
+   if Assigned(FCompressor[1, Band])
     then FCompressor[1, Band].Ratio := Value;
   end;
 end;
@@ -449,10 +446,10 @@ begin
  Assert(Index >= 43);
  Band := (Index - 43) div 8;
 
- if assigned(FCompressor[0, Band]) then
+ if Assigned(FCompressor[0, Band]) then
   begin
    FCompressor[0, Band].Knee_dB := Value;
-   if assigned(FCompressor[1, Band])
+   if Assigned(FCompressor[1, Band])
     then FCompressor[1, Band].Knee_dB := Value;
   end;
 end;
@@ -465,9 +462,9 @@ begin
  Assert(Index >= 43);
  Band := (Index - 43) div 8;
 
- if assigned(FCompressor[0, Band]) then
+ if Assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0, Band].AutoMakeUp := Boolean(round(Value));
+   FCompressor[0, Band].AutoMakeUp := Boolean(Round(Value));
    FCompressor[1, Band].AutoMakeUp := FCompressor[0, Band].AutoMakeUp;
   end;
 end;
@@ -481,10 +478,10 @@ end;
 procedure TTrackPlugModule.ParameterGateAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FGate[0]) then
+ if Assigned(FGate[0]) then
   begin
    FGate[0].Attack := Value;
-   if assigned(FGate[1])
+   if Assigned(FGate[1])
     then FGate[1].Attack := FGate[0].Attack;
   end;
 end;
@@ -492,10 +489,10 @@ end;
 procedure TTrackPlugModule.ParameterGateReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FGate[0]) then
+ if Assigned(FGate[0]) then
   begin
    FGate[0].Release := Value;
-   if assigned(FGate[1])
+   if Assigned(FGate[1])
     then FGate[1].Release := FGate[0].Release;
   end;
 end;
@@ -503,10 +500,10 @@ end;
 procedure TTrackPlugModule.ParameterGateThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FGate[0]) then
+ if Assigned(FGate[0]) then
   begin
    FGate[0].Threshold_dB := Value;
-   if assigned(FGate[1])
+   if Assigned(FGate[1])
     then FGate[1].Threshold_dB := Value;
   end;
 end;
@@ -514,10 +511,10 @@ end;
 procedure TTrackPlugModule.ParameterGateRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FGate[0]) then
+ if Assigned(FGate[0]) then
   begin
    FGate[0].Ratio := Value;
-   if assigned(FGate[1])
+   if Assigned(FGate[1])
     then FGate[1].Ratio := Value;
   end;
 end;
@@ -525,16 +522,16 @@ end;
 procedure TTrackPlugModule.ParameterGateKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FGate[0]) then
+ if Assigned(FGate[0]) then
   begin
    FGate[0].Knee_dB := Value;
-   if assigned(FGate[1])
+   if Assigned(FGate[1])
     then FGate[1].Knee_dB := Value;
   end;
 end;
 
 procedure TTrackPlugModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -546,7 +543,7 @@ begin
 end;
 
 procedure TTrackPlugModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin
@@ -559,7 +556,7 @@ begin
 end;
 
 procedure TTrackPlugModule.ParameterMakeUpGainDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
@@ -572,7 +569,7 @@ begin
  Assert(Index >= 43);
  Band := (Index - 43) div 8;
 
- if assigned(FCompressor[0, Band]) then
+ if Assigned(FCompressor[0, Band]) then
   begin
    FCompressor[0, Band].MakeUpGain_dB := Value;
    FCompressor[1, Band].MakeUpGain_dB := FCompressor[0, Band].MakeUpGain_dB;
@@ -580,27 +577,27 @@ begin
 end;
 
 procedure TTrackPlugModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TTrackPlugModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TTrackPlugModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TTrackPlugModule.ParameterOnOffDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
@@ -613,19 +610,19 @@ var
 begin
  // DC filters
  for Channel := 0 to Length(FDCFilter) - 1 do
-  if assigned(FDCFilter[Channel])
+  if Assigned(FDCFilter[Channel])
    then FDCFilter[Channel].SampleRate := SampleRate;
 
  // EQ filters
  for Channel := 0 to Length(FEqFilter) - 1 do
   for Band := 0 to Length(FEqFilter[Channel]) - 1 do
-   if assigned(FEqFilter[Channel, Band])
+   if Assigned(FEqFilter[Channel, Band])
     then FEqFilter[Channel, Band].SampleRate := SampleRate;
 
  // compressor
  for Channel := 0 to Length(FCompressor) - 1 do
   for Band := 0 to Length(FCompressor[Channel]) - 1 do
-   if assigned(FCompressor[Channel, Band])
+   if Assigned(FCompressor[Channel, Band])
     then FCompressor[Channel, Band].SampleRate := SampleRate;
 end;
 

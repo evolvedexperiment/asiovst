@@ -27,7 +27,6 @@ object FmFrequencyDomainPitchShifter: TFmFrequencyDomainPitchShifter
     Caption = 'Semitones'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object LbSemitoneValue: TGuiLabel
     Left = 8
@@ -38,7 +37,6 @@ object FmFrequencyDomainPitchShifter: TFmFrequencyDomainPitchShifter
     Caption = 'Semitones'
     FontOversampling = fo4x
     Shadow.Blur = 4.000000000000000000
-    Shadow.Color = clBlack
   end
   object DialSemitones: TGuiStitchedDial
     Left = 37
@@ -47,10 +45,13 @@ object FmFrequencyDomainPitchShifter: TFmFrequencyDomainPitchShifter
     Height = 56
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    OnChange = DialSemitonesChange
+    ScrollRange = 400.000000000000000000
     ImageList = GSPL
     ImageIndex = 0
     WheelStep = 1.000000000000000000
+    OnChange = DialSemitonesChange
+    DefaultValue = 0.000000000000000000
+    Value = 0.000000000000000000
   end
   object GSPL: TGuiStitchedPNGList
     StitchedPNGs = <
@@ -1881,7 +1882,6 @@ object FmFrequencyDomainPitchShifter: TFmFrequencyDomainPitchShifter
           701F701FC8F781FF3FF19CE47796B77C640000000049454E44AE426082}
         DisplayName = 'Knob'
         GlyphCount = 65
-        StitchKind = skHorizontal
         Height = 56
         Width = 3640
       end>

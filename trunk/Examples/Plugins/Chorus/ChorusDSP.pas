@@ -210,8 +210,8 @@ procedure TChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer;
 begin
  FCriticalSection.Enter;
  try
-  if Assigned(FChorus[0]) then FChorus[0].Stages := round(Value);
-  if Assigned(FChorus[1]) then FChorus[1].Stages := round(Value);
+  if Assigned(FChorus[0]) then FChorus[0].Stages := Round(Value);
+  if Assigned(FChorus[1]) then FChorus[1].Stages := Round(Value);
  finally
   FCriticalSection.Leave;
  end;

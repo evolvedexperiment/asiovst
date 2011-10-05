@@ -42,7 +42,6 @@ type
   TDecimatorFilterType = (dftLowpass, dftHighpass);
   TVSTDecimator = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
@@ -53,7 +52,7 @@ type
     procedure ParameterWetDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFilterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FCutoffFreqNorm  : Double;
     FResonance       : Double;
@@ -137,21 +136,18 @@ begin
    Parameter[5] := 100;
    Parameter[6] := 0;
   end;
+
+ // set editor form class
+ EditorFormClass := TVSTGUI;
 end;
 
 procedure TVSTDecimator.ParameterFilterTypeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case FFilterType of
   dftLowpass  : PreDefined := 'Lowpass';
   dftHighpass : PreDefined := 'Highpass';
  end;
-end;
-
-procedure TVSTDecimator.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TVSTGUI.Create(Self);
 end;
 
 

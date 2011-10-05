@@ -246,7 +246,7 @@ begin
    SpectrumAnalyser.Invalidate;
    {$ELSE}
    for j := 0 to cNumFrequencies - 1
-    do TBar(SpectrumAnalyser.Bars.Items[Band]).Value := round(FFilterArray[cNumFrequencies - Band - 1].RMS + FFSGain);
+    do TBar(SpectrumAnalyser.Bars.Items[Band]).Value := Round(FFilterArray[cNumFrequencies - Band - 1].RMS + FFSGain);
    SpectrumAnalyser.Invalidate;
    {$ENDIF}
   end;
@@ -275,8 +275,8 @@ procedure TFmAudioAmelioration.UpdateExciter;
 begin
  with TAudioAmeliorationModule(Owner) do
   begin
-   if TbExciter.Position <> round(0.1 * Parameter[6])
-    then TbExciter.Position := round(0.1 * Parameter[6]);
+   if TbExciter.Position <> Round(0.1 * Parameter[6])
+    then TbExciter.Position := Round(0.1 * Parameter[6]);
   end;
 end;
 
@@ -293,8 +293,8 @@ procedure TFmAudioAmelioration.UpdateAmbience;
 begin
  with TAudioAmeliorationModule(Owner) do
   begin
-   if TbAmbience.Position <> round(0.1 * Parameter[7])
-    then TbAmbience.Position := round(0.1 * Parameter[7]);
+   if TbAmbience.Position <> Round(0.1 * Parameter[7])
+    then TbAmbience.Position := Round(0.1 * Parameter[7]);
   end;
 end;
 
@@ -311,8 +311,8 @@ procedure TFmAudioAmelioration.Update3DSurround;
 begin
  with TAudioAmeliorationModule(Owner) do
   begin
-   if Tb3DSurround.Position <> round(0.1 * Parameter[8])
-    then Tb3DSurround.Position := round(0.1 * Parameter[8]);
+   if Tb3DSurround.Position <> Round(0.1 * Parameter[8])
+    then Tb3DSurround.Position := Round(0.1 * Parameter[8]);
   end;
 end;
 
@@ -329,8 +329,8 @@ procedure TFmAudioAmelioration.UpdateCompressor;
 begin
  with TAudioAmeliorationModule(Owner) do
   begin
-   if TbCompressor.Position <> round(0.1 * Parameter[9])
-    then TbCompressor.Position := round(0.1 * Parameter[9]);
+   if TbCompressor.Position <> Round(0.1 * Parameter[9])
+    then TbCompressor.Position := Round(0.1 * Parameter[9]);
   end;
 end;
 
@@ -347,8 +347,8 @@ procedure TFmAudioAmelioration.UpdateExtraBass;
 begin
  with TAudioAmeliorationModule(Owner) do
   begin
-   if TbExtraBass.Position <> round(0.1 * Parameter[10])
-    then TbExtraBass.Position := round(0.1 * Parameter[10]);
+   if TbExtraBass.Position <> Round(0.1 * Parameter[10])
+    then TbExtraBass.Position := Round(0.1 * Parameter[10]);
   end;
 end;
 

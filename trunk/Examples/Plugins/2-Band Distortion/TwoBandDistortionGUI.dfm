@@ -31,13 +31,13 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
     Alpha = 200
     Anchors = [akLeft, akTop, akRight]
     BorderColor = clWhite
+    BorderRadius = 13.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = 6908265
     ParentColor = True
-    BorderRadius = 13.000000000000000000
     TabOrder = 0
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbFreq: TGuiLabel
       Left = 16
       Top = 6
@@ -205,7 +205,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Height = 64
       Color = 6908265
       CurveMapping = -2.099999904632568000
-      DefaultValue = 1000.000000000000000000
+      DefaultValue = 100.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       ParentColor = False

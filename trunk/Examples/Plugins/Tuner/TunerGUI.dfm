@@ -30,13 +30,14 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    FontOversampling = fo4x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo4x
+    ParentFont = False
     OnClick = LbNoteClick
   end
   object LbA: TGuiLabel
@@ -44,13 +45,14 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    FontOversampling = fo3x
     Caption = 'A'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo3x
+    ParentFont = False
     OnClick = LbNoteClick
   end
   object LbD: TGuiLabel
@@ -58,13 +60,14 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    FontOversampling = fo3x
     Caption = 'D'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo3x
+    ParentFont = False
     OnClick = LbNoteClick
   end
   object LbG: TGuiLabel
@@ -72,13 +75,14 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    FontOversampling = fo3x
     Caption = 'G'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo3x
+    ParentFont = False
     OnClick = LbNoteClick
   end
   object LbH: TGuiLabel
@@ -86,13 +90,14 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    FontOversampling = fo3x
     Caption = 'H'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo3x
+    ParentFont = False
     OnClick = LbNoteClick
   end
   object LbE: TGuiLabel
@@ -100,13 +105,14 @@ object FmTuner: TFmTuner
     Top = 63
     Width = 18
     Height = 28
-    FontOversampling = fo3x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    FontOversampling = fo3x
+    ParentFont = False
     OnClick = LbNoteClick
   end
   object LbGuitarTuning: TGuiLabel
@@ -114,13 +120,14 @@ object FmTuner: TFmTuner
     Top = 68
     Width = 122
     Height = 23
-    FontOversampling = fo4x
     Caption = 'Guitar Tuning:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    FontOversampling = fo4x
+    ParentFont = False
   end
   object Timer: TTimer
     Interval = 20

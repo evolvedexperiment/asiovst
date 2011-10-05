@@ -179,7 +179,7 @@ begin
   begin
    Val := (Parameter[4] - 200) / 19800;
    Val := log2(100 * Val + 1) / log2(100 + 1);
-   SbPos := round(1000 * Val);
+   SbPos := Round(1000 * Val);
    if SbFrequency.Position <> SbPos
     then SbFrequency.Position := SbPos;
   end;

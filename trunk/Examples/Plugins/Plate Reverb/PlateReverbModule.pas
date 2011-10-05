@@ -44,7 +44,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleProcessReplacing(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -137,26 +136,23 @@ begin
  // preset 3
  with Programs[3] do
   begin
-   Parameter[0] := 100 * random;
-   Parameter[1] := 100 * random;
-   Parameter[2] := 100 * random;
-   Parameter[3] := 100 * random;
-   Parameter[4] := 100 * random;
-   Parameter[5] := 100 * random;
-   Parameter[6] := 100 * random;
-   Parameter[7] := 100 * random;
+   Parameter[0] := 100 * Random;
+   Parameter[1] := 100 * Random;
+   Parameter[2] := 100 * Random;
+   Parameter[3] := 100 * Random;
+   Parameter[4] := 100 * Random;
+   Parameter[5] := 100 * Random;
+   Parameter[6] := 100 * Random;
+   Parameter[7] := 100 * Random;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmPlateReverb;
 end;
 
 procedure TPlateReverbVST.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FPlateReverb);
-end;
-
-procedure TPlateReverbVST.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmPlateReverb.Create(Self);
 end;
 
 procedure TPlateReverbVST.ParameterDryChange(
@@ -277,17 +273,17 @@ end;
 
 procedure TPlateReverbVST.VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  i: Integer;
+  SampleIndex: Integer;
 begin
  FCriticalSection.Enter;
  try
-  for i := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, i] + Inputs[1, i]) * CHalf32);
+    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, SampleIndex] + Inputs[1, SampleIndex]) * CHalf32);
 
     // Calculate output MIXING with anything already there
-    Outputs[0, i] := Outputs[0, i] + FMix[0] * Inputs[0, i] + FMix[1] * FPlateReverb.OutputLeft;
-    Outputs[1, i] := Outputs[1, i] + FMix[0] * Inputs[1, i] + FMix[1] * FPlateReverb.OutputRight;
+    Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FPlateReverb.OutputLeft;
+    Outputs[1, SampleIndex] := Outputs[1, SampleIndex] + FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FPlateReverb.OutputRight;
    end;
  finally
   FCriticalSection.Leave;
@@ -296,17 +292,17 @@ end;
 
 procedure TPlateReverbVST.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  i: Integer;
+  SampleIndex: Integer;
 begin
  FCriticalSection.Enter;
  try
-  for i := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, i] + Inputs[1, i]) * CHalf32);
+    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, SampleIndex] + Inputs[1, SampleIndex]) * CHalf32);
 
     // Calculate output REPLACING with anything already there
-    Outputs[0, i] := FMix[0] * Inputs[0, i] + FMix[1] * FPlateReverb.OutputLeft;
-    Outputs[1, i] := FMix[0] * Inputs[1, i] + FMix[1] * FPlateReverb.OutputRight;
+    Outputs[0, SampleIndex] := FMix[0] * Inputs[0, SampleIndex] + FMix[1] * FPlateReverb.OutputLeft;
+    Outputs[1, SampleIndex] := FMix[0] * Inputs[1, SampleIndex] + FMix[1] * FPlateReverb.OutputRight;
    end;
  finally
   FCriticalSection.Leave;
