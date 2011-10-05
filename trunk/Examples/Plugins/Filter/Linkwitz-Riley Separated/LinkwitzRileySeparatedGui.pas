@@ -38,7 +38,8 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
   StdCtrls, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiBaseControl,
   DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedPngList, DAV_GuiPixelMap;
+  DAV_GuiStitchedPngList, DAV_GuiPixelMap, DAV_GuiImageControl,
+  DAV_GuiCustomControl, DAV_GuiGraphicControl;
 
 type
   TFmLinkwitzRiley = class(TForm)
@@ -180,7 +181,7 @@ begin
   begin
    if DialFrequency.Value <> Parameter[0]
     then DialFrequency.Value := Parameter[0];
-   LbDisplay.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbDisplay.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
 
@@ -190,7 +191,7 @@ begin
   begin
    if DialSlope.Value <> Parameter[1]
     then DialSlope.Value := Parameter[1];
-   LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + 'dB/Oct';
+   LbDisplay.Caption := string('Slope: ' + ParameterDisplay[1] + 'dB/Oct');
   end;
 end;
 
@@ -200,7 +201,7 @@ begin
   begin
    if DialType.Value <> Parameter[2]
     then DialType.Value := Parameter[2];
-   LbDisplay.Caption := ParameterDisplay[2];
+   LbDisplay.Caption := string(ParameterDisplay[2]);
   end;
 end;
 
