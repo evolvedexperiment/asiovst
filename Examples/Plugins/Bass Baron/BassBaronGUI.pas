@@ -233,9 +233,11 @@ end;
 
 procedure TFmBassBaron.FormResize(Sender: TObject);
 var
+(*
   RS     : TResourceStream;
   Png32  : TPortableNetworkGraphicPixel32;
   PM     : TGuiCustomPixelMap;
+*)
   x, y   : Integer;
   s      : array [0..2] of Single;
   h, hr  : Single;

@@ -5,7 +5,9 @@ library BassBaron;
 
 uses
   FastMM4,
+  {$IFDEF UseFastMove}
   FastMove,
+  {$ENDIF}
   {$IFDEF UseMadExcept}
   madExcept, // either download madExcept or remove mad* if there is an error here
   madLinkDisAsm,

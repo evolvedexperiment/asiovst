@@ -60,7 +60,7 @@ type
     { IContextMenu }
     function QueryContextMenu(Menu: HMENU; indexMenu, idCmdFirst, idCmdLast, uFlags: UINT): HResult; stdcall;
     function InvokeCommand(var lpici: TCMInvokeCommandInfo): HResult; stdcall;
-    function GetCommandString(idCmd, uType: UINT; pwReserved: PUINT; pszName: LPSTR; cchMax: UINT): HResult; stdcall;
+    function GetCommandString(idCmd: UINT_PTR; uFlags: UINT; pwReserved: PUINT; pszName: LPSTR; cchMax: UINT): HResult; stdcall;
   end;
 
 const
@@ -263,9 +263,8 @@ begin
     end;
 end;
 
-function TContextMenu.GetCommandString(idCmd, uType: UINT;
+function TContextMenu.GetCommandString(idCmd: UINT_PTR; uFlags: UINT;
   pwReserved: PUINT; pszName: LPSTR; cchMax: UINT): HResult;
-
 begin
   Result := S_OK;
 end;

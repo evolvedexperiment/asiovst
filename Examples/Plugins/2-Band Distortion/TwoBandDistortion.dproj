@@ -8,7 +8,7 @@
 			<AppType>Library</AppType>
 			<FrameworkType>None</FrameworkType>
 			<ProjectVersion>13.4</ProjectVersion>
-			<Platform Condition="'$(Platform)'==''">Win32</Platform>
+			<Platform Condition="'$(Platform)'==''">Win64</Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
 			<Base>true</Base>
@@ -74,7 +74,7 @@
 			<DCC_ExeOutput>..\..\..\Bin\$(Platform)\VST</DCC_ExeOutput>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<Manifest_File>None</Manifest_File>
-			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)</DCC_DcuOutput>
+			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;Vcl;$(DCC_Namespace)</DCC_Namespace>
@@ -220,7 +220,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
+			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='OSX32'">
@@ -228,7 +228,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
+			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win32'">
@@ -236,7 +236,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
+			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 	</Project>

@@ -32,7 +32,7 @@ type
     SampleRate: Integer): Integer; cdecl;
 
   TWinampDSPModule = record
-                      Description   : PChar;
+                      Description   : PAnsiChar;
                       HwndParent    : Hwnd;
                       HDLLinstance  : Hinst;
                       Config        : TWAConfig;
@@ -44,7 +44,7 @@ type
 
   TWinAmpDSPHeader = record
                       Version      : Integer;
-                      Description  : PChar;
+                      Description  : PAnsiChar;
                       GetModule    : TWAGetModule;
                       Key          : Integer;
                      end;
@@ -65,8 +65,8 @@ type
     FSampleRate    : Integer;
     FSampleFrames  : Integer;
     FEditorForm    : TFmWinAmpVST;
-    FRegistryKey   : string;
-    FFxpName       : string;
+    FRegistryKey   : AnsiString;
+    FFxpName       : AnsiString;
 {
     FRealDelay     : Integer;
     FPDCBuffer     : TArrayOfSingleArray;
@@ -121,8 +121,8 @@ type
       BitPerSample, ChannelCount, SampleRate: Integer): Integer;
   published
     property WinAmpDspModule: TWinampDSPModule read GetWinampDSPModule;
-    property RegistryKey: string read FRegistryKey;
-    property FxpName: string read FFxpName;
+    property RegistryKey: AnsiString read FRegistryKey;
+    property FxpName: AnsiString read FFxpName;
     property VstHost: TVstHost read FVstHost;
     property Bypass: Boolean read FBypass write FBypass;
     property Enhanced: Boolean read GetEnhanced write SetEnhanced;
@@ -371,6 +371,7 @@ begin
   end;
 end;
 
+
 { TWinAmpObject }
 
 constructor TWinAmpObject.CreateNew(AOwner: TComponent; const AWinAmpDspModule: PWinampDSPModule);
@@ -401,7 +402,7 @@ begin
   
 //  GetModuleFileName(HInstance, @FFxpName[1], 254);
   GetModuleFileName(AWinAmpDspModule.hDLLinstance, @FFxpName[1], 254);
-  FFxpName := strpas(@FFxpName[1]);
+  FFxpName := StrPas(@FFxpName[1]);
   FRegistryKey := ExtractFileName(FFxpName);
   if FRegistryKey = 'dsp_vst.dll'                          
    then FRegistryKey := 'Software\WinAmp\VST Host DSP Plugin'

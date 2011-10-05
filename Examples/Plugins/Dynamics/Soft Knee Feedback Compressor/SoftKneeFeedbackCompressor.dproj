@@ -20,7 +20,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DcuOutput>..\..\..\..\UnitCache\$(Platform)</DCC_DcuOutput>
+			<DCC_DcuOutput>..\..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_DependencyCheckOutputName>..\..\..\..\Bin\Win32\VST\SoftKneeFeedbackCompressor.dll</DCC_DependencyCheckOutputName>
 			<DCC_UnitSearchPath>..\..\..\..\source;..\..\..\..\source\ASIO;..\..\..\..\source\DSP;..\..\..\..\source\GUI;..\..\..\..\source\Math;..\..\..\..\source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_MapFile>3</DCC_MapFile>

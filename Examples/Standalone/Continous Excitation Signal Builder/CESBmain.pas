@@ -61,7 +61,6 @@ type
     BtBuild: TButton;
     LbChannels: TLabel;
     SeChannels: TSpinEdit;
-    XPManifest1: TXPManifest;
     LbLength: TLabel;
     SeLength: TSpinEdit;
     LbLengthUnit: TLabel;

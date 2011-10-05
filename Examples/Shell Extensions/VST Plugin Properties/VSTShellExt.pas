@@ -35,8 +35,8 @@ interface
 {$WARN SYMBOL_PLATFORM OFF}
 
 uses
-  FastMove, Windows, ActiveX, ComObj, VSTPropertySheet_TLB, ShlObj,
-  CommCtrl, SysUtils, Forms, StdVcl;
+  Windows, ActiveX, ComObj, VSTPropertySheet_TLB, ShlObj, CommCtrl, SysUtils,
+  Forms, StdVcl;
 
 type
   TVSTPluginPropertySheet = class(TTypedComObject, IVSTPluginPropertySheet,

@@ -36,7 +36,7 @@ interface
 {$WARN SYMBOL_PLATFORM OFF}
 
 uses
-  FastMove, Windows, ActiveX, ComObj, AudioSheet_TLB, ShlObj,
+  Windows, ActiveX, ComObj, AudioSheet_TLB, ShlObj,
   CommCtrl, SysUtils, Forms, StdVcl;
 
 type

@@ -1,9 +1,9 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{6EF0140A-3055-4580-A921-CAD8840AF50B}</ProjectGuid>
 			<MainSource>AdvancedClipper.dpr</MainSource>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<TargetedPlatforms>3</TargetedPlatforms>
 			<AppType>Library</AppType>
 			<FrameworkType>None</FrameworkType>
@@ -43,7 +43,7 @@
 			<Manifest_File>None</Manifest_File>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)</DCC_DcuOutput>
+			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;Vcl;$(DCC_Namespace)</DCC_Namespace>
 			<DCC_MapFile>3</DCC_MapFile>
