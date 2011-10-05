@@ -24,7 +24,7 @@
 
 { Disable this option if you want to use range/overflow checks of the compiler
   The default is enabled. }
-{$DEFINE ZeroArray}
+{-$DEFINE ZeroArray}
 
 { Enable this option for platform independent testing. No assembler code is
   used if this is checked}

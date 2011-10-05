@@ -2,6 +2,9 @@
 library Float;
 
 uses
+  {$IFDEF UseFastMove}
+  FastMove,
+  {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

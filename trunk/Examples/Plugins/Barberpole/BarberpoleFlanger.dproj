@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{253F18AD-A90C-4928-B0D2-1D89A1108C16}</ProjectGuid>
 			<MainSource>BarberpoleFlanger.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>13.4</ProjectVersion>
 			<FrameworkType>None</FrameworkType>

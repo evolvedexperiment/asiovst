@@ -1,5 +1,4 @@
 object BarberpoleFlangerModule: TBarberpoleFlangerModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -124,8 +123,6 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 81
   Height = 150
   Width = 215
 end

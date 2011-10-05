@@ -3,7 +3,7 @@
 			<ProjectGuid>{81BB597B-E111-47DC-AB22-A9D1F37E5359}</ProjectGuid>
 			<MainSource>TwoBandDistortion.dpr</MainSource>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<TargetedPlatforms>3</TargetedPlatforms>
 			<AppType>Library</AppType>
 			<FrameworkType>None</FrameworkType>

@@ -3,7 +3,9 @@ library Hysteresis;
 
 uses
   FastMM4,
-  FastMove,
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or comment if there is an error here
+  {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

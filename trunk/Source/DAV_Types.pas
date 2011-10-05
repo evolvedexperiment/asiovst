@@ -56,9 +56,9 @@ type
   PDAVSingleDynArray = ^TDAVSingleDynArray;
   PDAVDoubleDynArray = ^TDAVDoubleDynArray;
 
-  TDAVSingleFixedArray = array [0..{$IFDEF ZeroArray}0{$ELSE}MaxInt{$ENDIF}] of Single;
+  TDAVSingleFixedArray = array [0..{$IFDEF ZeroArray}0{$ELSE}MaxInt div SizeOf(Single) - 1{$ENDIF}] of Single;
   PDAVSingleFixedArray = ^TDAVSingleFixedArray;
-  TDAVDoubleFixedArray = array [0..{$IFDEF ZeroArray}0{$ELSE}MaxInt{$ENDIF}] of Double;
+  TDAVDoubleFixedArray = array [0..{$IFDEF ZeroArray}0{$ELSE}MaxInt div SizeOf(Double) - 1{$ENDIF}] of Double;
   PDAVDoubleFixedArray = ^TDAVDoubleFixedArray;
 
   TDAVArrayOfSingleDynArray = array of TDAVSingleDynArray;

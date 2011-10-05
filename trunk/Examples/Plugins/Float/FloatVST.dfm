@@ -48,8 +48,6 @@ object FloatModule: TFloatModule
   OnProcess = VSTModuleProcess32_8
   OnProcess32Replacing = VSTModuleProcess32_8
   OnProcess64Replacing = VSTModuleProcess64_8
-  Left = 299
-  Top = 55
   Height = 150
   Width = 215
 end
