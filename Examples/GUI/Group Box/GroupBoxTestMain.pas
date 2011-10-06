@@ -118,10 +118,10 @@ end;
 
 procedure TFmGroupBoxTest.SlRoundRadiusChange(Sender: TObject);
 begin
- GroupA.Radius := SlRoundRadius.Value;
- GroupB.Radius := SlRoundRadius.Value;
- GroupC.Radius := SlRoundRadius.Value;
- GroupD.Radius := SlRoundRadius.Value;
+ GroupA.BorderRadius := SlRoundRadius.Value;
+ GroupB.BorderRadius := SlRoundRadius.Value;
+ GroupC.BorderRadius := SlRoundRadius.Value;
+ GroupD.BorderRadius := SlRoundRadius.Value;
 end;
 
 procedure TFmGroupBoxTest.CbTransparentClick(Sender: TObject);

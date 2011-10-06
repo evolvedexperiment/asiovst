@@ -44,9 +44,9 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure HMMEffectChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure HMMModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure HMMModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure HMMModelChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure HMMPolarityDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure HMMPolarityDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure HMMPolarityChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCTSimulator : TCustomIIRCrosstalkSimulator;
@@ -87,7 +87,7 @@ begin
 end;
 
 procedure THMModule.HMMModelDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[index]) of
   0 : PreDefined := 'handcrafted';
@@ -117,7 +117,7 @@ begin
 end;
 
 procedure THMModule.HMMPolarityDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[index] > 0.5
   then PreDefined := '-'

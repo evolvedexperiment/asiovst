@@ -88,7 +88,6 @@ type
     FExtraBassActive    : Boolean;
     FPowerActive        : Boolean;
 
-    FMaxDSStages        : Integer;
     FDownSampleCount    : Integer;
     FDownSampleMax      : Integer;
     FBandReserve        : Double;

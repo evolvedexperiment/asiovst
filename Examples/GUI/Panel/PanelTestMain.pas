@@ -122,10 +122,10 @@ end;
 
 procedure TFmPanelTest.SlRoundRadiusChange(Sender: TObject);
 begin
- PanelA.Radius := SlRoundRadius.Value;
- PanelB.Radius := SlRoundRadius.Value;
- PanelC.Radius := SlRoundRadius.Value;
- PanelD.Radius := SlRoundRadius.Value;
+ PanelA.BorderRadius := SlRoundRadius.Value;
+ PanelB.BorderRadius := SlRoundRadius.Value;
+ PanelC.BorderRadius := SlRoundRadius.Value;
+ PanelD.BorderRadius := SlRoundRadius.Value;
 end;
 
 end.

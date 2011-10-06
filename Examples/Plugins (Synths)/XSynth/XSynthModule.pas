@@ -42,7 +42,6 @@ type
   TVSTSSModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTSSModuleLevelParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTSSModuleOsc1TypeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -60,7 +59,8 @@ type
     procedure VSTSSModuleOsc2ReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTSSModuleOsc2SustainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTSSModuleOsc2LevelChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
   private
     FLevel  : Single;
     FDrive  : Single;
@@ -72,12 +72,16 @@ type
     function GetOscilators(index: integer): TOsc;
   public
     property Voices: TVoiceList read FVoices;
-    property Oscilators[index:integer] : TOsc read GetOscilators;
+    property Oscilators[Index: Integer] : TOsc read GetOscilators;
   end;
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   Math, DAV_Common, DAV_Approximations, XSynthGUI;
@@ -152,6 +156,9 @@ begin
    Parameter[14] := 8;
    Parameter[15] := 90;
   end;
+
+ // set editor form class
+ EditorFormClass := TVSTGUI;
 end;
 
 procedure TVSTSSModule.VSTModuleClose(Sender: TObject);
@@ -159,46 +166,78 @@ begin
  FreeAndNil(FVoices);
 end;
 
-procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
-
-procedure TVSTSSModule.VSTModuleProcess(inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVSTSSModule.VSTModuleProcess32Replacing(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  i, j : Integer;
-  fb   : Single;
+  VoiceIndex  : Integer;
+  SampleIndex : Integer;
+  fb          : Single;
 begin
 
- for j := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, j] := 0; i := 0;
-   while i < Voices.Count do
+   Outputs[0, SampleIndex] := 0; VoiceIndex := 0;
+   while VoiceIndex < Voices.Count do
     begin
-     Outputs[0, j] := Outputs[0, j] + Voices[i].Process;
-     inc(i);
+     Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + Voices[VoiceIndex].Process;
+     inc(VoiceIndex);
     end;
   end;
 
  if FDrive > 1 then
-  for j := 0 to SampleFrames - 1
-   do Outputs[0, j] := FastTanhOpt5TermFPU(FDrive * Outputs[0, j]);
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[0, SampleIndex] := FastTanhOpt5TermFPU(FDrive * Outputs[0, SampleIndex]);
 
  FCutoff[1] := 0.9 * FCutoff[1] + 0.1 * FCutoff[0];
  FRes[1] := 0.9 * FRes[1] + 0.1 * FRes[0];
 
  fb := FRes[1] + FRes[1] / (1 - FCutoff[1] * 0.9);
- for j := 0 to SampleFrames-1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   FOld[0] := FOld[0] + FCutoff[1] * (Outputs[0,j] - FOld[0] + fb * (FOld[0] - FOld[1])) + CDenorm32;
+   FOld[0] := FOld[0] + FCutoff[1] * (Outputs[0,SampleIndex] - FOld[0] + fb * (FOld[0] - FOld[1])) + CDenorm32;
    FOld[1] := FOld[1] + FCutoff[1] * (FOld[0] - FOld[1]);
-   Outputs[0, j] := FLevel * FOld[1];
+   Outputs[0, SampleIndex] := FLevel * FOld[1];
   end;
 
- for i := 1 to numOutputs - 1
-  do Move(Outputs[0,0], Outputs[i,0], SampleFrames * SizeOf(Single));
+ for VoiceIndex := 1 to numOutputs - 1
+  do Move(Outputs[0, 0], Outputs[VoiceIndex, 0], SampleFrames * SizeOf(Single));
+end;
+
+procedure TVSTSSModule.VSTModuleProcess64Replacing(const Inputs,
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+var
+  VoiceIndex  : Integer;
+  SampleIndex : Integer;
+  fb          : Single;
+begin
+
+ for SampleIndex := 0 to SampleFrames - 1 do
+  begin
+   Outputs[0, SampleIndex] := 0; VoiceIndex := 0;
+   while VoiceIndex < Voices.Count do
+    begin
+     Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + Voices[VoiceIndex].Process;
+     inc(VoiceIndex);
+    end;
+  end;
+
+ if FDrive > 1 then
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[0, SampleIndex] := FastTanhOpt5TermFPU(FDrive * Outputs[0, SampleIndex]);
+
+ FCutoff[1] := 0.9 * FCutoff[1] + 0.1 * FCutoff[0];
+ FRes[1] := 0.9 * FRes[1] + 0.1 * FRes[0];
+
+ fb := FRes[1] + FRes[1] / (1 - FCutoff[1] * 0.9);
+ for SampleIndex := 0 to SampleFrames - 1 do
+  begin
+   FOld[0] := FOld[0] + FCutoff[1] * (Outputs[0,SampleIndex] - FOld[0] + fb * (FOld[0] - FOld[1])) + CDenorm32;
+   FOld[1] := FOld[1] + FCutoff[1] * (FOld[0] - FOld[1]);
+   Outputs[0, SampleIndex] := FLevel * FOld[1];
+  end;
+
+ for VoiceIndex := 1 to numOutputs - 1
+  do Move(Outputs[0, 0], Outputs[VoiceIndex, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;

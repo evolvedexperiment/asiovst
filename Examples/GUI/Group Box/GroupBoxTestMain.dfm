@@ -166,6 +166,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Color = clBtnFace
     DefaultValue = 10.000000000000000000
     Max = 10.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 2.000000000000000000
     ShowText = True
@@ -183,6 +184,7 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Color = clBtnFace
     DefaultValue = 10.000000000000000000
     Max = 10.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 4.000000000000000000
     ShowText = True

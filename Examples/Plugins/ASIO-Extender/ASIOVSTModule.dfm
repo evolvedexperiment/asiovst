@@ -1,5 +1,4 @@
 object ASIOVSTModule: TASIOVSTModule
-  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'ASIO Extender'
@@ -74,8 +73,6 @@ object ASIOVSTModule: TASIOVSTModule
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 251
-  Top = 331
   Height = 188
   Width = 282
 end

@@ -198,7 +198,7 @@ begin
    FCriticalSection.Enter;
    try
     // load left channel
-    with TResourceStream.Create(HInstance, ResName + 'L', 'F16') do
+    with TResourceStream.Create(HInstance, string(ResName + 'L'), 'F16') do
      try
       c := 0;
       FImpulseLength[0] := Size div SizeOf(THalfFloat);
@@ -225,7 +225,7 @@ begin
      end;
 
     // load right channel
-    with TResourceStream.Create(HInstance, ResName + 'R', 'F16') do
+    with TResourceStream.Create(HInstance, string(ResName + 'R'), 'F16') do
      try
       c := 0;
       FImpulseLength[1] := Size div SizeOf(THalfFloat);

@@ -9,12 +9,13 @@ uses
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleProcess64Replacing(const Inputs,
+      Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32Replacing(const Inputs,
+      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
   private
     FVoices       : TVoiceList;
     FSample       : PDAVSingleFixedArray;
@@ -36,6 +37,9 @@ uses
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin
  FVoices := TVoiceList.Create(True);
+
+ // set editor form class
+ EditorFormClass := TVSTGUI;
 end;
 
 procedure TVSTSSModule.LoadFromFile(const FileName: TFileName);
@@ -59,42 +63,36 @@ begin
  FreeAndNil(FVoices);
 end;
 
-procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
-
-procedure TVSTSSModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVSTSSModule.VSTModuleProcess32Replacing(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  i, j : Integer;
+  VoiceIndex, SampleIndex : Integer;
 begin
  FillChar(Outputs[0,0], SampleFrames * SizeOf(Single), 0);
  FillChar(Outputs[1,0], SampleFrames * SizeOf(Single), 0);
 
- for j := 0 to SampleFrames - 1 do
-  for i := 0 to Voices.Count - 1
-   do Outputs[0, j] := Outputs[0, j] + Voices[i].Process;
+ for SampleIndex := 0 to SampleFrames - 1 do
+  for VoiceIndex := 0 to Voices.Count - 1
+   do Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + Voices[VoiceIndex].Process;
 
- for i := 1 to numOutputs - 1
-  do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
+ for VoiceIndex := 1 to numOutputs - 1
+  do Move(Outputs[0, 0], Outputs[VoiceIndex, 0], SampleFrames * SizeOf(Single));
 end;
 
-procedure TVSTSSModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-var i,j : Integer;
+procedure TVSTSSModule.VSTModuleProcess64Replacing(const Inputs,
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+var
+  VoiceIndex, SampleIndex : Integer;
 begin
  FillChar(Outputs[0, 0], SampleFrames * SizeOf(Double), 0);
  FillChar(Outputs[1, 0], SampleFrames * SizeOf(Double), 0);
 
- for j := 0 to SampleFrames - 1 do
-  for i := 0 to Voices.Count - 1
-   do Outputs[0, j] := Outputs[0, j] + Voices[i].Process;
+ for SampleIndex := 0 to SampleFrames - 1 do
+  for VoiceIndex := 0 to Voices.Count - 1
+   do Outputs[0, SampleIndex] := Outputs[0, SampleIndex] + Voices[VoiceIndex].Process;
 
- for i := 1 to numOutputs - 1
-  do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Double));
+ for VoiceIndex := 1 to numOutputs - 1
+  do Move(Outputs[0, 0], Outputs[VoiceIndex, 0], SampleFrames * SizeOf(Double));
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;

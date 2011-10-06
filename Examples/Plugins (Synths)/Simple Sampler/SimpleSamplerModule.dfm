@@ -8,7 +8,6 @@ object VSTSSModule: TVSTSSModule
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Fibo'
@@ -22,13 +21,10 @@ object VSTSSModule: TVSTSSModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
-  OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcess = VSTModuleProcess32Replacing
+  OnProcess32Replacing = VSTModuleProcess32Replacing
+  OnProcess64Replacing = VSTModuleProcess64Replacing
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcess
-  Left = 247
-  Top = 85
   Height = 150
   Width = 215
 end

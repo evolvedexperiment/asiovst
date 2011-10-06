@@ -27,7 +27,7 @@ type
     procedure NoteOn(Frequency, Amplitude: Single);
     procedure NoteOff;
     function Process: Single; virtual;
-  published
+
     property Frequency: Single read FFrequency write SetFrequency;
     property SampleRate: Single read FSampleRate write SetSampleRate;
     property MidiKeyNr: Integer read FMidiKeyNr write FMidiKeyNr;

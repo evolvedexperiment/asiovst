@@ -100,12 +100,12 @@ uses
 procedure TFmSubBoost.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
-  PngBmp : TPngObject;
+  PngBmp : TPngImage;
 begin
  // Create Background Image
  FBackground := TGuiPixelMapMemory.Create;
 
- PngBmp := TPngObject.Create;
+ PngBmp := TPngImage.Create;
  try
   RS := TResourceStream.Create(hInstance, 'SubBoostKnob', 'PNG');
   try

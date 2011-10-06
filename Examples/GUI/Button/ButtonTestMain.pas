@@ -144,10 +144,10 @@ end;
 
 procedure TFmButton.TbRadiusChange(Sender: TObject);
 begin
- ButtonA.Radius := 0.5 * TbRadius.Position;
- ButtonB.Radius := 0.5 * TbRadius.Position;
- ButtonC.Radius := 0.5 * TbRadius.Position;
- ButtonD.Radius := 0.5 * TbRadius.Position;
+ ButtonA.BorderRadius := 0.5 * TbRadius.Position;
+ ButtonB.BorderRadius := 0.5 * TbRadius.Position;
+ ButtonC.BorderRadius := 0.5 * TbRadius.Position;
+ ButtonD.BorderRadius := 0.5 * TbRadius.Position;
 end;
 
 end.
