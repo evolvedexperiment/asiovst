@@ -78,6 +78,7 @@ type
     procedure BlockSizeChanged; override;
     procedure UpdateFilter; virtual;
     procedure CopyBlock; override;
+    procedure BlockComplete; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -258,6 +259,12 @@ begin
 
  for Sample := 0 to FBlockSize - 1
   do FPositions[Sample] := Sample;
+end;
+
+procedure TCustomBlockDisorder32.BlockComplete;
+begin
+  inherited;
+  // do nothing yet
 end;
 
 procedure TCustomBlockDisorder32.BlockSizeChanged;

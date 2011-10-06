@@ -331,7 +331,6 @@ var
   Offset            : Integer;
   ArrowHeight       : Integer;
   ArrowWidth        : Integer;
-  TextSize          : TSize;
 begin
  with PixelMap do
   begin

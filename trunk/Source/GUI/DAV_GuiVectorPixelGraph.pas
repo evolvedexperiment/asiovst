@@ -246,10 +246,8 @@ var
   IntegerRadiusX  : Integer;
   IntegerRadiusY  : Integer;
   YBounds         : array [0..1] of Integer;
-  NewSolid        : Integer;
   x, y            : Integer;
   PtIndex, PtSgn  : Integer;
-  PtOuter         : Integer;
 
   VertLine        : PByteArray;
   PointPtr        : PDAVSingleFixedArray;

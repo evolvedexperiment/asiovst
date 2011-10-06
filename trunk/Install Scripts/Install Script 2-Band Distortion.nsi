@@ -111,8 +111,6 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\Win32\VST\TwoBandDistortion.dll" "..\Bin\Win32\VST\2-Band Distortion.dll"'  
-
   ${If} ${RunningX64}
   File "..\Bin\Win64\VST\2-Band Distortion.dll"
   ${Else}

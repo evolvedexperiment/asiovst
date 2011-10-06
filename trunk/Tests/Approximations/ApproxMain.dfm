@@ -15,20 +15,32 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Splitter: TSplitter
+    Left = 281
+    Top = 0
+    Height = 304
+  end
   object GuiGraphXY: TGuiGraphXY
     Left = 284
     Top = 0
     Width = 386
     Height = 304
+    BorderColor = clMaroon
+    BorderWidth = 1.500000000000000000
+    GridColor = clBlack
     SeriesCollection = <
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
+        Series.ShadeAlpha = 0
+        Series.Width = 1.000000000000000000
       end
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
         Series.Color = clBlue
+        Series.ShadeAlpha = 0
+        Series.Width = 1.000000000000000000
       end>
     XAxis.Granularity = 1.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -41,13 +53,6 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
     YAxis.Lower = -0.100000000000000000
     YAxis.Upper = 0.100000000000000000
     Align = alClient
-    LineColor = clMaroon
-    LineWidth = 2
-  end
-  object Splitter: TSplitter
-    Left = 281
-    Top = 0
-    Height = 304
   end
   object Memo: TMemo
     Left = 0

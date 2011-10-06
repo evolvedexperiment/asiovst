@@ -75,7 +75,7 @@ begin
   begin
    SampleRate := 44100;
    Frequency  := 1000;
-   ProcessSample(1, Low, High);
+   ProcessSample32(1, Low, High);
    CheckTrue(Low > 0);
    CheckTrue(High > 0);
   end;
@@ -90,7 +90,7 @@ begin
   begin
    SampleRate := 44100;
    Frequency  := 1000;
-   ProcessSample(1, Low, High);
+   ProcessSample64(1, Low, High);
    CheckTrue(Low > 0);
    CheckTrue(High > 0);
   end;
