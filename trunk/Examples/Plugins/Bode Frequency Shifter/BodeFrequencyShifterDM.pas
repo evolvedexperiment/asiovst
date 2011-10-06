@@ -205,8 +205,8 @@ procedure TBodeFrequencyShifterDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
-  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
-  else PreDefined := FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4);
+  then PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4))
+  else PreDefined := AnsiString(FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4));
 end;
 
 procedure TBodeFrequencyShifterDataModule.ParameterFrequencyLabel(

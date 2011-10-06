@@ -606,8 +606,8 @@ begin
  if Assigned(EditorForm) then
   with TFmPartyDelay(EditorForm) do
    begin
-    StatusBar.SimpleText := ParameterProperties[Index].DisplayName + ': ' +
-      ParameterDisplay[Index] + ' ' + ParameterLabel[Index];
+    StatusBar.SimpleText := string(ParameterProperties[Index].DisplayName +
+      ': ' + ParameterDisplay[Index] + ' ' + ParameterLabel[Index]);
    end;
 end;
 

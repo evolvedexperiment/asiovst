@@ -10,8 +10,6 @@ type
   TVSTSSModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VocInputVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VocSynthVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -20,6 +18,10 @@ type
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBandwidthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleProcess32Replacing(const Inputs,
+      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64Replacing(const Inputs,
+      Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
   private
     FVoices  : TVoiceList;
     FVocoder : TVocoder;
@@ -29,7 +31,11 @@ type
 
 implementation
 
+{$IFDEF FPC}
+{$R *.LFM}
+{$ELSE}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   Math, DAV_Common, DAV_Approximations, VocoderGUI;
@@ -45,6 +51,9 @@ begin
   Parameter[3] := 0.5;
   Parameter[4] := 2;
   Parameter[5] := sqrt(0.5);
+
+  // set editor form class
+  EditorFormClass := TVSTGUI;
 end;
 
 procedure TVSTSSModule.VSTModuleClose(Sender: TObject);
@@ -53,33 +62,48 @@ begin
   FreeAndNil(FVoices);
 end;
 
-procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
-
-procedure TVSTSSModule.VSTModuleProcess(
-  const Inputs, Outputs: TDAVArrayOfSingleDynArray;
-  const SampleFrames: Integer);
+procedure TVSTSSModule.VSTModuleProcess32Replacing(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  i, j        : Integer;
+  VoiceIndex  : Integer;
+  SampleIndex : Integer;
   SynthSignal : Double;
 begin
 
-  for j := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
     // process synth input
     SynthSignal := 0;
-    for i := 0 to Voices.Count - 1
-     do SynthSignal := SynthSignal + Voices[i].Process;
+    for VoiceIndex := 0 to Voices.Count - 1
+     do SynthSignal := SynthSignal + Voices[VoiceIndex].Process;
 
-    Outputs[0, j] := FastTanhOpt5Term(FVocoder.ProcessSample(Inputs[0, j], SynthSignal));
+    Outputs[0, SampleIndex] := FastTanhOpt5Term(FVocoder.ProcessSample(Inputs[0, SampleIndex], SynthSignal));
    end;
 
-  for i := 1 to numOutputs - 1
-   do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
+  for VoiceIndex := 1 to numOutputs - 1
+   do Move(Outputs[0, 0], Outputs[VoiceIndex, 0], SampleFrames * SizeOf(Single));
+end;
+
+procedure TVSTSSModule.VSTModuleProcess64Replacing(const Inputs,
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+var
+  VoiceIndex  : Integer;
+  SampleIndex : Integer;
+  SynthSignal : Double;
+begin
+
+  for SampleIndex := 0 to SampleFrames - 1 do
+   begin
+    // process synth input
+    SynthSignal := 0;
+    for VoiceIndex := 0 to Voices.Count - 1
+     do SynthSignal := SynthSignal + Voices[VoiceIndex].Process;
+
+    Outputs[0, SampleIndex] := FastTanhOpt5Term(FVocoder.ProcessSample(Inputs[0, SampleIndex], SynthSignal));
+   end;
+
+  for VoiceIndex := 1 to numOutputs - 1
+   do Move(Outputs[0, 0], Outputs[VoiceIndex, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;

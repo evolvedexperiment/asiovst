@@ -49,10 +49,10 @@ type
     procedure AHBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+    procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterUseSSEMMXChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterUseSSEMMXDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterAccuracyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterUseSSEMMXDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterAccuracyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterAccuracyChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FASIOHost        : TASIOHost;
@@ -231,7 +231,7 @@ begin
   end;
 end;
 
-procedure TASIOVSTModule.ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+procedure TASIOVSTModule.ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := FASIOHost.DriverName;
 end;
@@ -245,7 +245,7 @@ begin
 end;
 
 procedure TASIOVSTModule.ParameterAccuracyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := '64'
@@ -253,7 +253,7 @@ begin
 end;
 
 procedure TASIOVSTModule.ParameterUseSSEMMXDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0.5
   then PreDefined := 'On'

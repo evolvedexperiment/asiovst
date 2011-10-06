@@ -8,7 +8,6 @@ object VSTSSModule: TVSTSSModule
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcdMixDryWet, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Voco'
@@ -20,7 +19,6 @@ object VSTSSModule: TVSTSSModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Input Volume'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -39,7 +37,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VocInputVolumeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Synth Volume'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -58,7 +55,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VocSynthVolumeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Vocoder Volume'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -77,7 +73,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VocVocoderVolumeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -93,7 +88,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = ParameterAttackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -109,7 +103,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = ParameterReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Bandwidth'
       LargeStepFloat = 2.000000000000000000
@@ -124,13 +117,10 @@ object VSTSSModule: TVSTSSModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
-  OnProcess = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess32Replacing
+  OnProcess64Replacing = VSTModuleProcess64Replacing
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 200
-  Top = 103
   Height = 150
   Width = 215
 end

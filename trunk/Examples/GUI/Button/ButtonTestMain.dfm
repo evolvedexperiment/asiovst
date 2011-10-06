@@ -41,9 +41,9 @@ object FmButton: TFmButton
     Alignment = taCenter
     BorderColor = clBlue
     BorderWidth = 1.000000000000000000
+    BorderRadius = 2.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button A'
-    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
     OnClick = ButtonAClick
@@ -56,9 +56,9 @@ object FmButton: TFmButton
     Alignment = taCenter
     BorderColor = clRed
     BorderWidth = 1.000000000000000000
+    BorderRadius = 2.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button B'
-    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
   end
@@ -70,9 +70,9 @@ object FmButton: TFmButton
     Alignment = taCenter
     BorderColor = clGreen
     BorderWidth = 1.000000000000000000
+    BorderRadius = 2.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button C'
-    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
   end
@@ -84,9 +84,9 @@ object FmButton: TFmButton
     Alignment = taCenter
     BorderColor = clYellow
     BorderWidth = 1.000000000000000000
+    BorderRadius = 2.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Button D'
-    BorderRadius = 2.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Transparent = False
   end

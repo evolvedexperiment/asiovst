@@ -20,7 +20,7 @@ type
     FSamplePos  : Integer;
     FSampleFrac : Single;
     FSampleInc  : Single;
-    FMem        : Array [0..3] of Single;
+    FMem        : array [0..3] of Single;
 
     FAngle,
     FPosition   : TComplexDouble;
@@ -34,8 +34,8 @@ type
     destructor Destroy; override;
     procedure NoteOn(Frequency, Amplitude: Single);
     procedure NoteOff;
-    function Process:Single; virtual;
-  published
+    function Process: Single; virtual;
+
     property Frequency: Single read FFrequency write SetFrequency;
     property SampleRate: Single read FSampleRate write SetSampleRate;
     property MidiKeyNr: Integer read FMidiKeyNr write FMidiKeyNr;

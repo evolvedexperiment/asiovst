@@ -8,7 +8,6 @@ object VSTSSModule: TVSTSSModule
   PlugCategory = vpcSynth
   CanDos = [vcdSendVstEvents, vcdSendVstMidiEvent, vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'XSyn'
@@ -24,7 +23,6 @@ object VSTSSModule: TVSTSSModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Type'
@@ -42,7 +40,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc1TypeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Attack'
@@ -59,7 +56,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc1AttackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Decay'
@@ -76,7 +72,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc1DecayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Release'
@@ -93,7 +88,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc1ReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Sustain'
@@ -110,7 +104,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc1SustainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Level'
@@ -127,7 +120,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc1LevelChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Type'
@@ -145,7 +137,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc2TypeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Attack'
@@ -162,7 +153,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc2AttackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Decay'
@@ -179,7 +169,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc2DecayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Release'
@@ -196,7 +185,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc2ReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Sustain'
@@ -213,7 +201,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc2SustainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Level'
@@ -230,7 +217,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleOsc2LevelChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Drive'
@@ -247,7 +233,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleDriveParameterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Cutoff'
@@ -268,7 +253,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleCutoffParameterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Resonance'
@@ -286,7 +270,6 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleResonanceParameterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Output Level'
@@ -317,12 +300,9 @@ object VSTSSModule: TVSTSSModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
-  OnProcess = VSTModuleProcess
+  OnProcess32Replacing = VSTModuleProcess32Replacing
+  OnProcess64Replacing = VSTModuleProcess64Replacing
   OnProcessMidi = VSTModuleProcessMidi
-  OnProcessReplacing = VSTModuleProcess
-  Left = 207
-  Top = 191
   Height = 150
   Width = 215
 end

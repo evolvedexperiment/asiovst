@@ -207,7 +207,7 @@ procedure THarmonicBassModule.ParameterdBDisplay(
 begin
  if Parameter[Index] = 0
   then PreDefined := '-oo'
-  else PreDefined := FloatToStrF(RoundTo(Amp_to_dB(Parameter[Index]), -2), ffGeneral, 3, 3);
+  else PreDefined := AnsiString(FloatToStrF(RoundTo(Amp_to_dB(Parameter[Index]), -2), ffGeneral, 3, 3));
 end;
 
 procedure THarmonicBassModule.ParameterHighpassSelectChange(

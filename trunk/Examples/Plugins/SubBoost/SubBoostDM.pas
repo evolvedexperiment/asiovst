@@ -85,7 +85,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common, DAV_VSTCustomModule, SubBoostGUI;
+  Math, {$IFDEF HAS_UNIT_ANSISTRINGS} AnsiStrings, {$ENDIF} DAV_Common,
+  DAV_VSTCustomModule, SubBoostGUI;
 
 procedure TSubBoostDataModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -123,10 +124,10 @@ begin
  FThreshold := dB_to_Amp(Parameter[4]);
 end;
 
-procedure TSubBoostDataModule.ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSubBoostDataModule.ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
 // PreDefined := IntToStr(round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
- PreDefined := FloatToStrF(FInputFilter.Frequency, ffGeneral, 3, 3);
+ PreDefined := AnsiString(FloatToStrF(FInputFilter.Frequency, ffGeneral, 3, 3));
 end;
 
 procedure TSubBoostDataModule.ParamOrderChange(
@@ -149,9 +150,9 @@ begin
    end;
 end;
 
-procedure TSubBoostDataModule.ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSubBoostDataModule.ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(round(-301.03 / (SampleRate * log10(FRelease))));
+ PreDefined := AnsiString(IntToStr(round(-301.03 / (SampleRate * Log10(FRelease)))));
 end;
 
 procedure TSubBoostDataModule.ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -159,7 +160,7 @@ begin
  FRelease := 1 - Power(10, -2 - (3 * Parameter[5]));
 end;
 
-procedure TSubBoostDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSubBoostDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0: PreDefined := 'Distort';

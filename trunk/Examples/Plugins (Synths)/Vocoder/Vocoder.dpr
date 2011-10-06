@@ -2,8 +2,10 @@
 library Vocoder;
 
 uses
-  FastMM4,
-  FastMove,
+  FastMM4,  // either download the library or comment if there is an error here
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or comment if there is an error here
+  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   VocoderModule in 'VocoderModule.pas' {VSTSSModule: TVSTModule},

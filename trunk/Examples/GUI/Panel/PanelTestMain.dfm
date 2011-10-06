@@ -44,10 +44,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Alpha = 128
     BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clBlue
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 0
     UseDockManager = True
     OnClick = PanelAClick
@@ -59,10 +59,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Alpha = 128
     BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clLime
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 1
     UseDockManager = True
     OnClick = PanelBClick
@@ -74,10 +74,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Alpha = 128
     BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clRed
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 2
     UseDockManager = True
   end
@@ -88,10 +88,10 @@ object FmPanelTest: TFmPanelTest
     Height = 32
     Alpha = 128
     BorderColor = clBlack
+    BorderRadius = 4.000000000000000000
     BorderWidth = 2.000000000000000000
     PanelColor = clYellow
     ParentColor = True
-    BorderRadius = 4.000000000000000000
     TabOrder = 3
     UseDockManager = True
   end
@@ -106,6 +106,7 @@ object FmPanelTest: TFmPanelTest
     DefaultValue = 16.000000000000000000
     Max = 16.000000000000000000
     Min = 1.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 2.000000000000000000
     ShowText = True
@@ -123,6 +124,7 @@ object FmPanelTest: TFmPanelTest
     Color = clBtnFace
     DefaultValue = 8.000000000000000000
     Max = 8.000000000000000000
+    ReadOnly = False
     ParentColor = False
     ParentShowHint = False
     Value = 2.000000000000000000

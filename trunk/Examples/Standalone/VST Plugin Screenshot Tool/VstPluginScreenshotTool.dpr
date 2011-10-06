@@ -26,7 +26,7 @@ resourcestring
 
 {-$DEFINE Alternative}
 
-procedure RenderScreenshot(FileName: TFileName; OutputFileName: TFileName = '');
+procedure RenderScreenshot(FileName: TFileName; ParameterFileName: TFileName = '');
 var
   Form      : TForm;
   Bitmap    : TBitmap;
@@ -59,8 +59,8 @@ begin
      // create form for GUI rendering
      Form := TForm.CreateNew(Application);
      try
-      if FileExists(ParamStr(2))
-       then LoadPreset(ParamStr(2)) else
+      if FileExists(ParameterFileName) and (ExtractFileExt(ParameterFileName) = '.fxp')
+       then LoadPreset(ParameterFileName) else
       if FileExists(FileName + '.fxp')
        then LoadPreset(FileName + '.fxp');
 
@@ -85,9 +85,13 @@ begin
        with Png do
         try
          Png.Assign(Bitmap);
-         if OutputFileName = ''
-          then OutputFileName := ChangeFileExt(FileName, '.png');
-         Png.SaveToFile(OutputFileName);
+         if ParameterFileName = ''
+          then ParameterFileName := ChangeFileExt(FileName, '.png');
+         if ExtractFileExt(ParameterFileName) = '.png'
+          then Png.SaveToFile(ParameterFileName)
+          else
+         if ExtractFileExt(ParameterFileName) <> '.fxp'
+          then WriteLn('Wrong file extension, only .png is allowed!');
         finally
          FreeAndNil(Png);
         end;
