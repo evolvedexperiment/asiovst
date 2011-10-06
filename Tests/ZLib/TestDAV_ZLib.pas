@@ -84,7 +84,7 @@ var
   Value             : Byte;
   CompressionStream : zlib.TZCompressionStream;
 begin
- CompressionStream := TZCompressionStream.Create(FCompressedDataStream, zcDefault);
+ CompressionStream := TZCompressionStream.Create(FCompressedDataStream, zcDefault, 15);
  for Index := 0 to High(Word) do
   begin
    Value := TestPolynomial(Index);

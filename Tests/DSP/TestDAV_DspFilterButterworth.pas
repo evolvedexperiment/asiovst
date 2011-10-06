@@ -324,7 +324,7 @@ begin
   // Calculate filter
   Input := 1;
   with FButterworthSplitBandFilter
-   do ProcessSample(Input, Lowpass, Highpass);
+   do ProcessSample64(Input, Lowpass, Highpass);
 
   // TODO: Validate method results
 end;
@@ -345,7 +345,7 @@ begin
 
   // Calculate filter
   Input := 1;
-  FButterworthSplitBandFilter.ProcessSample(Input, Lowpass, Highpass);
+  FButterworthSplitBandFilter.ProcessSample32(Input, Lowpass, Highpass);
 
   // TODO: Validate method results
 end;

@@ -1086,9 +1086,11 @@ end;
 
 function TGuiEQGraphSeriesCollectionItem.GetValueHandler(Sender: TObject;
   PixelPosition: Integer): TFixed24Dot8Point;
+(*
 var
   Level : Single;
   Freq  : Single;
+*)
 begin
  Assert(Collection.Owner is TCustomGuiEQGraph);
  with TCustomGuiEQGraph(Collection.Owner) do

@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{B8B65950-75D0-4B4B-AF5F-48607D65AE3C}</ProjectGuid>
 			<MainSource>VSTPluginUnitTest.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release Console</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>13.4</ProjectVersion>
 			<FrameworkType>VCL</FrameworkType>
@@ -81,7 +81,7 @@
 			<VerInfo_Locale>1031</VerInfo_Locale>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
-			<DCC_DcuOutput>..\..\UnitCache\$(Platform)</DCC_DcuOutput>
+			<DCC_DcuOutput>..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_UnitSearchPath>$(BDS)\Source\DUnit\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DependencyCheckOutputName>..\..\Bin\VSTPluginUnitTest.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
@@ -103,7 +103,7 @@
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
-			<Debugger_RunParams>C:\Users\Public\Code\VSTPack\Bin\Win32\VST\BassBaron.dll</Debugger_RunParams>
+			<Debugger_RunParams>C:\Users\Public\Code\VSTPack\Bin\Win32\VST\TwoBandDistortion.dll</Debugger_RunParams>
 			<DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<VerInfo_Locale>1033</VerInfo_Locale>
@@ -164,6 +164,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
+			<DCCReference Include="SplashScreen.pas">
+				<Form>FmSplashScreen</Form>
+			</DCCReference>
 			<DCCReference Include="DAV_TestVSTHost.pas"/>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>

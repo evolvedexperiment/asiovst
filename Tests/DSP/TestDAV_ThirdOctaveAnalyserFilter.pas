@@ -110,10 +110,10 @@ begin
       with TCustomThirdOctaveAnalyserFilter(FThirdOctaveAnalyser) do
        begin
         if BandIndex > 0
-         then CheckTrue(BandRMS[BandIndex - 1] < BandRMS[BandIndex]);
-        CheckEquals(0, BandRMS[BandIndex]);
+         then CheckTrue(BandData[BandIndex - 1] < BandData[BandIndex]);
+        CheckEquals(0, BandData[BandIndex]);
         if BandIndex + 1 < Length(CThirdOctaveFrequencies)
-         then CheckTrue(BandRMS[BandIndex - 1] < BandRMS[BandIndex]);
+         then CheckTrue(BandData[BandIndex - 1] < BandData[BandIndex]);
        end;
      end;
    finally
@@ -143,10 +143,10 @@ begin
       with TCustomThirdOctaveAnalyserFilter(FThirdOctaveAnalyser) do
        begin
         if BandIndex > 0
-         then CheckTrue(BandRMS[BandIndex - 1] < BandRMS[BandIndex]);
-        CheckEquals(0, BandRMS[BandIndex]);
+         then CheckTrue(BandData[BandIndex - 1] < BandData[BandIndex]);
+        CheckEquals(0, BandData[BandIndex]);
         if BandIndex + 1 < Length(CThirdOctaveFrequencies)
-         then CheckTrue(BandRMS[BandIndex - 1] < BandRMS[BandIndex]);
+         then CheckTrue(BandData[BandIndex - 1] < BandData[BandIndex]);
        end;
      end;
    finally
