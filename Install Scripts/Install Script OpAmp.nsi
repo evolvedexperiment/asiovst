@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !define SF_SELECTED   1
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------

@@ -4,7 +4,7 @@
 @"..\..\..\..\Bin\Win32\VST-Plugin Unit Test (command line).exe" "..\..\..\..\Bin\Win32\VST\Butterworth Splitter.dll"
 @"..\..\..\..\Bin\Win64\VST-Plugin Unit Test (command line).exe" "..\..\..\..\Bin\Win64\VST\Butterworth Splitter.dll"
 @"..\..\..\..\Bin\Win32\VST-Plugin Screenshot Tool.exe" "..\..\..\..\Bin\Win32\VST\Butterworth Splitter.dll" "..\..\..\..\Screenshots\Butterworth Splitter.png"
-@7z a "..\..\..\..\Archive\Butterworth Splitter.7z" "..\..\..\..\Bin\*\VST\Butterworth Splitter.dll" "..\..\..\..\Manuals\Butterworth Splitter.pdf" "..\..\..\..\Bin\License.txt"
+@7z a "..\..\..\..\Archive\ButterworthSplitter.7z" "..\..\..\..\Bin\*\VST\Butterworth Splitter.dll" "..\..\..\..\Manuals\Butterworth Splitter.pdf" "..\..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\..\Install Scripts\Install Script Butterworth Splitter.nsi"
 @ftps -s:"..\..\..\..\Release Scripts\Butterworth Splitter.ftp"
 @WinSCP -script="..\..\..\..\Release Scripts\Butterworth Splitter.scp"
