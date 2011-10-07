@@ -27,13 +27,13 @@
 			<Projects Include="Barberpole\BarberpoleFlanger.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="BarberpoleTuner\BarberpoleTuner.dproj">
+			<Projects Include="Barberpole Tuner\BarberpoleTuner.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Bass Baron\BassBaron.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="BassExtender\BassExtender.dproj">
+			<Projects Include="Bass Extender\BassExtender.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Baxxpander Clone\Baxxpander.dproj">
@@ -66,16 +66,10 @@
 			<Projects Include="Decimator\Decimator.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Difference &amp; Gain\GainedDifference.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="Dither &amp; Noiseshaper (IIR)\DitherNoiseshaper.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Flanger\SimpleFlanger.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Float\Float.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="fReeverb\fReeverb.dproj">
@@ -139,9 +133,6 @@
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Plate Reverb\PlateReverb.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Processing Test\ProcessingTest.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Pulsing\Pulsing.dproj">
@@ -288,13 +279,13 @@
 			<MSBuild Projects="Barberpole Shifter\BarberpoleShifter.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="BarberpoleTuner">
-			<MSBuild Projects="BarberpoleTuner\BarberpoleTuner.dproj"/>
+			<MSBuild Projects="Barberpole Tuner\BarberpoleTuner.dproj"/>
 		</Target>
 		<Target Name="BarberpoleTuner:Clean">
-			<MSBuild Projects="BarberpoleTuner\BarberpoleTuner.dproj" Targets="Clean"/>
+			<MSBuild Projects="Barberpole Tuner\BarberpoleTuner.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="BarberpoleTuner:Make">
-			<MSBuild Projects="BarberpoleTuner\BarberpoleTuner.dproj" Targets="Make"/>
+			<MSBuild Projects="Barberpole Tuner\BarberpoleTuner.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="BassBaron">
 			<MSBuild Projects="Bass Baron\BassBaron.dproj"/>
@@ -306,13 +297,13 @@
 			<MSBuild Projects="Bass Baron\BassBaron.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="BassExtender">
-			<MSBuild Projects="BassExtender\BassExtender.dproj"/>
+			<MSBuild Projects="Bass Extender\BassExtender.dproj"/>
 		</Target>
 		<Target Name="BassExtender:Clean">
-			<MSBuild Projects="BassExtender\BassExtender.dproj" Targets="Clean"/>
+			<MSBuild Projects="Bass Extender\BassExtender.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="BassExtender:Make">
-			<MSBuild Projects="BassExtender\BassExtender.dproj" Targets="Make"/>
+			<MSBuild Projects="Bass Extender\BassExtender.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Baxxpander">
 			<MSBuild Projects="Baxxpander Clone\Baxxpander.dproj"/>
@@ -422,15 +413,6 @@
 		<Target Name="DitherNoiseshaper:Make">
 			<MSBuild Projects="Dither &amp; Noiseshaper (IIR)\DitherNoiseshaper.dproj" Targets="Make"/>
 		</Target>
-		<Target Name="Float">
-			<MSBuild Projects="Float\Float.dproj"/>
-		</Target>
-		<Target Name="Float:Clean">
-			<MSBuild Projects="Float\Float.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="Float:Make">
-			<MSBuild Projects="Float\Float.dproj" Targets="Make"/>
-		</Target>
 		<Target Name="fReeverb">
 			<MSBuild Projects="fReeverb\fReeverb.dproj"/>
 		</Target>
@@ -448,15 +430,6 @@
 		</Target>
 		<Target Name="FrequencyDomainPitchShifter:Make">
 			<MSBuild Projects="Frequency Domain Pitchshifter\FrequencyDomainPitchShifter.dproj" Targets="Make"/>
-		</Target>
-		<Target Name="GainedDifference">
-			<MSBuild Projects="Difference &amp; Gain\GainedDifference.dproj"/>
-		</Target>
-		<Target Name="GainedDifference:Clean">
-			<MSBuild Projects="Difference &amp; Gain\GainedDifference.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="GainedDifference:Make">
-			<MSBuild Projects="Difference &amp; Gain\GainedDifference.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="GranularPitchshifter">
 			<MSBuild Projects="Granular Pitchshifter\GranularPitchshifter.dproj"/>
@@ -619,15 +592,6 @@
 		</Target>
 		<Target Name="PlateReverb:Make">
 			<MSBuild Projects="Plate Reverb\PlateReverb.dproj" Targets="Make"/>
-		</Target>
-		<Target Name="ProcessingTest">
-			<MSBuild Projects="Processing Test\ProcessingTest.dproj"/>
-		</Target>
-		<Target Name="ProcessingTest:Clean">
-			<MSBuild Projects="Processing Test\ProcessingTest.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="ProcessingTest:Make">
-			<MSBuild Projects="Processing Test\ProcessingTest.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Pulsing">
 			<MSBuild Projects="Pulsing\Pulsing.dproj"/>
@@ -828,13 +792,13 @@
 			<MSBuild Projects="PascalScript\VSTPascalScript.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="AdvancedClipper;AmpSim;ASIOVST;Audio2MidiTrigger;AudioAmelioration;AudioRelay;BarberpoleFlanger;BarberpoleShifter;BarberpoleTuner;BassBaron;BassExtender;Baxxpander;BodeFrequencyShifter;ChebyshevExciter;ChebyshevWaveshaper;Chorus;ChunkDemo;ConvoFx;ConvoFXLite;Convolution;CrosstalkCancellation;Decimator;DitherNoiseshaper;Float;fReeverb;FrequencyDomainPitchShifter;GainedDifference;GranularPitchshifter;HeadphoneMix;HRTF3D;HumRemoval;Hysteresis;LayeredFrequencySplitter;LoadVSTPlugin;LoudnessMeter;MaxxBassClone;ModDelay;ModDelay2;Nonlinear;OversampledTanh;PartyDelay;PhaseAdjustment;Phaser;PhaseRotator;PlateReverb;ProcessingTest;Pulsing;Quadropolis;ReverseVerb;RingModulator;SampleDelay;SimpleFlanger;SimpleSampleDelay;SimpleSonogram;SimpleVibrato;Sonogram;SortedDisorder;SoundTouchPitchShifter;SpectralDelayFilter;SpinBugLite;SplitHarmonizer;SubBoost;ThirdOctaveAnalyser;TrackPlug;Tuner;TwoBandDistortion;VariableDelay;VSTPascalScript;"/>
+			<CallTarget Targets="AdvancedClipper;AmpSim;ASIOVST;Audio2MidiTrigger;AudioAmelioration;AudioRelay;BarberpoleFlanger;BarberpoleShifter;BarberpoleTuner;BassBaron;BassExtender;Baxxpander;BodeFrequencyShifter;ChebyshevExciter;ChebyshevWaveshaper;Chorus;ChunkDemo;ConvoFx;ConvoFXLite;Convolution;CrosstalkCancellation;Decimator;DitherNoiseshaper;fReeverb;FrequencyDomainPitchShifter;GranularPitchshifter;HeadphoneMix;HRTF3D;HumRemoval;Hysteresis;LayeredFrequencySplitter;LoadVSTPlugin;LoudnessMeter;MaxxBassClone;ModDelay;ModDelay2;Nonlinear;OversampledTanh;PartyDelay;PhaseAdjustment;Phaser;PhaseRotator;PlateReverb;Pulsing;Quadropolis;ReverseVerb;RingModulator;SampleDelay;SimpleFlanger;SimpleSampleDelay;SimpleSonogram;SimpleVibrato;Sonogram;SortedDisorder;SoundTouchPitchShifter;SpectralDelayFilter;SpinBugLite;SplitHarmonizer;SubBoost;ThirdOctaveAnalyser;TrackPlug;Tuner;TwoBandDistortion;VariableDelay;VSTPascalScript;"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="AdvancedClipper:Clean;AmpSim:Clean;ASIOVST:Clean;Audio2MidiTrigger:Clean;AudioAmelioration:Clean;AudioRelay:Clean;BarberpoleFlanger:Clean;BarberpoleShifter:Clean;BarberpoleTuner:Clean;BassBaron:Clean;BassExtender:Clean;Baxxpander:Clean;BodeFrequencyShifter:Clean;ChebyshevExciter:Clean;ChebyshevWaveshaper:Clean;Chorus:Clean;ChunkDemo:Clean;ConvoFx:Clean;ConvoFXLite:Clean;Convolution:Clean;CrosstalkCancellation:Clean;Decimator:Clean;DitherNoiseshaper:Clean;Float:Clean;fReeverb:Clean;FrequencyDomainPitchShifter:Clean;GainedDifference:Clean;GranularPitchshifter:Clean;HeadphoneMix:Clean;HRTF3D:Clean;HumRemoval:Clean;Hysteresis:Clean;LayeredFrequencySplitter:Clean;LoadVSTPlugin:Clean;LoudnessMeter:Clean;MaxxBassClone:Clean;ModDelay:Clean;ModDelay2:Clean;Nonlinear:Clean;OversampledTanh:Clean;PartyDelay:Clean;PhaseAdjustment:Clean;Phaser:Clean;PhaseRotator:Clean;PlateReverb:Clean;ProcessingTest:Clean;Pulsing:Clean;Quadropolis:Clean;ReverseVerb:Clean;RingModulator:Clean;SampleDelay:Clean;SimpleFlanger:Clean;SimpleSampleDelay:Clean;SimpleSonogram:Clean;SimpleVibrato:Clean;Sonogram:Clean;SortedDisorder:Clean;SoundTouchPitchShifter:Clean;SpectralDelayFilter:Clean;SpinBugLite:Clean;SplitHarmonizer:Clean;SubBoost:Clean;ThirdOctaveAnalyser:Clean;TrackPlug:Clean;Tuner:Clean;TwoBandDistortion:Clean;VariableDelay:Clean;VSTPascalScript:Clean;"/>
+			<CallTarget Targets="AdvancedClipper:Clean;AmpSim:Clean;ASIOVST:Clean;Audio2MidiTrigger:Clean;AudioAmelioration:Clean;AudioRelay:Clean;BarberpoleFlanger:Clean;BarberpoleShifter:Clean;BarberpoleTuner:Clean;BassBaron:Clean;BassExtender:Clean;Baxxpander:Clean;BodeFrequencyShifter:Clean;ChebyshevExciter:Clean;ChebyshevWaveshaper:Clean;Chorus:Clean;ChunkDemo:Clean;ConvoFx:Clean;ConvoFXLite:Clean;Convolution:Clean;CrosstalkCancellation:Clean;Decimator:Clean;DitherNoiseshaper:Clean;fReeverb:Clean;FrequencyDomainPitchShifter:Clean;GranularPitchshifter:Clean;HeadphoneMix:Clean;HRTF3D:Clean;HumRemoval:Clean;Hysteresis:Clean;LayeredFrequencySplitter:Clean;LoadVSTPlugin:Clean;LoudnessMeter:Clean;MaxxBassClone:Clean;ModDelay:Clean;ModDelay2:Clean;Nonlinear:Clean;OversampledTanh:Clean;PartyDelay:Clean;PhaseAdjustment:Clean;Phaser:Clean;PhaseRotator:Clean;PlateReverb:Clean;Pulsing:Clean;Quadropolis:Clean;ReverseVerb:Clean;RingModulator:Clean;SampleDelay:Clean;SimpleFlanger:Clean;SimpleSampleDelay:Clean;SimpleSonogram:Clean;SimpleVibrato:Clean;Sonogram:Clean;SortedDisorder:Clean;SoundTouchPitchShifter:Clean;SpectralDelayFilter:Clean;SpinBugLite:Clean;SplitHarmonizer:Clean;SubBoost:Clean;ThirdOctaveAnalyser:Clean;TrackPlug:Clean;Tuner:Clean;TwoBandDistortion:Clean;VariableDelay:Clean;VSTPascalScript:Clean;"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="AdvancedClipper:Make;AmpSim:Make;ASIOVST:Make;Audio2MidiTrigger:Make;AudioAmelioration:Make;AudioRelay:Make;BarberpoleFlanger:Make;BarberpoleShifter:Make;BarberpoleTuner:Make;BassBaron:Make;BassExtender:Make;Baxxpander:Make;BodeFrequencyShifter:Make;ChebyshevExciter:Make;ChebyshevWaveshaper:Make;Chorus:Make;ChunkDemo:Make;ConvoFx:Make;ConvoFXLite:Make;Convolution:Make;CrosstalkCancellation:Make;Decimator:Make;DitherNoiseshaper:Make;Float:Make;fReeverb:Make;FrequencyDomainPitchShifter:Make;GainedDifference:Make;GranularPitchshifter:Make;HeadphoneMix:Make;HRTF3D:Make;HumRemoval:Make;Hysteresis:Make;LayeredFrequencySplitter:Make;LoadVSTPlugin:Make;LoudnessMeter:Make;MaxxBassClone:Make;ModDelay:Make;ModDelay2:Make;Nonlinear:Make;OversampledTanh:Make;PartyDelay:Make;PhaseAdjustment:Make;Phaser:Make;PhaseRotator:Make;PlateReverb:Make;ProcessingTest:Make;Pulsing:Make;Quadropolis:Make;ReverseVerb:Make;RingModulator:Make;SampleDelay:Make;SimpleFlanger:Make;SimpleSampleDelay:Make;SimpleSonogram:Make;SimpleVibrato:Make;Sonogram:Make;SortedDisorder:Make;SoundTouchPitchShifter:Make;SpectralDelayFilter:Make;SpinBugLite:Make;SplitHarmonizer:Make;SubBoost:Make;ThirdOctaveAnalyser:Make;TrackPlug:Make;Tuner:Make;TwoBandDistortion:Make;VariableDelay:Make;VSTPascalScript:Make;"/>
+			<CallTarget Targets="AdvancedClipper:Make;AmpSim:Make;ASIOVST:Make;Audio2MidiTrigger:Make;AudioAmelioration:Make;AudioRelay:Make;BarberpoleFlanger:Make;BarberpoleShifter:Make;BarberpoleTuner:Make;BassBaron:Make;BassExtender:Make;Baxxpander:Make;BodeFrequencyShifter:Make;ChebyshevExciter:Make;ChebyshevWaveshaper:Make;Chorus:Make;ChunkDemo:Make;ConvoFx:Make;ConvoFXLite:Make;Convolution:Make;CrosstalkCancellation:Make;Decimator:Make;DitherNoiseshaper:Make;fReeverb:Make;FrequencyDomainPitchShifter:Make;GranularPitchshifter:Make;HeadphoneMix:Make;HRTF3D:Make;HumRemoval:Make;Hysteresis:Make;LayeredFrequencySplitter:Make;LoadVSTPlugin:Make;LoudnessMeter:Make;MaxxBassClone:Make;ModDelay:Make;ModDelay2:Make;Nonlinear:Make;OversampledTanh:Make;PartyDelay:Make;PhaseAdjustment:Make;Phaser:Make;PhaseRotator:Make;PlateReverb:Make;Pulsing:Make;Quadropolis:Make;ReverseVerb:Make;RingModulator:Make;SampleDelay:Make;SimpleFlanger:Make;SimpleSampleDelay:Make;SimpleSonogram:Make;SimpleVibrato:Make;Sonogram:Make;SortedDisorder:Make;SoundTouchPitchShifter:Make;SpectralDelayFilter:Make;SpinBugLite:Make;SplitHarmonizer:Make;SubBoost:Make;ThirdOctaveAnalyser:Make;TrackPlug:Make;Tuner:Make;TwoBandDistortion:Make;VariableDelay:Make;VSTPascalScript:Make;"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

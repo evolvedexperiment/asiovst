@@ -212,9 +212,9 @@ begin
    for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
     begin
      // using Linkwitz-Riley TwoBand filters
-     FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
+     FLinkwitzRiley[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex], Low, High);
 
-     {$IFDEF FPC}
+     {$IFDEF PUREPASCAL}
      Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  +
        FastTanhOpt5Term(FLowMix[1]  * Low) +  FHighMix[0] * High +
        FastTanhOpt5Term(FHighMix[1] * High);
@@ -242,9 +242,9 @@ begin
    for ChannelIndex := 0 to Length(FLinkwitzRiley) - 1 do
     begin
      // using Linkwitz-Riley filters
-     FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
+     FLinkwitzRiley[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex], Low, High);
 
-     {$IFDEF FPC}
+     {$IFDEF PUREPASCAL}
      Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  +
        FastTanhOpt5Term(FLowMix[1]  * Low) +  FHighMix[0] * High +
        FastTanhOpt5Term(FHighMix[1] * High);

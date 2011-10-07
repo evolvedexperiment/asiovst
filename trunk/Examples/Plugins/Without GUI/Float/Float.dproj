@@ -35,6 +35,13 @@
 			<Cfg_1>true</Cfg_1>
 			<Base>true</Base>
 		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_3)'=='true') or '$(Cfg_3_Win64)'!=''">
+			<Cfg_3_Win64>true</Cfg_3_Win64>
+			<CfgParent>Cfg_3</CfgParent>
+			<Cfg_3>true</Cfg_3>
+			<Cfg_1>true</Cfg_1>
+			<Base>true</Base>
+		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
 			<Cfg_2>true</Cfg_2>
 			<CfgParent>Base</CfgParent>
@@ -52,7 +59,7 @@
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;VCL;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1031</VerInfo_Locale>
 			<DCC_DependencyCheckOutputName>..\..\..\Bin\Win32\VST\Float.dll</DCC_DependencyCheckOutputName>
-			<DCC_ExeOutput>..\..\..\Bin\$(Platform)\VST\</DCC_ExeOutput>
+			<DCC_ExeOutput>..\..\..\..\Bin\$(Platform)\VST\WithoutGUI\</DCC_ExeOutput>
 			<GenDll>true</GenDll>
 			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
@@ -81,6 +88,10 @@
 			<PostBuildEvent><![CDATA[$(PROJECTDIR)\$(PROJECTNAME).bat
 $(PostBuildEvent)]]></PostBuildEvent>
 			<PostBuildEventExecuteWhen>TargetOutOfDate</PostBuildEventExecuteWhen>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_3_Win64)'!=''">
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
