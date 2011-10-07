@@ -122,8 +122,6 @@ object SpinBugLiteModule: TSpinBugLiteModule
   OnProcess = VSTModuleProcessMono
   OnProcess32Replacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 285
-  Top = 161
   Height = 194
   Width = 241
 end
