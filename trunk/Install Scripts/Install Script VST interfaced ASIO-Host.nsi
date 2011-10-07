@@ -8,6 +8,7 @@ SetCompressor lzma
 ;Include Modern UI
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
+  !include "x64.nsh"
 
 
 ;--------------------------------
