@@ -1,8 +1,8 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{C532A85D-4EC7-4CB7-B4B0-84AF19EBF3E8}</ProjectGuid>
+			<ProjectGuid>{5BA7179C-0BD8-430F-857C-C1C8EB8C402F}</ProjectGuid>
 			<ProjectVersion>13.4</ProjectVersion>
-			<MainSource>Float.dpr</MainSource>
+			<MainSource>ProcessingTest.dpr</MainSource>
 			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<FrameworkType>None</FrameworkType>
@@ -55,13 +55,13 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<Manifest_File>None</Manifest_File>
+			<DCC_ExeOutput>..\..\..\..\Bin\$(Platform)\VST\Without GUI\</DCC_ExeOutput>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;VCL;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1031</VerInfo_Locale>
-			<DCC_DependencyCheckOutputName>..\..\..\Bin\Win32\VST\Float.dll</DCC_DependencyCheckOutputName>
-			<DCC_ExeOutput>..\..\..\..\Bin\$(Platform)\VST\Without GUI\</DCC_ExeOutput>
-			<GenDll>true</GenDll>
 			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
+			<DCC_DependencyCheckOutputName>ProcessingTest.dll</DCC_DependencyCheckOutputName>
+			<GenDll>true</GenDll>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
@@ -72,7 +72,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<Debugger_RunParams>Float.dll</Debugger_RunParams>
+			<Debugger_RunParams>ProcessingTest.dll</Debugger_RunParams>
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<Debugger_HostApplication>..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Debugger_HostApplication>
@@ -91,6 +91,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_3_Win64)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<Manifest_File>None</Manifest_File>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -98,16 +99,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
 			<DCC_RemoteDebug>true</DCC_RemoteDebug>
-			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<VerInfo_Locale>1033</VerInfo_Locale>
-			<Manifest_File>None</Manifest_File>
 		</PropertyGroup>
 		<ItemGroup>
 			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="FloatVST.pas">
-				<Form>FloatModule</Form>
+			<DCCReference Include="PluginVST.pas">
+				<Form>ProcessingTestModule</Form>
 				<DesignClass>TVSTModule</DesignClass>
 			</DCCReference>
 			<BuildConfiguration Include="Debug">
@@ -132,14 +130,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<Borland.ProjectType/>
 			<BorlandProject>
 				<Delphi.Personality>
-					<Source>
-						<Source Name="MainSource">Float.dpr</Source>
-					</Source>
 					<Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-						<Parameters Name="RunParams">Float.dll</Parameters>
+						<Parameters Name="RunParams">ProcessingTest.dll</Parameters>
 						<Parameters Name="HostApplication">..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Parameters>
 					</Parameters>
 					<VersionInfo>
@@ -173,6 +168,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
 						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Beispiele für gekapselte Komponenten für Automatisierungsserver</Excluded_Packages>
 						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Beispiele für gekapselte Komponenten für Automation Server</Excluded_Packages>
 					</Excluded_Packages>
+					<Source>
+						<Source Name="MainSource">ProcessingTest.dpr</Source>
+					</Source>
 				</Delphi.Personality>
 				<Platforms>
 					<Platform value="Win64">True</Platform>
