@@ -1,10 +1,10 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{C532A85D-4EC7-4CB7-B4B0-84AF19EBF3E8}</ProjectGuid>
-			<ProjectVersion>13.4</ProjectVersion>
-			<MainSource>Float.dpr</MainSource>
+			<ProjectGuid>{253F18AD-A90C-4928-B0D2-1D89A1108C16}</ProjectGuid>
+			<MainSource>Chorus.dpr</MainSource>
 			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<ProjectVersion>13.4</ProjectVersion>
 			<FrameworkType>None</FrameworkType>
 			<Base>True</Base>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -29,16 +29,15 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
-		<PropertyGroup Condition="'$(Config)'=='Publish' or '$(Cfg_3)'!=''">
-			<Cfg_3>true</Cfg_3>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win64)'!=''">
+			<Cfg_1_Win64>true</Cfg_1_Win64>
 			<CfgParent>Cfg_1</CfgParent>
 			<Cfg_1>true</Cfg_1>
 			<Base>true</Base>
 		</PropertyGroup>
-		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_3)'=='true') or '$(Cfg_3_Win64)'!=''">
-			<Cfg_3_Win64>true</Cfg_3_Win64>
-			<CfgParent>Cfg_3</CfgParent>
+		<PropertyGroup Condition="'$(Config)'=='Publish' or '$(Cfg_3)'!=''">
 			<Cfg_3>true</Cfg_3>
+			<CfgParent>Cfg_1</CfgParent>
 			<Cfg_1>true</Cfg_1>
 			<Base>true</Base>
 		</PropertyGroup>
@@ -55,15 +54,20 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<Manifest_File>None</Manifest_File>
+			<VerInfo_Locale>1031</VerInfo_Locale>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;VCL;$(DCC_Namespace)</DCC_Namespace>
-			<VerInfo_Locale>1031</VerInfo_Locale>
-			<DCC_DependencyCheckOutputName>..\..\..\Bin\Win32\VST\Float.dll</DCC_DependencyCheckOutputName>
-			<DCC_ExeOutput>..\..\..\..\Bin\$(Platform)\VST\Without GUI\</DCC_ExeOutput>
-			<GenDll>true</GenDll>
-			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
+			<DCC_DcuOutput>..\..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_ExeOutput>..\..\..\..\Bin\$(Platform)\VST\Without GUI\</DCC_ExeOutput>
 			<DCC_Platform>x86</DCC_Platform>
+			<DCC_N>true</DCC_N>
+			<DCC_S>false</DCC_S>
+			<GenDll>true</GenDll>
+			<DCC_K>false</DCC_K>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+			<DCC_E>false</DCC_E>
+			<DCC_F>false</DCC_F>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win64)'!=''">
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
@@ -72,25 +76,22 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<Debugger_RunParams>Float.dll</Debugger_RunParams>
+			<Debugger_RunParams>Chorus.DLL</Debugger_RunParams>
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
-			<Debugger_HostApplication>..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Debugger_HostApplication>
+			<Debugger_HostApplication>..\..\..\..\Bin\VST Plugin Analyser.exe</Debugger_HostApplication>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_3)'!=''">
-			<PostBuildEvent><![CDATA[$(PROJECTDIR)\$(PROJECTNAME).bat
-$(PostBuildEvent)]]></PostBuildEvent>
-			<PostBuildEventExecuteWhen>TargetOutOfDate</PostBuildEventExecuteWhen>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_3_Win64)'!=''">
+		<PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<Manifest_File>None</Manifest_File>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -98,16 +99,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
 			<DCC_RemoteDebug>true</DCC_RemoteDebug>
-			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<VerInfo_Locale>1033</VerInfo_Locale>
-			<Manifest_File>None</Manifest_File>
 		</PropertyGroup>
 		<ItemGroup>
 			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="FloatVST.pas">
-				<Form>FloatModule</Form>
+			<DCCReference Include="ChorusDSP.pas">
+				<Form>ChorusModule</Form>
 				<DesignClass>TVSTModule</DesignClass>
 			</DCCReference>
 			<BuildConfiguration Include="Debug">
@@ -133,14 +131,14 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">Float.dpr</Source>
+						<Source Name="MainSource">Chorus.dpr</Source>
 					</Source>
 					<Parameters>
+						<Parameters Name="RunParams">Chorus.DLL</Parameters>
+						<Parameters Name="HostApplication">..\..\..\..\Bin\VST Plugin Analyser.exe</Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-						<Parameters Name="RunParams">Float.dll</Parameters>
-						<Parameters Name="HostApplication">..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
@@ -183,28 +181,4 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
 		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
-		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win64'">
-			<PreBuildEvent/>
-			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-			<PreLinkEvent/>
-			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
-			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='OSX32'">
-			<PreBuildEvent/>
-			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-			<PreLinkEvent/>
-			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
-			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win32'">
-			<PreBuildEvent/>
-			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-			<PreLinkEvent/>
-			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
-			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-		</PropertyGroup>
 	</Project>

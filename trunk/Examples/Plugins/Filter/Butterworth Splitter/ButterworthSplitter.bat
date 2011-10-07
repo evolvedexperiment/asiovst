@@ -1,11 +1,17 @@
 @"..\..\..\..\Bin\Win32\madExceptPatch.exe" "..\..\..\..\Bin\Win32\VST\ButterworthSplitter.dll " .\ButterworthSplitter.mes
-@move "..\..\..\..\Bin\Win32\VST\ButterworthSplitter.dll" "..\..\..\..\Bin\Win32\VST\Butterworth Splitter.dll"
-@move "..\..\..\..\Bin\Win64\VST\ButterworthSplitter.dll" "..\..\..\..\Bin\Win64\VST\Butterworth Splitter.dll"
+@if exist "..\..\..\..\Bin\Win32\VST\ButterworthSplitter.dll" @move "..\..\..\..\Bin\Win32\VST\ButterworthSplitter.dll" "..\..\..\..\Bin\Win32\VST\Butterworth Splitter.dll"
+@if exist "..\..\..\..\Bin\Win64\VST\ButterworthSplitter.dll" @move "..\..\..\..\Bin\Win64\VST\ButterworthSplitter.dll" "..\..\..\..\Bin\Win64\VST\Butterworth Splitter.dll"
+@if not exist "..\..\..\..\Bin\Win32\VST\Butterworth Splitter.dll" goto Error
+@if not exist "..\..\..\..\Bin\Win64\VST\Butterworth Splitter.dll" goto Error
 @"..\..\..\..\Bin\Win32\VST-Plugin Unit Test (command line).exe" "..\..\..\..\Bin\Win32\VST\Butterworth Splitter.dll"
 @"..\..\..\..\Bin\Win64\VST-Plugin Unit Test (command line).exe" "..\..\..\..\Bin\Win64\VST\Butterworth Splitter.dll"
 @"..\..\..\..\Bin\Win32\VST-Plugin Screenshot Tool.exe" "..\..\..\..\Bin\Win32\VST\Butterworth Splitter.dll" "..\..\..\..\Screenshots\Butterworth Splitter.png"
-@7z a "..\..\..\..\Archive\ButterworthSplitter.7z" "..\..\..\..\Bin\*\VST\Butterworth Splitter.dll" "..\..\..\..\Manuals\Butterworth Splitter.pdf" "..\..\..\..\Bin\License.txt"
+@7z a "..\..\..\..\Archive\ButterworthSplitter.7z" "..\..\..\..\Bin\*\VST\Butterworth Splitter.dll" "..\..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\..\Install Scripts\Install Script Butterworth Splitter.nsi"
+@IF ERRORLEVEL==1 GOTO Error
 @ftps -s:"..\..\..\..\Release Scripts\Butterworth Splitter.ftp"
 @WinSCP -script="..\..\..\..\Release Scripts\Butterworth Splitter.scp"
-pause
+Exit
+:Error
+echo Script Error
+Pause

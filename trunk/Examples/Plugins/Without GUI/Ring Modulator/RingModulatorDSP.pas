@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  SyncObjs, Forms, DAV_Types, DAV_VSTModule, DAV_DspRingModulator;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  SyncObjs, Forms, Registry, DAV_Types, DAV_VSTModule, DAV_DspRingModulator;
 
 type
   TRingModulatorDataModule = class(TVSTModule)
@@ -67,7 +67,7 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, DAV_Common, DAV_VSTParameters;
+  DAV_Common, DAV_VSTParameters;
 
 const
   CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Ring Modulator';

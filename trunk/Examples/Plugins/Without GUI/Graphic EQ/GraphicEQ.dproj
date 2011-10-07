@@ -1,10 +1,10 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{C532A85D-4EC7-4CB7-B4B0-84AF19EBF3E8}</ProjectGuid>
-			<ProjectVersion>13.4</ProjectVersion>
-			<MainSource>Float.dpr</MainSource>
+			<ProjectGuid>{75535763-3483-4020-AB57-26A7D4DE98C6}</ProjectGuid>
+			<MainSource>GraphicEQ.dpr</MainSource>
 			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<ProjectVersion>13.4</ProjectVersion>
 			<FrameworkType>None</FrameworkType>
 			<Base>True</Base>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -29,16 +29,15 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
-		<PropertyGroup Condition="'$(Config)'=='Publish' or '$(Cfg_3)'!=''">
-			<Cfg_3>true</Cfg_3>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win64)'!=''">
+			<Cfg_1_Win64>true</Cfg_1_Win64>
 			<CfgParent>Cfg_1</CfgParent>
 			<Cfg_1>true</Cfg_1>
 			<Base>true</Base>
 		</PropertyGroup>
-		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_3)'=='true') or '$(Cfg_3_Win64)'!=''">
-			<Cfg_3_Win64>true</Cfg_3_Win64>
-			<CfgParent>Cfg_3</CfgParent>
+		<PropertyGroup Condition="'$(Config)'=='Publish' or '$(Cfg_3)'!=''">
 			<Cfg_3>true</Cfg_3>
+			<CfgParent>Cfg_1</CfgParent>
 			<Cfg_1>true</Cfg_1>
 			<Base>true</Base>
 		</PropertyGroup>
@@ -54,16 +53,23 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<VerInfo_Locale>1031</VerInfo_Locale>
 			<Manifest_File>None</Manifest_File>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;VCL;$(DCC_Namespace)</DCC_Namespace>
-			<VerInfo_Locale>1031</VerInfo_Locale>
-			<DCC_DependencyCheckOutputName>..\..\..\Bin\Win32\VST\Float.dll</DCC_DependencyCheckOutputName>
-			<DCC_ExeOutput>..\..\..\..\Bin\$(Platform)\VST\Without GUI\</DCC_ExeOutput>
-			<GenDll>true</GenDll>
-			<DCC_DcuOutput>..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
+			<DCC_DcuOutput>..\..\..\..\UnitCache\$(Platform)\$(Config)</DCC_DcuOutput>
+			<DCC_UnitSearchPath>..\..\..\source;..\..\..\source\ASIO;..\..\..\source\DSP;..\..\..\source\GUI;..\..\..\source\Math;..\..\..\source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_ExeOutput>..\..\..\..\Bin\$(Platform)\VST\Without GUI\</DCC_ExeOutput>
 			<DCC_Platform>x86</DCC_Platform>
+			<DCC_N>true</DCC_N>
+			<DCC_K>false</DCC_K>
+			<GenDll>true</GenDll>
+			<DCC_S>false</DCC_S>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+			<DCC_UsePackage>vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;Rave50CLX;Rave50VCL;dclOfficeXP;xlg16d6;AcmComponents;Controls_D7;cxCpu40Vcl;DAudioList;DCDSPComponents_D7;DirectX9_D7;DclCyExcel;DCPluginRenderer_D7;DragDropD5;DSPackDCDSPFilter_D7;DSPack_D7;FlatControls_D7;FlatStyle_D6;FolderBrowser_Package;GR32_D7;GR32_DSGN_D7;DJcl;JvStdCtrlsD7R;JvAppFrmD7R;JvCoreD7R;JvBandsD7R;JvBDED7R;JvCmpD7R;JvCryptD7R;JvCtrlsD7R;JvCustomD7R;JvDBD7R;JvDlgsD7R;JvDockingD7R;JvDotNetCtrlsD7R;JvEDID7R;qrpt;JvGlobusD7R;JvHMID7R;JvInspectorD7R;JvInterpreterD7R;JvJansD7R;JvManagedThreadsD7R;JvMMD7R;JvNetD7R;JvPageCompsD7R;JvPluginD7R;JvPrintPreviewD7R;JvSystemD7R;JvTimeFrameworkD7R;JvUIBD7R;JvValidatorsD7R;JvWizardD7R;JvXPCtrlsD7R;O406_r70;php4DelphiR7;sMenuD7;WordCap;wordcapD7;$(DCC_UsePackage)</DCC_UsePackage>
+			<DCC_F>false</DCC_F>
+			<DCC_E>false</DCC_E>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win64)'!=''">
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
@@ -72,25 +78,22 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<Debugger_RunParams>Float.dll</Debugger_RunParams>
+			<Debugger_RunParams>GraphicEQ.dll</Debugger_RunParams>
 			<DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
-			<Debugger_HostApplication>..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Debugger_HostApplication>
+			<Debugger_HostApplication>..\..\..\..\Bin\VST Plugin Analyser.exe</Debugger_HostApplication>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_3)'!=''">
-			<PostBuildEvent><![CDATA[$(PROJECTDIR)\$(PROJECTNAME).bat
-$(PostBuildEvent)]]></PostBuildEvent>
-			<PostBuildEventExecuteWhen>TargetOutOfDate</PostBuildEventExecuteWhen>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_3_Win64)'!=''">
+		<PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<Manifest_File>None</Manifest_File>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -98,16 +101,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
 			<DCC_RemoteDebug>true</DCC_RemoteDebug>
-			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<VerInfo_Locale>1033</VerInfo_Locale>
-			<Manifest_File>None</Manifest_File>
 		</PropertyGroup>
 		<ItemGroup>
 			<DelphiCompile Include="$(MainSource)">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="FloatVST.pas">
-				<Form>FloatModule</Form>
+			<DCCReference Include="GraphicEqDSP.pas">
+				<Form>PluginDataModule</Form>
 				<DesignClass>TVSTModule</DesignClass>
 			</DCCReference>
 			<BuildConfiguration Include="Debug">
@@ -129,18 +129,18 @@ $(PostBuildEvent)]]></PostBuildEvent>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
 		<ProjectExtensions>
 			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
-			<Borland.ProjectType/>
+			<Borland.ProjectType>VCLApplication</Borland.ProjectType>
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">Float.dpr</Source>
+						<Source Name="MainSource">GraphicEQ.dpr</Source>
 					</Source>
 					<Parameters>
+						<Parameters Name="RunParams">GraphicEQ.dll</Parameters>
+						<Parameters Name="HostApplication">..\..\..\..\Bin\VST Plugin Analyser.exe</Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-						<Parameters Name="RunParams">Float.dll</Parameters>
-						<Parameters Name="HostApplication">..\..\..\..\Bin\Win32\VST Plugin Analyser.exe</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
@@ -183,28 +183,4 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
 		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
-		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win64'">
-			<PreBuildEvent/>
-			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-			<PreLinkEvent/>
-			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
-			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='OSX32'">
-			<PreBuildEvent/>
-			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-			<PreLinkEvent/>
-			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
-			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win32'">
-			<PreBuildEvent/>
-			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-			<PreLinkEvent/>
-			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>$(PROJECTDIR)\$(PROJECTNAME).bat</PostBuildEvent>
-			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-		</PropertyGroup>
 	</Project>

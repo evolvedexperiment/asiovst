@@ -21,5 +21,4 @@ exports
   VstPluginMain name 'main',
   VstPluginMain name 'VSTPluginMain';
 
-begin
 end.
