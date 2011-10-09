@@ -21,15 +21,15 @@ object FmHumRemoval: TFmHumRemoval
     Top = 8
     Width = 379
     Height = 169
-    AntiAlias = gaaLinear4x
     BorderColor = 14277598
-    BorderRadius = 7
-    BorderWidth = 2
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
     ColorChart = clBlack
     FilterSeries = <
       item
         DisplayName = 'Mono'
         Color = 14277598
+        LineWidth = 2.000000000000000000
         OnGetFilterGain = GuiEQGraphGetFilterGain
       end>
     GraphColorDark = 7699334
@@ -42,6 +42,7 @@ object FmHumRemoval: TFmHumRemoval
     YAxis.UpperLevel = 6.000000000000000000
     YAxis.Granularity = 20.000000000000000000
     YAxis.MaximumGridLines = 4
+    YAxis.MouseActions = []
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 7699334
@@ -56,7 +57,7 @@ object FmHumRemoval: TFmHumRemoval
     Width = 172
     Height = 160
     BorderColor = 14277598
-    BorderWidth = 1.000000000000000000
+    BorderWidth = 1.500000000000000000
     Caption = 'Highpass'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -97,28 +98,6 @@ object FmHumRemoval: TFmHumRemoval
       Transparent = False
       OnClick = LedHighpassActiveClick
     end
-    object SbHighpassType: TGuiSelectBox
-      Left = 34
-      Top = 35
-      Width = 111
-      Height = 22
-      ArrowColor = 14606306
-      ButtonColor = clBlack
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 14277598
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ItemIndex = -1
-      Items.Strings = (
-        'Butterworth'
-        'Chebyshev I'
-        'Chebyshev II')
-      LineColor = 12632777
-      ParentFont = False
-      SelectBoxColor = clBlack
-      OnChange = SbHighpassTypeChange
-    end
     object LbHighpassOrder: TGuiLabel
       Left = 101
       Top = 63
@@ -140,6 +119,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 69
       Height = 20
       Alignment = taCenter
+      Caption = '1 kHz'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -149,11 +129,12 @@ object FmHumRemoval: TFmHumRemoval
       ParentFont = False
     end
     object LbHighpassOrderValue: TGuiLabel
-      Left = 97
+      Left = 94
       Top = 129
-      Width = 59
+      Width = 65
       Height = 20
       Alignment = taCenter
+      Caption = '6 dB/Oct'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -162,12 +143,35 @@ object FmHumRemoval: TFmHumRemoval
       FontOversampling = fo4x
       ParentFont = False
     end
+    object SbHighpassType: TGuiSelectBox
+      Left = 34
+      Top = 35
+      Width = 111
+      Height = 22
+      Items.Strings = (
+        'Butterworth'
+        'Chebyshev I'
+        'Chebyshev II')
+      ArrowColor = 14606306
+      BorderRadius = 2.000000000000000000
+      BorderWidth = 2.000000000000000000
+      ButtonColor = clBlack
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 14277598
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      SelectBoxColor = clBlack
+      OnChange = SbHighpassTypeChange
+    end
     object DialHighpassFrequency: TGuiStitchedDial
       Left = 35
       Top = 87
       Width = 36
       Height = 36
       CurveMapping = -1.799999952316284000
+      DefaultValue = 2.000000000000000000
       Max = 200.000000000000000000
       Min = 2.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -176,7 +180,6 @@ object FmHumRemoval: TFmHumRemoval
       Value = 2.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialHighpassFrequencyChange
-      DefaultValue = 0.000000000000000000
     end
     object DialHighpassOrder: TGuiStitchedDial
       Left = 109
@@ -184,6 +187,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 36
       Height = 36
       CurveMapping = -1.200000047683716000
+      DefaultValue = 1.000000000000000000
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -192,7 +196,6 @@ object FmHumRemoval: TFmHumRemoval
       Value = 1.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialHighpassOrderChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object GbNotchFilters: TGuiGroup
@@ -201,7 +204,7 @@ object FmHumRemoval: TFmHumRemoval
     Width = 201
     Height = 160
     BorderColor = 14277598
-    BorderWidth = 1.000000000000000000
+    BorderWidth = 1.500000000000000000
     Caption = 'Notch Filters'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -250,6 +253,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 85
       Height = 20
       Alignment = taCenter
+      Caption = '1 kHz'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -264,6 +268,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 84
       Height = 20
       Alignment = taCenter
+      Caption = '3 Oct'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 14277598
       Font.Height = -16
@@ -306,6 +311,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 36
       Height = 36
       CurveMapping = -1.299999952316284000
+      DefaultValue = 40.000000000000000000
       Max = 120.000000000000000000
       Min = 40.000000000000000000
       ScrollRange = 400.000000000000000000
@@ -314,7 +320,6 @@ object FmHumRemoval: TFmHumRemoval
       Value = 40.000000000000000000
       WheelStep = 1.000000000000000000
       OnChange = DialFundamentalFrequencyChange
-      DefaultValue = 0.000000000000000000
     end
     object DialNotchBandwidth: TGuiStitchedDial
       Left = 130
@@ -322,6 +327,7 @@ object FmHumRemoval: TFmHumRemoval
       Width = 36
       Height = 36
       CurveMapping = -1.200000047683716000
+      DefaultValue = 0.029999999329447750
       Max = 0.300000011920929000
       Min = 0.029999999329447750
       ScrollRange = 400.000000000000000000
@@ -330,7 +336,6 @@ object FmHumRemoval: TFmHumRemoval
       Value = 0.029999999329447750
       WheelStep = 1.000000000000000000
       OnChange = DialNotchBandwidthChange
-      DefaultValue = 0.000000000000000000
     end
   end
   object GSPL: TGuiStitchedPNGList

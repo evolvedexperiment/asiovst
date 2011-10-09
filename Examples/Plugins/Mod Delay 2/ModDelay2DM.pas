@@ -171,7 +171,7 @@ end;
 procedure TModDelay2Module.ParameterGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+ Predefined := AnsiString(FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3));
 end;
 
 procedure TModDelay2Module.ParameterMixChange(
@@ -272,9 +272,9 @@ var
 begin
  Freq := FModDelay[Index div 7].LowpassFrequency;
  if Freq < 1000
-  then PreDefined := FloatToStrF(Freq, ffGeneral, 3, 3) else
+  then PreDefined := AnsiString(FloatToStrF(Freq, ffGeneral, 3, 3)) else
  if Freq < 20000
-  then PreDefined := FloatToStrF(0.001 * Freq, ffGeneral, 3, 3)
+  then PreDefined := AnsiString(FloatToStrF(0.001 * Freq, ffGeneral, 3, 3))
   else PreDefined := 'off';
 end;
 

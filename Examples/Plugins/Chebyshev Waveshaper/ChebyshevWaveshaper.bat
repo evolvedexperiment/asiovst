@@ -9,9 +9,9 @@
 @7z a "..\..\..\Archive\ChebyshevWaveshaper.7z" "..\..\..\Bin\*\VST\Chebyshev Waveshaper.dll" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Chebyshev Waveshaper.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Chebyshev Waveshaper.ftp"
-@WinSCP -script="..\..\..\Release Scripts\Chebyshev Waveshaper.scp"
-Exit
+@if exist "..\..\..\Release Scripts\Chebyshev Waveshaper.ftp" ftps -s:"..\..\..\Release Scripts\Chebyshev Waveshaper.ftp"
+@if exist "..\..\..\Release Scripts\Chebyshev Waveshaper.scp" WinSCP -script="..\..\..\Release Scripts\Chebyshev Waveshaper.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

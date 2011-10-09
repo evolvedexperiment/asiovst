@@ -125,7 +125,7 @@ Section "Standalone Converter" SecExecutable
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
 
   ;Create uninstaller
@@ -153,7 +153,7 @@ Section "Shell Extension" SecShellExtension
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
 
   ExecWait '$SYSDIR\regsvr32.exe /s "$INSTDIR\Oversample Shell Extension.dll"'

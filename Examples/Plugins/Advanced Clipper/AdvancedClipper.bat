@@ -9,9 +9,9 @@
 @7z a "..\..\..\Archive\AdvancedClipper.7z" "..\..\..\Bin\*\VST\Advanced Clipper.dll" "..\..\..\Manuals\Advanced Clipper.pdf" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Advanced Clipper.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Advanced Clipper.ftp"
-@WinSCP -script="..\..\..\Release Scripts\Advanced Clipper.scp"
-Exit
+@if exist "..\..\..\Release Scripts\Advanced Clipper.ftp" ftps -s:"..\..\..\Release Scripts\Advanced Clipper.ftp"
+@if exist "..\..\..\Release Scripts\Advanced Clipper.scp" WinSCP -script="..\..\..\Release Scripts\Advanced Clipper.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

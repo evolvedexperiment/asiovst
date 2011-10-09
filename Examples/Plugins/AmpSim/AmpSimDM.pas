@@ -343,7 +343,7 @@ procedure TComboDataModule.StringToParameterModel(
 var
   Text : string;
 begin
- Text := Trim(ParameterString);
+ Text := string(Trim(ParameterString));
  if Text = 'D.I.' then Value := 0 else
  if Text = 'Spkr Sim' then Value := 1 else
  if Text = 'Radio' then Value := 2 else

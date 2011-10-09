@@ -70,7 +70,7 @@ uses
 
 procedure TFmFrequencyDomainPitchShifter.FormCreate(Sender: TObject);
 begin
- FBackground := TGuiCustomPixelMap.Create;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmFrequencyDomainPitchShifter.FormPaint(Sender: TObject);

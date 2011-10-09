@@ -9,9 +9,9 @@
 @7z a "..\..\..\Archive\BassExtender.7z" "..\..\..\Bin\*\VST\Bass Extender.dll" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Bass Extender.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Bass Extender.ftp"
-@WinSCP -script="..\..\..\Release Scripts\Bass Extender.scp"
-Exit
+@if exist "..\..\..\Release Scripts\Bass Extender.ftp" ftps -s:"..\..\..\Release Scripts\Bass Extender.ftp"
+@if exist "..\..\..\Release Scripts\Bass Extender.scp" WinSCP -script="..\..\..\Release Scripts\Bass Extender.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

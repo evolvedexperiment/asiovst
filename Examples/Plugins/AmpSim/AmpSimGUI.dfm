@@ -60,6 +60,14 @@ object FmCombo: TFmCombo
     Top = 8
     Width = 183
     Height = 25
+    Items.Strings = (
+      'D.I.'
+      'Speaker Sim'
+      'Radio'
+      'MB 1"'
+      'MB 8"'
+      '4x12 ^'
+      '4x12 >')
     ArrowColor = clMaroon
     BorderColor = 2039583
     BorderRadius = 8.000000000000000000
@@ -70,15 +78,6 @@ object FmCombo: TFmCombo
     Font.Height = -21
     Font.Name = 'Trebuchet MS'
     Font.Style = []
-    ItemIndex = -1
-    Items.Strings = (
-      'D.I.'
-      'Speaker Sim'
-      'Radio'
-      'MB 1"'
-      'MB 8"'
-      '4x12 ^'
-      '4x12 >')
     ParentFont = False
     SelectBoxColor = 4227200
     OnChange = SBModelChange

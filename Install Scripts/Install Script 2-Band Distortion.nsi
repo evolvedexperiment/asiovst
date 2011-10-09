@@ -128,7 +128,7 @@ Section "VST-Plugin" SecVstPlugin
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
   ${Endif}
 
@@ -142,7 +142,6 @@ SectionEnd
 Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
-  ;ADD YOUR OWN FILES HERE...
   File "..\Manuals\2-Band Distortion.pdf"
 
   ;Store installation folder

@@ -111,8 +111,10 @@ FunctionEnd
 Section "fReeverb VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\fReeverb.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST\fReeverb.dll"
+  ${Else}
+  File "..\Bin\Win32\VST\fReeverb.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -128,6 +130,7 @@ Section "fReeverb VST-Plugin" SecVstPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -147,8 +150,11 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
@@ -174,8 +180,8 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\fReeverb.dll"
+  Delete "$INSTDIR\fReeverb.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
