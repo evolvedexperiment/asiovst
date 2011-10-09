@@ -9,9 +9,9 @@
 @7z a "..\..\..\..\Archive\NoiseReduction.7z" "..\..\..\..\Bin\*\VST\Noise Reduction.dll" "..\..\..\..\Manuals\Noise Reduction.pdf" "..\..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\..\Install Scripts\Install Script Noise Reduction.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\..\Release Scripts\Noise Reduction.ftp"
-@WinSCP -script="..\..\..\..\Release Scripts\Noise Reduction.scp"
-Exit
+@if exist "..\..\..\..\Release Scripts\Noise Reduction.ftp" ftps -s:"..\..\..\..\Release Scripts\Noise Reduction.ftp"
+@if exist "..\..\..\..\Release Scripts\Noise Reduction.scp" WinSCP -script="..\..\..\..\Release Scripts\Noise Reduction.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

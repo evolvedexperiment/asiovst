@@ -172,7 +172,7 @@ end;
 procedure TSpinBugLiteModule.SBMCoefficientsDisplay(Sender : TObject;
   const Index : Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(parameter[0]));
+ PreDefined := AnsiString(IntToStr(Round(parameter[0])));
 end;
 
 procedure TSpinBugLiteModule.SBMCoefficientsChange(Sender : TObject;
@@ -197,7 +197,7 @@ end;
 procedure TSpinBugLiteModule.SBMProcessTypeDisplay(Sender : TObject;
   const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := GetProcessTypeCaption(Round(Parameter[1]));
+ PreDefined := AnsiString(GetProcessTypeCaption(Round(Parameter[1])));
 end;
 
 procedure TSpinBugLiteModule.SBMProcessTypeChange(Sender : TObject;

@@ -9,9 +9,9 @@
 @7z a "..\..\..\Archive\Barberpole.7z" "..\..\..\Bin\*\VST\Barberpole.dll" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Barberpole.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Barberpole.ftp"
-@WinSCP -script="..\..\..\Release Scripts\Barberpole.scp"
-Exit
+@if exist "..\..\..\Release Scripts\Barberpole.ftp" ftps -s:"..\..\..\Release Scripts\Barberpole.ftp"
+@if exist "..\..\..\Release Scripts\Barberpole.scp" WinSCP -script="..\..\..\Release Scripts\Barberpole.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

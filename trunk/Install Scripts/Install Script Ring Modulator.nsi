@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;RingModulator Installer
+;Ring Modulator Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -15,12 +15,12 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "RingModulator Installer"
+  Name "Ring Modulator Installer"
   OutFile "Ring_Modulator_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
-  
+
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
@@ -39,7 +39,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "RingModulator"
+  !define PRODUCT_NAME "Ring Modulator"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -54,20 +54,20 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 
 ;--------------------------------
 ;Reserve Files
-  
+
   ;These files should be inserted before other files in the data block
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
-  
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -77,7 +77,7 @@ SetCompressor lzma
 
 Function .onInit
 
-;  !insertmacro MUI_LANGDLL_DISPLAY  
+;  !insertmacro MUI_LANGDLL_DISPLAY
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
@@ -100,7 +100,7 @@ FunctionEnd
 
 ;--------------------------------
 ;Languages
- 
+
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
@@ -110,49 +110,33 @@ FunctionEnd
 
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
-  
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Ring Modulator.dll"
 
-  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST\Ring Modulator.dll"
+  ${Else}
+  File "..\Bin\Win32\VST\Ring Modulator.dll"
+
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"
   IntCmp $BugReportState 0 SkipDLLCall
-    
+
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
-  
-  StrCpy $0 "$INSTDIR\RingModulator.dll" 
+
+  StrCpy $0 "$INSTDIR\Ring Modulator.dll"
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
-  
+
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_RingModulator.exe"
-SectionEnd
-
-Section "Wrapper" SecVstWrapper
-  SetOutPath "$INSTDIR"
-  
-  !system 'copy "..\Bin\RingModulatorMono.dll "..\Bin\RingModulator (mono).dll"'  
-  !system 'copy "..\Bin\RingModulatorStereo.dll "..\Bin\RingModulator (stereo).dll"'  
-  !system 'copy "..\Bin\RingModulatorQuad.dll "..\Bin\RingModulator (quad).dll"'  
-
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\RingModulator (mono).dll"
-  File "..\Bin\RingModulator (stereo).dll"
-  File "..\Bin\RingModulator (quad).dll"
-
-  ;Store installation folder
-  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
-  ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_RingModulator.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Ring_Modulator.exe"
 SectionEnd
 
 
@@ -160,14 +144,17 @@ SectionEnd
 ;Installer Functions
 
 Function BugReportPatch
-  ${If} ${SectionIsSelected} ${SecVstPlugin}
+  ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
   ${EndIf}
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
@@ -178,15 +165,13 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "RingModulator VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Ring Modulator VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "RingModulator VST Plugin"
-  LangString DESC_SecVstWrapper ${LANG_ENGLISH} "Multi-Channel Wrapper"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Ring Modulator VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstWrapper} $(DESC_SecVstWrapper)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -195,11 +180,8 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\RingModulator.dll"
-  Delete "$INSTDIR\RingModulator (mono).dll"
-  Delete "$INSTDIR\RingModulator (stereo).dll"
-  Delete "$INSTDIR\RingModulator (quad).dll"
+  Delete "$INSTDIR\Ring Modulator.dll"
+  Delete "$INSTDIR\Ring Modulator.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

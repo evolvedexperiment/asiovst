@@ -7,9 +7,9 @@
 @7z a "..\..\..\Archive\Audio2MidiTrigger.7z" "..\..\..\Bin\*\VST\Audio2MidiTrigger.dll" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Audio2MidiTrigger.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Audio2MidiTrigger.ftp"
-@WinSCP -script="..\..\..\Release Scripts\Audio2MidiTrigger.scp"
-Exit
+@if exist "..\..\..\Release Scripts\Audio2MidiTrigger.ftp" ftps -s:"..\..\..\Release Scripts\Audio2MidiTrigger.ftp"
+@if exist "..\..\..\Release Scripts\Audio2MidiTrigger.scp" WinSCP -script="..\..\..\Release Scripts\Audio2MidiTrigger.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

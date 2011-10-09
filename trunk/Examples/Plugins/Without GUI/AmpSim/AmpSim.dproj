@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{0349A2F1-BC1B-4A0C-847B-B3342F24018D}</ProjectGuid>
 			<MainSource>AmpSim.dpr</MainSource>
@@ -92,7 +92,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<Manifest_File>None</Manifest_File>
+			<DCC_MapFile>0</DCC_MapFile>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_3)'!=''">
@@ -192,7 +192,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTPATH).bat&quot;</PostBuildEvent>
+			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTPATH).bat&quot;
+</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='OSX32'">
@@ -200,7 +201,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTPATH).bat&quot;</PostBuildEvent>
+			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTPATH).bat&quot;
+</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win32'">
@@ -208,7 +210,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTPATH).bat&quot;</PostBuildEvent>
+			<PostBuildEvent>&quot;$(PROJECTDIR)\$(PROJECTPATH).bat&quot;
+</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 	</Project>

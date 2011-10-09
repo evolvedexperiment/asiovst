@@ -181,13 +181,13 @@ end;
 procedure TDitherNoiseshaperModule.ParameterBitDepthDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TDitherNoiseshaperModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 const
-  COnOff :array [0..1] of string = ('Off', 'On');
+  COnOff :array [0..1] of AnsiString = ('Off', 'On');
 begin
  PreDefined := COnOff[round(Parameter[Index])];
 end;

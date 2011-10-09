@@ -9,9 +9,9 @@
 @7z a "..\..\..\Archive\Dither&Noiseshaper(FIR).7z" "..\..\..\Bin\*\VST\Dither & Noiseshaper (FIR).dll" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Dither & Noiseshaper (FIR).nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Dither & Noiseshaper (FIR).ftp"
-@WinSCP -script="..\..\..\Release Scripts\Dither & Noiseshaper (FIR).scp"
-Exit
+@if exist "..\..\..\Release Scripts\Dither & Noiseshaper (FIR).ftp" ftps -s:"..\..\..\Release Scripts\Dither & Noiseshaper (FIR).ftp"
+@if exist "..\..\..\Release Scripts\Dither & Noiseshaper (FIR).scp" WinSCP -script="..\..\..\Release Scripts\Dither & Noiseshaper (FIR).scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

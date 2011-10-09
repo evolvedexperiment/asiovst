@@ -111,9 +111,6 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\Win32\VST\Audio2MidiTrigger.dll" "..\Bin\Win32\VST\Audio2Midi Trigger.dll"'  
-  !system 'copy "..\Bin\Win64\VST\Audio2MidiTrigger.dll" "..\Bin\Win64\VST\Audio2Midi Trigger.dll"'  
-   
   ${If} ${RunningX64}
   File "..\Bin\Win64\VST\Audio2Midi Trigger.dll"
   ${Else}
@@ -131,7 +128,7 @@ Section "VST-Plugin" SecVstPlugin
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
   ${Endif}
 

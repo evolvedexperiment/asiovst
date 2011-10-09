@@ -20,7 +20,7 @@ SetCompressor lzma
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
-  
+
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
@@ -40,7 +40,7 @@ SetCompressor lzma
 ;Interface Settings
 
   !define PRODUCT_NAME "Lightweight Feedback Compressor"
-  !define PRODUCT_VERSION "1.0.2"
+  !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
@@ -54,18 +54,18 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 
 ;--------------------------------
 ;Reserve Files
-  
+
   ;These files should be inserted before other files in the data block
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
-  
+
   ReserveFile "madExcept Patch.dll"
   ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
@@ -77,7 +77,7 @@ SetCompressor lzma
 
 Function .onInit
 
-;  !insertmacro MUI_LANGDLL_DISPLAY  
+;  !insertmacro MUI_LANGDLL_DISPLAY
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
@@ -100,7 +100,7 @@ FunctionEnd
 
 ;--------------------------------
 ;Languages
- 
+
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
@@ -108,50 +108,35 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
-  
-  !system 'copy "..\Bin\LightweightFeedbackCompressor.dll" "..\Bin\Lightweight Feedback Compressor.dll"'  
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Lightweight Feedback Compressor.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST\Lightweight Feedback Compressor.dll"
+  ${Else}
+  File "..\Bin\Win32\VST\Lightweight Feedback Compressor.dll"
 
-  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"
   IntCmp $BugReportState 0 SkipDLLCall
-    
+
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
-  
-  StrCpy $0 "$INSTDIR\Lightweight Feedback Compressor.dll" 
+
+  StrCpy $0 "$INSTDIR\Lightweight Feedback Compressor.dll"
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
-  
+
   IntCmp $1 0 SkipDLLCall
   DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
-
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Lightweight Feedback Compressor.dll"
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
-  ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Compressor.exe"
-SectionEnd
 
-Section "Manual" SecManual
-  SetOutPath "$INSTDIR"
-  
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Manuals\Lightweight Feedback Compressor Manual.pdf"
-
-  ;Store installation folder
-  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Compressor.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Feedback_Compressor.exe"
 SectionEnd
 
 
@@ -165,8 +150,11 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
@@ -179,13 +167,11 @@ FunctionEnd
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Lightweight Feedback Compressor VST Plugin"
 
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Lightweight Feedback Compressor VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "Lightweight Feedback Compressor Manual"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Lightweight Feedback Compressor VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -194,9 +180,8 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\Lightweight Feedback Compressor.dll"
-  Delete "$INSTDIR\Lightweight Feedback Compressor Manual.pdf"
+  Delete "$INSTDIR\Lightweight Feedback Compressor.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

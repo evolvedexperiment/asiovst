@@ -110,8 +110,10 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Adhesive.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST\Adhesive.dll"
+  ${Else}
+  File "..\Bin\Win32\VST\Adhesive.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -123,9 +125,10 @@ Section "VST-Plugin" SecVstPlugin
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
+  ${EndIf}
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
 
   ;Store installation folder
@@ -146,8 +149,11 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${EndIf}
 
   NoVST:
 FunctionEnd

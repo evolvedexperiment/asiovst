@@ -9,9 +9,9 @@
 @7z a "..\..\..\..\Archive\ButterworthSplitter.7z" "..\..\..\..\Bin\*\VST\Butterworth Splitter.dll" "..\..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\..\Install Scripts\Install Script Butterworth Splitter.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\..\Release Scripts\Butterworth Splitter.ftp"
-@WinSCP -script="..\..\..\..\Release Scripts\Butterworth Splitter.scp"
-Exit
+@if exist "..\..\..\..\Release Scripts\Butterworth Splitter.ftp" ftps -s:"..\..\..\..\Release Scripts\Butterworth Splitter.ftp"
+@if exist "..\..\..\..\Release Scripts\Butterworth Splitter.scp" WinSCP -script="..\..\..\..\Release Scripts\Butterworth Splitter.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

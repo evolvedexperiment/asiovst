@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Graphic-EQ Installer
+;Float Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -15,12 +15,12 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Graphic-EQ Installer"
-  OutFile "Graphic-EQ_Install.exe"
+  Name "Float Installer"
+  OutFile "Float_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
-  
+
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
@@ -39,11 +39,12 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Graphic-EQ"
+  !define PRODUCT_NAME "Float"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define PRODUCT_DIR_ROOT_KEY "HKLM"
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
@@ -53,20 +54,20 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT HKLM
-  !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
+  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 
 ;--------------------------------
 ;Reserve Files
-  
+
   ;These files should be inserted before other files in the data block
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
-  
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -76,7 +77,7 @@ SetCompressor lzma
 
 Function .onInit
 
-;  !insertmacro MUI_LANGDLL_DISPLAY  
+;  !insertmacro MUI_LANGDLL_DISPLAY
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
@@ -99,7 +100,7 @@ FunctionEnd
 
 ;--------------------------------
 ;Languages
- 
+
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
@@ -109,32 +110,33 @@ FunctionEnd
 
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
-  
-  !system 'copy "..\Bin\GraphicEQ.dll" "..\Bin\Graphic-EQ.dll"'  
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Graphic-EQ.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST\Float.dll"
+  ${Else}
+  File "..\Bin\Win32\VST\Float.dll"
 
-  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"
   IntCmp $BugReportState 0 SkipDLLCall
-    
+
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
-  
-  StrCpy $0 "$INSTDIR\Graphic-EQ.dll" 
+
+  StrCpy $0 "$INSTDIR\Float.dll"
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
-  
+
   IntCmp $1 0 SkipDLLCall
   DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Graphic-EQ.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Float.exe"
 SectionEnd
 
 
@@ -148,8 +150,11 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
@@ -160,9 +165,9 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Float VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Float VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -175,8 +180,8 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Graphic-EQ.dll"
-  DeleteRegKey HKLM PRODUCT_DIR_REGKEY
+  Delete "$INSTDIR\Float.dll"
+  Delete "$INSTDIR\Float.pdf"
+  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

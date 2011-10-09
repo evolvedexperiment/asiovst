@@ -168,7 +168,7 @@
 {$DEFINE HandleDenormals}
 { If this compiler switch is enabled, denormals are handled on the lowest level
   possible. Although it costs some extra CPU cycles per sample, it avoids the
-  penalty caused by denormal calculations (around factor 3)  
+  penalty caused by denormal calculations (around factor 3)
   The default is enabled.}
 
 {.$DEFINE Use_IPPS}
@@ -188,5 +188,18 @@
   emulation is very slow!
   The default is disabled.}
 
+{$DEFINE UseFastMove}
+{ If this compiler switch is enabled, the FastMove library is used for all
+  Move(...) calls. It used to be significantly faster, especially on older
+  systems and IDEs. In later versions of Delphi its code is built in or at
+  least on par in terms of performance.
+  The FastMove library can be found at: http://fastcode.sourceforge.net/
+  The default is enabled.}
 
-{-$DEFINE UseMadExcept}
+{$DEFINE UseMadExcept}
+{ If this compiler switch is enabled, the madExcept library is used to handle
+  exceptions. The library can be downloaded for free at http://www.madshi.net/
+  However, a license need to be purchased in case it is used in a commercial
+  product.
+  The default is enabled.}
+

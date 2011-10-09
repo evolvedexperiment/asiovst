@@ -1,5 +1,4 @@
 object ModDelay2Module: TModDelay2Module
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'
@@ -272,8 +271,6 @@ object ModDelay2Module: TModDelay2Module
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 77
   Height = 150
   Width = 215
 end

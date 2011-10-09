@@ -9,9 +9,9 @@
 @7z a "..\..\..\Archive\2BandDistortion.7z" "..\..\..\Bin\*\VST\2-Band Distortion.dll" "..\..\..\Manuals\2-Band Distortion.pdf" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script 2-Band Distortion.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\2-Band Distortion.ftp"
-@WinSCP -script="..\..\..\Release Scripts\2-Band Distortion.scp"
-Exit
+@if exist "..\..\..\Release Scripts\2-Band Distortion.ftp" ftps -s:"..\..\..\Release Scripts\2-Band Distortion.ftp"
+@if exist "..\..\..\Release Scripts\2-Band Distortion.scp" WinSCP -script="..\..\..\Release Scripts\2-Band Distortion.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

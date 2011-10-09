@@ -86,7 +86,7 @@ begin
  GUI := TFmPascalScript.Create(Self);
  if Length(FScriptCode) > 0 then
   with TFmPascalScript(GUI)
-   do SynEdit.LineText := FScriptCode;
+   do SynEdit.LineText := string(FScriptCode);
 end;
 
 procedure TPascalScriptDataModule.VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
@@ -106,7 +106,7 @@ begin
      Read(FScriptCode[1], AtomSize);
      if Assigned(EditorForm) then
       with TFmPascalScript(EditorForm)
-       do SynEdit.Lines.Text := ScriptCode;
+       do SynEdit.Lines.Text := string(ScriptCode);
     end;
   end;
 end;

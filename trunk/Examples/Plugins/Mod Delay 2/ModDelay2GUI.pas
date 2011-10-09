@@ -86,7 +86,7 @@ uses
 
 procedure TFmModDelay2.FormCreate(Sender: TObject);
 begin
- FBackground := TGuiCustomPixelMap.Create;
+ FBackground := TGuiPixelMapMemory.Create;
 end;
 
 procedure TFmModDelay2.FormDestroy(Sender: TObject);

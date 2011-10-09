@@ -16,11 +16,11 @@ SetCompressor lzma
 
   ;Name and file
   Name "Barberpole Tuner Installer"
-  OutFile "Barberpole Tuner_Install.exe"
+  OutFile "Barberpole_Tuner_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
-  
+
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
@@ -54,20 +54,20 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 
 ;--------------------------------
 ;Reserve Files
-  
+
   ;These files should be inserted before other files in the data block
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
-  
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -77,7 +77,7 @@ SetCompressor lzma
 
 Function .onInit
 
-;  !insertmacro MUI_LANGDLL_DISPLAY  
+;  !insertmacro MUI_LANGDLL_DISPLAY
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
@@ -100,7 +100,7 @@ FunctionEnd
 
 ;--------------------------------
 ;Languages
- 
+
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
@@ -110,49 +110,48 @@ FunctionEnd
 
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
-  
-  !system 'copy "..\Bin\BarberpoleTuner.dll" "..\Bin\Barberpole Tuner.dll"'  
 
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Barberpole Tuner.dll"
+  ${If} ${RunningX64}
+  File "..\Bin\Win64\VST\Barberpole Tuner.dll"
+  ${Else}
+  File "..\Bin\Win32\VST\Barberpole Tuner.dll"
 
-  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"
   IntCmp $BugReportState 0 SkipDLLCall
-    
+
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
-  
-  StrCpy $0 "$INSTDIR\Barberpole Tuner.dll" 
+
+  StrCpy $0 "$INSTDIR\Barberpole Tuner.dll"
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
-  
+
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
+  ${Endif}
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Tuner.exe"
-
 SectionEnd
 
-Section "Barberpole Tuner Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
-  
+
   ;ADD YOUR OWN FILES HERE...
   File "..\Manuals\Barberpole Tuner.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Tuner.exe"
-
 SectionEnd
-  
+
 
 ;--------------------------------
 ;Installer Functions
@@ -164,25 +163,25 @@ Function BugReportPatch
   Goto NoVST
 
   IsVST:
+  ${If} ${RunningX64}
+  ${Else}
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+  ${Endif}
 
   NoVST:
 FunctionEnd
 
 
 ;--------------------------------
-;Language strings
+;Descriptions
 
+  ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Barberpole Tuner VST Plugin"
 
   LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Barberpole Tuner VST Plugin"
   LangString DESC_SecManual ${LANG_ENGLISH} "Barberpole Tuner Manual"
-
-
-;--------------------------------
-;Descriptions
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

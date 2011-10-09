@@ -1,13 +1,10 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{7F8F6E25-7BF5-4362-B371-50D4F479CC55}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
-			<Projects Include="2-Band Distortion\TwoBandDistortion.dproj">
-					<Dependencies/>
-			</Projects>
 			<Projects Include="Advanced Clipper\AdvancedClipper.dproj">
-					<Dependencies/>
+				<Dependencies/>
 			</Projects>
 			<Projects Include="AmpSim\AmpSim.dproj">
 				<Dependencies/>
@@ -15,16 +12,19 @@
 			<Projects Include="ASIO-Extender\ASIOVST.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Audio Amelioration\AudioAmelioration.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="Audio2MidiTrigger\Audio2MidiTrigger.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Barberpole Shifter\BarberpoleShifter.dproj">
+			<Projects Include="Audio Amelioration\AudioAmelioration.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Relay\AudioRelay.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Barberpole\BarberpoleFlanger.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Barberpole Shifter\BarberpoleShifter.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Barberpole Tuner\BarberpoleTuner.dproj">
@@ -54,10 +54,13 @@
 			<Projects Include="Chunk Demo\ChunkDemo.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="ConvoFX\ConvoFx.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="ConvoFX - Lite\ConvoFXLite.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="ConvoFX\ConvoFx.dproj">
+			<Projects Include="Simple Convolution Engine\Convolution.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Crosstalk Cancellation\CrosstalkCancellation.dproj">
@@ -67,9 +70,6 @@
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Dither &amp; Noiseshaper (IIR)\DitherNoiseshaper.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Flanger\SimpleFlanger.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="fReeverb\fReeverb.dproj">
@@ -105,10 +105,10 @@
 			<Projects Include="MaxxBass Clone\MaxxBassClone.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Mod Delay 2\ModDelay2.dproj">
+			<Projects Include="Mod Delay\ModDelay.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Mod Delay\ModDelay.dproj">
+			<Projects Include="Mod Delay 2\ModDelay2.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="NonLinear\Nonlinear.dproj">
@@ -120,16 +120,13 @@
 			<Projects Include="Party-Delay\PartyDelay.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="PascalScript\VSTPascalScript.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="Phase Adjustment\PhaseAdjustment.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Phase Rotator\PhaseRotator.dproj">
+			<Projects Include="Phaser\Phaser.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Phaser\Phaser.dproj">
+			<Projects Include="Phase Rotator\PhaseRotator.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Plate Reverb\PlateReverb.dproj">
@@ -141,9 +138,6 @@
 			<Projects Include="Quadropolis\Quadropolis.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Relay\AudioRelay.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="ReverseVerb\ReverseVerb.dproj">
 				<Dependencies/>
 			</Projects>
@@ -153,13 +147,16 @@
 			<Projects Include="Sample Delay\SampleDelay.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Simple Convolution Engine\Convolution.dproj">
+			<Projects Include="Flanger\SimpleFlanger.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Simple Sample Delay\SimpleSampleDelay.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Simple Sonogram\SimpleSonogram.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Vibrato\SimpleVibrato.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Sonogram\Sonogram.dproj">
@@ -192,10 +189,13 @@
 			<Projects Include="Tuner\Tuner.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="2-Band Distortion\TwoBandDistortion.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="Variable Delay\VariableDelay.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Vibrato\SimpleVibrato.dproj">
+			<Projects Include="PascalScript\VSTPascalScript.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -792,13 +792,309 @@
 			<MSBuild Projects="PascalScript\VSTPascalScript.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="AdvancedClipper;AmpSim;ASIOVST;Audio2MidiTrigger;AudioAmelioration;AudioRelay;BarberpoleFlanger;BarberpoleShifter;BarberpoleTuner;BassBaron;BassExtender;Baxxpander;BodeFrequencyShifter;ChebyshevExciter;ChebyshevWaveshaper;Chorus;ChunkDemo;ConvoFx;ConvoFXLite;Convolution;CrosstalkCancellation;Decimator;DitherNoiseshaper;fReeverb;FrequencyDomainPitchShifter;GranularPitchshifter;HeadphoneMix;HRTF3D;HumRemoval;Hysteresis;LayeredFrequencySplitter;LoadVSTPlugin;LoudnessMeter;MaxxBassClone;ModDelay;ModDelay2;Nonlinear;OversampledTanh;PartyDelay;PhaseAdjustment;Phaser;PhaseRotator;PlateReverb;Pulsing;Quadropolis;ReverseVerb;RingModulator;SampleDelay;SimpleFlanger;SimpleSampleDelay;SimpleSonogram;SimpleVibrato;Sonogram;SortedDisorder;SoundTouchPitchShifter;SpectralDelayFilter;SpinBugLite;SplitHarmonizer;SubBoost;ThirdOctaveAnalyser;TrackPlug;Tuner;TwoBandDistortion;VariableDelay;VSTPascalScript;"/>
+			<CallTarget Targets="AdvancedClipper;AmpSim;ASIOVST;Audio2MidiTrigger;AudioAmelioration;AudioRelay;BarberpoleFlanger;BarberpoleShifter;BarberpoleTuner;BassBaron;BassExtender;Baxxpander;BodeFrequencyShifter;ChebyshevExciter;ChebyshevWaveshaper;Chorus;ChunkDemo;ConvoFx;ConvoFXLite;Convolution;CrosstalkCancellation;Decimator;DitherNoiseshaper;fReeverb;FrequencyDomainPitchShifter;GranularPitchshifter;HeadphoneMix;HRTF3D;HumRemoval;Hysteresis;LayeredFrequencySplitter;LoadVSTPlugin;LoudnessMeter;MaxxBassClone;ModDelay;ModDelay2;Nonlinear;OversampledTanh;PartyDelay;PhaseAdjustment;Phaser;PhaseRotator;PlateReverb;Pulsing;Quadropolis;ReverseVerb;RingModulator;SampleDelay;SimpleFlanger;SimpleSampleDelay;SimpleSonogram;SimpleVibrato;Sonogram;SortedDisorder;SoundTouchPitchShifter;SpectralDelayFilter;SpinBugLite;SplitHarmonizer;SubBoost;ThirdOctaveAnalyser;TrackPlug;Tuner;TwoBandDistortion;VariableDelay;VSTPascalScript"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="AdvancedClipper:Clean;AmpSim:Clean;ASIOVST:Clean;Audio2MidiTrigger:Clean;AudioAmelioration:Clean;AudioRelay:Clean;BarberpoleFlanger:Clean;BarberpoleShifter:Clean;BarberpoleTuner:Clean;BassBaron:Clean;BassExtender:Clean;Baxxpander:Clean;BodeFrequencyShifter:Clean;ChebyshevExciter:Clean;ChebyshevWaveshaper:Clean;Chorus:Clean;ChunkDemo:Clean;ConvoFx:Clean;ConvoFXLite:Clean;Convolution:Clean;CrosstalkCancellation:Clean;Decimator:Clean;DitherNoiseshaper:Clean;fReeverb:Clean;FrequencyDomainPitchShifter:Clean;GranularPitchshifter:Clean;HeadphoneMix:Clean;HRTF3D:Clean;HumRemoval:Clean;Hysteresis:Clean;LayeredFrequencySplitter:Clean;LoadVSTPlugin:Clean;LoudnessMeter:Clean;MaxxBassClone:Clean;ModDelay:Clean;ModDelay2:Clean;Nonlinear:Clean;OversampledTanh:Clean;PartyDelay:Clean;PhaseAdjustment:Clean;Phaser:Clean;PhaseRotator:Clean;PlateReverb:Clean;Pulsing:Clean;Quadropolis:Clean;ReverseVerb:Clean;RingModulator:Clean;SampleDelay:Clean;SimpleFlanger:Clean;SimpleSampleDelay:Clean;SimpleSonogram:Clean;SimpleVibrato:Clean;Sonogram:Clean;SortedDisorder:Clean;SoundTouchPitchShifter:Clean;SpectralDelayFilter:Clean;SpinBugLite:Clean;SplitHarmonizer:Clean;SubBoost:Clean;ThirdOctaveAnalyser:Clean;TrackPlug:Clean;Tuner:Clean;TwoBandDistortion:Clean;VariableDelay:Clean;VSTPascalScript:Clean;"/>
+			<CallTarget Targets="AdvancedClipper:Clean;AmpSim:Clean;ASIOVST:Clean;Audio2MidiTrigger:Clean;AudioAmelioration:Clean;AudioRelay:Clean;BarberpoleFlanger:Clean;BarberpoleShifter:Clean;BarberpoleTuner:Clean;BassBaron:Clean;BassExtender:Clean;Baxxpander:Clean;BodeFrequencyShifter:Clean;ChebyshevExciter:Clean;ChebyshevWaveshaper:Clean;Chorus:Clean;ChunkDemo:Clean;ConvoFx:Clean;ConvoFXLite:Clean;Convolution:Clean;CrosstalkCancellation:Clean;Decimator:Clean;DitherNoiseshaper:Clean;fReeverb:Clean;FrequencyDomainPitchShifter:Clean;GranularPitchshifter:Clean;HeadphoneMix:Clean;HRTF3D:Clean;HumRemoval:Clean;Hysteresis:Clean;LayeredFrequencySplitter:Clean;LoadVSTPlugin:Clean;LoudnessMeter:Clean;MaxxBassClone:Clean;ModDelay:Clean;ModDelay2:Clean;Nonlinear:Clean;OversampledTanh:Clean;PartyDelay:Clean;PhaseAdjustment:Clean;Phaser:Clean;PhaseRotator:Clean;PlateReverb:Clean;Pulsing:Clean;Quadropolis:Clean;ReverseVerb:Clean;RingModulator:Clean;SampleDelay:Clean;SimpleFlanger:Clean;SimpleSampleDelay:Clean;SimpleSonogram:Clean;SimpleVibrato:Clean;Sonogram:Clean;SortedDisorder:Clean;SoundTouchPitchShifter:Clean;SpectralDelayFilter:Clean;SpinBugLite:Clean;SplitHarmonizer:Clean;SubBoost:Clean;ThirdOctaveAnalyser:Clean;TrackPlug:Clean;Tuner:Clean;TwoBandDistortion:Clean;VariableDelay:Clean;VSTPascalScript:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="AdvancedClipper:Make;AmpSim:Make;ASIOVST:Make;Audio2MidiTrigger:Make;AudioAmelioration:Make;AudioRelay:Make;BarberpoleFlanger:Make;BarberpoleShifter:Make;BarberpoleTuner:Make;BassBaron:Make;BassExtender:Make;Baxxpander:Make;BodeFrequencyShifter:Make;ChebyshevExciter:Make;ChebyshevWaveshaper:Make;Chorus:Make;ChunkDemo:Make;ConvoFx:Make;ConvoFXLite:Make;Convolution:Make;CrosstalkCancellation:Make;Decimator:Make;DitherNoiseshaper:Make;fReeverb:Make;FrequencyDomainPitchShifter:Make;GranularPitchshifter:Make;HeadphoneMix:Make;HRTF3D:Make;HumRemoval:Make;Hysteresis:Make;LayeredFrequencySplitter:Make;LoadVSTPlugin:Make;LoudnessMeter:Make;MaxxBassClone:Make;ModDelay:Make;ModDelay2:Make;Nonlinear:Make;OversampledTanh:Make;PartyDelay:Make;PhaseAdjustment:Make;Phaser:Make;PhaseRotator:Make;PlateReverb:Make;Pulsing:Make;Quadropolis:Make;ReverseVerb:Make;RingModulator:Make;SampleDelay:Make;SimpleFlanger:Make;SimpleSampleDelay:Make;SimpleSonogram:Make;SimpleVibrato:Make;Sonogram:Make;SortedDisorder:Make;SoundTouchPitchShifter:Make;SpectralDelayFilter:Make;SpinBugLite:Make;SplitHarmonizer:Make;SubBoost:Make;ThirdOctaveAnalyser:Make;TrackPlug:Make;Tuner:Make;TwoBandDistortion:Make;VariableDelay:Make;VSTPascalScript:Make;"/>
+			<CallTarget Targets="AdvancedClipper:Make;AmpSim:Make;ASIOVST:Make;Audio2MidiTrigger:Make;AudioAmelioration:Make;AudioRelay:Make;BarberpoleFlanger:Make;BarberpoleShifter:Make;BarberpoleTuner:Make;BassBaron:Make;BassExtender:Make;Baxxpander:Make;BodeFrequencyShifter:Make;ChebyshevExciter:Make;ChebyshevWaveshaper:Make;Chorus:Make;ChunkDemo:Make;ConvoFx:Make;ConvoFXLite:Make;Convolution:Make;CrosstalkCancellation:Make;Decimator:Make;DitherNoiseshaper:Make;fReeverb:Make;FrequencyDomainPitchShifter:Make;GranularPitchshifter:Make;HeadphoneMix:Make;HRTF3D:Make;HumRemoval:Make;Hysteresis:Make;LayeredFrequencySplitter:Make;LoadVSTPlugin:Make;LoudnessMeter:Make;MaxxBassClone:Make;ModDelay:Make;ModDelay2:Make;Nonlinear:Make;OversampledTanh:Make;PartyDelay:Make;PhaseAdjustment:Make;Phaser:Make;PhaseRotator:Make;PlateReverb:Make;Pulsing:Make;Quadropolis:Make;ReverseVerb:Make;RingModulator:Make;SampleDelay:Make;SimpleFlanger:Make;SimpleSampleDelay:Make;SimpleSonogram:Make;SimpleVibrato:Make;Sonogram:Make;SortedDisorder:Make;SoundTouchPitchShifter:Make;SpectralDelayFilter:Make;SpinBugLite:Make;SplitHarmonizer:Make;SubBoost:Make;ThirdOctaveAnalyser:Make;TrackPlug:Make;Tuner:Make;TwoBandDistortion:Make;VariableDelay:Make;VSTPascalScript:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
+		<ItemGroup Condition="'$(BuildGroup)'=='Release'">
+			<BuildGroupProject Include="Bass Baron\BassBaron.dproj">
+				<ProjectGuid>{BF523B80-F722-4DBF-BC6F-E06B85481FDA}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Phase Adjustment\PhaseAdjustment.dproj">
+				<ProjectGuid>{CF0846E0-EB26-420F-88D2-CD402D0336F3}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="HRTF 3D\HRTF3D.dproj">
+				<ProjectGuid>{AFF754A6-40D0-4C03-BF16-4A920B5A52E1}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="ASIO-Extender\ASIOVST.dproj">
+				<ProjectGuid>{9AE2A4B2-07C0-4FFF-AC9B-CA9936D6E57C}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Vibrato\SimpleVibrato.dproj">
+				<ProjectGuid>{253F18AD-A90C-4928-B0D2-1D89A1108C16}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Phaser\Phaser.dproj">
+				<ProjectGuid>{1B964996-B55C-4507-AB86-CB1557909731}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="ConvoFX\ConvoFx.dproj">
+				<ProjectGuid>{FBF43B99-AF41-4E48-B712-F2E6C55C56D6}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Bass Extender\BassExtender.dproj">
+				<ProjectGuid>{CC13FEAB-F5D8-4708-9498-856E742B1099}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Tuner\Tuner.dproj">
+				<ProjectGuid>{B870E5C8-E7A5-4117-A759-DAC6E2732048}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Sample Delay\SampleDelay.dproj">
+				<ProjectGuid>{CA8389BB-55F8-4390-A4C9-7647B7AA2F36}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Crosstalk Cancellation\CrosstalkCancellation.dproj">
+				<ProjectGuid>{B5DA1B1E-A84F-4A18-8978-D68DD8112351}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Audio Amelioration\AudioAmelioration.dproj">
+				<ProjectGuid>{2C0DB14F-4F01-4B39-9827-0947CC10A256}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Mod Delay\ModDelay.dproj">
+				<ProjectGuid>{8CD05DD4-D4F1-4281-82A4-161E4816D995}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Decimator\Decimator.dproj">
+				<ProjectGuid>{9BD491DC-6ABA-4EDF-9DCD-A6A4B22F5CB8}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="TrackPlug\TrackPlug.dproj">
+				<ProjectGuid>{F07A49BC-73B5-4EC8-9D5E-53F7C7C9CBEC}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Chebyshev Exciter\ChebyshevExciter.dproj">
+				<ProjectGuid>{2DF8190B-2895-4632-A674-41EB936B8CEB}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Chebyshev Waveshaper\ChebyshevWaveshaper.dproj">
+				<ProjectGuid>{9537FC5B-D3BA-4E3F-B19B-613710BEAA96}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="2-Band Distortion\TwoBandDistortion.dproj">
+				<ProjectGuid>{81BB597B-E111-47DC-AB22-A9D1F37E5359}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Frequency Domain Pitchshifter\FrequencyDomainPitchShifter.dproj">
+				<ProjectGuid>{61CA10CE-EBAC-4E6A-AE6C-EA13785E2F3C}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Barberpole Shifter\BarberpoleShifter.dproj">
+				<ProjectGuid>{AEB1F3E6-BBFA-4218-9A4F-A301F33DFCB1}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Hum Removal\HumRemoval.dproj">
+				<ProjectGuid>{CBC26428-1201-4701-A284-D0AEE74B9854}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Spectral Delay Filter\SpectralDelayFilter.dproj">
+				<ProjectGuid>{10883338-B02B-4ED7-88D0-D90D597AA486}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Third Octave Analyser\ThirdOctaveAnalyser.dproj">
+				<ProjectGuid>{18F36D67-EC6D-4F45-B841-BDEDD1012F87}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Simple Sonogram\SimpleSonogram.dproj">
+				<ProjectGuid>{AB426FD9-35BC-4C19-A571-0060201F034D}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Ring Modulator\RingModulator.dproj">
+				<ProjectGuid>{072A8EC6-DA93-4BC6-A901-33141EE45865}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="SubBoost\SubBoost.dproj">
+				<ProjectGuid>{67E043D2-B7F5-4E55-8AA7-75230527B634}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="PascalScript\VSTPascalScript.dproj">
+				<ProjectGuid>{5F9668CB-2FAE-430A-8BB2-9955A79F9D83}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="NonLinear\Nonlinear.dproj">
+				<ProjectGuid>{9A63EE87-4B35-4BB5-8217-47CC53491D3E}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Advanced Clipper\AdvancedClipper.dproj">
+				<ProjectGuid>{6EF0140A-3055-4580-A921-CAD8840AF50B}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Simple Sample Delay\SimpleSampleDelay.dproj">
+				<ProjectGuid>{A2628545-644D-4BC9-B25E-DA010707B536}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Dither &amp; Noiseshaper (IIR)\DitherNoiseshaper.dproj">
+				<ProjectGuid>{E8C0C67C-2A0A-4B4B-B994-4868625019BD}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Oversampled Tanh\OversampledTanh.dproj">
+				<ProjectGuid>{E424D7BF-190D-4FF2-927F-9D12C9F089D8}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Quadropolis\Quadropolis.dproj">
+				<ProjectGuid>{7367E837-1BFD-4ADA-9082-72DC5BC205EC}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="SpinBug Lite\SpinBugLite.dproj">
+				<ProjectGuid>{C3BB2EEC-B818-4036-B67D-DA1394C7BC0E}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Audio2MidiTrigger\Audio2MidiTrigger.dproj">
+				<ProjectGuid>{67E50328-7C25-4368-83CC-9B31FCEBFB0E}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Layered Frequency Splitter\LayeredFrequencySplitter.dproj">
+				<ProjectGuid>{43AD8A9C-4783-4928-B6E5-C8D830F6A084}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Loudness Meter\LoudnessMeter.dproj">
+				<ProjectGuid>{C90D82CB-AFEF-4A76-88F6-625F124507F4}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Phase Rotator\PhaseRotator.dproj">
+				<ProjectGuid>{CABA67DE-851A-48F3-80FF-921C110A033B}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Load VST Plugin\LoadVSTPlugin.dproj">
+				<ProjectGuid>{0BC13796-1EBF-4E5B-81DB-57807E3FDB3F}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Pulsing\Pulsing.dproj">
+				<ProjectGuid>{228DA432-0CDE-47A2-A24D-342EABE6B3D9}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="fReeverb\fReeverb.dproj">
+				<ProjectGuid>{4CCCDB64-AE69-441B-B21D-90EDBA222AE5}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Sorted Disorder\SortedDisorder.dproj">
+				<ProjectGuid>{E4AA5781-8608-4B18-A642-65A855C58B3A}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="AmpSim\AmpSim.dproj">
+				<ProjectGuid>{0349A2F1-BC1B-4A0C-847B-B3342F24018D}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Baxxpander Clone\Baxxpander.dproj">
+				<ProjectGuid>{00DFBDC2-926B-4801-BC87-AC724D4AC5BC}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="HeadphoneMix\HeadphoneMix.dproj">
+				<ProjectGuid>{CEF7EB86-C03E-45B5-B85F-BE92FD79B3F9}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Party-Delay\PartyDelay.dproj">
+				<ProjectGuid>{ECD735B0-C69C-41CE-A82F-F0F38C2D9F0A}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Barberpole Tuner\BarberpoleTuner.dproj">
+				<ProjectGuid>{9F3D0F20-08C5-4F07-847A-7F679BD42F35}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Chunk Demo\ChunkDemo.dproj">
+				<ProjectGuid>{92D0E3BC-6ADE-483E-A9E7-F7A3E4C66F93}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+			<BuildGroupProject Include="Relay\AudioRelay.dproj">
+				<ProjectGuid>{5CF8DB8F-E771-40EC-A58E-FA86C1B764DF}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
+		</ItemGroup>
 	</Project>

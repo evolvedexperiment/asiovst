@@ -198,7 +198,7 @@ begin
   begin
    if DialHighpassFrequency.Value <> Parameter[2]
     then DialHighpassFrequency.Value := Parameter[2];
-   LbHighpassFrequencyValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbHighpassFrequencyValue.Caption := string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -209,7 +209,7 @@ begin
   begin
    if DialHighpassOrder.Value <> Parameter[3]
     then DialHighpassOrder.Value := Parameter[3];
-   LbHighpassOrderValue.Caption := ParameterDisplay[3];
+   LbHighpassOrderValue.Caption := string(ParameterDisplay[3]);
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -220,7 +220,7 @@ begin
   begin
    if DialFundamentalFrequency.Value <> Parameter[4]
     then DialFundamentalFrequency.Value := Parameter[4];
-   LbFundamentalFrequencyValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
+   LbFundamentalFrequencyValue.Caption := string(ParameterDisplay[4] + ' ' + ParameterLabel[4]);
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -231,7 +231,7 @@ begin
   begin
    if DialNotchBandwidth.Value <> Parameter[5]
     then DialNotchBandwidth.Value := Parameter[5];
-   LbNotchBandwidthValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
+   LbNotchBandwidthValue.Caption := string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
    GuiEQGraph.UpdateGraph;
   end;
 end;

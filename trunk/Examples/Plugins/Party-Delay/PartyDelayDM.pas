@@ -607,7 +607,8 @@ begin
   with TFmPartyDelay(EditorForm) do
    begin
     StatusBar.SimpleText := string(ParameterProperties[Index].DisplayName +
-      ': ' + ParameterDisplay[Index] + ' ' + ParameterLabel[Index]);
+      AnsiString(': ') + ParameterDisplay[Index] + AnsiChar(' ') +
+      ParameterLabel[Index]);
    end;
 end;
 

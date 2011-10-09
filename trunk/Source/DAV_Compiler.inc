@@ -1356,4 +1356,9 @@
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
 {$IFDEF DELPHI7_UP} {$ELSE} {$UNDEF UseNativeTypes} {$ENDIF}
-{$IFDEF CPU64} {$UNDEF Use_IPPS} {$ENDIF}
+
+{$IFDEF CPU64}
+  {$UNDEF Use_IPPS}
+  {$UNDEF UseMadExcept}
+  {$UNDEF UseFastMove}
+{$ENDIF}

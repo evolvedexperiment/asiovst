@@ -175,6 +175,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -196,6 +197,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -217,6 +219,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -238,6 +241,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -259,6 +263,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -280,6 +285,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -301,6 +307,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -322,6 +329,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -343,6 +351,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -364,6 +373,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -385,6 +395,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -406,6 +417,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -427,6 +439,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True
@@ -448,6 +461,7 @@ object FmModDelay2: TFmModDelay2
     FontShadow.Saturation = 3.000000000000000000
     FontShadow.Visible = True
     Max = 100.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 50.000000000000000000
     ShowText = True

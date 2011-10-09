@@ -99,13 +99,13 @@ end;
 procedure TLayeredFreqSplitModule.ParameterIntegerDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(Round(Parameter[Index])));
 end;
 
 procedure TLayeredFreqSplitModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(2 * Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(2 * Round(Parameter[Index])));
 end;
 
 procedure TLayeredFreqSplitModule.ParameterOrderChange(

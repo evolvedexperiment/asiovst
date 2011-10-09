@@ -64,7 +64,7 @@ type
     procedure BtLoadScriptClick(Sender: TObject);
     procedure BtSaveScriptClick(Sender: TObject);
   private
-    fCompiler : TPSPascalCompiler;
+    FCompiler : TPSPascalCompiler;
   end;
 
 implementation
@@ -102,14 +102,14 @@ var
   i   : Integer;
 begin
  DebugBox.Items.Clear;
- if not fCompiler.Compile(SynEdit.Lines.Text) then
-  for i := 0 to fCompiler.MsgCount - 1
-   do DebugBox.Items.Add(fCompiler.Msg[i].MessageToString)
+ if not FCompiler.Compile(SynEdit.Lines.Text) then
+  for i := 0 to FCompiler.MsgCount - 1
+   do DebugBox.Items.Add(FCompiler.Msg[i].MessageToString)
  else
   begin
    FCompiler.GetOutput(str);
    TPascalScriptDataModule(Owner).ByteCode := str;
-   TPascalScriptDataModule(Owner).ScriptCode := SynEdit.Lines.Text;
+   TPascalScriptDataModule(Owner).ScriptCode := AnsiString(SynEdit.Lines.Text);
    DebugBox.Items.Add(STR_SUCCESSFULLY_COMPILED);
   end;
 end;
@@ -139,7 +139,7 @@ end;
 
 procedure TFmPascalScript.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(fCompiler);
+ FreeAndNil(FCompiler);
 end;
 
 procedure TFmPascalScript.SynEditKeyDown(Sender: TObject; var Key: Word;

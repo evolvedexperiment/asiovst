@@ -7,9 +7,9 @@
 @7z a "..\..\..\Archive\Chorus.7z" "..\..\..\Bin\*\VST\Chorus.dll" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Chorus.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Chorus.ftp"
-@WinSCP -script="..\..\..\Release Scripts\Chorus.scp"
-Exit
+@if exist "..\..\..\Release Scripts\Chorus.ftp" ftps -s:"..\..\..\Release Scripts\Chorus.ftp"
+@if exist "..\..\..\Release Scripts\Chorus.scp" WinSCP -script="..\..\..\Release Scripts\Chorus.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause

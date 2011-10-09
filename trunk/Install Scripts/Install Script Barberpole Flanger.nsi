@@ -111,8 +111,6 @@ FunctionEnd
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\Win32\VST\BarberpoleFlanger.dll" "..\Bin\Win32\VST\Barberpole Flanger.dll"'  
-
   ${If} ${RunningX64}
   File "..\Bin\Win64\VST\Barberpole Flanger.dll"
   ${Else}
@@ -130,7 +128,7 @@ Section "VST-Plugin" SecVstPlugin
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
   ${Endif}
 
@@ -144,7 +142,6 @@ SectionEnd
 Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
-  ;ADD YOUR OWN FILES HERE...
   File "..\Manuals\Barberpole Flanger.pdf"
 
   ;Store installation folder

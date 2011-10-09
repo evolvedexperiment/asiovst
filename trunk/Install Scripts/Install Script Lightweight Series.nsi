@@ -152,7 +152,7 @@ Section "VST-Plugins" SecVSTPlugin
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
 
   ;Store installation folder

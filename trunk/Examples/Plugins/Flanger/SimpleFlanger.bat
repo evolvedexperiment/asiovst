@@ -9,9 +9,9 @@
 @7z a "..\..\..\Archive\Flanger.7z" "..\..\..\Bin\*\VST\Flanger.dll" "..\..\..\Bin\License.txt"
 @makensis /V2 "..\..\..\Install Scripts\Install Script Flanger.nsi"
 @IF ERRORLEVEL==1 GOTO Error
-@ftps -s:"..\..\..\Release Scripts\Flanger.ftp"
-@WinSCP -script="..\..\..\Release Scripts\Flanger.scp"
-Exit
+@if exist "..\..\..\Release Scripts\Flanger.ftp" ftps -s:"..\..\..\Release Scripts\Flanger.ftp"
+@if exist "..\..\..\Release Scripts\Flanger.scp" WinSCP -script="..\..\..\Release Scripts\Flanger.scp"
+GOTO :EOF
 :Error
 echo Script Error
 Pause
