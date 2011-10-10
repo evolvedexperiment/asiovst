@@ -494,11 +494,11 @@ begin
  case Curve of
   ctLogarithmic:
     begin
-      Assert(FCurveFactor * Result + 1 >= 0);
-      Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
+     Assert(FCurveFactor * Result + 1 >= 0);
+     Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
     end;
   ctExponential: Result := Exp(Result * Ln(FCurveFactor + 1)) - 1;
-  ctFrequencyScale: if min <> 0
+  ctFrequencyScale: if Min <> 0
                      then Result := Log2(Max / Min * Result + 1) / Log2(Max / Min)
                      else Result := Log2(Max * Result + 1) / Log2(Max);
   else
