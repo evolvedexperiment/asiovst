@@ -11,7 +11,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\Release Scripts\Bode Frequency Shifter.ftp" ftps -s:"..\..\..\Release Scripts\Bode Frequency Shifter.ftp"
 @if exist "..\..\..\Release Scripts\Bode Frequency Shifter.scp" WinSCP -script="..\..\..\Release Scripts\Bode Frequency Shifter.scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause

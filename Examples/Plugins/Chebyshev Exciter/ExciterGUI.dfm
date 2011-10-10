@@ -195,7 +195,7 @@ object FmExciter: TFmExciter
       Height = 64
       Color = 6908265
       CurveMapping = -1.200000047683716000
-      DefaultValue = 1000.000000000000000000
+      DefaultValue = 100.000000000000000000
       Max = 16000.000000000000000000
       Min = 1000.000000000000000000
       ParentColor = False

@@ -74,7 +74,7 @@ type
     procedure OrderChanged; override;
   end;
 
-  TChebyshevWaveshaperSquarelShape = class(TChebyshevWaveshaper)
+  TChebyshevWaveshaperSquareShape = class(TChebyshevWaveshaper)
   private
     FShape: Double;
     procedure SetShape(const Value: Double);
@@ -118,7 +118,7 @@ resourcestring
 
 function Waveshaper1(Input, Parameter :Single): Single;
 begin
- if abs(Input) < Parameter
+ if Abs(Input) < Parameter
   then Result := Input
   else
    begin
@@ -130,7 +130,7 @@ end;
 
 function Waveshaper1(Input, Parameter :Double): Double;
 begin
- if abs(Input) < Parameter
+ if Abs(Input) < Parameter
   then Result := Input
   else
    begin
@@ -142,7 +142,7 @@ end;
 
 function Waveshaper2(Input, Parameter: Single): Single;
 begin
- if abs(Input) < Parameter
+ if Abs(Input) < Parameter
   then Result := Input
   else
    begin
@@ -154,7 +154,7 @@ end;
 
 function Waveshaper2(Input, Parameter: Double): Double;
 begin
- if abs(Input) < Parameter
+ if Abs(Input) < Parameter
   then Result := Input
   else
    begin
@@ -362,7 +362,7 @@ end;
 
 function TChebyshevWaveshaper.GetLevel(Harmonic: Integer): Double;
 begin
- Result := Amp_to_dB(abs(FGains[Harmonic]));
+ Result := Amp_to_dB(Abs(FGains[Harmonic]));
 end;
 
 function TChebyshevWaveshaper.GetOrder: Integer;
@@ -483,8 +483,8 @@ procedure TChebyshevWaveshaper.SetInverted(Harmonic: Integer;
   const Value: Boolean);
 begin
  if Value
-  then Gain[Harmonic] := -abs(Gain[Harmonic])
-  else Gain[Harmonic] :=  abs(Gain[Harmonic]);
+  then Gain[Harmonic] := -Abs(Gain[Harmonic])
+  else Gain[Harmonic] :=  Abs(Gain[Harmonic]);
 end;
 
 procedure TChebyshevWaveshaper.SetLevel(Harmonic: Integer; const Value: Double);
@@ -524,9 +524,9 @@ begin
 end;
 
 
-{ TChebyshevWaveshaperSquarelShape }
+{ TChebyshevWaveshaperSquareShape }
 
-procedure TChebyshevWaveshaperSquarelShape.OrderChanged;
+procedure TChebyshevWaveshaperSquareShape.OrderChanged;
 var
   i : Integer;
 begin
@@ -539,7 +539,7 @@ begin
  inherited;
 end;
 
-procedure TChebyshevWaveshaperSquarelShape.SetShape(const Value: Double);
+procedure TChebyshevWaveshaperSquareShape.SetShape(const Value: Double);
 begin
  if FShape <> Value then
   begin

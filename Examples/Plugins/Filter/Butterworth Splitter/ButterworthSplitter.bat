@@ -11,7 +11,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\..\Release Scripts\Butterworth Splitter.ftp" ftps -s:"..\..\..\..\Release Scripts\Butterworth Splitter.ftp"
 @if exist "..\..\..\..\Release Scripts\Butterworth Splitter.scp" WinSCP -script="..\..\..\..\Release Scripts\Butterworth Splitter.scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause

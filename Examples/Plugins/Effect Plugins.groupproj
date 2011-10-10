@@ -21,7 +21,7 @@
 			<Projects Include="Relay\AudioRelay.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Barberpole\BarberpoleFlanger.dproj">
+			<Projects Include="Barberpole Flanger\BarberpoleFlanger.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Barberpole Shifter\BarberpoleShifter.dproj">
@@ -261,13 +261,13 @@
 			<MSBuild Projects="Relay\AudioRelay.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="BarberpoleFlanger">
-			<MSBuild Projects="Barberpole\BarberpoleFlanger.dproj"/>
+			<MSBuild Projects="Barberpole Flanger\BarberpoleFlanger.dproj"/>
 		</Target>
 		<Target Name="BarberpoleFlanger:Clean">
-			<MSBuild Projects="Barberpole\BarberpoleFlanger.dproj" Targets="Clean"/>
+			<MSBuild Projects="Barberpole Flanger\BarberpoleFlanger.dproj" Targets="Clean"/>
 		</Target>
 		<Target Name="BarberpoleFlanger:Make">
-			<MSBuild Projects="Barberpole\BarberpoleFlanger.dproj" Targets="Make"/>
+			<MSBuild Projects="Barberpole Flanger\BarberpoleFlanger.dproj" Targets="Make"/>
 		</Target>
 		<Target Name="BarberpoleShifter">
 			<MSBuild Projects="Barberpole Shifter\BarberpoleShifter.dproj"/>
@@ -826,7 +826,7 @@
 				<Platforms>Win32;Win64</Platforms>
 				<Enabled>True</Enabled>
 			</BuildGroupProject>
-			<BuildGroupProject Include="Vibrato\SimpleVibrato.dproj">
+			<BuildGroupProject Include="Barberpole Flanger\BarberpoleFlanger.dproj">
 				<ProjectGuid>{253F18AD-A90C-4928-B0D2-1D89A1108C16}</ProjectGuid>
 				<Configurations>Release</Configurations>
 				<Platforms>Win32;Win64</Platforms>
@@ -862,6 +862,12 @@
 				<Platforms>Win32;Win64</Platforms>
 				<Enabled>True</Enabled>
 			</BuildGroupProject>
+			<BuildGroupProject Include="Mod Delay\ModDelay.dproj">
+				<ProjectGuid>{8CD05DD4-D4F1-4281-82A4-161E4816D995}</ProjectGuid>
+				<Configurations>Release</Configurations>
+				<Platforms>Win32;Win64</Platforms>
+				<Enabled>True</Enabled>
+			</BuildGroupProject>
 			<BuildGroupProject Include="Crosstalk Cancellation\CrosstalkCancellation.dproj">
 				<ProjectGuid>{B5DA1B1E-A84F-4A18-8978-D68DD8112351}</ProjectGuid>
 				<Configurations>Release</Configurations>
@@ -870,12 +876,6 @@
 			</BuildGroupProject>
 			<BuildGroupProject Include="Audio Amelioration\AudioAmelioration.dproj">
 				<ProjectGuid>{2C0DB14F-4F01-4B39-9827-0947CC10A256}</ProjectGuid>
-				<Configurations>Release</Configurations>
-				<Platforms>Win32;Win64</Platforms>
-				<Enabled>True</Enabled>
-			</BuildGroupProject>
-			<BuildGroupProject Include="Mod Delay\ModDelay.dproj">
-				<ProjectGuid>{8CD05DD4-D4F1-4281-82A4-161E4816D995}</ProjectGuid>
 				<Configurations>Release</Configurations>
 				<Platforms>Win32;Win64</Platforms>
 				<Enabled>True</Enabled>
@@ -916,14 +916,14 @@
 				<Platforms>Win32;Win64</Platforms>
 				<Enabled>True</Enabled>
 			</BuildGroupProject>
-			<BuildGroupProject Include="Barberpole Shifter\BarberpoleShifter.dproj">
-				<ProjectGuid>{AEB1F3E6-BBFA-4218-9A4F-A301F33DFCB1}</ProjectGuid>
+			<BuildGroupProject Include="Hum Removal\HumRemoval.dproj">
+				<ProjectGuid>{CBC26428-1201-4701-A284-D0AEE74B9854}</ProjectGuid>
 				<Configurations>Release</Configurations>
 				<Platforms>Win32;Win64</Platforms>
 				<Enabled>True</Enabled>
 			</BuildGroupProject>
-			<BuildGroupProject Include="Hum Removal\HumRemoval.dproj">
-				<ProjectGuid>{CBC26428-1201-4701-A284-D0AEE74B9854}</ProjectGuid>
+			<BuildGroupProject Include="Barberpole Shifter\BarberpoleShifter.dproj">
+				<ProjectGuid>{AEB1F3E6-BBFA-4218-9A4F-A301F33DFCB1}</ProjectGuid>
 				<Configurations>Release</Configurations>
 				<Platforms>Win32;Win64</Platforms>
 				<Enabled>True</Enabled>

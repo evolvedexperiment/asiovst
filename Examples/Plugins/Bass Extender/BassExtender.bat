@@ -11,7 +11,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\Release Scripts\Bass Extender.ftp" ftps -s:"..\..\..\Release Scripts\Bass Extender.ftp"
 @if exist "..\..\..\Release Scripts\Bass Extender.scp" WinSCP -script="..\..\..\Release Scripts\Bass Extender.scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause
