@@ -222,8 +222,6 @@ object BassBaronModule: TBassBaronModule
   OnProcess64Replacing = VSTModuleProcess64
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 366
-  Top = 131
   Height = 150
   Width = 215
 end

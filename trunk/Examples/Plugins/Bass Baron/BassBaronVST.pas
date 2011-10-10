@@ -120,7 +120,7 @@ begin
    Parameter[0] := 0;
    Parameter[1] := 80;
    Parameter[2] := 1;
-   Parameter[3] := 0;
+   Parameter[3] := 20;
    Parameter[4] := 0;
    Parameter[5] := 10;
    Parameter[6] := 0;
@@ -132,7 +132,7 @@ begin
    Parameter[0] := 0;
    Parameter[1] := 80;
    Parameter[2] := 0;
-   Parameter[3] := 0;
+   Parameter[3] := 20;
    Parameter[4] := 0;
    Parameter[5] := 10;
    Parameter[6] := 0;
@@ -144,7 +144,7 @@ begin
    Parameter[0] := 0;
    Parameter[1] := 85;
    Parameter[2] := 0;
-   Parameter[3] := 0;
+   Parameter[3] := 20;
    Parameter[4] := 0;
    Parameter[5] := 10;
    Parameter[6] := 0;
@@ -156,7 +156,7 @@ begin
    Parameter[0] := 0;
    Parameter[1] := 85;
    Parameter[2] := 1;
-   Parameter[3] := 0;
+   Parameter[3] := 20;
    Parameter[4] := 0;
    Parameter[5] := 10;
    Parameter[6] := 0;
@@ -168,7 +168,7 @@ begin
    Parameter[0] := 0;
    Parameter[1] := 75;
    Parameter[2] := 0;
-   Parameter[3] := 0;
+   Parameter[3] := 20;
    Parameter[4] := 0;
    Parameter[5] := 10;
    Parameter[6] := 0;
@@ -465,7 +465,7 @@ begin
  try
   for ChannelIndex := 0 to Length(FBassBaron) - 1 do
    if Assigned(FBassBaron[ChannelIndex]) then
-    for SampleIndex := 0 to SampleFrames - 1
+    for SampleIndex := 0 to Min(BlockSize, SampleFrames) - 1
      do Outputs[ChannelIndex, SampleIndex] := FBassBaron[ChannelIndex].ProcessSample32(
        Inputs[ChannelIndex, SampleIndex]);
  finally
@@ -483,7 +483,7 @@ begin
  try
   for ChannelIndex := 0 to Length(FBassBaron) - 1 do
    if Assigned(FBassBaron[ChannelIndex]) then
-    for SampleIndex := 0 to SampleFrames - 1
+    for SampleIndex := 0 to Min(BlockSize, SampleFrames) - 1
      do Outputs[ChannelIndex, SampleIndex] := FBassBaron[ChannelIndex].ProcessSample64(
        Inputs[ChannelIndex, SampleIndex]);
  finally
