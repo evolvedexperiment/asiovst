@@ -11,7 +11,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\Release Scripts\Dither & Noiseshaper (FIR).ftp" ftps -s:"..\..\..\Release Scripts\Dither & Noiseshaper (FIR).ftp"
 @if exist "..\..\..\Release Scripts\Dither & Noiseshaper (FIR).scp" WinSCP -script="..\..\..\Release Scripts\Dither & Noiseshaper (FIR).scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause

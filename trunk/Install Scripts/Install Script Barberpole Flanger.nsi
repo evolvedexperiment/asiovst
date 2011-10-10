@@ -20,7 +20,7 @@ SetCompressor lzma
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
-  
+
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
@@ -54,18 +54,18 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 
 ;--------------------------------
 ;Reserve Files
-  
+
   ;These files should be inserted before other files in the data block
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
-  
+
   ReserveFile "madExcept Patch.dll"
   ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
@@ -77,7 +77,7 @@ SetCompressor lzma
 
 Function .onInit
 
-;  !insertmacro MUI_LANGDLL_DISPLAY  
+;  !insertmacro MUI_LANGDLL_DISPLAY
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
@@ -100,7 +100,7 @@ FunctionEnd
 
 ;--------------------------------
 ;Languages
- 
+
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
@@ -110,23 +110,23 @@ FunctionEnd
 
 Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
-  
+
   ${If} ${RunningX64}
   File "..\Bin\Win64\VST\Barberpole Flanger.dll"
   ${Else}
   File "..\Bin\Win32\VST\Barberpole Flanger.dll"
 
-  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"
   IntCmp $BugReportState 0 SkipDLLCall
-    
+
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
-  
-  StrCpy $0 "$INSTDIR\Barberpole Flanger.dll" 
+
+  StrCpy $0 "$INSTDIR\Barberpole Flanger.dll"
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
-  
+
   IntCmp $1 0 SkipDLLCall
   DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
@@ -134,23 +134,24 @@ SkipDLLCall:
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Flanger.exe"
 SectionEnd
 
 Section "Manual" SecManual
   SetOutPath "$INSTDIR"
-  
+
+  ;ADD YOUR OWN FILES HERE...
   File "..\Manuals\Barberpole Flanger.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
+
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Flanger.exe"
 SectionEnd
-  
+
 
 ;--------------------------------
 ;Installer Functions

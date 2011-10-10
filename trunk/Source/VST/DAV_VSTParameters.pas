@@ -492,7 +492,11 @@ function TCustomVstParameterProperty.Parameter2VSTParameter(const Value: Single)
 begin
  Result := (Value - Min) / (Max - Min);
  case Curve of
-  ctLogarithmic: Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
+  ctLogarithmic:
+    begin
+      Assert(FCurveFactor * Result + 1 >= 0);
+      Result := Log2(FCurveFactor * Result + 1) / Log2(FCurveFactor + 1);
+    end;
   ctExponential: Result := Exp(Result * Ln(FCurveFactor + 1)) - 1;
   ctFrequencyScale: if min <> 0
                      then Result := Log2(Max / Min * Result + 1) / Log2(Max / Min)

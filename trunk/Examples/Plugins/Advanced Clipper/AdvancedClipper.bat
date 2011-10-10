@@ -11,7 +11,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\Release Scripts\Advanced Clipper.ftp" ftps -s:"..\..\..\Release Scripts\Advanced Clipper.ftp"
 @if exist "..\..\..\Release Scripts\Advanced Clipper.scp" WinSCP -script="..\..\..\Release Scripts\Advanced Clipper.scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause

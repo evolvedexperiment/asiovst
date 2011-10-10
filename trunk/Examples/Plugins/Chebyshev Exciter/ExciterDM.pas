@@ -60,7 +60,7 @@ type
     FSplitterHighpassFilter : array [0..1, 0..1] of TButterworthHighPassFilter;
     FMix                    : array [0..1] of Single;
     FOverdriveGain          : Single;
-    FChebyshevWaveshaper    : TChebyshevWaveshaperSquarelShape;
+    FChebyshevWaveshaper    : TChebyshevWaveshaperSquareShape;
     procedure InvertMix;
   public
   end;
@@ -93,14 +93,13 @@ begin
  for ChannelIndex := 0 to numInputs - 1 do
   for BandIndex := 0 to 1 do
    begin
-    FSourceLowpassFilter[ChannelIndex, BandIndex]    := TButterworthLowPassFilter.Create;
-    FSourceHighpassFilter[ChannelIndex, BandIndex]   := TButterworthHighPassFilter.Create;
+    FSourceLowpassFilter[ChannelIndex, BandIndex] := TButterworthLowPassFilter.Create;
+    FSourceHighpassFilter[ChannelIndex, BandIndex] := TButterworthHighPassFilter.Create;
     FSplitterHighpassFilter[ChannelIndex, BandIndex] := TButterworthHighPassFilter.Create;
    end;
- FChebyshevWaveshaper := TChebyshevWaveshaperSquarelShape.Create;
+ FChebyshevWaveshaper := TChebyshevWaveshaperSquareShape.Create;
 
- EditorFormClass := TFmExciter;
-
+ // initialize parameters
  Parameter[0] := 8000;
  Parameter[1] := 4;
  Parameter[2] := 50;
@@ -120,6 +119,9 @@ begin
    Parameter[2] := 80;
    Parameter[3] := 70;
   end;
+
+ // set editor form class
+ EditorFormClass := TFmExciter;
 end;
 
 procedure TExciterDataModule.VSTModuleClose(Sender: TObject);
@@ -221,8 +223,8 @@ begin
     for ChannelIndex := 0 to numInputs - 1 do
      for BandIndex := 0 to 1 do
       begin
-       FSourceLowpassFilter[ChannelIndex, BandIndex].Frequency    := Value;
-       FSourceHighpassFilter[ChannelIndex, BandIndex].Frequency   := Value;
+       FSourceLowpassFilter[ChannelIndex, BandIndex].Frequency := Value;
+       FSourceHighpassFilter[ChannelIndex, BandIndex].Frequency := Value;
        FSplitterHighpassFilter[ChannelIndex, BandIndex].Frequency := Value;
       end;
    finally
@@ -266,30 +268,32 @@ end;
 procedure TExciterDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
-  Sample    : Integer;
-  Channel   : Integer;
-  Input     : Double;
-  Source    : Double;
-  Low, High : Double;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
+  Input        : Double;
+  Source       : Double;
+  Low, High    : Double;
 const
-  cDenorm = 1E-31;
+  CDenorm = 1E-31;
 begin
  FCriticalSection.Enter;
  try
-  for Sample := 0 to SampleFrames - 1 do
-   for Channel := 0 to 1 do
+  for SampleIndex := 0 to Min(FBlockSize, SampleFrames) - 1 do
+   for ChannelIndex := 0 to 1 do
     begin
-     Input  := cDenorm + Inputs[Channel, Sample];
-     Low    := FSourceLowpassFilter[Channel, 1].ProcessSample64(
-               FSourceLowpassFilter[Channel, 0].ProcessSample64(Input));
+     if IsNan(Inputs[ChannelIndex, SampleIndex])
+      then Input  := CDenorm
+      else Input  := CDenorm + Inputs[ChannelIndex, SampleIndex];
+     Low    := FSourceLowpassFilter[ChannelIndex, 1].ProcessSample64(
+               FSourceLowpassFilter[ChannelIndex, 0].ProcessSample64(Input));
      Source := FChebyshevWaveshaper.ProcessSample64(FOverdriveGain * Low);
-     Source := FSourceHighpassFilter[Channel, 1].ProcessSample64(
-               FSourceHighpassFilter[Channel, 0].ProcessSample64(Source));
+     Source := FSourceHighpassFilter[ChannelIndex, 1].ProcessSample64(
+               FSourceHighpassFilter[ChannelIndex, 0].ProcessSample64(Source));
 
-     High  := FSplitterHighpassFilter[Channel, 1].ProcessSample64(
-              FSplitterHighpassFilter[Channel, 0].ProcessSample64(Input));
+     High  := FSplitterHighpassFilter[ChannelIndex, 1].ProcessSample64(
+              FSplitterHighpassFilter[ChannelIndex, 0].ProcessSample64(Input));
 
-     Outputs[Channel, Sample] := Low + FMix[0] * High + FMix[1] * Source;
+     Outputs[ChannelIndex, SampleIndex] := Low + FMix[0] * High + FMix[1] * Source;
    end;
  finally
   FCriticalSection.Leave;
@@ -306,14 +310,16 @@ var
   Source       : Double;
   Low, High    : Double;
 const
-  cDenorm = 1E-31;
+  cDenorm = 1E-61;
 begin
  FCriticalSection.Enter;
  try
-  for SampleIndex := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to Min(FBlockSize, SampleFrames) - 1 do
    for ChannelIndex := 0 to 1 do
     begin
-     Input  := cDenorm + Inputs[ChannelIndex, SampleIndex];
+     if IsNan(Inputs[ChannelIndex, SampleIndex])
+      then Input  := CDenorm
+      else Input  := CDenorm + Inputs[ChannelIndex, SampleIndex];
      Low    := FSourceLowpassFilter[ChannelIndex, 1].ProcessSample64(
                FSourceLowpassFilter[ChannelIndex, 0].ProcessSample64(Input));
      Source := FChebyshevWaveshaper.ProcessSample64(FOverdriveGain * Low);

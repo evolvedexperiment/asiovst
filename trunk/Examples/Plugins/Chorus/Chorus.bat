@@ -9,7 +9,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\Release Scripts\Chorus.ftp" ftps -s:"..\..\..\Release Scripts\Chorus.ftp"
 @if exist "..\..\..\Release Scripts\Chorus.scp" WinSCP -script="..\..\..\Release Scripts\Chorus.scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause

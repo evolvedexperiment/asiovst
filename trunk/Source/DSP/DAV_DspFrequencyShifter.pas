@@ -52,6 +52,7 @@ type
     procedure TransitionBandwidthChanged; virtual; abstract;
   public
     constructor Create; override;
+    procedure Clear; virtual; abstract;
 
     property Frequency: Single read FFrequency write SetFrequency; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
       The Frequency property descibes the frequency in Hz, by what the audio
@@ -86,6 +87,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+    procedure Clear; override;
 
     procedure ProcessSample(Input: Single; out Upshift, Downshift: Single); virtual; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
       The ProcessSample method simulateously processes the upshifted signal
@@ -171,6 +173,12 @@ begin
  inherited;
 end;
 
+procedure TCustomBodeFrequencyShifter32.Clear;
+begin
+ FLfo.Phase := 0;
+ FHilbert.ClearBuffers;
+end;
+
 procedure TCustomBodeFrequencyShifter32.CoefficientCountChanged;
 begin
  Assert(FCoefficientCount >= 1);
@@ -207,4 +215,4 @@ begin
  Downshift := (Cmplx.Re + Cmplx.Im) * CSqrtHalf32;
 end;
 
-end.
+end.

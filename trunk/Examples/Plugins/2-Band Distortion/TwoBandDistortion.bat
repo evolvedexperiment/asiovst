@@ -11,7 +11,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\Release Scripts\2-Band Distortion.ftp" ftps -s:"..\..\..\Release Scripts\2-Band Distortion.ftp"
 @if exist "..\..\..\Release Scripts\2-Band Distortion.scp" WinSCP -script="..\..\..\Release Scripts\2-Band Distortion.scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause

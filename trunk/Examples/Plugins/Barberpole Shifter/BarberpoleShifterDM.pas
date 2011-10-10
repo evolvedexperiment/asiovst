@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspFrequencyShifter;
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspFrequencyShifter;
 
 type
   TBarberpoleShifterDataModule = class(TVSTModule)
@@ -50,9 +50,13 @@ type
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTransitionBWChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleResume(Sender: TObject);
   private
-    FFreqShifter : array of TBodeFrequencyShifter32;
-    FMix         : array [0..2] of Single;
+    FCriticalSection : TCriticalSection;
+    FFreqShifter     : array of TBodeFrequencyShifter32;
+    FMix             : array [0..2] of Single;
     procedure ChooseProcess;
   public
   end;
@@ -68,9 +72,19 @@ implementation
 uses
   Math, BarberpoleShifterGUI;
 
+procedure TBarberpoleShifterDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TBarberpoleShifterDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TBarberpoleShifterDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  Assert(numInputs = numOutputs);
  Assert(numInputs > 0);
@@ -78,8 +92,8 @@ begin
 
  ChooseProcess;
 
- for Channel := 0 to Length(FFreqShifter) - 1
-  do FFreqShifter[Channel] := TBodeFrequencyShifter32.Create;
+ for ChannelIndex := 0 to Length(FFreqShifter) - 1
+  do FFreqShifter[ChannelIndex] := TBodeFrequencyShifter32.Create;
 
  // register editor
  EditorFormClass := TFmBarberpoleShifter;
@@ -99,21 +113,27 @@ end;
 
 procedure TBarberpoleShifterDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFreqShifter) - 1
-  do FreeAndNil(FFreqShifter[Channel]);
+ for ChannelIndex := 0 to Length(FFreqShifter) - 1
+  do FreeAndNil(FFreqShifter[ChannelIndex]);
 end;
 
 procedure TBarberpoleShifterDataModule.ParameterFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFreqShifter) - 1 do
-  if Assigned(FFreqShifter[Channel])
-   then FFreqShifter[Channel].Frequency := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FFreqShifter) - 1 do
+   if Assigned(FFreqShifter[ChannelIndex])
+    then FFreqShifter[ChannelIndex].Frequency := Value;
+ finally
+   FCriticalSection.Leave;
+ end;
 
+ // update GUI editor
  if EditorForm is TFmBarberpoleShifter
   then TFmBarberpoleShifter(EditorForm).UpdateFrequency;
 end;
@@ -125,6 +145,7 @@ begin
  FMix[2] := Max(0, (0.01 * Value));
  FMix[1] := 1 - Max(FMix[0], FMix[2]);
 
+ // update GUI editor
  if EditorForm is TFmBarberpoleShifter
   then TFmBarberpoleShifter(EditorForm).UpdateMix;
 end;
@@ -132,21 +153,31 @@ end;
 procedure TBarberpoleShifterDataModule.ParameterCoeffsChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFreqShifter) - 1 do
-  if Assigned(FFreqShifter[Channel])
-   then FFreqShifter[Channel].CoefficientCount := Round(Value);
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FFreqShifter) - 1 do
+   if Assigned(FFreqShifter[ChannelIndex])
+    then FFreqShifter[ChannelIndex].CoefficientCount := Round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TBarberpoleShifterDataModule.ParameterTransitionBWChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFreqShifter) - 1 do
-  if Assigned(FFreqShifter[Channel])
-   then FFreqShifter[Channel].TransitionBandwidth := Value;
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FFreqShifter) - 1 do
+   if Assigned(FFreqShifter[ChannelIndex])
+    then FFreqShifter[ChannelIndex].TransitionBandwidth := Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TBarberpoleShifterDataModule.ChooseProcess;
@@ -159,18 +190,54 @@ begin
  OnProcess32Replacing := OnProcess;
 end;
 
+procedure TBarberpoleShifterDataModule.VSTModuleResume(Sender: TObject);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FFreqShifter) - 1 do
+    if Assigned(FFreqShifter[ChannelIndex])
+     then FFreqShifter[ChannelIndex].Clear;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TBarberpoleShifterDataModule.VSTModuleSampleRateChange(
+  Sender: TObject; const SampleRate: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for ChannelIndex := 0 to Length(FFreqShifter) - 1 do
+    if Assigned(FFreqShifter[ChannelIndex])
+     then FFreqShifter[ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
 procedure TBarberpoleShifterDataModule.VSTModuleProcessMono(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
 var
   Sample   : Integer;
   Up, Down : Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   FFreqShifter[0].ProcessSample(Inputs[0, Sample], Up, Down);
-   Outputs[0, Sample] := FMix[1] * Inputs[0, Sample] +
-     FMix[0] * Down + FMix[2] * Up;
-  end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to Min(BlockSize, SampleFrames) - 1 do
+   begin
+    FFreqShifter[0].ProcessSample(Inputs[0, Sample], Up, Down);
+    Outputs[0, Sample] := FMix[1] * Inputs[0, Sample] +
+      FMix[0] * Down + FMix[2] * Up;
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TBarberpoleShifterDataModule.VSTModuleProcessStereo(const Inputs,
@@ -179,44 +246,43 @@ var
   Sample   : Integer;
   Up, Down : Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   FFreqShifter[0].ProcessSample(Inputs[0, Sample], Up, Down);
-   Outputs[0, Sample] := FMix[1] * Inputs[0, Sample] +
-     FMix[0] * Down + FMix[2] * Up;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to Min(BlockSize, SampleFrames) - 1 do
+   begin
+    FFreqShifter[0].ProcessSample(Inputs[0, Sample], Up, Down);
+    Outputs[0, Sample] := FMix[1] * Inputs[0, Sample] +
+      FMix[0] * Down + FMix[2] * Up;
 
-   FFreqShifter[1].ProcessSample(Inputs[1, Sample], Up, Down);
-   Outputs[1, Sample] := FMix[1] * Inputs[1, Sample] +
-     FMix[0] * Down + FMix[2] * Up;
-  end;
+    FFreqShifter[1].ProcessSample(Inputs[1, Sample], Up, Down);
+    Outputs[1, Sample] := FMix[1] * Inputs[1, Sample] +
+      FMix[0] * Down + FMix[2] * Up;
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TBarberpoleShifterDataModule.VSTModuleProcessMultiChannel(
   const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
   const SampleFrames: Integer);
 var
-  Channel  : Integer;
+  ChannelIndex  : Integer;
   Sample   : Integer;
   Up, Down : Single;
 begin
- for Channel := 0 to Length(FFreqShifter) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
-   begin
-    FFreqShifter[Channel].ProcessSample(Inputs[Channel, Sample], Up, Down);
-    Outputs[Channel, Sample] := FMix[1] * Inputs[Channel, Sample] +
-      FMix[0] * Down + FMix[2] * Up;
-   end;
-end;
-
-procedure TBarberpoleShifterDataModule.VSTModuleSampleRateChange(
-  Sender: TObject; const SampleRate: Single);
-var
-  Channel : Integer;
-begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FFreqShifter) - 1 do
-   if Assigned(FFreqShifter[Channel])
-    then FFreqShifter[Channel].SampleRate := Abs(SampleRate);
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FFreqShifter) - 1 do
+   for Sample := 0 to Min(BlockSize, SampleFrames) - 1 do
+    begin
+     FFreqShifter[ChannelIndex].ProcessSample(Inputs[ChannelIndex, Sample], Up, Down);
+     Outputs[ChannelIndex, Sample] := FMix[1] * Inputs[ChannelIndex, Sample] +
+       FMix[0] * Down + FMix[2] * Up;
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.

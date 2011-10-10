@@ -673,7 +673,7 @@ begin
      end;
 
     // use float steps
-    if ppfParameterUsesFloatStep in Flags then
+    if (ppfParameterUsesFloatStep in Flags) and (ParameterProperties[Index].Curve = ctLinear) then
      begin
       stepFloat      := Parameter2VSTParameter(ParameterProperties[Index].StepFloat, Index);
       largeStepFloat := Parameter2VSTParameter(ParameterProperties[Index].LargeStepFloat, Index);

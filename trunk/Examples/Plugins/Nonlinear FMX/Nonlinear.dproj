@@ -59,7 +59,7 @@
 			<DCC_UsePackage>DAV_Common_D16;vclimg;vclactnband;vcldb;vcldsnap;bindcompvcl;vcltouch;VclSmp;vcl;dsnapcon;vclx;DAV_ASIOHost_D16;$(DCC_UsePackage)</DCC_UsePackage>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
-			<Debugger_HostApplication>C:\Users\Public\Code\VSTPack\Bin\VST Plugin Analyser.exe</Debugger_HostApplication>
+			<Debugger_HostApplication>..\..\..\Bin\Win32\VST-Plugin Unit Test.exe</Debugger_HostApplication>
 			<Debugger_RunParams>Nonlinear.dll</Debugger_RunParams>
 			<DCC_UsePackage>JvWizards;JvGlobus;GLSS_BASS;JvMM;JvManagedThreads;JvHMI;GLCg_RunTime;JvBands;vcldbx;GR32_Controls_D16;IndySystem;TeeDB;DAV_Common_D16;JvDlgs;JvCrypt;JvPluginSystem;DAV_DSP_D16;Tee;JclContainers;JvCmp;JvNet;GLScene_RunTime;JvSystem;svnui;JvDotNetCtrls;JvTimeFramework;JvControls;vclimg;GLSS_OpenAL;IndyProtocols;fmi;DAV_GUI_D16;DAV_Modular_D16;VPR_RSXE2;JvXPCtrls;vclactnband;FMXTee;vcldb;TeeUI;vcldsnap;bindcompvcl;JvStdCtrls;JvCustom;Jcl;JvJans;JvPageComps;JvPrintPreview;GLS_Computing_RunTime;vcltouch;GR32_AddOn_RSXE2;JvCore;vclribbon;VclSmp;IndyCore;vcl;DAV_SEHost_D16;FmxTeeUI;dsnapcon;GR32_Charts_D16;JclVcl;JvAppFrm;JvDB;JvPascalInterpreter;vclx;JvRuntimeDesign;FlatControls;DAV_ASIOHost_D16;svn;JclDeveloperTools;GR32_RSXE2;GR32_DSGN_RSXE2;bdertl;JvDocking;DAV_VSTHost_D16;JvBDE;$(DCC_UsePackage)</DCC_UsePackage>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>

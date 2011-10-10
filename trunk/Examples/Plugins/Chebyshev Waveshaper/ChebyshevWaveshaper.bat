@@ -11,7 +11,7 @@
 @IF ERRORLEVEL==1 GOTO Error
 @if exist "..\..\..\Release Scripts\Chebyshev Waveshaper.ftp" ftps -s:"..\..\..\Release Scripts\Chebyshev Waveshaper.ftp"
 @if exist "..\..\..\Release Scripts\Chebyshev Waveshaper.scp" WinSCP -script="..\..\..\Release Scripts\Chebyshev Waveshaper.scp"
-GOTO :EOF
+@GOTO :EOF
 :Error
-echo Script Error
-Pause
+@echo Script Error
+@Pause
