@@ -44,7 +44,6 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -90,11 +89,15 @@ begin
  FDownsampler := TPolyphaseDownsampler64.Create;
  FOversampled := False;
 
+ // initialize parameters
  Parameter[0] := 20000;
  Parameter[1] := 4;
  Parameter[2] := 0;
 
  CalculateFilterKernel;
+
+ // set editor GUI
+ EditorFormClass := TFmLinearPhaseLinkwitzRiley;
 end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleClose(Sender: TObject);
@@ -102,15 +105,10 @@ begin
  FreeAndNil(FConvolution);
 end;
 
-procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmLinearPhaseLinkwitzRiley.Create(Self);
-end;
-
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterFilterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(2 * Round(0.5 * Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(2 * Round(0.5 * Parameter[Index])));
 end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterOversamplingChange(

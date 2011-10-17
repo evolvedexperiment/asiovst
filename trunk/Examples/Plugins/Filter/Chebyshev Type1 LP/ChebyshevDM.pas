@@ -139,7 +139,7 @@ var
 begin
  for Channel := 0 to Length(FFilter) - 1 do
   if Assigned(FFilter[Channel])
-   then FFilter[Channel].Order := round(Value); // max(2, 2 * round(0.5 * Value));
+   then FFilter[Channel].Order := Round(Value); // max(2, 2 * Round(0.5 * Value));
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev

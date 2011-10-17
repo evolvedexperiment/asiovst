@@ -91,8 +91,8 @@ var
   Channel  : Integer;
   TempFreq : Single;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FFreqShifter, numInputs);
 
  with TRegistry.Create do
@@ -176,7 +176,7 @@ begin
  try
   for Channel := 0 to Length(FFreqShifter) - 1 do
    if Assigned(FFreqShifter[Channel])
-    then FFreqShifter[Channel].CoefficientCount := round(Value);
+    then FFreqShifter[Channel].CoefficientCount := Round(Value);
  finally
   FCriticalSection.Leave;
  end;

@@ -82,8 +82,6 @@ type
   TImpulseResponseUpdateThread = class(TThread)
   private
     FSampleRateRatio       : Double;
-    FTempChannel           : Integer;
-    FImpulseResponseSize   : Integer;
     FConvoFXLiteDataModule : TConvoFXLiteDataModule;
   protected
     constructor Create(ConvoFXLiteDataModule: TConvoFXLiteDataModule); virtual;
@@ -93,6 +91,8 @@ type
   end;
 
 implementation
+
+{%CLASSGROUP 'System.Classes.TPersistent'}
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -149,7 +149,7 @@ begin
  for Channel := 0 to Length(FConvolution) - 1 do
   begin
    FConvolution[Channel] := TLowLatencyConvolution32.Create;
-   FConvolution[Channel].MinimumIRBlockOrder := max(7, CeilLog2(InitialDelay));
+   FConvolution[Channel].MinimumIRBlockOrder := Max(7, CeilLog2(InitialDelay));
    FConvolution[Channel].MaximumIRBlockOrder := 18;
   end;
  FGain      := 1;
@@ -238,7 +238,7 @@ var
   HFData  : array [0..2047] of THalfFloat;
   Scale   : Single;
 begin
- i := Limit(Integer(round(Value)), 1, 40);
+ i := Limit(Integer(Round(Value)), 1, 40);
  if FImpulseRespIndex <> i then
   begin
    FImpulseRespIndex := i;
@@ -322,7 +322,7 @@ const
 begin
  for Channel := 0 to Length(FConvolution) - 1 do
   begin
-   if abs(SampleRate - CDefaultSampleRate) < CDenorm32
+   if Abs(SampleRate - CDefaultSampleRate) < CDenorm32
     then
      begin
       FTempIRSize[Channel] := FImpulseLength[Channel];
@@ -375,7 +375,7 @@ begin
    IR[Sample] := FGain * IR[Sample];
    s := 0.1 * sqr(sqr((Length - Sample) * Scale));
    IR[Sample] := s * IR[Sample]  +
-                 (1 - s) * FDampingFilter.ProcessSample64(IR[Sample]);
+     (1 - s) * FDampingFilter.ProcessSample64(IR[Sample]);
   end;
 end;
 
@@ -393,20 +393,6 @@ begin
       then Value := FConvolution[Channel].MaximumIRBlockOrder;
      FConvolution[Channel].MinimumIRBlockOrder := Round(Value);
     end;
- finally
-  FCriticalSection.Leave
- end;
-end;
-
-procedure TConvoFXLiteDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-var
-  Channel: Integer;
-begin
- FCriticalSection.Enter;
- try
-  for Channel := 0 to Length(FConvolution) - 1
-   do FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], SampleFrames);
  finally
   FCriticalSection.Leave
  end;
@@ -443,6 +429,20 @@ procedure TConvoFXLiteDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  ImpulseResponseChanged;
+end;
+
+procedure TConvoFXLiteDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+var
+  Channel: Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FConvolution) - 1
+   do FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], SampleFrames);
+ finally
+  FCriticalSection.Leave
+ end;
 end;
 
 end.

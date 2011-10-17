@@ -219,7 +219,7 @@ begin
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
    if Assigned(FHarmonicBass[Channel])
-    then FHarmonicBass[Channel].HighpassSelect := THighpassSelect(round(Value));
+    then FHarmonicBass[Channel].HighpassSelect := THighpassSelect(Round(Value));
  finally
   FCriticalSection.Release;
  end;

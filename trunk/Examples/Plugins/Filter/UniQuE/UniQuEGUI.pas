@@ -245,7 +245,7 @@ procedure TFmUniQuE.OnOffClick(Sender: TObject);
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   Parameter[0] := round(1 - Parameter[0]);
+   Parameter[0] := Round(1 - Parameter[0]);
    UpdateOnOff;
   end;
 end;
@@ -254,7 +254,7 @@ procedure TFmUniQuE.InvertClick(Sender: TObject);
 begin
  with TUniQuEDataModule(Owner) do
   begin
-   Parameter[2] := round(1 - Parameter[2]);
+   Parameter[2] := Round(1 - Parameter[2]);
    UpdateInvert;
   end;
 end;

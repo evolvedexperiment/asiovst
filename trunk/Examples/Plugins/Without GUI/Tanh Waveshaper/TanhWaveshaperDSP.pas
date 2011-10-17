@@ -185,9 +185,9 @@ begin
  for Channel := 0 to Length(FOversampler) - 1 do
   begin
    if Assigned(FOversampler[Channel].Upsampling)
-    then FOversampler[Channel].Upsampling.Order := round(Value);
+    then FOversampler[Channel].Upsampling.Order := Round(Value);
    if Assigned(FOversampler[Channel].Downsampling)
-    then FOversampler[Channel].Downsampling.Order := round(Value);
+    then FOversampler[Channel].Downsampling.Order := Round(Value);
   end;
 end;
 
@@ -280,7 +280,7 @@ function FastPower2NollockError3(Value: Single): Single;
 var
   IntCast : Integer absolute result;
 begin
- IntCast := round(Value);
+ IntCast := Round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
  Result := Result * (1 + Value * (0.69314718 + Value * (0.22741128 +

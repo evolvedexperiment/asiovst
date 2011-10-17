@@ -35,17 +35,17 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_Complex, DAV_DspWindowFunctions, DAV_DspFftReal2Complex,
-  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, DAV_DspWindowFunctionsAdvanced,
-  {$ENDIF} {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, SyncObjs, DAV_Types, DAV_Complex, DAV_DspWindowFunctions,
+  DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS,
+  DAV_DspWindowFunctionsAdvanced, {$ENDIF} {$IFDEF Use_CUDA}
+  DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 
 type
   TLinearPhaseDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -53,21 +53,22 @@ type
     procedure ParameterWindowFunctionsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure StringToWindowParameter(Sender: TObject; const Index: Integer;
       const ParameterString: AnsiString; var Value: Single);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FFilterKernel   : PDAVSingleFixedArray;
-    FSignalPadded   : PDAVSingleFixedArray;
-    FFilterFreq     : PDAVComplexSingleFixedArray;
-    FSignalFreq     : PDAVComplexSingleFixedArray;
-    FSemaphore      : Integer;
-    FWindowFunction : TCustomWindowFunction;
-    FWinFuncIndex   : Integer;
+    FFilterKernel    : PDAVSingleFixedArray;
+    FSignalPadded    : PDAVSingleFixedArray;
+    FFilterFreq      : PDAVComplexSingleFixedArray;
+    FSignalFreq      : PDAVComplexSingleFixedArray;
+    FCriticalSection : TCriticalSection;
+    FWindowFunction  : TCustomWindowFunction;
+    FWinFuncIndex    : Integer;
 
     {$IFDEF Use_IPPS}
-    FFft            : TFftReal2ComplexIPPSFloat32;
+    FFft             : TFftReal2ComplexIPPSFloat32;
     {$ELSE} {$IFDEF Use_CUDA}
-    FFft            : TFftReal2ComplexCUDA32;
+    FFft             : TFftReal2ComplexCUDA32;
     {$ELSE}
-    FFft            : TFftReal2ComplexNativeFloat32;
+    FFft             : TFftReal2ComplexNativeFloat32;
     {$ENDIF}{$ENDIF}
     procedure CalculateFilterKernel;
   public
@@ -86,7 +87,8 @@ uses
 
 procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FSemaphore       := 0;
+ FCriticalSection := TCriticalSection.Create;
+
  FFilterKernel    := nil;
  FSignalPadded    := nil;
  FFilterFreq      := nil;
@@ -103,24 +105,29 @@ begin
   end;
 end;
 
+procedure TLinearPhaseDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
 begin
  {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
@@ -136,10 +143,14 @@ begin
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
 
+ // initialize parameters
  Parameter[0] := 20000;
  Parameter[1] := 4;
 
  CalculateFilterKernel;
+
+ // set editor form class
+ EditorFormClass := TFmLinearPhase;
 end;
 
 procedure TLinearPhaseDataModule.VSTModuleClose(Sender: TObject);
@@ -211,8 +222,7 @@ var
 begin
  if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
-   while FSemaphore > 0 do;
-   inc(FSemaphore);
+   FCriticalSection.Enter;
    try
     CutOff := Parameter[0] / SampleRate;
     h := BlockModeSize div 2;
@@ -241,14 +251,9 @@ begin
     FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
     {$ENDIF}{$ENDIF}
    finally
-    dec(FSemaphore);
+    FCriticalSection.Leave;
    end;
   end;
-end;
-
-procedure TLinearPhaseDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmLinearPhase.Create(Self);
 end;
 
 procedure TLinearPhaseDataModule.VSTModuleProcess(const Inputs,
@@ -258,8 +263,7 @@ var
   Bin     : Integer;
   Half    : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  Half := BlockModeSize div 2;
  try
   for Channel := 0 to numOutputs - 1 do
@@ -303,7 +307,7 @@ begin
     {$ENDIF}{$ENDIF}
    end;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 

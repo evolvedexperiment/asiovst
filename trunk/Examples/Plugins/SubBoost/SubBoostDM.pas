@@ -126,7 +126,7 @@ end;
 
 procedure TSubBoostDataModule.ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-// PreDefined := IntToStr(round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
+// PreDefined := IntToStr(Round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
  PreDefined := AnsiString(FloatToStrF(FInputFilter.Frequency, ffGeneral, 3, 3));
 end;
 
@@ -152,7 +152,7 @@ end;
 
 procedure TSubBoostDataModule.ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := AnsiString(IntToStr(round(-301.03 / (SampleRate * Log10(FRelease)))));
+ PreDefined := AnsiString(IntToStr(Round(-301.03 / (SampleRate * Log10(FRelease)))));
 end;
 
 procedure TSubBoostDataModule.ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -181,7 +181,7 @@ begin
   FDivide := 1;
   FPhase  := 1;
   FOsc    := 0; // Oscillator phase
-  FType   := TProcessType(round(Parameter[0]));
+  FType   := TProcessType(Round(Parameter[0]));
 (*
   if FType = ptKeyOsc
    then fFilterIn := 0.018

@@ -59,8 +59,8 @@ end;
 procedure TSoftKneeLimiterDataModule.SKLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Threshold_dB := Value;
- if assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Threshold_dB := Value;
+ if Assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Threshold_dB := Value;
+ if Assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Threshold_dB := Value;
  if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateThreshold;
 end;
@@ -68,8 +68,8 @@ end;
 procedure TSoftKneeLimiterDataModule.SKLMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].MakeUpGain_dB := Value;
- if assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].MakeUpGain_dB := Value;
+ if Assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].MakeUpGain_dB := Value;
+ if Assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].MakeUpGain_dB := Value;
  if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateMakeUp;
 end;
@@ -77,8 +77,8 @@ end;
 procedure TSoftKneeLimiterDataModule.SKLSoftKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Knee_dB := Value;
- if assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Knee_dB := Value;
+ if Assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Knee_dB := Value;
+ if Assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Knee_dB := Value;
  if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateSoftKnee;
 end;
@@ -86,8 +86,8 @@ end;
 procedure TSoftKneeLimiterDataModule.SKLReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Release := Value;
- if assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Release := Value;
+ if Assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Release := Value;
+ if Assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Release := Value;
  if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateRelease;
 end;
@@ -95,8 +95,8 @@ end;
 procedure TSoftKneeLimiterDataModule.SKLAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Attack := Value;
- if assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Attack := Value;
+ if Assigned(FSoftKneeLimiters[0]) then FSoftKneeLimiters[0].Attack := Value;
+ if Assigned(FSoftKneeLimiters[1]) then FSoftKneeLimiters[1].Attack := Value;
  if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateAttack;
 end;

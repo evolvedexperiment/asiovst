@@ -292,14 +292,14 @@ end;
 
 procedure TLA4029DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- Assert(round(Value) >= 0);
+ Assert(Round(Value) >= 0);
  if Assigned(FHighpass)
-  then FHighpass.Order := round(Value);
+  then FHighpass.Order := Round(Value);
 end;
 
 procedure TLA4029DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := IntToStr(round(Parameter[Index]));
+ PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 procedure TLA4029DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -310,7 +310,7 @@ end;
 
 procedure TLA4029DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0: Predefined := 'Input';
   1: Predefined := 'Gain Reduction';
   2: Predefined := 'Output';

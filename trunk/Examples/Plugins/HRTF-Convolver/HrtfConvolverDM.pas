@@ -199,7 +199,7 @@ procedure THrtfConvolverDataModule.HRTFChanged;
 const
   CDeg2Rad = 2 * Pi / 360;
 begin
- if assigned(FHRTFs) then
+ if Assigned(FHRTFs) then
   with FAdcHrtf do
    begin
     FHRTFs.InterpolateHrir(Parameter[0] * CDeg2Rad, Parameter[1] * CDeg2Rad,

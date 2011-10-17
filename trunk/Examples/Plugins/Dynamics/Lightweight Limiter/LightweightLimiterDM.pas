@@ -234,12 +234,12 @@ end;
 
 procedure TLightweightLimiterDataModule.ChooseProcess;
 begin
- case round(Parameter[7]) of
-  0 : case round(Parameter[6]) of
+ case Round(Parameter[7]) of
+  0 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMono;
        1 : OnProcess := VSTModuleProcessStereo;
       end;
-  1 : case round(Parameter[6]) of
+  1 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMonoSoftClip;
        1 : OnProcess := VSTModuleProcessStereoSoftClip;
       end;
@@ -252,7 +252,7 @@ procedure TLightweightLimiterDataModule.ParameterAutoMakeUpGainChange(
 begin
  if Assigned(FLightweightLimiter[0]) then
   begin
-   FLightweightLimiter[0].AutoMakeUp := Boolean(round(Value));
+   FLightweightLimiter[0].AutoMakeUp := Boolean(Round(Value));
    if Assigned(FLightweightLimiter[1])
     then FLightweightLimiter[1].AutoMakeUp := FLightweightLimiter[0].AutoMakeUp;
   end;

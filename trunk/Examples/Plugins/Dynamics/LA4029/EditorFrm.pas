@@ -204,7 +204,7 @@ end;
 function TFmLA4029.GetLevelState: TLevelState;
 begin
  with TLA4029DataModule(Owner)
-  do result := TLevelState(round(Parameter[8]));
+  do result := TLevelState(Round(Parameter[8]));
 end;
 
 procedure TFmLA4029.LEDOnOffClick(Sender: TObject);
@@ -377,13 +377,13 @@ begin
  // ToDo: Create a true mapping
  if Value < -40 then result := 0 else
  if Value >   3 then result := VUMeter.GlyphCount - 1 else
- if Value < -10 then result := round(((40 + Value) / 30) * 22) else
- if Value <  -7 then result := round(22 + (10 + Value) * 1.66) else
- if Value <  -5 then result := round(28 + (7 + Value) * 2.5) else
- if Value <  -3 then result := round(33 + (5 + Value) * 2.5) else
- if Value <  -1 then result := round(38 + (3 + Value) * 2.5) else
- if Value <   0 then result := round(43 + (1 + Value) * 5)
-  else result := round(48 + Value / 3 * (VUMeter.GlyphCount - 49));
+ if Value < -10 then result := Round(((40 + Value) / 30) * 22) else
+ if Value <  -7 then result := Round(22 + (10 + Value) * 1.66) else
+ if Value <  -5 then result := Round(28 + (7 + Value) * 2.5) else
+ if Value <  -3 then result := Round(33 + (5 + Value) * 2.5) else
+ if Value <  -1 then result := Round(38 + (3 + Value) * 2.5) else
+ if Value <   0 then result := Round(43 + (1 + Value) * 5)
+  else result := Round(48 + Value / 3 * (VUMeter.GlyphCount - 49));
 end;
 
 procedure TFmLA4029.VUMeterTimerTimer(Sender: TObject);

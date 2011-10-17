@@ -80,8 +80,8 @@ var
   o, s : Integer;
 begin
  result := '   ';
- o      := round(n / 12);
- s      := round(n - (12 * o));
+ o      := Round(n / 12);
+ s      := Round(n - (12 * o));
  o      := o - 2;
 
  case s of
@@ -128,7 +128,7 @@ end;
 procedure TTestToneDataModule.ParameterModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0: PreDefined := 'MIDI #';
   1: PreDefined := 'IMPULSE';
   2: PreDefined := 'WHITE';
@@ -144,7 +144,7 @@ end;
 procedure TTestToneDataModule.ParameterChannelDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[2]) of
+ case Round(Parameter[2]) of
   0 : PreDefined := 'LEFT';
   1 : PreDefined := 'CENTRE';
   2 : PreDefined := 'RIGHT';
@@ -153,7 +153,7 @@ end;
 
 function TTestToneDataModule.ISO2String(b : Single): string;
 begin
- case round(b) of
+ case Round(b) of
    13: result := '20 Hz';
    14: result := '25 Hz';
    15: result := '31 Hz';
@@ -272,7 +272,7 @@ begin
              s := s + ds;
             end;
            if (m = 7)
-            then dph := fsc * Power(10, 0.1 * round(s))
+            then dph := fsc * Power(10, 0.1 * Round(s))
             else dph := fsc * Power(10, 0.1 * s);
            x  := sin(ph);
            ph := f_mod(ph + dph, 2 * Pi);
@@ -343,15 +343,15 @@ begin
  updateRx := updateTx;
 
  //calcs here!
- FMode := round(8.9 * Parameter[0]);
- FLeft := 0.05 * round(60.*Parameter[1]);
+ FMode := Round(8.9 * Parameter[0]);
+ FLeft := 0.05 * Round(60.*Parameter[1]);
  FLeft := Power(10, FLeft - 3);
  if (FMode = 2) then FLeft := FLeft * 0.0000610; //scale white for RAND_MAX = 32767
  if (FMode = 3) then FLeft := FLeft * 0.0000243; //scale pink for RAND_MAX = 32767
  if(Parameter[2] < 0.3) then FRight := 0 else FRight := FLeft;
  if(Parameter[2] > 0.6) then FLeft  := 0;
- fLengh := 1 + 0.5 * round(62 * Parameter[6]);
- FSwt := round(fLengh * SampleRate);
+ fLengh := 1 + 0.5 * Round(62 * Parameter[6]);
+ FSwt := Round(fLengh * SampleRate);
 
  if (Parameter[7] > 0.8) then //output level trim
   begin
@@ -368,7 +368,7 @@ begin
   end;
  else //output level calibrate
   begin
-   cal    := round(25 * Parameter[7] - 21.1);
+   cal    := Round(25 * Parameter[7] - 21.1);
    calx   := cal;
   end;
 *)
@@ -426,8 +426,8 @@ begin
 (*
        FSw  := 200 * Trunc(100 * Parameter[3]);
        FSwx := 200 * Trunc(100 * Parameter[4]);
-       long2string(round(FSw), disp1); //start freq
-       long2string(round(FSwx), disp2); //end freq
+       long2string(Round(FSw), disp1); //start freq
+       long2string(Round(FSwx), disp2); //end freq
        if (FSw > FSwx) then
         begin
          FSwd := FSwx;
@@ -455,7 +455,7 @@ var
   f, df : Single;
 begin
  //just update display text...
- int FMode := round(8.9 * Parameter[0]);
+ int FMode := Round(8.9 * Parameter[0]);
  df := 0.0;
  if (Parameter[4] > 0.6) then df := 1.25 * Parameter[4] - 0.75;
  if (Parameter[4] < 0.4) then df := 1.25 * Parameter[4] - 0.50;

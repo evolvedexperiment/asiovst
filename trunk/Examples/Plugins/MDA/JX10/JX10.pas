@@ -101,7 +101,7 @@ uses
 
 procedure TJX10DataModule.Update;  // Parameter Change
 begin
- FMode     := round(7.9 * Parameter[3]);
+ FMode     := Round(7.9 * Parameter[3]);
  FNoiseMix := sqr(Parameter[21]);
  FVolTrim  := (3.2 - Parameter[0] - 1.5 * FNoiseMix) * (1.5 - 0.5 * Parameter[7]);
  FNoiseMix := FNoiseMix * 0.06;

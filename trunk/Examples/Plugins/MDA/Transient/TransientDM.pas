@@ -88,35 +88,35 @@ end;
 procedure TTransientDataModule.ParameterOutputChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FTransientProcessor)
+ if Assigned(FTransientProcessor)
   then FTransientProcessor.Output := Value;
 end;
 
 procedure TTransientDataModule.ParameterAttackChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FTransientProcessor)
+ if Assigned(FTransientProcessor)
   then FTransientProcessor.Attack := Value;
 end;
 
 procedure TTransientDataModule.ParameterReleaseChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FTransientProcessor)
+ if Assigned(FTransientProcessor)
   then FTransientProcessor.Release := Value;
 end;
 
 procedure TTransientDataModule.ParameterAttackChangeHold(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FTransientProcessor)
+ if Assigned(FTransientProcessor)
   then FTransientProcessor.AttackHold := Value;
 end;
 
 procedure TTransientDataModule.ParameterReleaseChangeHold(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FTransientProcessor)
+ if Assigned(FTransientProcessor)
   then FTransientProcessor.ReleaseHold := Value;
 end;
 
@@ -130,7 +130,7 @@ end;
 procedure TTransientDataModule.ParameterFilterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FTransientProcessor)
+ if Assigned(FTransientProcessor)
   then FTransientProcessor.Filter := Value;
 end;
 

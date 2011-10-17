@@ -275,7 +275,7 @@ begin
       begin
        GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] * SizeOf(Single));
        sz := Read(FImpulseResponse[m, n, i]^, CKernelSizes[m, n] * SizeOf(Single));
-       assert(sz = CKernelSizes[m, n] * SizeOf(Single));
+       Assert(sz = CKernelSizes[m, n] * SizeOf(Single));
       end;
     finally
      Free;
@@ -379,7 +379,7 @@ end;
 procedure TVTVSTModule.ParamHiBypassLeftChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FModeBypass[0, 1] := (round(Value) > 0);
+ FModeBypass[0, 1] := (Round(Value) > 0);
  BuildCompleteFilterKernel(0);
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateTrebleBypassLeft;
@@ -388,7 +388,7 @@ end;
 procedure TVTVSTModule.ParamHiBypassRightChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FModeBypass[1, 1] := (round(Value) > 0);
+ FModeBypass[1, 1] := (Round(Value) > 0);
  BuildCompleteFilterKernel(1);
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateTrebleBypassRight;
@@ -397,7 +397,7 @@ end;
 procedure TVTVSTModule.ParamLowBypassLeftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FModeBypass[0, 0] := (round(Value) > 0);
+ FModeBypass[0, 0] := (Round(Value) > 0);
  BuildCompleteFilterKernel(0);
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateBassBypassLeft;
@@ -406,7 +406,7 @@ end;
 procedure TVTVSTModule.ParamLowBypassRightChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FModeBypass[1, 0] := (round(Value) > 0);
+ FModeBypass[1, 0] := (Round(Value) > 0);
  BuildCompleteFilterKernel(1);
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateBassBypassRight;
@@ -414,7 +414,7 @@ end;
 
 procedure TVTVSTModule.ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case round(Parameter[Index]) of
+  case Round(Parameter[Index]) of
     1 : PreDefined := 'Roasty 1';
     2 : PreDefined := 'Roasty 2';
     3 : PreDefined := 'Steamin'' 1';
@@ -424,7 +424,7 @@ end;
 
 procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
-  case round(Parameter[Index]) of
+  case Round(Parameter[Index]) of
     1 : PreDefined := 'Mid/Side';
     2 : PreDefined := 'Left/Right';
    end;
@@ -440,7 +440,7 @@ var
 begin
  // Calculate Filter Index
  SngleIndex := (Parameter[2 + 4 * index] + 12) * 2;
- LowerIndex := round(SngleIndex - 0.5);
+ LowerIndex := Round(SngleIndex - 0.5);
  UpperIndex := LowerIndex + 1;
  if LowerIndex <  0 then LowerIndex :=  0;
  if UpperIndex <  0 then UpperIndex :=  0;
@@ -471,7 +471,7 @@ var
 begin
  // Calculate Filter Index
  SngleIndex := (Parameter[4 * index] + 12) * 2;
- LowerIndex := round(SngleIndex - 0.5);
+ LowerIndex := Round(SngleIndex - 0.5);
  UpperIndex := LowerIndex + 1;
  if LowerIndex <  0 then LowerIndex :=  0;
  if UpperIndex <  0 then UpperIndex :=  0;
@@ -621,7 +621,7 @@ procedure TVTVSTModule.ParamDriveChange(Sender: TObject; const Index: Integer; v
 var
   NewDriveMode : TDriveMode;
 begin
- NewDriveMode := TDriveMode(round(Value));
+ NewDriveMode := TDriveMode(Round(Value));
 
  if FDriveMode <> NewDriveMode then
   begin
@@ -745,7 +745,7 @@ end;
 procedure TVTVSTModule.ParameterBypassDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Boolean(round(Parameter[Index]))
+ if Boolean(Round(Parameter[Index]))
   then PreDefined := 'On'
   else PreDefined := 'Off';
 end;

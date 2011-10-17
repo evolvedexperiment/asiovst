@@ -102,8 +102,8 @@ end;
 
 procedure TDetuneDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FBuffer) then Dispose(FBuffer);
- if assigned(FWin) then Dispose(FWin);
+ if Assigned(FBuffer) then Dispose(FBuffer);
+ if Assigned(FWin) then Dispose(FWin);
 end;
 
 procedure TDetuneDataModule.ParamLatencyChange(Sender: TObject;
@@ -112,7 +112,7 @@ var
   i, tmp : Integer;
   p, dp  : Double;
 begin
-  tmp := 1 shl (8 + round(4.9 * Parameter[3]));
+  tmp := 1 shl (8 + Round(4.9 * Parameter[3]));
 
   if (tmp <> FBufLen) then //recalculate crossfade window
    begin
@@ -205,8 +205,8 @@ begin
 
    p1 := p1 - d1;
    if p1 < 0 then p1 := p1 + lf;                                // output
-   p1i := round(p1);
-   p1f := p1 - round(p1i);
+   p1i := Round(p1);
+   p1f := p1 - Round(p1i);
    a := FBuffer[p1i];
    inc(p1i);
    p1i := p1i and l;
@@ -234,7 +234,7 @@ begin
    p2 := p2 - d2;  //repeat for downwards shift - can't see a more efficient way?
    if (p2 < 0) then p2 := p2 + lf;       // output
 
-   p1i := round(p2);
+   p1i := Round(p2);
    p1f := p2 - p1i;
    a   := FBuffer[p1i];
    inc(p1i);
@@ -262,8 +262,8 @@ begin
   end;
 
  FPos[0] := p0;
- FPos[1] := round(p1);
- FPos[2] := round(p2);
+ FPos[1] := Round(p1);
+ FPos[2] := Round(p2);
 end;
 
 procedure TDetuneDataModule.VSTModuleSuspend(Sender: TObject);

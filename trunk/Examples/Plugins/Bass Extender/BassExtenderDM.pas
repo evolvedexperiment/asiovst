@@ -341,7 +341,7 @@ end;
 procedure TBassExtenderModule.ParamSplitOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- PreDefined := AnsiString(IntToStr(round(2 * Parameter[Index])));
+ PreDefined := AnsiString(IntToStr(Round(2 * Parameter[Index])));
 end;
 
 procedure TBassExtenderModule.ParamFreqDisplay(

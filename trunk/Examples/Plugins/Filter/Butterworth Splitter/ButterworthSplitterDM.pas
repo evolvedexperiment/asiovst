@@ -69,7 +69,7 @@ procedure TButterworthSplitterModule.VSTModuleOpen(Sender: TObject);
 var
   Channel: Integer;
 begin
- assert(numOutputs = 2 * numInputs);
+ Assert(numOutputs = 2 * numInputs);
  SetLength(FButterworthSplitter, numInputs);
  for Channel := 0 to Length(FButterworthSplitter) - 1 do
   begin
@@ -110,7 +110,7 @@ end;
 procedure TButterworthSplitterModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := IntToStr(round(Parameter[Index]));
+ Predefined := IntToStr(Round(Parameter[Index]));
 end;
 
 procedure TButterworthSplitterModule.ParameterFrequencyDisplay(
@@ -136,7 +136,7 @@ var
   Channel: Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FButterworthSplitter[Channel])
+  if Assigned(FButterworthSplitter[Channel])
    then FButterworthSplitter[Channel].Frequency := Value;
 end;
 
@@ -146,8 +146,8 @@ var
   Channel: Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FButterworthSplitter[Channel])
-   then FButterworthSplitter[Channel].Order := round(Value);
+  if Assigned(FButterworthSplitter[Channel])
+   then FButterworthSplitter[Channel].Order := Round(Value);
 end;
 
 procedure TButterworthSplitterModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -156,7 +156,7 @@ var
   Channel: Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FButterworthSplitter[Channel])
+  if Assigned(FButterworthSplitter[Channel])
    then FButterworthSplitter[Channel].SampleRate := SampleRate;
 end;
 

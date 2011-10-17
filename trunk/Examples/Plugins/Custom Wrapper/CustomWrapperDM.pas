@@ -208,10 +208,10 @@ begin
       while True do
        begin
         Aspect := Width / (j + i);
-        if (Aspect >= 1) and (abs(Aspect - round(Aspect)) < 1E-24)
+        if (Aspect >= 1) and (abs(Aspect - Round(Aspect)) < 1E-24)
          then break;
         Aspect := Width / (j - i);
-        if (Aspect > 0) and (abs(Aspect - round(Aspect)) < 1E-24)
+        if (Aspect > 0) and (abs(Aspect - Round(Aspect)) < 1E-24)
          then break
          else inc(i);
        end;
@@ -223,10 +223,10 @@ begin
       while True do
        begin
         Aspect := Height / (j + i);
-        if (Aspect >= 1) and (abs(Aspect - round(Aspect)) < 1E-24)
+        if (Aspect >= 1) and (abs(Aspect - Round(Aspect)) < 1E-24)
          then break;
         Aspect := Height / (j - i);
-        if (Aspect > 0) and (abs(Aspect - round(Aspect)) < 1E-24)
+        if (Aspect > 0) and (abs(Aspect - Round(Aspect)) < 1E-24)
          then break
          else inc(i);
        end;
@@ -261,7 +261,7 @@ begin
    PluginGUI := TDAVPluginGuiChunk.Create;
    try
     RS.Read(ChunkName, 4);
-    assert(ChunkName = 'PGUI');
+    Assert(ChunkName = 'PGUI');
     PluginGUI.LoadFromStream(RS);
     GUI.Color         := PluginGUI.BackgroundColor;
     numElementsPerRow := PluginGUI.KnobsPerRow;
@@ -378,9 +378,9 @@ begin
    Inc(n);
   end;
  VstHost[n].Parameter[Index - pnr] := Value;
- if (Index < Length(FDials)) and assigned(FDials[Index])
+ if (Index < Length(FDials)) and Assigned(FDials[Index])
   then FDials[Index].Position := Value;
- if (Index < Length(FDisplays)) and assigned(FDisplays[Index])
+ if (Index < Length(FDisplays)) and Assigned(FDisplays[Index])
   then FDisplays[Index].Caption := VstHost[n].GetParamDisplay(Index - pnr) +
                                    ' ' + VstHost[n].GetParamLabel(Index - pnr);
 end;

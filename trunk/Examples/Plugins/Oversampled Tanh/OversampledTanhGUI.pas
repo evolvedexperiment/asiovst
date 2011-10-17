@@ -89,7 +89,7 @@ procedure TFmOversampledTanh.UpdateCoeffs;
 begin
  with TOversampledTanhModule(Owner) do
   begin
-   CBCoeffs.Text := IntToStr(round(Parameter[0]));
+   CBCoeffs.Text := IntToStr(Round(Parameter[0]));
   end;
 end;
 

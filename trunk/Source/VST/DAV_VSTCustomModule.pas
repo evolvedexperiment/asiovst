@@ -655,6 +655,7 @@ begin
      with FEditorForm do
       begin
        {$IFDEF FMX}
+       Application.MainForm := FEditorForm;
        Visible := True;
        SetBounds(0, 0, Width, Height);
        Invalidate;
@@ -1016,8 +1017,11 @@ end;
 function TCustomVSTModule.HostCallEditKeyDown(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   keyCode : TVstKeyCode;
-  a, b    : Integer;
+  KcInt   : Integer;
+{$IFNDEF FMX}
+  b       : Integer;
   Hndl    : THandle;
+{$ENDIF}
 begin
  Result := 0;
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallEditKeyDown'); {$ENDIF}
@@ -1028,7 +1032,7 @@ begin
    keyCode.modifier := Round(opt);
    if Assigned(EditorForm) then
     begin
-     a := KeyCodeToInteger(keyCode);
+     KcInt := KeyCodeToInteger(keyCode);
      {$IFNDEF FMX}
      if Assigned(EditorForm.ActiveControl)
       then Hndl := EditorForm.ActiveControl.Handle
@@ -1037,21 +1041,21 @@ begin
      {$IFNDEF FPC}
      if keyCode.virt = 0 then b := 0 else b := KF_EXTENDED;
      if mkAlternate in TVSTModifierKeys(keyCode.modifier)
-      then SendMessage(Hndl, WM_KEYDOWN, a,b)
-      else SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
-     SendMessage(Hndl, WM_CHAR, a, b);
+      then SendMessage(Hndl, WM_KEYDOWN, KcInt, b)
+      else SendMessage(Hndl, WM_SYSKEYDOWN, KcInt,KF_ALTDOWN);
+     SendMessage(Hndl, WM_CHAR, KcInt, b);
      {$ELSE}
      if keyCode.virt = 0 then b := 0 else b := $100;
      if (keyCode.modifier and 2) <> 0
-      then SendMessage(Hndl, LM_KEYDOWN, a,b)
-      else SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
-     SendMessage(Hndl, LM_CHAR, a, b);
+      then SendMessage(Hndl, LM_KEYDOWN, KcInt,b)
+      else SendMessage(Hndl, LM_SYSKEYDOWN, KcInt, $2000);
+     SendMessage(Hndl, LM_CHAR, KcInt, b);
      {$ENDIF}
      {$ENDIF}
 
      if Assigned(FOnKeyDown) then FOnKeyDown(Self, keyCode);
      if Assigned(FOnCheckKey) then
-      if FOnCheckKey(Self, Char(a))
+      if FOnCheckKey(Self, Char(KcInt))
        then Result := 1
        else Result := -1
       else Result := -1;

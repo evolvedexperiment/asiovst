@@ -77,7 +77,7 @@ uses
 
 procedure TSplitterDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'NORMAL';
   1 : PreDefined := 'INVERSE';
   2 : PreDefined := 'NORM/INV';
@@ -105,7 +105,7 @@ end;
 
 procedure TSplitterDataModule.ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
     0: PreDefined := 'BELOW';
     1: PreDefined := 'ALL';
   else PreDefined := 'ABOVE';
@@ -242,14 +242,14 @@ begin
   if FFreq > 1 then FFreq := 1;
 
   ff  := -1;                                      // Above
-  tmp := round(2.9 * Parameter[2]);               // Frequency Switching
+  tmp := Round(2.9 * Parameter[2]);               // Frequency Switching
   if tmp = 0 then ff := 0.0;                      // Below
   if tmp = 1 then FFreq := 0.001;                 // All
 
   FLevel := Power(10, 0.05 * Parameter[3] + 0.3); // Level
 
   ll := 0.0;                                      // Above
-  tmp := round(2.9 * Parameter[4]);               // Level Switching
+  tmp := Round(2.9 * Parameter[4]);               // Level Switching
   if (tmp = 0) then ll := -1;                     // Below
   if (tmp = 1) then FLevel := 0;                  // All
 
@@ -263,8 +263,8 @@ begin
   o2l := i2l;
   o2r := i2l;
 
-  FMode := round(Parameter[0]);                   // Output Routing
-  case round(FMode) of
+  FMode := Round(Parameter[0]);                   // Output Routing
+  case Round(FMode) of
      0: begin i2l :=   0 ;  i2r :=   0 ; end;
      1: begin o2l := -o2l;  o2r := -o2r; end;
      2: begin i2l :=   0 ;  o2r := -o2r; end;

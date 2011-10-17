@@ -304,7 +304,7 @@ begin
       begin
        GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] * SizeOf(Single));
        sz := Read(FImpulseResponse[m, n, i]^, CKernelSizes[m, n] * SizeOf(Single));
-       assert(sz = CKernelSizes[m, n] * SizeOf(Single));
+       Assert(sz = CKernelSizes[m, n] * SizeOf(Single));
       end;
     finally
      Free;
@@ -397,7 +397,7 @@ end;
 
 procedure TVTVSTModule.ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   1 : PreDefined := 'Mono';
   2 : PreDefined := 'Stereo';
  end;
@@ -413,7 +413,7 @@ var
 begin
  // Calculate Filter Index
  SngleIndex := (Parameter[0] + 12) * 2;
- LowerIndex := round(SngleIndex - 0.5);
+ LowerIndex := Round(SngleIndex - 0.5);
  UpperIndex := LowerIndex + 1;
  if LowerIndex <  0 then LowerIndex :=  0;
  if UpperIndex <  0 then UpperIndex :=  0;
@@ -441,7 +441,7 @@ var
 begin
  // Calculate Filter Index
  SngleIndex := (Parameter[1] + 12) * 2;
- LowerIndex := round(SngleIndex - 0.5);
+ LowerIndex := Round(SngleIndex - 0.5);
  UpperIndex := LowerIndex + 1;
  if LowerIndex <  0 then LowerIndex :=  0;
  if UpperIndex <  0 then UpperIndex :=  0;
@@ -552,7 +552,7 @@ procedure TVTVSTModule.ParamDriveChange(Sender: TObject; const Index: Integer; v
 var
   NewDriveMode : TDriveMode;
 begin
- NewDriveMode := TDriveMode(round(Value));
+ NewDriveMode := TDriveMode(Round(Value));
 
  if FDriveMode <> NewDriveMode then
   begin

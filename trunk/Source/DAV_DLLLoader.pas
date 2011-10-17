@@ -34,6 +34,9 @@ type
   PLongWordArray = ^TLongWordArray;
   TLongWordArray = array [0..(2147483647 div SizeOf(LongWord)) - 1] of LongWord;
 
+  PNativeUIntArray = ^TNativeUIntArray;
+  TNativeUIntArray = array [0..(2147483647 div SizeOf(NativeUInt)) - 1] of NativeUInt;
+
   PImageDOSHeader = ^TImageDOSHeader;
   TImageDOSHeader = packed record
     Signature : Word;
@@ -79,7 +82,7 @@ type
 
   PImageBaseRelocation = ^TImageBaseRelocation;
   TImageBaseRelocation = packed record
-    VirtualAddress : NativeInt;
+    VirtualAddress : LongWord;
     SizeOfBlock    : LongWord;
   end;
 
@@ -162,7 +165,7 @@ type
   TDLLLoader = class(TPersistent)
   private
     FImageBase            : Pointer;
-    FImageBaseDelta       : Integer;
+    FImageBaseDelta       : NativeInt;
     FDLLProc              : TDLLEntryProc;
     FExternalLibraryArray : TExternalLibrarys;
     FImportArray          : TImports;
@@ -489,7 +492,7 @@ begin
     if FExternalLibraryArray[I].LibraryName = LibraryName then
      begin
       Result := I;
-      exit;
+      Exit;
      end;
 end;
 
@@ -571,7 +574,7 @@ var
   ImageNTHeaders: TImageNTHeaders;
   OldProtect: LongWord;
 
-  function ConvertPointer(RVA: NativeInt): Pointer;
+  function ConvertPointer(RVA: NativeUInt): Pointer;
   var
     I: Integer;
   begin
@@ -580,8 +583,8 @@ var
       if (RVA < (FSections[I].RVA + FSections[I].Size)) and
         (RVA >= FSections[I].RVA) then
        begin
-        Result := Pointer(LongWord((RVA - LongWord(FSections[I].RVA)) +
-          LongWord(FSections[I].Base)));
+        Result := Pointer(NativeUInt((RVA - NativeUInt(FSections[I].RVA)) +
+          NativeUInt(FSections[I].Base)));
         Exit;
        end;
   end;
@@ -592,14 +595,18 @@ var
     if Stream.Size > 0 then
      begin
       FillChar(ImageNTHeaders, SizeOf(TImageNTHeaders), #0);
-      if Stream.Read(ImageDOSHeader, SizeOf(TImageDOSHeader)) <> SizeOf(TImageDOSHeader) then exit;
+      if Stream.Read(ImageDOSHeader, SizeOf(TImageDOSHeader)) <> SizeOf(TImageDOSHeader) then Exit;
       if ImageDOSHeader.Signature <> $5A4D then Exit;
-      if Stream.Seek(ImageDOSHeader.LFAOffset, soFrombeginning) <> LongInt(ImageDOSHeader.LFAOffset) then exit;
-      if Stream.Read(ImageNTHeaders.Signature, SizeOf(LongWord)) <> SizeOf(LongWord) then exit;
+      if Stream.Seek(ImageDOSHeader.LFAOffset, soFrombeginning) <> LongInt(ImageDOSHeader.LFAOffset) then Exit;
+      if Stream.Read(ImageNTHeaders.Signature, SizeOf(LongWord)) <> SizeOf(LongWord) then Exit;
       if ImageNTHeaders.Signature <> $00004550 then Exit;
-      if Stream.Read(ImageNTHeaders.FileHeader, SizeOf(TImageFileHeader)) <> SizeOf(TImageFileHeader) then exit;
-      if ImageNTHeaders.FileHeader.Machine <> $14C then exit;
-      if Stream.Read(ImageNTHeaders.OptionalHeader, ImageNTHeaders.FileHeader.SizeOfOptionalHeader) <> ImageNTHeaders.FileHeader.SizeOfOptionalHeader then exit;
+      if Stream.Read(ImageNTHeaders.FileHeader, SizeOf(TImageFileHeader)) <> SizeOf(TImageFileHeader) then Exit;
+      {$IFDEF CPU32}
+      if ImageNTHeaders.FileHeader.Machine <> $14C then Exit;
+      {$ELSE}
+      if ImageNTHeaders.FileHeader.Machine <> $8664 then Exit;
+      {$ENDIF}
+      if Stream.Read(ImageNTHeaders.OptionalHeader, ImageNTHeaders.FileHeader.SizeOfOptionalHeader) <> ImageNTHeaders.FileHeader.SizeOfOptionalHeader then Exit;
       Result := True;
      end;
   end;
@@ -614,7 +621,7 @@ var
       if FileHeader.NumberOfSections > 0 then
        begin
         FImageBase := VirtualAlloc(nil, OptionalHeader.SizeOfImage, MEM_RESERVE, PAGE_NOACCESS);
-        FImageBaseDelta := LongWord(FImageBase) - OptionalHeader.ImageBase;
+        FImageBaseDelta := NativeUInt(FImageBase) - OptionalHeader.ImageBase;
         SectionBase := VirtualAlloc(FImageBase, OptionalHeader.SizeOfHeaders, MEM_COMMIT, PAGE_READWRITE);
         OldPosition := Stream.Position;
         Stream.Seek(0, soFrombeginning);
@@ -636,7 +643,7 @@ var
      begin
       GetMem(SectionHeaders, ImageNTHeaders.FileHeader.NumberOfSections * SizeOf(TImageSectionHeader));
       if Stream.Read(SectionHeaders^, (ImageNTHeaders.FileHeader.NumberOfSections * SizeOf(TImageSectionHeader))) <> (ImageNTHeaders.FileHeader.NumberOfSections * SizeOf(TImageSectionHeader))
-       then exit;
+       then Exit;
       SetLength(FSections, ImageNTHeaders.FileHeader.NumberOfSections);
       for I := 0 to ImageNTHeaders.FileHeader.NumberOfSections - 1 do
        begin
@@ -646,13 +653,13 @@ var
         if FSections[I].Size < Section.Misc.VirtualSize
          then FSections[I].Size := Section.Misc.VirtualSize;
         FSections[I].Characteristics := Section.Characteristics;
-        FSections[I].Base := VirtualAlloc(Pointer(LongWord(FSections[I].RVA +
-          LongWord(FImageBase))), FSections[I].Size, MEM_COMMIT, PAGE_READWRITE);
+        FSections[I].Base := VirtualAlloc(Pointer(NativeUInt(FSections[I].RVA +
+          NativeUInt(FImageBase))), FSections[I].Size, MEM_COMMIT, PAGE_READWRITE);
         FillChar(FSections[I].Base^, FSections[I].Size, #0);
         if Section.PointerToRawData <> 0 then
          begin
           Stream.Seek(Section.PointerToRawData, soFrombeginning);
-          if Stream.Read(FSections[I].Base^, Section.SizeOfRawData) <> LONGINT(Section.SizeOfRawData) then exit;
+          if Stream.Read(FSections[I].Base^, Section.SizeOfRawData) <> LONGINT(Section.SizeOfRawData) then Exit;
          end;
        end;
       FreeMem(SectionHeaders);
@@ -663,7 +670,7 @@ var
   function ProcessRelocations: Boolean;
   var
     Relocations: PAnsiChar;
-    Position: LongWord;
+    Position: NativeUInt;
     BaseRelocation: PImageBaseRelocation;
     Base: Pointer;
     NumberOfRelocations: LongWord;
@@ -687,38 +694,38 @@ var
         BaseRelocation := PImageBaseRelocation(Relocations);
         Base := ConvertPointer(BaseRelocation^.VirtualAddress);
         if not Assigned(Base) then
-          exit;
+          Exit;
         NumberOfRelocations :=
           (BaseRelocation^.SizeOfBlock - SizeOf(TImageBaseRelocation)) div
           SizeOf(Word);
-        Relocation := Pointer(LongWord(LongWord(BaseRelocation) +
+        Relocation := Pointer(NativeUInt(NativeUInt(BaseRelocation) +
           SizeOf(TImageBaseRelocation)));
         for RelocationCounter := 0 to NumberOfRelocations - 1 do
          begin
           RelocationPointer :=
-            Pointer(LongWord(LongWord(Base) +
+            Pointer(NativeUInt(NativeUInt(Base) +
             (Relocation^[RelocationCounter] and $FFF)));
           RelocationType := Relocation^[RelocationCounter] shr 12;
           case RelocationType of
             IMAGE_REL_BASED_ABSOLUTE : ;
             IMAGE_REL_BASED_HIGH : PWord(RelocationPointer)^ :=
-                (LongWord(
-                ((LongWord(PWord(RelocationPointer)^ + LongWord(FImageBase) -
+                (NativeUInt(
+                ((NativeUInt(PWord(RelocationPointer)^ + NativeUInt(FImageBase) -
                 ImageNTHeaders.OptionalHeader.ImageBase)))) shr 16) and $FFFF;
             IMAGE_REL_BASED_LOW : PWord(RelocationPointer)^ :=
-                LongWord(((LongWord(PWord(RelocationPointer)^
-                + LongWord(FImageBase) - ImageNTHeaders.
-                OptionalHeader.ImageBase)))) and $FFFF;
+                NativeUInt(((NativeUInt(PWord(RelocationPointer)^
+                + NativeUInt(FImageBase) - ImageNTHeaders.OptionalHeader.
+                ImageBase)))) and $FFFF;
             IMAGE_REL_BASED_HIGHLOW : PPointer(RelocationPointer)^ :=
-                Pointer((LongWord(LongWord(PPointer(RelocationPointer)^) +
-                LongWord(FImageBase) -
+                Pointer((NativeUInt(NativeUInt(PPointer(RelocationPointer)^) +
+                NativeUInt(FImageBase) -
                 ImageNTHeaders.OptionalHeader.ImageBase)));
             IMAGE_REL_BASED_HIGHADJ : ; // ???
             IMAGE_REL_BASED_MIPS_JMPADDR : ; // Only for MIPS CPUs ;)
            end;
          end;
         Relocations := Pointer(
-          LongWord(LongWord(Relocations) + BaseRelocation^.SizeOfBlock));
+          NativeUInt(NativeUInt(Relocations) + BaseRelocation^.SizeOfBlock));
         Inc(Position, BaseRelocation^.SizeOfBlock);
        end;
      end;
@@ -772,7 +779,7 @@ var
              end
             else
              begin
-              Name := ConvertPointer(LongWord(ThunkData^) +
+              Name := ConvertPointer(NativeUInt(ThunkData^) +
                 IMPORTED_NAME_OFFSET);
               DLLFunctionImport^.NameOrID := niName;
               DLLFunctionImport^.ID := 0;
@@ -870,7 +877,7 @@ var
           Result := (Result * 10) +
             Byte(Byte(Astring[CharCounter]) - Byte('0'))
         else
-          exit;
+          Exit;
     end;
 
   begin
@@ -889,18 +896,18 @@ var
         SetLength(FExportArray, ExportDirectory^.NumberOfNames);
         for I := 0 to ExportDirectory^.NumberOfNames - 1 do
          begin
-          FunctionNamePointer := ConvertPointer(LongWord(ExportDirectory^.AddressOfNames));
-          FunctionNamePointer := ConvertPointer(PLongWordArray(FunctionNamePointer)^[I]);
+          FunctionNamePointer := ConvertPointer(NativeUInt(ExportDirectory^.AddressOfNames));
+          FunctionNamePointer := ConvertPointer(PNativeUIntArray(FunctionNamePointer)^[I]); // TODO: problematic!!! PLongWordArray
           FunctionName := FunctionNamePointer;
-          FunctionIndexPointer := ConvertPointer(LongWord(ExportDirectory^.AddressOfNameOrdinals));
+          FunctionIndexPointer := ConvertPointer(NativeUInt(ExportDirectory^.AddressOfNameOrdinals));
           FunctionIndex := PWordArray(FunctionIndexPointer)^[I];
-          FunctionPointer := ConvertPointer(LongWord(ExportDirectory^.AddressOfFunctions));
-          FunctionPointer := ConvertPointer(PLongWordArray(FunctionPointer)^[FunctionIndex]);
+          FunctionPointer := ConvertPointer(NativeUInt(ExportDirectory^.AddressOfFunctions));
+          FunctionPointer := ConvertPointer(PNativeUIntArray(FunctionPointer)^[FunctionIndex]); // TODO: problematic!!! PLongWordArray
           FExportArray[I].Name := string(FunctionName);
           FExportArray[I].Index := FunctionIndex;
-          if (LongWord(ExportDirectory) < LongWord(FunctionPointer)) and
-            (LongWord(FunctionPointer) <
-            (LongWord(ExportDirectory) + ExportDirectorySize)) then
+          if (NativeUInt(ExportDirectory) < NativeUInt(FunctionPointer)) and
+            (NativeUInt(FunctionPointer) <
+            (NativeUInt(ExportDirectory) + ExportDirectorySize)) then
            begin
             ForwarderCharPointer := FunctionPointer;
             Forwarderstring := ForwarderCharPointer;
@@ -955,7 +962,7 @@ begin
   Result := False;
   if @FDLLProc <> nil then
    begin
-    FDLLProc(LongWord(FImageBase), DLL_PROCESS_DETACH, nil);
+    FDLLProc(NativeUInt(FImageBase), DLL_PROCESS_DETACH, nil);
     FDLLProc := nil;
    end;
 
@@ -1003,7 +1010,7 @@ begin
       if FExportArray[I].Name = FunctionName then
        begin
         Result := FExportArray[I].FunctionPointer;
-        exit;
+        Exit;
        end;
 end;
 
@@ -1016,7 +1023,7 @@ begin
     if FExportArray[i].Index = FunctionIndex then
      begin
       Result := FExportArray[i].FunctionPointer;
-      exit;
+      Exit;
      end;
 end;
 

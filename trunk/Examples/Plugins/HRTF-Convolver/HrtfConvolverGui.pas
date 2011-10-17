@@ -333,7 +333,7 @@ begin
  with THrtfConvolverDataModule(Owner) do
   begin
    if SEAzimuth.Value <> Parameter[0]
-    then SEAzimuth.Value := round(Parameter[0]);
+    then SEAzimuth.Value := Round(Parameter[0]);
    AudioDataDisplay.Invalidate;
   end;
 end;
@@ -343,7 +343,7 @@ begin
  with THrtfConvolverDataModule(Owner) do
   begin
    if SEElevation.Value <> Parameter[1]
-    then SEElevation.Value := round(Parameter[1]);
+    then SEElevation.Value := Round(Parameter[1]);
    AudioDataDisplay.Invalidate;
   end;
 end;
@@ -353,7 +353,7 @@ begin
  with THrtfConvolverDataModule(Owner) do
   begin
    if SERadius.Value <> Parameter[2]
-    then SERadius.Value := round(Parameter[2]);
+    then SERadius.Value := Round(Parameter[2]);
    AudioDataDisplay.Invalidate;
   end;
 end;

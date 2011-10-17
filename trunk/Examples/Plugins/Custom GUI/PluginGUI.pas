@@ -49,7 +49,7 @@ type
     FBackground : TGuiCustomPixelMap;
     function CreateRegistry: TRegistry;
     procedure RenderBrushedMetalBackground;
-    procedure SetBackground(Filename: TFilename);
+    procedure SetBackgRound(Filename: TFilename);
     procedure AssignParameterClick(Sender: TObject);
   protected
     procedure Clear;
@@ -189,7 +189,7 @@ procedure TFmCustomGui.MiSetBackgroundClick(Sender: TObject);
 begin
  if OpenPictureDialog.Execute then
   begin
-   SetBackground(OpenPictureDialog.Filename);
+   SetBackgRound(OpenPictureDialog.Filename);
    with CreateRegistry do
     try
      if OpenKey(CRegistryBaseKey + 'Background', True) then
@@ -264,7 +264,7 @@ begin
  Result.RootKey := HKEY_CURRENT_USER;
 end;
 
-procedure TFmCustomGui.SetBackground(Filename: TFilename);
+procedure TFmCustomGui.SetBackgRound(Filename: TFilename);
 begin
  if FileExists(Filename)
   then FBackground.LoadFromFile(Filename);
@@ -323,7 +323,7 @@ begin
    SectionName := 'Background';
 
    if ValueExists(SectionName, 'FileName')
-    then SetBackground(ReadString(SectionName, 'FileName', ''))
+    then SetBackgRound(ReadString(SectionName, 'FileName', ''))
       else RenderBrushedMetalBackground;
 
    Sections := TStringList.Create;
@@ -403,7 +403,7 @@ begin
     try
      // eventually read filename
      if FileExists(ReadString('Filename'))
-      then SetBackground(ReadString('Filename'))
+      then SetBackgRound(ReadString('Filename'))
       else RenderBrushedMetalBackground;
 
      // eventually read width

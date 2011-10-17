@@ -90,7 +90,7 @@ implementation
 procedure TImageDataModule.ParamModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[0]) of
+ case Round(Parameter[0]) of
   0: PreDefined := 'SM->LR';
   1: PreDefined := 'MS->LR';
   2: PreDefined := 'LR->LR';
@@ -167,7 +167,7 @@ end;
 procedure TImageDataModule.ParameterModeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- ImageMode := TImageMode(round(Value));
+ ImageMode := TImageMode(Round(Value));
 end;
 
 procedure TImageDataModule.ParameterMLevelChange(

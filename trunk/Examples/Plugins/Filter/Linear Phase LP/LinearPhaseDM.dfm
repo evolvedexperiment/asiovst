@@ -1,5 +1,6 @@
 object LinearPhaseDataModule: TLinearPhaseDataModule
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Linear Phase'
@@ -58,12 +59,9 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 81
   Height = 150
   Width = 215
 end

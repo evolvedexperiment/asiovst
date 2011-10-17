@@ -93,7 +93,7 @@ var
 begin
  with TStkPitchShiftModule(Owner) do
   begin
-   SemiPos := round(10 * Parameter[0]);
+   SemiPos := Round(10 * Parameter[0]);
    if SBSemitones.Position <> SemiPos
     then SBSemitones.Position := SemiPos;
    LbSemitonesValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4);
@@ -106,7 +106,7 @@ var
 begin
  with TStkPitchShiftModule(Owner) do
   begin
-   EffectMixPos := round(10 * Parameter[1]);
+   EffectMixPos := Round(10 * Parameter[1]);
    if SBEffectMix.Position <> EffectMixPos
     then SBEffectMix.Position := EffectMixPos;
    LbEffectMixValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 4, 4) + ' %';

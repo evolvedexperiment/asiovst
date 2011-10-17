@@ -129,7 +129,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Limit(Value, 1E-5, 10);
+  if Assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Limit(Value, 1E-5, 10);
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
@@ -142,7 +142,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].Order := Round(Value); //max(2, 2 * Round(0.5 * Value)); //
 
  // update GUI if necessary
@@ -156,7 +156,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].Frequency := Value;
 
  // update GUI if necessary

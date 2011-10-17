@@ -334,7 +334,7 @@ end;
 procedure TSmoothMultibandCompressorDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
@@ -375,7 +375,7 @@ end;
 
 procedure TSmoothMultibandCompressorDataModule.ChooseProcess;
 begin
- case round(Parameter[2]) of
+ case Round(Parameter[2]) of
   0 : OnProcess := VSTModuleProcessMono;
   1 : OnProcess := VSTModuleProcessMonoSoftClip;
  end;
@@ -515,7 +515,7 @@ var
   State   : Cardinal;
 begin
  Band := (Index - 9) div 6;
- State := round(Value);
+ State := Round(Value);
  if (State and 1) > 0
   then FStates[Band] := FStates[Band] + [bsBypass]
   else FStates[Band] := FStates[Band] - [bsBypass];

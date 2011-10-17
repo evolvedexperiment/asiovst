@@ -192,7 +192,7 @@ begin
  if (Parameter[4] < 0.5)
   then FRatF := 0.2 * sqr(Parameter[4])
   else
-   case round(8.9 * Parameter[4]) of
+   case Round(8.9 * Parameter[4]) of
       4: FRatF := 0.25;
       5: FRatF := 0.33333333;
       6: FRatF := 0.50;

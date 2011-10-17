@@ -50,7 +50,7 @@ type
     FPopupPos  : TPoint;
     function CreateRegistry: TRegistry;
     procedure RenderBrushedMetalBackground;
-    procedure SetBackground(Filename: TFilename);
+    procedure SetBackgRound(Filename: TFilename);
     procedure SetSelection(const Value: TPositionedLayer);
     procedure UpdateSelection;
     procedure LayerChangeHandler(Sender: TObject);
@@ -184,7 +184,7 @@ procedure TFmCustomGr32Gui.MiSetBackgroundClick(Sender: TObject);
 begin
  if OpenPictureDialog.Execute then
   begin
-   SetBackground(OpenPictureDialog.Filename);
+   SetBackgRound(OpenPictureDialog.Filename);
    with CreateRegistry do
     try
      if OpenKey(CRegistryBaseKey + 'Background', True) then
@@ -358,7 +358,7 @@ begin
  Result.RootKey := HKEY_CURRENT_USER;
 end;
 
-procedure TFmCustomGr32Gui.SetBackground(Filename: TFilename);
+procedure TFmCustomGr32Gui.SetBackgRound(Filename: TFilename);
 begin
  if FileExists(Filename)
   then Gr32Gui.Bitmap.LoadFromFile(Filename);
@@ -501,7 +501,7 @@ begin
    SectionName := 'Background';
 
    if ValueExists(SectionName, 'FileName')
-    then SetBackground(ReadString(SectionName, 'FileName', ''))
+    then SetBackgRound(ReadString(SectionName, 'FileName', ''))
       else RenderBrushedMetalBackground;
 
    Sections := TStringList.Create;
@@ -579,7 +579,7 @@ begin
     try
      // eventually read filename
      if FileExists(ReadString('Filename'))
-      then SetBackground(ReadString('Filename'))
+      then SetBackgRound(ReadString('Filename'))
       else RenderBrushedMetalBackground;
 
      // eventually read width

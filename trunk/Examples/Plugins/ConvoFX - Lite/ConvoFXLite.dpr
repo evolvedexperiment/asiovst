@@ -6,7 +6,7 @@ library ConvoFXLite;
 // if the file below is missing please execute the batch file in this
 // directory first to compile the resource file
 
-{$R 'Resources\IRs.res' 'Resources\IRs.rc'}
+{$R 'IRs.res' 'Resources\IRs.rc'}
 
 uses
   FastMM4, // either download the library or comment if there is an error here

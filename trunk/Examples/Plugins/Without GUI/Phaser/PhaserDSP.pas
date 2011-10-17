@@ -190,7 +190,7 @@ begin
  try
   for Channel := 0 to 1 do
    if Assigned(FPhaser[Channel])
-    then FPhaser[Channel].Stages := round(Value);
+    then FPhaser[Channel].Stages := Round(Value);
  finally
   FCriticalSection.Leave;
  end;

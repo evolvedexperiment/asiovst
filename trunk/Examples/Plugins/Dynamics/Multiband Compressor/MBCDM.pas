@@ -200,7 +200,7 @@ var
 begin
  for i := 0 to Length(FLowSplit) - 1 do
   if Assigned(FLowSplit[i])
-   then FLowSplit[i].Order := round(Value);
+   then FLowSplit[i].Order := Round(Value);
 end;
 
 procedure TMBCDataModule.MBCDMLowGainChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -435,7 +435,7 @@ end;
 procedure TMBCDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if round(Parameter[Index]) = 0
+ if Round(Parameter[Index]) = 0
   then PreDefined := 'Off'
   else PreDefined := 'On';
 end;
@@ -443,7 +443,7 @@ end;
 procedure TMBCDataModule.ParameterLimiterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Value) of
+ case Round(Value) of
   0: begin
       OnProcess := VSTModuleProcess;
       OnProcess64Replacing := VSTModuleProcessDoubleReplacing;
@@ -462,7 +462,7 @@ var
 begin
  for i := 0 to Length(FHighSplit) - 1 do
   if Assigned(FHighSplit[i])
-   then FHighSplit[i].Order := round(Value);
+   then FHighSplit[i].Order := Round(Value);
 end;
 
 procedure TMBCDataModule.MBCDMHighFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);

@@ -99,7 +99,7 @@ begin
  inc(FSemaphore);
  try
   if Value >= FConvolutionLowLatency.MinimumIRBlockOrder
-   then FConvolutionLowLatency.MaximumIRBlockOrder := round(Limit(Value, 7, 20))
+   then FConvolutionLowLatency.MaximumIRBlockOrder := Round(Limit(Value, 7, 20))
    else Value := FConvolutionLowLatency.MinimumIRBlockOrder;
  finally
   dec(FSemaphore);
@@ -114,8 +114,8 @@ begin
  try
   if Value > FConvolutionLowLatency.MaximumIRBlockOrder
    then Value := FConvolutionLowLatency.MaximumIRBlockOrder;
-  FConvolutionLowLatency.MinimumIRBlockOrder := round(Value);
-  FConvolutionClassic.FFTOrder := round(Value) + 1;
+  FConvolutionLowLatency.MinimumIRBlockOrder := Round(Value);
+  FConvolutionClassic.FFTOrder := Round(Value) + 1;
  finally
   dec(FSemaphore);
  end;

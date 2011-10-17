@@ -99,8 +99,8 @@ uses
 
 procedure TRePsychoDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSize      := round(0.5 * SampleRate);
- FDelayTime := round(0.01 * SampleRate + 0.5 * FSize * 0.45);
+ FSize      := Round(0.5 * SampleRate);
+ FDelayTime := Round(0.01 * SampleRate + 0.5 * FSize * 0.45);
  FSampleCnt := FSize + 1;
 
  AllocateBuffer;
@@ -118,15 +118,15 @@ end;
 
 procedure TRePsychoDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FBuffer[0]) then Dispose(FBuffer[0]);
- if assigned(FBuffer[1]) then Dispose(FBuffer[1]);
+ if Assigned(FBuffer[0]) then Dispose(FBuffer[0]);
+ if Assigned(FBuffer[1]) then Dispose(FBuffer[1]);
 end;
 
 procedure TRePsychoDataModule.CalculateBufferSize;
 begin
- if FSize <> round(0.5 * SampleRate) then
+ if FSize <> Round(0.5 * SampleRate) then
   begin
-   FSize := round(0.5 * SampleRate);
+   FSize := Round(0.5 * SampleRate);
    BufferSizeChanged;
   end;
 end;
@@ -183,7 +183,7 @@ end;
 
 procedure TRePsychoDataModule.CalculateDelayTime;
 begin
- FDelayTime := round(0.01 * SampleRate + 0.5 * FSize * FHold);
+ FDelayTime := Round(0.01 * SampleRate + 0.5 * FSize * FHold);
 end;
 
 procedure TRePsychoDataModule.ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -194,9 +194,9 @@ end;
 procedure TRePsychoDataModule.ParameterTuneChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if FSemiTones <> round(Value) then
+ if FSemiTones <> Round(Value) then
   begin
-   FSemiTones := round(Value);
+   FSemiTones := Round(Value);
    TuneChanged;
   end;
 end;
@@ -231,13 +231,13 @@ end;
 procedure TRePsychoDataModule.ParameterFineDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(FFineTune));
+ PreDefined := IntToStr(Round(FFineTune));
 end;
 
 procedure TRePsychoDataModule.ParameterHoldDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(1000.0 * FDelayTime / SampleRate));
+ PreDefined := IntToStr(Round(1000.0 * FDelayTime / SampleRate));
 end;
 
 procedure TRePsychoDataModule.ParameterFineChanged(Sender: TObject; const Index: Integer; var Value: Single);
@@ -300,7 +300,7 @@ begin
        if FSampleCnt = 0 then State := Output;
 
        FBuffer[0, FSampleCnt] := Mono;
-       Output := FBuffer[0, round(FSampleCnt * FTune)];
+       Output := FBuffer[0, Round(FSampleCnt * FTune)];
 
        // Fade
        Output := (State  * (1 - (COne80th * FSampleCnt)) +
@@ -310,7 +310,7 @@ begin
       begin
        //update to/from FBuffer[0]
        FBuffer[0, FSampleCnt] := Mono;
-       Output := FBuffer[0, round(FSampleCnt * FTune)];
+       Output := FBuffer[0, Round(FSampleCnt * FTune)];
       end;
 
      Inc(FSampleCnt);
@@ -367,8 +367,8 @@ begin
         FBuffer[0, FSampleCnt] := Left;
         FBuffer[1, FSampleCnt] := Right;
 
-        Output[0] := FBuffer[0, round(FSampleCnt * FTune)];
-        Output[1] := FBuffer[1, round(FSampleCnt * FTune)];
+        Output[0] := FBuffer[0, Round(FSampleCnt * FTune)];
+        Output[1] := FBuffer[1, Round(FSampleCnt * FTune)];
 
         Output[0] := (FState[0] * (1 - (COne80th * FSampleCnt)) + (Output[0] * COne80th * FSampleCnt));
         Output[1] := (FState[1] * (1 - (COne80th * FSampleCnt)) + (Output[1] * COne80th * FSampleCnt));
@@ -381,7 +381,7 @@ begin
 
         // Interpolation
         it1 := (FSampleCnt * FTune);
-        of1 := round(it1);
+        of1 := Round(it1);
         of2 := of1 + 1;
         it1 := it1 - of1;
         it2 := (1 - it1);

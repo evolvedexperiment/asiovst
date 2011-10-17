@@ -160,12 +160,12 @@ begin
  with TBugpassLiteDataModule(Owner), FrequencyBar, Canvas do
   begin
    Brush.Color := $00C1AE9B;
-   FillRect(Rect(0, 0, round(FreqLogToLinear(Parameter[0]) * Width), Height));
-   FillRect(Rect(round(FreqLogToLinear(Parameter[1]) * Width), 0, Width, Height));
+   FillRect(Rect(0, 0, Round(FreqLogToLinear(Parameter[0]) * Width), Height));
+   FillRect(Rect(Round(FreqLogToLinear(Parameter[1]) * Width), 0, Width, Height));
 
    Brush.Color := $00372D22;
-   FillRect(Rect(round(FreqLogToLinear(Parameter[0]) * Width), 0,
-                 round(FreqLogToLinear(Parameter[1]) * Width), Height));
+   FillRect(Rect(Round(FreqLogToLinear(Parameter[0]) * Width), 0,
+                 Round(FreqLogToLinear(Parameter[1]) * Width), Height));
   end;
 end;
 

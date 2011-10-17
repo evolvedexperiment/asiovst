@@ -85,7 +85,7 @@ end;
 
 procedure TMultibandDataModule.ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Low';
   1 : PreDefined := 'Mid';
   2 : PreDefined := 'High';
@@ -135,7 +135,7 @@ begin
  FAttackH  := Power(10, -0.05 -(1.5 * Parameter[9]));
  FReleaseH := Power(10, -2 - (2.5 * Parameter[10]));
 
- case round(Parameter[0] * 10) of
+ case Round(Parameter[0] * 10) of
      0: begin FTrimM := 0; FTrimH := 0; FSLev := 0; end;
   1, 2: begin FTrimL := 0; FTrimH := 0; FSLev := 0; end;
   3, 4: begin FTrimL := 0; FTrimM := 0; FSLev := 0; end;

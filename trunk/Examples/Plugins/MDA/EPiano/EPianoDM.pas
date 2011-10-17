@@ -210,7 +210,7 @@ begin
 
     while xf > 0 do
      begin
-      FWaves[p[0]] := round((1 - xf) * FWaves[p[0]] + xf * FWaves[p[1]]);
+      FWaves[p[0]] := Round((1 - xf) * FWaves[p[0]] + xf * FWaves[p[1]]);
       dec(p[0]);
       dec(p[1]);
       xf := xf + dxf;
@@ -322,7 +322,7 @@ end;
 
 procedure TEPianoDataModule.Update;  //parameter change
 begin
- FSize   := round(12 * Parameter[2] - 6);
+ FSize   := Round(12 * Parameter[2] - 6);
 
  FTreble := 4 * sqr(Parameter[3]) - 1.0; // Treble Gain
  if (Parameter[3] > 0.5)
@@ -343,7 +343,7 @@ begin
   then FVelSens := FVelSens - (0.75 - 3.0 * Parameter[6]);
 
  FWidth     := 0.03 * Parameter[7];
- FPoly      := 1 + round(31.9 * Parameter[8]);
+ FPoly      := 1 + Round(31.9 * Parameter[8]);
  FFine      := Parameter[9] - 0.5;
  FRandom    := 0.077 * sqr(Parameter[10]);
  FStretch   := 0.0; //0.000434 * (Parameter[11] - 0.5); parameter re-used for FOverdrive!
@@ -495,13 +495,13 @@ begin
 
     s := FSize;
     if (velocity > 40)
-     then s := s + round(FSizeVelocity * (velocity - 40));
+     then s := s + Round(FSizeVelocity * (velocity - 40));
 
     k := 0;
     while (note > (FKeyGroup[k].high + s)) do k := k + 3;  //find keygroup
     l := l + (note - FKeyGroup[k].root); // Pitch
     l := 32000 * FInvSampleRate * exp(0.05776226505 * l);
-    FVoices[vl].delta := round(65536.0 * l);
+    FVoices[vl].delta := Round(65536.0 * l);
     FVoices[vl].frac  := 0;
 
     if (velocity > 48) then Inc(k); // Mid Velocity Sample

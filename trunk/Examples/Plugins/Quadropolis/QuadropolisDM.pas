@@ -102,11 +102,11 @@ begin
   end;
 
  {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(FLength)));
+ FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(FLength)));
  {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(round(Log2(FLength)));
+ FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(FLength)));
  {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(FLength)));
+ FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(FLength)));
  {$ENDIF}{$ENDIF}
 
  FFft.AutoScaleType := astDivideInvByN;

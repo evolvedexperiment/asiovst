@@ -1,4 +1,4 @@
-﻿unit LightweightMultibandCompressorDM;
+unit LightweightMultibandCompressorDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -301,7 +301,7 @@ end;
 procedure TLightweightMultibandCompressorDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
@@ -361,7 +361,7 @@ end;
 
 procedure TLightweightMultibandCompressorDataModule.ChooseProcess;
 begin
- case round(Parameter[3]) of
+ case Round(Parameter[3]) of
   0 : OnProcess := VSTModuleProcessMono;
   1 : OnProcess := VSTModuleProcessMonoSoftClip;
  end;

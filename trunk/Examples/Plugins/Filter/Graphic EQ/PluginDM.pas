@@ -104,7 +104,7 @@ procedure TPluginDataModule.VSTModuleParameterChange(Sender: TObject;
 var
   PosVal : Integer;
 begin
- if assigned(FEQs[Index div 11, Index mod 11])
+ if Assigned(FEQs[Index div 11, Index mod 11])
   then FEQs[Index div 11, Index mod 11].Gain := -Value;
 
  // update GUI

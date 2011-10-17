@@ -100,6 +100,7 @@ procedure TBugpassLiteDataModule.VSTModuleOpen(Sender: TObject);
 begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
+ FFft.DataOrder := doComplex;
 
  ReallocateAlignedMemory(Pointer(FFilterFreq), (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  ReallocateAlignedMemory(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
@@ -107,6 +108,7 @@ begin
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
+ FFft.DataOrder := doPackedComplex;
 
  ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
@@ -114,6 +116,7 @@ begin
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
  FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
+ FFft.DataOrder := doPackedComplex;
 
  ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
@@ -127,7 +130,6 @@ begin
  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 
  FFft.AutoScaleType := astDivideInvByN;
- FFft.DataOrder := doPackedComplex;
 
  // set editor form class
  EditorFormClass := TFmBugpassLite;

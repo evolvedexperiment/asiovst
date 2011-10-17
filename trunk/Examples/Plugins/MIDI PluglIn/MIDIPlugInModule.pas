@@ -61,11 +61,11 @@ procedure TMIDIModule.ParamTransposeChange(
 begin
   with (EditorForm As TVSTGUI) do
    begin
-    LbTranspose.Caption := 'transpose: ' + IntToStr(round(Value));
+    LbTranspose.Caption := 'transpose: ' + IntToStr(Round(Value));
 
    // Update Scrollbar, if necessary
-    if par0.Position <> round(Value)
-     then par0.Position := round(Value);
+    if par0.Position <> Round(Value)
+     then par0.Position := Round(Value);
    end;
 end;
 

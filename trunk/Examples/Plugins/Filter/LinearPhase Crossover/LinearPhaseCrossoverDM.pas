@@ -329,7 +329,7 @@ procedure TLinearPhaseCrossoverModule.ParameterOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Value := 10;
-// if assigned(FLinearPhaseCrossover)
+// if Assigned(FLinearPhaseCrossover)
 //  then FLinearPhaseCrossover.Order := Round(Value);
 end;
 

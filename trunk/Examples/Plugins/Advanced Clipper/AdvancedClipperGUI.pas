@@ -298,7 +298,7 @@ begin
    Value := ParameterByName['Stage 1: Filter Order'];
    if DialFilterOrder1.Value <> Value
     then DialFilterOrder1.Value := Value;
-   LbDisplay.Caption := 'Filter Order: ' + IntToStr(round(Value));
+   LbDisplay.Caption := 'Filter Order: ' + IntToStr(Round(Value));
   end;
 end;
 
@@ -311,7 +311,7 @@ begin
    Value := ParameterByName['Stage 2: Filter Order'];
    if DialFilterOrder2.Value <> Value
     then DialFilterOrder2.Value := Value;
-   LbDisplay.Caption := 'Filter Order: ' + IntToStr(round(Value));
+   LbDisplay.Caption := 'Filter Order: ' + IntToStr(Round(Value));
   end;
 end;
 
@@ -324,7 +324,7 @@ begin
    Value := ParameterByName['Stage 1: Oversampling Factor'];
    if DialOSFactor1.Value <> Value
     then DialOSFactor1.Value := Value;
-   LbDisplay.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
+   LbDisplay.Caption := 'Oversampling: ' + IntToStr(Round(Value)) + 'x';
   end;
 end;
 
@@ -337,7 +337,7 @@ begin
    Value := ParameterByName['Stage 2: Oversampling Factor'];
    if DialOSFactor2.Value <> Value
     then DialOSFactor2.Value := Value;
-   LbDisplay.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
+   LbDisplay.Caption := 'Oversampling: ' + IntToStr(Round(Value)) + 'x';
   end;
 end;
 

@@ -106,11 +106,11 @@ end;
 
 procedure TTalkBoxDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FBuf[0]) then Dispose(FBuf[0]);
- if assigned(FBuf[1]) then Dispose(FBuf[1]);
- if assigned(FWindow) then Dispose(FWindow);
- if assigned(FCar[0]) then Dispose(FCar[0]);
- if assigned(FCar[1]) then Dispose(FCar[1]);
+ if Assigned(FBuf[0]) then Dispose(FBuf[0]);
+ if Assigned(FBuf[1]) then Dispose(FBuf[1]);
+ if Assigned(FWindow) then Dispose(FWindow);
+ if Assigned(FCar[0]) then Dispose(FCar[0]);
+ if Assigned(FCar[1]) then Dispose(FCar[1]);
 end;
 
 procedure TTalkBoxDataModule.ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -328,7 +328,7 @@ begin
  if (n > CMaxBufferSize)
   then n := CMaxBufferSize;
 
- //FO = round(0.0005 * fs);
+ //FO = Round(0.0005 * fs);
  FO := Round((0.0001 + 0.0004 * Parameter[3]) * fs);
 
  if (n <> FWinSize) then //recalc hanning window
