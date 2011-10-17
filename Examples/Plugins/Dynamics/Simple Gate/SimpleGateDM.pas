@@ -85,8 +85,8 @@ end;
 procedure TSimpleGateDataModule.SGDMThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleGates[0]) then FSimpleGates[0].Threshold_dB := Value;
- if assigned(FSimpleGates[1]) then FSimpleGates[1].Threshold_dB := Value;
+ if Assigned(FSimpleGates[0]) then FSimpleGates[0].Threshold_dB := Value;
+ if Assigned(FSimpleGates[1]) then FSimpleGates[1].Threshold_dB := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateScrollBar;
@@ -107,8 +107,8 @@ end;
 procedure TSimpleGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FSimpleGates[0]) then FSimpleGates[0].SampleRate := SampleRate;
- if assigned(FSimpleGates[1]) then FSimpleGates[1].SampleRate := SampleRate;
+ if Assigned(FSimpleGates[0]) then FSimpleGates[0].SampleRate := SampleRate;
+ if Assigned(FSimpleGates[1]) then FSimpleGates[1].SampleRate := SampleRate;
 end;
 
 end.

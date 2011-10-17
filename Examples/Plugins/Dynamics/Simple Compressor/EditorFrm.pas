@@ -141,7 +141,7 @@ var
 begin
  with TSimpleCompressorDataModule(Owner) do
   begin
-   Thres := round(Parameter[0]);
+   Thres := Round(Parameter[0]);
    if SBThreshold.Position <> Thres
     then SBThreshold.Position := Thres;
    LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';

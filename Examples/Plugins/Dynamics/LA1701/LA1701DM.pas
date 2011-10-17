@@ -1,4 +1,4 @@
-﻿unit LA1701DM;
+unit LA1701DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -289,7 +289,7 @@ end;
 
 procedure TLA1701DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- assert(Round(Value) >= 0);
+ Assert(Round(Value) >= 0);
  if Assigned(FHighpass)
   then FHighpass.Order := Round(Value);
 end;

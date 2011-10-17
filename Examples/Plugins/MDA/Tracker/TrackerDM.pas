@@ -71,7 +71,7 @@ uses
 procedure TTrackerDataModule.ParameterModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0: PreDefined := 'SINE';
   1: PreDefined := 'SQUARE';
   2: PreDefined := 'SAW';
@@ -115,7 +115,7 @@ procedure TTrackerDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
  //calcs here
- FMode := round(Parameter[0] * 4.9);
+ FMode := Round(Parameter[0] * 4.9);
 (*
  fo := FilterFreq(50);
  fi := sqr(1 - fo);
@@ -123,8 +123,8 @@ begin
 *)
  FThreshold := Power(10, 3 * Parameter[6] - 3.8);
  FWet := Power(10, 2 * Parameter[7] - 1);
- FMax := round(SampleRate / Power(10, 1.6 + 2.2 * Parameter[5]));
- FTrans := Power(1.0594631, round(72 * Parameter[4] - 36));
+ FMax := Round(SampleRate / Power(10, 1.6 + 2.2 * Parameter[5]));
+ FTrans := Power(1.0594631, Round(72 * Parameter[4] - 36));
 
  if (FMode < 4) then
   begin
@@ -290,13 +290,13 @@ end.
 void mdaTracker::getParameterDisplay(VstInt32 index, char *text)
 begin
  case index of
-  1: long2string(round(100 * Parameter[1]), text); break;
-  2: long2string(round(100 * Parameter[2]), text); break;
-  3: long2string(round(100 * Parameter[3]), text); break;
-  4: long2string(round( 72 * Parameter[4] - 36), text); break;
-  5: long2string(round(SampleRate / FMax), text); break;
-  6: long2string(round( 60 * Parameter[6] - 60), text); break;
-  7: long2string(round( 40 * Parameter[7] - 20), text); break;
+  1: long2string(Round(100 * Parameter[1]), text); break;
+  2: long2string(Round(100 * Parameter[2]), text); break;
+  3: long2string(Round(100 * Parameter[3]), text); break;
+  4: long2string(Round( 72 * Parameter[4] - 36), text); break;
+  5: long2string(Round(SampleRate / FMax), text); break;
+  6: long2string(Round( 60 * Parameter[6] - 60), text); break;
+  7: long2string(Round( 40 * Parameter[7] - 20), text); break;
  end;
 end;
 *)

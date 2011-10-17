@@ -243,7 +243,7 @@ begin
     begin
      s[1] := 0.97 * s[0] + 0.03 * random;
      s[0] := s[1];
-     b    := round(-$2A * s[1]);
+     b    := Round(-$2A * s[1]);
      Line[x].B := $2B + b;
      Line[x].G := $31 + b;
      Line[x].R := $33 + b;
@@ -257,7 +257,7 @@ begin
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
-       b    := round($2A * (s[1] + h));
+       b    := Round($2A * (s[1] + h));
        Line[x].B := $2B + b;
        Line[x].G := $31 + b;
        Line[x].R := $33 + b;
@@ -287,9 +287,9 @@ procedure TFmSplitter.UpdateMode;
 begin
  with TSplitTemplateDataModule(Owner) do
   begin
-   SBMode.ItemIndex := round(ParameterByName['Mode']);
+   SBMode.ItemIndex := Round(ParameterByName['Mode']);
 //   GuiLEDSplit.Brightness_Percent := 20 + 60 * (1 - f_Limit(0.5 * ParameterByName['Mode'], 0, 1));
-   DialSplitFrequency.Visible := round(ParameterByName['Mode']) < 3;
+   DialSplitFrequency.Visible := Round(ParameterByName['Mode']) < 3;
    LbSplitFrequency.Visible   := DialSplitFrequency.Visible;
    DialSplitOrder.Visible     := DialSplitFrequency.Visible;
    LbSplitOrder.Visible       := DialSplitFrequency.Visible;
@@ -360,8 +360,8 @@ begin
    if DialSplitOrder.Position <> Order
     then DialSplitOrder.Position := Order;
    if SplitType = stLiRi
-    then LbSplitOrder.Caption := ConvertOrderToString(2 * round(Order))
-    else LbSplitOrder.Caption := ConvertOrderToString(round(Order));
+    then LbSplitOrder.Caption := ConvertOrderToString(2 * Round(Order))
+    else LbSplitOrder.Caption := ConvertOrderToString(Round(Order));
   end;
 end;
 
@@ -371,9 +371,9 @@ begin
   begin
    GuiLEDOversampling.Brightness_Percent := 20 + 60 * (Limit(ParameterByName['Oversampling'], 0, 1));
 
-   DialOversampling.Visible     := round(ParameterByName['Oversampling']) = 1;
+   DialOversampling.Visible     := Round(ParameterByName['Oversampling']) = 1;
    LbOversamplingFactor.Visible := DialOversampling.Visible;
-   LbOversampling.Width         := 97 + 5 * round(ParameterByName['Oversampling']);
+   LbOversampling.Width         := 97 + 5 * Round(ParameterByName['Oversampling']);
   end;
 end;
 
@@ -386,7 +386,7 @@ begin
    OSFactor := ParameterByName['OS Factor'];
    if DialOversampling.Position <> OSFactor
     then DialOversampling.Position := OSFactor;
-   LbOversamplingFactor.Caption := IntToStr(round(OSFactor)) + 'x';
+   LbOversamplingFactor.Caption := IntToStr(Round(OSFactor)) + 'x';
   end;
 end;
 

@@ -353,30 +353,33 @@ type
 
   // defined events ////////////////////////////////////////////////////////////
   PVstMidiEvent = ^TVstMidiEvent;
-  TVstMidiEvent = record                    // to be casted from a VstEvent
-    EventType       : TVSTEventType;        // kVstMidiType
-    ByteSize        : LongInt;              // 24
-    DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
-    Flags           : TVstMidiEventFlags;   // see above
-    NoteLength      : LongInt;              // (in sample frames) of entire note, if available, else 0
-    NoteOffset      : LongInt;              // offset into note from note start if available, else 0
+  TVstMidiEvent = record                     // to be casted from a VstEvent
+    EventType       : TVSTEventType;         // kVstMidiType
+    ByteSize        : LongInt;               // 24
+    DeltaFrames     : LongInt;               // sample frames related to the current block start sample position
+    Flags           : TVstMidiEventFlags;    // see above
+    NoteLength      : LongInt;               // (in sample frames) of entire note, if available, else 0
+    NoteOffset      : LongInt;               // offset into note from note start if available, else 0
     MidiData        : array [0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
-    Detune          : Byte;                 // -64 to +63 cents; for scales other than 'well-tempered' ('microtuning')
+    Detune          : Byte;                  // -64 to +63 cents; for scales other than 'well-tempered' ('microtuning')
     NoteOffVelocity : Byte;
-    Reserved1       : Byte;                 // zero
-    Reserved2       : Byte;                 // zero
+    Reserved1       : Byte;                  // zero
+    Reserved2       : Byte;                  // zero
+    {$IFDEF CPU64}
+    Reserved3       : array [0..15] of Byte; // reserved;
+    {$ENDIF}
   end;
 
   PVstMidiSysExEvent = ^TVstMidiSysExEvent;
-  TVstMidiSysExEvent = record               // to be casted from a VstEvent
-    EventType       : TVSTEventType;        // kVstSysExType
-    ByteSize        : LongInt;              // 24
-    DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
-    Flags           : LongInt;              // not defined yet
-    DumpBytes       : LongInt;              // byte size of sysexDump
-    Reserved1       : TVstIntPtr;           // zero (Reserved for future use)
-    SysExDump       : PAnsiChar;            // sysex dump
-    Reserved2       : TVstIntPtr;           // zero (Reserved for future use)
+  TVstMidiSysExEvent = record                // to be casted from a VstEvent
+    EventType       : TVSTEventType;         // kVstSysExType
+    ByteSize        : LongInt;               // 24
+    DeltaFrames     : LongInt;               // sample frames related to the current block start sample position
+    Flags           : TVstMidiEventFlags;    // not defined yet
+    DumpBytes       : LongInt;               // byte size of sysexDump
+    Reserved1       : TVstIntPtr;            // zero (Reserved for future use)
+    SysExDump       : PAnsiChar;             // sysex dump
+    Reserved2       : TVstIntPtr;            // zero (Reserved for future use)
   end;
 
 // VstTimeInfo ///////////////////////////////////////////////////////////////

@@ -113,7 +113,7 @@ begin
  for ChannelIndex := 0 to Length(FFilter) - 1 do
   begin
    if Assigned(FFilter[ChannelIndex])
-    then FFilter[ChannelIndex].Order := round(Value);
+    then FFilter[ChannelIndex].Order := Round(Value);
   end;
 
  // update GUI

@@ -117,7 +117,7 @@ var
 begin
  for ChannelIndex := 0 to Length(FDitherNoiseshaper) - 1 do
   if Assigned(FDitherNoiseshaper[ChannelIndex])
-   then FDitherNoiseshaper[ChannelIndex].DitherType := TDitherType(round(Value));
+   then FDitherNoiseshaper[ChannelIndex].DitherType := TDitherType(Round(Value));
 
  // eventually update editor
  if EditorForm is TFmDitherNoiseshaper
@@ -189,7 +189,7 @@ procedure TDitherNoiseshaperModule.ParameterOnOffDisplay(
 const
   COnOff :array [0..1] of AnsiString = ('Off', 'On');
 begin
- PreDefined := COnOff[round(Parameter[Index])];
+ PreDefined := COnOff[Round(Parameter[Index])];
 end;
 
 procedure TDitherNoiseshaperModule.ParameterDitherTypeDisplay(Sender: TObject;

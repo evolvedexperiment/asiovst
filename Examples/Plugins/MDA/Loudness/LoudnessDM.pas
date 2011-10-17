@@ -187,7 +187,7 @@ begin
   then FOGain := -FOGain;
 
  f := 0.1 * FIGain + 6;  //coefficient index + fractional part
- i := round(f);
+ i := Round(f);
  f := f - i;
 
  tmp := cLoudness[i][0];  FCoeffs[0] := tmp + f * (cLoudness[i + 1][0] - tmp);

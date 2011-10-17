@@ -131,8 +131,8 @@ end;
 
 procedure TThruZeroDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FBuffer[0]) then Dispose(FBuffer[0]);
- if assigned(FBuffer[1]) then Dispose(FBuffer[1]);
+ if Assigned(FBuffer[0]) then Dispose(FBuffer[0]);
+ if Assigned(FBuffer[1]) then Dispose(FBuffer[1]);
 end;
 
 procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
@@ -172,7 +172,7 @@ begin
     // ds := 0.995 * (ds - de) + de;           // smoothed depth change ...try inc not mult
     dpt  := dm + de * (1 - sqr(ph));           // delay mod shape
     tmpf := dpt;
-    tmp  := round(tmpf);
+    tmp  := Round(tmpf);
     tmpf := tmpf - tmp;
     tmp  := (tmp + bp) and $7FF;
     tmpi := (tmp + 1) and $7FF;
@@ -280,8 +280,8 @@ end;
 
 procedure TThruZeroDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- if assigned(FBuffer[0]) then FillChar(FBuffer[0, 0], cBUFMAX * SizeOf(Single), 0);
- if assigned(FBuffer[1]) then FillChar(FBuffer[1, 0], cBUFMAX * SizeOf(Single), 0);
+ if Assigned(FBuffer[0]) then FillChar(FBuffer[0, 0], cBUFMAX * SizeOf(Single), 0);
+ if Assigned(FBuffer[1]) then FillChar(FBuffer[1, 0], cBUFMAX * SizeOf(Single), 0);
 end;
 
 end.

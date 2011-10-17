@@ -136,12 +136,12 @@ begin
    FMode := 0;
   end;
 
- tn := round(exp(18 * FFreq));
+ tn := Round(exp(18 * FFreq));
 
  FTCount := 1;
  FClip   := Power(10, (-1.5 + 1.5 * Parameter[0]));
 
- g1      := Power(2, 2 + round(Parameter[1] * 12));
+ g1      := Power(2, 2 + Round(Parameter[1] * 12));
  FGain[1] := 1 / (2 * g1);
  if (Parameter[2] > 0.5)
   then FGain[0] := -g1 / tn

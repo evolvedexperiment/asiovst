@@ -71,8 +71,8 @@ procedure TFmStkReverb.UpdateT60;
 begin
  with TStkReverbModule(Owner) do
   begin
-   if SBT60.Position <> round(Parameter[0])
-    then SBT60.Position := round(Parameter[0]);
+   if SBT60.Position <> Round(Parameter[0])
+    then SBT60.Position := Round(Parameter[0]);
    LbT60Value.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + ' ms';  
   end;
 end;

@@ -318,7 +318,7 @@ end;
 
 procedure TPianoDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FCombFilter) then Dispose(FCombFilter);
+ if Assigned(FCombFilter) then Dispose(FCombFilter);
 end;
 
 function TPianoDataModule.VSTModuleOutputProperties(Sender: TObject;
@@ -466,14 +466,14 @@ begin
 
    s := FSize;
    if (Velocity > 40)
-    then s := s + round(FSizeVelocity * (Velocity - 40));  
+    then s := s + Round(FSizeVelocity * (Velocity - 40));  
 
    k := 0;
    while (Note > (FKeyGroup[k].high + s)) do Inc(k);  // Find Keygroup
 
    l := l + (Note - FKeyGroup[k].root);               // Pitch
    l := 22050.0 * FInvSampleRate * exp(0.05776226505 * l);
-   FVoices[vl].delta := round(65536.0 * l);
+   FVoices[vl].delta := Round(65536.0 * l);
    FVoices[vl].frac  := 0;
    FVoices[vl].pos   := FKeyGroup[k].pos;
    FVoices[vl].stop  := FKeyGroup[k].stop;
@@ -581,7 +581,7 @@ end;
 
 procedure TPianoDataModule.Update;  //parameter change
 begin
- FSize         := round(12 * Parameter[2] - 6);
+ FSize         := Round(12 * Parameter[2] - 6);
  FSizeVelocity := 0.12 * Parameter[3];
  FMuffVelocity := sqr(Parameter[5]) * 5;
 
@@ -598,7 +598,7 @@ begin
  FWidth   := 0.04 * Parameter[7];
  if (FWidth > 0.03) then FWidth := 0.03;
 
- FPoly    := 8 + round(24.9 * Parameter[8]);
+ FPoly    := 8 + Round(24.9 * Parameter[8]);
 end;
 
 (*

@@ -348,7 +348,7 @@ begin
       if ShMixBg.Height - Y <= 0
        then Parameter[5] := 0
        else Parameter[5] := 100 * (1 - Y / ShMixBg.Height);
-    LbMix.Caption := IntToStr(round(Parameter[5]));
+    LbMix.Caption := IntToStr(Round(Parameter[5]));
    end;
 end;
 
@@ -363,7 +363,7 @@ begin
       if ShVolBg.Height - Y <= 0
        then Parameter[6] := 6
        else Parameter[6] := 6 - 30 * Y  / ShVolBg.Height;
-    LbVol.Caption := IntToStr(round(Parameter[6]));
+    LbVol.Caption := IntToStr(Round(Parameter[6]));
    end;
 end;
 

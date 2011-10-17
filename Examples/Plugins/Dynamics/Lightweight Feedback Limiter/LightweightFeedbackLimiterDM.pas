@@ -208,7 +208,7 @@ end;
 procedure TLightweightFeedbackLimiterDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
@@ -234,12 +234,12 @@ end;
 
 procedure TLightweightFeedbackLimiterDataModule.ChooseProcess;
 begin
- case round(Parameter[7]) of
-  0 : case round(Parameter[6]) of
+ case Round(Parameter[7]) of
+  0 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMono;
        1 : OnProcess := VSTModuleProcessStereo;
       end;
-  1 : case round(Parameter[6]) of
+  1 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMonoSoftClip;
        1 : OnProcess := VSTModuleProcessStereoSoftClip;
       end;
@@ -250,7 +250,7 @@ end;
 procedure TLightweightFeedbackLimiterDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLimiter[0].AutoMakeUp := Boolean(round(Value));
+ FLightweightFeedbackLimiter[0].AutoMakeUp := Boolean(Round(Value));
  FLightweightFeedbackLimiter[1].AutoMakeUp := FLightweightFeedbackLimiter[0].AutoMakeUp;
  
  // update GUI

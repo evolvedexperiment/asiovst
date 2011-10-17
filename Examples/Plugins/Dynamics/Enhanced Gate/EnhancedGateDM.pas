@@ -128,7 +128,7 @@ begin
    OnProcess := VSTModuleProcessBypass;
    OnProcess32Replacing := OnProcess;
   end;
- if assigned(EditorForm) then
+ if Assigned(EditorForm) then
   with TEditorForm(EditorForm) do
    if CBOnOff.Brightness_Percent > 90 <> Boolean(Round(Value)) then
     if Boolean(Round(Value))
@@ -148,7 +148,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Threshold_dB := Value;
 
  // update GUI if necessary
@@ -162,7 +162,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Range_dB := Value;
 
  // update GUI if necessary
@@ -175,7 +175,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Ratio := Value;
 
  // update GUI if necessary
@@ -204,7 +204,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].SideChainLowCut := Value;
 
  // update GUI if necessary
@@ -217,7 +217,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].SideChainHighCut := 1000 * Value;
 
  // update GUI if necessary
@@ -230,7 +230,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Attack := Value;
 
  // update GUI if necessary
@@ -243,7 +243,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Hold := Value;
 
  // update GUI if necessary
@@ -256,7 +256,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Knee_dB := Value;
 
  // update GUI if necessary
@@ -269,7 +269,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
+  if Assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Release := Value;
 
  // update GUI if necessary

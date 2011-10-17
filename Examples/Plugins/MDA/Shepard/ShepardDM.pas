@@ -70,7 +70,7 @@ uses
 
 procedure TShepardDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[0]) of
+ case Round(Parameter[0]) of
   0: PreDefined := 'TONES';
   1: PreDefined := 'RING MOD';
   2: PreDefined := 'TONES + IN';
@@ -89,7 +89,7 @@ end;
 
 procedure TShepardDataModule.ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMode := round(Value);
+ FMode := Round(Value);
 end;
 
 procedure TShepardDataModule.VSTModuleOpen(Sender: TObject);
@@ -169,7 +169,7 @@ begin
    if (p > x)
     then p := p - x;
 
-   i1 := round(p); //interpolate position
+   i1 := Round(p); //interpolate position
    i2 := i1 + 1;
    di := i2 - p;
 

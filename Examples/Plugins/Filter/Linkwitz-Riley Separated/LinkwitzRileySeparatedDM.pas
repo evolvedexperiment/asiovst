@@ -188,7 +188,7 @@ var
 begin
  for Channel := 0 to numInputs - 1 do
   if Assigned(FLinkwitzRiley[Channel])
-   then FLinkwitzRiley[Channel].Order := round(Value);
+   then FLinkwitzRiley[Channel].Order := Round(Value);
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley

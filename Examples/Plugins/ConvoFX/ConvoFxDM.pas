@@ -189,7 +189,7 @@ var
   HFData  : array [0..2047] of THalfFloat;
   Scale   : Single;
 begin
- i := Limit(Integer(round(Value)), 1, 40);
+ i := Limit(Integer(Round(Value)), 1, 40);
  if FIR <> i then
   begin
    FIR := i;

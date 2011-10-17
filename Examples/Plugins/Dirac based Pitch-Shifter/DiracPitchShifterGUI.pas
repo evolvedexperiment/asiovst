@@ -129,9 +129,9 @@ begin
   begin
    if DialSemitones.Position <> Parameter[0]
     then DialSemitones.Position := Parameter[0];
-   SemiTones := round(Parameter[0]);
+   SemiTones := Round(Parameter[0]);
    LbSemitoneValue.Caption := IntToStr(SemiTones) + ' : ' +
-     IntToStr(round(100 * (Parameter[0] - SemiTones)));
+     IntToStr(Round(100 * (Parameter[0] - SemiTones)));
   end;
 end;
 

@@ -244,7 +244,7 @@ begin
    Order := ParameterByName['Order'];
    if DialOrder.Value <> Order
     then DialOrder.Value := Order;
-   LbOrderValue.Caption := IntToStr(round(Order));
+   LbOrderValue.Caption := IntToStr(Round(Order));
   end;
 end;
 

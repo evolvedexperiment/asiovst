@@ -99,7 +99,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to NumInputs - 1 do
-   if assigned(FSoundTouch[Channel])
+   if Assigned(FSoundTouch[Channel])
     then FSoundTouch[Channel].Pitch := Power(2, Value / 12);
  finally
   FCriticalSection.Leave;
@@ -132,7 +132,7 @@ begin
  try
   if Abs(SampleRate) > 0 then
    for Channel := 0 to NumInputs - 1 do
-    if assigned(FSoundTouch[Channel])
+    if Assigned(FSoundTouch[Channel])
      then FSoundTouch[Channel].SampleRate := Abs(SampleRate);
  finally
   FCriticalSection.Leave;

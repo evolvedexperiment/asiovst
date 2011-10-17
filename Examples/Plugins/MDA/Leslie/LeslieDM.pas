@@ -197,7 +197,7 @@ begin
   then FLeslieSpeed := lsFast
   else FLeslieSpeed := lsSlow;
 
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.LeslieSpeed := FLeslieSpeed;
 
  {$IFDEF OriginalCode}
@@ -228,7 +228,7 @@ end;
 procedure TLeslieDataModule.ParameterLowWidthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.LowWidth := Value;
 
  {$IFDEF OriginalCode}
@@ -242,7 +242,7 @@ end;
 
 procedure TLeslieDataModule.ParameterLowThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.LowThrob := Value;
 
  {$IFDEF OriginalCode}
@@ -256,7 +256,7 @@ end;
 
 procedure TLeslieDataModule.ParameterHighWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.HighWidth := Value;
 
  {$IFDEF OriginalCode}
@@ -270,7 +270,7 @@ end;
 
 procedure TLeslieDataModule.ParameterHighDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.HighDepth := Value;
 
  {$IFDEF OriginalCode}
@@ -284,7 +284,7 @@ end;
 
 procedure TLeslieDataModule.ParameterHighThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.HighThrob := Value;
 
  {$IFDEF OriginalCode}
@@ -298,7 +298,7 @@ end;
 
 procedure TLeslieDataModule.ParameterXOverChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.Crossover := Value;
 
  {$IFDEF OriginalCode}
@@ -313,7 +313,7 @@ end;
 procedure TLeslieDataModule.ParameterOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.OutputGain := Value;
 
  {$IFDEF OriginalCode}
@@ -329,7 +329,7 @@ end;
 procedure TLeslieDataModule.ParameterSpeedChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.Speed := Value;
 
  {$IFDEF OriginalCode}
@@ -460,7 +460,7 @@ begin
 
    // delay output pos
    hint := hps + hd * (1 + chp);
-   hdd  := round(hint);
+   hdd  := Round(hint);
 
    // linear intrpolation
    hint := hint - hdd;
@@ -513,7 +513,7 @@ end;
 procedure TLeslieDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FLeslie)
+ if Assigned(FLeslie)
   then FLeslie.SampleRate := SampleRate;
 
  {$IFDEF OriginalCode}

@@ -106,21 +106,21 @@ end;
 procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
 begin
  {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
@@ -213,7 +213,7 @@ var
   n       : Double;
   CutOff  : Double;
 begin
- if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
+ if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
    while FSemaphore > 0 do;
    Inc(FSemaphore);
@@ -232,7 +232,7 @@ begin
         FFilterKernel^[i] := -sin(2.0 * Cutoff * n) / n;
        end;
 
-    if assigned(FWindowFunction)
+    if Assigned(FWindowFunction)
      then FWindowFunction.ProcessBlock32(FFilterKernel, h);
     FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
 

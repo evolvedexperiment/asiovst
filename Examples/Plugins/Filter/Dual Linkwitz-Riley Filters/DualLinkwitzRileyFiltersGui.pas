@@ -253,7 +253,7 @@ var
   Base10  : Double;
 begin
  Base10 := Log10(Value);
- Result := RoundTo(Value, round(Base10 - 1.5));
+ Result := RoundTo(Value, Round(Base10 - 1.5));
 end;
 
 procedure TFmLinkwitzRiley.DialLowpassFrequencyChange(Sender: TObject);
@@ -425,7 +425,7 @@ var
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   CurrentBit := round(Parameter[4]);
+   CurrentBit := Round(Parameter[4]);
    Parameter[4] := (CurrentBit and $2) or ((not CurrentBit) and $1);
   end;
 
@@ -439,7 +439,7 @@ var
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   CurrentBit := round(Parameter[4]);
+   CurrentBit := Round(Parameter[4]);
    Parameter[4] := (CurrentBit and $1) or ((not CurrentBit) and $2);
   end;
 
@@ -569,7 +569,7 @@ var
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   CurrentBit := round(Parameter[4]);
+   CurrentBit := Round(Parameter[4]);
    if (CurrentBit and $1) > 0
     then LedHighCut.Brightness_Percent := 90
     else LedHighCut.Brightness_Percent := 10;

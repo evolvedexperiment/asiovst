@@ -198,7 +198,7 @@ end;
 
 procedure TComboDataModule.ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Value) of
+ case Round(Value) of
   0: begin                         // DI
       FLPF      := 0;
       FMix[0]   := 0;
@@ -221,8 +221,8 @@ begin
       FLPF      := FilterFreq(1685);
       FMix[0]   := -1.7;
       FMix[1]   := 0.82;
-      FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-      FDelay[1] := round(SampleRate * 2.3174971031286210892236384704519E-4);
+      FDelay[0] := Round(SampleRate * 1.5276504735716468072105102352582E-4);
+      FDelay[1] := Round(SampleRate * 2.3174971031286210892236384704519E-4);
       FHPF      := FilterFreq(25);
      end;
 
@@ -230,8 +230,8 @@ begin
       FLPF      := FilterFreq(1385);
       FMix[0]   := -0.53;
       FMix[1]   := 0.21;
-      FDelay[0] := round(SampleRate * 1.3614703880190605854322668481961E-4);
-      FDelay[1] := round(SampleRate * 0.0008382229673093042749371332774518);
+      FDelay[0] := Round(SampleRate * 1.3614703880190605854322668481961E-4);
+      FDelay[1] := Round(SampleRate * 0.0008382229673093042749371332774518);
       FHPF      := FilterFreq(25);
      end;
 
@@ -239,8 +239,8 @@ begin
       FLPF      := FilterFreq(1685);
       FMix[0]   := -0.85;
       FMix[1]   := 0.41;
-      FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-      FDelay[1] := round(SampleRate * 3.0165912518853695324283559577677E-4);
+      FDelay[0] := Round(SampleRate * 1.5276504735716468072105102352582E-4);
+      FDelay[1] := Round(SampleRate * 3.0165912518853695324283559577677E-4);
       FHPF      := FilterFreq(25);
      end;
 
@@ -248,8 +248,8 @@ begin
       FLPF      := FilterFreq(2795);
       FMix[0]   := -0.29;
       FMix[1]   := 0.38;
-      FDelay[0] := round(SampleRate * 0.0010183299389002036659877800407332);
-      FDelay[1] := round(SampleRate * 4.1631973355537052456286427976686E-4);
+      FDelay[0] := Round(SampleRate * 0.0010183299389002036659877800407332);
+      FDelay[1] := Round(SampleRate * 4.1631973355537052456286427976686E-4);
       FHPF      := FilterFreq(459);
      end;
 
@@ -257,8 +257,8 @@ begin
       FLPF      := FilterFreq(1744);
       FMix[0]   := -0.96;
       FMix[1]   := 1.6;
-      FDelay[0] := round(SampleRate * 0.0028089887640449438202247191011236);
-      FDelay[1] := round(SampleRate * 7.9176563737133808392715756136184E-4);
+      FDelay[0] := Round(SampleRate * 0.0028089887640449438202247191011236);
+      FDelay[1] := Round(SampleRate * 7.9176563737133808392715756136184E-4);
       FHPF      := FilterFreq(382);
      end;
  end;
@@ -314,7 +314,7 @@ end;
 
 procedure TComboDataModule.TrimChanged;
 begin
- case round(Parameter[0]) of
+ case Round(Parameter[0]) of
   0: FTrim := 0.50;   // DI
   1: FTrim := 0.53;   // speaker sim
   2: FTrim := 1.10;   // radio
@@ -333,7 +333,7 @@ end;
 
 procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'D.I.';
   1 : PreDefined := 'Spkr Sim';
   2 : PreDefined := 'Radio';

@@ -92,7 +92,7 @@ end;
 
 procedure TDelayDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FBuffer)
+ if Assigned(FBuffer)
   then Dispose(FBuffer);
 end;
 
@@ -102,10 +102,10 @@ var
   tmp : Single;
 begin
  //calcs here
- ldel := round(FSize * sqr(Parameter[0]));
+ ldel := Round(FSize * sqr(Parameter[0]));
  if (ldel < 4) then ldel := 4;
 
- case round(Parameter[1] * 17.9) of //fixed left/right ratios
+ case Round(Parameter[1] * 17.9) of //fixed left/right ratios
    17: tmp := 0.5;
    16: tmp := 0.6667;
    15: tmp := 0.75;
@@ -118,7 +118,7 @@ begin
   else tmp := 4 * Parameter[1]; //variable ratio
  end;
 
- rdel := round(FSize * sqr(Parameter[0]) * tmp);
+ rdel := Round(FSize * sqr(Parameter[0]) * tmp);
  if (rdel > FSize) then rdel := FSize;
  if (rdel < 4) then rdel := 4;
 

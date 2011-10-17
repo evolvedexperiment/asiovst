@@ -33,6 +33,7 @@ unit EditorForm;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{$DEFINE LoadFromMemory}
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
@@ -108,11 +109,25 @@ var
   s, p                : AnsiString;
   ContainedVSTPlugins : TStringList;
   RS                  : TResourceStream;
+  {$IFDEF LoadFromMemory}
+  FileStream          : TFileStream;
+  {$ENDIF}
 begin
  with VstHost[0] do
   begin
-   if ParamCount > 0
-    then DLLFileName := ParamStr(1)
+   if ParamCount > 0 then
+    begin
+     {$IFDEF LoadFromMemory}
+     FileStream := TFileStream.Create(ParamStr(1), fmOpenRead);
+     try
+       LoadFromStream(FileStream);
+     finally
+       FreeAndNil(FileStream);
+     end;
+     {$ELSE}
+     LoadFromFile(ParamStr(1));
+     {$ENDIF}
+    end
     else
      begin
       ContainedVSTPlugins := TStringList.Create;

@@ -494,9 +494,9 @@ begin
 
  FCriticalSection.Enter;
  try
-  if not (OldFilter is CFilterClasses[round(Value)]) then
+  if not (OldFilter is CFilterClasses[Round(Value)]) then
    begin
-    FFilter[Band] := CFilterClasses[round(Value)].Create;
+    FFilter[Band] := CFilterClasses[Round(Value)].Create;
     if OldFilter <> nil then
      begin
       FFilter[Band].Assign(OldFilter);

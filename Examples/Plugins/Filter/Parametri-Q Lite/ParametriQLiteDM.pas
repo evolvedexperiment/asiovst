@@ -215,7 +215,7 @@ var
 begin
  Band := (Index - 1) div 4;
  if Assigned(FFilters[0, Band]) then
-  case round(Value) of
+  case Round(Value) of
     0 : FilterClass[Band] := TBasicGainFilter;
     1 : FilterClass[Band] := TBasicPeakFilter;
     2 : FilterClass[Band] := TBasicLowShelfFilter;
@@ -239,7 +239,7 @@ end;
 procedure TParametriQLiteDataModule.ParameterTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
    0 : PreDefined := 'Bypass';
    1 : PreDefined := 'Peak';
    2 : PreDefined := 'LoShlf';

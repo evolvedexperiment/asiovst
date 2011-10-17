@@ -196,7 +196,7 @@ begin
   begin
    if DialStages.Value <> Parameter[1]
     then DialStages.Value := Parameter[1];
-   LbStagesValue.Caption := IntToStr(round(Parameter[1]));
+   LbStagesValue.Caption := IntToStr(Round(Parameter[1]));
   end;
 end;
 

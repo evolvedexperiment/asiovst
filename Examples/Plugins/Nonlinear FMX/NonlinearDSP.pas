@@ -39,7 +39,6 @@ uses
   DAV_VSTCustomModule, DAV_VSTParameters;
 
 type
-  { TVSTOpAmp }
   TVSTOpAmp = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
@@ -52,6 +51,8 @@ type
   end;
 
 implementation
+
+{%CLASSGROUP 'System.Classes.TPersistent'}
 
 {$R *.fmx}
 

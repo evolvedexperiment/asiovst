@@ -140,10 +140,10 @@ end;
 
 procedure TmdaAmbienceDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FBuffers[0]) then Dispose(FBuffers[0]);
- if assigned(FBuffers[1]) then Dispose(FBuffers[1]);
- if assigned(FBuffers[2]) then Dispose(FBuffers[2]);
- if assigned(FBuffers[3]) then Dispose(FBuffers[3]);
+ if Assigned(FBuffers[0]) then Dispose(FBuffers[0]);
+ if Assigned(FBuffers[1]) then Dispose(FBuffers[1]);
+ if Assigned(FBuffers[2]) then Dispose(FBuffers[2]);
+ if Assigned(FBuffers[3]) then Dispose(FBuffers[3]);
 end;
 
 procedure TmdaAmbienceDataModule.VSTModuleProcess(const Inputs,
@@ -165,10 +165,10 @@ begin
  if (FReady = False)
   then VSTModuleSuspend(nil);
 
- d[0] := p + round(107 * FRoomsize) and 1023;
- d[1] := p + round(142 * FRoomsize) and 1023;
- d[2] := p + round(277 * FRoomsize) and 1023;
- d[3] := p + round(379 * FRoomsize) and 1023;
+ d[0] := p + Round(107 * FRoomsize) and 1023;
+ d[1] := p + Round(142 * FRoomsize) and 1023;
+ d[2] := p + Round(277 * FRoomsize) and 1023;
+ d[3] := p + Round(379 * FRoomsize) and 1023;
 
  for i := 0 to SampleFrames - 1 do
   begin
@@ -240,10 +240,10 @@ begin
  if (FReady = False)
   then VSTModuleSuspend(nil);
 
- d[0] := p + round(107 * FRoomsize) and 1023;
- d[1] := p + round(142 * FRoomsize) and 1023;
- d[2] := p + round(277 * FRoomsize) and 1023;
- d[3] := p + round(379 * FRoomsize) and 1023;
+ d[0] := p + Round(107 * FRoomsize) and 1023;
+ d[1] := p + Round(142 * FRoomsize) and 1023;
+ d[2] := p + Round(277 * FRoomsize) and 1023;
+ d[3] := p + Round(379 * FRoomsize) and 1023;
 
  for i := 0 to SampleFrames - 1 do
   begin

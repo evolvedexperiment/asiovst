@@ -166,7 +166,7 @@ begin
     Barberpole.Canvas.Pen.Color := Round($70 - $34 * BufferPointer^[Column]) shl 16 +
                                    Round($84 - $48 * BufferPointer^[Column]) shl  8 +
                                    Round($8D - $50 * BufferPointer^[Column]);
-//    Barberpole.Canvas.Pen.Color := TColor(round($64 + BufferPointer^[Column] * $60));
+//    Barberpole.Canvas.Pen.Color := TColor(Round($64 + BufferPointer^[Column] * $60));
     Barberpole.Canvas.MoveTo(Column + 1, 1);
     Barberpole.Canvas.LineTo(Column + 1, Barberpole.Height - 1);
    end;

@@ -186,7 +186,7 @@ begin
   begin
    if Parameter[6] <> DialFilterOrder.Position
     then Parameter[6] := DialFilterOrder.Position;
-   LbFilterOrder.Caption := IntToStr(round(DialFilterOrder.Position));
+   LbFilterOrder.Caption := IntToStr(Round(DialFilterOrder.Position));
   end;
 end;
 

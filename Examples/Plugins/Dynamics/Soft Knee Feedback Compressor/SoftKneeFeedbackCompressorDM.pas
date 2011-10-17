@@ -94,9 +94,9 @@ end;
 procedure TSoftKneeFeedbackCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeFeedbackCompressors[0])
+ if Assigned(FSoftKneeFeedbackCompressors[0])
   then FSoftKneeFeedbackCompressors[0].Threshold_dB := Value;
- if assigned(FSoftKneeFeedbackCompressors[1])
+ if Assigned(FSoftKneeFeedbackCompressors[1])
   then FSoftKneeFeedbackCompressors[1].Threshold_dB := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
@@ -106,9 +106,9 @@ end;
 procedure TSoftKneeFeedbackCompressorDataModule.ParamMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeFeedbackCompressors[0])
+ if Assigned(FSoftKneeFeedbackCompressors[0])
   then FSoftKneeFeedbackCompressors[0].MakeUpGain_dB := Value;
- if assigned(FSoftKneeFeedbackCompressors[1])
+ if Assigned(FSoftKneeFeedbackCompressors[1])
   then FSoftKneeFeedbackCompressors[1].MakeUpGain_dB := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
@@ -118,9 +118,9 @@ end;
 procedure TSoftKneeFeedbackCompressorDataModule.SLRatioChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
-  if assigned(FSoftKneeFeedbackCompressors[0])
+  if Assigned(FSoftKneeFeedbackCompressors[0])
   then FSoftKneeFeedbackCompressors[0].Ratio := 1 / Value;
- if assigned(FSoftKneeFeedbackCompressors[1])
+ if Assigned(FSoftKneeFeedbackCompressors[1])
   then FSoftKneeFeedbackCompressors[1].Ratio := 1 / Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
@@ -129,9 +129,9 @@ end;
 
 procedure TSoftKneeFeedbackCompressorDataModule.SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeFeedbackCompressors[0])
+ if Assigned(FSoftKneeFeedbackCompressors[0])
   then FSoftKneeFeedbackCompressors[0].Release := Value;
- if assigned(FSoftKneeFeedbackCompressors[1])
+ if Assigned(FSoftKneeFeedbackCompressors[1])
   then FSoftKneeFeedbackCompressors[1].Release := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
@@ -140,9 +140,9 @@ end;
 
 procedure TSoftKneeFeedbackCompressorDataModule.SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSoftKneeFeedbackCompressors[0])
+ if Assigned(FSoftKneeFeedbackCompressors[0])
   then FSoftKneeFeedbackCompressors[0].Attack := Value;
- if assigned(FSoftKneeFeedbackCompressors[1])
+ if Assigned(FSoftKneeFeedbackCompressors[1])
   then FSoftKneeFeedbackCompressors[1].Attack := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
@@ -164,9 +164,9 @@ end;
 procedure TSoftKneeFeedbackCompressorDataModule.VSTModuleSampleRateChange(
   Sender: TObject; const SampleRate: Single);
 begin
- if assigned(FSoftKneeFeedbackCompressors[0])
+ if Assigned(FSoftKneeFeedbackCompressors[0])
   then FSoftKneeFeedbackCompressors[0].SampleRate := SampleRate;
- if assigned(FSoftKneeFeedbackCompressors[1])
+ if Assigned(FSoftKneeFeedbackCompressors[1])
   then FSoftKneeFeedbackCompressors[1].SampleRate := SampleRate;
 end;
 

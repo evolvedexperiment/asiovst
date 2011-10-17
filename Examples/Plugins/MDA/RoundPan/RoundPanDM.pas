@@ -100,8 +100,8 @@ end;
 
 procedure TRoundPanDataModule.VSTModuleClose(Sender: TObject);
 begin
- // if assigned(FBuffer[0]) then Dispose(FBuffer[0]);
- // if assigned(FBuffer[1]) then Dispose(FBuffer[1]);
+ // if Assigned(FBuffer[0]) then Dispose(FBuffer[0]);
+ // if Assigned(FBuffer[1]) then Dispose(FBuffer[1]);
 end;
 
 procedure TRoundPanDataModule.VSTModuleProcess(const Inputs,

@@ -105,17 +105,17 @@ uses
 
 procedure TBeatBoxDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FHihatBuffer)    then Dispose(FHihatBuffer);
- if assigned(FKickBuffer)     then Dispose(FKickBuffer);
- if assigned(FSnareBuffer[0]) then Dispose(FSnareBuffer[0]);
- if assigned(FSnareBuffer[1]) then Dispose(FSnareBuffer[1]);
+ if Assigned(FHihatBuffer)    then Dispose(FHihatBuffer);
+ if Assigned(FKickBuffer)     then Dispose(FKickBuffer);
+ if Assigned(FSnareBuffer[0]) then Dispose(FSnareBuffer[0]);
+ if Assigned(FSnareBuffer[1]) then Dispose(FSnareBuffer[1]);
 end;
 
 procedure TBeatBoxDataModule.VSTModuleOpen(Sender: TObject);
 var
   Oversampling : Integer;
 begin
- Oversampling := round(SampleRate / 49000 + 0.5);
+ Oversampling := Round(SampleRate / 49000 + 0.5);
  if Oversampling < 1 then Oversampling := 1; 
 
  FHihatBufferLength := Oversampling * 20000;
@@ -197,10 +197,10 @@ begin
  FKSF1           := cos(3.1415927 * FKWW);     //p
  FKSF2           := sin(3.1415927 * FKWW);     //q
 
- if (FWWx  <> FWW)  then FSnareFX := round(2 * SampleRate);
- if (FKWWx <> FKWW) then FKSFX    := round(2 * SampleRate);
+ if (FWWx  <> FWW)  then FSnareFX := Round(2 * SampleRate);
+ if (FKWWx <> FKWW) then FKSFX    := Round(2 * SampleRate);
 
- FRec := round(4.9 * Parameter[10]);
+ FRec := Round(4.9 * Parameter[10]);
  if (FRec <> FRecx) and (FRecPos > 0) then //finish sample
   begin
    case FRec of
@@ -395,7 +395,7 @@ var
   Norm : Single;
 begin
  Norm := Arg1 / Arg2;
- result := (Norm - round(Norm - 0.5)) * Arg2
+ result := (Norm - Round(Norm - 0.5)) * Arg2
 end;
 
 procedure TBeatBoxDataModule.ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);

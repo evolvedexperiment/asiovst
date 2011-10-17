@@ -96,7 +96,7 @@ begin
   then FLowThreshold := 0  // Limiter
   else
    begin
-    FLowThreshold := 0.99 * Power(10, round(30 * Value - 20) / 20);
+    FLowThreshold := 0.99 * Power(10, Round(30 * Value - 20) / 20);
     FMode := 1;
    end;
 end;

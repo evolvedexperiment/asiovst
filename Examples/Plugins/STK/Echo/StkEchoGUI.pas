@@ -93,7 +93,7 @@ var
 begin
  with TStkEchoModule(Owner) do
   begin
-   DelayPos := round(10 * Parameter[0]);
+   DelayPos := Round(10 * Parameter[0]);
    if SBDelay.Position <> DelayPos
     then SBDelay.Position := DelayPos;
    LbDelayValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + ' ms';
@@ -106,7 +106,7 @@ var
 begin
  with TStkEchoModule(Owner) do
   begin
-   EffectMixPos := round(10 * Parameter[1]);
+   EffectMixPos := Round(10 * Parameter[1]);
    if SBEffectMix.Position <> EffectMixPos
     then SBEffectMix.Position := EffectMixPos;
    LbEffectMixValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 4, 4) + ' %';

@@ -78,7 +78,7 @@ uses
 
 procedure TStereoDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(FBuffer) then Dispose(FBuffer);
+ if Assigned(FBuffer) then Dispose(FBuffer);
 end;
 
 procedure TStereoDataModule.VSTModuleOpen(Sender: TObject);
@@ -144,7 +144,7 @@ begin
     a := Inputs[0, Sample] + Inputs[1, Sample]; //sum to mono
 
     FBuffer[bp] := a; //write
-    tmp := (bp + round(del + abs(FMod * sin(ph)))) mod 4410;
+    tmp := (bp + Round(del + abs(FMod * sin(ph)))) mod 4410;
     b   := FBuffer[tmp];
 
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
@@ -162,7 +162,7 @@ begin
     a := Inputs[0, Sample] + Inputs[1, Sample]; //sum to mono
 
     FBuffer[bp] := a; //write
-    tmp := (bp + round(del)) mod 4410;
+    tmp := (bp + Round(del)) mod 4410;
     b   := FBuffer[tmp];
 
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
@@ -237,7 +237,7 @@ end;
 
 procedure TStereoDataModule.ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FDelay := round(20 + 2080 * Power(Value, 2));
+ FDelay := Round(20 + 2080 * Power(Value, 2));
 end;
 
 end.
@@ -247,9 +247,9 @@ void mdaStereo::getParameterDisplay(VstInt32 index, char *text)
 begin
   switch(index)
   begin
-    case 0: long2string(round(200 * abs(Parameter[0] - 0.5)), text);break;
+    case 0: long2string(Round(200 * abs(Parameter[0] - 0.5)), text);break;
     case 1: float2strng((1000 * FDel / SampleRate), text); break;
-    case 2: long2string(round(200 * (Parameter[2] - 0.5)), text); break;
+    case 2: long2string(Round(200 * (Parameter[2] - 0.5)), text); break;
     case 4: float2strng(Power(10, 2 - 3 * Parameter[4]), text); break;
   end;
 end;

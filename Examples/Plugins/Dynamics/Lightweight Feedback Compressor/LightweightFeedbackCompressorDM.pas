@@ -212,7 +212,7 @@ end;
 procedure TLightweightFeedbackCompressorDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
@@ -236,12 +236,12 @@ end;
 
 procedure TLightweightFeedbackCompressorDataModule.ChooseProcess;
 begin
- case round(Parameter[7]) of
-  0 : case round(Parameter[6]) of
+ case Round(Parameter[7]) of
+  0 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMono;
        1 : OnProcess := VSTModuleProcessStereo;
       end;
-  1 : case round(Parameter[6]) of
+  1 : case Round(Parameter[6]) of
        0 : OnProcess := VSTModuleProcessMonoSoftClip;
        1 : OnProcess := VSTModuleProcessStereoSoftClip;
       end;
@@ -254,7 +254,7 @@ procedure TLightweightFeedbackCompressorDataModule.ParameterAutoMakeUpGainChange
 begin
  if Assigned(FLightweightFeedbackCompressor[0]) then
   begin
-   FLightweightFeedbackCompressor[0].AutoMakeUp := Boolean(round(Value));
+   FLightweightFeedbackCompressor[0].AutoMakeUp := Boolean(Round(Value));
    if Assigned(FLightweightFeedbackCompressor[1])
     then FLightweightFeedbackCompressor[1].AutoMakeUp := FLightweightFeedbackCompressor[0].AutoMakeUp;
   end;

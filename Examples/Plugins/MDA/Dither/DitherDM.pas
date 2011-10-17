@@ -70,7 +70,7 @@ uses
 procedure TDitherDataModule.ParamDitherDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
    0 : PreDefined := 'OFF';
    1 : PreDefined := 'TRI';
    2 : PreDefined := 'HP-TRI';
@@ -100,7 +100,7 @@ begin
    FWordLength := 32;
    FGain := sqr(1 - Parameter[4]);
   end
- else FWordLength := round(Power(2, FBits - 1)); //word length in quanta
+ else FWordLength := Round(Power(2, FBits - 1)); //word length in quanta
 
  //Using WaveLab 2.01 (unity gain) as a reference:
  //  16-bit output is floor(floating_point_value * 32768)
@@ -109,7 +109,7 @@ begin
  FDither := 2 * Parameter[2] / (FWordLength * 32767);
  FShaper := 0;
 
- case round(Parameter[0]) of // dither mode:
+ case Round(Parameter[0]) of // dither mode:
   0: FDither := 0;           // - off
   3: FShaper := 0.5;         // - noise shaping
  end;
@@ -141,7 +141,7 @@ begin
   r3 := FRandom[1];
   m := 1;
 (*
-  if (round(fParam1 * 3.9) = 1)
+  if (Round(fParam1 * 3.9) = 1)
    then m := 0;
 *)
 

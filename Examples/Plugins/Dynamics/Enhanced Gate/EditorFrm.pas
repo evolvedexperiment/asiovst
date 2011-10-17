@@ -288,8 +288,8 @@ procedure TEditorForm.VUTimerTimer(Sender: TObject);
 begin
  with TEnhancedGateDataModule(Owner) do
   begin
-   GaugeL.Progress := round(100 * LevelLeft);
-   GaugeR.Progress := round(100 * LevelRight);
+   GaugeL.Progress := Round(100 * LevelLeft);
+   GaugeR.Progress := Round(100 * LevelRight);
   end;
 end;
 

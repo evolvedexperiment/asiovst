@@ -5,6 +5,7 @@ library Nonlinear;
 
 uses
   FastMM4,
+  Forms,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
@@ -27,4 +28,5 @@ exports
   WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
+  Application.Initialize;
 end.

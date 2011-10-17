@@ -82,9 +82,9 @@ uses
 
 procedure TFmOversampler.FormDestroy(Sender: TObject);
 begin
- if assigned(FBackground)
+ if Assigned(FBackground)
   then FreeAndNil(FBackground);
- if assigned(FWinSizer)
+ if Assigned(FWinSizer)
   then FreeAndNil(FWinSizer);
 end;
 
@@ -101,7 +101,7 @@ begin
   try
    if VstHost[0].EditVisible then VstHost[0].CloseEdit;
    if VstHost[1].EditVisible then VstHost[1].CloseEdit;
-   if assigned(FWinSizer)
+   if Assigned(FWinSizer)
     then FreeAndNil(FWinSizer);
    MIAllowResizing.Checked := False;
   except
@@ -110,7 +110,7 @@ end;
 
 procedure TFmOversampler.FormPaint(Sender: TObject);
 begin
- if assigned(FBackground)
+ if Assigned(FBackground)
   then Canvas.Draw(0, PnControl.Height, FBackground);
 end;
 
@@ -124,7 +124,7 @@ begin
    if VstHost[0].Active and not VstHost[0].EditVisible
     then VstHost[0].ShowEdit(PnGui);
 
-   PnGui.Visible    := assigned(VstHost[0]) and VstHost[0].Active;
+   PnGui.Visible    := Assigned(VstHost[0]) and VstHost[0].Active;
    ShBorder.Visible := PnGui.Visible;
 
    // set plugin GUI size
@@ -166,9 +166,9 @@ end;
 
 procedure Lighten(var Pixel: TRGB24; Amount: Byte);
 begin
- Pixel.B := round($2B - Amount);
- Pixel.G := round($31 - Amount);
- Pixel.R := round($33 - Amount);
+ Pixel.B := Round($2B - Amount);
+ Pixel.G := Round($31 - Amount);
+ Pixel.R := Round($33 - Amount);
 end;
 
 procedure TFmOversampler.FormResize(Sender: TObject);
@@ -180,7 +180,7 @@ var
   b      : Byte;
 begin
  // Create Background Image (if not already done
- if not assigned(FBackground)
+ if not Assigned(FBackground)
   then FBackground := TBitmap.Create;
  with FBackground do
   begin
@@ -198,7 +198,7 @@ begin
     begin
      s[1] := 0.97 * s[0] + 0.03 * random;
      s[0] := s[1];
-     b    := round(-$2A * s[1]);
+     b    := Round(-$2A * s[1]);
      Line[x].B := $2B + b;
      Line[x].G := $31 + b;
      Line[x].R := $33 + b;
@@ -212,7 +212,7 @@ begin
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
-       b    := round($2A * (s[1] + h));
+       b    := Round($2A * (s[1] + h));
        Line[x].B := $2B + b;
        Line[x].G := $31 + b;
        Line[x].R := $33 + b;
@@ -242,14 +242,14 @@ begin
  MIAllowResizing.Checked := not MIAllowResizing.Checked;
  if MIAllowResizing.Checked then
   begin
-   if not assigned(FWinSizer)
+   if not Assigned(FWinSizer)
     then FWinSizer := TVstWindowSizer.Create;
    FWinSizer.Effect := TOversampleTemplateDataModule(Owner);
    FWinSizer.SetEditorHwnd(Self.Handle);
   end
  else
   begin
-   if assigned(FWinSizer)
+   if Assigned(FWinSizer)
     then FreeAndNil(FWinSizer);
   end;
 end;
@@ -266,9 +266,9 @@ begin
   begin
    GuiLEDOversampling.Brightness_Percent := 20 + 60 * (Limit(ParameterByName['Oversampling'], 0, 1));
 
-   DialOversampling.Visible     := round(ParameterByName['Oversampling']) = 1;
+   DialOversampling.Visible     := Round(ParameterByName['Oversampling']) = 1;
    LbOversamplingFactor.Visible := DialOversampling.Visible;
-   LbOversampling.Width         := 80 + 5 * round(ParameterByName['Oversampling']);
+   LbOversampling.Width         := 80 + 5 * Round(ParameterByName['Oversampling']);
   end;
 end;
 
@@ -281,7 +281,7 @@ begin
    OSFactor := ParameterByName['OS Factor'];
    if DialOversampling.Position <> OSFactor
     then DialOversampling.Position := OSFactor;
-   LbOversamplingFactor.Caption := IntToStr(round(OSFactor)) + 'x';
+   LbOversamplingFactor.Caption := IntToStr(Round(OSFactor)) + 'x';
   end;
 end;
 

@@ -57,6 +57,8 @@ type
 
 implementation
 
+{%CLASSGROUP 'System.Classes.TPersistent'}
+
 {$IFDEF FPC}
 {$R *.lfm}
 {$ELSE}
@@ -95,7 +97,7 @@ end;
 procedure TLinkwitzRileyModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := IntToStr(2 * round(Parameter[Index]));
+ Predefined := IntToStr(2 * Round(Parameter[Index]));
 end;
 
 procedure TLinkwitzRileyModule.ParameterFrequencyDisplay(
@@ -132,7 +134,7 @@ var
 begin
  for Channel := 0 to Length(FLinkwitzRiley) - 1 do
   if Assigned(FLinkwitzRiley[Channel])
-   then FLinkwitzRiley[Channel].Order := round(Value);
+   then FLinkwitzRiley[Channel].Order := Round(Value);
 end;
 
 procedure TLinkwitzRileyModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -142,7 +144,7 @@ var
 begin
  if Abs(SampleRate) > 0 then
   for Channel := 0 to Length(FLinkwitzRiley) - 1 do
-   if assigned(FLinkwitzRiley[Channel])
+   if Assigned(FLinkwitzRiley[Channel])
     then FLinkwitzRiley[Channel].SampleRate := Abs(SampleRate);
 end;
 

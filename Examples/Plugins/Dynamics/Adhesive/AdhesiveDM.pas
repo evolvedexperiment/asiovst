@@ -212,7 +212,7 @@ end;
 procedure TAdhesiveDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
@@ -237,21 +237,21 @@ end;
 procedure TAdhesiveDataModule.ParameterSideChainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FFilter) then FFilter.Frequency := Value;
+ if Assigned(FFilter) then FFilter.Frequency := Value;
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateSideChainFilter;
 end;
 
 procedure TAdhesiveDataModule.ChooseProcess;
 begin
- case round(Parameter[7]) of
+ case Round(Parameter[7]) of
   0 : OnProcess := VSTModuleProcessBypass;
-  1 : case round(Parameter[8]) of
-       0 : case round(Parameter[10]) of
+  1 : case Round(Parameter[8]) of
+       0 : case Round(Parameter[10]) of
             0: OnProcess := VSTModuleProcess;
             1: OnProcess := VSTModuleProcessSC;
            end;
-       1 : case round(Parameter[10]) of
+       1 : case Round(Parameter[10]) of
             0: OnProcess := VSTModuleProcessPeakClip;
             1: OnProcess := VSTModuleProcessSCPeakClip;
            end;
@@ -270,7 +270,7 @@ end;
 procedure TAdhesiveDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor) then FCompressor.Attack := Value;
+ if Assigned(FCompressor) then FCompressor.Attack := Value;
 
  // update GUI if necessary
  if EditorForm is TFmAdhesive
@@ -280,7 +280,7 @@ end;
 procedure TAdhesiveDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor) then FCompressor.Release := Value;
+ if Assigned(FCompressor) then FCompressor.Release := Value;
 
  // update GUI if necessary
  if EditorForm is TFmAdhesive
@@ -290,7 +290,7 @@ end;
 procedure TAdhesiveDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor) then FCompressor.Threshold_dB := Value;
+ if Assigned(FCompressor) then FCompressor.Threshold_dB := Value;
 
  // update GUI if necessary
  if EditorForm is TFmAdhesive
@@ -300,7 +300,7 @@ end;
 procedure TAdhesiveDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor) then FCompressor.Ratio := Value;
+ if Assigned(FCompressor) then FCompressor.Ratio := Value;
 
  // update GUI if necessary
  if EditorForm is TFmAdhesive
@@ -310,7 +310,7 @@ end;
 procedure TAdhesiveDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor) then FCompressor.Knee_dB := Value;
+ if Assigned(FCompressor) then FCompressor.Knee_dB := Value;
 
  // update GUI if necessary
  if EditorForm is TFmAdhesive
@@ -394,8 +394,8 @@ begin
  // skip invalid samplerates
  if abs(SampleRate) <= 0 then exit;
 
- if assigned(FCompressor) then FCompressor.SampleRate := abs(SampleRate);
- if assigned(FFilter) then FFilter.SampleRate := abs(SampleRate);
+ if Assigned(FCompressor) then FCompressor.SampleRate := abs(SampleRate);
+ if Assigned(FFilter) then FFilter.SampleRate := abs(SampleRate);
 end;
 
 end.

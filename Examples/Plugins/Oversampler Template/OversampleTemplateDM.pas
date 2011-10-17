@@ -360,7 +360,7 @@ begin
  GUI := TFmOversampler.Create(Self);
 
  // set plugin GUI size
- if assigned(VstHost[0]) and VstHost[0].Active then
+ if Assigned(VstHost[0]) and VstHost[0].Active then
   with TFmOversampler(GUI) do
    begin
     PnGui.Visible    := True;
@@ -387,7 +387,7 @@ begin
 
       // calculate new height and y position
       PnGui.Height := (Rct[0].Bottom - Rct[0].Top);
-      Oversize     := round(Oversize * (PnGui.Height) / PnGui.Width);
+      Oversize     := Round(Oversize * (PnGui.Height) / PnGui.Width);
       PnGui.Top    := PnControl.Height + Oversize div 2;
       ClientHeight := PnControl.Height + PnGui.Height + Oversize;
 
@@ -533,7 +533,7 @@ end;
 
 procedure TOversampleTemplateDataModule.ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := ConvertOrderToString(round(Parameter[Index]));
+ PreDefined := ConvertOrderToString(Round(Parameter[Index]));
 end;
 
 procedure TOversampleTemplateDataModule.ParamPreFilterOrderValue(Sender: TObject;
@@ -542,7 +542,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to Length(FUpsampler) - 1
-  do FUpsampler[ch].Order := round(Value);
+  do FUpsampler[ch].Order := Round(Value);
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleAfterProgramChange(Sender: TObject);
@@ -735,7 +735,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to Length(FUpsampler) - 1 do
-  case round(Value) of
+  case Round(Value) of
    4, 5, 6 : FUpsampler[ch].FilterClass := TChebyshev1LowpassFilter;
    else FUpsampler[ch].FilterClass := TButterworthLowpassFilter;
   end;
@@ -755,7 +755,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to Length(FDownsampler) - 1
-  do FDownsampler[ch].Order := round(Value);
+  do FDownsampler[ch].Order := Round(Value);
 end;
 
 procedure TOversampleTemplateDataModule.ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -763,7 +763,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to Length(FUpsampler) - 1 do
-  case round(Value) of
+  case Round(Value) of
    4, 5, 6 : FUpsampler[ch].FilterClass := TChebyshev1LowpassFilter;
    else FUpsampler[ch].FilterClass := TButterworthLowpassFilter;
   end;
@@ -771,7 +771,7 @@ end;
 
 procedure TOversampleTemplateDataModule.ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   4, 5, 6 : PreDefined := 'Chebyshev';
   else PreDefined := 'Butterworth';
  end;
@@ -779,7 +779,7 @@ end;
 
 procedure TOversampleTemplateDataModule.ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(Parameter[Index])) + 'x';
+ PreDefined := IntToStr(Round(Parameter[Index])) + 'x';
 end;
 
 function ConvertOrderToString(Order: Integer): string;
@@ -796,7 +796,7 @@ end;
 procedure TOversampleTemplateDataModule.ParamOversamplingDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- if Boolean(round(Parameter[Index]))
+ if Boolean(Round(Parameter[Index]))
   then PreDefined := 'On'
   else PreDefined := 'Off';
 end;
@@ -813,9 +813,9 @@ begin
   inc(FSemaphore);
   try
   {$ENDIF}
-   FOSActive := Boolean(round(Value));
+   FOSActive := Boolean(Round(Value));
    if FOSActive = True
-    then SetOSFactor(round(ParameterByName['OS Factor']))
+    then SetOSFactor(Round(ParameterByName['OS Factor']))
     else SetOSFactor(1);
   {$IFDEF UseSemaphore}
   finally
@@ -845,7 +845,7 @@ begin
   try
   {$ENDIF}
    if FOSActive = True
-    then SetOSFactor(round(Value))
+    then SetOSFactor(Round(Value))
     else SetOSFactor(1);
   {$IFDEF UseSemaphore}
   finally
@@ -961,7 +961,7 @@ begin
   (*
      for Channel := 0 to numInputs - 1 do
       for Sample := 0 to SampleFrames * FOSFactor - 1
-       do assert(not IsNaN(FIn32[Channel, Sample]));
+       do Assert(not IsNaN(FIn32[Channel, Sample]));
 
      DontRaiseExceptionsAndSetFPUcodeword;
   *)
@@ -975,7 +975,7 @@ begin
   (*
      for Channel := 0 to numInputs - 1 do
       for Sample := 0 to SampleFrames * FOSFactor - 1
-       do assert(not IsNaN(FOut32[Channel, Sample]));
+       do Assert(not IsNaN(FOut32[Channel, Sample]));
   *)
 
      // downsample

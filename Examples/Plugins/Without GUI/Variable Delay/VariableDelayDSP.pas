@@ -93,7 +93,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FVariDelay) - 1 do
-   if assigned(FVariDelay[Channel])
+   if Assigned(FVariDelay[Channel])
     then FVariDelay[Channel].Delay := 1E-4 * Value;
  finally
    FCriticalSection.Leave;

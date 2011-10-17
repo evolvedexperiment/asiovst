@@ -4,6 +4,8 @@ unit MiniHostForm;
 
 interface
 
+{$DEFINE LoadPluginFromStream}
+
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
@@ -1025,13 +1027,25 @@ end;
 procedure TFmMiniHost.LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0);
 var
   PresetFileName : TFileName;
+  {$IFDEF LoadPluginFromStream}
+  FileStream     : TFileStream;
+  {$ENDIF}
 begin
  if not FileExists(VSTDll) then Exit;
 
  StopProcessingAndClosePlugin;
 
  VSTHost.BlockSize := ASIOHost.BufferSize;
+ {$IFDEF LoadPluginFromStream}
+ FileStream := TFileStream.Create(VSTDll, fmOpenRead);
+ try
+  VSTHost[0].LoadFromStream(FileStream);
+ finally
+  FreeAndNil(FileStream);
+ end;
+ {$ELSE}
  VSTHost[0].LoadFromFile(VSTDll);
+ {$ENDIF}
 
  try
   VSTHost[0].Active := True;
@@ -1248,7 +1262,7 @@ begin
     EventType := etSysEx;
     ByteSize := 24;
     DeltaFrames := 0;
-    Flags := 0;
+    Flags := [];
     dumpBytes := aStream.Size;
     sysexDump := aStream.Memory;
     Reserved1 := 0;

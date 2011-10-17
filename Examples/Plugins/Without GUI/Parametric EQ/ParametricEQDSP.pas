@@ -178,7 +178,7 @@ end;
 procedure TParametricEQDataModule.ParameterTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
    0 : PreDefined := 'Bypass';
    1 : PreDefined := 'Peak';
    2 : PreDefined := 'LoShlf';

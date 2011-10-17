@@ -117,7 +117,7 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterOversampleChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLinkwitzRileyFilter) then
+ if Assigned(FLinkwitzRileyFilter) then
   begin
    FOversampled := Value > 0.5;
    CalculateFilterKernel;
@@ -127,7 +127,7 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterFilterOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLinkwitzRileyFilter) then
+ if Assigned(FLinkwitzRileyFilter) then
   begin
    FLinkwitzRileyFilter.Order := Round(0.5 * Parameter[Index]);
    CalculateFilterKernel;
@@ -142,7 +142,7 @@ end;
 procedure TLinearPhaseLinkwitzRileyDataModule.ParamFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLinkwitzRileyFilter) then
+ if Assigned(FLinkwitzRileyFilter) then
   begin
    if FOversampled
     then FLinkwitzRileyFilter.Frequency := 0.5 * Value
@@ -229,7 +229,7 @@ procedure TLinearPhaseLinkwitzRileyDataModule.VSTModuleSampleRateChange(Sender: 
   const SampleRate: Single);
 begin
  if abs(SampleRate) > 0 then
-  if assigned(FLinkwitzRileyFilter) then
+  if Assigned(FLinkwitzRileyFilter) then
    begin
     FLinkwitzRileyFilter.SampleRate := SampleRate;
     CalculateFilterKernel;

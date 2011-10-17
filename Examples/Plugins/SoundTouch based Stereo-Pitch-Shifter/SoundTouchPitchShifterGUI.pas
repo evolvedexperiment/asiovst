@@ -132,7 +132,7 @@ begin
     then DialSemitones.Value := Parameter[0];
    SemiTones := Round(Parameter[0]);
    LbSemitoneValue.Caption := IntToStr(SemiTones) + ' : ' +
-     IntToStr(round(100 * (Parameter[0] - SemiTones)));
+     IntToStr(Round(100 * (Parameter[0] - SemiTones)));
   end;
 end;
 

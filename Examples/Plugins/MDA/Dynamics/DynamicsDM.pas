@@ -130,13 +130,13 @@ end;
 procedure TDynamicsDataModule.ParameterAttackDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301030.1 / (SampleRate * log10(1 - FAttack))));
+ PreDefined := IntToStr(Round(-301030.1 / (SampleRate * log10(1 - FAttack))));
 end;
 
 procedure TDynamicsDataModule.ParameterReleaseDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301.0301 / (SampleRate * log10(1 - FRelease))));
+ PreDefined := IntToStr(Round(-301.0301 / (SampleRate * log10(1 - FRelease))));
 end;
 
 procedure TDynamicsDataModule.ParameterLimiterDisplay(Sender: TObject;
@@ -174,19 +174,19 @@ end;
 procedure TDynamicsDataModule.ParameterGateAttackDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301030.1 / (SampleRate * log10(1 - FGateAttack))));
+ PreDefined := IntToStr(Round(-301030.1 / (SampleRate * log10(1 - FGateAttack))));
 end;
 
 procedure TDynamicsDataModule.ParameterGateReleaseDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-1806 / (SampleRate * log10(FGateRelease))));
+ PreDefined := IntToStr(Round(-1806 / (SampleRate * log10(FGateRelease))));
 end;
 
 procedure TDynamicsDataModule.ParameterMixDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(100 * Parameter[9]));
+ PreDefined := IntToStr(Round(100 * Parameter[9]));
 end;
 
 procedure TDynamicsDataModule.ParameterLimiterChange(Sender: TObject;

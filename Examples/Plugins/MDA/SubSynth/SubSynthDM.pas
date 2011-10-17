@@ -94,13 +94,13 @@ end;
 
 procedure TSubSynthDataModule.ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
+ PreDefined := IntToStr(Round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
 end;
 
 procedure TSubSynthDataModule.ParameterReleaseDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301.03 / (SampleRate * log10(FRelease))));
+ PreDefined := IntToStr(Round(-301.03 / (SampleRate * log10(FRelease))));
 end;
 
 procedure TSubSynthDataModule.ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -110,7 +110,7 @@ end;
 
 procedure TSubSynthDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of 
+ case Round(Parameter[Index]) of 
   0: PreDefined := 'Distort';
   1: PreDefined := 'Divide';
   2: PreDefined := 'Invert';
@@ -141,7 +141,7 @@ begin
   FDivide := 1;
   FPhase  := 1;
   FOsc    := 0; // Oscillator phase
-  FType   := TProcessType(round(Parameter[0]));
+  FType   := TProcessType(Round(Parameter[0]));
   if FType = ptKeyOsc
    then FFilterIn := 0.018
    else FFilterIn := Power(10, -3 + (2 * Parameter[2]));

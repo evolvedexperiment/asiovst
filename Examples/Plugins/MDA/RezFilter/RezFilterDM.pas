@@ -93,7 +93,7 @@ procedure TRezFilterDataModule.ParameterTriggerDisplay(Sender: TObject;
 begin
  if (FTriggerThreshold = 0)
   then PreDefined := 'FREE RUN'
-  else PreDefined := IntToStr(round(20 * log10(0.5 * FTriggerThreshold)));
+  else PreDefined := IntToStr(Round(20 * log10(0.5 * FTriggerThreshold)));
 end;
 
 procedure TRezFilterDataModule.ParameterLFORateDisplay(Sender: TObject;

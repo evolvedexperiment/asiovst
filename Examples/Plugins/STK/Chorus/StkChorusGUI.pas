@@ -107,7 +107,7 @@ var
 begin
  with TStkChorusModule(Owner) do
   begin
-   ModDepthPos := round(10 * Parameter[0]);
+   ModDepthPos := Round(10 * Parameter[0]);
    if SBModDepth.Position <> ModDepthPos
     then SBModDepth.Position := ModDepthPos;
    LbModDepthValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 4, 4) + ' ms';
@@ -120,7 +120,7 @@ var
 begin
  with TStkChorusModule(Owner) do
   begin
-   ModFreqPos := round(100 * Parameter[1]);
+   ModFreqPos := Round(100 * Parameter[1]);
    if SBModFreq.Position <> ModFreqPos
     then SBModFreq.Position := ModFreqPos;
    LbModFreqValue.Caption := FloatToStrF(Parameter[1], ffGeneral, 4, 4) + ' Hz';
@@ -133,7 +133,7 @@ var
 begin
  with TStkChorusModule(Owner) do
   begin
-   EffectMixPos := round(10 * Parameter[2]);
+   EffectMixPos := Round(10 * Parameter[2]);
    if SBEffectMix.Position <> EffectMixPos
     then SBEffectMix.Position := EffectMixPos;
    LbEffectMixValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 4) + ' %';

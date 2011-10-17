@@ -76,14 +76,14 @@ var
 begin
   with (Owner As TVSTVUMeterModule) do
   begin
-    tmp := round(300 + 3 * Amp_to_dB(Peak[0]));
+    tmp := Round(300 + 3 * Amp_to_dB(Peak[0]));
 
     if tmp > 0 then ShVULeft.Width := tmp else ShVULeft.Width := 0;
-    tmp := round(300 + 3 * Amp_to_dB(Peak[1]));
+    tmp := Round(300 + 3 * Amp_to_dB(Peak[1]));
 
     if tmp>0 then ShVURight.Width := tmp else ShVURight.Width := 0;
-    LbGainLeft.Caption := 'left gain: ' + IntToStr(round(Parameter[0])) + ' db(fs)';
-    LbGainRight.Caption := 'right gain: ' + IntToStr(round(Parameter[1])) + ' db(fs)';
+    LbGainLeft.Caption := 'left gain: ' + IntToStr(Round(Parameter[0])) + ' db(fs)';
+    LbGainRight.Caption := 'right gain: ' + IntToStr(Round(Parameter[1])) + ' db(fs)';
   end;
 end;
 

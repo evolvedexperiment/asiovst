@@ -360,7 +360,7 @@ begin
     begin
      FBackground[0].DrawMode := dmOpaque;
      FBackground[0].DrawTo(FBackground[1]);
-     Parameter[2] := 1 - round(Parameter[2]);
+     Parameter[2] := 1 - Round(Parameter[2]);
      FAnimateFrame := -$20;
     end else
    for Stage := 0 to Length(GRectStage) - 1 do
@@ -1069,7 +1069,7 @@ begin
       while i < r.Right do
        begin
         n := CharacteristicCurve_dB(-54 + (i - r.Left) * s);
-        if n > 6 then PenColor := SetAlpha(PenColor, round($DF - (n - 6) * 2));
+        if n > 6 then PenColor := SetAlpha(PenColor, Round($DF - (n - 6) * 2));
         LineToFS(i, Limit(r.Bottom - (r.Bottom - r.Top) * ((n + 55) * COneSixty), r.Top, r.Bottom - 1));
         inc(i);
        end;

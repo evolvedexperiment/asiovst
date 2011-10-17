@@ -345,7 +345,7 @@ end;
 procedure TStkReverbModule.ParamAlgorithmDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'modified STK "NRev"';
   1 : PreDefined := 'modified STK "JCRev"';
   2 : PreDefined := 'modified STK "PRCRev"';
@@ -357,7 +357,7 @@ end;
 procedure TStkReverbModule.ParamAlgorithmChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Value) of
+ case Round(Value) of
   0 : begin
        OnProcess := VSTModuleProcessNetwork;
        OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingNetwork;

@@ -3,8 +3,9 @@ unit NonlinearGUI;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Dialogs;
+  System.SysUtils, System.Types, System.UITypes, System.Classes,
+  Winapi.GDIPAPI, FMX.Canvas.GDIP, FMX.Canvas.D2D, FMX.Types, FMX.Controls,
+  FMX.Forms, FMX.Dialogs;
 
 type
   TFmNonlinearFMX = class(TForm)
@@ -62,5 +63,22 @@ begin
   end;
 end;
 
-end.
+var
+  StartupInput: TGDIPlusStartupInput;
+  gdiplusToken: Cardinal;
 
+initialization
+  // Initialize StartupInput structure
+  StartupInput.DebugEventCallback := nil;
+  StartupInput.SuppressBackgroundThread := False;
+  StartupInput.SuppressExternalCodecs := False;
+  StartupInput.GdiplusVersion := 1;
+
+  GdiplusStartup(gdiplusToken, @StartupInput, nil);
+
+  SetD2DDefault;
+
+finalization
+  GdiplusShutdown(gdiplusToken);
+
+end.

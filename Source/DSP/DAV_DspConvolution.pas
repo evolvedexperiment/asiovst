@@ -33,6 +33,7 @@ unit DAV_DspConvolution;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{-$DEFINE CheckDataIntegrety}
 
 uses
   Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex
@@ -170,34 +171,47 @@ type
   TCustomLowLatencyConvolution = class(TDspPersistent)
   end;
 
-  TLowLatencyConvolutionStage32 = class(TPersistent)
+  TCustomLowLatencyConvolutionStage32 = class(TPersistent)
   private
     function GetCount: Integer;
   protected
-    {$IFDEF Use_IPPS}
-    FFft                : TFftReal2ComplexIPPSFloat32;
-    {$ELSE} {$IFDEF Use_CUDA}
-    FFft                : TFftReal2ComplexCUDA32;
-    {$ELSE}
-    FFft                : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}{$ENDIF}
-    FFFTSize            : Integer;
-    FFFTSizeHalf        : Integer;
-    FOutputPos          : Integer;
-    FLatency            : Integer;
-    FMod, FModAnd       : Integer;
+    FFFTSize       : Integer;
+    FOutputPos     : Integer;
+    FLatency       : Integer;
+    FMod, FModAnd  : Integer;
 
-    FIRSpectrums        : array of PDAVComplexSingleFixedArray;
-    FSignalFreq         : PDAVComplexSingleFixedArray;
-    FConvolved          : PDAVComplexSingleFixedArray;
-    FConvolvedTime      : PDAVSingleFixedArray;
+    FIRSpectrums   : array of PDAVComplexSingleFixedArray;
+    FSignalFreq    : PDAVComplexSingleFixedArray;
+    FConvolved     : PDAVComplexSingleFixedArray;
+    FConvolvedTime : PDAVSingleFixedArray;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
+    constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer); virtual;
+    destructor Destroy; override;
+    procedure PerformConvolution(const SignalIn, SignalOut: PDAVSingleFixedArray); virtual; abstract;
+  published
+    property Count: Integer read GetCount;
+    property Latency: Integer read FLatency;
+  end;
+
+  TLowLatencyConvolutionStage32 = class(TCustomLowLatencyConvolutionStage32)
+  protected
+    {$IFDEF Use_IPPS}
+    FFft         : TFftReal2ComplexIPPSFloat32;
+    {$ELSE} {$IFDEF Use_CUDA}
+    FFft         : TFftReal2ComplexCUDA32;
+    {$ELSE}
+    FFft         : TFftReal2ComplexNativeFloat32;
+    {$ENDIF}{$ENDIF}
+    FFFTSize     : Integer;
+    FFFTSizeHalf : Integer;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer); override;
     destructor Destroy; override;
 
     procedure FFTOrderChanged; virtual;
-    procedure PerformConvolution(const SignalIn, SignalOut: PDAVSingleFixedArray); virtual;
+    procedure PerformConvolution(const SignalIn, SignalOut: PDAVSingleFixedArray); override;
     procedure CalculateIRSpectrums(const IR: PDAVSingleFixedArray);
   published
     {$IFDEF Use_IPPS}
@@ -207,8 +221,6 @@ type
     {$ELSE}
     property Fft : TFftReal2ComplexNativeFloat32 read FFft;
     {$ENDIF}{$ENDIF}
-    property Count: Integer read GetCount;
-    property Latency: Integer read FLatency;
   end;
 
   // ToDo: - Input and Output buffers should become circular buffers in this
@@ -255,7 +267,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output : PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
-    procedure ProcessBlock(const Inplace : PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
+    procedure ProcessBlock(const Inplace: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     function ProcessSample32(Input: Single): Single; virtual;
     procedure LoadImpulseResponse(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: TDAVSingleDynArray); overload; virtual;
@@ -280,31 +292,44 @@ type
     procedure ProcessBlock(const Left, Right: PDAVSingleFixedArray; const SampleFrames: Integer); reintroduce; virtual;
   end;
 
-  TLowLatencyConvolutionStage64 = class(TPersistent)
+  TCustomLowLatencyConvolutionStage64 = class(TPersistent)
   private
     function GetCount: Integer;
   protected
-    {$IFDEF Use_IPPS}
-    FFft                : TFftReal2ComplexIPPSFloat64;
-    {$ELSE}
-    FFft                : TFftReal2ComplexNativeFloat64;
-    {$ENDIF}
-    FFFTSize            : Integer;
-    FFFTSizeHalf        : Integer;
-    FOutputPos          : Integer;
-    FLatency            : Integer;
-    FMod, FModAnd       : Integer;
+    FOutputPos     : Integer;
+    FLatency       : Integer;
+    FMod, FModAnd  : Integer;
 
-    FIRSpectrums        : array of PDAVComplexDoubleFixedArray;
-    FSignalFreq         : PDAVComplexDoubleFixedArray;
-    FConvolved          : PDAVComplexDoubleFixedArray;
-    FConvolvedTime      : PDAVDoubleFixedArray;
+    FIRSpectrums   : array of PDAVComplexDoubleFixedArray;
+    FSignalFreq    : PDAVComplexDoubleFixedArray;
+    FConvolved     : PDAVComplexDoubleFixedArray;
+    FConvolvedTime : PDAVDoubleFixedArray;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
+    constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer); virtual;
+    destructor Destroy; override;
+
+    procedure PerformConvolution(const SignalIn, SignalOut: PDAVDoubleFixedArray); virtual; abstract;
+  published
+    property Count: Integer read GetCount;
+    property Latency: Integer read FLatency;
+  end;
+
+  TLowLatencyConvolutionStage64 = class(TCustomLowLatencyConvolutionStage64)
+  protected
+    {$IFDEF Use_IPPS}
+    FFft           : TFftReal2ComplexIPPSFloat64;
+    {$ELSE}
+    FFft           : TFftReal2ComplexNativeFloat64;
+    {$ENDIF}
+    FFFTSize       : Integer;
+    FFFTSizeHalf   : Integer;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);  override;
     destructor Destroy; override;
     procedure FFTOrderChanged; virtual;
-    procedure PerformConvolution(const SignalIn, SignalOut: PDAVDoubleFixedArray); virtual;
+    procedure PerformConvolution(const SignalIn, SignalOut: PDAVDoubleFixedArray); override;
     procedure CalculateIRSpectrums(const IR: PDAVDoubleFixedArray);
   published
     {$IFDEF Use_IPPS}
@@ -312,8 +337,6 @@ type
     {$ELSE}
     property Fft : TFftReal2ComplexNativeFloat64 read FFft;
     {$ENDIF}
-    property Count: Integer read GetCount;
-    property Latency: Integer read FLatency;
   end;
 
   TLowLatencyConvolution64 = class(TCustomLowLatencyConvolution)
@@ -382,7 +405,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Math, DAV_BlockArithmetrics, DAV_BlockProcessing;
+  SysUtils, Math, DAV_Math, DAV_BlockArithmetrics, DAV_BlockProcessing;
 
 resourcestring
   RCStrIRBlockOrderError = 'Maximum IR block order must be larger or equal ' +
@@ -995,76 +1018,55 @@ begin
   end;
 end;
 
-{ TLowLatencyConvolutionStage32 }
 
-constructor TLowLatencyConvolutionStage32.Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
+{ TCustomLowLatencyConvolutionStage32 }
+
+constructor TCustomLowLatencyConvolutionStage32.Create(const IROrder: Byte;
+  const StartPos, Latency, Count: Integer);
 begin
  FSignalFreq    := nil;
  FConvolvedTime := nil;
  FOutputPos     := StartPos;
  FLatency       := Latency;
 
- {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(IROrder + 1);
- {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(IROrder + 1);
- {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(IROrder + 1);
- FFft.DataOrder := doPackedComplex;
- {$ENDIF}{$ENDIF}
- FFft.AutoScaleType := astDivideInvByN;
- FFTOrderChanged;
  SetLength(FIRSpectrums, Count);
 end;
 
-destructor TLowLatencyConvolutionStage32.Destroy;
+destructor TCustomLowLatencyConvolutionStage32.Destroy;
 var
   PartIndex : Integer;
 begin
  FreeMem(FSignalFreq);
- FreeMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ FreeMem(FConvolved);
  FreeMem(FConvolvedTime);
  for PartIndex := 0 to Length(FIRSpectrums) - 1
-  do Dispose(FIRSpectrums[PartIndex]);
- FreeAndNil(FFft);
+  do FreeMem(FIRSpectrums[PartIndex]);
 
  inherited;
 end;
 
-procedure TLowLatencyConvolutionStage32.FFTOrderChanged;
+procedure TCustomLowLatencyConvolutionStage32.AssignTo(Dest: TPersistent);
 begin
- FFFTSize            := FFft.FFTSize;
- FFFTSizeHalf        := FFFTSize shr 1;
-
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
- ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
- ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
-
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Single), 0);
-end;
-
-function TLowLatencyConvolutionStage32.GetCount: Integer;
-begin
- Result := Length(FIRSpectrums);
-end;
-
-procedure TLowLatencyConvolutionStage32.AssignTo(Dest: TPersistent);
-begin
- if Dest is TLowLatencyConvolutionStage32 then
-  with TLowLatencyConvolutionStage32(Dest) do
+ if Dest is TCustomLowLatencyConvolutionStage32 then
+  with TCustomLowLatencyConvolutionStage32(Dest) do
    begin
     inherited;
-    {$IFDEF Use_IPPS}
-    FFft.Assign(Self.FFft);
-    {$ELSE} {$IFDEF Use_CUDA}
-    FFft.Assign(Self.FFft);
-    {$ELSE}
-    FFft.Assign(Self.FFft);
-    {$ENDIF}{$ENDIF}
-    FFFTSize       := Self.FFFTSize;
-    FFFTSizeHalf   := Self.FFFTSizeHalf;
+    FOutputPos     := Self.FOutputPos;
+    FLatency       := Self.FLatency;
+    FMod           := Self.FMod;
+    FModAnd        := Self.FModAnd;
+
+(*
+    FIRSpectrums   := Self.FIRSpectrums;
+    FSignalFreq    := Self.FSignalFreq;
+    FConvolved     := Self.FConvolved;
+    FConvolvedTime := Self.FConvolvedTime;
+*)
+   end else
+ if Dest is TCustomLowLatencyConvolutionStage64 then
+  with TCustomLowLatencyConvolutionStage64(Dest) do
+   begin
+    inherited;
     FOutputPos     := Self.FOutputPos;
     FLatency       := Self.FLatency;
     FMod           := Self.FMod;
@@ -1077,7 +1079,70 @@ begin
     FConvolvedTime := Self.FConvolvedTime;
 *)
    end
- else inherited;  
+ else inherited;
+end;
+
+function TCustomLowLatencyConvolutionStage32.GetCount: Integer;
+begin
+ Result := Length(FIRSpectrums);
+end;
+
+
+{ TLowLatencyConvolutionStage32 }
+
+constructor TLowLatencyConvolutionStage32.Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
+begin
+ inherited Create(IROrder, StartPos, Latency, Count);
+
+ {$IFDEF Use_IPPS}
+ FFft := TFftReal2ComplexIPPSFloat32.Create(IROrder + 1);
+ {$ELSE} {$IFDEF Use_CUDA}
+ FFft := TFftReal2ComplexCUDA32.Create(IROrder + 1);
+ {$ELSE}
+ FFft := TFftReal2ComplexNativeFloat32.Create(IROrder + 1);
+ FFft.DataOrder := doPackedComplex;
+ {$ENDIF}{$ENDIF}
+ FFft.AutoScaleType := astDivideInvByN;
+ FFTOrderChanged;
+end;
+
+destructor TLowLatencyConvolutionStage32.Destroy;
+begin
+ FreeAndNil(FFft);
+ inherited;
+end;
+
+procedure TLowLatencyConvolutionStage32.FFTOrderChanged;
+begin
+ FFFTSize     := FFft.FFTSize;
+ FFFTSizeHalf := FFFTSize shr 1;
+
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
+
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Single), 0);
+end;
+
+procedure TLowLatencyConvolutionStage32.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+
+ if Dest is TLowLatencyConvolutionStage32 then
+  with TLowLatencyConvolutionStage32(Dest) do
+   begin
+    {$IFDEF Use_IPPS}
+    FFft.Assign(Self.FFft);
+    {$ELSE} {$IFDEF Use_CUDA}
+    FFft.Assign(Self.FFft);
+    {$ELSE}
+    FFft.Assign(Self.FFft);
+    {$ENDIF}{$ENDIF}
+    FFFTSize       := Self.FFFTSize;
+    FFFTSizeHalf   := Self.FFFTSizeHalf;
+   end;
 end;
 
 procedure TLowLatencyConvolutionStage32.CalculateIRSpectrums(const IR: PDAVSingleFixedArray);
@@ -1085,6 +1150,8 @@ var
   TempIR   : PDAVSingleFixedArray;
   Blocks   : Integer;
 begin
+ Assert(FFFTSize = FFft.FFTSize);
+
  // get temporary buffer to store zero padded IR parts
  GetMem(TempIR, FFFTSize * SizeOf(Single));
  try
@@ -1117,6 +1184,10 @@ var
 begin
  if FMod = 0 then
   begin
+   Assert(Assigned(FSignalFreq));
+   Assert(Assigned(SignalIn));
+   Assert(Assigned(SignalOut));
+
    FFft.PerformFFT(FSignalFreq, @SignalIn[-FFFTSize]);
    Half := FFFTSizeHalf;
 
@@ -1173,7 +1244,7 @@ end;
 
 procedure TLowLatencyConvolution32.InputBufferSizeChanged;
 begin
- FInputHistorySize     := FInputBufferSize - FLatency;
+ FInputHistorySize := FInputBufferSize - FLatency;
  ReallocMem(FInputBuffer, FInputBufferSize * SizeOf(Single));
  FillChar(FInputBuffer^[0], FInputBufferSize * SizeOf(Single), 0);
 end;
@@ -1212,18 +1283,34 @@ end;
 
 procedure TLowLatencyConvolution32.LoadImpulseResponse(
   const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
+{$IFDEF CheckDataIntegrety}
+var
+  SampleIndex : Integer;
+{$ENDIF}
 begin
  if FIRSize = SampleFrames then
   begin
    // size equal, only copy data and recalculate FFT frequency blocks
+   {$IFDEF CheckDataIntegrety}
+   for SampleIndex := 0 to FIRSize - 1 do
+    if not IsNaN(Data^[SampleIndex])
+     then FImpulseResponse^[SampleIndex] := Data^[SampleIndex];
+   {$ELSE}
    Move(Data^[0], FImpulseResponse^[0], FIRSize * SizeOf(Single));
+   {$ENDIF}
    BuildIRSpectrums;
   end else
  if FIRSize > SampleFrames then
   begin
    // new size smaller than previous, dispose unused memory at the end
    FIRSize := SampleFrames;
+   {$IFDEF CheckDataIntegrety}
+   for SampleIndex := 0 to FIRSize - 1 do
+    if not IsNaN(Data^[SampleIndex])
+     then FImpulseResponse^[SampleIndex] := Data^[SampleIndex];
+   {$ELSE}
    Move(Data^[0], FImpulseResponse^[0], FIRSize * SizeOf(Single));
+   {$ENDIF}
    PaddedIRSize := CalculatePaddedIRSize;
    BuildIRSpectrums;
    ReallocMem(FImpulseResponse, FIRSize * SizeOf(Single));
@@ -1232,7 +1319,13 @@ begin
   begin
    FIRSize := SampleFrames;
    ReallocMem(FImpulseResponse, FIRSize * SizeOf(Single));
+   {$IFDEF CheckDataIntegrety}
+   for SampleIndex := 0 to FIRSize - 1 do
+    if not IsNaN(Data^[SampleIndex])
+     then FImpulseResponse^[SampleIndex] := Data^[SampleIndex];
+   {$ELSE}
    Move(Data^[0], FImpulseResponse^[0], FIRSize * SizeOf(Single));
+   {$ENDIF}
    PaddedIRSize := CalculatePaddedIRSize;
    BuildIRSpectrums;
   end;
@@ -1421,6 +1514,7 @@ begin
    end
   else
    begin
+    Assert(FInputHistorySize + FBlockPosition + FLatency - FBlockPosition <= FInputBufferSize);
     Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * SizeOf(Single));
     Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FLatency - FBlockPosition) * SizeOf(Single));
 
@@ -1429,8 +1523,11 @@ begin
     FillChar(FOutputBuffer^[FOutputHistorySize], FLatency * SizeOf(Single), 0);
 
     // actually perform partitioned convolution
-    for Part := 0 to Length(FConvStages) - 1
-     do FConvStages[Part].PerformConvolution(@FInputBuffer[FInputBufferSize], FOutputBuffer);
+    for Part := 0 to Length(FConvStages) - 1 do
+     begin
+      Assert(FInputBufferSize - FConvStages[Part].FFFTSize >= 0);
+      FConvStages[Part].PerformConvolution(@FInputBuffer[FInputBufferSize], FOutputBuffer);
+     end;
 
     // discard already used input buffer part to make space for new data
     Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * SizeOf(Single));
@@ -1570,14 +1667,80 @@ begin
 end;
 
 
-{ TLowLatencyConvolutionStage64 }
+{ TCustomLowLatencyConvolutionStage64 }
 
-constructor TLowLatencyConvolutionStage64.Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
+constructor TCustomLowLatencyConvolutionStage64.Create(const IROrder: Byte;
+  const StartPos, Latency, Count: Integer);
 begin
  FSignalFreq    := nil;
  FConvolvedTime := nil;
  FOutputPos     := StartPos;
  FLatency       := Latency;
+
+ SetLength(FIRSpectrums, Count);
+end;
+
+destructor TCustomLowLatencyConvolutionStage64.Destroy;
+var
+  PartIndex : Integer;
+begin
+ FreeMem(FSignalFreq);
+ FreeMem(FConvolved);
+ FreeMem(FConvolvedTime);
+ for PartIndex := 0 to Length(FIRSpectrums) - 1
+  do FreeMem(FIRSpectrums[PartIndex]);
+
+ inherited;
+end;
+
+procedure TCustomLowLatencyConvolutionStage64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomLowLatencyConvolutionStage64 then
+  with TCustomLowLatencyConvolutionStage64(Dest) do
+   begin
+    inherited;
+    FOutputPos     := Self.FOutputPos;
+    FLatency       := Self.FLatency;
+    FMod           := Self.FMod;
+    FModAnd        := Self.FModAnd;
+
+(*
+    FIRSpectrums   := Self.FIRSpectrums;
+    FSignalFreq    := Self.FSignalFreq;
+    FConvolved     := Self.FConvolved;
+    FConvolvedTime := Self.FConvolvedTime;
+*)
+   end else
+ if Dest is TCustomLowLatencyConvolutionStage32 then
+  with TCustomLowLatencyConvolutionStage32(Dest) do
+   begin
+    inherited;
+    FOutputPos     := Self.FOutputPos;
+    FLatency       := Self.FLatency;
+    FMod           := Self.FMod;
+    FModAnd        := Self.FModAnd;
+
+(*
+    FIRSpectrums   := Self.FIRSpectrums;
+    FSignalFreq    := Self.FSignalFreq;
+    FConvolved     := Self.FConvolved;
+    FConvolvedTime := Self.FConvolvedTime;
+*)
+   end
+ else inherited;
+end;
+
+function TCustomLowLatencyConvolutionStage64.GetCount: Integer;
+begin
+ Result := Length(FIRSpectrums);
+end;
+
+
+{ TLowLatencyConvolutionStage64 }
+
+constructor TLowLatencyConvolutionStage64.Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
+begin
+ inherited Create(IROrder, StartPos, Latency, Count);
 
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat64.Create(IROrder + 1);
@@ -1589,25 +1752,18 @@ begin
  {$ENDIF}{$ENDIF}
  FFft.AutoScaleType := astDivideInvByN;
  FFTOrderChanged;
- SetLength(FIRSpectrums, Count);
 end;
 
 destructor TLowLatencyConvolutionStage64.Destroy;
-var
-  i : Integer;
 begin
- Dispose(FSignalFreq);
- Dispose(FConvolvedTime);
- for i := 0 to Length(FIRSpectrums) - 1
-  do Dispose(FIRSpectrums[i]);
  FreeAndNil(FFft);
  inherited;
 end;
 
 procedure TLowLatencyConvolutionStage64.FFTOrderChanged;
 begin
- FFFTSize            := FFft.FFTSize;
- FFFTSizeHalf        := FFFTSize shr 1;
+ FFFTSize     := FFft.FFTSize;
+ FFFTSizeHalf := FFFTSize shr 1;
 
  ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
  ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
@@ -1618,19 +1774,23 @@ begin
  FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Double), 0);
 end;
 
-function TLowLatencyConvolutionStage64.GetCount: Integer;
-begin
- Result := Length(FIRSpectrums);
-end;
-
 procedure TLowLatencyConvolutionStage64.AssignTo(Dest: TPersistent);
 begin
+ inherited;
+
  if Dest is TLowLatencyConvolutionStage64 then
   with TLowLatencyConvolutionStage64(Dest) do
    begin
-    inherited;
-   end
- else inherited;
+    {$IFDEF Use_IPPS}
+    FFft.Assign(Self.FFft);
+    {$ELSE} {$IFDEF Use_CUDA}
+    FFft.Assign(Self.FFft);
+    {$ELSE}
+    FFft.Assign(Self.FFft);
+    {$ENDIF}{$ENDIF}
+    FFFTSize       := Self.FFFTSize;
+    FFFTSizeHalf   := Self.FFFTSizeHalf;
+   end;
 end;
 
 procedure TLowLatencyConvolutionStage64.CalculateIRSpectrums(const IR: PDAVDoubleFixedArray);
@@ -1638,6 +1798,8 @@ var
   TempIR   : PDAVDoubleFixedArray;
   Blocks   : Integer;
 begin
+ Assert(FFFTSize = FFft.FFTSize);
+
  // get temporary buffer to store zero padded IR parts
  GetMem(TempIR, FFFTSize * SizeOf(Double));
  try
@@ -2071,5 +2233,7 @@ end;
 initialization
   RegisterDspProcessor32(TConvolution32);
   RegisterDspProcessor64(TConvolution64);
+  RegisterDspProcessor32(TLowLatencyConvolution32);
+  RegisterDspProcessor64(TLowLatencyConvolution64);
 
 end.

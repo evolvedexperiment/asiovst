@@ -100,7 +100,7 @@ begin
   begin
    g := sin(p);
    p := (p + dp) * cTwoPiX;
-   p := (p - round(p - 0.5)) * cTwoPi; // fmod( p + dp, tp );
+   p := (p - Round(p - 0.5)) * cTwoPi; // fmod( p + dp, tp );
 
    fp[0] := (fb * fp[0] + Inputs[0, Sample]) * g;
    fp[1] := (fb * fp[0] + Inputs[1, Sample]) * g;

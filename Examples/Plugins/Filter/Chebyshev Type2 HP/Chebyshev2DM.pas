@@ -132,7 +132,7 @@ var
 begin
  for ChannelIndex := 0 to numInputs - 1 do
   if Assigned(FFilter[ChannelIndex])
-   then FFilter[ChannelIndex].Order := round(Value); //max(2, 2 * round(0.5 * Value));
+   then FFilter[ChannelIndex].Order := Round(Value); //max(2, 2 * Round(0.5 * Value));
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev2

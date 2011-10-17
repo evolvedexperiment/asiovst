@@ -150,7 +150,7 @@ end;
 procedure TStkPitchShiftModule.ParamMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FPitchShift[0]) then
+ if Assigned(FPitchShift[0]) then
   with FPitchShift[0] do
    begin
     EffectMix := 0.01 * Value;
