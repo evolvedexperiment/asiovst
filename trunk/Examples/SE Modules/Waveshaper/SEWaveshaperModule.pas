@@ -19,7 +19,7 @@ type
   private
     FInputPtr       : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputPtr      : PDAVSingleFixedArray;
-    FShapePtr       : Pchar;
+    FShapePtr       : PAnsiChar;
     FStaticCount    : Integer;
     FLookupTable    : Array [0..CTableSize] of TSEFloatSample;
 
@@ -168,7 +168,7 @@ begin
 
     Index := Count * 512;
     IndexFrac := Index - trunc(index);
-    p := @FLookupTable[Round(index)]; // keep top 9 bits as index into 512 entry wavetable
+    p := @FLookupTable[Round(index)]; // keep top 9 bits as Index into 512 entry wavetable
     //single s 1 = *p++;
     //*out++ = s1 * (1.f - idx_frac) + *p * idx_frac;
     Output^ := p^[0] + (p^[1] - p^[0]) * (IndexFrac - 1);
@@ -178,7 +178,7 @@ begin
       push   ebx
       mov    ebx, dword ptr [Input]
 
-      // multiply index by table size
+      // multiply Index by table size
       fld    dword ptr [edx]
       fadd   dword ptr [CHalf]
       fmul   dword ptr CTableSize
@@ -263,7 +263,7 @@ begin
   from     := 0; // first x co=ord
   for i := 1 to segments - 1 do
    begin
-    fto := nodes[i].x * CTableSize *0.01; // convert to table index (0-512)
+    fto := nodes[i].x * CTableSize *0.01; // convert to table Index (0-512)
 
     if fto >= CTableSize
      then fto := CTableSize - 1;

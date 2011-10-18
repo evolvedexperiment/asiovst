@@ -399,7 +399,7 @@ function TSEControlableButterworthLPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- if index in [2..3] then Properties^.Direction := drIn;
+ if Index in [2..3] then Properties^.Direction := drIn;
 end;
 
 class procedure TSEControlableButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -424,7 +424,7 @@ function TSEControlableButterworthHPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- if index in [2..3] then Properties^.Direction := drIn;
+ if Index in [2..3] then Properties^.Direction := drIn;
 end;
 
 class procedure TSEControlableButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties);

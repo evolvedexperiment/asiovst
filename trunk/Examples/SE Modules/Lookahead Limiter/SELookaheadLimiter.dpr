@@ -30,7 +30,8 @@ begin
   else Result := nil;
 end;
 
-exports MakeModule name 'makeModule';
-exports GetModuleProperties name 'getModuleProperties';
+exports 
+  MakeModule name 'makeModule', 
+  GetModuleProperties name 'getModuleProperties';
 
 end.

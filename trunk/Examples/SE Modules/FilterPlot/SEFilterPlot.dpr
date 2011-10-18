@@ -14,10 +14,10 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of
   0: TSEFilterPlotModule.GetModuleProperties(Properties);
-  else result := False;
+  else Result := False;
  end;;
 end;
 
@@ -26,24 +26,25 @@ var
   SEModuleBase : TSEModuleBase;
   GUI          : TSEGUIBase;
 begin
- result := nil;
+ Result := nil;
  case Index of
   0: if (ProcessType = 1) then
       begin
        SEModuleBase := TSEFilterPlotModule.Create(SEAudioMaster, Reserved);
-       if assigned(SEModuleBase)
-        then result := SEModuleBase.Effect;
+       if Assigned(SEModuleBase)
+        then Result := SEModuleBase.Effect;
       end else
      if (ProcessType = 2) then
       begin
        GUI := TSEFilterPlotGui.Create(TSEGuiCallback(SEAudioMaster), Reserved);
-       if assigned(GUI)
-        then result := GUI.SEGUIStructBase;
+       if Assigned(GUI)
+        then Result := GUI.SEGUIStructBase;
       end;
  end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

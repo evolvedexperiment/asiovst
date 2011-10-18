@@ -14,10 +14,10 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of // !!TODO!! list your in / out plugs
   0: TSEIntToListModule.GetModuleProperties(Properties)
-  else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -26,26 +26,27 @@ var
   SEIntToListModule : TSEIntToListModule;
   GUI               : TSEIntToListGui;
 begin
- result := nil;
+ Result := nil;
  case Index of // !!TODO!! list your in / out plugs
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEIntToListModule := TSEIntToListModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEIntToListModule)
-         then result := SEIntToListModule.Effect;
+        if Assigned(SEIntToListModule)
+         then Result := SEIntToListModule.Effect;
        end else
       if (ProcessType = 1) then // GUI Object
        begin
         GUI := TSEIntToListGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
-        if assigned(GUI)
-         then result := GUI.SEGUIStructBase;
+        if Assigned(GUI)
+         then Result := GUI.SEGUIStructBase;
        end;
      end;
  end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

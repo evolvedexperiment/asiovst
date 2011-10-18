@@ -44,7 +44,7 @@ begin
   pinMode:
    begin
     InValue := Pin[pinIn].ValueAsInteger;
-    if (Mode = 0) then // calc what value this index maps to
+    if (Mode = 0) then // calc what value this Index maps to
      begin
       ExtraData := Pin[pinOut].getExtraData;
       it := TItEnumList.Create(ExtraData);
@@ -57,7 +57,7 @@ begin
   pinOut:
    begin
     OutValue := Pin[pinOut].ValueAsInteger;
-    if Mode = 0 then // calc what index this value maps to
+    if Mode = 0 then // calc what Index this value maps to
      begin
       ExtraData := Pin[pinOut].getExtraData;
       it := TItEnumList.Create(ExtraData);

@@ -318,7 +318,7 @@ end;
 function TSEHilbertModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   0:
    with Properties^ do
     begin

@@ -252,9 +252,9 @@ begin
  OnProcess := SubProcessStatic;
 
  // 'transmit' new output status to next module 'downstream'
- if assigned(Pin[0])
+ if Assigned(Pin[0])
   then Pin[0].TransmitStatusChange(SampleClock, stStatic);
- if assigned(Pin[1])
+ if Assigned(Pin[1])
   then Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
@@ -288,7 +288,7 @@ end;
 function TSEFastSineApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -355,7 +355,7 @@ end;
 function TSEFastSineApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -422,7 +422,7 @@ end;
 function TSEFastCosineApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -489,7 +489,7 @@ end;
 function TSEFastCosineApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -556,7 +556,7 @@ end;
 function TSEFastTangensApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -622,7 +622,7 @@ end;
 function TSEFastTangensApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -688,7 +688,7 @@ end;
 function TSEFastCotangensApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -754,7 +754,7 @@ end;
 function TSEFastCotangensApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -820,7 +820,7 @@ end;
 function TSEFastArcTanApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -884,7 +884,7 @@ end;
 function TSEFastArcTanApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -948,7 +948,7 @@ end;
 function TSEFastArcCotanApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1012,7 +1012,7 @@ end;
 function TSEFastArcCotanApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1076,7 +1076,7 @@ end;
 function TSEFastLog2ApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1142,7 +1142,7 @@ end;
 function TSEFastLog2ApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1208,7 +1208,7 @@ end;
 function TSEFastPower2ApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1274,7 +1274,7 @@ end;
 function TSEFastPower2ApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin

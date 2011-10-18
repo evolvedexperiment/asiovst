@@ -86,7 +86,7 @@ begin
  FreeAndNil(FContainedData);
  {$ENDIF}
  FreeAndNil(FCriticalSection);
- if assigned(FBufferedPlayer)
+ if Assigned(FBufferedPlayer)
   then FreeAndNil(FBufferedPlayer);
  inherited;
 end;
@@ -157,7 +157,7 @@ begin
                       begin
                        FPosition := 0;
                        FReset := False;
-                       if assigned(FBufferedPlayer)
+                       if Assigned(FBufferedPlayer)
                         then FBufferedPlayer.Reset;
                        Pin[Integer(pinReset)].TransmitStatusChange(SampleClock, stOneOff);
                       end;
@@ -169,7 +169,7 @@ procedure TSEAudioFilePlayerModule.LoadFromResource(ID: Integer);
 begin
  if (ID >= 0) and (ID < FContainedData.Count) then
   begin
-   if assigned(FResourceStream) then FreeAndNil(FResourceStream)
+   if Assigned(FResourceStream) then FreeAndNil(FResourceStream)
    FResourceStream := TResourceStream.Create(HInstance, FContainedData[ID], 'AudioFile');
    FBufferedPlayer.Stream := FResourceStream;
   end;

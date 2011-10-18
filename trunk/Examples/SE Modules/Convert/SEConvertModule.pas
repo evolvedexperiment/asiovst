@@ -180,9 +180,9 @@ begin
  OnProcess := SubProcessStatic;
 
  // 'transmit' new output status to next module 'downstream'
- if assigned(Pin[0])
+ if Assigned(Pin[0])
   then Pin[0].TransmitStatusChange(SampleClock, stStatic);
- if assigned(Pin[1])
+ if Assigned(Pin[1])
   then Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
@@ -226,7 +226,7 @@ end;
 function TSEFloatToIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -281,7 +281,7 @@ end;
 function TSEIntToFloatModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -337,7 +337,7 @@ end;
 function TSEDoubleToIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -392,7 +392,7 @@ end;
 function TSEIntToDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -448,7 +448,7 @@ end;
 function TSEFloatToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -503,7 +503,7 @@ end;
 function TSEDoubleToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -558,7 +558,7 @@ end;
 function TSEIntToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -616,7 +616,7 @@ end;
 function TSETextToGuiTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   0: with Properties^ do
       begin
        Name            := 'Text';
@@ -688,7 +688,7 @@ end;
 function TSEIntToGuiIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -744,7 +744,7 @@ end;
 function TSEFloatToGuiFloatModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -800,7 +800,7 @@ end;
 function TSEDoubleToGuiDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -856,7 +856,7 @@ end;
 function TSEBooleanToGuiBooleanModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -885,7 +885,7 @@ begin
 
  OnProcess := SubProcess;
 
- if assigned(Pin[1])
+ if Assigned(Pin[1])
   then Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
@@ -913,7 +913,7 @@ function TSESampleToFloatModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -987,7 +987,7 @@ begin
 
  OnProcess := SubProcess;
 
- if assigned(Pin[1])
+ if Assigned(Pin[1])
   then Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
@@ -1015,7 +1015,7 @@ function TSESampleToDoubleModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin

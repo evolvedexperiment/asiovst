@@ -14,10 +14,10 @@ uses
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
  Result := True;
- case Index of // !!TODO!! list your in / out plugs
+ case Index of
   0: TSENoiseReductionStaticModule.GetModuleProperties(Properties);
   1: TSENoiseReductionControllableModule.GetModuleProperties(Properties);
-  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
+  else Result := False;
  end;;
 end;
 
@@ -31,7 +31,8 @@ begin
   end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

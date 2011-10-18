@@ -374,8 +374,8 @@ begin
  OnProcess := SubProcessStatic;
 
  // 'transmit' new output status to next module 'downstream'
- if assigned(Pin[0]) then Pin[0].TransmitStatusChange(SampleClock, stStatic);
- if assigned(Pin[1]) then Pin[1].TransmitStatusChange(SampleClock, stStatic);
+ if Assigned(Pin[0]) then Pin[0].TransmitStatusChange(SampleClock, stStatic);
+ if Assigned(Pin[1]) then Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
 // The most important part, processing the audio
@@ -392,7 +392,7 @@ function TCustomSETrigoMathTwoArgumentsFloatModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -427,7 +427,7 @@ function TCustomSETrigoMathTwoArgumentsDoubleModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin

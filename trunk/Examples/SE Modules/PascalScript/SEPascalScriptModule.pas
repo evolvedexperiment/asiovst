@@ -131,8 +131,8 @@ begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
- if assigned(FSEProcessBlock) then FSEProcessBlock(0);
- if assigned(FSEProcessSample) then
+ if Assigned(FSEProcessBlock) then FSEProcessBlock(0);
+ if Assigned(FSEProcessSample) then
   for Sample := 0 to SampleFrames - 1 do
    begin
     d := Input^[Sample] + cDenorm64;

@@ -12,12 +12,12 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of
   0: TSELinkwitzRileyStaticModule.GetModuleProperties(Properties);
   1: TSELinkwitzRileyControlableModule.GetModuleProperties(Properties);
   2: TSELinkwitzRileyAutomatableModule.GetModuleProperties(Properties);
-  else result := False;
+  else Result := False;
  end;;
 end;
 
@@ -25,30 +25,31 @@ function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2Aud
 var
   SEModuleBase: TSEModuleBase;
 begin
- result := nil;
+ Result := nil;
  case Index of
   0: if (ProcessType = 1) then
       begin
        SEModuleBase := TSELinkwitzRileyStaticModule.Create(SEAudioMaster, Reserved);
-       if assigned(SEModuleBase)
-        then result := SEModuleBase.Effect;
+       if Assigned(SEModuleBase)
+        then Result := SEModuleBase.Effect;
       end;
   1: if (ProcessType = 1) then
       begin
        SEModuleBase := TSELinkwitzRileyControlableModule.Create(SEAudioMaster, Reserved);
-       if assigned(SEModuleBase)
-        then result := SEModuleBase.Effect;
+       if Assigned(SEModuleBase)
+        then Result := SEModuleBase.Effect;
       end;
   2: if (ProcessType = 1) then
       begin
        SEModuleBase := TSELinkwitzRileyAutomatableModule.Create(SEAudioMaster, Reserved);
-       if assigned(SEModuleBase)
-        then result := SEModuleBase.Effect;
+       if Assigned(SEModuleBase)
+        then Result := SEModuleBase.Effect;
       end;
  end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

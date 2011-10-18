@@ -169,7 +169,7 @@ end;
 function TCustomLookaheadLimiterSEModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   0: with Properties^ do
       begin
        Name            := 'Input';
@@ -239,7 +239,7 @@ function TLookaheadLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   4: with Properties^ do
       begin
        Name            := 'Input Gain [dB]';
@@ -322,7 +322,7 @@ function TLookaheadLimiterParamStaticSEModule.GetPinProperties(const Index: Inte
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   3..6: with Properties^ do Direction := drIn;
  end;
 end;
