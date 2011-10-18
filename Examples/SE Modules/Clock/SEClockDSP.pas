@@ -236,7 +236,7 @@ begin
 
             ExtraSamples := BufferOffset + SamplesAlreadyProcessed;
             HostTotalBeats := ti.ppqPos + ExtraSamples * SamplesToBeats;
-            FQuarterNoteCount := round(HostTotalBeats);
+            FQuarterNoteCount := Round(HostTotalBeats);
 
             BeatFrac := FMidiClock;
 

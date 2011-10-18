@@ -36,7 +36,8 @@ begin
  end;
 end;
 
-exports getModuleProperties name 'getModuleProperties';
-exports makeModule name 'makeModule';
+exports
+  makeModule name 'makeModule',
+  getModuleProperties name 'getModuleProperties';
 
 end.

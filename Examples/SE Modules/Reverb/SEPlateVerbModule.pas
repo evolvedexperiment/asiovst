@@ -148,7 +148,7 @@ begin
   end
  else
   begin
-   FStaticCount := BlockSize + round(SampleRate);
+   FStaticCount := BlockSize + Round(SampleRate);
    OnProcess := SubProcessStatic;
   end;
 end;

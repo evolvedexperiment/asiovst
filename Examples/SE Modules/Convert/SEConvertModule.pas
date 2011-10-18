@@ -56,7 +56,7 @@ type
   TSEFloatToTextModule = class(TSEConvertModule)
   protected
     FFloat : Single;
-    FText  : PChar;
+    FText  : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -66,7 +66,7 @@ type
   TSEDoubleToTextModule = class(TSEConvertModule)
   protected
     FDouble : Double;
-    FText   : PChar;
+    FText   : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -76,7 +76,7 @@ type
   TSEIntToTextModule = class(TSEConvertModule)
   protected
     FInteger : Integer;
-    FText    : PChar;
+    FText    : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -85,9 +85,9 @@ type
 
   TSETextToGuiTextModule = class(TSEConvertModule)
   protected
-    FText    : PChar;
-    FOutText : PChar;
-    FGuiText : PChar;
+    FText    : PAnsiChar;
+    FOutText : PAnsiChar;
+    FGuiText : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -96,8 +96,8 @@ type
 
   TSEIntToGuiIntModule = class(TSEConvertModule)
   protected
-    FInt    : PChar;
-    FGuiInt : PChar;
+    FInt    : PAnsiChar;
+    FGuiInt : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -106,8 +106,8 @@ type
 
   TSEFloatToGuiFloatModule = class(TSEConvertModule)
   protected
-    FFloat    : PChar;
-    FGuiFloat : PChar;
+    FFloat    : PAnsiChar;
+    FGuiFloat : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -116,8 +116,8 @@ type
 
   TSEDoubleToGuiDoubleModule = class(TSEConvertModule)
   protected
-    FDouble    : PChar;
-    FGuiDouble : PChar;
+    FDouble    : PAnsiChar;
+    FGuiDouble : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -126,8 +126,8 @@ type
 
   TSEBooleanToGuiBooleanModule = class(TSEConvertModule)
   protected
-    FBoolean    : PChar;
-    FGuiBoolean : PChar;
+    FBoolean    : PAnsiChar;
+    FGuiBoolean : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -218,7 +218,7 @@ end;
 procedure TSEFloatToIntModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if CurrentPin.PinID = 0
-  then FInteger := round(FFloat);
+  then FInteger := Round(FFloat);
  inherited;
 end;
 
@@ -329,7 +329,7 @@ end;
 procedure TSEDoubleToIntModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if CurrentPin.PinID = 0
-  then FInteger := round(FDouble);
+  then FInteger := Round(FDouble);
  inherited;
 end;
 
@@ -440,7 +440,7 @@ end;
 procedure TSEFloatToTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if CurrentPin.PinID = 0
-  then FText := PChar(FloatToStr(FFloat) + #0);
+  then FText := PAnsiChar(AnsiString(FloatToStr(FFloat)) + #0);
  inherited;
 end;
 
@@ -495,7 +495,7 @@ end;
 procedure TSEDoubleToTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if CurrentPin.PinID = 0
-  then FText := PChar(FloatToStr(FDouble) + #0);
+  then FText := PAnsiChar(AnsiString(FloatToStr(FDouble)) + #0);
  inherited;
 end;
 
@@ -550,7 +550,7 @@ end;
 procedure TSEIntToTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if CurrentPin.PinID = 0
-  then FText := PChar(IntToStr(FInteger) + #0);
+  then FText := PAnsiChar(AnsiString(IntToStr(FInteger)) + #0);
  inherited;
 end;
 
@@ -606,7 +606,7 @@ procedure TSETextToGuiTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if CurrentPin.PinID = 0 then
   begin
-   FOutText := PChar(FText + #0);
+   FOutText := PAnsiChar(FText + #0);
    Pin[1].TransmitStatusChange(SampleClock, stStatic);
   end;
  inherited;

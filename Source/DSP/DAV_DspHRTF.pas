@@ -50,7 +50,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Graphics, SysUtils, Contnrs, DAV_Types, DAV_ChunkClasses,
+  Classes, SysUtils, Contnrs, DAV_Types, DAV_ChunkClasses,
   DAV_HalfFloat, DAV_Classes, DAV_VectorMath;
 
 type

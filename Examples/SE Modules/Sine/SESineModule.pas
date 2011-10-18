@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DspLFO;
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DspSimpleOscillator;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -48,7 +48,7 @@ type
     FOutputBuffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FFrequency    : Single;
     {$IFDEF PUREPASCAL}
-    FSineLFO      : TSineLFO;
+    FSineLFO      : TSimpleOscillator32;
     {$ELSE}
     FAngle        : TComplexDouble;
     FPosition     : TComplexDouble;
@@ -73,7 +73,7 @@ type
     FCosineBuffer : PDAVSingleFixedArray;
     FFrequency    : Single;
     {$IFDEF PUREPASCAL}
-    FSineLFO      : TSineLFO;
+    FSineLFO      : TSimpleOscillator32;
     {$ELSE}
     FAngle        : TComplexDouble;
     FPosition     : TComplexDouble;
@@ -98,7 +98,7 @@ type
     FSine2Buffer  : PDAVSingleFixedArray;
     FFrequency    : Single;
     {$IFDEF PUREPASCAL}
-    FSineLFO      : TSineLFO;
+    FSineLFO      : TSimpleOscillator32;
     {$ELSE}
     FAngle        : TComplexDouble;
     FPosition     : TComplexDouble;
@@ -133,7 +133,7 @@ begin
  inherited Create(SEAudioMaster, Reserved);
  FFrequency := 440;
  {$IFDEF PUREPASCAL}
- FSineLFO := TSineLFO.Create;
+ FSineLFO := TSimpleOscillator32.Create;
  FSineLFO.SampleRate := SampleRate;
  FSineLFO.Frequency := FFrequency;
  {$ELSE}
@@ -201,7 +201,7 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FOutputBuffer[BufferOffset + Sample] := FPosition.Re;
+   FOutputBuffer[BufferOffset + Sample] := FSineLFO.Sine;
    FSineLFO.CalculateNextSample;
   end;
 end;
@@ -312,7 +312,7 @@ begin
  inherited Create(SEAudioMaster, Reserved);
  FFrequency := 440;
  {$IFDEF PUREPASCAL}
- FSineLFO := TSineLFO.Create;
+ FSineLFO := TSimpleOscillator32.Create;
  FSineLFO.SampleRate := SampleRate;
  FSineLFO.Frequency := FFrequency;
  {$ELSE}
@@ -382,8 +382,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FSineBuffer[BufferOffset + Sample] := FPosition.Re;
-   FCosineBuffer[BufferOffset + Sample] := FPosition.Im;
+   FSineBuffer[BufferOffset + Sample] := FSineLFO.Cosine;
+   FCosineBuffer[BufferOffset + Sample] := FSineLFO.Sine;
    FSineLFO.CalculateNextSample;
   end;
 end;
@@ -518,7 +518,7 @@ begin
  inherited Create(SEAudioMaster, Reserved);
  FFrequency := 440;
  {$IFDEF PUREPASCAL}
- FSineLFO := TSineLFO.Create;
+ FSineLFO := TSimpleOscillator32.Create;
  FSineLFO.SampleRate := SampleRate;
  FSineLFO.Frequency := FFrequency;
  {$ELSE}
@@ -588,8 +588,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FSineBuffer[BufferOffset + Sample] := FPosition.Re;
-   FSine2Buffer[BufferOffset + Sample] := 2 * FPosition.Re * FPosition.Im;
+   FSineBuffer[BufferOffset + Sample] := FSineLFO.Cosine;
+   FSine2Buffer[BufferOffset + Sample] := 2 * FSineLFO.Cosine * FSineLFO.Sine;
    FSineLFO.CalculateNextSample;
   end;
 end;

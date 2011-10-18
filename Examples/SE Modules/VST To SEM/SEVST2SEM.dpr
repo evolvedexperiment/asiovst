@@ -2,9 +2,12 @@ library SEVST2SEM;
 
 {-$R 'Test.res' 'Test.rc'}
 
+{$I DAV_Compiler.inc}
+
 uses
-  Fastmm4,
-  FastMove,
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or comment if there is an error here
+  {$ENDIF}
   Classes,
   DAV_SECommon,
   DAV_SEModule,
@@ -60,7 +63,7 @@ begin
  end;
 end;
 
-exports makeModule name 'makeModule';
-exports getModuleProperties name 'getModuleProperties';
+exports makeModule name 'makeModule',
+  getModuleProperties name 'getModuleProperties';
 
 end.

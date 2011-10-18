@@ -51,7 +51,7 @@ type
 
     // Input one Sample to the delay-line and return one output.
     function Tick(const Sample: Single): Single; override;
-  published
+
     property Delay: Single read FDelay write SetDelay;
   end;
 

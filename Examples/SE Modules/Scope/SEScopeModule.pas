@@ -30,7 +30,7 @@ type
     FScopeResults  : TScopeResults;
     FChannelActive : array [0..CScopeChannels-1] of Boolean;
     FResultsBlob   : TSEBlob;
-    procedure SendStringToGui(AMsgID, ALength: Integer; AData: PChar);
+    procedure SendStringToGui(AMsgID, ALength: Integer; AData: PAnsiChar);
     procedure ForceTrigger;
     procedure SendResultToGui;
   protected
@@ -111,13 +111,13 @@ begin
   end;
 
   OnProcess := WaitForTrigger1;
-  FTimeOut := round(SampleRate / 3);
+  FTimeOut := Round(SampleRate / 3);
 end;
 
 procedure TSEScopeModule.SendStringToGui(AMsgID, ALength: Integer;
-  AData: PChar);
+  AData: PAnsiChar);
 begin
- CallHost(seaudioMasterSendStringToGui, ALength, AMsgID, AData);
+ CallHost(seAudioMasterSendStringToGui, ALength, AMsgID, AData);
 end;
 
 procedure TSEScopeModule.SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -175,7 +175,7 @@ begin
    Remain := SampleFrames - Count;
 
    OnProcess := WaitForTrigger1;
-   FTimeOut := round(SampleRate / 3);
+   FTimeOut := Round(SampleRate / 3);
    OnProcess(BufferOffset + SampleFrames - Remain, Remain);
   end;
 end;

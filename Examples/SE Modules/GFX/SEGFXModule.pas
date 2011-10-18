@@ -188,14 +188,14 @@ end;
 // describe your module
 class procedure TSEGFXBaseModule.getModuleProperties(Properties : PSEModuleProperties);
 var
-  str : string;
+  str : AnsiString;
 begin
  // describe the plugin, this is the name the end-user will see.
  with Properties^ do
   begin
    str  := 'GFX ' + GetGfxName;
-   Name := PChar(str);
-   ID   := PChar(str);
+   Name := PAnsiChar(str);
+   ID   := PAnsiChar(str);
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';

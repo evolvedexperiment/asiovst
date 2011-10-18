@@ -50,17 +50,17 @@ type
   private
     FOutLeftBuffer   : PDAVSingleFixedArray;
     FOutRightBuffer  : PDAVSingleFixedArray;
-    FFileName        : PChar;
+    FFileName        : PAnsiChar;
     FPosition        : Integer;
     FReset           : Boolean;
     FBufferSize      : Integer;
     FSemitones       : Single;
     FInterpolation   : TBufferInterpolation;
-    FTitle           : PChar;
-    FArtist          : PChar;
-    FAlbum           : PChar;
-    FComment         : PChar;
-    FYear            : PChar;
+    FTitle           : PAnsiChar;
+    FArtist          : PAnsiChar;
+    FAlbum           : PAnsiChar;
+    FComment         : PAnsiChar;
+    FYear            : PAnsiChar;
     FCriticalSection : TCriticalSection;
     {$IFDEF UseEmbedding}
     FBufferedPlayer  : TBufferedMP3StreamPlayer;
@@ -251,7 +251,7 @@ class procedure TSEMp3PlayerModule.GetModuleProperties(Properties : PSEModulePro
 var
   ContainedData : TStringList;
   i             : Integer;
-  str           : string;
+  str           : AnsiString;
 {$ENDIF}
 begin
  {$IFDEF UseEmbedding}
@@ -292,7 +292,7 @@ end;
 function TSEMp3PlayerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 {$IFDEF UseEmbedding}
 var
-  str : string;
+  str : AnsiString;
 {$ENDIF}
 begin
  Result := True;
@@ -307,7 +307,7 @@ begin
                         DataType        := dtEnum;
                         DefaultValue    := '0';
                         str             := 'range 0,' + IntToStr(FContainedData.Count - 1);
-                        DatatypeExtra   := PChar(str);
+                        DatatypeExtra   := PAnsiChar(str);
                        end
                       else
                       {$ENDIF}

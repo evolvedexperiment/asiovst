@@ -28,7 +28,7 @@ type
     FAmount : Byte;
     procedure GuiPinValueChange(CurrentPin: TSEGuiPin); override;
     procedure GuiWindowOpen(WI: PSEWndInfo); override;
-  published
+
     property Amount: Byte read FAmount;
   end;
 
@@ -551,7 +551,7 @@ var
 begin
   RGBToHue(GetRValue(Color1), GetGValue(Color1), GetBValue(Color1), h1);
   RGBToHue(GetRValue(Color2), GetGValue(Color2), GetBValue(Color2), h2);
-  Result := round((h2 - h1) * 255);
+  Result := Round((h2 - h1) * 255);
 end;
 
 function PixelHue(Color: TColor; Amount: Byte; Dither: Boolean): TColor;
@@ -1181,7 +1181,7 @@ var
   const
     Pia: Single = pi / 510;
   begin
-   Result := round(sin(a * Pia) * 255);
+   Result := Round(sin(a * Pia) * 255);
   end;
 
 begin
@@ -1414,9 +1414,9 @@ begin
    pd := Dst.scanline[y];
    for x := 0 to w-1 do
     begin
-     pd[x * 3    ] := round(ps[x * 3    ] * Reciprocal) * Amount;
-     pd[x * 3 + 1] := round(ps[x * 3 + 1] * Reciprocal) * Amount;
-     pd[x * 3 + 2] := round(ps[x * 3 + 2] * Reciprocal) * Amount;
+     pd[x * 3    ] := Round(ps[x * 3    ] * Reciprocal) * Amount;
+     pd[x * 3 + 1] := Round(ps[x * 3 + 1] * Reciprocal) * Amount;
+     pd[x * 3 + 2] := Round(ps[x * 3 + 2] * Reciprocal) * Amount;
     end;
   end;
 end;
@@ -1602,19 +1602,19 @@ begin
      s[0] := s[1];
 
      // blue
-     v := round(Line[x * 3] + Amount * (h + s[1]));
+     v := Round(Line[x * 3] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3] := 0 else
      if v > 255 then Line[x * 3] := 255
       else Line[x * 3] := v;
 
      // green
-     v := round(Line[x * 3 + 1] + Amount * (h + s[1]));
+     v := Round(Line[x * 3 + 1] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3 + 1] := 0 else
      if v > 255 then Line[x * 3 + 1] := 255
       else Line[x * 3 + 1] := v;
 
      // red
-     v := round(Line[x * 3 + 2] + Amount * (h + s[1]));
+     v := Round(Line[x * 3 + 2] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3 + 2] := 0 else
      if v > 255 then Line[x * 3 + 2] := 255
       else Line[x * 3 + 2] := v;
@@ -1646,19 +1646,19 @@ begin
      s[0] := s[1];
 
      // blue
-     v := round(Line[x * 3] + Amount * (h + s[1]));
+     v := Round(Line[x * 3] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3] := 0 else
      if v > 255 then Line[x * 3] := 255
       else Line[x * 3] := v;
 
      // green
-     v := round(Line[x * 3 + 1] + Amount * (h + s[1]));
+     v := Round(Line[x * 3 + 1] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3 + 1] := 0 else
      if v > 255 then Line[x * 3 + 1] := 255
       else Line[x * 3 + 1] := v;
 
      // red
-     v := round(Line[x * 3 + 2] + Amount * (h + s[1]));
+     v := Round(Line[x * 3 + 2] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3 + 2] := 0 else
      if v > 255 then Line[x * 3 + 2] := 255
       else Line[x * 3 + 2] := v;
@@ -1673,19 +1673,19 @@ begin
      s[0] := s[1];
 
      // blue
-     v := round(Line[x * 3] + Amount * (h + s[1]));
+     v := Round(Line[x * 3] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3] := 0 else
      if v > 255 then Line[x * 3] := 255
       else Line[x * 3] := v;
 
      // green
-     v := round(Line[x * 3 + 1] + Amount * (h + s[1]));
+     v := Round(Line[x * 3 + 1] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3 + 1] := 0 else
      if v > 255 then Line[x * 3 + 1] := 255
       else Line[x * 3 + 1] := v;
 
      // red
-     v := round(Line[x * 3 + 2] + Amount * (h + s[1]));
+     v := Round(Line[x * 3 + 2] + Amount * (h + s[1]));
      if v < 0 then Line[x * 3 + 2] := 0 else
      if v > 255 then Line[x * 3 + 2] := 255
       else Line[x * 3 + 2] := v;

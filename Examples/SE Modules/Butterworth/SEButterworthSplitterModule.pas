@@ -145,7 +145,7 @@ begin
  OutHi := PDAVSingleFixedArray(@FOutputHiBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do FFilter.ProcessSample(Input[Sample], OutLo[Sample], OutHi[Sample]);
+  do FFilter.ProcessSample32(Input[Sample], OutLo[Sample], OutHi[Sample]);
 end;
 
 procedure TSEButterworthModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -371,7 +371,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
    FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
-   FFilter.ProcessSample(Input[Sample], OutLo[Sample], OutHi[Sample]);
+   FFilter.ProcessSample32(Input[Sample], OutLo[Sample], OutHi[Sample]);
   end;
 end;
 

@@ -14,15 +14,15 @@ type
 
   TSEPascalScriptModule = class(TSEModuleBase)
   private
-    FByteCode        : string;
-    FFileName        : PChar;
+    FByteCode        : AnsiString;
+    FFileName        : PAnsiChar;
     FInputBuffer     : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer    : PDAVSingleFixedArray;
     FPSCompiler      : TPSPascalCompiler;
     FPSExecuter      : TPSExec;
     FSEProcessSample : TSEProcessSample;
     FSEProcessBlock  : TSEProcessBlock;
-    procedure SetByteCode(const Value: string);
+    procedure SetByteCode(const Value: AnsiString);
     procedure ByteCodeLoaded;
   protected
     procedure Open; override;
@@ -35,7 +35,7 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
 
-    property ByteCode : string read FByteCode write SetByteCode;
+    property ByteCode : AnsiString read FByteCode write SetByteCode;
   end;
 
 implementation
@@ -97,7 +97,7 @@ begin
  OnProcess := SubProcess;
 end;
 
-procedure TSEPascalScriptModule.SetByteCode(const Value: string);
+procedure TSEPascalScriptModule.SetByteCode(const Value: AnsiString);
 begin
  if FByteCode <> Value then
   begin

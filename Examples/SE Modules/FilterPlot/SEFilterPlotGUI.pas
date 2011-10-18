@@ -193,17 +193,17 @@ begin
    HalfHght := (R.Bottom - R.Top) div 2;
 
    // draw 100 Hz
-   Band := round(FreqLogToLinear(100) * Wdth);
+   Band := Round(FreqLogToLinear(100) * Wdth);
    MoveTo(Band, R.Top);
    LineTo(Band, R.Bottom);
 
    // draw 1 kHz
-   Band := round(FreqLogToLinear(1E3) * Wdth);
+   Band := Round(FreqLogToLinear(1E3) * Wdth);
    MoveTo(Band, R.Top);
    LineTo(Band, R.Bottom);
 
    // draw 10 kHz
-   Band := round(FreqLogToLinear(1E4) * Wdth);
+   Band := Round(FreqLogToLinear(1E4) * Wdth);
    MoveTo(Band, R.Top);
    LineTo(Band, R.Bottom);
 
@@ -215,12 +215,12 @@ begin
    if assigned(FFilter) then
     begin
      Magn := FFilter.MagnitudeSquared(20);
-     MoveTo(1, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor)));
+     MoveTo(1, Round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor)));
      for c := 2 to Wdth do
       begin
        Frq := FreqLinearToLog(c * WdthRez);
        Magn := FFilter.MagnitudeSquared(Frq);
-       LineTo(c, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor )));
+       LineTo(c, Round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor )));
       end;
     end;
   end;

@@ -32,7 +32,7 @@ type
     procedure Reset;
     procedure AddPhaseOffset(Value: Single);
     function Tick: Single; virtual;
-  published
+
     property ActiveWave: Integer read FWave write FWave;
     property Phase: Single read FPhase write SetPhase;
     property PhaseOffset: Single read FPofs write SetPhaseOffset;

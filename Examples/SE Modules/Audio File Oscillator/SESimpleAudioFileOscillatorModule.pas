@@ -249,8 +249,10 @@ end;
 
 // describe the pins (plugs)
 function TSESimpleAudioFileOscillatorModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+{$IFDEF UseEmbedding}
 var
-  str : string;
+  str : AnsiString;
+{$ENDIF}
 begin
  Result := True;
  case TSEAudioFileOscillatorPins(index) of

@@ -114,7 +114,7 @@ begin
  FImpulseResponse := TAudioData32.Create;
 
  if FContainedIRs.Count > 0
-  then Integer(FFileName) := 0
+  then NativeInt(FFileName) := 0
   else FFileName := '';
 end;
 

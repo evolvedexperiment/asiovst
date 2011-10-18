@@ -32,7 +32,7 @@ type
     procedure Clear;
     function Tick(const Input: Single): Single; overload;
     procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
-  published
+
     property LastOutput: Single read GetLastOutput;
     property LastOutputLeft: Single read FLastOutput[0];
     property LastOutputRight: Single read FLastOutput[1];

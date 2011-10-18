@@ -230,7 +230,7 @@ type
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_Common;
 
 { TSEApproximationsModule }
 

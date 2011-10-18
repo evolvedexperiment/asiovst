@@ -15,7 +15,7 @@ type
   private
     FInputBuffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FFrequency   : PDAVSingleFixedArray;
-    FNote        : string;
+    FNote        : AnsiString;
     FDetune      : Single;
     FStaticCount : Integer;
     procedure ChooseProcess;

@@ -134,7 +134,7 @@ begin
    end
   else
    begin
-    FStaticCount := BlockSize + round(0.001 * FVocoder.Release * FVocoder.SampleRate);
+    FStaticCount := BlockSize + Round(0.001 * FVocoder.Release * FVocoder.SampleRate);
     OnProcess := SubProcessStatic;
     Pin[2].TransmitStatusChange(SampleClock, stStop);
    end;
