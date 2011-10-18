@@ -15,7 +15,7 @@ type
 
   TSEConcatStringModule = class(TSEStringToolsModule)
   protected
-    FText : array [0..2] of PChar;
+    FText : array [0..2] of PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -72,7 +72,7 @@ end;
 procedure TSEConcatStringModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if CurrentPin.PinID = 0
-  then FText[0] := PChar(StrPas(FText[1]) + StrPas(FText[2]) + #0);
+  then FText[0] := PAnsiChar(StrPas(FText[1]) + StrPas(FText[2]) + #0);
  inherited;
 end;
 
@@ -80,7 +80,7 @@ end;
 function TSEConcatStringModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin

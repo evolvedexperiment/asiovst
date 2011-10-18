@@ -12,7 +12,7 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of // !!TODO!! list your in / out plugs
    0: TSEFloatToIntModule.GetModuleProperties(Properties);
    1: TSEDoubleToIntModule.GetModuleProperties(Properties);
@@ -28,7 +28,7 @@ begin
   11: TSEBooleanToGuiBooleanModule.GetModuleProperties(Properties);
   12: TSESampleToFloatModule.GetModuleProperties(Properties);
   13: TSESampleToDoubleModule.GetModuleProperties(Properties);
-  else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -55,12 +55,13 @@ begin
   13: if (ProcessType = 1) then SEModuleBase := TSESampleToDoubleModule.Create(SEAudioMaster, Reserved);
  end;
 
- if assigned(SEModuleBase)
-  then result := SEModuleBase.Effect
-  else result := nil;
+ if Assigned(SEModuleBase)
+  then Result := SEModuleBase.Effect
+  else Result := nil;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

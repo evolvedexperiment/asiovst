@@ -316,9 +316,9 @@ begin
  OnProcess := SubProcessStatic;
 
  // 'transmit' new output status to next module 'downstream'
- if assigned(Pin[0])
+ if Assigned(Pin[0])
   then Pin[0].TransmitStatusChange(SampleClock, stStatic);
- if assigned(Pin[1])
+ if Assigned(Pin[1])
   then Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
@@ -359,7 +359,7 @@ end;
 function TSELimitFloatModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -430,7 +430,7 @@ end;
 function TSELimitDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -501,7 +501,7 @@ end;
 function TSELimitIntegerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -562,7 +562,7 @@ function TSEIsPowerOf2Module.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -614,7 +614,7 @@ function TSERoundToPowerOf2Module.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -667,7 +667,7 @@ function TSETruncToPowerOf2Module.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -720,7 +720,7 @@ function TSEExtendToPowerOf2Module.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -772,7 +772,7 @@ function TSEFlipIntegerBytesModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -824,7 +824,7 @@ end;
 function TSESincSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -876,7 +876,7 @@ end;
 function TSESincDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -928,7 +928,7 @@ end;
 function TSESigmoidSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -980,7 +980,7 @@ end;
 function TSESigmoidDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1032,7 +1032,7 @@ end;
 function TSEFractionalSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1084,7 +1084,7 @@ end;
 function TSEFractionalDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1135,7 +1135,7 @@ end;
 function TSEAbsoluteSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1187,7 +1187,7 @@ end;
 function TSEAbsoluteDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1239,7 +1239,7 @@ end;
 function TSEModuloSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1299,7 +1299,7 @@ end;
 function TSEModuloDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1359,7 +1359,7 @@ end;
 function TSEMinimumIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1419,7 +1419,7 @@ end;
 function TSEMinimumSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1479,7 +1479,7 @@ end;
 function TSEMinimumDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1539,7 +1539,7 @@ end;
 function TSEMaximumIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1599,7 +1599,7 @@ end;
 function TSEMaximumSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1659,7 +1659,7 @@ end;
 function TSEMaximumDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1719,7 +1719,7 @@ end;
 function TSEGetSinCosSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
@@ -1779,7 +1779,7 @@ end;
 function TSEGetSinCosDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin

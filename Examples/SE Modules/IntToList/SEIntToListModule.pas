@@ -63,7 +63,7 @@ end;
 function TSEIntToListModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin

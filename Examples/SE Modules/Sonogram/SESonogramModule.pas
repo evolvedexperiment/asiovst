@@ -88,7 +88,7 @@ end;
 
 procedure TSESonogramModule.Close;
 begin
- if assigned(FSonogram)
+ if Assigned(FSonogram)
   then FreeAndNil(FSonogram);
  inherited;
 end;

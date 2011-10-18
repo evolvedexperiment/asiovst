@@ -212,7 +212,7 @@ begin
    LineTo(Wdth, HalfHght);
 
    Pen.Color := FColorCurve;
-   if assigned(FFilter) then
+   if Assigned(FFilter) then
     begin
      Magn := FFilter.MagnitudeSquared(20);
      MoveTo(1, Round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor)));

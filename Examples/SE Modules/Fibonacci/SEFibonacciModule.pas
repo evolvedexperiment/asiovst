@@ -143,7 +143,7 @@ end;
 function TSEFibonacciModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   // typical input plug (inputs are listed first)
   // typical output plug
   0: with Properties^ do

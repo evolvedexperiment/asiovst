@@ -32,20 +32,21 @@ begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEModuleBase := TSESonogramModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
+        if Assigned(SEModuleBase)
          then Result := SEModuleBase.Effect;
        end else
       if (ProcessType = 2) then // GUI Object
        begin
         GUI := TSESonogramGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
-        if assigned(GUI)
+        if Assigned(GUI)
          then Result := GUI.SEGUIStructBase;
        end;
      end;
  end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

@@ -30,19 +30,20 @@ begin
   0: if (ProcessType = 1) then
       begin
        SEModuleBase := TSESimpleAudioFileOscillatorModule.Create(SEAudioMaster, Reserved);
-       if assigned(SEModuleBase)
+       if Assigned(SEModuleBase)
         then Result := SEModuleBase.Effect;
       end;
   1: if (ProcessType = 1) then
       begin
        SEModuleBase := TSEAudioFileOscillatorModule.Create(SEAudioMaster, Reserved);
-       if assigned(SEModuleBase)
+       if Assigned(SEModuleBase)
         then Result := SEModuleBase.Effect;
       end;
  end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

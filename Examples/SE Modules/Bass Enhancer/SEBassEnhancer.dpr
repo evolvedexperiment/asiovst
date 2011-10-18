@@ -38,7 +38,8 @@ begin
   else Result := nil;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

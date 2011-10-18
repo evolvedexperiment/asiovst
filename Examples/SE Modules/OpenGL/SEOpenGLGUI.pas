@@ -56,9 +56,9 @@ end;
 destructor TSEOpenGLGui.Destroy;
 begin
  inherited;
- if assigned(FGLScene)
+ if Assigned(FGLScene)
   then FreeAndNil(FGLScene);
- if assigned(FGLSceneViewer)
+ if Assigned(FGLSceneViewer)
   then FreeAndNil(FGLSceneViewer);
 end;
 
@@ -93,15 +93,15 @@ end;
 procedure TSEOpenGLGui.GuiWindowClose(WI: PSEWndInfo);
 begin
  inherited;
- if assigned(FGLScene)
+ if Assigned(FGLScene)
   then FreeAndNil(FGLScene);
- if assigned(FGLSceneViewer)
+ if Assigned(FGLSceneViewer)
   then FreeAndNil(FGLSceneViewer);
 end;
 
 procedure TSEOpenGLGui.GuiPaint(hDC: HDC; wi :PSEWndInfo);
 begin
- if assigned(FGLSceneViewer) then
+ if Assigned(FGLSceneViewer) then
   with FGLSceneViewer do
    begin
     SetFocus;

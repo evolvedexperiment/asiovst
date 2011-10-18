@@ -17,23 +17,24 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of
   0: TSEStkPitchshifterModule.GetModuleProperties(Properties);
-  else result := False;
+  else Result := False;
  end;;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- result := nil;
+ Result := nil;
  if (ProcessType = 1) then
   case Index of
-   0: result := TSEStkPitchshifterModule.Create(SEAudioMaster, Reserved).Effect;
+   0: Result := TSEStkPitchshifterModule.Create(SEAudioMaster, Reserved).Effect;
   end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

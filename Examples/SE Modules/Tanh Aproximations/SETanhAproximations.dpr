@@ -32,7 +32,7 @@ begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEModuleBase := TSETanhAproximationsModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
+        if Assigned(SEModuleBase)
          then Result := SEModuleBase.Effect;
        end;
      end;
@@ -40,7 +40,7 @@ begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEModuleBase := TSETanhAproxModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
+        if Assigned(SEModuleBase)
          then Result := SEModuleBase.Effect;
        end;
      end;
@@ -48,14 +48,15 @@ begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEModuleBase := TSETanhModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
+        if Assigned(SEModuleBase)
          then Result := SEModuleBase.Effect;
        end;
      end;
  end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

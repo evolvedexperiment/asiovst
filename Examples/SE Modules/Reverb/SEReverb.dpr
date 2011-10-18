@@ -18,7 +18,7 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of // !!TODO!! list your in / out plugs
    0: TSEStkNReverbStaticModule.GetModuleProperties(Properties);
    1: TSEStkNReverbControllableModule.GetModuleProperties(Properties);
@@ -32,31 +32,32 @@ begin
    9: TSEFreeverbControllableModule.GetModuleProperties(Properties);
   10: TSEPlateReverbStaticModule.GetModuleProperties(Properties);
   11: TSEPlateReverbControllableModule.GetModuleProperties(Properties);
-  else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- result := nil;
+ Result := nil;
  if (ProcessType = 1) then
   case Index of
-    0: result := TSEStkNReverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
-    1: result := TSEStkNReverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
-    2: result := TSEStkJCReverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
-    3: result := TSEStkJCReverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
-    4: result := TSEStkNReverb2StaticModule.Create(SEAudioMaster, Reserved).Effect;
-    5: result := TSEStkNReverb2ControllableModule.Create(SEAudioMaster, Reserved).Effect;
-    6: result := TSEStkJCReverb2StaticModule.Create(SEAudioMaster, Reserved).Effect;
-    7: result := TSEStkJCReverb2ControllableModule.Create(SEAudioMaster, Reserved).Effect;
-    8: result := TSEFreeverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
-    9: result := TSEFreeverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
-   10: result := TSEPlateReverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
-   11: result := TSEPlateReverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
+    0: Result := TSEStkNReverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
+    1: Result := TSEStkNReverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
+    2: Result := TSEStkJCReverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
+    3: Result := TSEStkJCReverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
+    4: Result := TSEStkNReverb2StaticModule.Create(SEAudioMaster, Reserved).Effect;
+    5: Result := TSEStkNReverb2ControllableModule.Create(SEAudioMaster, Reserved).Effect;
+    6: Result := TSEStkJCReverb2StaticModule.Create(SEAudioMaster, Reserved).Effect;
+    7: Result := TSEStkJCReverb2ControllableModule.Create(SEAudioMaster, Reserved).Effect;
+    8: Result := TSEFreeverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
+    9: Result := TSEFreeverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
+   10: Result := TSEPlateReverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
+   11: Result := TSEPlateReverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
   end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

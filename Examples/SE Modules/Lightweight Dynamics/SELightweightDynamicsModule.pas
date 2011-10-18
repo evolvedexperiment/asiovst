@@ -366,7 +366,7 @@ end;
 function TCustomLightweightDynamicsSEModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := True;
- case index of
+ case Index of
   0: with Properties^ do
       begin
        Name            := 'Sidechain';
@@ -495,7 +495,7 @@ function TLightweightGateStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
@@ -601,7 +601,7 @@ function TLightweightGateParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5..9: with Properties^ do Direction := drIn;
  end;
 end;
@@ -623,7 +623,7 @@ function TLightweightGateAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
@@ -809,7 +809,7 @@ function TLightweightLimiterStaticSEModule.GetPinProperties(const Index: Integer
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
@@ -915,7 +915,7 @@ function TLightweightLimiterParamStaticSEModule.GetPinProperties(const Index: In
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5..9: with Properties^ do Direction := drIn;
  end;
 end;
@@ -937,7 +937,7 @@ function TLightweightLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
@@ -1062,7 +1062,7 @@ function TCustomLightweightCompressorSEModule.GetPinProperties(const Index: Inte
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   6: with Properties^ do
       begin
        Name            := 'Auto Make Up';
@@ -1150,7 +1150,7 @@ function TLightweightCompressorStaticSEModule.GetPinProperties(const Index: Inte
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
@@ -1256,7 +1256,7 @@ function TLightweightCompressorParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5..10: with Properties^ do Direction := drIn;
  end;
 end;
@@ -1278,7 +1278,7 @@ function TLightweightCompressorAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
@@ -1406,7 +1406,7 @@ function TCustomLightweightFeedbackCompressorSEModule.GetPinProperties(const Ind
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   6: with Properties^ do
       begin
        Name            := 'Auto Make Up';
@@ -1494,7 +1494,7 @@ function TLightweightFeedbackCompressorStaticSEModule.GetPinProperties(const Ind
   Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
@@ -1600,7 +1600,7 @@ function TLightweightFeedbackCompressorParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5..10: with Properties^ do Direction := drIn;
  end;
 end;
@@ -1622,7 +1622,7 @@ function TLightweightFeedbackCompressorAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
+ case Index of
   5: with Properties^ do
       begin
        Name            := 'Threshold [dB]';

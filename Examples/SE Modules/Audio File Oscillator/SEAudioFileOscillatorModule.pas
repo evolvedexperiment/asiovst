@@ -889,7 +889,7 @@ begin
                         DataType        := dtEnum;
                         DefaultValue    := '0';
                         str             := 'range 0,' + IntToStr(FContainedData.Count - 1);
-                        DatatypeExtra   := PChar(str);
+                        DatatypeExtra   := PAnsiChar(str);
                        end
                       else
                       {$ENDIF}

@@ -86,7 +86,7 @@ end;
 
 procedure TSESonogramGui.GuiPaint(hDC: HDC; wi: PSEWndInfo);
 begin
- if assigned(FSonogram) and assigned(CriticalSection) then
+ if Assigned(FSonogram) and Assigned(CriticalSection) then
   with FSonogram do
    begin
     if not Assigned(Bitmap) then Exit;

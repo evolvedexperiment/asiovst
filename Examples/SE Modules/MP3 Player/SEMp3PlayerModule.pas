@@ -121,7 +121,7 @@ begin
  FreeAndNil(FContainedData);
  {$ENDIF}
  FreeAndNil(FCriticalSection);
- if assigned(FBufferedPlayer)
+ if Assigned(FBufferedPlayer)
   then FreeAndNil(FBufferedPlayer);
  inherited;
 end;
@@ -171,14 +171,14 @@ begin
                           except
                           end;
 
-                       if assigned(FBufferedPlayer.MpegAudio) then
+                       if Assigned(FBufferedPlayer.MpegAudio) then
                         with FBufferedPlayer.MpegAudio do
                          begin
-                          if assigned(FTitle)   then StrPCopy(FTitle, Id3Title);
-                          if assigned(FArtist)  then StrPCopy(FArtist, Id3Artist);
-                          if assigned(FAlbum)   then StrPCopy(FAlbum, Id3Album);
-                          if assigned(FYear)    then StrPCopy(FYear, Id3Year);
-                          if assigned(FComment) then StrPCopy(FComment, Id3Comment);
+                          if Assigned(FTitle)   then StrPCopy(FTitle, Id3Title);
+                          if Assigned(FArtist)  then StrPCopy(FArtist, Id3Artist);
+                          if Assigned(FAlbum)   then StrPCopy(FAlbum, Id3Album);
+                          if Assigned(FYear)    then StrPCopy(FYear, Id3Year);
+                          if Assigned(FComment) then StrPCopy(FComment, Id3Comment);
                          end;
 
                        ChooseProcess;
@@ -202,7 +202,7 @@ begin
                       begin
                        FPosition := 0;
                        FReset := False;
-                       if assigned(FBufferedPlayer)
+                       if Assigned(FBufferedPlayer)
                         then FBufferedPlayer.Reset;
                        Pin[Integer(pinReset)].TransmitStatusChange(SampleClock, stOneOff);
                       end;
@@ -214,7 +214,7 @@ procedure TSEMp3PlayerModule.LoadFromResource(ID: Integer);
 begin
  if (ID >= 0) and (ID < FContainedData.Count) then
   begin
-   if assigned(FResourceStream) then FreeAndNil(FResourceStream)
+   if Assigned(FResourceStream) then FreeAndNil(FResourceStream)
    FResourceStream := TResourceStream.Create(HInstance, FContainedData[ID], 'MP3');
    FBufferedPlayer.Stream := FResourceStream;
   end;

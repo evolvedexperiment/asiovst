@@ -23,14 +23,14 @@ function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2Aud
 var
   Effect: TSEModuleBase;
 begin
- result := nil;
+ Result := nil;
  case Index of // !!TODO!! list your in / out plugs
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         Effect := TSEAverageModule.Create(SEAudioMaster, Reserved);
-        if assigned(Effect)
-         then result := Effect.Effect;
+        if Assigned(Effect)
+         then Result := Effect.Effect;
        end;
      end;
  end;

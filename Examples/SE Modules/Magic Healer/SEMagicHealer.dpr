@@ -8,7 +8,8 @@ uses
 {$E sem}
 {$R *.res}
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

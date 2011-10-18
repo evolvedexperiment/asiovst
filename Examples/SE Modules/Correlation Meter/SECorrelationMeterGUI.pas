@@ -42,14 +42,14 @@ end;
 
 destructor TSECorrelationMeterGui.Destroy;
 begin
- if assigned(FCorrelationMeter)
+ if Assigned(FCorrelationMeter)
   then FreeAndNil(FCorrelationMeter);
  inherited;
 end;
 
 procedure TSECorrelationMeterGui.GuiWindowClose(WI: PSEWndInfo);
 begin
- if assigned(FCorrelationMeter)
+ if Assigned(FCorrelationMeter)
   then FreeAndNil(FCorrelationMeter);
  inherited;
 end;
@@ -67,7 +67,7 @@ end;
 
 procedure TSECorrelationMeterGui.GuiPaint(hDC: HDC; wi :PSEWndInfo);
 begin
- if assigned(FCorrelationMeter) then
+ if Assigned(FCorrelationMeter) then
   with FCorrelationMeter do
    begin
     if Width <> wi.Width then Width := wi.Width;

@@ -17,11 +17,11 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of
   0: TSERealverbModule.GetModuleProperties(Properties);
   1: TSERealverbStereoModule.GetModuleProperties(Properties);
-  else result := False;
+  else Result := False;
  end;;
 end;
 
@@ -35,12 +35,13 @@ begin
    0: SEModuleBase := TSERealverbModule.Create(SEAudioMaster, Reserved);
    1: SEModuleBase := TSERealverbStereoModule.Create(SEAudioMaster, Reserved);
   end;
- if assigned(SEModuleBase)
-  then result := SEModuleBase.Effect
-  else result := nil;
+ if Assigned(SEModuleBase)
+  then Result := SEModuleBase.Effect
+  else Result := nil;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

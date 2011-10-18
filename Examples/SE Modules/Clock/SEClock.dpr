@@ -12,11 +12,11 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
 
  case Index of // !!TODO!! list your in / out plugs
   0: TSEClockModule.GetModuleProperties(Properties);
-  else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -24,20 +24,21 @@ function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2Aud
 var
   SEModuleBase: TSEModuleBase;
 begin
- result := nil;
+ Result := nil;
  case Index of // !!TODO!! list your in / out plugs
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEModuleBase := TSEClockModule.Create(SEAudioMaster, p_resvd1);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
+        if Assigned(SEModuleBase)
+         then Result := SEModuleBase.Effect;
        end;
      end;
  end;
 end;
 
-exports makeModule name 'makeModule',
+exports 
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

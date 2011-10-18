@@ -289,7 +289,7 @@ function TSEControlableButterworthSplitterModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- if index in [2..3] then Properties^.Direction := drIn;
+ if Index in [2..3] then Properties^.Direction := drIn;
 end;
 
 class procedure TSEControlableButterworthSplitterModule.GetModuleProperties(Properties: PSEModuleProperties);
