@@ -61,11 +61,11 @@ end;
 
 procedure TSEDelayModule.CreateBuffer;
 begin
-  FBufferSize := round(SampleRate * FDelay_ms * 0.001);
+  FBufferSize := Round(SampleRate * FDelay_ms * 0.001);
   if (FBufferSize < 1) then FBufferSize := 1;
 
   if (FBufferSize > SampleRate * 10)  // limit to 10 s sample
-   then FBufferSize := round(SampleRate * 10);
+   then FBufferSize := Round(SampleRate * 10);
 
   ReallocMem(FBuffer, FBufferSize * SizeOf(TSEFLoatSample));
 

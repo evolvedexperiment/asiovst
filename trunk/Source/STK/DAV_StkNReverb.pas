@@ -34,7 +34,6 @@ type
     FInternalLengths    : array [0..14] of Integer;
     FCombCoefficient    : array [0..5] of Single;
     procedure SampleRateChanged; override;
-  published
   public
     constructor Create(const SampleRate: Single = 44100); overload; override;
     constructor Create(const SampleRate, T60: Single); reintroduce; overload; virtual;

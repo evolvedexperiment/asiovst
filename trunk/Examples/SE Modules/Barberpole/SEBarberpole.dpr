@@ -1,7 +1,11 @@
 library SEBarberpole;
 
+{$I DAV_Compiler.inc}
+
 uses
+  {$IFDEF UseFastMove}
   FastMove,
+  {$ENDIF}
   SysUtils,
   Classes,
   DAV_SECommon,
@@ -29,7 +33,7 @@ begin
   end;
 end;
 
-exports makeModule name 'makeModule';
-exports getModuleProperties name 'getModuleProperties';
+exports makeModule name 'makeModule',
+  getModuleProperties name 'getModuleProperties';
 
 end.

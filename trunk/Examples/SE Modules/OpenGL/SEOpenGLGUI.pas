@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Classes, Controls, SysUtils, DAV_SEModule, DAV_SEGUI, SEOpenGLModule,
-  GLScene, GLObjects, GLMisc, GLWin32Viewer, GLVectorFileObjects, GLFile3DS,
+  GLScene, GLObjects, GLWin32Viewer, GLVectorFileObjects, GLFile3DS,
   GLFileB3D, GLFileGL2, GLFileGTS, GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5,
   GLFileMDC, GLFileMS3D, GLFileNMF, GLFileNurbs, GLFileObj, GLFileOCT, GLFilePLY,
   GLFileQ3BSP, GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, GLStarRecord,

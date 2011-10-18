@@ -8,7 +8,7 @@ uses
 type
   TSEOpenGLModule = class(TSEModuleBase)
   protected
-    FFileName : PChar;
+    FFileName : PAnsiChar;
     procedure Open; override;
   public
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;

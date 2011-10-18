@@ -316,7 +316,7 @@ const
 
   function HueToColorValue(Hue: Single): Single;
   begin
-    Hue := Hue - round(Hue - 0.5);
+    Hue := Hue - Round(Hue - 0.5);
     if 6 * Hue < 1 then Result := M1 + (M2 - M1) * Hue * 6
     else if 2 * Hue < 1 then Result := M2
     else if 3 * Hue < 2 then Result := M1 + (M2 - M1) * (2 * OneThird - Hue) * 6

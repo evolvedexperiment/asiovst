@@ -134,8 +134,13 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ {$IFDEF PUREPASCAL}
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := FastTanhOpt3Term(Input[Sample]);
+ {$ELSE}
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FastTanhOpt3TermFPU(Input[Sample]);
+ {$ENDIF}
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt4asm(const BufferOffset, SampleFrames: Integer);
@@ -146,8 +151,13 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ {$IFDEF PUREPASCAL}
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := FastTanhOpt4Term(Input[Sample]);
+ {$ELSE}
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FastTanhOpt4TermFPU(Input[Sample]);
+ {$ENDIF}
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt5asm(const BufferOffset, SampleFrames: Integer);
@@ -158,8 +168,13 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ {$IFDEF PUREPASCAL}
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := FastTanhOpt5Term(Input[Sample]);
+ {$ELSE}
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FastTanhOpt5TermFPU(Input[Sample]);
+ {$ENDIF}
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt6asm(const BufferOffset, SampleFrames: Integer);
@@ -170,8 +185,13 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ {$IFDEF PUREPASCAL}
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := FastTanhOpt6Term(Input[Sample]);
+ {$ELSE}
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FastTanhOpt6TermFPU(Input[Sample]);
+ {$ENDIF}
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt7asm(const BufferOffset, SampleFrames: Integer);
@@ -182,8 +202,13 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ {$IFDEF PUREPASCAL}
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := FastTanhOpt7Term(Input[Sample]);
+ {$ELSE}
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FastTanhOpt7TermFPU(Input[Sample]);
+ {$ENDIF}
 end;
 
 // describe your module

@@ -10,8 +10,8 @@ type
   TCustomSETrigoMathModule = class(TSEModuleBase)
   protected
     procedure Open; override;
-    class function MathFuncText: string; virtual; abstract;
-    class function PrecisionText: string; virtual; abstract;
+    class function MathFuncText: AnsiString; virtual; abstract;
+    class function PrecisionText: AnsiString; virtual; abstract;
   public
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
     class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
@@ -21,7 +21,7 @@ type
   protected
     FFloatIn  : Single;
     FFloatOut : Single;
-    class function PrecisionText: string; override;
+    class function PrecisionText: AnsiString; override;
   public
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
@@ -30,7 +30,7 @@ type
   protected
     FDoubleIn  : Double;
     FDoubleOut : Double;
-    class function PrecisionText: string; override;
+    class function PrecisionText: AnsiString; override;
   public
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
@@ -38,301 +38,301 @@ type
   TSEArcCosFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCosDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSinFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSinDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESinFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESinDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECosFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECosDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSETanFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSETanDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECotanFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECotanDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESecantFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESecantDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECosecantFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECosecantDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESinhFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESinhDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECoshFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECoshDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSETanhFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSETanhDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECotHFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECotHDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESecHFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSESecHDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECscHFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSECscHDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCotFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCotDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSecFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSecDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCscFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCscDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCoshFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCoshDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSinhFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSinhDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcTanhFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcTanhDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCotHFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCotHDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSecHFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcSecHDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCscHFloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSEArcCscHDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSELog10FloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSELog10HDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSELog2FloatModule = class(TCustomSETrigoMathTwoArgumentsFloatModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
   TSELog2HDoubleModule = class(TCustomSETrigoMathTwoArgumentsDoubleModule)
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
-    class function MathFuncText: string; override;
+    class function MathFuncText: AnsiString; override;
   end;
 
 
@@ -346,20 +346,20 @@ uses
 class procedure TCustomSETrigoMathModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 var
-  Caption : string;
+  Caption : AnsiString;
 begin
  with Properties^ do
   begin
    Caption := MathFuncText + ' ' + PrecisionText;
 
    // describe the plugin, this is the name the end-user will see.
-   Name := PChar(Caption);
+   Name := PAnsiChar(Caption);
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := PChar('DAV + ' + Caption);
+   ID := PAnsiChar('DAV + ' + Caption);
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
@@ -414,7 +414,7 @@ begin
  end;
 end;
 
-class function TCustomSETrigoMathTwoArgumentsFloatModule.PrecisionText: string;
+class function TCustomSETrigoMathTwoArgumentsFloatModule.PrecisionText: AnsiString;
 begin
  Result := 'Float';
 end;
@@ -449,7 +449,7 @@ begin
  end;
 end;
 
-class function TCustomSETrigoMathTwoArgumentsDoubleModule.PrecisionText: string;
+class function TCustomSETrigoMathTwoArgumentsDoubleModule.PrecisionText: AnsiString;
 begin
  Result := 'Double';
 end;
@@ -457,7 +457,7 @@ end;
 
 { TSEArcCosFloatModule }
 
-class function TSEArcCosFloatModule.MathFuncText: string;
+class function TSEArcCosFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCos';
 end;
@@ -472,7 +472,7 @@ end;
 
 { TSEArcCosDoubleModule }
 
-class function TSEArcCosDoubleModule.MathFuncText: string;
+class function TSEArcCosDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCos';
 end;
@@ -487,7 +487,7 @@ end;
 
 { TSEArcSinFloatModule }
 
-class function TSEArcSinFloatModule.MathFuncText: string;
+class function TSEArcSinFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSin';
 end;
@@ -501,7 +501,7 @@ end;
 
 { TSEArcSinDoubleModule }
 
-class function TSEArcSinDoubleModule.MathFuncText: string;
+class function TSEArcSinDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSin';
 end;
@@ -515,7 +515,7 @@ end;
 
 { TSESinFloatModule }
 
-class function TSESinFloatModule.MathFuncText: string;
+class function TSESinFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Sin';
 end;
@@ -529,7 +529,7 @@ end;
 
 { TSESinDoubleModule }
 
-class function TSESinDoubleModule.MathFuncText: string;
+class function TSESinDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Sin';
 end;
@@ -543,7 +543,7 @@ end;
 
 { TSECosFloatModule }
 
-class function TSECosFloatModule.MathFuncText: string;
+class function TSECosFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Cos';
 end;
@@ -557,7 +557,7 @@ end;
 
 { TSECosDoubleModule }
 
-class function TSECosDoubleModule.MathFuncText: string;
+class function TSECosDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Cos';
 end;
@@ -571,7 +571,7 @@ end;
 
 { TSETanFloatModule }
 
-class function TSETanFloatModule.MathFuncText: string;
+class function TSETanFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Tan';
 end;
@@ -585,7 +585,7 @@ end;
 
 { TSETanDoubleModule }
 
-class function TSETanDoubleModule.MathFuncText: string;
+class function TSETanDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Tan';
 end;
@@ -599,7 +599,7 @@ end;
 
 { TSECotanFloatModule }
 
-class function TSECotanFloatModule.MathFuncText: string;
+class function TSECotanFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Cotan';
 end;
@@ -613,7 +613,7 @@ end;
 
 { TSECotanDoubleModule }
 
-class function TSECotanDoubleModule.MathFuncText: string;
+class function TSECotanDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Cotan';
 end;
@@ -627,7 +627,7 @@ end;
 
 { TSESecantFloatModule }
 
-class function TSESecantFloatModule.MathFuncText: string;
+class function TSESecantFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Secant';
 end;
@@ -641,7 +641,7 @@ end;
 
 { TSESecantDoubleModule }
 
-class function TSESecantDoubleModule.MathFuncText: string;
+class function TSESecantDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Secant';
 end;
@@ -655,7 +655,7 @@ end;
 
 { TSECosecantFloatModule }
 
-class function TSECosecantFloatModule.MathFuncText: string;
+class function TSECosecantFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Cosecant';
 end;
@@ -669,7 +669,7 @@ end;
 
 { TSECosecantDoubleModule }
 
-class function TSECosecantDoubleModule.MathFuncText: string;
+class function TSECosecantDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Cosecant';
 end;
@@ -683,7 +683,7 @@ end;
 
 { TSESinhFloatModule }
 
-class function TSESinhFloatModule.MathFuncText: string;
+class function TSESinhFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Sinh';
 end;
@@ -697,7 +697,7 @@ end;
 
 { TSESinhDoubleModule }
 
-class function TSESinhDoubleModule.MathFuncText: string;
+class function TSESinhDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Sinh';
 end;
@@ -711,7 +711,7 @@ end;
 
 { TSECoshFloatModule }
 
-class function TSECoshFloatModule.MathFuncText: string;
+class function TSECoshFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Cosh';
 end;
@@ -725,7 +725,7 @@ end;
 
 { TSECoshDoubleModule }
 
-class function TSECoshDoubleModule.MathFuncText: string;
+class function TSECoshDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Cosh';
 end;
@@ -739,7 +739,7 @@ end;
 
 { TSETanhFloatModule }
 
-class function TSETanhFloatModule.MathFuncText: string;
+class function TSETanhFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Tanh';
 end;
@@ -753,7 +753,7 @@ end;
 
 { TSETanhDoubleModule }
 
-class function TSETanhDoubleModule.MathFuncText: string;
+class function TSETanhDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Tanh';
 end;
@@ -767,7 +767,7 @@ end;
 
 { TSECotHFloatModule }
 
-class function TSECotHFloatModule.MathFuncText: string;
+class function TSECotHFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'CotH';
 end;
@@ -781,7 +781,7 @@ end;
 
 { TSECotHDoubleModule }
 
-class function TSECotHDoubleModule.MathFuncText: string;
+class function TSECotHDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'CotH';
 end;
@@ -795,7 +795,7 @@ end;
 
 { TSESecHFloatModule }
 
-class function TSESecHFloatModule.MathFuncText: string;
+class function TSESecHFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'SecH';
 end;
@@ -809,7 +809,7 @@ end;
 
 { TSESecHDoubleModule }
 
-class function TSESecHDoubleModule.MathFuncText: string;
+class function TSESecHDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'SecH';
 end;
@@ -823,7 +823,7 @@ end;
 
 { TSECscHFloatModule }
 
-class function TSECscHFloatModule.MathFuncText: string;
+class function TSECscHFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'CscH';
 end;
@@ -837,7 +837,7 @@ end;
 
 { TSECscHDoubleModule }
 
-class function TSECscHDoubleModule.MathFuncText: string;
+class function TSECscHDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'CscH';
 end;
@@ -851,7 +851,7 @@ end;
 
 { TSEArcCotFloatModule }
 
-class function TSEArcCotFloatModule.MathFuncText: string;
+class function TSEArcCotFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCot';
 end;
@@ -865,7 +865,7 @@ end;
 
 { TSEArcCotDoubleModule }
 
-class function TSEArcCotDoubleModule.MathFuncText: string;
+class function TSEArcCotDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCot';
 end;
@@ -879,7 +879,7 @@ end;
 
 { TSEArcSecFloatModule }
 
-class function TSEArcSecFloatModule.MathFuncText: string;
+class function TSEArcSecFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSec';
 end;
@@ -893,7 +893,7 @@ end;
 
 { TSEArcSecDoubleModule }
 
-class function TSEArcSecDoubleModule.MathFuncText: string;
+class function TSEArcSecDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSec';
 end;
@@ -907,7 +907,7 @@ end;
 
 { TSEArcCscFloatModule }
 
-class function TSEArcCscFloatModule.MathFuncText: string;
+class function TSEArcCscFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCsc';
 end;
@@ -921,7 +921,7 @@ end;
 
 { TSEArcCscDoubleModule }
 
-class function TSEArcCscDoubleModule.MathFuncText: string;
+class function TSEArcCscDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCsc';
 end;
@@ -935,7 +935,7 @@ end;
 
 { TSEArcCoshFloatModule }
 
-class function TSEArcCoshFloatModule.MathFuncText: string;
+class function TSEArcCoshFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCosh';
 end;
@@ -949,7 +949,7 @@ end;
 
 { TSEArcCoshDoubleModule }
 
-class function TSEArcCoshDoubleModule.MathFuncText: string;
+class function TSEArcCoshDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCosh';
 end;
@@ -963,7 +963,7 @@ end;
 
 { TSEArcSinhFloatModule }
 
-class function TSEArcSinhFloatModule.MathFuncText: string;
+class function TSEArcSinhFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSinh';
 end;
@@ -977,7 +977,7 @@ end;
 
 { TSEArcSinhDoubleModule }
 
-class function TSEArcSinhDoubleModule.MathFuncText: string;
+class function TSEArcSinhDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSinh';
 end;
@@ -991,7 +991,7 @@ end;
 
 { TSEArcTanhFloatModule }
 
-class function TSEArcTanhFloatModule.MathFuncText: string;
+class function TSEArcTanhFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcTanh';
 end;
@@ -1005,7 +1005,7 @@ end;
 
 { TSEArcTanhDoubleModule }
 
-class function TSEArcTanhDoubleModule.MathFuncText: string;
+class function TSEArcTanhDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcTanh';
 end;
@@ -1019,7 +1019,7 @@ end;
 
 { TSEArcCotHFloatModule }
 
-class function TSEArcCotHFloatModule.MathFuncText: string;
+class function TSEArcCotHFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCotH';
 end;
@@ -1033,7 +1033,7 @@ end;
 
 { TSEArcCotHDoubleModule }
 
-class function TSEArcCotHDoubleModule.MathFuncText: string;
+class function TSEArcCotHDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCotH';
 end;
@@ -1047,7 +1047,7 @@ end;
 
 { TSEArcSecHFloatModule }
 
-class function TSEArcSecHFloatModule.MathFuncText: string;
+class function TSEArcSecHFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSecH';
 end;
@@ -1061,7 +1061,7 @@ end;
 
 { TSEArcSecHDoubleModule }
 
-class function TSEArcSecHDoubleModule.MathFuncText: string;
+class function TSEArcSecHDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcSecH';
 end;
@@ -1075,7 +1075,7 @@ end;
 
 { TSEArcCscHFloatModule }
 
-class function TSEArcCscHFloatModule.MathFuncText: string;
+class function TSEArcCscHFloatModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCscH';
 end;
@@ -1089,7 +1089,7 @@ end;
 
 { TSEArcCscHDoubleModule }
 
-class function TSEArcCscHDoubleModule.MathFuncText: string;
+class function TSEArcCscHDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'ArcCscH';
 end;
@@ -1103,7 +1103,7 @@ end;
 
 { TSELog10FloatModule }
 
-class function TSELog10FloatModule.MathFuncText: string;
+class function TSELog10FloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Log10';
 end;
@@ -1117,7 +1117,7 @@ end;
 
 { TSELog10HDoubleModule }
 
-class function TSELog10HDoubleModule.MathFuncText: string;
+class function TSELog10HDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Log10';
 end;
@@ -1131,7 +1131,7 @@ end;
 
 { TSELog2FloatModule }
 
-class function TSELog2FloatModule.MathFuncText: string;
+class function TSELog2FloatModule.MathFuncText: AnsiString;
 begin
  Result := 'Log2';
 end;
@@ -1145,7 +1145,7 @@ end;
 
 { TSELog2HDoubleModule }
 
-class function TSELog2HDoubleModule.MathFuncText: string;
+class function TSELog2HDoubleModule.MathFuncText: AnsiString;
 begin
  Result := 'Log2';
 end;

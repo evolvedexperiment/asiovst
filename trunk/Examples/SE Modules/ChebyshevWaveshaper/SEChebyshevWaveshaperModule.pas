@@ -136,7 +136,7 @@ end;
 // describe the pins (plugs)
 function TSECustomChebyshevWaveshaperModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 var
- str : string;
+ str : AnsiString;
 begin
  Result := True;
  case Index of
@@ -163,8 +163,8 @@ begin
   4..CHarmonicCount + 2:
      with Properties^ do
       begin
-       str := 'Harmonic ' + IntToStr(Index - 3);
-       Name            := PChar(str);
+       str := AnsiString('Harmonic ' + IntToStr(Index - 3));
+       Name            := PAnsiChar(str);
       end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;

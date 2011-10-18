@@ -84,7 +84,7 @@ end;
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 var
   i, j : Integer;
-  ID   : string;
+  ID   : AnsiString;
 begin
  Result := False;
  if Length(DLLLoader) > 0 then
@@ -103,7 +103,7 @@ begin
      ID := StrPas(Properties^.ID);
      if Pos('merged', ContainedModules[Index]) > 0
       then ID := ID + ' (merged) ' + IntToStr(ContainedModules.Count);
-     Properties^.ID := PChar(ID);
+     Properties^.ID := PAnsiChar(ID);
     end;
   except
    Result := False;

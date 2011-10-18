@@ -82,6 +82,7 @@ type
   protected
     FDynamicProcesor: TLightweightSoftKneeFeedbackCompressor;
     procedure Open; override;
+    procedure SampleRateChanged; override;
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -138,6 +139,7 @@ type
     FDynamicProcesor : TLightweightSoftKneeLimiter;
     FAutoMakeUp      : Boolean;
     procedure Open; override;
+    procedure SampleRateChanged; override;
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -194,6 +196,7 @@ type
     FAutoMakeUp      : Boolean;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure Open; override;
+    procedure SampleRateChanged; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
@@ -262,6 +265,7 @@ type
     FAutoMakeUp      : Boolean;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure Open; override;
+    procedure SampleRateChanged; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
@@ -427,6 +431,12 @@ procedure TCustomLightweightGateSEModule.Open;
 begin
  inherited;
  OnProcess := SubProcess;
+end;
+
+procedure TCustomLightweightGateSEModule.SampleRateChanged;
+begin
+  inherited;
+  FDynamicProcesor.SampleRate := SampleRate;
 end;
 
 procedure TCustomLightweightGateSEModule.SubProcess(const BufferOffset,
@@ -735,6 +745,12 @@ procedure TCustomLightweightLimiterSEModule.Open;
 begin
  inherited;
  OnProcess := SubProcess;
+end;
+
+procedure TCustomLightweightLimiterSEModule.SampleRateChanged;
+begin
+ inherited;
+ FDynamicProcesor.SampleRate := SampleRate;
 end;
 
 procedure TCustomLightweightLimiterSEModule.SubProcess(const BufferOffset,
@@ -1069,6 +1085,12 @@ begin
   6: FDynamicProcesor.AutoMakeUp := FAutoMakeUp;
  end;
  inherited;
+end;
+
+procedure TCustomLightweightCompressorSEModule.SampleRateChanged;
+begin
+ inherited;
+ FDynamicProcesor.SampleRate := SampleRate;
 end;
 
 procedure TCustomLightweightCompressorSEModule.SubProcess(const BufferOffset,
@@ -1407,6 +1429,12 @@ begin
   6: FDynamicProcesor.AutoMakeUp := FAutoMakeUp;
  end;
  inherited;
+end;
+
+procedure TCustomLightweightFeedbackCompressorSEModule.SampleRateChanged;
+begin
+ inherited;
+ FDynamicProcesor.SampleRate := SampleRate;
 end;
 
 procedure TCustomLightweightFeedbackCompressorSEModule.SubProcess(const BufferOffset,

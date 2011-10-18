@@ -40,7 +40,6 @@ type
     procedure Clear; override;
     function Tick(const Input: Single): Single; override;
 
-  published
     property T60: Single read FT60 write SetT60;  
   end;
 

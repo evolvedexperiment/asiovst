@@ -50,17 +50,17 @@ type
   private
     FOutLeftBuffer   : PDAVSingleFixedArray;
     FOutRightBuffer  : PDAVSingleFixedArray;
-    FFileName        : PChar;
+    FFileName        : PAnsiChar;
     FPosition        : Integer;
     FReset           : Boolean;
     FBufferSize      : Integer;
     FSemitones       : Single;
     FInterpolation   : TBufferInterpolation;
-    FTitle           : PChar;
-    FArtist          : PChar;
-    FAlbum           : PChar;
-    FComment         : PChar;
-    FYear            : PChar;
+    FTitle           : PAnsiChar;
+    FArtist          : PAnsiChar;
+    FAlbum           : PAnsiChar;
+    FComment         : PAnsiChar;
+    FYear            : PAnsiChar;
     FMemoryStream    : TMemoryStream;
     FCriticalSection : TCriticalSection;
     FBufferedPlayer  : TBufferedMP3StreamPlayer;

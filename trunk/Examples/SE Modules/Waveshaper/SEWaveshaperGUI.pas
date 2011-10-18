@@ -82,8 +82,8 @@ begin
    x := (5 + x) * 10; // convert to screen co-ords
    y := (5 - y) * 10;
 
-   FNodes[i].x := round(x);
-   FNodes[i].y := round(y);
+   FNodes[i].x := Round(x);
+   FNodes[i].y := Round(y);
    inc(i);
 
    inc(p3);
@@ -196,12 +196,12 @@ begin
     else TickWidth := 2;
 
    // X-Axis ticks
-   MoveToEx(hDC, Mid.x - TickWidth, round(Mid.y + y), nil);
-   LineTo(hDC, Mid.x + TickWidth, round(Mid.y + y));
+   MoveToEx(hDC, Mid.x - TickWidth, Round(Mid.y + y), nil);
+   LineTo(hDC, Mid.x + TickWidth, Round(Mid.y + y));
 
    // Y-Axis ticks
-   MoveToEx(hDC, round(Mid.x + x), Mid.y - TickWidth, nil);
-   LineTo(hDC, round(Mid.x + x), Mid.y + TickWidth );
+   MoveToEx(hDC, Round(Mid.x + x), Mid.y - TickWidth, nil);
+   LineTo(hDC, Round(Mid.x + x), Mid.y + TickWidth );
    inc(v, 2);
   end;
 
@@ -237,7 +237,7 @@ begin
       if fv <> -1 then
        begin
         txt := FloatToStrF(fv, ffGeneral, 2, 1) + #0;
-        TextOut(hDC, Mid.x + TickWidth, Mid.y - round(y - FontHeight * 0.5), PChar(txt), Length(txt));
+        TextOut(hDC, Mid.x + TickWidth, Mid.y - Round(y - FontHeight * 0.5), PChar(txt), Length(txt));
        end;
       fv := fv + 2;
      end;
@@ -252,7 +252,7 @@ begin
       if fv <> -1 then
        begin
         txt := FloatToStrF(fv, ffGeneral, 2, 1) + #0;
-        TextOut(hDC, Mid.x + round(y), Mid.y + TickWidth, PChar(txt), Length(txt));
+        TextOut(hDC, Mid.x + Round(y), Mid.y + TickWidth, PChar(txt), Length(txt));
        end;
       fv := fv + 2;
      end;
@@ -316,20 +316,20 @@ begin
 
   i := CWsNodeCount - 1;
 
-  MoveToEx(hDC, round(FNodes[i].x * HorzScale + 0.5), round(FNodes[i].y * VertScale + 0.5), nil);
+  MoveToEx(hDC, Round(FNodes[i].x * HorzScale + 0.5), Round(FNodes[i].y * VertScale + 0.5), nil);
   Dec(i);
 
   while i >= 0 do
    begin
-    LineTo(hDC, round(FNodes[i].x * HorzScale + 0.5), round(FNodes[i].y * VertScale + 0.5));
+    LineTo(hDC, Round(FNodes[i].x * HorzScale + 0.5), Round(FNodes[i].y * VertScale + 0.5));
     Dec(i);
    end;
 
   // Nodes
   for i := CWsNodeCount - 1 downto 0 do
    begin
-    x := round(FNodes[i].x * HorzScale - CNodeSize * 0.5 + 0.5);
-    y := round(FNodes[i].y * VertScale - CNodeSize * 0.5 + 0.5);
+    x := Round(FNodes[i].x * HorzScale - CNodeSize * 0.5 + 0.5);
+    y := Round(FNodes[i].y * VertScale - CNodeSize * 0.5 + 0.5);
     pts[0] := Point(x, y);
     pts[1] := Point(x + CNodeSize,y);
     pts[2] := Point(x + CNodeSize,y + CNodeSize);
@@ -413,7 +413,7 @@ begin
 
   for i := CWsNodeCount - 1 downto 0 do
    begin
-    pt := Point(round(FNodes[i].x * HorzScale), round(FNodes[i].y * VertScale));
+    pt := Point(Round(FNodes[i].x * HorzScale), Round(FNodes[i].y * VertScale));
     rct := Rect(pt.x - CNodeSize div 2, pt.y - CNodeSize div 2,
                 pt.x + CNodeSize div 2, pt.y + CNodeSize div 2);
     if PtInRect(rct, Pnt) then
@@ -459,14 +459,14 @@ begin
      then left := 100;
 
     pt := FNodes[FDragNode];
-    pt.x := round(pt.x + (Pnt.x - FPtPrev.x) / HorzScale);
-    pt.y := round(pt.y + (Pnt.y - FPtPrev.y) / VertScale);
+    pt.x := Round(pt.x + (Pnt.x - FPtPrev.x) / HorzScale);
+    pt.y := Round(pt.y + (Pnt.y - FPtPrev.y) / VertScale);
 
     // constain
-    pt.x := round(max(pt.x, left));
-    pt.x := round(min(pt.x, right));
-    pt.y := round(max(pt.y, 0));
-    pt.y := round(min(pt.y, 100));
+    pt.x := Round(max(pt.x, left));
+    pt.x := Round(min(pt.x, right));
+    pt.y := Round(max(pt.y, 0));
+    pt.y := Round(min(pt.y, 100));
 
     FNodes[FDragNode] := pt;
     FPtPrev := Pnt;

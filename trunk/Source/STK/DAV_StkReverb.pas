@@ -32,7 +32,7 @@ type
     // Take VectorSize inputs, compute the same Number of outputs and return them in \e Vector.
     procedure Tick(const Input: PDAVSingleFixedArray; out Output: PDAVSingleFixedArray; const SampleFrames: Cardinal); overload; virtual;
 
-  published
+
     property EffectMix: Single read FEffectMix write SetEffectMix; // (0.0 = input only, 1.0 = reverb only).
     property LastOutputLeft: Single read FLastOutput[0];  // Return the last left output value.
     property LastOutputRight: Single read FLastOutput[1]; // Return the last right output value.

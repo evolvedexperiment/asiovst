@@ -314,7 +314,7 @@ begin
  OutHi := PDAVSingleFixedArray(@FOutHiBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do FFilter.ProcessSample(Input[Sample] + cDenorm32, OutLo^[Sample], OutHi^[Sample]);
+  do FFilter.ProcessSample32(Input[Sample] + cDenorm32, OutLo^[Sample], OutHi^[Sample]);
 end;
 
 
@@ -419,7 +419,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    FFilter.Frequency := 10000 * Freq^[Sample];
-   FFilter.ProcessSample(Input[Sample] + cDenorm32, OutLo^[Sample], OutHi^[Sample]);
+   FFilter.ProcessSample32(Input[Sample] + cDenorm32, OutLo^[Sample], OutHi^[Sample]);
   end;
 end;
 

@@ -186,8 +186,8 @@ begin
      then TickWidth := 4
      else TickWidth := 2;
 
-    MoveToEx(hDC, mid.x - TickWidth, mid.y + round(y), nil);
-    LineTo(hDC, mid.x + TickWidth, mid.y + round(y));
+    MoveToEx(hDC, mid.x - TickWidth, mid.y + Round(y), nil);
+    LineTo(hDC, mid.x + TickWidth, mid.y + Round(y));
     Inc(v, Step);
    end;
 
@@ -207,7 +207,7 @@ begin
      begin
       y := v * scale * 0.1;
       txt := IntToStr(v);
-      TextOut(hDC, Mid.x + TickWidth, Mid.y - round(y - FontHeight * 0.5), @txt[1], Length(txt));
+      TextOut(hDC, Mid.x + TickWidth, Mid.y - Round(y - FontHeight * 0.5), @txt[1], Length(txt));
       v := v + 5;
     end;
 (*
@@ -231,12 +231,12 @@ begin
    begin
     if (FDrawTrace[chan]) then
      begin
-      MoveToEx(hDC, 0, Mid.y - round(FValues[chan][0] * scale), nil);
+      MoveToEx(hDC, 0, Mid.y - Round(FValues[chan][0] * scale), nil);
 
       for i := 1 to CScopeBufferSize - 1 do
        begin
         x := (i * wi.width) div CScopeBufferSize;
-        LineTo(hDC, x, Mid.y - round(FValues[chan][i] * scale));
+        LineTo(hDC, x, Mid.y - Round(FValues[chan][i] * scale));
        end;
      end;
     SelectObject(hDC, OldPen);

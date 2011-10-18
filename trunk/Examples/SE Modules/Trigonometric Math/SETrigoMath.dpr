@@ -1,9 +1,11 @@
 library SETrigoMath;
 
+{$I DAV_Compiler.inc}
+
 uses
-  FastMM4,
-  FastMove,
-  FastCode,
+  {$IFDEF UseFastMove}
+  FastMove, // either download the library or comment if there is an error here
+  {$ENDIF}
   SysUtils,
   Classes,
   DAV_SECommon,
@@ -50,7 +52,7 @@ begin
   else result := nil;
 end;
 
-exports makeModule name 'makeModule';
-exports getModuleProperties name 'getModuleProperties';
+exports makeModule name 'makeModule',
+  getModuleProperties name 'getModuleProperties';
 
 end.

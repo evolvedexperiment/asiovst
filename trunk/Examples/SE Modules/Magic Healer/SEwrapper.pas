@@ -69,8 +69,8 @@ begin
   begin
    MM := DLLLoader[0].FindExport('makeModule');
    Result := MM(Index, ProcessType, SEAudioMaster, Reserved);
-   if assigned(result) then
-    with PSE2ModStructBase(result)^ do
+   if assigned(Result) then
+    with PSE2ModStructBase(Result)^ do
      begin
       Magic := $29A2A826;
       Magic := 2 * Magic;

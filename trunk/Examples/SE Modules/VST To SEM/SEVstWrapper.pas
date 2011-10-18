@@ -190,7 +190,7 @@ end;
 // describe the pins (plugs)
 function TCustomVST2SEModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 var
-  str : string;
+  str : AnsiString;
 begin
  if FVSTHost.Count = 0 then
   begin
@@ -202,7 +202,7 @@ begin
   with Properties^ do
    begin
     str             := 'Input ' + IntToStr(Index + 1);
-    Name            := PChar(str);
+    Name            := PAnsiChar(str);
     VariableAddress := @FInputPtr[Index];
     Direction       := drIn;
     Datatype        := dtFSample;
@@ -212,7 +212,7 @@ begin
   with Properties^ do
    begin
     str             := 'Output ' + IntToStr(Index - FVSTHost[0].numInputs + 1);
-    Name            := PChar(str);
+    Name            := PAnsiChar(str);
     VariableAddress := @FOutputPtr[Index - FVSTHost[0].numInputs];
     Direction       := drOut;
     Datatype        := dtFSample;
@@ -448,7 +448,7 @@ begin
          end;
 
         if Length(str) > 0 then SetLength(str, Length(str) - 1);
-        DatatypeExtra := PChar(str);
+        DatatypeExtra := PAnsiChar(str);
         DefaultValue  := '0';
        end
       else

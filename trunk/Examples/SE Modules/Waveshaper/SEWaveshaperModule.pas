@@ -24,7 +24,7 @@ type
     FLookupTable    : Array [0..CTableSize] of TSEFloatSample;
 
     function GetHandle: THandle;
-    function CreateSharedLookup(ATableName: PChar; ATablePointer: Pointer; ASampleRate: Single; ASize: Integer): boolean ;
+    function CreateSharedLookup(ATableName: PAnsiChar; ATablePointer: Pointer; ASampleRate: Single; ASize: Integer): boolean ;
     procedure SetupLookupTable;
     procedure FillLookupTable;
     procedure LookupTableChanged;
@@ -125,7 +125,7 @@ end;
 
 procedure TSEWaveshaperModule.SetupLookupTable;
 var
-  TableName      : string;
+  TableName      : AnsiString;
   NeedInitialise : Boolean;
 begin
  TableName := 'SE wave shaper ' + IntToStr(Integer(GetHandle)) + ' curve' + #0;
@@ -168,7 +168,7 @@ begin
 
     Index := Count * 512;
     IndexFrac := Index - trunc(index);
-    p := @FLookupTable[round(index)]; // keep top 9 bits as index into 512 entry wavetable
+    p := @FLookupTable[Round(index)]; // keep top 9 bits as index into 512 entry wavetable
     //single s 1 = *p++;
     //*out++ = s1 * (1.f - idx_frac) + *p * idx_frac;
     Output^ := p^[0] + (p^[1] - p^[0]) * (IndexFrac - 1);
@@ -212,7 +212,7 @@ begin
       fmulp  st(2), st(0)             // * idx_frac
       fadd                            // + table[0]
 
-      // inc pointers, store result
+      // inc pointers, store Result
       add         ebx, 4
       mov         dword ptr [Input], ebx
       fstp        dword ptr [ecx]
@@ -238,7 +238,7 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-function TSEWaveshaperModule.CreateSharedLookup(ATableName: PChar;
+function TSEWaveshaperModule.CreateSharedLookup(ATableName: PAnsiChar;
   ATablePointer: Pointer; ASampleRate: Single; ASize: Integer): boolean;
 begin
  Result := CallHost(SEAudioMasterCreateSharedLookup, Integer(ATablePointer), ASize, ATableName, ASampleRate) <> 0;
@@ -273,11 +273,11 @@ begin
      begin
       Gain := nodes[i - 1].y + ((t - from) / (fto - from)) * (nodes[i].y - nodes[i-1].y);
       Gain = (50 - gain) * 0.01;
-      FLookupTable[round(t)] := Gain;
+      FLookupTable[Round(t)] := Gain;
       t := t + 1;
      end;
 
-    from := round(to);
+    from := Round(to);
    end;
 *)
 
@@ -294,7 +294,7 @@ begin
     slope := 0.01 * delta_y / delta_x;
     c := 0.5 - 0.01 * nodes[i-1].y - from * slope;
 
-    int_to := round(fto);
+    int_to := Round(fto);
     if int_to > CTableSize
      then int_to := CTableSize;
 

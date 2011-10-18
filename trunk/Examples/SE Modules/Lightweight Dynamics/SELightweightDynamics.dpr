@@ -41,7 +41,7 @@ begin
 end;
 
 exports
-  makeModule name 'makeModule';
+  makeModule name 'makeModule',
   getModuleProperties name 'getModuleProperties';
 
 end.

@@ -32,7 +32,7 @@ type
     procedure Clear;
     function Tick(const Input: Single): Single; overload;
     procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
-  published
+
     property LastOutput: Single read FLastOutput;
     property EffectMix: Single read FEffectMix write SetEffectMix;
     property Shift: Single read FShift write SetShift;

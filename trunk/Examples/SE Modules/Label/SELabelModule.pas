@@ -12,7 +12,7 @@ const
 type
   TCustomSELabelModule = class(TSEModuleBase)
   private
-    FText : PChar;
+    FText : PAnsiChar;
   protected
     procedure Open; override;
   public
@@ -21,7 +21,7 @@ type
 
   TSELabelModuleDSP = class(TCustomSELabelModule)
   protected
-    FHiddenText : PChar;
+    FHiddenText : PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
@@ -116,7 +116,7 @@ begin
   inherited;
   if CurrentPin.PinID = 0 then
    begin
-    FHiddenText := PChar(FText + #0);
+    FHiddenText := PAnsiChar(FText + #0);
    end;
 end;
 

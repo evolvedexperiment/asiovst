@@ -14,7 +14,7 @@ type
 
   TCustomSELabelGui = class(TSEGUIBase)
   protected
-    FText       : string;
+    FText       : AnsiString;
   public  
     constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
   end;
@@ -76,7 +76,7 @@ end;
 
 procedure TSELabelDsp.GuiPinValueChange(CurrentPin: TSEGuiPin);
 var
-  NewText : string;
+  NewText : AnsiString;
 begin
  case CurrentPin.PinIndex of
   1 : begin
@@ -187,10 +187,10 @@ begin
       begin
        OldColor := FBitmap.Canvas.Font.Color;
        FBitmap.Canvas.Font.Color := clBlack;
-       FBitmap.Canvas.TextOut(FFontShadow, FFontShadow, FText);
+       FBitmap.Canvas.TextOut(FFontShadow, FFontShadow, string(FText));
        FBitmap.Canvas.Font.Color := OldColor;
       end;
-     FBitmap.Canvas.TextOut(0, 0, FText);
+     FBitmap.Canvas.TextOut(0, 0, string(FText));
      Downsample4xBitmap24(FBitmap);
      Draw(0, 0, FBitmap);
     finally
@@ -201,13 +201,13 @@ end;
 
 procedure TSELabelGui.GuiPinValueChange(CurrentPin: TSEGuiPin);
 var
-  NewText : string;
+  NewText : AnsiString;
   i       : Integer;
   b       : Boolean;
 begin
  case CurrentPin.PinIndex of
   0 : begin
-       NewText := CurrentPin.ValueAsString;
+       NewText := AnsiString(CurrentPin.ValueAsString);
        if NewText <> FText then
         begin
          FText := NewText;
@@ -274,7 +274,7 @@ end;
 procedure TSELabelGui.GuiWindowOpen(WI: PSEWndInfo);
 begin
  inherited;
- FText := Pin[0].ValueAsString;
+ FText := AnsiString(Pin[0].ValueAsString);
  FBitmap.Canvas.Font.Color := TColor(Pin[1].ValueAsInteger);
  FBitmap.Canvas.Font.Name := CFontList[Pin[2].ValueAsInteger];
  FBitmap.Canvas.Font.Size := 4 * Pin[3].ValueAsInteger;

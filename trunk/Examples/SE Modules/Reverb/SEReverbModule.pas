@@ -294,7 +294,7 @@ begin
   then OnProcess := SubProcess
   else
    begin
-    FStaticCount := BlockSize + round(FFreeverb.RoomSize * SampleRate);
+    FStaticCount := BlockSize + Round(FFreeverb.RoomSize * SampleRate);
     OnProcess := SubProcessStatic;
    end;
 end;
@@ -517,7 +517,7 @@ begin
   then OnProcess := SubProcess
   else
    begin
-    FStaticCount := BlockSize + round(FNReverb.T60 * SampleRate);
+    FStaticCount := BlockSize + Round(FNReverb.T60 * SampleRate);
     OnProcess := SubProcessStatic;
    end;
 end;
@@ -717,7 +717,7 @@ begin
   then OnProcess := SubProcess
   else
    begin
-    FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);
+    FStaticCount := BlockSize + Round(FJCReverb.T60 * SampleRate);
     OnProcess := SubProcessStatic;
    end;
 end;
@@ -926,7 +926,7 @@ begin
   end
  else
   begin
-   FStaticCount := BlockSize + round(FNReverb.T60 * SampleRate);
+   FStaticCount := BlockSize + Round(FNReverb.T60 * SampleRate);
    OnProcess := SubProcessStatic;
   end;
 end;
@@ -1147,7 +1147,7 @@ begin
   end
  else
   begin
-   FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);
+   FStaticCount := BlockSize + Round(FJCReverb.T60 * SampleRate);
    OnProcess := SubProcessStatic;
   end;
 end;

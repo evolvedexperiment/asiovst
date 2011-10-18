@@ -268,7 +268,7 @@ begin
 
      if FIsPlaying then
       begin
-       FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[round(FPosition)];
+       FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[Round(FPosition)];
 
        // advance position
        FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
@@ -279,9 +279,9 @@ begin
         else
          begin
           // wrap around
-          while round(FPosition) >= FAudioData[0].SampleCount
+          while Round(FPosition) >= FAudioData[0].SampleCount
            do FPosition := FPosition - FAudioData[0].SampleCount;
-          while round(FPosition) < 0
+          while Round(FPosition) < 0
            do FPosition := FPosition + FAudioData[0].SampleCount;
          end;
       end
@@ -309,10 +309,10 @@ begin
 
      if FIsPlaying then
       begin
-       FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[round(FPosition)];
+       FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[Round(FPosition)];
        for Channel := 0 to Length(FExtraOutputBuffers) - 1
         do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
-             FAudioData[Channel + 1].ChannelDataPointer^[round(FPosition)];
+             FAudioData[Channel + 1].ChannelDataPointer^[Round(FPosition)];
 
        // advance position
        FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
@@ -323,9 +323,9 @@ begin
         else
          begin
           // wrap around
-          while round(FPosition) >= FAudioData[0].SampleCount
+          while Round(FPosition) >= FAudioData[0].SampleCount
            do FPosition := FPosition - FAudioData[0].SampleCount;
-          while round(FPosition) < 0
+          while Round(FPosition) < 0
            do FPosition := FPosition + FAudioData[0].SampleCount;
          end;
       end
@@ -875,7 +875,7 @@ end;
 // describe the pins (plugs)
 function TSEAudioFileOscillatorModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 var
-  str : string;
+  str : AnsiString;
 begin
  Result := True;
  case TSEAudioFileOscillatorPins(index) of

@@ -51,7 +51,7 @@ type
     FOutputBuffer : PDAVSingleFixedArray;
     FFilter       : TCustomChebyshev1Filter;
     FStaticCount  : Integer;
-    class function GetModueName: string; virtual; abstract;
+    class function GetModueName: AnsiString; virtual; abstract;
     procedure ChooseProcess;
     procedure Open; override;
     procedure SampleRateChanged; override;
@@ -79,14 +79,14 @@ type
 
   TSEStaticChebyshev1FilterLPModule = class(TSEStaticChebyshev1FilterModule)
   protected
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
   end;
 
   TSEStaticChebyshev1FilterHPModule = class(TSEStaticChebyshev1FilterModule)
   protected
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
   end;
@@ -95,14 +95,14 @@ type
   protected
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   public
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   end;
 
   TSEControlableChebyshev1FilterHPModule = class(TSEStaticChebyshev1FilterHPModule)
   protected
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   public
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   end;
 
   TSEAutomatebleChebyshev1FilterModule = class(TSECustomChebyshev1FilterModule)
@@ -121,14 +121,14 @@ type
 
   TSEAutomatebleChebyshev1FilterLPModule = class(TSEAutomatebleChebyshev1FilterModule)
   protected
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
   end;
 
   TSEAutomatebleChebyshev1FilterHPModule = class(TSEAutomatebleChebyshev1FilterModule)
   protected
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
   end;
@@ -140,14 +140,14 @@ type
 
   TSEAutomatebleXChebyshev1FilterLPModule = class(TSEAutomatebleXChebyshev1FilterModule)
   protected
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
   end;
 
   TSEAutomatebleXChebyshev1FilterHPModule = class(TSEAutomatebleChebyshev1FilterModule)
   protected
-    class function GetModueName: string; override;
+    class function GetModueName: AnsiString; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
   end;
@@ -185,19 +185,19 @@ end;
 // describe your module
 class procedure TSECustomChebyshev1FilterModule.getModuleProperties(Properties : PSEModuleProperties);
 var
-  str : string;
+  str : AnsiString;
 begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   str := GetModueName;
-   Name := PChar(str);
+   str := AnsiString(GetModueName);
+   Name := PAnsiChar(str);
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := PChar(str);
+   ID := PAnsiChar(str);
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
@@ -342,7 +342,7 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEStaticChebyshev1FilterLPModule.GetModueName: string;
+class function TSEStaticChebyshev1FilterLPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Lowpass (static)';
 end;
@@ -357,14 +357,14 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEStaticChebyshev1FilterHPModule.GetModueName: string;
+class function TSEStaticChebyshev1FilterHPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Highpass (static)';
 end;
 
 { TSEControlableChebyshev1FilterLPModule }
 
-class function TSEControlableChebyshev1FilterLPModule.GetModueName: string;
+class function TSEControlableChebyshev1FilterLPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Lowpass';
 end;
@@ -380,7 +380,7 @@ end;
 
 { TSEControlableChebyshev1FilterHPModule }
 
-class function TSEControlableChebyshev1FilterHPModule.GetModueName: string;
+class function TSEControlableChebyshev1FilterHPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Highpass';
 end;
@@ -500,7 +500,7 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEAutomatebleChebyshev1FilterLPModule.GetModueName: string;
+class function TSEAutomatebleChebyshev1FilterLPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Lowpass (automatable)';
 end;
@@ -516,7 +516,7 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEAutomatebleChebyshev1FilterHPModule.GetModueName: string;
+class function TSEAutomatebleChebyshev1FilterHPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Highpass (automatable)';
 end;
@@ -560,7 +560,7 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEAutomatebleXChebyshev1FilterLPModule.GetModueName: string;
+class function TSEAutomatebleXChebyshev1FilterLPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Lowpass (automatable+)';
 end;
@@ -576,7 +576,7 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEAutomatebleXChebyshev1FilterHPModule.GetModueName: string;
+class function TSEAutomatebleXChebyshev1FilterHPModule.GetModueName: AnsiString;
 begin
  Result := 'Chebyshev I Highpass (automatable+)';
 end;
