@@ -266,6 +266,9 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
+    procedure Clear; virtual;
+
     procedure ProcessBlock(const Input, Output : PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure ProcessBlock(const Inplace: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     function ProcessSample32(Input: Single): Single; virtual;
@@ -376,6 +379,9 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
+    procedure Clear; virtual;
+
     procedure ProcessBlock(const Input, Output : PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure ProcessBlock(const Inplace : PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
@@ -1370,6 +1376,12 @@ begin
  Result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
 end;
 
+procedure TLowLatencyConvolution32.Clear;
+begin
+ FillChar(FInputBuffer^[0], FInputBufferSize * SizeOf(Single), 0);
+ FillChar(FOutputBuffer^[0], FIRSizePadded * SizeOf(Single), 0);
+end;
+
 procedure TLowLatencyConvolution32.CalculateLatency;
 begin
  FLatency           := 1 shl FMinimumIRBlockOrder;
@@ -1744,12 +1756,10 @@ begin
 
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat64.Create(IROrder + 1);
- {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA64.Create(IROrder + 1);
  {$ELSE}
  FFft := TFftReal2ComplexNativeFloat64.Create(IROrder + 1);
  FFft.DataOrder := doPackedComplex;
- {$ENDIF}{$ENDIF}
+ {$ENDIF}
  FFft.AutoScaleType := astDivideInvByN;
  FFTOrderChanged;
 end;
@@ -1989,6 +1999,12 @@ end;
 function TLowLatencyConvolution64.CalculatePaddedIRSize: Integer;
 begin
  Result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
+end;
+
+procedure TLowLatencyConvolution64.Clear;
+begin
+ FillChar(FInputBuffer^[0], FInputBufferSize * SizeOf(Double), 0);
+ FillChar(FOutputBuffer^[0], FIRSizePadded * SizeOf(Double), 0);
 end;
 
 procedure TLowLatencyConvolution64.CalculateLatency;

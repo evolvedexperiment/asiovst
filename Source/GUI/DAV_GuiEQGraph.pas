@@ -1223,7 +1223,7 @@ begin
  TabStop := False; // Ensure we're not a tab-stop
  Color := clBtnFace;
 
-  // create sub objects
+ // create sub objects
  FGuiFont         := TGuiOversampledGDIFont.Create;
  FXAxis           := TGuiEQGraphXAxis.Create(Self);
  FYAxis           := TGuiEQGraphYAxis.Create(Self);
