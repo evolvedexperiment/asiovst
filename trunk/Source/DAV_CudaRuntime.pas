@@ -363,7 +363,7 @@ begin
 end;
 
 var
-  CudaRuntimeDLL    : HMODULE;
+  CudaRuntimeDLL : HMODULE;
 
 const
   CCudaRuntimeDLLName = 'CudaRt.dll';

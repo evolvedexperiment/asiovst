@@ -344,6 +344,8 @@ function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
 
 implementation
 
+{%CLASSGROUP 'System.Classes.TPersistent'}
+
 uses
   Math, Contnrs, DAV_Common;
 
@@ -357,9 +359,9 @@ const
   CHostCallProcess32ReplacingOffset = $00000248;
   CHostCallProcess64ReplacingOffset = $0000024C;
   {$ELSE}
-  CHostCallProcessOffset = $0000022C;
-  CHostCallProcess32ReplacingOffset = $00000230;
-  CHostCallProcess64ReplacingOffset = $00000234;
+  CHostCallProcessOffset = $00000238; // $0000022C;
+  CHostCallProcess32ReplacingOffset = $0000023C; // $00000230;
+  CHostCallProcess64ReplacingOffset = $00000240; // $00000234;
   {$ENDIF}
 {$ENDIF}
 

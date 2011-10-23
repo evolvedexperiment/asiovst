@@ -96,7 +96,7 @@ type
     procedure SetNumOutputs(const Outputs: Integer);
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
     procedure SetKeysRequired(const Value: Boolean);
-    procedure ReadOnlyString(s: string); virtual;
+    procedure ReadOnlyString(VU: string); virtual;
     procedure SetOnProcessEx(const Value: TProcessAudio32Event);
     procedure SetOnProcess32ReplacingEx(const Value: TProcessAudio32Event);
     procedure SetOnProcess64ReplacingEx(const Value: TProcessAudio64Event);
@@ -532,10 +532,9 @@ begin
 
  Result := inherited HostCallDispatchEffect(Opcode, Index, Value, ptr, opt);
  if Assigned(FOnDispatcher) then FOnDispatcher(Self, Opcode);
-
 end;
 
-procedure TCustomVSTModule.ReadOnlyString(s: string); begin end;
+procedure TCustomVSTModule.ReadOnlyString(VU: string); begin end;
 
 function TCustomVSTModule.HostCallOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
@@ -553,14 +552,14 @@ end;
 
 function TCustomVSTModule.HostCallGetVu(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  s: Single;
+  VU: Single;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetVu'); {$ENDIF}
  if Assigned(FOnGetVUEvent) then
   begin
-   s := 0;
-   FOnGetVUEvent(s);
-   Result := round(s * 32767);
+   VU := 0;
+   FOnGetVUEvent(VU);
+   Result := Round(VU * 32767);
   end else Result := 0;
 end;
 

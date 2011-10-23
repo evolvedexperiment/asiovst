@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_CudaRuntime, DAV_CudaFFT,
+  Classes, DAV_Common, DAV_Types, DAV_Complex, DAV_CudaRuntime, DAV_CudaFFT,
   DAV_DspFftReal2Complex;
 
 type
