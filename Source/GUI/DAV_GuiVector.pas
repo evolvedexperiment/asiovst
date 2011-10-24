@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LCLType, {$ELSE} Windows, Messages, {$ENDIF}
-  Graphics, Classes, SysUtils, DAV_GuiFixedPoint;
+  Graphics, Classes, SysUtils, DAV_FixedPoint, DAV_GuiFixedPoint;
 
 type
   TGuiCustomGeometricShape = class(TPersistent)
@@ -53,8 +53,7 @@ type
 
   TGuiCustomCenteredGeometricShape = class(TGuiCustomGeometricShape)
   private
-    FCenterX : TFixed24Dot8Point;
-    FCenterY : TFixed24Dot8Point;
+    FCenter : TFixed24Dot8PointPoint;
     procedure SetCenterX(const Value: TFixed24Dot8Point);
     procedure SetCenterY(const Value: TFixed24Dot8Point);
   protected
@@ -64,8 +63,8 @@ type
   public
     constructor Create; override;
 
-    property CenterX: TFixed24Dot8Point read FCenterX write SetCenterX;
-    property CenterY: TFixed24Dot8Point read FCenterY write SetCenterY;
+    property CenterX: TFixed24Dot8Point read FCenter.X write SetCenterX;
+    property CenterY: TFixed24Dot8Point read FCenter.Y write SetCenterY;
   end;
 
   TGuiCustomCircle = class(TGuiCustomCenteredGeometricShape)
@@ -276,8 +275,8 @@ end;
 constructor TGuiCustomCenteredGeometricShape.Create;
 begin
  inherited;
- FCenterX.Fixed := 0;
- FCenterY.Fixed := 0;
+ FCenter.X.Fixed := 0;
+ FCenter.Y.Fixed := 0;
 end;
 
 procedure TGuiCustomCenteredGeometricShape.AssignTo(Dest: TPersistent);
@@ -287,8 +286,8 @@ begin
  if Dest is TGuiCustomCenteredGeometricShape then
   with TGuiCustomCenteredGeometricShape(Dest) do
    begin
-    FCenterX := Self.FCenterX;
-    FCenterY := Self.FCenterY;
+    FCenter.X := Self.FCenter.X;
+    FCenter.Y := Self.FCenter.Y;
    end;
 end;
 
@@ -305,18 +304,18 @@ end;
 
 procedure TGuiCustomCenteredGeometricShape.SetCenterX(const Value: TFixed24Dot8Point);
 begin
- if FCenterX.Fixed <> Value.Fixed then
+ if FCenter.X.Fixed <> Value.Fixed then
   begin
-   FCenterX := Value;
+   FCenter.X := Value;
    CenterXChanged;
   end;
 end;
 
 procedure TGuiCustomCenteredGeometricShape.SetCenterY(const Value: TFixed24Dot8Point);
 begin
- if (FCenterY.Fixed <> Value.Fixed) then
+ if (FCenter.Y.Fixed <> Value.Fixed) then
   begin
-   FCenterY := Value;
+   FCenter.Y := Value;
    CenterYChanged;
   end;
 end;
