@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Graphics, Classes, SysUtils, DAV_Common, DAV_GuiCommon, DAV_GuiFixedPoint,
+  Graphics, Classes, SysUtils, DAV_Common, DAV_FixedPoint, DAV_GuiCommon, 
   DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiVectorPixel;
 
 type

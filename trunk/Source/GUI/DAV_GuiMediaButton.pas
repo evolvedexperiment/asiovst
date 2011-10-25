@@ -165,8 +165,8 @@ type
 implementation
 
 uses
-  Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_GuiBlend,
-  DAV_GuiFixedPoint, DAV_Approximations;
+  Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_FixedPoint, DAV_GuiBlend,
+  DAV_Approximations;
 
 
 { TCustomGuiMediaButton }
