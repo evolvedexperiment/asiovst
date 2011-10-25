@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, Types, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Controls, Graphics, Menus, DAV_GuiPixelMap, DAV_GuiCustomControl,
-  DAV_GuiFont, DAV_GuiShadow;
+  DAV_GuiFont, DAV_GuiShadow, DAV_FixedPoint;
 
 type
   TCustomGuiSelectBox = class(TGuiCustomControl)

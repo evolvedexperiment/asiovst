@@ -36,7 +36,8 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Messages, Controls, Graphics, ExtCtrls, DAV_GuiPixelMap;
+  Classes, Messages, Controls, Graphics, ExtCtrls, DAV_FixedPoint,
+  DAV_GuiPixelMap;
 
 type
   TCustomGuiPanel = class(TCustomPanel)

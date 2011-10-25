@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes, SysUtils, DAV_Common, DAV_MemoryUtils, DAV_GuiCommon,
-  DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiFixedPoint;
+  DAV_GuiBlend, DAV_GuiPixelMap, DAV_GuiVector, DAV_FixedPoint;
 
 type
   TGuiPixelPrimitiveDraw = procedure(PixelMap: TGuiCustomPixelMap) of object;

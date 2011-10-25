@@ -37,8 +37,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, StdCtrls, ExtCtrls,
-  DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiVector, DAV_GuiFixedPoint,
-  DAV_GuiFont, DAV_GuiShadow;
+  DAV_FixedPoint, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiVector,
+  DAV_GuiFixedPoint, DAV_GuiFont, DAV_GuiShadow;
 
 type
   TGuiControlsRadioButton = class(TRadioButton)

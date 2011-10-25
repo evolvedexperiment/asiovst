@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
-  DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiShadow;
+  DAV_FixedPoint, DAV_GuiCommon, DAV_GuiFont, DAV_GuiPixelMap, DAV_GuiShadow;
 
 type
   TCustomGuiGroup = class(TCustomGroupBox)
@@ -393,8 +393,7 @@ type
 implementation
 
 uses
-  Math, DAV_Math, DAV_Approximations, DAV_GuiBlend,
-  DAV_GuiFixedPoint;
+  Math, DAV_Math, DAV_Approximations, DAV_GuiBlend;
 
 { TCustomGuiGroup }
 

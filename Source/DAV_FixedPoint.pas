@@ -40,8 +40,8 @@ uses
 type
   PFixed16Dot16Point = ^TFixed16Dot16Point;
   TFixed16Dot16Point = packed record
-  public
   {$IFDEF DELPHI14_UP}
+  public
     constructor Create(const Fixed: Integer); overload;
     constructor Create(const Frac: Byte; Int: SmallInt); overload;
 

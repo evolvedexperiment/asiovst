@@ -36,9 +36,9 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_Types, DAV_GuiCommon,
-  DAV_GuiBaseControl, DAV_GuiCustomControl, DAV_GuiPixelMap, DAV_GuiFont,
-  DAV_GuiShadow, DAV_GuiFixedPoint, DAV_GuiVector, DAV_GuiVectorPixelGraph;
+  Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_Types, DAV_FixedPoint,
+  DAV_GuiCommon, DAV_GuiBaseControl, DAV_GuiCustomControl, DAV_GuiPixelMap,
+  DAV_GuiFont, DAV_GuiShadow, DAV_GuiVector, DAV_GuiVectorPixelGraph;
 
 type
   TGuiEQGraph = class;
