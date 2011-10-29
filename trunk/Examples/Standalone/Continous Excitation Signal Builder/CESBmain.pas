@@ -750,7 +750,7 @@ begin
     FFT.DataOrder := doPackedComplex;
     FFT.AutoScaleType := astDivideFwdByN;
 
-    GetMem(FreqDom, FFT.BinCount * SizeOf(TComplexSingle));
+    GetMem(FreqDom, FFT.BinCount * SizeOf(TComplex32));
 
     Temp := FFT.FFTSize * Self.Frequency / SampleRate;
     BinBorder[0] := Round(Temp * Power(2, -1/6));
@@ -822,7 +822,7 @@ begin
     FFT.DataOrder := doPackedComplex;
     FFT.AutoScaleType := astDivideFwdByN;
 
-    GetMem(FreqDom, FFT.BinCount * SizeOf(TComplexSingle));
+    GetMem(FreqDom, FFT.BinCount * SizeOf(TComplex32));
     GetMem(TimeDom, FFT.FFTSize * SizeOf(Single));
 
     Temp := FFT.FFTSize * Self.Frequency / SampleRate;
@@ -925,7 +925,7 @@ begin
     FFT.DataOrder := doPackedComplex;
     FFT.AutoScaleType := astDivideFwdByN;
 
-    GetMem(FreqDom, FFT.BinCount * SizeOf(TComplexSingle));
+    GetMem(FreqDom, FFT.BinCount * SizeOf(TComplex32));
 
     Temp := FFT.FFTSize * Self.Frequency / SampleRate;
     BinBorder[0] := Round(Temp * Power(2, -0.5));

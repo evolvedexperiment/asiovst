@@ -53,9 +53,9 @@ type
 
   TGuiCustomCenteredGeometricShape = class(TGuiCustomGeometricShape)
   private
-    FCenter : TFixed24Dot8PointPoint;
-    procedure SetCenterX(const Value: TFixed24Dot8Point);
-    procedure SetCenterY(const Value: TFixed24Dot8Point);
+    FCenter : TFixed24Dot8Point;
+    procedure SetCenterX(const Value: TFixed24Dot8);
+    procedure SetCenterY(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure CenterXChanged; virtual;
@@ -63,30 +63,30 @@ type
   public
     constructor Create; override;
 
-    property CenterX: TFixed24Dot8Point read FCenter.X write SetCenterX;
-    property CenterY: TFixed24Dot8Point read FCenter.Y write SetCenterY;
+    property CenterX: TFixed24Dot8 read FCenter.X write SetCenterX;
+    property CenterY: TFixed24Dot8 read FCenter.Y write SetCenterY;
   end;
 
   TGuiCustomCircle = class(TGuiCustomCenteredGeometricShape)
   private
-    FRadius  : TFixed24Dot8Point;
-    procedure SetRadius(const Value: TFixed24Dot8Point);
+    FRadius  : TFixed24Dot8;
+    procedure SetRadius(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure RadiusChanged; virtual;
   public
     constructor Create; override;
 
-    property Radius: TFixed24Dot8Point read FRadius write SetRadius;
+    property Radius: TFixed24Dot8 read FRadius write SetRadius;
   end;
   TGuiCircle = class(TGuiCustomCircle);
 
   TGuiCustomCircleSector = class(TGuiCustomCircle)
   private
-    FAngleStart : TFixed24Dot8Point;
-    FAngleEnd   : TFixed24Dot8Point;
-    procedure SetAngleEnd(const Value: TFixed24Dot8Point);
-    procedure SetAngleStart(const Value: TFixed24Dot8Point);
+    FAngleStart : TFixed24Dot8;
+    FAngleEnd   : TFixed24Dot8;
+    procedure SetAngleEnd(const Value: TFixed24Dot8);
+    procedure SetAngleStart(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure AngleStartChanged; virtual;
@@ -94,17 +94,17 @@ type
   public
     constructor Create; override;
 
-    property AngleStart: TFixed24Dot8Point read FAngleStart write SetAngleStart;
-    property AngleEnd: TFixed24Dot8Point read FAngleEnd write SetAngleEnd;
+    property AngleStart: TFixed24Dot8 read FAngleStart write SetAngleStart;
+    property AngleEnd: TFixed24Dot8 read FAngleEnd write SetAngleEnd;
   end;
   TGuiCircleSector = class(TGuiCustomCircleSector);
 
   TGuiCustomEllipse = class(TGuiCustomCenteredGeometricShape)
   private
-    FRadiusX  : TFixed24Dot8Point;
-    FRadiusY  : TFixed24Dot8Point;
-    procedure SetRadiusX(const Value: TFixed24Dot8Point);
-    procedure SetRadiusY(const Value: TFixed24Dot8Point);
+    FRadiusX  : TFixed24Dot8;
+    FRadiusY  : TFixed24Dot8;
+    procedure SetRadiusX(const Value: TFixed24Dot8);
+    procedure SetRadiusY(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure RadiusXChanged; virtual;
@@ -112,21 +112,21 @@ type
   public
     constructor Create; override;
 
-    property RadiusX: TFixed24Dot8Point read FRadiusX write SetRadiusX;
-    property RadiusY: TFixed24Dot8Point read FRadiusY write SetRadiusY;
+    property RadiusX: TFixed24Dot8 read FRadiusX write SetRadiusX;
+    property RadiusY: TFixed24Dot8 read FRadiusY write SetRadiusY;
   end;
   TGuiEllipse = class(TGuiCustomEllipse);
 
   TGuiCustomRectangle = class(TGuiCustomGeometricShape)
   private
-    FRight  : TFixed24Dot8Point;
-    FBottom : TFixed24Dot8Point;
-    FTop    : TFixed24Dot8Point;
-    FLeft   : TFixed24Dot8Point;
-    procedure SetBottom(const Value: TFixed24Dot8Point);
-    procedure SetLeft(const Value: TFixed24Dot8Point);
-    procedure SetRight(const Value: TFixed24Dot8Point);
-    procedure SetTop(const Value: TFixed24Dot8Point);
+    FRight  : TFixed24Dot8;
+    FBottom : TFixed24Dot8;
+    FTop    : TFixed24Dot8;
+    FLeft   : TFixed24Dot8;
+    procedure SetBottom(const Value: TFixed24Dot8);
+    procedure SetLeft(const Value: TFixed24Dot8);
+    procedure SetRight(const Value: TFixed24Dot8);
+    procedure SetTop(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure BottomChanged; virtual;
@@ -136,37 +136,37 @@ type
   public
     constructor Create; override;
 
-    property Left: TFixed24Dot8Point read FLeft write SetLeft;
-    property Right: TFixed24Dot8Point read FRight write SetRight;
-    property Top: TFixed24Dot8Point read FTop write SetTop;
-    property Bottom: TFixed24Dot8Point read FBottom write SetBottom;
+    property Left: TFixed24Dot8 read FLeft write SetLeft;
+    property Right: TFixed24Dot8 read FRight write SetRight;
+    property Top: TFixed24Dot8 read FTop write SetTop;
+    property Bottom: TFixed24Dot8 read FBottom write SetBottom;
   end;
   TGuiRectangle = TGuiCustomRectangle;
 
   TGuiCustomRoundedRectangle = class(TGuiCustomRectangle)
   private
-    FBorderRadius: TFixed24Dot8Point;
-    procedure SetBorderRadius(const Value: TFixed24Dot8Point);
+    FBorderRadius: TFixed24Dot8;
+    procedure SetBorderRadius(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure BorderRadiusChanged; virtual;
   public
     constructor Create; override;
 
-    property BorderRadius: TFixed24Dot8Point read FBorderRadius write SetBorderRadius;
+    property BorderRadius: TFixed24Dot8 read FBorderRadius write SetBorderRadius;
   end;
   TGuiRoundedRectangle = class(TGuiCustomRoundedRectangle);
 
   TGuiCustomLine = class(TGuiCustomGeometricShape)
   private
-    FXA: TFixed24Dot8Point;
-    FYA: TFixed24Dot8Point;
-    FXB: TFixed24Dot8Point;
-    FYB: TFixed24Dot8Point;
-    procedure SetXA(const Value: TFixed24Dot8Point);
-    procedure SetXB(const Value: TFixed24Dot8Point);
-    procedure SetYA(const Value: TFixed24Dot8Point);
-    procedure SetYB(const Value: TFixed24Dot8Point);
+    FXA: TFixed24Dot8;
+    FYA: TFixed24Dot8;
+    FXB: TFixed24Dot8;
+    FYB: TFixed24Dot8;
+    procedure SetXA(const Value: TFixed24Dot8);
+    procedure SetXB(const Value: TFixed24Dot8);
+    procedure SetYA(const Value: TFixed24Dot8);
+    procedure SetYB(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure XAChanged; virtual;
@@ -176,22 +176,22 @@ type
   public
     constructor Create; override;
 
-    property XA: TFixed24Dot8Point read FXA write SetXA;
-    property YA: TFixed24Dot8Point read FYA write SetYA;
-    property XB: TFixed24Dot8Point read FXB write SetXB;
-    property YB: TFixed24Dot8Point read FYB write SetYB;
+    property XA: TFixed24Dot8 read FXA write SetXA;
+    property YA: TFixed24Dot8 read FYA write SetYA;
+    property XB: TFixed24Dot8 read FXB write SetXB;
+    property YB: TFixed24Dot8 read FYB write SetYB;
   end;
   TGuiLine = class(TGuiCustomLine);
 
-  TFixed24Dot8PointPoint = record
-    X, Y : TFixed24Dot8Point;
+  TFixed24Dot8Point = record
+    X, Y : TFixed24Dot8;
   end;
 
-  TFixed16Dot16PointPoint = record
-    X, Y : TFixed16Dot16Point;
+  TFixed16Dot16Point = record
+    X, Y : TFixed16Dot16;
   end;
 
-  TGetValueEvent = function (Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point of object;
+  TGetValueEvent = function (Sender: TObject; PixelPosition: Integer): TFixed24Dot8 of object;
 
   TGuiEquallySpacedPolyline = class(TGuiCustomGeometricShape)
   private
@@ -220,11 +220,11 @@ type
 
   TGuiCustomPolygon = class(TGuiCustomGeometricShape)
   private
-    FData : array of TFixed24Dot8PointPoint;
-    function GetX(Index: Integer): TFixed24Dot8Point;
-    function GetY(Index: Integer): TFixed24Dot8Point;
-    procedure SetX(Index: Integer; const Value: TFixed24Dot8Point);
-    procedure SetY(Index: Integer; const Value: TFixed24Dot8Point);
+    FData : array of TFixed24Dot8Point;
+    function GetX(Index: Integer): TFixed24Dot8;
+    function GetY(Index: Integer): TFixed24Dot8;
+    procedure SetX(Index: Integer; const Value: TFixed24Dot8);
+    procedure SetY(Index: Integer; const Value: TFixed24Dot8);
     function GetCount: Integer;
   protected
     procedure AssignTo(Dest: TPersistent); override;
@@ -232,16 +232,16 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure AddPoint(X, Y: TFixed24Dot8Point); overload;
-    procedure AddPoint(Point: TFixed24Dot8PointPoint); overload;
+    procedure AddPoint(X, Y: TFixed24Dot8); overload;
+    procedure AddPoint(Point: TFixed24Dot8Point); overload;
 (*
-    procedure RemovePoint(X, Y: TFixed24Dot8Point); overload;
-    procedure RemovePoint(Point: TFixed24Dot8PointPoint); overload;
+    procedure RemovePoint(X, Y: TFixed24Dot8); overload;
+    procedure RemovePoint(Point: TFixed24Dot8Point); overload;
 *)
     procedure RemovePoint(Index: Integer); overload;
 
-    property X[Index: Integer]: TFixed24Dot8Point read GetX write SetX;
-    property Y[Index: Integer]: TFixed24Dot8Point read GetY write SetY;
+    property X[Index: Integer]: TFixed24Dot8 read GetX write SetX;
+    property Y[Index: Integer]: TFixed24Dot8 read GetY write SetY;
     property Count: Integer read GetCount;
   end;
   TGuiPolygon = class(TGuiCustomPolygon);
@@ -302,7 +302,7 @@ begin
 end;
 
 
-procedure TGuiCustomCenteredGeometricShape.SetCenterX(const Value: TFixed24Dot8Point);
+procedure TGuiCustomCenteredGeometricShape.SetCenterX(const Value: TFixed24Dot8);
 begin
  if FCenter.X.Fixed <> Value.Fixed then
   begin
@@ -311,7 +311,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomCenteredGeometricShape.SetCenterY(const Value: TFixed24Dot8Point);
+procedure TGuiCustomCenteredGeometricShape.SetCenterY(const Value: TFixed24Dot8);
 begin
  if (FCenter.Y.Fixed <> Value.Fixed) then
   begin
@@ -345,7 +345,7 @@ begin
  Changed;
 end;
 
-procedure TGuiCustomCircle.SetRadius(const Value: TFixed24Dot8Point);
+procedure TGuiCustomCircle.SetRadius(const Value: TFixed24Dot8);
 begin
  if (FRadius.Fixed <> Value.Fixed) then
   begin
@@ -386,7 +386,7 @@ begin
  Changed;
 end;
 
-procedure TGuiCustomCircleSector.SetAngleEnd(const Value: TFixed24Dot8Point);
+procedure TGuiCustomCircleSector.SetAngleEnd(const Value: TFixed24Dot8);
 begin
  if FAngleEnd.Fixed <> Value.Fixed then
   begin
@@ -395,7 +395,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomCircleSector.SetAngleStart(const Value: TFixed24Dot8Point);
+procedure TGuiCustomCircleSector.SetAngleStart(const Value: TFixed24Dot8);
 begin
  if FAngleStart.Fixed <> Value.Fixed then
   begin
@@ -436,7 +436,7 @@ begin
  Changed;
 end;
 
-procedure TGuiCustomEllipse.SetRadiusX(const Value: TFixed24Dot8Point);
+procedure TGuiCustomEllipse.SetRadiusX(const Value: TFixed24Dot8);
 begin
  if (FRadiusX.Fixed <> Value.Fixed) then
   begin
@@ -445,7 +445,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomEllipse.SetRadiusY(const Value: TFixed24Dot8Point);
+procedure TGuiCustomEllipse.SetRadiusY(const Value: TFixed24Dot8);
 begin
  if (FRadiusY.Fixed <> Value.Fixed) then
   begin
@@ -500,7 +500,7 @@ begin
  Changed;
 end;
 
-procedure TGuiCustomRectangle.SetBottom(const Value: TFixed24Dot8Point);
+procedure TGuiCustomRectangle.SetBottom(const Value: TFixed24Dot8);
 begin
  if FBottom.Fixed <> Value.Fixed then
   begin
@@ -509,7 +509,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomRectangle.SetLeft(const Value: TFixed24Dot8Point);
+procedure TGuiCustomRectangle.SetLeft(const Value: TFixed24Dot8);
 begin
  if FLeft.Fixed <> Value.Fixed then
   begin
@@ -518,7 +518,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomRectangle.SetRight(const Value: TFixed24Dot8Point);
+procedure TGuiCustomRectangle.SetRight(const Value: TFixed24Dot8);
 begin
  if FRight.Fixed <> Value.Fixed then
   begin
@@ -527,7 +527,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomRectangle.SetTop(const Value: TFixed24Dot8Point);
+procedure TGuiCustomRectangle.SetTop(const Value: TFixed24Dot8);
 begin
  if FTop.Fixed <> Value.Fixed then
   begin
@@ -562,7 +562,7 @@ begin
 end;
 
 procedure TGuiCustomRoundedRectangle.SetBorderRadius(
-  const Value: TFixed24Dot8Point);
+  const Value: TFixed24Dot8);
 begin
  if FBorderRadius.Fixed <> Value.Fixed then
   begin
@@ -617,7 +617,7 @@ begin
  Changed;
 end;
 
-procedure TGuiCustomLine.SetXA(const Value: TFixed24Dot8Point);
+procedure TGuiCustomLine.SetXA(const Value: TFixed24Dot8);
 begin
  if FXA.Fixed <> Value.Fixed then
   begin
@@ -626,7 +626,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomLine.SetXB(const Value: TFixed24Dot8Point);
+procedure TGuiCustomLine.SetXB(const Value: TFixed24Dot8);
 begin
  if FXB.Fixed <> Value.Fixed then
   begin
@@ -635,7 +635,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomLine.SetYA(const Value: TFixed24Dot8Point);
+procedure TGuiCustomLine.SetYA(const Value: TFixed24Dot8);
 begin
  if FYA.Fixed <> Value.Fixed then
   begin
@@ -644,7 +644,7 @@ begin
   end;
 end;
 
-procedure TGuiCustomLine.SetYB(const Value: TFixed24Dot8Point);
+procedure TGuiCustomLine.SetYB(const Value: TFixed24Dot8);
 begin
  if FYB.Fixed <> Value.Fixed then
   begin
@@ -748,18 +748,18 @@ begin
    begin
     SetLength(FData, Length(Self.FData));
     if Length(Self.FData) > 0
-     then Move(Self.FData[0], FData[0], Length(Self.FData) * SizeOf(TFixed24Dot8PointPoint));
+     then Move(Self.FData[0], FData[0], Length(Self.FData) * SizeOf(TFixed24Dot8Point));
    end;
 end;
 
-procedure TGuiCustomPolygon.AddPoint(X, Y: TFixed24Dot8Point);
+procedure TGuiCustomPolygon.AddPoint(X, Y: TFixed24Dot8);
 begin
  SetLength(FData, Length(FData) + 1);
  FData[Length(FData) - 1].X := X;
  FData[Length(FData) - 1].Y := Y;
 end;
 
-procedure TGuiCustomPolygon.AddPoint(Point: TFixed24Dot8PointPoint);
+procedure TGuiCustomPolygon.AddPoint(Point: TFixed24Dot8Point);
 begin
  SetLength(FData, Length(FData) + 1);
  FData[Length(FData) - 1].X := Point.X;
@@ -771,14 +771,14 @@ begin
  Result := Length(FData);
 end;
 
-function TGuiCustomPolygon.GetX(Index: Integer): TFixed24Dot8Point;
+function TGuiCustomPolygon.GetX(Index: Integer): TFixed24Dot8;
 begin
  if Index < Length(FData)
   then Result := FData[Index].X
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-function TGuiCustomPolygon.GetY(Index: Integer): TFixed24Dot8Point;
+function TGuiCustomPolygon.GetY(Index: Integer): TFixed24Dot8;
 begin
  if Index < Length(FData)
   then Result := FData[Index].Y
@@ -793,13 +793,13 @@ begin
    begin
     if Index + 1 < Length(FData)
      then Move(FData[Index + 1], FData[Index], (Length(FData) - Index - 1) *
-       SizeOf(TFixed24Dot8PointPoint));
+       SizeOf(TFixed24Dot8Point));
     SetLength(FData, Length(FData) - 1);
    end;
 end;
 
 procedure TGuiCustomPolygon.SetX(Index: Integer;
-  const Value: TFixed24Dot8Point);
+  const Value: TFixed24Dot8);
 begin
  if Index < Length(FData)
   then FData[Index].X := Value
@@ -807,7 +807,7 @@ begin
 end;
 
 procedure TGuiCustomPolygon.SetY(Index: Integer;
-  const Value: TFixed24Dot8Point);
+  const Value: TFixed24Dot8);
 begin
  if Index < Length(FData)
   then FData[Index].Y := Value

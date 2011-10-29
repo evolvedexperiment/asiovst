@@ -57,9 +57,9 @@ begin
     begin
      Color := Random($3FFF); //Random($FFFFFF);
      Alpha := 1 + Random($FE);
-     CenterX := ConvertToFixed24Dot8Point(-$FF + Random(ClientWidth - 1 + 2 * $FF));
-     CenterY := ConvertToFixed24Dot8Point(-$FF + Random(ClientHeight - 1 + 2 * $FF));
-     Radius := ConvertToFixed24Dot8Point(0);
+     CenterX := ConvertToFixed24Dot8(-$FF + Random(ClientWidth - 1 + 2 * $FF));
+     CenterY := ConvertToFixed24Dot8(-$FF + Random(ClientHeight - 1 + 2 * $FF));
+     Radius := ConvertToFixed24Dot8(0);
     end;
   end;
 
@@ -124,13 +124,13 @@ begin
     Alpha := Round(0.94 * Alpha) - 1;
     if Alpha = 0 then
      begin
-      CenterX := ConvertToFixed24Dot8Point(-$FF + Random(ClientWidth - 1 + 2 * $FF));
-      CenterY := ConvertToFixed24Dot8Point(-$FF + Random(ClientHeight - 1 + 2 * $FF));
-      Radius := ConvertToFixed24Dot8Point(0);
+      CenterX := ConvertToFixed24Dot8(-$FF + Random(ClientWidth - 1 + 2 * $FF));
+      CenterY := ConvertToFixed24Dot8(-$FF + Random(ClientHeight - 1 + 2 * $FF));
+      Radius := ConvertToFixed24Dot8(0);
       Color := Random($3FFF);
       Alpha := 1 + Random($FE);
      end
-    else Radius := ConvertToFixed24Dot8Point(Radius.Fixed / 256 + 1);
+    else Radius := ConvertToFixed24Dot8(Radius.Fixed / 256 + 1);
     Draw(FPixelMap);
    end;
  Invalidate;

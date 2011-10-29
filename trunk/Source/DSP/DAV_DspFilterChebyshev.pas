@@ -45,7 +45,7 @@ type
     FFilterGain   : Double;
     FTanW0Half    : Double;
     FOrderInv     : Double;
-    FExpOrdPiHalf : TComplexDouble;
+    FExpOrdPiHalf : TComplex64;
     procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateW0; override;
     procedure CalculateHypFactors; virtual; abstract;

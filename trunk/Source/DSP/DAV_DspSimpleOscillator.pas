@@ -77,8 +77,8 @@ type
     function GetPhase: Single;
     procedure SetPhase(const Value: Single);
   protected
-    FAngle    : TComplexSingle;
-    FPosition : TComplexSingle;
+    FAngle    : TComplex32;
+    FPosition : TComplex32;
     procedure FrequencyChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetAmplitude(const Value: Double); override;
@@ -96,8 +96,8 @@ type
     function GetPhase: Double;
     procedure SetPhase(const Value: Double);
   protected
-    FAngle    : TComplexDouble;
-    FPosition : TComplexDouble;
+    FAngle    : TComplex64;
+    FPosition : TComplex64;
     procedure FrequencyChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetAmplitude(const Value: Double); override;

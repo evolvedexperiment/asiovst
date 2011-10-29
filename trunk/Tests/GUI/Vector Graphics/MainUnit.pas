@@ -216,7 +216,7 @@ end;
 procedure TFmVectorGraphicTest.BuildRandomPrimitives;
 var
   Index : Integer;
-  Cmplx : TComplexSingle;
+  Cmplx : TComplex32;
 begin
  if not Assigned(FPixelMap.DataPointer) then Exit;
 
@@ -242,27 +242,27 @@ begin
     if GeometricShape is TGuiCircle then
      with FPixelMap, TGuiCircle(GeometricShape) do
       begin
-       CenterX := ConvertToFixed24Dot8Point(Random(Width - 1) + Random);
-       CenterY := ConvertToFixed24Dot8Point(Random(Height - 1) + Random);
-       Radius := ConvertToFixed24Dot8Point(Random(Width div 4) + Random);
+       CenterX := ConvertToFixed24Dot8(Random(Width - 1) + Random);
+       CenterY := ConvertToFixed24Dot8(Random(Height - 1) + Random);
+       Radius := ConvertToFixed24Dot8(Random(Width div 4) + Random);
       end else
     if GeometricShape is TGuiEllipse then
      with FPixelMap, TGuiEllipse(GeometricShape) do
       begin
-       CenterX := ConvertToFixed24Dot8Point(Random(Width - 1) + Random);
-       CenterY := ConvertToFixed24Dot8Point(Random(Height - 1) + Random);
-       RadiusX := ConvertToFixed24Dot8Point(Random(Width div 4) + Random);
-       RadiusY := ConvertToFixed24Dot8Point(Random(Height div 4) + Random);
+       CenterX := ConvertToFixed24Dot8(Random(Width - 1) + Random);
+       CenterY := ConvertToFixed24Dot8(Random(Height - 1) + Random);
+       RadiusX := ConvertToFixed24Dot8(Random(Width div 4) + Random);
+       RadiusY := ConvertToFixed24Dot8(Random(Height div 4) + Random);
       end else
     if GeometricShape is TGuiRectangle then
      with FPixelMap, TGuiRectangle(GeometricShape) do
       begin
-       Left := ConvertToFixed24Dot8Point(Random(2 * (FPixelMap.Width - 1)) - FPixelMap.Width div 2 + Random);
-       Top := ConvertToFixed24Dot8Point(Random(2 * (FPixelMap.Height - 1)) - FPixelMap.Height div 2 + Random);
-       Right := FixedAdd(Left, ConvertToFixed24Dot8Point(Random(FPixelMap.Width - 1)));
-       Bottom := FixedAdd(Top, ConvertToFixed24Dot8Point(Random(FPixelMap.Height - 1)));
+       Left := ConvertToFixed24Dot8(Random(2 * (FPixelMap.Width - 1)) - FPixelMap.Width div 2 + Random);
+       Top := ConvertToFixed24Dot8(Random(2 * (FPixelMap.Height - 1)) - FPixelMap.Height div 2 + Random);
+       Right := FixedAdd(Left, ConvertToFixed24Dot8(Random(FPixelMap.Width - 1)));
+       Bottom := FixedAdd(Top, ConvertToFixed24Dot8(Random(FPixelMap.Height - 1)));
        if GeometricShape is TGuiRoundedRectangle
-        then TGuiRoundedRectangle(GeometricShape).BorderRadius := ConvertToFixed24Dot8Point(0.5 * Height * Random);
+        then TGuiRoundedRectangle(GeometricShape).BorderRadius := ConvertToFixed24Dot8(0.5 * Height * Random);
       end else
     if GeometricShape is TGuiLine then
      with FPixelMap, TGuiLine(GeometricShape) do
@@ -272,36 +272,36 @@ begin
        if 2 * Index >= Length(FPrimitives) then
         begin
          GetSinCos(4 * Pi * Index / Length(FPrimitives), Cmplx.Re, Cmplx.Im);
-         XA := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.2 * Cmplx.Re));
-         YA := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.2 * Cmplx.Im));
-         XB := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.8 * Cmplx.Re));
-         YB := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.8 * Cmplx.Im));
+         XA := ConvertToFixed24Dot8(0.5 * Width * (1 + 0.2 * Cmplx.Re));
+         YA := ConvertToFixed24Dot8(0.5 * Height * (1 + 0.2 * Cmplx.Im));
+         XB := ConvertToFixed24Dot8(0.5 * Width * (1 + 0.8 * Cmplx.Re));
+         YB := ConvertToFixed24Dot8(0.5 * Height * (1 + 0.8 * Cmplx.Im));
         end
        else
         begin
          GetSinCos(4 * Pi * Index / Length(FPrimitives), Cmplx.Re, Cmplx.Im);
-         XA := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.8 * Cmplx.Re));
-         YA := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.8 * Cmplx.Im));
-         XB := ConvertToFixed24Dot8Point(0.5 * Width * (1 + 0.9 * Cmplx.Re));
-         YB := ConvertToFixed24Dot8Point(0.5 * Height * (1 + 0.9 * Cmplx.Im));
+         XA := ConvertToFixed24Dot8(0.5 * Width * (1 + 0.8 * Cmplx.Re));
+         YA := ConvertToFixed24Dot8(0.5 * Height * (1 + 0.8 * Cmplx.Im));
+         XB := ConvertToFixed24Dot8(0.5 * Width * (1 + 0.9 * Cmplx.Re));
+         YB := ConvertToFixed24Dot8(0.5 * Height * (1 + 0.9 * Cmplx.Im));
         end;
 *)
 
 (*
-       XA := ConvertToFixed24Dot8Point(10 + 5 * Index + Index / 10);
+       XA := ConvertToFixed24Dot8(10 + 5 * Index + Index / 10);
        XB := XA;
-       YA := ConvertToFixed24Dot8Point(10);
-       YB := ConvertToFixed24Dot8Point(Height - 10);
+       YA := ConvertToFixed24Dot8(10);
+       YB := ConvertToFixed24Dot8(Height - 10);
 *)
 
-       XA := ConvertToFixed24Dot8Point(Random(2 * (Width - 1)) - Width div 2 + Random);
-       YA := ConvertToFixed24Dot8Point(Random(2 * (Height - 1)) - Height div 2 + Random);
+       XA := ConvertToFixed24Dot8(Random(2 * (Width - 1)) - Width div 2 + Random);
+       YA := ConvertToFixed24Dot8(Random(2 * (Height - 1)) - Height div 2 + Random);
        if Index = 0
         then XB := XA
-        else XB := ConvertToFixed24Dot8Point(Random(2 * (Width - 1)) - Width div 2 + Random);
+        else XB := ConvertToFixed24Dot8(Random(2 * (Width - 1)) - Width div 2 + Random);
        if Index = 1
         then YB := YA
-        else YB := ConvertToFixed24Dot8Point(Random(2 * (Height - 1)) - Height div 2 + Random);
+        else YB := ConvertToFixed24Dot8(Random(2 * (Height - 1)) - Height div 2 + Random);
       end;
   end;
 end;

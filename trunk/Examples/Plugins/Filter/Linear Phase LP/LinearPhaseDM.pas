@@ -115,10 +115,10 @@ begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
 
- ReallocMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
- ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
- FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
+ ReallocMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
+ ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
+ FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
+ FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
  {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
 

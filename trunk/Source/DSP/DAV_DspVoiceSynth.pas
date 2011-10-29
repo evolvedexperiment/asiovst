@@ -44,8 +44,8 @@ type
     procedure SetRelease(const Value: Single);
     procedure SetThreshold(const Value: Single);
   protected
-    FCurrentPosition         : TComplexSingle;
-    FComplexAngle            : TComplexSingle;
+    FCurrentPosition         : TComplex32;
+    FComplexAngle            : TComplex32;
     FSampleRateReciprocal    : Single;
     FAttack, FAttackFactor   : Single;
     FRelease, FReleaseFactor : Single;

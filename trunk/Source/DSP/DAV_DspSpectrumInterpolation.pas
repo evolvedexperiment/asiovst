@@ -41,12 +41,12 @@ function QuadraticPeakPosition(const Data: TDAV3SingleArray): Single; overload; 
 function QuadraticPeakPosition(const Data: TDAV3DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BarycentricPeakPosition(const Data: TDAV3SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BarycentricPeakPosition(const Data: TDAV3DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-function QuinnEstimator1(const Prev, Peak, Next: TComplexSingle): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-function QuinnEstimator1(const Prev, Peak, Next: TComplexDouble): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator1(const Prev, Peak, Next: TComplex32): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator1(const Prev, Peak, Next: TComplex64): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function QuinnEstimator1(const Data: PDAV3ComplexSingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function QuinnEstimator1(const Data: PDAV3ComplexDoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-function QuinnEstimator2(const Prev, Peak, Next: TComplexSingle): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-function QuinnEstimator2(const Prev, Peak, Next: TComplexDouble): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator2(const Prev, Peak, Next: TComplex32): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator2(const Prev, Peak, Next: TComplex64): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function QuinnEstimator2(const Data: PDAV3ComplexSingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function QuinnEstimator2(const Data: PDAV3ComplexDoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function JainEstimator(const Prev, Peak, Next: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
@@ -79,7 +79,7 @@ begin
  Result := (abs(Data[2]) - abs(Data[0])) / (abs(Data[0]) + abs(Data[1]) + abs(Data[2]))
 end;
 
-function QuinnEstimator1(const Prev, Peak, Next: TComplexSingle): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator1(const Prev, Peak, Next: TComplex32): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 var
   InvPeakMagnitude : Single;
   ap, dp, am, dm   : Single;
@@ -94,7 +94,7 @@ begin
   else Result := dm;
 end;
 
-function QuinnEstimator1(const Prev, Peak, Next: TComplexDouble): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator1(const Prev, Peak, Next: TComplex64): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 var
   InvPeakMagnitude : Double;
   ap, dp, am, dm   : Double;
@@ -149,7 +149,7 @@ begin
    CSqrt6Div24 * Log10((x + 1 - CSqrt2Div3)  /  (x + 1 + CSqrt2Div3)));
 end;
 
-function QuinnEstimator2(const Prev, Peak, Next: TComplexSingle): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator2(const Prev, Peak, Next: TComplex32): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 var
   InvPeakMagnitude : Single;
   ap, dp, am, dm   : Single;
@@ -162,7 +162,7 @@ begin
  Result := (dp + dm) * 0.5 + tau(dp) - tau(dm);
 end;
 
-function QuinnEstimator2(const Prev, Peak, Next: TComplexDouble): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function QuinnEstimator2(const Prev, Peak, Next: TComplex64): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 var
   InvPeakMagnitude : Single;
   ap, dp, am, dm   : Single;

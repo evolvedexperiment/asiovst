@@ -136,10 +136,10 @@ begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(FIRSize)));
 
- ReallocMem(FFilterFreq, (FIRSize div 2 + 1) * SizeOf(TComplexSingle));
- ReallocMem(FSignalFreq, (FIRSize div 2 + 1) * SizeOf(TComplexSingle));
- FillChar(FFilterFreq^[0], (FIRSize div 2 + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FSignalFreq^[0], (FIRSize div 2 + 1) * SizeOf(TComplexSingle), 0);
+ ReallocMem(FFilterFreq, (FIRSize div 2 + 1) * SizeOf(TComplex32));
+ ReallocMem(FSignalFreq, (FIRSize div 2 + 1) * SizeOf(TComplex32));
+ FillChar(FFilterFreq^[0], (FIRSize div 2 + 1) * SizeOf(TComplex32), 0);
+ FillChar(FSignalFreq^[0], (FIRSize div 2 + 1) * SizeOf(TComplex32), 0);
  {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(FIRSize)));
 
@@ -355,7 +355,7 @@ var
   n       : Double;
   Freq    : Double;
   Scale   : Double;
-  Cmplx   : array [0..2] of TComplexDouble;
+  Cmplx   : array [0..2] of TComplex64;
 begin
  // checks whether everything is set correctly
  for Band := 0 to Length(FFilterProtos) - 1 do

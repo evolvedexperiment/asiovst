@@ -134,7 +134,7 @@ type
     FGainFactor        : Double;
     FGainFactorSquared : Double;
     FFrequency, FW0    : Double;
-    FExpW0             : TComplexDouble;
+    FExpW0             : TComplex64;
     procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateW0; virtual;
     procedure CalculateGainFactor; virtual;
@@ -143,7 +143,7 @@ type
     procedure CalculateSamplerateDependentVariables; override;
 
     property GainFactor: Double read FGainFactor;
-    property ExpW0: TComplexDouble read FExpW0;
+    property ExpW0: TComplex64 read FExpW0;
     property W0: Double read FW0;
   public
     constructor Create; override;
@@ -221,8 +221,8 @@ type
   protected
     FDenominator  : array [1..2] of Double;
     FNominator    : array [0..2] of Double;
-    FPoles        : array [0..1] of TComplexSingle;
-    FZeros        : array [0..1] of TComplexSingle;
+    FPoles        : array [0..1] of TComplex32;
+    FZeros        : array [0..1] of TComplex32;
     FState        : array [0..1] of Double;
     FStateStack   : array of array[0..1] of Double;
     procedure CalculatePoleZeroes; virtual;
@@ -340,7 +340,7 @@ end;
 procedure TCustomFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Single);
 var
-  Complex64 : TComplexDouble;
+  Complex64 : TComplex64;
 begin
  inherited;
  Complex(Frequency, Complex64.Re, Complex64.Im);
@@ -374,7 +374,7 @@ end;
 
 function TCustomFilter.Phase(const Frequency: Double): Double;
 var
-  cmplx : TComplexDouble;
+  cmplx : TComplex64;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Result := ArcTan2(cmplx.Im, cmplx.Re);
@@ -482,7 +482,7 @@ procedure TCustomFilterCascade.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   i   : Integer;
-  Tmp : TComplexDouble;
+  Tmp : TComplex64;
 begin
  if Length(FFilterArray) = 0 then exit;
  Assert(Assigned(FFilterArray[0]));
@@ -805,7 +805,7 @@ end;
 
 function TCustomFIRFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
-  Cmplx    : TComplexDouble;
+  Cmplx    : TComplex64;
 begin
  Cmplx := Goertzel(PDAVDoubleFixedArray(@FIR[0]), FKernelSize, Pi * Frequency / SampleRate);
  Result := FGainFactor * (Sqr(Cmplx.Re) + Sqr(Cmplx.Im));

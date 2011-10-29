@@ -17,7 +17,7 @@ type
     FFrequency        : Single;
     FAmplitude        : Single;
     FVSTModule        : TVSTModule;
-    FAngle, FPosition : TComplexDouble;
+    FAngle, FPosition : TComplex64;
     procedure SetSampleRate(const Value: Single);
   protected
     procedure FrequencyChanged; virtual;

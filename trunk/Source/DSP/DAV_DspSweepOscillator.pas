@@ -47,8 +47,8 @@ type
     procedure SetModFreq(const Value: Double);
   protected
     FModFreq  : Double;
-    FAngle    : array [0..1] of TComplexDouble;
-    FPosition : TComplexDouble;
+    FAngle    : array [0..1] of TComplex64;
+    FPosition : TComplex64;
     procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateModulationFrequency; virtual;
     procedure SetAmplitude(const Value: Double); override;

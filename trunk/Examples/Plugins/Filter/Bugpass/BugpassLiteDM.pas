@@ -102,10 +102,10 @@ begin
  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
  FFft.DataOrder := doComplex;
 
- ReallocateAlignedMemory(Pointer(FFilterFreq), (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
- ReallocateAlignedMemory(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
- FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
+ ReallocateAlignedMemory(Pointer(FFilterFreq), (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
+ ReallocateAlignedMemory(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
+ FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
+ FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
  {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
  FFft.DataOrder := doPackedComplex;

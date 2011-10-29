@@ -40,8 +40,8 @@ uses
 type
   TMetronome = class(TDspSampleRatePersistent, IDspGenerator32)
   private
-    FAngle          : TComplexDouble;
-    FPosition       : TComplexDouble;
+    FAngle          : TComplex64;
+    FPosition       : TComplex64;
     FDecayFactor    : Single;
     FVolume         : Single;
     FBeatPos        : Integer;

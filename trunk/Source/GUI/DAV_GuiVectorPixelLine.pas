@@ -94,10 +94,10 @@ var
 begin
  with GeometricShape do
   begin
-   X[0] := ConvertFromFixed24Dot8PointToInteger(XA);
-   Y[0] := ConvertFromFixed24Dot8PointToInteger(YA);
-   X[1] := ConvertFromFixed24Dot8PointToInteger(XB);
-   Y[1] := ConvertFromFixed24Dot8PointToInteger(YB);
+   X[0] := ConvertFromFixed24Dot8ToInteger(XA);
+   Y[0] := ConvertFromFixed24Dot8ToInteger(YA);
+   X[1] := ConvertFromFixed24Dot8ToInteger(XB);
+   Y[1] := ConvertFromFixed24Dot8ToInteger(YB);
   end;
 
  PixelColor32 := ConvertColor(Color);
@@ -299,20 +299,20 @@ end;
 
 procedure TGuiPixelThinLine.DrawFixedPoint(PixelMap: TGuiCustomPixelMap);
 var
-  FromX, ToX      : TFixed24Dot8Point;
-  FromY, ToY      : TFixed24Dot8Point;
-  DeltaX, DeltaY  : TFixed24Dot8Point;
+  FromX, ToX      : TFixed24Dot8;
+  FromY, ToY      : TFixed24Dot8;
+  DeltaX, DeltaY  : TFixed24Dot8;
   PixelColor32    : TPixel32;
-  Gradient        : TFixed24Dot8Point;
-  XEnd            : TFixed24Dot8Point;
-  YEnd            : TFixed24Dot8Point;
-  Gap             : TFixed24Dot8Point;
-  Temp            : TFixed24Dot8Point;
+  Gradient        : TFixed24Dot8;
+  XEnd            : TFixed24Dot8;
+  YEnd            : TFixed24Dot8;
+  Gap             : TFixed24Dot8;
+  Temp            : TFixed24Dot8;
   XPos            : array [0..1] of Integer;
   YPos            : array [0..1] of Integer;
   X, Y            : Integer;
   OriginalAlpha   : Integer;
-  Inter           : TFixed24Dot8Point;
+  Inter           : TFixed24Dot8;
 begin
  with GeometricShape do
   begin
@@ -491,11 +491,11 @@ var
 begin
  with GeometricShape do
   begin
-   X[0] := ConvertFromFixed24Dot8PointToInteger(XA);
-   Y[0] := ConvertFromFixed24Dot8PointToInteger(YA);
-   X[1] := ConvertFromFixed24Dot8PointToInteger(XB);
-   Y[1] := ConvertFromFixed24Dot8PointToInteger(YB);
-   LineWidth := 3; //ConvertFromFixed24Dot8PointToInteger(Width);
+   X[0] := ConvertFromFixed24Dot8ToInteger(XA);
+   Y[0] := ConvertFromFixed24Dot8ToInteger(YA);
+   X[1] := ConvertFromFixed24Dot8ToInteger(XB);
+   Y[1] := ConvertFromFixed24Dot8ToInteger(YB);
+   LineWidth := 3; //ConvertFromFixed24Dot8ToInteger(Width);
   end;
 
  PixelColor32 := ConvertColor(Color);

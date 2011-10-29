@@ -61,8 +61,8 @@ type
     procedure SBVolumeChange(Sender: TObject);
     procedure SETempoChange(Sender: TObject);
   private
-    FAngle     : TComplexDouble;
-    FPosition  : TComplexDouble;
+    FAngle     : TComplex64;
+    FPosition  : TComplex64;
     FVolume    : Single;
     FBeatPos   : Integer;
     FIniFile   : TFileName;

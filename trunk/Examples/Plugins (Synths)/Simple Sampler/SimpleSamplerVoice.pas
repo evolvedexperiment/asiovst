@@ -23,7 +23,7 @@ type
     FMem        : array [0..3] of Single;
 
     FAngle,
-    FPosition   : TComplexDouble;
+    FPosition   : TComplex64;
     procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Value: Single);
   protected

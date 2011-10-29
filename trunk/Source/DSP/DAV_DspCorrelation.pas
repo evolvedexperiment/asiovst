@@ -213,11 +213,11 @@ procedure TCorrelation32.FFTOrderChanged;
 begin
  inherited;
 
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
- ReallocMem(FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
+ ReallocMem(FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
 
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FCorrelationFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
+ FillChar(FCorrelationFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
 end;
 
 {$IFDEF Use_IPPS}
@@ -249,8 +249,8 @@ begin
  if Dest is TCorrelation32 then
   with TCorrelation32(Dest) do 
    begin
-    Move(Self.FSignalFreq^, FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
-    Move(Self.FCorrelationFreq^, FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+    Move(Self.FSignalFreq^, FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
+    Move(Self.FCorrelationFreq^, FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
    end else
  if Dest is TCorrelation64 then
   with TCorrelation64(Dest) do
@@ -328,11 +328,11 @@ procedure TCorrelation64.FFTOrderChanged;
 begin
  inherited;
 
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
- ReallocMem(FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
+ ReallocMem(FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
 
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
- FillChar(FCorrelationFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
+ FillChar(FCorrelationFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
 end;
 
 {$IFDEF Use_IPPS}
@@ -368,8 +368,8 @@ begin
  if Dest is TCorrelation64 then
   with TCorrelation64(Dest) do
    begin
-    Move(Self.FSignalFreq^, FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
-    Move(Self.FCorrelationFreq^, FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+    Move(Self.FSignalFreq^, FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
+    Move(Self.FCorrelationFreq^, FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
    end;
 end;
 

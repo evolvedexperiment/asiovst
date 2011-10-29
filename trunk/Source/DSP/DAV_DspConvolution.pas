@@ -555,7 +555,7 @@ begin
  for Blocks := 0 to Length(FFilterFreqs) - 1 do
   begin
    assert(sz > 0);
-   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplex32));
 
    if sz < FFFTSizeHalf then
     begin
@@ -577,13 +577,13 @@ begin
  inherited;
 
  ReallocMem(FInputBuffer, FFFTSize * SizeOf(Single));
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
- ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
+ ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
 
  FillChar(FInputBuffer^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
+ FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
  FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Single), 0);
 
  ImpulseResponseChanged;
@@ -658,7 +658,7 @@ begin
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
-   Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+   Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32));
 
    ComplexMultiplyBlock32(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
 
@@ -847,7 +847,7 @@ begin
 
  for Blocks := 0 to Length(FFilterFreqs) - 1 do
   begin
-   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplex64));
 
    // calculate IR part size to be copied
    sz := IRSize - Blocks * FFFTSizeHalf;
@@ -867,13 +867,13 @@ begin
  inherited;
 
  ReallocMem(FInputBuffer, FFFTSize * SizeOf(Double));
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
- ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
+ ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Double));
 
  FillChar(FInputBuffer^[0], FFFTSize * SizeOf(Double), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
- FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
+ FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
  FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Double), 0);
 end;
 
@@ -939,7 +939,7 @@ begin
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
-   Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+   Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64));
 
    ComplexMultiplyBlock64(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
 
@@ -1123,12 +1123,12 @@ begin
  FFFTSize     := FFft.FFTSize;
  FFFTSizeHalf := FFFTSize shr 1;
 
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
- ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
+ ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
 
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
+ FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
  FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Single), 0);
 end;
 
@@ -1168,7 +1168,7 @@ begin
 
   for Blocks := 0 to Length(FIRSpectrums) - 1 do
    begin
-    ReallocMem(FIRSpectrums[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+    ReallocMem(FIRSpectrums[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplex32));
 
     // build temporary IR part
     Move(IR^[FOutputPos + Blocks * FFFTSizeHalf], TempIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Single));
@@ -1200,7 +1200,7 @@ begin
    if Length(FIRSpectrums) = 1 then Dest := FSignalFreq
     else
      begin
-      Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+      Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32));
       Dest := FConvolved;
      end;
 
@@ -1775,12 +1775,12 @@ begin
  FFFTSize     := FFft.FFTSize;
  FFFTSizeHalf := FFFTSize shr 1;
 
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
- ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
+ ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Double));
 
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
- FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
+ FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
  FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Double), 0);
 end;
 
@@ -1820,7 +1820,7 @@ begin
 
   for Blocks := 0 to Length(FIRSpectrums) - 1 do
    begin
-    ReallocMem(FIRSpectrums[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+    ReallocMem(FIRSpectrums[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplex64));
 
     // build temporary IR part
     Move(IR^[FOutputPos + Blocks * FFFTSizeHalf], TempIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Double));
@@ -1848,7 +1848,7 @@ begin
    if Length(FIRSpectrums) = 1 then Dest := FSignalFreq
     else
      begin
-      Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+      Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64));
       Dest := FConvolved;
      end;
 

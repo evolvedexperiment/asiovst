@@ -796,7 +796,7 @@ const
   COne4th  = 1 /  4;
 {$ELSE}
 var
-  Position, Offset: TComplexDouble;
+  Position, Offset: TComplex64;
 {$ENDIF}
 begin
 {$IFDEF FastCalculation}

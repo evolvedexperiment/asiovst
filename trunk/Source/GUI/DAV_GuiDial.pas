@@ -882,7 +882,7 @@ end;
 procedure TCustomGuiDial.RenderBitmap(const Bitmap: TBitmap);
 var
   Steps, i : Integer;
-  Val, Off : TComplexDouble;
+  Val, Off : TComplex64;
   Rad, tmp : Single;
   PtsArray : Array of TPoint;
 begin
@@ -1274,12 +1274,12 @@ var
   Steps, i : Integer;
   Val      : Single;
   Rad      : Single;
-  Cmplx    : TComplexSingle;
+  Cmplx    : TComplex32;
   Pnt      : TPoint;
   XStart   : Single;
   LineFrac : Single;
   BW       : Single;
-  Center   : TComplexSingle;
+  Center   : TComplex32;
   Line     : PRGB32Array;
 begin
  with Bitmap, Canvas do
@@ -1343,7 +1343,7 @@ end;
 procedure TCustomGuiDialEx.RenderBitmap(const Bitmap: TBitmap);
 var
   Steps, i  : Integer;
-  Val, Off  : TComplexDouble;
+  Val, Off  : TComplex64;
   Rad, tmp  : Single;
   PtsArray  : Array of TPoint;
   LineFrac  : Single;

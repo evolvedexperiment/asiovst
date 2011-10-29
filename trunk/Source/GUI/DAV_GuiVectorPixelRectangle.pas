@@ -425,8 +425,8 @@ var
   PixelColor32   : TPixel32;
   RoundedRadius  : Integer;
   MinYDistance   : Integer;
-  SqrDist        : TFixed24Dot8Point;
-  SqrYDist       : TFixed24Dot8Point;
+  SqrDist        : TFixed24Dot8;
+  SqrYDist       : TFixed24Dot8;
   XOffset, Y     : Integer;
   YRange         : array [0..1] of Integer;
   XRange, XPos   : array [0..1] of Integer;
@@ -504,8 +504,8 @@ begin
      // check whether rounded border offset needs to be applied
      if (MinYDistance < RoundedRadius) then
       begin
-       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(Integer(RoundedRadius - MinYDistance)));
-       SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RoundedRadius)), SqrYDist);
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8(Integer(RoundedRadius - MinYDistance)));
+       SqrDist := FixedSub(ConvertToFixed24Dot8(Sqr(RoundedRadius)), SqrYDist);
        Assert(SqrDist.Fixed >= 0);
        XOffset := RoundedRadius - FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
 
@@ -542,27 +542,27 @@ var
   ScnLn           : PPixel32Array;
   PixelColor32    : TPixel32;
   TempColor32     : TPixel32;
-  OriginalLeft    : TFixed24Dot8Point;
-  OriginalTop     : TFixed24Dot8Point;
-  OriginalRight   : TFixed24Dot8Point;
-  OriginalBottom  : TFixed24Dot8Point;
-  RoundedRadius   : TFixed24Dot8Point;
-  RadiusPlusOne   : TFixed24Dot8Point;
-  SqrRadius       : TFixed24Dot8Point;
-  SqrRadPlusOne   : TFixed24Dot8Point;
-  SqrRadMinusOne  : TFixed24Dot8Point;
-  MinYDistance    : TFixed24Dot8Point;
-  YDistPx2Ctr     : TFixed24Dot8Point;
-  SqrDistPx2Ctr   : TFixed24Dot8Point;
-  SqrYDistPx2Ctr  : TFixed24Dot8Point;
+  OriginalLeft    : TFixed24Dot8;
+  OriginalTop     : TFixed24Dot8;
+  OriginalRight   : TFixed24Dot8;
+  OriginalBottom  : TFixed24Dot8;
+  RoundedRadius   : TFixed24Dot8;
+  RadiusPlusOne   : TFixed24Dot8;
+  SqrRadius       : TFixed24Dot8;
+  SqrRadPlusOne   : TFixed24Dot8;
+  SqrRadMinusOne  : TFixed24Dot8;
+  MinYDistance    : TFixed24Dot8;
+  YDistPx2Ctr     : TFixed24Dot8;
+  SqrDistPx2Ctr   : TFixed24Dot8;
+  SqrYDistPx2Ctr  : TFixed24Dot8;
   Y               : Integer;
   YRange          : array [0..1] of Integer;
-  YFixed          : TFixed24Dot8Point;
-  XDistance       : TFixed24Dot8Point;
-  XOffset         : TFixed24Dot8Point;
-  Temp            : TFixed24Dot8Point;
-  XPos            : array [0..1] of TFixed24Dot8Point;
-  XRange          : array [0..1] of TFixed24Dot8Point;
+  YFixed          : TFixed24Dot8;
+  XDistance       : TFixed24Dot8;
+  XOffset         : TFixed24Dot8;
+  Temp            : TFixed24Dot8;
+  XPos            : array [0..1] of TFixed24Dot8;
+  XRange          : array [0..1] of TFixed24Dot8;
   X               : array [0..1] of Integer;
   XAlpha, YAlpha  : Integer;
 
@@ -600,7 +600,7 @@ begin
     then YRange[0] := FixedFloor(OriginalTop)
     else YRange[0] := 0;
 
-   if OriginalBottom.Fixed < ConvertToFixed24Dot8Point(Integer(Height - 1)).Fixed
+   if OriginalBottom.Fixed < ConvertToFixed24Dot8(Integer(Height - 1)).Fixed
     then YRange[1] := FixedCeil(OriginalBottom)
     else YRange[1] := Height - 1;
 
@@ -609,9 +609,9 @@ begin
     then XRange[0] := OriginalLeft
     else XRange[0].Fixed := 0;
 
-   if OriginalRight.Fixed < ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed
+   if OriginalRight.Fixed < ConvertToFixed24Dot8(Integer(Width - 1)).Fixed
     then XRange[1] := OriginalRight
-    else XRange[1] := ConvertToFixed24Dot8Point(Integer(Width - 1));
+    else XRange[1] := ConvertToFixed24Dot8(Integer(Width - 1));
 
    // eventually limit round radius
    if FixedAdd(RoundedRadius, RoundedRadius).Fixed > FixedSub(OriginalRight, OriginalLeft).Fixed
@@ -635,7 +635,7 @@ begin
      XPos[1] := XRange[1];
 
      // calculate fixed point Y
-     YFixed := ConvertToFixed24Dot8Point(Y);
+     YFixed := ConvertToFixed24Dot8(Y);
 
      // calculate y alpha
      if Y = YRange[0]
@@ -751,7 +751,7 @@ begin
      else
       begin
        Assert(XPos[0].Fixed >= 0);
-       Assert(XPos[1].Fixed < ConvertToFixed24Dot8Point(Width).Fixed);
+       Assert(XPos[1].Fixed < ConvertToFixed24Dot8(Width).Fixed);
 
        if XPos[1].Fixed > XPos[0].Fixed then
         begin
@@ -813,8 +813,8 @@ var
   RoundedRadius  : Integer;
   RadiusMinusOne : Integer;
   MinYDistance   : Integer;
-  SqrDist        : TFixed24Dot8Point;
-  SqrYDist       : TFixed24Dot8Point;
+  SqrDist        : TFixed24Dot8;
+  SqrYDist       : TFixed24Dot8;
   XOffset, Y     : Integer;
   XCount         : Integer;
   YRange         : array [0..1] of Integer;
@@ -894,13 +894,13 @@ begin
      // check whether rounded border offset needs to be applied
      if (MinYDistance < RoundedRadius) then
       begin
-       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(Integer(RoundedRadius - MinYDistance)));
-       SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RoundedRadius)), SqrYDist);
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8(Integer(RoundedRadius - MinYDistance)));
+       SqrDist := FixedSub(ConvertToFixed24Dot8(Sqr(RoundedRadius)), SqrYDist);
        Assert(SqrDist.Fixed >= 0);
        XOffset := FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
 
-       SqrYDist := FixedSqr(ConvertToFixed24Dot8Point(Integer(RoundedRadius - MinYDistance)));
-       SqrDist := FixedSub(ConvertToFixed24Dot8Point(Sqr(RadiusMinusOne)), SqrYDist);
+       SqrYDist := FixedSqr(ConvertToFixed24Dot8(Integer(RoundedRadius - MinYDistance)));
+       SqrDist := FixedSub(ConvertToFixed24Dot8(Sqr(RadiusMinusOne)), SqrYDist);
        if SqrDist.Fixed < 0 then SqrDist.Fixed := 0;
        XCount := XOffset - FixedRound(FixedSub(FixedSqrt(SqrDist), CFixed24Dot8Half));
 
@@ -961,27 +961,27 @@ var
   ScnLn           : PPixel32Array;
   PixelColor32    : TPixel32;
   TempColor32     : TPixel32;
-  OriginalLeft    : TFixed24Dot8Point;
-  OriginalTop     : TFixed24Dot8Point;
-  OriginalRight   : TFixed24Dot8Point;
-  OriginalBottom  : TFixed24Dot8Point;
-  RoundedRadius   : TFixed24Dot8Point;
-  RadiusPlusOne   : TFixed24Dot8Point;
-  SqrRadius       : TFixed24Dot8Point;
-  SqrRadPlusOne   : TFixed24Dot8Point;
-  SqrRadMinusOne  : TFixed24Dot8Point;
-  MinYDistance    : TFixed24Dot8Point;
-  YDistPx2Ctr     : TFixed24Dot8Point;
-  SqrDistPx2Ctr   : TFixed24Dot8Point;
-  SqrYDistPx2Ctr  : TFixed24Dot8Point;
+  OriginalLeft    : TFixed24Dot8;
+  OriginalTop     : TFixed24Dot8;
+  OriginalRight   : TFixed24Dot8;
+  OriginalBottom  : TFixed24Dot8;
+  RoundedRadius   : TFixed24Dot8;
+  RadiusPlusOne   : TFixed24Dot8;
+  SqrRadius       : TFixed24Dot8;
+  SqrRadPlusOne   : TFixed24Dot8;
+  SqrRadMinusOne  : TFixed24Dot8;
+  MinYDistance    : TFixed24Dot8;
+  YDistPx2Ctr     : TFixed24Dot8;
+  SqrDistPx2Ctr   : TFixed24Dot8;
+  SqrYDistPx2Ctr  : TFixed24Dot8;
   Y               : Integer;
   YRange          : array [0..1] of Integer;
-  YFixed          : TFixed24Dot8Point;
-  XDistance       : TFixed24Dot8Point;
-  XOffset         : TFixed24Dot8Point;
-  Temp            : TFixed24Dot8Point;
-  XPos            : array [0..1] of TFixed24Dot8Point;
-  XRange          : array [0..1] of TFixed24Dot8Point;
+  YFixed          : TFixed24Dot8;
+  XDistance       : TFixed24Dot8;
+  XOffset         : TFixed24Dot8;
+  Temp            : TFixed24Dot8;
+  XPos            : array [0..1] of TFixed24Dot8;
+  XRange          : array [0..1] of TFixed24Dot8;
   X               : array [0..1] of Integer;
   XAlpha, YAlpha  : Integer;
 
@@ -1019,7 +1019,7 @@ begin
     then YRange[0] := FixedFloor(OriginalTop)
     else YRange[0] := 0;
 
-   if OriginalBottom.Fixed < ConvertToFixed24Dot8Point(Integer(Height - 1)).Fixed
+   if OriginalBottom.Fixed < ConvertToFixed24Dot8(Integer(Height - 1)).Fixed
     then YRange[1] := FixedCeil(OriginalBottom)
     else YRange[1] := Height - 1;
 
@@ -1028,9 +1028,9 @@ begin
     then XRange[0] := OriginalLeft
     else XRange[0].Fixed := 0;
 
-   if OriginalRight.Fixed < ConvertToFixed24Dot8Point(Integer(Width - 1)).Fixed
+   if OriginalRight.Fixed < ConvertToFixed24Dot8(Integer(Width - 1)).Fixed
     then XRange[1] := OriginalRight
-    else XRange[1] := ConvertToFixed24Dot8Point(Integer(Width - 1));
+    else XRange[1] := ConvertToFixed24Dot8(Integer(Width - 1));
 
    // eventually limit round radius
    if FixedAdd(RoundedRadius, RoundedRadius).Fixed > FixedSub(OriginalRight, OriginalLeft).Fixed
@@ -1054,7 +1054,7 @@ begin
      XPos[1] := XRange[1];
 
      // calculate fixed point Y
-     YFixed := ConvertToFixed24Dot8Point(Y);
+     YFixed := ConvertToFixed24Dot8(Y);
 
      // calculate y alpha
      if Y = YRange[0]
@@ -1173,7 +1173,7 @@ begin
      else
       begin
        Assert(XPos[0].Fixed >= 0);
-       Assert(XPos[1].Fixed < ConvertToFixed24Dot8Point(Width).Fixed);
+       Assert(XPos[1].Fixed < ConvertToFixed24Dot8(Width).Fixed);
 
        if XPos[1].Fixed > XPos[0].Fixed then
         begin

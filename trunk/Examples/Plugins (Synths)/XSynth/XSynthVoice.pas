@@ -95,7 +95,7 @@ type
   TSineOscilator = class(TOscilator)
   private
     FAngle,
-    FPosition   : TComplexDouble;
+    FPosition   : TComplex64;
   protected
     procedure FrequencyChanged; override;
   public
@@ -106,7 +106,7 @@ type
   TSquareOscilator = class(TOscilator)
   private
     FAngle,
-    FPosition   : TComplexDouble;
+    FPosition   : TComplex64;
   protected
     procedure FrequencyChanged; override;
   public

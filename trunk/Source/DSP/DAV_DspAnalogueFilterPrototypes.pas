@@ -44,8 +44,8 @@ type
   public
     constructor Create; virtual; abstract;
 
-    function Complex64(Frequency: Double): TComplexDouble; overload; virtual; abstract;
-    function Complex32(Frequency: Single): TComplexSingle; overload; virtual;
+    function Complex64(Frequency: Double): TComplex64; overload; virtual; abstract;
+    function Complex32(Frequency: Single): TComplex32; overload; virtual;
     function Magnitude(Frequency: Double): Double; virtual;
     function Magnitude_dB(Frequency: Double): Double; virtual;
     function Phase(Frequency: Double): Double; virtual;
@@ -121,7 +121,7 @@ type
     procedure GainChanged; virtual;
   public
     constructor Create; override;
-    function Complex64(Frequency: Double): TComplexDouble; override;
+    function Complex64(Frequency: Double): TComplex64; override;
 
     property Frequency: Double read FFrequency write SetFrequency;
     property Bandwidth: Double read FBandwidth write SetBandwidth;
@@ -228,7 +228,7 @@ type
     procedure CalculateCoefficients; override;
   public
     constructor Create; override;
-    function Complex64(Frequency: Double): TComplexDouble; override;
+    function Complex64(Frequency: Double): TComplex64; override;
   end;
 
   TAnalogueBWeightingFilterPrototype = class(TCustomAnalogueWeightingFilterPrototype)
@@ -240,7 +240,7 @@ type
     procedure CalculateCoefficients; override;
   public
     constructor Create; override;
-    function Complex64(Frequency: Double): TComplexDouble; override;
+    function Complex64(Frequency: Double): TComplex64; override;
   end;
 
   TAnalogueCWeightingFilterPrototype = class(TCustomAnalogueWeightingFilterPrototype)
@@ -252,7 +252,7 @@ type
     function GetOrder: Integer; override;
   public
     constructor Create; override;
-    function Complex64(Frequency: Double): TComplexDouble; override;
+    function Complex64(Frequency: Double): TComplex64; override;
   end;
 
   TAnalogueDWeightingFilterPrototype = class(TCustomAnalogueWeightingFilterPrototype)
@@ -265,7 +265,7 @@ type
     function GetOrder: Integer; override;
   public
     constructor Create; override;
-    function Complex64(Frequency: Double): TComplexDouble; override;
+    function Complex64(Frequency: Double): TComplex64; override;
   end;
 
 implementation
@@ -281,7 +281,7 @@ resourcestring
 
 function TCustomAnalogueFilterPrototype.Magnitude(Frequency: Double): Double;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  Cmplx := Complex64(Frequency);
  Result := Sqrt(Sqr(Cmplx.Re) + Sqr(Cmplx.Im));
@@ -289,7 +289,7 @@ end;
 
 function TCustomAnalogueFilterPrototype.Magnitude_dB(Frequency: Double): Double;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  Cmplx := Complex64(Frequency);
  Result := 10 * Log10(Sqr(Cmplx.Re) + Sqr(Cmplx.Im));
@@ -297,15 +297,15 @@ end;
 
 function TCustomAnalogueFilterPrototype.Phase(Frequency: Double): Double;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  Cmplx := Complex64(Frequency);
  Result := ArcTan2(Cmplx.Im, Cmplx.Re);
 end;
 
-function TCustomAnalogueFilterPrototype.Complex32(Frequency: Single): TComplexSingle;
+function TCustomAnalogueFilterPrototype.Complex32(Frequency: Single): TComplex32;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  Cmplx := Complex64(Frequency);
  Result.Re := Cmplx.Re;
@@ -386,7 +386,7 @@ begin
 end;
 
 function TCustomBiquadAnalogueFilterPrototype.Complex64(
-  Frequency: Double): TComplexDouble;
+  Frequency: Double): TComplex64;
 var
   Omega   : Double;
   Divisor : Double;
@@ -960,11 +960,11 @@ begin
 end;
 
 function TAnalogueAWeightingFilterPrototype.Complex64(
-  Frequency: Double): TComplexDouble;
+  Frequency: Double): TComplex64;
 var
   Omega   : Double;
   Divisor : Double;
-  Cmplex  : TComplexDouble;
+  Cmplex  : TComplex64;
   Temp    : array [0..1] of Double;
 begin
  Omega := 2 * Pi * Frequency;
@@ -1007,11 +1007,11 @@ begin
 end;
 
 function TAnalogueBWeightingFilterPrototype.Complex64(
-  Frequency: Double): TComplexDouble;
+  Frequency: Double): TComplex64;
 var
   Omega   : Double;
   Divisor : Double;
-  Cmplex  : TComplexDouble;
+  Cmplex  : TComplex64;
 begin
  Omega := 2 * Pi * Frequency;
 
@@ -1063,11 +1063,11 @@ begin
 end;
 
 function TAnalogueCWeightingFilterPrototype.Complex64(
-  Frequency: Double): TComplexDouble;
+  Frequency: Double): TComplex64;
 var
   Omega   : Double;
   Divisor : Double;
-  Cmplex  : TComplexDouble;
+  Cmplex  : TComplex64;
 begin
  Omega := 2 * Pi * Frequency;
 
@@ -1108,11 +1108,11 @@ begin
 end;
 
 function TAnalogueDWeightingFilterPrototype.Complex64(
-  Frequency: Double): TComplexDouble;
+  Frequency: Double): TComplex64;
 var
   Omega   : Double;
   Divisor : Double;
-  Cmplex  : TComplexDouble;
+  Cmplex  : TComplex64;
 begin
  Omega := 2 * Pi * Frequency;
 

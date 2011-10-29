@@ -139,13 +139,13 @@ begin
  FFFTSizeHalf    := FFFTSize div 2;
  FFFTSizeQuarter := FFFTSize div 4;
  ReallocMem(FFilterKernel, FFFTSize * SizeOf(Single));
- ReallocMem(FFilterFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FFilterFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
  ReallocMem(FBuffer, FFFTSize * SizeOf(Single));
 
  FillChar(FFilterKernel^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FFilterFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FFilterFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
  FillChar(FBuffer^[0], FFFTSize * SizeOf(Single), 0);
 
  for i := 0 to Length(FSignalTime) - 1 do

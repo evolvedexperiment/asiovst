@@ -654,9 +654,9 @@ begin
       with TGuiPixelFilledCircle.Create do
        try
         Color := clRed;
-        GeometricShape.CenterX := ConvertToFixed24Dot8Point(0.5 * Width);
-        GeometricShape.CenterY := ConvertToFixed24Dot8Point(0.5 * Height);
-        GeometricShape.Radius := ConvertToFixed24Dot8Point(0.5 * (Min(Width, Height) - FOutlineWidth) - Offset);
+        GeometricShape.CenterX := ConvertToFixed24Dot8(0.5 * Width);
+        GeometricShape.CenterY := ConvertToFixed24Dot8(0.5 * Height);
+        GeometricShape.Radius := ConvertToFixed24Dot8(0.5 * (Min(Width, Height) - FOutlineWidth) - Offset);
         Alpha := $FF;
         Draw(PixelMap);
        finally
@@ -666,10 +666,10 @@ begin
        try
         Color := clBlack;
         Alpha := $AF;
-        LineWidth := ConvertToFixed24Dot8Point(FOutlineWidth);
-        GeometricShape.CenterX := ConvertToFixed24Dot8Point(0.5 * Width);
-        GeometricShape.CenterY := ConvertToFixed24Dot8Point(0.5 * Height);
-        GeometricShape.Radius := ConvertToFixed24Dot8Point(0.5 * Min(Width, Height) - Offset);
+        LineWidth := ConvertToFixed24Dot8(FOutlineWidth);
+        GeometricShape.CenterX := ConvertToFixed24Dot8(0.5 * Width);
+        GeometricShape.CenterY := ConvertToFixed24Dot8(0.5 * Height);
+        GeometricShape.Radius := ConvertToFixed24Dot8(0.5 * Min(Width, Height) - Offset);
         Draw(PixelMap);
        finally
         Free;
@@ -684,8 +684,8 @@ procedure TGuiMediaButton.RenderTriangle(PixelMap: TGuiCustomPixelMap;
   Rect: TRect; Color: TColor; Reverse: Boolean = False);
 var
   X, Y   : Integer;
-  XFixed : TFixed24Dot8Point;
-  XAdv   : TFixed24Dot8Point;
+  XFixed : TFixed24Dot8;
+  XAdv   : TFixed24Dot8;
   ScnLn  : array [0..1] of PPixel32Array;
   Clr    : TPixel32;
   BrdClr : TPixel32;
@@ -701,7 +701,7 @@ begin
 
    // set start and advance
    XFixed := CFixed24Dot8Half;
-   XAdv := ConvertToFixed24Dot8Point(2 * (Rect.Right - Rect.Left) / (Rect.Bottom - Rect.Top));
+   XAdv := ConvertToFixed24Dot8(2 * (Rect.Right - Rect.Left) / (Rect.Bottom - Rect.Top));
    if Reverse then
     for Y := 0 to ((Rect.Bottom - Rect.Top) div 2) do
      begin

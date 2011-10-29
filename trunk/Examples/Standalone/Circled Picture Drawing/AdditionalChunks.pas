@@ -12,19 +12,19 @@ type
   TCircleChunk = class(TDefinedChunk)
   protected
     FAlpha   : Byte;
-    FCenterX : TFixed24Dot8Point;
-    FCenterY : TFixed24Dot8Point;
+    FCenterX : TFixed24Dot8;
+    FCenterY : TFixed24Dot8;
     FColor   : TColor;
-    FRadius  : TFixed24Dot8Point;
+    FRadius  : TFixed24Dot8;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
     class function GetClassChunkName: TChunkName; override;
 
-    property Radius: TFixed24Dot8Point read FRadius write FRadius;
-    property CenterX: TFixed24Dot8Point read FCenterX write FCenterX;
-    property CenterY: TFixed24Dot8Point read FCenterY write FCenterY;
+    property Radius: TFixed24Dot8 read FRadius write FRadius;
+    property CenterX: TFixed24Dot8 read FCenterX write FCenterX;
+    property CenterY: TFixed24Dot8 read FCenterY write FCenterY;
     property Color: TColor read FColor write FColor;
     property Alpha: Byte read FAlpha write FAlpha;
   end;
@@ -41,25 +41,25 @@ type
 
   TRoundedRectangleChunk = class(TDefinedChunk)
   private
-    FRight: TFixed24Dot8Point;
-    FBottom: TFixed24Dot8Point;
-    FTop: TFixed24Dot8Point;
-    FLeft: TFixed24Dot8Point;
+    FRight: TFixed24Dot8;
+    FBottom: TFixed24Dot8;
+    FTop: TFixed24Dot8;
+    FLeft: TFixed24Dot8;
   protected
     FAlpha   : Byte;
     FColor   : TColor;
-    FRadius  : TFixed24Dot8Point;
+    FRadius  : TFixed24Dot8;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
     class function GetClassChunkName: TChunkName; override;
 
-    property Radius: TFixed24Dot8Point read FRadius write FRadius;
-    property Left: TFixed24Dot8Point read FLeft write FLeft;
-    property Top: TFixed24Dot8Point read FTop write FTop;
-    property Right: TFixed24Dot8Point read FRight write FRight;
-    property Bottom: TFixed24Dot8Point read FBottom write FBottom;
+    property Radius: TFixed24Dot8 read FRadius write FRadius;
+    property Left: TFixed24Dot8 read FLeft write FLeft;
+    property Top: TFixed24Dot8 read FTop write FTop;
+    property Right: TFixed24Dot8 read FRight write FRight;
+    property Bottom: TFixed24Dot8 read FBottom write FBottom;
     property Color: TColor read FColor write FColor;
     property Alpha: Byte read FAlpha write FAlpha;
   end;
@@ -112,7 +112,7 @@ uses
 constructor TCircleChunk.Create;
 begin
  inherited;
- FChunkSize := 3 * SizeOf(TFixed24Dot8Point) + SizeOf(TColor) + SizeOf(Byte);
+ FChunkSize := 3 * SizeOf(TFixed24Dot8) + SizeOf(TColor) + SizeOf(Byte);
 end;
 
 class function TCircleChunk.GetClassChunkName: TChunkName;
@@ -127,9 +127,9 @@ begin
  with Stream do
   begin
    Assert(Stream.Size >= FChunkSize);
-   Read(FRadius, SizeOf(TFixed24Dot8Point));
-   Read(FCenterX, SizeOf(TFixed24Dot8Point));
-   Read(FCenterY, SizeOf(TFixed24Dot8Point));
+   Read(FRadius, SizeOf(TFixed24Dot8));
+   Read(FCenterX, SizeOf(TFixed24Dot8));
+   Read(FCenterY, SizeOf(TFixed24Dot8));
    Read(FAlpha, SizeOf(Byte));
    Read(FColor, SizeOf(TColor));
   end;
@@ -141,9 +141,9 @@ begin
 
  with Stream do
   begin
-   Write(FRadius, SizeOf(TFixed24Dot8Point));
-   Write(FCenterX, SizeOf(TFixed24Dot8Point));
-   Write(FCenterY, SizeOf(TFixed24Dot8Point));
+   Write(FRadius, SizeOf(TFixed24Dot8));
+   Write(FCenterX, SizeOf(TFixed24Dot8));
+   Write(FCenterY, SizeOf(TFixed24Dot8));
    Write(FAlpha, SizeOf(Byte));
    Write(FColor, SizeOf(TColor));
   end;
@@ -241,7 +241,7 @@ end;
 constructor TRoundedRectangleChunk.Create;
 begin
  inherited;
- FChunkSize := 5 * SizeOf(TFixed24Dot8Point) + SizeOf(TColor) + SizeOf(Byte);
+ FChunkSize := 5 * SizeOf(TFixed24Dot8) + SizeOf(TColor) + SizeOf(Byte);
 end;
 
 class function TRoundedRectangleChunk.GetClassChunkName: TChunkName;
@@ -256,11 +256,11 @@ begin
  with Stream do
   begin
    Assert(Stream.Size >= FChunkSize);
-   Read(FRadius, SizeOf(TFixed24Dot8Point));
-   Read(FLeft, SizeOf(TFixed24Dot8Point));
-   Read(FTop, SizeOf(TFixed24Dot8Point));
-   Read(FRight, SizeOf(TFixed24Dot8Point));
-   Read(FBottom, SizeOf(TFixed24Dot8Point));
+   Read(FRadius, SizeOf(TFixed24Dot8));
+   Read(FLeft, SizeOf(TFixed24Dot8));
+   Read(FTop, SizeOf(TFixed24Dot8));
+   Read(FRight, SizeOf(TFixed24Dot8));
+   Read(FBottom, SizeOf(TFixed24Dot8));
    Read(FAlpha, SizeOf(Byte));
    Read(FColor, SizeOf(TColor));
   end;
@@ -272,11 +272,11 @@ begin
 
  with Stream do
   begin
-   Write(FRadius, SizeOf(TFixed24Dot8Point));
-   Write(FLeft, SizeOf(TFixed24Dot8Point));
-   Write(FTop, SizeOf(TFixed24Dot8Point));
-   Write(FRight, SizeOf(TFixed24Dot8Point));
-   Write(FBottom, SizeOf(TFixed24Dot8Point));
+   Write(FRadius, SizeOf(TFixed24Dot8));
+   Write(FLeft, SizeOf(TFixed24Dot8));
+   Write(FTop, SizeOf(TFixed24Dot8));
+   Write(FRight, SizeOf(TFixed24Dot8));
+   Write(FBottom, SizeOf(TFixed24Dot8));
    Write(FAlpha, SizeOf(Byte));
    Write(FColor, SizeOf(TColor));
   end;

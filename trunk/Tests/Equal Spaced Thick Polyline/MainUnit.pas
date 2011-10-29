@@ -73,7 +73,7 @@ type
     FESPL           : TGuiPixelEquallySpacedPolyline;
     procedure SetLineWidth(const Value: Single);
 
-    function GetValueHandler(Sender: TObject; PixelPosition: Integer): TFixed24Dot8Point;
+    function GetValueHandler(Sender: TObject; PixelPosition: Integer): TFixed24Dot8;
 
     procedure ScenarioPeakLine1;
     procedure ScenarioPeakLine2;
@@ -116,7 +116,7 @@ begin
  FESPL := TGuiPixelEquallySpacedPolyline.Create;
  FESPL.Color := clWhite;
  FESPL.Alpha := $FF;
- FESPL.LineWidth := ConvertToFixed24Dot8Point(2);
+ FESPL.LineWidth := ConvertToFixed24Dot8(2);
  FESPL.GeometricShape.OnGetValue := GetValueHandler;
 
  FPaintBoxUpdate := True;
@@ -148,11 +148,11 @@ begin
 end;
 
 function TFmESTP.GetValueHandler(Sender: TObject;
-  PixelPosition: Integer): TFixed24Dot8Point;
+  PixelPosition: Integer): TFixed24Dot8;
 begin
  if (PixelPosition > 0) and (PixelPosition < Length(FPointArray))
-  then Result := ConvertToFixed24Dot8Point(FPointArray[PixelPosition])
-  else Result := ConvertToFixed24Dot8Point(0.5 * FPixelMap.Height);
+  then Result := ConvertToFixed24Dot8(FPointArray[PixelPosition])
+  else Result := ConvertToFixed24Dot8(0.5 * FPixelMap.Height);
 end;
 
 procedure TFmESTP.ScenarioStandard;
@@ -1800,15 +1800,15 @@ var
   x, y            : Integer;
   PtIndex         : Integer;
 
-  YValues         : array of TFixed24Dot8Point;
-  Distance        : TFixed24Dot8Point;
-  IntLineWdth     : TFixed24Dot8Point;
-  RadiusMinusHalf : TFixed24Dot8Point;
-  CurrentValue    : TFixed24Dot8Point;
-  YStartPos       : TFixed24Dot8Point;
-  YEndPos         : TFixed24Dot8Point;
-  WidthScale      : TFixed24Dot8Point;
-  PointPtr        : PFixed24Dot8PointArray;
+  YValues         : array of TFixed24Dot8;
+  Distance        : TFixed24Dot8;
+  IntLineWdth     : TFixed24Dot8;
+  RadiusMinusHalf : TFixed24Dot8;
+  CurrentValue    : TFixed24Dot8;
+  YStartPos       : TFixed24Dot8;
+  YEndPos         : TFixed24Dot8;
+  WidthScale      : TFixed24Dot8;
+  PointPtr        : PFixed24Dot8Array;
   PxColor         : TPixel32;
   LeftRightIdx    : Integer;
 
@@ -1829,7 +1829,7 @@ begin
    FillRect(ClientRect, pxBlack32);
 
    PxColor := pxWhite32;
-   IntLineWdth := ConvertToFixed24Dot8Point(Max(FLineWidth - 1, 0));
+   IntLineWdth := ConvertToFixed24Dot8(Max(FLineWidth - 1, 0));
    RadiusMinusHalf := FixedMul(IntLineWdth, CFixed24Dot8Half);
 
    // initialize temporaty variables
@@ -1841,17 +1841,17 @@ begin
 
    // fill additional points
    for PtIndex := 0 to IntegerRadiusX - 1
-    do YValues[PtIndex] := ConvertToFixed24Dot8Point(0.5 * Height);
+    do YValues[PtIndex] := ConvertToFixed24Dot8(0.5 * Height);
 
    for PtIndex := IntegerRadiusX to Length(YValues) - 1
-    do YValues[PtIndex] := ConvertToFixed24Dot8Point(FPointArray[PtIndex - IntegerRadiusX]);
+    do YValues[PtIndex] := ConvertToFixed24Dot8(FPointArray[PtIndex - IntegerRadiusX]);
 
 
    for x := 0 to Width - 1 do
     begin
      // get next value
      if IntegerRadiusX + x < Length(FPointArray)
-      then YValues[Length(YValues) - 1] := ConvertToFixed24Dot8Point(FPointArray[x + IntegerRadiusX])
+      then YValues[Length(YValues) - 1] := ConvertToFixed24Dot8(FPointArray[x + IntegerRadiusX])
       else YValues[Length(YValues) - 1].Fixed := 0;
 
      // calculate solid range
@@ -1864,7 +1864,7 @@ begin
       begin
        // calculate distance
        Distance := FixedSqrt(FixedSub(FixedSqr(RadiusMinusHalf),
-         FixedSqr(ConvertToFixed24Dot8Point(PtIndex))));
+         FixedSqr(ConvertToFixed24Dot8(PtIndex))));
 
        for LeftRightIdx := 0 to 1 do
         begin
@@ -1884,7 +1884,7 @@ begin
      {$IFDEF DrawAntialiasedLines}
 
      // calculate width scale (0 < x <= 1)
-     WidthScale := FixedSub(RadiusMinusHalf, ConvertToFixed24Dot8Point(IntegerRadiusX - 2));
+     WidthScale := FixedSub(RadiusMinusHalf, ConvertToFixed24Dot8(IntegerRadiusX - 2));
 
      {$IFDEF DrawInnerHalfLines}
      if IntegerRadiusY = IntegerRadiusX then
@@ -1943,7 +1943,7 @@ begin
       do BlendPixelInplace(PxColor, PixelPointer[x, y]^);
 
      // shift y-values
-     Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(TFixed24Dot8Point));
+     Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(TFixed24Dot8));
     end;
 
    EMMS;
@@ -1964,7 +1964,7 @@ end;
 procedure TFmESTP.SlLineWidthChange(Sender: TObject);
 begin
  LineWidth := SlLineWidth.Value;
- FESPL.LineWidth := ConvertToFixed24Dot8Point(SlLineWidth.Value);
+ FESPL.LineWidth := ConvertToFixed24Dot8(SlLineWidth.Value);
  UpdateStatusInformation;
 end;
 

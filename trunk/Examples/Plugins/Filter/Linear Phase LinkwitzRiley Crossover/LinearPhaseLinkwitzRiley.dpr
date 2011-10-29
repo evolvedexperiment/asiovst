@@ -3,6 +3,15 @@ library LinearPhaseLinkwitzRiley;
 
 {$I DAV_Compiler.inc}
 
+{$IFDEF CPU64}
+{$IFDEF Use_IPPS}
+  Error: 'IPPS may not be used in 64-Bit'
+{$ENDIF}
+{$IFDEF Use_CUDA}
+  Error: 'CUDA may not be used in 64-Bit'
+{$ENDIF}
+{$ENDIF}
+
 uses
   FastMM4,  // either download the library or comment if there is an error here
   {$IFDEF UseFastMove}

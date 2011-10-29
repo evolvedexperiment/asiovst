@@ -223,7 +223,7 @@ begin
 
  ReallocMem(FInputBuffer, FFFTSize * SizeOf(Single));
  ReallocMem(FOutputBuffer, FFFTSize * SizeOf(Single));
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
  ReallocMem(FLastPhase, (FFFTSizeHalf + 1) * SizeOf(Single));
  ReallocMem(FSumPhase, (FFFTSizeHalf + 1) * SizeOf(Single));
  ReallocMem(FOutputAccum, FFFTSize * SizeOf(Single));
@@ -234,7 +234,7 @@ begin
 
  FillChar(FInputBuffer^[0], FFFTSize * SizeOf(Single), 0);
  FillChar(FOutputBuffer^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
  FillChar(FLastPhase^[0], (FFFTSizeHalf + 1) * SizeOf(Single), 0);
  FillChar(FSumPhase^[0], (FFFTSizeHalf + 1) * SizeOf(Single), 0);
  FillChar(FOutputAccum^[0], FFFTSize * SizeOf(Single), 0);
