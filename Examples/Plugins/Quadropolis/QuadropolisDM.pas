@@ -115,7 +115,7 @@ begin
  for Channel := 0 to Length(FIR) - 1 do
   begin
    {$IFDEF Use_IPPS}
-   MemSize := (FLength div 2 + 1) * SizeOf(TComplexSingle);
+   MemSize := (FLength div 2 + 1) * SizeOf(TComplex32);
    {$ELSE} {$IFDEF Use_CUDA}
    MemSize := FLength * SizeOf(Single);
    {$ELSE}
@@ -246,7 +246,7 @@ begin
   for Channel := 0 to numOutputs - 1 do
    begin
     FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FOutputFreq[Channel]), @Outputs[Channel, 0]);
-    FillChar(FOutputFreq[Channel]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
+    FillChar(FOutputFreq[Channel]^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
    end;
 
   {$ELSE}{$IFDEF Use_CUDA}

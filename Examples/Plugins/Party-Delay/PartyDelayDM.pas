@@ -398,7 +398,7 @@ procedure TPartyDelayDataModule.ParameterFrequencyShiftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band  : Integer;
-  Cmplx : TComplexSingle;
+  Cmplx : TComplex32;
 begin
  Band := Index div ParametersPerBand;
  if Value <> 0 then

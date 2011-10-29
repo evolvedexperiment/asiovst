@@ -7,7 +7,19 @@ unit DAV_DspNoiseShapingFilterDesigner;
 {$I ..\DAV_Compiler.inc}
 
 interface
-uses  Classes, DAV_Types, DAV_Complex,  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}  DAV_DspFftReal2Complex;type  TCoefficientUpdate = procedure(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double) of object;     TCustomNoiseShapingFilterDesigner = class(TObject)  private    FSampleRate          : Single;
+
+uses
+  Classes, DAV_Types, DAV_Complex,
+  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
+  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
+  DAV_DspFftReal2Complex;
+
+type
+  TCoefficientUpdate = procedure(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double) of object;
+   
+  TCustomNoiseShapingFilterDesigner = class(TObject)
+  private
+    FSampleRate          : Single;
     FLoopCount           : Integer;
     FLoopCountReciprocal : Single;
     FSampleFrames        : Integer;
@@ -49,7 +61,8 @@ interface
     property OnCoefficientUpdate;
     property FFTSize;
   end;
-implementation
+
+implementation
 
 uses
   SysUtils, Math;
@@ -58,8 +71,10 @@ resourcestring
   RCStrInvalidSampleframes = 'Sampleframes must be above 2!';
   RCStrInvalidLoopcount = 'Loopcount must be above 2!';
 
-{ TCustomNoiseShapingFilterDesigner }
-constructor TCustomNoiseShapingFilterDesigner.Create;begin
+{ TCustomNoiseShapingFilterDesigner }
+
+constructor TCustomNoiseShapingFilterDesigner.Create;
+begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(6);
  {$ELSE} {$IFDEF Use_CUDA}
@@ -75,12 +90,14 @@ constructor TCustomNoiseShapingFilterDesigner.Create;begin
  SampleFramesChanged;
 end;
 
-destructor TCustomNoiseShapingFilterDesigner.Destroy;begin
+destructor TCustomNoiseShapingFilterDesigner.Destroy;
+begin
  FreeAndNil(FFft);
  inherited;
 end;
 
-procedure TCustomNoiseShapingFilterDesigner.SetLoopCount(const Value: Integer);begin
+procedure TCustomNoiseShapingFilterDesigner.SetLoopCount(const Value: Integer);
+begin
  if Value <= 2
   then raise Exception.Create(RCStrInvalidLoopcount);
 
@@ -91,7 +108,8 @@ procedure TCustomNoiseShapingFilterDesigner.SetLoopCount(const Value: Integer);
   end;
 end;
 
-procedure TCustomNoiseShapingFilterDesigner.SetSampleFrames(const Value: Integer);begin
+procedure TCustomNoiseShapingFilterDesigner.SetSampleFrames(const Value: Integer);
+begin
  if Value <= 2
   then raise Exception.Create(RCStrInvalidSampleframes);
 
@@ -102,7 +120,8 @@ procedure TCustomNoiseShapingFilterDesigner.SetSampleFrames(const Value: Integer
   end;
 end;
 
-procedure TCustomNoiseShapingFilterDesigner.SetSampleRate(const Value: Single);begin
+procedure TCustomNoiseShapingFilterDesigner.SetSampleRate(const Value: Single);
+begin
  if FSampleRate <> Value then
   begin
    FSampleRate := Value;
@@ -110,23 +129,28 @@ procedure TCustomNoiseShapingFilterDesigner.SetSampleRate(const Value: Single);
   end;
 end;
 
-function TCustomNoiseShapingFilterDesigner.GetFFTSize: Integer;begin
+function TCustomNoiseShapingFilterDesigner.GetFFTSize: Integer;
+begin
  result := FFft.FFTSize;
 end;
 
-function TCustomNoiseShapingFilterDesigner.GetFFTSizeHalf: Integer;begin
+function TCustomNoiseShapingFilterDesigner.GetFFTSizeHalf: Integer;
+begin
  result := FFft.FFTSize div 2;
 end;
 
-procedure TCustomNoiseShapingFilterDesigner.LoopCountChanged;begin
+procedure TCustomNoiseShapingFilterDesigner.LoopCountChanged;
+begin
  FLoopCountReciprocal := 1 / FLoopCount;
 end;
 
-procedure TCustomNoiseShapingFilterDesigner.SampleRateChanged;begin
+procedure TCustomNoiseShapingFilterDesigner.SampleRateChanged;
+begin
  // not implemented yet
 end;
 
-procedure TCustomNoiseShapingFilterDesigner.SampleFramesChanged;begin
+procedure TCustomNoiseShapingFilterDesigner.SampleFramesChanged;
+begin
  // not implemented yet
 end;
 
@@ -150,7 +174,8 @@ begin
  result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency), 0.69);
 end;
 
-procedure TCustomNoiseShapingFilterDesigner.Calculate;var
+procedure TCustomNoiseShapingFilterDesigner.Calculate;
+var
   i, j, TotalLoop, Num     : Integer;
   iath, ath, logath        : PDAVDoubleFixedArray;
   Noise, TimeDomain        : PDAVSingleFixedArray;
@@ -167,7 +192,8 @@ procedure TCustomNoiseShapingFilterDesigner.Calculate;var
 const
   NTRYMAX = 20;
 
-begin Randomize;
+begin
+ Randomize;
  OldBestMax := 10000;
  Num := (3 * FLoopCount div 2);
 
@@ -177,7 +203,7 @@ begin Randomize;
  GetMem(logath, FFTSize * SizeOf(Single));
  GetMem(Noise, FFTSize * SizeOf(Double));
  GetMem(TimeDomain, FFTSize * SizeOf(Single));
- GetMem(FrequencyDomain, FFTSizeHalf * SizeOf(TComplexSingle));
+ GetMem(FrequencyDomain, FFTSizeHalf * SizeOf(TComplex32));
  GetMem(xtry, Num * SizeOf(Single));
  GetMem(Best, Num * SizeOf(Single));
  GetMem(Best2, Num * SizeOf(Single));
@@ -304,4 +330,5 @@ begin Randomize;
    LastBestMax := BestMax;
   end;
 end;
-end.
+
+end.

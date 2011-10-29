@@ -546,8 +546,8 @@ begin
  inherited;
  FFft.Order := FFftOrder;
 
- ReallocMem(FBuffer, FFft.BinCount * SizeOf(TComplexSingle));
- FillChar(FBuffer^, FFft.BinCount * SizeOf(TComplexSingle), 0);
+ ReallocMem(FBuffer, FFft.BinCount * SizeOf(TComplex32));
+ FillChar(FBuffer^, FFft.BinCount * SizeOf(TComplex32), 0);
 
  FBlockBuilder.BlockSize := FFft.FFTSize;
  FWindowFunction.Length := FFft.FFTSize;
@@ -664,8 +664,8 @@ begin
  inherited;
  FFft.Order := FFftOrder;
 
- ReallocMem(FBuffer, FFft.BinCount * SizeOf(TComplexDouble));
- FillChar(FBuffer^, FFft.BinCount * SizeOf(TComplexDouble), 0);
+ ReallocMem(FBuffer, FFft.BinCount * SizeOf(TComplex64));
+ FillChar(FBuffer^, FFft.BinCount * SizeOf(TComplex64), 0);
 
  FBlockBuilder.BlockSize := FFft.FFTSize;
  FWindowFunction.Length := FFft.FFTSize;

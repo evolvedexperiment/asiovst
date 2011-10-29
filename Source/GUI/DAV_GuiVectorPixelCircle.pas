@@ -123,13 +123,13 @@ var
   X, Y         : Integer;
   ScnLne       : PPixel32Array;
   PixelColor32 : TPixel32;
-  Radius       : TFixed24Dot8Point;
-  CenterX      : TFixed24Dot8Point;
-  CenterY      : TFixed24Dot8Point;
-  XStart       : TFixed24Dot8Point;
+  Radius       : TFixed24Dot8;
+  CenterX      : TFixed24Dot8;
+  CenterY      : TFixed24Dot8;
+  XStart       : TFixed24Dot8;
   YRange       : array [0..1] of Integer;
   XRange       : array [0..1] of Integer;
-  SqrYDist     : TFixed24Dot8Point;
+  SqrYDist     : TFixed24Dot8;
 begin
  with PixelMap do
   begin
@@ -159,7 +159,7 @@ begin
    for Y := YRange[0] to YRange[1] do
     begin
      // calculate squared vertical distance
-     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8(Y), CenterY));
 
      XStart.Fixed := FixedSqr(Radius).Fixed - SqrYDist.Fixed;
      if XStart.Fixed <= 0
@@ -189,7 +189,7 @@ var
   PixelColor32   : TPixel32;
   CombColor      : TPixel32;
   Radius         : Single;
-  Center         : TComplexSingle;
+  Center         : TComplex32;
   XStart         : Single;
   YRange         : array [0..1] of Integer;
   XRange         : array [0..1] of Integer;
@@ -203,9 +203,9 @@ begin
    PixelColor32.A := Alpha;
 
    // transfer the GeometricShape data to local variables
-   Radius := ConvertFromFixed24Dot8Point(GeometricShape.Radius) + 1;
-   Center.Re := ConvertFromFixed24Dot8Point(GeometricShape.CenterX);
-   Center.Im := ConvertFromFixed24Dot8Point(GeometricShape.CenterY);
+   Radius := ConvertFromFixed24Dot8(GeometricShape.Radius) + 1;
+   Center.Re := ConvertFromFixed24Dot8(GeometricShape.CenterX);
+   Center.Im := ConvertFromFixed24Dot8(GeometricShape.CenterY);
 
    // calculate affected scanlines
    YRange[0] := Round(Center.Im - Radius);
@@ -267,13 +267,13 @@ var
   CombColor      : TPixel32;
   YRange         : array [0..1] of Integer;
   XRange         : array [0..1] of Integer;
-  Radius         : TFixed24Dot8Point;
-  CenterX        : TFixed24Dot8Point;
-  CenterY        : TFixed24Dot8Point;
-  XStart         : TFixed24Dot8Point;
-  SqrYDist       : TFixed24Dot8Point;
-  SqrDist        : TFixed24Dot8Point;
-  SqrRadMinusOne : TFixed24Dot8Point;
+  Radius         : TFixed24Dot8;
+  CenterX        : TFixed24Dot8;
+  CenterY        : TFixed24Dot8;
+  XStart         : TFixed24Dot8;
+  SqrYDist       : TFixed24Dot8;
+  SqrDist        : TFixed24Dot8;
+  SqrRadMinusOne : TFixed24Dot8;
   {$IFNDEF Simple}
   PixelLineCount : Integer;
   {$ENDIF}
@@ -309,7 +309,7 @@ begin
    for Y := YRange[0] to YRange[1] do
     begin
      // calculate squared vertical distance
-     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8(Y), CenterY));
 
      XStart.Fixed := FixedSqr(Radius).Fixed - SqrYDist.Fixed;
      if XStart.Fixed <= 0
@@ -348,7 +348,7 @@ begin
          {$ELSE}
 
          PixelLineCount := FixedFloor(FixedAdd(FixedSub(CenterX,
-           ConvertToFixed24Dot8Point(X)), FixedSqrt(
+           ConvertToFixed24Dot8(X)), FixedSqrt(
            FixedSub(SqrRadMinusOne, SqrYDist)))) + 1;
 
          Assert(PixelLineCount > 0);
@@ -429,7 +429,7 @@ var
   ScnLne        : PPixel32Array;
   PixelColor32  : TPixel32;
   SingleRadius  : Single;
-  Center        : TComplexSingle;
+  Center        : TComplex32;
   XStart        : Single;
   YRange        : array [0..1] of Integer;
   XRange        : array [0..1] of Integer;
@@ -444,9 +444,9 @@ begin
     begin
      PixelColor32 := ConvertColor(Color);
      PixelColor32.A := Alpha;
-     SingleRadius := ConvertFromFixed24Dot8Point(Radius) + 1;
-     Center.Re := ConvertFromFixed24Dot8Point(CenterX);
-     Center.Im := ConvertFromFixed24Dot8Point(CenterY);
+     SingleRadius := ConvertFromFixed24Dot8(Radius) + 1;
+     Center.Re := ConvertFromFixed24Dot8(CenterX);
+     Center.Im := ConvertFromFixed24Dot8(CenterY);
 
      // inner radius
      SqrMinusWidth := Sqr(BranchlessClipPositive(SingleRadius - LineWidth.Fixed * CFixed24Dot8ToFloat));
@@ -506,16 +506,16 @@ var
   CombColor      : TPixel32;
   YRange         : array [0..1] of Integer;
   XRange         : array [0..1] of Integer;
-  OuterRadius    : TFixed24Dot8Point;
-  InnerRadius    : TFixed24Dot8Point;
-  CenterX        : TFixed24Dot8Point;
-  CenterY        : TFixed24Dot8Point;
-  XStart         : TFixed24Dot8Point;
-  SqrYDist       : TFixed24Dot8Point;
-  SqrDist        : TFixed24Dot8Point;
-  SqrOuterRad    : TFixed24Dot8Point;
-  SqrInnerRad    : TFixed24Dot8Point;
-  SqrInnerRadOne : TFixed24Dot8Point;
+  OuterRadius    : TFixed24Dot8;
+  InnerRadius    : TFixed24Dot8;
+  CenterX        : TFixed24Dot8;
+  CenterY        : TFixed24Dot8;
+  XStart         : TFixed24Dot8;
+  SqrYDist       : TFixed24Dot8;
+  SqrDist        : TFixed24Dot8;
+  SqrOuterRad    : TFixed24Dot8;
+  SqrInnerRad    : TFixed24Dot8;
+  SqrInnerRadOne : TFixed24Dot8;
   {$IFNDEF Simple}
   PixelLineCount : Integer;
   {$ENDIF}
@@ -563,7 +563,7 @@ begin
    for Y := YRange[0] to YRange[1] do
     begin
      // calculate squared vertical distance
-     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), CenterY));
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8(Y), CenterY));
 
      XStart.Fixed := FixedSqr(OuterRadius).Fixed - SqrYDist.Fixed;
      if XStart.Fixed <= 0
@@ -615,7 +615,7 @@ begin
          Inc(X);
          {$ELSE}
          PixelLineCount := FixedFloor(FixedAdd(FixedSub(CenterX,
-           ConvertToFixed24Dot8Point(X)), FixedSqrt(
+           ConvertToFixed24Dot8(X)), FixedSqrt(
            FixedSub(SqrInnerRad, SqrYDist)))) + 1;
 
          if X + PixelLineCount > XRange[1]

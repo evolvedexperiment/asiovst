@@ -102,7 +102,7 @@ procedure TCustomParametricEQ.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   i   : Integer;
-  Tmp : TComplexDouble;
+  Tmp : TComplex64;
 begin
  if Length(FFilterArray) = 0 then exit;
  assert(assigned(FFilterArray[0]));

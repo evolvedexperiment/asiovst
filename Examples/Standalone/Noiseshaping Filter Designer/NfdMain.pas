@@ -98,8 +98,8 @@ begin
  FillChar(FImpResp^[0], FFft.FFTSize * SizeOf(Single), 0);
 
  // frequency response buffer
- GetMem(FFreqResp, FFft.BinCount * SizeOf(TComplexSingle));
- FillChar(FFreqResp^[0], FFft.BinCount * SizeOf(TComplexSingle), 0);
+ GetMem(FFreqResp, FFft.BinCount * SizeOf(TComplex32));
+ FillChar(FFreqResp^[0], FFft.BinCount * SizeOf(TComplex32), 0);
 
  // magnitude buffer
  GetMem(FMagnitude, FFft.BinCount * SizeOf(Single));

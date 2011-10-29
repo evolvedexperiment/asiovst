@@ -334,7 +334,7 @@ var
   XStart            : Single;
   RadMinusBorderOne : Single;
   Scale             : Single;
-  Center            : TComplexSingle;
+  Center            : TComplex32;
   SqrYDist          : Single;
   SqrDist           : Single;
   Bright            : Single;

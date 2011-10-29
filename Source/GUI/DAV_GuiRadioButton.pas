@@ -560,21 +560,21 @@ var
   DotColor          : TPixel32;
   BackColor         : TPixel32;
   DrawDot           : Boolean;
-  Radius            : TFixed24Dot8Point;
-  InnerOffset       : TFixed24Dot8Point;
-  BorderWidth       : TFixed24Dot8Point;
-  XStart            : TFixed24Dot8Point;
-  Scale             : TFixed24Dot8Point;
-  OffsetX           : TFixed24Dot8Point;
-  OffsetY           : TFixed24Dot8Point;
-  SqrYDist          : TFixed24Dot8Point;
-  SqrDist           : TFixed24Dot8Point;
-  SqrRadMinusOne    : TFixed24Dot8Point;
-  SqrRadMinusBorder : TFixed24Dot8Point;
-  RadMinusBorderOne : TFixed24Dot8Point;
-  SqrRadMinusInner  : TFixed24Dot8Point;
-  RadMinusInnerOne  : TFixed24Dot8Point;
-  Temp              : TFixed24Dot8Point;
+  Radius            : TFixed24Dot8;
+  InnerOffset       : TFixed24Dot8;
+  BorderWidth       : TFixed24Dot8;
+  XStart            : TFixed24Dot8;
+  Scale             : TFixed24Dot8;
+  OffsetX           : TFixed24Dot8;
+  OffsetY           : TFixed24Dot8;
+  SqrYDist          : TFixed24Dot8;
+  SqrDist           : TFixed24Dot8;
+  SqrRadMinusOne    : TFixed24Dot8;
+  SqrRadMinusBorder : TFixed24Dot8;
+  RadMinusBorderOne : TFixed24Dot8;
+  SqrRadMinusInner  : TFixed24Dot8;
+  RadMinusInnerOne  : TFixed24Dot8;
+  Temp              : TFixed24Dot8;
 begin
  with Buffer do
   begin
@@ -593,10 +593,10 @@ begin
     then BackColor := ConvertColor(FFocusedColor)
     else BackColor := ConvertColor(FBackgroundColor);
 
-   BorderWidth := ConvertToFixed24Dot8Point(Max(2.5, 1 + 0.15 * FRadioButtonRadius));
+   BorderWidth := ConvertToFixed24Dot8(Max(2.5, 1 + 0.15 * FRadioButtonRadius));
 
    // draw circle
-   Radius := ConvertToFixed24Dot8Point(FRadioButtonRadius);
+   Radius := ConvertToFixed24Dot8(FRadioButtonRadius);
    if Radius.Fixed <= 0 then Exit;
 
    InnerOffset := FixedAdd(BorderWidth, BorderWidth);
@@ -629,22 +629,22 @@ begin
    OffsetX := FixedAdd(Radius, CFixed24Dot8Half);
    {$ELSE}
    case Alignment of
-    taLeftJustify  : OffsetX := FixedSub(FixedSub(ConvertToFixed24Dot8Point(Width), Radius), CFixed24Dot8Half);
+    taLeftJustify  : OffsetX := FixedSub(FixedSub(ConvertToFixed24Dot8(Width), Radius), CFixed24Dot8Half);
     taRightJustify : OffsetX := FixedAdd(Radius, CFixed24Dot8Half);
     else raise Exception.Create('Unknown justify');
    end;
    {$ENDIF}
-   OffsetY := FixedMul(ConvertToFixed24Dot8Point(Integer(Height - 1)), CFixed24Dot8Half);
+   OffsetY := FixedMul(ConvertToFixed24Dot8(Integer(Height - 1)), CFixed24Dot8Half);
 
    for Y := FixedRound(FixedSub(OffsetY, Radius)) to FixedRound(FixedAdd(OffsetY, Radius)) do
     begin
      // calculate squared vertical distance
-     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8Point(Y), OffsetY));
+     SqrYDist := FixedSqr(FixedSub(ConvertToFixed24Dot8(Y), OffsetY));
 
      XStart := FixedSub(FixedSqr(Radius), SqrYDist);
      if XStart.Fixed < 0
       then Continue
-      else XStart := FixedSub(FixedSqrt(XStart), ConvertToFixed24Dot8Point(0.4999999));
+      else XStart := FixedSub(FixedSqrt(XStart), ConvertToFixed24Dot8(0.4999999));
 
      ScnLne := Scanline[Y];
      X1 := FixedRound(FixedSub(OffsetX, XStart));
@@ -652,7 +652,7 @@ begin
      while X1 < X2 do
       begin
        // calculate squared distance
-       SqrDist := FixedAdd(FixedSqr(FixedSub(ConvertToFixed24Dot8Point(X1), OffsetX)), SqrYDist);
+       SqrDist := FixedAdd(FixedSqr(FixedSub(ConvertToFixed24Dot8(X1), OffsetX)), SqrYDist);
 
        if SqrDist.Fixed <= SqrRadMinusBorder.Fixed then
         begin

@@ -113,10 +113,10 @@ type
     procedure SETempoChange(Sender: TObject);
     procedure TBVolumeChange(Sender: TObject);
   private
-    FMetAngle       : TComplexDouble;
-    FMetPosition    : TComplexDouble;
-    FFlangeAngle    : TComplexDouble;
-    FFlangePosition : TComplexDouble;
+    FMetAngle       : TComplex64;
+    FMetPosition    : TComplex64;
+    FFlangeAngle    : TComplex64;
+    FFlangePosition : TComplex64;
     FFlange         : Boolean;
     FRobotize       : Boolean;
     FRecRev         : Boolean;

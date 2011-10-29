@@ -30,7 +30,7 @@ type
 
   // TCudaFftComplex is a single-precision, floating-point complex data type that
   // consists of interleaved real and imaginary components.
-  TCudaFftComplex = TComplexSingle;
+  TCudaFftComplex = TComplex32;
 
   // CudaFft supports the following transform types
   TCudaFftType = (CCudaFftR2C = $2A, CCudaFftC2R = $2C, CCudaFftC2C = $29);

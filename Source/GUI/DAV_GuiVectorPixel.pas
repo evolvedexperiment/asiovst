@@ -82,13 +82,13 @@ type
 
   TCustomGuiPixelFramePrimitive = class(TCustomGuiPixelSimplePrimitive)
   private
-    FLineWidth : TFixed24Dot8Point;
-    procedure SetLineWidth(const Value: TFixed24Dot8Point);
+    FLineWidth : TFixed24Dot8;
+    procedure SetLineWidth(const Value: TFixed24Dot8);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure LineWidthChanged; virtual;
   public
-    property LineWidth: TFixed24Dot8Point read FLineWidth write SetLineWidth;
+    property LineWidth: TFixed24Dot8 read FLineWidth write SetLineWidth;
   end;
 
   TCustomGuiPixelFillPrimitive = class(TCustomGuiPixelSimplePrimitive)
@@ -228,7 +228,7 @@ begin
 end;
 
 procedure TCustomGuiPixelFramePrimitive.SetLineWidth(
-  const Value: TFixed24Dot8Point);
+  const Value: TFixed24Dot8);
 begin
  if FLineWidth.Fixed <> Value.Fixed then
   begin
@@ -272,15 +272,15 @@ var
   ScnLne         : PPixel32Array;
   PixelColor32   : TPixel32;
   CombColor      : TPixel32;
-  Rad            : TComplexSingle;
-  Center         : TComplexSingle;
+  Rad            : TComplex32;
+  Center         : TComplex32;
   XStart         : Single;
   YRange         : array [0..1] of Integer;
   XRange         : array [0..1] of Integer;
   SqrYDist       : Single;
   SqrDist        : Single;
   SqrBorderDist  : Single;
-  SqrRadMinusOne : TComplexSingle;
+  SqrRadMinusOne : TComplex32;
   SqrRadRatio    : array [0..1] of Single;
 begin
  with PixelMap do
@@ -291,13 +291,13 @@ begin
    // transfer the GeometricShape data to local variables
    with GeometricShape do
     begin
-     Rad.Re := ConvertFromFixed24Dot8Point(RadiusX) + 1;
-     Rad.Im := ConvertFromFixed24Dot8Point(RadiusY) + 1;
+     Rad.Re := ConvertFromFixed24Dot8(RadiusX) + 1;
+     Rad.Im := ConvertFromFixed24Dot8(RadiusY) + 1;
      if (Rad.Re <= 0) or (Rad.Im <= 0) then Exit;
      SqrRadRatio[0] := Sqr(Rad.Re / Rad.Im);
 
-     Center.Re := ConvertFromFixed24Dot8Point(CenterX);
-     Center.Im := ConvertFromFixed24Dot8Point(CenterY);
+     Center.Re := ConvertFromFixed24Dot8(CenterX);
+     Center.Im := ConvertFromFixed24Dot8(CenterY);
     end;
 
    // calculate affected scanlines
@@ -369,8 +369,8 @@ var
   X, Y         : Integer;
   ScnLne       : PPixel32Array;
   PixelColor32 : TPixel32;
-  Rad          : TComplexSingle;
-  Center       : TComplexSingle;
+  Rad          : TComplex32;
+  Center       : TComplex32;
   SqrRadRatio  : Single;
   XStart       : Single;
   YRange       : array [0..1] of Integer;
@@ -385,13 +385,13 @@ begin
    // transfer the GeometricShape data to local variables
    with GeometricShape do
     begin
-     Rad.Re := ConvertFromFixed24Dot8Point(RadiusX) + 1;
-     Rad.Im := ConvertFromFixed24Dot8Point(RadiusY) + 1;
+     Rad.Re := ConvertFromFixed24Dot8(RadiusX) + 1;
+     Rad.Im := ConvertFromFixed24Dot8(RadiusY) + 1;
      if (Rad.Re <= 0) or (Rad.Im <= 0) then Exit;
      SqrRadRatio := Sqr(Rad.Re / Rad.Im);
 
-     Center.Re := ConvertFromFixed24Dot8Point(CenterX);
-     Center.Im := ConvertFromFixed24Dot8Point(CenterY);
+     Center.Re := ConvertFromFixed24Dot8(CenterX);
+     Center.Im := ConvertFromFixed24Dot8(CenterY);
     end;
 
    // calculate affected scanlines

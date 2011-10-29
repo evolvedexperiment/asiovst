@@ -288,12 +288,12 @@ procedure TCustomNoiseReduction32.FFTOrderChanged;
 begin
  inherited;
  ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Single));
- ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplexSingle));
- ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplexSingle));
+ ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplex32));
+ ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplex32));
  ReallocMem(FFilterIR, FFFTSize * SizeOf(Single));
  FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Single), 0);
- FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle), 0);
- FillChar(FFilter^, Fft.BinCount * SizeOf(TComplexSingle), 0);
+ FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32), 0);
+ FillChar(FFilter^, Fft.BinCount * SizeOf(TComplex32), 0);
  FillChar(FFilterIR^, FFFTSize * SizeOf(Single), 0);
 
  if Assigned(FWindowFunction)
@@ -351,7 +351,7 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
- Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle));
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32));
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
@@ -479,7 +479,7 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
- Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle));
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32));
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
@@ -680,7 +680,7 @@ begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
  // filter with the currest filter coefficients
- Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle));
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32));
  PerformSpectralEffect(FAddSpecBuffer);
 
  // eventually match threshold
@@ -917,12 +917,12 @@ procedure TCustomNoiseReduction64.FFTOrderChanged;
 begin
  inherited;
  ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Double));
- ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplexDouble));
- ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplexDouble));
+ ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplex64));
+ ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplex64));
  ReallocMem(FFilterIR, FFFTSize * SizeOf(Double));
  FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Double), 0);
- FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexDouble), 0);
- FillChar(FFilter^, Fft.BinCount * SizeOf(TComplexDouble), 0);
+ FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex64), 0);
+ FillChar(FFilter^, Fft.BinCount * SizeOf(TComplex64), 0);
  FillChar(FFilterIR^, FFFTSize * SizeOf(Double), 0);
 
  if Assigned(FWindowFunction)
@@ -978,7 +978,7 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
- Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexDouble));
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex64));
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
@@ -1106,7 +1106,7 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
- Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexDouble));
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex64));
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);

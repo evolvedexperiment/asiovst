@@ -187,7 +187,7 @@ const
 
 var
   Temp  : Double;
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  // even function
  Value := Abs(Value);
@@ -269,7 +269,7 @@ const
 
 var
   Temp  : Double;
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 
 begin
 

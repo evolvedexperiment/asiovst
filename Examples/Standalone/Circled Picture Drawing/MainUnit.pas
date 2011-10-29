@@ -845,9 +845,9 @@ procedure AssignCircleData(Circle: TGuiPixelFilledCircle;
 begin
  with Circle do
   begin
-   GeometricShape.CenterX := ConvertToFixed24Dot8Point(Data^[0]);
-   GeometricShape.CenterY := ConvertToFixed24Dot8Point(Data^[1]);
-   GeometricShape.Radius := ConvertToFixed24Dot8Point(Data^[2]);
+   GeometricShape.CenterX := ConvertToFixed24Dot8(Data^[0]);
+   GeometricShape.CenterY := ConvertToFixed24Dot8(Data^[1]);
+   GeometricShape.Radius := ConvertToFixed24Dot8(Data^[2]);
    Color := HLSToRGB(Data^[3], Data^[4], Data^[5]);
    Alpha := Round($FF * Data^[6]);
   end;
@@ -1521,9 +1521,9 @@ begin
    // draw recent circle
    with TGuiPixelFilledCircle.Create do
     try
-     GeometricShape.CenterX := ConvertToFixed24Dot8Point(Population[0]);
-     GeometricShape.CenterY := ConvertToFixed24Dot8Point(Population[1]);
-     GeometricShape.Radius := ConvertToFixed24Dot8Point(Population[2]);
+     GeometricShape.CenterX := ConvertToFixed24Dot8(Population[0]);
+     GeometricShape.CenterY := ConvertToFixed24Dot8(Population[1]);
+     GeometricShape.Radius := ConvertToFixed24Dot8(Population[2]);
      Color := HLSToRGB(Population[3], Population[4], Population[5]);
      Alpha := Round($FF * Population[6]);
 
@@ -1557,9 +1557,9 @@ begin
     try
      for Index := 0 to FNumberOfCircles - 1 do
       begin
-       GeometricShape.CenterX := ConvertToFixed24Dot8Point(Population[7 * Index + 0]);
-       GeometricShape.CenterY := ConvertToFixed24Dot8Point(Population[7 * Index + 1]);
-       GeometricShape.Radius := ConvertToFixed24Dot8Point(Population[7 * Index + 2]);
+       GeometricShape.CenterX := ConvertToFixed24Dot8(Population[7 * Index + 0]);
+       GeometricShape.CenterY := ConvertToFixed24Dot8(Population[7 * Index + 1]);
+       GeometricShape.Radius := ConvertToFixed24Dot8(Population[7 * Index + 2]);
        Color := HLSToRGB(Population[7 * Index + 3], Population[7 * Index + 4],
          Population[7 * Index + 5]);
        Alpha := Round($FF * Population[7 * Index + 6]);
@@ -1593,24 +1593,24 @@ begin
     Color := clRed;
     Alpha := 192;
 
-    GeometricShape.XA := ConvertToFixed24Dot8Point(BestPop[0] - BestPop[2] - Max(BestPop[2], 10));
-    GeometricShape.XB := ConvertToFixed24Dot8Point(BestPop[0] - BestPop[2] - 2);
-    GeometricShape.YA := ConvertToFixed24Dot8Point(BestPop[1]);
-    GeometricShape.YB := ConvertToFixed24Dot8Point(BestPop[1]);
+    GeometricShape.XA := ConvertToFixed24Dot8(BestPop[0] - BestPop[2] - Max(BestPop[2], 10));
+    GeometricShape.XB := ConvertToFixed24Dot8(BestPop[0] - BestPop[2] - 2);
+    GeometricShape.YA := ConvertToFixed24Dot8(BestPop[1]);
+    GeometricShape.YB := ConvertToFixed24Dot8(BestPop[1]);
     Draw(FBestDrawing);
 
-    GeometricShape.XA := ConvertToFixed24Dot8Point(BestPop[0] + BestPop[2] + Max(BestPop[2], 10));
-    GeometricShape.XB := ConvertToFixed24Dot8Point(BestPop[0] + BestPop[2] + 2);
+    GeometricShape.XA := ConvertToFixed24Dot8(BestPop[0] + BestPop[2] + Max(BestPop[2], 10));
+    GeometricShape.XB := ConvertToFixed24Dot8(BestPop[0] + BestPop[2] + 2);
     Draw(FBestDrawing);
 
-    GeometricShape.YA := ConvertToFixed24Dot8Point(BestPop[1] - BestPop[2] - Max(BestPop[2], 10));
-    GeometricShape.YB := ConvertToFixed24Dot8Point(BestPop[1] - BestPop[2] - 2);
-    GeometricShape.XA := ConvertToFixed24Dot8Point(BestPop[0]);
-    GeometricShape.XB := ConvertToFixed24Dot8Point(BestPop[0]);
+    GeometricShape.YA := ConvertToFixed24Dot8(BestPop[1] - BestPop[2] - Max(BestPop[2], 10));
+    GeometricShape.YB := ConvertToFixed24Dot8(BestPop[1] - BestPop[2] - 2);
+    GeometricShape.XA := ConvertToFixed24Dot8(BestPop[0]);
+    GeometricShape.XB := ConvertToFixed24Dot8(BestPop[0]);
     Draw(FBestDrawing);
 
-    GeometricShape.YA := ConvertToFixed24Dot8Point(BestPop[1] + BestPop[2] + Max(BestPop[2], 10));
-    GeometricShape.YB := ConvertToFixed24Dot8Point(BestPop[1] + BestPop[2] + 2);
+    GeometricShape.YA := ConvertToFixed24Dot8(BestPop[1] + BestPop[2] + Max(BestPop[2], 10));
+    GeometricShape.YB := ConvertToFixed24Dot8(BestPop[1] + BestPop[2] + 2);
     Draw(FBestDrawing);
    finally
     Free;
@@ -1965,9 +1965,9 @@ begin
   for Index := 0 to Min(FNumberOfCircles, Circles.Count) - 1 do
    with DifferentialEvolution do
     begin
-     BestPopulation[7 * Index    ] := ConvertFromFixed24Dot8Point(Circles[Index].CenterX);
-     BestPopulation[7 * Index + 1] := ConvertFromFixed24Dot8Point(Circles[Index].CenterY);
-     BestPopulation[7 * Index + 2] := ConvertFromFixed24Dot8Point(Circles[Index].Radius);
+     BestPopulation[7 * Index    ] := ConvertFromFixed24Dot8(Circles[Index].CenterX);
+     BestPopulation[7 * Index + 1] := ConvertFromFixed24Dot8(Circles[Index].CenterY);
+     BestPopulation[7 * Index + 2] := ConvertFromFixed24Dot8(Circles[Index].Radius);
      Pixel.R := Circles[Index].Color and $FF;
      Pixel.G := (Circles[Index].Color shr 8) and $FF;
      Pixel.B := (Circles[Index].Color shr 16) and $FF;
@@ -2061,13 +2061,13 @@ var
   Drawing       : TGuiPixelMapMemory;
   BackDraw      : TGuiPixelMapMemory;
   Circle        : TGuiPixelFilledCircle;
-  OffsetX       : TFixed24Dot8Point;
-  OffsetY       : TFixed24Dot8Point;
+  OffsetX       : TFixed24Dot8;
+  OffsetY       : TFixed24Dot8;
   FrameIndex    : Integer;
   Index         : Integer;
   IntScale      : Integer;
-  FinalRadius   : TFixed24Dot8Point;
-  FixedOneThird : TFixed24Dot8Point;
+  FinalRadius   : TFixed24Dot8;
+  FixedOneThird : TFixed24Dot8;
   TempRect      : TRect;
   FinalAlpha    : Byte;
   HalfLifePos   : Single;
@@ -2091,13 +2091,13 @@ begin
    Circle := TGuiPixelFilledCircle.Create;
 
    IntScale := Round(ScaleFactor * (1 shl 8));
-   OffsetX := ConvertToFixed24Dot8Point(Drawing.Width div 4);
-   OffsetY := ConvertToFixed24Dot8Point(Drawing.Height div 4);
+   OffsetX := ConvertToFixed24Dot8(Drawing.Width div 4);
+   OffsetY := ConvertToFixed24Dot8(Drawing.Height div 4);
 
    if AnimatedCircle then
     begin
      // initialize
-     FixedOneThird := ConvertToFixed24Dot8Point(0.3333);
+     FixedOneThird := ConvertToFixed24Dot8(0.3333);
      FrameIndex := 1;
      ProgressBar.Max := 2 * Length(FCircles) + 41;
      HalfLifePos := 0;
@@ -2163,7 +2163,7 @@ begin
             with Circle.GeometricShape do
              begin
               Radius := FixedAdd(Radius, FixedMul(FixedSub(FinalRadius, Radius), FixedOneThird));
-              Radius := FixedMul(Radius, ConvertToFixed24Dot8Point(1.1));
+              Radius := FixedMul(Radius, ConvertToFixed24Dot8(1.1));
               Radius := FixedAdd(Radius, CFixed24Dot8One);
              end;
 
@@ -2379,8 +2379,8 @@ begin
       with Circle do
        begin
         GeometricShape.Radius := FixedMul(GeometricShape.Radius, 2 shl 8);
-        GeometricShape.CenterX := FixedAdd(ConvertToFixed24Dot8Point(Drawing.Width div 6), FixedMul(GeometricShape.CenterX, 2 shl 8));
-        GeometricShape.CenterY := FixedAdd(ConvertToFixed24Dot8Point(Drawing.Height div 6), FixedMul(GeometricShape.CenterY, 2 shl 8));
+        GeometricShape.CenterX := FixedAdd(ConvertToFixed24Dot8(Drawing.Width div 6), FixedMul(GeometricShape.CenterX, 2 shl 8));
+        GeometricShape.CenterY := FixedAdd(ConvertToFixed24Dot8(Drawing.Height div 6), FixedMul(GeometricShape.CenterY, 2 shl 8));
         Draw(Drawing);
        end;
      end;

@@ -13,7 +13,7 @@ type
     FDCOffset  : Single;
     FFrequency : Single;
     FAmplitude : Single;
-    FAngle     : TComplexDouble;
+    FAngle     : TComplex64;
     FPosition  : TDAVComplexDoubleDynArray;
 
     procedure SetAmplitude(const Value: Single); virtual;

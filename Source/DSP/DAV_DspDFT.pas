@@ -55,15 +55,15 @@ procedure DFT(realTime, realFreq, imagFreq : TDAVDoubleDynArray); overload;
 procedure InverseDFT(realTime, realFreq, imagFreq : TDAVSingleDynArray); overload;
 procedure InverseDFT(realTime, realFreq, imagFreq : TDAVDoubleDynArray); overload;
 
-function Goertzel(TimeSignal: TDAVSingleDynArray; const NormFrequency: Double): TComplexSingle; overload;
-function Goertzel(TimeSignal: TDAVDoubleDynArray; const NormFrequency: Double): TComplexDouble; overload;
-function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexSingle; overload;
-function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexDouble; overload;
+function Goertzel(TimeSignal: TDAVSingleDynArray; const NormFrequency: Double): TComplex32; overload;
+function Goertzel(TimeSignal: TDAVDoubleDynArray; const NormFrequency: Double): TComplex64; overload;
+function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplex32; overload;
+function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplex64; overload;
 
-function Goertzel(TimeSignal: TDAVSingleDynArray; const Angular: TComplexSingle): TComplexSingle; overload;
-function Goertzel(TimeSignal: TDAVDoubleDynArray; const Angular: TComplexDouble): TComplexDouble; overload;
-function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const Angular: TComplexSingle): TComplexSingle; overload;
-function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const Angular: TComplexDouble): TComplexDouble; overload;
+function Goertzel(TimeSignal: TDAVSingleDynArray; const Angular: TComplex32): TComplex32; overload;
+function Goertzel(TimeSignal: TDAVDoubleDynArray; const Angular: TComplex64): TComplex64; overload;
+function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const Angular: TComplex32): TComplex32; overload;
+function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const Angular: TComplex64): TComplex64; overload;
 
 implementation
 
@@ -285,10 +285,10 @@ begin
   end;
 end;
 
-function Goertzel(TimeSignal: TDAVSingleDynArray; const NormFrequency: Double): TComplexSingle;
+function Goertzel(TimeSignal: TDAVSingleDynArray; const NormFrequency: Double): TComplex32;
 {$IFDEF PUREPASCAL}
 var
-  Pos, Angle : TComplexDouble;
+  Pos, Angle : TComplex64;
   i          : Integer;
 begin
  Pos.Re   := 0;
@@ -347,10 +347,10 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: TDAVDoubleDynArray; const NormFrequency: Double): TComplexDouble;
+function Goertzel(TimeSignal: TDAVDoubleDynArray; const NormFrequency: Double): TComplex64;
 {$IFDEF PUREPASCAL}
 var
-  Pos, Angle : TComplexDouble;
+  Pos, Angle : TComplex64;
   i          : Integer;
 begin
  Pos.Re := 0;
@@ -408,10 +408,10 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexSingle; overload;
+function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplex32; overload;
 {$IFDEF PUREPASCAL}
 var
-  Pos, Angle : TComplexDouble;
+  Pos, Angle : TComplex64;
   i          : Integer;
 begin
  Pos.Re   := 0;
@@ -474,10 +474,10 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexDouble; overload;
+function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplex64; overload;
 {$IFDEF PUREPASCAL}
 var
-  Pos, Angle : TComplexDouble;
+  Pos, Angle : TComplex64;
   i          : Integer;
 begin
  Pos.Re := 0;
@@ -540,10 +540,10 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: TDAVSingleDynArray; const Angular: TComplexSingle): TComplexSingle;
+function Goertzel(TimeSignal: TDAVSingleDynArray; const Angular: TComplex32): TComplex32;
 {$IFDEF PUREPASCAL}
 var
-  Pos : TComplexSingle;
+  Pos : TComplex32;
   i   : Integer;
 begin
  Pos.Re   := 0;
@@ -601,10 +601,10 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: TDAVDoubleDynArray; const Angular: TComplexDouble): TComplexDouble;
+function Goertzel(TimeSignal: TDAVDoubleDynArray; const Angular: TComplex64): TComplex64;
 {$IFDEF PUREPASCAL}
 var
-  Pos : TComplexDouble;
+  Pos : TComplex64;
   i   : Integer;
 begin
  Pos.Re := 0;
@@ -661,10 +661,10 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const Angular: TComplexSingle): TComplexSingle; overload;
+function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const Angular: TComplex32): TComplex32; overload;
 {$IFDEF PUREPASCAL}
 var
-  Pos : TComplexSingle;
+  Pos : TComplex32;
   i   : Integer;
 begin
  Pos.Re   := 0;
@@ -726,10 +726,10 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const Angular: TComplexDouble): TComplexDouble; overload;
+function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const Angular: TComplex64): TComplex64; overload;
 {$IFDEF PUREPASCAL}
 var
-  Pos : TComplexDouble;
+  Pos : TComplex64;
   i   : Integer;
 begin
  Pos.Re := 0;
@@ -791,4 +791,4 @@ asm
 end;
 {$ENDIF}
 
-end.
+end.

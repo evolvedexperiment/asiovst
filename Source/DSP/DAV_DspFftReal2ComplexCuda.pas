@@ -192,7 +192,7 @@ begin
  OldPtr := FGPUFreqDomain;
 
  // Allocate new memory
- CudaError := CudaMalloc(FGPUFreqDomain, (FFftSize div 2 + 1) * SizeOf(TComplexSingle));
+ CudaError := CudaMalloc(FGPUFreqDomain, (FFftSize div 2 + 1) * SizeOf(TComplex32));
  if CudaError <> ceSuccess
   then raise Exception.Create(CudaErrorToString(CudaError));
 

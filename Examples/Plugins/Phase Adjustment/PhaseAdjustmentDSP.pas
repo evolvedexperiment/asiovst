@@ -115,18 +115,18 @@ begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(Pointer(FFilterFreq), (FIRSize + 1) * SizeOf(TComplexSingle));
- FillChar(FFilterFreq^[0], (FIRSize + 1) * SizeOf(TComplexSingle), 0);
+ ReallocateAlignedMemory(Pointer(FFilterFreq), (FIRSize + 1) * SizeOf(TComplex32));
+ FillChar(FFilterFreq^[0], (FIRSize + 1) * SizeOf(TComplex32), 0);
  {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplexSingle));
- FillChar(FFilterFreq^[0], FIRSize * SizeOf(TComplexSingle), 0);
+ ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplex32));
+ FillChar(FFilterFreq^[0], FIRSize * SizeOf(TComplex32), 0);
  {$ELSE}
  FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(2 * FIRSize)));
 
- ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplexSingle));
- FillChar(FFilterFreq^[0], FIRSize * SizeOf(TComplexSingle), 0);
+ ReallocateAlignedMemory(FFilterFreq, FIRSize * SizeOf(TComplex32));
+ FillChar(FFilterFreq^[0], FIRSize * SizeOf(TComplex32), 0);
  {$ENDIF}{$ENDIF}
 
  // allocate memory for impulse response
@@ -218,7 +218,7 @@ end;
 procedure TPhaseAdjustmentModule.CalculateFilterKernel;
 var
   Index        : Integer;
-  ComplexValue : TComplexSingle;
+  ComplexValue : TComplex32;
   PhaseOffset  : Double;
   PhaseSum     : Double;
 const

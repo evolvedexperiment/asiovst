@@ -188,10 +188,10 @@ begin
  inherited;
 
  ReallocMem(FInputBuffer, FFFTSize * SizeOf(Single));
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
 
  FillChar(FInputBuffer^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
 end;
 
 {$IFDEF Use_IPPS}
@@ -321,10 +321,10 @@ begin
  inherited;
 
  ReallocMem(FInputBuffer, FFFTSize * SizeOf(Double));
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
 
  FillChar(FInputBuffer^[0], FFFTSize * SizeOf(Double), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
 end;
 
 {$IFDEF Use_IPPS}

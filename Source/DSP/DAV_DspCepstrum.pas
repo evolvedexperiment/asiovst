@@ -206,8 +206,8 @@ procedure TPowerCepstrum32.FFTOrderChanged;
 begin
  inherited;
 
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
- FillChar(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
+ FillChar(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
 
  ReallocMem(FFreqSignal, FFFTSize * SizeOf(Single));
  FillChar(FFreqSignal, FFFTSize * SizeOf(Single), 0);
@@ -275,8 +275,8 @@ procedure TPowerCepstrum64.FFTOrderChanged;
 begin
  inherited;
 
- ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
- FillChar(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble), 0);
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
+ FillChar(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
 
  ReallocMem(FFreqSignal, FFFTSize * SizeOf(Double));
  FillChar(FFreqSignal, FFFTSize * SizeOf(Double), 0);

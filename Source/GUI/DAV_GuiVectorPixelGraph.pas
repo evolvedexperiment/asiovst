@@ -82,15 +82,15 @@ var
   x, y            : Integer;
   PtIndex         : Integer;
 
-  YValues         : array of TFixed24Dot8Point;
-  Distance        : TFixed24Dot8Point;
-  IntLineWdth     : TFixed24Dot8Point;
-  RadiusMinusHalf : TFixed24Dot8Point;
-  CurrentValue    : TFixed24Dot8Point;
-  YStartPos       : TFixed24Dot8Point;
-  YEndPos         : TFixed24Dot8Point;
-  WidthScale      : TFixed24Dot8Point;
-  PointPtr        : PFixed24Dot8PointArray;
+  YValues         : array of TFixed24Dot8;
+  Distance        : TFixed24Dot8;
+  IntLineWdth     : TFixed24Dot8;
+  RadiusMinusHalf : TFixed24Dot8;
+  CurrentValue    : TFixed24Dot8;
+  YStartPos       : TFixed24Dot8;
+  YEndPos         : TFixed24Dot8;
+  WidthScale      : TFixed24Dot8;
+  PointPtr        : PFixed24Dot8Array;
   PxColor         : TPixel32;
   LeftRightIdx    : Integer;
 
@@ -140,7 +140,7 @@ begin
        begin
         // calculate distance
         Distance := FixedSqrt(FixedSub(FixedSqr(RadiusMinusHalf),
-          FixedSqr(ConvertToFixed24Dot8Point(PtIndex))));
+          FixedSqr(ConvertToFixed24Dot8(PtIndex))));
 
         for LeftRightIdx := 0 to 1 do
          begin
@@ -160,7 +160,7 @@ begin
        end;
 
       // calculate width scale (0 < x <= 1)
-      WidthScale := FixedSub(RadiusMinusHalf, ConvertToFixed24Dot8Point(Integer(IntegerRadiusX - 2)));
+      WidthScale := FixedSub(RadiusMinusHalf, ConvertToFixed24Dot8(Integer(IntegerRadiusX - 2)));
 
       if IntegerRadiusY = IntegerRadiusX then
        for LeftRightIdx := 0 to 1 do
@@ -221,7 +221,7 @@ begin
       EMMS;
 
       // shift y-values
-      Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(TFixed24Dot8Point));
+      Move(YValues[1], YValues[0], (Length(YValues) - 1) * SizeOf(TFixed24Dot8));
      end;
    end;
 end;
@@ -262,7 +262,7 @@ begin
     PixelColor32   := ConvertColor(Color);
     PixelColor32.A := Alpha;
 
-    IntLineWdth := Max(ConvertFromFixed24Dot8Point(LineWidth) - 1, 0);
+    IntLineWdth := Max(ConvertFromFixed24Dot8(LineWidth) - 1, 0);
     RadiusMinusHalf := 0.5 * IntLineWdth;
     Radius := RadiusMinusHalf + 1;
     SqrRadius := Sqr(Radius);
@@ -278,12 +278,12 @@ begin
 
      // fill additional points
      for PtIndex := 0 to Length(FYValues) - 1
-      do FYValues[PtIndex] := ConvertFromFixed24Dot8Point(GeometricShape.OnGetValue(Self, PtIndex - IntegerRadiusX));
+      do FYValues[PtIndex] := ConvertFromFixed24Dot8(GeometricShape.OnGetValue(Self, PtIndex - IntegerRadiusX));
 
      for x := GeometricShape.MarginLeft to Width - GeometricShape.MarginRight - 1 do
       begin
        // get next value
-       FYValues[Length(FYValues) - 1] := ConvertFromFixed24Dot8Point(
+       FYValues[Length(FYValues) - 1] := ConvertFromFixed24Dot8(
          GeometricShape.OnGetValue(Self, x + IntegerRadiusX - GeometricShape.MarginLeft));
 
        // clear vertical line array

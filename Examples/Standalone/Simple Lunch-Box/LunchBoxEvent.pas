@@ -24,7 +24,7 @@ type
     fMem         : Array [0..3] of Single;
 
     fAngle,
-    fPosition    : TComplexDouble;
+    fPosition    : TComplex64;
     fPatPos      : Integer;
     function GetSampleRate:Single; virtual;
     procedure SetSampleRate(v:Single); virtual;

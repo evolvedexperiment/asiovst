@@ -80,7 +80,7 @@ type
     procedure TimerTimer(Sender: TObject);
   private
     FMagnitudes     : Array [0..cNumFrequencies - 1] of Double;
-    FThirdOctaveExp : Array [0..cNumFrequencies - 1] of TComplexSingle;
+    FThirdOctaveExp : Array [0..cNumFrequencies - 1] of TComplex32;
     FSpeedConst     : Array [0..1] of Single;
     FChannelNr      : Integer;
     FSampleRateReci : Double;

@@ -56,7 +56,7 @@ type
     FFilterGain     : Double;
     FOrderInv       : Double;
     FPiHalfOrderInv : Double;
-    FExpOrdPiHalf   : TComplexDouble;
+    FExpOrdPiHalf   : TComplex64;
     FTanW0          : Double;
     FCoeffs         : array [0..63] of Double;
     FState          : array [0..63] of Double;
@@ -327,7 +327,7 @@ procedure TCustomButterworthLowPassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
-  Cmplx       : TComplexDouble;
+  Cmplx       : TComplex64;
 begin
  if FOrder = 0 then exit;
  FFilterGain := FGainFactorSquared;
@@ -375,7 +375,7 @@ end;
 
 function TCustomButterworthLowPassFilter.Phase(const Frequency: Double): Double;
 var
-  Cmplx : array [0..1] of TComplexDouble;
+  Cmplx : array [0..1] of TComplex64;
   i     : Integer;
 begin
 (*
@@ -396,8 +396,8 @@ procedure TCustomButterworthLowPassFilter.Complex(const Frequency: Double; out R
   Imaginary: Double);
 var
   i       : Cardinal;
-  Cmplx   : TComplexDouble;
-  A, B, R : TComplexDouble;
+  Cmplx   : TComplex64;
+  A, B, R : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -586,7 +586,7 @@ procedure TCustomButterworthHighPassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
-  Cmplx       : TComplexDouble;
+  Cmplx       : TComplex64;
 begin
  if FOrder = 0 then exit;
  FFilterGain := Sqr(FGainFactor);
@@ -666,8 +666,8 @@ procedure TCustomButterworthHighPassFilter.Complex(const Frequency: Double; out 
   Imaginary: Double);
 var
   i     : Cardinal;
-  Cmplx : TComplexDouble;
-  A, R  : TComplexDouble;
+  Cmplx : TComplex64;
+  A, R  : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -894,7 +894,7 @@ procedure TCustomButterworthSplitBandFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
-  Cmplx       : TComplexDouble;
+  Cmplx       : TComplex64;
 begin
  if FOrder = 0 then exit;
  FFilterGain := FGainFactorSquared;
@@ -923,7 +923,7 @@ end;
 
 function TCustomButterworthSplitBandFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  Complex(Frequency, Cmplx.Re, Cmplx.Im);
  Result := Sqr(Cmplx.Re) + Sqr(Cmplx.Im);
@@ -933,8 +933,8 @@ procedure TCustomButterworthSplitBandFilter.Complex(const Frequency: Double;
   out Real, Imaginary: Double);
 var
   i     : Cardinal;
-  Cmplx : TComplexDouble;
-  A, R  : TComplexDouble;
+  Cmplx : TComplex64;
+  A, R  : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 

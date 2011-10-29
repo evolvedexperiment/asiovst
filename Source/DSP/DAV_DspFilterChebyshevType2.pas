@@ -301,7 +301,7 @@ end;
 
 function TCustomChebyshev2LowpassFilter.Phase(const Frequency: Double): Double;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  Complex(Frequency, Cmplx.Re, Cmplx.Im);
  Result := ArcTan2(Cmplx.Im, Cmplx.Re);
@@ -312,7 +312,7 @@ var
   K, K2 : Double;
   t     : array [0..3] of Double;
   i     : Integer;
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  K := FTanW0Half;
  K2 := sqr(K);
@@ -426,8 +426,8 @@ procedure TChebyshev2LowpassFilter.Complex(const Frequency: Double;
   out Real, Imaginary: Double);
 var
   i       : Cardinal;
-  Cmplx   : TComplexDouble;
-  A, B, R : TComplexDouble;
+  Cmplx   : TComplex64;
+  A, B, R : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -495,7 +495,7 @@ end;
 
 function TCustomChebyshev2HighpassFilter.Phase(const Frequency: Double): Double;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  Complex(Frequency, Cmplx.Re, Cmplx.Im);
  Result := ArcTan2(Cmplx.Im, Cmplx.Re);
@@ -506,7 +506,7 @@ var
   K, K2 : Double;
   t     : array [0..3] of Double;
   i     : Integer;
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  K := FTanW0Half;
  K2 := sqr(K);
@@ -627,8 +627,8 @@ procedure TChebyshev2HighpassFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   i       : Cardinal;
-  Cmplx   : TComplexDouble;
-  A, B, R : TComplexDouble;
+  Cmplx   : TComplex64;
+  A, B, R : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -709,8 +709,8 @@ procedure TChebyshev2LowpassFilterAutomatable.Complex(const Frequency: Double;
   out Real, Imaginary: Double);
 var
   i       : Cardinal;
-  Cmplx   : TComplexDouble;
-  A, B, R : TComplexDouble;
+  Cmplx   : TComplex64;
+  A, B, R : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -810,8 +810,8 @@ procedure TChebyshev2HighpassFilterAutomatable.Complex(const Frequency: Double;
   out Real, Imaginary: Double);
 var
   i       : Cardinal;
-  Cmplx   : TComplexDouble;
-  A, B, R : TComplexDouble;
+  Cmplx   : TComplex64;
+  A, B, R : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 

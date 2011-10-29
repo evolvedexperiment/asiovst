@@ -77,7 +77,7 @@ begin
    AutoScaleType := astDivideBySqrtN;
 
    GetMem(TimeDomain, FFTSize * SizeOf(Single));
-   GetMem(FreqDomain, BinCount * SizeOf(TComplexSingle));
+   GetMem(FreqDomain, BinCount * SizeOf(TComplex32));
    Move(FilterKernel[0], TimeDomain[0], SampleFrames * SizeOf(Single));
 
    // fill extended part with zeroes
@@ -136,7 +136,7 @@ begin
    AutoScaleType := astDivideBySqrtN;
 
    GetMem(TimeDomain, FFTSize * SizeOf(Double));
-   GetMem(FreqDomain, BinCount * SizeOf(TComplexDouble));
+   GetMem(FreqDomain, BinCount * SizeOf(TComplex64));
    Move(FilterKernel[0], TimeDomain[0], SampleFrames * SizeOf(Double));
 
    // fill extended part with zeroes
@@ -198,7 +198,7 @@ begin
 
    // reserve memory
    GetMem(TimeDomain, FFTSize * SizeOf(Single));
-   GetMem(FreqDomain, FFTSize * SizeOf(TComplexSingle));
+   GetMem(FreqDomain, FFTSize * SizeOf(TComplex32));
    GetMem(Magnitude,  FFTSize * SizeOf(Single));
    try
 
@@ -284,7 +284,7 @@ begin
 
    // reserve memory
    GetMem(TimeDomain, FFTSize * SizeOf(Double));
-   GetMem(FreqDomain, FFTSize * SizeOf(TComplexDouble));
+   GetMem(FreqDomain, FFTSize * SizeOf(TComplex64));
    GetMem(Magnitude,  FFTSize * SizeOf(Double));
    try
 

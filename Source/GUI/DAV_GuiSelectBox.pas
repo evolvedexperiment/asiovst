@@ -326,8 +326,8 @@ var
   SqrDist, SqrYDist : Single;
   SqrRadMinusOne    : Single;
   Temp              : Single;
-  XFixed            : TFixed24Dot8Point;
-  XAdv              : TFixed24Dot8Point;
+  XFixed            : TFixed24Dot8;
+  XAdv              : TFixed24Dot8;
   Offset            : Integer;
   ArrowHeight       : Integer;
   ArrowWidth        : Integer;
@@ -481,7 +481,7 @@ begin
    Offset := Round(FArrowButtonWidth - ArrowWidth div 2);
 
    // set advance
-   XAdv := ConvertToFixed24Dot8Point(2 * ArrowWidth / ArrowHeight);
+   XAdv := ConvertToFixed24Dot8(2 * ArrowWidth / ArrowHeight);
 
    // set start
    XFixed := CFixed24Dot8Half;

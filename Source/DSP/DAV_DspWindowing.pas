@@ -48,8 +48,8 @@ const
 
 type
   TParameterRecord = record
-    ComplexPosition          : TComplexDouble;
-    ComplexAngle             : TComplexDouble;
+    ComplexPosition          : TComplex64;
+    ComplexAngle             : TComplex64;
     SpectrumCorrectionFactor : Double;
     SpuaredCorrectionFactor  : Double;
     CoefficientPointer       : PDAVDoubleFixedArray;
@@ -206,8 +206,8 @@ end;
 procedure ApplyBlackmanWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
   Sample : Integer;
-  Phase  : TComplexDouble;
-  Value  : TComplexDouble;
+  Phase  : TComplex64;
+  Value  : TComplex64;
 const
   CBlackman : array [0..2] of Double = (0.34, -0.5, 0.16);
 begin

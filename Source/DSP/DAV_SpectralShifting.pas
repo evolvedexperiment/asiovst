@@ -102,7 +102,7 @@ begin
      Sqr(Spectum^[(Fft.BinCount - FBinShift) - 1].Im));
 
    Bin := 1;
-   Move(Spectum^[Bin], Spectum^[FBinShift + 1], (Fft.BinCount - FBinShift - 2) * SizeOf(TComplexSingle));
+   Move(Spectum^[Bin], Spectum^[FBinShift + 1], (Fft.BinCount - FBinShift - 2) * SizeOf(TComplex32));
 
    // shift DC (as complex)
    Spectum^[FBinShift].Re := Spectum^[0].Re;
@@ -112,7 +112,7 @@ begin
    Spectum^[0].Re := 0;
 
    // fill gap with zero
-   FillChar(Spectum^[Bin], (FBinShift - 1) * SizeOf(TComplexSingle), 0);
+   FillChar(Spectum^[Bin], (FBinShift - 1) * SizeOf(TComplex32), 0);
   end else
  if FBinShift < 0 then
   begin
@@ -120,7 +120,7 @@ begin
    Spectum^[0].Re := Sqrt(Sqr(Spectum^[-FBinShift].Re) + Sqr(Spectum^[-FBinShift].Im));
 
    Bin := 1;
-   Move(Spectum^[-FBinShift + 1], Spectum^[Bin], (Fft.BinCount + FBinShift - 2) * SizeOf(TComplexSingle));
+   Move(Spectum^[-FBinShift + 1], Spectum^[Bin], (Fft.BinCount + FBinShift - 2) * SizeOf(TComplex32));
 
    // shift Nyquist as real
    Spectum^[Fft.BinCount + FBinShift].Re := Spectum^[0].Im;
@@ -130,7 +130,7 @@ begin
    Spectum^[0].Im := 0;
 
    // fill gap with zero
-   FillChar(Spectum^[(Fft.BinCount + FBinShift)], (-FBinShift - 1) * SizeOf(TComplexSingle), 0);
+   FillChar(Spectum^[(Fft.BinCount + FBinShift)], (-FBinShift - 1) * SizeOf(TComplex32), 0);
   end;
 end;
 

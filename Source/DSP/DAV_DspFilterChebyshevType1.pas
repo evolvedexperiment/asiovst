@@ -258,8 +258,8 @@ procedure TCustomChebyshev1LowpassFilter.Complex(const Frequency: Double;
   out Real, Imaginary: Double);
 var
   i       : Cardinal;
-  Cmplx   : TComplexDouble;
-  A, B, R : TComplexDouble;
+  Cmplx   : TComplex64;
+  A, B, R : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -292,7 +292,7 @@ end;
 
 function TCustomChebyshev1LowpassFilter.Phase(const Frequency: Double): Double;
 var
-  Cmplx : array [0..1] of TComplexDouble;
+  Cmplx : array [0..1] of TComplex64;
   i     : Integer;
 begin
 (*
@@ -388,7 +388,7 @@ var
   K, K2 : Double;
   t     : array [0..2] of Double;
   i     : Integer;
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  K  := FTanW0Half;
  K2 := sqr(K);
@@ -583,8 +583,8 @@ procedure TCustomChebyshev1HighpassFilter.Complex(const Frequency: Double;
   out Real, Imaginary: Double);
 var
   i       : Cardinal;
-  Cmplx   : TComplexDouble;
-  A, B, R : TComplexDouble;
+  Cmplx   : TComplex64;
+  A, B, R : TComplex64;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -617,7 +617,7 @@ end;
 
 function TCustomChebyshev1HighpassFilter.Phase(const Frequency: Double): Double;
 var
-  Cmplx    : TComplexDouble;
+  Cmplx    : TComplex64;
   Nom, Den : Double;
   i        : Integer;
 begin
@@ -728,7 +728,7 @@ var
   K, K2     : Double;
   t, t1, t2 : Double;
   i         : Integer;
-  Cmplx     : TComplexDouble;
+  Cmplx     : TComplex64;
 begin
  K  := FTanW0Half;
  K2 := sqr(K);
@@ -824,7 +824,7 @@ var
   K, K2 : Double;
   t     : array [0..2] of Double;
   i     : Integer;
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  K  := FTanW0Half;
  K2 := sqr(K);
@@ -1021,7 +1021,7 @@ var
   K, K2      : Double;
   t, t1, t2  : Double;
   i          : Integer;
-  Cmplx      : TComplexDouble;
+  Cmplx      : TComplex64;
 begin
  if FOrder = 0 then exit;
  K  := FTanW0Half;

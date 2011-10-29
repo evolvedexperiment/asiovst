@@ -46,7 +46,7 @@ end;
 function TForm1.GetFilterGain(Sender: TObject;
   const Frequency: Single): Single;
 var
-  Cmplx : TComplexDouble;
+  Cmplx : TComplex64;
 begin
  FFilter.Complex(Frequency, Cmplx.Re, Cmplx.Im);
  Result := 10 * Log10(Sqr(Cmplx.Re) + Sqr(Cmplx.Im));

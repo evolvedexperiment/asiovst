@@ -96,7 +96,7 @@ var
 
 procedure TestComplexFunctions.TestComplexPolar32;
 var
-  Result : TComplexSingle;
+  Result : TComplex32;
 begin
  // real case
  Result := ComplexPolar(1, 0);
@@ -107,7 +107,7 @@ end;
 procedure TestComplexFunctions.TestComplexPolar64;
 var
   Mag    : Double;
-  Result : TComplexDouble;
+  Result : TComplex64;
 begin
  // real case
  Mag := 1;
@@ -118,7 +118,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexSign32;
 var
-  Input  : TComplexSingle;
+  Input  : TComplex32;
   Result : Single;
 begin
  // real cases
@@ -167,7 +167,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexSign64;
 var
-  Input  : TComplexDouble;
+  Input  : TComplex64;
   Result : Double;
 begin
  // real cases
@@ -216,7 +216,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexConjugate32;
 var
-  Result : TComplexSingle;
+  Result : TComplex32;
 begin
  Result.Re := 1;
  Result.Im := 2;
@@ -231,7 +231,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexConjugate64;
 var
-  Result : TComplexDouble;
+  Result : TComplex64;
 begin
  Result.Re := 1;
  Result.Im := 2;
@@ -246,7 +246,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexInvert32;
 var
-  Result : TComplexSingle;
+  Result : TComplex32;
 begin
  Result.Re := 1;
  Result.Im := 2;
@@ -261,7 +261,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexInvert64;
 var
-  Result : TComplexDouble;
+  Result : TComplex64;
 begin
  Result.Re := 1;
  Result.Im := 2;
@@ -276,7 +276,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexMagnitude32;
 var
-  Value  : TComplexSingle;
+  Value  : TComplex32;
   Result : Single;
 begin
  // real case
@@ -300,7 +300,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexMagnitude64;
 var
-  Value  : TComplexDouble;
+  Value  : TComplex64;
   Result : Double;
 begin
  // real case
@@ -324,7 +324,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexArgument32;
 var
-  Value  : TComplexSingle;
+  Value  : TComplex32;
   Result : Single;
 begin
  // real case
@@ -348,7 +348,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexArgument64;
 var
-  Value  : TComplexDouble;
+  Value  : TComplex64;
   Result : Double;
 begin
  // real case
@@ -372,8 +372,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexAdd32;
 var
-  A, B   : TComplexSingle;
-  Result : TComplexSingle;
+  A, B   : TComplex32;
+  Result : TComplex32;
 begin
  A.Re := 1;
  A.Im := 1;
@@ -391,8 +391,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexAdd64;
 var
-  A, B   : TComplexDouble;
-  Result : TComplexDouble;
+  A, B   : TComplex64;
+  Result : TComplex64;
 begin
  A.Re := 1;
  A.Im := 1;
@@ -410,8 +410,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexAddInplace32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  Result.Re := 1;
  Result.Im := 1;
@@ -429,8 +429,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexAddInplace64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  Result.Re := 1;
  Result.Im := 1;
@@ -448,8 +448,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSubtract32;
 var
-  A, B   : TComplexSingle;
-  Result : TComplexSingle;
+  A, B   : TComplex32;
+  Result : TComplex32;
 begin
  A.Re := 5;
  A.Im := 3;
@@ -467,8 +467,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSubtract64;
 var
-  A, B   : TComplexDouble;
-  Result : TComplexDouble;
+  A, B   : TComplex64;
+  Result : TComplex64;
 begin
  A.Re := 5;
  A.Im := 3;
@@ -486,8 +486,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSubtractInplace32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  Result.Re := 2;
  Result.Im := 3;
@@ -505,8 +505,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSubtractInplace64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  Result.Re := 2;
  Result.Im := 3;
@@ -524,8 +524,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexMultiply32;
 var
-  A, B   : TComplexSingle;
-  Result : TComplexSingle;
+  A, B   : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  A.Re := -1;
@@ -572,8 +572,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexMultiply64;
 var
-  A, B   : TComplexDouble;
-  Result : TComplexDouble;
+  A, B   : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  A.Re := -1;
@@ -620,8 +620,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexMultiplyInplace32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := -1;
@@ -668,8 +668,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexMultiplyInplace64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := -1;
@@ -716,8 +716,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexDivide32;
 var
-  A, B   : TComplexSingle;
-  Result : TComplexSingle;
+  A, B   : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  A.Re := -1;
@@ -764,8 +764,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexDivide64;
 var
-  A, B   : TComplexDouble;
-  Result : TComplexDouble;
+  A, B   : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  A.Re := -1;
@@ -812,8 +812,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexDivideInplace32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := -2;
@@ -860,8 +860,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexDivideInplace64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := -2;
@@ -908,7 +908,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexReciprocal32;
 var
-  Result : TComplexSingle;
+  Result : TComplex32;
 begin
  // real case
  Result.Re := -2;
@@ -949,7 +949,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexReciprocal64;
 var
-  Result : TComplexDouble;
+  Result : TComplex64;
 begin
  // real case
  Result.Re := -2;
@@ -990,7 +990,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexReciprocalInplace32;
 var
-  Result : TComplexSingle;
+  Result : TComplex32;
 begin
  // real case
  Result.Re := -2;
@@ -1031,7 +1031,7 @@ end;
 
 procedure TestComplexFunctions.TestComplexReciprocalInplace64;
 var
-  Result : TComplexDouble;
+  Result : TComplex64;
 begin
  // real case
  Result.Re := -2;
@@ -1072,8 +1072,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSqr32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 2;
@@ -1104,8 +1104,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSqr64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 2;
@@ -1136,8 +1136,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSqrt32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 4;
@@ -1168,8 +1168,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSqrt64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 4;
@@ -1200,8 +1200,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexLog1032;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 10;
@@ -1232,8 +1232,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexLog1064;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 10;
@@ -1250,8 +1250,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexExp32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1280,8 +1280,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexExp64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1310,8 +1310,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexLn32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := exp(1);
@@ -1342,8 +1342,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexLn64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := exp(1);
@@ -1374,8 +1374,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSin32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1406,8 +1406,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSin64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1438,8 +1438,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSinh32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1456,8 +1456,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexSinh64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1474,8 +1474,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexCos32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1506,8 +1506,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexCos64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1538,8 +1538,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexCosh32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1556,8 +1556,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexCosh64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1574,8 +1574,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexTan32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1606,8 +1606,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexTan64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1638,8 +1638,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexTanh32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1670,8 +1670,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexTanh64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1702,8 +1702,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcCos32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1716,8 +1716,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcCos64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1730,8 +1730,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcSin32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1744,8 +1744,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcSin64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1758,8 +1758,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcTan32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1772,8 +1772,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcTan64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;
@@ -1786,8 +1786,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcTanh32;
 var
-  Value  : TComplexSingle;
-  Result : TComplexSingle;
+  Value  : TComplex32;
+  Result : TComplex32;
 begin
  // real case
  Value.Re := 1;
@@ -1800,8 +1800,8 @@ end;
 
 procedure TestComplexFunctions.TestComplexArcTanh64;
 var
-  Value  : TComplexDouble;
-  Result : TComplexDouble;
+  Value  : TComplex64;
+  Result : TComplex64;
 begin
  // real case
  Value.Re := 1;

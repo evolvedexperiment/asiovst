@@ -248,7 +248,7 @@ procedure TDampingFilter.Complex(const Frequency: Double; out Real, Imaginary: D
 (*
 var
   cw, Divider  : Double;
-  cmplx        : TComplexDouble;
+  cmplx        : TComplex64;
   i            : Integer;
 *)
 begin
@@ -285,7 +285,7 @@ end;
 
 procedure TDampingFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
 var
-  cmplx : TComplexDouble;
+  cmplx : TComplex64;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Real := Cmplx.Re;
@@ -299,7 +299,7 @@ end;
 
 function TDampingFilter.Phase(const Frequency: Double): Double;
 var
-  cmplx : TComplexDouble;
+  cmplx : TComplex64;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Result := ArcTan2(cmplx.Im, cmplx.Re);
@@ -657,7 +657,7 @@ end;
 
 procedure TDspFDNReverb32.InputAngleChanged;
 var
-  Cmplx : TComplexSingle;
+  Cmplx : TComplex32;
 begin
  GetSinCos(FInputAngle * Pi / 180, Cmplx.Im, Cmplx.Re);
  FFeedbackDelayNetwork.InputVector[0] := Cmplx.Re;
@@ -693,7 +693,7 @@ end;
 
 procedure TDspFDNReverb32.OutputAngleChanged;
 var
-  Cmplx : TComplexSingle;
+  Cmplx : TComplex32;
 begin
  GetSinCos(FOutputAngle * Pi / 180, Cmplx.Im, Cmplx.Re);
  FFeedbackDelayNetwork.OutputVector[0] := Cmplx.Re;

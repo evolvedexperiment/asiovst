@@ -43,7 +43,7 @@ function LegendrePolynomial(n: Integer; x: Double): Double;
 function IncompleteEllipticIntegral1stKind(k: Double; Phi: Double = 0.5 * Pi; Steps: Integer = 1000): Double;
 function IncompleteEllipticIntegral2ndKind(k: Double; Phi: Double = 0.5 * Pi; Steps: Integer = 1000): Double;
 function IncompleteEllipticIntegral3rdKind(n, k: Double; Phi: Double = 0.5 * Pi; Steps: Integer = 1000): Double;
-function CompleteEllipticIntegral1stKind(k: TComplexDouble; Steps: Integer = 30): TComplexDouble; overload;
+function CompleteEllipticIntegral1stKind(k: TComplex64; Steps: Integer = 30): TComplex64; overload;
 function CompleteEllipticIntegral1stKind(k: Double; Steps: Integer = 30): Double; overload;
 function CompleteEllipticIntegral2ndKind(k: Double; Steps: Integer = 1000): Double;
 function CompleteEllipticIntegral3rdKind(n, k: Double; Steps: Integer = 1000): Double;
@@ -52,8 +52,8 @@ function PochhammerRisingSequentialProduct(x: Double; n: Integer): Double;
 function PochhammerFallingSequentialProduct(x: Double; n: Integer): Double;
 function NomeQk(k: Double): Double; overload;
 function NomeQm(m: Double): Double; overload;
-function NomeQk(k: TComplexDouble): TComplexDouble; overload;
-function NomeQm(m: TComplexDouble): TComplexDouble; overload;
+function NomeQk(k: TComplex64): TComplex64; overload;
+function NomeQm(m: TComplex64): TComplex64; overload;
 function Theta00(q: Double): Double; overload;
 function Theta01(q: Double): Double; overload;
 function Theta10(q: Double): Double; overload;
@@ -62,22 +62,22 @@ function Theta00(z, q: Double): Double; overload;
 function Theta01(z, q: Double): Double; overload;
 function Theta10(z, q: Double): Double; overload;
 function Theta11(z, q: Double): Double; overload;
-function Theta00(q: TComplexDouble): TComplexDouble; overload;
-function Theta01(q: TComplexDouble): TComplexDouble; overload;
-function Theta10(q: TComplexDouble): TComplexDouble; overload;
-function Theta11(q: TComplexDouble): TComplexDouble; overload;
-function Theta00(z, q:  TComplexDouble): TComplexDouble; overload;
-function Theta01(z, q:  TComplexDouble): TComplexDouble; overload;
-function Theta10(z, q:  TComplexDouble): TComplexDouble; overload;
-function Theta11(z, q:  TComplexDouble): TComplexDouble; overload;
+function Theta00(q: TComplex64): TComplex64; overload;
+function Theta01(q: TComplex64): TComplex64; overload;
+function Theta10(q: TComplex64): TComplex64; overload;
+function Theta11(q: TComplex64): TComplex64; overload;
+function Theta00(z, q:  TComplex64): TComplex64; overload;
+function Theta01(z, q:  TComplex64): TComplex64; overload;
+function Theta10(z, q:  TComplex64): TComplex64; overload;
+function Theta11(z, q:  TComplex64): TComplex64; overload;
 function Theta1(z, q: Double): Double; overload;
 function Theta2(z, q: Double): Double; overload;
 function Theta3(z, q: Double): Double; overload;
 function Theta4(z, q: Double): Double; overload;
-function Theta1(z, q:  TComplexDouble): TComplexDouble; overload;
-function Theta2(z, q:  TComplexDouble): TComplexDouble; overload;
-function Theta3(z, q:  TComplexDouble): TComplexDouble; overload;
-function Theta4(z, q:  TComplexDouble): TComplexDouble; overload;
+function Theta1(z, q:  TComplex64): TComplex64; overload;
+function Theta2(z, q:  TComplex64): TComplex64; overload;
+function Theta3(z, q:  TComplex64): TComplex64; overload;
+function Theta4(z, q:  TComplex64): TComplex64; overload;
 
 function Sn(z, k: Double): Double; overload;
 function Cn(z, k: Double): Double; overload;
@@ -94,23 +94,23 @@ function Cs(z, k: Double): Double; overload;
 function Dc(z, k: Double): Double; overload;
 function Ds(z, k: Double): Double; overload;
 
-function Sn(z, k: TComplexDouble): TComplexDouble; overload;
-function Cn(z, k: TComplexDouble): TComplexDouble; overload;
-function Dn(z, k: TComplexDouble): TComplexDouble; overload;
-function Ns(z, k: TComplexDouble): TComplexDouble; overload;
-function Nc(z, k: TComplexDouble): TComplexDouble; overload;
-function Nd(z, k: TComplexDouble): TComplexDouble; overload;
-function Sd(z, k: TComplexDouble): TComplexDouble; overload;
-function Sc(z, k: TComplexDouble): TComplexDouble; overload;
-function Cd(z, k: TComplexDouble): TComplexDouble; overload;
-function Cs(z, k: TComplexDouble): TComplexDouble; overload;
-function Dc(z, k: TComplexDouble): TComplexDouble; overload;
-function Ds(z, k: TComplexDouble): TComplexDouble; overload;
+function Sn(z, k: TComplex64): TComplex64; overload;
+function Cn(z, k: TComplex64): TComplex64; overload;
+function Dn(z, k: TComplex64): TComplex64; overload;
+function Ns(z, k: TComplex64): TComplex64; overload;
+function Nc(z, k: TComplex64): TComplex64; overload;
+function Nd(z, k: TComplex64): TComplex64; overload;
+function Sd(z, k: TComplex64): TComplex64; overload;
+function Sc(z, k: TComplex64): TComplex64; overload;
+function Cd(z, k: TComplex64): TComplex64; overload;
+function Cs(z, k: TComplex64): TComplex64; overload;
+function Dc(z, k: TComplex64): TComplex64; overload;
+function Ds(z, k: TComplex64): TComplex64; overload;
 
 function HypergeometricFunction2F1(a, b, c: Double; z: Double; Steps: Integer = 30): Double;
 
 function InverseCd(z, m: Double; Steps: Integer = 10): Double; overload;
-function InverseCd(z, m: TComplexDouble; Steps: Integer = 10): TComplexDouble; overload;
+function InverseCd(z, m: TComplex64; Steps: Integer = 10): TComplex64; overload;
 
 function RationalEllipticFunction(Order: Integer; Selectivity, x : Double): Double;
 
@@ -193,8 +193,8 @@ function IncompleteEllipticIntegral1stKind(k: Double; Phi: Double = 0.5 * Pi;
 var
   i     : Integer;
   Scale : Double;
-  Cmplx : TComplexDouble;
-  Pos   : TComplexDouble;
+  Cmplx : TComplex64;
+  Pos   : TComplex64;
 begin
  Result := 0;
  Scale  := 1 / Steps;
@@ -216,8 +216,8 @@ function IncompleteEllipticIntegral2ndKind(k: Double; Phi: Double = 0.5 * Pi;
 var
   i     : Integer;
   Scale : Double;
-  Cmplx : TComplexDouble;
-  Pos   : TComplexDouble;
+  Cmplx : TComplex64;
+  Pos   : TComplex64;
 begin
  Result := 0;
  Scale  := 1 / Steps;
@@ -239,8 +239,8 @@ function IncompleteEllipticIntegral3rdKind(n, k: Double; Phi: Double = 0.5 * Pi;
 var
   i     : Integer;
   Scale : Double;
-  Cmplx : TComplexDouble;
-  Pos   : TComplexDouble;
+  Cmplx : TComplex64;
+  Pos   : TComplex64;
 begin
  Result := 0;
  Scale  := 1 / Steps;
@@ -296,10 +296,10 @@ begin
  Result := 0.5 * Pi * Result;
 end;
 
-function CompleteEllipticIntegral1stKind(k: TComplexDouble; Steps: Integer = 30): TComplexDouble; overload;
+function CompleteEllipticIntegral1stKind(k: TComplex64; Steps: Integer = 30): TComplex64; overload;
 var
   Factor : Double;
-  Temp   : TComplexDouble;
+  Temp   : TComplex64;
   Step   : Integer;
 
  function CalculateFactor(Step: Integer): Single;
@@ -342,8 +342,8 @@ function CompleteEllipticIntegral2ndKind(k: Double; Steps: Integer = 1000): Doub
 var
   i     : Integer;
   Scale : Double;
-  Cmplx : TComplexDouble;
-  Pos   : TComplexDouble;
+  Cmplx : TComplex64;
+  Pos   : TComplex64;
 begin
  Result := 0;
  Scale  := 1 / Steps;
@@ -364,8 +364,8 @@ function CompleteEllipticIntegral3rdKind(n, k: Double; Steps: Integer = 1000): D
 var
   i     : Integer;
   Scale : Double;
-  Cmplx : TComplexDouble;
-  Pos   : TComplexDouble;
+  Cmplx : TComplex64;
+  Pos   : TComplex64;
 begin
  Result := 0;
  Scale  := 1 / Steps;
@@ -397,7 +397,7 @@ begin
  Result := exp(-Pi * CompleteEllipticIntegral1stKind(1 - m) / CompleteEllipticIntegral1stKind(m));
 end;
 
-function NomeQk(k: TComplexDouble): TComplexDouble; overload;
+function NomeQk(k: TComplex64): TComplex64; overload;
 begin
  raise Exception.Create('Yet todo!');
 (*
@@ -409,7 +409,7 @@ begin
 *)
 end;
 
-function NomeQm(m: TComplexDouble): TComplexDouble; overload;
+function NomeQm(m: TComplex64): TComplex64; overload;
 begin
  raise Exception.Create('Yet todo!');
 end;
@@ -569,11 +569,11 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function Theta00(q: TComplexDouble): TComplexDouble;
+function Theta00(q: TComplex64): TComplex64;
 var
   Epsilon : Double;
   Step    : Integer;
-  Current : TComplexDouble;
+  Current : TComplex64;
 begin
  Assert(q.Im >= 0);
  Result.Re := 0;
@@ -599,18 +599,18 @@ begin
  Result.Im := 2 * Result.Im;
 end;
 
-function Theta01(q: TComplexDouble): TComplexDouble;
+function Theta01(q: TComplex64): TComplex64;
 var
-  Temp : TComplexDouble;
+  Temp : TComplex64;
 begin
  Temp.Re := 0.5;
  Temp.Im := 0;
  Result := Theta00(Temp, q);
 end;
 
-function Theta10(q: TComplexDouble): TComplexDouble;
+function Theta10(q: TComplex64): TComplex64;
 var
-  Temp : TComplexDouble;
+  Temp : TComplex64;
 begin
  Temp.Re := 0.5 * q.Re;
  Temp.Im := 0.5 * q.Im;
@@ -620,9 +620,9 @@ begin
  ComplexMultiplyInplace64(Result, ComplexExp64(Temp.Im, Temp.Re));
 end;
 
-function Theta11(q: TComplexDouble): TComplexDouble;
+function Theta11(q: TComplex64): TComplex64;
 var
-  Temp : TComplexDouble;
+  Temp : TComplex64;
 begin
  Temp.Re := 0.5;
  Temp.Im := 0;
@@ -631,11 +631,11 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function Theta00(z, q:  TComplexDouble): TComplexDouble;
+function Theta00(z, q:  TComplex64): TComplex64;
 var
   Epsilon : Double;
   Step    : Integer;
-  Current : TComplexDouble;
+  Current : TComplex64;
 begin
  Assert(q.Im >= 0);
  Result.Re := 0;
@@ -661,13 +661,13 @@ begin
  Result.Im := 2 * Result.Im;
 end;
 
-function Theta01(z, q:  TComplexDouble): TComplexDouble;
+function Theta01(z, q:  TComplex64): TComplex64;
 begin
  z.Re := z.Re + 0.5;
  Result := Theta00(z, q);
 end;
 
-function Theta10(z, q:  TComplexDouble): TComplexDouble;
+function Theta10(z, q:  TComplex64): TComplex64;
 begin
  z.Re := z.Re + 0.5 * q.Re;
  z.Im := z.Im + 0.5 * q.Im;
@@ -677,7 +677,7 @@ begin
  ComplexMultiplyInplace64(Result, ComplexExp64(z.Im, z.Re));
 end;
 
-function Theta11(z, q:  TComplexDouble): TComplexDouble;
+function Theta11(z, q:  TComplex64): TComplex64;
 begin
  z.Re := z.Re + 0.5;
  Result := Theta10(z, q);
@@ -769,24 +769,24 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function Theta1(z, q:  TComplexDouble): TComplexDouble;
+function Theta1(z, q:  TComplex64): TComplex64;
 begin
  Result := Theta11(z, q);
  Result.Re := -Result.Re;
  Result.Im := -Result.Im;
 end;
 
-function Theta2(z, q:  TComplexDouble): TComplexDouble;
+function Theta2(z, q:  TComplex64): TComplex64;
 begin
  Result := Theta10(z, q);
 end;
 
-function Theta3(z, q:  TComplexDouble): TComplexDouble;
+function Theta3(z, q:  TComplex64): TComplex64;
 begin
  Result := Theta00(z, q);
 end;
 
-function Theta4(z, q:  TComplexDouble): TComplexDouble;
+function Theta4(z, q:  TComplex64): TComplex64;
 begin
  Result := Theta01(z, q);
 end;
@@ -934,9 +934,9 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function Sn(z, k: TComplexDouble): TComplexDouble;
+function Sn(z, k: TComplex64): TComplex64;
 var
-  Theta : TComplexDouble;
+  Theta : TComplex64;
 begin
  Theta  := NomeQk(k);
  Result := ComplexDivide64(ComplexMultiply64(Theta00(Theta), Theta11(z, Theta)),
@@ -945,18 +945,18 @@ begin
  Result.Im := -Result.Im;
 end;
 
-function Cn(z, k: TComplexDouble): TComplexDouble; overload;
+function Cn(z, k: TComplex64): TComplex64; overload;
 var
-  Theta : TComplexDouble;
+  Theta : TComplex64;
 begin
  Theta  := NomeQk(k);
  Result := ComplexDivide64(ComplexMultiply64(Theta01(Theta), Theta10(z, Theta)),
    ComplexMultiply64(Theta10(Theta), Theta01(z, Theta)));
 end;
 
-function Dn(z, k: TComplexDouble): TComplexDouble; overload;
+function Dn(z, k: TComplex64): TComplex64; overload;
 var
-  Theta : TComplexDouble;
+  Theta : TComplex64;
 begin
  Theta  := NomeQk(k);
  Result := ComplexDivide64(ComplexMultiply64(Theta01(Theta), Theta00(z, Theta)),
@@ -965,47 +965,47 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function Ns(z, k: TComplexDouble): TComplexDouble;
+function Ns(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexReciprocal64(Dn(z, k));
 end;
 
-function Nc(z, k: TComplexDouble): TComplexDouble;
+function Nc(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexReciprocal64(Dn(z, k));
 end;
 
-function Nd(z, k: TComplexDouble): TComplexDouble;
+function Nd(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexReciprocal64(Dn(z, k));
 end;
 
-function Sd(z, k: TComplexDouble): TComplexDouble;
+function Sd(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexDivide64(Sn(z, k), Dn(z, k));
 end;
 
-function Sc(z, k: TComplexDouble): TComplexDouble;
+function Sc(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexDivide64(Sn(z, k), Cn(z, k));
 end;
 
-function Cd(z, k: TComplexDouble): TComplexDouble;
+function Cd(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexDivide64(Cn(z, k), Dn(z, k));
 end;
 
-function Cs(z, k: TComplexDouble): TComplexDouble;
+function Cs(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexDivide64(Cn(z, k), Sn(z, k));
 end;
 
-function Dc(z, k: TComplexDouble): TComplexDouble;
+function Dc(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexDivide64(Dn(z, k), Cn(z, k));
 end;
 
-function Ds(z, k: TComplexDouble): TComplexDouble;
+function Ds(z, k: TComplex64): TComplex64;
 begin
  Result := ComplexDivide64(Dn(z, k), Sn(z, k));
 end;
@@ -1739,7 +1739,7 @@ begin
 *)
 end;
 
-function InverseCd(z, m: TComplexDouble; Steps: Integer): TComplexDouble;
+function InverseCd(z, m: TComplex64; Steps: Integer): TComplex64;
 begin
  raise Exception.Create('not yet implemented');
 end;

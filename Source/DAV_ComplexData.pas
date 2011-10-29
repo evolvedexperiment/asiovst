@@ -222,7 +222,7 @@ end;
 
 procedure TComplexChannel32.Clear;
 begin
- FillChar(FChannelDataPtr^, BinCount * SizeOf(TComplexSingle), 0);
+ FillChar(FChannelDataPtr^, BinCount * SizeOf(TComplex32), 0);
 end;
 
 destructor TComplexChannel32.Destroy;
@@ -265,11 +265,11 @@ end;
 
 procedure TComplexChannel32.BinCountChanged;
 begin
- ReallocMem(FChannelDataPtr, ComplexData.BinCount * SizeOf(TComplexSingle));
+ ReallocMem(FChannelDataPtr, ComplexData.BinCount * SizeOf(TComplex32));
 
  // check if new length is longer than the old length and fill with zeroes if necessary
  if ComplexData.BinCount > BinCount
-  then FillChar(FChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplexSingle), 0);
+  then FillChar(FChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplex32), 0);
 
  inherited;
 end;
@@ -309,7 +309,7 @@ end;
 
 procedure TComplexChannel64.Clear;
 begin
- FillChar(FChannelDataPtr^, ComplexData.BinCount * SizeOf(TComplexDouble), 0);
+ FillChar(FChannelDataPtr^, ComplexData.BinCount * SizeOf(TComplex64), 0);
 end;
 
 destructor TComplexChannel64.Destroy;
@@ -383,11 +383,11 @@ end;
 
 procedure TComplexChannel64.BinCountChanged;
 begin
- ReallocMem(FChannelDataPtr, ComplexData.BinCount * SizeOf(TComplexDouble));
+ ReallocMem(FChannelDataPtr, ComplexData.BinCount * SizeOf(TComplex64));
 
  // check if new length is longer than the old length and fill with zeroes if necessary
  if ComplexData.BinCount > BinCount
-  then FillChar(FChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplexDouble), 0);
+  then FillChar(FChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplex64), 0);
 
  inherited;
 end;

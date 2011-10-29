@@ -203,7 +203,7 @@ end;
 
 procedure TCustomBodeFrequencyShifter32.ProcessSample(Input: Single; out Upshift, Downshift: Single);
 var
-  Cmplx : TComplexSingle;
+  Cmplx : TComplex32;
 const
   CSqrtHalf32 : Single = 0.70710678118654752440084436210485;
 begin

@@ -187,7 +187,7 @@ end;
 
 procedure TCustomBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
 (*var cw, Divider  : Double;
-    cmplx        : TComplexDouble;
+    cmplx        : TComplex64;
     i            : Integer;*)
 begin
 (*
@@ -225,7 +225,7 @@ end;
 
 procedure TCustomBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
 var
-  cmplx : TComplexDouble;
+  cmplx : TComplex64;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Real := cmplx.Re;
@@ -244,7 +244,7 @@ end;
 
 function TCustomBesselFilter.Phase(const Frequency: Double): Double;
 var
-  cmplx : TComplexDouble;
+  cmplx : TComplex64;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Result := ArcTan2(cmplx.Im, cmplx.Re);

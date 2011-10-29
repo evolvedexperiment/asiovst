@@ -50,8 +50,8 @@ type
     {$IFDEF PUREPASCAL}
     FSineLFO      : TSimpleOscillator32;
     {$ELSE}
-    FAngle        : TComplexDouble;
-    FPosition     : TComplexDouble;
+    FAngle        : TComplex64;
+    FPosition     : TComplex64;
     {$ENDIF}
     procedure FrequencyChanged;
   protected
@@ -75,8 +75,8 @@ type
     {$IFDEF PUREPASCAL}
     FSineLFO      : TSimpleOscillator32;
     {$ELSE}
-    FAngle        : TComplexDouble;
-    FPosition     : TComplexDouble;
+    FAngle        : TComplex64;
+    FPosition     : TComplex64;
     {$ENDIF}
     procedure FrequencyChanged;
   protected
@@ -100,8 +100,8 @@ type
     {$IFDEF PUREPASCAL}
     FSineLFO      : TSimpleOscillator32;
     {$ELSE}
-    FAngle        : TComplexDouble;
-    FPosition     : TComplexDouble;
+    FAngle        : TComplex64;
+    FPosition     : TComplex64;
     {$ENDIF}
     procedure FrequencyChanged;
   protected

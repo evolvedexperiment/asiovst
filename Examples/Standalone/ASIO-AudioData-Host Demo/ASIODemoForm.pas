@@ -40,7 +40,7 @@ type
   private
     procedure SetFrequency(const CurrentValue: Double);
   public
-    FAngle, FPosition : TComplexDouble;
+    FAngle, FPosition : TComplex64;
     FPan, FFreq, FVol : Double;
     FChannelOffset    : Byte;
   published
