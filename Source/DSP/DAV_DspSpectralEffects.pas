@@ -47,8 +47,10 @@ type
   protected
     FBlockPosition : Integer;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure ClearIOBuffers; virtual; abstract;
   public
     constructor Create; override;
+    procedure Clear; virtual;
   end;
 
   TCustomSpectralEffect32 = class(TCustomSpectralEffect)
@@ -66,6 +68,7 @@ type
     FOutputBuffer  : PDAVSingleFixedArray;
 
     procedure AssignTo(Dest: TPersistent); override;
+    procedure ClearIOBuffers; override;
     procedure FFTOrderChanged; override;
     procedure PerformSpectralEffect(SignalIn, SignalOut: PDAVSingleFixedArray); overload; virtual;
     procedure PerformSpectralEffect(Spectum: PDAVComplexSingleFixedArray); overload; virtual; abstract;
@@ -108,9 +111,11 @@ type
     {$ELSE}
     property Fft : TFftReal2ComplexNativeFloat64 read GetFft;
     {$ENDIF}
+    procedure ClearIOBuffers; override;
   public
     constructor Create; override;
     destructor Destroy; override;
+
     procedure ProcessBlock(const Input, Output: PDAVDoubleFixedArray; const SampleFrames: Integer); virtual;
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleFrames: Integer); virtual;
     function ProcessSample64(Input: Double): Double; virtual;
@@ -131,6 +136,11 @@ constructor TCustomSpectralEffect.Create;
 begin
  inherited;
  FBlockPosition := 0;
+end;
+
+procedure TCustomSpectralEffect.Clear;
+begin
+  ClearIOBuffers;
 end;
 
 procedure TCustomSpectralEffect.AssignTo(Dest: TPersistent);
@@ -192,9 +202,14 @@ begin
  ReallocMem(FOutputBuffer, FFFTSize * SizeOf(Single));
  ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex32));
 
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
+ ClearIOBuffers;
+end;
+
+procedure TCustomSpectralEffect32.ClearIOBuffers;
+begin
  FillChar(FInputBuffer^[0], FFFTSize * SizeOf(Single), 0);
  FillChar(FOutputBuffer^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex32), 0);
 end;
 
 {$IFDEF Use_IPPS}
@@ -333,9 +348,14 @@ begin
  ReallocMem(FOutputBuffer, FFFTSize * SizeOf(Double));
  ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplex64));
 
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
+ ClearIOBuffers;
+end;
+
+procedure TCustomSpectralEffect64.ClearIOBuffers;
+begin
  FillChar(FInputBuffer^[0], FFFTSize * SizeOf(Double), 0);
  FillChar(FOutputBuffer^[0], FFFTSize * SizeOf(Double), 0);
- FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplex64), 0);
 end;
 
 {$IFDEF Use_IPPS}

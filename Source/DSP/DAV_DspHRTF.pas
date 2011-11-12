@@ -400,8 +400,8 @@ type
     class function GetClassChunkName: TChunkName; override;
     procedure AddChunk(Chunk: TCustomChunk); override;
 
-    property Hrir[index: Integer]: TCustomHrir read GetHrir;
-    property HrirCount: Integer read GetHrirCount; 
+    property Hrir[Index: Integer]: TCustomHrir read GetHrir;
+    property HrirCount: Integer read GetHrirCount;
     property Title: String index 0 read GetGeneralInfoString write SetGeneralInfoString;
     property Date: TDateTime read GetDate write SetDate;
     property Context: String index 1 read GetGeneralInfoString write SetGeneralInfoString;
@@ -675,7 +675,7 @@ procedure TCustomHrir.MoveData32(Destination: PDAVSingleFixedArray; Index,
 var
   Sample : Integer;
 begin
- assert(Index in [0..1]);
+ Assert(Index in [0..1]);
 
  // eventually zero pad IR
  if Self.SampleFrames < SampleFrames then
@@ -705,7 +705,7 @@ procedure TCustomHrir.MoveData64(Destination: PDAVDoubleFixedArray; Index,
 var
   Sample : Integer;
 begin
- assert(Index in [0..1]);
+ Assert(Index in [0..1]);
 
  // eventually zero pad IR
  if Self.SampleFrames < SampleFrames then
@@ -759,7 +759,7 @@ procedure TCustomHrir.AssignData32(Source: PDAVSingleFixedArray; Index,
 var
   Sample : Integer;
 begin
- assert(Index in [0..1]);
+ Assert(Index in [0..1]);
 
  // decode
  case Encoding of
@@ -781,7 +781,7 @@ procedure TCustomHrir.AssignData64(Source: PDAVDoubleFixedArray; Index,
 var
   Sample : Integer;
 begin
- assert(Index in [0..1]);
+ Assert(Index in [0..1]);
 
  // decode
  case Encoding of
@@ -831,8 +831,8 @@ begin
    CreateBuffers;
 
    // check constraints
-   assert(Integer(FChunkSize) - (SizeOf(THrirHeader)) >= 2 * SampleFrames * FHrirHeader.BytesPerSample);
-   assert(Size - Position >= 2 * SampleFrames * BytesPerSample);
+   Assert(Integer(FChunkSize) - (SizeOf(THrirHeader)) >= 2 * SampleFrames * FHrirHeader.BytesPerSample);
+   Assert(Size - Position >= 2 * SampleFrames * BytesPerSample);
 
    // read data
    Read(FBuffer[0]^, SampleFrames * BytesPerSample);
@@ -916,7 +916,7 @@ begin
   begin
    // read 'Title' string
    Read(StringSize, 1);
-   assert(StringSize + 5 + SizeOf(Date) <= FChunkSize);
+   Assert(StringSize + 5 + SizeOf(Date) <= FChunkSize);
    SetLength(Title, StringSize);
    Read(Title[1], StringSize);
 
@@ -925,27 +925,27 @@ begin
 
    // read 'Context' string
    Read(StringSize, 1);
-   assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) <= FChunkSize);
+   Assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) <= FChunkSize);
    SetLength(Context, StringSize);
    Read(Context[1], StringSize);
 
    // read 'Copyright' string
    Read(StringSize, 1);
-   assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) +
+   Assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) +
      Byte(Context[0]) <= FChunkSize);
    SetLength(Copyright, StringSize);
    Read(Copyright[1], StringSize);
 
    // read 'Author' string
    Read(StringSize, 1);
-   assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) + Byte(Context[0]) +
+   Assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) + Byte(Context[0]) +
      Byte(Copyright[0]) <= FChunkSize);
    SetLength(Author, StringSize);
    Read(Author[1], StringSize);
 
    // read 'Loudspeaker' string
    Read(StringSize, 1);
-   assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) + Byte(Context[0]) +
+   Assert(StringSize + 5 + SizeOf(Date) + Byte(Title[0]) + Byte(Context[0]) +
      Byte(Copyright[0]) + Byte(Author[0]) <= FChunkSize);
    SetLength(Notes, StringSize);
    Read(Notes[1], StringSize);
@@ -1039,7 +1039,7 @@ begin
   begin
    // read 'ID' string
    Read(StringSize, 1);
-   assert(StringSize + 2 <= FChunkSize);
+   Assert(StringSize + 2 <= FChunkSize);
    SetLength(ID, StringSize);
    Read(ID[1], StringSize);
 
@@ -1048,7 +1048,7 @@ begin
 
    // read 'Desc' string
    Read(StringSize, 1);
-   assert(StringSize + 2 + Byte(ID[0]) <= FChunkSize);
+   Assert(StringSize + 2 + Byte(ID[0]) <= FChunkSize);
    SetLength(Desc, StringSize);
    Read(Desc[1], StringSize);
   end;
@@ -1127,7 +1127,7 @@ begin
 
    // read 'RoomType' string
    Read(StringSize, 1);
-   assert(StringSize + 3 * SizeOf(Single) <= FChunkSize);
+   Assert(StringSize + 3 * SizeOf(Single) <= FChunkSize);
    SetLength(RoomType, StringSize);
    Read(RoomType[1], StringSize);
   end;
@@ -1230,19 +1230,19 @@ begin
   begin
    // read 'MicType' string
    Read(StringSize, 1);
-   assert(StringSize + 3 <= FChunkSize);
+   Assert(StringSize + 3 <= FChunkSize);
    SetLength(MicType, StringSize);
    Read(MicType[1], StringSize);
 
    // read 'Manufacturer' string
    Read(StringSize, 1);
-   assert(StringSize + 3 + Byte(MicType[0]) <= FChunkSize);
+   Assert(StringSize + 3 + Byte(MicType[0]) <= FChunkSize);
    SetLength(Manufacturer, StringSize);
    Read(Manufacturer[1], StringSize);
 
    // read 'Notes' string
    Read(StringSize, 1);
-   assert(StringSize + 3 + Byte(MicType[0]) + Byte(Manufacturer[0]) <= FChunkSize);
+   Assert(StringSize + 3 + Byte(MicType[0]) + Byte(Manufacturer[0]) <= FChunkSize);
    SetLength(Notes, StringSize);
    Read(Notes[1], StringSize);
   end;
@@ -1331,25 +1331,25 @@ begin
   begin
    // read 'ADConverter' string
    Read(StringSize, 1);
-   assert(StringSize + 3 < FChunkSize);
+   Assert(StringSize + 3 < FChunkSize);
    SetLength(ADConverter, StringSize);
    Read(ADConverter[1], StringSize);
 
    // read 'DAConverter' string
    Read(StringSize, 1);
-   assert(StringSize + 3 + Byte(ADConverter[0]) < FChunkSize);
+   Assert(StringSize + 3 + Byte(ADConverter[0]) < FChunkSize);
    SetLength(DAConverter, StringSize);
    Read(DAConverter[1], StringSize);
 
    // read 'Amplifier' string
    Read(StringSize, 1);
-   assert(StringSize + 3 + Byte(ADConverter[0]) + Byte(DAConverter[0]) < FChunkSize);
+   Assert(StringSize + 3 + Byte(ADConverter[0]) + Byte(DAConverter[0]) < FChunkSize);
    SetLength(Amplifier, StringSize);
    Read(Amplifier[1], StringSize);
 
    // read 'Loudspeaker' string
    Read(StringSize, 1);
-   assert(StringSize + 3 + Byte(ADConverter[0]) + Byte(DAConverter[0]) + Byte(Amplifier[0]) < FChunkSize);
+   Assert(StringSize + 3 + Byte(ADConverter[0]) + Byte(DAConverter[0]) + Byte(Amplifier[0]) < FChunkSize);
    SetLength(Loudspeaker, StringSize);
    Read(Loudspeaker[1], StringSize);
   end;
@@ -1440,7 +1440,7 @@ begin
 
    // read 'MeasurementType' string
    Read(StringSize, 1);
-   assert(StringSize + 2 + SizeOf(Distance) + SizeOf(MeasuredLength) < FChunkSize);
+   Assert(StringSize + 2 + SizeOf(Distance) + SizeOf(MeasuredLength) < FChunkSize);
    SetLength(MeasurementType, StringSize);
    Read(MeasurementType[1], StringSize);
 
@@ -1449,7 +1449,7 @@ begin
 
    // read 'ExcitationType' string
    Read(StringSize, 1);
-   assert(StringSize + 2 + SizeOf(Distance) + SizeOf(MeasuredLength) +
+   Assert(StringSize + 2 + SizeOf(Distance) + SizeOf(MeasuredLength) +
      Byte(MeasurementType[0]) <= FChunkSize);
    SetLength(ExcitationType, StringSize);
    Read(ExcitationType[1], StringSize);
@@ -1527,6 +1527,7 @@ begin
    TCustomHrirMeasurementInformation]);
  FHrirList := TObjectList.Create(False);
  FInterpolationType := itLinear;
+ FSampleRate := 44100;
 end;
 
 destructor TCustomHrtfs.Destroy;
@@ -1547,21 +1548,21 @@ end;
 
 function TCustomHrtfs.GetDate: TDateTime;
 begin
- if assigned(FGeneralInformation)
+ if Assigned(FGeneralInformation)
   then Result := FGeneralInformation.Date
   else Result := Now;
 end;
 
 function TCustomHrtfs.GetDistance: Single;
 begin
- if assigned(FMeasurementInformation)
+ if Assigned(FMeasurementInformation)
   then Result := FMeasurementInformation.Distance
   else Result := 0;
 end;
 
 function TCustomHrtfs.GetGeneralInfoString(const Index: Integer): String;
 begin
- if assigned(FGeneralInformation) then
+ if Assigned(FGeneralInformation) then
   with FGeneralInformation do
    case index of
     0 : Result := Title;
@@ -1633,7 +1634,7 @@ end;
 
 function TCustomHrtfs.GetMeasuredLength: Integer;
 begin
- if assigned(FMeasurementInformation)
+ if Assigned(FMeasurementInformation)
   then Result := FMeasurementInformation.MeasuredLength
   else Result := 0;
 end;
@@ -1641,7 +1642,7 @@ end;
 function TCustomHrtfs.GetMeasurementString(const Index: Integer): String;
 begin
  Result := '';
- if assigned(FMeasurementInformation) then
+ if Assigned(FMeasurementInformation) then
   with FMeasurementInformation do
    case Index of
     0 : Result := MeasurementType;
@@ -1652,7 +1653,7 @@ end;
 function TCustomHrtfs.GetMicString(const Index: Integer): String;
 begin
  Result := '';
- if assigned(FMicrophoneInformation) then
+ if Assigned(FMicrophoneInformation) then
   with FMicrophoneInformation do
    case Index of
     0 : Result := MicType;
@@ -1664,7 +1665,7 @@ end;
 function TCustomHrtfs.GetOutboardString(const Index: Integer): String;
 begin
  Result := '';
- if assigned(FOutboardInformation) then
+ if Assigned(FOutboardInformation) then
   with FOutboardInformation do
    case Index of
     0 : Result := ADConverter;
@@ -1677,7 +1678,7 @@ end;
 function TCustomHrtfs.GetRoomDim(const Index: Integer): Single;
 begin
  Result := 0;
- if assigned(FRoomInformation) then
+ if Assigned(FRoomInformation) then
   with FRoomInformation do
    case Index of
     0 : Result := X;
@@ -1688,21 +1689,21 @@ end;
 
 function TCustomHrtfs.GetRoomType: String;
 begin
- if assigned(FRoomInformation)
+ if Assigned(FRoomInformation)
   then Result := FRoomInformation.RoomType
   else Result := '';
 end;
 
 function TCustomHrtfs.GetSex: THrirSexType;
 begin
- if assigned(FSubjectInformation)
+ if Assigned(FSubjectInformation)
   then Result := FSubjectInformation.Sex
   else Result := stUnknown;
 end;
 
 function TCustomHrtfs.GetSubjectString(const Index: Integer): String;
 begin
- if assigned(FSubjectInformation) then
+ if Assigned(FSubjectInformation) then
   with FSubjectInformation do
    case index of
     0 : Result := ID;
@@ -1714,14 +1715,14 @@ end;
 
 function TCustomHrtfs.GetSymmetric: Boolean;
 begin
- if not assigned(FMeasurementInformation)
+ if not Assigned(FMeasurementInformation)
   then Result := FMeasurementInformation.Symmetric
   else Result := False;
 end;
 
 procedure TCustomHrtfs.SetDate(const Value: TDateTime);
 begin
- if not assigned(FGeneralInformation) then
+ if not Assigned(FGeneralInformation) then
   begin
    FGeneralInformation := TCustomHrirGeneralInformation.Create;
    AddChunk(FGeneralInformation);
@@ -1731,7 +1732,7 @@ end;
 
 procedure TCustomHrtfs.SetDistance(const Value: Single);
 begin
- if not assigned(FMeasurementInformation) then
+ if not Assigned(FMeasurementInformation) then
   begin
    FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
    AddChunk(FMeasurementInformation);
@@ -1742,13 +1743,13 @@ end;
 procedure TCustomHrtfs.SetGeneralInfoString(const Index: Integer;
   const Value: String);
 begin
- if not assigned(FGeneralInformation) then
+ if not Assigned(FGeneralInformation) then
   begin
    if Value = '' then exit;
    FGeneralInformation := TCustomHrirGeneralInformation.Create;
    AddChunk(FGeneralInformation);
   end;
- if assigned(FGeneralInformation) then
+ if Assigned(FGeneralInformation) then
   with FGeneralInformation do
    case index of
     0 : Title := Value;
@@ -1762,7 +1763,7 @@ end;
 
 procedure TCustomHrtfs.SetMeasuredLength(const Value: Integer);
 begin
- if not assigned(FMeasurementInformation) then
+ if not Assigned(FMeasurementInformation) then
   begin
    FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
    AddChunk(FMeasurementInformation);
@@ -1773,13 +1774,13 @@ end;
 procedure TCustomHrtfs.SetMeasurementString(const Index: Integer;
   const Value: String);
 begin
- if not assigned(FMeasurementInformation) then
+ if not Assigned(FMeasurementInformation) then
   begin
    if Value = '' then exit;
    FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
    AddChunk(FMeasurementInformation);
   end;
- if assigned(FMeasurementInformation) then
+ if Assigned(FMeasurementInformation) then
   with FMeasurementInformation do
    case index of
     0 : MeasurementType := Value;
@@ -1790,13 +1791,13 @@ end;
 
 procedure TCustomHrtfs.SetMicString(const Index: Integer; const Value: String);
 begin
- if not assigned(FMicrophoneInformation) then
+ if not Assigned(FMicrophoneInformation) then
   begin
    if Value = '' then exit;
    FMicrophoneInformation := TCustomHrirMicrophoneInformation.Create;
    AddChunk(FMicrophoneInformation);
   end;
- if assigned(FMicrophoneInformation) then
+ if Assigned(FMicrophoneInformation) then
   with FMicrophoneInformation do
    case index of
     0 : MicType := Value;
@@ -1809,13 +1810,13 @@ end;
 procedure TCustomHrtfs.SetOutboardString(const Index: Integer;
   const Value: String);
 begin
- if not assigned(FOutboardInformation) then
+ if not Assigned(FOutboardInformation) then
   begin
    if Value = '' then exit;
    FOutboardInformation := TCustomHrirOutboardInformation.Create;
    AddChunk(FOutboardInformation);
   end;
- if assigned(FOutboardInformation) then
+ if Assigned(FOutboardInformation) then
   with FOutboardInformation do
    case index of
     0 : ADConverter := Value;
@@ -1828,7 +1829,7 @@ end;
 
 procedure TCustomHrtfs.SetRoomDim(const Index: Integer; const Value: Single);
 begin
- if not assigned(FRoomInformation) then
+ if not Assigned(FRoomInformation) then
   begin
    if Value = 0 then exit;
    FRoomInformation := TCustomHrirRoomInformation.Create;
@@ -1846,7 +1847,7 @@ end;
 
 procedure TCustomHrtfs.SetRoomType(const Value: String);
 begin
- if not assigned(FRoomInformation) then
+ if not Assigned(FRoomInformation) then
   begin
    if Value = '' then exit;
    FRoomInformation := TCustomHrirRoomInformation.Create;
@@ -1857,7 +1858,7 @@ end;
 
 procedure TCustomHrtfs.SetSex(const Value: THrirSexType);
 begin
- if not assigned(FSubjectInformation) then
+ if not Assigned(FSubjectInformation) then
   begin
    if Value = stUnknown then exit;
    FSubjectInformation := TCustomHrirSubjectInformation.Create;
@@ -1869,13 +1870,13 @@ end;
 procedure TCustomHrtfs.SetSubjectString(const Index: Integer;
   const Value: String);
 begin
- if not assigned(FSubjectInformation) then
+ if not Assigned(FSubjectInformation) then
   begin
    if Value = '' then exit;
    FSubjectInformation := TCustomHrirSubjectInformation.Create;
    AddChunk(FSubjectInformation);
   end;
- if assigned(FSubjectInformation) then
+ if Assigned(FSubjectInformation) then
   with FSubjectInformation do
    case index of
     0 : ID := Value;
@@ -1886,7 +1887,7 @@ end;
 
 procedure TCustomHrtfs.SetSymmetric(const Value: Boolean);
 begin
- if not assigned(FMeasurementInformation) then
+ if not Assigned(FMeasurementInformation) then
   begin
    FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
    AddChunk(FMeasurementInformation);
@@ -1912,7 +1913,7 @@ procedure TCustomHrtfs.CalculateScaleFactors(const SpherePos, A,
   B: TSphereVector3D; var ScaleA, ScaleB: Double);
 var
   HrirAngle : Double;
-  Angle     : Array [0..1] of Single;
+  Angle     : array [0..1] of Single;
 begin
  // calculate vector distances
  HrirAngle := GetOrthodromicAngle2D(A, B);
@@ -1925,18 +1926,18 @@ begin
  ScaleB := 1 - ScaleA;
 
  // verify constraints
- assert(ScaleA < 1);
+ Assert(ScaleA < 1);
 end;
 
 procedure TCustomHrtfs.CalculateScaleFactors(const SpherePos, A, B,
   C: TSphereVector3D; var ScaleA, ScaleB, ScaleC: Double);
 var
-  AngleA       : Array [0..2] of Double;
-  PntA         : Array [0..2] of Double;
-  InnerAngles  : Array [0..2] of Double;
-  TotalAngle   : Array [0..2] of Double;
-  HalfAngles   : Array [0..1, 0..2] of Double;
-  SidePart     : Array [0..1, 0..2] of Double;
+  AngleA       : array [0..2] of Double;
+  PntA         : array [0..2] of Double;
+  InnerAngles  : array [0..2] of Double;
+  TotalAngle   : array [0..2] of Double;
+  HalfAngles   : array [0..1, 0..2] of Double;
+  SidePart     : array [0..1, 0..2] of Double;
 begin
  // calculate orthodromic angle/distance to desired position (without arccos)
  AngleA[0] := GetOrthodromicAngle2DWithoutArcCos(A, SpherePos); // a'
@@ -1959,7 +1960,7 @@ begin
  InnerAngles[2] := GetSphericTriangleAngleNoCos(PntA[2], AngleA[1], AngleA[0]);
 
  // check position lies inside the triangle
- assert(abs( (InnerAngles[0] + InnerAngles[1] + InnerAngles[2]) - 2 * Pi) < 1E-5);
+ Assert(abs( (InnerAngles[0] + InnerAngles[1] + InnerAngles[2]) - 2 * Pi) < 1E-5);
 
  // half angles (part 1)
  HalfAngles[0, 0] := GetSphericTriangleAngleNoCos(AngleA[0], AngleA[2], PntA[1]);
@@ -1977,9 +1978,9 @@ begin
  TotalAngle[2] := GetSphericTriangleAngleNoCos(PntA[2], PntA[0], PntA[1]); // gamma
 
  // check position lies inside the triangle
- assert(abs((HalfAngles[0, 1] + HalfAngles[1, 2]) - TotalAngle[0]) < 1E-3);
- assert(abs((HalfAngles[0, 2] + HalfAngles[1, 0]) - TotalAngle[1]) < 1E-3);
- assert(abs((HalfAngles[0, 0] + HalfAngles[1, 1]) - TotalAngle[2]) < 1E-3);
+ Assert(abs((HalfAngles[0, 1] + HalfAngles[1, 2]) - TotalAngle[0]) < 1E-3);
+ Assert(abs((HalfAngles[0, 2] + HalfAngles[1, 0]) - TotalAngle[1]) < 1E-3);
+ Assert(abs((HalfAngles[0, 0] + HalfAngles[1, 1]) - TotalAngle[2]) < 1E-3);
 
 (*
  // calculate triangle angles (using spherical trigonometry)
@@ -2001,9 +2002,9 @@ begin
  SidePart[0, 1] := arccot((sin(TotalAngle[0]) * cot(HalfAngles[0, 2]) + PntA[0] * cos(TotalAngle[0])) / sqrt(1 - sqr(PntA[0])));
  SidePart[0, 2] := arccot((sin(TotalAngle[1]) * cot(HalfAngles[0, 0]) + PntA[1] * cos(TotalAngle[1])) / sqrt(1 - sqr(PntA[1])));
 
- assert(SidePart[0, 0] < arccos(PntA[0]));
- assert(SidePart[0, 1] < arccos(PntA[1]));
- assert(SidePart[0, 2] < arccos(PntA[2]));
+ Assert(SidePart[0, 0] < arccos(PntA[0]));
+ Assert(SidePart[0, 1] < arccos(PntA[1]));
+ Assert(SidePart[0, 2] < arccos(PntA[2]));
 
  SidePart[1, 0] := arccos(PntA[0]) - SidePart[0, 0];
  SidePart[1, 1] := arccos(PntA[1]) - SidePart[0, 1];
@@ -2021,10 +2022,10 @@ begin
 
 (*
  // verify scaling order
- assert(Scale[0] > Scale[1]);
- assert(Scale[1] > Scale[2]);
+ Assert(Scale[0] > Scale[1]);
+ Assert(Scale[1] > Scale[2]);
 
- assert(abs(Scale[0] + Scale[1] + Scale[2] - 1) < 1E-3);
+ Assert(abs(Scale[0] + Scale[1] + Scale[2] - 1) < 1E-3);
 *)
 end;
 
@@ -2062,8 +2063,8 @@ procedure TCustomHrtfs.Interpolate2Hrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray);
 var
   TempData  : PDavSingleFixedArray;
-  Hrirs     : Array [0..1] of TCustomHrir;
-  Scale     : Array [0..1] of Double;
+  Hrirs     : array [0..1] of TCustomHrir;
+  Scale     : array [0..1] of Double;
   SpherePos : TSphereVector3D;
   Sample    : Integer;
 begin
@@ -2115,8 +2116,8 @@ procedure TCustomHrtfs.Interpolate2Hrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavDoubleFixedArray);
 var
   TempData  : PDavDoubleFixedArray;
-  Hrirs     : Array [0..1] of TCustomHrir;
-  Scale     : Array [0..1] of Double;
+  Hrirs     : array [0..1] of TCustomHrir;
+  Scale     : array [0..1] of Double;
   SpherePos : TSphereVector3D;
   Sample    : Integer;
 begin
@@ -2166,15 +2167,15 @@ end;
 procedure TCustomHrtfs.Interpolate3Hrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray);
 var
-  TempData     : Array [0..1] of PDavSingleFixedArray;
-  Hrirs        : Array [0..2] of TCustomHrir;
-  HrirPos      : Array [0..2] of TSphereVector3D;
+  TempData     : array [0..1] of PDavSingleFixedArray;
+  Hrirs        : array [0..2] of TCustomHrir;
+  HrirPos      : array [0..2] of TSphereVector3D;
   SpherePos    : TSphereVector3D;
-  AngleA       : Array [0..1] of Double;
+  AngleA       : array [0..1] of Double;
   i            : Integer;
   MinimumAngle : Single;
   CurrentAngle : Single;
-  Scale        : Array [0..2] of Double;
+  Scale        : array [0..2] of Double;
   Sample       : Integer;
 begin
  SpherePos := MakeSphereVector3D(Azimuth, Polar);
@@ -2318,17 +2319,17 @@ begin
       AngleA[0] := GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos);
       AngleA[1] := GetOrthodromicAngle2D(Hrirs[0].Position, Hrirs[1].Position);
 
-      assert(AngleA[0] > 0);
-      assert(AngleA[1] > 0);
+      Assert(AngleA[0] > 0);
+      Assert(AngleA[1] > 0);
 
       // calculate wheighting
       Scale[0] := AngleA[0] / AngleA[1];
       Scale[1] := 1 - Scale[0];
 
-      assert(Scale[0] >= 0);
-      assert(Scale[1] >= 0);
-      assert(Scale[0] <= 1);
-      assert(Scale[1] <= 1);
+      Assert(Scale[0] >= 0);
+      Assert(Scale[1] >= 0);
+      Assert(Scale[0] <= 1);
+      Assert(Scale[1] <= 1);
 
       // allocate a temporary buffer
       GetMem(TempData[0], SampleFrames * SizeOf(Single));
@@ -2388,16 +2389,16 @@ end;
 procedure TCustomHrtfs.Interpolate3Hrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavDoubleFixedArray);
 var
-  TempData  : Array [0..1] of PDavDoubleFixedArray;
-  Hrirs     : Array [0..2] of TCustomHrir;
-  HrirPos   : Array [0..2] of TSphereVector3D;
+  TempData  : array [0..1] of PDavDoubleFixedArray;
+  Hrirs     : array [0..2] of TCustomHrir;
+  HrirPos   : array [0..2] of TSphereVector3D;
   SpherePos : TSphereVector3D;
-  AngleA    : Array [0..2] of Double;
-  PntA      : Array [0..2] of Double;
-  Angles    : Array [0..2] of Double;
-  HalfAng   : Array [0..2] of Double;
-  Relations : Array [0..2] of Double;
-  Scale     : Array [0..2] of Double;
+  AngleA    : array [0..2] of Double;
+  PntA      : array [0..2] of Double;
+  Angles    : array [0..2] of Double;
+  HalfAng   : array [0..2] of Double;
+  Relations : array [0..2] of Double;
+  Scale     : array [0..2] of Double;
   Sample    : Integer;
 begin
  SpherePos := MakeSphereVector3D(Azimuth, Polar);
@@ -2545,7 +2546,7 @@ var
   TempHrir     : TCustomHrir;
   MinimumAngle : Double;
 begin
- assert(FHrirList.Count > 0);
+ Assert(FHrirList.Count > 0);
 
  // initialize with first HRIR
  Result := TCustomHrir(FHrirList[0]);
@@ -2586,7 +2587,7 @@ var
   OnAzimuthAxisFound : Boolean;
   MinimumAngle       : Double;
 begin
- assert(FHrirList.Count > 1);
+ Assert(FHrirList.Count > 1);
 
  // initialize with first HRIR
  if TCustomHrir(FHrirList[0]) <> Nearest
@@ -2674,7 +2675,7 @@ var
   TempHrir     : TCustomHrir;
   Angles       : array [0..2] of Single;
 begin
- assert(FHrirList.Count >= 3);
+ Assert(FHrirList.Count >= 3);
 
  // initialize with first three HRIRs
  A := TCustomHrir(FHrirList[0]);
@@ -2790,12 +2791,12 @@ end;
 
 procedure TCustomHrtfs.ClearInformationChunks;
 begin
- if assigned(FGeneralInformation)     then FreeAndNil(FGeneralInformation);
- if assigned(FSubjectInformation)     then FreeAndNil(FSubjectInformation);
- if assigned(FRoomInformation)        then FreeAndNil(FRoomInformation);
- if assigned(FMicrophoneInformation)  then FreeAndNil(FMicrophoneInformation);
- if assigned(FOutboardInformation)    then FreeAndNil(FOutboardInformation);
- if assigned(FMeasurementInformation) then FreeAndNil(FMeasurementInformation);
+ if Assigned(FGeneralInformation)     then FreeAndNil(FGeneralInformation);
+ if Assigned(FSubjectInformation)     then FreeAndNil(FSubjectInformation);
+ if Assigned(FRoomInformation)        then FreeAndNil(FRoomInformation);
+ if Assigned(FMicrophoneInformation)  then FreeAndNil(FMicrophoneInformation);
+ if Assigned(FOutboardInformation)    then FreeAndNil(FOutboardInformation);
+ if Assigned(FMeasurementInformation) then FreeAndNil(FMeasurementInformation);
 end;
 
 procedure TCustomHrtfs.LoadFromStream(Stream: TStream);
@@ -2809,7 +2810,7 @@ begin
  FMeasurementInformation := nil;
  inherited;
 
- if assigned(FOnHrtfChanged)
+ if Assigned(FOnHrtfChanged)
   then FOnHrtfChanged(Self);
 end;
 
@@ -2817,7 +2818,7 @@ procedure TCustomHrtfs.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Strea
 begin
  if ChunkClass = TCustomHrirGeneralInformation then
   begin
-   if assigned(FGeneralInformation)
+   if Assigned(FGeneralInformation)
     then raise Exception.Create(RCStrChunkAlreadyExists);
    FGeneralInformation := TCustomHrirGeneralInformation.Create;
    FGeneralInformation.ChunkFlags := ChunkFlags;
@@ -2826,7 +2827,7 @@ begin
   end else
  if ChunkClass = TCustomHrirSubjectInformation then
   begin
-   if assigned(FSubjectInformation)
+   if Assigned(FSubjectInformation)
     then raise Exception.Create(RCStrChunkAlreadyExists);
    FSubjectInformation := TCustomHrirSubjectInformation.Create;
    FSubjectInformation.ChunkFlags := ChunkFlags;
@@ -2835,7 +2836,7 @@ begin
   end else
  if ChunkClass = TCustomHrirRoomInformation then
   begin
-   if assigned(FRoomInformation)
+   if Assigned(FRoomInformation)
     then raise Exception.Create(RCStrChunkAlreadyExists);
    FRoomInformation := TCustomHrirRoomInformation.Create;
    FRoomInformation.ChunkFlags := ChunkFlags;
@@ -2844,7 +2845,7 @@ begin
   end else
  if ChunkClass = TCustomHrirMicrophoneInformation then
   begin
-   if assigned(FMicrophoneInformation)
+   if Assigned(FMicrophoneInformation)
     then raise Exception.Create(RCStrChunkAlreadyExists);
    FMicrophoneInformation := TCustomHrirMicrophoneInformation.Create;
    FMicrophoneInformation.ChunkFlags := ChunkFlags;
@@ -2853,7 +2854,7 @@ begin
   end else
  if ChunkClass = TCustomHrirOutboardInformation then
   begin
-   if assigned(FOutboardInformation)
+   if Assigned(FOutboardInformation)
     then raise Exception.Create(RCStrChunkAlreadyExists);
    FOutboardInformation := TCustomHrirOutboardInformation.Create;
    FOutboardInformation.ChunkFlags := ChunkFlags;
@@ -2862,7 +2863,7 @@ begin
   end else
  if ChunkClass = TCustomHrirMeasurementInformation then
   begin
-   if assigned(FMeasurementInformation)
+   if Assigned(FMeasurementInformation)
     then raise Exception.Create(RCStrChunkAlreadyExists);
    FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
    FMeasurementInformation.ChunkFlags := ChunkFlags;

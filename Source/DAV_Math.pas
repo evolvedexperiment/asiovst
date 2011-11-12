@@ -89,6 +89,9 @@ function Power2(const X: Extended): Extended;
 function IsNan32(const Value: Single): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function IsNan64(const Value: Double): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+function Mirror(Value: Single): Single; overload;
+function Mirror(Value: Double): Double; overload;
+
 function Sigmoid(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Sinc(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -118,6 +121,9 @@ function RelativeAngle(X1, Y1, X2, Y2: Integer): Single;
 function SafeAngle(Angle: Single): Single;
 function SolveForX(X, Z: Longint): Longint;
 function SolveForY(Y, Z: Longint): Longint;
+
+function FloatMod(x, y: Single): Single; overload;
+function FloatMod(x, y: Double): Double; overload;
 
 const
   CTwoMulTwo2Neg32   : Single = ((2.0 / $10000) / $10000);  // 2^-32
@@ -535,6 +541,17 @@ function IsNan64(const Value: Double): Boolean;
 begin
   Result := ((PInt64(@Value)^ and $7FF0000000000000)  = $7FF0000000000000) and
             ((PInt64(@Value)^ and $000FFFFFFFFFFFFF) <> $0000000000000000);
+end;
+
+
+function Mirror(Value: Single): Single;
+begin
+  Result := 1 - Abs(Value - 1 - 4 * Round(0.25 * Value - 0.25));
+end;
+
+function Mirror(Value: Double): Double;
+begin
+  Result := 1 - Abs(Value - 1 - 4 * Round(0.25 * Value - 0.25));
 end;
 
 
@@ -1129,6 +1146,22 @@ function SolveForY(Y, Z: Longint): Longint;
 // This function solves for Im in the equation "x is y% of z".
 begin
   if Z = 0 then Result := 0 else Result := Round((Y * 100.0) / Z); //t
+end;
+
+function FloatMod(x, y: Single): Single;
+begin
+  if (y = 0) then
+    Result := X
+  else
+    Result := x - y * Round(x / y - 0.5);
+end;
+
+function FloatMod(x, y: Double): Double;
+begin
+  if (y = 0) then
+    Result := X
+  else
+    Result := x - y * Round(x / y - 0.5);
 end;
 
 

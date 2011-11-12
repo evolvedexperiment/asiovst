@@ -78,25 +78,25 @@ var
 { Binding Function Pointers }
 
 var
-  BindingBlendPixel          : TFunctionBinding;
-  BindingBlendPixelInplace   : TFunctionBinding;
-  BindingBlendPixelLine      : TFunctionBinding;
-  BindingBlendLine           : TFunctionBinding;
-  BindingCombinePixel        : TFunctionBinding;
-  BindingCombinePixelInplace : TFunctionBinding;
-  BindingCombinePixelLine    : TFunctionBinding;
-  BindingCombineLine         : TFunctionBinding;
-  BindingEMMS                : TFunctionBinding;
-  BindingMergePixel          : TFunctionBinding;
-  BindingMergePixelInplace   : TFunctionBinding;
-  BindingMergePixelLine      : TFunctionBinding;
-  BindingMergeLine           : TFunctionBinding;
+  GBindingBlendPixel          : TFunctionBinding;
+  GBindingBlendPixelInplace   : TFunctionBinding;
+  GBindingBlendPixelLine      : TFunctionBinding;
+  GBindingBlendLine           : TFunctionBinding;
+  GBindingCombinePixel        : TFunctionBinding;
+  GBindingCombinePixelInplace : TFunctionBinding;
+  GBindingCombinePixelLine    : TFunctionBinding;
+  GBindingCombineLine         : TFunctionBinding;
+  GBindingEMMS                : TFunctionBinding;
+  GBindingMergePixel          : TFunctionBinding;
+  GBindingMergePixelInplace   : TFunctionBinding;
+  GBindingMergePixelLine      : TFunctionBinding;
+  GBindingMergeLine           : TFunctionBinding;
 
 
 { Binding List }
 
 var
-  BindingBlend : TFunctionBindingList;
+  GBindingBlend : TFunctionBindingList;
 
 implementation
 
@@ -2425,12 +2425,12 @@ end;
 procedure BindFunctions;
 begin
  // create function binding list for 32-bit float conversions
- BindingBlend := TFunctionBindingList.Create;
+ GBindingBlend := TFunctionBindingList.Create;
 
  // create function binding for EMMS procedure
- BindingEMMS := TFunctionBinding.Create(@@EMMS, @EMMSNative);
- BindingBlend.AddBinding(BindingEMMS);
- with BindingEMMS do
+ GBindingEMMS := TFunctionBinding.Create(@@EMMS, @EMMSNative);
+ GBindingBlend.AddBinding(GBindingEMMS);
+ with GBindingEMMS do
   begin
    Add(@EMMSNative);
    {$IFNDEF PUREPASCAL}
@@ -2441,10 +2441,10 @@ begin
   end;
 
  // create function binding for blend register
- BindingBlendPixel := TFunctionBinding.Create(
+ GBindingBlendPixel := TFunctionBinding.Create(
    @@BlendPixel, @BlendPixelNative);
- BindingBlend.AddBinding(BindingBlendPixel);
- with BindingBlendPixel do
+ GBindingBlend.AddBinding(GBindingBlendPixel);
+ with GBindingBlendPixel do
   begin
    Add(@BlendPixelNative);
    {$IFNDEF PUREPASCAL}
@@ -2455,10 +2455,10 @@ begin
   end;
 
  // create function binding for blend memory
- BindingBlendPixelInplace := TFunctionBinding.Create(
+ GBindingBlendPixelInplace := TFunctionBinding.Create(
    @@BlendPixelInplace, @BlendPixelInplaceNative);
- BindingBlend.AddBinding(BindingBlendPixelInplace);
- with BindingBlendPixelInplace do
+ GBindingBlend.AddBinding(GBindingBlendPixelInplace);
+ with GBindingBlendPixelInplace do
   begin
    Add(@BlendPixelInplaceNative);
    {$IFNDEF PUREPASCAL}
@@ -2469,10 +2469,10 @@ begin
   end;
 
  // create function binding for blend line
- BindingBlendPixelLine := TFunctionBinding.Create(
+ GBindingBlendPixelLine := TFunctionBinding.Create(
    @@BlendPixelLine, @BlendPixelLineNative);
- BindingBlend.AddBinding(BindingBlendPixelLine);
- with BindingBlendPixelLine do
+ GBindingBlend.AddBinding(GBindingBlendPixelLine);
+ with GBindingBlendPixelLine do
   begin
    Add(@BlendPixelLineNative);
    {$IFNDEF PUREPASCAL}
@@ -2483,10 +2483,10 @@ begin
   end;
 
  // create function binding for blend line
- BindingBlendLine := TFunctionBinding.Create(
+ GBindingBlendLine := TFunctionBinding.Create(
    @@BlendLine, @BlendLineNative);
- BindingBlend.AddBinding(BindingBlendLine);
- with BindingBlendLine do
+ GBindingBlend.AddBinding(GBindingBlendLine);
+ with GBindingBlendLine do
   begin
    Add(@BlendLineNative);
    {$IFNDEF PUREPASCAL}
@@ -2497,10 +2497,10 @@ begin
   end;
 
  // create function binding for combine register
- BindingCombinePixel := TFunctionBinding.Create(
+ GBindingCombinePixel := TFunctionBinding.Create(
    @@CombinePixel, @CombinePixelNative);
- BindingBlend.AddBinding(BindingCombinePixel);
- with BindingCombinePixel do
+ GBindingBlend.AddBinding(GBindingCombinePixel);
+ with GBindingCombinePixel do
   begin
    Add(@CombinePixelNative);
    {$IFNDEF PUREPASCAL}
@@ -2511,10 +2511,10 @@ begin
   end;
 
  // create function binding for combine memory
- BindingCombinePixelInplace := TFunctionBinding.Create(
+ GBindingCombinePixelInplace := TFunctionBinding.Create(
    @@CombinePixelInplace, @CombinePixelInplaceNative);
- BindingBlend.AddBinding(BindingCombinePixelInplace);
- with BindingCombinePixelInplace do
+ GBindingBlend.AddBinding(GBindingCombinePixelInplace);
+ with GBindingCombinePixelInplace do
   begin
    Add(@CombinePixelInplaceNative);
    {$IFNDEF PUREPASCAL}
@@ -2525,10 +2525,10 @@ begin
   end;
 
  // create function binding for combine memory
- BindingCombinePixelLine := TFunctionBinding.Create(
+ GBindingCombinePixelLine := TFunctionBinding.Create(
    @@CombinePixelLine, @CombinePixelLineNative);
- BindingBlend.AddBinding(BindingCombinePixelLine);
- with BindingCombinePixelLine do
+ GBindingBlend.AddBinding(GBindingCombinePixelLine);
+ with GBindingCombinePixelLine do
   begin
    Add(@CombinePixelLineNative);
    {$IFNDEF PUREPASCAL}
@@ -2539,10 +2539,10 @@ begin
   end;
 
  // create function binding for combine line
- BindingCombineLine := TFunctionBinding.Create(
+ GBindingCombineLine := TFunctionBinding.Create(
    @@CombineLine, @CombineLineNative);
- BindingBlend.AddBinding(BindingCombineLine);
- with BindingCombineLine do
+ GBindingBlend.AddBinding(GBindingCombineLine);
+ with GBindingCombineLine do
   begin
    Add(@CombineLineNative);
    {$IFNDEF PUREPASCAL}
@@ -2555,10 +2555,10 @@ begin
   end;
 
  // create function binding for combine register
- BindingMergePixel := TFunctionBinding.Create(
+ GBindingMergePixel := TFunctionBinding.Create(
    @@MergePixel, @MergePixelNative);
- BindingBlend.AddBinding(BindingMergePixel);
- with BindingMergePixel do
+ GBindingBlend.AddBinding(GBindingMergePixel);
+ with GBindingMergePixel do
   begin
    Add(@MergePixelNative);
    {$IFNDEF PUREPASCAL}
@@ -2569,10 +2569,10 @@ begin
   end;
 
  // create function binding for Merge memory
- BindingMergePixelInplace := TFunctionBinding.Create(
+ GBindingMergePixelInplace := TFunctionBinding.Create(
    @@MergePixelInplace, @MergePixelInplaceNative);
- BindingBlend.AddBinding(BindingMergePixelInplace);
- with BindingMergePixelInplace do
+ GBindingBlend.AddBinding(GBindingMergePixelInplace);
+ with GBindingMergePixelInplace do
   begin
    Add(@MergePixelInplaceNative);
    {$IFNDEF PUREPASCAL}
@@ -2583,10 +2583,10 @@ begin
   end;
 
  // create function binding for Merge line
- BindingMergeLine := TFunctionBinding.Create(
+ GBindingMergeLine := TFunctionBinding.Create(
    @@MergeLine, @MergeLineNative);
- BindingBlend.AddBinding(BindingMergeLine);
- with BindingMergeLine do
+ GBindingBlend.AddBinding(GBindingMergeLine);
+ with GBindingMergeLine do
   begin
    Add(@MergeLineNative);
    {$IFNDEF PUREPASCAL}
@@ -2597,13 +2597,13 @@ begin
   end;
 
  // processor specific rebind
- BindingBlend.RebindProcessorSpecific;
+ GBindingBlend.RebindProcessorSpecific;
 end;
 
 procedure UnbindFunctions;
 begin
- BindingBlend.Free;
- BindingBlend := nil;
+ GBindingBlend.Free;
+ GBindingBlend := nil;
 end;
 
 initialization

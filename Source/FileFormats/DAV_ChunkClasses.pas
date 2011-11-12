@@ -796,13 +796,13 @@ end;
 
 function TChunkContainer.GetChunkClass(ChunkName: TChunkName): TCustomChunkClass;
 var
-  i : Integer;
+  Index : Integer;
 begin
  Result := TUnknownChunk;
- for i := 0 to Length(FRegisteredChunks) - 1 do
-  if CompareChunkNames(FRegisteredChunks[i].GetClassChunkName, ChunkName) then
+ for Index := 0 to Length(FRegisteredChunks) - 1 do
+  if CompareChunkNames(FRegisteredChunks[Index].GetClassChunkName, ChunkName) then
    begin
-    Result := FRegisteredChunks[i];
+    Result := FRegisteredChunks[Index];
     Exit;
    end;
 end;

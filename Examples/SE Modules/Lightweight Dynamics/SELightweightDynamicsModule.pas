@@ -28,7 +28,7 @@ unit SELightweightDynamicsModule;
 //  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
-//  SynthEdit is witten by Jef McClintock (see http://www.synthedit.com/      //
+//  SynthEdit is witten by Jeff McClintock (see http://www.synthedit.com/     //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -324,11 +324,13 @@ end;
 procedure TCustomLightweightDynamicsSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- if CurrentPin.PinID = 0 then
-  begin
+
+ if CurrentPin.PinID in [0..2] then
    ChooseProcess;
-   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
-  end;
+
+ if CurrentPin.PinID in [1..2] then
+   Pin[CurrentPin.PinID + 2].TransmitStatusChange(SampleClock,
+     Pin[CurrentPin.PinID].Status);
 end;
 
 // describe your module
@@ -353,7 +355,9 @@ end;
 
 procedure TCustomLightweightDynamicsSEModule.ChooseProcess;
 begin
- if Pin[0].Status = stRun
+ if (Pin[0].Status = stRun) and
+    ((Pin[1].Status = stRun) or
+     (Pin[2].Status = stRun))
   then OnProcess := SubProcess
   else
    begin

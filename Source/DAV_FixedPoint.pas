@@ -55,7 +55,11 @@ type
     class operator Negative(const Value: TFixed8Dot24): TFixed8Dot24;
     class operator Positive(const Value: TFixed8Dot24): TFixed8Dot24;
     class operator Add(const Lhs, Rhs: TFixed8Dot24): TFixed8Dot24;
+    class operator Add(const Lhs: TFixed8Dot24; Rhs: Single): TFixed8Dot24;
+    class operator Add(const Lhs: TFixed8Dot24; Rhs: Integer): TFixed8Dot24;
     class operator Subtract(const Lhs, Rhs: TFixed8Dot24): TFixed8Dot24;
+    class operator Subtract(const Lhs: TFixed8Dot24; Rhs: Single): TFixed8Dot24;
+    class operator Subtract(const Lhs: TFixed8Dot24; Rhs: Integer): TFixed8Dot24;
     class operator Multiply(const Lhs, Rhs: TFixed8Dot24): TFixed8Dot24;
     class operator Divide(const Lhs, Rhs: TFixed8Dot24): TFixed8Dot24;
     class operator Divide(const Lhs: TFixed8Dot24; Rhs: Integer): TFixed8Dot24;
@@ -69,6 +73,12 @@ type
     class function Half: TFixed8Dot24; inline; static;
 
     class function ArcTan2(const A, B: TFixed8Dot24): TFixed8Dot24; overload; static;
+
+    class operator Implicit(const Value: Single): TFixed8Dot24;
+    class operator Implicit(const Value: Double): TFixed8Dot24;
+    class operator Implicit(const Value: Integer): TFixed8Dot24;
+    class operator Explicit(const Value: TFixed8Dot24): Single;
+    class operator Explicit(const Value: TFixed8Dot24): Double;
 
     function AsSingle: Single;
 
@@ -103,7 +113,11 @@ type
     class operator Negative(const Value: TFixed16Dot16): TFixed16Dot16;
     class operator Positive(const Value: TFixed16Dot16): TFixed16Dot16;
     class operator Add(const Lhs, Rhs: TFixed16Dot16): TFixed16Dot16;
+    class operator Add(const Lhs: TFixed16Dot16; Rhs: Single): TFixed16Dot16;
+    class operator Add(const Lhs: TFixed16Dot16; Rhs: Integer): TFixed16Dot16;
     class operator Subtract(const Lhs, Rhs: TFixed16Dot16): TFixed16Dot16;
+    class operator Subtract(const Lhs: TFixed16Dot16; Rhs: Single): TFixed16Dot16;
+    class operator Subtract(const Lhs: TFixed16Dot16; Rhs: Integer): TFixed16Dot16;
     class operator Multiply(const Lhs, Rhs: TFixed16Dot16): TFixed16Dot16;
     class operator Divide(const Lhs, Rhs: TFixed16Dot16): TFixed16Dot16;
     class operator Divide(const Lhs: TFixed16Dot16; Rhs: Integer): TFixed16Dot16;
@@ -117,6 +131,12 @@ type
     class function Half: TFixed16Dot16; inline; static;
 
     class function ArcTan2(const A, B: TFixed16Dot16): TFixed16Dot16; overload; static;
+
+    class operator Implicit(const Value: Single): TFixed16Dot16;
+    class operator Implicit(const Value: Double): TFixed16Dot16;
+    class operator Implicit(const Value: Integer): TFixed16Dot16;
+    class operator Explicit(const Value: TFixed16Dot16): Single;
+    class operator Explicit(const Value: TFixed16Dot16): Double;
 
     function AsSingle: Single;
 //    procedure Sin; overload;
@@ -151,7 +171,11 @@ type
     class operator Negative(const Value: TFixed24Dot8): TFixed24Dot8;
     class operator Positive(const Value: TFixed24Dot8): TFixed24Dot8;
     class operator Add(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
+    class operator Add(const Lhs: TFixed24Dot8; Rhs: Single): TFixed24Dot8;
+    class operator Add(const Lhs: TFixed24Dot8; Rhs: Integer): TFixed24Dot8;
     class operator Subtract(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
+    class operator Subtract(const Lhs: TFixed24Dot8; Rhs: Single): TFixed24Dot8;
+    class operator Subtract(const Lhs: TFixed24Dot8; Rhs: Integer): TFixed24Dot8;
     class operator Multiply(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
     class operator Divide(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
     class operator Divide(const Lhs: TFixed24Dot8; Rhs: Integer): TFixed24Dot8;
@@ -165,6 +189,12 @@ type
     class function Half: TFixed24Dot8; inline; static;
 
     class function ArcTan2(const A, B: TFixed24Dot8): TFixed24Dot8; overload; static;
+
+    class operator Implicit(const Value: Single): TFixed24Dot8;
+    class operator Implicit(const Value: Double): TFixed24Dot8;
+    class operator Implicit(const Value: Integer): TFixed24Dot8;
+    class operator Explicit(const Value: TFixed24Dot8): Single;
+    class operator Explicit(const Value: TFixed24Dot8): Double;
 
     function AsSingle: Single;
 //    procedure Sin; overload;
@@ -1418,6 +1448,16 @@ begin
   Result.Fixed := Lhs.Fixed + Rhs.Fixed;
 end;
 
+class operator TFixed8Dot24.Add(const Lhs: TFixed8Dot24; Rhs: Single): TFixed8Dot24;
+begin
+  Result.Fixed := Lhs.Fixed + ConvertToFixed8Dot24(Rhs).Fixed;
+end;
+
+class operator TFixed8Dot24.Add(const Lhs: TFixed8Dot24; Rhs: Integer): TFixed8Dot24;
+begin
+  Result.Fixed := Lhs.Fixed + Rhs shl 24;
+end;
+
 class function TFixed8Dot24.ArcTan2(const A,
   B: TFixed8Dot24): TFixed8Dot24;
 begin
@@ -1525,6 +1565,16 @@ begin
   Result.Fixed := Lhs.Fixed - Rhs.Fixed;
 end;
 
+class operator TFixed8Dot24.Subtract(const Lhs: TFixed8Dot24; Rhs: Single): TFixed8Dot24;
+begin
+  Result.Fixed := Lhs.Fixed - ConvertToFixed8Dot24(Rhs).Fixed;
+end;
+
+class operator TFixed8Dot24.Subtract(const Lhs: TFixed8Dot24; Rhs: Integer): TFixed8Dot24;
+begin
+  Result.Fixed := Lhs.Fixed - Rhs shl 24;
+end;
+
 class function TFixed8Dot24.Two: TFixed8Dot24;
 begin
   Result := CFixed8Dot24Two;
@@ -1533,6 +1583,31 @@ end;
 class function TFixed8Dot24.Zero: TFixed8Dot24;
 begin
   Result.Fixed := 0;
+end;
+
+class operator TFixed8Dot24.Implicit(const Value: Single): TFixed8Dot24;
+begin
+  Result := ConvertToFixed8Dot24(Value);
+end;
+
+class operator TFixed8Dot24.Implicit(const Value: Double): TFixed8Dot24;
+begin
+  Result := ConvertToFixed8Dot24(Value);
+end;
+
+class operator TFixed8Dot24.Implicit(const Value: Integer): TFixed8Dot24;
+begin
+  Result.Fixed := Value shl 24;
+end;
+
+class operator TFixed8Dot24.Explicit(const Value: TFixed8Dot24): Single;
+begin
+  Result := ConvertFromFixed8Dot24(Value);
+end;
+
+class operator TFixed8Dot24.Explicit(const Value: TFixed8Dot24): Double;
+begin
+  Result := ConvertFromFixed8Dot24(Value);
 end;
 
 function TFixed8Dot24.AsSingle: Single;
@@ -1558,6 +1633,16 @@ class operator TFixed16Dot16.Add(const Lhs,
   Rhs: TFixed16Dot16): TFixed16Dot16;
 begin
   Result.Fixed := Lhs.Fixed + Rhs.Fixed;
+end;
+
+class operator TFixed16Dot16.Add(const Lhs: TFixed16Dot16; Rhs: Single): TFixed16Dot16;
+begin
+  Result.Fixed := Lhs.Fixed + ConvertToFixed16Dot16(Rhs).Fixed;
+end;
+
+class operator TFixed16Dot16.Add(const Lhs: TFixed16Dot16; Rhs: Integer): TFixed16Dot16;
+begin
+  Result.Fixed := Lhs.Fixed + Rhs shl 16;
 end;
 
 class function TFixed16Dot16.ArcTan2(const A,
@@ -1667,6 +1752,16 @@ begin
   Result.Fixed := Lhs.Fixed - Rhs.Fixed;
 end;
 
+class operator TFixed16Dot16.Subtract(const Lhs: TFixed16Dot16; Rhs: Single): TFixed16Dot16;
+begin
+  Result.Fixed := Lhs.Fixed - ConvertToFixed16Dot16(Rhs).Fixed;
+end;
+
+class operator TFixed16Dot16.Subtract(const Lhs: TFixed16Dot16; Rhs: Integer): TFixed16Dot16;
+begin
+  Result.Fixed := Lhs.Fixed - Rhs shl 16;
+end;
+
 class function TFixed16Dot16.Two: TFixed16Dot16;
 begin
   Result := CFixed16Dot16Two;
@@ -1675,6 +1770,31 @@ end;
 class function TFixed16Dot16.Zero: TFixed16Dot16;
 begin
   Result.Fixed := 0;
+end;
+
+class operator TFixed16Dot16.Implicit(const Value: Single): TFixed16Dot16;
+begin
+  Result := ConvertToFixed16Dot16(Value);
+end;
+
+class operator TFixed16Dot16.Implicit(const Value: Double): TFixed16Dot16;
+begin
+  Result := ConvertToFixed16Dot16(Value);
+end;
+
+class operator TFixed16Dot16.Implicit(const Value: Integer): TFixed16Dot16;
+begin
+  Result.Fixed := Value shl 16;
+end;
+
+class operator TFixed16Dot16.Explicit(const Value: TFixed16Dot16): Single;
+begin
+  Result := ConvertFromFixed16Dot16(Value);
+end;
+
+class operator TFixed16Dot16.Explicit(const Value: TFixed16Dot16): Double;
+begin
+  Result := ConvertFromFixed16Dot16(Value);
 end;
 
 function TFixed16Dot16.AsSingle: Single;
@@ -1707,6 +1827,16 @@ end;
 class operator TFixed24Dot8.Add(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
 begin
   Result.Fixed := Lhs.Fixed + Rhs.Fixed;
+end;
+
+class operator TFixed24Dot8.Add(const Lhs: TFixed24Dot8; Rhs: Single): TFixed24Dot8;
+begin
+  Result.Fixed := Lhs.Fixed + ConvertToFixed24Dot8(Rhs).Fixed;
+end;
+
+class operator TFixed24Dot8.Add(const Lhs: TFixed24Dot8; Rhs: Integer): TFixed24Dot8;
+begin
+  Result.Fixed := Lhs.Fixed + Rhs shl 8;
 end;
 
 class operator TFixed24Dot8.Negative(const Value: TFixed24Dot8): TFixed24Dot8;
@@ -1806,6 +1936,16 @@ begin
   Result.Fixed := Lhs.Fixed - Rhs.Fixed;
 end;
 
+class operator TFixed24Dot8.Subtract(const Lhs: TFixed24Dot8; Rhs: Single): TFixed24Dot8;
+begin
+  Result.Fixed := Lhs.Fixed - ConvertToFixed24Dot8(Rhs).Fixed;
+end;
+
+class operator TFixed24Dot8.Subtract(const Lhs: TFixed24Dot8; Rhs: Integer): TFixed24Dot8;
+begin
+  Result.Fixed := Lhs.Fixed - Rhs shl 8;
+end;
+
 class function TFixed24Dot8.Two: TFixed24Dot8;
 begin
   Result := CFixed24Dot8Two;
@@ -1820,6 +1960,31 @@ class function TFixed24Dot8.ArcTan2(const A, B: TFixed24Dot8): TFixed24Dot8;
 begin
   Result := ConvertToFixed24Dot8(
     Math.ArcTan2(ConvertFromFixed24Dot8(A), ConvertFromFixed24Dot8(B)));
+end;
+
+class operator TFixed24Dot8.Implicit(const Value: Single): TFixed24Dot8;
+begin
+  Result := ConvertToFixed24Dot8(Value);
+end;
+
+class operator TFixed24Dot8.Implicit(const Value: Double): TFixed24Dot8;
+begin
+  Result := ConvertToFixed24Dot8(Value);
+end;
+
+class operator TFixed24Dot8.Implicit(const Value: Integer): TFixed24Dot8;
+begin
+  Result.Fixed := Value shl 8;
+end;
+
+class operator TFixed24Dot8.Explicit(const Value: TFixed24Dot8): Single;
+begin
+  Result := ConvertFromFixed24Dot8(Value);
+end;
+
+class operator TFixed24Dot8.Explicit(const Value: TFixed24Dot8): Double;
+begin
+  Result := ConvertFromFixed24Dot8(Value);
 end;
 
 function TFixed24Dot8.AsSingle: Single;

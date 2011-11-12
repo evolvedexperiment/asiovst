@@ -1,4 +1,4 @@
-unit NoiseReductionDM;
+﻿unit NoiseReductionDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -62,6 +62,7 @@ type
     procedure ParameterThresholdOffsetChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure VSTModuleResume(Sender: TObject);
   private
     FCriticalSection : TCriticalSection;
     FSamplesCaptured : Integer;
@@ -74,6 +75,8 @@ type
   end;
 
 implementation
+
+{%CLASSGROUP 'System.Classes.TPersistent'}
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -121,6 +124,7 @@ begin
  FEditorRect.Bottom := 147;
  FEditorRect.Right := 348;
 
+ // initialize parameters
  Parameter[0] := 8;
  Parameter[1] := 9;
  Parameter[2] := 4;
@@ -374,15 +378,35 @@ begin
   then TFmNoiseReduction(EditorForm).UpdateRelease;
 end;
 
+procedure TNoiseReductionModule.VSTModuleResume(Sender: TObject);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+   if Abs(SampleRate) > 0 then
+    for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+     if Assigned(FNoiseReduction[ChannelIndex])
+      then FNoiseReduction[ChannelIndex].Clear;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
 procedure TNoiseReductionModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
   ChannelIndex : Integer;
 begin
- if Abs(SampleRate) > 0 then
-  for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
-   if Assigned(FNoiseReduction[ChannelIndex])
-    then FNoiseReduction[ChannelIndex].SampleRate := Abs(SampleRate);
+ FCriticalSection.Enter;
+ try
+   if Abs(SampleRate) > 0 then
+    for ChannelIndex := 0 to Length(FNoiseReduction) - 1 do
+     if Assigned(FNoiseReduction[ChannelIndex])
+      then FNoiseReduction[ChannelIndex].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TNoiseReductionModule.VSTModuleProcess(const Inputs,
