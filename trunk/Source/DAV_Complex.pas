@@ -57,6 +57,14 @@ type
     class operator Negative(const Value: TComplex32): TComplex32;
 
     class function Zero: TComplex32; inline; static;
+
+    class function Euler(const Value: Single): TComplex32; overload; inline; static;
+    class function Euler(const Value: Double): TComplex32; overload; inline; static;
+    class function Euler(const Value: Extended): TComplex32; overload; inline; static;
+
+    procedure ComputeEuler(const Value: Single); overload;
+    procedure ComputeEuler(const Value: Double); overload;
+    procedure ComputeEuler(const Value: Extended); overload;
   {$ENDIF}
   end;
 
@@ -79,6 +87,14 @@ type
     class operator Negative(const Value: TComplex64): TComplex64;
 
     class function Zero: TComplex64; inline; static;
+
+    class function Euler(const Value: Single): TComplex64; overload; inline; static;
+    class function Euler(const Value: Double): TComplex64; overload; inline; static;
+    class function Euler(const Value: Extended): TComplex64; overload; inline; static;
+
+    procedure ComputeEuler(const Value: Single); overload;
+    procedure ComputeEuler(const Value: Double); overload;
+    procedure ComputeEuler(const Value: Extended); overload;
   {$ENDIF}
   end;
 
@@ -320,7 +336,7 @@ begin
   else
  if (Z.Re <= 0) and (Z.Im < 0)
   then Result := -1
-  else Result := sign(Z.Re);
+  else Result := Sign(Z.Re);
 end;
 
 function ComplexSign32(const Re, Im: Single): Single;
@@ -331,7 +347,7 @@ begin
   if (Re <= 0) and (Im < 0) then
     Result := -1
   else
-    Result := sign(Re);
+    Result := Sign(Re);
 end;
 
 function ComplexSign64(const Re, Im: Double): Double;
@@ -342,7 +358,7 @@ begin
   if (Re <= 0) and (Im < 0) then
     Result := -1
   else
-    Result := sign(Re);
+    Result := Sign(Re);
 end;
 
 
@@ -1544,6 +1560,36 @@ begin
   Result.Im := 0;
 end;
 
+class function TComplex32.Euler(const Value: Single): TComplex32;
+begin
+  GetSinCos(Value, Result.Im, Result.Re);
+end;
+
+class function TComplex32.Euler(const Value: Double): TComplex32;
+begin
+  GetSinCos(Value, Result.Im, Result.Re);
+end;
+
+class function TComplex32.Euler(const Value: Extended): TComplex32;
+begin
+  GetSinCos(Value, Result.Im, Result.Re);
+end;
+
+procedure TComplex32.ComputeEuler(const Value: Single);
+begin
+  GetSinCos(Value, Self.Im, Self.Re);
+end;
+
+procedure TComplex32.ComputeEuler(const Value: Double);
+begin
+  GetSinCos(Value, Self.Im, Self.Re);
+end;
+
+procedure TComplex32.ComputeEuler(const Value: Extended);
+begin
+  GetSinCos(Value, Self.Im, Self.Re);
+end;
+
 
 { TComplex64 }
 
@@ -1598,6 +1644,36 @@ class function TComplex64.Zero: TComplex64;
 begin
   Result.Re := 0;
   Result.Im := 0;
+end;
+
+class function TComplex64.Euler(const Value: Single): TComplex64;
+begin
+  GetSinCos(Value, Result.Im, Result.Re);
+end;
+
+class function TComplex64.Euler(const Value: Double): TComplex64;
+begin
+  GetSinCos(Value, Result.Im, Result.Re);
+end;
+
+class function TComplex64.Euler(const Value: Extended): TComplex64;
+begin
+  GetSinCos(Value, Result.Im, Result.Re);
+end;
+
+procedure TComplex64.ComputeEuler(const Value: Single);
+begin
+  GetSinCos(Value, Self.Im, Self.Re);
+end;
+
+procedure TComplex64.ComputeEuler(const Value: Double);
+begin
+  GetSinCos(Value, Self.Im, Self.Re);
+end;
+
+procedure TComplex64.ComputeEuler(const Value: Extended);
+begin
+  GetSinCos(Value, Self.Im, Self.Re);
 end;
 
 end.

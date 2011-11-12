@@ -55,6 +55,9 @@ type
     class function InterpolatorLength: Integer; virtual; abstract;
   public
     constructor Create; override;
+
+    procedure Reset; virtual; abstract;
+
     property SampleRate;
     property Delay: Single read FDelay write SetDelay;
     property ClearBufferOnChange: Boolean read FClearBuffer write FClearBuffer default true;
@@ -67,6 +70,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure Reset; override;
 
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
@@ -98,6 +103,9 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure Reset; override;
+
     function ProcessSample32(Input: Single): Single; override;
   end;
 
@@ -144,7 +152,7 @@ procedure TCustomVariableDelay.DelayChanged;
 var
   NewSize : Integer;
 begin
- NewSize := round(SampleRate * FDelay + 0.50000001);
+ NewSize := Round(SampleRate * FDelay + 0.50000001);
  FFractional := NewSize - SampleRate * FDelay;
  ChangeBuffer(NewSize + InterpolatorLength);
  Changed;
@@ -163,6 +171,11 @@ destructor TCustomVariableDelay32.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
+end;
+
+procedure TCustomVariableDelay32.Reset;
+begin
+  FillChar(FBuffer^[0], FBufferSize * SizeOf(Single), 0);
 end;
 
 procedure TCustomVariableDelay32.ProcessBlock32(const Data: PDAVSingleFixedArray;
@@ -200,6 +213,7 @@ begin
    ReallocMem(FBuffer, NewSize * SizeOf(Single));
   end;
 end;
+
 
 { TVariableDelay32Linear }
 
@@ -299,6 +313,12 @@ end;
 
 
 { TVariableDelay32Allpass }
+
+procedure TVariableDelay32Allpass.Reset;
+begin
+  inherited;
+  FAllpassFilter.Reset;
+end;
 
 constructor TVariableDelay32Allpass.Create;
 begin

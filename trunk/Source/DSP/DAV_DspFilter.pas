@@ -1019,7 +1019,7 @@ var
 begin
  cw := 2 * cos(2 * Frequency * Pi * FSRR);
  Result := (Sqr(FNominator[0] - FNominator[2]) + Sqr(FNominator[1]) + (FNominator[1] * (FNominator[0] + FNominator[2]) + FNominator[0] * FNominator[2] * cw) * cw)
-         / (Sqr(1 - FDenominator[2]) + Sqr(FDenominator[1]) + (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw );
+   / (Sqr(1 - FDenominator[2]) + Sqr(FDenominator[1]) + (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw );
 end;
 
 function TCustomBiquadIIRFilter.MagnitudeLog10(const Frequency: Double): Double;
@@ -1033,7 +1033,7 @@ var
 begin
  GetSinCos(2 * Frequency * Pi * FSRR, sw, cw);
  Result := ArcTan2(-sw * (FNominator[0] * (2 * cw * FDenominator[2] + FDenominator[1]) + FNominator[1] * (FDenominator[2] - 1) - FNominator[2] * (2 * cw + FDenominator[1])),
-                  (FNominator[0] * (FDenominator[2] * (2 * Sqr(cw) - 1) + 1 + FDenominator[1] * cw) + FNominator[1] * (cw * (FDenominator[2] + 1) + FDenominator[1]) + FNominator[2] * (2 * Sqr(cw) + FDenominator[1] * cw + FDenominator[2] - 1)));
+   (FNominator[0] * (FDenominator[2] * (2 * Sqr(cw) - 1) + 1 + FDenominator[1] * cw) + FNominator[1] * (cw * (FDenominator[2] + 1) + FDenominator[1]) + FNominator[2] * (2 * Sqr(cw) + FDenominator[1] * cw + FDenominator[2] - 1)));
 end;
 
 function TCustomBiquadIIRFilter.Real(const Frequency: Double): Double;
@@ -1042,10 +1042,10 @@ var
 begin
  cw := cos(2 * Frequency * Pi * FSRR);
  Real := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
-          +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-          + (2 * Sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2]))
-          / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
-          + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
+   +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
+   + (2 * Sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2]))
+   / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
+   + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
 end;
 
 function TCustomBiquadIIRFilter.Imaginary(const Frequency: Double): Double;
@@ -1054,9 +1054,9 @@ var
 begin
  cw := cos(2 * Frequency * Pi * FSRR);
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
-              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw))
-              / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
-              + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]))
+   + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * Sqrt(1 - Sqr(cw))
+   / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
+   + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]))
 end;
 
 procedure TCustomBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
@@ -1065,12 +1065,12 @@ var
 begin
  cw := cos(2 * Frequency * Pi * FSRR);
  Divider   := 1 / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
-                    + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
+   + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
  Real      := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
-              +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-              + (2 * Sqr(cw)-1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
+   +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
+   + (2 * Sqr(cw)-1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
-              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
+   + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * Sqrt(1 - Sqr(cw)) * Divider;
 end;
 
 procedure TCustomBiquadIIRFilter.CoefficientsChanged;
@@ -1085,12 +1085,12 @@ var
 begin
  cw := cos(2 * Frequency * pi * FSRR);
  Divider   := 1 / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
-                    + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
+   + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
  Real      := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
-              +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-              + (2 * Sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
+   +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
+   + (2 * Sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
-              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
+   + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * Sqrt(1 - Sqr(cw)) * Divider;
 end;
 
 procedure TCustomBiquadIIRFilter.Reset;
@@ -1149,7 +1149,7 @@ begin
  if e > 0
   then
    begin
-    FZeros[0].Im := sqrt(e);
+    FZeros[0].Im := Sqrt(e);
     FZeros[1].Im := -FZeros[0].Im;
    end
   else
@@ -1168,7 +1168,7 @@ begin
  if e > 0
   then
    begin
-    FPoles[0].Im := sqrt(e);
+    FPoles[0].Im := Sqrt(e);
     FPoles[1].Im := -FPoles[0].Im;
    end
   else

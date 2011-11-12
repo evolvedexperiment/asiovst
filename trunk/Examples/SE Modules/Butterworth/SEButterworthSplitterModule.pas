@@ -275,6 +275,7 @@ begin
  case TSEButterworthPins(CurrentPin.PinID) of
       pinInput : begin
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                  Pin[2].TransmitStatusChange(SampleClock, Pin[0].Status);
                   ChooseProcess;
                  end;
   pinFrequency : FFilter.Frequency := 1E-5 + abs(FFrequency);

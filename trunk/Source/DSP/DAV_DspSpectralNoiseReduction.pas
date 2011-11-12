@@ -34,6 +34,12 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF Use_IPPS}
+{$DEFINE ComplexDataOrder}
+{$ELSE}
+{$DEFINE PackedComplexDataOrder}
+{$ENDIF}
+
 uses
   Classes, DAV_Types, DAV_Classes, DAV_Complex, DAV_DspSpectralEffects,
   DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_DspWindowFunctions,
@@ -58,6 +64,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure Clear; override;
 
     property WindowFunctionClass : TWindowFunctionClass read FWindowClass write SetWindowClass;
   end;
@@ -162,7 +170,7 @@ type
     property Ratio: Double read FRatio write SetRatio;
     property Knee: Double read FKnee write SetKnee;
     property Match: Boolean read FMatch write SetMatch;
-    property ThresholdOffset: Double read FOffset write SetOffset; 
+    property ThresholdOffset: Double read FOffset write SetOffset;
 
     property FFTOrder;
     property FFTSize;
@@ -186,6 +194,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure Clear; override;
 
     property WindowFunctionClass : TWindowFunctionClass read FWindowClass write SetWindowClass;
   end;
@@ -274,10 +284,10 @@ end;
 
 destructor TCustomNoiseReduction32.Destroy;
 begin
- Dispose(FFilterIR);
- Dispose(FAddTimeBuffer);
- Dispose(FAddSpecBuffer);
- Dispose(FFilter);
+ FreeMem(FFilterIR);
+ FreeMem(FAddTimeBuffer);
+ FreeMem(FAddSpecBuffer);
+ FreeMem(FFilter);
 
  FreeAndNil(FWindowFunction);
 
@@ -287,17 +297,44 @@ end;
 procedure TCustomNoiseReduction32.FFTOrderChanged;
 begin
  inherited;
+
  ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Single));
+ {$IFDEF ComplexDataOrder}
+ ReallocMem(FAddSpecBuffer, (Fft.BinCount + 1) * SizeOf(TComplex32));
+ ReallocMem(FFilter, (Fft.BinCount + 1) * SizeOf(TComplex32));
+ {$ELSE}
  ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplex32));
  ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplex32));
+ {$ENDIF}
  ReallocMem(FFilterIR, FFFTSize * SizeOf(Single));
+
  FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Single), 0);
+ {$IFDEF ComplexDataOrder}
+ FillChar(FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex32), 0);
+ FillChar(FFilter^, (Fft.BinCount + 1) * SizeOf(TComplex32), 0);
+ {$ELSE}
  FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32), 0);
  FillChar(FFilter^, Fft.BinCount * SizeOf(TComplex32), 0);
+ {$ENDIF}
  FillChar(FFilterIR^, FFFTSize * SizeOf(Single), 0);
 
  if Assigned(FWindowFunction)
   then FWindowFunction.Length := FFTSize;
+end;
+
+procedure TCustomNoiseReduction32.Clear;
+begin
+ inherited;
+
+ FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Single), 0);
+ {$IFDEF ComplexDataOrder}
+ FillChar(FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex32), 0);
+ FillChar(FFilter^, (Fft.BinCount + 1) * SizeOf(TComplex32), 0);
+ {$ELSE}
+ FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32), 0);
+ FillChar(FFilter^, Fft.BinCount * SizeOf(TComplex32), 0);
+ {$ENDIF}
+ FillChar(FFilterIR^, FFFTSize * SizeOf(Single), 0);
 end;
 
 procedure TCustomNoiseReduction32.SetWindowClass(
@@ -351,7 +388,11 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
+ {$IFDEF ComplexDataOrder}
+ Move(FSignalFreq^, FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex32));
+ {$ELSE}
  Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32));
+ {$ENDIF}
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
@@ -380,7 +421,9 @@ begin
  if Abs(Spectrum^[0].Re) > FThreshold
   then FFilter^[0].Re := CHalf32 * (1 + FFilter^[0].Re)
   else FFilter^[0].Re := CHalf32 * FFilter^[0].Re;
- FFilter^[0].Im := 0;
+ {$IFDEF ComplexDataOrder}
+ FFilter^[Half].Re := 0;
+ {$ENDIF}
 
  // other bins
  for Bin := 1 to Half - 1 do
@@ -392,10 +435,16 @@ begin
   end;
 
  // Nyquist bin
+ {$IFDEF ComplexDataOrder}
  if Abs(Spectrum^[Half].Re) > FThreshold
   then FFilter^[Half].Re := CHalf32 * (1 + FFilter^[Half].Re)
   else FFilter^[Half].Re := CHalf32 * FFilter^[Half].Re;
  FFilter^[Half].Im := 0;
+ {$ELSE}
+ if Abs(Spectrum^[0].Im) > FThreshold
+  then FFilter^[0].Im := CHalf32 * (1 + FFilter^[0].Im)
+  else FFilter^[0].Im := CHalf32 * FFilter^[0].Im;
+ {$ENDIF}
 
  // transform filter to time domain
  FFft.PerformIFFT(FFilter, FFilterIR);
@@ -412,7 +461,11 @@ end;
 
 procedure TSpectralNoiseCut32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
 begin
+ {$IFDEF ComplexDataOrder}
+ ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf + 1);
+ {$ELSE}
  ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf);
+ {$ENDIF}
 end;
 
 procedure TSpectralNoiseCut32.SetThreshold(const Value: Double);
@@ -479,7 +532,11 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
+ {$IFDEF ComplexDataOrder}
+ Move(FSignalFreq^, FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex32));
+ {$ELSE}
  Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32));
+ {$ENDIF}
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
@@ -510,23 +567,31 @@ begin
  // DC bin
  FGates[0].InputSample(COffset + Sqr(Spectrum^[0].Re));
  FFilter^[0].Re := FGates[0].GainSample(1);
- if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ if Abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ {$IFDEF ComplexDataOrder}
  FFilter^[0].Im := 0;
+ {$ENDIF}
 
  // other bins
  for Bin := 1 to Half - 1 do
   begin
    FGates[Bin].InputSample(COffset + Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im));
    FFilter^[Bin].Re := FGates[Bin].GainSample(1);
-   if abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
+   if Abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
    FFilter^[Bin].Im := 0;
   end;
 
  // Nyquist bin
+ {$IFDEF ComplexDataOrder}
  FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
- FFilter^[0].Re := FGates[Half].GainSample(1);
- if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ FFilter^[Half].Re := FGates[Half].GainSample(1);
+ if Abs(FFilter^[Half].Re) > 1 then FFilter^[Half].Re := 0;
  FFilter^[Half].Im := 0;
+ {$ELSE}
+ FGates[Half].InputSample(COffset + Sqr(Spectrum^[0].Im));
+ FFilter^[0].Im := FGates[Half].GainSample(1);
+ if Abs(FFilter^[0].Im) > 1 then FFilter^[0].Im := 0;
+ {$ENDIF}
 
  FFft.PerformIFFT(FFilter, FFilterIR);
 
@@ -539,7 +604,11 @@ end;
 
 procedure TSpectralNoiseGate32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
 begin
+ {$IFDEF ComplexDataOrder}
+ ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf + 1);
+ {$ELSE}
  ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf);
+ {$ENDIF}
 end;
 
 procedure TSpectralNoiseGate32.SetAttack(const Value: Double);
@@ -636,7 +705,14 @@ begin
  FOffset := 8;
 
  FFFT.AutoScaleType := astDivideInvByN;
+
+ {$IFDEF ComplexDataOrder}
+ FFFT.DataOrder := doComplex;
+ {$ENDIF}
+
+ {$IFDEF PackedComplexDataOrder}
  FFFT.DataOrder := doPackedComplex;
+ {$ENDIF}
 end;
 
 procedure TNoiseReduction32.FFTOrderChanged;
@@ -680,7 +756,11 @@ begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
  // filter with the currest filter coefficients
+ {$IFDEF ComplexDataOrder}
+ Move(FSignalFreq^, FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex32));
+ {$ELSE}
  Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex32));
+ {$ENDIF}
  PerformSpectralEffect(FAddSpecBuffer);
 
  // eventually match threshold
@@ -713,13 +793,21 @@ const
 begin
  Half := FFFTSizeHalf;
 
+ {$IFDEF ComplexDataOrder}
+ Assert(FFFT.DataOrder = doComplex);
+ {$ENDIF}
+ {$IFDEF PackedComplexDataOrder}
  Assert(FFFT.DataOrder = doPackedComplex);
+ {$ENDIF}
 
  // DC bin
  FGates[0].InputSample(COffset + Sqr(Spectrum^[0].Re));
  FFilter^[0].Re := FGates[0].GainSample(1);
  Assert(not (IsNan(FFilter^[0].Re)));
- if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ if Abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ {$IFDEF ComplexDataOrder}
+ FFilter^[0].Im := 0;
+ {$ENDIF}
 
  // other bins
  for Bin := 1 to Half - 1 do
@@ -732,10 +820,18 @@ begin
   end;
 
  // Nyquist bin
+ {$IFDEF ComplexDataOrder}
+ FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
+ FFilter^[Half].Re := FGates[Half].GainSample(1);
+ Assert(not (IsNan(FFilter^[Half].Re)));
+ if Abs(FFilter^[Half].Re) > 1 then FFilter^[Half].Re := 0;
+ FFilter^[Half].Im := 0;
+ {$ELSE}
  FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
  FFilter^[0].Im := FGates[Half].GainSample(1);
  Assert(not (IsNan(FFilter^[0].Im)));
  if Abs(FFilter^[0].Im) > 1 then FFilter^[0].Im := 0;
+ {$ENDIF}
 
  FFft.PerformIFFT(FFilter, FFilterIR);
 
@@ -785,7 +881,11 @@ end;
 
 procedure TNoiseReduction32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
 begin
+ {$IFDEF ComplexDataOrder}
+ ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf + 1);
+ {$ELSE}
  ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf);
+ {$ENDIF}
 end;
 
 procedure TNoiseReduction32.SetAttack(const Value: Double);
@@ -917,16 +1017,42 @@ procedure TCustomNoiseReduction64.FFTOrderChanged;
 begin
  inherited;
  ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Double));
+ {$IFDEF ComplexDataOrder}
+ ReallocMem(FAddSpecBuffer, (Fft.BinCount + 1) * SizeOf(TComplex64));
+ ReallocMem(FFilter, (Fft.BinCount + 1) * SizeOf(TComplex64));
+ {$ELSE}
  ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplex64));
  ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplex64));
+ {$ENDIF}
  ReallocMem(FFilterIR, FFFTSize * SizeOf(Double));
+
  FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Double), 0);
+ {$IFDEF ComplexDataOrder}
+ FillChar(FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex64), 0);
+ FillChar(FFilter^, (Fft.BinCount + 1) * SizeOf(TComplex64), 0);
+ {$ELSE}
  FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex64), 0);
  FillChar(FFilter^, Fft.BinCount * SizeOf(TComplex64), 0);
+ {$ENDIF}
  FillChar(FFilterIR^, FFFTSize * SizeOf(Double), 0);
 
  if Assigned(FWindowFunction)
   then FWindowFunction.Length := FFTSize;
+end;
+
+procedure TCustomNoiseReduction64.Clear;
+begin
+ inherited;
+
+ FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Double), 0);
+ {$IFDEF ComplexDataOrder}
+ FillChar(FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex64), 0);
+ FillChar(FFilter^, (Fft.BinCount + 1) * SizeOf(TComplex64), 0);
+ {$ELSE}
+ FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex64), 0);
+ FillChar(FFilter^, Fft.BinCount * SizeOf(TComplex64), 0);
+ {$ENDIF}
+ FillChar(FFilterIR^, FFFTSize * SizeOf(Double), 0);
 end;
 
 procedure TCustomNoiseReduction64.SetWindowClass(
@@ -978,7 +1104,11 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
+ {$IFDEF ComplexDataOrder}
+ Move(FSignalFreq^, FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex64));
+ {$ELSE}
  Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex64));
+ {$ENDIF}
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
@@ -1007,7 +1137,9 @@ begin
  if Abs(Spectrum^[0].Re) > FThreshold
   then FFilter^[0].Re := CHalf64 * (1 + FFilter^[0].Re)
   else FFilter^[0].Re := CHalf64 * FFilter^[0].Re;
+ {$IFDEF ComplexDataOrder}
  FFilter^[0].Im := 0;
+ {$ENDIF}
 
  // other bins
  for Bin := 1 to Half - 1 do
@@ -1019,10 +1151,16 @@ begin
   end;
 
  // Nyquist bin
+ {$IFDEF ComplexDataOrder}
  if Abs(Spectrum^[Half].Re) > FThreshold
   then FFilter^[Half].Re := CHalf64 * (1 + FFilter^[Half].Re)
   else FFilter^[Half].Re := CHalf64 * FFilter^[Half].Re;
  FFilter^[Half].Im := 0;
+ {$ELSE}
+ if Abs(Spectrum^[0].Im) > FThreshold
+  then FFilter^[0].Im := CHalf64 * (1 + FFilter^[0].Im)
+  else FFilter^[0].Im := CHalf64 * FFilter^[0].Im;
+ {$ENDIF}
 
  // transform filter to time domain
  FFft.PerformIFFT(FFilter, FFilterIR);
@@ -1039,7 +1177,11 @@ end;
 
 procedure TSpectralNoiseCut64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
 begin
+ {$IFDEF ComplexDataOrder}
+ ComplexMultiplyBlock64(Spectrum, FFilter, FFFTSizeHalf + 1);
+ {$ELSE}
  ComplexMultiplyBlock64(Spectrum, FFilter, FFFTSizeHalf);
+ {$ENDIF}
 end;
 
 procedure TSpectralNoiseCut64.SetThreshold(const Value: Double);
@@ -1106,7 +1248,11 @@ var
 begin
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
+ {$IFDEF ComplexDataOrder}
+ Move(FSignalFreq^, FAddSpecBuffer^, (Fft.BinCount + 1) * SizeOf(TComplex64));
+ {$ELSE}
  Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplex64));
+ {$ENDIF}
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
@@ -1137,23 +1283,31 @@ begin
  // DC bin
  FGates[0].InputSample(COffset + Sqr(Spectrum^[0].Re));
  FFilter^[0].Re := FGates[0].GainSample(1);
- if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ if Abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ {$IFDEF ComplexDataOrder}
  FFilter^[0].Im := 0;
+ {$ENDIF}
 
  // other bins
  for Bin := 1 to Half - 1 do
   begin
    FGates[Bin].InputSample(COffset + Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im));
    FFilter^[Bin].Re := FGates[Bin].GainSample(1);
-   if abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
+   if Abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
    FFilter^[Bin].Im := 0;
   end;
 
  // Nyquist bin
+ {$IFDEF ComplexDataOrder}
  FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
  FFilter^[0].Re := FGates[Half].GainSample(1);
- if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ if Abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
  FFilter^[Half].Im := 0;
+ {$ELSE}
+ FGates[Half].InputSample(COffset + Sqr(Spectrum^[0].Im));
+ FFilter^[0].Im := FGates[Half].GainSample(1);
+ if Abs(FFilter^[0].Im) > 1 then FFilter^[0].Im := 0;
+ {$ENDIF}
 
  FFft.PerformIFFT(FFilter, FFilterIR);
 
@@ -1166,7 +1320,11 @@ end;
 
 procedure TSpectralNoiseGate64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
 begin
+ {$IFDEF ComplexDataOrder}
+ ComplexMultiplyBlock64(Spectrum, FFilter, FFFTSizeHalf + 1);
+ {$ELSE}
  ComplexMultiplyBlock64(Spectrum, FFilter, FFFTSizeHalf);
+ {$ENDIF}
 end;
 
 procedure TSpectralNoiseGate64.SetAttack(const Value: Double);

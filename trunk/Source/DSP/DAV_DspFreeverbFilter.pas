@@ -34,6 +34,8 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{-$DEFINE PUREPASCAL}
+
 {$IFDEF CPUx86_64}
   {$DEFINE PUREPASCAL}
 {$ENDIF}
@@ -75,7 +77,9 @@ type
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
 
+    procedure Clear;
     procedure Mute;
+
     property Feedback: Single read FFeedback write FFeedback;
     property BufferSize : Integer read FBufferSize write SetBufferSize;
   end;
@@ -104,13 +108,20 @@ type
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
 
+    procedure Clear;
     procedure Mute;
+
     property Damp: Single read FDamp write SetDamp;
     property Feedback: Single read FFeedback write FFeedback;
-    property BufferSize : Integer read FBufferSize write SetBufferSize;
+    property BufferSize: Integer read FBufferSize write SetBufferSize;
   end;
 
 implementation
+
+{$IFDEF PUREPASCAL}
+uses
+  Math;
+{$ENDIF}
 
 { TFreeverbAllpass }
 
@@ -154,10 +165,16 @@ end;
 procedure TFreeverbAllpass.BuffersizeChanged;
 begin
  ReallocMem(FBuffer, (FBufferSize + 1) * SizeOf(Single));
+ Clear;
  FBufferPos := 0;
 end;
 
 procedure TFreeverbAllpass.Mute;
+begin
+ Clear;
+end;
+
+procedure TFreeverbAllpass.Clear;
 begin
  FillChar(FBuffer^[0], (FBufferSize + 1) * SizeOf(Single), 0);
 end;
@@ -264,6 +281,7 @@ end;
 procedure TFreeverbCombFilter.BuffersizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
+ Clear;
  FBufferPos := 0;
  Changed;
 end;
@@ -285,6 +303,11 @@ end;
 
 procedure TFreeverbCombFilter.Mute;
 begin
+ Clear;
+end;
+
+procedure TFreeverbCombFilter.Clear;
+begin
  FillChar(FBuffer^[0], FBufferSize * SizeOf(Single), 0);
 end;
 
@@ -299,50 +322,58 @@ end;
 
 function TFreeverbCombFilter.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
+var
+  Temp : Single;
+  IntCast : Integer absolute Result;
 begin
- // yet todo!!!
+  Result := FBuffer[FBufferPos];
+//  if (IntCast and $7F800000) <> 0 then Result := 0;
+  Temp := Result * FFeedback + Input;
+  Result := Result * FDampB + FFilterStore * FDampA;
+//  if (IntCast and $7F800000) <> 0 then Result := 0;
+  FFilterStore := Temp;
 {$ELSE}
 asm
-  mov   ecx, [eax].FBuffer                       // FBuffer start in ecx
-  mov   edx, [eax].FBufferPos                    // FBuffer index in edx
+    MOV     ECX, [EAX].FBuffer                      // FBuffer start in ECX
+    MOV     EDX, [EAX].FBufferPos                   // FBuffer index in EDX
 
-  // This checks for very small values that can cause a Processor
-  // to switch in extra precision mode, which is expensive.
-  // Since such small values are irrelevant to audio, avoid this.
-  // This is the same spot where the original C macro appears
-  test  dword ptr [ecx + edx], $7F800000         // test if denormal
-  jnz   @Normal
-  mov   dword ptr [ecx + edx], 0                 // if so, zero out
+    // This checks for very small values that can cause a Processor
+    // to switch in extra precision mode, which is expensive.
+    // Since such small values are irrelevant to audio, avoid this.
+    // This is the same spot where the original CMP macro appears
+    TEST    DWORD PTR [ECX + EDX], $7F800000        // TEST if denormal
+    JNZ     @Normal
+    MOV     DWORD PTR [ECX + EDX], 0                // if so, zero out
+
 @normal:
+    FLD     [ECX + EDX].Single;                     // load sample from FBuffer
+    FLD     ST(0)                                   // duplicate on the stack
+    FMUL    [EAX].FDampB                            // multiply with FDampB
+    FLD     [EAX].FFilterStore;                     // load stored filtered sample
+    FMUL    [EAX].FDampA                            // multiply with FDampA
+    FADDP
+    FST     [EAX].FFilterStore                      // store it back
 
-  fld   [ecx + edx].Single;                      // load sample from FBuffer
-  fld   st(0)                                    // duplicate on the stack
-  fmul  [eax].FDampB                             // multiply with FDampB
-  fld   [eax].FFilterStore;                      // load stored filtered sample
-  fmul  [eax].FDampA                             // multiply with FDampA
-  faddp
-  fst   [eax].FFilterStore                       // store it back
+    // This checks for very small values that can cause a Processor
+    // to switch in extra precision mode, which is expensive.
+    // Since such small values are irrelevant to audio, avoid this.
+    // This is the same spot where the original CMP macro appears
+    TEST    DWORD PTR [EAX].FFilterStore, $7F800000 // TEST if denormal
+    JNZ     @Normal2
+    MOV     DWORD PTR [EAX].FFilterStore, 0         // if so, zero out
 
-  // This checks for very small values that can cause a Processor
-  // to switch in extra precision mode, which is expensive.
-  // Since such small values are irrelevant to audio, avoid this.
-  // This is the same spot where the original C macro appears
-  test  dword ptr [eax].FFilterStore, $7F800000  // test if denormal
-  jnz   @Normal2
-  mov   dword ptr [eax].FFilterStore, 0          // if so, zero out
 @normal2:
-
-  fmul  [eax].FFeedback                          // multiply with FFeedback
-  fadd  input                                    // and add to input sample
-  fstp  [ecx+edx].Single                         // store at current FBuffer pos
-  add   edx, 4                                   // Update FBuffer index
-  cmp   edx, [eax].FBufferSize;                  // end of FBuffer reached?
-  jb    @OK
-  xor   edx, edx                                 // if so, reset Buffer index
+    FMUL  [EAX].FFeedback                           // multiply with FFeedback
+    FADD  Input                                     // and ADD to input sample
+    FSTP  [ECX + EDX].Single                        // store at current FBuffer pos
+    ADD   EDX, 4                                    // Update FBuffer index
+    CMP   EDX, [EAX].FBufferSize;                   // end of FBuffer reached?
+    JB    @OK
+    XOR   EDX, EDX                                  // if so, reset Buffer index
 @OK:
-  mov  [eax].FBufferPos, edx                     // and store new index.
-                                                 // result already in st(0),
-                                                 // hence duplicate
+    MOV  [EAX].FBufferPos, EDX                      // and store new index.
+                                                    // result already in ST(0),
+                                                    // hence duplicate
  {$ENDIF}
 end;
 

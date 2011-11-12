@@ -208,6 +208,7 @@ begin
   pinInput: begin
              ChooseProcess;
              Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+             Pin[2].TransmitStatusChange(SampleClock, Pin[0].Status);
             end;
  end;
 end;

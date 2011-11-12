@@ -44,10 +44,10 @@ uses
 type
   TCustomFirstOrderFilter = class(TCustomIIRFilter)
   protected
-    FState      : Double;
-    FCoeff      : Double;
-    FFilterGain : Double;
-    FStates     : TDAVDoubleDynArray;
+    FState       : Double;
+    FCoefficient : Double;
+    FFilterGain  : Double;
+    FStates      : TDAVDoubleDynArray;
     function GetOrder: Cardinal; override;
     procedure SetOrder(const Value: Cardinal); override;
     procedure AssignTo(Dest: TPersistent); override;
@@ -77,17 +77,18 @@ type
   private
     FFractionalDelay: Double;
     procedure SetFractionalDelay(const Value: Double);
-    procedure FractionalDelayChanged;
   protected
     FCoefficient : Double;
     FState       : Double;
     FStates      : TDAVDoubleDynArray;
     procedure AssignTo(Dest: TPersistent); override;
-  published
+    procedure FractionalDelayChanged; virtual;
   public
     constructor Create; override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
+    function Real(const Frequency: Double): Double; override;
+    function Imaginary(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Reset; override;
@@ -95,6 +96,8 @@ type
     procedure ResetStatesInt64; override;
     procedure PushStates; override;
     procedure PopStates; override;
+    procedure Complex(const Frequency: Double; out Real: Single;
+      out Imaginary: Single); override;
 
     property FractionalDelay: Double read FFractionalDelay write SetFractionalDelay;
   end;
@@ -143,8 +146,8 @@ type
     function ProcessSample64(Input: Double): Double; override;
   end;
 
-  TFirstOrderLowpassFilter = class(TFirstOrderHighcutFilter);
-  TFirstOrderHighpassFilter = class(TFirstOrderLowcutFilter);
+  TFirstOrderLowpassFilter = TFirstOrderHighcutFilter;
+  TFirstOrderHighpassFilter = TFirstOrderLowcutFilter;
 
 implementation
 
@@ -272,6 +275,17 @@ end;
 
 { TFirstOrderAllpassFilter }
 
+procedure TFirstOrderAllpassFilter.Complex(const Frequency: Double; out Real,
+  Imaginary: Single);
+var
+  cw, Divider : Double;
+begin
+ cw := cos(2 * Frequency * Pi * FSRR);
+ Divider := 1 / (Sqr(FCoefficient) + 1 + 2 * cw * (FCoefficient));
+ Real := (2 * FCoefficient + cw * (1 + Sqr(FCoefficient))) * Divider;
+ Imaginary := (1 - Sqr(FCoefficient)) * Sqrt(1 - Sqr(cw)) * Divider;
+end;
+
 constructor TFirstOrderAllpassFilter.Create;
 begin
  inherited;
@@ -318,9 +332,23 @@ begin
 end;
 
 function TFirstOrderAllpassFilter.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
 begin
  Result := FState + FCoefficient * Input;
  FState := Input - FCoefficient * Result;
+{$ELSE}
+asm
+  FLD     Input                // Input
+  {$IFDEF HandleDenormals}
+  FADD    CDenorm32
+  {$ENDIF}
+  FMUL    [Self].FCoefficient
+  FADD    [Self].FState        // Result
+  FLD     [Self].FCoefficient  // FCoefficient, Result
+  FMUL    ST(0), ST(1)         // Result * FCoefficient, Result
+  FSUBR   Input                // Input - Result * FCoefficient, Result
+  FSTP    [Self].FState
+{$ENDIF}
 end;
 
 function TFirstOrderAllpassFilter.ProcessSample64(Input: Double): Double;
@@ -333,6 +361,13 @@ procedure TFirstOrderAllpassFilter.PushStates;
 begin
  SetLength(FStates, Length(FStates) + 1);
  FStates[Length(FStates) - 1] := FState;
+end;
+
+function TFirstOrderAllpassFilter.Real(const Frequency: Double): Double;
+var
+  Dummy : Double;
+begin
+ Complex(Frequency, Result, Dummy);
 end;
 
 procedure TFirstOrderAllpassFilter.Reset;
@@ -350,7 +385,6 @@ begin
  FState := 0;
 end;
 
-
 procedure TFirstOrderAllpassFilter.SetFractionalDelay(const Value: Double);
 begin
  if FFractionalDelay <> Value then
@@ -365,6 +399,13 @@ begin
  FCoefficient := 0.5 * FFractionalDelay;
 end;
 
+function TFirstOrderAllpassFilter.Imaginary(const Frequency: Double): Double;
+var
+  Dummy : Double;
+begin
+ Complex(Frequency, Dummy, Result);
+end;
+
 
 { TFirstOrderLowShelfFilter }
 
@@ -374,7 +415,7 @@ var
 begin
  K := FExpW0.Im / (1 + FExpW0.Re);
  FFilterGain := (K * FGainFactor + 1) / (K / FGainFactor + 1);
- FCoeff := (FGainFactor * K - 1) / (FGainFactor * K + 1);
+ FCoefficient := (FGainFactor * K - 1) / (FGainFactor * K + 1);
  FAddCoeff := (K - FGainFactor) / (K + FGainFactor);
 end;
 
@@ -383,7 +424,7 @@ function TFirstOrderLowShelfFilter.ProcessSample32(Input: Single): Single;
 begin
  Input := FFilterGain * Input;
  Result := Input + FState;
- FState := Input * FCoeff - Result * FAddCoeff;
+ FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
  FLD Input.Single
@@ -397,8 +438,8 @@ asm
   FLD   ST(0)
   FMUL  [EAX.FAddCoeff].Double
   FXCH  ST(2)
-  FMUL  [EAX.FCoeff].Double
-  fsubrp ST(2), ST(0)
+  FMUL  [EAX.FCoefficient].Double
+  FSUBRP ST(2), ST(0)
   FXCH
   FSTP  [EAX.FState].Double
  @End:
@@ -410,25 +451,25 @@ function TFirstOrderLowShelfFilter.ProcessSample64(Input: Double): Double;
 begin
  Input := FFilterGain * Input;
  Result := Input + FState;
- FState := Input * FCoeff - Result * FAddCoeff;
+ FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
- FLD Input.Double
- {$IFDEF HandleDenormals}
- FADD CDenorm64
- {$ENDIF}
- FMUL  [EAX.FFilterGain].Double
- JZ @End
-  FLD   ST(0)
-  FADD  [EAX.FState].Double
-  FLD   ST(0)
-  FMUL  [EAX.FAddCoeff].Double
-  FXCH  ST(2)
-  FMUL  [EAX.FCoeff].Double
-  fsubrp ST(2), ST(0)
+  FLD     Input.Double
+  {$IFDEF HandleDenormals}
+  FADD    CDenorm64
+  {$ENDIF}
+  FMUL    [EAX.FFilterGain].Double
+  JZ      @End
+  FLD     ST(0)
+  FADD    [EAX.FState].Double
+  FLD     ST(0)
+  FMUL    [EAX.FAddCoeff].Double
+  FXCH    ST(2)
+  FMUL    [EAX.FCoefficient].Double
+  FSUBRP  ST(2), ST(0)
   FXCH
-  FSTP  [EAX.FState].Double
- @End:
+  FSTP    [EAX.FState].Double
+@End:
  {$ENDIF}
 end;
 
@@ -441,7 +482,7 @@ var
 begin
  K  := FExpW0.Im / (1 + FExpW0.Re);
  FFilterGain := ((K / FGainFactor + 1) / (K * FGainFactor + 1)) * FGainFactorSquared;
- FCoeff := (K - FGainFactor) / (K + FGainFactor);
+ FCoefficient := (K - FGainFactor) / (K + FGainFactor);
  FAddCoeff := (K * FGainFactor - 1) / (K * FGainFactor + 1);
 end;
 
@@ -450,7 +491,7 @@ function TFirstOrderHighShelfFilter.ProcessSample32(Input: Single): Single;
 begin
  Input := FFilterGain * Input;
  Result := Input + FState;
- FState := Input * FCoeff - Result * FAddCoeff;
+ FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
  FLD Input.Single
@@ -464,8 +505,8 @@ asm
   FLD   ST(0)
   FMUL  [EAX.FAddCoeff].Double
   FXCH  ST(2)
-  FMUL  [EAX.FCoeff].Double
-  fsubrp ST(2), ST(0)
+  FMUL  [EAX.FCoefficient].Double
+  FSUBRP ST(2), ST(0)
   FXCH
   FSTP  [EAX.FState].Double
  @End:
@@ -477,7 +518,7 @@ function TFirstOrderHighShelfFilter.ProcessSample64(Input: Double): Double;
 begin
  Input := FFilterGain * Input;
  Result := Input + FState;
- FState := Input * FCoeff - Result * FAddCoeff;
+ FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
  FLD Input.Double
@@ -491,8 +532,8 @@ asm
   FLD   ST(0)
   FMUL  [EAX.FAddCoeff].Double
   FXCH  ST(2)
-  FMUL  [EAX.FCoeff].Double
-  fsubrp ST(2), ST(0)
+  FMUL  [EAX.FCoefficient].Double
+  FSUBRP ST(2), ST(0)
   FXCH
   FSTP  [EAX.FState].Double
  @End:
@@ -511,7 +552,7 @@ begin
 
  t := 1 / (1 + K);
  FFilterGain := FFilterGain * t * K;
- FCoeff := (1 - K) * t;
+ FCoefficient := (1 - K) * t;
 end;
 
 function TFirstOrderHighcutFilter.MagnitudeSquared(const Frequency: Double): Double;
@@ -519,7 +560,7 @@ var
   cw : Double;
 begin
  cw := 2 * Cos(2 * Frequency * Pi * SampleRateReciprocal);
- Result := Sqr(FFilterGain) * (cw + 2) / (1 + Sqr(FCoeff) - cw * FCoeff);
+ Result := Sqr(FFilterGain) * (cw + 2) / (1 + Sqr(FCoefficient) - cw * FCoefficient);
  Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
@@ -528,7 +569,7 @@ function TFirstOrderHighcutFilter.ProcessSample32(Input: Single): Single;
 begin
  Input  := FFilterGain * Input {$IFDEF HandleDenormals} + CDenorm32 {$ENDIF};
  Result := Input + FState;
- FState := Input + FCoeff * Result;
+ FState := Input + FCoefficient * Result;
 {$ELSE}
 asm
  FLD     Input.Single
@@ -539,7 +580,7 @@ asm
  FLD     ST(0)
  FADD    [EAX.FState].Double
  FLD     ST(0)
- FMUL    [EAX.FCoeff].Double
+ FMUL    [EAX.FCoefficient].Double
  FADDP   ST(2), ST(0)
  FXCH
  FSTP    [EAX.FState].Double
@@ -551,7 +592,7 @@ function TFirstOrderHighcutFilter.ProcessSample64(Input: Double): Double;
 begin
  Input  := FFilterGain * Input {$IFDEF HandleDenormals} + CDenorm32 {$ENDIF};
  Result := Input + FState;
- FState := Input + FCoeff * Result;
+ FState := Input + FCoefficient * Result;
 {$ELSE}
 asm
  FLD     Input.Double
@@ -562,7 +603,7 @@ asm
  FLD     ST(0)
  FADD    [EAX.FState].Double
  FLD     ST(0)
- FMUL    [EAX.FCoeff].Double
+ FMUL    [EAX.FCoefficient].Double
  FADDP   ST(2), ST(0)
  FXCH
  FSTP    [EAX.FState].Double
@@ -581,8 +622,8 @@ begin
 
  A.Re :=  Cmplx.Re + 1;
  A.Im := -Cmplx.Im;
- B.Re := -Cmplx.Re * FCoeff + 1;
- B.Im :=  Cmplx.Im * FCoeff;
+ B.Re := -Cmplx.Re * FCoefficient + 1;
+ B.Im :=  Cmplx.Im * FCoefficient;
  R := ComplexMultiply64(R, ComplexDivide64(A, B));
 
  Real := R.Re;
@@ -601,7 +642,7 @@ begin
 
  t := 1 / (K + 1);
  FFilterGain := FFilterGain * t;
- FCoeff := (1 - K) * t;
+ FCoefficient := (1 - K) * t;
 end;
 
 function TFirstOrderLowcutFilter.MagnitudeSquared(const Frequency: Double): Double;
@@ -609,7 +650,7 @@ var
   cw : Double;
 begin
  cw     := 2 * Cos(2 * Frequency * pi * FSRR);
- Result := Sqr(FFilterGain) * (cw - 2) / (1 + Sqr(FCoeff) - cw * FCoeff);
+ Result := Sqr(FFilterGain) * (cw - 2) / (1 + Sqr(FCoefficient) - cw * FCoefficient);
  Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
@@ -628,8 +669,8 @@ begin
  A.Im := -Cmplx.Im;
  R := ComplexMultiply64(R, A);
 
- A.Re := -Cmplx.Re * FCoeff + 1;
- A.Im :=  Cmplx.Im * FCoeff;
+ A.Re := -Cmplx.Re * FCoefficient + 1;
+ A.Im :=  Cmplx.Im * FCoefficient;
  R := ComplexDivide64(R, A);
 
  Real := R.Re;
@@ -642,7 +683,7 @@ function TFirstOrderLowcutFilter.ProcessSample32(Input: Single): Single;
 begin
  Input := FFilterGain * Input;
  Result :=  Input + FState;
- FState := -Input + FCoeff * Result;
+ FState := -Input + FCoefficient * Result;
 {$ELSE}
 asm
  FLD     Input.Single
@@ -662,7 +703,7 @@ asm
  FLD     ST(0)
  FADD    [EAX.FState].Double
  FLD     ST(0)
- FMUL    [EAX.FCoeff].Double
+ FMUL    [EAX.FCoefficient].Double
  FSUBRP  ST(2), ST(0)
  FXCH
  FSTP    [EAX.FState].Double
@@ -674,7 +715,7 @@ function TFirstOrderLowcutFilter.ProcessSample64(Input: Double): Double;
 begin
  Input := FFilterGain * Input;
  Result :=  Input + FState;
- FState := -Input + FCoeff * Result;
+ FState := -Input + FCoefficient * Result;
 {$ELSE}
 asm
  FLD     Input.Double
@@ -694,7 +735,7 @@ asm
  FLD     ST(0)
  FADD    [EAX.FState].Double
  FLD     ST(0)
- FMUL    [EAX.FCoeff].Double
+ FMUL    [EAX.FCoefficient].Double
  FSUBRP  ST(2), ST(0)
  FXCH
  FSTP    [EAX.FState].Double
