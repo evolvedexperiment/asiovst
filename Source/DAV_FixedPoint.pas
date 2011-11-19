@@ -212,17 +212,27 @@ type
   TArrayOfArrayOfFixed24Dot8 = array of TArrayOfFixed24Dot8;
 
 function ConvertToFixed8Dot24(Value: Single): TFixed8Dot24; overload;
+function ConvertToFixed8Dot24(Value: Double): TFixed8Dot24; overload;
 function ConvertToFixed8Dot24(Value: Integer): TFixed8Dot24; overload;
+function ConvertToFixed8Dot24(Value: TFixed16Dot16): TFixed8Dot24; overload;
+function ConvertToFixed8Dot24(Value: TFixed24Dot8): TFixed8Dot24; overload;
 function ConvertToFixed16Dot16(Value: Single): TFixed16Dot16; overload;
+function ConvertToFixed16Dot16(Value: Double): TFixed16Dot16; overload;
 function ConvertToFixed16Dot16(Value: Integer): TFixed16Dot16; overload;
+function ConvertToFixed16Dot16(Value: TFixed8Dot24): TFixed16Dot16; overload;
+function ConvertToFixed16Dot16(Value: TFixed24Dot8): TFixed16Dot16; overload;
 function ConvertToFixed24Dot8(Value: Single): TFixed24Dot8; overload;
+function ConvertToFixed24Dot8(Value: Double): TFixed24Dot8; overload;
 function ConvertToFixed24Dot8(Value: Integer): TFixed24Dot8; overload;
+function ConvertToFixed24Dot8(Value: TFixed8Dot24): TFixed24Dot8; overload;
+function ConvertToFixed24Dot8(Value: TFixed16Dot16): TFixed24Dot8; overload;
 function ConvertFromFixed8Dot24(Value: TFixed8Dot24): Single; overload;
 function ConvertFromFixed16Dot16(Value: TFixed16Dot16): Single; overload;
 function ConvertFromFixed24Dot8(Value: TFixed24Dot8): Single; overload;
 function ConvertFromFixed8Dot24ToInteger(Value: TFixed8Dot24): Integer; overload;
 function ConvertFromFixed16Dot16ToInteger(Value: TFixed16Dot16): Integer; overload;
 function ConvertFromFixed24Dot8ToInteger(Value: TFixed24Dot8): Integer; overload;
+
 function FixedAbs(Value: TFixed8Dot24): TFixed8Dot24; overload;
 function FixedAbs(Value: TFixed16Dot16): TFixed16Dot16; overload;
 function FixedAbs(Value: TFixed24Dot8): TFixed24Dot8; overload;
@@ -238,6 +248,9 @@ function FixedCeil(Value: TFixed24Dot8): Integer; overload;
 function FixedRound(Value: TFixed8Dot24): Integer; overload;
 function FixedRound(Value: TFixed16Dot16): Integer; overload;
 function FixedRound(Value: TFixed24Dot8): Integer; overload;
+function FixedRoundHalfUp(Value: TFixed8Dot24): Integer; overload;
+function FixedRoundHalfUp(Value: TFixed16Dot16): Integer; overload;
+function FixedRoundHalfUp(Value: TFixed24Dot8): Integer; overload;
 function FixedAdd(A, B: TFixed8Dot24): TFixed8Dot24; overload;
 function FixedAdd(A, B: TFixed16Dot16): TFixed16Dot16; overload;
 function FixedAdd(A, B: TFixed24Dot8): TFixed24Dot8; overload;
@@ -316,12 +329,22 @@ begin
  Result.Fixed := Round(Value * CFixed8Dot24One.Fixed);
 end;
 
+function ConvertToFixed8Dot24(Value: Double): TFixed8Dot24; overload;
+begin
+ Result.Fixed := Round(Value * CFixed8Dot24One.Fixed);
+end;
+
 function ConvertToFixed8Dot24(Value: Integer): TFixed8Dot24; overload;
 begin
  Result.Fixed := Value shl 24;
 end;
 
 function ConvertToFixed16Dot16(Value: Single): TFixed16Dot16;
+begin
+ Result.Fixed := Round(Value * CFixed16Dot16One.Fixed);
+end;
+
+function ConvertToFixed16Dot16(Value: Double): TFixed16Dot16;
 begin
  Result.Fixed := Round(Value * CFixed16Dot16One.Fixed);
 end;
@@ -336,9 +359,78 @@ begin
  Result.Fixed := Round(Value * CFixed24Dot8One.Fixed);
 end;
 
+function ConvertToFixed24Dot8(Value: Double): TFixed24Dot8;
+begin
+ Result.Fixed := Round(Value * CFixed24Dot8One.Fixed);
+end;
+
 function ConvertToFixed24Dot8(Value: Integer): TFixed24Dot8;
 begin
  Result.Fixed := Value shl 8;
+end;
+
+function ConvertToFixed8Dot24(Value: TFixed16Dot16): TFixed8Dot24;
+begin
+  Result.Fixed := Value.Fixed shl 8;
+end;
+
+function ConvertToFixed8Dot24(Value: TFixed24Dot8): TFixed8Dot24;
+begin
+  Result.Fixed := Value.Fixed shl 16;
+end;
+
+function ConvertToFixed16Dot16(Value: TFixed8Dot24): TFixed16Dot16;
+{$IFDEF PUREPASCAL}
+begin
+  Result := Integer(Cardinal(Cardinal(Cardinal(Value) shr 8) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value) shr 31)))) shl 24)));
+
+//  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
+{$ELSE}
+asm
+  SAR     Value, 8;
+  {$IFDEF CPUx86_64}
+  MOV     Result, Value
+  {$ENDIF}
+{$ENDIF}
+end;
+
+function ConvertToFixed16Dot16(Value: TFixed24Dot8): TFixed16Dot16;
+begin
+  Result.Fixed := Value.Fixed shl 8;
+end;
+
+function ConvertToFixed24Dot8(Value: TFixed8Dot24): TFixed24Dot8;
+{$IFDEF PUREPASCAL}
+begin
+  Result := Integer(Cardinal(Cardinal(Cardinal(Value) shr 16) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value) shr 31)))) shl 16)));
+
+//  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 16);
+{$ELSE}
+asm
+  SAR     Value, 16;
+  {$IFDEF CPUx86_64}
+  MOV     Result, Value
+  {$ENDIF}
+{$ENDIF}
+end;
+
+function ConvertToFixed24Dot8(Value: TFixed16Dot16): TFixed24Dot8;
+{$IFDEF PUREPASCAL}
+begin
+  Result.Fixed := Integer(Cardinal(Cardinal(Cardinal(Value.Fixed) shr 8) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value.Fixed) shr 31))))
+    shl 24)));
+
+//  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
+{$ELSE}
+asm
+  SAR     Value, 8;
+  {$IFDEF CPUx86_64}
+  MOV     Result, Value
+  {$ENDIF}
+{$ENDIF}
 end;
 
 function ConvertFromFixed8Dot24(Value: TFixed8Dot24): Single;
@@ -403,8 +495,11 @@ end;
 
 function FixedFloor(Value: TFixed8Dot24): Integer;
 {$IFDEF PUREPASCAL}
+var
+  Mask : Cardinal;
 begin
-  Result := (Value.Fixed and $80000000) or (Value.Fixed shr 24);
+  Result := Integer(Cardinal(Cardinal(Cardinal(Value.Fixed) shr 24) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value.Fixed) shr 31)))) shl 8)));
 {$ELSE}
 asm
   SAR     Value, 24;
@@ -417,10 +512,12 @@ end;
 function FixedFloor(Value: TFixed16Dot16): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed and $80000000) or (Value.Fixed shr 16);
+  Result := Integer(Cardinal(Cardinal(Cardinal(Value) shr 16) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value) shr 31))))
+    shl (16))));
 {$ELSE}
 asm
-  SAR     Value, 16;
+  SAR     Value, 16
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -430,10 +527,13 @@ end;
 function FixedFloor(Value: TFixed24Dot8): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
+  Result := Integer(Cardinal(Cardinal(Cardinal(Value) shr 8) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value) shr 31)))) shl 24)));
+
+// Result := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
 {$ELSE}
 asm
-  SAR     Value, 8;
+  SAR     Value, 8
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -443,11 +543,14 @@ end;
 function FixedCeil(Value: TFixed8Dot24): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FFFF) shr 24);
+  Value.Fixed := Value.Fixed + $FFFFFF;
+
+  Result := Integer(Cardinal(Cardinal(Value.Fixed shr 24) or
+    (Cardinal(-(Value.Fixed shr 31)) shl 8)));
 {$ELSE}
 asm
-  ADD     Value, $FFFF
-  SAR     Value, 24;
+  ADD     Value, $FFFFFF
+  SAR     Value, 24
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -457,11 +560,15 @@ end;
 function FixedCeil(Value: TFixed16Dot16): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FFFF) shr 16);
+  Value.Fixed := Value.Fixed + $FFFF;
+  Result := Integer(Cardinal(Cardinal(Cardinal(Value.Fixed) shr 16) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value.Fixed) shr 31)))) shl 16)));
+
+//  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FFFF) shr 16);
 {$ELSE}
 asm
   ADD     Value, $FFFF
-  SAR     Value, 16;
+  SAR     Value, 16
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -471,11 +578,16 @@ end;
 function FixedCeil(Value: TFixed24Dot8): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FF) shr 8);
+  Value.Fixed := Value.Fixed + $FF;
+
+  Result := Integer(Cardinal(Cardinal(Cardinal(Value) shr 8) or
+    (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value) shr 31)))) shl 24)));
+
+//  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FF) shr 8);
 {$ELSE}
 asm
   ADD     Value, $FF
-  SAR     Value, 8;
+  SAR     Value, 8
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -485,10 +597,10 @@ end;
 function FixedRound(Value: TFixed8Dot24): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := {(Value.Fixed and $80000000) or} (Value.Fixed + $7FFFFF) shr 24;
+  Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17FFFFF) and $1FFFFFF) + 1) shr 25);
 {$ELSE}
 asm
-  ADD     Value, $7FFFFF
+  ADD     Value, $800000
   SAR     Value, 24
   {$IFDEF CPUx86_64}
   MOV     Result, Value
@@ -499,7 +611,7 @@ end;
 function FixedRound(Value: TFixed16Dot16): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := {(Value.Fixed and $80000000) or} (Value.Fixed + $7FFF) shr 16;
+  Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17FFF) and $1FFFF) + 1) shr 17);
 {$ELSE}
 asm
   ADD     Value, $7FFF
@@ -513,10 +625,10 @@ end;
 function FixedRound(Value: TFixed24Dot8): Integer;
 {$IFDEF PUREPASCAL}
 begin
-  Result := {(Value.Fixed and $80000000) or} (Value.Fixed + $7F) shr 8;
+  Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17F) and $1FF) + 1) shr 9);
 {$ELSE}
 asm
-  ADD     Value, $7F
+  ADD     Value, $80
   SAR     Value, 8
   {$IFDEF CPUx86_64}
   MOV     Result, Value
@@ -533,6 +645,51 @@ asm
   ADD     A, B
   {$IFDEF CPUx86_64}
   MOV     Result, A
+  {$ENDIF}
+{$ENDIF}
+end;
+
+function FixedRoundHalfUp(Value: TFixed8Dot24): Integer;
+{$IFDEF PUREPASCAL}
+begin
+  Value.Fixed := Value.Fixed + $800000;
+  Result := Integer((((Value.Fixed) shr 24) or -((Value.Fixed) shr 31) shl 8));
+{$ELSE}
+asm
+  ADD     Value, $800000
+  SAR     Value, 24
+  {$IFDEF CPUx86_64}
+  MOV     Result, Value
+  {$ENDIF}
+{$ENDIF}
+end;
+
+function FixedRoundHalfUp(Value: TFixed16Dot16): Integer;
+{$IFDEF PUREPASCAL}
+begin
+  Value.Fixed := Value.Fixed + $8000;
+  Result := Integer((((Value.Fixed) shr 16) or -((Value.Fixed) shr 31) shl 16));
+{$ELSE}
+asm
+  ADD     Value, $8000
+  SAR     Value, 16
+  {$IFDEF CPUx86_64}
+  MOV     Result, Value
+  {$ENDIF}
+{$ENDIF}
+end;
+
+function FixedRoundHalfUp(Value: TFixed24Dot8): Integer;
+{$IFDEF PUREPASCAL}
+begin
+  Value.Fixed := Value.Fixed + $80;
+  Result := Integer((((Value.Fixed) shr 8) or -((Value.Fixed) shr 31) shl 24));
+{$ELSE}
+asm
+  ADD     Value, $80
+  SAR     Value, 8
+  {$IFDEF CPUx86_64}
+  MOV     Result, Value
   {$ENDIF}
 {$ENDIF}
 end;
@@ -922,7 +1079,7 @@ function FixedReciprocal(Value: TFixed8Dot24): TFixed8Dot24;
 var
   IntResult : Integer absolute Result;
 const
-  CDividend: Single = CFixed8Dot24One * CFixed8Dot24One
+  CDividend: Single = 281474976710656;
 begin
   IntResult := Round(CDividend / Value.Fixed - 0.5);
 {$ELSE}
@@ -1328,7 +1485,7 @@ asm
 {$ENDIF}
 end;
 
-function FixedMin(A, B: TFixed8Dot24): TFixed8Dot24; overload;
+function FixedMin(A, B: TFixed8Dot24): TFixed8Dot24;
 begin
   if A.Fixed < B.Fixed then
     Result := A
@@ -1336,7 +1493,7 @@ begin
     Result := B;
 end;
 
-function FixedMin(A, B: TFixed16Dot16): TFixed16Dot16; overload;
+function FixedMin(A, B: TFixed16Dot16): TFixed16Dot16;
 begin
   if A.Fixed < B.Fixed then
     Result := A
@@ -1344,7 +1501,7 @@ begin
     Result := B;
 end;
 
-function FixedMin(A, B: TFixed24Dot8): TFixed24Dot8; overload;
+function FixedMin(A, B: TFixed24Dot8): TFixed24Dot8;
 begin
   if A.Fixed < B.Fixed then
     Result := A
@@ -1352,7 +1509,7 @@ begin
     Result := B;
 end;
 
-function FixedMax(A, B: TFixed8Dot24): TFixed8Dot24; overload;
+function FixedMax(A, B: TFixed8Dot24): TFixed8Dot24;
 begin
   if A.Fixed > B.Fixed then
     Result := A
@@ -1360,7 +1517,7 @@ begin
     Result := B;
 end;
 
-function FixedMax(A, B: TFixed16Dot16): TFixed16Dot16; overload;
+function FixedMax(A, B: TFixed16Dot16): TFixed16Dot16;
 begin
   if A.Fixed > B.Fixed then
     Result := A
@@ -1368,7 +1525,7 @@ begin
     Result := B;
 end;
 
-function FixedMax(A, B: TFixed24Dot8): TFixed24Dot8; overload;
+function FixedMax(A, B: TFixed24Dot8): TFixed24Dot8;
 begin
   if A.Fixed > B.Fixed then
     Result := A

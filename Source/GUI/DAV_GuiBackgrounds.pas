@@ -79,6 +79,9 @@ type
     property Color;
   end;
 
+procedure FillBrushedMetal(PixelMap : TGuiCustomPixelMap; Color: TPixel32;
+  Amount: Single = 0.3; Spotlight: Single = 0);
+
 implementation
 
 uses
@@ -207,7 +210,6 @@ procedure TCustomGuiBackground.DrawBackground;
 var
   x, y  : Integer;
   s     : array [0..1] of Single;
-  Val   : Integer;
   ScnLn : PPixel32Array;
 begin
  with FPixelMap do
@@ -221,25 +223,43 @@ begin
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
 
-       Val := (FColor shr 16) and $FF;
-       Val := Round(Val + FAmount * s[1]);
-       if Val <= 0 then ScnLn[x].B := 0 else
-       if Val >= 255 then ScnLn[x].B := 255
-        else ScnLn[x].B := Val;
-
-       Val := (FColor shr 8) and $FF;
-       Val := Round(Val + FAmount * s[1]);
-       if Val <= 0 then ScnLn[x].G := 0 else
-       if Val >= 255 then ScnLn[x].G := 255
-        else ScnLn[x].G := Val;
-
-       Val := FColor and $FF;
-       Val := Round(Val + FAmount * s[1]);
-       if Val <= 0 then ScnLn[x].R := 0 else
-       if Val >= 255 then ScnLn[x].R := 255
-        else ScnLn[x].R := Val;
-
+       ScnLn^[x].R := EnsureRange(Round(((FColor shr 16) and $FF) +
+         FAmount * s[1]), 0, 255);
+       ScnLn^[x].G := EnsureRange(Round(((FColor shr 8) and $FF) +
+         FAmount * s[1]), 0, 255);
+       ScnLn^[x].B := EnsureRange(Round((FColor and $FF) +
+         FAmount * s[1]), 0, 255);
        s[0] := s[1];
+      end;
+    end;
+  end;
+end;
+
+procedure FillBrushedMetal(PixelMap : TGuiCustomPixelMap; Color: TPixel32;
+  Amount: Single = 0.3; Spotlight: Single = 0);
+var
+  x, y   : Integer;
+  s      : array [0..1] of Single;
+  h, hr  : Single;
+  ScnLne : PPixel32Array;
+begin
+ with PixelMap do
+  begin
+   s[0] := 0;
+   s[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     ScnLne := Scanline[y];
+     h := Spotlight * (1 - Sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[0] := s[1];
+
+       ScnLne[x].B := EnsureRange(Round(Color.B * (1 - Amount * (s[1] - h))), 0, 255);
+       ScnLne[x].G := EnsureRange(Round(Color.G * (1 - Amount * (s[1] - h))), 0, 255);
+       ScnLne[x].R := EnsureRange(Round(Color.R * (1 - Amount * (s[1] - h))), 0, 255);
       end;
     end;
   end;

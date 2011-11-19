@@ -97,8 +97,8 @@ begin
  with FBackgroundBitmap do
   begin
    PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
+   Width := ClientWidth;
+   Height := ClientHeight;
    s[0] := 0;
    s[1] := 0;
    hr   := 1 / Height;

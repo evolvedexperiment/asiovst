@@ -14,21 +14,6 @@ object FmSelectBoxTest: TFmSelectBoxTest
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object SbAntiAlias: TGuiSelectBox
-    Left = 58
-    Top = 5
-    Width = 105
-    Height = 20
-    ItemIndex = -1
-    Items.Strings = (
-      'gaaNone'
-      'gaa2x'
-      'gaa3x'
-      'gaa4x'
-      'gaa8x'
-      'gaa16x')
-    OnChange = SbAntiAliasChange
-  end
   object LbAntiAlias: TLabel
     Left = 8
     Top = 9
@@ -43,20 +28,6 @@ object FmSelectBoxTest: TFmSelectBoxTest
     Height = 13
     Caption = 'Line Width:'
   end
-  object SbLineWidth: TGuiSelectBox
-    Left = 68
-    Top = 31
-    Width = 95
-    Height = 20
-    ItemIndex = -1
-    Items.Strings = (
-      '1'
-      '2'
-      '3'
-      '4')
-    LineColor = clRed
-    OnChange = SbLineWidthChange
-  end
   object LbRadius: TLabel
     Left = 8
     Top = 61
@@ -64,12 +35,51 @@ object FmSelectBoxTest: TFmSelectBoxTest
     Height = 13
     Caption = 'Corner Radius:'
   end
+  object LbArrowWidth: TLabel
+    Left = 8
+    Top = 87
+    Width = 64
+    Height = 13
+    Caption = 'Arrow Width:'
+  end
+  object SbAntiAlias: TGuiSelectBox
+    Left = 58
+    Top = 5
+    Width = 105
+    Height = 20
+    Items.Strings = (
+      'gaaNone'
+      'gaa2x'
+      'gaa3x'
+      'gaa4x'
+      'gaa8x'
+      'gaa16x')
+    BorderColor = clBtnShadow
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = clBtnFace
+  end
+  object SbLineWidth: TGuiSelectBox
+    Left = 68
+    Top = 31
+    Width = 95
+    Height = 20
+    Items.Strings = (
+      '1'
+      '2'
+      '3'
+      '4')
+    BorderColor = clBtnShadow
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = clBtnFace
+    OnChange = SbLineWidthChange
+  end
   object SbCornerRadius: TGuiSelectBox
     Left = 86
     Top = 57
     Width = 77
     Height = 20
-    ItemIndex = -1
     Items.Strings = (
       '1'
       '2'
@@ -81,28 +91,26 @@ object FmSelectBoxTest: TFmSelectBoxTest
       '8'
       '9'
       '10')
-    LineColor = clBlue
+    BorderColor = clBtnShadow
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = clBtnFace
     OnChange = SbCornerRadiusChange
-  end
-  object LbArrowWidth: TLabel
-    Left = 8
-    Top = 87
-    Width = 64
-    Height = 13
-    Caption = 'Arrow Width:'
   end
   object SbArrowWidth: TGuiSelectBox
     Left = 76
     Top = 83
     Width = 87
     Height = 20
-    ItemIndex = -1
     Items.Strings = (
       '1'
       '2'
       '3'
       '4')
-    LineColor = clLime
+    BorderColor = clBtnShadow
+    BorderRadius = 5.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = clBtnFace
     OnChange = SbArrowWidthChange
   end
 end
