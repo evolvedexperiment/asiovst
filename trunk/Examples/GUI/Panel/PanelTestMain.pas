@@ -7,19 +7,20 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls, DAV_GuiCommon, DAV_GuiPixelMap, DAV_GuiPanel,
-  DAV_GuiSlider, DAV_GuiCheckBox, DAV_GuiGraphicControl, DAV_GuiLabel;
+  DAV_GuiSlider, DAV_GuiCheckBox, DAV_GuiGraphicControl, DAV_GuiLabel,
+  DAV_GuiBackgrounds;
 
 type
   TFmPanelTest = class(TForm)
+    CbTransparent: TGuiControlsCheckBox;
+    LbLineWidth: TGuiLabel;
+    LbRoundRadius: TGuiLabel;
     PanelA: TGuiPanel;
     PanelB: TGuiPanel;
     PanelC: TGuiPanel;
     PanelD: TGuiPanel;
-    SlRoundRadius: TGuiSlider;
     SlLineWidth: TGuiSlider;
-    LbRoundRadius: TGuiLabel;
-    LbLineWidth: TGuiLabel;
-    CbTransparent: TGuiControlsCheckBox;
+    SlRoundRadius: TGuiSlider;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -62,33 +63,14 @@ begin
 end;
 
 procedure TFmPanelTest.FormResize(Sender: TObject);
-var
-  x, y   : Integer;
-  s      : array [0..1] of Single;
-  h, hr  : Single;
-  ScnLne : PPixel32Array;
+const
+  CBaseColor : TPixel32 = (ARGB : $FF8D8470);
 begin
  with FBackground do
   begin
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     ScnLne := Scanline[y];
-     h    := 0.1 * (1 - Sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
-
-       ScnLne[x].B := Round($70 - $34 * (s[1] - h));
-       ScnLne[x].G := Round($84 - $48 * (s[1] - h));
-       ScnLne[x].R := Round($8D - $50 * (s[1] - h));
-      end;
-    end;
+   Width := ClientWidth;
+   Height := ClientHeight;
+   FillBrushedMetal(FBackground, CBaseColor, 0.5, 0.1);
   end;
 end;
 

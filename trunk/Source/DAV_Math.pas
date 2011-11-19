@@ -74,6 +74,9 @@ procedure GetSinCos(const Frequency: Extended; out SinValue, CosValue : Extended
 procedure GetSinCos(const Frequency: Double; out SinValue, CosValue : Double); overload;
 procedure GetSinCos(const Frequency: Single; out SinValue, CosValue : Single); overload;
 
+function RoundHalfUp(Value: Double): Integer; overload;
+function RoundHalfUp(Value: Single): Integer; overload;
+
 function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function NextPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
 function PrevPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
@@ -362,6 +365,16 @@ asm
 end;
 {$ENDIF}
 {$ENDIF}
+
+function RoundHalfUp(Value: Double): Integer;
+begin
+  Result := Floor(Value + 0.5);
+end;
+
+function RoundHalfUp(Value: Single): Integer;
+begin
+  Result := Floor(Value + 0.5);
+end;
 
 function IsPowerOf2(const Value: Integer): Boolean;
 //returns true when X = 1,2,4,8,16 etc.

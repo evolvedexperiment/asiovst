@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_GuiBaseControl, DAV_GuiSelectBox;
+  Dialogs, StdCtrls, DAV_GuiBaseControl, DAV_GuiSelectBox, DAV_GuiCustomControl;
 
 type
   TFmSelectBoxTest = class(TForm)
@@ -17,7 +17,6 @@ type
     SbCornerRadius: TGuiSelectBox;
     SbLineWidth: TGuiSelectBox;
     procedure FormShow(Sender: TObject);
-    procedure SbAntiAliasChange(Sender: TObject);
     procedure SbLineWidthChange(Sender: TObject);
     procedure SbCornerRadiusChange(Sender: TObject);
     procedure SbArrowWidthChange(Sender: TObject);
@@ -32,18 +31,9 @@ implementation
 
 procedure TFmSelectBoxTest.FormShow(Sender: TObject);
 begin
- SbAntiAlias.ItemIndex := Integer(SbAntiAlias.AntiAlias);
- SBCornerRadius.ItemIndex := SbAntiAlias.Radius - 1;
- SBLineWidth.ItemIndex := SbAntiAlias.LineWidth - 1;
+ SBCornerRadius.ItemIndex := Round(SbAntiAlias.BorderRadius - 1);
+ SBLineWidth.ItemIndex := Round(SbAntiAlias.BorderWidth) - 1;
  SbArrowWidth.ItemIndex := SbAntiAlias.ArrowWidth - 1;
-end;
-
-procedure TFmSelectBoxTest.SbAntiAliasChange(Sender: TObject);
-begin
- SbAntiAlias.AntiAlias := TGuiAntiAlias(SbAntiAlias.ItemIndex);
- SBCornerRadius.AntiAlias := SbAntiAlias.AntiAlias;
- SBLineWidth.AntiAlias := SbAntiAlias.AntiAlias;
- SbArrowWidth.AntiAlias := SbAntiAlias.AntiAlias;
 end;
 
 procedure TFmSelectBoxTest.SbArrowWidthChange(Sender: TObject);
@@ -56,18 +46,18 @@ end;
 
 procedure TFmSelectBoxTest.SbCornerRadiusChange(Sender: TObject);
 begin
- SbAntiAlias.Radius := SBCornerRadius.ItemIndex + 1;
- SBCornerRadius.Radius := SbAntiAlias.Radius;
- SBLineWidth.Radius := SbAntiAlias.Radius;
- SbArrowWidth.Radius := SbAntiAlias.Radius;
+ SbAntiAlias.BorderRadius := SBCornerRadius.ItemIndex + 1;
+ SBCornerRadius.BorderRadius := SbAntiAlias.BorderRadius;
+ SBLineWidth.BorderRadius := SbAntiAlias.BorderRadius;
+ SbArrowWidth.BorderRadius := SbAntiAlias.BorderRadius;
 end;
 
 procedure TFmSelectBoxTest.SbLineWidthChange(Sender: TObject);
 begin
- SbAntiAlias.LineWidth := SBLineWidth.ItemIndex + 1;
- SBCornerRadius.LineWidth := SbAntiAlias.LineWidth;
- SBLineWidth.LineWidth := SbAntiAlias.LineWidth;
- SbArrowWidth.LineWidth := SbAntiAlias.LineWidth;
+ SbAntiAlias.BorderWidth := SBLineWidth.ItemIndex + 1;
+ SBCornerRadius.BorderWidth := SbAntiAlias.BorderWidth;
+ SBLineWidth.BorderWidth := SbAntiAlias.BorderWidth;
+ SbArrowWidth.BorderWidth := SbAntiAlias.BorderWidth;
 end;
 
 end.

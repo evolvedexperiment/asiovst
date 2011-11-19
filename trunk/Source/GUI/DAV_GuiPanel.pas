@@ -379,8 +379,8 @@ var
   Radius               : TFixed24Dot8;
   XStart               : TFixed24Dot8;
   BorderWidthFixed     : TFixed24Dot8;
-  RadMinusOne          : TFixed24Dot8;
-  RadMinusBorder       : TFixed24Dot8;
+  RadiusMinusOne       : TFixed24Dot8;
+  RadiusMinusBorder    : TFixed24Dot8;
   SqrRadMinusBorderOne : TFixed24Dot8;
   SqrRadMinusBorder    : TFixed24Dot8;
   SqrDist, SqrYDist    : TFixed24Dot8;
@@ -405,16 +405,16 @@ begin
    WidthMinusOne := ConvertToFixed24Dot8(Integer(Width - 1));
 
    // precalculate radius variables
-   RadMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
-   if RadMinusOne.Fixed < 0
-    then RadMinusOne.Fixed := 0;
+   RadiusMinusOne.Fixed := Radius.Fixed - CFixed24Dot8One.Fixed;
+   if RadiusMinusOne.Fixed < 0
+    then RadiusMinusOne.Fixed := 0;
 
-   RadMinusBorder.Fixed := Radius.Fixed - BorderWidthFixed.Fixed;
-   if RadMinusBorder.Fixed < 0
-    then RadMinusBorder.Fixed := 0;
-   SqrRadMinusBorder := FixedSqr(RadMinusBorder);
+   RadiusMinusBorder.Fixed := Radius.Fixed - BorderWidthFixed.Fixed;
+   if RadiusMinusBorder.Fixed < 0
+    then RadiusMinusBorder.Fixed := 0;
+   SqrRadMinusBorder := FixedSqr(RadiusMinusBorder);
 
-   SqrRadMinusBorderOne.Fixed := RadMinusBorder.Fixed - CFixed24Dot8One.Fixed;
+   SqrRadMinusBorderOne.Fixed := RadiusMinusBorder.Fixed - CFixed24Dot8One.Fixed;
    if SqrRadMinusBorderOne.Fixed < 0
     then SqrRadMinusBorderOne.Fixed := 0
     else SqrRadMinusBorderOne := FixedSqr(SqrRadMinusBorderOne);
@@ -423,6 +423,7 @@ begin
    if SqrRadMinusOne.Fixed < 0
     then SqrRadMinusOne.Fixed := 0
     else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
+
 
    // draw rounded borders
    for Y := 0 to FixedRound(Radius) - 1  do
@@ -436,7 +437,7 @@ begin
      ScnLne[0] := Scanline[Y];
      ScnLne[1] := Scanline[Height - 1 - Y];
 
-     Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
+     Temp.Fixed := RadiusMinusOne.Fixed - XStart.Fixed;
      XRange[0] := FixedRound(Temp);
      XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
@@ -444,11 +445,11 @@ begin
        XFixed := ConvertToFixed24Dot8(X);
 
        // calculate squared distance
-       if XFixed.Fixed < RadMinusOne.Fixed
-        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadMinusOne)).Fixed + SqrYDist.Fixed
+       if XFixed.Fixed < RadiusMinusOne.Fixed
+        then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, RadiusMinusOne)).Fixed + SqrYDist.Fixed
         else
          begin
-          Temp.Fixed := ConvertToFixed24Dot8(Integer(Width - 1)).Fixed - RadMinusOne.Fixed;
+          Temp.Fixed := ConvertToFixed24Dot8(Integer(Width - 1)).Fixed - RadiusMinusOne.Fixed;
           if XFixed.Fixed > Temp.Fixed
            then SqrDist.Fixed := FixedSqr(FixedSub(XFixed, Temp)).Fixed + SqrYDist.Fixed
            else SqrDist := SqrYDist;
@@ -459,7 +460,7 @@ begin
         else
        if SqrDist.Fixed < SqrRadMinusBorder.Fixed then
         begin
-         Temp.Fixed := RadMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
+         Temp.Fixed := RadiusMinusBorder.Fixed - FixedSqrt(SqrDist).Fixed;
          Assert(Temp.Fixed >= 0);
          if Temp.Fixed > $FF
           then CombColor := PanelColor
@@ -602,8 +603,10 @@ end;
 procedure TCustomGuiPanel.CMChanged(var Message: TMessage);
 begin
  inherited;
+
  if not FNative
   then FBufferChanged := True;
+
  Invalidate;
 end;
 

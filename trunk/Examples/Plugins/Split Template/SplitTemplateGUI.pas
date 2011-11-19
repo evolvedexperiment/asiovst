@@ -230,8 +230,8 @@ begin
  with FBackground do
   begin
    PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height - PnControl.Height;
+   Width := ClientWidth;
+   Height := ClientHeight - PnControl.Height;
    if Height < 2 then exit;
    s[0] := 0;
    s[1] := 0;
