@@ -233,6 +233,13 @@ function ConvertFromFixed8Dot24ToInteger(Value: TFixed8Dot24): Integer; overload
 function ConvertFromFixed16Dot16ToInteger(Value: TFixed16Dot16): Integer; overload;
 function ConvertFromFixed24Dot8ToInteger(Value: TFixed24Dot8): Integer; overload;
 
+procedure ConvertSingleDataToFixed8Dot24Data(Data: Pointer; Count: Integer);
+procedure ConvertFixed8Dot24DataFromSingleData(Data: Pointer; Count: Integer);
+procedure ConvertSingleDataToFixed16Dot16Data(Data: Pointer; Count: Integer);
+procedure ConvertFixed16Dot16DataFromSingleData(Data: Pointer; Count: Integer);
+procedure ConvertSingleDataToFixed24Dot8Data(Data: Pointer; Count: Integer);
+procedure ConvertFixed24Dot8DataFromSingleData(Data: Pointer; Count: Integer);
+
 function FixedAbs(Value: TFixed8Dot24): TFixed8Dot24; overload;
 function FixedAbs(Value: TFixed16Dot16): TFixed16Dot16; overload;
 function FixedAbs(Value: TFixed24Dot8): TFixed24Dot8; overload;
@@ -272,6 +279,8 @@ function FixedDiv(A, B: TFixed24Dot8): TFixed24Dot8; overload;
 function FixedDiv(A: TFixed8Dot24; B: Integer): TFixed8Dot24; overload;
 function FixedDiv(A: TFixed16Dot16; B: Integer): TFixed16Dot16; overload;
 function FixedDiv(A: TFixed24Dot8; B: Integer): TFixed24Dot8; overload;
+function FixedDivTo8Dot24(A, B: TFixed24Dot8): TFixed8Dot24;
+function FixedDivTo16Dot16(A, B: TFixed24Dot8): TFixed16Dot16;
 function FixedReciprocal(Value: TFixed8Dot24): TFixed8Dot24; overload;
 function FixedReciprocal(Value: TFixed16Dot16): TFixed16Dot16; overload;
 function FixedReciprocal(Value: TFixed24Dot8): TFixed24Dot8; overload;
@@ -382,13 +391,13 @@ end;
 function ConvertToFixed16Dot16(Value: TFixed8Dot24): TFixed16Dot16;
 {$IFDEF PUREPASCAL}
 begin
-  Result := Integer(Cardinal(Cardinal(Cardinal(Value) shr 8) or
+  Result.Fixed := Integer(Cardinal(Cardinal(Cardinal(Value) shr 8) or
     (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value) shr 31)))) shl 24)));
 
 //  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
 {$ELSE}
 asm
-  SAR     Value, 8;
+  SAR     Value, 8
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -396,8 +405,16 @@ asm
 end;
 
 function ConvertToFixed16Dot16(Value: TFixed24Dot8): TFixed16Dot16;
+{$IFDEF PUREPASCAL}
 begin
   Result.Fixed := Value.Fixed shl 8;
+{$ELSE}
+asm
+  SHL     Value, 8
+  {$IFDEF CPUx86_64}
+  MOV     Result, Value
+  {$ENDIF}
+{$ENDIF}
 end;
 
 function ConvertToFixed24Dot8(Value: TFixed8Dot24): TFixed24Dot8;
@@ -409,7 +426,7 @@ begin
 //  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 16);
 {$ELSE}
 asm
-  SAR     Value, 16;
+  SAR     Value, 16
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -426,7 +443,7 @@ begin
 //  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
 {$ELSE}
 asm
-  SAR     Value, 8;
+  SAR     Value, 8
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -600,8 +617,14 @@ begin
   Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17FFFFF) and $1FFFFFF) + 1) shr 25);
 {$ELSE}
 asm
+  MOV     EDX, Value
   ADD     Value, $800000
   SAR     Value, 24
+  ADD     EDX, $17FFFFF
+  AND     EDX, $1FFFFFF
+  ADD     EDX, 1
+  SHR     EDX, $19
+  SUB     Value, EDX
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -614,8 +637,14 @@ begin
   Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17FFF) and $1FFFF) + 1) shr 17);
 {$ELSE}
 asm
-  ADD     Value, $7FFF
+  MOV     EDX, Value
+  ADD     Value, $8000
   SAR     Value, 16
+  ADD     EDX, $17FFF
+  AND     EDX, $1FFFF
+  ADD     EDX, 1
+  SHR     EDX, $11
+  SUB     Value, EDX
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -628,8 +657,14 @@ begin
   Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17F) and $1FF) + 1) shr 9);
 {$ELSE}
 asm
+  MOV     EDX, Value
   ADD     Value, $80
   SAR     Value, 8
+  ADD     EDX, $17F
+  AND     EDX, $1FF
+  ADD     EDX, 1
+  SHR     EDX, $9
+  SUB     Value, EDX
   {$IFDEF CPUx86_64}
   MOV     Result, Value
   {$ENDIF}
@@ -1069,6 +1104,56 @@ asm
   MOV     ECX, B
   CDQ
   SHLD    EDX, EAX, 8
+  IDIV    ECX
+  {$ENDIF}
+{$ENDIF}
+end;
+
+function FixedDivTo8Dot24(A, B: TFixed24Dot8): TFixed8Dot24;
+{$IFDEF PUREPASCAL}
+var
+  IntResult : Integer absolute Result;
+begin
+  IntResult := Round(A.Fixed / B.Fixed * CFixed8Dot24One.Fixed);
+{$ELSE}
+asm
+  {$IFDEF CPUx86_64}
+  MOV     RAX, RCX
+  MOV     RCX, RDX
+  CDQ
+  SHLD    RDX, RAX, 8
+  SHL     RAX, 8
+  IDIV    RDX
+  {$ELSE}
+  MOV     ECX, B
+  CDQ
+  SHLD    B, A, 24
+  SHL     A, 24
+  IDIV    ECX
+  {$ENDIF}
+{$ENDIF}
+end;
+
+function FixedDivTo16Dot16(A, B: TFixed24Dot8): TFixed16Dot16;
+{$IFDEF PUREPASCAL}
+var
+  IntResult : Integer absolute Result;
+begin
+  IntResult := Round(A.Fixed / B.Fixed * CFixed16Dot16One.Fixed);
+{$ELSE}
+asm
+  {$IFDEF CPUx86_64}
+  MOV     RAX, RCX
+  MOV     RCX, RDX
+  CDQ
+  SHLD    RDX, RAX, 8
+  SHL     RAX, 8
+  IDIV    RDX
+  {$ELSE}
+  MOV     ECX, B
+  CDQ
+  SHLD    B, A, 16
+  SHL     A, 16
   IDIV    ECX
   {$ENDIF}
 {$ENDIF}
@@ -1579,6 +1664,80 @@ function FixedArcTan2(A, B: TFixed24Dot8): TFixed24Dot8;
 begin
   Result := ConvertToFixed24Dot8(
     Math.ArcTan2(ConvertFromFixed24Dot8(A), ConvertFromFixed24Dot8(B)));
+end;
+
+
+procedure ConvertSingleDataToFixed8Dot24Data(Data: Pointer;
+  Count: Integer);
+var
+  Index : Integer;
+begin
+  for Index := 0 to Count - 1 do
+  begin
+    Assert((PSingle(Data)^ < 256) and (PSingle(Data)^ > -256));
+    PFixed8Dot24(Data)^ := ConvertToFixed8Dot24(PSingle(Data)^);
+    Inc(PSingle(Data));
+  end;
+end;
+
+procedure ConvertFixed8Dot24DataFromSingleData(Data: Pointer;
+  Count: Integer);
+var
+  Index : Integer;
+begin
+  for Index := 0 to Count - 1 do
+  begin
+    PSingle(Data)^ := PFixed8Dot24(Data)^.AsSingle;
+    Inc(PSingle(Data));
+  end;
+end;
+
+procedure ConvertSingleDataToFixed16Dot16Data(Data: Pointer;
+  Count: Integer);
+var
+  Index : Integer;
+begin
+  for Index := 0 to Count - 1 do
+  begin
+    PFixed16Dot16(Data)^ := ConvertToFixed16Dot16(PSingle(Data)^);
+    Inc(PSingle(Data));
+  end;
+end;
+
+procedure ConvertFixed16Dot16DataFromSingleData(Data: Pointer;
+  Count: Integer);
+var
+  Index : Integer;
+begin
+  for Index := 0 to Count - 1 do
+  begin
+    PSingle(Data)^ := PFixed16Dot16(Data)^.AsSingle;
+    Inc(PSingle(Data));
+  end;
+end;
+
+procedure ConvertSingleDataToFixed24Dot8Data(Data: Pointer;
+  Count: Integer);
+var
+  Index : Integer;
+begin
+  for Index := 0 to Count - 1 do
+  begin
+    PFixed24Dot8(Data)^ := ConvertToFixed24Dot8(PSingle(Data)^);
+    Inc(PSingle(Data));
+  end;
+end;
+
+procedure ConvertFixed24Dot8DataFromSingleData(Data: Pointer;
+  Count: Integer);
+var
+  Index : Integer;
+begin
+  for Index := 0 to Count - 1 do
+  begin
+    PFixed24Dot8(Data)^ := ConvertToFixed24Dot8(PSingle(Data)^);
+    Inc(PSingle(Data));
+  end;
 end;
 
 

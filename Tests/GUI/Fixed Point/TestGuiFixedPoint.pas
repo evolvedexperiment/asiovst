@@ -29,6 +29,7 @@ type
     procedure TestRoundHalfUp; virtual; abstract;
     procedure TestReciprocal; virtual; abstract;
     procedure TestSqrt; virtual; abstract;
+    procedure TestConvert; virtual; abstract;
   end;
 
   TTestFixedPoint8Dot24 = class(TCustomTestFixedPoint)
@@ -43,6 +44,7 @@ type
     procedure TestRound; override;
     procedure TestRoundHalfUp; override;
     procedure TestReciprocal; override;
+    procedure TestConvert; override;
   end;
 
   TTestFixedPoint16Dot16 = class(TCustomTestFixedPoint)
@@ -58,6 +60,7 @@ type
     procedure TestRoundHalfUp; override;
     procedure TestReciprocal; override;
     procedure TestSqrt; override;
+    procedure TestConvert; override;
   end;
 
   TTestFixedPoint24Dot8 = class(TCustomTestFixedPoint)
@@ -73,6 +76,7 @@ type
     procedure TestRoundHalfUp; override;
     procedure TestReciprocal; override;
     procedure TestSqrt; override;
+    procedure TestConvert; override;
   end;
 
 implementation
@@ -131,6 +135,7 @@ procedure TTestFixedPoint8Dot24.TestDiv;
 var
   A, B, C : TFixed8Dot24;
   Index   : Integer;
+  Floats  : array [0..2] of Single;
 begin
  inherited;
  A := CFixed8Dot24Half;
@@ -139,6 +144,22 @@ begin
    B := ConvertToFixed8Dot24(Index);
    C := FixedDiv(B, A);
    CheckEquals(Round(B.Fixed / A.Fixed * CFixed8Dot24One.Fixed), C.Fixed);
+  end;
+
+ Floats[0] := 0.1;
+ Floats[1] := 0.7;
+ for Index := 0 to $1F do
+  begin
+   A := ConvertToFixed8Dot24(Floats[0]);
+   B := ConvertToFixed8Dot24(Floats[1]);
+   C := FixedDiv(A, B);
+
+   // advance
+   Floats[2] := Floats[0] + 0.1;
+   Floats[0] := Floats[0] / Floats[1];
+   Floats[1] := -Floats[2];
+
+   CheckEquals(Floats[0], ConvertFromFixed8Dot24(C), 1E-5);
   end;
 end;
 
@@ -182,10 +203,35 @@ begin
   begin
    Value.Fixed := Index;
    Result := FixedCeil(Value);
-   if (Value.FracLow = 0) and (Value.FracHigh = 0) then
-     CheckEquals(Value.Int, Result)
-   else
-     CheckEquals(Value.Int + 1, Result);
+   CheckEquals(Ceil(Value.Fixed * CFixed8Dot24ToFloat), Result);
+  end;
+end;
+
+procedure TTestFixedPoint8Dot24.TestConvert;
+var
+  Value    : TFixed8Dot24;
+  V16Dot16 : TFixed16Dot16;
+  V24Dot8  : TFixed24Dot8;
+  Index    : Integer;
+begin
+ inherited;
+
+ for Index := -$7FFFFF to $7FFFFF do
+  begin
+   Value.Fixed := Index shl 8;
+   V16Dot16 := ConvertToFixed16Dot16(Value);
+   CheckEquals(Value.AsSingle, V16Dot16.AsSingle);
+   Value := ConvertFromFixed16Dot16(V16Dot16);
+   CheckEquals(Value.AsSingle, V16Dot16.AsSingle);
+  end;
+
+ for Index := -$7FFF to $7FFF do
+  begin
+   Value.Fixed := Index shl 16;
+   V24Dot8 := ConvertToFixed24Dot8(Value);
+   CheckEquals(Value.AsSingle, V24Dot8.AsSingle);
+   Value := ConvertFromFixed24Dot8(V24Dot8);
+   CheckEquals(Value.AsSingle, V24Dot8.AsSingle);
   end;
 end;
 
@@ -232,6 +278,11 @@ begin
  for IntIndex := -$7F to $7E do
    begin
     Value.Fixed := 0;
+    Value.Int := IntIndex;
+    Result := FixedRound(Value);
+    CheckEquals(Round(Value.Fixed * CFixed8Dot24ToFloat), Result);
+
+    Value.Fixed := Random($FFFFFF);
     Value.Int := IntIndex;
     Result := FixedRound(Value);
     CheckEquals(Round(Value.Fixed * CFixed8Dot24ToFloat), Result);
@@ -320,6 +371,7 @@ procedure TTestFixedPoint16Dot16.TestDiv;
 var
   A, B, C : TFixed16Dot16;
   Index   : Integer;
+  Floats  : array [0..2] of Single;
 begin
  inherited;
  A := CFixed16Dot16Half;
@@ -328,6 +380,22 @@ begin
    B := ConvertToFixed16Dot16(Index);
    C := FixedDiv(B, A);
    CheckEquals(Round(B.Fixed / A.Fixed * CFixed16Dot16One.Fixed), C.Fixed);
+  end;
+
+ Floats[0] := 0.1;
+ Floats[1] := 0.7;
+ for Index := 0 to $1F do
+  begin
+   A := ConvertToFixed16Dot16(Floats[0]);
+   B := ConvertToFixed16Dot16(Floats[1]);
+   C := FixedDiv(A, B);
+
+   // advance
+   Floats[2] := Floats[0] + 0.1;
+   Floats[0] := Floats[0] / Floats[1];
+   Floats[1] := -Floats[2];
+
+   CheckEquals(Floats[0], ConvertFromFixed16Dot16(C), 1E-3);
   end;
 end;
 
@@ -371,10 +439,35 @@ begin
   begin
    Value.Fixed := Index;
    Result := FixedCeil(Value);
-   if (Value.Frac = 0) then
-     CheckEquals(Value.Int, Result)
-   else
-     CheckEquals(Value.Int + 1, Result);
+   CheckEquals(Ceil(Value.Fixed * CFixed16Dot16ToFloat), Result);
+  end;
+end;
+
+procedure TTestFixedPoint16Dot16.TestConvert;
+var
+  Value   : TFixed16Dot16;
+  V8Dot24 : TFixed8Dot24;
+  V24Dot8 : TFixed24Dot8;
+  Index   : Integer;
+begin
+ inherited;
+
+ for Index := -$7FFFFF to $7FFFFF do
+  begin
+   Value.Fixed := Index;
+   V8Dot24 := ConvertToFixed8Dot24(Value);
+   CheckEquals(Value.AsSingle, V8Dot24.AsSingle);
+   Value := ConvertFromFixed8Dot24(V8Dot24);
+   CheckEquals(Value.AsSingle, V8Dot24.AsSingle);
+  end;
+
+ for Index := -$7FFFFF to $7FFFFF do
+  begin
+   Value.Fixed := Index shl 8;
+   V24Dot8 := ConvertToFixed24Dot8(Value);
+   CheckEquals(Value.AsSingle, V24Dot8.AsSingle);
+   Value := ConvertFromFixed24Dot8(V24Dot8);
+   CheckEquals(Value.AsSingle, V24Dot8.AsSingle);
   end;
 end;
 
@@ -384,12 +477,16 @@ var
   Result   : Integer;
   IntIndex : SmallInt;
 begin
- inherited;
+  inherited;
 
- for IntIndex := -$7FFF to $7FFE do
+  for IntIndex := -$7FFF to $7FFE do
    begin
     Value.Fixed := 0;
     Value.Int := IntIndex;
+    Result := FixedRound(Value);
+    CheckEquals(Round(Value.Fixed * CFixed16Dot16ToFloat), Result);
+
+    Value.Frac := Random($FFFF);
     Result := FixedRound(Value);
     CheckEquals(Round(Value.Fixed * CFixed16Dot16ToFloat), Result);
 
@@ -533,6 +630,7 @@ procedure TTestFixedPoint24Dot8.TestDiv;
 var
   A, B, C : TFixed24Dot8;
   Index   : Integer;
+  Floats  : array [0..2] of Single;
 begin
  inherited;
  A := CFixed24Dot8Half;
@@ -541,6 +639,22 @@ begin
    B := ConvertToFixed24Dot8(Index);
    C := FixedDiv(B, A);
    CheckEquals(Round(B.Fixed / A.Fixed * CFixed24Dot8One.Fixed), C.Fixed);
+  end;
+
+ Floats[0] := 0.1;
+ Floats[1] := 0.7;
+ for Index := 0 to $1F do
+  begin
+   A := ConvertToFixed24Dot8(Floats[0]);
+   B := ConvertToFixed24Dot8(Floats[1]);
+   C := FixedDiv(A, B);
+
+   // advance
+   Floats[2] := Floats[0] + 0.1;
+   Floats[0] := Floats[0] / Floats[1];
+   Floats[1] := -Floats[2];
+
+   CheckEquals(Floats[0], ConvertFromFixed24Dot8(C), 1E-1);
   end;
 end;
 
@@ -565,12 +679,11 @@ var
   Index  : Integer;
 begin
  inherited;
- for Index := 0 to $FF do
+ for Index := -$7FFFFFE to $7FFFFFE do
   begin
-   Value.Fixed := Index shl 8;
-   Value.Frac  := Index shr 8;
+   Value.Fixed := Index;
    Result := FixedFloor(Value);
-   CheckEquals(Index, Result);
+   CheckEquals(Floor(Value.Fixed * CFixed24Dot8ToFloat), Result);
   end;
 end;
 
@@ -581,12 +694,39 @@ var
   Index  : Integer;
 begin
  inherited;
- for Index := 0 to $FF do
+ for Index := -$7FFFFFE to $7FFFFFE do
   begin
-   Value.Fixed := Index shl 8;
-   Value.Frac  := Index shr 8;
+   Value.Fixed := Index;
    Result := FixedCeil(Value);
-   CheckEquals((Value.Fixed + $FF) shr 8, Result);
+   CheckEquals(Ceil(Value.Fixed * CFixed24Dot8ToFloat), Result);
+  end;
+end;
+
+procedure TTestFixedPoint24Dot8.TestConvert;
+var
+  Value    : TFixed24Dot8;
+  V8Dot24  : TFixed8Dot24;
+  V16Dot16 : TFixed16Dot16;
+  Index    : Integer;
+begin
+ inherited;
+
+ for Index := -$7FFF to $7FFF do
+  begin
+   Value.Fixed := Index;
+   V8Dot24 := ConvertToFixed8Dot24(Value);
+   CheckEquals(Value.AsSingle, V8Dot24.AsSingle);
+   Value := ConvertFromFixed8Dot24(V8Dot24);
+   CheckEquals(Value.AsSingle, V8Dot24.AsSingle);
+  end;
+
+ for Index := -$7FFFFE to $7FFFFE do
+  begin
+   Value.Fixed := Index;
+   V16Dot16 := ConvertToFixed16Dot16(Value);
+   CheckEquals(Value.AsSingle, V16Dot16.AsSingle);
+   Value := ConvertFromFixed16Dot16(V16Dot16);
+   CheckEquals(Value.AsSingle, V16Dot16.AsSingle);
   end;
 end;
 
@@ -602,6 +742,10 @@ begin
    begin
     Value.Fixed := IntIndex shl 8;
     Value.Frac := 0;
+    Result := FixedRound(Value);
+    CheckEquals(Round(Value.Fixed * CFixed24Dot8ToFloat), Result);
+
+    Value.Frac := Random($FF);
     Result := FixedRound(Value);
     CheckEquals(Round(Value.Fixed * CFixed24Dot8ToFloat), Result);
 

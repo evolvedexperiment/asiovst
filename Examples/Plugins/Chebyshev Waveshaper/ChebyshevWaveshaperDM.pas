@@ -43,9 +43,6 @@ const
   CdBMin : Single = -140;
 
 type
-
-  { TChebyshevWaveshaperDataModule }
-
   TChebyshevWaveshaperDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
@@ -72,6 +69,9 @@ implementation
 
 uses
   DAV_Common, DAV_VSTParameters, ChebyshevWaveshaperGUI;
+
+
+{ TChebyshevWaveshaperDataModule }
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var

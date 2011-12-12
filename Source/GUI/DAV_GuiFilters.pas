@@ -497,8 +497,8 @@ begin
  for y := 0 to ByteMap.Height - 1 do
   begin
    ptr := ByteMap.Scanline[y];
-   for x := 0 to ByteMap.Width - 1 do
-    ptr[x] := Round((ptr[x] - Mn) * Scale);
+   for x := 0 to ByteMap.Width - 1
+    do ptr[x] := Round((ptr[x] - Mn) * Scale);
   end;
 end;
 

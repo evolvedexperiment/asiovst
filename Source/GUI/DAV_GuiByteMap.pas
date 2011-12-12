@@ -87,7 +87,8 @@ type
     procedure FillRect(Rect: TRect; Data: Byte);
     procedure FrameRect(Rect: TRect; Data: Byte);
     procedure Line(FromX, FromY, ToX, ToY: Integer; Data: Byte);
-    procedure HorizontalLine(FromX, ToX, Y: Integer; Data: Byte);
+    procedure HorizontalLine(FromX, ToX, Y: Integer; Data: Byte); overload;
+    procedure HorizontalLine(FromX, ToX, Y: Integer; FromData, ToData: Byte); overload;
     procedure VerticalLine(X, FromY, ToY: Integer; Data: Byte);
 
     property DataPointer: PByteArray read GetDataPointer;
@@ -164,7 +165,7 @@ type
 implementation
 
 uses
-  Math, DAV_GuiFileFormats, DAV_GuiPixelMap;
+  Math, DAV_Common, DAV_GuiFileFormats, DAV_GuiPixelMap;
 
 { TGuiCustomByteMap }
 
@@ -575,12 +576,31 @@ procedure TGuiCustomByteMap.HorizontalLine(FromX, ToX, Y: Integer;
 var
   X : Integer;
 begin
- if ToX < FromX  then
-  for X := ToX to FromX - 1
-   do FDataPointer[Y * Width + X] := Data
- else
-  for X := FromX to ToX - 1
-   do FDataPointer[Y * Width + X] := Data;
+ if FromX > ToX
+  then Exchange32(FromX, ToX);
+
+ for X := FromX to ToX - 1
+  do FDataPointer[Y * Width + X] := Data;
+end;
+
+procedure TGuiCustomByteMap.HorizontalLine(FromX, ToX, Y: Integer; FromData,
+  ToData: Byte);
+var
+  X    : Integer;
+  R, S : Single;
+  Data : Byte;
+begin
+ if FromX > ToX
+  then Exchange32(FromX, ToX);
+
+ S := 1 / (ToX - FromX);
+ R := 0;
+ for X := FromX to ToX - 1 do
+  begin
+   FDataPointer[Y * Width + X] := Trunc(FromData + R * (ToData - FromData));
+   R := R + S;
+   EMMS;
+  end;
 end;
 
 procedure TGuiCustomByteMap.Line(FromX, FromY, ToX, ToY: Integer; Data: Byte);
