@@ -100,7 +100,8 @@ type
     procedure FillRect(Left, Top, Right, Bottom: Integer; Color: TPixel32); overload;
     procedure FrameRect(Rect: TRect; Color: TPixel32);
     procedure Line(FromX, FromY, ToX, ToY: Integer; Color: TPixel32);
-    procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32);
+    procedure HorizontalLine(FromX, ToX, Y: Integer; Color: TPixel32); overload;
+    procedure HorizontalLine(FromX, ToX, Y: Integer; FromColor, ToColor: TPixel32); overload;
     procedure VerticalLine(X, FromY, ToY: Integer; Color: TPixel32);
     procedure Assign(Source: TPersistent); override;
     function Equals(Obj: TObject): Boolean; {$IFDEF FPC} override; {$ENDIF} {$IFDEF DELPHI14_UP} override; {$ENDIF}
@@ -183,7 +184,7 @@ type
 implementation
 
 uses
-  Math, DAV_GuiFileFormats;
+  Math, DAV_Common, DAV_GuiFileFormats;
 
 {$IFDEF Darwin}
 resourcestring
@@ -860,19 +861,34 @@ end;
 
 procedure TGuiCustomPixelMap.HorizontalLine(FromX, ToX, Y: Integer;
   Color: TPixel32);
-var
-  X : Integer;
 begin
  try
-  if ToX < FromX  then
-   for X := ToX to FromX - 1
-    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
-  else
-   for X := FromX to ToX - 1
-    do BlendPixelInplace(Color, FDataPointer[Y * Width + X])
+  if FromX > ToX
+   then Exchange32(FromX, ToX);
+  BlendPixelLine(Color, @FDataPointer[Y * Width + FromX], ToX - FromX);
  finally
   EMMS;
  end;
+end;
+
+procedure TGuiCustomPixelMap.HorizontalLine(FromX, ToX, Y: Integer; FromColor,
+  ToColor: TPixel32);
+var
+  X     : Integer;
+  R, S  : Single;
+  Color : TPixel32;
+begin
+ if FromX > ToX
+  then Exchange32(FromX, ToX);
+ S := 1 / (ToX - FromX);
+ R := 0;
+ for X := FromX to ToX - 1 do
+  begin
+   Color := CombinePixel(ToColor, FromColor, Round(R * $FF));
+   BlendPixelInplace(Color, FDataPointer[Y * Width + X]);
+   R := R + S;
+   EMMS;
+  end;
 end;
 
 procedure TGuiCustomPixelMap.Line(FromX, FromY, ToX, ToY: Integer; Color: TPixel32);

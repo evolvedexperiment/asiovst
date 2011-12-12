@@ -92,8 +92,15 @@ function Power2(const X: Extended): Extended;
 function IsNan32(const Value: Single): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function IsNan64(const Value: Double): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+function MirrorFullscale(Value: Single): Single; overload;
+function MirrorFullscale(Value: Double): Double; overload;
+
 function Mirror(Value: Single): Single; overload;
+function Mirror(Value, Maximum: Single): Single; overload;
+function Mirror(Value, Minimum, Maximum: Single): Single; overload;
 function Mirror(Value: Double): Double; overload;
+function Mirror(Value, Maximum: Double): Double; overload;
+function Mirror(Value, Minimum, Maximum: Double): Double; overload;
 
 function Sigmoid(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -557,7 +564,33 @@ begin
 end;
 
 
+function MirrorFullscale(Value: Single): Single;
+begin
+  Result := 1 - Abs(Value - 1 - 4 * Round(0.25 * Value - 0.25));
+end;
+
 function Mirror(Value: Single): Single;
+begin
+  Result := Abs(Value - 2 * Round(0.5 * Value));
+end;
+
+function Mirror(Value: Single; Maximum: Single): Single;
+begin
+  Assert(Maximum <> 0);
+  Value := Value / Maximum;
+  Result := Abs(Value - 2 * Round(0.5 * Value));
+  Result := Result * Maximum;
+end;
+
+function Mirror(Value: Single; Minimum: Single; Maximum: Single): Single;
+begin
+  Assert(Maximum - Minimum <> 0);
+  Value := (Value - Minimum) / (Maximum - Minimum);
+  Result := Abs(Value - 2 * Round(0.5 * Value));
+  Result := Result * (Maximum - Minimum) + Minimum;
+end;
+
+function MirrorFullscale(Value: Double): Double;
 begin
   Result := 1 - Abs(Value - 1 - 4 * Round(0.25 * Value - 0.25));
 end;
@@ -565,6 +598,22 @@ end;
 function Mirror(Value: Double): Double;
 begin
   Result := 1 - Abs(Value - 1 - 4 * Round(0.25 * Value - 0.25));
+end;
+
+function Mirror(Value: Double; Maximum: Double): Double;
+begin
+  Assert(Maximum <> 0);
+  Value := Value / Maximum;
+  Result := Abs(Value - 2 * Round(0.5 * Value));
+  Result := Result * Maximum;
+end;
+
+function Mirror(Value: Double; Minimum: Double; Maximum: Double): Double;
+begin
+  Assert(Maximum - Minimum <> 0);
+  Value := (Value - Minimum) / (Maximum - Minimum);
+  Result := Abs(Value - 2 * Round(0.5 * Value));
+  Result := Result * (Maximum - Minimum) + Minimum;
 end;
 
 

@@ -401,7 +401,7 @@ begin
    Move(FBuffer^[FReadBufferPos], Data^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 
@@ -508,7 +508,7 @@ begin
    Move(FBuffer^[FReadBufferPos], Data^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 
@@ -787,7 +787,7 @@ begin
    Move(FBuffer[1]^[FReadBufferPos], Right^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 
@@ -1211,7 +1211,7 @@ begin
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 
@@ -1280,7 +1280,7 @@ end;
 function TCustomCircularReserveMultiBuffer.GetFreeSampleCount: Cardinal;
 begin
  Result := inherited GetFreeSampleCount;
- assert(Result >= FLatency);
+ Assert(Result >= FLatency);
  Result := Result - FLatency;
 end;
 
@@ -1439,7 +1439,7 @@ begin
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 
@@ -1516,7 +1516,7 @@ begin
    FReadBufferPos := FReadBufferPos + Result;
   end;
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
+ Assert(FSamplesInBuffer >= 0);
 *)
 end;
 
@@ -1700,7 +1700,7 @@ begin
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 

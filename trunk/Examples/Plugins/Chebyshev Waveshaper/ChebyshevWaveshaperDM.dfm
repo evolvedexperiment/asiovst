@@ -1,5 +1,4 @@
 object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
-  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
@@ -45,10 +44,8 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDouble
   OnProcess32Replacing = VSTModuleProcess
-  Left = 286
-  Top = 81
+  OnProcess64Replacing = VSTModuleProcessDouble
   Height = 150
   Width = 215
 end

@@ -1118,7 +1118,7 @@ begin
 
 
    // draw bottom rounded borders
-   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(RadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
 
@@ -1133,8 +1133,8 @@ begin
      ScnLne[0] := Scanline[Y];
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
+     XRange[0] := FixedRoundHalfUp(Temp);
+     XRange[1] := FixedRoundHalfUp(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
      if XRange[0] < 0 then XRange[0] := 0;
 
      for X := XRange[0] to XRange[1] do
@@ -1182,7 +1182,7 @@ begin
       end;
     end;
 
-   for Y := FixedRound(RadiusFixed) to FixedRound(HeaderHeight) - 1 do
+   for Y := FixedRoundHalfUp(RadiusFixed) to FixedRoundHalfUp(HeaderHeight) - 1 do
     begin
      ScnLne[0] := Scanline[Y];
      YFixed := ConvertToFixed24Dot8(Y);
@@ -1202,7 +1202,7 @@ begin
       then YBorderDistance.Fixed := BorderWidthFixed.Fixed - YFixed.Fixed
       else YBorderDistance.Fixed := 0;
 
-     X := FixedRound(FixedSub(HeaderWidth, RadiusFixed));
+     X := FixedRoundHalfUp(FixedSub(HeaderWidth, RadiusFixed));
      while X < Width do
       begin
        // convert
@@ -1262,7 +1262,7 @@ begin
     end;
    EMMS;
 
-   for Y := FixedRound(HeaderHeight) to Height - 1 - FixedRound(RadiusFixed) do
+   for Y := FixedRoundHalfUp(HeaderHeight) to Height - 1 - FixedRoundHalfUp(RadiusFixed) do
     begin
      ScnLne[0] := Scanline[Y];
      YFixed := ConvertToFixed24Dot8(Y);
@@ -1361,7 +1361,7 @@ begin
    EMMS;
 
 
-   for Y := FixedRound(RadiusFixed) to FixedRound(HeaderHeight) - 1 - FixedRound(RadiusFixed) do
+   for Y := FixedRoundHalfUp(RadiusFixed) to FixedRoundHalfUp(HeaderHeight) - 1 - FixedRoundHalfUp(RadiusFixed) do
     begin
      BlendPixelLine(BorderColor, @Scanline[Y][0], FHeaderWidth);
      EMMS;
@@ -1369,7 +1369,7 @@ begin
 
 
    // draw bottom rounded borders
-   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(RadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
 
@@ -1384,8 +1384,8 @@ begin
      ScnLne[0] := Scanline[Height - 1 - Y];
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
+     XRange[0] := FixedRoundHalfUp(Temp);
+     XRange[1] := FixedRoundHalfUp(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8(X);
@@ -1434,7 +1434,7 @@ begin
 
 
    // draw top label border
-   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(RadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
      SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(RadiusFixed, CFixed24Dot8One)));
@@ -1443,12 +1443,12 @@ begin
       then Continue
       else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
      ScnLne[0] := Scanline[Y];
-     ScnLne[1] := Scanline[FixedRound(HeaderHeight) - Y - 1];
+     ScnLne[1] := Scanline[FixedRoundHalfUp(HeaderHeight) - Y - 1];
 
-     BlendPixelLine(BorderColor, @ScnLne[1][0], FixedRound(FixedSub(HeaderWidth, RadiusFixed)) - 1);
+     BlendPixelLine(BorderColor, @ScnLne[1][0], FixedRoundHalfUp(FixedSub(HeaderWidth, RadiusFixed)) - 1);
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     for X := FixedRound(Temp) to FixedRound(RadiusFixed) do
+     for X := FixedRoundHalfUp(Temp) to FixedRoundHalfUp(RadiusFixed) do
       begin
        XFixed := ConvertToFixed24Dot8(X);
 
@@ -1469,10 +1469,10 @@ begin
          end;
 
        BlendPixelInplace(CombColor, ScnLne[0][X]);
-       BlendPixelInplace(CombColor, ScnLne[1][FixedRound(HeaderWidth) - 1 - X]);
+       BlendPixelInplace(CombColor, ScnLne[1][FixedRoundHalfUp(HeaderWidth) - 1 - X]);
       end;
 
-     BlendPixelLine(BorderColor, @ScnLne[0][FixedRound(RadiusFixed) + 1], FixedRound(FixedSub(HeaderWidth, RadiusFixed))  - 1);
+     BlendPixelLine(BorderColor, @ScnLne[0][FixedRoundHalfUp(RadiusFixed) + 1], FixedRoundHalfUp(FixedSub(HeaderWidth, RadiusFixed))  - 1);
      EMMS;
     end;
 
@@ -1755,7 +1755,7 @@ begin
     else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
 
    // draw top rounded borders
-   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(RadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
 
@@ -1770,8 +1770,8 @@ begin
      ScnLne := Scanline[Y];
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
+     XRange[0] := FixedRoundHalfUp(Temp);
+     XRange[1] := FixedRoundHalfUp(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
      X := XRange[0];
      while X <= XRange[1] do
       begin
@@ -1821,7 +1821,7 @@ begin
     end;
 
    // draw bottom rounded borders
-   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(RadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
 
@@ -1836,8 +1836,8 @@ begin
      ScnLne := Scanline[Height - 1 - Y];
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
+     XRange[0] := FixedRoundHalfUp(Temp);
+     XRange[1] := FixedRoundHalfUp(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8(X);
@@ -1885,7 +1885,7 @@ begin
       end;
     end;
 
-   for Y := FixedRound(RadiusFixed) to Height - 1 - FixedRound(RadiusFixed) do
+   for Y := FixedRoundHalfUp(RadiusFixed) to Height - 1 - FixedRoundHalfUp(RadiusFixed) do
     begin
      ScnLne := Scanline[Y];
      YFixed := ConvertToFixed24Dot8(Y);
@@ -2078,7 +2078,7 @@ begin
     else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
 
    // draw top rounded borders
-   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(RadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
 
@@ -2093,8 +2093,8 @@ begin
      ScnLne := Scanline[Y];
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
+     XRange[0] := FixedRoundHalfUp(Temp);
+     XRange[1] := FixedRoundHalfUp(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8(X);
@@ -2131,7 +2131,7 @@ begin
     end;
 
    // draw bottom rounded borders
-   for Y := 0 to FixedRound(RadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(RadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
 
@@ -2146,8 +2146,8 @@ begin
      ScnLne := Scanline[Height - 1 - Y];
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     XRange[0] := FixedRound(Temp);
-     XRange[1] := FixedRound(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
+     XRange[0] := FixedRoundHalfUp(Temp);
+     XRange[1] := FixedRoundHalfUp(FixedSub(ConvertToFixed24Dot8(Integer(Width - 1)), Temp));
      for X := XRange[0] to XRange[1] do
       begin
        XFixed := ConvertToFixed24Dot8(X);
@@ -2191,7 +2191,7 @@ begin
       end;
     end;
 
-   for Y := FixedRound(RadiusFixed) to Height - 1 - FixedRound(RadiusFixed) do
+   for Y := FixedRoundHalfUp(RadiusFixed) to Height - 1 - FixedRoundHalfUp(RadiusFixed) do
     begin
      ScnLne := Scanline[Y];
      YFixed := ConvertToFixed24Dot8(Y);
@@ -2409,7 +2409,7 @@ begin
     else SqrRadMinusOne := FixedSqr(SqrRadMinusOne);
 
    // draw rounded borders
-   for Y := 0 to FixedRound(BorderRadiusFixed) - 1  do
+   for Y := 0 to FixedRoundHalfUp(BorderRadiusFixed) - 1  do
     begin
      YFixed := ConvertToFixed24Dot8(Y);
      SqrYDist := FixedSqr(FixedSub(YFixed, FixedSub(BorderRadiusFixed, CFixed24Dot8One)));
@@ -2421,7 +2421,7 @@ begin
      ScnLne[1] := Scanline[Height - 1 - Y];
 
      Temp.Fixed := RadMinusOne.Fixed - XStart.Fixed;
-     XRange[0] := FixedRound(Temp);
+     XRange[0] := FixedRoundHalfUp(Temp);
      XRange[1] := FixedFloor(RadMinusOne);
      for X := XRange[0] to XRange[1] do
       begin
@@ -2490,7 +2490,7 @@ begin
      X := FixedFloor(BorderRadiusFixed);
      XRange[0] := FixedFloor(BorderWidthFixed) - X;
      if XRange[0] > 0 then
-      for Y := 0 to FixedRound(BorderRadiusFixed) - 1 do
+      for Y := 0 to FixedRoundHalfUp(BorderRadiusFixed) - 1 do
        begin
         ScnLne[0] := Scanline[FYOffset + Y];
         ScnLne[1] := Scanline[Height - 1 - Y];
@@ -2504,8 +2504,8 @@ begin
 
    // draw vertical lines
    Temp.Fixed := Max(BorderRadiusFixed.Fixed, BorderWidthFixed.Fixed);
-   XRange[0] := FYOffset + FixedRound(Temp);
-   XRange[1] := Height - FixedRound(Temp);
+   XRange[0] := FYOffset + FixedRoundHalfUp(Temp);
+   XRange[1] := Height - FixedRoundHalfUp(Temp);
    for Y := XRange[0] to XRange[1] - 1 do
     begin
      ScnLne[0] := Scanline[Y];
@@ -2523,7 +2523,7 @@ begin
 
    // draw missing vertical lines part
    if (BorderWidthFixed.Fixed > BorderRadiusFixed.Fixed) then
-    for Y := FixedRound(BorderRadiusFixed) to FixedRound(BorderWidthFixed) - 1 do
+    for Y := FixedRoundHalfUp(BorderRadiusFixed) to FixedRoundHalfUp(BorderWidthFixed) - 1 do
      begin
       ScnLne[0] := Scanline[FYOffset + Y];
       ScnLne[1] := Scanline[Height - Y - 1];
@@ -2546,8 +2546,8 @@ begin
    CenterY := FixedSub(BorderWidthFixed, CFixed24Dot8One);
 
    // calculate affected scanlines
-   YRange[0] := FixedRound(FixedSub(CenterY, BorderWidthFixed));
-   YRange[1] := FixedRound(FixedAdd(CenterY, BorderWidthFixed));
+   YRange[0] := FixedRoundHalfUp(FixedSub(CenterY, BorderWidthFixed));
+   YRange[1] := FixedRoundHalfUp(FixedAdd(CenterY, BorderWidthFixed));
 
    // eventually limit range
    if YRange[0] < 0 then YRange[0] := 0;
@@ -2565,8 +2565,8 @@ begin
       else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
 
      // calculate affected pixels within this scanline
-     XRange[0] := FixedRound(CenterX);
-     XRange[1] := FixedRound(FixedAdd(CenterX, XStart));
+     XRange[0] := FixedRoundHalfUp(CenterX);
+     XRange[1] := FixedRoundHalfUp(FixedAdd(CenterX, XStart));
 
      ScnLne[0] := Scanline[FYOffset + Y];
      X := XRange[0];
@@ -2593,8 +2593,8 @@ begin
    CenterX.Frac := 0;
 
    // calculate affected scanlines
-   YRange[0] := FixedRound(FixedSub(CenterY, BorderWidthFixed));
-   YRange[1] := FixedRound(FixedAdd(CenterY, BorderWidthFixed));
+   YRange[0] := FixedRoundHalfUp(FixedSub(CenterY, BorderWidthFixed));
+   YRange[1] := FixedRoundHalfUp(FixedAdd(CenterY, BorderWidthFixed));
 
    // eventually limit range
    if YRange[0] < 0 then YRange[0] := 0;
@@ -2612,8 +2612,8 @@ begin
       else XStart.Fixed := FixedSqrt(XStart).Fixed - CFixed24Dot8Half.Fixed;
 
      // calculate affected pixels within this scanline
-     XRange[0] := FixedRound(FixedSub(CenterX, XStart));
-     XRange[1] := FixedRound(CenterX);
+     XRange[0] := FixedRoundHalfUp(FixedSub(CenterX, XStart));
+     XRange[1] := FixedRoundHalfUp(CenterX);
 
      ScnLne[0] := Scanline[FYOffset + Y];
      X := XRange[0];
