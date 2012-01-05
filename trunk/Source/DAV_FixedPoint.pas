@@ -397,10 +397,10 @@ begin
 //  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
 {$ELSE}
 asm
-  SAR     Value, 8
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    SAR     Value, 8
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -410,10 +410,10 @@ begin
   Result.Fixed := Value.Fixed shl 8;
 {$ELSE}
 asm
-  SHL     Value, 8
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    SHL     Value, 8
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -426,10 +426,10 @@ begin
 //  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 16);
 {$ELSE}
 asm
-  SAR     Value, 16
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    SAR     Value, 16
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -443,10 +443,10 @@ begin
 //  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
 {$ELSE}
 asm
-  SAR     Value, 8
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    SAR     Value, 8
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -519,10 +519,10 @@ begin
     (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value.Fixed) shr 31)))) shl 8)));
 {$ELSE}
 asm
-  SAR     Value, 24;
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    SAR     Value, 24;
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -534,10 +534,10 @@ begin
     shl (16))));
 {$ELSE}
 asm
-  SAR     Value, 16
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    SAR     Value, 16
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -550,10 +550,10 @@ begin
 // Result := (Value.Fixed and $80000000) or (Value.Fixed shr 8);
 {$ELSE}
 asm
-  SAR     Value, 8
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    SAR     Value, 8
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -566,11 +566,11 @@ begin
     (Cardinal(-(Value.Fixed shr 31)) shl 8)));
 {$ELSE}
 asm
-  ADD     Value, $FFFFFF
-  SAR     Value, 24
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    ADD     Value, $FFFFFF
+    SAR     Value, 24
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -584,11 +584,11 @@ begin
 //  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FFFF) shr 16);
 {$ELSE}
 asm
-  ADD     Value, $FFFF
-  SAR     Value, 16
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    ADD     Value, $FFFF
+    SAR     Value, 16
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -603,11 +603,11 @@ begin
 //  Result := (Value.Fixed and $80000000) or ((Value.Fixed + $FF) shr 8);
 {$ELSE}
 asm
-  ADD     Value, $FF
-  SAR     Value, 8
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    ADD     Value, $FF
+    SAR     Value, 8
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -617,17 +617,17 @@ begin
   Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17FFFFF) and $1FFFFFF) + 1) shr 25);
 {$ELSE}
 asm
-  MOV     EDX, Value
-  ADD     Value, $800000
-  SAR     Value, 24
-  ADD     EDX, $17FFFFF
-  AND     EDX, $1FFFFFF
-  ADD     EDX, 1
-  SHR     EDX, $19
-  SUB     Value, EDX
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    MOV     EDX, Value
+    ADD     Value, $800000
+    SAR     Value, 24
+    ADD     EDX, $17FFFFF
+    AND     EDX, $1FFFFFF
+    ADD     EDX, 1
+    SHR     EDX, $19
+    SUB     Value, EDX
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -637,17 +637,17 @@ begin
   Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17FFF) and $1FFFF) + 1) shr 17);
 {$ELSE}
 asm
-  MOV     EDX, Value
-  ADD     Value, $8000
-  SAR     Value, 16
-  ADD     EDX, $17FFF
-  AND     EDX, $1FFFF
-  ADD     EDX, 1
-  SHR     EDX, $11
-  SUB     Value, EDX
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    MOV     EDX, Value
+    ADD     Value, $8000
+    SAR     Value, 16
+    ADD     EDX, $17FFF
+    AND     EDX, $1FFFF
+    ADD     EDX, 1
+    SHR     EDX, $11
+    SUB     Value, EDX
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -657,17 +657,17 @@ begin
   Result := FixedRoundHalfUp(Value) - ((((Value.Fixed + $17F) and $1FF) + 1) shr 9);
 {$ELSE}
 asm
-  MOV     EDX, Value
-  ADD     Value, $80
-  SAR     Value, 8
-  ADD     EDX, $17F
-  AND     EDX, $1FF
-  ADD     EDX, 1
-  SHR     EDX, $9
-  SUB     Value, EDX
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    MOV     EDX, Value
+    ADD     Value, $80
+    SAR     Value, 8
+    ADD     EDX, $17F
+    AND     EDX, $1FF
+    ADD     EDX, 1
+    SHR     EDX, $9
+    SUB     Value, EDX
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -677,10 +677,10 @@ begin
   Result.Fixed := A.Fixed + B.Fixed;
 {$ELSE}
 asm
-  ADD     A, B
-  {$IFDEF CPUx86_64}
-  MOV     Result, A
-  {$ENDIF}
+    ADD     A, B
+    {$IFDEF CPUx86_64}
+    MOV     Result, A
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -691,11 +691,11 @@ begin
   Result := Integer((((Value.Fixed) shr 24) or -((Value.Fixed) shr 31) shl 8));
 {$ELSE}
 asm
-  ADD     Value, $800000
-  SAR     Value, 24
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    ADD     Value, $800000
+    SAR     Value, 24
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -706,11 +706,11 @@ begin
   Result := Integer((((Value.Fixed) shr 16) or -((Value.Fixed) shr 31) shl 16));
 {$ELSE}
 asm
-  ADD     Value, $8000
-  SAR     Value, 16
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    ADD     Value, $8000
+    SAR     Value, 16
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -721,11 +721,11 @@ begin
   Result := Integer((((Value.Fixed) shr 8) or -((Value.Fixed) shr 31) shl 24));
 {$ELSE}
 asm
-  ADD     Value, $80
-  SAR     Value, 8
-  {$IFDEF CPUx86_64}
-  MOV     Result, Value
-  {$ENDIF}
+    ADD     Value, $80
+    SAR     Value, 8
+    {$IFDEF CPUx86_64}
+    MOV     Result, Value
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -735,10 +735,10 @@ begin
   Result.Fixed := A.Fixed + B.Fixed;
 {$ELSE}
 asm
-  ADD     A, B
-  {$IFDEF CPUx86_64}
-  MOV     Result, A
-  {$ENDIF}
+    ADD     A, B
+    {$IFDEF CPUx86_64}
+    MOV     Result, A
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -748,10 +748,10 @@ begin
   Result.Fixed := A.Fixed + B.Fixed;
 {$ELSE}
 asm
-  ADD     A, B
-  {$IFDEF CPUx86_64}
-  MOV     Result, A
-  {$ENDIF}
+    ADD     A, B
+    {$IFDEF CPUx86_64}
+    MOV     Result, A
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -761,10 +761,10 @@ begin
   Result.Fixed := A.Fixed - B.Fixed;
 {$ELSE}
 asm
-  SUB     A, B
-  {$IFDEF CPUx86_64}
-  MOV     Result, A
-  {$ENDIF}
+    SUB     A, B
+    {$IFDEF CPUx86_64}
+    MOV     Result, A
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -774,10 +774,10 @@ begin
   Result.Fixed := A.Fixed - B.Fixed;
 {$ELSE}
 asm
-  SUB     A, B
-  {$IFDEF CPUx86_64}
-  MOV     Result, A
-  {$ENDIF}
+    SUB     A, B
+    {$IFDEF CPUx86_64}
+    MOV     Result, A
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -787,10 +787,10 @@ begin
   Result.Fixed := A.Fixed - B.Fixed;
 {$ELSE}
 asm
-  SUB     A, B
-  {$IFDEF CPUx86_64}
-  MOV     Result, A
-  {$ENDIF}
+    SUB     A, B
+    {$IFDEF CPUx86_64}
+    MOV     Result, A
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -802,14 +802,14 @@ begin
   IntResult := Round(A.Fixed * CFixed8Dot24ToFloat * B.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     EAX, A
-  IMUL    B
-  SHRD    EAX, EDX, 24
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 24
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     EAX, A
+    IMUL    B
+    SHRD    EAX, EDX, 24
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 24
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -821,14 +821,14 @@ begin
   IntResult := Round(A.Fixed * CFixed16Dot16ToFloat * B.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     EAX, A
-  IMUL    B
-  SHRD    EAX, EDX, 16
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 16
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     EAX, A
+    IMUL    B
+    SHRD    EAX, EDX, 16
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 16
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -840,14 +840,14 @@ begin
   IntResult := Round(A.Fixed * CFixed24Dot8ToFloat * B.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  IMUL    RDX
-  SHRD    RAX, RDX, 8
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 8
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    IMUL    RDX
+    SHRD    RAX, RDX, 8
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 8
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -859,14 +859,14 @@ begin
   IntResult := Round(A.Fixed * CFixed8Dot24ToFloat * B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  IMUL    RDX
-  SHRD    RAX, RDX, 24
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 24
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    IMUL    RDX
+    SHRD    RAX, RDX, 24
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 24
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -878,14 +878,14 @@ begin
   IntResult := Round(A.Fixed * CFixed16Dot16ToFloat * B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  IMUL    RDX
-  SHRD    RAX, RDX, 16
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 16
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    IMUL    RDX
+    SHRD    RAX, RDX, 16
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 16
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -897,14 +897,14 @@ begin
   IntResult := Round(A.Fixed * CFixed24Dot8ToFloat * B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  IMUL    RDX
-  SHRD    RAX, RDX, 8
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 8
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    IMUL    RDX
+    SHRD    RAX, RDX, 8
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 8
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -916,14 +916,14 @@ begin
   IntResult := Round(A * CFixed8Dot24ToFloat * B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  IMUL    RDX
-  SHRD    RAX, RDX, 24
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 24
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    IMUL    RDX
+    SHRD    RAX, RDX, 24
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 24
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -935,14 +935,14 @@ begin
   IntResult := Round(A * CFixed16Dot16ToFloat * B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  IMUL    RDX
-  SHRD    RAX, RDX, 16
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 16
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    IMUL    RDX
+    SHRD    RAX, RDX, 16
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 16
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -954,14 +954,14 @@ begin
   IntResult := Round(A * CFixed24Dot8ToFloat * B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  IMUL    RDX
-  SHRD    RAX, RDX, 8
-  {$ELSE}
-  IMUL    B
-  SHRD    A, B, 8
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    IMUL    RDX
+    SHRD    RAX, RDX, 8
+    {$ELSE}
+    IMUL    B
+    SHRD    A, B, 8
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -973,20 +973,20 @@ begin
   IntResult := Round(A.Fixed / B.Fixed * CFixed8Dot24One.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 24
-  SHL     RAX, 24
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    B, A, 24
-  SHL     A, 24
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 24
+    SHL     RAX, 24
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    B, A, 24
+    SHL     A, 24
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -998,20 +998,20 @@ begin
   IntResult := Round(A.Fixed / B.Fixed * CFixed16Dot16One.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 16
-  SHL     RAX, 16
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    B, A, 16
-  SHL     A, 16
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 16
+    SHL     RAX, 16
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    B, A, 16
+    SHL     A, 16
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1023,20 +1023,20 @@ begin
   IntResult := Round(A.Fixed / B.Fixed * CFixed24Dot8One.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 8
-  SHL     RAX, 8
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    B, A, 8
-  SHL     A, 8
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 8
+    SHL     RAX, 8
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    B, A, 8
+    SHL     A, 8
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1048,18 +1048,18 @@ begin
   IntResult := Round(A.Fixed / B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 24
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    B, A, 24
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 24
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    B, A, 24
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1071,18 +1071,18 @@ begin
   IntResult := Round(A.Fixed / B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 16
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    B, A, 16
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 16
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    B, A, 16
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1094,18 +1094,18 @@ begin
   IntResult := Round(A.Fixed / B);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 8
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    EDX, EAX, 8
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 8
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    EDX, EAX, 8
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1117,20 +1117,20 @@ begin
   IntResult := Round(A.Fixed / B.Fixed * CFixed8Dot24One.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 8
-  SHL     RAX, 8
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    B, A, 24
-  SHL     A, 24
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 8
+    SHL     RAX, 8
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    B, A, 24
+    SHL     A, 24
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1142,20 +1142,20 @@ begin
   IntResult := Round(A.Fixed / B.Fixed * CFixed16Dot16One.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  MOV     RAX, RCX
-  MOV     RCX, RDX
-  CDQ
-  SHLD    RDX, RAX, 8
-  SHL     RAX, 8
-  IDIV    RDX
-  {$ELSE}
-  MOV     ECX, B
-  CDQ
-  SHLD    B, A, 16
-  SHL     A, 16
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    MOV     RAX, RCX
+    MOV     RCX, RDX
+    CDQ
+    SHLD    RDX, RAX, 8
+    SHL     RAX, 8
+    IDIV    RDX
+    {$ELSE}
+    MOV     ECX, B
+    CDQ
+    SHLD    B, A, 16
+    SHL     A, 16
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1169,18 +1169,18 @@ begin
   IntResult := Round(CDividend / Value.Fixed - 0.5);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  XOR     RAX, RAX
-  MOV     RDX, 1
-  IDIV    RCX
-  SHL     RAX, 16
-  {$ELSE}
-  MOV     ECX, Value
-  XOR     EAX, EAX
-  MOV     EDX, 1
-  IDIV    ECX
-  SHL     EAX, 16
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    XOR     RAX, RAX
+    MOV     RDX, 1
+    IDIV    RCX
+    SHL     RAX, 16
+    {$ELSE}
+    MOV     ECX, Value
+    XOR     EAX, EAX
+    MOV     EDX, 1
+    IDIV    ECX
+    SHL     EAX, 16
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1194,16 +1194,16 @@ begin
   IntResult := Round(CDividend / Value.Fixed - 0.5);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  XOR     RAX, RAX
-  MOV     RDX, 1
-  IDIV    RCX
-  {$ELSE}
-  MOV     ECX, Value
-  XOR     EAX, EAX
-  MOV     EDX, 1
-  IDIV    ECX
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    XOR     RAX, RAX
+    MOV     RDX, 1
+    IDIV    RCX
+    {$ELSE}
+    MOV     ECX, Value
+    XOR     EAX, EAX
+    MOV     EDX, 1
+    IDIV    ECX
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1217,18 +1217,18 @@ begin
   IntResult := Round(CDividend / Value.Fixed - 0.5);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  XOR     RAX, RAX
-  MOV     RDX, 1
-  IDIV    RCX
-  SHR     RAX, 16
-  {$ELSE}
-  MOV     ECX, Value
-  XOR     EAX, EAX
-  MOV     EDX, 1
-  IDIV    ECX
-  SHR     EAX, 16
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    XOR     RAX, RAX
+    MOV     RDX, 1
+    IDIV    RCX
+    SHR     RAX, 16
+    {$ELSE}
+    MOV     ECX, Value
+    XOR     EAX, EAX
+    MOV     EDX, 1
+    IDIV    ECX
+    SHR     EAX, 16
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1240,14 +1240,14 @@ begin
   IntResult := Round((Value.Fixed * CFixed8Dot24ToFloat) * Value.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  IMUL    RCX, RCX
-  SHRD    RCX, RDX, 24
-  MOV     RAX, RCX
-  {$ELSE}
-  IMUL    Value
-  SHRD    EAX, EDX, 24
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    IMUL    RCX, RCX
+    SHRD    RCX, RDX, 24
+    MOV     RAX, RCX
+    {$ELSE}
+    IMUL    Value
+    SHRD    EAX, EDX, 24
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1259,14 +1259,14 @@ begin
   IntResult := Round((Value.Fixed * CFixed16Dot16ToFloat) * Value.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  IMUL    RCX, RCX
-  SHRD    RCX, RDX, 16
-  MOV     RAX, RCX
-  {$ELSE}
-  IMUL    Value
-  SHRD    EAX, EDX, 16
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    IMUL    RCX, RCX
+    SHRD    RCX, RDX, 16
+    MOV     RAX, RCX
+    {$ELSE}
+    IMUL    Value
+    SHRD    EAX, EDX, 16
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1278,14 +1278,14 @@ begin
   IntResult := Round((Value.Fixed * CFixed24Dot8ToFloat) * Value.Fixed);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  IMUL    RCX, RCX
-  SHRD    RCX, RDX, 8
-  MOV     RAX, RCX
-  {$ELSE}
-  IMUL    Value
-  SHRD    EAX, EDX, 8
-  {$ENDIF}
+    {$IFDEF CPUx86_64}
+    IMUL    RCX, RCX
+    SHRD    RCX, RDX, 8
+    MOV     RAX, RCX
+    {$ELSE}
+    IMUL    Value
+    SHRD    EAX, EDX, 8
+    {$ENDIF}
 {$ENDIF}
 end;
 
@@ -1299,52 +1299,52 @@ begin
   IntResult := Round(Sqrt(Value.Fixed * CFixed16Dot16OneAsSingle) - 0.5);
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  XOR     EAX, EAX
-  MOV     R8D, $40000000
+    {$IFDEF CPUx86_64}
+    XOR     EAX, EAX
+    MOV     R8D, $40000000
 
-  @Step1:
-  MOV     EDX, ECX
-  SUB     EDX, R8D
-  JL      @Step2
-  SUB     EDX, EAX
-  JL      @Step2
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, R8D
-  SHR     R8D, 2
-  JNZ     @Step1
-  JMP     @Step3
-@Step2:
-  SHR     EAX, 1
-  SHR     R8D, 2
-  JNZ     @Step1
-@Step3:
-  SHL     EAX, 8
-  {$ELSE}
-  PUSH    EBX
-  MOV     ECX, Value
-  XOR     Value, Value
-  MOV     EBX, $40000000
 @Step1:
-  MOV     EDX, ECX
-  SUB     EDX, EBX
-  JL      @Step2
-  SUB     EDX, Value
-  JL      @Step2
-  MOV     ECX, EDX
-  SHR     Value, 1
-  OR      Value, EBX
-  SHR     EBX, 2
-  JNZ     @Step1
-  JMP     @Step3
+    MOV     EDX, ECX
+    SUB     EDX, R8D
+    JL      @Step2
+    SUB     EDX, EAX
+    JL      @Step2
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, R8D
+    SHR     R8D, 2
+    JNZ     @Step1
+    JMP     @Step3
 @Step2:
-  SHR     Value, 1
-  SHR     EBX, 2
-  JNZ     @Step1
+    SHR     EAX, 1
+    SHR     R8D, 2
+    JNZ     @Step1
 @Step3:
-  SHL     Value, 8
-  POP     EBX
+    SHL     EAX, 8
+    {$ELSE}
+    PUSH    EBX
+    MOV     ECX, Value
+    XOR     Value, Value
+    MOV     EBX, $40000000
+@Step1:
+    MOV     EDX, ECX
+    SUB     EDX, EBX
+    JL      @Step2
+    SUB     EDX, Value
+    JL      @Step2
+    MOV     ECX, EDX
+    SHR     Value, 1
+    OR      Value, EBX
+    SHR     EBX, 2
+    JNZ     @Step1
+    JMP     @Step3
+@Step2:
+    SHR     Value, 1
+    SHR     EBX, 2
+    JNZ     @Step1
+@Step3:
+    SHL     Value, 8
+    POP     EBX
   {$ENDIF}
 {$ENDIF}
 end;
@@ -1360,100 +1360,100 @@ begin
 {$ELSE}
 asm
   {$IFDEF CPUx86_64}
-  XOR     EAX, EAX
-  MOV     R8D, $40000000
+    XOR     EAX, EAX
+    MOV     R8D, $40000000
 
 @Step1:
-  MOV     EDX, ECX
-  SUB     EDX, R8D
-  JB      @Step2
-  SUB     EDX, EAX
-  JB      @Step2
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, R8D
-  SHR     R8D, 2
-  JNZ     @Step1
-  JZ      @Step3
+    MOV     EDX, ECX
+    SUB     EDX, R8D
+    JB      @Step2
+    SUB     EDX, EAX
+    JB      @Step2
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, R8D
+    SHR     R8D, 2
+    JNZ     @Step1
+    JZ      @Step3
 
 @Step2:
-  SHR     EAX, 1
-  SHR     R8D, 2
-  JNZ     @Step1
+    SHR     EAX, 1
+    SHR     R8D, 2
+    JNZ     @Step1
 
 @Step3:
-  MOV     R8D, $00004000
-  SHL     EAX, 16
-  SHL     ECX, 16
+    MOV     R8D, $00004000
+    SHL     EAX, 16
+    SHL     ECX, 16
 
 @Step4:
-  MOV     EDX, ECX
-  SUB     EDX, R8D
-  jb      @Step5
-  SUB     EDX, EAX
-  jb      @Step5
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, R8D
-  SHR     R8D, 2
-  JNZ     @Step4
-  JMP     @Step6
+    MOV     EDX, ECX
+    SUB     EDX, R8D
+    jb      @Step5
+    SUB     EDX, EAX
+    jb      @Step5
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, R8D
+    SHR     R8D, 2
+    JNZ     @Step4
+    JMP     @Step6
 
 @Step5:
-  SHR     EAX, 1
-  SHR     R8D, 2
-  JNZ     @Step4
+    SHR     EAX, 1
+    SHR     R8D, 2
+    JNZ     @Step4
 
 @Step6:
-  {$ELSE}
-  PUSH    EBX
-  MOV     ECX, Value
-  XOR     EAX, EAX
-  MOV     EBX, $40000000
+    {$ELSE}
+    PUSH    EBX
+    MOV     ECX, Value
+    XOR     EAX, EAX
+    MOV     EBX, $40000000
 
 @Step1:
-  MOV     EDX, ECX
-  SUB     EDX, EBX
-  JB      @Step2
-  SUB     EDX, EAX
-  JB      @Step2
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, EBX
-  SHR     EBX, 2
-  JNZ     @Step1
-  JZ      @Step3
+    MOV     EDX, ECX
+    SUB     EDX, EBX
+    JB      @Step2
+    SUB     EDX, EAX
+    JB      @Step2
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, EBX
+    SHR     EBX, 2
+    JNZ     @Step1
+    JZ      @Step3
 
 @Step2:
-  SHR     EAX, 1
-  SHR     EBX, 2
-  JNZ     @Step1
+    SHR     EAX, 1
+    SHR     EBX, 2
+    JNZ     @Step1
 
 @Step3:
-  MOV     EBX, $00004000
-  SHL     EAX, 16
-  SHL     ECX, 16
+    MOV     EBX, $00004000
+    SHL     EAX, 16
+    SHL     ECX, 16
 
 @Step4:
-  MOV     EDX, ECX
-  SUB     EDX, EBX
-  jb      @Step5
-  SUB     EDX, EAX
-  jb      @Step5
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, EBX
-  SHR     EBX, 2
-  JNZ     @Step4
-  JMP     @Step6
+    MOV     EDX, ECX
+    SUB     EDX, EBX
+    jb      @Step5
+    SUB     EDX, EAX
+    jb      @Step5
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, EBX
+    SHR     EBX, 2
+    JNZ     @Step4
+    JMP     @Step6
 
 @Step5:
-  SHR     EAX, 1
-  SHR     EBX, 2
-  JNZ     @Step4
+    SHR     EAX, 1
+    SHR     EBX, 2
+    JNZ     @Step4
 
 @Step6:
-  POP     EBX
+    POP     EBX
   {$ENDIF}
 {$ENDIF}
 end;
@@ -1468,105 +1468,105 @@ begin
   IntResult := Round(Sqrt(Value.Fixed * CFixed24Dot8OneAsSingle));
 {$ELSE}
 asm
-  {$IFDEF CPUx86_64}
-  XOR     EAX, EAX
-  MOV     R8D, $40000000
+    {$IFDEF CPUx86_64}
+    XOR     EAX, EAX
+    MOV     R8D, $40000000
 
 @Step1:
-  MOV     EDX, ECX
-  SUB     EDX, R8D
-  JB      @Step2
-  SUB     EDX, EAX
-  JB      @Step2
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, R8D
-  SHR     R8D, 2
-  JNZ     @Step1
-  JZ      @Step3
+    MOV     EDX, ECX
+    SUB     EDX, R8D
+    JB      @Step2
+    SUB     EDX, EAX
+    JB      @Step2
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, R8D
+    SHR     R8D, 2
+    JNZ     @Step1
+    JZ      @Step3
 
 @Step2:
-  SHR     EAX, 1
-  SHR     R8D, 2
-  JNZ     @Step1
+    SHR     EAX, 1
+    SHR     R8D, 2
+    JNZ     @Step1
 
 @Step3:
-  MOV     R8D, $00004000
-  SHL     EAX, 16
-  SHL     ECX, 16
+    MOV     R8D, $00004000
+    SHL     EAX, 16
+    SHL     ECX, 16
 
 @Step4:
-  MOV     EDX, ECX
-  SUB     EDX, R8D
-  jb      @Step5
-  SUB     EDX, EAX
-  JB      @Step5
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, R8D
-  SHR     R8D, 2
-  JNZ     @Step4
-  JMP     @Step6
+    MOV     EDX, ECX
+    SUB     EDX, R8D
+    jb      @Step5
+    SUB     EDX, EAX
+    JB      @Step5
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, R8D
+    SHR     R8D, 2
+    JNZ     @Step4
+    JMP     @Step6
 
 @Step5:
-  SHR     EAX, 1
-  SHR     R8D, 2
-  JNZ     @Step4
+    SHR     EAX, 1
+    SHR     R8D, 2
+    JNZ     @Step4
 
 @Step6:
-  SHR     EAX, 4
+    SHR     EAX, 4
 
-  {$ELSE}
-  PUSH    EBX
-  MOV     ECX, EAX
-  XOR     EAX, EAX
-  MOV     EBX, $40000000
+    {$ELSE}
+    PUSH    EBX
+    MOV     ECX, EAX
+    XOR     EAX, EAX
+    MOV     EBX, $40000000
 
 @Step1:
-  MOV     EDX, ECX
-  SUB     EDX, EBX
-  JB      @Step2
-  SUB     EDX, EAX
-  JB      @Step2
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, EBX
-  SHR     EBX, 2
-  JNZ     @Step1
-  JZ      @Step3
+    MOV     EDX, ECX
+    SUB     EDX, EBX
+    JB      @Step2
+    SUB     EDX, EAX
+    JB      @Step2
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, EBX
+    SHR     EBX, 2
+    JNZ     @Step1
+    JZ      @Step3
 
 @Step2:
-  SHR     EAX, 1
-  SHR     EBX, 2
-  JNZ     @Step1
+    SHR     EAX, 1
+    SHR     EBX, 2
+    JNZ     @Step1
 
 @Step3:
-  MOV     EBX, $00004000
-  SHL     EAX, 16
-  SHL     ECX, 16
+    MOV     EBX, $00004000
+    SHL     EAX, 16
+    SHL     ECX, 16
 
 @Step4:
-  MOV     EDX, ECX
-  SUB     EDX, EBX
-  JB      @Step5
-  SUB     EDX, EAX
-  jb      @Step5
-  MOV     ECX, EDX
-  SHR     EAX, 1
-  OR      EAX, EBX
-  SHR     EBX, 2
-  JNZ     @Step4
-  JMP     @Step6
+    MOV     EDX, ECX
+    SUB     EDX, EBX
+    JB      @Step5
+    SUB     EDX, EAX
+    jb      @Step5
+    MOV     ECX, EDX
+    SHR     EAX, 1
+    OR      EAX, EBX
+    SHR     EBX, 2
+    JNZ     @Step4
+    JMP     @Step6
 
 @Step5:
-  SHR     EAX, 1
-  SHR     EBX, 2
-  JNZ     @Step4
+    SHR     EAX, 1
+    SHR     EBX, 2
+    JNZ     @Step4
 
 @Step6:
-  POP     EBX
-  SHR     EAX, 4
-  {$ENDIF}
+    POP     EBX
+    SHR     EAX, 4
+    {$ENDIF}
 {$ENDIF}
 end;
 

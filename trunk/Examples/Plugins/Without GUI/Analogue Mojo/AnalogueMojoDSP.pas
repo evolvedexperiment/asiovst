@@ -44,11 +44,15 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessMulti(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessMulti(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDampingChange(Sender: TObject;
+      const Index: Integer; var Value: Single);
+    procedure ParameterDampingDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FCriticalSection : TCriticalSection;
     FTransformator   : array of TTransformatorSimulation;
@@ -99,6 +103,12 @@ begin
  FreeAndNil(FCriticalSection);
 end;
 
+procedure TAnalogueMojoDM.ParameterDampingDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+  PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3));
+end;
+
 procedure TAnalogueMojoDM.ChooseProcess;
 begin
  case Length(FTransformator) of
@@ -124,6 +134,21 @@ begin
  end;
 end;
 
+procedure TAnalogueMojoDM.ParameterDampingChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ChannelIndex : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for ChannelIndex := 0 to Length(FTransformator) - 1 do
+   if Assigned(FTransformator[ChannelIndex])
+    then FTransformator[ChannelIndex].DampingFrequency := (1 - 0.02 * ChannelIndex) * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
 procedure TAnalogueMojoDM.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 var
   ChannelIndex : Integer;
@@ -140,7 +165,7 @@ begin
 end;
 
 procedure TAnalogueMojoDM.VSTModuleProcessMono(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex  : Integer;
 begin
@@ -154,7 +179,7 @@ begin
 end;
 
 procedure TAnalogueMojoDM.VSTModuleProcessStereo(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex  : Integer;
 const
@@ -174,7 +199,7 @@ begin
 end;
 
 procedure TAnalogueMojoDM.VSTModuleProcessMulti(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

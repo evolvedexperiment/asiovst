@@ -203,56 +203,55 @@ begin
 end;
 {$ELSE}
 asm
- push ebx
- push edi
- push esi
+    PUSH    EBX
+    PUSH    EDI
+    PUSH    ESI
 
- mov ebx, [eax.FFilterKernel]
+    MOV     EBX, [EAX.FFilterKernel]
+    MOV     EDI, [EAX.FStates    ].Integer
+    MOV     ESI, [EAX.FStates + 4].Integer
 
- mov edi, [eax.FStates    ].Integer
- mov esi, [eax.FStates + 4].Integer
+    // calculate first sample
+    FLD     Input            // Input
+    FLD     ST(0)            // Input, Input
+    FMUL    [EBX].Single     // Input * FFilterKernel^[0], Input
+    FLD     ST(0)            // Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
+    FADD    [EDI].Single     // FStates[0]^[0] + Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
+    FSTP    [EDX].Single     // Input * FFilterKernel^[0], Input
+    FLD     [ESI].Single     // FStates[1]^[0], Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
+    FSUBRP                   // FStates[1]^[0] - Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
+    FSTP    [ECX].Single     // Input
 
- // calculate first sample
- fld  Input               // Input
- fld  st(0)               // Input, Input
- fmul [ebx].Single        // Input * FFilterKernel^[0], Input
- fld  st(0)               // Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
- fadd [edi].Single        // FStates[0]^[0] + Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
- fstp [edx].Single        // Input * FFilterKernel^[0], Input
- fld  [esi].Single        // FStates[1]^[0], Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
- fsubrp                   // FStates[1]^[0] - Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
- fstp [ecx].Single        // Input
+    MOV     ECX, [EAX.FFilterLength]
+    MOV     EAX, ECX
+    SHR     EAX, 1           // EAX = FFilterLength div 2
+    SUB     ECX, 1
 
- mov ecx, [eax.FFilterLength]
- mov eax, ecx
- shr eax, 1              // eax = FFilterLength div 2
- sub ecx, 1
+ @Loop:
+    ADD     EBX, 4           // increase FilterKernel Pointer
+    FLD     ST(0)            // Input, Input
+    FMUL    [EBX].Single     // Input * FFilterKernel^[i], Input
+    FLD     ST(0)            // Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
+    FADD    [EDI + 4].Single // FStates[0]^[i] + Input * FFilterKernel^[i], Input * FFilterKernel^[i], Input
+    FSTP    [EDI].Single     // Input * FFilterKernel^[0], Input
 
- @loop:
-   add  ebx, 4           // increase FilterKernel Pointer
-   fld st(0)             // Input, Input
-   fmul [ebx].Single     // Input * FFilterKernel^[i], Input
-   fld  st(0)            // Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
-   fadd [edi + 4].Single // FStates[0]^[i] + Input * FFilterKernel^[i], Input * FFilterKernel^[i], Input
-   fstp [edi].Single     // Input * FFilterKernel^[0], Input
+    FLD     [ESI + 4].Single // FStates[1]^[i], Input * FFilterKernel^[i], Input * FFilterKernel^[i], Input
+    FSUBRP                   // FStates[1]^[i] - Input * FFilterKernel^[i], Input * FFilterKernel^[i], Input
+    CMP     ECX, EAX
+    JNZ     @Norm
+    FADD    ST(0), ST(1)     // ADD Input if necessary
+@Norm:
+    FSTP    [ESI].Single     // Input
 
-   fld  [esi + 4].Single // FStates[1]^[i], Input * FFilterKernel^[i], Input * FFilterKernel^[i], Input
-   fsubrp                // FStates[1]^[i] - Input * FFilterKernel^[i], Input * FFilterKernel^[i], Input
-   cmp ecx, eax
-   jnz @norm
-   fadd st(0), st(1)     // add Input if necessary
-   @norm:
-   fstp [esi].Single     // Input
+    ADD     EDI, 4           // increase State[0] Pointer
+    ADD     ESI, 4           // increase State[1] Pointer
+    LOOP    @Loop
 
-   add  edi, 4           // increase State[0] Pointer
-   add  esi, 4           // increase State[1] Pointer
- loop @loop
+    FSTP    ST(0)            // remove Input
 
- fstp st(0)              // remove Input
-
- pop esi
- pop edi
- pop ebx
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ENDIF}
 

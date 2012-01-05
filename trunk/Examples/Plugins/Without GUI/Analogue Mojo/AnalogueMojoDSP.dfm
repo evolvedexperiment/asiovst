@@ -34,6 +34,23 @@ object AnalogueMojoDM: TAnalogueMojoDM
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 2.000000000000000000
+      DisplayName = 'Damping Freq,'
+      LargeStepFloat = 2.000000000000000000
+      Max = 16000.000000000000000000
+      MaxInteger = 16000
+      Min = 10000.000000000000000000
+      MinInteger = 10000
+      ShortLabel = 'Damping'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'kHz'
+      VSTModule = Owner
+      OnParameterChange = ParameterDampingChange
+      OnCustomParameterDisplay = ParameterDampingDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
@@ -41,8 +58,6 @@ object AnalogueMojoDM: TAnalogueMojoDM
   OnProcess = VSTModuleProcessStereo
   OnProcess32Replacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 217
-  Top = 77
   Height = 150
   Width = 215
 end

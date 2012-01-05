@@ -38,23 +38,23 @@ begin
 end;
 {$ELSE}
 asm
- mov eax, Value
- shr eax, $10
- and eax, $8000
+    MOV     EAX, Value
+    SHR     EAX, $10
+    AND     EAX, $8000
 
- mov edx, Value
- and edx, $7F800000
- sub edx, $38000000
- shr edx, 13
- and edx, $7C00
+    MOV     EDX, Value
+    AND     EDX, $7F800000
+    SUB     EDX, $38000000
+    SHR     EDX, 13
+    AND     EDX, $7C00
 
- or eax, edx
+    OR      EAX, EDX
 
- mov edx, Value
- shr edx, 13
- and edx, $3FF
- or eax, edx
- mov result, ax
+    MOV     EDX, Value
+    SHR     EDX, 13
+    AND     EDX, $3FF
+    OR      EAX, EDX
+    MOV     Result, AX
 end;
 {$ENDIF}
 
@@ -69,21 +69,21 @@ begin
 end;
 {$ELSE}
 asm
- mov cx, Value
- and cx, $8000
- shl ecx, 16
+    MOV     CX, Value
+    AND     CX, $8000
+    SHL     ECX, 16
 
- xor edx, edx
- mov dx, Value
- and dx, $7C00
- add edx, $1C000
- shl edx, 13
- or ecx, edx
+    XOR     EDX, EDX
+    MOV     DX, Value
+    AND     DX, $7C00
+    ADD     EDX, $1C000
+    SHL     EDX, 13
+    OR      ECX, EDX
 
- and ax, $3FF
- shl eax, 13
- or eax, ecx
- mov result, eax
+    AND     AX, $3FF
+    SHL     EAX, 13
+    OR      EAX, ECX
+    MOV     Result, EAX
 end;
 {$ENDIF}
 

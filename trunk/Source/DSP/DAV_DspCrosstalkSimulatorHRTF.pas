@@ -120,46 +120,46 @@ end;
 
 procedure ComplexMultiply(const InplaceBuffer, Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
 asm
- // DC
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add eax, 4
- add edx, 4
+    // DC
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EAX].Single
+    ADD     EAX, 4
+    ADD     EDX, 4
 
- // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add eax, 4
- add edx, 4
+    // Nyquist
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EAX].Single
+    ADD     EAX, 4
+    ADD     EDX, 4
 
- dec ecx
+    DEC     ECX
 @Start:
-  fld [eax    ].Single  // A.Re
-  fld [eax + 4].Single  // A.Im, A.Re
-  fld [edx    ].Single  // B.Re, A.Im, A.Re
-  fld [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fsubp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp [eax    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
-  fmulp                 // A.Im * B.Re, B.Im, A.Re
-  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
-  fmulp                 // B.Im * A.Re, A.Im * B.Re
-  faddp                 // A.Im * B.Re + A.Re * B.Im
-  fstp [eax + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 8
-  add edx, 8
- loop @Start
+    FLD     [EAX    ].Single  // A.Re
+    FLD     [EAX + 4].Single  // A.Im, A.Re
+    FLD     [EDX    ].Single  // B.Re, A.Im, A.Re
+    FLD     [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FSUBP                     // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EAX    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)             // A.Im, B.Re, B.Im, A.Re
+    FMULP                     // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)             // B.Im, A.Re, A.Im * B.Re
+    FMULP                     // B.Im * A.Re, A.Im * B.Re
+    FADDP                     // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EAX + 4].Single  // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 8
+    ADD     EDX, 8
+    LOOP    @Start
 
- // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
+    // Nyquist
+    FLD   [EAX].Single
+    FMUL  [EDX].Single
+    FSTP  [EAX].Single
 end;
 
 { TCustomSimpleHrtfCrosstalkSimulator }

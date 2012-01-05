@@ -10,6 +10,7 @@ interface
 {$DEFINE UseInifiles}
 {$DEFINE UseInline}
 {$DEFINE OptimizedErrorCalculationLoop}
+{-$DEFINE OnlyFinalBlend} // define this only in case the final blend is wrong
 
 {$IFDEF MSWINDOWS}
 {$DEFINE UseInifiles}
@@ -18,11 +19,12 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, 
   Graphics, Controls, Forms, Dialogs, Menus, ExtCtrls, StdCtrls, ComCtrls, 
-  ActnList, DAV_Common, DAV_Types, DAV_ChunkClasses, DAV_Bindings, 
-  DAV_GuiCommon, DAV_DifferentialEvolution, DAV_GuiPixelMap, DAV_GuiByteMap, 
-  DAV_GuiFixedPoint, DAV_GuiVector, DAV_GuiVectorPixel, DAV_GuiFilters, 
-  DAV_GuiFiltersBlur, DAV_GuiVectorPixelCircle, DAV_GuiVectorPixelLine, 
-  DAV_GuiFileFormats, DAV_GuiPng;
+  ActnList, TeEngine, Series, TeeProcs, Chart, DAV_Common, DAV_Types,
+  DAV_ChunkClasses, DAV_Bindings, DAV_GuiCommon, DAV_DifferentialEvolution,
+  DAV_GuiPixelMap, DAV_GuiByteMap, DAV_FixedPoint, DAV_GuiVector,
+  DAV_GuiVectorPixel, DAV_GuiFilters, DAV_GuiFiltersBlur,
+  DAV_GuiVectorPixelCircle, DAV_GuiVectorPixelLine, DAV_GuiFileFormats,
+  DAV_GuiPng;
 
 type
   TEvolutionThread = class(TThread)
@@ -39,6 +41,11 @@ type
     MainMenu: TMainMenu;
     MiBack: TMenuItem;
     MiCopyReference: TMenuItem;
+    MiCostMap: TMenuItem;
+    MiCrosshair: TMenuItem;
+    MiCurrentBestCost: TMenuItem;
+    MiDisplay: TMenuItem;
+    MiDrawing: TMenuItem;
     MiEvolve: TMenuItem;
     MiExit: TMenuItem;
     MiFile: TMenuItem;
@@ -48,34 +55,39 @@ type
     MiOpenBest: TMenuItem;
     MiOpenDrawing: TMenuItem;
     MiOpenReference: TMenuItem;
+    MiPreviousBest: TMenuItem;
     MiSaveAnimation: TMenuItem;
     MiSaveDrawing: TMenuItem;
     MiSaveFramed: TMenuItem;
     MiSaveHighResolution: TMenuItem;
     MiSavePopulation: TMenuItem;
     MiSaveResult: TMenuItem;
+    MiScale2x: TMenuItem;
+    MiScaleHalf: TMenuItem;
     MiSettings: TMenuItem;
     MiStart: TMenuItem;
     MiStopContinue: TMenuItem;
+    MiStoreLog: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
     N4: TMenuItem;
     N5: TMenuItem;
     N6: TMenuItem;
+    N7: TMenuItem;
     OpenDialog: TOpenDialog;
     OpenDialogPrimitives: TOpenDialog;
-    PaintBoxDraw: TPaintBox;
-    PaintBoxRef: TPaintBox;
     SaveDialog: TSaveDialog;
     SaveDialogPrimitives: TSaveDialog;
     StatusBar: TStatusBar;
-    MiDisplay: TMenuItem;
-    MiCrosshair: TMenuItem;
-    MiCurrentBestCost: TMenuItem;
-    N7: TMenuItem;
-    MiCostMap: TMenuItem;
-    MiPreviousBest: TMenuItem;
+    MiBackupPopulation: TMenuItem;
+    PcMain: TPageControl;
+    TsDrawing: TTabSheet;
+    PaintBoxDraw: TPaintBox;
+    PaintBoxRef: TPaintBox;
+    TsOptimizationHistory: TTabSheet;
+    CtOptimizationHistory: TChart;
+    SeriesHistory: TFastLineSeries;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -84,26 +96,30 @@ type
     procedure AcNextExecute(Sender: TObject);
     procedure AcSettingsExecute(Sender: TObject);
     procedure AcStartExecute(Sender: TObject);
+    procedure PaintBoxDrawPaint(Sender: TObject);
+    procedure PaintBoxRefPaint(Sender: TObject);
     procedure MiCopyReferenceClick(Sender: TObject);
+    procedure MiCostMapClick(Sender: TObject);
+    procedure MiCrosshairClick(Sender: TObject);
+    procedure MiCurrentBestCostClick(Sender: TObject);
     procedure MiExitClick(Sender: TObject);
     procedure MiLoadPopulationClick(Sender: TObject);
+    procedure MiLogClick(Sender: TObject);
     procedure MiOpenBestClick(Sender: TObject);
     procedure MiOpenDrawingClick(Sender: TObject);
     procedure MiOpenReferenceClick(Sender: TObject);
+    procedure MiPreviousBestClick(Sender: TObject);
     procedure MiSaveAnimationClick(Sender: TObject);
     procedure MiSaveDrawingClick(Sender: TObject);
     procedure MiSaveFramedClick(Sender: TObject);
     procedure MiSaveHighResolutionClick(Sender: TObject);
     procedure MiSavePopulationClick(Sender: TObject);
     procedure MiSaveResultClick(Sender: TObject);
+    procedure MiScale2xClick(Sender: TObject);
+    procedure MiScaleHalfClick(Sender: TObject);
     procedure MiStopContinueClick(Sender: TObject);
-    procedure PaintBoxDrawPaint(Sender: TObject);
-    procedure PaintBoxRefPaint(Sender: TObject);
-    procedure MiLogClick(Sender: TObject);
-    procedure MiCrosshairClick(Sender: TObject);
-    procedure MiCurrentBestCostClick(Sender: TObject);
-    procedure MiCostMapClick(Sender: TObject);
-    procedure MiPreviousBestClick(Sender: TObject);
+    procedure MiStoreLogClick(Sender: TObject);
+    procedure MiBackupPopulationClick(Sender: TObject);
   private
     FWorstCost               : Double;
     FMaximumCost             : Double;
@@ -178,14 +194,19 @@ type
     procedure ReduceHighCostsChanged; virtual;
     procedure ResetCircles;
     procedure SaveDrawingBackup;
-    procedure SavePopulationBackup(FileName: TFileName);
+    procedure SavePopulationBackup; overload;
+    procedure SavePopulationBackup(FileName: TFileName); overload;
     procedure LoadPopulationBackup(FileName: TFileName);
     procedure CalculateStaticCosts; virtual;
     procedure SaveDrawing(FileName: TFileName);
     procedure SaveDrawingHR(FileName: TFileName);
     procedure SaveDrawingFramed(FileName: TFileName);
+    procedure SaveAnimationStatic(FileName: TFileName; ScaleFactor: Single);
     procedure SaveAnimation(FileName: TFileName; ScaleFactor: Single;
-      AnimatedCircle: Boolean = False; Halflife: Integer = 0);
+      Halflife: Integer = 0);
+    procedure SaveAnimationAdvanced(FileName: TFileName; ScaleFactor: Single);
+    procedure SaveAnimationBlow(FileName: TFileName; ScaleFactor: Single;
+      Inverted: Boolean = False);
     procedure LoadDrawing(FileName: TFileName);
     procedure LoadBest(FileName: TFileName);
     procedure DrawPopulation(Population: TDifferentialEvolutionPopulation;
@@ -253,7 +274,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Approximations,
+  Math, {$IFDEF UseInifiles} IniFiles, {$ENDIF} DAV_Math, DAV_Approximations,
   DAV_GuiBlend, SettingsUnit, ProgressBarUnit, AdditionalChunks, CostLogUnit,
   SaveAnimationUnit;
 
@@ -351,6 +372,7 @@ begin
  FCostLog := TStringList.Create;
  if FileExists(ExtractFilePath(ParamStr(0)) + 'Costs.log')
   then FCostLog.LoadFromFile(ExtractFilePath(ParamStr(0)) + 'Costs.log');
+ SeriesHistory.Clear;
 
  // create and initialize differential evolution optimizer
  FDiffEvol := TDifferentialEvolution.Create(Self);
@@ -417,7 +439,8 @@ begin
  FreeAndNil(FCostMap);
 
  // store cost log
- FCostLog.SaveToFile(ExtractFilePath(ParamStr(0)) + 'Costs.log');
+ if MiStoreLog.Checked then
+   FCostLog.SaveToFile(ExtractFilePath(ParamStr(0)) + 'Costs.log');
 
  // free misc.
  FreeAndNil(FDiffEvol);
@@ -557,6 +580,11 @@ begin
  AcNext.Checked := True;
 end;
 
+procedure TFmPrimitivePictureEvolution.MiBackupPopulationClick(Sender: TObject);
+begin
+ MiBackupPopulation.Checked := not MiBackupPopulation.Checked;
+end;
+
 procedure TFmPrimitivePictureEvolution.MiCopyReferenceClick(Sender: TObject);
 begin
  FDrawing.Assign(FReference);
@@ -648,9 +676,13 @@ procedure TFmPrimitivePictureEvolution.MiSaveAnimationClick(Sender: TObject);
 begin
  with TFmSaveAnimation.Create(Self) do
   try
-   if (ShowModal = mrOK) and DirectoryExists(EdDirectory.Text)
-    then SaveAnimation(EdDirectory.Text, SEScale.Value * 0.01,
-      CbCircleAnimation.Checked, SEHalfLife.Value);
+   if (ShowModal = mrOK) and DirectoryExists(EdDirectory.Text) then
+    case CbStyle.ItemIndex of
+      0 : SaveAnimationStatic(EdDirectory.Text, SEScale.Value * 0.01);
+      1 : SaveAnimation(EdDirectory.Text, SEScale.Value * 0.01, SEHalfLife.Value);
+      2 : SaveAnimationAdvanced(EdDirectory.Text, SEScale.Value * 0.01);
+      3 : SaveAnimationBlow(EdDirectory.Text, SEScale.Value * 0.01);
+    end;
   finally
    Free;
   end;
@@ -744,6 +776,9 @@ begin
   begin
    if Assigned(FEvolution)
     then FEvolution.Suspended := True;
+
+   // save population backup
+   SavePopulationBackup;
 
    MiSaveDrawing.Enabled := True;
    MiStopContinue.Caption := 'C&ontinue';
@@ -885,33 +920,33 @@ const
 var
   Data : Integer;
 asm
-  MOVD      MM0, CBitMask
-  MOVD      MM1, EAX
-  PAND      MM1, MM0
-  MOVD      MM2, EDX
-  PAND      MM2, MM0
-  PSADBW    MM1, MM2
-  MOVD      EAX, MM1
-
-  // check if abs sum is zero
-  TEST      EAX, EAX
-  JS        @ZeroResult
-
-  MOV       EDX, EAX
-  IMUL      EAX, 9
-  ADD       EAX, 255
-  IMUL      EAX, EDX
-  MOV       Data, EAX
-  EMMS
-  FILD      Data
-  FMUL      CScale
-
-  POP       ECX
-  POP       EBP
-  RET
-
+    MOVD      MM0, CBitMask
+    MOVD      MM1, EAX
+    PAND      MM1, MM0
+    MOVD      MM2, EDX
+    PAND      MM2, MM0
+    PSADBW    MM1, MM2
+    MOVD      EAX, MM1
+  
+    // check if abs sum is zero
+    TEST      EAX, EAX
+    JS        @ZeroResult
+  
+    MOV       EDX, EAX
+    IMUL      EAX, 9
+    ADD       EAX, 255
+    IMUL      EAX, EDX
+    MOV       Data, EAX
+    EMMS
+    FILD      Data
+    FMUL      CScale
+  
+    POP       ECX
+    POP       EBP
+    RET
+  
 @ZeroResult:
-  FLDZ
+    FLDZ
 end;
 
 function ErrorWeightingSSE(Current, Reference: TPixel32): Single;
@@ -921,32 +956,32 @@ const
 var
   Data : Integer;
 asm
-  MOVD      XMM0, CBitMask
-  MOVD      XMM1, EAX
-  PAND      XMM1, XMM0
-  MOVD      XMM2, EDX
-  PAND      XMM2, XMM0
-  PSADBW    XMM1, XMM2
-  MOVD      EAX, XMM1
-
-  // check if abs sum is zero
-  TEST      EAX, EAX
-  JS        @ZeroResult
-
-  MOV       EDX, EAX
-  IMUL      EAX, 9
-  ADD       EAX, 255
-  IMUL      EAX, EDX
-  MOV       Data, EAX
-  FILD      Data
-  FMUL      CScale
-
-  POP       ECX
-  POP       EBP
-  RET
-
+    MOVD      XMM0, CBitMask
+    MOVD      XMM1, EAX
+    PAND      XMM1, XMM0
+    MOVD      XMM2, EDX
+    PAND      XMM2, XMM0
+    PSADBW    XMM1, XMM2
+    MOVD      EAX, XMM1
+  
+    // check if abs sum is zero
+    TEST      EAX, EAX
+    JS        @ZeroResult
+  
+    MOV       EDX, EAX
+    IMUL      EAX, 9
+    ADD       EAX, 255
+    IMUL      EAX, EDX
+    MOV       Data, EAX
+    FILD      Data
+    FMUL      CScale
+  
+    POP       ECX
+    POP       EBP
+    RET
+  
 @ZeroResult:
-  FLDZ
+    FLDZ
 end;
 {$ENDIF}
 
@@ -974,42 +1009,42 @@ const
 var
   Data : Integer;
 asm
-  FLDZ
-  LEA       EAX, EAX + ECX * 4
-  LEA       EDX, EDX + ECX * 4
-  NEG       ECX
-  JNL       @Done
-
-  PUSH      EBX
-
+    FLDZ
+    LEA       EAX, EAX + ECX * 4
+    LEA       EDX, EDX + ECX * 4
+    NEG       ECX
+    JNL       @Done
+  
+    PUSH      EBX
+  
 @Start:
-  MOVD      MM0, CBitMask
-  MOVD      MM1, [EAX + 4 * ECX]
-  PAND      MM1, MM0
-  MOVD      MM2, [EDX + 4 * ECX]
-  PAND      MM2, MM0
-  PSADBW    MM1, MM2
-  MOVD      EBX, MM1
-
-  TEST      EBX, EBX
-  JZ        @Continue
-
-  MOV       Data, EBX
-  IMUL      EBX, 9
-  ADD       EBX, 255
-  IMUL      EBX, Data
-  MOV       Data, EBX
-  EMMS
-  FILD      Data
-  FADDP
-
+    MOVD      MM0, CBitMask
+    MOVD      MM1, [EAX + 4 * ECX]
+    PAND      MM1, MM0
+    MOVD      MM2, [EDX + 4 * ECX]
+    PAND      MM2, MM0
+    PSADBW    MM1, MM2
+    MOVD      EBX, MM1
+  
+    TEST      EBX, EBX
+    JZ        @Continue
+  
+    MOV       Data, EBX
+    IMUL      EBX, 9
+    ADD       EBX, 255
+    IMUL      EBX, Data
+    MOV       Data, EBX
+    EMMS
+    FILD      Data
+    FADDP
+  
 @Continue:
-  ADD       ECX, 1
-  JS        @Start
-
-  POP       EBX
-  FMUL      CScale
-
+    ADD       ECX, 1
+    JS        @Start
+  
+    POP       EBX
+    FMUL      CScale
+  
 @Done:
 end;
 
@@ -1020,40 +1055,40 @@ const
 var
   Data : Integer;
 asm
-  FLDZ
-  LEA       EAX, EAX + ECX * 4
-  LEA       EDX, EDX + ECX * 4
-  NEG       ECX
-  JNL       @Done
-
-  MOVD      XMM0, CBitMask
-  PUSH      EBX
-
+    FLDZ
+    LEA       EAX, EAX + ECX * 4
+    LEA       EDX, EDX + ECX * 4
+    NEG       ECX
+    JNL       @Done
+  
+    MOVD      XMM0, CBitMask
+    PUSH      EBX
+  
 @Start:
-  MOVD      XMM1, [EAX + 4 * ECX]
-  PAND      XMM1, XMM0
-  MOVD      XMM2, [EDX + 4 * ECX]
-  PAND      XMM2, XMM0
-  PSADBW    XMM1, XMM2
-  MOVD      EBX, XMM1
-
-  TEST      EBX, EBX
-  JZ        @Continue
-
-  MOV       Data, EBX
-  IMUL      EBX, 9
-  ADD       EBX, 255
-  IMUL      EBX, Data
-  MOV       Data, EBX
-  FILD      Data
-  FADDP
-
+    MOVD      XMM1, [EAX + 4 * ECX]
+    PAND      XMM1, XMM0
+    MOVD      XMM2, [EDX + 4 * ECX]
+    PAND      XMM2, XMM0
+    PSADBW    XMM1, XMM2
+    MOVD      EBX, XMM1
+  
+    TEST      EBX, EBX
+    JZ        @Continue
+  
+    MOV       Data, EBX
+    IMUL      EBX, 9
+    ADD       EBX, 255
+    IMUL      EBX, Data
+    MOV       Data, EBX
+    FILD      Data
+    FADDP
+  
 @Continue:
-  ADD       ECX, 1
-  JS        @Start
-
-  POP       EBX
-  FMUL      CScale
+    ADD       ECX, 1
+    JS        @Start
+  
+    POP       EBX
+    FMUL      CScale
 
 @Done:
 end;
@@ -1110,6 +1145,11 @@ begin
   end;
 end;
 
+procedure TFmPrimitivePictureEvolution.MiStoreLogClick(Sender: TObject);
+begin
+  MiStoreLog.Checked := not MiStoreLog.Checked;
+end;
+
 procedure TFmPrimitivePictureEvolution.UpdateOptimizerSettings;
 var
   Index : Integer;
@@ -1146,18 +1186,24 @@ procedure TFmPrimitivePictureEvolution.CalculateCostMap;
 var
   x, y      : Integer;
   Error     : Single;
+  TrueWidth : Integer;
   PixelData : array [0..1] of PPixel32Array;
   ByteData  : PByteArray;
   ErrorByte : Byte;
   PosData   : array of TPoint;
 begin
+ TrueWidth := FReference.Width;
+ Assert(TrueWidth = FDrawing.Width);
+ Assert(TrueWidth <= FCostMap.Width);
+
+ // build cost map
  for y := 0 to FCostMap.Height - 1 do
   begin
    PixelData[0] := FReference.ScanLine[y];
    PixelData[1] := FDrawing.ScanLine[y];
    ByteData := FCostMap.ScanLine[y];
 
-   for x := 0 to FCostMap.Width - 1 do
+   for x := 0 to TrueWidth - 1 do
     begin
      {$IFDEF UseInline}
      Error := ErrorWeightingInline(PixelData[1, x], PixelData[0, x]);
@@ -1168,6 +1214,7 @@ begin
     end;
   end;
 
+ // apply filters
  for x := 0 to 1 do
   begin
    with TGuiStackBlurFilter.Create do
@@ -1186,12 +1233,13 @@ begin
    end;
   end;
 
+ // find higest cost positions
  SetLength(PosData, 0);
  ErrorByte := 0;
  for y := 0 to FCostMap.Height - 1 do
   begin
    ByteData := FCostMap.ScanLine[y];
-   for x := 0 to FCostMap.Width - 1 do
+   for x := 0 to TrueWidth - 1 do
     begin
      if ByteData^[x] = ErrorByte then
       begin
@@ -1249,9 +1297,9 @@ begin
      if FCorrectPosition then
       begin
        if (Population[0] < -Width) or (Population[0] > 2 * Width)
-        then Population[0] := (2 * Random - 0.5) * Width;
+        then Population[0] := Mirror(Population[0], -0.5 * Width, 1.5 * Width);
        if (Population[1] < -Height) or (Population[1] > 2 * Height)
-        then Population[1] := (2 * Random - 0.5) * Height;
+        then Population[1] := Mirror(Population[1], -0.5 * Height, 1.5 * Height);
 
        if FCorrectInvisibleCircles then
         begin
@@ -1299,13 +1347,13 @@ begin
      if FCorrectColor then
       begin
        if (Population[3] < 0) or (Population[3] > 1)
-        then Population[3] := Random;
+        then Population[3] := Mirror(Population[3]);
        if (Population[4] < 0) or (Population[4] > 1)
-        then Population[4] := Random;
+        then Population[4] := Mirror(Population[4]);
        if (Population[5] < 0) or (Population[5] > 1)
-        then Population[5] := Random;
+        then Population[5] := Mirror(Population[5]);
        if (Population[6] < 0) or (Population[6] > 1)
-        then Population[6] := Random;
+        then Population[6] := Mirror(Population[6]);
       end;
 
      if (Population[0] < -Width) or (Population[0] > 2 * Width) or
@@ -1587,6 +1635,10 @@ begin
  BestPop := FDiffEvol.GetBestPopulation;
  DrawPopulation(BestPop, FBestDrawing);
 
+ // save population backup
+ if MiBackupPopulation.Checked then
+   SavePopulationBackup;
+
  if MiCrosshair.Checked then
   with TGuiPixelThinLine.Create do
    try
@@ -1609,6 +1661,7 @@ begin
     GeometricShape.XB := ConvertToFixed24Dot8(BestPop[0]);
     Draw(FBestDrawing);
 
+    StatusBar.Panels[6].Text := 'Radius: ' + FloatToStrF(BestPop[2], ffGeneral, 5, 5);
     GeometricShape.YA := ConvertToFixed24Dot8(BestPop[1] + BestPop[2] + Max(BestPop[2], 10));
     GeometricShape.YB := ConvertToFixed24Dot8(BestPop[1] + BestPop[2] + 2);
     Draw(FBestDrawing);
@@ -1708,6 +1761,19 @@ begin
   end;
 end;
 
+procedure TFmPrimitivePictureEvolution.SavePopulationBackup;
+var
+  FileName : array [0..1] of TFileName;
+begin
+ FileName[0] := 'Backup' + IntToStr(FCurrentCircle) + '.pop';
+ FileName[1] := FileName[0] + '.bak';
+ if FileExists(FileName[1])
+  then DeleteFile(FileName[1]);
+ if FileExists(FileName[0])
+  then RenameFile(FileName[0], FileName[1]);
+ SavePopulationBackup(FileName[0]);
+end;
+
 procedure TFmPrimitivePictureEvolution.SavePopulationBackup(FileName: TFileName);
 var
   Index             : Integer;
@@ -1728,6 +1794,44 @@ begin
   finally
    Free;
   end;
+end;
+
+procedure TFmPrimitivePictureEvolution.MiScale2xClick(Sender: TObject);
+var
+  CircleIndex : Integer;
+begin
+ FDrawing.Clear(FBackgroundColor);
+ FNewDrawing.Clear(FBackgroundColor);
+ FBestDrawing.Clear(FBackgroundColor);
+ for CircleIndex := 0 to Length(FCircles) - 1 do
+  with FCircles[CircleIndex] do
+   begin
+    GeometricShape.CenterX := FixedMul(GeometricShape.CenterX, CFixed24Dot8Two);
+    GeometricShape.CenterY := FixedMul(GeometricShape.CenterY, CFixed24Dot8Two);
+    GeometricShape.Radius := FixedMul(GeometricShape.Radius, CFixed24Dot8Two);
+    Draw(FDrawing);
+    Draw(FBestDrawing);
+    Draw(FNewDrawing);
+   end;
+end;
+
+procedure TFmPrimitivePictureEvolution.MiScaleHalfClick(Sender: TObject);
+var
+  CircleIndex : Integer;
+begin
+ FDrawing.Clear(FBackgroundColor);
+ FNewDrawing.Clear(FBackgroundColor);
+ FBestDrawing.Clear(FBackgroundColor);
+ for CircleIndex := 0 to Length(FCircles) - 1 do
+  with FCircles[CircleIndex] do
+   begin
+    GeometricShape.CenterX := FixedMul(GeometricShape.CenterX, CFixed24Dot8Half);
+    GeometricShape.CenterY := FixedMul(GeometricShape.CenterY, CFixed24Dot8Half);
+    GeometricShape.Radius := FixedMul(GeometricShape.Radius, CFixed24Dot8Half);
+    Draw(FDrawing);
+    Draw(FBestDrawing);
+    Draw(FNewDrawing);
+   end;
 end;
 
 procedure TFmPrimitivePictureEvolution.LoadPopulationBackup(FileName: TFileName);
@@ -1769,6 +1873,7 @@ begin
    FDiffEvol.Initialize;
   end;
  FTrialCount := 0;
+ SeriesHistory.Clear;
 end;
 
 
@@ -1884,7 +1989,8 @@ begin
   end;
 
  // store cost log
- FCostLog.SaveToFile('Costs.log');
+ if MiStoreLog.Checked
+  then FCostLog.SaveToFile('Costs.log');
 
  Randomize;
  Inc(FTrialCount);
@@ -1898,9 +2004,12 @@ begin
  DifferentialEvolution.Evolve;
 
  BestCosts := DifferentialEvolution.GetBestCost;
- if BestCosts < FLastBestCosts
-  then FTrialsSinceUpdate := 0
-  else Inc(FTrialsSinceUpdate);
+ if BestCosts < FLastBestCosts then
+  begin
+   FTrialsSinceUpdate := 0;
+   SeriesHistory.AddXY(FTrialCount, BestCosts - FMaximumCost);
+  end
+ else Inc(FTrialsSinceUpdate);
 
  FLastBestCosts := BestCosts;
 end;
@@ -1909,6 +2018,7 @@ procedure TFmPrimitivePictureEvolution.LoadReference(FileName: TFileName);
 begin
  if not FileExists(FileName) then Exit;
 
+ FReference.Clear(FBackgroundColor);
  FReference.LoadFromFile(FileName);
  with FDrawing do
   begin
@@ -1930,7 +2040,7 @@ begin
 
  with FCostMap do
   begin
-   SetSize(FReference.Width, FReference.Height);
+   SetSize(4 * ((FReference.Width + 3) div 4), FReference.Height);
    Clear;
   end;
 
@@ -1944,7 +2054,7 @@ begin
  PaintBoxDraw.Height := FReference.Height;
  PaintBoxDraw.Left := PaintBoxRef.Left + PaintBoxRef.Width + 8;
  ClientWidth := 2 * FReference.Width + 24;
- ClientHeight := FReference.Height + StatusBar.Height + 16;
+ ClientHeight := FReference.Height + StatusBar.Height + 16 + 28;
 
  PaintBoxRef.Invalidate;
  PaintBoxDraw.Invalidate;
@@ -2054,9 +2164,74 @@ begin
  end;
 end;
 
+procedure TFmPrimitivePictureEvolution.SaveAnimationStatic(FileName: TFileName;
+  ScaleFactor: Single);
+var
+  Drawing  : TGuiPixelMapMemory;
+  Circle   : TGuiPixelFilledCircle;
+  OffsetX  : TFixed24Dot8;
+  OffsetY  : TFixed24Dot8;
+  Index    : Integer;
+  IntScale : Integer;
+begin
+ with TFmProgressBar.Create(Self) do
+  try
+   Show;
+   Drawing := TGuiPixelMapMemory.Create;
+   Drawing.Width := Round(2 * ScaleFactor * FBestDrawing.Width);
+   Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
+   Drawing.Clear(FBackgroundColor);
+   Drawing.MakeOpaque;
+   {$IFNDEF OnlyFinalBlend}
+   Drawing.SaveToFile(FileName + '\Frame0.png');
+   {$ENDIF}
+
+   Circle := TGuiPixelFilledCircle.Create;
+
+   IntScale := Round(ScaleFactor * (1 shl 8));
+   OffsetX := ConvertToFixed24Dot8(Drawing.Width div 4);
+   OffsetY := ConvertToFixed24Dot8(Drawing.Height div 4);
+
+   ProgressBar.Max := Length(FCircles) + 16;
+   for Index := 0 to Length(FCircles) - 1 do
+    if Assigned(FCircles[Index]) then
+     with FCircles[Index] do
+      begin
+       Circle.GeometricShape.Radius := FixedMul(GeometricShape.Radius, IntScale);
+       Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
+       Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
+       Circle.Color := Color;
+       Circle.Alpha := Alpha;
+       Circle.Draw(Drawing);
+
+       // finalize and save drawing
+       Drawing.MakeOpaque;
+       Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Index + 1) + '.png');
+
+       ProgressBar.StepIt;
+       Application.ProcessMessages;
+      end;
+
+(*
+   // blend over reference
+   for Index := 0 to 15 do
+    begin
+     Drawing.Draw(FReference, Drawing.Width div 4, Drawing.Height div 4, $8);
+     Drawing.MakeOpaque;
+     Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Length(FCircles) + Index + 1) + '.png');
+     ProgressBar.StepIt;
+     Application.ProcessMessages;
+    end;
+*)
+  finally
+   if Assigned(Circle) then FreeAndNil(Circle);
+   if Assigned(Drawing) then FreeAndNil(Drawing);
+   Free;
+  end;
+end;
+
 procedure TFmPrimitivePictureEvolution.SaveAnimation(FileName: TFileName;
-  ScaleFactor: Single; AnimatedCircle: Boolean = False; Halflife: Integer = 0);
-{-$DEFINE OnlyFinalBlend} // define this only in case the final blend is wrong
+  ScaleFactor: Single; Halflife: Integer = 0);
 var
   Drawing       : TGuiPixelMapMemory;
   BackDraw      : TGuiPixelMapMemory;
@@ -2094,97 +2269,60 @@ begin
    OffsetX := ConvertToFixed24Dot8(Drawing.Width div 4);
    OffsetY := ConvertToFixed24Dot8(Drawing.Height div 4);
 
-   if AnimatedCircle then
-    begin
-     // initialize
-     FixedOneThird := ConvertToFixed24Dot8(0.3333);
-     FrameIndex := 1;
-     ProgressBar.Max := 2 * Length(FCircles) + 41;
-     HalfLifePos := 0;
-     HalfLifeIndex := 0;
+   // initialize
+   FixedOneThird := ConvertToFixed24Dot8(0.3333);
+   FrameIndex := 1;
+   ProgressBar.Max := 2 * Length(FCircles) + 41;
+   HalfLifePos := 0;
+   HalfLifeIndex := 0;
 
-     // create temporary drawing
-     BackDraw := TGuiPixelMapMemory.Create;
-     try
-      for Index := 0 to Length(FCircles) - 1 do
-       if Assigned(FCircles[Index]) then
-        with FCircles[Index] do
+   // create temporary drawing
+   BackDraw := TGuiPixelMapMemory.Create;
+   try
+    for Index := 0 to Length(FCircles) - 1 do
+     if Assigned(FCircles[Index]) then
+      with FCircles[Index] do
+       begin
+        // general steps
+        BackDraw.Assign(Drawing);
+        Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
+        Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
+        Circle.Color := Color;
+
+        // define final values
+        FinalRadius := FixedMul(GeometricShape.Radius, IntScale);
+        FinalAlpha := Alpha;
+
+        // set start values
+        Circle.GeometricShape.Radius := CFixed24Dot8One;
+        Circle.Alpha := 1;
+
+        ProgressBar.StepIt;
+        Application.ProcessMessages;
+
+        {$IFNDEF OnlyFinalBlend}
+        while Circle.GeometricShape.Radius.Fixed < FinalRadius.Fixed do
          begin
-          // general steps
-          BackDraw.Assign(Drawing);
-          Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
-          Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
-          Circle.Color := Color;
-
-          // define final values
-          FinalRadius := FixedMul(GeometricShape.Radius, IntScale);
-          FinalAlpha := Alpha;
-
-          // set start values
-          Circle.GeometricShape.Radius := CFixed24Dot8One;
-          Circle.Alpha := 1;
-
-          ProgressBar.StepIt;
-          Application.ProcessMessages;
-
-          {$IFNDEF OnlyFinalBlend}
-          while Circle.GeometricShape.Radius.Fixed < FinalRadius.Fixed do
-           begin
-            // calculate alpha
-            Circle.Alpha := Round(FinalAlpha * (Circle.GeometricShape.Radius.Fixed / FinalRadius.Fixed)) and $FF;
-
-            if (Halflife = 0) or (HalfLifePos <= 1) then
-             begin
-              // render circle
-              Circle.Draw(Drawing);
-
-              // finalize and save drawing
-              if not Drawing.Equals(BackDraw) then
-               begin
-                Drawing.MakeOpaque;
-                Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
-
-                // advance frame index
-                Inc(FrameIndex);
-
-                // reset drawing
-                Drawing.Assign(BackDraw);
-               end;
-             end;
-
-            Inc(HalfLifeIndex);
-            if Halflife > 0 then
-             begin
-              if HalfLifePos > 1 then HalfLifePos := HalfLifePos - 1;
-              HalfLifePos := HalfLifePos + 1 - (Halflife / (Halflife + HalfLifeIndex));
-             end;
-
-            // advance radius
-            with Circle.GeometricShape do
-             begin
-              Radius := FixedAdd(Radius, FixedMul(FixedSub(FinalRadius, Radius), FixedOneThird));
-              Radius := FixedMul(Radius, ConvertToFixed24Dot8(1.1));
-              Radius := FixedAdd(Radius, CFixed24Dot8One);
-             end;
-
-            Application.ProcessMessages;
-           end;
-         {$ENDIF}
-
-          // draw desired circle
-          Circle.GeometricShape.Radius := FinalRadius;
-          Circle.Alpha := FinalAlpha;
-          Circle.Draw(Drawing);
+          // calculate alpha
+          Circle.Alpha := Round(FinalAlpha * (Circle.GeometricShape.Radius.Fixed / FinalRadius.Fixed)) and $FF;
 
           if (Halflife = 0) or (HalfLifePos <= 1) then
            begin
-            {$IFNDEF OnlyFinalBlend}
-            // finalize and save drawing
-            Drawing.MakeOpaque;
-            Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
-            {$ENDIF}
+            // render circle
+            Circle.Draw(Drawing);
 
-            Inc(FrameIndex);
+            // finalize and save drawing
+            if not Drawing.Equals(BackDraw) then
+             begin
+              Drawing.MakeOpaque;
+              Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+
+              // advance frame index
+              Inc(FrameIndex);
+
+              // reset drawing
+              Drawing.Assign(BackDraw);
+             end;
            end;
 
           Inc(HalfLifeIndex);
@@ -2194,95 +2332,420 @@ begin
             HalfLifePos := HalfLifePos + 1 - (Halflife / (Halflife + HalfLifeIndex));
            end;
 
-          ProgressBar.StepIt;
+          // advance radius
+          with Circle.GeometricShape do
+           begin
+            Radius := FixedAdd(Radius, FixedMul(FixedSub(FinalRadius, Radius), FixedOneThird));
+            Radius := FixedMul(Radius, ConvertToFixed24Dot8(1.1));
+            Radius := FixedAdd(Radius, CFixed24Dot8One);
+           end;
+
           Application.ProcessMessages;
          end;
+       {$ENDIF}
 
-      // blend over reference
-      for Index := 0 to 40 do
-       begin
-        TempRect := Rect(0, 0, (Drawing.Width div 4) - 1, Drawing.Height);
-        Drawing.FillRect(TempRect, pxShadeBlack32);
+        // draw desired circle
+        Circle.GeometricShape.Radius := FinalRadius;
+        Circle.Alpha := FinalAlpha;
+        Circle.Draw(Drawing);
 
-        TempRect := Rect(Drawing.Width - (Drawing.Width div 4) + 1, 0,
-          Drawing.Width, Drawing.Height);
-        Drawing.FillRect(TempRect, pxShadeBlack32);
+        if (Halflife = 0) or (HalfLifePos <= 1) then
+         begin
+          {$IFNDEF OnlyFinalBlend}
+          // finalize and save drawing
+          Drawing.MakeOpaque;
+          Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+          {$ENDIF}
 
-        TempRect := Rect((Drawing.Width div 4) - 1, 0,
-          Drawing.Width - (Drawing.Width div 4) + 1,
-          (Drawing.Height div 4) - 1);
-        Drawing.FillRect(TempRect, pxShadeBlack32);
+          Inc(FrameIndex);
+         end;
 
-        TempRect := Rect((Drawing.Width div 4) - 1,
-          Drawing.Height - (Drawing.Height div 4) + 1,
-          Drawing.Width - (Drawing.Width div 4) + 1, Drawing.Height);
-        Drawing.FillRect(TempRect, pxShadeBlack32);
-
-        TempRect := Rect((Drawing.Width div 4), (Drawing.Height div 4),
-          (Drawing.Width - Drawing.Width div 4),
-          (Drawing.Height - Drawing.Height div 4));
-        Drawing.FrameRect(TempRect, pxShadeWhite32);
-
-        Dec(TempRect.Left);
-        Dec(TempRect.Top);
-        Inc(TempRect.Right);
-        Inc(TempRect.Bottom);
-        Drawing.FrameRect(TempRect, pxShadeWhite32);
-        Drawing.FrameRect(TempRect, pxShadeWhite32);
-
-        Dec(TempRect.Left);
-        Dec(TempRect.Top);
-        Inc(TempRect.Right);
-        Inc(TempRect.Bottom);
-        Drawing.FrameRect(TempRect, pxShadeWhite32);
-
-        Drawing.MakeOpaque;
-        Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
-        Inc(FrameIndex);
+        Inc(HalfLifeIndex);
+        if Halflife > 0 then
+         begin
+          if HalfLifePos > 1 then HalfLifePos := HalfLifePos - 1;
+          HalfLifePos := HalfLifePos + 1 - (Halflife / (Halflife + HalfLifeIndex));
+         end;
 
         ProgressBar.StepIt;
         Application.ProcessMessages;
        end;
-     finally
-      FreeAndNil(BackDraw);
+
+    // blend over reference
+    for Index := 0 to 40 do
+     begin
+      TempRect := Rect(0, 0, (Drawing.Width div 4) - 1, Drawing.Height);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect(Drawing.Width - (Drawing.Width div 4) + 1, 0,
+        Drawing.Width, Drawing.Height);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect((Drawing.Width div 4) - 1, 0,
+        Drawing.Width - (Drawing.Width div 4) + 1,
+        (Drawing.Height div 4) - 1);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect((Drawing.Width div 4) - 1,
+        Drawing.Height - (Drawing.Height div 4) + 1,
+        Drawing.Width - (Drawing.Width div 4) + 1, Drawing.Height);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect((Drawing.Width div 4), (Drawing.Height div 4),
+        (Drawing.Width - Drawing.Width div 4),
+        (Drawing.Height - Drawing.Height div 4));
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+      Dec(TempRect.Left);
+      Dec(TempRect.Top);
+      Inc(TempRect.Right);
+      Inc(TempRect.Bottom);
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+      Dec(TempRect.Left);
+      Dec(TempRect.Top);
+      Inc(TempRect.Right);
+      Inc(TempRect.Bottom);
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+      Drawing.MakeOpaque;
+      Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+      Inc(FrameIndex);
+
+      ProgressBar.StepIt;
+      Application.ProcessMessages;
      end;
-    end
-   else
-    begin
-     ProgressBar.Max := Length(FCircles) + 16;
-     for Index := 0 to Length(FCircles) - 1 do
-      if Assigned(FCircles[Index]) then
-       with FCircles[Index] do
-        begin
-         Circle.GeometricShape.Radius := FixedMul(GeometricShape.Radius, IntScale);
-         Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), OffsetX);
-         Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), OffsetY);
-         Circle.Color := Color;
-         Circle.Alpha := Alpha;
-         Circle.Draw(Drawing);
-
-         // finalize and save drawing
-         Drawing.MakeOpaque;
-         Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Index + 1) + '.png');
-
-         ProgressBar.StepIt;
-         Application.ProcessMessages;
-        end;
-
-(*
-     // blend over reference
-     for Index := 0 to 15 do
-      begin
-       Drawing.Draw(FReference, Drawing.Width div 4, Drawing.Height div 4, $8);
-       Drawing.MakeOpaque;
-       Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Length(FCircles) + Index + 1) + '.png');
-       ProgressBar.StepIt;
-       Application.ProcessMessages;
-      end;
-*)
-    end;
+   finally
+    FreeAndNil(BackDraw);
+   end;
   finally
    if Assigned(Circle) then FreeAndNil(Circle);
+   if Assigned(Drawing) then FreeAndNil(Drawing);
+   Free;
+  end;
+end;
+
+procedure TFmPrimitivePictureEvolution.SaveAnimationAdvanced(FileName: TFileName;
+  ScaleFactor: Single);
+var
+  Drawing       : TGuiPixelMapMemory;
+  BackDraw      : TGuiPixelMapMemory;
+  Circle        : TGuiPixelFilledCircle;
+  FinalCircle   : TGuiPixelFilledCircle;
+  Offset        : TFixed24Dot8Point;
+  FrameIndex    : Integer;
+  Index         : Integer;
+  SlotIndex     : Integer;
+  SlotList      : TList;
+  IntScale      : Integer;
+  Ratio         : Single;
+  FTotalRadius  : Single;
+  FinalRadius   : TFixed24Dot8;
+  FixedScale    : array [0..1] of TFixed24Dot8;
+  TempRect      : TRect;
+const
+  pxShadeBlack32 : TPixel32 = (ARGB : $10000000);
+  pxShadeWhite32 : TPixel32 = (ARGB : $0FFFFFFF);
+begin
+ // initialize
+ FixedScale[0] := ConvertToFixed24Dot8(0.2);
+ FixedScale[1] := ConvertToFixed24Dot8(1.1);
+ FrameIndex := 1;
+ FTotalRadius  := 0;
+
+ with TFmProgressBar.Create(Self) do
+  try
+   Show;
+   Drawing := TGuiPixelMapMemory.Create;
+   Drawing.Width := Round(2 * ScaleFactor * FBestDrawing.Width);
+   Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
+   Drawing.Clear(FBackgroundColor);
+   Drawing.MakeOpaque;
+   {$IFNDEF OnlyFinalBlend}
+   Drawing.SaveToFile(FileName + '\Frame0.png');
+   {$ENDIF}
+
+   ProgressBar.Max := Length(FCircles) + 41;
+   IntScale := Round(ScaleFactor * (1 shl 8));
+   Offset.X := ConvertToFixed24Dot8(Drawing.Width div 4);
+   Offset.Y := ConvertToFixed24Dot8(Drawing.Height div 4);
+
+   // create temporary drawing
+   BackDraw := TGuiPixelMapMemory.Create;
+   BackDraw.Assign(Drawing);
+
+   // create slotlist
+   SlotList := TList.Create;
+
+   Index := 0;
+   while Index < Length(FCircles) do
+   begin
+    // reset drawing
+    Drawing.Assign(BackDraw);
+
+    FTotalRadius := 0.7 * FTotalRadius;
+
+    // eventually create new circle
+    if (SlotList.Count < 32) and ((SlotList.Count = 0) or (FTotalRadius < 64))
+      and (Index + SlotList.Count < Length(FCircles)) then
+     begin
+      Circle := TGuiPixelFilledCircle.Create;
+      with FCircles[Index + SlotList.Count] do
+       begin
+        Circle.GeometricShape.CenterX := FixedAdd(FixedMul(GeometricShape.CenterX, IntScale), Offset.X);
+        Circle.GeometricShape.CenterY := FixedAdd(FixedMul(GeometricShape.CenterY, IntScale), Offset.Y);
+        Circle.GeometricShape.Radius := CFixed24Dot8One;
+        Circle.Color := Color;
+        Circle.Alpha := $FF;
+        SlotList.Add(Circle);
+        FTotalRadius := FTotalRadius + ConvertFromFixed24Dot8(GeometricShape.Radius);
+       end;
+      ProgressBar.StepIt;
+      Application.ProcessMessages;
+     end;
+
+    // iterate through all circles in the slot list
+    SlotIndex := 0;
+    while SlotIndex < SlotList.Count do
+     begin
+      Circle := TGuiPixelFilledCircle(SlotList.Items[SlotIndex]);
+
+      // calculate alpha
+      FinalCircle := FCircles[Index + SlotIndex];
+      FinalRadius := FixedMul(FinalCircle.GeometricShape.Radius, IntScale);
+      Ratio := (Circle.GeometricShape.Radius.Fixed / FinalRadius.Fixed);
+      Assert(Ratio <= 1);
+      Assert(Ratio >= 0);
+      Circle.Alpha := Round(FinalCircle.Alpha * Ratio) and $FF;
+
+      Circle.Draw(Drawing);
+
+      // check if circle still needs to be kept in list
+      if (Circle.GeometricShape.Radius.Fixed = FinalRadius.Fixed) and (SlotIndex = 0) then
+       begin
+        BackDraw.Assign(Drawing);
+        TGuiPixelFilledCircle(SlotList.Items[SlotIndex]).Free;
+        SlotList.Delete(0);
+        Inc(Index);
+        Continue;
+       end;
+
+      if Circle.GeometricShape.Radius.Fixed < FinalRadius.Fixed then
+       with Circle.GeometricShape do
+        begin
+         Radius := FixedAdd(Radius, FixedMul(FixedSub(FinalRadius, Radius), FixedScale[0]));
+         Radius := FixedMul(Radius, FixedScale[1]);
+         Radius := FixedAdd(Circle.GeometricShape.Radius, CFixed24Dot8One);
+        end;
+
+      if Circle.GeometricShape.Radius.Fixed > FinalRadius.Fixed
+       then Circle.GeometricShape.Radius := FinalRadius;
+
+      Inc(SlotIndex);
+     end;
+
+    {$IFNDEF OnlyFinalBlend}
+    // finalize and save drawing
+    Drawing.MakeOpaque;
+    Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+    {$ENDIF}
+    Inc(FrameIndex);
+   end;
+
+   // blend over reference
+   for Index := 0 to 40 do
+    begin
+     TempRect := Rect(0, 0, (Drawing.Width div 4) - 1, Drawing.Height);
+     Drawing.FillRect(TempRect, pxShadeBlack32);
+
+     TempRect := Rect(Drawing.Width - (Drawing.Width div 4) + 1, 0,
+       Drawing.Width, Drawing.Height);
+     Drawing.FillRect(TempRect, pxShadeBlack32);
+
+     TempRect := Rect((Drawing.Width div 4) - 1, 0,
+       Drawing.Width - (Drawing.Width div 4) + 1,
+       (Drawing.Height div 4) - 1);
+     Drawing.FillRect(TempRect, pxShadeBlack32);
+
+     TempRect := Rect((Drawing.Width div 4) - 1,
+       Drawing.Height - (Drawing.Height div 4) + 1,
+       Drawing.Width - (Drawing.Width div 4) + 1, Drawing.Height);
+     Drawing.FillRect(TempRect, pxShadeBlack32);
+
+     TempRect := Rect((Drawing.Width div 4), (Drawing.Height div 4),
+       (Drawing.Width - Drawing.Width div 4),
+       (Drawing.Height - Drawing.Height div 4));
+     Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+     Dec(TempRect.Left);
+     Dec(TempRect.Top);
+     Inc(TempRect.Right);
+     Inc(TempRect.Bottom);
+     Drawing.FrameRect(TempRect, pxShadeWhite32);
+     Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+     Dec(TempRect.Left);
+     Dec(TempRect.Top);
+     Inc(TempRect.Right);
+     Inc(TempRect.Bottom);
+     Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+     Drawing.MakeOpaque;
+     Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+     Inc(FrameIndex);
+
+     ProgressBar.StepIt;
+     Application.ProcessMessages;
+    end;
+  finally
+   if Assigned(BackDraw) then FreeAndNil(BackDraw);
+   if Assigned(SlotList) then FreeAndNil(SlotList);
+   if Assigned(Drawing) then FreeAndNil(Drawing);
+   Free;
+  end;
+end;
+
+procedure TFmPrimitivePictureEvolution.SaveAnimationBlow(FileName: TFileName;
+  ScaleFactor: Single; Inverted: Boolean = False);
+var
+  Drawing       : TGuiPixelMapMemory;
+  Offset        : TFixed24Dot8Point;
+  FrameIndex    : Integer;
+  Iterations    : Integer;
+  Index         : Integer;
+  IntScale      : Integer;
+  Ratio         : Single;
+  ScaledRatio   : TFixed24Dot8;
+  MaxRadius     : TFixed24Dot8;
+  TempRect      : TRect;
+  Circles       : array of TGuiPixelFilledCircle;
+const
+  pxShadeBlack32 : TPixel32 = (ARGB : $10000000);
+  pxShadeWhite32 : TPixel32 = (ARGB : $0FFFFFFF);
+begin
+ if Length(FCircles) = 0
+  then Exit;
+
+ with TFmProgressBar.Create(Self) do
+  try
+   Show;
+   Drawing := TGuiPixelMapMemory.Create;
+   Drawing.Width := Round(2 * ScaleFactor * FBestDrawing.Width);
+   Drawing.Height := Round(2 * ScaleFactor * FBestDrawing.Height);
+   Drawing.Clear(FBackgroundColor);
+   Drawing.MakeOpaque;
+   {$IFNDEF OnlyFinalBlend}
+   Drawing.SaveToFile(FileName + '\Frame0.png');
+   {$ENDIF}
+
+   IntScale := Round(ScaleFactor * (1 shl 8));
+   Offset.X := ConvertToFixed24Dot8(Drawing.Width div 4);
+   Offset.Y := ConvertToFixed24Dot8(Drawing.Height div 4);
+
+   // find maximum radius and create circles
+   MaxRadius := FCircles[0].GeometricShape.Radius;
+   SetLength(Circles, Length(FCircles));
+   Circles[0] := TGuiPixelFilledCircle.Create;
+   Circles[0].Assign(FCircles[0]);
+   Circles[0].GeometricShape.CenterX := FixedAdd(FixedMul(Circles[0].GeometricShape.CenterX, IntScale), Offset.X);
+   Circles[0].GeometricShape.CenterY := FixedAdd(FixedMul(Circles[0].GeometricShape.CenterY, IntScale), Offset.Y);
+   for Index := 1 to Length(FCircles) - 1 do
+    begin
+     if FCircles[Index].GeometricShape.Radius > MaxRadius
+      then MaxRadius := FCircles[Index].GeometricShape.Radius;
+     Circles[Index] := TGuiPixelFilledCircle.Create;
+     Circles[Index].Assign(FCircles[Index]);
+     Circles[Index].GeometricShape.CenterX := FixedAdd(FixedMul(Circles[Index].GeometricShape.CenterX, IntScale), Offset.X);
+     Circles[Index].GeometricShape.CenterY := FixedAdd(FixedMul(Circles[Index].GeometricShape.CenterY, IntScale), Offset.Y);
+    end;
+   Iterations := FixedFloor(0.25 * MaxRadius);
+   ProgressBar.Max := Iterations + 43;
+
+   FrameIndex := 1;
+   while FrameIndex < Iterations do
+    begin
+     Drawing.Clear(FBackgroundColor);
+     Drawing.MakeOpaque;
+
+     Ratio := FrameIndex / (Iterations - 1);
+     Assert(Ratio <= 1);
+     Assert(Ratio >= 0);
+     ScaledRatio := FixedMul(ConvertToFixed24Dot8(Ratio), IntScale);
+
+     for Index := 0 to Length(Circles) - 1 do
+      begin
+       Circles[Index].GeometricShape.Radius := FixedMul(FCircles[Index].GeometricShape.Radius, ScaledRatio);
+       Circles[Index].Alpha := Round(FCircles[Index].Alpha * Sqrt(Ratio)) and $FF;
+       Circles[Index].Draw(Drawing);
+      end;
+
+     {$IFNDEF OnlyFinalBlend}
+     // finalize and save drawing
+     Drawing.MakeOpaque;
+     if Inverted then
+       Drawing.SaveToFile(FileName + '\Frame' + IntToStr(Iterations - FrameIndex) + '.png')
+     else
+       Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+     {$ENDIF}
+
+     Inc(FrameIndex);
+     ProgressBar.StepIt;
+     Application.ProcessMessages;
+    end;
+
+   for Index := 0 to Length(Circles) - 1 do
+     FreeAndNil(Circles[Index]);
+
+   // blend over reference
+   if not Inverted then
+    for Index := 0 to 40 do
+     begin
+      TempRect := Rect(0, 0, (Drawing.Width div 4) - 1, Drawing.Height);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect(Drawing.Width - (Drawing.Width div 4) + 1, 0,
+        Drawing.Width, Drawing.Height);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect((Drawing.Width div 4) - 1, 0,
+        Drawing.Width - (Drawing.Width div 4) + 1,
+        (Drawing.Height div 4) - 1);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect((Drawing.Width div 4) - 1,
+        Drawing.Height - (Drawing.Height div 4) + 1,
+        Drawing.Width - (Drawing.Width div 4) + 1, Drawing.Height);
+      Drawing.FillRect(TempRect, pxShadeBlack32);
+
+      TempRect := Rect((Drawing.Width div 4), (Drawing.Height div 4),
+        (Drawing.Width - Drawing.Width div 4),
+        (Drawing.Height - Drawing.Height div 4));
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+      Dec(TempRect.Left);
+      Dec(TempRect.Top);
+      Inc(TempRect.Right);
+      Inc(TempRect.Bottom);
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+      Dec(TempRect.Left);
+      Dec(TempRect.Top);
+      Inc(TempRect.Right);
+      Inc(TempRect.Bottom);
+      Drawing.FrameRect(TempRect, pxShadeWhite32);
+
+      Drawing.MakeOpaque;
+      Drawing.SaveToFile(FileName + '\Frame' + IntToStr(FrameIndex) + '.png');
+      Inc(FrameIndex);
+
+      ProgressBar.StepIt;
+      Application.ProcessMessages;
+     end;
+   ProgressBar.Position := ProgressBar.Max;
+   Application.ProcessMessages;
+  finally
    if Assigned(Drawing) then FreeAndNil(Drawing);
    Free;
   end;
@@ -2481,6 +2944,5 @@ initialization
 
 finalization
   UnbindFunctions;
-
 
 end.

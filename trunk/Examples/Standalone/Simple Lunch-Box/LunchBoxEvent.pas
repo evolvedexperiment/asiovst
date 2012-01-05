@@ -1,68 +1,99 @@
 unit LunchBoxEvent;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2006-2011        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
-uses DAV_Complex;
+{$I DAV_Compiler.inc}
+
+uses
+  DAV_Complex;
 
 type
   TLunchBoxSample = class(TObject)
   private
-    fMidiKeyNr   : Integer;
-    fVelocity    : Integer;
-    fSampleRate  : Single;
-    fFrequency   : Single;
-    fAmplitude   : Single;
-    fSamplePos   : Integer;
-    fSampleFrac  : Single;
-    fSampleInc   : Single;
-    fIsPlaying   : Boolean;
-    fSampleIndex : Integer;
-    fMem         : Array [0..3] of Single;
+    FMidiKeyNr   : Integer;
+    FVelocity    : Integer;
+    FSampleRate  : Single;
+    FFrequency   : Single;
+    FAmplitude   : Single;
+    FSamplePos   : Integer;
+    FSampleFrac  : Single;
+    FSampleInc   : Single;
+    FIsPlaying   : Boolean;
+    FSampleIndex : Integer;
+    FMem         : array [0..3] of Single;
 
-    fAngle,
-    fPosition    : TComplex64;
-    fPatPos      : Integer;
-    function GetSampleRate:Single; virtual;
-    procedure SetSampleRate(v:Single); virtual;
+    FAngle,
+    FPosition    : TComplex64;
+    FPatPos      : Integer;
+    function GetSampleRate: Single; virtual;
+    procedure SetSampleRate(Value: Single); virtual;
   public
-    constructor Create(Sample : Integer);
+    constructor Create(Sample: Integer);
     destructor Destroy; override;
-    procedure SetFrequency(Frequency:Single); virtual;
-    function Process:Single; virtual;
-    procedure NoteOn(Amplitude : Single);
+
+    procedure SetFrequency(Frequency: Single); virtual;
+    function ProcessSample32: Single; virtual;
+    procedure NoteOn(Amplitude: Single);
     procedure NoteOff;
-  published
-    property IsPlaying : Boolean read fIsPlaying write fIsPlaying;
-    property PatternPosition : Integer read fPatPos write fPatPos;
-    property Frequency : Single read fFrequency write SetFrequency;
-    property SampleRate : Single read GetSampleRate write SetSampleRate;
-    property MidiKeyNr : Integer read fMidiKeyNr write fMidiKeyNr;
-    property Velocity : Integer read fVelocity write fVelocity;
-    property SampleIndex : Integer read fSampleIndex;
+
+    property IsPlaying: Boolean read FIsPlaying write FIsPlaying;
+    property PatternPosition: Integer read FPatPos write FPatPos;
+    property Frequency: Single read FFrequency write SetFrequency;
+    property SampleRate: Single read GetSampleRate write SetSampleRate;
+    property MidiKeyNr: Integer read FMidiKeyNr write FMidiKeyNr;
+    property Velocity: Integer read FVelocity write FVelocity;
+    property SampleIndex: Integer read FSampleIndex;
   end;
 
 implementation
 
 uses
-  DAV_Types, LunchBoxMain, DAV_DspInterpolation;
+  DAV_Types, DAV_Math, DAV_DspInterpolation, LunchBoxMain;
+
 
 { TLunchBoxSample }
 
 constructor TLunchBoxSample.Create(Sample : Integer);
 begin
  SampleRate   := 44100;
- fPosition.Re := 0;
- fPosition.Im := -1;
- fSamplePos   := 0;
- fSampleFrac  := 0;
- fSampleInc   := 0;
- fPatPos      := 0;
- fSampleIndex := Sample;
- fIsPlaying   := False;
+ FPosition.Re := 0;
+ FPosition.Im := -1;
+ FSamplePos   := 0;
+ FSampleFrac  := 0;
+ FSampleInc   := 0;
+ FPatPos      := 0;
+ FSampleIndex := Sample;
+ FIsPlaying   := False;
 end;
 
 destructor TLunchBoxSample.Destroy;
@@ -72,53 +103,46 @@ end;
 
 function TLunchBoxSample.GetSampleRate: Single;
 begin
- result:=fSampleRate;
+ result := FSampleRate;
 end;
 
 procedure TLunchBoxSample.NoteOn(Amplitude: Single);
 begin
- fIsPlaying:=True;
- fAmplitude:=Amplitude;
+ FIsPlaying := True;
+ FAmplitude := Amplitude;
 end;
 
 procedure TLunchBoxSample.NoteOff;
 begin
- fSamplePos:=0;
- fIsPlaying:=False;
+ FSamplePos := 0;
+ FIsPlaying := False;
 end;
 
-procedure TLunchBoxSample.SetSampleRate(v: Single);
+procedure TLunchBoxSample.SetSampleRate(Value: Single);
 begin
- if (v > 0) then fSampleRate:=v;
+ if (Value > 0) then FSampleRate := Value;
 end;
 
-function TLunchBoxSample.Process: Single;
+function TLunchBoxSample.ProcessSample32: Single;
 begin
- Result := fAmplitude * Hermite32_asm(fSampleFrac, @fMem[0]);
- fSampleFrac := fSampleFrac + fSampleInc;
- while fSampleFrac >= 1 do
+ Result := FAmplitude * Hermite32_asm(FSampleFrac, @FMem[0]);
+ FSampleFrac := FSampleFrac + FSampleInc;
+ while FSampleFrac >= 1 do
   begin
-   inc(fSamplePos);
-   if fSamplePos >= Length(Samples[fSampleIndex].Data)
+   inc(FSamplePos);
+   if FSamplePos >= Length(Samples[FSampleIndex].Data)
     then NoteOff;
-   fSampleFrac := fSampleFrac-1;
-   Move(fMem[1],fMem[0],12);
-   fMem[3] := Samples[fSampleIndex].Data[fSamplePos];
+   FSampleFrac := FSampleFrac - 1;
+   Move(FMem[1], FMem[0], 12);
+   FMem[3] := Samples[FSampleIndex].Data[FSamplePos];
   end;
 end;
 
 procedure TLunchBoxSample.SetFrequency(Frequency: Single);
-  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
-  asm
-   fld Frequency.Double;
-   fsincos
-   fstp [CosValue].Double;
-   fstp [SinValue].Double;
-  end;
 begin
- fFrequency:=Frequency;
- fSampleInc:=Frequency;
- GetSinCos(2*Pi*fFrequency/fSampleRate,fAngle.Im,fAngle.Re);
+ FFrequency := Frequency;
+ FSampleInc := Frequency;
+ GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
 end.

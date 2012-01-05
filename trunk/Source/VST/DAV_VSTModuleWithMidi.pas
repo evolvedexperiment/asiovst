@@ -28,9 +28,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); override;
-    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); override;
-    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); override;
+    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); override;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); override;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); override;
 
     function HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
     function HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
@@ -133,7 +133,7 @@ begin
 end;
 
 
-procedure TVSTModuleWithMidi.HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TVSTModuleWithMidi.HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
  inherited;
  {$IFDEF DebugLog} AddLogMessage('HostCallProcess - MIDI Processing'); {$ENDIF}
@@ -144,7 +144,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TVSTModuleWithMidi.HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
  inherited;
 
@@ -156,7 +156,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TVSTModuleWithMidi.HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 begin
  inherited;
  {$IFDEF DebugLog} AddLogMessage('HostCallProcess64Replacing - MIDI Processing'); {$ENDIF}

@@ -119,29 +119,29 @@ begin
 end;
 {$ELSE}
 asm
-    fld  [Pntr +  8].Single;      // x1
-    fsub [Pntr     ].Single       // x1-xm1
-    fld  [Pntr +  4].Single       // x0           x1-xm1
-    fsub [Pntr +  8].Single       // v            x1-xm1
-    fld  [Pntr + 12].Single       // x2           v            x1-xm1
-    fsub [Pntr +  4].Single       // x2-x0        v            x1-xm1
-    fxch st(2)                    // x1-m1        v            x2-x0
-    fmul CHalf32                  // c            v            x2-x0
-    fxch st(2)                    // x2-x0        v            c
-    fmul CHalf32                  // 0.5*(x2-x0)  v            c
-    fxch st(2)                    // c            v            0.5*(x2-x0)
-    fst st(3)                     // c            v            0.5*(x2-x0)  c
-    fadd st(0), st(1)             // w            v            0.5*(x2-x0)  c
-    fxch st(2)                    // 0.5*(x2-x0)  v            w            c
-    faddp st(1), st(0)            // v+.5(x2-x0)  w            c
-    fadd st(0), st(1)             // a            w            c
-    fadd st(1), st(0)             // a            b_neg        c
-    fmul Fractional.Single        // a * frac     b_neg        c
-    fsubrp st(1), st(0)           // a * f-b      c
-    fmul Fractional.Single        // (a*f-b)*f    c
-    faddp st(1), st(0)            // res-x0/f
-    fmul Fractional.Single        // res-x0
-    fadd [Pntr + 4].Single        // res
+    FLD     [Pntr +  8].Single  // x1
+    FSUB    [Pntr     ].Single  // x1-xm1
+    FLD     [Pntr +  4].Single  // x0           x1-xm1
+    FSUB    [Pntr +  8].Single  // v            x1-xm1
+    FLD     [Pntr + 12].Single  // x2           v            x1-xm1
+    FSUB    [Pntr +  4].Single  // x2-x0        v            x1-xm1
+    FXCH    ST(2)               // x1-m1        v            x2-x0
+    FMUL    CHalf32             // c            v            x2-x0
+    FXCH    ST(2)               // x2-x0        v            c
+    FMUL    CHalf32             // 0.5*(x2-x0)  v            c
+    FXCH    ST(2)               // c            v            0.5*(x2-x0)
+    FST     ST(3)               // c            v            0.5*(x2-x0)  c
+    FADD    ST(0), ST(1)        // w            v            0.5*(x2-x0)  c
+    FXCH    ST(2)               // 0.5*(x2-x0)  v            w            c
+    FADDP   ST(1), ST(0)        // v+.5(x2-x0)  w            c
+    FADD    ST(0), ST(1)        // a            w            c
+    FADD    ST(1), ST(0)        // a            b_neg        c
+    FMUL    Fractional.Single   // a * frac     b_neg        c
+    FSUBRP  ST(1), ST(0)        // a * f-b      c
+    FMUL    Fractional.Single   // (a*f-b)*f    c
+    FADDP   ST(1), ST(0)        // res-x0/f
+    FMUL    Fractional.Single   // res-x0
+    FADD    [Pntr + 4].Single   // res
 end;
 {$ENDIF}
 
@@ -160,29 +160,29 @@ begin
 end;
 {$ELSE}
 asm
-    fld   [Pntr + 16].Double      // x1
-    fsub  [Pntr     ].Double      // x1-xm1
-    fld   [Pntr +  8].Double      // x0           x1-xm1
-    fsub  [Pntr + 16].Double      // v            x1-xm1
-    fld   [Pntr + 24].Double      // x2           v            x1-xm1
-    fsub  [Pntr +  8].Double      // x2-x0        v            x1-xm1
-    fxch st(2)                    // x1-m1        v            x2-x0
-    fmul CHalf64                  // c            v            x2-x0
-    fxch st(2)                    // x2-x0        v            c
-    fmul CHalf64                  // 0.5*(x2-x0)  v            c
-    fxch st(2)                    // c            v            0.5*(x2-x0)
-    fst st(3)                     // c            v            0.5*(x2-x0)  c
-    fadd st(0), st(1)             // w            v            0.5*(x2-x0)  c
-    fxch st(2)                    // 0.5*(x2-x0)  v            w            c
-    faddp st(1), st(0)            // v+.5(x2-x0)  w            c
-    fadd st(0), st(1)             // a            w            c
-    fadd st(1), st(0)             // a            b_neg        c
-    fmul Fractional.Double        // a*frac       b_neg        c
-    fsubrp st(1), st(0)           // a*f-b        c
-    fmul Fractional.Double        // (a*f-b)*f    c
-    faddp st(1), st(0)            // res-x0/f
-    fmul Fractional.Double        // res-x0
-    fadd [Pntr + 8].Double        // res
+    FLD     [Pntr + 16].Double  // x1
+    FSUB    [Pntr     ].Double  // x1-xm1
+    FLD     [Pntr +  8].Double  // x0           x1-xm1
+    FSUB    [Pntr + 16].Double  // v            x1-xm1
+    FLD     [Pntr + 24].Double  // x2           v            x1-xm1
+    FSUB    [Pntr +  8].Double  // x2-x0        v            x1-xm1
+    FXCH    ST(2)               // x1-m1        v            x2-x0
+    FMUL    CHalf64             // c            v            x2-x0
+    FXCH    ST(2)               // x2-x0        v            c
+    FMUL    CHalf64             // 0.5*(x2-x0)  v            c
+    FXCH    ST(2)               // c            v            0.5*(x2-x0)
+    FST     ST(3)               // c            v            0.5*(x2-x0)  c
+    FADD    ST(0), ST(1)        // w            v            0.5*(x2-x0)  c
+    FXCH    ST(2)               // 0.5*(x2-x0)  v            w            c
+    FADDP   ST(1), ST(0)        // v+.5(x2-x0)  w            c
+    FADD    ST(0), ST(1)        // a            w            c
+    FADD    ST(1), ST(0)        // a            b_neg        c
+    FMUL    Fractional.Double   // a*frac       b_neg        c
+    FSUBRP  ST(1), ST(0)        // a*f-b        c
+    FMUL    Fractional.Double   // (a*f-b)*f    c
+    FADDP   ST(1), ST(0)        // res-x0/f
+    FMUL    Fractional.Double   // res-x0
+    FADD    [Pntr + 8].Double   // res
 end;
 {$ENDIF}
 
@@ -193,29 +193,29 @@ begin
 end;
 {$ELSE}
 asm
-    fld   [Pntr + 16].Single      // x1
-    fsub  [Pntr     ].Single      // x1-xm1
-    fld   [Pntr +  8].Single      // x0           x1-xm1
-    fsub  [Pntr + 16].Single      // v            x1-xm1
-    fld   [Pntr + 24].Single      // x2           v            x1-xm1
-    fsub  [Pntr +  8].Single      // x2-x0        v            x1-xm1
-    fxch st(2)                    // x1-m1        v            x2-x0
-    fmul CHalf32                  // c            v            x2-x0
-    fxch st(2)                    // x2-x0        v            c
-    fmul CHalf32                  // 0.5*(x2-x0)  v            c
-    fxch st(2)                    // c            v            0.5*(x2-x0)
-    fst st(3)                     // c            v            0.5*(x2-x0)  c
-    fadd st(0), st(1)             // w            v            0.5*(x2-x0)  c
-    fxch st(2)                    // 0.5*(x2-x0)  v            w            c
-    faddp st(1), st(0)            // v+.5(x2-x0)  w            c
-    fadd st(0), st(1)             // a            w            c
-    fadd st(1), st(0)             // a            b_neg        c
-    fmul Fractional.Single        // a*frac       b_neg        c
-    fsubrp st(1), st(0)           // a*f-b        c
-    fmul Fractional.Single        // (a*f-b)*f    c
-    faddp st(1), st(0)            // res-x0/f
-    fmul Fractional.Single        // res-x0
-    fadd [Pntr + 8].Single        // res
+    FLD     [Pntr + 16].Single  // x1
+    FSUB    [Pntr     ].Single  // x1-xm1
+    FLD     [Pntr +  8].Single  // x0           x1-xm1
+    FSUB    [Pntr + 16].Single  // v            x1-xm1
+    FLD     [Pntr + 24].Single  // x2           v            x1-xm1
+    FSUB    [Pntr +  8].Single  // x2-x0        v            x1-xm1
+    FXCH    ST(2)               // x1-m1        v            x2-x0
+    FMUL    CHalf32             // c            v            x2-x0
+    FXCH    ST(2)               // x2-x0        v            c
+    FMUL    CHalf32             // 0.5*(x2-x0)  v            c
+    FXCH    ST(2)               // c            v            0.5*(x2-x0)
+    FST     ST(3)               // c            v            0.5*(x2-x0)  c
+    FADD    ST(0), ST(1)        // w            v            0.5*(x2-x0)  c
+    FXCH    ST(2)               // 0.5*(x2-x0)  v            w            c
+    FADDP   ST(1), ST(0)        // v+.5(x2-x0)  w            c
+    FADD    ST(0), ST(1)        // a            w            c
+    FADD    ST(1), ST(0)        // a            b_neg        c
+    FMUL    Fractional.Single   // a*frac       b_neg        c
+    FSUBRP  ST(1), ST(0)        // a*f-b        c
+    FMUL    Fractional.Single   // (a*f-b)*f    c
+    FADDP   ST(1), ST(0)        // res-x0/f
+    FMUL    Fractional.Single   // res-x0
+    FADD    [Pntr + 8].Single   // res
 end;
 {$ENDIF}
 
@@ -226,29 +226,29 @@ begin
 end;
 {$ELSE}
 asm
-    fld   [Pntr + 32].Double      // x1
-    fsub  [Pntr     ].Double      // x1-xm1
-    fld   [Pntr + 16].Double      // x0           x1-xm1
-    fsub  [Pntr + 32].Double      // v            x1-xm1
-    fld   [Pntr + 48].Double      // x2           v            x1-xm1
-    fsub  [Pntr + 16].Double      // x2-x0        v            x1-xm1
-    fxch st(2)                    // x1-m1        v            x2-x0
-    fmul CHalf64                  // c            v            x2-x0
-    fxch st(2)                    // x2-x0        v            c
-    fmul CHalf64                  // 0.5*(x2-x0)  v            c
-    fxch st(2)                    // c            v            0.5*(x2-x0)
-    fst st(3)                     // c            v            0.5*(x2-x0)  c
-    fadd st(0), st(1)             // w            v            0.5*(x2-x0)  c
-    fxch st(2)                    // 0.5*(x2-x0)  v            w            c
-    faddp st(1), st(0)            // v+.5(x2-x0)  w            c
-    fadd st(0), st(1)             // a            w            c
-    fadd st(1), st(0)             // a            b_neg        c
-    fmul Fractional.Double        // a*frac       b_neg        c
-    fsubrp st(1), st(0)           // a*f-b        c
-    fmul Fractional.Double        // (a*f-b)*f    c
-    faddp st(1), st(0)            // res-x0/f
-    fmul Fractional.Double        // res-x0
-    fadd [Pntr + 16].Double       // res
+    FLD     [Pntr + 32].Double  // x1
+    FSUB    [Pntr     ].Double  // x1-xm1
+    FLD     [Pntr + 16].Double  // x0           x1-xm1
+    FSUB    [Pntr + 32].Double  // v            x1-xm1
+    FLD     [Pntr + 48].Double  // x2           v            x1-xm1
+    FSUB    [Pntr + 16].Double  // x2-x0        v            x1-xm1
+    FXCH    ST(2)               // x1-m1        v            x2-x0
+    FMUL    CHalf64             // c            v            x2-x0
+    FXCH    ST(2)               // x2-x0        v            c
+    FMUL    CHalf64             // 0.5*(x2-x0)  v            c
+    FXCH    ST(2)               // c            v            0.5*(x2-x0)
+    FST     ST(3)               // c            v            0.5*(x2-x0)  c
+    FADD    ST(0), ST(1)        // w            v            0.5*(x2-x0)  c
+    FXCH    ST(2)               // 0.5*(x2-x0)  v            w            c
+    FADDP   ST(1), ST(0)        // v+.5(x2-x0)  w            c
+    FADD    ST(0), ST(1)        // a            w            c
+    FADD    ST(1), ST(0)        // a            b_neg        c
+    FMUL    Fractional.Double   // a*frac       b_neg        c
+    FSUBRP  ST(1), ST(0)        // a*f-b        c
+    FMUL    Fractional.Double   // (a*f-b)*f    c
+    FADDP   ST(1), ST(0)        // res-x0/f
+    FMUL    Fractional.Double   // res-x0
+    FADD   [Pntr + 16].Double   // res
 end;
 {$ENDIF}
 

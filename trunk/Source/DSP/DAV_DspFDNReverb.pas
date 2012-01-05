@@ -346,15 +346,27 @@ begin
  FState := x + FCoeffs[1] * Result;
 {$ELSE}
 asm
- fld Input.Double;
- fmul [eax.FCoeffs].Double      // x
- fld  st(0)                     // x, x
- fadd [eax.FState].Double       // x + FState, x
- fld  st(0)                     // x + FState, x + FState, x
- fmul [eax.FCoeffs + 8].Double
- faddp st(2), st(0)
- fxch
- fstp [eax.FState].Double
+{$IFDEF CPUx86_64}
+    MOVSD   XMM1, [EAX.FCoeffs].Double
+    MULSD   XMM0, XMM1                       // XMM0 = FCoeffs[0] * Input
+    MOVSD   XMM2, XMM0                       // XMM2 = XMM0 = x
+    MOVSD   XMM1, [EAX.FState].Double        // XMM1 = FState
+    ADDSD   XMM0, XMM1                       // XMM0 = x + FState
+    MOVSD   XMM1, [EAX.FCoeffs + 8].Double
+    MULSD   XMM1, XMM0                       // XMM1 = FCoeffs[1] * Result
+    ADDSD   XMM1, XMM2                       // XMM1 = x + FCoeffs[1] * Result
+    MOVSD   [EAX.FState].Double, XMM1        // XMM1 = FState
+{$ELSE}
+    FLD     Input.Double;
+    FMUL    [EAX.FCoeffs].Double             // x
+    FLD     ST(0)                            // x, x
+    FADD    [EAX.FState].Double              // x + FState, x
+    FLD     ST(0)                            // x + FState, x + FState, x
+    FMUL    [EAX.FCoeffs + 8].Double
+    FADDP   ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState].Double
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -367,6 +379,7 @@ procedure TDampingFilter.PushStates;
 begin
  raise Exception.Create('Not supported');
 end;
+
 
 { TCustomDspFDNReverb }
 
@@ -556,6 +569,7 @@ begin
    WetMixChanged;
   end;
 end;
+
 
 { TDspFDNReverb32 }
 

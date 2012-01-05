@@ -16,7 +16,7 @@ object FmVST: TFmVST
     128)
   PixelsPerInch = 96
   TextHeight = 13
-  object GroupBox1: TGroupBox
+  object GbOutputVST: TGroupBox
     Left = 8
     Top = 67
     Width = 284
@@ -24,7 +24,7 @@ object FmVST: TFmVST
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Output VST '
     TabOrder = 0
-    object Label2: TLabel
+    object LbOutputVST: TLabel
       Left = 11
       Top = 25
       Width = 22
@@ -59,7 +59,7 @@ object FmVST: TFmVST
       OnClick = BtOutputEditorClick
     end
   end
-  object GroupBox2: TGroupBox
+  object GbRealtimeVST: TGroupBox
     Left = 8
     Top = 4
     Width = 284
@@ -67,7 +67,7 @@ object FmVST: TFmVST
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Realtime FX VST '
     TabOrder = 1
-    object Label1: TLabel
+    object LbRealtimeVST: TLabel
       Left = 11
       Top = 25
       Width = 22

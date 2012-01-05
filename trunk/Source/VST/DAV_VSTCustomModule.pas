@@ -14,8 +14,8 @@ uses
 type
 //  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
 
-  TProcessAudio32Event     = procedure(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer) of object;
-  TProcessAudio64Event     = procedure(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer) of object;
+  TProcessAudio32Event     = procedure(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal) of object;
+  TProcessAudio64Event     = procedure(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal) of object;
   TGetVUEvent              = procedure(var VU: Single) of object;
   TBlockSizeChangeEvent    = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent   = procedure(Sender: TObject; const SampleRate: Single) of object;
@@ -31,7 +31,7 @@ type
   TSoftBypassEvent         = procedure(Sender: TObject; const isBypass: Boolean) of object;
   TOnSetPanLawEvent        = procedure(Sender: TObject; const LawType: TVstPanLawType; const Value: Single) of object;
   TGetEditorEvent          = procedure(Sender: TObject; var GUI: TForm; ParentWindow: THandle) of object;
-  TOnVendorSpecificEvent   = function(Sender: TObject; const Index: Integer; const Value: TVstIntPtr; const Ptr: pointer; const Float: Single): Integer of object;
+  TOnVendorSpecificEvent   = function(Sender: TObject; const Index: Integer; const Value: TVstIntPtr; const Ptr: Pointer; const Float: Single): Integer of object;
   TOnCanDoEvent            = function(Sender: TObject; const CanDoText: AnsiString): Integer of object;
   TOnCheckKey              = function(Sender: TObject; Key: Char): Boolean of object;
   TOnEditClose             = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
@@ -163,57 +163,57 @@ type
     procedure OnProcess32ReplacingExChanged; virtual;
     procedure InitialDelayChanged; virtual;
 
-    function HostCallDispatchEffect(const Opcode : TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); override;
-    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); override;
-    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); override;
+    function HostCallDispatchEffect(const Opcode : TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); override;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); override;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); override;
 
     // HostCalls, protected methods that can be overwritten, but shall remain
     // hidden, since the user should not be able to call them directly!
-    function HostCallOpen                      (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallClose                     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetVu                     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetSampleRate             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetBlockSize              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallMainsChanged              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditGetRect               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditOpen                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditClose                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditIdle                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditTop                   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditSleep                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallProcessEvents             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallConnectInput              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallConnectOutput             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetInputProperties        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetOutputProperties       (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetPlugCategory           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallOfflineNotify             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallOfflinePrepare            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallOfflineRun                (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallProcessVarIo              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetBlockSizeAndSampleRate (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetBypass                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetEffectName             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetVendorString           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetProductString          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetVendorVersion          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallVendorSpecific            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallCanDo                     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetTailSize               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallKeysRequired              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetVstVersion             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditKeyDown               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallEditKeyUp                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetEditKnobMode           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallGetSpeakerArrangement     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallShellGetNextPlugin        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallStartProcess              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallStopProcess               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetTotalSampleToProcess   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetPanLaw                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetProcessPrecision       (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
-    function HostCallSetSpeakerArrangement     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallOpen                      (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallClose                     (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetVu                     (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetSampleRate             (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetBlockSize              (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallMainsChanged              (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditGetRect               (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditOpen                  (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditClose                 (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditIdle                  (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditTop                   (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditSleep                 (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallProcessEvents             (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallConnectInput              (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallConnectOutput             (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetInputProperties        (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetOutputProperties       (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetPlugCategory           (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallOfflineNotify             (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallOfflinePrepare            (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallOfflineRun                (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallProcessVarIo              (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetBlockSizeAndSampleRate (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetBypass                 (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetEffectName             (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetVendorString           (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetProductString          (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetVendorVersion          (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallVendorSpecific            (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallCanDo                     (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetTailSize               (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallKeysRequired              (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetVstVersion             (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditKeyDown               (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEditKeyUp                 (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetEditKnobMode           (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetSpeakerArrangement     (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallShellGetNextPlugin        (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallStartProcess              (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallStopProcess               (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetTotalSampleToProcess   (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetPanLaw                 (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetProcessPrecision       (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetSpeakerArrangement     (const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr; override;
 
     function GetSpeakerArrangement(var InputArrangement, OutputArrangement: PVstSpeakerArrangement): Boolean; virtual;
     function AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
@@ -369,7 +369,7 @@ begin
 end;
 *)
 
-procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   OutsTmp      : TDAVArrayOfSingleFixedArray;
   ChannelIndex : Integer;
@@ -394,14 +394,14 @@ begin
    end;
 end;
 
-procedure TCustomVSTModule.HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TCustomVSTModule.HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
 // {$IFDEF DebugLog} AddLogMessage('--> TCustomVSTModule.HostCallProcess32Replacing'); {$ENDIF}
  if Assigned(FOnProcess32ReplacingEx)
   then FOnProcess32ReplacingEx(Inputs, Outputs, SampleFrames);
 end;
 
-procedure TCustomVSTModule.HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TCustomVSTModule.HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
   Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
@@ -515,7 +515,7 @@ begin
    then PlugCategory := vpcUnknown;
 end;
 
-function TCustomVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog}
  if not (Opcode in [effIdle, effEditIdle])
@@ -536,21 +536,21 @@ end;
 
 procedure TCustomVSTModule.ReadOnlyString(VU: string); begin end;
 
-function TCustomVSTModule.HostCallOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallOpen'); {$ENDIF}
  Result := inherited HostCallOpen(Index, Value, ptr, opt);
  if Assigned(FOnOpen) then FOnOpen(Self);
 end;
 
-function TCustomVSTModule.HostCallClose(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallClose(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallClose'); {$ENDIF}
  if Assigned(FOnClose) then FOnClose(Self);
  Result := inherited HostCallClose(Index, Value, ptr, opt);
 end;
 
-function TCustomVSTModule.HostCallGetVu(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetVu(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 var
   VU: Single;
 begin
@@ -563,21 +563,21 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallSetSampleRate (' + FloatToStr(Opt) + ')'); {$ENDIF}
  SetSampleRate(opt);
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallSetBlockSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetBlockSize(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallSetBlockSize (' + IntToStr(Value) + ')'); {$ENDIF}
  SetBlockSize(Value);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallMainsChanged(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallMainsChanged(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallMainsChanged (' + IntToStr(Value) + ')'); {$ENDIF}
  if (Value = 0) then
@@ -592,7 +592,7 @@ begin
   Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditGetRect(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditGetRect(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallEditGetRect'); {$ENDIF}
  Result := 0;
@@ -622,7 +622,7 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallEditOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 {$IFDEF DARWIN}
 var
   ViewRef : HIViewRef;
@@ -671,7 +671,7 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallEditClose(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditClose(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 var
   DestroyForm: Boolean;
 begin
@@ -686,7 +686,7 @@ begin
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditIdle(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditIdle(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  if (effFlagsHasEditor in FEffect.EffectFlags) and FEditorNeedUpdate and Assigned(FEditorForm)then
   begin
@@ -697,41 +697,41 @@ begin
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditTop(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditTop(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallEditTop'); {$ENDIF}
  if Assigned(FOnEditTop) then FOnEditTop(Self);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditSleep(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditSleep(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallEditSleep'); {$ENDIF}
  if Assigned(FOnEditSleep) then FOnEditSleep(Self);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallProcessEvents'); {$ENDIF}
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallConnectInput(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallConnectInput(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallConnectInput'); {$ENDIF}
  if Assigned(FOnInConnected) then FOnInConnected(Self, Index, (Value <> 0));
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallConnectOutput(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallConnectOutput(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallConnectOutput'); {$ENDIF}
  if Assigned(FOnOutConnected) then FOnOutConnected(Self, Index, (Value <> 0));
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallGetInputProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetInputProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 var
   cpf : TVstPinPropertiesFlags;
   str : string;
@@ -764,7 +764,7 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallGetOutputProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetOutputProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 var
   cpf : TVstPinPropertiesFlags;
   str : string;
@@ -797,13 +797,13 @@ begin
    end;
 end;
 
-function TCustomVSTModule.HostCallGetPlugCategory(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetPlugCategory(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetPlugCategory'); {$ENDIF}
  Result := Integer(FPlugCategory);
 end;
 
-function TCustomVSTModule.HostCallOfflineNotify(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallOfflineNotify(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallOfflineNotify'); {$ENDIF}
  if Assigned(FOnOfflineNotify) then
@@ -851,19 +851,19 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallOfflinePrepare(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallOfflinePrepare(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallOfflinePrepare'); {$ENDIF}
  Result := OfflinePrepare(PVstOfflineTaskRecord(ptr), Value);
 end;
 
-function TCustomVSTModule.HostCallOfflineRun(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallOfflineRun(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallOfflineRun'); {$ENDIF}
  Result := OfflineRun(PVstOfflineTaskRecord(ptr), Value);
 end;
 
-function TCustomVSTModule.HostCallProcessVarIo(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallProcessVarIo(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallProcessVarIo'); {$ENDIF}
  if Assigned(FOnProcessVarIO) then
@@ -873,7 +873,7 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog}
  AddLogMessage('TCustomVSTModule.HostCallSetBlockSizeAndSampleRate');
@@ -893,7 +893,7 @@ begin
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallSetBypass(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetBypass(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
   {$IFDEF DebugLog}
   if Value <> 0
@@ -907,7 +907,7 @@ begin
    end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallGetEffectName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetEffectName(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetEffectName'); {$ENDIF}
  Result := 0;
@@ -918,7 +918,7 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallGetVendorString(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetVendorString(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetVendorString'); {$ENDIF}
  Result := 0;
@@ -929,7 +929,7 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallGetProductString(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetProductString(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetProductString'); {$ENDIF}
  Result := 0;
@@ -942,13 +942,13 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallGetVendorVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetVendorVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetVendorVersion'); {$ENDIF}
  Result := FEffect.Version;
 end;
 
-function TCustomVSTModule.HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallVendorSpecific'); {$ENDIF}
  if Assigned(FOnVendorSpecific)
@@ -956,7 +956,7 @@ begin
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallCanDo(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallCanDo(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 0;
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallCanDo (' + StrPas(PAnsiChar(ptr)) + ')'); {$ENDIF}
@@ -995,25 +995,25 @@ begin
  if Assigned(FOnCanDo) then FOnCanDo(Self, PAnsiChar(ptr));
 end;
 
-function TCustomVSTModule.HostCallGetTailSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetTailSize(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetTailSize'); {$ENDIF}
  Result := FTailSize;
 end;
 
-function TCustomVSTModule.HostCallKeysRequired(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallKeysRequired(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallKeysRequired'); {$ENDIF}
  Result := Integer(not FKeysRequired); // reversed to keep v1 compatibility
 end;
 
-function TCustomVSTModule.HostCallGetVstVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetVstVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetVstVersion'); {$ENDIF}
  Result := 2400;
 end;
 
-function TCustomVSTModule.HostCallEditKeyDown(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditKeyDown(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 var
   keyCode : TVstKeyCode;
   KcInt   : Integer;
@@ -1065,7 +1065,7 @@ begin
  else Result := -1;
 end;
 
-function TCustomVSTModule.HostCallEditKeyUp(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallEditKeyUp(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 var
   keyCode : TVstKeyCode;
   a, b    : Integer;
@@ -1112,7 +1112,7 @@ begin
   end else Result := -1;
 end;
 
-function TCustomVSTModule.HostCallSetEditKnobMode(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetEditKnobMode(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallSetEditKnobMode (' + IntToStr(Value) + ')'); {$ENDIF}
  if Assigned(FOnSetKnobMode) then
@@ -1122,13 +1122,13 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallGetSpeakerArrangement(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallGetSpeakerArrangement(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallGetSpeakerArrangement'); {$ENDIF}
  Result := Integer(GetSpeakerArrangement(PVstSpeakerArrangement(Pointer(Value)^), PVstSpeakerArrangement(ptr^)));
 end;
 
-function TCustomVSTModule.HostCallShellGetNextPlugin(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallShellGetNextPlugin(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallShellGetNextPlugin'); {$ENDIF}
  if (FCurrentVstShellPlugin < FVstShellPlugins.Count) and Assigned(Ptr) then
@@ -1144,7 +1144,7 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallStartProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallStartProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 1;
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallStartProcess'); {$ENDIF}
@@ -1153,7 +1153,7 @@ begin
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallStopProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallStopProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 1;
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallStopProcess'); {$ENDIF}
@@ -1162,13 +1162,13 @@ begin
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetTotalSampleToProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetTotalSampleToProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallSetTotalSampleToProcess'); {$ENDIF}
  Result := Value;
 end;
 
-function TCustomVSTModule.HostCallSetPanLaw(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetPanLaw(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 1;
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallSetPanLaw'); {$ENDIF}
@@ -1177,7 +1177,7 @@ begin
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetProcessPrecision(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
+function TCustomVSTModule.HostCallSetProcessPrecision(const Index: Integer; const Value: TVstIntPtr; const ptr: Pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.HostCallSetProcessPrecision'); {$ENDIF}
  Result := Integer(fProcessPrecisition); // [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision

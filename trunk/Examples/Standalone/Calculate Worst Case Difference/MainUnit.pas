@@ -2,10 +2,12 @@ unit MainUnit;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, DAV_Types, DAV_AudioMemory, DAV_AudioData, DAV_AudioFile,
-  DAV_AudioFileWAV;
+  StdCtrls, ComCtrls, ExtCtrls, DAV_Types, DAV_AudioMemory, DAV_AudioData,
+  DAV_AudioFile, DAV_AudioFileWAV, TeEngine, Series, TeeProcs, Chart;
 
 type
   TCalculationThread = class(TThread)
@@ -29,17 +31,24 @@ type
     destructor Destroy; override;
 
     procedure BuildDifferenceSignal(FileName: TFileName);
+    procedure SaveOrderToFile(FileName: TFileName);
   end;
 
   TFmCalculateWorstCaseDifference = class(TForm)
-    ListBox: TListBox;
-    BtAddFiles: TButton;
-    BtStartCalculation: TButton;
     StatusBar: TStatusBar;
     OpenDialog: TOpenDialog;
-    BtClear: TButton;
-    BtBuildDifference: TButton;
     SaveDialog: TSaveDialog;
+    PCMain: TPageControl;
+    TsMain: TTabSheet;
+    ListBox: TListBox;
+    BtAddFiles: TButton;
+    BtClear: TButton;
+    BtStartCalculation: TButton;
+    BtBuildDifference: TButton;
+    TsHistory: TTabSheet;
+    CtHistory: TChart;
+    SsWorst: TLineSeries;
+    SsAverage: TLineSeries;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtAddFilesClick(Sender: TObject);
@@ -207,77 +216,77 @@ asm
 {$IFDEF CPU64}
 {$ENDIF}
 {$IFDEF CPU32}
-  FLD1                             // ST(0) = 1
-  MOV      [ESP - 4], ECX
-  FILD     DWORD PTR [ESP - 4]      // store SampleFrames
-  FDIVP                            // ST(0) = 1 / SampleFrames
-  FLDZ                             // SumDiff := 0;
-  FLDZ                             // Maximum := 0;
-
-  PUSH     EBX
-  PUSH     EDI
-  PUSH     ESI
-  XOR      EBX, EBX                 // EBX = SampleIndex = 0
+    FLD1                             // ST(0) = 1
+    MOV      [ESP - 4], ECX
+    FILD     DWORD PTR [ESP - 4]     // store SampleFrames
+    FDIVP                            // ST(0) = 1 / SampleFrames
+    FLDZ                             // SumDiff := 0;
+    FLDZ                             // Maximum := 0;
+  
+    PUSH     EBX
+    PUSH     EDI
+    PUSH     ESI
+    XOR      EBX, EBX                // EBX = SampleIndex = 0
 
 @OuterLoop:
-  PUSH     ECX
-  MOV      EDI, EAX                 // EDI = Data^[0]
-  LEA      ESI, EAX + 4 * EDX - 4   // EDI = Data^[DataCount - 1]
-  MOV      ECX, EDX                 // ECX = Datacount
-
-  PUSH     EAX
-
-  MOV      EAX, [EDI]
-  FLD      DWORD PTR [EAX + 4 * EBX]
-  MOV      EAX, [ESI]
-  FLD      DWORD PTR [EAX + 4 * EBX]
-  FXCH
-  ADD      EDI, 4
-  SUB      ESI, 4
-  DEC      ECX
+    PUSH     ECX
+    MOV      EDI, EAX                // EDI = Data^[0]
+    LEA      ESI, EAX + 4 * EDX - 4  // EDI = Data^[DataCount - 1]
+    MOV      ECX, EDX                // ECX = Datacount
+  
+    PUSH     EAX
+  
+    MOV      EAX, [EDI]
+    FLD      DWORD PTR [EAX + 4 * EBX]
+    MOV      EAX, [ESI]
+    FLD      DWORD PTR [EAX + 4 * EBX]
+    FXCH
+    ADD      EDI, 4
+    SUB      ESI, 4
+    DEC      ECX
 
 @InnerLoop:
-  MOV      EAX, [EDI]
-  FADD     DWORD PTR [EAX + 4 * EBX]
-  FSTP     DWORD PTR [ESP - 4]
-  FLD      DWORD PTR [ESP - 4]
-  FXCH
+    MOV      EAX, [EDI]
+    FADD     DWORD PTR [EAX + 4 * EBX]
+    FSTP     DWORD PTR [ESP - 4]
+    FLD      DWORD PTR [ESP - 4]
+    FXCH
+  
+    MOV      EAX, [ESI]
+    FADD     DWORD PTR [EAX + 4 * EBX]
+    FSTP     DWORD PTR [ESP - 4]
+    FLD      DWORD PTR [ESP - 4]
+    FXCH
+  
+    ADD      EDI, 4
+    SUB      ESI, 4
+    LOOP     @InnerLoop
+  
+  
+    POP      EAX
+  
+    FSUBP                            // calculate difference
+    FABS                             // calculate absolute difference
+  
+    FXCH     ST(2)
+    FCOMI    ST(0), ST(2)            // compare values
+    FCMOVB   ST(0), ST(2)            // eventually move ST(0) to ST(2)
+    FXCH     ST(2)
+    FADDP                            // add to sum difference
+  
+    INC      EBX                     // move to next sample
+    POP      ECX
+    LOOP     @OuterLoop
+  
+    POP      ESI
+    POP      EDI
+    POP      EBX
 
-  MOV      EAX, [ESI]
-  FADD     DWORD PTR [EAX + 4 * EBX]
-  FSTP     DWORD PTR [ESP - 4]
-  FLD      DWORD PTR [ESP - 4]
-  FXCH
-
-  ADD      EDI, 4
-  SUB      ESI, 4
-  LOOP     @InnerLoop
-
-
-  POP      EAX
-
-  FSUBP                             // calculate difference
-  FABS                              // calculate absolute difference
-
-  FXCH     ST(2)
-  FCOMI    ST(0), ST(2)             // compare values
-  FCMOVB   ST(0), ST(2)             // eventually move ST(0) to ST(2)
-  FXCH     ST(2)
-  FADDP                             // add to sum difference
-
-  INC      EBX                      // move to next sample
-  POP      ECX
-  LOOP     @OuterLoop
-
-  POP      ESI
-  POP      EDI
-  POP      EBX
-
-  FMULP    ST(2), ST(0)             // calculate maximum
-  MOV      EAX, Maximum
-  FSTP     QWORD PTR [EAX]
-  MOV      EAX, Average
-  FSTP     QWORD PTR [EAX]
+    FMULP    ST(2), ST(0)            // calculate maximum
+    MOV      EAX, Maximum
+    FSTP     QWORD PTR [EAX]
+    MOV      EAX, Average
+    FSTP     QWORD PTR [EAX]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -286,11 +295,15 @@ end;
 procedure TCalculationThread.CalculateDifference(out Maximum, Average: Double);
 var
   Index       : Integer;
+  {$IFNDEF UseDirectCalculateDifference}
   SampleIndex : Integer;
   Sum         : array [0..1] of Single;
+  {$ENDIF}
   Data        : array [0..1] of PPointerArray;
+  {$IFNDEF UseDirectCalculateDifference}
   Difference  : Double;
   SumDiff     : Extended;
+  {$ENDIF}
 begin
   GetMem(Data[0], Length(FAudioData) * SizeOf(Pointer));
   GetMem(Data[1], Length(FAudioData) * SizeOf(Pointer));
@@ -345,6 +358,9 @@ begin
     StatusBar.Panels[1].Text := 'Average: ' + FloatToStrF(FAverageDifference, ffGeneral, 7, 7);
     StatusBar.Panels[2].Text := 'Maximum: ' + FloatToStrF(FMaximumDifference, ffGeneral, 7, 7) +
       ' (' + FloatToStrF(1 + Abs(Log2(FMaximumDifference + 1E-30)), ffGeneral, 4, 4) + ' Bit)';
+
+    SsAverage.AddXY(FTrial, 1 + Abs(Log2(FAverageDifference + 1E-30)));
+    SsWorst.AddXY(FTrial, 1 + Abs(Log2(FMaximumDifference + 1E-30)));
   end;
 
   with TStringList.Create do
@@ -401,7 +417,6 @@ end;
 
 procedure TCalculationThread.Execute;
 var
-  Index             : Integer;
   CurrentDifference : Double;
   Maximum, Average  : Double;
 begin
@@ -430,6 +445,19 @@ begin
       Synchronize(DisplayInformation);
     end;
   until Terminated;
+end;
+
+procedure TCalculationThread.SaveOrderToFile(FileName: TFileName);
+var
+  ItemIndex : Integer;
+begin
+ with TStringList.Create do
+ try
+   for ItemIndex := 0 to Length(FAudioData) - 1 do
+     Add(IntToStr(FCurrentOrder^[ItemIndex]));
+ finally
+   Free;
+ end;
 end;
 
 
@@ -502,7 +530,10 @@ procedure TFmCalculateWorstCaseDifference.BtBuildDifferenceClick(
   Sender: TObject);
 begin
   if SaveDialog.Execute and Assigned(FCalculationThread) then
-    FCalculationThread.BuildDifferenceSignal(SaveDialog.FileName);
+  case SaveDialog.FilterIndex of
+    1 : FCalculationThread.BuildDifferenceSignal(SaveDialog.FileName);
+    2 : FCalculationThread.SaveOrderToFile(SaveDialog.FileName);
+  end;
 end;
 
 procedure TFmCalculateWorstCaseDifference.BtClearClick(Sender: TObject);
@@ -523,6 +554,9 @@ begin
   begin
     BtStartCalculation.Caption := '&Stop Calculation';
 
+    SsWorst.Clear;
+    SsAverage.Clear;
+
     with TIniFile.Create(GIniFileName) do
     try
       EraseSection('Files');
@@ -542,11 +576,17 @@ begin
 
     FCalculationThread := TCalculationThread.Create(ListBox.Items);
     BtBuildDifference.Enabled := True;
+
+    TsHistory.Enabled := True;
+    ListBox.Enabled := False;
   end
   else
   begin
     BtStartCalculation.Caption := '&Start Calculation';
     BtBuildDifference.Enabled := False;
+
+    TsHistory.Enabled := False;
+    ListBox.Enabled := True;
 
     if Assigned(FCalculationThread) then
     begin

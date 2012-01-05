@@ -588,7 +588,6 @@ procedure TGuiCustomByteMap.HorizontalLine(FromX, ToX, Y: Integer; FromData,
 var
   X    : Integer;
   R, S : Single;
-  Data : Byte;
 begin
  if FromX > ToX
   then Exchange32(FromX, ToX);

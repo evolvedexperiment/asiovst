@@ -34,11 +34,16 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   Classes, DAV_Types, DAV_Classes;
 
 type
-  TCustomChebyshevWaveshaper = class(TDspPersistent, IDspProcessor64)
+  TCustomChebyshevWaveshaper = class(TDspPersistent, IDspProcessor32,
+    IDspProcessor64)
   private
     function GetCoefficients(Index: Integer): Double;
     procedure SetOrder(Value: Integer);
@@ -57,7 +62,9 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); virtual; abstract;
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual; abstract;
+    function ProcessSample32(Input: Single): Single; virtual; abstract;
     function ProcessSample64(Input: Double): Double; virtual; abstract;
 
     property Coefficients[Harmonic: Integer]: Double read GetCoefficients;
@@ -67,24 +74,30 @@ type
 
   TChebyshevWaveshaper = class(TCustomChebyshevWaveshaper)
   private
+    FBypassDC: Boolean;
     function GetGain(Harmonic: Integer): Double;
     function GetInverted(Harmonic: Integer): Boolean;
     function GetLevel(Harmonic: Integer): Double;
     procedure SetGain(Harmonic: Integer; const Value: Double);
     procedure SetLevel(Harmonic: Integer; const Value: Double);
     procedure SetInverted(Harmonic: Integer; const Value: Boolean);
+    procedure SetBypassDC(const Value: Boolean);
   protected
     procedure RecalculateHarmonics; override;
     procedure OrderChanged; override;
   public
     constructor Create; override;
 
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
 
     property Gain[Harmonic: Integer]: Double read GetGain write SetGain;
     property Level[Harmonic: Integer]: Double read GetLevel write SetLevel;
     property Inverted[Harmonic: Integer]: Boolean read GetInverted write SetInverted;
+
+    property BypassDC: Boolean read FBypassDC write SetBypassDC;
   end;
 
   TSymmetricChebyshevWaveshaper = class(TCustomChebyshevWaveshaper)
@@ -101,7 +114,9 @@ type
   public
     constructor Create; override;
 
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
 
     property Gain[Harmonic: Integer]: Double read GetGain write SetGain;
@@ -281,18 +296,29 @@ function Saturate(Input, Limit: Single): Single;
 begin
  Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
 {$ELSE}
+{$IFDEF CPUx86_64}
+const
+  CMostSignificantBit : Cardinal = $80000000;
+{$ELSE}
 const
   CGrdDiv : Double = 0.5;
+{$ENDIF}
 asm
- FLD     Input.Single
- FADD    Limit
- FABS
- FLD     Input.Single
- FSUB    Limit
- FABS
- FSUBP
- FMUL    CGrdDiv;
-// Result := CGrdDiv * (Abs(Input + Limit) - Abs(Input - Limit));
+{$IFDEF CPUx86_64}
+    MOVSS   XMM2, CMostSignificantBit // XMM2 = CMostSignificantBit
+    MINSS   XMM0, XMM1                // XMM0 = Min(Input, Limit)
+    XORSS   XMM1, XMM2                // XMM1 = -Limit
+    MAXSS   XMM0, XMM1                // XMM0 = Max(XMM0, -Limit)
+{$ELSE}
+    FLD     Input.Single
+    FADD    Limit
+    FABS
+    FLD     Input.Single
+    FSUB    Limit
+    FABS
+    FSUBP
+    FMUL    CGrdDiv;
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -301,17 +327,29 @@ function Saturate(Input, Limit: Double): Double;
 begin
  Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
 {$ELSE}
+{$IFDEF CPUx86_64}
+const
+  CMostSignificantBit : Cardinal = $80000000;
+{$ELSE}
 const
   CGrdDiv : Double = 0.5;
+{$ENDIF}
 asm
- FLD     Input.Double
- FADD    Limit.Double
- FABS
- FLD     Input.Double
- FSUB    Limit.Double
- FABS
- FSUBP
- FMUL    CGrdDiv;
+{$IFDEF CPUx86_64}
+    MOVSS   XMM2, CMostSignificantBit // XMM2 = CMostSignificantBit
+    MINSS   XMM0, XMM1                // XMM0 = Min(Input, Limit)
+    XORSS   XMM1, XMM2                // XMM1 = -Limit
+    MAXSS   XMM0, XMM1                // XMM0 = Max(XMM0, -Limit)
+{$ELSE}
+    FLD     Input.Double
+    FADD    Limit.Double
+    FABS
+    FLD     Input.Double
+    FSUB    Limit.Double
+    FABS
+    FSUBP
+    FMUL    CGrdDiv;
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -496,6 +534,22 @@ begin
   inherited;
 end;
 
+procedure TChebyshevWaveshaper.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample : Integer;
+  Term   : Integer;
+  Temp   : Single;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   Temp := FChebyshevCoeffs^[Order];
+   for Term := Order - 1 downto 0
+    do Temp := Temp * Data[Sample] + FChebyshevCoeffs^[Term];
+   Data[Sample] := Temp;
+  end;
+end;
+
 procedure TChebyshevWaveshaper.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
@@ -512,6 +566,36 @@ begin
   end;
 end;
 
+function TChebyshevWaveshaper.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
+var
+  Term : Integer;
+begin
+  Result := FChebyshevCoeffs^[FCoeffCount - 1];
+  for Term := FCoeffCount - 2 downto 0
+   do Result := Result * Input + FChebyshevCoeffs^[Term];
+{$ELSE}
+asm
+    MOV     ECX, [Self.FCoeffCount]
+    MOV     EDX, [Self.FChebyshevCoeffs]
+
+    FLD     [EDX + ECX * 8].Double      // Result, Input
+    SUB     ECX, 1
+    JNG     @Done
+    FLD     Input.Single                // Input, Result
+    FXCH                                // Result, Input
+
+@Start:
+    FMUL    ST(0), ST(1)                // Result * Input, Input
+    FADD    [EDX + ECX * 8].Double      // NewResult, Input
+    SUB     ECX, 1
+    JNS     @Start
+    FSTP    ST(1)
+
+@Done:
+{$ENDIF}
+end;
+
 function TChebyshevWaveshaper.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
@@ -522,21 +606,21 @@ begin
    do Result := Result * Input + FChebyshevCoeffs^[Term];
 {$ELSE}
 asm
-  MOV     ECX, [Self.FCoeffCount]
-  MOV     EDX, [Self.FChebyshevCoeffs]
+    MOV     ECX, [Self.FCoeffCount]
+    MOV     EDX, [Self.FChebyshevCoeffs]
 
-  FLD     [EDX + ECX * 8].Double      // Result, Input
-  SUB     ECX, 1
-  JNG     @Done
-  FLD     Input.Double                // Input, Result
-  FXCH                                // Result, Input
+    FLD     [EDX + ECX * 8].Double      // Result, Input
+    SUB     ECX, 1
+    JNG     @Done
+    FLD     Input.Double                // Input, Result
+    FXCH                                // Result, Input
 
 @Start:
-  FMUL    ST(0), ST(1)                // Result * Input, Input
-  FADD    [EDX + ECX * 8].Double      // NewResult, Input
-  SUB     ECX, 1
-  JNS     @Start
-  FSTP    ST(1)
+    FMUL    ST(0), ST(1)                // Result * Input, Input
+    FADD    [EDX + ECX * 8].Double      // NewResult, Input
+    SUB     ECX, 1
+    JNS     @Start
+    FSTP    ST(1)
 
 @Done:
 {$ENDIF}
@@ -553,6 +637,8 @@ begin
     if FGains[Input] <> 0
      then FChebyshevCoeffs^[Index] := FChebyshevCoeffs^[Index] + FGains[Input] * ChebyshevPolynomial(1 + Input, Index);
   end;
+ if FBypassDC
+  then FChebyshevCoeffs^[0] := 0;
 end;
 
 function TChebyshevWaveshaper.GetGain(Harmonic: Integer): Double;
@@ -570,6 +656,15 @@ end;
 function TChebyshevWaveshaper.GetLevel(Harmonic: Integer): Double;
 begin
  Result := Amp_to_dB(Abs(Gain[Harmonic]));
+end;
+
+procedure TChebyshevWaveshaper.SetBypassDC(const Value: Boolean);
+begin
+ if FBypassDC <> Value then
+  begin
+   FBypassDC := Value;
+   RecalculateHarmonics;
+  end;
 end;
 
 procedure TChebyshevWaveshaper.SetGain(Harmonic: Integer; const Value: Double);
@@ -615,6 +710,22 @@ begin
   inherited;
 end;
 
+procedure TSymmetricChebyshevWaveshaper.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample : Integer;
+  Term   : Integer;
+  Temp   : Single;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   Temp := FChebyshevCoeffs^[FCoeffCount - 1];
+   for Term := FCoeffCount - 2 downto 0
+    do Temp := Temp * Sqr(Data[Sample]) + FChebyshevCoeffs^[Term];
+   Data[Sample] := Temp;
+  end;
+end;
+
 procedure TSymmetricChebyshevWaveshaper.ProcessBlock64(
   const Data: PDAVDoubleFixedArray; SampleCount: Integer);
 var
@@ -631,7 +742,40 @@ begin
   end;
 end;
 
-{.$DEFINE PUREPASCAL}
+function TSymmetricChebyshevWaveshaper.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
+var
+  Term : Integer;
+begin
+  Result := FChebyshevCoeffs^[FCoeffCount - 1];
+  for Term := FCoeffCount - 2 downto 0
+   do Result := Result * Sqr(Input) + FChebyshevCoeffs^[Term];
+  Result := Input * Result;
+{$ELSE}
+asm
+    MOV     ECX, [Self.FCoeffCount]
+    MOV     EDX, [Self.FChebyshevCoeffs]
+
+    FLD     Input.Single            // Input
+    FLD     [EDX + ECX * 8].Double  // Result, Input
+    SUB     ECX, 1
+    JNG     @Done
+    FLD     Input.Single            // Input, Result, Input
+    FMUL    Input.Single            // Input^2, Result, Input
+    FXCH                            // Result, Input^2, Input
+
+@Start:
+    FMUL    ST(0), ST(1)            // Result * Input, Input
+    FADD    [EDX + ECX * 8].Double  // NewResult, Input
+    SUB     ECX, 1
+    JNS     @Start
+    FSTP    ST(1)
+
+@Done:
+    FMULP                           // NewResult * Input
+{$ENDIF}
+end;
+
 function TSymmetricChebyshevWaveshaper.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
@@ -643,26 +787,26 @@ begin
   Result := Input * Result;
 {$ELSE}
 asm
-  MOV     ECX, [Self.FCoeffCount]
-  MOV     EDX, [Self.FChebyshevCoeffs]
+    MOV     ECX, [Self.FCoeffCount]
+    MOV     EDX, [Self.FChebyshevCoeffs]
 
-  FLD     Input.Double            // Input
-  FLD     [EDX + ECX * 8].Double  // Result, Input
-  SUB     ECX, 1
-  JNG     @Done
-  FLD     Input.Double            // Input, Result, Input
-  FMUL    Input.Double            // Input^2, Result, Input
-  FXCH                            // Result, Input^2, Input
+    FLD     Input.Double            // Input
+    FLD     [EDX + ECX * 8].Double  // Result, Input
+    SUB     ECX, 1
+    JNG     @Done
+    FLD     Input.Double            // Input, Result, Input
+    FMUL    Input.Double            // Input^2, Result, Input
+    FXCH                            // Result, Input^2, Input
 
 @Start:
-  FMUL    ST(0), ST(1)            // Result * Input, Input
-  FADD    [EDX + ECX * 8].Double  // NewResult, Input
-  SUB     ECX, 1
-  JNS     @Start
-  FSTP    ST(1)
+    FMUL    ST(0), ST(1)            // Result * Input, Input
+    FADD    [EDX + ECX * 8].Double  // NewResult, Input
+    SUB     ECX, 1
+    JNS     @Start
+    FSTP    ST(1)
 
 @Done:
-  FMULP                           // NewResult * Input
+    FMULP                           // NewResult * Input
 {$ENDIF}
 end;
 

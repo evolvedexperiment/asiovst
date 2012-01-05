@@ -63,6 +63,9 @@ var
   BlockScaleInplace32 : procedure(Destination: PSingle; Value: Single; Count: Integer);
   BlockScaleInplace64 : procedure(Destination: PDouble; Value: Double; Count: Integer);
 
+  BlockScale32 : procedure(Destination, Source: PSingle; Count: Integer; Value: Single);
+  BlockScale64 : procedure(Destination, Source: PDouble; Count: Integer; Value: Double);
+
 implementation
 
 uses
@@ -522,10 +525,75 @@ asm
   NEG     ECX
   JNL     @Done
 
-  FLD     Value.Single
+  FLD     Value.Double
 
 @Start:
   FLD     [EAX + ECX * 8].Double
+  FMUL    ST(0), ST(1)
+  FSTP    [EAX + ECX * 8].Double
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    ST(0)
+@Done:
+{$ENDIF}
+end;
+
+procedure BlockScale32Native(Destination, Source: PSingle; Count: Integer; Value: Single);
+{$IFDEF PUREPASCAL}
+var
+  Index: Integer;
+begin
+  for Index := Count - 1 downto 0 do
+  begin
+    Destination^ := Source^ * Value;
+    Inc(Source);
+    Inc(Destination);
+  end;
+{$ELSE}
+asm
+  LEA     EAX, EAX + ECX * 4
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
+
+  FLD     Value.Single
+
+@Start:
+  FLD     [EDX + ECX * 4].Single
+  FMUL    ST(0), ST(1)
+  FSTP    [EAX + ECX * 4].Single
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    ST(0)
+@Done:
+{$ENDIF}
+end;
+
+procedure BlockScale64Native(Destination, Source: PDouble; Count: Integer; Value: Double);
+{$IFDEF PUREPASCAL}
+var
+  Index: Integer;
+begin
+  for Index := Count - 1 downto 0 do
+  begin
+    Destination^ := Source^ * Value;
+    Inc(Source);
+    Inc(Destination);
+  end;
+{$ELSE}
+asm
+  LEA     EAX, EAX + ECX * 8
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+
+  FLD     Value.Double
+
+@Start:
+  FLD     [EAX + ECX * 8].Double
+  FLD     [EDX + ECX * 8].Double
   FMUL    ST(0), ST(1)
   FSTP    [EAX + ECX * 8].Double
   ADD     ECX, 1
@@ -648,6 +716,20 @@ begin
     @BlockScaleInplace64Native) do
   begin
     Add(@BlockScaleInplace64Native);
+  end;
+
+  // Block Scale Binding (32 bit)
+  with TFunctionBinding.Create(@@BlockScale32,
+    @BlockScale32Native) do
+  begin
+    Add(@BlockScale32Native);
+  end;
+
+  // Block Scale Binding (64 bit)
+  with TFunctionBinding.Create(@@BlockScale64,
+    @BlockScale64Native) do
+  begin
+    Add(@BlockScale64Native);
   end;
 
 end;

@@ -34,6 +34,10 @@ interface
 
 {$I DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 uses
   DAV_Types, DAV_Complex, DAV_Bindings;
 
@@ -95,46 +99,44 @@ begin
   do ComplexMultiplyInplace32(Buffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
- // DC
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EAX].Single
- ADD   EAX, 4
- ADD   EDX, 4
+    // DC
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EAX].Single
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EAX].Single
- ADD   EAX, 4
- ADD   EDX, 4
+    // Nyquist (packed)
+    FLD     [EAX + 4].Single
+    FMUL    [EDX + 4].Single
+    FSTP    [EAX + 4].Single
+    ADD     EAX, 8
+    ADD     EDX, 8
 
- DEC   ECX
+    DEC     ECX
 @Start:
-  FLD   [EAX    ].Single  // A.Re
-  FLD   [EAX + 4].Single  // A.Im, A.Re
-  FLD   [EDX    ].Single  // B.Re, A.Im, A.Re
-  FLD   [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP  [EAX    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH  ST(2)             // A.Im, B.Re, B.Im, A.Re
-  FMULP                   // A.Im * B.Re, B.Im, A.Re
-  FXCH  ST(2)             // B.Im, A.Re, A.Im * B.Re
-  FMULP                   // B.Im * A.Re, A.Im * B.Re
-  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
-  FSTP  [EAX + 4].Single  // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD   EAX, 8
-  ADD   EDX, 8
- LOOP @Start
+    FLD     [EAX    ].Single // A.Re
+    FLD     [EAX + 4].Single // A.Im, A.Re
+    FLD     [EDX    ].Single // B.Re, A.Im, A.Re
+    FLD     [EDX + 4].Single // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FSUBP                    // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EAX    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)            // A.Im, B.Re, B.Im, A.Re
+    FMULP                    // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)            // B.Im, A.Re, A.Im * B.Re
+    FMULP                    // B.Im * A.Re, A.Im * B.Re
+    FADDP                    // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EAX + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 8
+    ADD     EDX, 8
+    LOOP    @Start
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EAX].Single
+    // Nyquist
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EAX].Single
 {$ENDIF}
 end;
 
@@ -151,54 +153,51 @@ begin
   do OutBuffer^[SampleIndex] := ComplexMultiply32(InBuffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
- PUSH EBX
- MOV EBX, OutBuffer
+    PUSH    EBX
+    MOV     EBX, OutBuffer
 
- // DC
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EBX].Single
- ADD EAX, 4
- ADD EBX, 4
- ADD EDX, 4
+    // DC
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EBX].Single
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EBX].Single
- ADD EAX, 4
- ADD EBX, 4
- ADD EDX, 4
+    // Nyquist
+    FLD     [EAX + 4].Single
+    FMUL    [EDX + 4].Single
+    FSTP    [EBX + 4].Single
+    ADD     EAX, 8
+    ADD     EBX, 8
+    ADD     EDX, 8
 
- DEC ECX
+    DEC     ECX
 @Start:
-  FLD   [EAX    ].Single  // A.Re
-  FLD   [EAX + 4].Single  // A.Im, A.Re
-  FLD   [EDX    ].Single  // B.Re, A.Im, A.Re
-  FLD   [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP  [EBX    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH  ST(2)             // A.Im, B.Re, B.Im, A.Re
-  FMULP                   // A.Im * B.Re, B.Im, A.Re
-  FXCH  ST(2)             // B.Im, A.Re, A.Im * B.Re
-  FMULP                   // B.Im * A.Re, A.Im * B.Re
-  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
-  FSTP [EBX + 4].Single   // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD EAX, 8
-  ADD EBX, 8
-  ADD EDX, 8
- LOOP @Start
+    FLD     [EAX    ].Single  // A.Re
+    FLD     [EAX + 4].Single  // A.Im, A.Re
+    FLD     [EDX    ].Single  // B.Re, A.Im, A.Re
+    FLD     [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FSUBP   ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EBX    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)             // A.Im, B.Re, B.Im, A.Re
+    FMULP                     // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)             // B.Im, A.Re, A.Im * B.Re
+    FMULP                     // B.Im * A.Re, A.Im * B.Re
+    FADDP   ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EBX + 4].Single  // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 8
+    ADD     EBX, 8
+    ADD     EDX, 8
+    LOOP    @Start
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EBX].Single
+    // Nyquist
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EBX].Single
 
- POP EBX
+    POP     EBX
 {$ENDIF}
 end;
 
@@ -215,46 +214,44 @@ begin
   do ComplexMultiplyInplace64(Buffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
- // DC
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EAX].Double
- ADD EAX, 8
- ADD EDX, 8
+    // DC
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EAX].Double
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EAX].Double
- ADD EAX, 8
- ADD EDX, 8
+    // Nyquist
+    FLD     [EAX + 8].Double
+    FMUL    [EDX + 8].Double
+    FSTP    [EAX + 8].Double
+    ADD     EAX, 16
+    ADD     EDX, 16
 
- DEC ECX
+    DEC     ECX
 @Start:
-  FLD   [EAX    ].Double  // A.Re
-  FLD   [EAX + 8].Double  // A.Im, A.Re
-  FLD   [EDX    ].Double  // B.Re, A.Im, A.Re
-  FLD   [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP [EAX    ].Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH ST(2)              // A.Im, B.Re, B.Im, A.Re
-  FMULP                   // A.Im * B.Re, B.Im, A.Re
-  FXCH ST(2)              // B.Im, A.Re, A.Im * B.Re
-  FMULP                   // B.Im * A.Re, A.Im * B.Re
-  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
-  FSTP [EAX + 8].Double   // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD EAX, 16
-  ADD EDX, 16
- LOOP @Start
+    FLD     [EAX    ].Double // A.Re
+    FLD     [EAX + 8].Double // A.Im, A.Re
+    FLD     [EDX    ].Double // B.Re, A.Im, A.Re
+    FLD     [EDX + 8].Double // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FSUBP   ST(1), ST(0)     // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EAX    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)            // A.Im, B.Re, B.Im, A.Re
+    FMULP                    // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)            // B.Im, A.Re, A.Im * B.Re
+    FMULP                    // B.Im * A.Re, A.Im * B.Re
+    FADDP   ST(1), ST(0)     // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EAX + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 16
+    ADD     EDX, 16
+    LOOP    @Start
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EAX].Double
+    // Nyquist
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EAX].Double
 {$ENDIF}
 end;
 
@@ -271,54 +268,54 @@ begin
   do OutBuffer^[SampleIndex] := ComplexMultiply64(InBuffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
- PUSH EBX
- MOV EBX, OutBuffer
+    PUSH    EBX
+    MOV     EBX, OutBuffer
 
- // DC
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EBX].Double
- ADD EAX, 8
- ADD EBX, 8
- ADD EDX, 8
+    // DC
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EBX].Double
+    ADD     EAX, 8
+    ADD     EBX, 8
+    ADD     EDX, 8
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EBX].Double
- ADD EAX, 8
- ADD EBX, 8
- ADD EDX, 8
+    // Nyquist
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EBX].Double
+    ADD     EAX, 8
+    ADD     EBX, 8
+    ADD     EDX, 8
 
- DEC ECX
+    DEC     ECX
 @Start:
-  FLD   [EAX    ].Double  // A.Re
-  FLD   [EAX + 8].Double  // A.Im, A.Re
-  FLD   [EDX    ].Double  // B.Re, A.Im, A.Re
-  FLD   [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD   ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL  ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FSUBP ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP  [EBX    ].Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH  ST(2)             // A.Im, B.Re, B.Im, A.Re
-  FMULP                   // A.Im * B.Re, B.Im, A.Re
-  FXCH  ST(2)             // B.Im, A.Re, A.Im * B.Re
-  FMULP                   // B.Im * A.Re, A.Im * B.Re
-  FADDP ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
-  FSTP  [EBX + 8].Double  // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD EAX, 16
-  ADD EBX, 16
-  ADD EDX, 16
- LOOP @Start
+    FLD     [EAX    ].Double  // A.Re
+    FLD     [EAX + 8].Double  // A.Im, A.Re
+    FLD     [EDX    ].Double  // B.Re, A.Im, A.Re
+    FLD     [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FSUBP   ST(1), ST(0)      // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EBX    ].Double  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)             // A.Im, B.Re, B.Im, A.Re
+    FMULP                     // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)             // B.Im, A.Re, A.Im * B.Re
+    FMULP                     // B.Im * A.Re, A.Im * B.Re
+    FADDP   ST(1), ST(0)      // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EBX + 8].Double  // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 16
+    ADD     EBX, 16
+    ADD     EDX, 16
+    LOOP @Start
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EBX].Double
+    // Nyquist
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EBX].Double
 
- POP EBX
+    POP     EBX
 {$ENDIF}
 end;
 
@@ -334,47 +331,45 @@ begin
   do ComplexMultiplyInplace32(InplaceBuffer^[SampleIndex], ComplexConjugate32(Signal^[SampleIndex]));
 {$ELSE}
 asm
- // DC
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EAX].Single
- ADD EAX, 4
- ADD EDX, 4
+    // DC
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EAX].Single
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EAX].Single
- ADD EAX, 4
- ADD EDX, 4
+    // Nyquist
+    FLD     [EAX + 4].Single
+    FMUL    [EDX + 4].Single
+    FSTP    [EAX + 4].Single
+    ADD     EAX, 8
+    ADD     EDX, 8
 
- DEC ECX
+    DEC     ECX
 @Start:
-  FLD [EAX    ].Single  // A.Re
-  FLD [EAX + 4].Single  // A.Im, A.Re
-  FLD [EDX    ].Single  // B.Re, A.Im, A.Re
-  FLD [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP [EAX    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
-  FMULP                 // A.Im * B.Re, B.Im, A.Re
-  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
-  FMULP                 // B.Im * A.Re, A.Im * B.Re
-  FSUBP                 // A.Im * B.Re - A.Re * B.Im
-  FSTP [EAX + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD EAX, 8
-  ADD EDX, 8
- LOOP @Start
+    FLD     [EAX    ].Single // A.Re
+    FLD     [EAX + 4].Single // A.Im, A.Re
+    FLD     [EDX    ].Single // B.Re, A.Im, A.Re
+    FLD     [EDX + 4].Single // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FADDP                    // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EAX    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)            // A.Im, B.Re, B.Im, A.Re
+    FMULP                    // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)            // B.Im, A.Re, A.Im * B.Re
+    FMULP                    // B.Im * A.Re, A.Im * B.Re
+    FSUBP                    // A.Im * B.Re - A.Re * B.Im
+    FSTP    [EAX + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 8
+    ADD     EDX, 8
+    LOOP    @Start
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EAX].Single
- {$ENDIF}
+    // Nyquist
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EAX].Single
+{$ENDIF}
 end;
 
 procedure ComplexMultiplyConjugated32(const InBuffer, Signal: PDAVComplexSingleFixedArray; const SampleFrames: Integer;
@@ -390,55 +385,52 @@ begin
   do OutBuffer^[SampleIndex] := ComplexMultiply32(InBuffer^[SampleIndex], ComplexConjugate32(Signal^[SampleIndex]));
 {$ELSE}
 asm
- PUSH EBX
- MOV EBX, OutBuffer
+    PUSH    EBX
+    MOV     EBX, OutBuffer
 
- // DC
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EBX].Single
- ADD EAX, 4
- ADD EBX, 4
- ADD EDX, 4
+    // DC
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EBX].Single
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EBX].Single
- ADD EAX, 4
- ADD EBX, 4
- ADD EDX, 4
+    // Nyquist
+    FLD     [EAX + 4].Single
+    FMUL    [EDX + 4].Single
+    FSTP    [EBX + 4].Single
+    ADD     EAX, 8
+    ADD     EBX, 8
+    ADD     EDX, 8
 
- DEC ECX
+    DEC     ECX
 @Start:
-  FLD [EAX    ].Single  // A.Re
-  FLD [EAX + 4].Single  // A.Im, A.Re
-  FLD [EDX    ].Single  // B.Re, A.Im, A.Re
-  FLD [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP [EBX    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
-  FMULP                 // A.Im * B.Re, B.Im, A.Re
-  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
-  FMULP                 // B.Im * A.Re, A.Im * B.Re
-  FSUBP                 // A.Im * B.Re + A.Re * B.Im
-  FSTP [EBX + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD EAX, 8
-  ADD EBX, 8
-  ADD EDX, 8
- LOOP @Start
+    FLD     [EAX    ].Single  // A.Re
+    FLD     [EAX + 4].Single  // A.Im, A.Re
+    FLD     [EDX    ].Single  // B.Re, A.Im, A.Re
+    FLD     [EDX + 4].Single  // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)      // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FADDP                     // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EBX    ].Single  // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)             // A.Im, B.Re, B.Im, A.Re
+    FMULP                     // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)             // B.Im, A.Re, A.Im * B.Re
+    FMULP                     // B.Im * A.Re, A.Im * B.Re
+    FSUBP                     // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EBX + 4].Single  // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 8
+    ADD     EBX, 8
+    ADD     EDX, 8
+    LOOP @Start
 
- // Nyquist
- FLD   [EAX].Single
- FMUL  [EDX].Single
- FSTP  [EBX].Single
+    // Nyquist
+    FLD     [EAX].Single
+    FMUL    [EDX].Single
+    FSTP    [EBX].Single
 
- POP EBX
- {$ENDIF}
+    POP     EBX
+{$ENDIF}
 end;
 
 procedure ComplexMultiplyConjugated64(const InplaceBuffer, Signal: PDAVComplexDoubleFixedArray; const SampleFrames: Integer); overload;
@@ -453,47 +445,45 @@ begin
   do ComplexMultiplyInplace64(InplaceBuffer^[SampleIndex], ComplexConjugate64(Signal^[SampleIndex]));
 {$ELSE}
 asm
- // DC
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EAX].Double
- ADD EAX, 8
- ADD EDX, 8
+    // DC
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EAX].Double
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EAX].Double
- ADD EAX, 8
- ADD EDX, 8
+    // Nyquist
+    FLD     [EAX + 8].Double
+    FMUL    [EDX + 8].Double
+    FSTP    [EAX + 8].Double
+    ADD     EAX, 16
+    ADD     EDX, 16
 
- DEC ECX
+    DEC     ECX
 @Start:
-  FLD [EAX    ].Double  // A.Re
-  FLD [EAX + 8].Double  // A.Im, A.Re
-  FLD [EDX    ].Double  // B.Re, A.Im, A.Re
-  FLD [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP [EAX    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
-  FMULP                 // A.Im * B.Re, B.Im, A.Re
-  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
-  FMULP                 // B.Im * A.Re, A.Im * B.Re
-  FSUBP                 // A.Im * B.Re + A.Re * B.Im
-  FSTP [EAX + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD EAX, 16
-  ADD EDX, 16
- LOOP @Start
+    FLD     [EAX    ].Double // A.Re
+    FLD     [EAX + 8].Double // A.Im, A.Re
+    FLD     [EDX    ].Double // B.Re, A.Im, A.Re
+    FLD     [EDX + 8].Double // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FADDP                    // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EAX    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)            // A.Im, B.Re, B.Im, A.Re
+    FMULP                    // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)            // B.Im, A.Re, A.Im * B.Re
+    FMULP                    // B.Im * A.Re, A.Im * B.Re
+    FSUBP                    // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EAX + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 16
+    ADD     EDX, 16
+    LOOP    @Start
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EAX].Double
- {$ENDIF}
+    // Nyquist
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EAX].Double
+{$ENDIF}
 end;
 
 procedure ComplexMultiplyConjugated64(const InBuffer, Signal: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
@@ -509,179 +499,173 @@ begin
   do OutBuffer^[SampleIndex] := ComplexMultiply64(InBuffer^[SampleIndex], ComplexConjugate64(Signal^[SampleIndex]));
 {$ELSE}
 asm
- PUSH EBX
- MOV EBX, OutBuffer
+    PUSH    EBX
+    MOV     EBX, OutBuffer
 
- // DC
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EBX].Double
- ADD EAX, 8
- ADD EBX, 8
- ADD EDX, 8
+    // DC
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EBX].Double
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EBX].Double
- ADD EAX, 8
- ADD EBX, 8
- ADD EDX, 8
+    // Nyquist
+    FLD     [EAX + 8].Double
+    FMUL    [EDX + 8].Double
+    FSTP    [EBX + 8].Double
+    ADD     EAX, 16
+    ADD     EBX, 16
+    ADD     EDX, 16
 
- DEC ECX
+    DEC     ECX
 @Start:
-  FLD [EAX    ].Double  // A.Re
-  FLD [EAX + 8].Double  // A.Im, A.Re
-  FLD [EDX    ].Double  // B.Re, A.Im, A.Re
-  FLD [EDX + 8].Double  // B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FLD ST(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FMUL ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  FADDP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FSTP [EBX    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  FXCH ST(2)            // A.Im, B.Re, B.Im, A.Re
-  FMULP                 // A.Im * B.Re, B.Im, A.Re
-  FXCH ST(2)            // B.Im, A.Re, A.Im * B.Re
-  FMULP                 // B.Im * A.Re, A.Im * B.Re
-  FSUBP                 // A.Im * B.Re + A.Re * B.Im
-  FSTP [EBX + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
-  ADD EAX, 16
-  ADD EBX, 16
-  ADD EDX, 16
- LOOP @Start
+    FLD     [EAX    ].Double // A.Re
+    FLD     [EAX + 8].Double // A.Im, A.Re
+    FLD     [EDX    ].Double // B.Re, A.Im, A.Re
+    FLD     [EDX + 8].Double // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)            // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FADDP                    // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    [EBX    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)            // A.Im, B.Re, B.Im, A.Re
+    FMULP                    // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)            // B.Im, A.Re, A.Im * B.Re
+    FMULP                    // B.Im * A.Re, A.Im * B.Re
+    FSUBP                    // A.Im * B.Re + A.Re * B.Im
+    FSTP    [EBX + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
+    ADD     EAX, 16
+    ADD     EBX, 16
+    ADD     EDX, 16
+    LOOP    @Start
 
- // Nyquist
- FLD   [EAX].Double
- FMUL  [EDX].Double
- FSTP  [EBX].Double
+    // Nyquist
+    FLD     [EAX].Double
+    FMUL    [EDX].Double
+    FSTP    [EBX].Double
 
- POP EBX
- {$ENDIF}
+    POP     EBX
+{$ENDIF}
 end;
 
 
 procedure DCSubstract(Data: PSingle; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
-  InBuf : array [0..0] of Double absolute Data;
-  d : Double;
-  i : Integer;
+  InBuf       : array [0..0] of Double absolute Data;
+  TempValue   : Double;
+  SampleIndex : Integer;
 begin
  if SampleCount = 0 then Exit;
- d := InBuf[0];
- for i := 1 to SampleCount - 1
-  do d := d + InBuf[i];
- d := d / SampleCount;
- for i := 0 to SampleCount - 1
-  do InBuf[i] := InBuf[i] - d;
-end;
+ TempValue := InBuf[0];
+ for SampleIndex := 1 to SampleCount - 1
+  do TempValue := TempValue + InBuf[SampleIndex];
+ TempValue := TempValue / SampleCount;
+ for SampleIndex := 0 to SampleCount - 1
+  do InBuf[SampleIndex] := InBuf[SampleIndex] - TempValue;
 {$ELSE}
 asm
- TEST EDX, EDX
- JZ @End
+    TEST    EDX, EDX
+    JZ      @End
 
- PUSH EDX
- fldz                            // DC
- @CalcDCLoop:
-   DEC EDX
-   fadd  [EAX + 4 * EDX].Single  // DC = DC + Value
- JNZ @CalcDCLoop
- POP EDX
+    PUSH    EDX
+    FLDZ                           // DC
+@CalcDCLoop:
+    DEC     EDX
+    FADD    [EAX + 4 * EDX].Single // DC = DC + Value
+    JNZ     @CalcDCLoop
+    POP     EDX
 
- MOV  [ESP - 4], EDX
- fild [ESP - 4].Integer          // Length, DC
- fdivp ST(1), ST(0)              // RealDC = DC / Length
+    MOV     [ESP - 4], EDX
+    FILD    [ESP - 4].Integer      // Length, DC
+    FDIVP   ST(1), ST(0)           // RealDC = DC / Length
 
- @SubstractDCLoop:
-   DEC EDX
-   FLD  [EAX + 4 * EDX].Single   // Value, RealDC
-   fsub ST(0), ST(1)             // Value-RealDC, RealDC
-   FSTP  [EAX + 4 * EDX].Single  // RealDC
- JNZ @SubstractDCLoop
- FSTP ST(0)                      // clear stack
+@SubstractDCLoop:
+    DEC     EDX
+    FLD     [EAX + 4 * EDX].Single // Value, RealDC
+    FSUB    ST(0), ST(1)           // Value-RealDC, RealDC
+    FSTP    [EAX + 4 * EDX].Single // RealDC
+    JNZ     @SubstractDCLoop
+    FSTP    ST(0)                  // clear stack
 
- @End:
-end;
+@End:
 {$ENDIF}
+end;
 
 procedure DCSubstract(Data: PDouble; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
-  InBuf : array [0..0] of Double absolute Data;
-  d : Double;
-  i : Integer;
+  InBuf       : array [0..0] of Double absolute Data;
+  TempValue   : Double;
+  SampleIndex : Integer;
 begin
  if SampleCount = 0 then Exit;
- d := InBuf[0];
- for i := 1 to SampleCount - 1
-  do d := d + InBuf[i];
- d := d / SampleCount;
- for i := 0 to SampleCount - 1
-  do InBuf[i] := InBuf[i] - d;
-end;
+ TempValue := InBuf[0];
+ for SampleIndex := 1 to SampleCount - 1
+  do TempValue := TempValue + InBuf[SampleIndex];
+ TempValue := TempValue / SampleCount;
+ for SampleIndex := 0 to SampleCount - 1
+  do InBuf[SampleIndex] := InBuf[SampleIndex] - TempValue;
 {$ELSE}
 asm
- TEST EDX,EDX
- JZ @End
+    TEST    EDX, EDX
+    JZ      @End
 
- PUSH EDX
- fldz                            // DC
- @CalcDCLoop:
-   DEC EDX
-   fadd  [EAX + 8 * EDX].Double  // DC = DC + Value
- JNZ @CalcDCLoop
- POP EDX
+    PUSH    EDX
+    FLDZ                            // DC
 
- MOV [esp - 4], EDX
- fild [esp - 4].Integer          // Length, DC
- fdivp ST(1), ST(0)              // RealDC = DC / Length
+@CalcDCLoop:
+    DEC     EDX
+    FADD    [EAX + 8 * EDX].Double  // DC = DC + Value
+    JNZ     @CalcDCLoop
+    POP     EDX
 
- @SubstractDCLoop:
-   DEC EDX
-   FLD  [EAX + 8 * EDX].Double  // Value, RealDC
-   fsub ST(0), ST(1)            // Value-RealDC, RealDC
-   FSTP  [EAX + 8 * EDX].Double // RealDC
- JNZ @SubstractDCLoop
- FSTP ST(0)                     // clear stack
+    MOV     [ESP - 4], EDX
+    FILD    [ESP - 4].Integer       // Length, DC
+    FDIVP   ST(1), ST(0)            // RealDC = DC / Length
 
- @End:
-end;
+@SubstractDCLoop:
+    DEC     EDX
+    FLD     [EAX + 8 * EDX].Double  // Value, RealDC
+    FSUB    ST(0), ST(1)            // Value-RealDC, RealDC
+    FSTP    [EAX + 8 * EDX].Double  // RealDC
+    JNZ     @SubstractDCLoop
+    FSTP    ST(0)                   // clear stack
+
+@End:
 {$ENDIF}
+end;
 
 procedure ConvertSingleToDouble(Input: PDAVSingleFixedArray; Output: PDAVDoubleFixedArray; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
-  i : Integer;
+  SampleIndex : Integer;
 begin
- for i := 0 to SampleCount - 1
-  do Output^[i] := Input^[i];
-end;
+ for SampleIndex := 0 to SampleCount - 1
+  do Output^[SampleIndex] := Input^[SampleIndex];
 {$ELSE}
 asm
 @Start:
- FLD  [EAX + ECX * 4 - 4].Single
- FSTP [EDX + ECX * 8 - 8].Double
- LOOP @Start
-end;
+    FLD  [EAX + ECX * 4 - 4].Single
+    FSTP [EDX + ECX * 8 - 8].Double
+    LOOP @Start
 {$ENDIF}
+end;
 
 procedure ConvertDoubleToSingle(Input: PDAVDoubleFixedArray; Output: PDAVSingleFixedArray; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
-  i : Integer;
+  SampleIndex : Integer;
 begin
- for i := 0 to SampleCount - 1
-  do Output^[i] := Input^[i];
-end;
+ for SampleIndex := 0 to SampleCount - 1
+  do Output^[SampleIndex] := Input^[SampleIndex];
 {$ELSE}
 asm
 @Start:
- FLD [EAX + ECX * 8 - 8].Double
- FSTP [EDX + ECX * 4 - 4].Single
- LOOP @Start
-end;
+    FLD     [EAX + ECX * 8 - 8].Double
+    FSTP    [EDX + ECX * 4 - 4].Single
+    LOOP    @Start
 {$ENDIF}
+end;
 
 procedure CopyAndCheck32(Input, Output: PSingle; Count: Integer);
 var
@@ -722,109 +706,108 @@ end;
 function FindMaximum(Data: PSingle; SampleCount: Integer): Integer;
 {$IFDEF PUREPASCAL}
 var
-  i : Integer;
-  d : Double;
+  SampleIndex : Integer;
+  TempValue   : Double;
 begin
  Result := 0;
  Assert(SampleCount > 0);
- d := Abs(Data^);
- for i := 1 to SampleCount - 1 do
+ TempValue := Abs(Data^);
+ for SampleIndex := 1 to SampleCount - 1 do
   begin
-   if Abs(Data^) > d then
+   if Abs(Data^) > TempValue then
     begin
-     Result := i;
-     d := Abs(Data^);
+     Result := SampleIndex;
+     TempValue := Abs(Data^);
     end;
    Inc(Data);
   end;
 {$ELSE}
 asm
- TEST EDX,EDX
- JZ @End
+    TEST    EDX, EDX
+    JZ      @End
 
- MOV Result,EDX                // Result := EDX
- DEC EDX
- JNZ @End                      // only one sample -> exit!
- FLD  [EAX+4*EDX].Single       // Value
- FABS                          // |Value| = Max
+    MOV     Result, EDX                 // Result := EDX
+    DEC     EDX
+    JNZ     @End                        // only one sample -> exit!
+    FLD     [EAX + 4 * EDX].Single      // Value
+    FABS                                // |Value| = Max
 
- @FindMaxLoop:
-   FLD  [EAX+4*EDX-4].Single   // Value, Max
-   FABS                        // |Value|, Max
+@FindMaxLoop:
+    FLD     [EAX + 4 * EDX - 4].Single  // Value, Max
+    FABS                                // |Value|, Max
 
-   FCOMI ST(0), ST(1)          // |Value| <-> Max ?
-   FSTSW AX                    // AX = FPU Status Word
-   SAHF                        // AX -> EFLAGS register
-   JAE @NextSample             // if |Value| <-> Max then next sample!
-   FXCH                        // OldMax, |Value|
-   MOV Result,EDX              // Result := EDX
+    FCOMI   ST(0), ST(1)                // |Value| <-> Max ?
+    FSTSW   AX                          // AX = FPU Status Word
+    SAHF                                // AX -> EFLAGS register
+    JAE     @NextSample                 // if |Value| <-> Max then next sample!
+    FXCH                                // OldMax, |Value|
+    MOV     Result, EDX                 // Result := EDX
 
-   @NextSample:
-   FSTP ST(0)                  // Value, Max
-   DEC EDX
- JNZ @FindMaxLoop
+@NextSample:
+    FSTP    ST(0)                       // Value, Max
+    DEC     EDX
+    JNZ     @FindMaxLoop
 
- MOV EDX,Result              // EDX := Result
- SUB EDX,1                   // EDX := EDX - 1  -> index starts at 0!
- MOV Result,EDX              // Result := EDX
+    MOV     EDX, Result                 // EDX := Result
+    SUB     EDX, 1                      // EDX := EDX - 1  -> index starts at 0!
+    MOV     Result, EDX                 // Result := EDX
 
- @End:
+@End:
 {$ENDIF}
 end;
 
 function FindMaximum(Data: PDouble; SampleCount: Integer): Integer;
 {$IFDEF PUREPASCAL}
 var
-  i : Integer;
-  d : Double;
+  SampleIndex : Integer;
+  TempValue   : Double;
 begin
  Result := 0;
  Assert(SampleCount > 0);
- d := abs(Data^);
- for i := 1 to SampleCount - 1 do
+ TempValue := abs(Data^);
+ for SampleIndex := 1 to SampleCount - 1 do
   begin
-   if abs(Data^) > d then
+   if abs(Data^) > TempValue then
     begin
-     Result := i;
-     d := abs(Data^);
+     Result := SampleIndex;
+     TempValue := abs(Data^);
     end;
    Inc(Data);
   end;
-end;
 {$ELSE}
 asm
- TEST EDX,EDX
- JZ @End
+    TEST    EDX,EDX
+    JZ      @End
 
- MOV Result,EDX                // Result := EDX
- DEC EDX
- JZ @End                       // only one sample -> exit!
- FLD  [EAX + 8 * EDX].Double       // Value
- FABS                          // |Value| = Max
+    MOV     Result, EDX                // Result := EDX
+    DEC     EDX
+    JZ      @End                       // only one sample -> exit!
+    FLD     [EAX + 8 * EDX].Double     // Value
+    FABS                               // |Value| = Max
 
- @FindMaxLoop:
-   FLD  [EAX + 8 * EDX-8].Double   // Value, Max
-   FABS                        // |Value|, Max
+@FindMaxLoop:
+    FLD     [EAX + 8 * EDX - 8].Double // Value, Max
+    FABS                               // |Value|, Max
 
-   FCOMI ST(0), ST(1)          // |Value| <-> Max ?
-   FSTSW AX                    // AX = FPU Status Word
-   SAHF                        // AX -> EFLAGS register
-   JAE @NextSample             // if |Value| <-> Max then next sample!
-   FXCH                        // OldMax, |Value|
-   MOV Result,EDX              // Result := EDX
+    FCOMI   ST(0), ST(1)               // |Value| <-> Max ?
+    FSTSW   AX                         // AX = FPU Status Word
+    SAHF                               // AX -> EFLAGS register
+    JAE     @NextSample                // if |Value| <-> Max then next sample!
+    FXCH                               // OldMax, |Value|
+    MOV     Result, EDX                // Result := EDX
 
-   @NextSample:
-   FSTP ST(0)                  // Value, Max
-   DEC EDX
- JNZ @FindMaxLoop
+@NextSample:
+    FSTP    ST(0)                      // Value, Max
+    DEC     EDX
+    JNZ     @FindMaxLoop
 
- MOV EDX,Result              // EDX := Result
- SUB EDX,1                   // EDX := EDX - 1  -> index starts at 0!
- MOV Result,EDX              // Result := EDX
+    MOV     EDX, Result                // EDX := Result
+    SUB     EDX, 1                     // EDX := EDX - 1  -> index starts at 0!
+    MOV     Result, EDX                // Result := EDX
 
- @End:
-end;
+@End:
 {$ENDIF}
+end;
 
 procedure CalcMinMax(Data: PSingle; SampleCount: Integer; var MinMax: TDAVMinMaxSingle);
 var

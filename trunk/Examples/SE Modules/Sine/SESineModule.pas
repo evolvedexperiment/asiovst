@@ -204,31 +204,30 @@ begin
    FOutputBuffer[BufferOffset + Sample] := FSineLFO.Sine;
    FSineLFO.CalculateNextSample;
   end;
-end;
 {$ELSE}
 asm
- jecxz @loopend
- add edx, Self.FOutputBuffer
-@loopstart:
- fld [Self.FPosition.Re].Double  // FPosition.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
- fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    JECXZ   @LoopEnd
+    ADD     EDX, Self.FOutputBuffer
+@LoopStart:
+    FLD    [Self.FPosition.Re].Double  // FPosition.Re
+    FMUL   [Self.FAngle.Re].Double     // FPosition.Re * FAngle.Re
+    FLD    [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL   [Self.FAngle.Im].Double     // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                              // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
- fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- fstp [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
- fst [Self.FPosition.Re].Double  // FPosition.Re := New.Re
- fstp [edx].Single               // FOutputBuffer := New.Re
- add edx, 4
- loop @loopstart
-@loopend:
-end;
+    FLD    [Self.FPosition.Im].Double  // FPosition.Im, New.Re
+    FMUL   [Self.FAngle.Re].Double     // FPosition.Im * FAngle.Re, New.Re
+    FLD    [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL   [Self.FAngle.Im].Double     // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                              // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FSTP   [Self.FPosition.Im].Double  // FPosition.Im := New.Im, New.Re
+    FST    [Self.FPosition.Re].Double  // FPosition.Re := New.Re
+    FSTP   [EDX].Single                // FOutputBuffer := New.Re
+    ADD    EDX, 4
+    LOOP   @LoopStart
+@LoopEnd:
 {$ENDIF}
+end;
 
 // describe your module
 class procedure TSESineModule.getModuleProperties(Properties : PSEModuleProperties);
@@ -281,31 +280,34 @@ end;
 {$IFNDEF PUREPASCAL}
 procedure SESineProcess(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
 asm
- mov ecx, SampleFrames
- jecxz @loopend
- mov eax, ModuleBase
- mov edx, BufferOffset
- add edx, [eax + $A0]
-@loopstart:
- fld [eax + $B8].Double  // FPosition.Re
- fmul [eax + $A8].Double // FPosition.Re * FAngle.Re
- fld [eax + $C0].Double  // FPosition.Im, FPosition.Re * FAngle.Re
- fmul [eax + $B0].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- fsubp                   // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    MOV     ECX, SampleFrames
+    JECXZ   @LoopEnd
+    MOV     EAX, ModuleBase
+    MOV     EDX, BufferOffset
+    ADD     EDX, [EAX + $A0]
+@LoopStart:
+    FLD     [EAX + $B8].Double // FPosition.Re
+    FMUL    [EAX + $A8].Double // FPosition.Re * FAngle.Re
+    FLD     [EAX + $C0].Double // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL    [EAX + $B0].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                      // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- fld [eax + $C0].Double  // FPosition.Im, New.Re
- fmul [eax + $A8].Double // FPosition.Im * FAngle.Re, New.Re
- fld [eax + $B8].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- fmul [eax + $B0].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- faddp                   // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- fstp [eax + $C0].Double // FPosition.Im := New.Im, New.Re
- fst [eax + $B8].Double  // FPosition.Re := New.Re
- fstp [edx].Single       // FOutputBuffer := New.Re
- add edx, 4
- loop @loopstart
-@loopend:
+    FLD     [EAX + $C0].Double // FPosition.Im, New.Re
+    FMUL    [EAX + $A8].Double // FPosition.Im * FAngle.Re, New.Re
+    FLD     [EAX + $B8].Double // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL    [EAX + $B0].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                      // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FSTP    [EAX + $C0].Double // FPosition.Im := New.Im, New.Re
+    FST     [EAX + $B8].Double // FPosition.Re := New.Re
+    FSTP    [EDX].Single       // FOutputBuffer := New.Re
+    ADD     EDX, 4
+    LOOP    @LoopStart
+@LoopEnd:
 end;
 {$ENDIF}
+
+
+{ TSESineCosineModule }
 
 constructor TSESineCosineModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
@@ -389,32 +391,32 @@ begin
 end;
 {$ELSE}
 asm
- jecxz @loopend
- push ebx
- mov ebx, edx
- add edx, Self.FSineBuffer
- add ebx, Self.FCosineBuffer
-@loopstart:
- fld [Self.FPosition.Re].Double  // FPosition.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
- fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    JECXZ   @LoopEnd
+    PUSH    EBX
+    MOV     EBX, EDX
+    ADD     EDX, Self.FSineBuffer
+    ADD     EBX, Self.FCosineBuffer
+@LoopStart:
+    FLD    [Self.FPosition.Re].Double // FPosition.Re
+    FMUL   [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
+    FLD    [Self.FPosition.Im].Double // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL   [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                             // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
- fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- fst [Self.FPosition.Im].Double  // FPosition.Im := New.Im, New.Re
- fstp [ebx].Single               // FCosineBuffer := New.Im, New.Re
- fst [Self.FPosition.Re].Double  // FPosition.Re := New.Re
- fstp [edx].Single               // FSineBuffer := New.Re
- add edx, 4
- add ebx, 4
- loop @loopstart
- pop ebx
-@loopend:
+    FLD    [Self.FPosition.Im].Double // FPosition.Im, New.Re
+    FMUL   [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
+    FLD    [Self.FPosition.Re].Double // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL   [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                             // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FST    [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
+    FSTP   [EBX].Single               // FCosineBuffer := New.Im, New.Re
+    FST    [Self.FPosition.Re].Double // FPosition.Re := New.Re
+    FSTP   [EDX].Single               // FSineBuffer := New.Re
+    ADD    EDX, 4
+    ADD    EBX, 4
+    LOOP   @LoopStart
+    POP    EBX
+@LoopEnd:
 end;
 {$ENDIF}
 
@@ -475,43 +477,46 @@ end;
 {$IFNDEF PUREPASCAL}
 procedure SESineCosineProcess(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
 asm
- mov ecx, SampleFrames
- jecxz @loopend
- mov eax, ModuleBase
- push ebx
- mov edx, BufferOffset
- mov ebx, BufferOffset
- add edx, [eax + $A0]
- add ebx, [eax + $A4]
-@loopstart:
- fld [eax + $C0].Double  // FPosition.Re
- fmul [eax + $B0].Double // FPosition.Re * FAngle.Re
- fld [eax + $C8].Double  // FPosition.Im, FPosition.Re * FAngle.Re
- fmul [eax + $B8].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- fsubp                   // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    MOV     ECX, SampleFrames
+    JECXZ   @LoopEnd
+    MOV     EAX, ModuleBase
+    PUSH    EBX
+    MOV     EDX, BufferOffset
+    MOV     EBX, BufferOffset
+    ADD     EDX, [EAX + $A0]
+    ADD     EBX, [EAX + $A4]
+    @LoopStart:
+    FLD     [EAX + $C0].Double // FPosition.Re
+    FMUL    [EAX + $B0].Double // FPosition.Re * FAngle.Re
+    FLD     [EAX + $C8].Double // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL    [EAX + $B8].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                      // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- fld [eax + $C8].Double  // FPosition.Im, New.Re
- fmul [eax + $B0].Double // FPosition.Im * FAngle.Re, New.Re
- fld [eax + $C0].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- fmul [eax + $B8].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- faddp                   // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- fst [eax + $C8].Double  // FPosition.Im := New.Im, New.Re
+    FLD     [EAX + $C8].Double // FPosition.Im, New.Re
+    FMUL    [EAX + $B0].Double // FPosition.Im * FAngle.Re, New.Re
+    FLD     [EAX + $C0].Double // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL    [EAX + $B8].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                      // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FST     [EAX + $C8].Double // FPosition.Im := New.Im, New.Re
 (*
- fmul st(0), st(0)
- fadd st(0), st(0)
- fld1
- fsubp
+    FMUL    ST(0), ST(0)
+    FADD    ST(0), ST(0)
+    FLD1
+    FSUBP
 *)
- fstp [ebx].Single       // FOutputBuffer := New.Im, New.Re
- fst [eax + $C0].Double  // FPosition.Re := New.Re
- fstp [edx].Single       // FOutputBuffer := New.Re
- add edx, 4
- add ebx, 4
- loop @loopstart
- pop ebx
-@loopend:
+    FSTP    [EBX].Single       // FOutputBuffer := New.Im, New.Re
+    FST     [EAX + $C0].Double // FPosition.Re := New.Re
+    FSTP    [EDX].Single       // FOutputBuffer := New.Re
+    ADD     EDX, 4
+    ADD     EBX, 4
+    LOOP    @LoopStart
+    POP     EBX
+@LoopEnd:
 end;
 {$ENDIF}
+
+
+{ TSESine2Module }
 
 constructor TSESine2Module.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
@@ -595,35 +600,35 @@ begin
 end;
 {$ELSE}
 asm
- jecxz @loopend
- push ebx
- mov ebx, edx
- add edx, Self.FSineBuffer
- add ebx, Self.FSine2Buffer
-@loopstart:
- fld [Self.FPosition.Re].Double  // FPosition.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
- fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    JECXZ   @LoopEnd
+    PUSH    EBX
+    MOV     EBX, EDX
+    ADD     EDX, Self.FSineBuffer
+    ADD     EBX, Self.FSine2Buffer
+@LoopStart:
+    FLD     [Self.FPosition.Re].Double // FPosition.Re
+    FMUL    [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
+    FLD     [Self.FPosition.Im].Double // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL    [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                              // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
- fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- fst [Self.FPosition.Im].Double  // FPosition.Im := New.Im, New.Re
- fxch
- fst [Self.FPosition.Re].Double  // FPosition.Re := New.Re, New.Im
- fst [edx].Single                // FOutputBuffer := New.Re, New.Im
- fmulp
- fadd st(0), st(0)
- fstp [ebx].Single               // FOutputBuffer := New.Im, New.Re
- add edx, 4
- add ebx, 4
- loop @loopstart
- pop ebx
-@loopend:
+    FLD     [Self.FPosition.Im].Double // FPosition.Im, New.Re
+    FMUL    [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
+    FLD     [Self.FPosition.Re].Double // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL    [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                              // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FST     [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
+    FXCH
+    FST     [Self.FPosition.Re].Double  // FPosition.Re := New.Re, New.Im
+    FST     [EDX].Single                // FOutputBuffer := New.Re, New.Im
+    FMULP
+    FADD    ST(0), ST(0)
+    FSTP    [EBX].Single               // FOutputBuffer := New.Im, New.Re
+    ADD     EDX, 4
+    ADD     EBX, 4
+    LOOP    @LoopStart
+    POP     EBX
+@LoopEnd:
 end;
 {$ENDIF}
 
@@ -684,38 +689,38 @@ end;
 {$IFNDEF PUREPASCAL}
 procedure SESine2Process(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
 asm
- mov ecx, SampleFrames
- jecxz @loopend
- mov eax, ModuleBase
- push ebx
- mov edx, BufferOffset
- mov ebx, BufferOffset
- add edx, [eax + $A0]
- add ebx, [eax + $A4]
-@loopstart:
- fld [eax + $C0].Double  // FPosition.Re
- fmul [eax + $B0].Double // FPosition.Re * FAngle.Re
- fld [eax + $C8].Double  // FPosition.Im, FPosition.Re * FAngle.Re
- fmul [eax + $B8].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- fsubp                   // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    MOV     ECX, SampleFrames
+    JECXZ   @LoopEnd
+    MOV     EAX, ModuleBase
+    PUSH    EBX
+    MOV     EDX, BufferOffset
+    MOV     EBX, BufferOffset
+    ADD     EDX, [EAX + $A0]
+    ADD     EBX, [EAX + $A4]
+@LoopStart:
+    FLD     [EAX + $C0].Double // FPosition.Re
+    FMUL    [EAX + $B0].Double // FPosition.Re * FAngle.Re
+    FLD     [EAX + $C8].Double // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL    [EAX + $B8].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                      // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- fld [eax + $C8].Double  // FPosition.Im, New.Re
- fmul [eax + $B0].Double // FPosition.Im * FAngle.Re, New.Re
- fld [eax + $C0].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- fmul [eax + $B8].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- faddp                   // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- fst [eax + $C8].Double  // FPosition.Im := New.Im, New.Re
- fxch
- fst [eax + $C0].Double  // FPosition.Re := New.Re, New.Im
- fst [edx].Single        // FOutputBuffer := New.Re, New.Im
- fmulp
- fadd st(0), st(0)
- fstp [ebx].Single       // FOutputBuffer := New.Im, New.Re
- add edx, 4
- add ebx, 4
- loop @loopstart
- pop ebx
-@loopend:
+    FLD     [EAX + $C8].Double // FPosition.Im, New.Re
+    FMUL    [EAX + $B0].Double // FPosition.Im * FAngle.Re, New.Re
+    FLD     [EAX + $C0].Double // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL    [EAX + $B8].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                      // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FST     [EAX + $C8].Double // FPosition.Im := New.Im, New.Re
+    FXCH
+    FST     [EAX + $C0].Double // FPosition.Re := New.Re, New.Im
+    FST     [EDX].Single       // FOutputBuffer := New.Re, New.Im
+    FMULP
+    FADD    ST(0), ST(0)
+    FSTP    [EBX].Single       // FOutputBuffer := New.Im, New.Re
+    ADD     EDX, 4
+    ADD     EBX, 4
+    LOOP    @LoopStart
+    POP     EBX
+@LoopEnd:
 end;
 {$ENDIF}
 

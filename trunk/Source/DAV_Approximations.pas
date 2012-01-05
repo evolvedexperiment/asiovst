@@ -554,24 +554,24 @@ end;
 {$IFNDEF Purepascal}
 function FastCosPart3TermFPU(Value: Single): Single;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos3Term + 4 * 2].Single  // CCos3Term[2], Value²
- fmul  st(0), st(1)                // Value² * CCos3Term[2], Value²
- fadd  [CCos3Term + 4 * 1].Single  // ...
- fmulp
- fadd  [CCos3Term].Single
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos3Term + 4 * 2].Single  // CCos3Term[2], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos3Term[2], Value²
+    FADD    [CCos3Term + 4 * 1].Single  // ...
+    FMULP
+    FADD    [CCos3Term].Single
 end;
 
 function FastCosPart3TermFPU(Value: Double): Double;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos3Term + 4 * 2].Single  // CCos3Term[2], Value²
- fmul  st(0), st(1)                // Value² * CCos3Term[2], Value²
- fadd  [CCos3Term + 4 * 1].Single  // ...
- fmulp
- fadd  [CCos3Term].Single
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos3Term + 4 * 2].Single  // CCos3Term[2], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos3Term[2], Value²
+    FADD    [CCos3Term + 4 * 1].Single  // ...
+    FMULP
+    FADD    [CCos3Term].Single
 end;
 {$ENDIF}
 
@@ -668,28 +668,28 @@ end;
 {$IFNDEF Purepascal}
 function FastCosPart4TermFPU(Value: Single): Single;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos4Term + 4 * 3].Single  // CCos4Term[3], Value²
- fmul  st(0), st(1)                // Value² * CCos4Term[3], Value²
- fadd  [CCos4Term + 4 * 2].Single  // ...
- fmul  st(0), st(1)
- fadd  [CCos4Term + 4 * 1].Single
- fmulp
- fadd  [CCos4Term].Single
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos4Term + 4 * 3].Single  // CCos4Term[3], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos4Term[3], Value²
+    FADD    [CCos4Term + 4 * 2].Single  // ...
+    FMUL    ST(0), ST(1)
+    FADD    [CCos4Term + 4 * 1].Single
+    FMULP
+    FADD    [CCos4Term].Single
 end;
 
 function FastCosPart4TermFPU(Value: Double): Double;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos4Term + 4 * 3].Single  // CCos4Term[3], Value²
- fmul  st(0), st(1)                // Value² * CCos4Term[3], Value²
- fadd  [CCos4Term + 4 * 2].Single  // ...
- fmul  st(0), st(1)
- fadd  [CCos4Term + 4 * 1].Single
- fmulp
- fadd  [CCos4Term].Single
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos4Term + 4 * 3].Single  // CCos4Term[3], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos4Term[3], Value²
+    FADD    [CCos4Term + 4 * 2].Single  // ...
+    FMUL    ST(0), ST(1)
+    FADD    [CCos4Term + 4 * 1].Single
+    FMULP
+    FADD    [CCos4Term].Single
 end;
 {$ENDIF}
 
@@ -796,32 +796,32 @@ end;
 {$IFNDEF Purepascal}
 function FastCosPart5TermFPU(Value: Single): Single;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos5Term + 4 * 4].Single  // CCos5Term[4], Value²
- fmul  st(0), st(1)                // Value² * CCos5Term[4], Value²
- fadd  [CCos5Term + 4 * 3].Single  // ...
- fmul  st(0), st(1)
- fadd  [CCos5Term + 4 * 2].Single
- fmul  st(0), st(1)
- fadd  [CCos5Term + 4 * 1].Single
- fmulp
- fadd  [CCos5Term].Single
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos5Term + 4 * 4].Single  // CCos5Term[4], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos5Term[4], Value²
+    FADD    [CCos5Term + 4 * 3].Single  // ...
+    FMUL    ST(0), ST(1)
+    FADD    [CCos5Term + 4 * 2].Single
+    FMUL    ST(0), ST(1)
+    FADD    [CCos5Term + 4 * 1].Single
+    FMULP
+    FADD    [CCos5Term].Single
 end;
 
 function FastCosPart5TermFPU(Value: Double): Double;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos5Term + 4 * 4].Single  // CCos5Term[4], Value²
- fmul  st(0), st(1)                // Value² * CCos5Term[4], Value²
- fadd  [CCos5Term + 4 * 3].Single  // ...
- fmul  st(0), st(1)
- fadd  [CCos5Term + 4 * 2].Single
- fmul  st(0), st(1)
- fadd  [CCos5Term + 4 * 1].Single
- fmulp
- fadd  [CCos5Term].Single
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos5Term + 4 * 4].Single  // CCos5Term[4], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos5Term[4], Value²
+    FADD    [CCos5Term + 4 * 3].Single  // ...
+    FMUL    ST(0), ST(1)
+    FADD    [CCos5Term + 4 * 2].Single
+    FMUL    ST(0), ST(1)
+    FADD    [CCos5Term + 4 * 1].Single
+    FMULP
+    FADD    [CCos5Term].Single
 end;
 {$ENDIF}
 
@@ -928,40 +928,40 @@ end;
 {$IFNDEF Purepascal}
 function FastCosPart6TermFPU(Value: Single): Single;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos6Term + 8 * 6].Double  // CCos6Term[5], Value²
- fmul  st(0), st(1)                // Value² * CCos6Term[5], Value²
- fadd  [CCos6Term + 8 * 5].Double  // ...
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 4].Double
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 3].Double
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 2].Double
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 1].Double
- fmulp
- fadd [CCos6Term + 8].Double
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos6Term + 8 * 6].Double  // CCos6Term[5], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos6Term[5], Value²
+    FADD    [CCos6Term + 8 * 5].Double  // ...
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 4].Double
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 3].Double
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 2].Double
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 1].Double
+    FMULP
+    FADD    [CCos6Term + 8].Double
 end;
 
 function FastCosPart6TermFPU(Value: Double): Double;
 asm
- fld   Value
- fmul  st(0), st(0)                // Value²
- fld   [CCos6Term + 8 * 6].Double  // CCos6Term[5], Value²
- fmul  st(0), st(1)                // Value² * CCos6Term[5], Value²
- fadd  [CCos6Term + 8 * 5].Double  // ...
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 4].Double
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 3].Double
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 2].Double
- fmul  st(0), st(1)
- fadd  [CCos6Term + 8 * 1].Double
- fmulp
- fadd [CCos6Term + 8].Double
+    FLD     Value
+    FMUL    ST(0), ST(0)                // Value²
+    FLD     [CCos6Term + 8 * 6].Double  // CCos6Term[5], Value²
+    FMUL    ST(0), ST(1)                // Value² * CCos6Term[5], Value²
+    FADD    [CCos6Term + 8 * 5].Double  // ...
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 4].Double
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 3].Double
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 2].Double
+    FMUL    ST(0), ST(1)
+    FADD    [CCos6Term + 8 * 1].Double
+    FMULP
+    FADD   [CCos6Term + 8].Double
 end;
 {$ENDIF}
 
@@ -1726,16 +1726,16 @@ begin
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
- fld   Value
- fmul  Value
- fld   C1
- fmul  st(0),  st(1)
- fld   C2
- faddp st(1), st(0)
- fmulp st(1), st(0)
- fld1
- faddp
- fmul  Value
+    FLD     Value
+    FMUL    Value
+    FLD     C1
+    FMUL    ST(0),  ST(1)
+    FLD     C2
+    FADDP   ST(1), ST(0)
+    FMULP   ST(1), ST(0)
+    FLD1
+    FADDP
+    FMUL    Value
 {$ENDIF}
 end;
 
@@ -1751,16 +1751,16 @@ begin
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
- fld   Value
- fmul  Value
- fld   C1
- fmul  st(0), st(1)
- fld   C2
- faddp st(1), st(0)
- fmulp st(1), st(0)
- fld1
- faddp
- fmul  Value
+    FLD     Value
+    FMUL    Value
+    FLD     C1
+    FMUL    ST(0), ST(1)
+    FLD     C2
+    FADDP   ST(1), ST(0)
+    FMULP   ST(1), ST(0)
+    FLD1
+    FADDP
+    FMUL    Value
 {$ENDIF}
 end;
 
@@ -1776,16 +1776,16 @@ begin
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
- fld   Value
- fmul  Value
- fld   C1
- fmul  st(0), st(1)
- fld   C2
- faddp st(1), st(0)
- fmulp st(1), st(0)
- fld1
- faddp
- fmul  Value
+    FLD     Value
+    FMUL    Value
+    FLD     C1
+    FMUL    ST(0), ST(1)
+    FLD     C2
+    FADDP   ST(1), ST(0)
+    FMULP   ST(1), ST(0)
+    FLD1
+    FADDP
+    FMUL    Value
 {$ENDIF}
 end;
 
@@ -1801,16 +1801,16 @@ begin
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
- fld   Value
- fmul  Value
- fld   C1
- fmul  st(0), st(1)
- fld   C2
- faddp st(1), st(0)
- fmulp st(1), st(0)
- fld1
- faddp
- fmul  Value
+    FLD     Value
+    FMUL    Value
+    FLD     C1
+    FMUL    ST(0), ST(1)
+    FLD     C2
+    FADDP   ST(1), ST(0)
+    FMULP   ST(1), ST(0)
+    FLD1
+    FADDP
+    FMUL    Value
 {$ENDIF}
 end;
 
@@ -2652,67 +2652,67 @@ const
 var
   IntExp : Integer;
 asm
-  fld     Exponent
-  fld     st             // copy to st(1)
-  fabs                   // Abs(exp)
-  fld     Max
-  fcompp                 // leave exp in st(0)
-  fstsw   ax
-  sahf
-  jb      @@RealPower    // exp > MaxInt
-  fld     st             // exp in st(0) and st(1)
-  frndint                // Round(exp)
-  fcomp                  // compare exp and Round(exp)
-  fstsw   ax
-  sahf
-  jne     @@RealPower
-  fistp   IntExp
-  mov     eax, IntExp    // eax = Trunc(Exponent)
-  mov     ecx, eax
-  cdq
-  fld1                   // Result = 1
-  xor     eax, edx
-  sub     eax, edx       // Abs(exp)
-  jz      @@Exit
-  fld     Base
-  jmp     @@Entry
-@@Loop:
-  fmul    st, st         // Base * Base
-@@Entry:
-  shr     eax, 1
-  jnc     @@Loop
-  fmul    st(1), st      // Result * X
-  jnz     @@Loop
-  fstp    st
-  cmp     ecx, 0
-  jge     @@Exit
-  fld1
-  fdivrp  st(1), st(0)   // 1 / Result
-  jmp     @@Exit
-@@RealPower:
-  fld     Base
-  ftst
-  fstsw   ax
-  sahf
-  jz      @@Done
-  fldln2
-  fxch
-  fyl2x
-  fxch
-  fmulp   st(1), st
-  fldl2e
-  fmulp   st(1), st
-  fld     st(0)
-  frndint
-  fsub    st(1), st
-  fxch    st(1)
-  f2xm1
-  fld1
-  faddp   st(1), st
-  fscale
-@@Done:
-  fstp    st(1)
-@@Exit:
+    FLD     Exponent
+    FLD     ST             // copy to ST(1)
+    FABS                   // Abs(exp)
+    FLD     Max
+    FCOMPP                 // leave exp in ST(0)
+    FSTSW   AX
+    SAHF
+    JB      @RealPower     // exp > MaxInt
+    FLD     ST             // exp in ST(0) and ST(1)
+    FRNDINT                // Round(exp)
+    FCOMP                  // compare exp and Round(exp)
+    FSTSW   AX
+    SAHF
+    JNE     @RealPower
+    FISTP   IntExp
+    MOV     EAX, IntExp    // EAX = Trunc(Exponent)
+    MOV     ECX, EAX
+    CDQ
+    FLD1                   // Result = 1
+    XOR     EAX, EDX
+    SUB     EAX, EDX       // Abs(exp)
+    JZ      @Exit
+    FLD     Base
+    JMP     @Entry
+@Loop:
+    FMUL    ST, ST         // Base * Base
+@Entry:
+    SHR     EAX, 1
+    JNC     @Loop
+    FMUL    ST(1), ST      // Result * X
+    JNZ     @Loop
+    FSTP    ST
+    CMP     ECX, 0
+    JGE     @Exit
+    FLD1
+    FDIVRP  ST(1), ST(0)   // 1 / Result
+    JMP     @Exit
+@RealPower:
+    FLD     Base
+    FTST
+    FSTSW   AX
+    SAHF
+    JZ      @Done
+    FLDLN2
+    FXCH
+    FYL2X
+    FXCH
+    FMULP   ST(1), ST
+    FLDL2E
+    FMULP   ST(1), ST
+    FLD     ST(0)
+    FRNDINT
+    FSUB    ST(1), ST
+    FXCH    ST(1)
+    F2XM1
+    FLD1
+    FADDP   ST(1), ST
+    FSCALE
+@Done:
+    FSTP    ST(1)
+@Exit:
 end;
 {$ENDIF}
 
@@ -2954,21 +2954,21 @@ const
   c1 : Double = -0.54699348440059470;
   c2 : Double =  1.26175667589988239;
 asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: b := c2 + a * (c1 + a * c0), a, Input
- fXch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Single // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: b := c2 + a * (c1 + a * c0), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt4TermFPU(Input: Single): Single; assembler;
@@ -2978,23 +2978,23 @@ const
   c2 : Double =  1.89047619399687661;
   c3 : Double =  0.89690305801668457;
 asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Single // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt5TermFPU(Input: Single): Single; assembler;
@@ -3005,25 +3005,25 @@ const
   c3 : Double =  0.54953758170495126;
   c4 : Double =  1.03971379878158321;
 asm
- fld Input.Single      // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Single // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FADD    c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt6TermFPU(Input: Single): Single; assembler;
@@ -3035,27 +3035,27 @@ const
   c4 : Double =  1.21020234045009012;
   c5 : Double =  0.98516470896867081;
 asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Single // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FADD    c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FADD    c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt7TermFPU(Input: Single): Single; assembler;
@@ -3068,29 +3068,29 @@ const
   c5 : Double =  0.91005085146116016;
   c6 : Double =  1.00518193411912860;
 asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fmul st(0), st(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fadd c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fxch st(2)        // exchange b and x, Stack: x, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Single // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FADD    c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FADD    c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
+    FADD    c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
+    FXCH    ST(2)        // exchange b and x, Stack: x, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt3TermFPU(Input: Double): Double; assembler;
@@ -3099,21 +3099,21 @@ const
   c1 : Double = -0.54699348440059470;
   c2 : Double =  1.26175667589988239;
 asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: b := c2 + a * (c1 + a * c0), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Double // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: b := c2 + a * (c1 + a * c0), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt4TermFPU(Input: Double): Double; assembler;
@@ -3123,23 +3123,23 @@ const
   c2 : Double =  1.89047619399687661;
   c3 : Double =  0.89690305801668457;
 asm
- fld Input.Double      // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Double // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt5TermFPU(Input: Double): Double; assembler;
@@ -3150,25 +3150,25 @@ const
   c1 : Double =  0.54953758170495126;
   c0 : Double =  1.03971379878158321;
 asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Double // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FADD    c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt6TermFPU(Input: Double): Double; assembler;
@@ -3180,27 +3180,27 @@ const
   c4 : Double =  1.21020234045009012;
   c5 : Double =  0.98516470896867081;
 asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Double // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FADD    c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FADD    c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 
 function FastTanhOpt7TermFPU(Input: Double): Double; assembler;
@@ -3213,29 +3213,29 @@ const
   c5 : Double =  0.91005085146116016;
   c6 : Double =  1.00518193411912860;
 asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: Abs(Input), Input
- fld c0            // Load c0 as working value, Abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fmul st(0), st(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fadd c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
+    FLD     Input.Double // Load Input
+    FLD     ST(0)        // Copy Input
+    FABS                 // Stack: Abs(Input), Input
+    FLD     c0           // Load c0 as working value, Abs(Input) => a
+    FMUL    ST(0), ST(1) // Stack: a * c0, a, Input
+    FADD    c1           // Stack: c1 + a * c0, a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c1 + a * c0), a, Input
+    FADD    c2           // Stack: c2 + a * (c1 + a * c0), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
+    FADD    c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FADD    c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FADD    c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
+    FMUL    ST(0), ST(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
+    FADD    c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
+    FXCH    ST(2)        // exchange b and Input, Stack: Input, a, b
+    FMUL    ST(0), ST(2) // Stack: b * Input, a, b
+    FXCH    ST(2)        // exchange b * Input and Input, Stack: b, a, b * Input
+    FMULP                // Stack: b * a, b * Input
+    FLD1                 // Stack: 1, b * a, b * Input
+    FADDP                // Stack: 1 + b * a, b * Input
+    FDIVP                // Stack: (b * Input) / (1 + b * a)
 end;
 {$ENDIF}
 
@@ -3270,16 +3270,16 @@ const
   c3: Single = 3;
   c6: Single = 6;
 asm
- fld Input.Single;
- fabs
- fld c3
- fadd st(0),st(1)
- fld st(0)
- fmul Input.Single
- fxch st(2)
- fmulp
- fadd c6.Single
- fdiv
+    FLD     Input.Single;
+    FABS
+    FLD     c3
+    FADD    ST(0), ST(1)
+    FLD     ST(0)
+    FMUL    Input.Single
+    FXCH    ST(2)
+    FMULP
+    FADD    c6.Single
+    FDIV
 {$ENDIF}
 end;
 
@@ -3290,11 +3290,11 @@ begin
 {$ELSE}
 const c3 : Single = 3;
 asm
- fld Input.Single;
- fld Input.Single;
- fabs
- fadd c3
- fdiv
+    FLD     Input.Single;
+    FLD     Input.Single;
+    FABS
+    FADD    c3
+    FDIV
 {$ENDIF}
 end;
 

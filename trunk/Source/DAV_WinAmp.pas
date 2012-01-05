@@ -77,7 +77,8 @@ type
                       Key          : Integer;
                      end;
 
-  TWinAmpConvert = procedure (const Data: Pointer; const ChannelCount, SampleFrames: Integer) of object;
+  TWinAmpConvert = procedure (const Data: Pointer; const ChannelCount,
+    SampleFrames: Cardinal) of object;
 
 
 implementation

@@ -96,7 +96,7 @@ implementation
 {$R *.dfm}
 
 uses
-  DAV_Complex, FileCtrl;
+  DAV_Common, DAV_Complex, FileCtrl;
 
 const
   CDegToRad         : Single = 2 * Pi / 360;
@@ -104,12 +104,6 @@ const
   SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
   SCRoundDown8087CW : Word = $173F; // exceptions disabled
   SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
-
-procedure DontRaiseExceptionsAndSetFPUcodeword;
-asm
- fnclex                  // Don't raise pending exceptions enabled by the new flags
- fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
-end;
 
 procedure TFmHrtfAverager.FormCreate(Sender: TObject);
 begin

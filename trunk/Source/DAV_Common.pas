@@ -544,23 +544,23 @@ begin
  Result := (Value * $01010101) shr 24;
 {$ELSE}
 asm
-  MOV     EAX, Value
-  MOV     EDX, EAX
-  SHR     EAX, 1
-  AND     EAX, $55555555
-  SUB     EDX, EAX
-  MOV     EAX, EDX
-  SHR     EDX, 2
-  AND     EAX, $33333333
-  AND     EDX, $33333333
-  ADD     EAX, EDX
-  MOV     EDX, EAX
-  SHR     EAX, 4
-  ADD     EAX, EDX
-  AND     EAX, $0F0F0F0F
-  IMUL    EAX, $01010101
-  SHR     EAX, 24
-  MOV     Result, EAX
+    MOV     EAX, Value
+    MOV     EDX, EAX
+    SHR     EAX, 1
+    AND     EAX, $55555555
+    SUB     EDX, EAX
+    MOV     EAX, EDX
+    SHR     EDX, 2
+    AND     EAX, $33333333
+    AND     EDX, $33333333
+    ADD     EAX, EDX
+    MOV     EDX, EAX
+    SHR     EAX, 4
+    ADD     EAX, EDX
+    AND     EAX, $0F0F0F0F
+    IMUL    EAX, $01010101
+    SHR     EAX, 24
+    MOV     Result, EAX
 {$ENDIF}
 end;
 
@@ -610,10 +610,10 @@ begin
  Result := 10 * Log10(Value);
 {$ELSE}
 asm
-  FLDLG2
-  FLD     Value
-  FYL2X
-  FMUL    CTen32
+    FLDLG2
+    FLD     Value
+    FYL2X
+    FMUL    CTen32
 {$ENDIF}
 end;
 
@@ -621,43 +621,40 @@ function SqrAmp2dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result := 10 * Log10(Value);
-end;
 {$ELSE}
 asm
- FLDLG2
- FLD     Value
- FYL2X
- FMUL    CTen64
-end;
+    FLDLG2
+    FLD     Value
+    FYL2X
+    FMUL    CTen64
 {$ENDIF}
+end;
 
 function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := CTwenty32 * Log10(Value);
-end;
 {$ELSE}
 asm
- FLDLG2
- FLD Value
- FYL2X
- FMUL CTwenty32
-end;
+    FLDLG2
+    FLD Value
+    FYL2X
+    FMUL CTwenty32
 {$ENDIF}
+end;
 
 function Amp_to_dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result := CTwenty64 * Log10(Value);
-end;
 {$ELSE}
 asm
- FLDLG2
- FLD Value
- FYL2X
- FMUL CTwenty64
-end;
+    FLDLG2
+    FLD Value
+    FYL2X
+    FMUL CTwenty64
 {$ENDIF}
+end;
 
 procedure Amp_to_dB(var v: TDAV4SingleArray);
 {$IFDEF PUREPASCAL}
@@ -666,31 +663,30 @@ begin
  v[1] := Amp_to_dB(v[1]);
  v[2] := Amp_to_dB(v[2]);
  v[3] := Amp_to_dB(v[3]);
-end;
 {$ELSE}
 asm
- FLDLG2
- FLD    [EAX].Single
- FYL2X
- FMUL   CTwenty32.Double
- FSTP   [EAX].Single
- FLDLG2
- FLD    [EAX + 4].Single
- FYL2X
- FMUL   CTwenty32.Double
- FSTP   [EAX + 4].Single
- FLDLG2
- FLD    [EAX + 8].Single
- FYL2X
- FMUL   CTwenty32.Double
- FSTP   [EAX + 8].Single
- FLDLG2
- FLD    [EAX + 12].Single
- FYL2X
- FMUL   CTwenty32.Double
- FSTP   [EAX + 12].Single
-end;
+    FLDLG2
+    FLD    [EAX].Single
+    FYL2X
+    FMUL   CTwenty32.Double
+    FSTP   [EAX].Single
+    FLDLG2
+    FLD    [EAX + 4].Single
+    FYL2X
+    FMUL   CTwenty32.Double
+    FSTP   [EAX + 4].Single
+    FLDLG2
+    FLD    [EAX + 8].Single
+    FYL2X
+    FMUL   CTwenty32.Double
+    FSTP   [EAX + 8].Single
+    FLDLG2
+    FLD    [EAX + 12].Single
+    FYL2X
+    FMUL   CTwenty32.Double
+    FSTP   [EAX + 12].Single
 {$ENDIF}
+end;
 
 
 //////////////////////////////////////////////
@@ -703,53 +699,51 @@ function FreqLinearToLog(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := CTwenty32 * Exp(value * 6.907755279);
-end;
 {$ELSE}
 const
   fltl2: Single = 6.907755279;
 asm
- FLD     Value.Single
- FMUL    fltl2
- FLDL2E
- FMUL
- FLD     ST(0)
- FRNDINT
- FSUB    ST(1), ST
- FXCH    ST(1)
- F2XM1
- FLD1
- FADD
- FSCALE
- FSTP    ST(1)
- FMUL    CTwenty64.Double
-end;
+    FLD     Value.Single
+    FMUL    fltl2
+    FLDL2E
+    FMUL
+    FLD     ST(0)
+    FRNDINT
+    FSUB    ST(1), ST
+    FXCH    ST(1)
+    F2XM1
+    FLD1
+    FADD
+    FSCALE
+    FSTP    ST(1)
+    FMUL    CTwenty64.Double
 {$ENDIF}
+end;
 
 function FreqLinearToLog(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result := CTwenty64 * Exp(value * 6.907755279);
-end;
 {$ELSE}
 const
   fltl2: Double = 6.907755279;
 asm
- FLD     Value.Double
- FMUL    fltl2
- FLDL2E
- FMUL
- FLD     ST(0)
- FRNDINT
- FSUB    ST(1), ST
- FXCH    ST(1)
- F2XM1
- FLD1
- FADD
- FSCALE
- FSTP    ST(1)
- FMUL CTwenty64.Double
-end;
+    FLD     Value.Double
+    FMUL    fltl2
+    FLDL2E
+    FMUL
+    FLD     ST(0)
+    FRNDINT
+    FSUB    ST(1), ST
+    FXCH    ST(1)
+    F2XM1
+    FLD1
+    FADD
+    FSCALE
+    FSTP    ST(1)
+    FMUL    CTwenty64.Double
 {$ENDIF}
+end;
 
 function FreqLogToLinear(const Value: Single): Single;
 const
@@ -758,16 +752,15 @@ const
 {$IFDEF PUREPASCAL}
 begin
  Result := ln(value * fltl1) * fltl2;
-end;
 {$ELSE}
 asm
- FLDLN2
- FLD     Value.Single
- FMUL    fltl1
- FYL2X
- FMUL    fltl2
-end;
+    FLDLN2
+    FLD     Value.Single
+    FMUL    fltl1
+    FYL2X
+    FMUL    fltl2
 {$ENDIF}
+end;
 
 function FreqLogToLinear(const Value: Double): Double;
 const
@@ -776,16 +769,15 @@ const
 {$IFDEF PUREPASCAL}
 begin
  Result := ln(value * fltl1) * fltl2;
-end;
 {$ELSE}
 asm
- FLDLN2
- FLD     Value.Double
- FMUL    fltl1
- FYL2X
- FMUL    fltl2
-end;
+    FLDLN2
+    FLD     Value.Double
+    FMUL    fltl1
+    FYL2X
+    FMUL    fltl2
 {$ENDIF}
+end;
 
 function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single;
 begin
@@ -964,31 +956,29 @@ function FastFractional(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := Value - Round(Value - 0.5);
-end;
 {$ELSE}
 asm
- FLD     Value.Single
- FLD     Value.Single
- FSUB    CHalf64
- FRNDINT
- FSUBP
-end;
+    FLD     Value.Single
+    FLD     Value.Single
+    FSUB    CHalf64
+    FRNDINT
+    FSUBP
 {$ENDIF}
+end;
 
 function FastFractional(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result := Value - Round(Value - 0.5);
-end;
 {$ELSE}
 asm
- FLD     Value.Double
- FLD     Value.Double
- FSUB    CHalf64
- FRNDINT
- FSUBP
-end;
+    FLD     Value.Double
+    FLD     Value.Double
+    FSUB    CHalf64
+    FRNDINT
+    FSUBP
 {$ENDIF}
+end;
 
 procedure FastAbs(var Value: Single);
 var
@@ -1013,23 +1003,22 @@ begin
  i[1] := i[1] and $7FFFFFFF;
  i[2] := i[2] and $7FFFFFFF;
  i[3] := i[3] and $7FFFFFFF;
-end;
 {$ELSE}
 asm
- FLD  [EAX].Single
- FABS
- FSTP [EAX].Single
- FLD  [EAX +  4].Single
- FABS
- FSTP [EAX +  4].Single
- FLD  [EAX +  8].Single
- FABS
- FSTP [EAX +  8].Single
- FLD  [EAX + 12].Single
- FABS
- FSTP [EAX + 12].Single
-end;
+    FLD  [EAX].Single
+    FABS
+    FSTP [EAX].Single
+    FLD  [EAX +  4].Single
+    FABS
+    FSTP [EAX +  4].Single
+    FLD  [EAX +  8].Single
+    FABS
+    FSTP [EAX +  8].Single
+    FLD  [EAX + 12].Single
+    FABS
+    FSTP [EAX + 12].Single
 {$ENDIF}
+end;
 
 procedure FastNegative(var Value: Single);
 var
@@ -1055,31 +1044,29 @@ function LaurentRoundInt(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Round(Value);
-end;
 {$ELSE}
 asm
- FLD     Value.Single
- FADD    ST(0), ST(0)
- FADD    CHalf32
- FISTP   Result.Integer
- SAR     Result.Integer, 1
-end;
+    FLD     Value.Single
+    FADD    ST(0), ST(0)
+    FADD    CHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
 {$ENDIF}
+end;
 
 function LaurentRoundInt(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Round(Value);
-end;
 {$ELSE}
 asm
- FLD     Value.Double
- FADD    ST(0), ST(0)
- FADD    CHalf32
- FISTP   Result.Integer
- SAR     Result.Integer, 1
-end;
+    FLD     Value.Double
+    FADD    ST(0), ST(0)
+    FADD    CHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
 {$ENDIF}
+end;
 
 procedure LaurentRoundInt(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
 {$IFDEF PUREPASCAL}
@@ -1092,50 +1079,47 @@ begin
    Inc(Output);
    Inc(Input);
   end;
-end;
 {$ELSE}
 asm
- @Start:
- FLD     [EAX].Single
- FADD    ST(0), ST(0)
- FADD    CHalf32
- FISTP   [EDX].Integer
- SAR     [EDX].Integer, 1
- ADD     EAX,4
- ADD     EDX,4
- LOOP    @Start
-end;
+@Start:
+    FLD     [EAX].Single
+    FADD    ST(0), ST(0)
+    FADD    CHalf32
+    FISTP   [EDX].Integer
+    SAR     [EDX].Integer, 1
+    ADD     EAX,4
+    ADD     EDX,4
+    LOOP    @Start
 {$ENDIF}
+end;
 
 function LaurentFastFloor(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Floor(Value);
-end;
 {$ELSE}
 asm
- FLD     Value.Single
- FADD    ST(0), ST(0)
- FSUB    CHalf32
- FISTP   Result.Integer
- SAR     Result.Integer, 1
-end;
+    FLD     Value.Single
+    FADD    ST(0), ST(0)
+    FSUB    CHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
 {$ENDIF}
+end;
 
 function LaurentFastFloor(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Floor(Value);
-end;
 {$ELSE}
 asm
- FLD     Value.Double
- FADD    ST(0), ST(0)
- FSUB    CHalf32
- FISTP   Result.Integer
- SAR     Result.Integer, 1
-end;
+    FLD     Value.Double
+    FADD    ST(0), ST(0)
+    FSUB    CHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
 {$ENDIF}
+end;
 
 procedure LaurentFastFloor(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
 {$IFDEF PUREPASCAL}
@@ -1148,20 +1132,19 @@ begin
    Inc(Output);
    Inc(Input);
   end;
-end;
 {$ELSE}
 asm
- @Start:
- FLD     [EAX].Single
- FADD    ST(0), ST(0)
- FSUB    CHalf32
- FISTP   [EDX].Integer
- SAR     [EDX].Integer, 1
- ADD     EAX, 4
- ADD     EDX, 4
- LOOP    @Start
-end;
+@Start:
+    FLD     [EAX].Single
+    FADD    ST(0), ST(0)
+    FSUB    CHalf32
+    FISTP   [EDX].Integer
+    SAR     [EDX].Integer, 1
+    ADD     EAX, 4
+    ADD     EDX, 4
+    LOOP    @Start
 {$ENDIF}
+end;
 
 // LaurentFastCeil
 
@@ -1169,33 +1152,31 @@ function LaurentFastCeil(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Ceil(Value);
-end;
 {$ELSE}
 asm
- FLD     Value.Single
- FADD    ST(0), ST(0)
- FSUBR   CMinusHalf32
- FISTP   Result.Integer
- SAR     Result.Integer, 1
- NEG     Result.Integer
-end;
+    FLD     Value.Single
+    FADD    ST(0), ST(0)
+    FSUBR   CMinusHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
+    NEG     Result.Integer
 {$ENDIF}
+end;
 
 function LaurentFastCeil(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Ceil(Value);
-end;
 {$ELSE}
 asm
- FLD      Value.Double
- FADD     ST(0), ST(0)
- FSUBR    CMinusHalf32
- FISTP    Result.Integer
- SAR      Result.Integer, 1
- NEG      Result.Integer
-end;
+    FLD      Value.Double
+    FADD     ST(0), ST(0)
+    FSUBR    CMinusHalf32
+    FISTP    Result.Integer
+    SAR      Result.Integer, 1
+    NEG      Result.Integer
 {$ENDIF}
+end;
 
 procedure LaurentFastCeil(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
 {$IFDEF PUREPASCAL}
@@ -1208,21 +1189,20 @@ begin
    Inc(Output);
    Inc(Input);
   end;
-end;
 {$ELSE}
 asm
- @Start:
- FLD     [EAX].Single
- FADD    ST(0), ST(0)
- FSUBR   CMinusHalf32
- FISTP   [EDX].Integer
- SAR     [EDX].Integer, 1
- NEG     [EDX].Integer
- ADD     EAX, 4
- ADD     EDX, 4
- LOOP    @Start
-end;
+@Start:
+    FLD     [EAX].Single
+    FADD    ST(0), ST(0)
+    FSUBR   CMinusHalf32
+    FISTP   [EDX].Integer
+    SAR     [EDX].Integer, 1
+    NEG     [EDX].Integer
+    ADD     EAX, 4
+    ADD     EDX, 4
+    LOOP    @Start
 {$ENDIF}
+end;
 
 // Laurent Fast Trunc
 
@@ -1230,72 +1210,68 @@ function LaurentFastTrunc(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Trunc(Value);
-end;
 {$ELSE}
 var
   IntCast : Integer absolute Value;
 asm
- FLD   Value.Single
- FADD  ST(0), ST(0)
- FABS
- FADD  CMinusHalf32
- FISTP Result.Integer
- SAR   Result.Integer, 1
- TEST  IntCast, $80000000
- JZ @Done
- NEG Result.Integer
- @Done:
-end;
+    FLD   Value.Single
+    FADD  ST(0), ST(0)
+    FABS
+    FADD  CMinusHalf32
+    FISTP Result.Integer
+    SAR   Result.Integer, 1
+    TEST  IntCast, $80000000
+    JZ @Done
+    NEG Result.Integer
+@Done:
 {$ENDIF}
+end;
 
 function LaurentFastTrunc(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Trunc(Value);
-end;
 {$ELSE}
 var
   ByteCast : array [0..7] of Byte absolute Value;
 asm
- FLD   Value.Double
- FADD  ST(0), ST(0)
- FABS
- FADD  CMinusHalf32
- FISTP Result.Integer
- SAR   Result.Integer, 1
- TEST  ByteCast[4].Integer, $80000000
- JZ    @Done
- NEG   Result.Integer
- @Done:
-end;
+    FLD   Value.Double
+    FADD  ST(0), ST(0)
+    FABS
+    FADD  CMinusHalf32
+    FISTP Result.Integer
+    SAR   Result.Integer, 1
+    TEST  ByteCast[4].Integer, $80000000
+    JZ    @Done
+    NEG   Result.Integer
+@Done:
 {$ENDIF}
+end;
 
 
 function FastRound(Sample: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Round(Sample);
-end;
 {$ELSE}
 asm
- FLD Sample.Single
- FRNDINT
- FISTP Result.Integer
-end;
+    FLD Sample.Single
+    FRNDINT
+    FISTP Result.Integer
 {$ENDIF}
+end;
 
 function FastRound(Sample: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  Result := Round(Sample);
-end;
 {$ELSE}
 asm
- FLD Sample.Double
- FRNDINT
- FISTP Result.Integer
-end;
+    FLD Sample.Double
+    FRNDINT
+    FISTP Result.Integer
 {$ENDIF}
+end;
 
 function FastSgn(const Value: Single): Integer;
 var
@@ -1323,20 +1299,90 @@ procedure DontRaiseExceptionsAndSetFPUcodeword;
 var
   FpuCodeword : Word;
 asm
- mov     FpuCodeword, $133F
- fnclex                     // Don't raise pending exceptions enabled by the new flags
- fldcw   FpuCodeword        // round FPU codeword, with exceptions disabled
-{$ELSE}
-const
-  SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
-  SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
-  SCRoundDown8087CW : Word = $173F; // exceptions disabled
-  SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
-asm
- fnclex                  // Don't raise pending exceptions enabled by the new flags
- fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
+    MOV     FpuCodeword, $133F
+    FNCLEX                     // Don't raise pending exceptions enabled by the new flags
+    FLDCW   FpuCodeword        // round FPU codeword, with exceptions disabled
+    {$ELSE}
+    const
+    SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
+    SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
+    SCRoundDown8087CW : Word = $173F; // exceptions disabled
+    SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
+    asm
+    FNCLEX                  // Don't raise pending exceptions enabled by the new flags
+    FLDCW   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
  {$ENDIF}
 end;
+
+{$IFNDEF CPUX64}
+function GetMXCSR: Cardinal;
+var
+  State : PInt64;
+begin
+  GetMem(State, 512); // needs to be aligned!
+  try
+    asm
+//      FXSAVE   State
+      MOV      EDX, State
+      MOV      EAX, [EDX + 24]
+      MOV      Result, EAX
+    end;
+  finally
+    FreeMem(State);
+  end;
+end;
+{$ENDIF}
+
+procedure SetMXCSR(Value: Cardinal);
+asm
+    LDMXCSR  Value.Cardinal
+end;
+
+(*
+procedure SetMxcsrOn(Bit: Byte);
+var
+  State : PInt64;
+  X     : Integer;
+begin
+  GetMem(State, 512); // needs to be aligned!
+  try
+    asm
+      FXSAVE   State
+      MOV      EDX, State
+      MOV      EAX, [EDX + 24]
+      MOV      EDX, 1
+      SHL      EDX, Bit
+      OR       EAX, EDX
+      MOV      X, EAX
+      LDMXCSR  X
+    end;
+  finally
+    FreeMem(State);
+  end;
+end;
+
+procedure SetMxcsrOff(Bit: Byte);
+var
+  State : PInt64;
+  X     : Integer;
+begin
+  GetMem(State, 512); // needs to be aligned!
+  try
+    asm
+      FXSAVE   State
+      MOV      EDX, State
+      MOV      EAX, [EDX + 24]
+      MOV      EDX, 1
+      SHL      EDX, Bit
+      OR       EAX, EDX
+      MOV      X, EAX
+      LDMXCSR  X
+    end;
+  finally
+    FreeMem(State);
+  end;
+end;
+*)
 
 
 { String Functions }
@@ -1469,11 +1515,11 @@ begin
 end;
 {$ELSE}
 asm
- FLD     DWORD PTR [EBP + $08]
- FLD     DWORD PTR [EBP + $0C]
- FCOMI   ST(0), ST(1)
- FCMOVNB ST(0), ST(1)
- FFREE   ST(1)
+    FLD     DWORD PTR [EBP + $08]
+    FLD     DWORD PTR [EBP + $0C]
+    FCOMI   ST(0), ST(1)
+    FCMOVNB ST(0), ST(1)
+    FFREE   ST(1)
 end;
 {$ENDIF}
 
@@ -1486,13 +1532,14 @@ begin
 end;
 {$ELSE}
 asm
- FLD     DWORD PTR [EBP + $0C]
- FLD     DWORD PTR [EBP + $08]
- FCOMI   ST(0), ST(1)
- FCMOVNB ST(0), ST(1)
- FFREE   ST(1)
+    FLD     DWORD PTR [EBP + $0C]
+    FLD     DWORD PTR [EBP + $08]
+    FCOMI   ST(0), ST(1)
+    FCMOVNB ST(0), ST(1)
+    FFREE   ST(1)
 end;
 {$ENDIF}
+
 
 { Object oriented code conversions }
 

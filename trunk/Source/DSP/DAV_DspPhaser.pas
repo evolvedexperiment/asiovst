@@ -164,59 +164,59 @@ begin
 end;
 {$ELSE}
 asm
- fld   self.FCoefficient.Single
- mov   ecx, self.FStages.Integer
- add   eax, FY.Single
- fld   Input.Single
- fmul  st(0), st(1)
- fadd  [eax].Single
- fld   st(0)
- fmul  st(0),st(2)
- fld   st(0)
- fsub  Input.Single
- fstp  [eax].Single
- add   eax, 4
- fsub  [eax].Single
- fld   st(0)
- fmul  st(0),st(3)
- fsub  st(2),st(0)
- fxch  st(2)
- fstp  [eax].Single
- add   eax, 4
- fld   [eax].Single
- fsubp st(2),st(0)
- fld   st(1)
- fmul  st(0),st(3)
- fsub  st(1),st(0)
- fxch
+    FLD      Self.FCoefficient.Single
+    MOV      ECX, Self.FStages.Integer
+    ADD      EAX, FY.Single
+    FLD      Input.Single
+    FMUL     ST(0), ST(1)
+    FADD     [EAX].Single
+    FLD      ST(0)
+    FMUL     ST(0),ST(2)
+    FLD      ST(0)
+    FSUB     Input.Single
+    FSTP     [EAX].Single
+    ADD      EAX, 4
+    FSUB     [EAX].Single
+    FLD      ST(0)
+    FMUL     ST(0),ST(3)
+    FSUB     ST(2),ST(0)
+    FXCH     ST(2)
+    FSTP     [EAX].Single
+    ADD      EAX, 4
+    FLD      [EAX].Single
+    FSUBP    ST(2),ST(0)
+    FLD      ST(1)
+    FMUL     ST(0),ST(3)
+    FSUB     ST(1),ST(0)
+    FXCH
 
- @loop:
-  fstp  [eax].Single
-  add   eax, 4
-  fsub  [eax].Single
-  fld   st(0)
-  fmul  st(0), st(3)
-  fsub  st(2), st(0)
-  fxch  st(2)
-  fstp  [eax].Single
-  add   eax, 4
-  fld   [eax].Single
-  fsubp st(2), st(0)
-  fld   st(1)
-  fmul  st(0), st(3)
-  fsub  st(1), st(0)
- loop  @loop
+@StartLoop:
+    FSTP     [EAX].Single
+    ADD      EAX, 4
+    FSUB     [EAX].Single
+    FLD      ST(0)
+    FMUL     ST(0), ST(3)
+    FSUB     ST(2), ST(0)
+    FXCH     ST(2)
+    FSTP     [EAX].Single
+    ADD      EAX, 4
+    FLD      [EAX].Single
+    FSUBP    ST(2), ST(0)
+    FLD      ST(1)
+    FMUL     ST(0), ST(3)
+    FSUB     ST(1), ST(0)
+    LOOP     @StartLoop
 
- fxch
- fstp  [eax].Single
- add   eax, 4
- fadd  [eax].Single
- fxch
- fld   st(1)
- fmulp st(3), st(0)
- fsubp st(2), st(0)
- fxch
- fstp  [eax].Single
+    FXCH
+    FSTP     [EAX].Single
+    ADD      EAX, 4
+    FADD     [EAX].Single
+    FXCH
+    FLD      ST(1)
+    FMULP    ST(3), ST(0)
+    FSUBP    ST(2), ST(0)
+    FXCH
+    FSTP     [EAX].Single
 end;
 {$ENDIF}
 
@@ -248,6 +248,7 @@ begin
     end;
   end;
 end;
+
 
 { TCustomPhaser }
 

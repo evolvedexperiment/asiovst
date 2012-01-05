@@ -15,10 +15,10 @@ type
   private
     procedure ProcessingModeChanged;
   protected
-    FBlockModeSize        : Integer;
-    FBlockModeOverlap     : Integer;
+    FBlockModeSize        : Cardinal;
+    FBlockModeOverlap     : Cardinal;
     FProcessingMode       : TProcessingMode;
-    FBlockPosition        : Integer;
+    FBlockPosition        : Cardinal;
     FDspQueueList         : TDAVProcessingComponentList;
     FBlockInBuffer32      : TDAVArrayOfSingleFixedArray;
     FBlockOutBuffer32     : TDAVArrayOfSingleFixedArray;
@@ -36,16 +36,16 @@ type
     procedure Process32ReplacingChanged; virtual;
     procedure Process64ReplacingChanged; virtual;
 
-    procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); overload;
-    procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); overload;
+    procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); overload;
+    procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); overload;
 
     procedure ProcessMidiEvent(const MidiEvent: TVstMidiEvent); override;
 
@@ -58,8 +58,8 @@ type
     procedure SetOnProcess64Replacing(Value : TProcessAudio64Event);
     procedure SetProcessingMode(Value : TProcessingMode);
     procedure PrepareBlockProcessing; virtual;
-    procedure SetBlockForcedSize(v: Integer); virtual;
-    procedure SetBlockOverlapSize(v: Integer); virtual;
+    procedure SetBlockForcedSize(Value: Cardinal); virtual;
+    procedure SetBlockOverlapSize(Value: Cardinal); virtual;
     procedure SetDspDirectProcessItem(v: TDAVProcessingComponent); virtual;
   public
     constructor Create(AOwner: TComponent); override;
@@ -68,8 +68,8 @@ type
     procedure RegisterDSPItem(item: TDAVProcessingComponent);
     procedure UnRegisterDSPItem(item: TDAVProcessingComponent);
 
-    property BlockModeSize: Integer read FBlockModeSize write SetBlockForcedSize default 1024;
-    property BlockModeOverlap: Integer read FBlockModeOverlap write SetBlockOverlapSize default 0;
+    property BlockModeSize: Cardinal read FBlockModeSize write SetBlockForcedSize default 1024;
+    property BlockModeOverlap: Cardinal read FBlockModeOverlap write SetBlockOverlapSize default 0;
     property ProcessingMode: TProcessingMode read FProcessingmode write SetProcessingMode default pmNormal;
 
     property OnProcess: TProcessAudio32Event read FOnProcess write SetOnProcess;
@@ -165,27 +165,27 @@ end;
 procedure TDspVSTModule.InitialDelayChanged;
 begin
  if (FProcessingmode = pmBlockSave) and
-    (FInitialDelay < FBlockModeSize - FBlockModeOverlap)
+    (FInitialDelay < Integer(FBlockModeSize - FBlockModeOverlap))
   then FEffect.initialDelay := FBlockModeSize - FBlockModeOverlap
   else FEffect.initialDelay := FInitialDelay;
 
  if HostProduct <> 'energyXT' then IOChanged;
 end;
 
-procedure TDspVSTModule.SetBlockForcedSize(v: Integer);
+procedure TDspVSTModule.SetBlockForcedSize(Value: Cardinal);
 begin
- if v > 0 then FBlockModeSize := v;
+ if Value > 0 then FBlockModeSize := Value;
 
  FBlockPosition := FBlockModeOverlap;
  PrepareBlockProcessing;
 end;
 
-procedure TDspVSTModule.SetBlockOverlapSize(v: Integer);
+procedure TDspVSTModule.SetBlockOverlapSize(Value: Cardinal);
 begin
- if v < FBlockModeSize then FBlockModeOverlap := v;
+ if Value < FBlockModeSize then FBlockModeOverlap := Value;
 
  if (FProcessingmode = pmBlockSave) and
-    (FEffect.InitialDelay < FBlockModeSize - FBlockModeOverlap)
+    (FEffect.InitialDelay < Integer(FBlockModeSize - FBlockModeOverlap))
   then InitialDelayChanged;
 end;
 
@@ -213,7 +213,7 @@ begin
 end;
 
 
-procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
 begin
@@ -222,7 +222,7 @@ begin
   do Move(Inputs[Channel, 0], PSingle(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single));
 end;
 
-procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
 begin
@@ -231,7 +231,7 @@ begin
   do Move(Inputs[Channel, 0], PDouble(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Double));
 end;
 
-procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
 begin
@@ -240,7 +240,7 @@ begin
   do FillChar(PSingle(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
 
-procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
 begin
@@ -249,9 +249,10 @@ begin
   do FillChar(PDouble(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  CurrentPosition : Integer;
+  CurrentPosition : Cardinal;
   Channel         : Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('TDspVSTModule.DoBlockSaveProcess'); {$ENDIF}
@@ -280,9 +281,9 @@ begin
   until CurrentPosition >= SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  CurrentPosition : Integer;
+  CurrentPosition : Cardinal;
   Channel         : Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('TDspVSTModule.DoBlockSaveProcess'); {$ENDIF}
@@ -312,9 +313,9 @@ begin
  until CurrentPosition >= SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
-  CurrentPosition : Integer;
+  CurrentPosition : Cardinal;
   Channel         : Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('TDspVSTModule.DoBlockSaveProcess32Replacing'); {$ENDIF}
@@ -342,12 +343,12 @@ begin
     CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
     FBlockPosition := FBlockModeOverlap;
    end;
- until CurrentPosition>=SampleFrames;
+ until CurrentPosition >= SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess32Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
-  CurrentPosition : Integer;
+  CurrentPosition : Cardinal;
   Channel         : Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('TDspVSTModule.DoBlockSaveProcess32Replacing'); {$ENDIF}
@@ -376,7 +377,7 @@ begin
  until CurrentPosition >= SampleFrames;
 end;
 
-procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   ProcessBuffer : TDAVArrayOfSingleFixedArray;
   Channel       : Integer;
@@ -405,7 +406,7 @@ begin
  end;
 end;
 
-procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   ProcessBuffer : TDAVArrayOfDoubleFixedArray;
   Channel       : Integer;
@@ -462,7 +463,7 @@ begin
 
    FBlockPosition := FBlockModeOverlap;
    if (FProcessingmode = pmBlockSave) and
-      (FEffect.InitialDelay < FBlockModeSize - FBlockModeOverlap)
+      (FEffect.InitialDelay < Integer(FBlockModeSize - FBlockModeOverlap))
     then InitialDelayChanged;
   end
  else

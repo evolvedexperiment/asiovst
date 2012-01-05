@@ -263,30 +263,30 @@ begin
 end;
 {$ELSE}
 asm
-    fld  [Pntr +  8].Single;      // x1
-    fsub [Pntr     ].Single       // x1-xm1
-    fld  [Pntr +  4].Single       // x0           x1-xm1
-    fsub [Pntr +  8].Single       // v            x1-xm1
-    fld  [Pntr +  4].Single       // x0           v            x1-xm1
-    fxch st(2)                    // x1-m1        v            x0
-    fmul CHalf32                  // c            v            x0
-    fxch st(2)                    // -x0          v            c
-    fmul CHalf32                  // 0.5*x0       v            c
-    fxch st(2)                    // c            v            0.5*x0
-    fst st(3)                     // c            v            0.5*x0       c
-    fadd st(0), st(1)             // w            v            0.5*x0       c
-    fxch st(2)                    // 0.5*x0       v            w            c
+    FLD     [Pntr +  8].Single  // x1
+    FSUB    [Pntr     ].Single  // x1-xm1
+    FLD     [Pntr +  4].Single  // x0           x1-xm1
+    FSUB    [Pntr +  8].Single  // v            x1-xm1
+    FLD     [Pntr +  4].Single  // x0           v            x1-xm1
+    FXCH    ST(2)               // x1-m1        v            x0
+    FMUL    CHalf32             // c            v            x0
+    FXCH    ST(2)               // -x0          v            c
+    FMUL    CHalf32             // 0.5*x0       v            c
+    FXCH    ST(2)               // c            v            0.5*x0
+    FST     ST(3)               // c            v            0.5*x0       c
+    FADD    ST(0), ST(1)        // w            v            0.5*x0       c
+    FXCH    ST(2)               // 0.5*x0       v            w            c
 
     // verify!
-    fsubp st(1), st(0)            // v-.5*x0      w            c
-    fadd st(0), st(1)             // a            w            c
-    fadd st(1), st(0)             // a            b_neg        c
-    fmul Fractional.Single        // a * frac     b_neg        c
-    fsubrp st(1), st(0)           // a * f-b      c
-    fmul Fractional.Single        // (a*f-b)*f    c
-    faddp st(1), st(0)            // res-x0/f
-    fmul Fractional.Single        // res-x0
-    fadd [Pntr + 4].Single        // res
+    FSUBP   ST(1), ST(0)        // v-.5*x0      w            c
+    FADD    ST(0), ST(1)        // a            w            c
+    FADD    ST(1), ST(0)        // a            b_neg        c
+    FMUL    Fractional.Single   // a * frac     b_neg        c
+    FSUBRP  ST(1), ST(0)        // a * FST-b      c
+    FMUL    Fractional.Single   // (a*FST-b)*FST    c
+    FADDP   ST(1), ST(0)        // res-x0/FST
+    FMUL    Fractional.Single   // res-x0
+    FADD    [Pntr + 4].Single   // res
 end;
 {$ENDIF}
 

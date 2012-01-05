@@ -45,7 +45,7 @@ type
   TConvolutionDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
   private
     FFilterKernel   : PDAVSingleFixedArray;
     FFilterFreq     : PDAVComplexSingleFixedArray;
@@ -79,7 +79,10 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Math, DAV_DspWindowing, ConvolutionGUI;
+  Math, DAV_Math, DAV_DspWindowing, DAV_BlockProcessing, ConvolutionGUI;
+
+
+{ TConvolutionDataModule }
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -181,64 +184,20 @@ begin
     // calculate frequency
     FFft.PerformFFT(FFilterFreq, FFilterKernel);
    finally
-    dec(FSemaphore);
+    Dec(FSemaphore);
    end;
   end;
-end;
-
-procedure ComplexMultiply(InplaceBuffer: PDAVComplexSingleFixedArray; Filter: PDAVComplexSingleFixedArray; SampleFrames: Integer); overload;
-asm
- // DC
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add eax, 4
- add edx, 4
-
- // Nyquist (packed)
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
- add eax, 4
- add edx, 4
-
- dec ecx
-@Start:
-  fld [eax    ].Single  // A.Re
-  fld [eax + 4].Single  // A.Im, A.Re
-  fld [edx    ].Single  // B.Re, A.Im, A.Re
-  fld [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
-  fsubp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fstp [eax    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
-  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
-  fmulp                 // A.Im * B.Re, B.Im, A.Re
-  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
-  fmulp                 // B.Im * A.Re, A.Im * B.Re
-  faddp                 // A.Im * B.Re + A.Re * B.Im
-  fstp [eax + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
-  add eax, 8
-  add edx, 8
- loop @Start
-
- // Nyquist
- fld   [eax].Single
- fmul  [edx].Single
- fstp  [eax].Single
 end;
 
 procedure TConvolutionDataModule.PerformConvolution(Signal: PDAVSingleFixedArray);
 begin
  FFft.PerformFFT(FSignalFreq, Signal);
- ComplexMultiply(@FSignalFreq^[0], @FFilterFreq^[0], FFFTSizeHalf);
+ ComplexMultiplyBlock32(@FSignalFreq^[0], @FFilterFreq^[0], FFFTSizeHalf);
  FFft.PerformIFFT(FSignalFreq, Signal);
 end;
 
 procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel     : Integer;
   SamplesPos  : Integer;
@@ -265,7 +224,7 @@ begin
      PerformConvolution(@FBuffer[0]);
      Move(FBuffer[(FFFTSize - SampleCount)], Outputs[Channel, SamplesPos], SampleCount * SizeOf(Single));
     end;
-   inc(SamplesPos, SampleCount);
+   Inc(SamplesPos, SampleCount);
   until SamplesPos >= SampleCount;
 
 (*
@@ -285,7 +244,7 @@ begin
 *)
 
  finally
-  dec(FSemaphore);
+  Dec(FSemaphore);
  end;
 end;
 

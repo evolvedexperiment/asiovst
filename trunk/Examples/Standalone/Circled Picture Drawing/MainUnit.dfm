@@ -2,8 +2,8 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
   Left = 300
   Top = 56
   Caption = 'Primitive Picture Evolution'
-  ClientHeight = 234
-  ClientWidth = 424
+  ClientHeight = 264
+  ClientWidth = 431
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,24 +18,10 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object PaintBoxRef: TPaintBox
-    Left = 8
-    Top = 8
-    Width = 201
-    Height = 201
-    OnPaint = PaintBoxRefPaint
-  end
-  object PaintBoxDraw: TPaintBox
-    Left = 215
-    Top = 8
-    Width = 201
-    Height = 201
-    OnPaint = PaintBoxDrawPaint
-  end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 215
-    Width = 424
+    Top = 245
+    Width = 431
     Height = 19
     Panels = <
       item
@@ -60,8 +46,79 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
       end
       item
         Text = 'Circles per Second:'
+        Width = 150
+      end
+      item
+        Text = 'Misc. Status'
         Width = 100
       end>
+  end
+  object PcMain: TPageControl
+    Left = 0
+    Top = 0
+    Width = 431
+    Height = 245
+    ActivePage = TsDrawing
+    Align = alClient
+    TabOrder = 1
+    object TsDrawing: TTabSheet
+      Caption = 'Drawing'
+      object PaintBoxDraw: TPaintBox
+        Left = 215
+        Top = 8
+        Width = 201
+        Height = 201
+        OnPaint = PaintBoxDrawPaint
+      end
+      object PaintBoxRef: TPaintBox
+        Left = 8
+        Top = 8
+        Width = 201
+        Height = 201
+        OnPaint = PaintBoxRefPaint
+      end
+    end
+    object TsOptimizationHistory: TTabSheet
+      Caption = 'Optimization History'
+      ImageIndex = 1
+      object CtOptimizationHistory: TChart
+        Left = 0
+        Top = 0
+        Width = 423
+        Height = 217
+        Legend.Visible = False
+        Title.Text.Strings = (
+          'TChart')
+        Title.Visible = False
+        Shadow.Visible = False
+        View3D = False
+        View3DWalls = False
+        Align = alClient
+        BevelOuter = bvNone
+        TabOrder = 0
+        ColorPaletteIndex = 13
+        object SeriesHistory: TFastLineSeries
+          Marks.Arrow.Visible = True
+          Marks.Callout.Brush.Color = clBlack
+          Marks.Callout.Arrow.Visible = True
+          Marks.Visible = False
+          LinePen.Color = 10708548
+          LinePen.Width = 2
+          XValues.Name = 'X'
+          XValues.Order = loAscending
+          YValues.Name = 'Y'
+          YValues.Order = loNone
+          Data = {
+            001900000000000000008690400000000000A48F400000000000E08F40000000
+            0000B08D400000000000348C4000000000006088400000000000208C40000000
+            0000788E4000000000003690400000000000408F400000000000B88F40000000
+            0000788E400000000000648E4000000000000891400000000000309140000000
+            0000909040000000000058914000000000000C924000000000005C9240000000
+            0000B69240000000000028944000000000001296400000000000969440000000
+            00003096400000000000349740}
+        end
+      end
+    end
   end
   object MainMenu: TMainMenu
     Left = 24
@@ -139,6 +196,10 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
         Caption = 'Load Population...'
         OnClick = MiLoadPopulationClick
       end
+      object MiBackupPopulation: TMenuItem
+        Caption = 'Backup Population'
+        OnClick = MiBackupPopulationClick
+      end
       object N2: TMenuItem
         Caption = '-'
       end
@@ -157,6 +218,10 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
         Caption = 'Log'
         ShortCut = 123
         OnClick = MiLogClick
+      end
+      object MiStoreLog: TMenuItem
+        Caption = 'Store Log'
+        OnClick = MiStoreLogClick
       end
       object N6: TMenuItem
         Caption = '-'
@@ -190,6 +255,17 @@ object FmPrimitivePictureEvolution: TFmPrimitivePictureEvolution
         Caption = 'Crosshair'
         Checked = True
         OnClick = MiCrosshairClick
+      end
+    end
+    object MiDrawing: TMenuItem
+      Caption = 'Drawing'
+      object MiScale2x: TMenuItem
+        Caption = 'Scale by Factor 2'
+        OnClick = MiScale2xClick
+      end
+      object MiScaleHalf: TMenuItem
+        Caption = 'Scale by Factor 0.5'
+        OnClick = MiScaleHalfClick
       end
     end
   end

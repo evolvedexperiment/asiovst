@@ -132,6 +132,8 @@ type
 
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
   end;
 
   TFirstOrderLowcutFilter = class(TCustomFirstOrderFilter, IDspProcessor32,
@@ -144,6 +146,8 @@ type
 
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
   end;
 
   TFirstOrderLowpassFilter = TFirstOrderHighcutFilter;
@@ -280,7 +284,7 @@ procedure TFirstOrderAllpassFilter.Complex(const Frequency: Double; out Real,
 var
   cw, Divider : Double;
 begin
- cw := cos(2 * Frequency * Pi * FSRR);
+ cw := Cos(2 * Frequency * Pi * FSRR);
  Divider := 1 / (Sqr(FCoefficient) + 1 + 2 * cw * (FCoefficient));
  Real := (2 * FCoefficient + cw * (1 + Sqr(FCoefficient))) * Divider;
  Imaginary := (1 - Sqr(FCoefficient)) * Sqrt(1 - Sqr(cw)) * Divider;
@@ -338,16 +342,29 @@ begin
  FState := Input - FCoefficient * Result;
 {$ELSE}
 asm
-  FLD     Input                // Input
-  {$IFDEF HandleDenormals}
-  FADD    CDenorm32
-  {$ENDIF}
-  FMUL    [Self].FCoefficient
-  FADD    [Self].FState        // Result
-  FLD     [Self].FCoefficient  // FCoefficient, Result
-  FMUL    ST(0), ST(1)         // Result * FCoefficient, Result
-  FSUBR   Input                // Input - Result * FCoefficient, Result
-  FSTP    [Self].FState
+{$IFDEF CPUx86_64}
+    CVTSS2SD XMM0, XMM0                      // XMM0 = Input.Double
+    MOVSD    XMM1, XMM0                      // XMM1 = Input
+    MOVSD    XMM2, [EAX.FCoefficient].Double // XMM1 = FCoefficient
+    MULSD    XMM0, XMM2                      // XMM0 = Input * FCoefficient
+    MOVSD    XMM3, [EAX.FState].Double       // XMM3 = FState
+    ADDSD    XMM0, XMM3                      // XMM0 = FState + Input * FCoefficient
+    MULSD    XMM2, XMM0                      // XMM2 = FCoefficient * Result
+    SUBSD    XMM1, XMM2                      // XMM1 = Input - FCoefficient * Result
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+    CVTSD2SS XMM0, XMM0                      // convert Result
+{$ELSE}
+    FLD     Input.Single         // Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm32
+    {$ENDIF}
+    FMUL    [Self].FCoefficient
+    FADD    [Self].FState        // Result
+    FLD     [Self].FCoefficient  // FCoefficient, Result
+    FMUL    ST(0), ST(1)         // Result * FCoefficient, Result
+    FSUBR   Input                // Input - Result * FCoefficient, Result
+    FSTP    [Self].FState
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -427,22 +444,39 @@ begin
  FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
- FLD Input.Single
- {$IFDEF HandleDenormals}
- FADD CDenorm32
+{$IFDEF CPUx86_64}
+    CVTSS2SD XMM0, XMM0                      // XMM0 = Input.Double
+    MOVSD    XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD    XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD    XMM2, XMM0                      // XMM2 = FilterGain * Input
+    MOVSD    XMM3, [EAX.FState].Double       // XMM3 = FState
+    ADDSD    XMM0, XMM3                      // XMM0 = Input + FState
+    MOVSD    XMM1, [EAX.FCoefficient].Double // XMM1 = FCoefficient
+    MULSD    XMM1, XMM2                      // XMM1 = FCoefficient * XMM2
+    MOVSD    XMM2, [EAX.FAddCoeff].Double    // XMM2 = FAddCoeff
+    MULSD    XMM2, XMM0                      // XMM2 = Result * FAddCoeff
+    SUBSD    XMM1, XMM2                      // XMM1 = XMM1 - XMM2
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+    CVTSD2SS XMM0, XMM0                      // convert Result
+{$ELSE}
+    FLD      Input.Single
+    {$IFDEF HandleDenormals}
+    FADD     CDenorm32
+    {$ENDIF}
+    FMUL     [EAX.FFilterGain].Double
+    JZ       @End
+
+    FLD      ST(0)
+    FADD     [EAX.FState].Double
+    FLD      ST(0)
+    FMUL     [EAX.FAddCoeff].Double
+    FXCH     ST(2)
+    FMUL     [EAX.FCoefficient].Double
+    FSUBRP   ST(2), ST(0)
+    FXCH
+    FSTP     [EAX.FState].Double
+@End:
  {$ENDIF}
- FMUL  [EAX.FFilterGain].Double
- JZ @End
-  FLD   ST(0)
-  FADD  [EAX.FState].Double
-  FLD   ST(0)
-  FMUL  [EAX.FAddCoeff].Double
-  FXCH  ST(2)
-  FMUL  [EAX.FCoefficient].Double
-  FSUBRP ST(2), ST(0)
-  FXCH
-  FSTP  [EAX.FState].Double
- @End:
  {$ENDIF}
 end;
 
@@ -454,23 +488,38 @@ begin
  FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
-  FLD     Input.Double
-  {$IFDEF HandleDenormals}
-  FADD    CDenorm64
-  {$ENDIF}
-  FMUL    [EAX.FFilterGain].Double
-  JZ      @End
-  FLD     ST(0)
-  FADD    [EAX.FState].Double
-  FLD     ST(0)
-  FMUL    [EAX.FAddCoeff].Double
-  FXCH    ST(2)
-  FMUL    [EAX.FCoefficient].Double
-  FSUBRP  ST(2), ST(0)
-  FXCH
-  FSTP    [EAX.FState].Double
+{$IFDEF CPUx86_64}
+    MOVSD    XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD    XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD    XMM2, XMM0                      // XMM2 = FilterGain * Input
+    MOVSD    XMM3, [EAX.FState].Double       // XMM3 = FState
+    ADDSD    XMM0, XMM3                      // XMM0 = Input + FState
+    MOVSD    XMM1, [EAX.FCoefficient].Double // XMM1 = FCoefficient
+    MULSD    XMM1, XMM2                      // XMM1 = FCoefficient * XMM2
+    MOVSD    XMM2, [EAX.FAddCoeff].Double    // XMM2 = FAddCoeff
+    MULSD    XMM2, XMM0                      // XMM2 = Result * FAddCoeff
+    SUBSD    XMM1, XMM2                      // XMM1 = XMM1 - XMM2
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+{$ELSE}
+    FLD     Input.Double
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64
+    {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    JZ      @End
+    FLD     ST(0)
+    FADD    [EAX.FState].Double
+    FLD     ST(0)
+    FMUL    [EAX.FAddCoeff].Double
+    FXCH    ST(2)
+    FMUL    [EAX.FCoefficient].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState].Double
+
 @End:
- {$ENDIF}
+{$ENDIF}
+{$ENDIF}
 end;
 
 
@@ -480,7 +529,7 @@ procedure TFirstOrderHighShelfFilter.CalculateCoefficients;
 var
   K : Double;
 begin
- K  := FExpW0.Im / (1 + FExpW0.Re);
+ K := FExpW0.Im / (1 + FExpW0.Re);
  FFilterGain := ((K / FGainFactor + 1) / (K * FGainFactor + 1)) * FGainFactorSquared;
  FCoefficient := (K - FGainFactor) / (K + FGainFactor);
  FAddCoeff := (K * FGainFactor - 1) / (K * FGainFactor + 1);
@@ -494,23 +543,41 @@ begin
  FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
- FLD Input.Single
- {$IFDEF HandleDenormals}
- FADD CDenorm32
- {$ENDIF}
- FMUL  [EAX.FFilterGain].Double
- JZ @End
-  FLD   ST(0)
-  FADD  [EAX.FState].Double
-  FLD   ST(0)
-  FMUL  [EAX.FAddCoeff].Double
-  FXCH  ST(2)
-  FMUL  [EAX.FCoefficient].Double
-  FSUBRP ST(2), ST(0)
-  FXCH
-  FSTP  [EAX.FState].Double
- @End:
- {$ENDIF}
+{$IFDEF CPUx86_64}
+    CVTSS2SD XMM0, XMM0                      // XMM0 = Input.Double
+    MOVSD    XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD    XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD    XMM2, XMM0                      // XMM2 = FilterGain * Input
+    MOVSD    XMM3, [EAX.FState].Double       // XMM3 = FState
+    ADDSD    XMM0, XMM3                      // XMM0 = Input + FState
+    MOVSD    XMM1, [EAX.FCoefficient].Double // XMM1 = FCoefficient
+    MULSD    XMM1, XMM2                      // XMM1 = FCoefficient * XMM2
+    MOVSD    XMM2, [EAX.FAddCoeff].Double    // XMM2 = FAddCoeff
+    MULSD    XMM2, XMM0                      // XMM2 = Result * FAddCoeff
+    SUBSD    XMM1, XMM2                      // XMM1 = XMM1 - XMM2
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+    CVTSD2SS XMM0, XMM0                      // convert Result
+{$ELSE}
+    FLD      Input.Single
+    {$IFDEF HandleDenormals}
+    FADD     CDenorm32
+    {$ENDIF}
+    FMUL     [EAX.FFilterGain].Double
+    JZ       @End
+
+    FLD      ST(0)
+    FADD     [EAX.FState].Double
+    FLD      ST(0)
+    FMUL     [EAX.FAddCoeff].Double
+    FXCH     ST(2)
+    FMUL     [EAX.FCoefficient].Double
+    FSUBRP   ST(2), ST(0)
+    FXCH
+    FSTP     [EAX.FState].Double
+
+@End:
+{$ENDIF}
+{$ENDIF}
 end;
 
 function TFirstOrderHighShelfFilter.ProcessSample64(Input: Double): Double;
@@ -521,22 +588,38 @@ begin
  FState := Input * FCoefficient - Result * FAddCoeff;
 {$ELSE}
 asm
- FLD Input.Double
- {$IFDEF HandleDenormals}
- FADD CDenorm64
+{$IFDEF CPUx86_64}
+    MOVSD   XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD   XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD   XMM2, XMM0                      // XMM2 = FilterGain * Input
+    MOVSD   XMM3, [EAX.FState].Double       // XMM3 = FState
+    ADDSD   XMM0, XMM3                      // XMM0 = Input + FState
+    MOVSD   XMM1, [EAX.FCoefficient].Double // XMM1 = FCoefficient
+    MULSD   XMM1, XMM2                      // XMM1 = FCoefficient * XMM2
+    MOVSD   XMM2, [EAX.FAddCoeff].Double    // XMM2 = FAddCoeff
+    MULSD   XMM2, XMM0                      // XMM2 = Result * FAddCoeff
+    SUBSD   XMM1, XMM2                      // XMM1 = XMM1 - XMM2
+    MOVSD   [EAX.FState].Double, XMM1       // store FState
+{$ELSE}
+    FLD     Input.Double
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64
+    {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    JZ      @End
+
+    FLD     ST(0)
+    FADD    [EAX.FState].Double
+    FLD     ST(0)
+    FMUL    [EAX.FAddCoeff].Double
+    FXCH    ST(2)
+    FMUL    [EAX.FCoefficient].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState].Double
+
+@End:
  {$ENDIF}
- FMUL  [EAX.FFilterGain].Double
- JZ @End
-  FLD   ST(0)
-  FADD  [EAX.FState].Double
-  FLD   ST(0)
-  FMUL  [EAX.FAddCoeff].Double
-  FXCH  ST(2)
-  FMUL  [EAX.FCoefficient].Double
-  FSUBRP ST(2), ST(0)
-  FXCH
-  FSTP  [EAX.FState].Double
- @End:
  {$ENDIF}
 end;
 
@@ -568,23 +651,37 @@ function TFirstOrderHighcutFilter.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Input  := FFilterGain * Input {$IFDEF HandleDenormals} + CDenorm32 {$ENDIF};
- Result := Input + FState;
- FState := Input + FCoefficient * Result;
+ Result := FState + Input;
+ FState := FCoefficient * Result + Input;
 {$ELSE}
 asm
- FLD     Input.Single
- {$IFDEF HandleDenormals}
- FADD    CDenorm32
- {$ENDIF}
- FMUL    [EAX.FFilterGain].Double
- FLD     ST(0)
- FADD    [EAX.FState].Double
- FLD     ST(0)
- FMUL    [EAX.FCoefficient].Double
- FADDP   ST(2), ST(0)
- FXCH
- FSTP    [EAX.FState].Double
- {$ENDIF}
+{$IFDEF CPUx86_64}
+    CVTSS2SD XMM0, XMM0                      // XMM0 = Input.Double
+    MOVSD    XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD    XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD    XMM1, XMM0                      // XMM1 = FilterGain * Input
+    MOVSD    XMM2, [EAX.FState].Double       // XMM2 = FState
+    ADDSD    XMM0, XMM2                      // XMM0 = Input + FState
+    MOVSD    XMM2, [EAX.FCoefficient].Double // XMM2 = FCoefficient
+    MULSD    XMM2, XMM0                      // XMM2 = FCoefficient * Result
+    ADDSD    XMM1, XMM2                      // XMM1 = Input + FCoefficient * Result
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+    CVTSD2SS XMM0, XMM0                      // convert Result
+{$ELSE}
+    FLD     Input.Single
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm32
+    {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    FLD     ST(0)
+    FADD    [EAX.FState].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoefficient].Double
+    FADDP   ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState].Double
+{$ENDIF}
+{$ENDIF}
 end;
 
 function TFirstOrderHighcutFilter.ProcessSample64(Input: Double): Double;
@@ -595,18 +692,122 @@ begin
  FState := Input + FCoefficient * Result;
 {$ELSE}
 asm
- FLD     Input.Double
- {$IFDEF HandleDenormals}
- FADD    CDenorm64
+{$IFDEF CPUx86_64}
+    MOVSD    XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD    XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD    XMM1, XMM0                      // XMM1 = FilterGain * Input
+    MOVSD    XMM2, [EAX.FState].Double       // XMM2 = FState
+    ADDSD    XMM0, XMM2                      // XMM0 = Input + FState
+    MOVSD    XMM2, [EAX.FCoefficient].Double // XMM2 = FCoefficient
+    MULSD    XMM2, XMM0                      // XMM2 = FCoefficient * Result
+    ADDSD    XMM1, XMM2                      // XMM1 = Input + FCoefficient * Result
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+{$ELSE}
+    FLD     Input.Double
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64
+    {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    FLD     ST(0)
+    FADD    [EAX.FState].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoefficient].Double
+    FADDP   ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState].Double
+{$ENDIF}
+{$ENDIF}
+end;
+
+procedure TFirstOrderHighcutFilter.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+{$IFDEF PUREPASCAL}
+var
+  Input       : Single;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Input := FFilterGain * Data[SampleIndex] {$IFDEF HandleDenormals} + CDenorm32 {$ENDIF};
+   Data[SampleIndex] := Input + FState;
+   FState := FCoefficient * Data[SampleIndex] + Input;
+  end;
+{$ELSE}
+asm
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
+  FLD     [EAX.FCoefficient].Double    // FCoefficient
+  FLD     [EAX.FFilterGain].Double     // FFilterGain
+  FLD     [EAX.FState].Double          // FState
+
+@Start:
+  FLD     [EDX + ECX * 4].Single       // Input, FState, FFilterGain, FCoefficient
+  {$IFDEF HandleDenormals}
+  FADD    CDenorm32
+  {$ENDIF}
+  FMUL    ST(0), ST(2)                 // Input := FFilterGain * Input, FState, FFilterGain, FCoefficient
+  FLD     ST(0)                        // Input, Input, FState, FFilterGain, FCoefficient
+  FADDP   ST(2), ST(0)                 // Input, Input + FState, FFilterGain, FCoefficient
+  FXCH                                 // Input + FState, Input, FFilterGain, FCoefficient
+  FLD     ST(0)                        // Input + FState, Input + FState, Input, FFilterGain, FCoefficient
+  FMUL    ST(0), ST(4)                 // FCoefficient * (Input + FState), Input + FState, Input, FFilterGain, FCoefficient
+  FADDP   ST(2), ST(0)                 // Input + FState, NewState := Input + FCoefficient * (Input + FState), FFilterGain, FCoefficient
+  FSTP    [EDX + ECX * 4].Single
+
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    [EAX.FState].Double
+  FSTP    ST(0)
+  FSTP    ST(0)
+@Done:
  {$ENDIF}
- FMUL    [EAX.FFilterGain].Double
- FLD     ST(0)
- FADD    [EAX.FState].Double
- FLD     ST(0)
- FMUL    [EAX.FCoefficient].Double
- FADDP   ST(2), ST(0)
- FXCH
- FSTP    [EAX.FState].Double
+end;
+
+procedure TFirstOrderHighcutFilter.ProcessBlock64(
+  const Data: PDAVDoubleFixedArray; SampleCount: Integer);
+{$IFDEF PUREPASCAL}
+var
+  Temp        : Double;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Temp := FFilterGain * Data[SampleIndex] {$IFDEF HandleDenormals} + CDenorm64 {$ENDIF};
+   Data[SampleIndex] := Temp + FState;
+   FState := FCoefficient * Data[SampleIndex] + Temp;
+  end;
+{$ELSE}
+asm
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+  FLD     [EAX.FCoefficient].Double    // FCoefficient
+  FLD     [EAX.FFilterGain].Double     // FFilterGain
+  FLD     [EAX.FState].Double          // FState
+
+@Start:
+  FLD     [EDX + ECX * 8].Double       // Input, FState, FFilterGain, FCoefficient
+  {$IFDEF HandleDenormals}
+  FADD    CDenorm32
+  {$ENDIF}
+  FMUL    ST(0), ST(2)                 // Input := FFilterGain * Input, FState, FFilterGain, FCoefficient
+  FLD     ST(0)                        // Input, Input, FState, FFilterGain, FCoefficient
+  FADDP   ST(2), ST(0)                 // Input, Input + FState, FFilterGain, FCoefficient
+  FXCH                                 // Input + FState, Input, FFilterGain, FCoefficient
+  FLD     ST(0)                        // Input + FState, Input + FState, Input, FFilterGain, FCoefficient
+  FMUL    ST(0), ST(4)                 // FCoefficient * (Input + FState), Input + FState, Input, FFilterGain, FCoefficient
+  FADDP   ST(2), ST(0)                 // Input + FState, NewState := Input + FCoefficient * (Input + FState), FFilterGain, FCoefficient
+  FSTP    [EDX + ECX * 8].Double
+
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    [EAX.FState].Double
+  FSTP    ST(0)
+  FSTP    ST(0)
+@Done:
  {$ENDIF}
 end;
 
@@ -678,36 +879,78 @@ begin
 end;
 
 
+procedure TFirstOrderLowcutFilter.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Temp        : Single;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Temp := FFilterGain * Data[SampleIndex];
+   Data[SampleIndex] := Temp + FState;
+   FState := FCoefficient * Data[SampleIndex] - Temp;
+  end;
+end;
+
+procedure TFirstOrderLowcutFilter.ProcessBlock64(
+  const Data: PDAVDoubleFixedArray; SampleCount: Integer);
+var
+  Temp        : Double;
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Temp := FFilterGain * Data[SampleIndex];
+   Data[SampleIndex] := Temp + FState;
+   FState := FCoefficient * Data[SampleIndex] - Temp;
+  end;
+end;
+
 function TFirstOrderLowcutFilter.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Input := FFilterGain * Input;
- Result :=  Input + FState;
- FState := -Input + FCoefficient * Result;
+ Input  := FFilterGain * Input;
+ Result := FState + Input;
+ FState := FCoefficient * Result - Input;
 {$ELSE}
 asm
- FLD     Input.Single
+{$IFDEF CPUx86_64}
+    CVTSS2SD XMM0, XMM0                      // XMM0 = Input.Double
+    MOVSD    XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD    XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD    XMM1, XMM0                      // XMM1 = FilterGain * Input
+    MOVSD    XMM2, [EAX.FState].Double       // XMM2 = FState
+    ADDSD    XMM0, XMM2                      // XMM0 = Input + FState
+    MOVSD    XMM2, [EAX.FCoefficient].Double // XMM2 = FCoefficient
+    MULSD    XMM2, XMM0                      // XMM2 = FCoefficient * Result
+    ADDSD    XMM1, XMM2                      // XMM1 = Input + FCoefficient * Result
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+    CVTSD2SS XMM0, XMM0                      // convert Result
+{$ELSE}
+    FLD     Input.Single
 
- // eventually add denormal
- {$IFDEF HandleDenormals}
- MOV     EDX, DenormRandom
- IMUL    EDX, DenormRandom, $08088405
- INC     EDX
- SHR     EDX, 23
- OR      EDX, $20000000
- MOV     DenormRandom, EDX
- FADD    DenormRandom
- {$ENDIF}
+    // eventually add denormal
+    {$IFDEF HandleDenormals}
+    MOV     EDX, DenormRandom
+    IMUL    EDX, DenormRandom, $08088405
+    INC     EDX
+    SHR     EDX, 23
+    OR      EDX, $20000000
+    MOV     DenormRandom, EDX
+    FADD    DenormRandom
+    {$ENDIF}
 
- FMUL    [EAX.FFilterGain].Double
- FLD     ST(0)
- FADD    [EAX.FState].Double
- FLD     ST(0)
- FMUL    [EAX.FCoefficient].Double
- FSUBRP  ST(2), ST(0)
- FXCH
- FSTP    [EAX.FState].Double
- {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    FLD     ST(0)
+    FADD    [EAX.FState].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoefficient].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState].Double
+{$ENDIF}
+{$ENDIF}
 end;
 
 function TFirstOrderLowcutFilter.ProcessSample64(Input: Double): Double;
@@ -718,28 +961,40 @@ begin
  FState := -Input + FCoefficient * Result;
 {$ELSE}
 asm
- FLD     Input.Double
+{$IFDEF CPUx86_64}
+    MOVSD    XMM1, [EAX.FFilterGain].Double  // XMM1 = FilterGain
+    MULSD    XMM0, XMM1                      // XMM0 = FilterGain * Input
+    MOVSD    XMM1, XMM0                      // XMM1 = FilterGain * Input
+    MOVSD    XMM2, [EAX.FState].Double       // XMM2 = FState
+    ADDSD    XMM0, XMM2                      // XMM0 = Input + FState
+    MOVSD    XMM2, [EAX.FCoefficient].Double // XMM2 = FCoefficient
+    MULSD    XMM2, XMM0                      // XMM2 = FCoefficient * Result
+    ADDSD    XMM1, XMM2                      // XMM1 = Input + FCoefficient * Result
+    MOVSD    [EAX.FState].Double, XMM1       // store FState
+{$ELSE}
+    FLD     Input.Double
 
- // eventually add denormal
- {$IFDEF HandleDenormals}
- MOV     EDX, DenormRandom
- IMUL    EDX, DenormRandom, $08088405
- INC     EDX
- SHR     EDX, 23
- OR      EDX, $20000000
- MOV     DenormRandom, EDX
- FADD    DenormRandom
- {$ENDIF}
+    // eventually add denormal
+    {$IFDEF HandleDenormals}
+    MOV     EDX, DenormRandom
+    IMUL    EDX, DenormRandom, $08088405
+    INC     EDX
+    SHR     EDX, 23
+    OR      EDX, $20000000
+    MOV     DenormRandom, EDX
+    FADD    DenormRandom
+    {$ENDIF}
 
- FMUL    [EAX.FFilterGain].Double
- FLD     ST(0)
- FADD    [EAX.FState].Double
- FLD     ST(0)
- FMUL    [EAX.FCoefficient].Double
- FSUBRP  ST(2), ST(0)
- FXCH
- FSTP    [EAX.FState].Double
- {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    FLD     ST(0)
+    FADD    [EAX.FState].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoefficient].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState].Double
+{$ENDIF}
+{$ENDIF}
 end;
 
 initialization

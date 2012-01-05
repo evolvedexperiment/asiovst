@@ -90,19 +90,10 @@ implementation
 uses
   DAV_Common, DAV_GuiCommon, DAV_DspDynamics;
 
-const
-  SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
-
 resourcestring
   RCStrASIO4ALLV2NotFound = 'ASIO4ALL v2 not found!';
 
 {$R *.dfm}
-
-procedure DontRaiseExceptionsAndSetFPUcodeword;
-asm
- fnclex                  // Don't raise pending exceptions enabled by the new flags
- fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
-end;
 
 procedure TFmBarberpoleTuner.FormCreate(Sender: TObject);
 var
