@@ -254,8 +254,26 @@ end;
 
 procedure TLinearPhaseLinkwitzRileyDataModule.ParameterOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  BandIndex : Integer;
 begin
  FOversampled := Value > 0.5;
+
+ for BandIndex := 0 to Length(FLowpassFilter) - 1 do
+ if Assigned(FLowpassFilter[BandIndex]) then
+  begin
+   FCriticalSection.Enter;
+   try
+    if FOversampled
+     then FLowpassFilter[BandIndex].Frequency := 0.5 * Parameter[BandIndex * 2]
+     else FLowpassFilter[BandIndex].Frequency := Parameter[BandIndex * 2];
+    if Assigned(FHighpassFilter[BandIndex])
+     then FHighpassFilter[BandIndex].Frequency := FLowpassFilter[BandIndex].Frequency;
+   finally
+    FCriticalSection.Leave;
+   end;
+  end;
+
  FilterKernelChanged;
 end;
 
@@ -294,8 +312,13 @@ begin
  Assert(BandIndex in [0..2]);
  if Assigned(FLowpassFilter[BandIndex]) then
   begin
-   FLowpassFilter[BandIndex].Order := Round(0.5 * Parameter[Index]);
-   FHighpassFilter[BandIndex].Order := Round(0.5 * Parameter[Index]);
+   FCriticalSection.Enter;
+   try
+    FLowpassFilter[BandIndex].Order := Round(0.5 * Parameter[Index]);
+    FHighpassFilter[BandIndex].Order := Round(0.5 * Parameter[Index]);
+   finally
+    FCriticalSection.Leave;
+   end;
    FilterKernelChanged;
   end;
 
@@ -314,10 +337,16 @@ begin
  Assert(BandIndex in [0..2]);
  if Assigned(FLowpassFilter[BandIndex]) then
   begin
-   if FOversampled
-    then FLowpassFilter[BandIndex].Frequency := 0.5 * Value
-    else FLowpassFilter[BandIndex].Frequency := Value;
-   FHighpassFilter[BandIndex].Frequency := FLowpassFilter[BandIndex].Frequency;
+   FCriticalSection.Enter;
+   try
+    if FOversampled
+     then FLowpassFilter[BandIndex].Frequency := 0.5 * Value
+     else FLowpassFilter[BandIndex].Frequency := Value;
+    if Assigned(FHighpassFilter[BandIndex])
+     then FHighpassFilter[BandIndex].Frequency := FLowpassFilter[BandIndex].Frequency;
+   finally
+    FCriticalSection.Leave;
+   end;
    FilterKernelChanged;
   end;
 
@@ -345,7 +374,7 @@ begin
     begin
      Data[0] := FFilterKernel[BandIndex]^[2 * SampleIndex];
      Data[1] := FFilterKernel[BandIndex]^[2 * SampleIndex + 1];
-     FFilterKernel[BandIndex]^[SampleIndex] := 2 * FDownsampler.ProcessSample64(Data);
+     FFilterKernel[BandIndex]^[SampleIndex] := 4 * FDownsampler.ProcessSample64(Data);
     end;
 
  FCriticalSection.Enter;

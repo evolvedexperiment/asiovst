@@ -144,23 +144,23 @@ begin
   end;
 {$ELSE}
 asm
- MOV     ECX, EDX
- XOR     EDX, EDX
- LEA     EAX, EAX + ECX
- NEG     ECX
- JNL     @Done
+    MOV     ECX, EDX
+    XOR     EDX, EDX
+    LEA     EAX, EAX + ECX
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
+    PUSH    EBX
 @Start:
- MOVZX   EBX, [EAX + ECX]
- ADD     EDX, EBX
- ADD     ECX, 1
- JS      @Start
+    MOVZX   EBX, [EAX + ECX]
+    ADD     EDX, EBX
+    ADD     ECX, 1
+    JS      @Start
 
- POP     EBX
+    POP     EBX
 
 @Done:
- MOV     Result, EDX
+    MOV     Result, EDX
 {$ENDIF}
 end;
 

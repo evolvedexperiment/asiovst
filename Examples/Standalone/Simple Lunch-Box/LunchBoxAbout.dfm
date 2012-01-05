@@ -16,7 +16,7 @@ object FmAbout: TFmAbout
   OnClick = FormClick
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object LbTitle: TLabel
     Left = 24
     Top = 17
     Width = 258
@@ -30,7 +30,7 @@ object FmAbout: TFmAbout
     ParentFont = False
     OnClick = FormClick
   end
-  object Lb: TLabel
+  object LbCopyright: TLabel
     Left = 88
     Top = 55
     Width = 141
@@ -38,12 +38,12 @@ object FmAbout: TFmAbout
     Caption = 'originally created by BramBos'
     OnClick = FormClick
   end
-  object Label2: TLabel
+  object LbInfo: TLabel
     Left = 86
     Top = 69
-    Width = 147
+    Width = 155
     Height = 13
-    Caption = 'complete rewritten as example'
+    Caption = 'completely rewritten as example'
     OnClick = FormClick
   end
 end

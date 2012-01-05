@@ -214,7 +214,7 @@ function TCustomTransformatorSimulation.ProcessSample32(Input: Single): Single;
 var
   Data : TDAV2DoubleArray;
 begin
- Result := CHalf32 * (Input + FLowpass.ProcessSample32(Input));
+ Result := CHalf32 * (2 * Input + FLowpass.ProcessSample32(Input));
  Result := FHighpass.ProcessSample32(Result);
  FUpsampler.ProcessSample(FInputGain * Result, Data);
  Data[0] := Waveshaper(Data[0]);
@@ -226,7 +226,7 @@ function TCustomTransformatorSimulation.ProcessSample64(Input: Double): Double;
 var
   Data : TDAV2DoubleArray;
 begin
- Result := CHalf64 * (Input + FLowpass.ProcessSample32(Input));
+ Result := CHalf64 * (2 * Input + FLowpass.ProcessSample32(Input));
  Result := FHighpass.ProcessSample32(Result);
  FUpsampler.ProcessSample(FInputGain * Result, Data);
  Data[0] := Waveshaper(Data[0]);

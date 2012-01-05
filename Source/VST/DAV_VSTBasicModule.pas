@@ -54,15 +54,15 @@ type
 
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
   private
-    procedure ConvertDummy(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertFloatToInterleaved(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertFloatToInterleaved16bit(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertFloatToInterleaved24bit(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertFloatToInterleaved8bit(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertInterleaved16bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertInterleaved24bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertInterleaved8bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
-    procedure ConvertInterleavedToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertDummy(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertFloatToInterleaved(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertFloatToInterleaved16bit(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertFloatToInterleaved24bit(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertFloatToInterleaved8bit(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertInterleaved16bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertInterleaved24bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertInterleaved8bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
+    procedure ConvertInterleavedToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Cardinal);
   protected
     FEffect             : TVSTEffect;
     FAudioMaster        : TAudioMasterCallbackFunc;
@@ -245,9 +245,9 @@ type
     function HostCallGetNumMidiInputChannels   (const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr; virtual;
     function HostCallGetNumMidiOutputChannels  (const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr; virtual;
 
-    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); virtual; abstract;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal); virtual; abstract;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal); virtual; abstract;
 
     function  HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr; virtual;
     function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
@@ -324,7 +324,7 @@ function GetParameterFuncDummy(const Effect: PVSTEffect;
 procedure SetParameterFuncDummy(const Effect: PVSTEffect;
   const Index: Integer; const Value: Single); cdecl;
 procedure ProcessFuncDummy(const Effect: PVSTEffect;
-  const Inputs, Outputs: Pointer; const SampleFrames: Integer); cdecl;
+  const Inputs, Outputs: Pointer; const SampleFrames: Cardinal); cdecl;
 
 // WinAmp
 function Init(const WinAmpDSPModule: PWinAmpDSPModule): Integer; cdecl;
@@ -919,120 +919,129 @@ begin
 end;
 
 procedure TBasicVSTModule.ConvertDummy(const Data: Pointer; const ChannelCount,
-  SampleFrames: Integer);
+  SampleFrames: Cardinal);
 begin
  // do nothing (dummy)
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved8bit(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  I8 : PShortIntArray absolute Data;
-  Channel, Sample : Integer;
+  I8           : PShortIntArray absolute Data;
+  ChannelIndex : Cardinal;
+  SampleIndex  : Cardinal;
 const
   MulFakDith8 : Single = $7E;
 begin
- for Channel := 0 to min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do I8^[Sample * ChannelCount + Channel] := round(FWinAmpOutputBuffer[Channel]^[Sample] * MulFakDith8 + random - random);
+ for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do I8^[SampleIndex * ChannelCount + ChannelIndex] := Round(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex] * MulFakDith8 + random - random);
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved16bit(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  I16             : PSmallIntArray absolute Data;
-  Channel, Sample : Integer;
+  I16          : PSmallIntArray absolute Data;
+  ChannelIndex : Cardinal;
+  SampleIndex  : Cardinal;
 const
   MulFakDith16 : Single = $7FFE;
 begin
- for Channel := 0 to min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do I16^[Sample * ChannelCount + Channel] := Round(Limit(FWinAmpOutputBuffer[Channel]^[Sample]) * MulFakDith16 + Random - Random);
+ for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do I16^[SampleIndex * ChannelCount + ChannelIndex] := Round(Limit(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex]) * MulFakDith16 + Random - Random);
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved24bit(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  I24             : P3ByteArray absolute Data;
-  Channel, Sample : Integer;
-  TempData        : Integer;
-  TempDataBytes   : array [0..3] of Byte absolute TempData;
+  I24           : P3ByteArray absolute Data;
+  ChannelIndex  : Cardinal;
+  SampleIndex   : Cardinal;
+  TempData      : Integer;
+  TempDataBytes : array [0..3] of Byte absolute TempData;
 const
   MulFakDith24 : Single = 1 / $7FFFFE;
 begin
- for Channel := 0 to min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
+ for ChannelIndex := 0 to Min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    TempData := round(Limit(FWinAmpOutputBuffer[Channel]^[Sample]) * MulFakDith24 + random - random);
-    Move(TempDataBytes[1], I24^[Sample * ChannelCount + Channel], 3);
+    TempData := Round(Limit(FWinAmpOutputBuffer[ChannelIndex]^[SampleIndex]) * MulFakDith24 + random - random);
+    Move(TempDataBytes[1], I24^[SampleIndex * ChannelCount + ChannelIndex], 3);
    end;
 end;
 
 procedure TBasicVSTModule.ConvertFloatToInterleaved(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  Interleaved     : PDAVSingleFixedArray absolute Data;
-  Channel, Sample : Integer;
+  Interleaved  : PDAVSingleFixedArray absolute Data;
+  ChannelIndex : Cardinal;
+  SampleIndex  : Cardinal;
 begin
- for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[Channel]^[Sample] := Interleaved^[Sample * ChannelCount + Channel];
+ for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := Interleaved^[SampleIndex * ChannelCount + ChannelIndex];
 end;
 
 procedure TBasicVSTModule.ConvertInterleaved8bitToFloat(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  I8              : PShortIntArray absolute Data;
-  Channel, Sample : Integer;
+  I8           : PShortIntArray absolute Data;
+  ChannelIndex : Cardinal;
+  SampleIndex  : Cardinal;
 const
   DivFak8 : Single = 1 / $80;
 begin
- for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[Channel]^[Sample] := I8^[Sample * ChannelCount + Channel] * DivFak8;
+ for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := I8^[SampleIndex * ChannelCount + ChannelIndex] * DivFak8;
 end;
 
 procedure TBasicVSTModule.ConvertInterleaved16bitToFloat(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  I16             : PSmallIntArray absolute Data;
-  Channel, Sample : Integer;
+  I16          : PSmallIntArray absolute Data;
+  ChannelIndex : Cardinal;
+  SampleIndex  : Cardinal;
 const
   DivFak16 : Single = 1 / $8000;
 begin
- for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[Channel]^[Sample] := I16^[Sample * ChannelCount + Channel] * DivFak16;
+ for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := I16^[SampleIndex * ChannelCount + ChannelIndex] * DivFak16;
 end;
 
 procedure TBasicVSTModule.ConvertInterleaved24bitToFloat(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  I24             : P3ByteArray absolute Data;
-  Channel, Sample : Integer;
-  TempData        : Integer;
+  I24          : P3ByteArray absolute Data;
+  TempData     : Integer;
+  ChannelIndex : Cardinal;
+  SampleIndex  : Cardinal;
 const
   DivFak24 : Single = 1 / $800000;
 begin
- for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1 do
+ for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    TempData := (ShortInt(I24^[Sample * ChannelCount + Channel][2]) shl 16) +
-                         (I24^[Sample * ChannelCount + Channel][1]  shl 8)  +
-                         (I24^[Sample * ChannelCount + Channel][0]);
-    FWinAmpInputBuffer[Channel]^[Sample] := TempData * DivFak24;
+    TempData := (ShortInt(I24^[SampleIndex * ChannelCount + ChannelIndex][2]) shl 16) +
+                         (I24^[SampleIndex * ChannelCount + ChannelIndex][1]  shl 8)  +
+                         (I24^[SampleIndex * ChannelCount + ChannelIndex][0]);
+    FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] := TempData * DivFak24;
    end;
 end;
 
 procedure TBasicVSTModule.ConvertInterleavedToFloat(const Data: Pointer;
-  const ChannelCount, SampleFrames: Integer);
+  const ChannelCount, SampleFrames: Cardinal);
 var
-  Interleaved     : PDAVSingleFixedArray absolute Data;
-  Channel, Sample : Integer;
+  Interleaved  : PDAVSingleFixedArray absolute Data;
+  ChannelIndex : Cardinal;
+  SampleIndex  : Cardinal;
 begin
- for Channel := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do FWinAmpInputBuffer[Channel]^[Sample] := Interleaved^[Sample * ChannelCount + Channel];
+ for ChannelIndex := 0 to Min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[ChannelIndex]^[SampleIndex] :=
+     Interleaved^[SampleIndex * ChannelCount + ChannelIndex];
 end;
 
 
@@ -1521,7 +1530,7 @@ procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outp
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
@@ -1529,43 +1538,43 @@ begin
 end;
 {$ELSE}
 asm
-  PUSH EBX
+    PUSH    EBX
 
-  // TEST SampleFrames <> 0
-  MOV EAX, SampleFrames
-  TEST EAX, EAX
-  JZ @end
+    // TEST SampleFrames <> 0
+    MOV     EAX, SampleFrames
+    TEST    EAX, EAX
+    JZ      @End
 
-  // TEST Effect <> 0
-  MOV EBX, Effect
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect <> 0
+    MOV     EBX, Effect
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Effect^.AudioEffectPtr <> 0
-  MOV EBX, [EBX + $40]
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect^.AudioEffectPtr <> 0
+    MOV     EBX, [EBX + $40]
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Outputs <> 0
-  MOV ECX, [Outputs]
-  TEST ECX, ECX
-  JZ @end
+    // TEST Outputs <> 0
+    MOV     ECX, [Outputs]
+    TEST    ECX, ECX
+    JZ      @End
 
-  // TEST Inputs <> 0
-  MOV EDX, [Inputs]
-  TEST EDX, EDX
-  JZ @end
+    // TEST Inputs <> 0
+    MOV     EDX, [Inputs]
+    TEST    EDX, EDX
+    JZ      @End
 
-  // PUSH SampleFrames on stack
-  PUSH EAX
-  MOV EAX, EBX
-  MOV EBX, [EAX]
+    // PUSH SampleFrames on stack
+    PUSH    EAX
+    MOV     EAX, EBX
+    MOV     EBX, [EAX]
 
-  // CALL HostCallProcess
-  CALL DWORD PTR [EBX + CHostCallProcessOffset] // [TBasicVSTModule(EBX).HostCallProcess]
+    // CALL HostCallProcess
+    CALL    DWORD PTR [EBX + CHostCallProcessOffset] // [TBasicVSTModule(EBX).HostCallProcess]
 
- @end:
-  POP EBX
+@End:
+    POP EBX
 end;
 {$ENDIF}
 
@@ -1573,7 +1582,7 @@ procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const I
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
@@ -1581,43 +1590,43 @@ begin
 end;
 {$ELSE}
 asm
-  PUSH EBX
+    PUSH    EBX
 
-  // TEST SampleFrames <> 0
-  MOV EAX, SampleFrames
-  TEST EAX, EAX
-  JZ @end
+    // TEST SampleFrames <> 0
+    MOV     EAX, SampleFrames
+    TEST    EAX, EAX
+    JZ      @End
 
-  // TEST Effect <> 0
-  MOV EBX, Effect
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect <> 0
+    MOV     EBX, Effect
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Effect^.AudioEffectPtr <> 0
-  MOV EBX, [EBX + $40]
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect^.AudioEffectPtr <> 0
+    MOV     EBX, [EBX + $40]
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Outputs <> 0
-  MOV ECX, [Outputs]
-  TEST ECX, ECX
-  JZ @end
+    // TEST Outputs <> 0
+    MOV     ECX, [Outputs]
+    TEST    ECX, ECX
+    JZ      @End
 
-  // TEST Inputs <> 0
-  MOV EDX, [Inputs]
-  TEST EDX, EDX
-  JZ @end
+    // TEST Inputs <> 0
+    MOV     EDX, [Inputs]
+    TEST    EDX, EDX
+    JZ      @End
 
-  // PUSH SampleFrames on stack
-  PUSH EAX
-  MOV EAX, EBX
-  MOV EBX, [EAX]
+    // PUSH SampleFrames on stack
+    PUSH    EAX
+    MOV     EAX, EBX
+    MOV     EBX, [EAX]
 
-  // CALL HostCallProcess32Replacing (damn hack!!!)
-  CALL DWORD PTR [EBX + CHostCallProcess32ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess32Replacing]
+    // CALL HostCallProcess32Replacing (damn hack!!!)
+    CALL    DWORD PTR [EBX + CHostCallProcess32ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess32Replacing]
 
- @end:
-  POP EBX
+@End:
+    POP EBX
 end;
 {$ENDIF}
 
@@ -1626,7 +1635,7 @@ procedure Process64ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
@@ -1634,52 +1643,53 @@ begin
 end;
 {$ELSE}
 asm
-  PUSH EBX
+    PUSH    EBX
 
-  // TEST SampleFrames <> 0
-  MOV EAX, SampleFrames
-  TEST EAX, EAX
-  JZ @end
+    // TEST SampleFrames <> 0
+    MOV     EAX, SampleFrames
+    TEST    EAX, EAX
+    JZ      @End
 
-  // TEST Effect <> 0
-  MOV EBX, Effect
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect <> 0
+    MOV     EBX, Effect
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Effect^.AudioEffectPtr <> 0
-  MOV EBX, [EBX + $40]
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect^.AudioEffectPtr <> 0
+    MOV     EBX, [EBX + $40]
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Outputs <> 0
-  MOV ECX, [Outputs]
-  TEST ECX, ECX
-  JZ @end
+    // TEST Outputs <> 0
+    MOV     ECX, [Outputs]
+    TEST    ECX, ECX
+    JZ      @End
 
-  // TEST Inputs <> 0
-  MOV EDX, [Inputs]
-  TEST EDX, EDX
-  JZ @end
+    // TEST Inputs <> 0
+    MOV     EDX, [Inputs]
+    TEST    EDX, EDX
+    JZ      @End
 
-  // PUSH SampleFrames on stack
-  PUSH EAX
-  MOV EAX, EBX
-  MOV EBX, [EAX]
+    // PUSH SampleFrames on stack
+    PUSH    EAX
+    MOV     EAX, EBX
+    MOV     EBX, [EAX]
 
-  // CALL HostCallProcess64Replacing (damn hack!!!)
-  CALL DWORD PTR [EBX + CHostCallProcess64ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess64Replacing]
+    // CALL HostCallProcess64Replacing (damn hack!!!)
+    CALL    DWORD PTR [EBX + CHostCallProcess64ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess64Replacing]
 
- @end:
-  POP EBX
+@End:
+    POP     EBX
 end;
 {$ENDIF}
 
 {$IFNDEF UseAudioEffectPtr}
-procedure ProcessFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
+procedure ProcessFuncUserPtr(const Effect: PVSTEffect; const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
@@ -1687,51 +1697,52 @@ begin
 end;
 {$ELSE}
 asm
-  PUSH EBX
+    PUSH    EBX
 
-  // TEST SampleFrames <> 0
-  MOV EAX, SampleFrames
-  TEST EAX, EAX
-  JZ @end
+    // TEST SampleFrames <> 0
+    MOV     EAX, SampleFrames
+    TEST    EAX, EAX
+    JZ      @End
 
-  // TEST Effect <> 0
-  MOV EBX, Effect
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect <> 0
+    MOV     EBX, Effect
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Effect^.User <> 0
-  MOV EBX, [EBX + $44]
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect^.User <> 0
+    MOV     EBX, [EBX + $44]
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Outputs <> 0
-  MOV ECX, [Outputs]
-  TEST ECX, ECX
-  JZ @end
+    // TEST Outputs <> 0
+    MOV     ECX, [Outputs]
+    TEST    ECX, ECX
+    JZ      @End
 
-  // TEST Inputs <> 0
-  MOV EDX, [Inputs]
-  TEST EDX, EDX
-  JZ @end
+    // TEST Inputs <> 0
+    MOV     EDX, [Inputs]
+    TEST    EDX, EDX
+    JZ      @End
 
-  // PUSH SampleFrames on stack
-  PUSH EAX
-  MOV EAX, EBX
-  MOV EBX, [EAX]
+    // PUSH SampleFrames on stack
+    PUSH    EAX
+    MOV     EAX, EBX
+    MOV     EBX, [EAX]
 
-  // CALL HostCallProcess
-  CALL DWORD PTR [EBX + CHostCallProcessOffset] // [TBasicVSTModule(EBX).HostCallProcess]
+    // CALL HostCallProcess
+    CALL    DWORD PTR [EBX + CHostCallProcessOffset] // [TBasicVSTModule(EBX).HostCallProcess]
 
- @end:
-  POP EBX
+@End:
+    POP EBX
 end;
 {$ENDIF}
 
-procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
+procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs,
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
@@ -1739,50 +1750,51 @@ begin
 end;
 {$ELSE}
 asm
-  PUSH EBX
+    PUSH    EBX
 
-  // TEST SampleFrames <> 0
-  MOV EAX, SampleFrames
-  TEST EAX, EAX
-  JZ @end
+    // TEST SampleFrames <> 0
+    MOV     EAX, SampleFrames
+    TEST    EAX, EAX
+    JZ      @End
 
-  // TEST Effect <> 0
-  MOV EBX, Effect
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect <> 0
+    MOV     EBX, Effect
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Effect^.User <> 0
-  MOV EBX, [EBX + $44]
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect^.User <> 0
+    MOV     EBX, [EBX + $44]
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Outputs <> 0
-  MOV ECX, [Outputs]
-  TEST ECX, ECX
-  JZ @end
+    // TEST Outputs <> 0
+    MOV     ECX, [Outputs]
+    TEST    ECX, ECX
+    JZ      @End
 
-  // TEST Inputs <> 0
-  MOV EDX, [Inputs]
-  TEST EDX, EDX
-  JZ @end
+    // TEST Inputs <> 0
+    MOV     EDX, [Inputs]
+    TEST    EDX, EDX
+    JZ      @End
 
-  // PUSH SampleFrames on stack
-  PUSH EAX
-  MOV EAX, EBX
-  MOV EBX, [EAX]
+    // PUSH SampleFrames on stack
+    PUSH    EAX
+    MOV     EAX, EBX
+    MOV     EBX, [EAX]
 
-  CALL DWORD PTR [EBX + CHostCallProcess32ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess32Replacing]
+    CALL    DWORD PTR [EBX + CHostCallProcess32ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess32Replacing]
 
- @end:
-  POP EBX
+@End:
+    POP EBX
 end;
 {$ENDIF}
 
-procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
+procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs,
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
@@ -1790,43 +1802,43 @@ begin
 end;
 {$ELSE}
 asm
-  PUSH EBX
+    PUSH    EBX
 
-  // TEST SampleFrames <> 0
-  MOV EAX, SampleFrames
-  TEST EAX, EAX
-  JZ @end
+    // TEST SampleFrames <> 0
+    MOV     EAX, SampleFrames
+    TEST    EAX, EAX
+    JZ      @End
 
-  // TEST Effect <> 0
-  MOV EBX, Effect
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect <> 0
+    MOV     EBX, Effect
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Effect^.User <> 0
-  MOV EBX, [EBX + $44]
-  TEST EBX, EBX
-  JZ @end
+    // TEST Effect^.User <> 0
+    MOV     EBX, [EBX + $44]
+    TEST    EBX, EBX
+    JZ      @End
 
-  // TEST Outputs <> 0
-  MOV ECX, [Outputs]
-  TEST ECX, ECX
-  JZ @end
+    // TEST Outputs <> 0
+    MOV     ECX, [Outputs]
+    TEST    ECX, ECX
+    JZ      @End
 
-  // TEST Inputs <> 0
-  MOV EDX, [Inputs]
-  TEST EDX, EDX
-  JZ @end
+    // TEST Inputs <> 0
+    MOV     EDX, [Inputs]
+    TEST    EDX, EDX
+    JZ      @End
 
-  // PUSH SampleFrames on stack
-  PUSH EAX
-  MOV EAX, EBX
-  MOV EBX, [EAX]
+    // PUSH SampleFrames on stack
+    PUSH    EAX
+    MOV     EAX, EBX
+    MOV     EBX, [EAX]
 
-  // CALL HostCallProcess64Replacing (damn hack!!!)
-  CALL DWORD PTR [EBX + CHostCallProcess64ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess64Replacing]
+    // CALL HostCallProcess64Replacing (damn hack!!!)
+    CALL    DWORD PTR [EBX + CHostCallProcess64ReplacingOffset] // [TBasicVSTModule(EBX).HostCallProcess64Replacing]
 
- @end:
-  POP EBX
+@End:
+    POP EBX
 end;
 {$ENDIF}
 {$ENDIF}
@@ -1842,7 +1854,7 @@ procedure SetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer; 
 begin
 end;
 
-procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: Pointer; const SampleFrames: Integer); cdecl;
+procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: Pointer; const SampleFrames: Cardinal); cdecl;
 begin
 end;
 

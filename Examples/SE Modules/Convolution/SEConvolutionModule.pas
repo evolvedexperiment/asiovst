@@ -110,7 +110,7 @@ begin
  EnumResourceNames(HInstance, 'IR', @EnumNamesFunc, LongWord(FContainedIRs));
 
  // create impulse response storage
- FImpulseResponse     := TAudioData32.Create;
+ FImpulseResponse := TAudioData32.Create;
 
  if FContainedIRs.Count > 0
   then NativeInt(FFileName) := 0
@@ -350,6 +350,8 @@ begin
         pinFileName : begin
                        if FContainedIRs.Count <= 0 then
                         begin
+                         CallHost(seaudioMasterResolveFilename,
+                           Integer(pinFileName), 300, FFileName);
                          if FileExists(string(FFileName))
                           then LoadIR(string(StrPas(FFileName)));
                         end

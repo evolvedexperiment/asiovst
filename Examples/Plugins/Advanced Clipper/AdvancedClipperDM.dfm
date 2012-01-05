@@ -229,8 +229,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 348
-  Top = 80
   Height = 150
   Width = 215
 end

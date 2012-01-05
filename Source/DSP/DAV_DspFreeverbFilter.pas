@@ -198,36 +198,36 @@ begin
 end;
 {$ELSE}
 asm
-  mov  ecx, [eax].FBuffer                 // FBuffer start in ecx
-  mov  edx, [eax].FBufferPos              // FBuffer index in edx
-  fld  input
+    MOV     ECX, [EAX].FBuffer                 // FBuffer start in ECX
+    MOV     EDX, [EAX].FBufferPos              // FBuffer index in EDX
+    FLD     Input
 
-  // This checks for very small values that can cause a Processor
-  // to switch in extra precision fMode, which is expensive.
-  // Since such small values are irrelevant to audio, avoid this.
-  // The code is equivalent to the C inline macro by Jezar
-  // This is the same spot where the original C macro appears
-  test dword ptr [ecx + edx], $7F800000   // test if denormal
-  jnz @Normal
-  mov dword ptr [ecx + edx], 0            // if so, zero out
-@normal:
+    // This checks for very small values that can cause a Processor
+    // to switch in extra precision fMode, which is expensive.
+    // Since such small values are irrelevant to audio, avoid this.
+    // The code is equivalent to the C inline macro by Jezar
+    // This is the same spot where the original C macro appears
+    TEST    DWORD PTR [ECX + EDX], $7F800000   // TEST if denormal
+    JNZ     @Normal
+    MOV     DWORD PTR [ECX + EDX], 0           // if so, zero out
+@Normal:
 
-  fld  [ecx + edx].Single                 // load current sample from FBuffer
-  fsub st(0), st(1)                       // subtract input sample
+    FLD     [ECX + EDX].Single                 // load current sample from FBuffer
+    FSUB    ST(0), ST(1)                       // subtract input sample
 
-  fxch                                    // this is a zero cycle operant,
-                                          // just renames the stack internally
-  fmul [eax].FFeedback.Single             // multiply stored sample with FFeedback
-  fadd input                              // and add the input
-  fstp [ecx + edx].Single;                // store at the current sample pos
-  add  edx, 4                             // increment sample position
-  cmp  edx, [eax].FBufferSize;            // are we at end of FBuffer?
-  jb   @OK
-  xor  edx, edx                           // if so, reset FBuffer index
+    FXCH                                       // this is a zero cycle operant,
+                                               // just renames the stack internally
+    FMUL    [EAX].FFeedback.Single             // multiply stored sample with FFeedback
+    FADD    Input                              // and add the input
+    FSTP    [ECX + EDX].Single;                // store at the current sample pos
+    ADD     EDX, 4                             // increment sample position
+    CMP     EDX, [EAX].FBufferSize;            // are we at end of FBuffer?
+    JB      @OK
+    XOR     EDX, EDX                           // if so, reset FBuffer index
 @OK:
-  mov  [eax].FBufferPos, edx              // and store new index,
-                                          // result already in st(0),
-                                          // hence the fxch
+    MOV     [EAX].FBufferPos, EDX              // and store new index,
+                                               // result already in ST(0),
+                                               // hence the FXCH
 end;
 {$ENDIF}
 
@@ -345,7 +345,7 @@ asm
     JNZ     @Normal
     MOV     DWORD PTR [ECX + EDX], 0                // if so, zero out
 
-@normal:
+@Normal:
     FLD     [ECX + EDX].Single;                     // load sample from FBuffer
     FLD     ST(0)                                   // duplicate on the stack
     FMUL    [EAX].FDampB                            // multiply with FDampB

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Classes, DAV_DspFilter;
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter;
 
 {$IFDEF CPUx86_64}
   {$DEFINE PUREPASCAL}
@@ -128,13 +128,20 @@ type
 
   TBasicHighcutFilter = class(TBiquadIIRFilter, IDspProcessor32,
     IDspProcessor64)
-  private
   protected
     procedure CalculateCoefficients; override;
   public
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real: Double;
       out Imaginary: Double); override;
+
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
+
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray;
+      SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray;
+      SampleCount: Integer); override;
   end;
 
   TBasicLowcutFilter = class(TBiquadIIRFilter, IDspProcessor32,
@@ -166,6 +173,12 @@ implementation
 uses
   Math, DAV_Math;
 
+{$IFDEF HandleDenormals}
+const
+  CDenorm32    : Single = 1E-24;
+  CDenorm64    : Double = 1E-34;
+{$ENDIF}
+
 { TBasicGainFilter }
 
 procedure TBasicGainFilter.CalculateCoefficients;
@@ -186,7 +199,7 @@ end;
 {$IFNDEF PUREPASCAL}
 function TBasicGainFilter.ProcessSampleASM: Double;
 asm
- fmul [eax.FGainFactor].Double
+  FMUL    [EAX.FGainFactor].Double
 end;
 {$ENDIF}
 
@@ -501,17 +514,183 @@ function TBasicHighcutFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   cw : Double;
 begin
- cw := 2 * cos(2 * Frequency * Pi * FSRR);
+ cw := 2 * Cos(2 * Frequency * Pi * FSRR);
  Result := (Sqr(FNominator[0]) * Sqr(cw + 2))
          / (Sqr(1 - FDenominator[2]) + Sqr(FDenominator[1]) +
            (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw);
+end;
+
+function TBasicHighcutFilter.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
+var
+  Temp : Single;
+begin
+ Temp      := FNominator[0] * Input;
+ Result    := Temp + FState[0];
+ FState[0] := 2 * Temp - FDenominator[1] * Result + FState[1];
+ FState[1] := Temp - FDenominator[2] * Result;
+{$ELSE}
+asm
+ FLD     Input.Single                    // Input
+ {$IFDEF HandleDenormals}
+ FADD    CDenorm32
+ {$ENDIF}
+ FMUL    [Self.FNominator].Double        // a0 * Input = t
+ FLD     ST(0)                           // t, t
+ FADD    [Self.FState].Double            // r = d0 + t, t
+ FXCH                                    // t, r
+ FLD     ST(1)                           // r, t, r
+ FLD     ST(0)                           // r, r, t, r,
+ FMUL    [Self.FDenominator].Double      // b0 * r, r, t, r
+ FSUBR   ST(0), ST(2)                    // t - b0 * r, r, t, r
+ FADD    ST(0), ST(2)                    // 2 * t - b0 * r, r, t, r
+ FADD    [Self.FState + 8].Double        // d1 + a1 * Input - b0 * r, r, t, r
+ FSTP    [Self.FState].Double            // d0 = a1 * Input + d1 + b1 * r, r, t, r
+ FMUL    [Self.FDenominator + 8].Double  // b1 * r, t, r
+ FSUBP   ST(1), ST(0)                    // b1 * r + t, r !!!
+ FSTP    [Self.FState + 8].Double        // d1 = b1 * r + t, r !!!
+{$ENDIF}
+end;
+
+function TBasicHighcutFilter.ProcessSample64(Input: Double): Double;
+{$IFDEF PUREPASCAL}
+var
+  Temp : Double;
+begin
+ Temp      := FNominator[0] * Input;
+ Result    := Temp + FState[0];
+ FState[0] := 2 * Temp - FDenominator[1] * Result + FState[1];
+ FState[1] := Temp - FDenominator[2] * Result;
+{$ELSE}
+asm
+ FLD     Input.Double                    // Input
+ {$IFDEF HandleDenormals}
+ FADD    CDenorm64
+ {$ENDIF}
+ FMUL    [Self.FNominator].Double        // a0 * Input = t
+ FLD     ST(0)                           // t, t
+ FADD    [Self.FState].Double            // r = d0 + t, t
+ FXCH                                    // t, r
+ FLD     ST(1)                           // r, t, r
+ FLD     ST(0)                           // r, r, t, r,
+ FMUL    [Self.FDenominator].Double      // b0 * r, r, t, r
+ FSUBR   ST(0), ST(2)                    // t - b0 * r, r, t, r
+ FADD    ST(0), ST(2)                    // 2 * t - b0 * r, r, t, r
+ FADD    [Self.FState + 8].Double        // d1 + a1 * Input - b0 * r, r, t, r
+ FSTP    [Self.FState].Double            // d0 = a1 * Input + d1 + b1 * r, r, t, r
+ FMUL    [Self.FDenominator + 8].Double  // b1 * r, t, r
+ FSUBP   ST(1), ST(0)                    // b1 * r + t, r !!!
+ FSTP    [Self.FState + 8].Double        // d1 = b1 * r + t, r !!!
+{$ENDIF}
+end;
+
+procedure TBasicHighcutFilter.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+   Data[SampleIndex] := ProcessSample32(Data[SampleIndex]);
+{$ELSE}
+asm
+  LEA     EDX, EDX + ECX * 4
+  NEG     ECX
+  JNL     @Done
+  FLD     [EAX.FDenominator + 8].Double   // FDenominator[1]
+  FLD     [EAX.FDenominator].Double       // FDenominator[0], b1
+  FLD     [EAX.FNominator].Double         // FNominator, b0, b1
+  FLD     [EAX.FState + 8].Double         // FState[1], a0, b0, b1
+  FLD     [EAX.FState].Double             // FState[0], s1, a0, b0, b1
+
+@Start:
+  FLD     [EDX + ECX * 4].Single          // Input, s0, s1, a0, b0, b1
+  {$IFDEF HandleDenormals}
+  FADD    CDenorm32
+  {$ENDIF}
+  FMUL    ST(0), ST(3)                    // a0 * Input = t, s0, s1, a0, b0, b1
+  FLD     ST(0)                           // t, t, s0, s1, a0, b0, b1
+  FADDP   ST(2), ST(0)                    // t, r = s0 + t, s1, a0, b0, b1
+  FLD     ST(1)                           // r, t, r, s1, a0, b0, b1
+  FLD     ST(0)                           // r, r, t, r, s1, a0, b0, b1
+  FMUL    ST(0), ST(6)                    // b0 * r, r, t, r, s1, a0, b0, b1
+  FSUBR   ST(0), ST(2)                    // t - b0 * r, r, t, r, s1, a0, b0, b1
+  FADD    ST(0), ST(2)                    // 2 * t - b0 * r, r, t, r, s1, a0, b0, b1
+  FADDP   ST(4), ST(0)                    // r, t, r, s0 = s1 + a1 * Input - b0 * r, a0, b0, b1
+  FMUL    ST(0), ST(6)                    // b1 * r, t, r, s0, a0, b0, b1
+  FSUBP   ST(1), ST(0)                    // s1 = t - b1 * r, r, s0, a0, b0, b1
+  FXCH                                    // r, s1, s0, a0, b0, b1
+  FSTP    [EDX + ECX * 4].Single          // s1, s0, a0, b0, b1
+  FXCH                                    // s0, s1, a0, b0, b1
+
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    [EAX.FState].Double             // s1, a0, b0, b1
+  FSTP    [EAX.FState + 8].Double         // a0, b0, b1
+  FSTP    ST(0)                           // b0, b1
+  FSTP    ST(0)                           // b0
+  FSTP    ST(0)
+@Done:
+{$ENDIF}
+end;
+
+procedure TBasicHighcutFilter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+   Data[SampleIndex] := ProcessSample32(Data[SampleIndex]);
+{$ELSE}
+asm
+  LEA     EDX, EDX + ECX * 8
+  NEG     ECX
+  JNL     @Done
+  FLD     [EAX.FDenominator + 8].Double   // FDenominator[1]
+  FLD     [EAX.FDenominator].Double       // FDenominator[0], b1
+  FLD     [EAX.FNominator].Double         // FNominator, b0, b1
+  FLD     [EAX.FState + 8].Double         // FState[1], a0, b0, b1
+  FLD     [EAX.FState].Double             // FState[0], s1, a0, b0, b1
+
+@Start:
+  FLD     [EDX + ECX * 8].Single          // Input, s0, s1, a0, b0, b1
+  {$IFDEF HandleDenormals}
+  FADD    CDenorm64
+  {$ENDIF}
+  FMUL    ST(0), ST(3)                    // a0 * Input = t, s0, s1, a0, b0, b1
+  FLD     ST(0)                           // t, t, s0, s1, a0, b0, b1
+  FADDP   ST(2), ST(0)                    // t, r = s0 + t, s1, a0, b0, b1
+  FLD     ST(1)                           // r, t, r, s1, a0, b0, b1
+  FLD     ST(0)                           // r, r, t, r, s1, a0, b0, b1
+  FMUL    ST(0), ST(6)                    // b0 * r, r, t, r, s1, a0, b0, b1
+  FSUBR   ST(0), ST(2)                    // t - b0 * r, r, t, r, s1, a0, b0, b1
+  FADD    ST(0), ST(2)                    // 2 * t - b0 * r, r, t, r, s1, a0, b0, b1
+  FADDP   ST(4), ST(0)                    // r, t, r, s0 = s1 + a1 * Input - b0 * r, a0, b0, b1
+  FMUL    ST(0), ST(6)                    // b1 * r, t, r, s0, a0, b0, b1
+  FSUBP   ST(1), ST(0)                    // s1 = t - b1 * r, r, s0, a0, b0, b1
+  FXCH                                    // r, s1, s0, a0, b0, b1
+  FSTP    [EDX + ECX * 8].Single          // s1, s0, a0, b0, b1
+  FXCH                                    // s0, s1, a0, b0, b1
+
+  ADD     ECX, 1
+  JS      @Start
+
+  FSTP    [EAX.FState].Double             // s1, a0, b0, b1
+  FSTP    [EAX.FState + 8].Double         // a0, b0, b1
+  FSTP    ST(0)                           // b0, b1
+  FSTP    ST(0)                           // b0
+  FSTP    ST(0)
+@Done:
+{$ENDIF}
 end;
 
 procedure TBasicHighcutFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
 var
   cw, Divider : Double;
 begin
- cw := cos(2 * Frequency * Pi * FSRR);
+ cw := Cos(2 * Frequency * Pi * FSRR);
  Divider   := FNominator[0] / (Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
                     + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
  Real      := (1 + (2 * FDenominator[1] + FDenominator[2])

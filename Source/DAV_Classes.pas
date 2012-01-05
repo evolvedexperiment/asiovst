@@ -421,7 +421,7 @@ end;
 
 function TCustomAudioComponent.GetSampleRate: Double;
 begin
- result := FInternalSampleRateSource.SampleRate;
+ Result := FInternalSampleRateSource.SampleRate;
 end;
 
 procedure TCustomAudioComponent.SetSampleRate(const Value: Double);

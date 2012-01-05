@@ -273,21 +273,22 @@ begin
 end;
 {$ELSE}
 asm
- FLD     [Self.FPosition.Re].Single // FPosition.Re
- FMUL    [Self.FAngle.Re].Single    // FPosition.Re * FAngle.Re
- FLD     [Self.FPosition.Im].Single // FPosition.Im, FPosition.Re * FAngle.Re
- FMUL    [Self.FAngle.Im].Single    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- FSUBP                              // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    FLD     [Self.FPosition.Re].Single // FPosition.Re
+    FMUL    [Self.FAngle.Re].Single    // FPosition.Re * FAngle.Re
+    FLD     [Self.FPosition.Im].Single // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL    [Self.FAngle.Im].Single    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                              // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- FLD     [Self.FPosition.Im].Single // FPosition.Im, New.Re
- FMUL    [Self.FAngle.Re].Single    // FPosition.Im * FAngle.Re, New.Re
- FLD     [Self.FPosition.Re].Single // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- FMUL    [Self.FAngle.Im].Single    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- FADDP                              // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- FSTP    [Self.FPosition.Im].Single // FPosition.Im := New.Im, New.Re
- FSTP    [Self.FPosition.Re].Single // FPosition.Re := New.Re
+    FLD     [Self.FPosition.Im].Single // FPosition.Im, New.Re
+    FMUL    [Self.FAngle.Re].Single    // FPosition.Im * FAngle.Re, New.Re
+    FLD     [Self.FPosition.Re].Single // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL    [Self.FAngle.Im].Single    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                              // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FSTP    [Self.FPosition.Im].Single // FPosition.Im := New.Im, New.Re
+    FSTP    [Self.FPosition.Re].Single // FPosition.Re := New.Re
 end;
 {$ENDIF}
+
 
 { TCustomSimpleOscillator64 }
 
@@ -356,19 +357,19 @@ begin
 end;
 {$ELSE}
 asm
- FLD     [Self.FPosition.Re].Double // FPosition.Re
- FMUL    [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
- FLD     [Self.FPosition.Im].Double // FPosition.Im, FPosition.Re * FAngle.Re
- FMUL    [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
- FSUBP                              // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+    FLD     [Self.FPosition.Re].Double // FPosition.Re
+    FMUL    [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
+    FLD     [Self.FPosition.Im].Double // FPosition.Im, FPosition.Re * FAngle.Re
+    FMUL    [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+    FSUBP                              // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
- FLD     [Self.FPosition.Im].Double // FPosition.Im, New.Re
- FMUL    [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
- FLD     [Self.FPosition.Re].Double // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
- FMUL    [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
- FADDP                              // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
- FSTP    [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
- FSTP    [Self.FPosition.Re].Double // FPosition.Re := New.Re
+    FLD     [Self.FPosition.Im].Double // FPosition.Im, New.Re
+    FMUL    [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
+    FLD     [Self.FPosition.Re].Double // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+    FMUL    [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+    FADDP                              // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+    FSTP    [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
+    FSTP    [Self.FPosition.Re].Double // FPosition.Re := New.Re
 end;
 {$ENDIF}
 

@@ -11,7 +11,7 @@ unit DAV_DspLightweightDynamics;
 //                                                                            //
 //  Software distributed under the License is distributed on an "AS IS"       //
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
+//  License for the specific language governing rights AND limitations under  //
 //  the License.                                                              //
 //                                                                            //
 //  Alternatively, the contents of this file may be used under the terms of   //
@@ -329,101 +329,100 @@ var
   CastedSingle : Single;
   IntCast      : Integer absolute CastedSingle;
 asm
- // Temp := CDenorm32 + abs(Input);
- mov     edx, eax               // edx = Self
- fld     Input
- fabs
- fadd    CDenorm32              // Stack: temp
+    // Temp := CDenorm32 + abs(Input);
+    MOV     EDX, EAX               // EDX = Self
+    FLD     Input
+    FABS
+    FADD    CDenorm32              // Stack: temp
 
- fcom    [edx.FPeak].Double     // Stack: temp
- fstsw   ax
- sahf
- jbe     @Release
+    FCOM    [EDX.FPeak].Double     // Stack: temp
+    FSTSW   AX
+    SAHF
+    JBE     @Release
 @Attack:
- fsub    [edx.FPeak]
- fmul    [edx.FAttackFactor]
- fadd    [edx.FPeak]
- fst     [edx.FPeak]
- jmp     @AmpTodB
+    FSUB    [EDX.FPeak]
+    FMUL    [EDX.FAttackFactor]
+    FADD    [EDX.FPeak]
+    FST     [EDX.FPeak]
+    JMP     @AmpTodB
 @Release:
- fld     [edx.FPeak]             // Stack: FPeak, temp
- fsub    st(0), st(1)            // Stack: (FPeak - temp), temp
- fmul    [edx.FReleaseFactor]    // Stack: (FPeak - temp) * FReleaseFactor, temp
- faddp                           // Stack: (FPeak - temp) * FReleaseFactor + temp
- fst     [edx.FPeak]
+    FLD     [EDX.FPeak]             // Stack: FPeak, temp
+    FSUB    ST(0), ST(1)            // Stack: (FPeak - temp), temp
+    FMUL    [EDX.FReleaseFactor]    // Stack: (FPeak - temp) * FReleaseFactor, temp
+    FADDP                           // Stack: (FPeak - temp) * FReleaseFactor + temp
+    FST     [EDX.FPeak]
 
 @AmpTodB:
- fstp    IntCast                 // Stack: (empty)
- mov     eax, IntCast
- mov     ecx, eax                // copy eax to ecx
- and     eax, $807fffff
- add     eax, $3f800000
- mov     IntCast, eax
- fld     CastedSingle
- fmul    [CSoftKnee        ].Single
- fadd    [CSoftKnee + 4    ].Single
- fmul    CastedSingle
- fadd    [CSoftKnee + 4 * 2].Single
- fmul    CastedSingle
- fadd    [CSoftKnee + 4 * 3].Single
- fmul    CastedSingle
- fadd    [CSoftKnee + 4 * 4].Single
+    FSTP    IntCast                 // Stack: (empty)
+    MOV     EAX, IntCast
+    MOV     ECX, EAX                // copy EAX to ECX
+    AND     EAX, $807fffff
+    ADD     EAX, $3f800000
+    MOV     IntCast, EAX
+    FLD     CastedSingle
+    FMUL    [CSoftKnee        ].Single
+    FADD    [CSoftKnee + 4    ].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 2].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 3].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 4].Single
 
- shr     ecx, $17
- and     ecx, $000000ff
- sub     ecx, $00000080
- mov     IntCast, ecx
- fild    IntCast
- faddp
+    SHR     ECX, $17
+    AND     ECX, $000000ff
+    SUB     ECX, $00000080
+    MOV     IntCast, ECX
+    FILD    IntCast
+    FADDP
 
+    FSUBR   [EDX.FThrshlddB]        // Stack : Temp
 
- fsubr   [edx.FThrshlddB]        // Stack : Temp
+    // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
+    FLD     ST(0)                   // Stack : Temp, Temp
+    FMUL    ST(0), ST(0)
+    FADD    [EDX.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
+    FLD     ST(0)                   // Stack : Intemp, Intemp, Temp
+    FST     CastedSingle            // Stack : Intemp, Intemp, Temp
 
- // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
- fld     st(0)                   // Stack : Temp, Temp
- fmul    st(0), st(0)
- fadd    [edx.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
- fld     st(0)                   // Stack : Intemp, Intemp, Temp
- fst     CastedSingle            // Stack : Intemp, Intemp, Temp
+    MOV     EAX, IntCast
+    SUB     EAX, $00800000
+    SHR     EAX, 1
+    ADD     EAX, $20000000
+    MOV     IntCast, EAX
+    FDIV    CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
+    FADD    CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
+    FLD     ST(0)                   // Stack: newResult, newResult, Intemp, Temp
+    FMUL    CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
+    FXCH                            // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
+    FDIVP   ST(2), ST(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
+    FADDP                           // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
 
- mov     eax, IntCast
- sub     eax, $00800000
- shr     eax, 1
- add     eax, $20000000
- mov     IntCast, eax
- fdiv    CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
- fadd    CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
- fld     st(0)                   // Stack: newResult, newResult, Intemp, Temp
- fmul    CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
- fxch                            // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
- fdivp   st(2), st(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
- faddp                           // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
+    FSUBP                           // Stack: Temp + SqrtTemp
+    FMUL    CHalf32                 // Stack: CHalf32 * (FMkpdB - (Temp + SqrtTemp))
 
- fsubp                           // Stack: Temp + SqrtTemp
- fmul    CHalf32                 // Stack: CHalf32 * (FMkpdB - (Temp + SqrtTemp))
+    FLD     ST(0)                   // Stack: temp, temp
+    FRNDINT                         // Stack: round(temp), temp
 
- fld     st(0)                   // Stack: temp, temp
- frndint                         // Stack: round(temp), temp
+    FIST    IntCast                 // Stack: round(temp), temp
+    FSUBP                           // Stack: newtemp = temp - round(temp)
 
- fist    IntCast                 // Stack: round(temp), temp
- fsubp                           // Stack: newtemp = temp - round(temp)
+    MOV     EAX, IntCast
+    ADD     EAX, $7F
+    SHL     EAX, $17
+    MOV     IntCast, EAX
 
- mov     eax, IntCast
- add     eax, $7F
- shl     eax, $17
- mov     IntCast, eax
+    FLD     ST(0)                      // Stack: newtemp, newtemp
+    FMUL    [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
+    FADD    [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
+    FMUL    ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FADD    [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FMULP                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FLD1
+    FADDP                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FMUL    CastedSingle
 
- fld     st(0)                      // Stack: newtemp, newtemp
- fmul    [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
- fadd    [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
- fmul    st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fadd    [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fmul    CastedSingle
-
- fstp [edx.FGain]
+    FSTP    [EDX.FGain]
 end;
 {$ENDIF}
 
@@ -448,103 +447,103 @@ var
   CastedSingle : Single;
   IntCast      : Integer absolute CastedSingle;
 asm
- // Temp := CDenorm32 + abs(Input);
- mov   edx, eax               // edx = Self
- fld   Input
- fabs
- fadd  CDenorm32              // Stack: temp
+    // Temp := CDenorm32 + abs(Input);
+    MOV     EDX, EAX               // EDX = Self
+    FLD     Input
+    FABS
+    FADD    CDenorm32              // Stack: temp
 
- fcom  [edx.FPeak].Double     // Stack: temp
- fstsw ax
- sahf
- jbe   @Release
+    FCOM    [EDX.FPeak].Double     // Stack: temp
+    FSTSW   AX
+    SAHF
+    JBE     @Release
 @Attack:
- fsub  [edx.FPeak]
- fmul  [edx.FAttackFactor]
- fadd  [edx.FPeak]
- fst   [edx.FPeak]
- jmp   @AmpTodB
+    FSUB    [EDX.FPeak]
+    FMUL    [EDX.FAttackFactor]
+    FADD    [EDX.FPeak]
+    FST     [EDX.FPeak]
+    JMP     @AmpTodB
 @Release:
- fld   [edx.FPeak]            // Stack: FPeak, temp
- fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
- fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
- faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
- fst   [edx.FPeak]
+    FLD     [EDX.FPeak]            // Stack: FPeak, temp
+    FSUB    ST(0), ST(1)           // Stack: (FPeak - temp), temp
+    FMUL    [EDX.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
+    FADDP                          // Stack: (FPeak - temp) * FReleaseFactor + temp
+    FST     [EDX.FPeak]
 
 @AmpTodB:
- fstp  IntCast                // Stack: (empty)
- mov   eax, IntCast
- mov   ecx, eax               // copy eax to ecx
- and   eax, $807fffff
- add   eax, $3f800000
- mov   IntCast, eax
- fld   CastedSingle
- fmul  [CSoftKnee        ].Single
- fadd  [CSoftKnee + 4    ].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 2].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 3].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 4].Single
+    FSTP    IntCast                // Stack: (empty)
+    MOV     EAX, IntCast
+    MOV     ECX, EAX               // copy EAX to ECX
+    AND     EAX, $807FFFFF
+    ADD     EAX, $3F800000
+    MOV     IntCast, EAX
+    FLD     CastedSingle
+    FMUL    [CSoftKnee        ].Single
+    FADD    [CSoftKnee + 4    ].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 2].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 3].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 4].Single
 
- shr   ecx, $17
- and   ecx, $000000ff
- sub   ecx, $00000080
- mov   IntCast, ecx
- fild  IntCast
- faddp
+    SHR     ECX, $17
+    AND     ECX, $000000FF
+    SUB     ECX, $00000080
+    MOV     IntCast, ECX
+    FILD    IntCast
+    FADDP
 
 
- fsubr  [edx.FThrshlddB]       // Stack : Temp
+    FSUBR   [EDX.FThrshlddB]       // Stack : Temp
 
- // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
- fld   st(0)                   // Stack : Temp, Temp
- fmul  st(0), st(0)
- fadd  [edx.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
- fld   st(0)                   // Stack : Intemp, Intemp, Temp
- fst   CastedSingle            // Stack : Intemp, Intemp, Temp
+    // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
+    FLD     ST(0)                   // Stack : Temp, Temp
+    FMUL    ST(0), ST(0)
+    FADD    [EDX.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
+    FLD     ST(0)                   // Stack : Intemp, Intemp, Temp
+    FST     CastedSingle            // Stack : Intemp, Intemp, Temp
 
- mov   eax, IntCast
- sub   eax, $00800000
- shr   eax, 1
- add   eax, $20000000
- mov   IntCast, eax
- fdiv  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
- fadd  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
- fld   st(0)                   // Stack: newResult, newResult, Intemp, Temp
- fmul  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
- fxch                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
- fdivp st(2), st(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
- faddp                         // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
+    MOV     EAX, IntCast
+    SUB     EAX, $00800000
+    SHR     EAX, 1
+    ADD     EAX, $20000000
+    MOV     IntCast, EAX
+    FDIV    CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
+    FADD    CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
+    FLD     ST(0)                   // Stack: newResult, newResult, Intemp, Temp
+    FMUL    CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
+    FXCH                            // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
+    FDIVP   ST(2), ST(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
+    FADDP                           // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
 
- fsubp                         // Stack: Temp + SqrtTemp
- fmul  CHalf32                 // Stack: CHalf32 * (FMkpdB - (Temp + SqrtTemp))
+    FSUBP                           // Stack: Temp + SqrtTemp
+    FMUL    CHalf32                 // Stack: CHalf32 * (FMkpdB - (Temp + SqrtTemp))
 
- fld   st(0)                   // Stack: temp, temp
- frndint                       // Stack: round(temp), temp
+    FLD     ST(0)                   // Stack: temp, temp
+    FRNDINT                         // Stack: round(temp), temp
 
- fist  IntCast                 // Stack: round(temp), temp
- fsubp                         // Stack: newtemp = temp - round(temp)
+    FIST    IntCast                 // Stack: round(temp), temp
+    FSUBP                           // Stack: newtemp = temp - round(temp)
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV     EAX, IntCast
+    ADD     EAX, $7F
+    SHL     EAX, $17
+    MOV     IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fmul  CastedSingle
+    FLD     ST(0)                      // Stack: newtemp, newtemp
+    FMUL    [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
+    FADD    [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
+    FMUL    ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FADD    [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FMULP                              // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FLD1
+    FADDP                              // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FMUL    CastedSingle
 
- fst  [edx.FGain]
- fmul Input
- fmul [edx.FMakeUpGain]
+    FST     [EDX.FGain]
+    FMUL    Input
+    FMUL    [EDX.FMakeUpGain]
 end;
 {$ENDIF}
 
@@ -679,167 +678,167 @@ var
   CastedSingle : Single;
   IntCast      : Integer absolute CastedSingle;
 asm
- // Temp := CDenorm32 + abs(Input);
- mov   edx, eax               // edx = Self
- fld   Input
- fabs
- fadd  CDenorm32              // Stack: temp
+    // Temp := CDenorm32 + abs(Input);
+    MOV     EDX, EAX               // EDX = Self
+    FLD     Input
+    FABS
+    FADD    CDenorm32              // Stack: temp
 
- fcom  [edx.FPeak].Double     // Stack: temp
- fstsw ax
- sahf
- jbe   @Release
+    FCOM    [EDX.FPeak].Double     // Stack: temp
+    FSTSW   AX
+    SAHF
+    JBE     @Release
 @Attack:
- fsub  [edx.FPeak]
- fmul  [edx.FAttackFactor]
- fadd  [edx.FPeak]
- fst   [edx.FPeak]
- jmp   @AmpTodB
+    FSUB    [EDX.FPeak]
+    FMUL    [EDX.FAttackFactor]
+    FADD    [EDX.FPeak]
+    FST     [EDX.FPeak]
+    JMP     @AmpTodB
 @Release:
- fld   [edx.FPeak]            // Stack: FPeak, temp
- fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
- fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
- faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
- fst   [edx.FPeak]
+    FLD     [EDX.FPeak]            // Stack: FPeak, temp
+    FSUB    ST(0), ST(1)           // Stack: (FPeak - temp), temp
+    FMUL    [EDX.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
+    FADDP                          // Stack: (FPeak - temp) * FReleaseFactor + temp
+    FST     [EDX.FPeak]
 
 @AmpTodB:
- fstp  IntCast                // Stack: (empty)
- mov   eax, IntCast
- mov   ecx, eax               // copy eax to ecx
- and   eax, $807fffff
- add   eax, $3f800000
- mov   IntCast, eax
- fld   CastedSingle
- fmul  [CSoftKnee        ].Single
- fadd  [CSoftKnee + 4    ].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 2].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 3].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 4].Single
+    FSTP    IntCast                // Stack: (empty)
+    MOV     EAX, IntCast
+    MOV     ECX, EAX               // copy EAX to ECX
+    AND     EAX, $807fffff
+    ADD     EAX, $3f800000
+    MOV     IntCast, EAX
+    FLD     CastedSingle
+    FMUL    [CSoftKnee        ].Single
+    FADD    [CSoftKnee + 4    ].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 2].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 3].Single
+    FMUL    CastedSingle
+    FADD    [CSoftKnee + 4 * 4].Single
 
- shr   ecx, $17
- and   ecx, $000000ff
- sub   ecx, $00000080
- mov   IntCast, ecx
- fild  IntCast
- faddp
+    SHR     ECX, $17
+    AND     ECX, $000000ff
+    SUB     ECX, $00000080
+    MOV     IntCast, ECX
+    FILD    IntCast
+    FADDP
 
 
- fsub  [edx.FThrshlddB]       // Stack : Temp
- fmul  [edx.FRatioFactor]     // Stack : Temp[0]
+    FSUB    [EDX.FThrshlddB]       // Stack : Temp
+    FMUL    [EDX.FRatioFactor]     // Stack : Temp[0]
 
- // Temp[1] := FastSqrtBab2(Sqr(Temp[0]) + FKneeFactor);
- fld   st(0)                   // Stack : Temp[0], Temp[0]
- fmul  st(0), st(0)
- fadd  [edx.FKneeFactor]       // Stack : Temp[0] * Temp[0] + FKneeFactor, Temp[0]
- fld   st(0)                   // Stack : Intemp, Intemp, Temp[0]
- fst   CastedSingle            // Stack : Intemp, Intemp, Temp[0]
+    // Temp[1] := FastSqrtBab2(Sqr(Temp[0]) + FKneeFactor);
+    FLD     ST(0)                   // Stack : Temp[0], Temp[0]
+    FMUL    ST(0), ST(0)
+    FADD    [EDX.FKneeFactor]       // Stack : Temp[0] * Temp[0] + FKneeFactor, Temp[0]
+    FLD     ST(0)                   // Stack : Intemp, Intemp, Temp[0]
+    FST     CastedSingle            // Stack : Intemp, Intemp, Temp[0]
 
- mov   eax, IntCast
- sub   eax, $00800000
- shr   eax, 1
- add   eax, $20000000
- mov   IntCast, eax
- fdiv  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp[0]
- fadd  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp[0]
- fld   st(0)                   // Stack: newResult, newResult, Intemp, Temp[0]
- fmul  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp[0]
- fxch                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp[0]
- fdivp st(2), st(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp[0]
- faddp                         // Stack: Temp[1] := Intemp / newResult + CQuarter32 * newResult, Temp[0]
+    MOV     EAX, IntCast
+    SUB     EAX, $00800000
+    SHR     EAX, 1
+    ADD     EAX, $20000000
+    MOV     IntCast, EAX
+    FDIV    CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp[0]
+    FADD    CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp[0]
+    FLD     ST(0)                   // Stack: newResult, newResult, Intemp, Temp[0]
+    FMUL    CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp[0]
+    FXCH                            // Stack: newResult, CQuarter32 * newResult, Intemp, Temp[0]
+    FDIVP   ST(2), ST(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp[0]
+    FADDP                           // Stack: Temp[1] := Intemp / newResult + CQuarter32 * newResult, Temp[0]
 
- // FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
- fld   st(0)                   // Stack: Temp[1], Temp[1], Temp[0]
- fsubr st(0), st(2)            // Stack: Temp[0] - Temp[1], Temp[1], Temp[0]
+    // FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
+    FLD     ST(0)                   // Stack: Temp[1], Temp[1], Temp[0]
+    FSUBR   ST(0), ST(2)            // Stack: Temp[0] - Temp[1], Temp[1], Temp[0]
 
- fld   st(0)                   // Stack: Temp[0] - Temp[1], Temp[0] - Temp[1], Temp[1], Temp[0]
- frndint                       // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
+    FLD     ST(0)                   // Stack: Temp[0] - Temp[1], Temp[0] - Temp[1], Temp[1], Temp[0]
+    FRNDINT                         // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
 
- fist  IntCast                 // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
- fsubp                         // Stack: newtemp = (Temp[0] - Temp[1]) - round(Temp[0] - Temp[1]), Temp[1], Temp[0]
+    FIST    IntCast                 // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
+    FSUBP                           // Stack: newtemp = (Temp[0] - Temp[1]) - round(Temp[0] - Temp[1]), Temp[1], Temp[0]
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV     EAX, IntCast
+    ADD     EAX, $7F
+    SHL     EAX, $17
+    MOV     IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp, Temp[1], Temp[0]
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[1], Temp[0]
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[1], Temp[0]
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
- fmul  CastedSingle               // NewGain, Temp[1], Temp[0]
- fstp  [edx.FGain]
+    FLD     ST(0)                      // Stack: newtemp, newtemp, Temp[1], Temp[0]
+    FMUL    [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[1], Temp[0]
+    FADD    [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[1], Temp[0]
+    FMUL    ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
+    FADD    [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
+    FMULP                              // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
+    FLD1
+    FADDP                              // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
+    FMUL    CastedSingle               // NewGain, Temp[1], Temp[0]
+    FSTP    [EDX.FGain]
 
- // Temp[1] := 2 * Temp[1] / ((FRatio + 1) * Temp[1] + (FRatio - 1) * Temp[0]);
- fld1                             // 1, Temp[1], Temp[0]
- fadd  [edx.FRatio]               // Ratio + 1, Temp[1], Temp[0]
- fmul  st(0), st(1)               // Temp[1] * (Ratio + 1), Temp[1], Temp[0]
- fxch  st(2)                      // Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- fld1                             // 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- fsubr [edx.FRatio]               // Ratio - 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- fmulp                            // (Ratio - 1) * Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- faddp st(2), st(0)               // Temp[1], (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1),
- fdivrp                           // Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
- fadd  st(0), st(0)               // 2 * Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
+    // Temp[1] := 2 * Temp[1] / ((FRatio + 1) * Temp[1] + (FRatio - 1) * Temp[0]);
+    FLD1                               // 1, Temp[1], Temp[0]
+    FADD    [EDX.FRatio]               // Ratio + 1, Temp[1], Temp[0]
+    FMUL    ST(0), ST(1)               // Temp[1] * (Ratio + 1), Temp[1], Temp[0]
+    FXCH    ST(2)                      // Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FLD1                               // 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FSUBR   [EDX.FRatio]               // Ratio - 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FMULP                              // (Ratio - 1) * Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FADDP   ST(2), ST(0)               // Temp[1], (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1),
+    FDIVRP                             // Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
+    FADD    ST(0), ST(0)               // 2 * Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
 
- // FAttackFactor := 1 - FastPower2MinError3(Temp[1] * FAttackSampleCycle);
- fld   st(0)                      // Temp[1], Temp[1]
- fmul  [edx.FAttackSampleCycle]   // Temp[0], Temp[1]
+    // FAttackFactor := 1 - FastPower2MinError3(Temp[1] * FAttackSampleCycle);
+    FLD     ST(0)                      // Temp[1], Temp[1]
+    FMUL    [EDX.FAttackSampleCycle]   // Temp[0], Temp[1]
 
- fld   st(0)                      // Stack: Temp[0], Temp[0], Temp[1]
- frndint                          // Stack: round(Temp[0]), Temp[0], Temp[1]
+    FLD     ST(0)                      // Stack: Temp[0], Temp[0], Temp[1]
+    FRNDINT                            // Stack: round(Temp[0]), Temp[0], Temp[1]
 
- fist  IntCast                    // Stack: round(Temp[0]), Temp[0], Temp[1]
- fsubp                            // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0], Temp[1]
+    FIST    IntCast                    // Stack: round(Temp[0]), Temp[0], Temp[1]
+    FSUBP                              // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0], Temp[1]
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV     EAX, IntCast
+    ADD     EAX, $7F
+    SHL     EAX, $17
+    MOV     IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp, Temp[0], Temp[1]
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0], Temp[1]
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0], Temp[1]
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
- fmul  CastedSingle               // NewAttackFactor, Temp[1]
- fld1                             // 1, NewAttackFactor, Temp[1]
- fsubrp                           // 1 - NewAttackFactor, Temp[1]
- fstp  [edx.FAttackFactor]
+    FLD     ST(0)                      // Stack: newtemp, newtemp, Temp[0], Temp[1]
+    FMUL    [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0], Temp[1]
+    FADD    [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0], Temp[1]
+    FMUL    ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
+    FADD    [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
+    FMULP                              // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
+    FLD1
+    FADDP                              // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
+    FMUL    CastedSingle               // NewAttackFactor, Temp[1]
+    FLD1                               // 1, NewAttackFactor, Temp[1]
+    FSUBRP                             // 1 - NewAttackFactor, Temp[1]
+    FSTP    [EDX.FAttackFactor]
 
- // FReleaseFactor := FastPower2MinError3(Temp[1] * FReleaseSampleCycle);
- fmul  [edx.FReleaseSampleCycle]  // Temp[0]
+    // FReleaseFactor := FastPower2MinError3(Temp[1] * FReleaseSampleCycle);
+    FMUL    [EDX.FReleaseSampleCycle]  // Temp[0]
 
- fld   st(0)                      // Stack: Temp[0], Temp[0]
- frndint                          // Stack: round(Temp[0]), Temp[0]
+    FLD     ST(0)                      // Stack: Temp[0], Temp[0]
+    FRNDINT                            // Stack: round(Temp[0]), Temp[0]
 
- fist  IntCast                    // Stack: round(Temp[0]), Temp[0]
- fsubp                            // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0]
+    FIST    IntCast                    // Stack: round(Temp[0]), Temp[0]
+    FSUBP                              // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0]
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV     EAX, IntCast
+    ADD     EAX, $7F
+    SHL     EAX, $17
+    MOV     IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp, Temp[0]
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0]
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0]
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
- fmul  CastedSingle               // NewReleaseFactor
- fstp  [edx.FReleaseFactor]
+    FLD     ST(0)                      // Stack: newtemp, newtemp, Temp[0]
+    FMUL    [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0]
+    FADD    [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0]
+    FMUL    ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
+    FADD    [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
+    FMULP                              // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
+    FLD1
+    FADDP                              // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
+    FMUL    CastedSingle               // NewReleaseFactor
+    FSTP    [EDX.FReleaseFactor]
 end;
 {$ENDIF}
 
@@ -968,101 +967,101 @@ var
   CastedSingle : Single;
   IntCast      : Integer absolute CastedSingle;
 asm
- // Temp := CDenorm32 + abs(Input);
- mov   edx, eax               // edx = Self
- fld   Input
- fabs
- fadd  CDenorm32              // Stack: temp
+    // Temp := CDenorm32 + abs(Input);
+    MOV   EDX, EAX               // EDX = Self
+    FLD   Input
+    FABS
+    FADD  CDenorm32              // Stack: temp
 
- fcom  [edx.FPeak].Double     // Stack: temp
- fstsw ax
- sahf
- jbe   @Release
+    FCOM  [EDX.FPeak].Double     // Stack: temp
+    FSTSW AX
+    SAHF
+    JBE   @Release
 @Attack:
- fsub  [edx.FPeak]
- fmul  [edx.FAttackFactor]
- fadd  [edx.FPeak]
- fst   [edx.FPeak]
- jmp   @AmpTodB
+    FSUB  [EDX.FPeak]
+    FMUL  [EDX.FAttackFactor]
+    FADD  [EDX.FPeak]
+    FST   [EDX.FPeak]
+    JMP   @AmpTodB
 @Release:
- fld   [edx.FPeak]            // Stack: FPeak, temp
- fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
- fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
- faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
- fst   [edx.FPeak]
+    FLD   [EDX.FPeak]            // Stack: FPeak, temp
+    FSUB  ST(0), ST(1)           // Stack: (FPeak - temp), temp
+    FMUL  [EDX.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
+    FADDP                        // Stack: (FPeak - temp) * FReleaseFactor + temp
+    FST   [EDX.FPeak]
 
 @AmpTodB:
- fstp  IntCast                // Stack: (empty)
- mov   eax, IntCast
- mov   ecx, eax               // copy eax to ecx
- and   eax, $807fffff
- add   eax, $3f800000
- mov   IntCast, eax
- fld   CastedSingle
- fmul  [CSoftKnee        ].Single
- fadd  [CSoftKnee + 4    ].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 2].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 3].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 4].Single
+    FSTP  IntCast                // Stack: (empty)
+    MOV   EAX, IntCast
+    MOV   ECX, EAX               // copy EAX to ECX
+    AND   EAX, $807fffff
+    ADD   EAX, $3f800000
+    MOV   IntCast, EAX
+    FLD   CastedSingle
+    FMUL  [CSoftKnee        ].Single
+    FADD  [CSoftKnee + 4    ].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 2].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 3].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 4].Single
 
- shr   ecx, $17
- and   ecx, $000000ff
- sub   ecx, $00000080
- mov   IntCast, ecx
- fild  IntCast
- faddp
+    SHR   ECX, $17
+    AND   ECX, $000000ff
+    SUB   ECX, $00000080
+    MOV   IntCast, ECX
+    FILD  IntCast
+    FADDP
 
 
- fsub  [edx.FThrshlddB]       // Stack : Temp
- fmul  [edx.FRatioFactor]
+    FSUB  [EDX.FThrshlddB]       // Stack : Temp
+    FMUL  [EDX.FRatioFactor]
 
- // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
- fld   st(0)                   // Stack : Temp, Temp
- fmul  st(0), st(0)
- fadd  [edx.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
- fld   st(0)                   // Stack : Intemp, Intemp, Temp
- fst   CastedSingle            // Stack : Intemp, Intemp, Temp
+    // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
+    FLD   ST(0)                   // Stack : Temp, Temp
+    FMUL  ST(0), ST(0)
+    FADD  [EDX.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
+    FLD   ST(0)                   // Stack : Intemp, Intemp, Temp
+    FST   CastedSingle            // Stack : Intemp, Intemp, Temp
 
- mov   eax, IntCast
- sub   eax, $00800000
- shr   eax, 1
- add   eax, $20000000
- mov   IntCast, eax
- fdiv  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
- fadd  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
- fld   st(0)                   // Stack: newResult, newResult, Intemp, Temp
- fmul  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
- fxch                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
- fdivp st(2), st(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
- faddp                         // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
+    MOV   EAX, IntCast
+    SUB   EAX, $00800000
+    SHR   EAX, 1
+    ADD   EAX, $20000000
+    MOV   IntCast, EAX
+    FDIV  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
+    FADD  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
+    FLD   ST(0)                   // Stack: newResult, newResult, Intemp, Temp
+    FMUL  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
+    FXCH                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
+    FDIVP ST(2), ST(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
+    FADDP                         // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
 
- fsubp                         // Stack: Temp + SqrtTemp
+    FSUBP                         // Stack: Temp + SqrtTemp
 
- fld   st(0)                   // Stack: temp, temp
- frndint                       // Stack: round(temp), temp
+    FLD   ST(0)                   // Stack: temp, temp
+    FRNDINT                       // Stack: round(temp), temp
 
- fist  IntCast                 // Stack: round(temp), temp
- fsubp                         // Stack: newtemp = temp - round(temp)
+    FIST  IntCast                 // Stack: round(temp), temp
+    FSUBP                         // Stack: newtemp = temp - round(temp)
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV   EAX, IntCast
+    ADD   EAX, $7F
+    SHL   EAX, $17
+    MOV   IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fmul  CastedSingle
+    FLD   ST(0)                      // Stack: newtemp, newtemp
+    FMUL  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
+    FADD  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
+    FMUL  ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FADD  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FMULP                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FLD1
+    FADDP                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FMUL  CastedSingle
 
- fstp [edx.FGain]
+    FSTP [EDX.FGain]
 end;
 {$ENDIF}
 
@@ -1187,101 +1186,101 @@ var
   CastedSingle : Single;
   IntCast      : Integer absolute CastedSingle;
 asm
- // Temp := CDenorm32 + abs(Input);
- mov   edx, eax               // edx = Self
- fld   Input
- fabs
- fadd  CDenorm32              // Stack: temp
+    // Temp := CDenorm32 + abs(Input);
+    MOV   EDX, EAX               // EDX = Self
+    FLD   Input
+    FABS
+    FADD  CDenorm32              // Stack: temp
 
- fcom  [edx.FPeak].Double     // Stack: temp
- fstsw ax
- sahf
- jbe   @Release
+    FCOM  [EDX.FPeak].Double     // Stack: temp
+    FSTSW AX
+    SAHF
+    JBE   @Release
 @Attack:
- fsub  [edx.FPeak]
- fmul  [edx.FAttackFactor]
- fadd  [edx.FPeak]
- fst   [edx.FPeak]
- jmp   @AmpTodB
+    FSUB  [EDX.FPeak]
+    FMUL  [EDX.FAttackFactor]
+    FADD  [EDX.FPeak]
+    FST   [EDX.FPeak]
+    JMP   @AmpTodB
 @Release:
- fld   [edx.FPeak]            // Stack: FPeak, temp
- fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
- fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
- faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
- fst   [edx.FPeak]
+    FLD   [EDX.FPeak]            // Stack: FPeak, temp
+    FSUB  ST(0), ST(1)           // Stack: (FPeak - temp), temp
+    FMUL  [EDX.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
+    FADDP                        // Stack: (FPeak - temp) * FReleaseFactor + temp
+    FST   [EDX.FPeak]
 
 @AmpTodB:
- fstp  IntCast                // Stack: (empty)
- mov   eax, IntCast
- mov   ecx, eax               // copy eax to ecx
- and   eax, $807fffff
- add   eax, $3f800000
- mov   IntCast, eax
- fld   CastedSingle
- fmul  [CSoftKnee        ].Single
- fadd  [CSoftKnee + 4    ].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 2].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 3].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 4].Single
+    FSTP  IntCast                // Stack: (empty)
+    MOV   EAX, IntCast
+    MOV   ECX, EAX               // copy EAX to ECX
+    AND   EAX, $807fffff
+    ADD   EAX, $3f800000
+    MOV   IntCast, EAX
+    FLD   CastedSingle
+    FMUL  [CSoftKnee        ].Single
+    FADD  [CSoftKnee + 4    ].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 2].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 3].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 4].Single
 
- shr   ecx, $17
- and   ecx, $000000ff
- sub   ecx, $00000080
- mov   IntCast, ecx
- fild  IntCast
- faddp
+    SHR   ECX, $17
+    AND   ECX, $000000ff
+    SUB   ECX, $00000080
+    MOV   IntCast, ECX
+    FILD  IntCast
+    FADDP
 
 
- fsubr [edx.FThrshlddB]       // Stack : Temp
- fmul  [edx.FRatioFactor]
+    FSUBR [EDX.FThrshlddB]       // Stack : Temp
+    FMUL  [EDX.FRatioFactor]
 
- // FGain := FastPower2MinError3(Temp + FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
- fld   st(0)                   // Stack : Temp, Temp
- fmul  st(0), st(0)
- fadd  [edx.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
- fld   st(0)                   // Stack : Intemp, Intemp, Temp
- fst   CastedSingle            // Stack : Intemp, Intemp, Temp
+    // FGain := FastPower2MinError3(Temp + FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
+    FLD   ST(0)                   // Stack : Temp, Temp
+    FMUL  ST(0), ST(0)
+    FADD  [EDX.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
+    FLD   ST(0)                   // Stack : Intemp, Intemp, Temp
+    FST   CastedSingle            // Stack : Intemp, Intemp, Temp
 
- mov   eax, IntCast
- sub   eax, $00800000
- shr   eax, 1
- add   eax, $20000000
- mov   IntCast, eax
- fdiv  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
- fadd  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
- fld   st(0)                   // Stack: newResult, newResult, Intemp, Temp
- fmul  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
- fxch                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
- fdivp st(2), st(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
- faddp                         // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
+    MOV   EAX, IntCast
+    SUB   EAX, $00800000
+    SHR   EAX, 1
+    ADD   EAX, $20000000
+    MOV   IntCast, EAX
+    FDIV  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
+    FADD  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
+    FLD   ST(0)                   // Stack: newResult, newResult, Intemp, Temp
+    FMUL  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
+    FXCH                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
+    FDIVP ST(2), ST(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
+    FADDP                         // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
 
- faddp                         // Stack: Temp + SqrtTemp
+    FADDP                         // Stack: Temp + SqrtTemp
 
- fld   st(0)                   // Stack: temp, temp
- frndint                       // Stack: round(temp), temp
+    FLD   ST(0)                   // Stack: temp, temp
+    FRNDINT                       // Stack: round(temp), temp
 
- fist  IntCast                 // Stack: round(temp), temp
- fsubp                         // Stack: newtemp = temp - round(temp)
+    FIST  IntCast                 // Stack: round(temp), temp
+    FSUBP                         // Stack: newtemp = temp - round(temp)
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV   EAX, IntCast
+    ADD   EAX, $7F
+    SHL   EAX, $17
+    MOV   IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fmul  CastedSingle
+    FLD   ST(0)                      // Stack: newtemp, newtemp
+    FMUL  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
+    FADD  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
+    FMUL  ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FADD  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FMULP                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FLD1
+    FADDP                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FMUL  CastedSingle
 
- fstp [edx.FGain]
+    FSTP [EDX.FGain]
 end;
 {$ENDIF}
 
@@ -1426,103 +1425,103 @@ var
   CastedSingle : Single;
   IntCast      : Integer absolute CastedSingle;
 asm
- // Temp := CDenorm32 + abs(Input);
- mov   edx, eax               // edx = Self
- fld   [edx.FPrevAbsSample]
- fabs
- fadd  CDenorm32              // Stack: temp
+    // Temp := CDenorm32 + abs(Input);
+    MOV   EDX, EAX               // EDX = Self
+    FLD   [EDX.FPrevAbsSample]
+    FABS
+    FADD  CDenorm32              // Stack: temp
 
- fcom  [edx.FPeak].Double     // Stack: temp
- fstsw ax
- sahf
- jbe   @Release
+    FCOM  [EDX.FPeak].Double     // Stack: temp
+    FSTSW AX
+    SAHF
+    JBE   @Release
 @Attack:
- fsub  [edx.FPeak]
- fmul  [edx.FAttackFactor]
- fadd  [edx.FPeak]
- fst   [edx.FPeak]
- jmp   @AmpTodB
+    FSUB  [EDX.FPeak]
+    FMUL  [EDX.FAttackFactor]
+    FADD  [EDX.FPeak]
+    FST   [EDX.FPeak]
+    JMP   @AmpTodB
 @Release:
- fld   [edx.FPeak]            // Stack: FPeak, temp
- fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
- fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
- faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
- fst   [edx.FPeak]
+    FLD   [EDX.FPeak]            // Stack: FPeak, temp
+    FSUB  ST(0), ST(1)           // Stack: (FPeak - temp), temp
+    FMUL  [EDX.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
+    FADDP                        // Stack: (FPeak - temp) * FReleaseFactor + temp
+    FST   [EDX.FPeak]
 
 @AmpTodB:
- fstp  IntCast                // Stack: (empty)
- mov   eax, IntCast
- mov   ecx, eax               // copy eax to ecx
- and   eax, $807fffff
- add   eax, $3f800000
- mov   IntCast, eax
- fld   CastedSingle
- fmul  [CSoftKnee        ].Single
- fadd  [CSoftKnee + 4    ].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 2].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 3].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 4].Single
+    FSTP  IntCast                // Stack: (empty)
+    MOV   EAX, IntCast
+    MOV   ECX, EAX               // copy EAX to ECX
+    AND   EAX, $807fffff
+    ADD   EAX, $3f800000
+    MOV   IntCast, EAX
+    FLD   CastedSingle
+    FMUL  [CSoftKnee        ].Single
+    FADD  [CSoftKnee + 4    ].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 2].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 3].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 4].Single
 
- shr   ecx, $17
- and   ecx, $000000ff
- sub   ecx, $00000080
- mov   IntCast, ecx
- fild  IntCast
- faddp
+    SHR   ECX, $17
+    AND   ECX, $000000ff
+    SUB   ECX, $00000080
+    MOV   IntCast, ECX
+    FILD  IntCast
+    FADDP
 
 
- fsub  [edx.FThrshlddB]       // Stack : Temp
- fmul  [edx.FRatioFactor]
+    FSUB  [EDX.FThrshlddB]       // Stack : Temp
+    FMUL  [EDX.FRatioFactor]
 
- // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
- fld   st(0)                   // Stack : Temp, Temp
- fmul  st(0), st(0)
- fadd  [edx.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
- fld   st(0)                   // Stack : Intemp, Intemp, Temp
- fst   CastedSingle            // Stack : Intemp, Intemp, Temp
+    // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(Sqr(Temp) + FKneeFactor)));
+    FLD   ST(0)                   // Stack : Temp, Temp
+    FMUL  ST(0), ST(0)
+    FADD  [EDX.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
+    FLD   ST(0)                   // Stack : Intemp, Intemp, Temp
+    FST   CastedSingle            // Stack : Intemp, Intemp, Temp
 
- mov   eax, IntCast
- sub   eax, $00800000
- shr   eax, 1
- add   eax, $20000000
- mov   IntCast, eax
- fdiv  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
- fadd  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
- fld   st(0)                   // Stack: newResult, newResult, Intemp, Temp
- fmul  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
- fxch                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
- fdivp st(2), st(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
- faddp                         // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
+    MOV   EAX, IntCast
+    SUB   EAX, $00800000
+    SHR   EAX, 1
+    ADD   EAX, $20000000
+    MOV   IntCast, EAX
+    FDIV  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
+    FADD  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
+    FLD   ST(0)                   // Stack: newResult, newResult, Intemp, Temp
+    FMUL  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp
+    FXCH                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp
+    FDIVP ST(2), ST(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp
+    FADDP                         // Stack: Intemp / newResult + CQuarter32 * newResult, Temp
 
- fsubp                         // Stack: Temp + SqrtTemp
+    FSUBP                         // Stack: Temp + SqrtTemp
 
- fld   st(0)                   // Stack: temp, temp
- frndint                       // Stack: round(temp), temp
+    FLD   ST(0)                   // Stack: temp, temp
+    FRNDINT                       // Stack: round(temp), temp
 
- fist  IntCast                 // Stack: round(temp), temp
- fsubp                         // Stack: newtemp = temp - round(temp)
+    FIST  IntCast                 // Stack: round(temp), temp
+    FSUBP                         // Stack: newtemp = temp - round(temp)
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV   EAX, IntCast
+    ADD   EAX, $7F
+    SHL   EAX, $17
+    MOV   IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fmul  CastedSingle
+    FLD   ST(0)                      // Stack: newtemp, newtemp
+    FMUL  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
+    FADD  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
+    FMUL  ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FADD  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+    FMULP                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FLD1
+    FADDP                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+    FMUL  CastedSingle
 
- fst  [edx.FGain]
- fmul Input
- fstp [edx.FPrevAbsSample]
+    FST  [EDX.FGain]
+    FMUL Input
+    FSTP [EDX.FPrevAbsSample]
 end;
 {$ENDIF}
 
@@ -1675,167 +1674,167 @@ var
   CastedSingle : Single;
   IntCast      : Integer absolute CastedSingle;
 asm
- // Temp := CDenorm32 + abs(Input);
- mov   edx, eax               // edx = Self
- fld   Input
- fabs
- fadd  CDenorm32              // Stack: temp
+    // Temp := CDenorm32 + abs(Input);
+    MOV   EDX, EAX               // EDX = Self
+    FLD   Input
+    FABS
+    FADD  CDenorm32              // Stack: temp
 
- fcom  [edx.FPeak].Double     // Stack: temp
- fstsw ax
- sahf
- jbe   @Release
+    FCOM  [EDX.FPeak].Double     // Stack: temp
+    FSTSW AX
+    SAHF
+    JBE   @Release
 @Attack:
- fsub  [edx.FPeak]
- fmul  [edx.FAttackFactor]
- fadd  [edx.FPeak]
- fst   [edx.FPeak]
- jmp   @AmpTodB
+    FSUB  [EDX.FPeak]
+    FMUL  [EDX.FAttackFactor]
+    FADD  [EDX.FPeak]
+    FST   [EDX.FPeak]
+    JMP   @AmpTodB
 @Release:
- fld   [edx.FPeak]            // Stack: FPeak, temp
- fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
- fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
- faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
- fst   [edx.FPeak]
+    FLD   [EDX.FPeak]            // Stack: FPeak, temp
+    FSUB  ST(0), ST(1)           // Stack: (FPeak - temp), temp
+    FMUL  [EDX.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
+    FADDP                        // Stack: (FPeak - temp) * FReleaseFactor + temp
+    FST   [EDX.FPeak]
 
 @AmpTodB:
- fstp  IntCast                // Stack: (empty)
- mov   eax, IntCast
- mov   ecx, eax               // copy eax to ecx
- and   eax, $807fffff
- add   eax, $3f800000
- mov   IntCast, eax
- fld   CastedSingle
- fmul  [CSoftKnee        ].Single
- fadd  [CSoftKnee + 4    ].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 2].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 3].Single
- fmul  CastedSingle
- fadd  [CSoftKnee + 4 * 4].Single
+    FSTP  IntCast                // Stack: (empty)
+    MOV   EAX, IntCast
+    MOV   ECX, EAX               // copy EAX to ECX
+    AND   EAX, $807fffff
+    ADD   EAX, $3f800000
+    MOV   IntCast, EAX
+    FLD   CastedSingle
+    FMUL  [CSoftKnee        ].Single
+    FADD  [CSoftKnee + 4    ].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 2].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 3].Single
+    FMUL  CastedSingle
+    FADD  [CSoftKnee + 4 * 4].Single
 
- shr   ecx, $17
- and   ecx, $000000ff
- sub   ecx, $00000080
- mov   IntCast, ecx
- fild  IntCast
- faddp
+    SHR   ECX, $17
+    AND   ECX, $000000ff
+    SUB   ECX, $00000080
+    MOV   IntCast, ECX
+    FILD  IntCast
+    FADDP
 
 
- fsub  [edx.FThrshlddB]       // Stack : Temp
- fmul  [edx.FRatioFactor]     // Stack : Temp[0]
+    FSUB  [EDX.FThrshlddB]       // Stack : Temp
+    FMUL  [EDX.FRatioFactor]     // Stack : Temp[0]
 
- // Temp[1] := FastSqrtBab2(Sqr(Temp[0]) + FKneeFactor);
- fld   st(0)                   // Stack : Temp[0], Temp[0]
- fmul  st(0), st(0)
- fadd  [edx.FKneeFactor]       // Stack : Temp[0] * Temp[0] + FKneeFactor, Temp[0]
- fld   st(0)                   // Stack : Intemp, Intemp, Temp[0]
- fst   CastedSingle            // Stack : Intemp, Intemp, Temp[0]
+    // Temp[1] := FastSqrtBab2(Sqr(Temp[0]) + FKneeFactor);
+    FLD   ST(0)                   // Stack : Temp[0], Temp[0]
+    FMUL  ST(0), ST(0)
+    FADD  [EDX.FKneeFactor]       // Stack : Temp[0] * Temp[0] + FKneeFactor, Temp[0]
+    FLD   ST(0)                   // Stack : Intemp, Intemp, Temp[0]
+    FST   CastedSingle            // Stack : Intemp, Intemp, Temp[0]
 
- mov   eax, IntCast
- sub   eax, $00800000
- shr   eax, 1
- add   eax, $20000000
- mov   IntCast, eax
- fdiv  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp[0]
- fadd  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp[0]
- fld   st(0)                   // Stack: newResult, newResult, Intemp, Temp[0]
- fmul  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp[0]
- fxch                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp[0]
- fdivp st(2), st(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp[0]
- faddp                         // Stack: Temp[1] := Intemp / newResult + CQuarter32 * newResult, Temp[0]
+    MOV   EAX, IntCast
+    SUB   EAX, $00800000
+    SHR   EAX, 1
+    ADD   EAX, $20000000
+    MOV   IntCast, EAX
+    FDIV  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp[0]
+    FADD  CastedSingle            // Stack: newResult = CastedSingle + Intemp / CastedSingle, Intemp, Temp[0]
+    FLD   ST(0)                   // Stack: newResult, newResult, Intemp, Temp[0]
+    FMUL  CQuarter32              // Stack: CQuarter32 * newResult, newResult, Intemp, Temp[0]
+    FXCH                          // Stack: newResult, CQuarter32 * newResult, Intemp, Temp[0]
+    FDIVP ST(2), ST(0)            // Stack: Intemp / newResult, CQuarter32 * newResult, Temp[0]
+    FADDP                         // Stack: Temp[1] := Intemp / newResult + CQuarter32 * newResult, Temp[0]
 
- // FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
- fld   st(0)                   // Stack: Temp[1], Temp[1], Temp[0]
- fsubr st(0), st(2)            // Stack: Temp[0] - Temp[1], Temp[1], Temp[0]
+    // FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
+    FLD   ST(0)                   // Stack: Temp[1], Temp[1], Temp[0]
+    FSUBR ST(0), ST(2)            // Stack: Temp[0] - Temp[1], Temp[1], Temp[0]
 
- fld   st(0)                   // Stack: Temp[0] - Temp[1], Temp[0] - Temp[1], Temp[1], Temp[0]
- frndint                       // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
+    FLD   ST(0)                   // Stack: Temp[0] - Temp[1], Temp[0] - Temp[1], Temp[1], Temp[0]
+    FRNDINT                       // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
 
- fist  IntCast                 // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
- fsubp                         // Stack: newtemp = (Temp[0] - Temp[1]) - round(Temp[0] - Temp[1]), Temp[1], Temp[0]
+    FIST  IntCast                 // Stack: round(Temp[0] - Temp[1]), Temp[0] - Temp[1], Temp[1], Temp[0]
+    FSUBP                         // Stack: newtemp = (Temp[0] - Temp[1]) - round(Temp[0] - Temp[1]), Temp[1], Temp[0]
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV   EAX, IntCast
+    ADD   EAX, $7F
+    SHL   EAX, $17
+    MOV   IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp, Temp[1], Temp[0]
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[1], Temp[0]
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[1], Temp[0]
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
- fmul  CastedSingle               // NewGain, Temp[1], Temp[0]
- fstp  [edx.FGain]
+    FLD   ST(0)                      // Stack: newtemp, newtemp, Temp[1], Temp[0]
+    FMUL  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[1], Temp[0]
+    FADD  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[1], Temp[0]
+    FMUL  ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
+    FADD  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[1], Temp[0]
+    FMULP                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
+    FLD1
+    FADDP                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[1], Temp[0]
+    FMUL  CastedSingle               // NewGain, Temp[1], Temp[0]
+    FSTP  [EDX.FGain]
 
- // Temp[1] := 2 * Temp[1] / ((FRatio + 1) * Temp[1] + (FRatio - 1) * Temp[0]);
- fld1                             // 1, Temp[1], Temp[0]
- fadd  [edx.FRatio]               // Ratio + 1, Temp[1], Temp[0]
- fmul  st(0), st(1)               // Temp[1] * (Ratio + 1), Temp[1], Temp[0]
- fxch  st(2)                      // Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- fld1                             // 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- fsubr [edx.FRatio]               // Ratio - 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- fmulp                            // (Ratio - 1) * Temp[0], Temp[1], Temp[1] * (Ratio + 1)
- faddp st(2), st(0)               // Temp[1], (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1),
- fdivrp                           // Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
- fadd  st(0), st(0)               // 2 * Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
+    // Temp[1] := 2 * Temp[1] / ((FRatio + 1) * Temp[1] + (FRatio - 1) * Temp[0]);
+    FLD1                             // 1, Temp[1], Temp[0]
+    FADD  [EDX.FRatio]               // Ratio + 1, Temp[1], Temp[0]
+    FMUL  ST(0), ST(1)               // Temp[1] * (Ratio + 1), Temp[1], Temp[0]
+    FXCH  ST(2)                      // Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FLD1                             // 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FSUBR [EDX.FRatio]               // Ratio - 1, Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FMULP                            // (Ratio - 1) * Temp[0], Temp[1], Temp[1] * (Ratio + 1)
+    FADDP ST(2), ST(0)               // Temp[1], (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1),
+    FDIVRP                           // Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
+    FADD  ST(0), ST(0)               // 2 * Temp[1] / (Ratio - 1) * Temp[0] + Temp[1] * (Ratio + 1)
 
- // FAttackFactor := 1 - FastPower2MinError3(Temp[1] * FAttackSampleCycle);
- fld   st(0)                      // Temp[1], Temp[1]
- fmul  [edx.FAttackSampleCycle]   // Temp[0], Temp[1]
+    // FAttackFactor := 1 - FastPower2MinError3(Temp[1] * FAttackSampleCycle);
+    FLD   ST(0)                      // Temp[1], Temp[1]
+    FMUL  [EDX.FAttackSampleCycle]   // Temp[0], Temp[1]
 
- fld   st(0)                      // Stack: Temp[0], Temp[0], Temp[1]
- frndint                          // Stack: round(Temp[0]), Temp[0], Temp[1]
+    FLD   ST(0)                      // Stack: Temp[0], Temp[0], Temp[1]
+    FRNDINT                          // Stack: round(Temp[0]), Temp[0], Temp[1]
 
- fist  IntCast                    // Stack: round(Temp[0]), Temp[0], Temp[1]
- fsubp                            // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0], Temp[1]
+    FIST  IntCast                    // Stack: round(Temp[0]), Temp[0], Temp[1]
+    FSUBP                            // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0], Temp[1]
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV   EAX, IntCast
+    ADD   EAX, $7F
+    SHL   EAX, $17
+    MOV   IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp, Temp[0], Temp[1]
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0], Temp[1]
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0], Temp[1]
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
- fmul  CastedSingle               // NewAttackFactor, Temp[1]
- fld1                             // 1, NewAttackFactor, Temp[1]
- fsubrp                           // 1 - NewAttackFactor, Temp[1]
- fstp  [edx.FAttackFactor]
+    FLD   ST(0)                      // Stack: newtemp, newtemp, Temp[0], Temp[1]
+    FMUL  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0], Temp[1]
+    FADD  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0], Temp[1]
+    FMUL  ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
+    FADD  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0], Temp[1]
+    FMULP                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
+    FLD1
+    FADDP                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0], Temp[1]
+    FMUL  CastedSingle               // NewAttackFactor, Temp[1]
+    FLD1                             // 1, NewAttackFactor, Temp[1]
+    FSUBRP                           // 1 - NewAttackFactor, Temp[1]
+    FSTP  [EDX.FAttackFactor]
 
- // FReleaseFactor := FastPower2MinError3(Temp[1] * FReleaseSampleCycle);
- fmul  [edx.FReleaseSampleCycle]  // Temp[0]
+    // FReleaseFactor := FastPower2MinError3(Temp[1] * FReleaseSampleCycle);
+    FMUL  [EDX.FReleaseSampleCycle]  // Temp[0]
 
- fld   st(0)                      // Stack: Temp[0], Temp[0]
- frndint                          // Stack: round(Temp[0]), Temp[0]
+    FLD   ST(0)                      // Stack: Temp[0], Temp[0]
+    FRNDINT                          // Stack: round(Temp[0]), Temp[0]
 
- fist  IntCast                    // Stack: round(Temp[0]), Temp[0]
- fsubp                            // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0]
+    FIST  IntCast                    // Stack: round(Temp[0]), Temp[0]
+    FSUBP                            // Stack: newtemp = Temp[0] - round(Temp[0], Temp[0]
 
- mov   eax, IntCast
- add   eax, $7F
- shl   eax, $17
- mov   IntCast, eax
+    MOV   EAX, IntCast
+    ADD   EAX, $7F
+    SHL   EAX, $17
+    MOV   IntCast, EAX
 
- fld   st(0)                      // Stack: newtemp, newtemp, Temp[0]
- fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0]
- fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0]
- fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
- fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
- fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
- fld1
- faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
- fmul  CastedSingle               // NewReleaseFactor
- fstp  [edx.FReleaseFactor]
+    FLD   ST(0)                      // Stack: newtemp, newtemp, Temp[0]
+    FMUL  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp, Temp[0]
+    FADD  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp, Temp[0]
+    FMUL  ST(0), ST(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
+    FADD  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp, Temp[0]
+    FMULP                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
+    FLD1
+    FADDP                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp))), Temp[0]
+    FMUL  CastedSingle               // NewReleaseFactor
+    FSTP  [EDX.FReleaseFactor]
 end;
 {$ENDIF}
 

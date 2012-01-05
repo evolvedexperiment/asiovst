@@ -169,7 +169,7 @@ end;
 {$IFNDEF PUREPASCAL}
 function TAutomatableGainFilter.ProcessSampleASM: Double;
 asm
- fmul [eax.FGainFactorSquared].Double
+    FMUL    [EAX.FGainFactorSquared].Double
 end;
 {$ENDIF}
 

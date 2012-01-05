@@ -201,14 +201,6 @@ begin
  end;
 end;
 
-procedure DontRaiseExceptionsAndSetFPUcodeword;
-const
-  SCRound8087CW : Word = $133F; // round FPU codeword, with exceptions disabled
-asm
- fnclex                 // Don't raise pending exceptions enabled by the new flags
- fldcw  SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
-end;
-
 // stuff Delphi might not know...
 const
   FILE_READ_DATA            = $0001; // file & pipe

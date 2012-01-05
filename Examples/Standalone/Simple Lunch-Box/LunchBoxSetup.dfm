@@ -28,7 +28,7 @@ object FmSetup: TFmSetup
     Caption = 'ASIO Driver:'
     Layout = tlCenter
   end
-  object Label1: TLabel
+  object LbOutput: TLabel
     Left = 4
     Top = 29
     Width = 50
@@ -37,7 +37,7 @@ object FmSetup: TFmSetup
     Caption = 'Output:'
     Layout = tlCenter
   end
-  object Label2: TLabel
+  object LbPlaybackSampleRate: TLabel
     Left = 4
     Top = 88
     Width = 138
@@ -52,7 +52,6 @@ object FmSetup: TFmSetup
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     TabOrder = 0
     OnChange = CBDriversChange
   end
@@ -63,7 +62,6 @@ object FmSetup: TFmSetup
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     TabOrder = 1
     OnChange = CBOutputChange
   end

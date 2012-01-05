@@ -25,7 +25,7 @@ unit DAV_DspFilter;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2005-2011        //
+//  Portions created by Christian-W. Budde are Copyright (CALL) 2005-2011        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -406,16 +406,16 @@ end;
 {$IFNDEF PUREPASCAL}
 function TCustomFilter.ProcessSampleASM: Double;
 asm
- push eax
- push ecx
- push edx
- FSTP [esp - 4].Single
- push dword ptr [esp - 4]
- mov edx, [eax]
- call dword ptr [edx + $24] // ProcessSample
- pop edx
- pop ecx
- pop eax
+    PUSH    EAX
+    PUSH    ECX
+    PUSH    EDX
+    FSTP    [ESP - 4].Single
+    PUSH    DWORD PTR [ESP - 4]
+    MOV     EDX, [EAX]
+    CALL    DWORD PTR [EDX + $24] // ProcessSample
+    POP     EDX
+    POP     ECX
+    POP     EAX
 end;
 {$ENDIF}
 
@@ -441,7 +441,7 @@ begin
      then Move(FFilterArray[i + 1], FFilterArray[i], (Length(FFilterArray) - 1 - i) * SizeOf(Single));
     SetLength(FFilterArray, Length(FFilterArray) - 1);
    end
-  else inc(i);
+  else Inc(i);
  if OwnFilters
   then FreeAndNil(Filter);
 end;
@@ -827,20 +827,20 @@ begin
   do InOutBuffer[SampleIndex] := InOutBuffer[SampleIndex] + IRBuffer[SampleIndex] * Current;
 {$ELSE}
 asm
-  FLD   Current.Double
-  @SmallLoop:
-  FLD   [edx].Double
-  FMUL  ST(0),ST(1)
-  FLD   [eax].Double
-  faddp ST(1), ST(0)
+    FLD     Current.Double
+@SmallLoop:
+    FLD     [EDX].Double
+    FMUL    ST(0),ST(1)
+    FLD     [EAX].Double
+    FADDP   ST(1), ST(0)
 
-  FSTP  [eax].Double
-  add   eax, 8
-  add   edx, 8
-  loop  @SmallLoop
+    FSTP    [EAX].Double
+    ADD     EAX, 8
+    ADD     EDX, 8
+    LOOP    @SmallLoop
 
-  @EndSmallLoop:
-  ffree ST(0)
+@EndSmallLoop:
+    FSTP    ST(0)
 {$ENDIF}
 end;
 
@@ -854,55 +854,56 @@ begin
   do InOutBuffer[SampleIndex] := InOutBuffer[SampleIndex] + IRBuffer[SampleIndex] * Current;
 {$ELSE}
 asm
-  FLD   Current.Double
+    FLD     Current.Double
 
-  push ecx
-  shr ecx,2
-  jz @SkipLargeAddLoop
-  @LargeLoop:
-  FLD   [edx].Double
-  FMUL  ST(0),ST(1)
-  FLD   [eax].Double
-  faddp ST(1), ST(0)
-  FSTP  [eax].Double
-  FLD   [edx+8].Double
-  FMUL  ST(0),ST(1)
-  FLD   [eax+8].Double
-  faddp ST(1), ST(0)
-  FSTP  [eax+8].Double
-  FLD   [edx+16].Double
-  FMUL  ST(0),ST(1)
-  FLD   [eax+16].Double
-  faddp ST(1), ST(0)
-  FSTP  [eax+16].Double
-  FLD   [edx+24].Double
-  FMUL  ST(0),ST(1)
-  FLD   [eax+24].Double
-  faddp ST(1), ST(0)
-  FSTP  [eax+24].Double
+    PUSH    ECX
+    SHR     ECX,2
+    JZ      @SkipLargeAddLoop
 
-  add   eax, 32
-  add   edx, 32
-  loop  @LargeLoop
+@LargeLoop:
+    FLD     [EDX].Double
+    FMUL    ST(0), ST(1)
+    FLD     [EAX].Double
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX].Double
+    FLD     [EDX + 8].Double
+    FMUL    ST(0),ST(1)
+    FLD     [EAX + 8].Double
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX + 8].Double
+    FLD     [EDX + 16].Double
+    FMUL    ST(0), ST(1)
+    FLD     [EAX + 16].Double
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX + 16].Double
+    FLD     [EDX + 24].Double
+    FMUL    ST(0), ST(1)
+    FLD     [EAX + 24].Double
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX + 24].Double
 
-  @SkipLargeAddLoop:
-  pop ecx
-  and ecx,$00000003
-  jz @EndSmallLoop
+    ADD     EAX, 32
+    ADD     EDX, 32
+    LOOP    @LargeLoop
 
-  @SmallLoop:
-  FLD   [edx].Double
-  FMUL  ST(0),ST(1)
-  FLD   [eax].Double
-  faddp ST(1), ST(0)
-  FSTP [eax].Double
+@SkipLargeAddLoop:
+    POP     ECX
+    AND     ECX, $3
+    JZ      @EndSmallLoop
 
-  add   eax, 8
-  add   edx, 8
-  loop  @SmallLoop
+@SmallLoop:
+    FLD     [EDX].Double
+    FMUL    ST(0),ST(1)
+    FLD     [EAX].Double
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX].Double
 
-  @EndSmallLoop:
-  ffree ST(0)
+    ADD     EAX, 8
+    ADD     EDX, 8
+    LOOP    @SmallLoop
+
+@EndSmallLoop:
+    FSTP    ST(0)
 {$ENDIF}
 end;
 
@@ -1189,22 +1190,22 @@ begin
 end;
 {$ELSE}
 asm
- FLD     Input.Double                    // Input
- FMUL    [Self.FNominator].Double        // a0 * Input
- FADD    [Self.FState].Double            // r = d0 + a0 * Input
- FLD     ST(0)                           // r, r
- FLD     ST(0)                           // r, r, r
- FMUL    [Self.FDenominator].Double      // b0 * r, r, r
- FLD     Input.Double                    // Input, b0 * r, r, r
- FMUL    [Self.FNominator + 8].Double    // a1 * Input, b0 * r, r, r
- FSUBRP                                  // a1 * Input + b0 * r, r, r
- FADD    [Self.FState + 8].Double        // d1 + a1 * Input - b0 * r, r, r
- FSTP    [Self.FState].Double            // d0 = a1 * Input + d1 + b1 * r, r, r
- FMUL    [Self.FDenominator + 8].Double  // b1*r, r
- FLD     Input.Double                    // Input, b1*r, r
- FMUL    [Self.FNominator + 16].Double   // a2*Input, b1*r, r
- FSUBRP  ST(1), ST(0)                    // b1*r + a2*Input, r !!!
- FSTP    [Self.FState + 8].Double        // d1 = b1*r + a2*Input, r !!!
+    FLD     Input.Double                    // Input
+    FMUL    [Self.FNominator].Double        // a0 * Input
+    FADD    [Self.FState].Double            // r = d0 + a0 * Input
+    FLD     ST(0)                           // r, r
+    FLD     ST(0)                           // r, r, r
+    FMUL    [Self.FDenominator].Double      // b0 * r, r, r
+    FLD     Input.Double                    // Input, b0 * r, r, r
+    FMUL    [Self.FNominator + 8].Double    // a1 * Input, b0 * r, r, r
+    FSUBRP                                  // a1 * Input + b0 * r, r, r
+    FADD    [Self.FState + 8].Double        // d1 + a1 * Input - b0 * r, r, r
+    FSTP    [Self.FState].Double            // d0 = a1 * Input + d1 + b1 * r, r, r
+    FMUL    [Self.FDenominator + 8].Double  // b1*r, r
+    FLD     Input.Double                    // Input, b1*r, r
+    FMUL    [Self.FNominator + 16].Double   // a2*Input, b1*r, r
+    FSUBRP  ST(1), ST(0)                    // b1*r + a2*Input, r !!!
+    FSTP    [Self.FState + 8].Double        // d1 = b1*r + a2*Input, r !!!
 end;
 {$ENDIF}
 
@@ -1217,22 +1218,22 @@ begin
 end;
 {$ELSE}
 asm
- FLD     Input.Single                    // Input
- FMUL    [Self.FNominator].Double        // a0 * Input
- FADD    [Self.FState].Double            // r = d0 + a0 * Input
- FLD     ST(0)                           // r, r
- FLD     ST(0)                           // r, r, r
- FMUL    [Self.FDenominator].Double      // b0 * r, r, r
- FLD     Input.Single                    // Input, b0 * r, r, r
- FMUL    [Self.FNominator + 8].Double    // a1 * Input, b0 * r, r, r
- FSUBRP                                  // a1 * Input + b0 * r, r, r
- FADD    [Self.FState + 8].Double        // d1 + a1 * Input - b0 * r, r, r
- FSTP    [Self.FState].Double            // d0 = a1 * Input + d1 + b1 * r, r, r
- FMUL    [Self.FDenominator + 8].Double  // b1 * r, r
- FLD     Input.Single                    // Input, b1 * r, r
- FMUL    [Self.FNominator + 16].Double   // a2*Input, b1 * r, r
- FSUBRP  ST(1), ST(0)                    // b1 * r + a2 * Input, r !!!
- FSTP    [Self.FState + 8].Double        // d1 = b1 * r + a2 * Input, r !!!
+    FLD     Input.Single                    // Input
+    FMUL    [Self.FNominator].Double        // a0 * Input
+    FADD    [Self.FState].Double            // r = d0 + a0 * Input
+    FLD     ST(0)                           // r, r
+    FLD     ST(0)                           // r, r, r
+    FMUL    [Self.FDenominator].Double      // b0 * r, r, r
+    FLD     Input.Single                    // Input, b0 * r, r, r
+    FMUL    [Self.FNominator + 8].Double    // a1 * Input, b0 * r, r, r
+    FSUBRP                                  // a1 * Input + b0 * r, r, r
+    FADD    [Self.FState + 8].Double        // d1 + a1 * Input - b0 * r, r, r
+    FSTP    [Self.FState].Double            // d0 = a1 * Input + d1 + b1 * r, r, r
+    FMUL    [Self.FDenominator + 8].Double  // b1 * r, r
+    FLD     Input.Single                    // Input, b1 * r, r
+    FMUL    [Self.FNominator + 16].Double   // a2*Input, b1 * r, r
+    FSUBRP  ST(1), ST(0)                    // b1 * r + a2 * Input, r !!!
+    FSTP    [Self.FState + 8].Double        // d1 = b1 * r + a2 * Input, r !!!
 end;
 {$ENDIF}
 
@@ -1246,24 +1247,24 @@ end;
 {$IFNDEF PUREPASCAL}
 function TCustomBiquadIIRFilter.ProcessSampleASM: Double;
 asm
- FLD     ST(0)                           // s, s
- FMUL    [Self.FNominator].Double        // a0*s, s
- FADD    [Self.FState].Double            // r = d0+a0*s, s
- FLD     ST(0)                           // r, r, s
- FLD     ST(0)                           // r, r, r, s
- FMUL    [Self.FDenominator].Double      // b0*r, r, r, s
- FLD     ST(3)                           // s, b0*r, r, r, s
- FMUL    [Self.FNominator + 8].Double    // a1*s, b0*r, r, r, s
- FSUBRP                                  // a1*s + b0*r, r, r, s
- FADD    [Self.FState + 8].Double        // d1+a1*s-b0*r, r, r, s
+    FLD     ST(0)                           // s, s
+    FMUL    [Self.FNominator].Double        // a0*s, s
+    FADD    [Self.FState].Double            // r = d0+a0*s, s
+    FLD     ST(0)                           // r, r, s
+    FLD     ST(0)                           // r, r, r, s
+    FMUL    [Self.FDenominator].Double      // b0*r, r, r, s
+    FLD     ST(3)                           // s, b0*r, r, r, s
+    FMUL    [Self.FNominator + 8].Double    // a1*s, b0*r, r, r, s
+    FSUBRP                                  // a1*s + b0*r, r, r, s
+    FADD    [Self.FState + 8].Double        // d1+a1*s-b0*r, r, r, s
 
- FSTP    [Self.FState].Double            // d0 = a1*s + d1+b1*r, r, r, s
- FMUL    [Self.FDenominator + 8].Double  // b1*r, r, s
- FXCH    ST(2)                           // s, r, b1*r,
- FMUL    [Self.FNominator + 16].Double   // a2*s, r, b1*r,
- FSUBRP  ST(2), ST(0)                    // b1*r + a2*s, r, !!!
- FXCH
- FSTP    [Self.FState + 8].Double        // d1 = b1*r + a2*s, r, !!!
+    FSTP    [Self.FState].Double            // d0 = a1*s + d1+b1*r, r, r, s
+    FMUL    [Self.FDenominator + 8].Double  // b1*r, r, s
+    FXCH    ST(2)                           // s, r, b1*r,
+    FMUL    [Self.FNominator + 16].Double   // a2*s, r, b1*r,
+    FSUBRP  ST(2), ST(0)                    // b1*r + a2*s, r, !!!
+    FXCH
+    FSTP    [Self.FState + 8].Double        // d1 = b1*r + a2*s, r, !!!
 end;
 {$ENDIF}
 
@@ -1290,6 +1291,7 @@ function TCustomBiquadIIRFilter.GetOrder: Cardinal;
 begin
  Result := 2;
 end;
+
 
 { TBilinearTransformedBiquadIIRFilter }
 

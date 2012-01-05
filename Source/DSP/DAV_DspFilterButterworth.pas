@@ -32,7 +32,7 @@ unit DAV_DspFilterButterworth;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I ..\DAV_Compiler.INC}
 
 {$IFDEF Darwin}
   {$DEFINE PUREPASCAL} // for OSX use pure pascal code
@@ -344,7 +344,7 @@ begin
    FFilterGain := FFilterGain * t * K2;
    FCoeffs[i    ] := 2 * (1 - K2) * t;
    FCoeffs[i + 1] := (a - 1 - K2) * t;
-   inc(i, 2);
+   Inc(i, 2);
   end;
  if i < Integer(FOrder) then
   begin
@@ -412,7 +412,7 @@ begin
    B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
    R := ComplexMultiply64(R, ComplexDivide64(A, B));
-   inc(i);
+   Inc(i);
   end;
 
  if FOrder mod 2 = 1 then
@@ -450,54 +450,58 @@ begin
   end;
 {$ELSE}
 asm
- fld Input.Single;
- {$IFDEF HandleDenormals}
- fadd CDenorm32
- {$ENDIF}
- fmul  [eax.FFilterGain].Double
- mov   ecx, [eax.FOrder]
- test  ecx, ecx
- jz    @End
- shr   ecx, 1
- shl   ecx, 2
- push  ecx
- jz @SingleStage
- @FilterLoop:
-  sub   ecx, 4
-  fld   st(0)
-  fadd  [eax.FState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4 + 8].Double
- ja @FilterLoop
+{$IFDEF CPUx86_64}
+{$ELSE}
+    FLD     Input.Single;
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm32
+    {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    MOV     ECX, [EAX.FOrder]
+    TEST    ECX, ECX
+    JZ      @End
+    SHR     ECX, 1
+    SHL     ECX, 2
+    PUSH    ECX
+    JZ      @SingleStage
 
- @SingleStage:
- pop ecx
- shr ecx, 1
- sub ecx, [eax.FOrder]
- jz @End
-  mov ecx, [eax.FOrder]
-  dec ecx
-  shl ecx, 1
-  fld st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  faddp st(2), st(0)
-  fxch
-  fstp [eax.FState + ecx * 4].Double
- @End:
- {$ENDIF}
+@FilterLoop:
+    SUB     ECX, 4
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4 + 8].Double
+    JA      @FilterLoop
+
+@SingleStage:
+    POP     ECX
+    SHR     ECX, 1
+    SUB     ECX, [EAX.FOrder]
+    JZ      @End
+    MOV     ECX, [EAX.FOrder]
+    DEC     ECX
+    SHL     ECX, 1
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADDP   ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState + ECX * 4].Double
+{$ENDIF}
+@End:
+{$ENDIF}
 end;
 
 function TCustomButterworthLowPassFilter.ProcessSample64(Input: Double): Double;
@@ -522,54 +526,58 @@ begin
   end;
 {$ELSE}
 asm
- fld Input.Double;
- {$IFDEF HandleDenormals}
- fadd CDenorm32
- {$ENDIF}
- fmul  [eax.FFilterGain].Double
- mov   ecx, [eax.FOrder]
- test  ecx, ecx
- jz    @End
- shr   ecx, 1
- shl   ecx, 2
- push  ecx
- jz @SingleStage
- @FilterLoop:
-  sub   ecx, 4
-  fld   st(0)
-  fadd  [eax.FState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4 + 8].Double
- ja @FilterLoop
+{$IFDEF CPUx86_64}
+{$ELSE}
+    FLD     Input.Double;
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm32
+    {$ENDIF}
+    FMUL    [EAX.FFilterGain].Double
+    MOV     ECX, [EAX.FOrder]
+    TEST    ECX, ECX
+    JZ      @End
+    SHR     ECX, 1
+    SHL     ECX, 2
+    PUSH    ECX
+    JZ      @SingleStage
 
- @SingleStage:
- pop ecx
- shr ecx, 1
- sub ecx, [eax.FOrder]
- jz @End
-  mov ecx, [eax.FOrder]
-  dec ecx
-  shl ecx, 1
-  fld st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  faddp st(2), st(0)
-  fxch
-  fstp [eax.FState + ecx * 4].Double
- @End:
- {$ENDIF}
+@FilterLoop:
+    SUB     ECX, 4
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4 + 8].Double
+    JA      @FilterLoop
+
+@SingleStage:
+    POP     ECX
+    SHR     ECX, 1
+    SUB     ECX, [EAX.FOrder]
+    JZ      @End
+    MOV     ECX, [EAX.FOrder]
+    DEC     ECX
+    SHL     ECX, 1
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADDP   ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState + ECX * 4].Double
+{$ENDIF}
+@End:
+{$ENDIF}
 end;
 
 { TButterworthFilterHP }
@@ -604,7 +612,7 @@ begin
    FFilterGain := FFilterGain * t;
    FCoeffs[i    ] := -2 * (K2 - 1) * t;
    FCoeffs[i + 1] := (a - K2 - 1) * t;
-   inc(i, 2);
+   Inc(i, 2);
   end;
  if i < Integer(FOrder) then
   begin
@@ -685,7 +693,7 @@ begin
    A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
    R := ComplexDivide64(R, A);
 
-   inc(i);
+   Inc(i);
   end;
 
  if FOrder mod 2 = 1 then
@@ -725,64 +733,68 @@ begin
   end;
 {$ELSE}
 asm
- fld  Input.Single
+{$IFDEF CPUx86_64}
+{$ELSE}
+    FLD     Input.Single
 
- // eventually add denormal
- {$IFDEF HandleDenormals}
- mov  edx, DenormRandom
- imul edx, DenormRandom, $08088405
- inc  edx
- shr  edx, 23
- or   edx, $20000000
- mov  DenormRandom, edx
- fadd DenormRandom
- {$ENDIF}
+    // eventually add denormal
+    {$IFDEF HandleDenormals}
+    MOV     EDX, DenormRandom
+    IMUL    EDX, DenormRandom, $08088405
+    INC     EDX
+    SHR     EDX, 23
+    OR      EDX, $20000000
+    MOV     DenormRandom, EDX
+    FADD    DenormRandom
+    {$ENDIF}
 
- fmul [eax.FFilterGain].Double
- mov  ecx, [eax.FOrder]
- test ecx, ecx
- jz @End
- shr ecx, 1
- shl ecx, 2
- push ecx
- jz @SingleStage
- @FilterLoop:
-  sub   ecx, 4
-  fld   st(0)
-  fadd  [eax.FState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  fsubp
-  fstp  [eax.FState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4 + 8].Double
- ja @FilterLoop
+    FMUL    [EAX.FFilterGain].Double
+    MOV     ECX, [EAX.FOrder]
+    TEST    ECX, ECX
+    JZ      @End
+    SHR     ECX, 1
+    SHL     ECX, 2
+    PUSH    ECX
+    JZ      @SingleStage
 
- @SingleStage:
- pop ecx
- shr ecx, 1
- sub ecx, [eax.FOrder]
+@FilterLoop:
+    SUB     ECX, 4
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FSUBP
+    FSTP    [EAX.FState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4 + 8].Double
+    JA      @FilterLoop
 
- jz @End
-  mov    ecx, [eax.FOrder]
-  dec    ecx
-  shl    ecx, 1
-  fld    st(0)
-  fadd   [eax.FState + ecx * 4].Double
-  fld    st(0)
-  fmul   [eax.FCoeffs + ecx * 4].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp   [eax.FState + ecx * 4].Double
- @End:
- {$ENDIF}
+@SingleStage:
+    POP     ECX
+    SHR     ECX, 1
+    SUB     ECX, [EAX.FOrder]
+
+    JZ      @End
+    MOV     ECX, [EAX.FOrder]
+    DEC     ECX
+    SHL     ECX, 1
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState + ECX * 4].Double
+{$ENDIF}
+@End:
+{$ENDIF}
 end;
 
 function TCustomButterworthHighPassFilter.ProcessSample64(Input: Double): Double;
@@ -808,63 +820,67 @@ begin
   end;
 {$ELSE}
 asm
- fld  Input.Double
+{$IFDEF CPUx86_64}
+{$ELSE}
+    FLD     Input.Double
 
- // eventually add denormal
- {$IFDEF HandleDenormals}
- mov  edx, DenormRandom
- imul edx, DenormRandom, $08088405
- inc  edx
- shr  edx, 23
- or   edx, $20000000
- mov  DenormRandom, edx
- fadd DenormRandom
- {$ENDIF}
+    // eventually add denormal
+    {$IFDEF HandleDenormals}
+    MOV     EDX, DenormRandom
+    IMUL    EDX, DenormRandom, $08088405
+    INC     EDX
+    SHR     EDX, 23
+    OR      EDX, $20000000
+    MOV     DenormRandom, EDX
+    FADD    DenormRandom
+    {$ENDIF}
 
- fmul  [eax.FFilterGain].Double
- mov   ecx, [eax.FOrder]
- test  ecx, ecx
- jz    @End
- shr   ecx, 1
- shl   ecx, 2
- push  ecx
- jz @SingleStage
- @FilterLoop:
-  sub   ecx, 4
-  fld   st(0)
-  fadd  [eax.FState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  fsubp
-  fstp  [eax.FState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4 + 8].Double
- ja @FilterLoop
+    FMUL    [EAX.FFilterGain].Double
+    MOV     ECX, [EAX.FOrder]
+    TEST    ECX, ECX
+    JZ      @End
+    SHR     ECX, 1
+    SHL     ECX, 2
+    PUSH    ECX
+    JZ      @SingleStage
 
- @SingleStage:
- pop ecx
- shr ecx, 1
- sub ecx, [eax.FOrder]
- jz @End
-  mov ecx, [eax.FOrder]
-  dec ecx
-  shl ecx, 1
-  fld st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp [eax.FState + ecx * 4].Double
- @End:
- {$ENDIF}
+@FilterLoop:
+    SUB     ECX, 4
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FSUBP
+    FSTP    [EAX.FState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4 + 8].Double
+    JA      @FilterLoop
+
+@SingleStage:
+    POP     ECX
+    SHR     ECX, 1
+    SUB     ECX, [EAX.FOrder]
+    JZ      @End
+    MOV     ECX, [EAX.FOrder]
+    DEC     ECX
+    SHL     ECX, 1
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState + ECX * 4].Double
+{$ENDIF}
+@End:
+{$ENDIF}
 end;
 
 { TCustomButterworthSplitBandFilter }
@@ -911,7 +927,7 @@ begin
    FFilterGain := FFilterGain * t;
    FCoeffs[i    ] := 2 * (1 - K2) * t;
    FCoeffs[i + 1] := (a - 1 - K2) * t;
-   inc(i, 2);
+   Inc(i, 2);
   end;
  if i < Integer(FOrder) then
   begin
@@ -951,7 +967,7 @@ begin
   begin
    ComplexMultiplyInplace64(Real, Imaginary, Cmplx.Re, -Cmplx.Im);
    ComplexMultiplyInplace64(R.Re, R.Im, Cmplx.Re, -Cmplx.Im);
-   inc(i);
+   Inc(i);
   end;
 
  if FOrder mod 2 = 1 then
@@ -970,7 +986,7 @@ begin
    A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
    ComplexDivideInplace64(Real, Imaginary, A.Re, A.Im);
-   inc(i);
+   Inc(i);
   end;
 
  if FOrder mod 2 = 1 then
@@ -1015,105 +1031,110 @@ begin
   end;
 {$ELSE}
 asm
- fld  Input.Single               // highpass
+{$IFDEF CPUx86_64}
+{$ELSE}
+    FLD     Input.Single               // highpass
 
- // eventuall add denormal
- {$IFDEF HandleDenormals}
- push ebx
- mov  ebx, DenormRandom
- imul ebx, DenormRandom, $08088405
- inc  ebx
- shr  ebx, 23
- or   ebx, $20000000
- mov  DenormRandom, ebx
- fadd DenormRandom
- pop ebx
- {$ENDIF}
+    // eventuall add denormal
+    {$IFDEF HandleDenormals}
+    PUSH    EBX
+    MOV     EBX, DenormRandom
+    IMUL    EBX, DenormRandom, $08088405
+    INC     EBX
+    SHR     EBX, 23
+    OR      EBX, $20000000
+    MOV     DenormRandom, EBX
+    FADD    DenormRandom
+    POP     EBX
+    {$ENDIF}
 
- fmul [eax.FFilterGain].Double
- fld  st(0)                      // lowpass, highpass
- fmul [eax.FKs].Double
- push ecx
- mov  ecx, [eax.FOrder]
- test ecx, ecx
- jz  @End
- shr  ecx, 1
- shl  ecx, 2
- push ecx
- jz @SingleStage
- @FilterLoop:
-  sub  ecx, 4
+    FMUL    [EAX.FFilterGain].Double
+    FLD     ST(0)                      // lowpass, highpass
+    FMUL    [EAX.FKs].Double
+    PUSH    ECX
+    MOV     ECX, [EAX.FOrder]
+    TEST    ECX, ECX
+    JZ      @End
+    SHR     ECX, 1
+    SHL     ECX, 2
+    PUSH    ECX
+    JZ      @SingleStage
 
-  // lowpass
-  fld   st(0)
-  fadd  [eax.FState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4 + 8].Double
-  fxch
+@FilterLoop:
+    SUB     ECX, 4
 
-  // highpass
-  fld   st(0)
-  fadd  [eax.FHPState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FHPState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  fsubp
-  fstp  [eax.FHPState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FHPState + ecx * 4 + 8].Double
-  fxch
- ja @FilterLoop
+    // lowpass
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4 + 8].Double
+    FXCH
 
- @SingleStage:
- pop ecx
- shr ecx, 1
- sub ecx, [eax.FOrder]
- jz @End
-  mov ecx, [eax.FOrder]
-  dec ecx
-  shl ecx, 1
+    // highpass
+    FLD     ST(0)
+    FADD    [EAX.FHPState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FHPState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FSUBP
+    FSTP    [EAX.FHPState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FHPState + ECX * 4 + 8].Double
+    FXCH
+    JA      @FilterLoop
 
-  // lowpass
-  fld   st(0)
-  fadd  [eax.FState + ecx * 4].Double
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  faddp st(2), st(0)
-  fxch
-  fstp  [eax.FState + ecx * 4].Double
-  fxch
+@SingleStage:
+    POP     ECX
+    SHR     ECX, 1
+    SUB     ECX, [EAX.FOrder]
+    JZ      @End
+    MOV     ECX, [EAX.FOrder]
+    DEC     ECX
+    SHL     ECX, 1
 
-  // highpass
-  fld    st(0)
-  fadd   [eax.FHPState + ecx * 4].Double
-  fld    st(0)
-  fmul   [eax.FCoeffs + ecx * 4].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp   [eax.FHPState + ecx * 4].Double
-  fxch
- @End:
- fstp [Lowpass].Single
- pop ecx
- fstp [Highpass].Single
- {$ENDIF}
+    // lowpass
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADDP   ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState + ECX * 4].Double
+    FXCH
+
+    // highpass
+    FLD     ST(0)
+    FADD    [EAX.FHPState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FHPState + ECX * 4].Double
+    FXCH
+
+@End:
+    FSTP    [Lowpass].Single
+    POP     ECX
+    FSTP    [Highpass].Single
+{$ENDIF}
+{$ENDIF}
 end;
 
 procedure TCustomButterworthSplitBandFilter.ProcessSample64(Input: Double; out Lowpass,
@@ -1150,105 +1171,109 @@ begin
   end;
 {$ELSE}
 asm
- fld  Input.Double               // highpass
- fmul [eax.FFilterGain].Double
+{$IFDEF CPUx86_64}
+{$ELSE}
+    FLD     Input.Double               // highpass
+    FMUL    [EAX.FFilterGain].Double
 
- // eventually add denormal
- {$IFDEF HandleDenormals}
- push ebx
- mov  ebx, DenormRandom
- imul ebx, DenormRandom, $08088405
- inc  ebx
- shr  ebx, 23
- or   ebx, $20000000
- mov  DenormRandom, ebx
- fadd DenormRandom
- pop ebx
- {$ENDIF}
+    // eventually add denormal
+    {$IFDEF HandleDenormals}
+    PUSH    EBX
+    MOV     EBX, DenormRandom
+    IMUL    EBX, DenormRandom, $08088405
+    INC     EBX
+    SHR     EBX, 23
+    OR      EBX, $20000000
+    MOV     DenormRandom, EBX
+    FADD    DenormRandom
+    POP     EBX
+    {$ENDIF}
 
- fld st(0)                       // lowpass, highpass
- fmul [eax.FKs].Double
- push ecx
- mov  ecx, [eax.FOrder]
- test ecx, ecx
- jz  @End
- shr  ecx, 1
- shl  ecx, 2
- push ecx
- jz @SingleStage
- @FilterLoop:
-  sub  ecx, 4
+    FLD     ST(0)                       // lowpass, highpass
+    FMUL    [EAX.FKs].Double
+    PUSH    ECX
+    MOV     ECX, [EAX.FOrder]
+    TEST    ECX, ECX
+    JZ      @End
+    SHR     ECX, 1
+    SHL     ECX, 2
+    PUSH    ECX
+    JZ      @SingleStage
+@FilterLoop:
+    SUB     ECX, 4
 
-  // lowpass
-  fld   st(0)
-  fadd  [eax.FState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FState + ecx * 4 + 8].Double
-  fxch
+    // lowpass
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FState + ECX * 4 + 8].Double
+    FXCH
 
-  // highpass
-  fld   st(0)
-  fadd  [eax.FHPState + ecx * 4].Double
-  fld   st(0)
-  fld   st(0)
-  fmul  [eax.FCoeffs + ecx * 4].Double
-  fadd  [eax.FHPState + ecx * 4 + 8].Double
-  fld   st(3)
-  fadd  st(0), st(0)
-  fsubp
-  fstp  [eax.FHPState + ecx * 4].Double
-  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
-  fxch
-  fxch  st(2)
-  faddp st(1), st(0)
-  fstp  [eax.FHPState + ecx * 4 + 8].Double
-  fxch
- ja @FilterLoop
+    // highpass
+    FLD     ST(0)
+    FADD    [EAX.FHPState + ECX * 4].Double
+    FLD     ST(0)
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADD    [EAX.FHPState + ECX * 4 + 8].Double
+    FLD     ST(3)
+    FADD    ST(0), ST(0)
+    FSUBP
+    FSTP    [EAX.FHPState + ECX * 4].Double
+    FMUL    [EAX.FCoeffs + ECX * 4 + 8].Double
+    FXCH
+    FXCH    ST(2)
+    FADDP   ST(1), ST(0)
+    FSTP    [EAX.FHPState + ECX * 4 + 8].Double
+    FXCH
+    JA      @FilterLoop
 
- @SingleStage:
- pop ecx
- shr ecx, 1
- sub ecx, [eax.FOrder]
- jz @End
-  mov ecx, [eax.FOrder]
-  dec ecx
-  shl ecx, 1
+@SingleStage:
+    POP     ECX
+    SHR     ECX, 1
+    SUB     ECX, [EAX.FOrder]
+    JZ      @End
+    MOV     ECX, [EAX.FOrder]
+    DEC     ECX
+    SHL     ECX, 1
 
-  // lowpass
-  fld  st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  faddp st(2), st(0)
-  fxch
-  fstp [eax.FState + ecx * 4].Double
-  fxch
+    // lowpass
+    FLD     ST(0)
+    FADD    [EAX.FState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FADDP   ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FState + ECX * 4].Double
+    FXCH
 
-  // highpass
-  fld st(0)
-  fadd [eax.FHPState + ecx * 4].Double
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fsubrp st(2), st(0)
-  fxch
-  fstp [eax.FHPState + ecx * 4].Double
-  fxch
- @End:
- fstp [Lowpass].Double
- pop ecx
- fstp [Highpass].Double
- {$ENDIF}
+    // highpass
+    FLD     ST(0)
+    FADD    [EAX.FHPState + ECX * 4].Double
+    FLD     ST(0)
+    FMUL    [EAX.FCoeffs + ECX * 4].Double
+    FSUBRP  ST(2), ST(0)
+    FXCH
+    FSTP    [EAX.FHPState + ECX * 4].Double
+    FXCH
+
+@End:
+    FSTP     [Lowpass].Double
+    POP      ECX
+    FSTP     [Highpass].Double
+{$ENDIF}
+{$ENDIF}
 end;
 
 function TCustomButterworthSplitBandFilter.ProcessSample64(

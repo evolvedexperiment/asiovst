@@ -32,7 +32,7 @@ unit DAV_DspPlateReverb;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I ..\DAV_Compiler.Inc}
 
 {$IFDEF CPUx86_64}
   {$DEFINE PUREPASCAL}
@@ -213,7 +213,7 @@ begin
  Pos := FBufferPos - Index;
  if Pos < 0
   then Inc(Pos, FInternalBufferSize);
- result := FBuffer^[Pos];
+ Result := FBuffer^[Pos];
 end;
 
 procedure TDiffusor.SetBufferSize(const Value: Integer);
@@ -255,52 +255,76 @@ var
   WritePos: PSingle;
 begin
  WritePos := @FBuffer^[FBufferPos];
- inc(FBufferPos);
+ Inc(FBufferPos);
  if FBufferPos >= FInternalBufferSize
   then FBufferPos := 0;
 
  WritePos^ := Input - FAmount * FBuffer^[FBufferPos];
- result := WritePos^ * FAmount + FBuffer^[FBufferPos];
-end;
+ Result := WritePos^ * FAmount + FBuffer^[FBufferPos];
 {$ELSE}
 asm
-  push ebx
-  mov  ecx, [eax].FBuffer                 // FBuffer start in ecx
-  mov  edx, [eax].FBufferPos              // FBuffer index in edx
-  mov  ebx, edx                           // FBuffer index in ebx
-  inc  edx
-  cmp  edx, [eax].FInternalBufferSize     // are we at end of FBuffer?
-  jb   @OK
-  xor  edx, edx                           // if so, reset FBuffer index
+{$IFDEF CPUx86_64}
+    MOV     EDX, [ECX].FBuffer              // FBuffer start in EDX
+    MOV     R8, [ECX].FBufferPos            // FBuffer index in R8
+    MOV     R9, R8                          // FBuffer index in EBX
+    INC     R8
+    CMP     R8, [ECX].FInternalBufferSize   // are we at end of FBuffer?
+    JB      @OK
+    XOR     R8, R8                          // if so, reset FBuffer index
 @OK:
-  mov  [eax].FBufferPos, edx              // and store new index,
-                                          // result already in st(0),
+    MOV     [ECX].FBufferPos, R8            // and store new index,
+                                            // Result already in st(0),
 
-  fld  Input                              // load Input
+@Normal:
+    MOVSS   XMM1, [EDX + 4 * R8]            // load FBuffer^[FBufferPos]
+    MOVSS   XMM2, [ECX].FAmount             // load Amount
+    MOVSS   XMM3, XMM2                      // load Amount
+    MULSS   XMM2, XMM1                      // multiply Amount
+    SUBSS   XMM0, XMM2                      // Input - FAmount * FBuffer^[FBufferPos]
+    MOVSS   [EDX + 4 * R9], XMM0            // write at WritePos
+    MULSS   XMM0, XMM3                      // multiply Amount
+    ADDSS   XMM1, XMM2                      // add FBuffer^[FBufferPos]
+    MOVSS   XMM0, XMM1                      // store to Result
+
+{$ELSE}
+    PUSH    EBX
+    MOV     ECX, [EAX].FBuffer               // FBuffer start in ECX
+    MOV     EDX, [EAX].FBufferPos            // FBuffer index in EDX
+    MOV     EBX, EDX                         // FBuffer index in EBX
+    INC     EDX
+    CMP     EDX, [EAX].FInternalBufferSize   // are we at end of FBuffer?
+    JB      @OK
+    XOR     EDX, EDX                         // if so, reset FBuffer index
+@OK:
+    MOV     [EAX].FBufferPos, EDX            // and store new index,
+                                             // Result already in st(0),
+
+    FLD     Input                            // load Input
 
 (*
-  // This checks for very small values that can cause a processor
-  // to switch in extra precision fMode, which is expensive.
-  // Since such small values are irrelevant to audio, avoid this.
-  // The code is equivalent to the C inline macro by Jezar
-  // This is the same spot where the original C macro appears
-  test dword ptr [ecx + 4 * edx], $7F800000 // test if denormal
-  jnz @Normal
-  mov dword ptr [ecx + 4 * edx], 0          // if so, zero out
+    // This checks for very small values that can cause a processor
+    // to switch in extra precision fMode, which is expensive.
+    // Since such small values are irrelevant to audio, avoid this.
+    // The code is equivalent to the C inline macro by Jezar
+    // This is the same spot where the original C macro appears
+
+    TEST dword PTR [ECX + 4 * EDX], $7F800000 // TEST if denormal
+    JNZ  @Normal
+    MOV dword PTR [ECX + 4 * EDX], 0          // if so, zero out
 *)
-@normal:
 
-
-  fld  [ecx + 4 * edx]                    // load FBuffer^[FBufferPos]
-  fmul [eax].FAmount                      // multiply Amount
-  fsubp                                   // Input - FAmount * FBuffer^[FBufferPos]
-  fst  [ecx + 4 * ebx]                    // write at WritePos
-  fmul [eax].FAmount                      // multiply Amount
-  fadd [ecx + 4 * edx]                    // add FBuffer^[FBufferPos]
-  fstp result                             // store to result
-  pop  ebx
-end;
+@Normal:
+    FLD     [ECX + 4 * EDX]                  // load FBuffer^[FBufferPos]
+    FMUL    [EAX].FAmount                    // multiply Amount
+    FSUBP                                    // Input - FAmount * FBuffer^[FBufferPos]
+    FST     [ECX + 4 * EBX]                  // write at WritePos
+    FMUL    [EAX].FAmount                    // multiply Amount
+    FADD    [ECX + 4 * EDX]                  // add FBuffer^[FBufferPos]
+    FSTP    Result                           // store to Result
+    POP     EBX
 {$ENDIF}
+{$ENDIF}
+end;
 
 
 { TModulatedDiffusor }
@@ -337,7 +361,7 @@ begin
  Pos := FBufferInPos - Index;
  if Pos < 0
   then Inc(Pos, FInternalBufferSize);
- result := FBuffer^[Pos];
+ Result := FBuffer^[Pos];
 end;
 
 procedure TModulatedDiffusor.SetBufferSize(const Value: Integer);
@@ -407,11 +431,11 @@ begin
  temp := FBuffer^[FBufferOutPos];
 
  // increase output position
- inc(FBufferOutPos);
+ Inc(FBufferOutPos);
  if FBufferOutPos >= FInternalBufferSize
   then FBufferOutPos := 0;
 
- inc(FBufferInPos);
+ Inc(FBufferInPos);
  if FBufferInPos >= FInternalBufferSize
   then FBufferInPos := FBufferInPos - FInternalBufferSize;
  SPos := Excursion * FLFO.Sine;
@@ -431,7 +455,7 @@ begin
  FLFO.CalculateNextSample;
 
  FBuffer^[Pos] := Input + FAmount * temp;
- result := FAllpass.ProcessSample64(FBuffer^[Pos]) * FAmount + temp
+ Result := FAllpass.ProcessSample64(FBuffer^[Pos]) * FAmount + temp
 end;
 
 
@@ -649,7 +673,7 @@ begin
  Temp := FResampleFilter.ProcessSample64(CDenorm32 + Input);
 
  FPreDelayBuffer[FPreDelayBufferPos] := Temp;
- inc(FPreDelayBufferPos);
+ Inc(FPreDelayBufferPos);
  if FPreDelayBufferPos = 3
   then Move(FPreDelayBuffer[0], FPreDelayBuffer[FPreDelayBufferSize], 3 * SizeOf(Single)) else
  if FPreDelayBufferPos >= FPreDelayBufferSize
@@ -711,7 +735,7 @@ begin
  FCurrentOutput[1] := Hermite32_asm(1 - FResamplePos, @FBuffer[1, 0]);
  FResamplePos := FResamplePos + FResampleFactor;
 
- result := CHalf32 * (FCurrentOutput[0] + FCurrentOutput[1]);
+ Result := CHalf32 * (FCurrentOutput[0] + FCurrentOutput[1]);
 end;
 
 initialization

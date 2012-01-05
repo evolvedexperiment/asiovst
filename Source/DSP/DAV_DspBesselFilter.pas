@@ -396,32 +396,33 @@ begin
 end;
 {$ELSE}
 asm
- fld Input.Double
- fmul [self.FA].Double
- fadd [self.FState].Double
- mov ecx, 1
- mov edx, [self.FOrder]
+    FLD     Input.Double
+    FMUL    [Self.FA].Double
+    FADD    [Self.FState].Double
+    MOV     ECX, 1
+    MOV     EDX, [Self.FOrder]
 
 @StageLoop:
- fld st(0)
- fmul [self.FB + ecx * 8 - 8].Double
- fadd [self.FState + ecx * 8].Double
- fld Input.Double
- fmul [self.FA + ecx * 8].Double
- faddp
- fstp [self.FState + ecx * 8 - 8].Double
- inc ecx
- test ecx, edx
- jnp @StageLoop
+    FLD     ST(0)
+    FMUL    [Self.FB + ECX * 8 - 8].Double
+    FADD    [Self.FState + ECX * 8].Double
+    FLD     Input.Double
+    FMUL    [Self.FA + ECX * 8].Double
+    FADDP
+    FSTP    [Self.FState + ECX * 8 - 8].Double
+    INC     ECX
+    TEST    ECX, EDX
+    JNP     @StageLoop
 
- fld st(0)
- fmul [self.FB + ecx * 8 - 8].Double
- fld Input.Double
- fmul [self.FA + ecx * 8].Double
- faddp
- fstp [self.FState + ecx * 8 - 8].Double
+    FLD     ST(0)
+    FMUL    [Self.FB + ECX * 8 - 8].Double
+    FLD     Input.Double
+    FMUL    [Self.FA + ECX * 8].Double
+    FADDP
+    FSTP    [Self.FState + ECX * 8 - 8].Double
 end;
 {$ENDIF}
+
 
 { TBesselFilterHP }
 
@@ -468,10 +469,11 @@ function TBesselHighpassFilter.MagnitudeSquared(const Frequency: Double): Double
   i    : Integer;
   a,cw : Double;*)
 begin
-  Result:=1; // dummy
+  Result := 1; // dummy
 (*
- cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw-2);
- Result:=1;
+ cw := 2 * cos(2 * Frequency * pi * fSRR);
+ a := sqr(cw - 2);
+ Result := 1;
  for i := 0 to (FOrder div 2) - 1
   do Result:=Result*sqr(fAB[4*i])*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
  if (FOrder mod 2) = 1 then
@@ -494,30 +496,30 @@ begin
 end;
 {$ELSE}
 asm
- fld Input.Double
- fmul [self.FA].Double
- fadd [self.FState].Double
- mov ecx, 1
- mov edx, [self.FOrder]
+    FLD Input.Double
+    FMUL [Self.FA].Double
+    FADD [Self.FState].Double
+    MOV ECX, 1
+    MOV EDX, [Self.FOrder]
 
 @StageLoop:
- fld st(0)
- fmul [self.FB + ecx * 8 - 8].Double
- fadd [self.FState + ecx * 8].Double
- fld Input.Double
- fmul [self.FA + ecx * 8].Double
- faddp
- fstp [self.FState + ecx * 8 - 8].Double
- inc ecx
- test ecx, edx
- jnp @StageLoop
+    FLD ST(0)
+    FMUL [Self.FB + ECX * 8 - 8].Double
+    FADD [Self.FState + ECX * 8].Double
+    FLD Input.Double
+    FMUL [Self.FA + ECX * 8].Double
+    FADDP
+    FSTP [Self.FState + ECX * 8 - 8].Double
+    INC ECX
+    TEST ECX, EDX
+    JNP @StageLoop
 
- fld st(0)
- fmul [self.FB + ecx * 8 - 8].Double
- fld Input.Double
- fmul [self.FA + ecx * 8].Double
- faddp
- fstp [self.FState + ecx * 8 - 8].Double
+    FLD ST(0)
+    FMUL [Self.FB + ECX * 8 - 8].Double
+    FLD Input.Double
+    FMUL [Self.FA + ECX * 8].Double
+    FADDP
+    FSTP [Self.FState + ECX * 8 - 8].Double
 end;
 {$ENDIF}
 

@@ -306,44 +306,44 @@ begin
 end;
 {$ELSE}
 asm
- fld NormFrequency.Double          // NormFrequency
- fsincos                           // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- mov ecx, [TimeSignal - 4].Integer // ecx = Length(TimeSignal)
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD NormFrequency.Double          // NormFrequency
+    FSINCOS                           // Angle.Re, Angle.Im
+    FLD1                              // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV EAX, TimeSignal               // EAX = TimeSignal
+    MOV ECX, [TimeSignal - 4].Integer // ECX = Length(TimeSignal)
+    DEC ECX                           // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 4                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD EAX, 4                       // next timesignal
+    FLD  ST(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH ST(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- fstp Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- finit                             // (cleared)
+    FSTP Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FINIT                             // (cleared)
 end;
 {$ENDIF}
 
@@ -367,44 +367,44 @@ begin
 end;
 {$ELSE}
 asm
- fld NormFrequency.Double          // NormFrequency
- fsincos                           // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- mov ecx, [TimeSignal - 4].Integer // ecx = Length(TimeSignal)
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD NormFrequency.Double          // NormFrequency
+    FSINCOS                           // Angle.Re, Angle.Im
+    FLD1                              // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV EAX, TimeSignal               // EAX = TimeSignal
+    MOV ECX, [TimeSignal - 4].Integer // ECX = Length(TimeSignal)
+    DEC ECX                           // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 8                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD EAX, 8                       // next timesignal
+    FLD  ST(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Double                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH ST(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Double                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- fstp Result.Im.Double             // Result.Im.Double := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Double             // Result.Re.Double := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- finit                             // (cleared)
+    FSTP Result.Im.Double             // Result.Im.Double := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP Result.Re.Double             // Result.Re.Double := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FINIT                             // (cleared)
 end;
 {$ENDIF}
 
@@ -428,49 +428,49 @@ begin
 end;
 {$ELSE}
 asm
- fld NormFrequency.Double          // NormFrequency
- fsincos                           // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- push ecx
- mov ecx, edx                      // ecx = Length
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD NormFrequency.Double          // NormFrequency
+    FSINCOS                           // Angle.Re, Angle.Im
+    FLD1                              // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV EAX, TimeSignal               // EAX = TimeSignal
+    PUSH ECX
+    MOV ECX, edx                      // ECX = Length
+    DEC ECX                           // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 4                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD EAX, 4                       // next timesignal
+    FLD  ST(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH ST(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- pop ecx
- fstp Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
+    POP ECX
+    FSTP Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
 end;
 {$ENDIF}
 
@@ -494,49 +494,49 @@ begin
 end;
 {$ELSE}
 asm
- fld NormFrequency.Double          // NormFrequency
- fsincos                           // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- push ecx
- mov ecx, edx                      // ecx = Length(TimeSignal)
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD NormFrequency.Double          // NormFrequency
+    FSINCOS                           // Angle.Re, Angle.Im
+    FLD1                              // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV EAX, TimeSignal               // EAX = TimeSignal
+    PUSH ECX
+    MOV ECX, edx                      // ECX = Length(TimeSignal)
+    DEC ECX                           // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 8                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD EAX, 8                       // next timesignal
+    FLD  ST(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Double                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH ST(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Double                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- pop ecx
- fstp Result.Im.Double             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Double             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
+    POP ECX
+    FSTP Result.Im.Double             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP Result.Re.Double             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
 end;
 {$ENDIF}
 
@@ -560,44 +560,44 @@ begin
 end;
 {$ELSE}
 asm
- fld Angular.Im.Single             // Angle.Im
- fld Angular.Re.Single             // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- mov ecx, [TimeSignal - 4].Integer // ecx = Length(TimeSignal)
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD Angular.Im.Single             // Angle.Im
+    FLD Angular.Re.Single             // Angle.Re, Angle.Im
+    FLD1                              // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV EAX, TimeSignal               // EAX = TimeSignal
+    MOV ECX, [TimeSignal - 4].Integer // ECX = Length(TimeSignal)
+    DEC ECX                           // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 4                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD EAX, 4                       // next timesignal
+    FLD  ST(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH ST(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- fstp Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- finit                             // (cleared)
+    FSTP Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FINIT                             // (cleared)
 end;
 {$ENDIF}
 
@@ -620,44 +620,44 @@ begin
 end;
 {$ELSE}
 asm
- fld Angular.Im.Double             // Angle.Im
- fld Angular.Re.Double             // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- mov ecx, [TimeSignal - 4].Integer // ecx = Length(TimeSignal)
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD Angular.Im.Double             // Angle.Im
+    FLD Angular.Re.Double             // Angle.Re, Angle.Im
+    FLD1                              // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV EAX, TimeSignal               // EAX = TimeSignal
+    MOV ECX, [TimeSignal - 4].Integer // ECX = Length(TimeSignal)
+    DEC ECX                           // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 8                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD EAX, 8                       // next timesignal
+    FLD  ST(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Double                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH ST(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Double                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- fstp Result.Im.Double             // Result.Im.Double := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Double             // Result.Re.Double := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- finit                             // (cleared)
+    FSTP Result.Im.Double             // Result.Im.Double := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP Result.Re.Double             // Result.Re.Double := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FINIT                             // (cleared)
 end;
 {$ENDIF}
 
@@ -680,49 +680,49 @@ begin
 end;
 {$ELSE}
 asm
- fld Angular.Im.Single             // Angle.Im
- fld Angular.Re.Single             // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- push ecx
- mov ecx, edx                      // ecx = Length
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD Angular.Im.Single             // Angle.Im
+    FLD Angular.Re.Single             // Angle.Re, Angle.Im
+    FLD1                              // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD [TimeSignal].Single           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV EAX, TimeSignal               // EAX = TimeSignal
+    PUSH ECX
+    MOV ECX, edx                      // ECX = Length
+    DEC ECX                           // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 4                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD EAX, 4                       // next timesignal
+    FLD  ST(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD  ST(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH ST(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH ST(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD [EAX].Single                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL ST(0), ST(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- pop ecx
- fstp Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
+    POP ECX
+    FSTP Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
+    FSTP ST(0)                        // (cleared)
 end;
 {$ENDIF}
 
@@ -745,49 +745,49 @@ begin
 end;
 {$ELSE}
 asm
- fld Angular.Im.Double             // Angle.Im
- fld Angular.Re.Double             // Angle.Re, Angle.Im
- fld1                              // Pos.Im, Angle.Re, Angle.Im
- fldz                              // Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fld [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- mov eax, TimeSignal               // eax = TimeSignal
- push ecx
- mov ecx, edx                      // ecx = Length(TimeSignal)
- dec ecx                           // ecx = Length(TimeSignal) - 1
+    FLD     Angular.Im.Double        // Angle.Im
+    FLD     Angular.Re.Double        // Angle.Re, Angle.Im
+    FLD1                             // Pos.Im, Angle.Re, Angle.Im
+    FLDZ                             // Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD     [TimeSignal].Double      // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLDZ                             // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    MOV     EAX, TimeSignal          // EAX = TimeSignal
+    PUSH    ECX
+    MOV     ECX, EDX                 // ECX = Length(TimeSignal)
+    DEC     ECX                      // ECX = Length(TimeSignal) - 1
 
-@calcloop:
-  add eax, 8                       // next timesignal
-  fld  st(2)                       // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(5)                // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(7)                // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fsubp                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(3)                       // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fld  st(4)                       // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(6)                // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  faddp                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
-  fxch st(4)                       // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fstp st(0)                       // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(3)                // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch st(1)                       // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fld [eax].Double                 // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fmul st(0), st(4)                // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  faddp                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
-  fxch                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+@CalcLoop:
+    ADD     EAX, 8                   // next timesignal
+    FLD     ST(2)                    // Pos.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL    ST(0), ST(5)             // Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD     ST(4)                    // Pos.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL    ST(0), ST(7)             // Pos.Im * Angle.Im, Pos.Re * Angle.Re, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSUBP                            // newPos.Re := Pos.Re * Angle.Re - Pos.Im * Angle.Im, Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH    ST(3)                    // Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL    ST(0), ST(6)             // Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FLD     ST(4)                    // Pos.Im, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FMUL    ST(0), ST(6)             // Pos.Im * Angle.Re, Angle.Im * Pos.Re, Result.Re, Result.Im, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FADDP                            // newPos.Im := Pos.Im * Angle.Re + Angle.Im * Pos.Re, Result.Im, Result.Re, newPos.Re, Pos.Im, Angle.Re, Angle.Im
+    FXCH    ST(4)                    // Pos.Im, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FSTP    ST(0)                    // Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD     [EAX].Double             // TimeSignal, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL    ST(0), ST(3)             // TimeSignal * newPos.Re, Result.Re, Result.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Re + TimeSignal * newPos.Re, Result.Im, NewPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH    ST(1)                    // Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FLD     [EAX].Double             // TimeSignal, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FMUL    ST(0), ST(4)             // TimeSignal * newPos.Im, Result.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FADDP                            // Result.Im + TimeSignal * newPos.Im, NewResult.Re, newPos.Re, newPos.Im, Angle.Re, Angle.Im
+    FXCH                             // NewResult.Re, NewResult.Im, newPos.Re, newPos.Im, Angle.Re, Angle.Im
 
- loop @calcloop
+    LOOP @CalcLoop
 
- pop ecx
- fstp Result.Im.Double             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Double             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
- fstp st(0)                        // (cleared)
+    POP     ECX
+    FSTP    Result.Im.Double             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP    Result.Re.Double             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+    FSTP    ST(0)                        // (cleared)
+    FSTP    ST(0)                        // (cleared)
+    FSTP    ST(0)                        // (cleared)
+    FSTP    ST(0)                        // (cleared)
 end;
 {$ENDIF}
 

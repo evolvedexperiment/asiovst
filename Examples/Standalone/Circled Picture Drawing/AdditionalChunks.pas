@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Graphics, DAV_Types, DAV_ChunkClasses, DAV_DifferentialEvolution,
-  DAV_GuiFixedPoint;
+  DAV_FixedPoint;
 
 type
   TCircleChunk = class(TDefinedChunk)

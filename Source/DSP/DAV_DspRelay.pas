@@ -2,7 +2,7 @@ unit DAV_DspRelay;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//  Version: MPL 1.1 OR LGPL 2.1 with linking exception                       //
 //                                                                            //
 //  The contents of this file are subject to the Mozilla Public License       //
 //  Version 1.1 (the "License"); you may not use this file except in          //
@@ -10,7 +10,7 @@ unit DAV_DspRelay;
 //  http://www.mozilla.org/MPL/                                               //
 //                                                                            //
 //  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express OR implied. See the   //
 //  License for the specific language governing rights and limitations under  //
 //  the License.                                                              //
 //                                                                            //
@@ -250,25 +250,25 @@ begin
   else Result := -1;
 {$ELSE}
 asm
- cmp     edx, [Self + FUpper]
- jle     @NextComparison
- mov     byte ptr [Self + FState],$01
- jmp     @OutputDecision
+    CMP     EDX, [Self + FUpper]
+    JLE     @NextComparison
+    MOV     Byte Ptr [Self + FState],$01
+    JMP     @OutputDecision
 
- @NextComparison:
- cmp     edx, [Self + FLower]
- jnl     @OutputDecision
- mov     byte ptr [Self + FState], $00
+@NextComparison:
+    CMP     EDX, [Self + FLower]
+    JNL     @OutputDecision
+    MOV     Byte Ptr [Self + FState], $00
 
 @OutputDecision:
- cmp     byte ptr [Self + FState], $00
- jz      @Negative
+    CMP     Byte Ptr [Self + FState], $00
+    JZ      @Negative
 
- mov     eax, $00000001
- ret
+    MOV     EAX, $1
+    RET
 
 @Negative:
- or      eax, -$01
+    OR      EAX, -$1
 {$ENDIF}
 end;
 
@@ -315,28 +315,28 @@ begin
   else Result := -1;
 {$ELSE}
 asm
- mov     edx, Self
- fld     Input.Single
- fcomp   [edx + FUpper].Double
- fstsw   ax
- sahf
- jbe     @NextComparison
- mov     byte ptr [edx + FState], $01
+    MOV     EDX, Self
+    FLD     Input.Single
+    FCOMP   [EDX + FUpper].Double
+    FSTSW   AX
+    SAHF
+    JBE     @NextComparison
+    MOV     Byte Ptr [EDX + FState], $01
 
 @NextComparison:
- fld     Input.Single
- fcomp   [edx + FLower].Double
- fstsw   ax
- sahf
- jnb     @OutputDecision
- mov     byte ptr [edx + FState],$00
+    FLD     Input.Single
+    FCOMP   [EDX + FLower].Double
+    FSTSW   AX
+    SAHF
+    JNB     @OutputDecision
+    MOV     Byte Ptr [EDX + FState],$00
 
 @OutputDecision:
- fld1
- cmp     byte ptr [edx + FState], $00
- jz      @Done
+    FLD1
+    CMP     Byte Ptr [EDX + FState], $00
+    JZ      @Done
 
- fchs
+    FCHS
 
 @Done:
 {$ENDIF}
