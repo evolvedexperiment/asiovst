@@ -226,17 +226,17 @@ begin
 end;
 {$ELSE}
 asm
- IMUL  EDX, GRandSeed, 08088405H
- INC   EDX
- MOV   GRandSeed, EDX
- FLD   CTwoMulTwo2Neg32
- PUSH  0
- PUSH  EDX
- FILD  QWORD PTR [ESP]
- ADD   ESP, 8
- FMULP ST(1), ST(0)
- FLD1
- FSUBP ST, ST
+    IMUL    EDX, GRandSeed, 08088405H
+    INC     EDX
+    MOV     GRandSeed, EDX
+    FLD     CTwoMulTwo2Neg32
+    PUSH    0
+    PUSH    EDX
+    FILD    QWORD PTR [ESP]
+    ADD     ESP, 8
+    FMULP   ST(1), ST(0)
+    FLD1
+    FSUBP   ST, ST
 end;
 {$ENDIF}
 {$ENDIF}
@@ -320,10 +320,10 @@ begin
 end;
 {$ELSE}
 asm
-  FLD     Frequency;
-  FSINCOS
-  FSTP    TBYTE PTR [EDX]    // Cos
-  FSTP    TBYTE PTR [EAX]    // Sin
+    FLD     Frequency.Extended
+    FSINCOS
+    FSTP    TBYTE PTR [EDX]    // Cos
+    FSTP    TBYTE PTR [EAX]    // Sin
 end;
 {$ENDIF}
 {$ENDIF}
@@ -343,10 +343,10 @@ begin
 end;
 {$ELSE}
 asm
- FLD     Frequency.Double;
- FSINCOS
- FSTP    [CosValue].Double;
- FSTP    [SinValue].Double;
+    FLD     Frequency.Double
+    FSINCOS
+    FSTP    [CosValue].Double
+    FSTP    [SinValue].Double
 end;
 {$ENDIF}
 {$ENDIF}
@@ -365,10 +365,10 @@ begin
 end;
 {$ELSE}
 asm
- FLD     Frequency;
- FSINCOS
- FSTP    [CosValue].Single;
- FSTP    [SinValue].Single;
+    FLD     Frequency
+    FSINCOS
+    FSTP    [CosValue].Single
+    FSTP    [SinValue].Single
 end;
 {$ENDIF}
 {$ENDIF}
@@ -398,9 +398,9 @@ begin
     Result := Result shl 1;
 {$ELSE}
 asm
- BSR     ECX, EAX
- SHR     EAX, CL
- SHL     EAX, CL
+    BSR     ECX, EAX
+    SHR     EAX, CL
+    SHL     EAX, CL
 {$ENDIF}
 end;
 
@@ -413,14 +413,14 @@ begin
     Result := Result shl 1;
 {$ELSE}
 asm
- DEC     EAX
- JLE     @1
- BSR     ECX, EAX
- MOV     EAX, 2
- SHL     EAX, cl
- RET
+    DEC     EAX
+    JLE     @1
+    BSR     ECX, EAX
+    MOV     EAX, 2
+    SHL     EAX, cl
+    RET
 @1:
- MOV     EAX, 1
+    MOV     EAX, 1
 {$ENDIF}
 end;
 
@@ -455,10 +455,10 @@ begin
 end;
 {$ELSE}
 asm
- FLD     Value.Extended
- FXTRACT
- FSTP    ST(0)
- FISTP   Result.Integer
+    FLD     Value.Extended
+    FXTRACT
+    FSTP    ST(0)
+    FISTP   Result.Integer
 end;
 {$ENDIF}
 {$ENDIF}
@@ -472,11 +472,11 @@ end;
 var
   Temp : Integer;
 asm
- MOV     Temp, Value;
- FILD    Temp.Integer
- FXTRACT
- FSTP    ST(0)
- FISTP   Result.Integer
+    MOV     Temp, Value;
+    FILD    Temp.Integer
+    FXTRACT
+    FSTP    ST(0)
+    FISTP   Result.Integer
 end;
 {$ENDIF}
 
@@ -492,14 +492,14 @@ begin
 end;
 {$ELSE}
 asm
- FLD     Value.Extended
- FLD1
- FSUBP   ST, ST
- FXTRACT
- FSTP    ST(0)
- FLD1
- FADDP   ST(1), ST(0)
- FISTP   Result.Integer
+    FLD     Value.Extended
+    FLD1
+    FSUBP   ST, ST
+    FXTRACT
+    FSTP    ST(0)
+    FLD1
+    FADDP   ST(1), ST(0)
+    FISTP   Result.Integer
 end;
 {$ENDIF}
 {$ENDIF}
@@ -513,13 +513,13 @@ end;
 var
   Temp : Integer;
 asm
- DEC     Value
- MOV     Temp, Value;
- FILD    Temp.Integer
- FXTRACT
- FSTP    ST(0)
- FISTP   Result.Integer
- INC     Result
+    DEC     Value
+    MOV     Temp, Value;
+    FILD    Temp.Integer
+    FXTRACT
+    FSTP    ST(0)
+    FISTP   Result.Integer
+    INC     Result
 end;
 {$ENDIF}
 
@@ -535,16 +535,16 @@ begin
 end;
 {$ELSE}
 asm
- FLD     X
- FLD     ST(0)         // i := Round(y);
- FRNDINT
- FSUB    ST(1), ST     // f := y - i;
- FXCH    ST(1)         // z := 2**f
- F2XM1
- FLD1
- FADDP
- FSCALE                // Result := z * 2**i
- FSTP    ST(1)
+    FLD     X
+    FLD     ST(0)         // i := Round(y);
+    FRNDINT
+    FSUB    ST(1), ST     // f := y - i;
+    FXCH    ST(1)         // z := 2**f
+    F2XM1
+    FLD1
+    FADDP
+    FSCALE                // Result := z * 2**i
+    FSTP    ST(1)
 end;
 {$ENDIF}
 {$ENDIF}

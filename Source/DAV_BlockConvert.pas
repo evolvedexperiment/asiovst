@@ -78,15 +78,16 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 8
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
+
 @Start:
- FLD     [EDX + ECX * 8].Double
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
 end;
@@ -107,15 +108,16 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
+
 @Start:
- FLD     [EDX + ECX * 4].Single
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
 end;

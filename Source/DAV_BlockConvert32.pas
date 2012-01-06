@@ -181,21 +181,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 2
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 2
+    NEG     ECX
+    JNL     @Done
 
- FLD     CSmallToFloat
+    FLD     CSmallToFloat
 
 @Start:
- FILD    [EDX + ECX * 2].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FILD    [EDX + ECX * 2].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -218,29 +218,29 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CInt32ToFloat
- PUSH    EBX
+    FLD     CInt32ToFloat
+    PUSH    EBX
 
 @Start:
- MOV     EBX, [EDX].DWord
- SHL     EBX, 8
- AND     EBX, $FFFFFF00
+    MOV     EBX, [EDX].DWord
+    SHL     EBX, 8
+    AND     EBX, $FFFFFF00
 
- MOV     [ESP - 4], EBX
- FILD    [ESP - 4].Single
- FMUL    ST(0), ST(1)
+    MOV     [ESP - 4], EBX
+    FILD    [ESP - 4].Single
+    FMUL    ST(0), ST(1)
 
- FSTP    [EAX + ECX * 4].Single
- ADD     EDX, 3
- ADD     ECX, 1
- JS      @Start
+    FSTP    [EAX + ECX * 4].Single
+    ADD     EDX, 3
+    ADD     ECX, 1
+    JS      @Start
 
- POP     EBX
- FFREE   ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -262,21 +262,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CInt32ToFloat
+    FLD     CInt32ToFloat
 
 @Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -298,21 +298,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CSmallToFloat
+    FLD     CSmallToFloat
 
 @Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -334,21 +334,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD      CInt18ToFloat
+    FLD      CInt18ToFloat
 
 @Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -370,21 +370,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CInt20ToFloat
+    FLD     CInt20ToFloat
 
 @Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -406,21 +406,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CInt24ToFloat
+    FLD     CInt24ToFloat
 
 @Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -442,27 +442,27 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 2
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 2
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- XOR     EBX, EBX
- FLD     CSmallToFloat
+    PUSH    EBX
+    XOR     EBX, EBX
+    FLD     CSmallToFloat
 
 @Start:
- MOV     BX, [EDX + 2 * ECX]
- XCHG    BH, BL
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    MOV     BX, [EDX + 2 * ECX]
+    XCHG    BH, BL
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -488,33 +488,32 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CInt24ToFloat
- PUSH    EBX
+    FLD     CInt24ToFloat
+    PUSH    EBX
 
 @Start:
- XOR     EBX, EBX
+    XOR     EBX, EBX
 
- MOV     BL, [EDX + 2]
- MOV     BH, [EDX + 1]
- ROR     EBX, 8
- MOV     BH, [EDX]
- ROL     EBX, 8
+    MOV     BL, [EDX + 2]
+    MOV     BH, [EDX + 1]
+    ROR     EBX, 8
+    MOV     BH, [EDX]
+    ROL     EBX, 8
 
- MOV     [ESP - 4], EBX
- FILD    [ESP - 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     EDX, 3
- ADD     ECX, 1
- JS      @Start
+    MOV     [ESP - 4], EBX
+    FILD    [ESP - 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     EDX, 3
+    ADD     ECX, 1
+    JS      @Start
 
-
- POP     EBX
- FFREE   ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -536,26 +535,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CInt32ToFloat
+    PUSH    EBX
+    FLD     CInt32ToFloat
 
 @Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -577,26 +576,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CSmallToFloat
+    PUSH    EBX
+    FLD     CSmallToFloat
 
 @Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -618,26 +617,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CInt18ToFloat
+    PUSH    EBX
+    FLD     CInt18ToFloat
 
 @Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -659,26 +658,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CInt20ToFloat
+    PUSH    EBX
+    FLD     CInt20ToFloat
 
 @Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -700,26 +699,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CInt24ToFloat
+    PUSH    EBX
+    FLD     CInt24ToFloat
 
 @Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -744,21 +743,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 2
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 2
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CFloatToSmall
+    FLD     CFloatToSmall
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [EAX + ECX * 2].Word
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 2].Word
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -783,28 +782,28 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CFloatToInt24
- PUSH    EBX
+    FLD     CFloatToInt24
+    PUSH    EBX
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].Single
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].Single
 
- MOV     EBX, [ESP - 4]
- AND     EBX, $FFFFFF
- MOV     [EAX].DWord, EBX
+    MOV     EBX, [ESP - 4]
+    AND     EBX, $FFFFFF
+    MOV     [EAX].DWord, EBX
 
- ADD     EAX, 3
- ADD     ECX, 1
- JS      @Start
+    ADD     EAX, 3
+    ADD     ECX, 1
+    JS      @Start
 
- POP     EBX
- FFREE   ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -826,21 +825,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CFloatToInt32
+    FLD     CFloatToInt32
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -862,21 +861,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CFloatToSmall
+    FLD     CFloatToSmall
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -898,21 +897,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD      CFloatToInt18
+    FLD      CFloatToInt18
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -934,21 +933,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CFloatToInt20
+    FLD     CFloatToInt20
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -970,21 +969,21 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CFloatToInt24
+    FLD     CFloatToInt24
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE ST(0)
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -1007,27 +1006,27 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 2
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 2
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- XOR     EBX, EBX
- FLD     CFloatToSmall
+    PUSH    EBX
+    XOR     EBX, EBX
+    FLD     CFloatToSmall
 
 @Start:
- FLD     [EDX + 4 * ECX].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].Word
- MOV     BX, [ESP - 4]
- XCHG    BH, BL
- MOV     [EAX + ECX * 2], BX
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + 4 * ECX].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].Word
+    MOV     BX, [ESP - 4]
+    XCHG    BH, BL
+    MOV     [EAX + ECX * 2], BX
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -1052,30 +1051,29 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- FLD     CFloatToInt24
- PUSH    EBX
+    FLD     CFloatToInt24
+    PUSH    EBX
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].Single
- MOV     EBX, [ESP - 4]
- MOV     [EAX], BL
- MOV     [EAX + 1], BH
- ROR     EBX, 8
- MOV     [EAX + 2], BH
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].Single
+    MOV     EBX, [ESP - 4]
+    MOV     [EAX], BL
+    MOV     [EAX + 1], BH
+    ROR     EBX, 8
+    MOV     [EAX + 2], BH
 
- ADD     EAX, 3
- ADD     ECX, 1
- JS      @Start
+    ADD     EAX, 3
+    ADD     ECX, 1
+    JS      @Start
 
-
- POP     EBX
- FFREE   ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
 end;
@@ -1098,26 +1096,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CFloatToInt32
+    PUSH    EBX
+    FLD     CFloatToInt32
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].DWord
- MOV     EBX, [ESP - 4]
- BSWAP   EBX
- MOV     [EAX + ECX * 4], EBX
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -1140,27 +1138,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CFloatToSmall
+    PUSH    EBX
+    FLD     CFloatToSmall
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].DWord
- MOV     EBX, [ESP - 4]
- BSWAP   EBX
- MOV     [EAX + ECX * 4], EBX
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
-
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -1183,27 +1180,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CFloatToInt18
+    PUSH    EBX
+    FLD     CFloatToInt18
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].DWord
- MOV     EBX, [ESP - 4]
- BSWAP   EBX
- MOV     [EAX + ECX * 4], EBX
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
-
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -1226,27 +1222,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CFloatToInt20
+    PUSH    EBX
+    FLD     CFloatToInt20
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].DWord
- MOV     EBX, [ESP - 4]
- BSWAP   EBX
- MOV     [EAX + ECX * 4], EBX
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
-
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -1269,27 +1264,26 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
- PUSH    EBX
- FLD     CFloatToInt24
+    PUSH    EBX
+    FLD     CFloatToInt24
 
 @Start:
- FLD     [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FISTP   [ESP - 4].DWord
- MOV     EBX, [ESP - 4]
- BSWAP   EBX
- MOV     [EAX + ECX * 4], EBX
- ADD     ECX, 1
- JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
-
- FFREE   ST(0)
- POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -1304,785 +1298,704 @@ end;
 procedure BlockConvertInt16LSBToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
+    PUSH     EBX
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4SmallToSingle
+    MOVUPS   XMM0, C4SmallToSingle
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 2
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 2
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
 
- XORPS    XMM1, XMM1
-
- PINSRW   XMM1, [EDX + ECX * 2    ], 0
-
- PINSRW   XMM1, [EDX + ECX * 2 + 2], 2
-
- PINSRW   XMM1, [EDX + ECX * 2 + 4], 4
-
- PINSRW   XMM1, [EDX + ECX * 2 + 6], 6
-
- CVTDQ2PS XMM1, XMM1
-
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    XORPS    XMM1, XMM1
+    PINSRW   XMM1, [EDX + ECX * 2    ], 0
+    PINSRW   XMM1, [EDX + ECX * 2 + 2], 2
+    PINSRW   XMM1, [EDX + ECX * 2 + 4], 4
+    PINSRW   XMM1, [EDX + ECX * 2 + 6], 6
+    CVTDQ2PS XMM1, XMM1
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- XORPS    XMM1, XMM1
- PINSRW   XMM1, [EDX + ECX * 2 + 8], 0
- CVTDQ2PS XMM1, XMM1
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
+    XORPS    XMM1, XMM1
+    PINSRW   XMM1, [EDX + ECX * 2 + 8], 0
+    CVTDQ2PS XMM1, XMM1
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 
 @Fallback:
- CALL     BlockConvertInt16LSBToFloat32Native
+    CALL     BlockConvertInt16LSBToFloat32Native
 
 @Done:
- POP      EBX
+    POP      EBX
 end;
 
 procedure BlockConvertInt32LSBToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
+    PUSH     EBX
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int32ToSingle
+    MOVUPS   XMM0, C4Int32ToSingle
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
 
- CVTDQ2PS XMM1, [EDX + ECX * 4]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    CVTDQ2PS XMM1, [EDX + ECX * 4]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM2, [EDX + ECX * 4 + 16]
- CVTDQ2PS XMM1, XMM2
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOVSS    XMM2, [EDX + ECX * 4 + 16]
+    CVTDQ2PS XMM1, XMM2
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSBToFloat32Native
+    CALL     BlockConvertInt32LSBToFloat32Native
 
 @Done:
- POP      EBX
+    POP      EBX
 end;
 
 procedure BlockConvertInt32LSB16ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
+    PUSH     EBX
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4SmallToSingle
+    MOVUPS   XMM0, C4SmallToSingle
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
 
- CVTDQ2PS XMM1, [EDX + ECX * 4]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    CVTDQ2PS XMM1, [EDX + ECX * 4]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM2, [EDX + ECX * 4 + 16]
- CVTDQ2PS XMM1, XMM2
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
+    MOVSS    XMM2, [EDX + ECX * 4 + 16]
+    CVTDQ2PS XMM1, XMM2
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 
 @Fallback:
- CALL     BlockConvertInt32LSB16ToFloat32Native
+    CALL     BlockConvertInt32LSB16ToFloat32Native
 
 @Done:
- POP      EBX
+    POP      EBX
 end;
 
 procedure BlockConvertInt32LSB18ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
+    PUSH     EBX
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int18ToSingle
+    MOVUPS   XMM0, C4Int18ToSingle
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
 
- CVTDQ2PS XMM1, [EDX + ECX * 4]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    CVTDQ2PS XMM1, [EDX + ECX * 4]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM2, [EDX + ECX * 4 + 16]
- CVTDQ2PS XMM1, XMM2
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOVSS    XMM2, [EDX + ECX * 4 + 16]
+    CVTDQ2PS XMM1, XMM2
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSB18ToFloat32Native
+    CALL     BlockConvertInt32LSB18ToFloat32Native
 
 @Done:
- POP      EBX
+    POP      EBX
 end;
 
 procedure BlockConvertInt32LSB20ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
+    PUSH     EBX
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int20ToSingle
+    MOVUPS   XMM0, C4Int20ToSingle
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
-
- CVTDQ2PS XMM1, [EDX + ECX * 4]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    CVTDQ2PS XMM1, [EDX + ECX * 4]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM2, [EDX + ECX * 4 + 16]
- CVTDQ2PS XMM1, XMM2
- MULSS    XMM1, XMM0
- MOVSS   [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOVSS    XMM2, [EDX + ECX * 4 + 16]
+    CVTDQ2PS XMM1, XMM2
+    MULSS    XMM1, XMM0
+    MOVSS   [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSB20ToFloat32Native
+    CALL     BlockConvertInt32LSB20ToFloat32Native
 
 @Done:
- POP      EBX
+    POP      EBX
 end;
 
 procedure BlockConvertInt32LSB24ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
+    PUSH     EBX
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int24ToSingle
+    MOVUPS   XMM0, C4Int24ToSingle
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
-
- CVTDQ2PS XMM1, [EDX + ECX * 4]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    CVTDQ2PS XMM1, [EDX + ECX * 4]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM2, [EDX + ECX * 4 + 16]
- CVTDQ2PS XMM1, XMM2
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOVSS    XMM2, [EDX + ECX * 4 + 16]
+    CVTDQ2PS XMM1, XMM2
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSB24ToFloat32Native
+    CALL     BlockConvertInt32LSB24ToFloat32Native
 
 @Done:
- POP      EBX
+    POP      EBX
 end;
 
 procedure BlockConvertInt16MSBToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
+    PUSH     EBX
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4SmallToSingle
+    MOVUPS   XMM0, C4SmallToSingle
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 2
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 2
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
+    XORPS    XMM1, XMM1
+    MOV      BX, [EDX + 2 * ECX]
+    XCHG     BH, BL
+    PINSRW   XMM1, EBX, 0
+    MOV      BX, [EDX + 2 * ECX + 2]
+    XCHG     BH, BL
+    PINSRW   XMM1, EBX, 2
+    MOV      BX, [EDX + 2 * ECX + 4]
+    XCHG     BH, BL
+    PINSRW   XMM1, EBX, 4
+    MOV      BX, [EDX + 2 * ECX + 6]
 
- XORPS    XMM1, XMM1
+    XCHG     BH, BL
+    PINSRW   XMM1, EBX, 6
+    CVTDQ2PS XMM1, XMM1
 
- MOV      BX, [EDX + 2 * ECX]
-
- XCHG     BH, BL
- PINSRW   XMM1, EBX, 0
- MOV      BX, [EDX + 2 * ECX + 2]
- XCHG     BH, BL
- PINSRW   XMM1, EBX, 2
- MOV      BX, [EDX + 2 * ECX + 4]
- XCHG     BH, BL
- PINSRW   XMM1, EBX, 4
- MOV      BX, [EDX + 2 * ECX + 6]
-
- XCHG     BH, BL
- PINSRW   XMM1, EBX, 6
- CVTDQ2PS XMM1, XMM1
-
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- XORPS    XMM1, XMM1
- MOV      BX, [EDX + 2 * ECX + 8]
- XCHG     BH, BL
- PINSRW   XMM1, EBX, 0
- CVTDQ2PS XMM1, XMM1
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    XORPS    XMM1, XMM1
+    MOV      BX, [EDX + 2 * ECX + 8]
+    XCHG     BH, BL
+    PINSRW   XMM1, EBX, 0
+    CVTDQ2PS XMM1, XMM1
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt16MSBToFloat32Native
+    CALL     BlockConvertInt16MSBToFloat32Native
 
 @Done:
- POP      EBX
+    POP      EBX
 end;
 
 procedure BlockConvertInt32MSBToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
- PUSH     ESI
+    PUSH     EBX
+    PUSH     ESI
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int32ToSingle
- MOV      ESI, ESP
- AND      ESI, $FFFFF0
- SUB      ESI, $10
+    MOVUPS   XMM0, C4Int32ToSingle
+    MOV      ESI, ESP
+    AND      ESI, $FFFFF0
+    SUB      ESI, $10
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
-
- MOV      EBX, [EDX + ECX * 4     ]
-
- BSWAP    EBX
-
- MOV      [ESI     ], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  4]
- BSWAP    EBX
-
- MOV      [ESI +  4], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  8]
- BSWAP    EBX
-
- MOV      [ESI +  8], EBX
-
- MOV      EBX, [EDX + ECX * 4 + 12]
- BSWAP    EBX
-
- MOV      [ESI + 12], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    MOV      EBX, [EDX + ECX * 4     ]
+    BSWAP    EBX
+    MOV      [ESI     ], EBX
+    MOV      EBX, [EDX + ECX * 4 +  4]
+    BSWAP    EBX
+    MOV      [ESI +  4], EBX
+    MOV      EBX, [EDX + ECX * 4 +  8]
+    BSWAP    EBX
+    MOV      [ESI +  8], EBX
+    MOV      EBX, [EDX + ECX * 4 + 12]
+    BSWAP    EBX
+    MOV      [ESI + 12], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOV      EBX, [EDX + ECX * 4 + 16]
- BSWAP    EBX
-
- MOV      [ESI], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOV      EBX, [EDX + ECX * 4 + 16]
+    BSWAP    EBX
+    MOV      [ESI], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32MSBToFloat32Native
+    CALL     BlockConvertInt32MSBToFloat32Native
 
 @Done:
- POP      ESI
- POP      EBX
+    POP      ESI
+    POP      EBX
 end;
 
 procedure BlockConvertInt32MSB16ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
- PUSH     ESI
+    PUSH     EBX
+    PUSH     ESI
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4SmallToSingle
- MOV      ESI, ESP
- AND      ESI, $FFFFF0
- SUB      ESI, $10
+    MOVUPS   XMM0, C4SmallToSingle
+    MOV      ESI, ESP
+    AND      ESI, $FFFFF0
+    SUB      ESI, $10
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
-
- MOV      EBX, [EDX + ECX * 4     ]
-
- BSWAP    EBX
-
- MOV      [ESI     ], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  4]
- BSWAP    EBX
-
- MOV      [ESI +  4], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  8]
- BSWAP    EBX
-
- MOV      [ESI +  8], EBX
-
- MOV      EBX, [EDX + ECX * 4 + 12]
- BSWAP    EBX
-
- MOV      [ESI + 12], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    MOV      EBX, [EDX + ECX * 4     ]
+    BSWAP    EBX
+    MOV      [ESI     ], EBX
+    MOV      EBX, [EDX + ECX * 4 +  4]
+    BSWAP    EBX
+    MOV      [ESI +  4], EBX
+    MOV      EBX, [EDX + ECX * 4 +  8]
+    BSWAP    EBX
+    MOV      [ESI +  8], EBX
+    MOV      EBX, [EDX + ECX * 4 + 12]
+    BSWAP    EBX
+    MOV      [ESI + 12], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOV      EBX, [EDX + ECX * 4 + 16]
- BSWAP    EBX
-
- MOV      [ESI], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOV      EBX, [EDX + ECX * 4 + 16]
+    BSWAP    EBX
+    MOV      [ESI], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32MSB16ToFloat32Native
+    CALL     BlockConvertInt32MSB16ToFloat32Native
 
 @Done:
- POP      ESI
- POP      EBX
+    POP      ESI
+    POP      EBX
 end;
 
 procedure BlockConvertInt32MSB18ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
- PUSH     ESI
+    PUSH     EBX
+    PUSH     ESI
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int18ToSingle
- MOV      ESI, ESP
- AND      ESI, $FFFFF0
- SUB      ESI, $10
+    MOVUPS   XMM0, C4Int18ToSingle
+    MOV      ESI, ESP
+    AND      ESI, $FFFFF0
+    SUB      ESI, $10
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
-
- MOV      EBX, [EDX + ECX * 4     ]
-
- BSWAP    EBX
-
- MOV      [ESI     ], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  4]
- BSWAP    EBX
-
- MOV      [ESI +  4], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  8]
- BSWAP    EBX
-
- MOV      [ESI +  8], EBX
-
- MOV      EBX, [EDX + ECX * 4 + 12]
- BSWAP    EBX
-
- MOV      [ESI + 12], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    MOV      EBX, [EDX + ECX * 4     ]
+    BSWAP    EBX
+    MOV      [ESI     ], EBX
+    MOV      EBX, [EDX + ECX * 4 +  4]
+    BSWAP    EBX
+    MOV      [ESI +  4], EBX
+    MOV      EBX, [EDX + ECX * 4 +  8]
+    BSWAP    EBX
+    MOV      [ESI +  8], EBX
+    MOV      EBX, [EDX + ECX * 4 + 12]
+    BSWAP    EBX
+    MOV      [ESI + 12], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOV      EBX, [EDX + ECX * 4 + 16]
- BSWAP    EBX
-
- MOV      [ESI], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOV      EBX, [EDX + ECX * 4 + 16]
+    BSWAP    EBX
+    MOV      [ESI], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32MSB18ToFloat32Native
+    CALL     BlockConvertInt32MSB18ToFloat32Native
 
 @Done:
- POP      ESI
- POP      EBX
+    POP      ESI
+    POP      EBX
 end;
 
 
 procedure BlockConvertInt32MSB20ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
- PUSH     ESI
+    PUSH     EBX
+    PUSH     ESI
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int20ToSingle
- MOV      ESI, ESP
- AND      ESI, $FFFFF0
- SUB      ESI, $10
+    MOVUPS   XMM0, C4Int20ToSingle
+    MOV      ESI, ESP
+    AND      ESI, $FFFFF0
+    SUB      ESI, $10
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
-
- MOV      EBX, [EDX + ECX * 4     ]
-
- BSWAP    EBX
-
- MOV      [ESI     ], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  4]
- BSWAP    EBX
-
- MOV      [ESI +  4], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  8]
- BSWAP    EBX
-
- MOV      [ESI +  8], EBX
-
- MOV      EBX, [EDX + ECX * 4 + 12]
- BSWAP    EBX
-
- MOV      [ESI + 12], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    MOV      EBX, [EDX + ECX * 4     ]
+    BSWAP    EBX
+    MOV      [ESI     ], EBX
+    MOV      EBX, [EDX + ECX * 4 +  4]
+    BSWAP    EBX
+    MOV      [ESI +  4], EBX
+    MOV      EBX, [EDX + ECX * 4 +  8]
+    BSWAP    EBX
+    MOV      [ESI +  8], EBX
+    MOV      EBX, [EDX + ECX * 4 + 12]
+    BSWAP    EBX
+    MOV      [ESI + 12], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOV      EBX, [EDX + ECX * 4 + 16]
- BSWAP    EBX
-
- MOV      [ESI], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOV      EBX, [EDX + ECX * 4 + 16]
+    BSWAP    EBX
+    MOV      [ESI], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32MSB20ToFloat32Native
+    CALL     BlockConvertInt32MSB20ToFloat32Native
 
 @Done:
- POP      ESI
- POP      EBX
+    POP      ESI
+    POP      EBX
 end;
 
 
 procedure BlockConvertInt32MSB24ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- PUSH     EBX
- PUSH     ESI
+    PUSH     EBX
+    PUSH     ESI
 
- MOV      EBX, EAX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EAX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOV      EBX, EDX
- AND      EBX, $F
- JNZ      @Fallback
+    MOV      EBX, EDX
+    AND      EBX, $F
+    JNZ      @Fallback
 
- MOVUPS   XMM0, C4Int24ToSingle
- MOV      ESI, ESP
- AND      ESI, $FFFFF0
- SUB      ESI, $10
+    MOVUPS   XMM0, C4Int24ToSingle
+    MOV      ESI, ESP
+    AND      ESI, $FFFFF0
+    SUB      ESI, $10
 
- SUB      ECX, 4
- LEA      EAX, EAX + ECX * 4
- LEA      EDX, EDX + ECX * 4
- NEG      ECX
- JG       @Reminder
+    SUB      ECX, 4
+    LEA      EAX, EAX + ECX * 4
+    LEA      EDX, EDX + ECX * 4
+    NEG      ECX
+    JG       @Reminder
 
 @MainAlgorithm:
-
- MOV      EBX, [EDX + ECX * 4     ]
-
- BSWAP    EBX
-
- MOV      [ESI     ], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  4]
- BSWAP    EBX
-
- MOV      [ESI +  4], EBX
-
- MOV      EBX, [EDX + ECX * 4 +  8]
- BSWAP    EBX
-
- MOV      [ESI +  8], EBX
-
- MOV      EBX, [EDX + ECX * 4 + 12]
- BSWAP    EBX
-
- MOV      [ESI + 12], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULPS    XMM1, XMM0
- MOVAPS   [EAX + ECX * 4], XMM1
- ADD      ECX, 4
- JLE      @MainAlgorithm
+    MOV      EBX, [EDX + ECX * 4     ]
+    BSWAP    EBX
+    MOV      [ESI     ], EBX
+    MOV      EBX, [EDX + ECX * 4 +  4]
+    BSWAP    EBX
+    MOV      [ESI +  4], EBX
+    MOV      EBX, [EDX + ECX * 4 +  8]
+    BSWAP    EBX
+    MOV      [ESI +  8], EBX
+    MOV      EBX, [EDX + ECX * 4 + 12]
+    BSWAP    EBX
+    MOV      [ESI + 12], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULPS    XMM1, XMM0
+    MOVAPS   [EAX + ECX * 4], XMM1
+    ADD      ECX, 4
+    JLE      @MainAlgorithm
 
 @Reminder:
- SUB      ECX, 4
- JNS      @Done
+    SUB      ECX, 4
+    JNS      @Done
 
 @ReminderLoop:
- MOV      EBX, [EDX + ECX * 4 + 16]
- BSWAP    EBX
-
- MOV      [ESI], EBX
-
- CVTDQ2PS XMM1, [ESI]
- MULSS    XMM1, XMM0
- MOVSS    [EAX + ECX * 4 + 16], XMM1
- ADD      ECX, 1
- JS       @ReminderLoop
- JMP      @Done
-
+    MOV      EBX, [EDX + ECX * 4 + 16]
+    BSWAP    EBX
+    MOV      [ESI], EBX
+    CVTDQ2PS XMM1, [ESI]
+    MULSS    XMM1, XMM0
+    MOVSS    [EAX + ECX * 4 + 16], XMM1
+    ADD      ECX, 1
+    JS       @ReminderLoop
+    JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32MSB24ToFloat32Native
+    CALL     BlockConvertInt32MSB24ToFloat32Native
 
 @Done:
- POP      ESI
- POP      EBX
+    POP      ESI
+    POP      EBX
 end;
 
 
@@ -2092,36 +2005,36 @@ end;
 procedure Int32LSBToSingle_3DNow(Destination: PSingle;
   Source: Pointer; Count: Integer);
 asm
- FEMMS                          // Fast MMX Enter/Leave
- SHR       ECX, 3               // unroll the loop by 8
- MOVQ      MM4, C2Int32ToSingle // use mm4 as 1/high(Integer) divider
- PREFETCHW [EDX]                // give the mmu a heads-up,
-                                // load the total line of mmx0..7 data in the cache
-                                // and prepare for modification. (If I understand AMD correctly)
- @Start:
- MOVQ      MM0, [EDX     ]      // Sample 1 | Sample 2
- MOVQ      MM1, [EDX +  8]      // Sample 3 | Sample 4
- MOVQ      MM2, [EDX + 16]      // Sample 5 | Sample 7
- MOVQ      MM3, [EDX + 24]      // Sample 7 | Sample 8
- PI2FD     MM0, MM0             // convert to FP
- PI2FD     MM1, MM1
- PI2FD     MM2, MM2
- PI2FD     MM3, MM3
- PFMUL     MM0, MM4             // divide by high(Integer)
- PFMUL     MM1, MM4
- PFMUL     MM2, MM4
- PFMUL     MM3, MM4
- MOVQ      [EAX     ], MM0      // Store Sample back to RAM
- MOVQ      [EAX +  8], MM1
- MOVQ      [EAX + 16], MM2
- MOVQ      [EAX + 24], MM3
- ADD       EAX, 32
- ADD       EAX, 32
- PREFETCHW [EAX]                // Inform mmu about next Sample Position
- LOOP      @Start
+    FEMMS                          // Fast MMX Enter/Leave
+    SHR       ECX, 3               // unroll the loop by 8
+    MOVQ      MM4, C2Int32ToSingle // use mm4 as 1/high(Integer) divider
+    PREFETCHW [EDX]                // give the mmu a heads-up,
+                                  // load the total line of mmx0..7 data in the cache
+                                  // and prepare for modification. (If I understand AMD correctly)
+@Start:
+    MOVQ      MM0, [EDX     ]      // Sample 1 | Sample 2
+    MOVQ      MM1, [EDX +  8]      // Sample 3 | Sample 4
+    MOVQ      MM2, [EDX + 16]      // Sample 5 | Sample 7
+    MOVQ      MM3, [EDX + 24]      // Sample 7 | Sample 8
+    PI2FD     MM0, MM0             // convert to FP
+    PI2FD     MM1, MM1
+    PI2FD     MM2, MM2
+    PI2FD     MM3, MM3
+    PFMUL     MM0, MM4             // divide by high(Integer)
+    PFMUL     MM1, MM4
+    PFMUL     MM2, MM4
+    PFMUL     MM3, MM4
+    MOVQ      [EAX     ], MM0      // Store Sample back to RAM
+    MOVQ      [EAX +  8], MM1
+    MOVQ      [EAX + 16], MM2
+    MOVQ      [EAX + 24], MM3
+    ADD       EAX, 32
+    ADD       EAX, 32
+    PREFETCHW [EAX]                // Inform mmu about next Sample Position
+    LOOP      @Start
 
- @Done:
- FEMMS                          // Fast MMX Enter/Leave
+@Done:
+    FEMMS                          // Fast MMX Enter/Leave
 end;
 
 {$ENDIF}

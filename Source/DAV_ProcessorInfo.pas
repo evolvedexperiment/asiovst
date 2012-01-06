@@ -507,96 +507,96 @@ function HasCPUIDInstruction: Boolean;
 const
   CFlag = $200000;
 asm
-  {$IFDEF CPU32}
-  PUSHFD                 // save EFLAGS to stack
-  POP     EAX            // store EFLAGS in EAX
-  MOV     ECX, EAX       // save in ECX for later testing
-  XOR     EAX, CFlag     // flip ID bit in EFLAGS
-  AND     ECX, CFlag
-  PUSH    EAX            // save new EFLAGS Value on stack
-  POPFD                  // replace current EFLAGS Value
-  PUSHFD                 // get new EFLAGS
-  POP     EAX            // store new EFLAGS in EAX
-  AND     EAX, CFlag
-  XOR     EAX, ECX       // check if ID bit changed
-  SETNZ   Result         // set result
-  {$ENDIF CPU32}
+    {$IFDEF CPU32}
+    PUSHFD                 // save EFLAGS to stack
+    POP     EAX            // store EFLAGS in EAX
+    MOV     ECX, EAX       // save in ECX for later testing
+    XOR     EAX, CFlag     // flip ID bit in EFLAGS
+    AND     ECX, CFlag
+    PUSH    EAX            // save new EFLAGS Value on stack
+    POPFD                  // replace current EFLAGS Value
+    PUSHFD                 // get new EFLAGS
+    POP     EAX            // store new EFLAGS in EAX
+    AND     EAX, CFlag
+    XOR     EAX, ECX       // check if ID bit changed
+    SETNZ   Result         // set result
+    {$ENDIF CPU32}
 
-  {$IFDEF CPU64}
-  MOV       EDX, False
-  PUSHFQ
-  POP       RAX
-  MOV       ECX, EAX
-  XOR       EAX, $00200000
-  PUSH      RAX
-  POPFQ
-  PUSHFQ
-  POP       RAX
-  XOR       ECX, EAX
-  JZ        @NotFound
-  MOV       EDX, True
+    {$IFDEF CPU64}
+    MOV       EDX, False
+    PUSHFQ
+    POP       RAX
+    MOV       ECX, EAX
+    XOR       EAX, $00200000
+    PUSH      RAX
+    POPFQ
+    PUSHFQ
+    POP       RAX
+    XOR       ECX, EAX
+    JZ        @NotFound
+    MOV       EDX, True
 @NotFound:
-  PUSH      RAX
-  POPFQ
-  MOV       EAX, EDX
-  {$ENDIF CPU64}
+    PUSH      RAX
+    POPFQ
+    MOV       EAX, EDX
+    {$ENDIF CPU64}
 end;
 
 procedure CallCPUID(ValueEAX, ValueECX: Cardinal; out ReturnedEAX, ReturnedEBX,
   ReturnedECX, ReturnedEDX);
 asm
-  {$IFDEF CPU32}
-  // save context
-  PUSH    EDI
-  PUSH    EBX
-  MOV     EDI, ReturnedEAX
+    {$IFDEF CPU32}
+    // save context
+    PUSH    EDI
+    PUSH    EBX
+    MOV     EDI, ReturnedEAX
 
-  // init parameters
-  MOV     ECX, ValueECX
+    // init parameters
+    MOV     ECX, ValueECX
 
-  // CPUID
-  DB      0FH
-  DB      0A2H
+    // CPUID
+    DB      0FH
+    DB      0A2H
 
-  // store results
-  MOV     Cardinal PTR [EDI], EAX
-  MOV     EDI, ReturnedEBX
-  MOV     Cardinal PTR [EDI], EBX
-  MOV     EDI, ReturnedECX
-  MOV     Cardinal PTR [EDI], ECX
-  MOV     EDI, ReturnedEDX
-  MOV     Cardinal PTR [EDI], EDX
+    // store results
+    MOV     Cardinal PTR [EDI], EAX
+    MOV     EDI, ReturnedEBX
+    MOV     Cardinal PTR [EDI], EBX
+    MOV     EDI, ReturnedECX
+    MOV     Cardinal PTR [EDI], ECX
+    MOV     EDI, ReturnedEDX
+    MOV     Cardinal PTR [EDI], EDX
 
-  // restore context
-  POP     EBX
-  POP     EDI
-  {$ENDIF CPU32}
+    // restore context
+    POP     EBX
+    POP     EDI
+    {$ENDIF CPU32}
 
-  // yet to be tested...
-  {$IFDEF CPU64}
-  // save context
-  PUSH    RDI
-  PUSH    RBX
+    // yet to be tested...
+    {$IFDEF CPU64}
+    // save context
+    PUSH    RDI
+    PUSH    RBX
 
-  // init parameters
-  MOV     EAX, ValueEAX
-  MOV     ECX, ValueECX
+    // init parameters
+    MOV     EAX, ValueEAX
+    MOV     ECX, ValueECX
 
-  // CPUID
-  CPUID
+    // CPUID
+    CPUID
 
-  // store results
-  MOV     [R8], EAX
-  MOV     [R9], EBX
-  MOV     RDI, ReturnedECX
-  MOV     [RDI], ECX
-  MOV     RDI, ReturnedEDX
-  MOV     [RDI], EDX
+    // store results
+    MOV     [R8], EAX
+    MOV     [R9], EBX
+    MOV     RDI, ReturnedECX
+    MOV     [RDI], ECX
+    MOV     RDI, ReturnedEDX
+    MOV     [RDI], EDX
 
-  // restore context
-  POP     RBX
-  POP     RDI
-  {$ENDIF CPU64}
+    // restore context
+    POP     RBX
+    POP     RDI
+    {$ENDIF CPU64}
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -605,19 +605,19 @@ function IsFPU_Available: Boolean;
 var
   _FCW, _FSW: Word;
 asm
-  MOV     EAX, False     // initialize return register
-  MOV     _FSW, $5A5A    // store a non-zero Value
-  FNINIT                 // must use non-wait form
-  FNSTSW  _FSW           // store the status
-  CMP     _FSW, 0        // was the correct status read?
-  JNE     @exit          // no, FPU not available
-  FNSTCW  _FCW           // yes, now save control word
-  MOV     DX, _FCW       // get the control word
-  AND     DX, $103F      // mask the proper status bits
-  CMP     DX, $3F        // is a numeric processor installed?
-  JNE     @exit          // no, FPU not installed
-  MOV     EAX, True      // yes, FPU is installed
-@exit:
+    MOV     EAX, False     // initialize return register
+    MOV     _FSW, $5A5A    // store a non-zero Value
+    FNINIT                 // must use non-wait form
+    FNSTSW  _FSW           // store the status
+    CMP     _FSW, 0        // was the correct status read?
+    JNE     @Exit          // no, FPU not available
+    FNSTCW  _FCW           // yes, now save control word
+    MOV     DX, _FCW       // get the control word
+    AND     DX, $103F      // mask the proper status bits
+    CMP     DX, $3F        // is a numeric processor installed?
+    JNE     @Exit          // no, FPU not installed
+    MOV     EAX, True      // yes, FPU is installed
+@Exit:
 end;
 
 function TestFDIVInstruction: Boolean;
@@ -632,17 +632,17 @@ begin
   BottomNum := PI;
   One := 1;
   asm
-   PUSH    EAX
-   FLD     [TopNum]
-   FDIV    [BottomNum]
-   FMUL    [BottomNum]
-   FSUBR   [TopNum]
-   FCOMP   [One]
-   FSTSW   AX
-   SHR     EAX, 8
-   AND     EAX, 01H
-   MOV     ISOK, AL
-   POP     EAX
+      PUSH    EAX
+      FLD     [TopNum]
+      FDIV    [BottomNum]
+      FMUL    [BottomNum]
+      FSUBR   [TopNum]
+      FCOMP   [One]
+      FSTSW   AX
+      SHR     EAX, 8
+      AND     EAX, 01H
+      MOV     ISOK, AL
+      POP     EAX
   end;
   Result := ISOK;
 end;

@@ -611,22 +611,22 @@ begin
 end;
 {$ELSE}
 asm
- fld A.Re.Single    // A.Re
- fld A.Im.Single    // A.Im, A.Re
- fld B.Re.Single    // B.Re, A.Im, A.Re
- fld B.Im.Single    // B.Im, B.Re, A.Im, A.Re
- fld st(3)          // A.Re, B.Im, B.Re, A.Im, A.Re
- fmul st(0), st(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
- fld st(3)          // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
- fmul st(0), st(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
- fsubp              // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
- fstp A.Re.Single   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
- fxch st(2)         // A.Im, B.Re, B.Im, A.Re
- fmulp              // A.Im * B.Re, B.Im, A.Re
- fxch st(2)         // B.Im, A.Re, A.Im * B.Re
- fmulp              // B.Im * A.Re, A.Im * B.Re
- faddp              // A.Im * B.Re + A.Re * B.Im
- fstp A.Im.Single   // A.Im := A.Im * B.Re + A.Re * B.Im
+    FLD     A.Re.Single   // A.Re
+    FLD     A.Im.Single   // A.Im, A.Re
+    FLD     B.Re.Single   // B.Re, A.Im, A.Re
+    FLD     B.Im.Single   // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)         // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)         // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FSUBP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    A.Re.Single   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)         // A.Im, B.Re, B.Im, A.Re
+    FMULP                 // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)         // B.Im, A.Re, A.Im * B.Re
+    FMULP                 // B.Im * A.Re, A.Im * B.Re
+    FADDP                 // A.Im * B.Re + A.Re * B.Im
+    FSTP    A.Im.Single   // A.Im := A.Im * B.Re + A.Re * B.Im
 end;
 {$ENDIF}
 
@@ -642,22 +642,22 @@ begin
 end;
 {$ELSE}
 asm
- fld A.Re.Double    // A.Re
- fld A.Im.Double    // A.Im, A.Re
- fld B.Re.Double    // B.Re, A.Im, A.Re
- fld B.Im.Double    // B.Im, B.Re, A.Im, A.Re
- fld st(3)          // A.Re, B.Im, B.Re, A.Im, A.Re
- fmul st(0), st(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
- fld st(3)          // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
- fmul st(0), st(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
- fsubp              // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
- fstp A.Re.Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
- fxch st(2)         // A.Im, B.Re, B.Im, A.Re
- fmulp              // A.Im * B.Re, B.Im, A.Re
- fxch st(2)         // B.Im, A.Re, A.Im * B.Re
- fmulp              // B.Im * A.Re, A.Im * B.Re
- faddp              // A.Im * B.Re + A.Re * B.Im
- fstp A.Im.Double   // A.Im := A.Im * B.Re + A.Re * B.Im
+    FLD     A.Re.Double   // A.Re
+    FLD     A.Im.Double   // A.Im, A.Re
+    FLD     B.Re.Double   // B.Re, A.Im, A.Re
+    FLD     B.Im.Double   // B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)         // A.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FLD     ST(3)         // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FMUL    ST(0), ST(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+    FSUBP                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FSTP    A.Re.Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+    FXCH    ST(2)         // A.Im, B.Re, B.Im, A.Re
+    FMULP                 // A.Im * B.Re, B.Im, A.Re
+    FXCH    ST(2)         // B.Im, A.Re, A.Im * B.Re
+    FMULP                 // B.Im * A.Re, A.Im * B.Re
+    FADDP                 // A.Im * B.Re + A.Re * B.Im
+    FSTP    A.Im.Double   // A.Im := A.Im * B.Re + A.Re * B.Im
 end;
 {$ENDIF}
 
@@ -696,30 +696,30 @@ begin
 end;
 {$ELSE}
 asm
- fld  B.Re          // B.Re
- fld  B.Im          // B.Im, B.Re
- fmulp              // B.Im * B.Re
- fadd st(0), st(0)  // 2 * B.Im * B.Re = B''
+    FLD     B.Re          // B.Re
+    FLD     B.Im          // B.Im, B.Re
+    FMULP                 // B.Im * B.Re
+    FADD    ST(0), ST(0)  // 2 * B.Im * B.Re = B''
 
- fld  B.Re          // B.Re, B''
- fmul st(0), st(0)  // B.Re², B''
- fld  B.Im          // B.Im, B.Re², B''
- fmul st(0), st(0)  // B.Im², B.Re², B''
- fsubp              // B.Im² + B.Re² = B', B''
+    FLD     B.Re          // B.Re, B''
+    FMUL    ST(0), ST(0)  // B.Re², B''
+    FLD     B.Im          // B.Im, B.Re², B''
+    FMUL    ST(0), ST(0)  // B.Im², B.Re², B''
+    FSUBP                 // B.Im² + B.Re² = B', B''
 
- fld A.Re           // A.Re, B', B''
- fmul st(0), st(1)  // A.Re * B', B', B''
- fld A.Im           // A.Im, A.Re * B', B', B''
- fmul st(0), st(3)  // A.Im * B'', A.Re * B', B', B''
- fsubp              // A.Re * B' - A.Im * B'' := New A.Re, B', B''
+    FLD     A.Re          // A.Re, B', B''
+    FMUL    ST(0), ST(1)  // A.Re * B', B', B''
+    FLD     A.Im          // A.Im, A.Re * B', B', B''
+    FMUL    ST(0), ST(3)  // A.Im * B'', A.Re * B', B', B''
+    FSUBP                 // A.Re * B' - A.Im * B'' := New A.Re, B', B''
 
- fxch st(2)         // B'', B', New A.Re
- fmul A.Re          // A.Re * B'', B', New A.Re
- fxch st(1)         // B', A.Re * B'', New A.Re
- fmul A.Im          // A.Im * B', A.Re * B'', New A.Re
- faddp              // A.Im * B' + A.Re * B'' := New A.Im, New A.Re
- fstp A.Im          // New A.Re
- fstp A.Re
+    FXCH    ST(2)         // B'', B', New A.Re
+    FMUL    A.Re          // A.Re * B'', B', New A.Re
+    FXCH    ST(1)         // B', A.Re * B'', New A.Re
+    FMUL    A.Im          // A.Im * B', A.Re * B'', New A.Re
+    FADDP                 // A.Im * B' + A.Re * B'' := New A.Im, New A.Re
+    FSTP    A.Im          // New A.Re
+    FSTP    A.Re
 end;
 {$ENDIF}
 
@@ -736,30 +736,30 @@ begin
 end;
 {$ELSE}
 asm
- fld  B.Re          // B.Re
- fld  B.Im          // B.Im, B.Re
- fmulp              // B.Im * B.Re
- fadd st(0), st(0)  // 2 * B.Im * B.Re = B''
+    FLD     B.Re          // B.Re
+    FLD     B.Im          // B.Im, B.Re
+    FMULP                 // B.Im * B.Re
+    FADD    ST(0), ST(0)  // 2 * B.Im * B.Re = B''
 
- fld  B.Re          // B.Re, B''
- fmul st(0), st(0)  // B.Re², B''
- fld  B.Im          // B.Im, B.Re², B''
- fmul st(0), st(0)  // B.Im², B.Re², B''
- fsubp              // B.Im² + B.Re² = B', B''
+    FLD     B.Re          // B.Re, B''
+    FMUL    ST(0), ST(0)  // B.Re², B''
+    FLD     B.Im          // B.Im, B.Re², B''
+    FMUL    ST(0), ST(0)  // B.Im², B.Re², B''
+    FSUBP                 // B.Im² + B.Re² = B', B''
 
- fld A.Re           // A.Re, B', B''
- fmul st(0), st(1)  // A.Re * B', B', B''
- fld A.Im           // A.Im, A.Re * B', B', B''
- fmul st(0), st(3)  // A.Im * B'', A.Re * B', B', B''
- fsubp              // A.Re * B' - A.Im * B'' := New A.Re, B', B''
+    FLD     A.Re          // A.Re, B', B''
+    FMUL    ST(0), ST(1)  // A.Re * B', B', B''
+    FLD     A.Im          // A.Im, A.Re * B', B', B''
+    FMUL    ST(0), ST(3)  // A.Im * B'', A.Re * B', B', B''
+    FSUBP                 // A.Re * B' - A.Im * B'' := New A.Re, B', B''
 
- fxch st(2)         // B'', B', New A.Re
- fmul A.Re          // A.Re * B'', B', New A.Re
- fxch st(1)         // B', A.Re * B'', New A.Re
- fmul A.Im          // A.Im * B', A.Re * B'', New A.Re
- faddp              // A.Im * B' + A.Re * B'' := New A.Im, New A.Re
- fstp A.Im          // New A.Re
- fstp A.Re
+    FXCH    ST(2)         // B'', B', New A.Re
+    FMUL    A.Re          // A.Re * B'', B', New A.Re
+    FXCH    ST(1)         // B', A.Re * B'', New A.Re
+    FMUL    A.Im          // A.Im * B', A.Re * B'', New A.Re
+    FADDP                 // A.Im * B' + A.Re * B'' := New A.Im, New A.Re
+    FSTP    A.Im          // New A.Re
+    FSTP    A.Re
 end;
 {$ENDIF}
 
