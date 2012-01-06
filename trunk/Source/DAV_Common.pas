@@ -1005,18 +1005,18 @@ begin
  i[3] := i[3] and $7FFFFFFF;
 {$ELSE}
 asm
-    FLD  [EAX].Single
+    FLD     [EAX].Single
     FABS
-    FSTP [EAX].Single
-    FLD  [EAX +  4].Single
+    FSTP    [EAX].Single
+    FLD     [EAX +  4].Single
     FABS
-    FSTP [EAX +  4].Single
-    FLD  [EAX +  8].Single
+    FSTP    [EAX +  4].Single
+    FLD     [EAX +  8].Single
     FABS
-    FSTP [EAX +  8].Single
-    FLD  [EAX + 12].Single
+    FSTP    [EAX +  8].Single
+    FLD     [EAX + 12].Single
     FABS
-    FSTP [EAX + 12].Single
+    FSTP    [EAX + 12].Single
 {$ENDIF}
 end;
 
@@ -1169,12 +1169,12 @@ begin
  Result := Ceil(Value);
 {$ELSE}
 asm
-    FLD      Value.Double
-    FADD     ST(0), ST(0)
-    FSUBR    CMinusHalf32
-    FISTP    Result.Integer
-    SAR      Result.Integer, 1
-    NEG      Result.Integer
+    FLD     Value.Double
+    FADD    ST(0), ST(0)
+    FSUBR   CMinusHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
+    NEG     Result.Integer
 {$ENDIF}
 end;
 
@@ -1214,15 +1214,15 @@ begin
 var
   IntCast : Integer absolute Value;
 asm
-    FLD   Value.Single
-    FADD  ST(0), ST(0)
+    FLD     Value.Single
+    FADD    ST(0), ST(0)
     FABS
-    FADD  CMinusHalf32
-    FISTP Result.Integer
-    SAR   Result.Integer, 1
-    TEST  IntCast, $80000000
-    JZ @Done
-    NEG Result.Integer
+    FADD    CMinusHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
+    TEST    IntCast, $80000000
+    JZ      @Done
+    NEG     Result.Integer
 @Done:
 {$ENDIF}
 end;
@@ -1235,15 +1235,15 @@ begin
 var
   ByteCast : array [0..7] of Byte absolute Value;
 asm
-    FLD   Value.Double
-    FADD  ST(0), ST(0)
+    FLD     Value.Double
+    FADD    ST(0), ST(0)
     FABS
-    FADD  CMinusHalf32
-    FISTP Result.Integer
-    SAR   Result.Integer, 1
-    TEST  ByteCast[4].Integer, $80000000
-    JZ    @Done
-    NEG   Result.Integer
+    FADD    CMinusHalf32
+    FISTP   Result.Integer
+    SAR     Result.Integer, 1
+    TEST    ByteCast[4].Integer, $80000000
+    JZ      @Done
+    NEG     Result.Integer
 @Done:
 {$ENDIF}
 end;
@@ -1255,9 +1255,9 @@ begin
  Result := Round(Sample);
 {$ELSE}
 asm
-    FLD Sample.Single
+    FLD     Sample.Single
     FRNDINT
-    FISTP Result.Integer
+    FISTP   Result.Integer
 {$ENDIF}
 end;
 
@@ -1267,9 +1267,9 @@ begin
  Result := Round(Sample);
 {$ELSE}
 asm
-    FLD Sample.Double
+    FLD     Sample.Double
     FRNDINT
-    FISTP Result.Integer
+    FISTP   Result.Integer
 {$ENDIF}
 end;
 
