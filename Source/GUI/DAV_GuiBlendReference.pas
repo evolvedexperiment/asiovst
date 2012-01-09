@@ -342,6 +342,7 @@ end;
 
 procedure BindFunctions;
 begin
+(*
  BindingBlendPixel.Add(@BlendPixelReference);
  BindingBlendPixelInplace.Add(@BlendPixelInplaceReference);
  BindingBlendLine.Add(@BlendLineReference);
@@ -351,6 +352,7 @@ begin
  BindingMergePixel.Add(@MergePixelReference);
  BindingMergePixelInplace.Add(@MergePixelInplaceReference);
  BindingMergeLine.Add(@MergeLineReference);
+*)
 end;
 
 {$IFDEF UseLookupTables}

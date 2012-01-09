@@ -54,7 +54,9 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-{$IFNDEF FPC}{$DEFINE MemDLL}{$ENDIF}
+{$IFNDEF FPC}
+  {$DEFINE MemDLL}
+{$ENDIF}
 
 {-$DEFINE Debug64}
 

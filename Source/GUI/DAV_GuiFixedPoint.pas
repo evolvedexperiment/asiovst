@@ -291,6 +291,8 @@ begin
 end;
 
 
+{$IFDEF SUPPORTS_ENHANCED_RECORDS}
+
 { TFixed8Dot24Point }
 
 constructor TFixed8Dot24Point.Create(X, Y: TFixed8Dot24);
@@ -448,5 +450,7 @@ begin
   Result.X.Fixed := 0;
   Result.Y.Fixed := 0;
 end;
+
+{$ENDIF}
 
 end.
