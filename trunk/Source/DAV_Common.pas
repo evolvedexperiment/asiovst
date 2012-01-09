@@ -1314,7 +1314,6 @@ asm
  {$ENDIF}
 end;
 
-{$IFNDEF CPUX64}
 function GetMXCSR: Cardinal;
 var
   State : PInt64;
@@ -1322,20 +1321,31 @@ begin
   GetMem(State, 512); // needs to be aligned!
   try
     asm
-//      FXSAVE   State
+      FXSAVE   State
       MOV      EDX, State
-      MOV      EAX, [EDX + 24]
+      {$IFDEF CPUx86_64}
+      MOV      EAX, [RDX + 24].Cardinal
+      {$ELSE}
+      MOV      EAX, [EDX + 24].Cardinal
+      {$ENDIF}
       MOV      Result, EAX
     end;
   finally
     FreeMem(State);
   end;
 end;
-{$ENDIF}
 
 procedure SetMXCSR(Value: Cardinal);
 asm
-    LDMXCSR  Value.Cardinal
+{$IFDEF CPU32}
+    MOV      [ESP - 4], EAX
+    LDMXCSR  [ESP - 4]
+{$ENDIF}
+
+{$IFDEF CPUx86_64}
+    MOV      [RSP - 4], ECX
+    LDMXCSR  [RSP - 4]
+{$ENDIF}
 end;
 
 (*

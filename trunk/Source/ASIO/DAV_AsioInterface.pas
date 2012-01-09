@@ -194,20 +194,24 @@ begin
 asm
 {$IFDEF CPUx86_64}
   // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baInit]
-{$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR SysHandle
 {$IFDEF FPC}
-  MOV     ECX, SELF
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
 {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baInit]
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baInit]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR SysHandle
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baInit]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -220,20 +224,24 @@ begin
 asm
 {$IFDEF CPUx86_64}
   // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetDriverName]
-{$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR Name
 {$IFDEF FPC}
-  MOV     ECX, SELF
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
 {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetDriverName]
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetDriverName]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR Name
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetDriverName]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -246,19 +254,23 @@ begin
 asm
 {$IFDEF CPUx86_64}
   // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetDriverVersion]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetDriverVersion]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetDriverVersion]
+{$ELSE}
+    // x86 (32-Bit)
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetDriverVersion]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -270,21 +282,25 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetErrorMessage]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR ErrorString
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetErrorMessage]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetErrorMessage]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR ErrorString
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetErrorMessage]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -296,20 +312,24 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baStart]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baStart]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baStart]
+{$ELSE}
+    // x86 (32-Bit)
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baStart]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -321,20 +341,24 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baStop]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
+{$ELSE}
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baStop]
 {$ELSE}
   // x86 (32-Bit)
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baStop]
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baStop]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -346,22 +370,26 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetChannels]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR NumOutputChannels
-  PUSH    DWORD PTR NumInputChannels
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetChannels]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetChannels]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR NumOutputChannels
+    PUSH    DWORD PTR NumInputChannels
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetChannels]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -373,22 +401,26 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetLatencies]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR OutputLatency
-  PUSH    DWORD PTR InputLatency
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetLatencies]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetLatencies]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR OutputLatency
+    PUSH    DWORD PTR InputLatency
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetLatencies]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -400,24 +432,28 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetBufferSize]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR Granularity
-  PUSH    DWORD PTR PreferredSize
-  PUSH    DWORD PTR MaxSize
-  PUSH    DWORD PTR MinSize
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetBufferSize]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetBufferSize]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR Granularity
+    PUSH    DWORD PTR PreferredSize
+    PUSH    DWORD PTR MaxSize
+    PUSH    DWORD PTR MinSize
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetBufferSize]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -429,26 +465,30 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
+    // x86 (64-Bit)
 (*
-  PUSH    QWORD PTR [SampleRate + 4]
-  PUSH    QWORD PTR SampleRate
+    PUSH    QWORD PTR [SampleRate + 4]
+    PUSH    QWORD PTR SampleRate
 *)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baCanSampleRate]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR [SampleRate + 4]
-  PUSH    DWORD PTR SampleRate
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baCanSampleRate]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baCanSampleRate]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR [SampleRate + 4]
+    PUSH    DWORD PTR SampleRate
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baCanSampleRate]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -460,21 +500,25 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetSampleRate]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR SampleRate
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetSampleRate]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetSampleRate]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR SampleRate
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetSampleRate]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -486,22 +530,26 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baSetSampleRate]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR [SampleRate + 4]
-  PUSH    DWORD PTR SampleRate
-  {$IFDEF FPC}
-  MOV     ECX, DWORD PTR SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baSetSampleRate]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baSetSampleRate]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR [SampleRate + 4]
+    PUSH    DWORD PTR SampleRate
+{$IFDEF FPC}
+    MOV     ECX, DWORD PTR SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baSetSampleRate]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -513,22 +561,26 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetClockSources]
+    // x86 (64-Bit)
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR NumSources
-  PUSH    DWORD PTR Clocks
-  {$IFDEF FPC}
-  MOV     ECX, DWORD PTR SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetClockSources]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetClockSources]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR NumSources
+    PUSH    DWORD PTR Clocks
+{$IFDEF FPC}
+    MOV     ECX, DWORD PTR SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetClockSources]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -541,20 +593,24 @@ begin
 asm
 {$IFDEF CPUx86_64}
   // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baSetClockSource]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR Reference
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baSetClockSource]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baSetClockSource]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR Reference
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baSetClockSource]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -568,21 +624,25 @@ begin
 asm
 {$IFDEF CPUx86_64}
   // x86 (64-Bit)
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetSamplePosition]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR TimeStamp
-  PUSH    DWORD PTR SamplePosition
-  {$IFDEF FPC}
-  MOV     ECX, DWORD PTR SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetSamplePosition]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetSamplePosition]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR TimeStamp
+    PUSH    DWORD PTR SamplePosition
+{$IFDEF FPC}
+    MOV     ECX, DWORD PTR SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetSamplePosition]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -594,20 +654,24 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baGetChannelInfo]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR Info
-  {$IFDEF FPC}
-  MOV     ECX, DWORD PTR SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baGetChannelInfo]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baGetChannelInfo]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR Info
+{$IFDEF FPC}
+    MOV     ECX, DWORD PTR SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baGetChannelInfo]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -619,23 +683,27 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baCreateBuffers]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR Callbacks
-  PUSH    DWORD PTR BufferSize
-  PUSH    DWORD PTR NumChannels
-  PUSH    DWORD PTR BufferInfos
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baCreateBuffers]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baCreateBuffers]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR Callbacks
+    PUSH    DWORD PTR BufferSize
+    PUSH    DWORD PTR NumChannels
+    PUSH    DWORD PTR BufferInfos
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baCreateBuffers]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -647,19 +715,23 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baDisposeBuffers]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
+{$ELSE}
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baDisposeBuffers]
 {$ELSE}
   // x86 (32-Bit)
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baDisposeBuffers]
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baDisposeBuffers]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -671,19 +743,23 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baControlPanel]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baControlPanel]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baControlPanel]
+{$ELSE}
+    // x86 (32-Bit)
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baControlPanel]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -695,21 +771,25 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baFuture]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
 {$ELSE}
-  // x86 (32-Bit)
-  PUSH    DWORD PTR Opt
-  PUSH    DWORD PTR Selector
-  {$IFDEF FPC}
-  MOV     ECX, SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baFuture]
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baFuture]
+{$ELSE}
+    // x86 (32-Bit)
+    PUSH    DWORD PTR Opt
+    PUSH    DWORD PTR Selector
+{$IFDEF FPC}
+    MOV     ECX, SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baFuture]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -721,19 +801,23 @@ begin
 {$ELSE}
 asm
 {$IFDEF CPUx86_64}
-  MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-  MOV     RAX, [RAX]
-  CALL    QWORD PTR [RAX + baOutputReady]
+{$IFDEF FPC}
+    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
+{$ELSE}
+    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
+{$ENDIF}
+    MOV     RAX, [RAX]
+    CALL    QWORD PTR [RAX + baOutputReady]
 {$ELSE}
   // x86 (32-Bit)
-  {$IFDEF FPC}
-  MOV     ECX, DWORD PTR SELF
-  {$ELSE}
-  MOV     ECX, DWORD PTR [SELF]
-  {$ENDIF}
-  MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
-  MOV     EAX, DWORD PTR [ECX]
-  CALL    DWORD PTR [EAX + baOutputReady]
+{$IFDEF FPC}
+    MOV     ECX, DWORD PTR SELF
+{$ELSE}
+    MOV     ECX, DWORD PTR [SELF]
+{$ENDIF}
+    MOV     ECX, DWORD PTR [ECX + ASIODriverInterface]
+    MOV     EAX, DWORD PTR [ECX]
+    CALL    DWORD PTR [EAX + baOutputReady]
 {$ENDIF}
 {$ENDIF}
 end;
@@ -769,9 +853,5 @@ begin
 end;
 
 {$ENDIF}
-
-initialization
-
-finalization
 
 end.

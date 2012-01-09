@@ -12,7 +12,7 @@ uses
   DAV_AudioFileAU, DAV_AudioFileDataCache, DAV_AudioFileWAV, 
   DAV_ChannelDataCoder, DAV_ChunkAiffBasic, DAV_ChunkClasses, 
   DAV_ChunkWaveBasic, DAV_ChunkWaveCustom, DAV_MpegAudio, DAV_Math, 
-  LazarusPackageIntf;
+  DAV_MiniFloat, DAV_FixedPoint, LazarusPackageIntf;
 
 implementation
 

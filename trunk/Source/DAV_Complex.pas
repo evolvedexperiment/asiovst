@@ -43,9 +43,11 @@ type
   TComplex32 = record
     Re: Single;
     Im: Single;
-  {$IFDEF DELPHI10_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(const Re, Im: Single);
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TComplex32): Boolean;
@@ -60,11 +62,15 @@ type
 
     class function Euler(const Value: Single): TComplex32; overload; inline; static;
     class function Euler(const Value: Double): TComplex32; overload; inline; static;
+    {$IFNDEF FPC}
     class function Euler(const Value: Extended): TComplex32; overload; inline; static;
+    {$ENDIF}
 
     procedure ComputeEuler(const Value: Single); overload;
     procedure ComputeEuler(const Value: Double); overload;
+    {$IFNDEF FPC}
     procedure ComputeEuler(const Value: Extended); overload;
+    {$ENDIF}
   {$ENDIF}
   end;
 
@@ -73,9 +79,11 @@ type
   TComplex64 = record
     Re: Double;
     Im: Double;
-  {$IFDEF DELPHI10_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(const Re, Im: Double);
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TComplex64): Boolean;
@@ -90,11 +98,15 @@ type
 
     class function Euler(const Value: Single): TComplex64; overload; inline; static;
     class function Euler(const Value: Double): TComplex64; overload; inline; static;
+    {$IFNDEF FPC}
     class function Euler(const Value: Extended): TComplex64; overload; inline; static;
+    {$ENDIF}
 
     procedure ComputeEuler(const Value: Single); overload;
     procedure ComputeEuler(const Value: Double); overload;
+    {$IFNDEF FPC}
     procedure ComputeEuler(const Value: Extended); overload;
+    {$ENDIF}
   {$ENDIF}
   end;
 
@@ -1505,13 +1517,17 @@ begin
 end;
 
 
+{$IFDEF SUPPORTS_ENHANCED_RECORDS}
+
 { TComplex32 }
 
+{$IFNDEF FPC}
 constructor TComplex32.Create(const Re, Im: Single);
 begin
   Self.Re := Re;
   Self.Im := Im;
 end;
+{$ENDIF}
 
 class operator TComplex32.Add(const Lhs,
   Rhs: TComplex32): TComplex32;
@@ -1570,10 +1586,12 @@ begin
   GetSinCos(Value, Result.Im, Result.Re);
 end;
 
+{$IFNDEF FPC}
 class function TComplex32.Euler(const Value: Extended): TComplex32;
 begin
   GetSinCos(Value, Result.Im, Result.Re);
 end;
+{$ENDIF}
 
 procedure TComplex32.ComputeEuler(const Value: Single);
 begin
@@ -1585,19 +1603,23 @@ begin
   GetSinCos(Value, Self.Im, Self.Re);
 end;
 
+{$IFNDEF FPC}
 procedure TComplex32.ComputeEuler(const Value: Extended);
 begin
   GetSinCos(Value, Self.Im, Self.Re);
 end;
+{$ENDIF}
 
 
 { TComplex64 }
 
+{$IFNDEF FPC}
 constructor TComplex64.Create(const Re, Im: Double);
 begin
   Self.Re := 0;
   Self.Im := 0;
 end;
+{$ENDIF}
 
 class operator TComplex64.Add(const Lhs,
   Rhs: TComplex64): TComplex64;
@@ -1656,10 +1678,12 @@ begin
   GetSinCos(Value, Result.Im, Result.Re);
 end;
 
+{$IFNDEF FPC}
 class function TComplex64.Euler(const Value: Extended): TComplex64;
 begin
   GetSinCos(Value, Result.Im, Result.Re);
 end;
+{$ENDIF}
 
 procedure TComplex64.ComputeEuler(const Value: Single);
 begin
@@ -1671,9 +1695,12 @@ begin
   GetSinCos(Value, Self.Im, Self.Re);
 end;
 
+{$IFNDEF FPC}
 procedure TComplex64.ComputeEuler(const Value: Extended);
 begin
   GetSinCos(Value, Self.Im, Self.Re);
 end;
+{$ENDIF}
+{$ENDIF}
 
 end.

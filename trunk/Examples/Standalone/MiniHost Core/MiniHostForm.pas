@@ -4,7 +4,9 @@ unit MiniHostForm;
 
 interface
 
-{$DEFINE LoadPluginFromStream}
+{$IFNDEF FPC}
+  {$DEFINE LoadPluginFromStream}
+{$ENDIF}
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
@@ -252,7 +254,9 @@ type
     procedure AddWAV(const FileName: string);
     procedure BuildPresetList;
     procedure LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0); overload;
+    {$IFNDEF FPC}
     procedure LoadPlugin(const Stream: TStream; const DefaultProgram: Integer = 0); overload;
+    {$ENDIF}
     procedure LoadPresets(Files: TStrings);
     procedure LoadWAV(const FileName: string);
     procedure LoadWAVFile;
@@ -361,15 +365,15 @@ begin
   o1 := FBufferPntr^;
   if FCh = 2 then // stereo?
    begin
-    pp := psingle(longint(FBufferPntr) + 4);
+    pp := PSingle(LongInt(FBufferPntr) + 4);
     o2 := pp^;
-    next := psingle(longint(FBufferPntr) + 8);
-    next2 := psingle(longint(FBufferPntr) + 12);
+    next := PSingle(LongInt(FBufferPntr) + 8);
+    next2 := PSingle(LongInt(FBufferPntr) + 12);
     o2 := o2 * (1 - FCnt) + FCnt * next2^;
    end
   else
    begin
-    next := psingle(longint(FBufferPntr) + 4);
+    next := PSingle(longint(FBufferPntr) + 4);
     o2 := o1;
    end;
   if (FCnt <1 ) and (FInterpol) then // interpolation?
@@ -378,9 +382,9 @@ begin
   FCnt := FCnt + speed * (FSR / samplerate);
   while (FCnt >= 1) do
    begin
-    inc(FBufferPntr, FCh);
+    Inc(FBufferPntr, FCh);
     FCnt := FCnt - 1;
-    inc(FCnt2, FCh);
+    Inc(FCnt2, FCh);
    end;
   if (FCnt2 >= FSize - 1) then
    begin
@@ -505,7 +509,7 @@ begin
         end;
       end;
    end;
-(*
+( *
 *)
   end;
  IBtDropDown.picture.Bitmap.TransparentColor := $A8A8A8;
@@ -705,6 +709,7 @@ begin
 
  LoadWAV(WaveFile.Filename);
 
+ {$IFNDEF FPC}
  ContainedVSTPlugins := TStringList.Create;
  try
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
@@ -733,6 +738,7 @@ begin
  finally
   FreeAndNil(ContainedVSTPlugins);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmMiniHost.FormDestroy(Sender: TObject);
@@ -1078,6 +1084,7 @@ begin
  ShowVSTPlugin(DefaultProgram);
 end;
 
+{$IFNDEF FPC}
 procedure TFmMiniHost.LoadPlugin(const Stream: TStream; const DefaultProgram: Integer = 0);
 begin
  StopProcessingAndClosePlugin;
@@ -1098,6 +1105,7 @@ begin
 
  ShowVSTPlugin(DefaultProgram);
 end;
+{$ENDIF}
 
 procedure TFmMiniHost.BuildChannelBuffers;
 var
@@ -1183,6 +1191,7 @@ begin
  // fill background
  Application.ProcessMessages;
 
+ {$IFNDEF FPC}
  BMP := TBitmap.Create;
  BMP.PixelFormat := pf24bit;
  with BMP do
@@ -1198,10 +1207,13 @@ begin
      B := B + SCL[x].B;
     end;
 
-   result := RGB(R div BMP.Width, G div BMP.Width, B div BMP.Width);
+   Result := RGB(R div BMP.Width, G div BMP.Width, B div BMP.Width);
   finally
    FreeAndNil(BMP);
   end;
+ {$ELSE}
+ Result := $808080;
+ {$ENDIF}
 end;
 
 procedure TFmMiniHost.VSTHostAudioMasterIdle(Sender: TVSTPlugin);
@@ -1433,7 +1445,9 @@ begin
    InitialDir := FDirPreset;
    DefaultExt := '.fxp';
    Options := [ofAllowMultiSelect, ofFileMustExist, ofForceShowHidden];
+   {$IFNDEF FPC}
    Ctl3D := False;
+   {$ENDIF}
    Filter := 'preset files (*.fxp)|*.fxp';
    Title := 'Select a preset';
    if Execute then
@@ -1486,7 +1500,9 @@ begin
    Title := 'Select a preset';
    InitialDir := FDirPreset;
    Options := [ofForceShowHidden];
+{$IFNDEF FPC}
    Ctl3D := False;
+{$ENDIF}
 
    s2 := PresetBox.Items[PresetBox.ItemIndex];
    s2 := Copy(s2, 6, Length(s2) - 5);
@@ -1517,7 +1533,9 @@ begin
    InitialDir := FDirPreset;
 
    Options := [ofFileMustExist, ofForceShowHidden];
+   {$IFNDEF FPC}
    Ctl3D := False;
+   {$ENDIF}
 
    if Execute then
     begin
@@ -1549,7 +1567,9 @@ begin
    Title := 'Select a bank';
    InitialDir := FDirPreset;
    Options := [ofForceShowHidden];
+   {$IFNDEF FPC}
    Ctl3D := False;
+   {$ENDIF}
    if Execute then
     begin
      FDirPreset := ExtractFileDir(filename);
@@ -1574,7 +1594,9 @@ begin
    filename := '*.dll';
    Filter := 'VST Plugins (*.dll)|*.dll';
    Options := [ofFileMustExist, ofForceShowHidden];
+   {$IFNDEF FPC}
    Ctl3D := False;
+   {$ENDIF}
    Title := 'Select a VST plugin';
    InitialDir := FDirPlugin;
    if Execute then
@@ -1597,7 +1619,9 @@ begin
    FilterIndex := 0;
    InitialDir := FDirWave;
    Options := [ofFileMustExist, ofForceShowHidden];
+   {$IFNDEF FPC}
    Ctl3D := False;
+   {$ENDIF}
    Title := 'Select a WAV file';
    if Execute then
     begin
@@ -1646,7 +1670,9 @@ begin
    Filter := 'WAV files (*.wav)|*.wav';
    Title := 'Select a WAV file';
    Options := [ofForceShowHidden];
+   {$IFNDEF FPC}
    Ctl3D := False;
+   {$ENDIF}
    if Execute then
     begin
      FDirWave := extractfiledir(filename);
@@ -1904,7 +1930,9 @@ begin
    DefaultExt := '.mid';
    InitialDir := FDirMidi;
    Options := [ofFileMustExist, ofForceShowHidden];
+   {$IFNDEF FPC}
    Ctl3D := False;
+   {$ENDIF}
 
    Filename := '*.mid;*.mpl';
    Filter := 'MIDI files and playlists (*.mid;*.mpl)|*.mid;*.mpl|MIDI files (*.mid)|*.mid|MIDI playlists (*.mpl)|*.mpl';

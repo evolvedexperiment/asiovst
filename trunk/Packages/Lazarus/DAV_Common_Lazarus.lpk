@@ -5,7 +5,7 @@
     <Name Value="DAV_Common_Lazarus"/>
     <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\..\Resources"/>
@@ -30,7 +30,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="22">
+    <Files Count="24">
       <Item1>
         <Filename Value="..\..\Source\DAV_Common.pas"/>
         <UnitName Value="DAV_Common"/>
@@ -120,6 +120,14 @@
         <Filename Value="..\..\Source\DAV_Math.pas"/>
         <UnitName Value="DAV_Math"/>
       </Item22>
+      <Item23>
+        <Filename Value="..\..\Source\DAV_MiniFloat.pas"/>
+        <UnitName Value="DAV_MiniFloat"/>
+      </Item23>
+      <Item24>
+        <Filename Value="..\..\Source\DAV_FixedPoint.pas"/>
+        <UnitName Value="DAV_FixedPoint"/>
+      </Item24>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">

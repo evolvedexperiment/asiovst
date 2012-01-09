@@ -40,10 +40,12 @@ uses
 type
   PFixed8Dot24 = ^TFixed8Dot24;
   TFixed8Dot24 = packed record
-  {$IFDEF DELPHI10_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(const Fixed: Integer); overload;
     constructor Create(const FracLow: Word; FracHigh: Byte; Int: SmallInt); overload;
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TFixed8Dot24): Boolean;
@@ -63,7 +65,9 @@ type
     class operator Multiply(const Lhs, Rhs: TFixed8Dot24): TFixed8Dot24;
     class operator Divide(const Lhs, Rhs: TFixed8Dot24): TFixed8Dot24;
     class operator Divide(const Lhs: TFixed8Dot24; Rhs: Integer): TFixed8Dot24;
+    {$IFNDEF FPC}
     class operator Round(const Value: TFixed8Dot24): Integer;
+    {$ENDIF}
     class operator LeftShift(const Value: TFixed8Dot24; Shift: Byte): TFixed8Dot24;
     class operator RightShift(const Value: TFixed8Dot24; Shift: Byte): TFixed8Dot24;
 
@@ -98,10 +102,12 @@ type
 
   PFixed16Dot16 = ^TFixed16Dot16;
   TFixed16Dot16 = packed record
-  {$IFDEF DELPHI10_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(const Fixed: Integer); overload;
-    constructor Create(const Frac: Byte; Int: SmallInt); overload;
+    constructor Create(const Frac: Word; Int: SmallInt); overload;
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TFixed16Dot16): Boolean;
@@ -121,7 +127,9 @@ type
     class operator Multiply(const Lhs, Rhs: TFixed16Dot16): TFixed16Dot16;
     class operator Divide(const Lhs, Rhs: TFixed16Dot16): TFixed16Dot16;
     class operator Divide(const Lhs: TFixed16Dot16; Rhs: Integer): TFixed16Dot16;
+    {$IFNDEF FPC}
     class operator Round(const Value: TFixed16Dot16): Integer;
+    {$ENDIF}
     class operator LeftShift(const Value: TFixed16Dot16; Shift: Byte): TFixed16Dot16;
     class operator RightShift(const Value: TFixed16Dot16; Shift: Byte): TFixed16Dot16;
 
@@ -155,11 +163,13 @@ type
 
   PFixed24Dot8 = ^TFixed24Dot8;
   TFixed24Dot8 = packed record
-  {$IFDEF DELPHI10_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(const Fixed: Integer); overload;
     constructor Create(const Frac: Byte; Int: Integer); overload;
     constructor Create(const Frac: Byte; Low: Byte; High: SmallInt); overload;
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TFixed24Dot8): Boolean;
@@ -179,7 +189,9 @@ type
     class operator Multiply(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
     class operator Divide(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
     class operator Divide(const Lhs: TFixed24Dot8; Rhs: Integer): TFixed24Dot8;
+    {$IFNDEF FPC}
     class operator Round(const Value: TFixed24Dot8): Integer;
+    {$ENDIF}
     class operator LeftShift(const Value: TFixed24Dot8; Shift: Byte): TFixed24Dot8;
     class operator RightShift(const Value: TFixed24Dot8; Shift: Byte): TFixed24Dot8;
 
@@ -299,9 +311,9 @@ function FixedMax(A, B: TFixed8Dot24): TFixed8Dot24; overload;
 function FixedMax(A, B: TFixed16Dot16): TFixed16Dot16; overload;
 function FixedMax(A, B: TFixed24Dot8): TFixed24Dot8; overload;
 
-function FixedSinCos(Value: TFixed8Dot24; out Sin, Cos: TFixed8Dot24): TFixed8Dot24; overload;
-function FixedSinCos(Value: TFixed16Dot16; out Sin, Cos: TFixed16Dot16): TFixed16Dot16; overload;
-function FixedSinCos(Value: TFixed24Dot8; out Sin, Cos: TFixed24Dot8): TFixed24Dot8; overload;
+procedure FixedSinCos(Value: TFixed8Dot24; out Sin, Cos: TFixed8Dot24); overload;
+procedure FixedSinCos(Value: TFixed16Dot16; out Sin, Cos: TFixed16Dot16); overload;
+procedure FixedSinCos(Value: TFixed24Dot8; out Sin, Cos: TFixed24Dot8); overload;
 function FixedArcTan2(A, B: TFixed8Dot24): TFixed8Dot24; overload;
 function FixedArcTan2(A, B: TFixed16Dot16): TFixed16Dot16; overload;
 function FixedArcTan2(A, B: TFixed24Dot8): TFixed24Dot8; overload;
@@ -332,6 +344,9 @@ const
   CFixed24Dot8TwoPi : TFixed24Dot8 = (Fixed : Round(PI * $200));
 
 implementation
+
+uses
+  DAV_Math;
 
 function ConvertToFixed8Dot24(Value: Single): TFixed8Dot24; overload;
 begin
@@ -1618,32 +1633,32 @@ begin
     Result := B;
 end;
 
-function FixedSinCos(Value: TFixed8Dot24; out Sin, Cos: TFixed8Dot24): TFixed8Dot24;
+procedure FixedSinCos(Value: TFixed8Dot24; out Sin, Cos: TFixed8Dot24);
 var
   FloatSin : Single;
   FloatCos : Single;
 begin
- SinCos(ConvertFromFixed8Dot24(Value), FloatSin, FloatCos);
+ GetSinCos(ConvertFromFixed8Dot24(Value), FloatSin, FloatCos);
  Sin := ConvertToFixed8Dot24(FloatSin);
  Cos := ConvertToFixed8Dot24(FloatCos);
 end;
 
-function FixedSinCos(Value: TFixed16Dot16; out Sin, Cos: TFixed16Dot16): TFixed16Dot16;
+procedure FixedSinCos(Value: TFixed16Dot16; out Sin, Cos: TFixed16Dot16);
 var
   FloatSin : Single;
   FloatCos : Single;
 begin
- SinCos(ConvertFromFixed16Dot16(Value), FloatSin, FloatCos);
+ GetSinCos(ConvertFromFixed16Dot16(Value), FloatSin, FloatCos);
  Sin := ConvertToFixed16Dot16(FloatSin);
  Cos := ConvertToFixed16Dot16(FloatCos);
 end;
 
-function FixedSinCos(Value: TFixed24Dot8; out Sin, Cos: TFixed24Dot8): TFixed24Dot8;
+procedure FixedSinCos(Value: TFixed24Dot8; out Sin, Cos: TFixed24Dot8);
 var
   FloatSin : Single;
   FloatCos : Single;
 begin
- SinCos(ConvertFromFixed24Dot8(Value), FloatSin, FloatCos);
+ GetSinCos(ConvertFromFixed24Dot8(Value), FloatSin, FloatCos);
  Sin := ConvertToFixed24Dot8(FloatSin);
  Cos := ConvertToFixed24Dot8(FloatCos);
 end;
@@ -1687,7 +1702,7 @@ var
 begin
   for Index := 0 to Count - 1 do
   begin
-    PSingle(Data)^ := PFixed8Dot24(Data)^.AsSingle;
+    PSingle(Data)^ := ConvertFromFixed8Dot24(PFixed8Dot24(Data)^);
     Inc(PSingle(Data));
   end;
 end;
@@ -1711,7 +1726,7 @@ var
 begin
   for Index := 0 to Count - 1 do
   begin
-    PSingle(Data)^ := PFixed16Dot16(Data)^.AsSingle;
+    PSingle(Data)^ := ConvertFromFixed16Dot16(PFixed16Dot16(Data)^);
     Inc(PSingle(Data));
   end;
 end;
@@ -1741,10 +1756,11 @@ begin
 end;
 
 
-{$IFDEF DELPHI10_UP}
+{$IFDEF SUPPORTS_ENHANCED_RECORDS}
 
 { TFixed8Dot24 }
 
+{$IFNDEF FPC}
 constructor TFixed8Dot24.Create(const Fixed: Integer);
 begin
   Self.Fixed := Fixed;
@@ -1757,6 +1773,7 @@ begin
   Self.FracHigh := FracHigh;
   Self.Int := Int;
 end;
+{$ENDIF}
 
 class operator TFixed8Dot24.Add(const Lhs,
   Rhs: TFixed8Dot24): TFixed8Dot24;
@@ -1869,11 +1886,13 @@ begin
   Result.Fixed := Value.Fixed shr Shift;
 end;
 
+{$IFNDEF FPC}
 class operator TFixed8Dot24.Round(
   const Value: TFixed8Dot24): Integer;
 begin
   Result := FixedRound(Value);
 end;
+{$ENDIF}
 
 class operator TFixed8Dot24.Subtract(const Lhs,
   Rhs: TFixed8Dot24): TFixed8Dot24;
@@ -1934,16 +1953,18 @@ end;
 
 { TFixed16Dot16 }
 
+{$IFNDEF FPC}
 constructor TFixed16Dot16.Create(const Fixed: Integer);
 begin
   Self.Fixed := Fixed;
 end;
 
-constructor TFixed16Dot16.Create(const Frac: Byte; Int: SmallInt);
+constructor TFixed16Dot16.Create(const Frac: Word; Int: SmallInt);
 begin
   Self.Frac := Frac;
-  Self.Int := Fixed;
+  Self.Int := Int;
 end;
+{$ENDIF}
 
 class operator TFixed16Dot16.Add(const Lhs,
   Rhs: TFixed16Dot16): TFixed16Dot16;
@@ -2056,11 +2077,13 @@ begin
   Result.Fixed := Value.Fixed shr Shift;
 end;
 
+{$IFNDEF FPC}
 class operator TFixed16Dot16.Round(
   const Value: TFixed16Dot16): Integer;
 begin
   Result := FixedRound(Value);
 end;
+{$ENDIF}
 
 class operator TFixed16Dot16.Subtract(const Lhs,
   Rhs: TFixed16Dot16): TFixed16Dot16;
@@ -2121,6 +2144,7 @@ end;
 
 { TFixed24Dot8 }
 
+{$IFNDEF FPC}
 constructor TFixed24Dot8.Create(const Fixed: Integer);
 begin
   Self.Fixed := Fixed;
@@ -2131,6 +2155,7 @@ begin
   Self.Fixed := Int shl 8;
   Self.Frac := Frac;
 end;
+{$ENDIF}
 
 constructor TFixed24Dot8.Create(const Frac: Byte; Low: Byte;
   High: SmallInt);
@@ -2241,10 +2266,12 @@ begin
   Result.Fixed := Value.Fixed shr Shift;
 end;
 
+{$IFNDEF FPC}
 class operator TFixed24Dot8.Round(const Value: TFixed24Dot8): Integer;
 begin
   Result := FixedRound(Value)
 end;
+{$ENDIF}
 
 class operator TFixed24Dot8.Subtract(const Lhs,
   Rhs: TFixed24Dot8): TFixed24Dot8;

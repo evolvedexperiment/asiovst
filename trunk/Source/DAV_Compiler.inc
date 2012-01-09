@@ -6,7 +6,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-
 {$INCLUDE DAV_CompilerSwitches.inc}
 
 
@@ -1109,14 +1108,66 @@
 
     {$DEFINE XPLATFORM_RTL}
 
-    {$IFDEF VER2_2}
+    {$IFDEF VER2}
+      {$IFDEF VER2_1}
+        {$DEFINE VER2_1_UP}
+      {$ENDIF}
+      {$IFDEF VER2_2}
+        {$DEFINE VER2_1_UP}
+        {$DEFINE VER2_2_UP}
+      {$ENDIF}
+      {$IFDEF VER2_3}
+        {$DEFINE VER2_1_UP}
+        {$DEFINE VER2_2_UP}
+        {$DEFINE VER2_3_UP}
+      {$ENDIF}
+      {$IFDEF VER2_4}
+        {$DEFINE VER2_1_UP}
+        {$DEFINE VER2_2_UP}
+        {$DEFINE VER2_3_UP}
+        {$DEFINE VER2_4_UP}
+      {$ENDIF}
+      {$IFDEF VER2_5}
+        {$DEFINE VER2_1_UP}
+        {$DEFINE VER2_2_UP}
+        {$DEFINE VER2_3_UP}
+        {$DEFINE VER2_4_UP}
+        {$DEFINE VER2_5_UP}
+      {$ENDIF}
+      {$IFDEF VER2_6}
+        {$DEFINE VER2_1_UP}
+        {$DEFINE VER2_2_UP}
+        {$DEFINE VER2_3_UP}
+        {$DEFINE VER2_4_UP}
+        {$DEFINE VER2_5_UP}
+        {$DEFINE VER2_6_UP}
+      {$ENDIF}
+      {$IFDEF VER2_7}
+        {$DEFINE VER2_1_UP}
+        {$DEFINE VER2_2_UP}
+        {$DEFINE VER2_3_UP}
+        {$DEFINE VER2_4_UP}
+        {$DEFINE VER2_5_UP}
+        {$DEFINE VER2_6_UP}
+        {$DEFINE VER2_7_UP}
+      {$ENDIF}
+    {$ENDIF}
+
+    {$IFDEF VER2_2_UP}
       {$DEFINE SUPPORTS_DISPINTERFACE}
       {$DEFINE SUPPORTS_IMPLEMENTS}
       {$DEFINE SUPPORTS_DISPID}
     {$ELSE}
       {$UNDEF SUPPORTS_DISPINTERFACE}
       {$UNDEF SUPPORTS_IMPLEMENTS}
-    {$endif}
+    {$ENDIF}
+
+    {$IFDEF VER2_6_UP}
+      {$DEFINE SUPPORTS_ENHANCED_RECORDS}
+    {$ELSE}
+      {$UNDEF SUPPORTS_ENHANCED_RECORDS}
+    {$ENDIF}
+
     {$UNDEF SUPPORTS_UNSAFE_WARNINGS}
 
     {$IFNDEF LCLWin32}

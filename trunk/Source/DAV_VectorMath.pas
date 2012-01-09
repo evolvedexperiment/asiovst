@@ -859,15 +859,15 @@ end;
 
 function AngleLerp(Start, Stop, t: Single): Single;
 var
-  DIV: Single;
+  Delta: Single;
 begin
   Start := NormalizeAngle(Start);
   Stop := NormalizeAngle(Stop);
-  DIV := Stop - Start;
-  if DIV > PI
-   then DIV := -d - C2PI else // positive DIV, Angle on opposite side, becomes negative i.e. changes direction
-  if DIV < -PI then DIV := DIV + C2PI; // negative DIV, Angle on opposite side, becomes positive i.e. changes direction
-  Result := Start + DIV * t;
+  Delta := Stop - Start;
+  if Delta > PI
+   then Delta := -Delta - C2PI else // positive Delta, Angle on opposite side, becomes negative i.e. changes direction
+  if Delta < -PI then Delta := Delta + C2PI; // negative Delta, Angle on opposite side, becomes positive i.e. changes direction
+  Result := Start + Delta * t;
 end;
 
 function DistanceBetweenAngles(Angle1, Angle2: Single): Single;

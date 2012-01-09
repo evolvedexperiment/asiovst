@@ -31,7 +31,9 @@ type
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -40,18 +42,17 @@ uses
 
 procedure TFmAbout.LbWebClick(Sender: TObject);
 begin
-{$IFNDEF FPC}
- ShellExecute(GetDesktopWindow, 'open',
-  PChar('http://www.tobybear.de'), nil, nil, SW_SHOWNORMAL);
-{$ENDIF}
+ {$IFNDEF FPC}
+ ShellExecute(Self.WindowHandle, 'open', PChar('http://www.tobybear.de'), nil,
+   nil, SW_SHOWNORMAL);
 end;
 
 procedure TFmAbout.LbMailClick(Sender: TObject);
 begin
-{$IFNDEF FPC}
- ShellExecute(GetDesktopWindow, 'open',
-  PChar('mailto:tobybear@web.de'), nil, nil, SW_SHOWNORMAL);
-{$ENDIF}
+ {$IFNDEF FPC}
+ ShellExecute(Self.WindowHandle, 'open', PChar('mailto:tobybear@web.de'), nil,
+   nil, SW_SHOWNORMAL);
+ {$ENDIF}
 end;
 
 procedure TFmAbout.BtOKClick(Sender: TObject);
@@ -67,15 +68,9 @@ end;
 procedure TFmAbout.LbDonateClick(Sender: TObject);
 begin
  {$IFNDEF FPC}
- ShellExecute(GetDesktopWindow(), 'open',
+ ShellExecute(Self.WindowHandle, 'open',
    PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
  {$ENDIF}
 end;
 
-{$IFDEF FPC}
-initialization
-  {$i AboutForm.lrs}
-{$ENDIF}
-
 end.
-
