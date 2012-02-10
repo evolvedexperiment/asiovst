@@ -15,8 +15,8 @@ type
     procedure SKLSoftKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FSoftKneeLimiters : array [0..1] of TSimpleSoftKneeLimiter;
@@ -102,7 +102,7 @@ begin
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleProcess(const Inputs, Outputs:
-  TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   i : Integer;
 begin
@@ -114,7 +114,7 @@ begin
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   i : Integer;
 begin

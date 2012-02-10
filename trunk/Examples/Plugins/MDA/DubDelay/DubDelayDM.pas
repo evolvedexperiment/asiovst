@@ -25,7 +25,7 @@ unit DubDelayDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ uses
 
 type
   TDubDelayDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -195,7 +195,7 @@ begin
  FIRelease := Power(10, -2 / SampleRate);
 end;
 
-procedure TDubDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TDubDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Sample                         : Integer;
   i, j, g, e, e2, ra, re, at, ga : Single;

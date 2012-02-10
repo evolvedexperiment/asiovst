@@ -27,7 +27,7 @@ unit DAV_DspTransientProcessor;
 //  located at http://sourceforge.net/projects/mda-vst/                       //
 //  It was reviewed and rewritten from scratch by Christian-W. Budde          //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

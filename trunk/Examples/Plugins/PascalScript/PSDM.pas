@@ -25,7 +25,7 @@ unit PSDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +45,8 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VPSStoreChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
     procedure VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
   private
@@ -142,7 +142,7 @@ begin
 end;
 
 procedure TPascalScriptDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   i : Integer;
   d : Double;
@@ -161,7 +161,7 @@ begin
 end;
 
 procedure TPascalScriptDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var i : Integer;
 begin
  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));

@@ -41,7 +41,7 @@ begin
 end;
 
 procedure TGainedDifferenceModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex : Integer;
 begin

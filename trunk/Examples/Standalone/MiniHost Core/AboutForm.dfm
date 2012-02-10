@@ -23,7 +23,7 @@ object FmAbout: TFmAbout
   object LbTitle: TLabel
     Left = 46
     Top = 16
-    Width = 130
+    Width = 129
     Height = 14
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Tobybear MiniHost 1.0.1'
@@ -37,7 +37,7 @@ object FmAbout: TFmAbout
   object LbCopyright: TLabel
     Left = 4
     Top = 184
-    Width = 217
+    Width = 216
     Height = 42
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -64,7 +64,7 @@ object FmAbout: TFmAbout
   object LbWeb: TLabel
     Left = 40
     Top = 144
-    Width = 130
+    Width = 129
     Height = 14
     Cursor = crHandPoint
     Anchors = [akLeft, akTop, akRight]

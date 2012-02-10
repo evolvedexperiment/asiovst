@@ -25,7 +25,7 @@ unit SubSynthDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ type
   TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);
 
   TSubSynthDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -150,7 +150,7 @@ begin
 end;
 
 procedure TSubSynthDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   fi, fo       : Single;
   f1, f2       : Single;

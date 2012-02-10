@@ -25,7 +25,7 @@ unit CustomWrapperDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,12 +48,12 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleStartProcess(Sender: TObject);
     procedure VSTModuleStopProcess(Sender: TObject);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -458,7 +458,7 @@ begin
 end;
 
 procedure TCustomWrapperDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   chcnt : Integer;
   ch, n : Integer;
@@ -487,7 +487,7 @@ begin
   do VstHost[n].ProcessEvents(Events);
 end;
 
-procedure TCustomWrapperDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TCustomWrapperDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   chcnt : Integer;
   ch, n : Integer;
@@ -507,7 +507,7 @@ begin
   end;
 end;
 
-procedure TCustomWrapperDataModule.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TCustomWrapperDataModule.VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   chcnt : Integer;
   ch, n : Integer;

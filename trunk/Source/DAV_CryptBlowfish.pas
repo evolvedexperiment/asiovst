@@ -26,7 +26,7 @@ unit DAV_CryptBlowfish;
 //  The initial developer of this code is Christian-W. Budde based on C code  //
 //  by Paul Kocher (pck@netcom.com)                                           //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2010-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

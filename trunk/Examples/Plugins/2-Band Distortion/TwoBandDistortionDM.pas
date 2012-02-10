@@ -25,7 +25,7 @@ unit TwoBandDistortionDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,8 +48,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamLowDistChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -226,7 +226,7 @@ begin
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleProcess32(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;
@@ -256,7 +256,7 @@ begin
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleProcess64(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;

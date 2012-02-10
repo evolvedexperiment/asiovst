@@ -25,7 +25,7 @@ unit WavedisplayModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ uses
 
 type
   TWavedisplayModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
   public
@@ -63,7 +63,7 @@ begin
 end;
 
 procedure TWavedisplayModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   i: Integer;
 begin

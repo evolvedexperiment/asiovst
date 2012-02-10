@@ -25,7 +25,7 @@ unit SplitHarmonizerDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,10 +48,10 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessReplacing64LR(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessReplacing64MS(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessReplacing64LR(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessReplacing64MS(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterDelayAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDelayBChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -425,7 +425,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessLR(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Sample  : Integer;
@@ -459,7 +459,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64LR(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Sample  : Integer;
@@ -493,7 +493,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessMS(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Sample  : Integer;
@@ -528,7 +528,7 @@ begin
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64MS(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Sample  : Integer;

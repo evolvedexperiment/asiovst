@@ -1,8 +1,11 @@
 program GroupBoxTest;
 
 uses
+  madExcept,
+  madLinkDisAsm,
   Forms,
-  GroupBoxTestMain in 'GroupBoxTestMain.pas' {Form1};
+  GroupBoxTestMain in 'GroupBoxTestMain.pas' {Form1},
+  DAV_GuiGroup in '..\..\..\Source\GUI\DAV_GuiGroup.pas';
 
 {$R *.res}
 

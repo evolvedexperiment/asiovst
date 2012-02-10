@@ -25,7 +25,7 @@ unit OversampledTanhModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2006-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2006-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure ParamCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamTransitionChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -179,7 +179,7 @@ begin
    do UpdateCoeffs;
 end;
 
-procedure TOversampledTanhModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TOversampledTanhModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Sample  : Integer;

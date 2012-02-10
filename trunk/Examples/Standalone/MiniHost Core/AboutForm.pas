@@ -45,6 +45,7 @@ begin
  {$IFNDEF FPC}
  ShellExecute(Self.WindowHandle, 'open', PChar('http://www.tobybear.de'), nil,
    nil, SW_SHOWNORMAL);
+ {$ENDIF}
 end;
 
 procedure TFmAbout.LbMailClick(Sender: TObject);

@@ -25,7 +25,7 @@ unit SplitTemplateDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,34 +68,34 @@ type
     procedure VSTModuleProcess64SplitVST(const SampleFrames: Integer);
 
     // 32 bit stuff
-    procedure VSTModuleProcess32SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitExciter(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitDynamic(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitLeftRight(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitMidSide(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32Serial(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32Bypass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitTransient(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitSingle(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitDynLFO(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitLFO(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess32SplitSpin(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitExciter(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitDynamic(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitLeftRight(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitMidSide(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32Serial(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32Bypass(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitTransient(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitSingle(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitDynLFO(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitLFO(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess32SplitSpin(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 
     // 64 bit stuff
-    procedure VSTModuleProcess64Serial(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitDynamic(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitExciter(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitLeftRight(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitMidSide(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64Bypass(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitTransient(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitSingle(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitLFO(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitDynLFO(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64SplitSpin(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64Serial(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitDynamic(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitExciter(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitLeftRight(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitMidSide(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64Bypass(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitTransient(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitSingle(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitLFO(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitDynLFO(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64SplitSpin(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 
     procedure VSTModuleProcessEvents(Sender: TObject; const Events: TVstEvents);
     procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
@@ -1033,7 +1033,7 @@ begin
   end;
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   L     : Double;
   Channel, i : Integer;
@@ -1072,7 +1072,7 @@ begin
     do Outputs[Channel, i] := FVolumeFactor * (FLow32[Channel, i] + FHigh32[Channel, i]);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, i  : Integer;
 begin
@@ -1117,7 +1117,7 @@ begin
     do Outputs[Channel, i] := FVolumeFactor * (FLow32[Channel, i] + FHigh32[Channel, i]);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32SplitExciter(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitExciter(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, i  : Integer;
 begin
@@ -1162,7 +1162,7 @@ begin
     do Outputs[Channel, i] := FVolumeFactor * (FLow32[Channel, i] + FHigh32[Channel, i]);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32SplitDynamic(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitDynamic(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   L, H  : Double;
   Channel, i : Integer;
@@ -1211,7 +1211,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32Bypass(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel  : Integer;
 begin
@@ -1219,7 +1219,7 @@ begin
   do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32Serial(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32Serial(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, i  : Integer;
 begin
@@ -1267,7 +1267,7 @@ begin
   end;
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32SplitLeftRight(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitLeftRight(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   i  : Integer;
 begin
@@ -1348,7 +1348,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32SplitLFO(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Data  : array [0..1, 0..1] of Double;
   Pan   : array [0..1] of Double;
@@ -1407,7 +1407,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32SplitDynLFO(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Data  : array [0..1, 0..1] of Double;
   Pan   : array [0..1] of Double;
@@ -1465,7 +1465,7 @@ begin
   end;
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32SplitMidSide(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitMidSide(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   L, H : Double;
   i    : Integer;
@@ -1538,7 +1538,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32SplitSingle(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, i  : Integer;
 begin
@@ -1580,7 +1580,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32SplitSpin(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Data  : array [0..1, 0..1] of Double;
   Pan   : array [0..1, 0..1] of Double;
@@ -1659,7 +1659,7 @@ begin
   end;
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess32SplitTransient(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitTransient(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   L, H  : Double;
   Channel, i : Integer;
@@ -1710,7 +1710,7 @@ end;
 
 // 64bit
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   L     : Double;
   Channel, i : Integer;
@@ -1749,7 +1749,7 @@ begin
     do Outputs[Channel, i] := FVolumeFactor * (FLow64[Channel, i] + FHigh64[Channel, i]);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex, SampleIndex  : Integer;
 begin
@@ -1792,7 +1792,7 @@ begin
     do Outputs[ChannelIndex, SampleIndex] := FVolumeFactor * (FLow64[ChannelIndex, SampleIndex] + FHigh64[ChannelIndex, SampleIndex]);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64SplitExciter(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitExciter(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex, SampleIndex : Integer;
 begin
@@ -1835,7 +1835,7 @@ begin
     do Outputs[ChannelIndex, SampleIndex] := FVolumeFactor * (FLow64[ChannelIndex, SampleIndex] + FHigh64[ChannelIndex, SampleIndex]);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64SplitDynamic(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitDynamic(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   L, H  : Double;
   Channel, i : Integer;
@@ -1884,7 +1884,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64Bypass(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel  : Integer;
 begin
@@ -1892,7 +1892,7 @@ begin
   do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Double));
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64Serial(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64Serial(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, i  : Integer;
 begin
@@ -1940,7 +1940,7 @@ begin
   end;
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64SplitLeftRight(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitLeftRight(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   i  : Integer;
 begin
@@ -2021,7 +2021,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitLFO(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Data  : array [0..1, 0..1] of Double;
   Pan   : array [0..1] of Double;
@@ -2080,7 +2080,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitDynLFO(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Data  : array [0..1, 0..1] of Double;
   Pan   : array [0..1] of Double;
@@ -2138,7 +2138,7 @@ begin
   end;
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64SplitMidSide(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitMidSide(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   L, H : Double;
   i    : Integer;
@@ -2211,7 +2211,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitSingle(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, i  : Integer;
 begin
@@ -2246,7 +2246,7 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitSpin(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Data  : array [0..1, 0..1] of Double;
   Pan   : array [0..1, 0..1] of Double;
@@ -2325,7 +2325,7 @@ begin
   end;
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess64SplitTransient(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitTransient(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   L, H  : Double;
   Channel, i : Integer;

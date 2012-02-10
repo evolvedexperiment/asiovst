@@ -25,7 +25,7 @@ unit SpinBugLiteModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,16 +43,16 @@ type
   TSpinBugLiteModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender : TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcessStereoA(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessStereoB(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessStereoC(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessStereoD(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessMono(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessMonoL(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessMonoR(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessMS(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessSpecial(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
-    procedure VSTModuleProcessOldOne(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+    procedure VSTModuleProcessStereoA(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessStereoB(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessStereoC(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessStereoD(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessMono(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessMonoL(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessMonoR(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessMS(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessSpecial(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
+    procedure VSTModuleProcessOldOne(const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
     procedure VSTModuleSampleRateChange(Sender : TObject; const SampleRate : Single);
     procedure SBMCoefficientsDisplay(Sender : TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure SBMCoefficientsChange(Sender : TObject; const Index: Integer; var Value: Single);
@@ -262,7 +262,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoA(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i      : Integer;
   a1, b1 : Single;
@@ -285,7 +285,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoB(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i      : Integer;
   a1, b1 : Single;
@@ -308,7 +308,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoC(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i      : Integer;
   a1, b1 : Single;
@@ -329,7 +329,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoD(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i      : Integer;
   s, c   : Double;
@@ -355,7 +355,8 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMono(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
 var
   i    : Integer;
   a, b : Single;
@@ -372,7 +373,8 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMonoL(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Cardinal);
 var
   i    : Integer;
   a, b : Single;
@@ -389,7 +391,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMonoR(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i    : Integer;
   a, b : Single;
@@ -406,7 +408,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessMS(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i      : Integer;
   a1, b1 : Single;
@@ -429,7 +431,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessSpecial(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i      : Integer;
   a1, b1 : Single;
@@ -453,7 +455,7 @@ begin
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessOldOne(
-  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Integer);
+  const Inputs, Outputs : TDAVArrayOfSingleFixedArray; const SampleFrames : Cardinal);
 var
   i      : Integer;
   a1, b1 : Single;

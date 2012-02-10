@@ -25,7 +25,7 @@ unit VocoderDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure ParameterModInDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterModInChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHiBandChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -198,7 +198,7 @@ begin
 // Suspend;
 end;
 
-procedure TVocoderDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TVocoderDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Sample              : Integer;
   a, b, o, aa, bb     : Single;

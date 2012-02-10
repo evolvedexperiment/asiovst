@@ -16,6 +16,14 @@ object HumRemovalModule: THumRemovalModule
     item
       DisplayName = 'Default'
       VSTModule = Owner
+    end
+    item
+      DisplayName = '50 Hz'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = '60 Hz'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item

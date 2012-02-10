@@ -25,7 +25,7 @@ unit DAV_DspInterpolation;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2006-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2006-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,6 +33,7 @@ unit DAV_DspInterpolation;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{$IFDEF CPUx86_64}{$DEFINE PUREPASCAL}{$ENDIF}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
@@ -108,14 +109,13 @@ function Hermite32_asm(const Fractional: Single; Pntr: PDAV4SingleArray): Single
 {$IFDEF PUREPASCAL}
 var
   c : TDAV4SingleArray;
-  b : Single;
 begin
-  c[0] := (Pntr^[2] - Pntr[0]) * CHalf32;
-  c[1] := Pntr[1] - Pntr[2];
+  c[0] := (Pntr^[2] - Pntr^[0]) * CHalf32;
+  c[1] := Pntr^[1] - Pntr^[2];
   c[2] := c[0] + c[1];
-  c[3] := c[2] + c[1] + (Pntr[3] - Pntr[1]) * CHalf32;
-  b    := c[2] + c[3];
-  Result := ((((c[3] * Fractional) - b) * Fractional + c[0]) * Fractional + Pntr[1]);
+  c[3] := c[2] + c[1] + (Pntr^[3] - Pntr^[1]) * CHalf32;
+  Result := ((((c[3] * Fractional) - (c[2] + c[3])) * Fractional + c[0]) *
+    Fractional + Pntr^[1]);
 end;
 {$ELSE}
 asm

@@ -26,7 +26,7 @@ unit DAV_DspFFT;
 //  The code is based on the FFT routine, (C)1996 S.M.Bernsee                 //
 //  It was reviewed and rewritten from scratch by Christian-W. Budde          //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

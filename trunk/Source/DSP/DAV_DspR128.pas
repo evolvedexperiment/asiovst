@@ -25,7 +25,7 @@ unit DAV_DspR128;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,6 +158,9 @@ implementation
 
 uses
   DAV_Approximations;
+
+resourcestring
+  RCStrSamplerateNotSupported = 'Samplerate not supported';
 
 const
   CMeanSquareBias : Single = 1E-10;
@@ -684,7 +687,9 @@ begin
    F400msSampleCount := Round(0.4 * Abs(SampleRate));
    F2600msSampleCount := Round(2.6 * Abs(SampleRate));
 
-   Assert(F400msSampleCount > 0);
+   if F400msSampleCount = 0 then
+     raise Exception.Create(RCStrSamplerateNotSupported);
+
    FMomIntScale := 1 / F400msSampleCount;
    FShortIntScale := 1 / (F400msSampleCount + F2600msSampleCount);
 

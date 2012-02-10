@@ -25,7 +25,7 @@ unit PluginDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleAfterProgramChange(Sender: TObject);
     procedure VSTModuleProcess32Replacing(const Inputs,
-      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
   private
     FChunk : TTextChunk;
     function GetText: AnsiString;
@@ -136,7 +136,7 @@ begin
 end;
 
 procedure TPluginDataModule.VSTModuleProcess32Replacing(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
   //
 end;

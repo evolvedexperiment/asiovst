@@ -553,7 +553,7 @@ begin
  FmOptions := TFmOptions.Create(Self);
  FmOptions.Host := Self;
 
- DragAcceptFiles(Self.handle, True);
+ DragAcceptFiles(Self.Handle, True);
 
 {$IFNDEF FPC}
  ININame := GetApplicationDirectory + '\' + ChangeFileExt(GetApplicationFilename, '.ini');

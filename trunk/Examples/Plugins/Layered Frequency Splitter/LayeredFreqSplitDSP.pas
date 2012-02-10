@@ -25,7 +25,7 @@ unit LayeredFreqSplitDSP;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2010-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
-      const SampleFrames: Integer);
+      const SampleFrames: Cardinal);
     procedure ParameterLayersChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -131,7 +131,7 @@ begin
 end;
 
 procedure TLayeredFreqSplitModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;

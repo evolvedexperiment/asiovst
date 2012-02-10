@@ -25,7 +25,7 @@ unit HumRemovalDSP;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +47,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDetect(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessDetect(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure ParameterHighpassActiveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -120,6 +120,45 @@ begin
  Parameter[5] := 0.08;
  Parameter[6] := 48;
  Parameter[7] := 0;
+
+ with Programs[0] do
+  begin
+   // initialize parameters
+   Parameter[0] := 1;
+   Parameter[1] := 0;
+   Parameter[2] := 75;
+   Parameter[3] := 2;
+   Parameter[4] := 50;
+   Parameter[5] := 0.08;
+   Parameter[6] := 48;
+   Parameter[7] := 0;
+  end;
+
+ with Programs[1] do
+  begin
+   // initialize parameters
+   Parameter[0] := 1;
+   Parameter[1] := 0;
+   Parameter[2] := 75;
+   Parameter[3] := 2;
+   Parameter[4] := 50;
+   Parameter[5] := 0.08;
+   Parameter[6] := 48;
+   Parameter[7] := 0;
+  end;
+
+ with Programs[2] do
+  begin
+   // initialize parameters
+   Parameter[0] := 1;
+   Parameter[1] := 0;
+   Parameter[2] := 75;
+   Parameter[3] := 2;
+   Parameter[4] := 60;
+   Parameter[5] := 0.08;
+   Parameter[6] := 48;
+   Parameter[7] := 0;
+  end;
 end;
 
 procedure THumRemovalModule.VSTModuleClose(Sender: TObject);
@@ -306,18 +345,19 @@ begin
 end;
 
 procedure THumRemovalModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Sample  : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FHumRemoval[Channel].ProcessSample32(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FHumRemoval[Channel].ProcessSample32(
+     Inputs[Channel, Sample]);
 end;
 
 procedure THumRemovalModule.VSTModuleProcessDetect(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Index   : Integer;

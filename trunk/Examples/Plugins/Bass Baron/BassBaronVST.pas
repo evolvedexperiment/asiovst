@@ -25,7 +25,7 @@ unit BassBaronVST;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,8 +46,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBassMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHfLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -456,7 +456,7 @@ begin
 end;
 
 procedure TBassBaronModule.VSTModuleProcess32(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex   : Integer;
   SampleIndex    : Integer;
@@ -474,7 +474,7 @@ begin
 end;
 
 procedure TBassBaronModule.VSTModuleProcess64(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

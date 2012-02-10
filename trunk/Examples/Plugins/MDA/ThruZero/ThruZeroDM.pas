@@ -25,7 +25,7 @@ unit ThruZeroDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ const
 type
   TThruZeroDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject;const SampleRate: Single);
@@ -135,7 +135,7 @@ begin
  if Assigned(FBuffer[1]) then Dispose(FBuffer[1]);
 end;
 
-procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Sample                  : Integer;
   a, b, f, f1, f2, ph     : Single;

@@ -12,9 +12,9 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess32Replacing(const Inputs,
-      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcess64Replacing(const Inputs,
-      Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+      Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
   private
     FVoices : TVoiceList;
   public

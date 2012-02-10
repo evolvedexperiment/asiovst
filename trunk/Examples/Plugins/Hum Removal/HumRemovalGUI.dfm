@@ -21,6 +21,7 @@ object FmHumRemoval: TFmHumRemoval
     Top = 8
     Width = 379
     Height = 169
+    AntiAlias = True
     BorderColor = 14277598
     BorderRadius = 7.000000000000000000
     BorderWidth = 1.500000000000000000

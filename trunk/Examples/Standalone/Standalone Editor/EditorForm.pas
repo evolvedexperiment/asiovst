@@ -25,7 +25,7 @@ unit EditorForm;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,8 +36,8 @@ interface
 {$DEFINE LoadFromMemory}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
-  {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
+  {$IFDEF FPC}LCLIntf, Buttons, {$ELSE}Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
   StdCtrls, ToolWin, Dialogs, Menus, DAV_Types, DAV_ASIOHost, DAV_VSTHost;
 
 type
@@ -88,7 +88,9 @@ var
 
 implementation
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
 
@@ -222,16 +224,6 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.FormActivate(Sender: TObject);
-begin
- VstHost[0].EditActivate;
-end;
-
-procedure TFmVSTEditor.FormDeactivate(Sender: TObject);
-begin
- VstHost[0].EditDeActivate;
-end;
-
 procedure TFmVSTEditor.FormDestroy(Sender: TObject);
 var
   Channel: Integer;
@@ -240,6 +232,33 @@ begin
   do Dispose(FVSTInBuffer[Channel]);
  for Channel := 0 to Length(FVSTOutBuffer) - 1
   do Dispose(FVSTOutBuffer[Channel]);
+end;
+
+procedure TFmVSTEditor.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+ ASIOHost.Active := False;
+ VSTHost[0].Active := False;
+ Sleep(10);
+ Application.ProcessMessages;
+ ASIOHOST.Active := False;
+ with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
+  try
+   WriteInteger('Layout', 'Main Top', Top);
+   WriteInteger('Layout', 'Main Left', Left);
+  finally
+   Free;
+  end;
+end;
+
+procedure TFmVSTEditor.FormActivate(Sender: TObject);
+begin
+ VstHost[0].EditActivate;
+end;
+
+procedure TFmVSTEditor.FormDeactivate(Sender: TObject);
+begin
+ VstHost[0].EditDeActivate;
 end;
 
 procedure TFmVSTEditor.MILoadPresetClick(Sender: TObject);
@@ -277,15 +296,6 @@ begin
  VstHost[0].CurrentProgram := CBPreset.ItemIndex;
 end;
 
-procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleFixedArray);
-begin
- if VSTHost[0].Active
-  then VSTHost[0].Process32Replacing(@InBuffer[InputChannelOffset],
-                                     @OutBuffer[OutputChannelOffset],
-                                     ASIOHost.BufferSize);
-end;
-
 procedure TFmVSTEditor.ASIOHostReset(Sender: TObject);
 var
   Channel: Integer;
@@ -297,26 +307,13 @@ begin
   do ReallocMem(FVSTOutBuffer[Channel], VSTHost.BlockSize * SizeOf(Single));
 end;
 
-procedure TFmVSTEditor.FormClose(Sender: TObject;
-  var Action: TCloseAction);
+procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 begin
- ASIOHost.Active := False;
- VSTHost[0].Active := False;
- Sleep(10);
- Application.ProcessMessages;
- ASIOHOST.Active := False;
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
-  try
-   WriteInteger('Layout', 'Main Top', Top);
-   WriteInteger('Layout', 'Main Left', Left);
-  finally
-   Free;
-  end;
+ if VSTHost[0].Active
+  then VSTHost[0].Process32Replacing(@InBuffer[InputChannelOffset],
+                                     @OutBuffer[OutputChannelOffset],
+                                     ASIOHost.BufferSize);
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i EditorForm.lrs}
-{$ENDIF}
 
 end.

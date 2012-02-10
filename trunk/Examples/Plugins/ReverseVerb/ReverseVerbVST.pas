@@ -25,7 +25,7 @@ unit ReverseVerbVST;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,8 +56,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleBeforeProgramChange(Sender: TObject);
     procedure VSTModuleAfterProgramChange(Sender: TObject);
-    procedure VSTModuleProcessForward(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessBackward(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessForward(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessBackward(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterDirectChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -786,7 +786,7 @@ begin
 end;
 
 procedure TReverseVerbDataModule.VSTModuleProcessBackward(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;
@@ -820,7 +820,7 @@ begin
 end;
 
 procedure TReverseVerbDataModule.VSTModuleProcessForward(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

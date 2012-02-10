@@ -25,7 +25,7 @@ unit HumRemovalDSP;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +47,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDetect(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessDetect(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure ParameterHighpassActiveDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterHighpassOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -265,7 +265,7 @@ begin
 end;
 
 procedure THumRemovalModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Sample  : Integer;
@@ -276,7 +276,7 @@ begin
 end;
 
 procedure THumRemovalModule.VSTModuleProcessDetect(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel : Integer;
   Index   : Integer;

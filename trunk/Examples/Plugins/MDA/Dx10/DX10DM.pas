@@ -25,7 +25,7 @@ unit DX10DM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ uses
 type
   TDX10DataModule = class(TVSTModule)
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer;
       var vLabel, shortLabel: string;
@@ -220,7 +220,7 @@ begin
  FDeltaLFO := 628.3 * ifs * 25 * sqr(Parameter[15]); // these params not in original DX10
 end;
 
-procedure TDX10DataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TDX10DataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   event, frame, frames, v : Integer;
   o, x, e, mw, w, m       : Single;
