@@ -133,7 +133,7 @@ begin
 end;
 
 procedure TRpeqModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

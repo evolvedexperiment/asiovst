@@ -25,7 +25,7 @@ unit HumRemovalGUI;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +179,7 @@ begin
   begin
    if SbHighpassType.ItemIndex <> Round(Parameter[1])
     then SbHighpassType.ItemIndex := Round(Parameter[1]);
+   GuiEQGraph.FilterSeries[0].DataChanged;
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -188,6 +189,7 @@ begin
  with THumRemovalModule(Owner) do
   begin
    LedHighpassActive.Brightness_Percent := Limit(10 + 80 * Parameter[0], 10, 90);
+   GuiEQGraph.FilterSeries[0].DataChanged;
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -199,6 +201,7 @@ begin
    if DialHighpassFrequency.Value <> Parameter[2]
     then DialHighpassFrequency.Value := Parameter[2];
    LbHighpassFrequencyValue.Caption := string(ParameterDisplay[2] + ' ' + ParameterLabel[2]);
+   GuiEQGraph.FilterSeries[0].DataChanged;
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -210,6 +213,7 @@ begin
    if DialHighpassOrder.Value <> Parameter[3]
     then DialHighpassOrder.Value := Parameter[3];
    LbHighpassOrderValue.Caption := string(ParameterDisplay[3]);
+   GuiEQGraph.FilterSeries[0].DataChanged;
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -221,6 +225,7 @@ begin
    if DialFundamentalFrequency.Value <> Parameter[4]
     then DialFundamentalFrequency.Value := Parameter[4];
    LbFundamentalFrequencyValue.Caption := string(ParameterDisplay[4] + ' ' + ParameterLabel[4]);
+   GuiEQGraph.FilterSeries[0].DataChanged;
    GuiEQGraph.UpdateGraph;
   end;
 end;
@@ -232,6 +237,7 @@ begin
    if DialNotchBandwidth.Value <> Parameter[5]
     then DialNotchBandwidth.Value := Parameter[5];
    LbNotchBandwidthValue.Caption := string(ParameterDisplay[5] + ' ' + ParameterLabel[5]);
+   GuiEQGraph.FilterSeries[0].DataChanged;
    GuiEQGraph.UpdateGraph;
   end;
 end;

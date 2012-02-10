@@ -28,7 +28,7 @@ unit DAV_Bindings;
 //  The unit may contain code snippets found in several other open source     //
 //  projects.                                                                 //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

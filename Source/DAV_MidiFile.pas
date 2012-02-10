@@ -27,7 +27,7 @@ unit DAV_MidiFile;
 //  for this project by Tobias Fleischer and Christian-W. Budde.              //
 //  see comments below for more information                                   //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

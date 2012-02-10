@@ -1,4 +1,4 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{81BB597B-E111-47DC-AB22-A9D1F37E5359}</ProjectGuid>
 			<MainSource>TwoBandDistortion.dpr</MainSource>
@@ -239,8 +239,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>move /y $(OUTPUTPATH) &quot;$(OUTPUTDIR)/2-Band Distortion.dll&quot;
-</PostBuildEvent>
+			<PostBuildEvent>move /y $(OUTPUTPATH) &quot;$(OUTPUTDIR)/2-Band Distortion.dll&quot;</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='OSX32'">
@@ -248,8 +247,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>move /y $(OUTPUTPATH) &quot;$(OUTPUTDIR)/2-Band Distortion.dll&quot;
-</PostBuildEvent>
+			<PostBuildEvent>move /y $(OUTPUTPATH) &quot;$(OUTPUTDIR)/2-Band Distortion.dll&quot;</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
@@ -257,8 +255,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
 			<PreLinkEvent/>
 			<PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-			<PostBuildEvent>move /y $(OUTPUTPATH) &quot;$(OUTPUTDIR)/2-Band Distortion.dll&quot;
-</PostBuildEvent>
+			<PostBuildEvent>move /y $(OUTPUTPATH) &quot;$(OUTPUTDIR)/2-Band Distortion.dll&quot;</PostBuildEvent>
 			<PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Publish' And '$(Platform)'=='Win64'">

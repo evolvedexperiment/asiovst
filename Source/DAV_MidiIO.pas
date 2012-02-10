@@ -28,7 +28,7 @@ unit DAV_MidiIO;
 //                                                                            //
 //  It has been adapted for this project by Christian-W. Budde                //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

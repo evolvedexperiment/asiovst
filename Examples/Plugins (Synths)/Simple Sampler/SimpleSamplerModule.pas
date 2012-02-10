@@ -13,9 +13,9 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess64Replacing(const Inputs,
-      Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+      Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcess32Replacing(const Inputs,
-      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
   private
     FVoices       : TVoiceList;
     FSample       : PDAVSingleFixedArray;
@@ -64,7 +64,7 @@ begin
 end;
 
 procedure TVSTSSModule.VSTModuleProcess32Replacing(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   VoiceIndex, SampleIndex : Integer;
 begin
@@ -80,7 +80,7 @@ begin
 end;
 
 procedure TVSTSSModule.VSTModuleProcess64Replacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   VoiceIndex, SampleIndex : Integer;
 begin

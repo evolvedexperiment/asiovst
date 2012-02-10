@@ -25,7 +25,7 @@ unit DAV_DspRingModulator;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -487,4 +487,4 @@ initialization
   RegisterDspProcessors64([TAutoRingModulator64, TAnalogAutoRingModulator64,
     TLightweightAnalogAutoRingModulator64]);
 
-end.
+end.

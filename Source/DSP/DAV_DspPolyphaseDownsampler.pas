@@ -27,7 +27,7 @@ unit DAV_DspPolyphaseDownsampler;
 //  can be found at http://ldesoras.free.fr/prod.html#src_hiir                //
 //  It was reviewed and rewritten from scratch by Christian-W. Budde          //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

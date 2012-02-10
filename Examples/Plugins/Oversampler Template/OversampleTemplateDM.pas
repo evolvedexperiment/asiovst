@@ -25,7 +25,7 @@ unit OversampleTemplateDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,8 +58,8 @@ type
     procedure VSTModuleOfflineNotify(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 
-    procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64OversampleSingle(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess64OversampleSingle(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 
     procedure VSTModuleProcessEvents(Sender: TObject; const Events: TVstEvents);
     procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
@@ -936,7 +936,7 @@ asm
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleProcess32OversampleSingle(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, Sample : Integer;
 begin
@@ -1004,7 +1004,7 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleProcess64OversampleSingle(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   Channel, Sample  : Integer;
 begin

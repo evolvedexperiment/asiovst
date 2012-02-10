@@ -127,6 +127,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+			<Debugger_RunParams>&quot;C:\Users\Christian\Code\Plugins\Audiocation\Loudness Meter\Bin\AudiocationLoudnessMeter.dll&quot;</Debugger_RunParams>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<DCC_RemoteDebug>true</DCC_RemoteDebug>

@@ -25,7 +25,7 @@ unit UniQuEDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ type
     procedure ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure ParamPowerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPhaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPadChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -322,7 +322,7 @@ begin
 end;
 
 procedure TUniQuEDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   ChannelIndex, SampleIndex : Integer;
 begin

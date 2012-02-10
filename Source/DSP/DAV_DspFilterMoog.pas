@@ -27,7 +27,7 @@ unit DAV_DspFilterMoog;
 //  MOOG LADDER FILTER by Antti Huovilainen                                   //
 //  (see http://dafx04.na.infn.it/WebProc/Proc/P_061.pdf)                     //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

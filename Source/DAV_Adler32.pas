@@ -26,7 +26,7 @@ unit DAV_Adler32;
 //  The initial developer of this code is Christian-W. Budde, based on code   //
 //  written by Mark Adler                                                     //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2010-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2010-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

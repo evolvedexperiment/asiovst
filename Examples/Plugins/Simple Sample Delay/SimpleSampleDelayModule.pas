@@ -25,7 +25,7 @@ unit SimpleSampleDelayModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,8 +41,8 @@ uses
 type
   TSimpleSampleDelayVST = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -210,7 +210,7 @@ begin
   then TFmSimpleSampleDelay(EditorForm).UpdateDryMix;
 end;
 
-procedure TSimpleSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer);
+procedure TSimpleSampleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex : Integer;
 begin
@@ -232,7 +232,7 @@ begin
 end;
 
 procedure TSimpleSampleDelayVST.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
 var
   SampleIndex : Integer;
 begin

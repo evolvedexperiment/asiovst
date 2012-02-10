@@ -28,7 +28,7 @@ unit MidiGuiU;
 //  Code review and slight changes to match the global project rules by       //
 //  by Christian-W. Budde                                                     //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2011        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2012        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////

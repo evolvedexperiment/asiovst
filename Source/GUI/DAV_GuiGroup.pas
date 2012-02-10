@@ -1176,7 +1176,7 @@ begin
           CombColor.A := Temp.Fixed;
          end;
 
-       Assert(X < Width);
+       // Assert(X <= Width);
        BlendPixelInplace(CombColor, ScnLne[0][X]);
        EMMS;
       end;
