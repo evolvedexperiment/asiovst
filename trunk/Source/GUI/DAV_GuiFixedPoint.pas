@@ -40,11 +40,13 @@ uses
 type
   TFixed8Dot24Point = record
     X, Y : TFixed8Dot24;
-  {$IFDEF DELPHI14_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(X, Y: TFixed8Dot24); overload;
     constructor Create(X, Y: Integer); overload;
     constructor Create(X, Y: Single); overload;
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TFixed8Dot24Point): Boolean;
@@ -73,11 +75,13 @@ type
 
   TFixed16Dot16Point = record
     X, Y : TFixed16Dot16;
-  {$IFDEF DELPHI14_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(X, Y: TFixed16Dot16); overload;
     constructor Create(X, Y: Integer); overload;
     constructor Create(X, Y: Single); overload;
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TFixed16Dot16Point): Boolean;
@@ -106,11 +110,13 @@ type
 
   TFixed24Dot8Point = record
     X, Y : TFixed24Dot8;
-  {$IFDEF DELPHI14_UP}
+  {$IFDEF SUPPORTS_ENHANCED_RECORDS}
   public
+    {$IFNDEF FPC}
     constructor Create(X, Y: TFixed24Dot8); overload;
     constructor Create(X, Y: Integer); overload;
     constructor Create(X, Y: Single); overload;
+    {$ENDIF}
 
     // operator overloads
     class operator Equal(const Lhs, Rhs: TFixed24Dot8Point): Boolean;
@@ -295,6 +301,7 @@ end;
 
 { TFixed8Dot24Point }
 
+{$IFNDEF FPC}
 constructor TFixed8Dot24Point.Create(X, Y: TFixed8Dot24);
 begin
   Self.X := X;
@@ -312,6 +319,7 @@ begin
   Self.X := ConvertToFixed8Dot24(X);
   Self.Y := ConvertToFixed8Dot24(Y);
 end;
+{$ENDIF}
 
 class operator TFixed8Dot24Point.Equal(const Lhs,
   Rhs: TFixed8Dot24Point): Boolean;
@@ -348,6 +356,7 @@ end;
 
 { TFixed16Dot16Point }
 
+{$IFNDEF FPC}
 constructor TFixed16Dot16Point.Create(X, Y: TFixed16Dot16);
 begin
   Self.X := X;
@@ -365,6 +374,7 @@ begin
   Self.X := ConvertToFixed16Dot16(X);
   Self.Y := ConvertToFixed16Dot16(Y);
 end;
+{$ENDIF}
 
 class operator TFixed16Dot16Point.Equal(const Lhs,
   Rhs: TFixed16Dot16Point): Boolean;
@@ -401,6 +411,7 @@ end;
 
 { TFixed24Dot8Point }
 
+{$IFNDEF FPC}
 constructor TFixed24Dot8Point.Create(X, Y: TFixed24Dot8);
 begin
   Self.X := X;
@@ -418,6 +429,7 @@ begin
   Self.X := ConvertToFixed24Dot8(X);
   Self.Y := ConvertToFixed24Dot8(Y);
 end;
+{$ENDIF}
 
 class operator TFixed24Dot8Point.Equal(const Lhs,
   Rhs: TFixed24Dot8Point): Boolean;
@@ -450,7 +462,6 @@ begin
   Result.X.Fixed := 0;
   Result.Y.Fixed := 0;
 end;
-
 {$ENDIF}
 
 end.

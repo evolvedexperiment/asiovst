@@ -66,6 +66,8 @@ type
     class function Euler(const Value: Extended): TComplex32; overload; inline; static;
     {$ENDIF}
 
+    function Magnitude: Single;
+
     procedure ComputeEuler(const Value: Single); overload;
     procedure ComputeEuler(const Value: Double); overload;
     {$IFNDEF FPC}
@@ -101,6 +103,8 @@ type
     {$IFNDEF FPC}
     class function Euler(const Value: Extended): TComplex64; overload; inline; static;
     {$ENDIF}
+
+    function Magnitude: Double;
 
     procedure ComputeEuler(const Value: Single); overload;
     procedure ComputeEuler(const Value: Double); overload;
@@ -432,22 +436,22 @@ end;
 
 function ComplexMagnitude32(const Re, Im: Single): Single;
 begin
-  Result := hypot(Re, Im);
+  Result := Hypot(Re, Im);
 end;
 
 function ComplexMagnitude64(const Re, Im: Double): Double;
 begin
-  Result := hypot(Re, Im);
+  Result := Hypot(Re, Im);
 end;
 
 function ComplexMagnitude32(const Complex: TComplex32): Single;
 begin
-  Result := hypot(Complex.Re, Complex.Im);
+  Result := Hypot(Complex.Re, Complex.Im);
 end;
 
 function ComplexMagnitude64(const Complex: TComplex64): Double;
 begin
-  Result := hypot(Complex.Re, Complex.Im);
+  Result := Hypot(Complex.Re, Complex.Im);
 end;
 
 
@@ -1105,25 +1109,25 @@ end;
 
 function ComplexLn32(const Re, Im: Single): TComplex32;
 begin
- Result.Re := ln(hypot(Re, Im));
+ Result.Re := Ln(Hypot(Re, Im));
  Result.Im := ArcTan2(Im, Re);
 end;
 
 function ComplexLn64(const Re, Im: Double): TComplex64;
 begin
- Result.Re := ln(hypot(Re, Im));
+ Result.Re := Ln(Hypot(Re, Im));
  Result.Im := ArcTan2(Im, Re);
 end;
 
 function ComplexLn32(const Z: TComplex32): TComplex32;
 begin
- Result.Re := ln(hypot(Z.Re, Z.Im));
+ Result.Re := Ln(Hypot(Z.Re, Z.Im));
  Result.Im := ArcTan2(Z.Im, Z.Re);
 end;
 
 function ComplexLn64(const Z: TComplex64): TComplex64;
 begin
- Result.Re := ln(hypot(Z.Re, Z.Im));
+ Result.Re := Ln(Hypot(Z.Re, Z.Im));
  Result.Im := ArcTan2(Z.Im, Z.Re);
 end;
 
@@ -1593,6 +1597,11 @@ begin
 end;
 {$ENDIF}
 
+function TComplex32.Magnitude: Single;
+begin
+  Result := Hypot(Re, Im);
+end;
+
 procedure TComplex32.ComputeEuler(const Value: Single);
 begin
   GetSinCos(Value, Self.Im, Self.Re);
@@ -1684,6 +1693,11 @@ begin
   GetSinCos(Value, Result.Im, Result.Re);
 end;
 {$ENDIF}
+
+function TComplex64.Magnitude: Double;
+begin
+  Result := Hypot(Re, Im);
+end;
 
 procedure TComplex64.ComputeEuler(const Value: Single);
 begin

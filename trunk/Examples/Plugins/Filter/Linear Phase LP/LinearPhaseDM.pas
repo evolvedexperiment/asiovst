@@ -119,6 +119,7 @@ begin
  ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
+ FFft.DataOrder := doComplex;
  {$ELSE} {$IFDEF Use_CUDA}
  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
 
@@ -133,15 +134,16 @@ begin
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
+
+ FFft.DataOrder := doPackedComplex;
  {$ENDIF}{$ENDIF}
+
+ FFft.AutoScaleType := astDivideInvByN;
 
  ReallocMem(FFilterKernel, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalPadded, BlockModeSize * SizeOf(Single));
  FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
-
- FFft.AutoScaleType := astDivideInvByN;
- FFft.DataOrder := doPackedComplex;
 
  // initialize parameters
  Parameter[0] := 20000;

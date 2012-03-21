@@ -2155,7 +2155,6 @@ begin
   Self.Fixed := Int shl 8;
   Self.Frac := Frac;
 end;
-{$ENDIF}
 
 constructor TFixed24Dot8.Create(const Frac: Byte; Low: Byte;
   High: SmallInt);
@@ -2164,6 +2163,7 @@ begin
   Self.Low := Low;
   Self.High := High;
 end;
+{$ENDIF}
 
 class operator TFixed24Dot8.Add(const Lhs, Rhs: TFixed24Dot8): TFixed24Dot8;
 begin

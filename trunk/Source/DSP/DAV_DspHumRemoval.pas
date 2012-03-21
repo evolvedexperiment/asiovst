@@ -68,6 +68,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
+    procedure Clear;
+
     function ProcessSample32(Input: Single): Single;
     function ProcessSample64(Input: Double): Double;
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
@@ -111,6 +113,15 @@ begin
  for FilterIndex := 0 to Length(FNotchFilters) - 1
   do FreeAndNil(FNotchFilters[FilterIndex]);
  inherited;
+end;
+
+procedure TDspHumRemoval.Clear;
+var
+  FilterIndex : Integer;
+begin
+ FHighpassFilter.ResetStates;
+ for FilterIndex := 0 to Length(FNotchFilters) - 1
+  do FNotchFilters[FilterIndex].ResetStates;
 end;
 
 procedure TDspHumRemoval.SetAttenuation(const Value: Single);
