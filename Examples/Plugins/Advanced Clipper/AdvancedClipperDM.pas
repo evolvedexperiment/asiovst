@@ -45,8 +45,10 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcess(const Inputs,
+      Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs,
+      Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParaOSFactor1Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOSFactor2Change(Sender: TObject; const Index: Integer; var Value: Single);
@@ -76,6 +78,8 @@ type
   end;
 
 implementation
+
+{%CLASSGROUP 'System.Classes.TPersistent'}
 
 {$IFDEF FPC}
 {$R *.LFM}

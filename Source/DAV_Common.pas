@@ -1302,37 +1302,35 @@ asm
     MOV     FpuCodeword, $133F
     FNCLEX                     // Don't raise pending exceptions enabled by the new flags
     FLDCW   FpuCodeword        // round FPU codeword, with exceptions disabled
-    {$ELSE}
-    const
-    SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
-    SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
-    SCRoundDown8087CW : Word = $173F; // exceptions disabled
-    SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
-    asm
+{$ELSE}
+const
+  SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
+  SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
+  SCRoundDown8087CW : Word = $173F; // exceptions disabled
+  SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
+asm
     FNCLEX                  // Don't raise pending exceptions enabled by the new flags
     FLDCW   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
  {$ENDIF}
 end;
 
 function GetMXCSR: Cardinal;
-{$IFDEF CPUX86}
 asm
+{$IFDEF CPU_32}
     PUSH    0
     STMXCSR [ESP].DWord
     POP     EAX
-end;
-{$ENDIF CPUX86}
-{$IFDEF CPUX64}
-asm
+{$ENDIF}
+{$IFDEF CPUx86_64}
     PUSH    0
     STMXCSR [RSP].DWord
     POP     RAX
+{$ENDIF}
 end;
-{$ENDIF CPUX64}
 
 procedure SetMXCSR(Value: Cardinal);
 asm
-{$IFDEF CPU32}
+{$IFDEF CPU386}
     MOV      [ESP - 4], EAX
     LDMXCSR  [ESP - 4]
 {$ENDIF}
@@ -1517,7 +1515,6 @@ begin
  if A > B
   then Result := B
   else Result := A
-end;
 {$ELSE}
 asm
     FLD     DWORD PTR [EBP + $08]
@@ -1525,8 +1522,8 @@ asm
     FCOMI   ST(0), ST(1)
     FCMOVNB ST(0), ST(1)
     FFREE   ST(1)
-end;
 {$ENDIF}
+end;
 
 function FastMax(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}

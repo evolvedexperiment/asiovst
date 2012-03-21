@@ -1460,7 +1460,7 @@ end;
 {$IFNDEF UseAudioEffectPtr}
 function DispatchEffectFuncUserPtr(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index: Integer; const Value: TVstIntPtr; const PTR: Pointer; const opt: Single): TVstIntPtr; cdecl;
 begin
- if Assigned(Effect) and
+ if Assigned(Effect) and // (Effect^.Magic <> #0#0#0#0) and
   (TObject(Effect^.User) is TBasicVSTModule)
    then Result := TBasicVSTModule(Effect^.User).HostCallDispatchEffect(OpCode, Index, Value, PTR, opt)
  else Result := 0;

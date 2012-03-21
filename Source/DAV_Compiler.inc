@@ -718,6 +718,7 @@
         {$DEFINE 64BIT}
         {$DEFINE CPU64}
         {$DEFINE CPUx86_64}
+        {$UNDEF CPU386}
         {$UNDEF CPU32}
       {$ELSE}
         {$DEFINE 32BIT}

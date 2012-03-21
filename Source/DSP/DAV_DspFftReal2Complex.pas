@@ -390,8 +390,8 @@ end;
 
 procedure TFftReal2Complex.CalculateOrderDependentValues;
 begin
-  FFftSize := Round(IntPower(2, FOrder));
-  FBinCount := FFftSize div 2 + 1;
+  FFftSize := 1 shl FOrder;
+  FBinCount := FFftSize shr 1 + 1;
   FFFTSizeInv := 1 / FFftSize;
 end;
 
@@ -972,7 +972,7 @@ var
 
 begin
   TempBuffer[0] := @FreqDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   ci := fFFTSize;
   repeat
@@ -1097,25 +1097,25 @@ begin
   // third pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
-    FBuffer[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
-    FBuffer[ci + 2] := FreqDomain[ci + 2];
-    FBuffer[ci + 6] := FreqDomain[ci + 6];
+    FBuffer^[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
+    FBuffer^[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
+    FBuffer^[ci + 2] := FreqDomain[ci + 2];
+    FBuffer^[ci + 6] := FreqDomain[ci + 6];
 
     v := (FreqDomain[ci + 5] - FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 1] := FreqDomain[ci + 1] + v;
-    FBuffer[ci + 3] := FreqDomain[ci + 1] - v;
+    FBuffer^[ci + 1] := FreqDomain[ci + 1] + v;
+    FBuffer^[ci + 3] := FreqDomain[ci + 1] - v;
 
     v := (FreqDomain[ci + 5] + FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 5] := v + FreqDomain[ci + 3];
-    FBuffer[ci + 7] := v - FreqDomain[ci + 3];
+    FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
+    FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
 
   // next pass
   TempBuffer[0] := @FreqDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
@@ -1157,29 +1157,29 @@ begin
   repeat
     BitPos[0] := FBitRevLUT.LUT[ci - 4];
     BitPos[1] := FBitRevLUT.LUT[ci - 3];
-    FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 2];
     BitPos[1] := FBitRevLUT.LUT[ci - 1];
-    FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 4] := s + c;
-    FBuffer[ci - 2] := s - c;
+    FBuffer^[ci - 4] := s + c;
+    FBuffer^[ci - 2] := s - c;
 
     BitPos[0] := FBitRevLUT.LUT[ci - 8];
     BitPos[1] := FBitRevLUT.LUT[ci - 7];
-    FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 6];
     BitPos[1] := FBitRevLUT.LUT[ci - 5];
-    FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 8] := s + c;
-    FBuffer[ci - 6] := s - c;
+    FBuffer^[ci - 8] := s + c;
+    FBuffer^[ci - 6] := s - c;
 
     Dec(ci, 8);
   until (ci <= 0);
@@ -1187,23 +1187,23 @@ begin
   // third pass at once
   ci := 0;
   repeat
-    FreqDomain[ci] := FBuffer[ci] + FBuffer[ci + 4];
-    FreqDomain[ci + 4] := FBuffer[ci] - FBuffer[ci + 4];
-    FreqDomain[ci + 2] := FBuffer[ci + 2];
-    FreqDomain[ci + 6] := FBuffer[ci + 6];
+    FreqDomain[ci] := FBuffer^[ci] + FBuffer^[ci + 4];
+    FreqDomain[ci + 4] := FBuffer^[ci] - FBuffer^[ci + 4];
+    FreqDomain[ci + 2] := FBuffer^[ci + 2];
+    FreqDomain[ci + 6] := FBuffer^[ci + 6];
 
-    v := (FBuffer[ci + 5] - FBuffer[ci + 7]) * CSQRT2Div2;
-    FreqDomain[ci + 1] := FBuffer[ci + 1] + v;
-    FreqDomain[ci + 3] := FBuffer[ci + 1] - v;
-    v := (FBuffer[ci + 5] + FBuffer[ci + 7]) * CSQRT2Div2;
-    FreqDomain[ci + 5] := v + FBuffer[ci + 3];
-    FreqDomain[ci + 7] := v - FBuffer[ci + 3];
+    v := (FBuffer^[ci + 5] - FBuffer^[ci + 7]) * CSQRT2Div2;
+    FreqDomain[ci + 1] := FBuffer^[ci + 1] + v;
+    FreqDomain[ci + 3] := FBuffer^[ci + 1] - v;
+    v := (FBuffer^[ci + 5] + FBuffer^[ci + 7]) * CSQRT2Div2;
+    FreqDomain[ci + 5] := v + FBuffer^[ci + 3];
+    FreqDomain[ci + 7] := v - FBuffer^[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
 
   // next pass
-  TempBuffer[0] := @FBuffer[0];
+  TempBuffer[0] := @FBuffer^[0];
   TempBuffer[1] := @FreqDomain[0];
   for Pass := 3 to FOrder - 2 do
    begin
@@ -1315,50 +1315,50 @@ begin
     BitPos[0] := FBitRevLUT.LUT[ci - 4];
     BitPos[1] := FBitRevLUT.LUT[ci - 3];
 
-    FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 2];
     BitPos[1] := FBitRevLUT.LUT[ci - 1];
-    FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 4] := s + c;
-    FBuffer[ci - 2] := s - c;
+    FBuffer^[ci - 4] := s + c;
+    FBuffer^[ci - 2] := s - c;
 
     BitPos[0] := FBitRevLUT.LUT[ci - 8];
     BitPos[1] := FBitRevLUT.LUT[ci - 7];
-    FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 6];
     BitPos[1] := FBitRevLUT.LUT[ci - 5];
-    FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 8] := s + c;
-    FBuffer[ci - 6] := s - c;
+    FBuffer^[ci - 8] := s + c;
+    FBuffer^[ci - 6] := s - c;
 
     Dec(ci, 8);
   until (ci <= 0);
 
-  TempBuffer[0] := @FBuffer[0];
+  TempBuffer[0] := @FBuffer^[0];
   TempBuffer[1] := @FreqDomain[0];
 
   // third pass at once
   ci := 0;
   repeat
-    TempBuffer[1][ci    ] := FBuffer[ci] + FBuffer[ci + 4];
-    TempBuffer[1][ci + 4] := FBuffer[ci] - FBuffer[ci + 4];
-    TempBuffer[1][ci + 2] := FBuffer[ci + 2];
-    TempBuffer[1][ci + 6] := FBuffer[ci + 6];
+    TempBuffer[1][ci    ] := FBuffer^[ci] + FBuffer^[ci + 4];
+    TempBuffer[1][ci + 4] := FBuffer^[ci] - FBuffer^[ci + 4];
+    TempBuffer[1][ci + 2] := FBuffer^[ci + 2];
+    TempBuffer[1][ci + 6] := FBuffer^[ci + 6];
 
-    v := (FBuffer[ci + 5] - FBuffer[ci + 7]) * CSQRT2Div2;
-    TempBuffer[1][ci + 1] := FBuffer[ci + 1] + v;
-    TempBuffer[1][ci + 3] := FBuffer[ci + 1] - v;
-    v := (FBuffer[ci + 5] + FBuffer[ci + 7]) * CSQRT2Div2;
-    TempBuffer[1][ci + 5] := v + FBuffer[ci + 3];
-    TempBuffer[1][ci + 7] := v - FBuffer[ci + 3];
+    v := (FBuffer^[ci + 5] - FBuffer^[ci + 7]) * CSQRT2Div2;
+    TempBuffer[1][ci + 1] := FBuffer^[ci + 1] + v;
+    TempBuffer[1][ci + 3] := FBuffer^[ci + 1] - v;
+    v := (FBuffer^[ci + 5] + FBuffer^[ci + 7]) * CSQRT2Div2;
+    TempBuffer[1][ci + 5] := v + FBuffer^[ci + 3];
+    TempBuffer[1][ci + 7] := v - FBuffer^[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -1489,25 +1489,25 @@ begin
   // third pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
-    FBuffer[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
-    FBuffer[ci + 2] := FreqDomain[ci + 2];
-    FBuffer[ci + 6] := FreqDomain[ci + 6];
+    FBuffer^[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
+    FBuffer^[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
+    FBuffer^[ci + 2] := FreqDomain[ci + 2];
+    FBuffer^[ci + 6] := FreqDomain[ci + 6];
 
     v := (FreqDomain[ci + 5] - FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 1] := FreqDomain[ci + 1] + v;
-    FBuffer[ci + 3] := FreqDomain[ci + 1] - v;
+    FBuffer^[ci + 1] := FreqDomain[ci + 1] + v;
+    FBuffer^[ci + 3] := FreqDomain[ci + 1] - v;
 
     v := (FreqDomain[ci + 5] + FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 5] := v + FreqDomain[ci + 3];
-    FBuffer[ci + 7] := v - FreqDomain[ci + 3];
+    FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
+    FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
 
   // next pass
   TempBuffer[0] := @FreqDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   for Pass := 3 to FOrder - 2 do
    begin
@@ -1555,10 +1555,10 @@ begin
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
    begin
     // Extreme coefficients are always real
-    FreqDomain[0                 ] := (FBuffer[0] + FBuffer[NbrCoef]) * FScaleFactor;
-    FreqDomain[NbrCoef           ] := (FBuffer[0] - FBuffer[NbrCoef]) * FScaleFactor;
-    FreqDomain[          NbrCoefH] := FBuffer[          NbrCoefH] * FScaleFactor;
-    FreqDomain[NbrCoef + NbrCoefH] := FBuffer[NbrCoef + NbrCoefH] * FScaleFactor;
+    FreqDomain[0                 ] := (FBuffer^[0] + FBuffer^[NbrCoef]) * FScaleFactor;
+    FreqDomain[NbrCoef           ] := (FBuffer^[0] - FBuffer^[NbrCoef]) * FScaleFactor;
+    FreqDomain[          NbrCoefH] := FBuffer^[          NbrCoefH] * FScaleFactor;
+    FreqDomain[NbrCoef + NbrCoefH] := FBuffer^[NbrCoef + NbrCoefH] * FScaleFactor;
 
     // Others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
@@ -1566,22 +1566,22 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + i];
       s := TrigoLUT[NbrCoef  - 4 - i];
 
-      v := FBuffer[NbrCoef + i] * c - FBuffer[NbrCoef + NbrCoefH + i] * s;
-      FreqDomain[          i] := (FBuffer[i] + v) * FScaleFactor;
-      FreqDomain[NbrCoef - i] := (FBuffer[i] - v) * FScaleFactor;
+      v := FBuffer^[NbrCoef + i] * c - FBuffer^[NbrCoef + NbrCoefH + i] * s;
+      FreqDomain[          i] := (FBuffer^[i] + v) * FScaleFactor;
+      FreqDomain[NbrCoef - i] := (FBuffer^[i] - v) * FScaleFactor;
 
-      v := FBuffer[NbrCoef + i] * s + FBuffer[NbrCoef + NbrCoefH + i] * c;
-      FreqDomain[    NbrCoef + i] := (v + FBuffer[NbrCoefH + i]) * FScaleFactor;
-      FreqDomain[2 * NbrCoef - i] := (v - FBuffer[NbrCoefH + i]) * FScaleFactor;
+      v := FBuffer^[NbrCoef + i] * s + FBuffer^[NbrCoef + NbrCoefH + i] * c;
+      FreqDomain[    NbrCoef + i] := (v + FBuffer^[NbrCoefH + i]) * FScaleFactor;
+      FreqDomain[2 * NbrCoef - i] := (v - FBuffer^[NbrCoefH + i]) * FScaleFactor;
      end;
    end
   else
    begin
     // Extreme coefficients are always real
-    FreqDomain[0                 ] := FBuffer[0] + FBuffer[NbrCoef];
-    FreqDomain[NbrCoef           ] := FBuffer[0] - FBuffer[NbrCoef];
-    FreqDomain[          NbrCoefH] := FBuffer[          NbrCoefH];
-    FreqDomain[NbrCoef + NbrCoefH] := FBuffer[NbrCoef + NbrCoefH];
+    FreqDomain[0                 ] := FBuffer^[0] + FBuffer^[NbrCoef];
+    FreqDomain[NbrCoef           ] := FBuffer^[0] - FBuffer^[NbrCoef];
+    FreqDomain[          NbrCoefH] := FBuffer^[          NbrCoefH];
+    FreqDomain[NbrCoef + NbrCoefH] := FBuffer^[NbrCoef + NbrCoefH];
 
     // Others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
@@ -1589,13 +1589,13 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + i];
       s := TrigoLUT[NbrCoef  - 4 - i];
 
-      v := FBuffer[NbrCoef + i] * c - FBuffer[NbrCoef + NbrCoefH + i] * s;
-      FreqDomain[          i] := FBuffer[i] + v;
-      FreqDomain[NbrCoef - i] := FBuffer[i] - v;
+      v := FBuffer^[NbrCoef + i] * c - FBuffer^[NbrCoef + NbrCoefH + i] * s;
+      FreqDomain[          i] := FBuffer^[i] + v;
+      FreqDomain[NbrCoef - i] := FBuffer^[i] - v;
 
-      v := FBuffer[NbrCoef + i] * s + FBuffer[NbrCoef + NbrCoefH + i] * c;
-      FreqDomain[    NbrCoef + i] := v + FBuffer[NbrCoefH + i];
-      FreqDomain[2 * NbrCoef - i] := v - FBuffer[NbrCoefH + i];
+      v := FBuffer^[NbrCoef + i] * s + FBuffer^[NbrCoef + NbrCoefH + i] * c;
+      FreqDomain[    NbrCoef + i] := v + FBuffer^[NbrCoefH + i];
+      FreqDomain[2 * NbrCoef - i] := v - FBuffer^[NbrCoefH + i];
      end;
    end;
 end;
@@ -1613,7 +1613,7 @@ var
   TempBuffer  : array [0..2] of PDAVSingleFixedArray;
 begin
   TempBuffer[0] := @FreqDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   // first and second pass at once
   ci := fFFTSize;
@@ -2023,19 +2023,19 @@ begin
   // antepenultimate pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := TimeDomain[ci] + TimeDomain[ci + 4];
-    FBuffer[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
-    FBuffer[ci + 2] := TimeDomain[ci + 2] * 2;
-    FBuffer[ci + 6] := TimeDomain[ci + 6] * 2;
+    FBuffer^[ci    ] := TimeDomain[ci] + TimeDomain[ci + 4];
+    FBuffer^[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
+    FBuffer^[ci + 2] := TimeDomain[ci + 2] * 2;
+    FBuffer^[ci + 6] := TimeDomain[ci + 6] * 2;
 
-    FBuffer[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
-    FBuffer[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
+    FBuffer^[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
+    FBuffer^[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
 
     Tmp[0] := TimeDomain[ci + 1] - TimeDomain[ci + 3];
     Tmp[1] := TimeDomain[ci + 5] + TimeDomain[ci + 7];
 
-    FBuffer[ci + 5] := (Tmp[0] + Tmp[1]) * CSQRT2Div2;
-    FBuffer[ci + 7] := (Tmp[1] - Tmp[0]) * CSQRT2Div2;
+    FBuffer^[ci + 5] := (Tmp[0] + Tmp[1]) * CSQRT2Div2;
+    FBuffer^[ci + 7] := (Tmp[1] - Tmp[0]) * CSQRT2Div2;
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2044,20 +2044,20 @@ begin
   // penultimate and last pass at once
   ci := 0;
   repeat
-    Tmp[0] := FBuffer[ci] + FBuffer[ci + 2];
-    Tmp[2] := FBuffer[ci] - FBuffer[ci + 2];
-    Tmp[1] := FBuffer[ci + 1] * 2;
-    Tmp[3] := FBuffer[ci + 3] * 2;
+    Tmp[0] := FBuffer^[ci] + FBuffer^[ci + 2];
+    Tmp[2] := FBuffer^[ci] - FBuffer^[ci + 2];
+    Tmp[1] := FBuffer^[ci + 1] * 2;
+    Tmp[3] := FBuffer^[ci + 3] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
-    Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
-    Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
-    Tmp[1] := FBuffer[ci + 5] * 2;
-    Tmp[3] := FBuffer[ci + 7] * 2;
+    Tmp[0] := FBuffer^[ci + 4] + FBuffer^[ci + 6];
+    Tmp[2] := FBuffer^[ci + 4] - FBuffer^[ci + 6];
+    Tmp[1] := FBuffer^[ci + 5] * 2;
+    Tmp[3] := FBuffer^[ci + 7] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
@@ -2136,19 +2136,19 @@ begin
   // antepenultimate pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := TimeDomain[ci] + TimeDomain[ci + 4];
-    FBuffer[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
-    FBuffer[ci + 2] := TimeDomain[ci + 2] * 2;
-    FBuffer[ci + 6] := TimeDomain[ci + 6] * 2;
+    FBuffer^[ci    ] := TimeDomain[ci] + TimeDomain[ci + 4];
+    FBuffer^[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
+    FBuffer^[ci + 2] := TimeDomain[ci + 2] * 2;
+    FBuffer^[ci + 6] := TimeDomain[ci + 6] * 2;
 
-    FBuffer[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
-    FBuffer[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
+    FBuffer^[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
+    FBuffer^[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
 
     Tmp[0] := TimeDomain[ci + 1] - TimeDomain[ci + 3];
     Tmp[1] := TimeDomain[ci + 5] + TimeDomain[ci + 7];
 
-    FBuffer[ci + 5] := (Tmp[0] + Tmp[1]) * CSQRT2Div2;
-    FBuffer[ci + 7] := (Tmp[1] - Tmp[0]) * CSQRT2Div2;
+    FBuffer^[ci + 5] := (Tmp[0] + Tmp[1]) * CSQRT2Div2;
+    FBuffer^[ci + 7] := (Tmp[1] - Tmp[0]) * CSQRT2Div2;
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2156,20 +2156,20 @@ begin
   // penultimate and last pass at once
   ci := 0;
   repeat
-    Tmp[0] := FBuffer[ci] + FBuffer[ci + 2];
-    Tmp[1] := FBuffer[ci] - FBuffer[ci + 2];
-    Tmp[2] := FBuffer[ci + 1] * 2;
-    Tmp[3] := FBuffer[ci + 3] * 2;
+    Tmp[0] := FBuffer^[ci] + FBuffer^[ci + 2];
+    Tmp[1] := FBuffer^[ci] - FBuffer^[ci + 2];
+    Tmp[2] := FBuffer^[ci + 1] * 2;
+    Tmp[3] := FBuffer^[ci + 3] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[2];
     TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[2];
     TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[1] + Tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[1] - Tmp[3];
 
-    Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
-    Tmp[1] := FBuffer[ci + 4] - FBuffer[ci + 6];
-    Tmp[2] := FBuffer[ci + 5] * 2;
-    Tmp[3] := FBuffer[ci + 7] * 2;
+    Tmp[0] := FBuffer^[ci + 4] + FBuffer^[ci + 6];
+    Tmp[1] := FBuffer^[ci + 4] - FBuffer^[ci + 6];
+    Tmp[2] := FBuffer^[ci + 5] * 2;
+    Tmp[3] := FBuffer^[ci + 7] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[2];
     TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[2];
@@ -2251,7 +2251,7 @@ begin
 
   // prepare to the next pass
   TempBuffer[0] := @TimeDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   // first pass
   for Pass := FOrder - 2 downto 3 do
@@ -2410,7 +2410,7 @@ begin
    end;
 
   TempBuffer[0] := @TimeDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   // second pass
   for Pass := FOrder - 2 downto 3 do
@@ -2527,16 +2527,16 @@ begin
   if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
    begin
     // extreme coefficients are always real
-    FBuffer[0                 ] := (FreqDomain[0] + FreqDomain[NbrCoef]) * FScaleFactor;
-    FBuffer[NbrCoef           ] := (FreqDomain[0] - FreqDomain[NbrCoef]) * FScaleFactor;
-    FBuffer[          NbrCoefH] := FreqDomain[NbrCoefH] * 2 * FScaleFactor;
-    FBuffer[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH + NbrCoef] * 2 * FScaleFactor;
+    FBuffer^[0                 ] := (FreqDomain[0] + FreqDomain[NbrCoef]) * FScaleFactor;
+    FBuffer^[NbrCoef           ] := (FreqDomain[0] - FreqDomain[NbrCoef]) * FScaleFactor;
+    FBuffer^[          NbrCoefH] := FreqDomain[NbrCoefH] * 2 * FScaleFactor;
+    FBuffer^[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH + NbrCoef] * 2 * FScaleFactor;
 
     // others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
      begin
-      FBuffer[i           ] := (FreqDomain[        + i] + FreqDomain[NbrCoef  - i]) * FScaleFactor;
-      FBuffer[i + NbrCoefH] := (FreqDomain[NbrCoef + i] - FreqDomain[NbrCoefD - i]) * FScaleFactor;
+      FBuffer^[i           ] := (FreqDomain[        + i] + FreqDomain[NbrCoef  - i]) * FScaleFactor;
+      FBuffer^[i + NbrCoefH] := (FreqDomain[NbrCoef + i] - FreqDomain[NbrCoefD - i]) * FScaleFactor;
 
       Tmp[0] := TrigoLUT[NbrCoefH - 4  + i]; // cos (i * PI / NbrCoef);
       Tmp[1] := TrigoLUT[NbrCoef  - 4  - i]; // sin (i * PI / NbrCoef);
@@ -2544,23 +2544,23 @@ begin
       Tmp[2] := (FreqDomain[        + i] - FreqDomain[NbrCoef           - i]) * FScaleFactor;
       Tmp[3] := (FreqDomain[NbrCoef + i] + FreqDomain[NbrCoef + NbrCoef - i]) * FScaleFactor;
 
-      FBuffer[NbrCoef            + i] := Tmp[2] * Tmp[0] + Tmp[3] * Tmp[1];
-      FBuffer[NbrCoef + NbrCoefH + i] := Tmp[3] * Tmp[0] - Tmp[2] * Tmp[1];
+      FBuffer^[NbrCoef            + i] := Tmp[2] * Tmp[0] + Tmp[3] * Tmp[1];
+      FBuffer^[NbrCoef + NbrCoefH + i] := Tmp[3] * Tmp[0] - Tmp[2] * Tmp[1];
      end;
    end
   else
    begin
     // extreme coefficients are always real
-    FBuffer[0                 ] := FreqDomain[0] + FreqDomain[NbrCoef];
-    FBuffer[NbrCoef           ] := FreqDomain[0] - FreqDomain[NbrCoef];
-    FBuffer[          NbrCoefH] := FreqDomain[NbrCoefH] * 2;
-    FBuffer[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH + NbrCoef] * 2;
+    FBuffer^[0                 ] := FreqDomain[0] + FreqDomain[NbrCoef];
+    FBuffer^[NbrCoef           ] := FreqDomain[0] - FreqDomain[NbrCoef];
+    FBuffer^[          NbrCoefH] := FreqDomain[NbrCoefH] * 2;
+    FBuffer^[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH + NbrCoef] * 2;
 
     // others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
      begin
-      FBuffer[i           ] := FreqDomain[        + i] + FreqDomain[NbrCoef           - i];
-      FBuffer[i + NbrCoefH] := FreqDomain[NbrCoef + i] - FreqDomain[NbrCoef + NbrCoef - i];
+      FBuffer^[i           ] := FreqDomain[        + i] + FreqDomain[NbrCoef           - i];
+      FBuffer^[i + NbrCoefH] := FreqDomain[NbrCoef + i] - FreqDomain[NbrCoef + NbrCoef - i];
 
       Tmp[0] := TrigoLUT[NbrCoefH - 4 + i]; // cos (i * PI / NbrCoef);
       Tmp[1] := TrigoLUT[NbrCoef  - 4 - i]; // sin (i * PI / NbrCoef);
@@ -2568,12 +2568,12 @@ begin
       Tmp[2] := FreqDomain[        + i] - FreqDomain[NbrCoef           - i];
       Tmp[3] := FreqDomain[NbrCoef + i] + FreqDomain[NbrCoef + NbrCoef - i];
 
-      FBuffer[NbrCoef            + i] := Tmp[2] * Tmp[0] + Tmp[3] * Tmp[1];
-      FBuffer[NbrCoef + NbrCoefH + i] := Tmp[3] * Tmp[0] - Tmp[2] * Tmp[1];
+      FBuffer^[NbrCoef            + i] := Tmp[2] * Tmp[0] + Tmp[3] * Tmp[1];
+      FBuffer^[NbrCoef + NbrCoefH + i] := Tmp[3] * Tmp[0] - Tmp[2] * Tmp[1];
      end;
    end;
 
-  TempBuffer[0] := @FBuffer[0];
+  TempBuffer[0] := @FBuffer^[0];
   TempBuffer[1] := @TimeDomain[0];
 
   // second pass
@@ -2627,19 +2627,19 @@ begin
   // antepenultimate pass
   ci := 0;
   repeat
-    FBuffer[ci] := TimeDomain[ci] + TimeDomain[ci + 4];
-    FBuffer[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
-    FBuffer[ci + 2] := TimeDomain[ci + 2] * 2;
-    FBuffer[ci + 6] := TimeDomain[ci + 6] * 2;
+    FBuffer^[ci] := TimeDomain[ci] + TimeDomain[ci + 4];
+    FBuffer^[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
+    FBuffer^[ci + 2] := TimeDomain[ci + 2] * 2;
+    FBuffer^[ci + 6] := TimeDomain[ci + 6] * 2;
 
-    FBuffer[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
-    FBuffer[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
+    FBuffer^[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
+    FBuffer^[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
 
     Tmp[2] := TimeDomain[ci + 1] - TimeDomain[ci + 3];
     Tmp[3] := TimeDomain[ci + 5] + TimeDomain[ci + 7];
 
-    FBuffer[ci + 5] := (Tmp[2] + Tmp[3]) * CSQRT2Div2;
-    FBuffer[ci + 7] := (Tmp[3] - Tmp[2]) * CSQRT2Div2;
+    FBuffer^[ci + 5] := (Tmp[2] + Tmp[3]) * CSQRT2Div2;
+    FBuffer^[ci + 7] := (Tmp[3] - Tmp[2]) * CSQRT2Div2;
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2647,20 +2647,20 @@ begin
   // penultimate and last pass at once
   ci := 0;
   repeat
-    Tmp[0] := FBuffer[ci] + FBuffer[ci + 2];
-    Tmp[2] := FBuffer[ci] - FBuffer[ci + 2];
-    Tmp[1] := FBuffer[ci + 1] * 2;
-    Tmp[3] := FBuffer[ci + 3] * 2;
+    Tmp[0] := FBuffer^[ci] + FBuffer^[ci + 2];
+    Tmp[2] := FBuffer^[ci] - FBuffer^[ci + 2];
+    Tmp[1] := FBuffer^[ci + 1] * 2;
+    Tmp[3] := FBuffer^[ci + 3] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci]] := Tmp[0] + Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
-    Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
-    Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
-    Tmp[1] := FBuffer[ci + 5] * 2;
-    Tmp[3] := FBuffer[ci + 7] * 2;
+    Tmp[0] := FBuffer^[ci + 4] + FBuffer^[ci + 6];
+    Tmp[2] := FBuffer^[ci + 4] - FBuffer^[ci + 6];
+    Tmp[1] := FBuffer^[ci + 5] * 2;
+    Tmp[3] := FBuffer^[ci + 7] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
@@ -2691,16 +2691,16 @@ begin
   if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
    begin
     // extreme coefficients are always real
-    FBuffer[0]                  := (FreqDomain[0].Re + FreqDomain[0].Im) * FScaleFactor;
-    FBuffer[NbrCoef]            := (FreqDomain[0].Re - FreqDomain[0].Im) * FScaleFactor;
-    FBuffer[NbrCoefH]           := FreqDomain[NbrCoefH].Re * 2 * FScaleFactor;
-    FBuffer[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH].Im * 2 * FScaleFactor;
+    FBuffer^[0]                  := (FreqDomain[0].Re + FreqDomain[0].Im) * FScaleFactor;
+    FBuffer^[NbrCoef]            := (FreqDomain[0].Re - FreqDomain[0].Im) * FScaleFactor;
+    FBuffer^[NbrCoefH]           := FreqDomain[NbrCoefH].Re * 2 * FScaleFactor;
+    FBuffer^[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH].Im * 2 * FScaleFactor;
 
     // others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
      begin
-      FBuffer[i           ] := (FreqDomain[i].Re + FreqDomain[NbrCoef - i].Re) * FScaleFactor;
-      FBuffer[i + NbrCoefH] := (FreqDomain[i].Im - FreqDomain[NbrCoef - i].Im) * FScaleFactor;
+      FBuffer^[i           ] := (FreqDomain[i].Re + FreqDomain[NbrCoef - i].Re) * FScaleFactor;
+      FBuffer^[i + NbrCoefH] := (FreqDomain[i].Im - FreqDomain[NbrCoef - i].Im) * FScaleFactor;
 
       c := TrigoLUT[NbrCoefH - 4 + i];
       s := TrigoLUT[NbrCoef  - 4 - i];
@@ -2708,17 +2708,17 @@ begin
       vr := (FreqDomain[i].Re - FreqDomain[NbrCoef - i].Re) * FScaleFactor;
       vi := (FreqDomain[i].Im + FreqDomain[NbrCoef - i].Im) * FScaleFactor;
 
-      FBuffer[NbrCoef            + i] := vr * c + vi * s;
-      FBuffer[NbrCoef + NbrCoefH + i] := vi * c - vr * s;
+      FBuffer^[NbrCoef            + i] := vr * c + vi * s;
+      FBuffer^[NbrCoef + NbrCoefH + i] := vi * c - vr * s;
      end;
    end
   else
    begin
     // extreme coefficients are always real
-    FBuffer[0]                  := FreqDomain[0].Re + FreqDomain[0].Im;
-    FBuffer[NbrCoef]            := FreqDomain[0].Re - FreqDomain[0].Im;
-    FBuffer[NbrCoefH]           := FreqDomain[NbrCoefH].Re * 2;
-    FBuffer[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH].Im * 2;
+    FBuffer^[0]                  := FreqDomain[0].Re + FreqDomain[0].Im;
+    FBuffer^[NbrCoef]            := FreqDomain[0].Re - FreqDomain[0].Im;
+    FBuffer^[NbrCoefH]           := FreqDomain[NbrCoefH].Re * 2;
+    FBuffer^[NbrCoef + NbrCoefH] := FreqDomain[NbrCoefH].Im * 2;
 
     // others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
@@ -2732,12 +2732,12 @@ begin
       vr := FreqDomain[i].Re - FreqDomain[NbrCoef - i].Re;
       vi := FreqDomain[i].Im + FreqDomain[NbrCoef - i].Im;
 
-      FBuffer[NbrCoef            + i] := vr * c + vi * s;
-      FBuffer[NbrCoef + NbrCoefH + i] := vi * c - vr * s;
+      FBuffer^[NbrCoef            + i] := vr * c + vi * s;
+      FBuffer^[NbrCoef + NbrCoefH + i] := vi * c - vr * s;
      end;
    end;
 
-  TempBuffer[0] := @FBuffer[0];
+  TempBuffer[0] := @FBuffer^[0];
   TempBuffer[1] := @TimeDomain[0];
 
   // first pass
@@ -2786,19 +2786,19 @@ begin
   // antepenultimate pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := TimeDomain[ci] + TimeDomain[ci + 4];
-    FBuffer[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
-    FBuffer[ci + 2] := TimeDomain[ci + 2] * 2;
-    FBuffer[ci + 6] := TimeDomain[ci + 6] * 2;
+    FBuffer^[ci    ] := TimeDomain[ci] + TimeDomain[ci + 4];
+    FBuffer^[ci + 4] := TimeDomain[ci] - TimeDomain[ci + 4];
+    FBuffer^[ci + 2] := TimeDomain[ci + 2] * 2;
+    FBuffer^[ci + 6] := TimeDomain[ci + 6] * 2;
 
-    FBuffer[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
-    FBuffer[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
+    FBuffer^[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
+    FBuffer^[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
 
     vr := TimeDomain[ci + 1] - TimeDomain[ci + 3];
     vi := TimeDomain[ci + 5] + TimeDomain[ci + 7];
 
-    FBuffer[ci + 5] := (vr + vi) * CSQRT2Div2;
-    FBuffer[ci + 7] := (vi - vr) * CSQRT2Div2;
+    FBuffer^[ci + 5] := (vr + vi) * CSQRT2Div2;
+    FBuffer^[ci + 7] := (vi - vr) * CSQRT2Div2;
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -2806,20 +2806,20 @@ begin
   // penultimate and last pass at once
   ci := 0;
   repeat
-    Tmp[0] := FBuffer[ci] + FBuffer[ci + 2];
-    Tmp[2] := FBuffer[ci] - FBuffer[ci + 2];
-    Tmp[1] := FBuffer[ci + 1] * 2;
-    Tmp[3] := FBuffer[ci + 3] * 2;
+    Tmp[0] := FBuffer^[ci] + FBuffer^[ci + 2];
+    Tmp[2] := FBuffer^[ci] - FBuffer^[ci + 2];
+    Tmp[1] := FBuffer^[ci + 1] * 2;
+    Tmp[3] := FBuffer^[ci + 3] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci]] := Tmp[0] + Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
-    Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
-    Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
-    Tmp[1] := FBuffer[ci + 5] * 2;
-    Tmp[3] := FBuffer[ci + 7] * 2;
+    Tmp[0] := FBuffer^[ci + 4] + FBuffer^[ci + 6];
+    Tmp[2] := FBuffer^[ci + 4] - FBuffer^[ci + 6];
+    Tmp[1] := FBuffer^[ci + 5] * 2;
+    Tmp[3] := FBuffer^[ci + 7] * 2;
 
     TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
     TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
@@ -3188,18 +3188,18 @@ begin
   // third pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
-    FBuffer[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
-    FBuffer[ci + 2] := FreqDomain[ci + 2];
-    FBuffer[ci + 6] := FreqDomain[ci + 6];
+    FBuffer^[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
+    FBuffer^[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
+    FBuffer^[ci + 2] := FreqDomain[ci + 2];
+    FBuffer^[ci + 6] := FreqDomain[ci + 6];
 
     v := (FreqDomain[ci + 5] - FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 1] := FreqDomain[ci + 1] + v;
-    FBuffer[ci + 3] := FreqDomain[ci + 1] - v;
+    FBuffer^[ci + 1] := FreqDomain[ci + 1] + v;
+    FBuffer^[ci + 3] := FreqDomain[ci + 1] - v;
 
     v := (FreqDomain[ci + 5] + FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 5] := v + FreqDomain[ci + 3];
-    FBuffer[ci + 7] := v - FreqDomain[ci + 3];
+    FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
+    FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -3209,10 +3209,10 @@ begin
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
    begin
     // Extreme coefficients are always real
-    FreqDomain[0                 ] := (FBuffer[0] + FBuffer[NbrCoef]) * FScaleFactor;
-    FreqDomain[NbrCoef           ] := (FBuffer[0] - FBuffer[NbrCoef]) * FScaleFactor;
-    FreqDomain[          NbrCoefH] := FBuffer[          NbrCoefH] * FScaleFactor;
-    FreqDomain[NbrCoef + NbrCoefH] := FBuffer[NbrCoef + NbrCoefH] * FScaleFactor;
+    FreqDomain[0                 ] := (FBuffer^[0] + FBuffer^[NbrCoef]) * FScaleFactor;
+    FreqDomain[NbrCoef           ] := (FBuffer^[0] - FBuffer^[NbrCoef]) * FScaleFactor;
+    FreqDomain[          NbrCoefH] := FBuffer^[          NbrCoefH] * FScaleFactor;
+    FreqDomain[NbrCoef + NbrCoefH] := FBuffer^[NbrCoef + NbrCoefH] * FScaleFactor;
 
     // Others are conjugate complex numbers
     for ci := 1 to NbrCoefH - 1 do
@@ -3220,22 +3220,22 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + ci];
       s := TrigoLUT[NbrCoef  - 4 - ci];
 
-      v := FBuffer[NbrCoef + ci] * c - FBuffer[NbrCoef + NbrCoefH + ci] * s;
-      FreqDomain[          ci] := (FBuffer[ci] + v) * FScaleFactor;
-      FreqDomain[NbrCoef - ci] := (FBuffer[ci] - v) * FScaleFactor;
+      v := FBuffer^[NbrCoef + ci] * c - FBuffer^[NbrCoef + NbrCoefH + ci] * s;
+      FreqDomain[          ci] := (FBuffer^[ci] + v) * FScaleFactor;
+      FreqDomain[NbrCoef - ci] := (FBuffer^[ci] - v) * FScaleFactor;
 
-      v := FBuffer[NbrCoef + ci] * s + FBuffer[NbrCoef + NbrCoefH + ci] * c;
-      FreqDomain[    NbrCoef + ci] := (v + FBuffer[NbrCoefH + ci]) * FScaleFactor;
-      FreqDomain[2 * NbrCoef - ci] := (v - FBuffer[NbrCoefH + ci]) * FScaleFactor;
+      v := FBuffer^[NbrCoef + ci] * s + FBuffer^[NbrCoef + NbrCoefH + ci] * c;
+      FreqDomain[    NbrCoef + ci] := (v + FBuffer^[NbrCoefH + ci]) * FScaleFactor;
+      FreqDomain[2 * NbrCoef - ci] := (v - FBuffer^[NbrCoefH + ci]) * FScaleFactor;
      end;
    end
   else
    begin
     // Extreme coefficients are always real
-    FreqDomain[0                 ] := FBuffer[0] + FBuffer[NbrCoef];
-    FreqDomain[NbrCoef           ] := FBuffer[0] - FBuffer[NbrCoef];
-    FreqDomain[          NbrCoefH] := FBuffer[          NbrCoefH];
-    FreqDomain[NbrCoef + NbrCoefH] := FBuffer[NbrCoef + NbrCoefH];
+    FreqDomain[0                 ] := FBuffer^[0] + FBuffer^[NbrCoef];
+    FreqDomain[NbrCoef           ] := FBuffer^[0] - FBuffer^[NbrCoef];
+    FreqDomain[          NbrCoefH] := FBuffer^[          NbrCoefH];
+    FreqDomain[NbrCoef + NbrCoefH] := FBuffer^[NbrCoef + NbrCoefH];
 
     // Others are conjugate complex numbers
     for ci := 1 to NbrCoefH - 1 do
@@ -3243,13 +3243,13 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + ci];
       s := TrigoLUT[NbrCoef  - 4 - ci];
 
-      v := FBuffer[NbrCoef + ci] * c - FBuffer[NbrCoef + NbrCoefH + ci] * s;
-      FreqDomain[          ci] := FBuffer[ci] + v;
-      FreqDomain[NbrCoef - ci] := FBuffer[ci] - v;
+      v := FBuffer^[NbrCoef + ci] * c - FBuffer^[NbrCoef + NbrCoefH + ci] * s;
+      FreqDomain[          ci] := FBuffer^[ci] + v;
+      FreqDomain[NbrCoef - ci] := FBuffer^[ci] - v;
 
-      v := FBuffer[NbrCoef + ci] * s + FBuffer[NbrCoef + NbrCoefH + ci] * c;
-      FreqDomain[    NbrCoef + ci] := v + FBuffer[NbrCoefH + ci];
-      FreqDomain[2 * NbrCoef - ci] := v - FBuffer[NbrCoefH + ci];
+      v := FBuffer^[NbrCoef + ci] * s + FBuffer^[NbrCoef + NbrCoefH + ci] * c;
+      FreqDomain[    NbrCoef + ci] := v + FBuffer^[NbrCoefH + ci];
+      FreqDomain[2 * NbrCoef - ci] := v - FBuffer^[NbrCoefH + ci];
      end;
    end;
 end;
@@ -3289,18 +3289,18 @@ begin
   // third pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := TempBuffer[ci] + TempBuffer[ci + 4];
-    FBuffer[ci + 4] := TempBuffer[ci] - TempBuffer[ci + 4];
-    FBuffer[ci + 2] := TempBuffer[ci + 2];
-    FBuffer[ci + 6] := TempBuffer[ci + 6];
+    FBuffer^[ci    ] := TempBuffer[ci] + TempBuffer[ci + 4];
+    FBuffer^[ci + 4] := TempBuffer[ci] - TempBuffer[ci + 4];
+    FBuffer^[ci + 2] := TempBuffer[ci + 2];
+    FBuffer^[ci + 6] := TempBuffer[ci + 6];
 
     v := (TempBuffer[ci + 5] - TempBuffer[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 1] := TempBuffer[ci + 1] + v;
-    FBuffer[ci + 3] := TempBuffer[ci + 1] - v;
+    FBuffer^[ci + 1] := TempBuffer[ci + 1] + v;
+    FBuffer^[ci + 3] := TempBuffer[ci + 1] - v;
 
     v := (TempBuffer[ci + 5] + TempBuffer[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 5] := v + TempBuffer[ci + 3];
-    FBuffer[ci + 7] := v - TempBuffer[ci + 3];
+    FBuffer^[ci + 5] := v + TempBuffer[ci + 3];
+    FBuffer^[ci + 7] := v - TempBuffer[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -3312,11 +3312,11 @@ begin
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
    begin
     // Extreme coefficients are always real
-    FreqDomain[0].Re := (FBuffer[0] + FBuffer[NbrCoef]) * FScaleFactor;
-    FreqDomain[0].Im := (FBuffer[0] - FBuffer[NbrCoef]) * FScaleFactor;
+    FreqDomain[0].Re := (FBuffer^[0] + FBuffer^[NbrCoef]) * FScaleFactor;
+    FreqDomain[0].Im := (FBuffer^[0] - FBuffer^[NbrCoef]) * FScaleFactor;
 
-    FreqDomain[NbrCoefH].Re := FBuffer[NbrCoefH] * FScaleFactor;
-    FreqDomain[NbrCoefH].Im := FBuffer[NbrCoef + NbrCoefH] * FScaleFactor;
+    FreqDomain[NbrCoefH].Re := FBuffer^[NbrCoefH] * FScaleFactor;
+    FreqDomain[NbrCoefH].Im := FBuffer^[NbrCoef + NbrCoefH] * FScaleFactor;
 
     // Others are conjugate complex numbers
     for ci := 1 to NbrCoefH - 1 do
@@ -3324,23 +3324,23 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + ci];
       s := TrigoLUT[NbrCoef  - 4 - ci];
 
-      v := FBuffer[NbrCoef + ci] * c - FBuffer[NbrCoef + NbrCoefH + ci] * s;
-      FreqDomain[ci          ].Re := (FBuffer[ci] + v) * FScaleFactor;
-      FreqDomain[NbrCoef - ci].Re := (FBuffer[ci] - v) * FScaleFactor;
+      v := FBuffer^[NbrCoef + ci] * c - FBuffer^[NbrCoef + NbrCoefH + ci] * s;
+      FreqDomain[ci          ].Re := (FBuffer^[ci] + v) * FScaleFactor;
+      FreqDomain[NbrCoef - ci].Re := (FBuffer^[ci] - v) * FScaleFactor;
 
-      v := FBuffer[NbrCoef + NbrCoefH + ci] * c + FBuffer[NbrCoef + ci] * s;
-      FreqDomain[ci          ].Im := (v + FBuffer[NbrCoefH + ci]) * FScaleFactor;
-      FreqDomain[NbrCoef - ci].Im := (v - FBuffer[NbrCoefH + ci]) * FScaleFactor;
+      v := FBuffer^[NbrCoef + NbrCoefH + ci] * c + FBuffer^[NbrCoef + ci] * s;
+      FreqDomain[ci          ].Im := (v + FBuffer^[NbrCoefH + ci]) * FScaleFactor;
+      FreqDomain[NbrCoef - ci].Im := (v - FBuffer^[NbrCoefH + ci]) * FScaleFactor;
      end;
    end
   else 
    begin
     // Extreme coefficients are always real
-    FreqDomain[0].Re := FBuffer[0] + FBuffer[NbrCoef];
-    FreqDomain[0].Im := FBuffer[0] - FBuffer[NbrCoef];
+    FreqDomain[0].Re := FBuffer^[0] + FBuffer^[NbrCoef];
+    FreqDomain[0].Im := FBuffer^[0] - FBuffer^[NbrCoef];
 
-    FreqDomain[NbrCoefH].Re := FBuffer[NbrCoefH];
-    FreqDomain[NbrCoefH].Im := FBuffer[NbrCoef + NbrCoefH];
+    FreqDomain[NbrCoefH].Re := FBuffer^[NbrCoefH];
+    FreqDomain[NbrCoefH].Im := FBuffer^[NbrCoef + NbrCoefH];
 
     // Others are conjugate complex numbers
     for ci := 1 to NbrCoefH - 1 do
@@ -3348,13 +3348,13 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + ci];
       s := TrigoLUT[NbrCoef  - 4 - ci];
 
-      v := FBuffer[NbrCoef + ci] * c - FBuffer[NbrCoef + NbrCoefH + ci] * s;
-      FreqDomain[ci          ].Re := FBuffer[ci] + v;
-      FreqDomain[NbrCoef - ci].Re := FBuffer[ci] - v;
+      v := FBuffer^[NbrCoef + ci] * c - FBuffer^[NbrCoef + NbrCoefH + ci] * s;
+      FreqDomain[ci          ].Re := FBuffer^[ci] + v;
+      FreqDomain[NbrCoef - ci].Re := FBuffer^[ci] - v;
 
-      v := FBuffer[NbrCoef + NbrCoefH + ci] * c + FBuffer[NbrCoef + ci] * s;
-      FreqDomain[ci          ].Im := v + FBuffer[NbrCoefH + ci];
-      FreqDomain[NbrCoef - ci].Im := v - FBuffer[NbrCoefH + ci];
+      v := FBuffer^[NbrCoef + NbrCoefH + ci] * c + FBuffer^[NbrCoef + ci] * s;
+      FreqDomain[ci          ].Im := v + FBuffer^[NbrCoefH + ci];
+      FreqDomain[NbrCoef - ci].Im := v - FBuffer^[NbrCoefH + ci];
      end;
    end;
 end;
@@ -3379,29 +3379,29 @@ begin
   repeat
     BitPos[0] := FBitRevLUT.LUT[ci - 4];
     BitPos[1] := FBitRevLUT.LUT[ci - 3];
-    FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 2];
     BitPos[1] := FBitRevLUT.LUT[ci - 1];
-    FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 4] := s + c;
-    FBuffer[ci - 2] := s - c;
+    FBuffer^[ci - 4] := s + c;
+    FBuffer^[ci - 2] := s - c;
 
     BitPos[0] := FBitRevLUT.LUT[ci - 8];
     BitPos[1] := FBitRevLUT.LUT[ci - 7];
-    FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 6];
     BitPos[1] := FBitRevLUT.LUT[ci - 5];
-    FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 8] := s + c;
-    FBuffer[ci - 6] := s - c;
+    FBuffer^[ci - 8] := s + c;
+    FBuffer^[ci - 6] := s - c;
 
     Dec(ci, 8);
   until (ci <= 0);
@@ -3409,23 +3409,23 @@ begin
   // third pass at once
   ci := 0;
   repeat
-    FreqDomain[ci] := FBuffer[ci] + FBuffer[ci + 4];
-    FreqDomain[ci + 4] := FBuffer[ci] - FBuffer[ci + 4];
-    FreqDomain[ci + 2] := FBuffer[ci + 2];
-    FreqDomain[ci + 6] := FBuffer[ci + 6];
+    FreqDomain[ci] := FBuffer^[ci] + FBuffer^[ci + 4];
+    FreqDomain[ci + 4] := FBuffer^[ci] - FBuffer^[ci + 4];
+    FreqDomain[ci + 2] := FBuffer^[ci + 2];
+    FreqDomain[ci + 6] := FBuffer^[ci + 6];
 
-    v := (FBuffer[ci + 5] - FBuffer[ci + 7]) * CSQRT2Div2;
-    FreqDomain[ci + 1] := FBuffer[ci + 1] + v;
-    FreqDomain[ci + 3] := FBuffer[ci + 1] - v;
-    v := (FBuffer[ci + 5] + FBuffer[ci + 7]) * CSQRT2Div2;
-    FreqDomain[ci + 5] := v + FBuffer[ci + 3];
-    FreqDomain[ci + 7] := v - FBuffer[ci + 3];
+    v := (FBuffer^[ci + 5] - FBuffer^[ci + 7]) * CSQRT2Div2;
+    FreqDomain[ci + 1] := FBuffer^[ci + 1] + v;
+    FreqDomain[ci + 3] := FBuffer^[ci + 1] - v;
+    v := (FBuffer^[ci + 5] + FBuffer^[ci + 7]) * CSQRT2Div2;
+    FreqDomain[ci + 5] := v + FBuffer^[ci + 3];
+    FreqDomain[ci + 7] := v - FBuffer^[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
 
   // next pass
-  TempBuffer[0] := @FBuffer[0];
+  TempBuffer[0] := @FBuffer^[0];
   TempBuffer[1] := @FreqDomain[0];
   for Pass := 3 to FOrder - 2 do
    begin
@@ -3535,50 +3535,50 @@ begin
   repeat
     BitPos[0] := FBitRevLUT.LUT[ci - 4];
     BitPos[1] := FBitRevLUT.LUT[ci - 3];
-    FBuffer[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 3] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 2];
     BitPos[1] := FBitRevLUT.LUT[ci - 1];
-    FBuffer[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 1] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 4] := s + c;
-    FBuffer[ci - 2] := s - c;
+    FBuffer^[ci - 4] := s + c;
+    FBuffer^[ci - 2] := s - c;
 
     BitPos[0] := FBitRevLUT.LUT[ci - 8];
     BitPos[1] := FBitRevLUT.LUT[ci - 7];
-    FBuffer[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 7] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     s := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
     BitPos[0] := FBitRevLUT.LUT[ci - 6];
     BitPos[1] := FBitRevLUT.LUT[ci - 5];
-    FBuffer[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
+    FBuffer^[ci - 5] := TimeDomain[BitPos[0]] - TimeDomain[BitPos[1]];
     c := TimeDomain[BitPos[0]] + TimeDomain[BitPos[1]];
 
-    FBuffer[ci - 8] := s + c;
-    FBuffer[ci - 6] := s - c;
+    FBuffer^[ci - 8] := s + c;
+    FBuffer^[ci - 6] := s - c;
 
     dec(ci, 8);
   until (ci <= 0);
 
-  TempBuffer[0] := @FBuffer[0];
+  TempBuffer[0] := @FBuffer^[0];
   TempBuffer[1] := @FreqDomain[0];
 
   // third pass at once
   ci := 0;
   repeat
-    TempBuffer[1][ci    ] := FBuffer[ci] + FBuffer[ci + 4];
-    TempBuffer[1][ci + 4] := FBuffer[ci] - FBuffer[ci + 4];
-    TempBuffer[1][ci + 2] := FBuffer[ci + 2];
-    TempBuffer[1][ci + 6] := FBuffer[ci + 6];
+    TempBuffer[1][ci    ] := FBuffer^[ci] + FBuffer^[ci + 4];
+    TempBuffer[1][ci + 4] := FBuffer^[ci] - FBuffer^[ci + 4];
+    TempBuffer[1][ci + 2] := FBuffer^[ci + 2];
+    TempBuffer[1][ci + 6] := FBuffer^[ci + 6];
 
-    v := (FBuffer[ci + 5] - FBuffer[ci + 7]) * CSQRT2Div2;
-    TempBuffer[1][ci + 1] := FBuffer[ci + 1] + v;
-    TempBuffer[1][ci + 3] := FBuffer[ci + 1] - v;
-    v := (FBuffer[ci + 5] + FBuffer[ci + 7]) * CSQRT2Div2;
-    TempBuffer[1][ci + 5] := v + FBuffer[ci + 3];
-    TempBuffer[1][ci + 7] := v - FBuffer[ci + 3];
+    v := (FBuffer^[ci + 5] - FBuffer^[ci + 7]) * CSQRT2Div2;
+    TempBuffer[1][ci + 1] := FBuffer^[ci + 1] + v;
+    TempBuffer[1][ci + 3] := FBuffer^[ci + 1] - v;
+    v := (FBuffer^[ci + 5] + FBuffer^[ci + 7]) * CSQRT2Div2;
+    TempBuffer[1][ci + 5] := v + FBuffer^[ci + 3];
+    TempBuffer[1][ci + 7] := v - FBuffer^[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -3709,25 +3709,25 @@ begin
   // third pass
   ci := 0;
   repeat
-    FBuffer[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
-    FBuffer[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
-    FBuffer[ci + 2] := FreqDomain[ci + 2];
-    FBuffer[ci + 6] := FreqDomain[ci + 6];
+    FBuffer^[ci    ] := FreqDomain[ci] + FreqDomain[ci + 4];
+    FBuffer^[ci + 4] := FreqDomain[ci] - FreqDomain[ci + 4];
+    FBuffer^[ci + 2] := FreqDomain[ci + 2];
+    FBuffer^[ci + 6] := FreqDomain[ci + 6];
 
     v := (FreqDomain[ci + 5] - FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 1] := FreqDomain[ci + 1] + v;
-    FBuffer[ci + 3] := FreqDomain[ci + 1] - v;
+    FBuffer^[ci + 1] := FreqDomain[ci + 1] + v;
+    FBuffer^[ci + 3] := FreqDomain[ci + 1] - v;
 
     v := (FreqDomain[ci + 5] + FreqDomain[ci + 7]) * CSQRT2Div2;
-    FBuffer[ci + 5] := v + FreqDomain[ci + 3];
-    FBuffer[ci + 7] := v - FreqDomain[ci + 3];
+    FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
+    FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
     Inc(ci, 8);
   until (ci >= fFFTSize);
 
   // next pass
   TempBuffer[0] := @FreqDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   for Pass := 3 to FOrder - 1 do
    begin
@@ -3775,10 +3775,10 @@ begin
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
    begin
     // Extreme coefficients are always real
-    FreqDomain[0                 ] := (FBuffer[0] + FBuffer[NbrCoef]) * FScaleFactor;
-    FreqDomain[NbrCoef           ] := (FBuffer[0] - FBuffer[NbrCoef]) * FScaleFactor;
-    FreqDomain[          NbrCoefH] := FBuffer[          NbrCoefH] * FScaleFactor;
-    FreqDomain[NbrCoef + NbrCoefH] := FBuffer[NbrCoef + NbrCoefH] * FScaleFactor;
+    FreqDomain[0                 ] := (FBuffer^[0] + FBuffer^[NbrCoef]) * FScaleFactor;
+    FreqDomain[NbrCoef           ] := (FBuffer^[0] - FBuffer^[NbrCoef]) * FScaleFactor;
+    FreqDomain[          NbrCoefH] := FBuffer^[          NbrCoefH] * FScaleFactor;
+    FreqDomain[NbrCoef + NbrCoefH] := FBuffer^[NbrCoef + NbrCoefH] * FScaleFactor;
 
     // Others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
@@ -3786,22 +3786,22 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + i];
       s := TrigoLUT[NbrCoef  - 4 - i];
 
-      v := FBuffer[NbrCoef + i] * c - FBuffer[NbrCoef + NbrCoefH + i] * s;
-      FreqDomain[          i] := (FBuffer[i] + v) * FScaleFactor;
-      FreqDomain[NbrCoef - i] := (FBuffer[i] - v) * FScaleFactor;
+      v := FBuffer^[NbrCoef + i] * c - FBuffer^[NbrCoef + NbrCoefH + i] * s;
+      FreqDomain[          i] := (FBuffer^[i] + v) * FScaleFactor;
+      FreqDomain[NbrCoef - i] := (FBuffer^[i] - v) * FScaleFactor;
 
-      v := FBuffer[NbrCoef + i] * s + FBuffer[NbrCoef + NbrCoefH + i] * c;
-      FreqDomain[    NbrCoef + i] := (v + FBuffer[NbrCoefH + i]) * FScaleFactor;
-      FreqDomain[2 * NbrCoef - i] := (v - FBuffer[NbrCoefH + i]) * FScaleFactor;
+      v := FBuffer^[NbrCoef + i] * s + FBuffer^[NbrCoef + NbrCoefH + i] * c;
+      FreqDomain[    NbrCoef + i] := (v + FBuffer^[NbrCoefH + i]) * FScaleFactor;
+      FreqDomain[2 * NbrCoef - i] := (v - FBuffer^[NbrCoefH + i]) * FScaleFactor;
      end;
    end
   else
    begin
     // Extreme coefficients are always real
-    FreqDomain[0                 ] := FBuffer[0] + FBuffer[NbrCoef];
-    FreqDomain[NbrCoef           ] := FBuffer[0] - FBuffer[NbrCoef];
-    FreqDomain[          NbrCoefH] := FBuffer[          NbrCoefH];
-    FreqDomain[NbrCoef + NbrCoefH] := FBuffer[NbrCoef + NbrCoefH];
+    FreqDomain[0                 ] := FBuffer^[0] + FBuffer^[NbrCoef];
+    FreqDomain[NbrCoef           ] := FBuffer^[0] - FBuffer^[NbrCoef];
+    FreqDomain[          NbrCoefH] := FBuffer^[          NbrCoefH];
+    FreqDomain[NbrCoef + NbrCoefH] := FBuffer^[NbrCoef + NbrCoefH];
 
     // Others are conjugate complex numbers
     for i := 1 to NbrCoefH - 1 do
@@ -3809,13 +3809,13 @@ begin
       c := TrigoLUT[NbrCoefH - 4 + i];
       s := TrigoLUT[NbrCoef  - 4 - i];
 
-      v := FBuffer[NbrCoef + i] * c - FBuffer[NbrCoef + NbrCoefH + i] * s;
-      FreqDomain[          i] := FBuffer[i] + v;
-      FreqDomain[NbrCoef - i] := FBuffer[i] - v;
+      v := FBuffer^[NbrCoef + i] * c - FBuffer^[NbrCoef + NbrCoefH + i] * s;
+      FreqDomain[          i] := FBuffer^[i] + v;
+      FreqDomain[NbrCoef - i] := FBuffer^[i] - v;
 
-      v := FBuffer[NbrCoef + i] * s + FBuffer[NbrCoef + NbrCoefH + i] * c;
-      FreqDomain[    NbrCoef + i] := v + FBuffer[NbrCoefH + i];
-      FreqDomain[2 * NbrCoef - i] := v - FBuffer[NbrCoefH + i];
+      v := FBuffer^[NbrCoef + i] * s + FBuffer^[NbrCoef + NbrCoefH + i] * c;
+      FreqDomain[    NbrCoef + i] := v + FBuffer^[NbrCoefH + i];
+      FreqDomain[2 * NbrCoef - i] := v - FBuffer^[NbrCoefH + i];
      end;
    end;
 end;
@@ -3833,7 +3833,7 @@ var
   TempBuffer  : array [0..2] of PDAVDoubleFixedArray;
 begin
   TempBuffer[0] := @FreqDomain[0];
-  TempBuffer[1] := @FBuffer[0];
+  TempBuffer[1] := @FBuffer^[0];
 
   // first and second pass at once
   ci := fFFTSize;
@@ -4251,7 +4251,7 @@ begin
    else
     begin
      TempBuffer[0] := TempBuffer[1];
-     TempBuffer[1] := @FBuffer[0];
+     TempBuffer[1] := @FBuffer^[0];
     end
   end;
 
@@ -4368,7 +4368,7 @@ begin
    else
     begin
      TempBuffer[0] := TempBuffer[1];
-     TempBuffer[1] := @FBuffer[0];
+     TempBuffer[1] := @FBuffer^[0];
     end
   end;
 
@@ -4434,7 +4434,7 @@ var
   TempBuffer    : array [0..2] of PDAVDoubleFixedArray;
 begin
  TempBuffer[0] := @FreqDomain[0];
- TempBuffer[1] := @FBuffer[0];
+ TempBuffer[1] := @FBuffer^[0];
 
  // do the transformation in several pass
 
@@ -4493,19 +4493,19 @@ begin
   ci := 0;
 
   repeat
-   FBuffer[ci    ] := TimeDomain[ci    ] + TimeDomain[ci + 4];
-   FBuffer[ci + 4] := TimeDomain[ci    ] - TimeDomain[ci + 4];
-   FBuffer[ci + 2] := TimeDomain[ci + 2] * 2;
-   FBuffer[ci + 6] := TimeDomain[ci + 6] * 2;
+   FBuffer^[ci    ] := TimeDomain[ci    ] + TimeDomain[ci + 4];
+   FBuffer^[ci + 4] := TimeDomain[ci    ] - TimeDomain[ci + 4];
+   FBuffer^[ci + 2] := TimeDomain[ci + 2] * 2;
+   FBuffer^[ci + 6] := TimeDomain[ci + 6] * 2;
 
-   FBuffer[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
-   FBuffer[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
+   FBuffer^[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
+   FBuffer^[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
 
    vr := TimeDomain[ci + 1] - TimeDomain[ci + 3];
    vi := TimeDomain[ci + 5] + TimeDomain[ci + 7];
 
-   FBuffer[ci + 5] := (vr + vi) * CSQRT2Div2;
-   FBuffer[ci + 7] := (vi - vr) * CSQRT2Div2;
+   FBuffer^[ci + 5] := (vr + vi) * CSQRT2Div2;
+   FBuffer^[ci + 7] := (vi - vr) * CSQRT2Div2;
 
    Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -4514,20 +4514,20 @@ begin
   ci := 0;
 
   repeat
-   Tmp[0] := FBuffer[ci    ] + FBuffer[ci+2];
-   Tmp[2] := FBuffer[ci    ] - FBuffer[ci+2];
-   Tmp[1] := FBuffer[ci + 1] * 2;
-   Tmp[3] := FBuffer[ci + 3] * 2;
+   Tmp[0] := FBuffer^[ci    ] + FBuffer^[ci+2];
+   Tmp[2] := FBuffer^[ci    ] - FBuffer^[ci+2];
+   Tmp[1] := FBuffer^[ci + 1] * 2;
+   Tmp[3] := FBuffer^[ci + 3] * 2;
 
    TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
-   Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
-   Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
-   Tmp[1] := FBuffer[ci + 5] * 2;
-   Tmp[3] := FBuffer[ci + 7] * 2;
+   Tmp[0] := FBuffer^[ci + 4] + FBuffer^[ci + 6];
+   Tmp[2] := FBuffer^[ci + 4] - FBuffer^[ci + 6];
+   Tmp[1] := FBuffer^[ci + 5] * 2;
+   Tmp[3] := FBuffer^[ci + 7] * 2;
 
    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];
@@ -4550,7 +4550,7 @@ var
   TempBuffer    : array [0..2] of PDAVDoubleFixedArray;
 begin
  TempBuffer[0] := @FreqDomain[0];
- TempBuffer[1] := @FBuffer[0];
+ TempBuffer[1] := @FBuffer^[0];
 
  // Do the transformation in several Pass
 
@@ -4609,19 +4609,19 @@ begin
   ci := 0;
 
   repeat
-   FBuffer[ci    ] := TimeDomain[ci    ] + TimeDomain[ci + 4];
-   FBuffer[ci + 4] := TimeDomain[ci    ] - TimeDomain[ci + 4];
-   FBuffer[ci + 2] := TimeDomain[ci + 2] * 2;
-   FBuffer[ci + 6] := TimeDomain[ci + 6] * 2;
+   FBuffer^[ci    ] := TimeDomain[ci    ] + TimeDomain[ci + 4];
+   FBuffer^[ci + 4] := TimeDomain[ci    ] - TimeDomain[ci + 4];
+   FBuffer^[ci + 2] := TimeDomain[ci + 2] * 2;
+   FBuffer^[ci + 6] := TimeDomain[ci + 6] * 2;
 
-   FBuffer[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
-   FBuffer[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
+   FBuffer^[ci + 1] := TimeDomain[ci + 1] + TimeDomain[ci + 3];
+   FBuffer^[ci + 3] := TimeDomain[ci + 5] - TimeDomain[ci + 7];
 
    vr := TimeDomain[ci + 1] - TimeDomain[ci + 3];
    vi := TimeDomain[ci + 5] + TimeDomain[ci + 7];
 
-   FBuffer[ci + 5] := (vr + vi) * CSQRT2Div2;
-   FBuffer[ci + 7] := (vi - vr) * CSQRT2Div2;
+   FBuffer^[ci + 5] := (vr + vi) * CSQRT2Div2;
+   FBuffer^[ci + 7] := (vi - vr) * CSQRT2Div2;
 
    Inc(ci, 8);
   until (ci >= fFFTSize);
@@ -4630,20 +4630,20 @@ begin
   ci := 0;
 
   repeat
-   Tmp[0] := FBuffer[ci    ] + FBuffer[ci+2];
-   Tmp[2] := FBuffer[ci    ] - FBuffer[ci+2];
-   Tmp[1] := FBuffer[ci + 1] * 2;
-   Tmp[3] := FBuffer[ci + 3] * 2;
+   Tmp[0] := FBuffer^[ci    ] + FBuffer^[ci+2];
+   Tmp[2] := FBuffer^[ci    ] - FBuffer^[ci+2];
+   Tmp[1] := FBuffer^[ci + 1] * 2;
+   Tmp[3] := FBuffer^[ci + 3] * 2;
 
    TimeDomain[FBitRevLUT.LUT[ci    ]] := Tmp[0] + Tmp[1];
    TimeDomain[FBitRevLUT.LUT[ci + 1]] := Tmp[0] - Tmp[1];
    TimeDomain[FBitRevLUT.LUT[ci + 2]] := Tmp[2] + Tmp[3];
    TimeDomain[FBitRevLUT.LUT[ci + 3]] := Tmp[2] - Tmp[3];
 
-   Tmp[0] := FBuffer[ci + 4] + FBuffer[ci + 6];
-   Tmp[2] := FBuffer[ci + 4] - FBuffer[ci + 6];
-   Tmp[1] := FBuffer[ci + 5] * 2;
-   Tmp[3] := FBuffer[ci + 7] * 2;
+   Tmp[0] := FBuffer^[ci + 4] + FBuffer^[ci + 6];
+   Tmp[2] := FBuffer^[ci + 4] - FBuffer^[ci + 6];
+   Tmp[1] := FBuffer^[ci + 5] * 2;
+   Tmp[3] := FBuffer^[ci + 7] * 2;
 
    TimeDomain[FBitRevLUT.LUT[ci + 4]] := Tmp[0] + Tmp[1];
    TimeDomain[FBitRevLUT.LUT[ci + 5]] := Tmp[0] - Tmp[1];

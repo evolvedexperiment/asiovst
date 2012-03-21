@@ -371,9 +371,9 @@ end;
 
 procedure TDAVUpSampling.FilterClassChanged;
 var
-  oldFilter : TCustomOrderFilter;
+  OldFilter : TCustomOrderFilter;
 begin
- oldFilter := FFilter;
+ OldFilter := FFilter;
  FFilter := FFilterClass.Create;
  if Assigned(oldFilter)
   then FFilter.Assign(oldFilter);
