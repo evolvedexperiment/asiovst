@@ -250,7 +250,7 @@ asm
     {$ENDIF}
     FST     [EDI].Single               // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Single               // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]   // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]   // EDX = FCoefficients
     FMUL    [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0]
     FSUBRP                             // (Input + Y[0]) * FCoefficients[0] - X[0]
     FST     [ESI].Single               // FMem[FPhase].Y[0] := "
@@ -317,7 +317,7 @@ asm
     {$ENDIF}
     FST     [EDI + 4].Single           // FMem[FPhase].X[1] := FPrev;
     FADD    [ESI + 4].Single           // FPrev + Y[1], X[1], Input
-    MOV     EBX, [EAX.FCoefficients]   // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]   // EDX = FCoefficients
     FMUL    [EBX + 8].Double           // (FPrev + Y[1]) * FCoefficients[1], X[1]
     FSUBRP                             // (FPrev + Y[1]) * FCoefficients[1] - X[1]
     FST     [ESI + 4].Single           // FMem[FPhase].Y[1] := "
@@ -373,7 +373,7 @@ asm
     {$ENDIF}
     FST     [EDI].Single               // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Single               // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]   // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]   // EDX = FCoefficients
     FMUL    [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0], Input
     FSUBRP                             // (Input + Y[0]) * FCoefficients[0] - X[0], Input
     FSTP    [ESI].Single               // FMem[FPhase].Y[0] :=  "
@@ -452,7 +452,7 @@ asm
     {$ENDIF}
     FST     [EDI].Single                // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Single                // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]    // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]    // EDX = FCoefficients
     FMUL    [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0], Input
     FSUBRP                              // (Input + Y[0]) * FCoefficients[0] - X[0], Input
     FSTP    [ESI].Single                // FMem[FPhase].Y[0] :=  "
@@ -645,7 +645,7 @@ asm
     {$ENDIF}
     FST     [EDI].Single                // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Single                // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]    // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]    // EDX = FCoefficients
     FMUL    [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0]
     FSUBRP                              // (Input + Y[0]) * FCoefficients[0] - X[0]
     FST     [ESI].Single                // FMem[FPhase].Y[0] :=  "
@@ -708,7 +708,7 @@ asm
     {$ENDIF}
     FST     [EDI + 4].Single            // FMem[FPhase].X[1] := FPrev;
     FADD    [ESI + 4].Single            // FPrev + Y[1], X[1], Input
-    MOV     EBX, [EAX.FCoefficients]    // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]    // EDX = FCoefficients
     FMUL    [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
     FSUBRP                              // (FPrev + Y[1]) * FCoefficients[1] - X[1]
     FST     [ESI + 4].Single            // FMem[FPhase].Y[1] :=  "
@@ -759,7 +759,7 @@ asm
     {$ENDIF}
     FST     [EDI].Single                // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Single                // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]    // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]    // EDX = FCoefficients
     FMUL    [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0],Input
     FSUBRP                              // (Input + Y[0]) * FCoefficients[0] - X[0],Input
     FSTP    [ESI].Single                // FMem[FPhase].Y[0] :=  "
@@ -833,7 +833,7 @@ asm
     {$ENDIF}
     FST     [EDI].Single                // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Single                // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]    // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]    // EDX = FCoefficients
     FMUL    [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0],Input
     FSUBRP                              // (Input + Y[0]) * FCoefficients[0] - X[0],Input
     FSTP    [ESI].Single                // FMem[FPhase].Y[0] :=  "
@@ -845,7 +845,7 @@ asm
     {$ENDIF}
     FST     [EDI + 4].Single            // FMem[FPhase].X[1] := FPrev;
     FADD    [ESI + 4].Single            // FPrev + Y[1], X[1], Input
-    MOV     EBX, [EAX.FCoefficients]    // edx=FCoefficients
+    MOV     EBX, [EAX.FCoefficients]    // EDX=FCoefficients
     FMUL    [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
     FSUBRP                              // (FPrev + Y[1]) * FCoefficients[1] - X[1]
     FSTP    [ESI + 4].Single            // FMem[FPhase].Y[1] :=  "
@@ -1121,7 +1121,7 @@ asm
     {$ENDIF}
     FST     [EDI].Double               // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Double               // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]   // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]   // EDX = FCoefficients
     FMUL    [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0]
     FSUBRP                             // (Input + Y[0]) * FCoefficients[0] - X[0]
     FST     [ESI].Double               // FMem[FPhase].Y[0] := "
@@ -1186,7 +1186,7 @@ asm
     {$ENDIF}
     FST     [EDI + 8].Double           // FMem[FPhase].X[1] := FPrev;
     FADD    [ESI + 8].Double           // FPrev + Y[1], X[1], Input
-    MOV     EBX, [EAX.FCoefficients]   // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]   // EDX = FCoefficients
     FMUL    [EBX + 8].Double           // (FPrev + Y[1]) * FCoefficients[1], X[1]
     FSUBRP                             // (FPrev + Y[1]) * FCoefficients[1] - X[1]
     FST     [ESI + 8].Double           // FMem[FPhase].Y[1] := "
@@ -1245,7 +1245,7 @@ asm
     {$ENDIF}
     FST     [EDI].Double               // FMem[FPhase].X[0] := Input;
     FADD    [ESI].Double               // Input + Y[0], X[0], Input
-    MOV     EBX, [EAX.FCoefficients]   // edx = FCoefficients
+    MOV     EBX, [EAX.FCoefficients]   // EDX = FCoefficients
     FMUL    [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0], Input
     FSUBRP                             // (Input + Y[0]) * FCoefficients[0] - X[0], Input
     FSTP    [ESI].Double               // FMem[FPhase].Y[0] :=  "
@@ -1300,69 +1300,69 @@ procedure TPhaseHalfPi64.ProcessSample4(const Input: Double;
   out OutputA, OutputB: Double);
 {$IFNDEF PUREPASCAL}
 asm
- PUSH EBX                         // push EBX on stack
- PUSH EDI                         // push EDI on stack
- PUSH ESI                         // push ESI on stack
- MOV  EBX, [EAX.FPhase]           // EBX = FPhase
- SHL  EBX, 3                      // EBX = 8 * FPhase
- MOV  EDI, [EAX + FMem[EBX]]      // EDI = X[0]
- MOV  ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
- SHR  EBX, 3                      // EBX = FPhase
- XOR  EBX, $1                     // Toggle FPhase!!
- MOV  [EAX.FPhase], EBX           // FPhase = EBX
- {$IFDEF HandleDenormals}
- FLD CDenorm64                   // Pure Speed
- {$ELSE}
- FLDZ
- {$ENDIF}
+    PUSH    EBX                         // push EBX on stack
+    PUSH    EDI                         // push EDI on stack
+    PUSH    ESI                         // push ESI on stack
+    MOV     EBX, [EAX.FPhase]           // EBX = FPhase
+    SHL     EBX, 3                      // EBX = 8 * FPhase
+    MOV     EDI, [EAX + FMem[EBX]]      // EDI = X[0]
+    MOV     ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
+    SHR     EBX, 3                      // EBX = FPhase
+    XOR     EBX, $1                     // Toggle FPhase!!
+    MOV     [EAX.FPhase], EBX           // FPhase = EBX
+    {$IFDEF HandleDenormals}
+    FLD     CDenorm64                   // Pure Speed
+    {$ELSE}
+    FLDZ
+    {$ENDIF}
 
- FLD  Input.Double                // Input
- FLD  [EDI].Double                // X[0], Input
- FLD  Input.Double                // Input, X[0], Input
- FST  [EDI].Double                // FMem[FPhase].X[0] := Input;
- {$IFDEF HandleDenormals}
- FADD ST(0), ST(3)                // dEnOrMaL + Input, X[0], Input
- {$ENDIF}
- FADD [ESI].Double                // dEnOrMaL + Input + Y[0], X[0], Input
- MOV  EBX, [EAX.FCoefficients]    // edx = FCoefficients
- FMUL [EBX].Double                // (dEnOrMaL + Input + Y[0]) * FCoefficients[0], X[0], Input
- FSUBRP                           // (dEnOrMaL + Input + Y[0]) * FCoefficients[0] - X[0], Input
- FSTP [ESI].Double                // FMem[FPhase].Y[0] :=  "
+    FLD     Input.Double                // Input
+    FLD     [EDI].Double                // X[0], Input
+    FLD     Input.Double                // Input, X[0], Input
+    FST     [EDI].Double                // FMem[FPhase].X[0] := Input;
+    {$IFDEF HandleDenormals}
+    FADD    ST(0), ST(3)                // dEnOrMaL + Input, X[0], Input
+    {$ENDIF}
+    FADD    [ESI].Double                // dEnOrMaL + Input + Y[0], X[0], Input
+    MOV     EBX, [EAX.FCoefficients]    // EDX = FCoefficients
+    FMUL    [EBX].Double                // (dEnOrMaL + Input + Y[0]) * FCoefficients[0], X[0], Input
+    FSUBRP                              // (dEnOrMaL + Input + Y[0]) * FCoefficients[0] - X[0], Input
+    FSTP    [ESI].Double                // FMem[FPhase].Y[0] :=  "
 
- FLD  [EDI + 8].Double            // X[1], Input
- FLD  [EAX.FPrev].Double          // FPrev, X[1], Input
- FST  [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
- {$IFDEF HandleDenormals}
- FADD ST(0), ST(3)                // dEnOrMaL
- {$ENDIF}
- FADD [ESI + 8].Double            // FPrev + Y[1], X[1], Input
- FMUL [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
- FSUBRP                           // (FPrev + Y[1]) * FCoefficients[1] - X[1]
- FSTP [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
+    FLD     [EDI + 8].Double            // X[1], Input
+    FLD     [EAX.FPrev].Double          // FPrev, X[1], Input
+    FST     [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
+    {$IFDEF HandleDenormals}
+    FADD    ST(0), ST(3)                // dEnOrMaL
+    {$ENDIF}
+    FADD    [ESI + 8].Double            // FPrev + Y[1], X[1], Input
+    FMUL    [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
+    FSUBRP                              // (FPrev + Y[1]) * FCoefficients[1] - X[1]
+    FSTP    [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
 
- FLD  [EDI + 16].Double           // X[2], Input
- FLD  [ESI].Double                // Y[0], X[2], Input
- FST  [EDI + 16].Double           // FMem[FPhase].X[2] := Y[0];
- FADD [ESI + 16].Double           // Y[2] + Y[0], X[2], Input
- FMUL [EBX + 16].Double           // (Y[0] + Y[2]) * FCoefficients[2], X[2]
- FSUBRP                           // (Y[0] + Y[2]) * FCoefficients[2] - X[2]
- FST  [ESI + 16].Double           // FMem[FPhase].Y[2] :=  "
- FSTP OutputA.Double              // OutputB := FMem[FPhase].Y[2];
+    FLD     [EDI + 16].Double           // X[2], Input
+    FLD     [ESI].Double                // Y[0], X[2], Input
+    FST     [EDI + 16].Double           // FMem[FPhase].X[2] := Y[0];
+    FADD    [ESI + 16].Double           // Y[2] + Y[0], X[2], Input
+    FMUL    [EBX + 16].Double           // (Y[0] + Y[2]) * FCoefficients[2], X[2]
+    FSUBRP                              // (Y[0] + Y[2]) * FCoefficients[2] - X[2]
+    FST     [ESI + 16].Double           // FMem[FPhase].Y[2] :=  "
+    FSTP    OutputA.Double              // OutputB := FMem[FPhase].Y[2];
 
- FLD  [EDI + 24].Double           // X[3], Input
- FLD  [ESI +  8].Double           // X[1], X[3], Input
- FST  [EDI + 24].Double           // FMem[FPhase].X[3] := X[1];
- FADD [ESI + 24].Double           // FPrev + Y[3], X[3], Input
- FMUL [EBX + 24].Double           // (FPrev + Y[3]) * FCoefficients[3], X[3]
- fsubp                            // (FPrev + Y[3]) * FCoefficients[3] - X[3]
- FST  [ESI + 24].Double           // FMem[FPhase].Y[3] :=  "
- FSTP OutputB.Double              // OutputB := FMem[FPhase].Y[3];
+    FLD     [EDI + 24].Double           // X[3], Input
+    FLD     [ESI +  8].Double           // X[1], X[3], Input
+    FST     [EDI + 24].Double           // FMem[FPhase].X[3] := X[1];
+    FADD    [ESI + 24].Double           // FPrev + Y[3], X[3], Input
+    FMUL    [EBX + 24].Double           // (FPrev + Y[3]) * FCoefficients[3], X[3]
+    FSUBP                               // (FPrev + Y[3]) * FCoefficients[3] - X[3]
+    FST     [ESI + 24].Double           // FMem[FPhase].Y[3] :=  "
+    FSTP    OutputB.Double              // OutputB := FMem[FPhase].Y[3];
 
- FSTP [EAX.FPrev].Double          // FPrev := Input;
- FSTP ST(0)
- POP ESI
- POP EDI
- POP EBX
+    FSTP    [EAX.FPrev].Double          // FPrev := Input;
+    FSTP    ST(0)
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ELSE}
 begin
@@ -1387,87 +1387,88 @@ procedure TPhaseHalfPi64.ProcessSampleLarge(const Input: Double;
   out OutputA, OutputB: Double);
 {$IFNDEF PUREPASCAL}
 asm
- PUSH EBX                         // push EBX on stack
- PUSH EDI                         // push EDI on stack
- PUSH ESI                         // push ESI on stack
- MOV  EBX, [EAX.FPhase]           // EBX = FPhase
- SHL  EBX, 3                      // EBX = 8 * FPhase
- MOV  EDI, [EAX + FMem[EBX]]      // EDI = X[0]
- MOV  ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
- SHR  EBX, 3                      // EBX = FPhase
- XOR  EBX, $1                     // Toggle FPhase!!
- MOV  [EAX.FPhase], EBX           // FPhase = EBX
+    PUSH    EBX                         // push EBX on stack
+    PUSH    EDI                         // push EDI on stack
+    PUSH    ESI                         // push ESI on stack
+    MOV     EBX, [EAX.FPhase]           // EBX = FPhase
+    SHL     EBX, 3                      // EBX = 8 * FPhase
+    MOV     EDI, [EAX + FMem[EBX]]      // EDI = X[0]
+    MOV     ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
+    SHR     EBX, 3                      // EBX = FPhase
+    XOR     EBX, $1                     // Toggle FPhase!!
+    MOV     [EAX.FPhase], EBX           // FPhase = EBX
 
- {$IFDEF HandleDenormals}
- FLD CDenorm64                   // Pure Speed
- {$ELSE}
- FLDZ
- {$ENDIF}
+    {$IFDEF HandleDenormals}
+    FLD     CDenorm64                   // Pure Speed
+    {$ELSE}
+    FLDZ
+    {$ENDIF}
 
- FLD  Input.Double                // Input
- FLD  [EDI].Double                // X[0], Input
- FLD  Input.Double                // Input, X[0], Input
- {$IFDEF HandleDenormals}
- FADD ST(0), ST(3)                // dEnOrMaL
- {$ENDIF}
- FST  [EDI].Double                // FMem[FPhase].X[0] := Input;
- FADD [ESI].Double                // Input + Y[0], X[0], Input
- MOV  EBX, [EAX.FCoefficients]    // EBX = FCoefficients
- FMUL [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0],Input
- FSUBRP                           // (Input + Y[0]) * FCoefficients[0] - X[0],Input
- FSTP [ESI].Double                // FMem[FPhase].Y[0] :=  "
+    FLD     Input.Double                // Input
+    FLD     [EDI].Double                // X[0], Input
+    FLD     Input.Double                // Input, X[0], Input
+    {$IFDEF HandleDenormals}
+    FADD    ST(0), ST(3)                // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI].Double                // FMem[FPhase].X[0] := Input;
+    FADD    [ESI].Double                // Input + Y[0], X[0], Input
+    MOV     EBX, [EAX.FCoefficients]    // EBX = FCoefficients
+    FMUL    [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0],Input
+    FSUBRP                              // (Input + Y[0]) * FCoefficients[0] - X[0],Input
+    FSTP    [ESI].Double                // FMem[FPhase].Y[0] :=  "
 
- FLD  [EDI + 8].Double            // X[1], Input
- FLD  [EAX.FPrev].Double          // FPrev, X[1], Input
- {$IFDEF HandleDenormals}
- FADD ST(0), ST(3)                // dEnOrMaL
- {$ENDIF}
- FST  [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
- FADD [ESI + 8].Double            // FPrev + Y[1], X[1], Input
- FMUL [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
- FSUBRP                           // (FPrev + Y[1]) * FCoefficients[1] - X[1]
- FSTP [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
+    FLD     [EDI + 8].Double            // X[1], Input
+    FLD     [EAX.FPrev].Double          // FPrev, X[1], Input
+    {$IFDEF HandleDenormals}
+    FADD    ST(0), ST(3)                // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
+    FADD    [ESI + 8].Double            // FPrev + Y[1], X[1], Input
+    FMUL    [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
+    FSUBRP                              // (FPrev + Y[1]) * FCoefficients[1] - X[1]
+    FSTP    [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
 
- PUSH ECX                         // push ECX on stack
- MOV ECX, [EAX.FNumberOfCoeffs]   // ECX=Self.FNumberOfCoeffs
- SUB ECX, 4                       // "Den Rest mach ich selber"
+    PUSH    ECX                         // push ECX on stack
+    MOV     ECX, [EAX.FNumberOfCoeffs]  // ECX = Self.FNumberOfCoeffs
+    SUB     ECX, 4                      // "Den Rest mach ich selber"
+
 @Loopy:
- FLD  [EDI + 16].Double           // X[2], Input
- FLD  [ESI].Double                // Y[0], X[2], Input
- FST  [EDI + 16].Double           // FMem[FPhase].X[2] := Y[0];
- FADD [ESI + 16].Double           // FPrev + Y[2], X[2], Input
- FMUL [EBX + 16].Double           // (FPrev + Y[2]) * FCoefficients[2], X[2]
- FSUBRP                           // (FPrev + Y[2]) * FCoefficients[2] - X[2]
- FSTP [ESI + 16].Double           // FMem[FPhase].Y[2] :=  "
- ADD ESI, 8
- ADD EDI, 8
- ADD EBX, 8
- LOOP @Loopy
- POP ECX                          // restore ECX
+    FLD     [EDI + 16].Double           // X[2], Input
+    FLD     [ESI].Double                // Y[0], X[2], Input
+    FST     [EDI + 16].Double           // FMem[FPhase].X[2] := Y[0];
+    FADD    [ESI + 16].Double           // FPrev + Y[2], X[2], Input
+    FMUL    [EBX + 16].Double           // (FPrev + Y[2]) * FCoefficients[2], X[2]
+    FSUBRP                              // (FPrev + Y[2]) * FCoefficients[2] - X[2]
+    FSTP    [ESI + 16].Double           // FMem[FPhase].Y[2] :=  "
+    ADD     ESI, 8
+    ADD     EDI, 8
+    ADD     EBX, 8
+    LOOP    @Loopy
+    POP     ECX                         // restore ECX
 
- FLD  [EDI + 16].Double           // X[10], Input
- FLD  [ESI].Double                // X[8], X[10], Input
- FST  [EDI + 16].Double           // FMem[FPhase].X[10] := X[8];
- FADD [ESI + 16].Double           // FPrev + Y[10], X[8], Input
- FMUL [EBX + 16].Double           // (FPrev + Y[10]) * FCoefficients[10], X[10]
- FSUBRP                           // (FPrev + Y[10]) * FCoefficients[10] - X[10]
- FST  [ESI + 16].Double           // FMem[FPhase].Y[10] :=  "
- FSTP [ECX].Double                // OutputB := FMem[FPhase].Y[10];
+    FLD     [EDI + 16].Double           // X[10], Input
+    FLD     [ESI].Double                // X[8], X[10], Input
+    FST     [EDI + 16].Double           // FMem[FPhase].X[10] := X[8];
+    FADD    [ESI + 16].Double           // FPrev + Y[10], X[8], Input
+    FMUL    [EBX + 16].Double           // (FPrev + Y[10]) * FCoefficients[10], X[10]
+    FSUBRP                              // (FPrev + Y[10]) * FCoefficients[10] - X[10]
+    FST     [ESI + 16].Double           // FMem[FPhase].Y[10] :=  "
+    FSTP    [ECX].Double                // OutputB := FMem[FPhase].Y[10];
 
- FLD  [EDI + 24].Double           // X[11], Input
- FLD  [ESI +  8].Double           // X[9], X[11], Input
- FST  [EDI + 24].Double           // FMem[FPhase].X[11] := X[9];
- FADD [ESI + 24].Double           // FPrev + Y[11], X[9], Input
- FMUL [EBX + 24].Double           // (FPrev + Y[11]) * FCoefficients[11], X[11]
- FSUBRP                           // (FPrev + Y[11]) * FCoefficients[11] - X[11]
- FST  [ESI + 24].Double           // FMem[FPhase].Y[11] :=  "
- FSTP [edx].Double                // OutputB := FMem[FPhase].Y[11];
+    FLD     [EDI + 24].Double           // X[11], Input
+    FLD     [ESI +  8].Double           // X[9], X[11], Input
+    FST     [EDI + 24].Double           // FMem[FPhase].X[11] := X[9];
+    FADD    [ESI + 24].Double           // FPrev + Y[11], X[9], Input
+    FMUL    [EBX + 24].Double           // (FPrev + Y[11]) * FCoefficients[11], X[11]
+    FSUBRP                              // (FPrev + Y[11]) * FCoefficients[11] - X[11]
+    FST     [ESI + 24].Double           // FMem[FPhase].Y[11] :=  "
+    FSTP    [EDX].Double                // OutputB := FMem[FPhase].Y[11];
 
- FSTP [EAX.FPrev].Double          // FPrev := Input;
- FSTP ST(0)
- POP ESI
- POP EDI
- POP EBX
+    FSTP    [EAX.FPrev].Double          // FPrev := Input;
+    FSTP    ST(0)
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ELSE}
 var
@@ -1495,40 +1496,40 @@ end;
 function TPhaseHalfPi64.ProcessSample1(const Input: Double): Double;
 {$IFNDEF PUREPASCAL}
 asm
- PUSH EBX                        // push EBX on stack
- PUSH EDI                        // push EDI on stack
- PUSH ESI                        // push ESI on stack
- MOV EBX, [EAX.FPhase]           // EBX = FPhase
- SHL EBX, 3                      // EBX = 8 * FPhase
- MOV EDI, [EAX + FMem[EBX]]      // EDI = X[0]
- MOV ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
- SHR EBX, 3                      // EBX = FPhase
- XOR EBX, $1                     // Toggle FPhase!!
- MOV [EAX.FPhase], EBX           // FPhase = EBX
+    PUSH    EBX                        // push EBX on stack
+    PUSH    EDI                        // push EDI on stack
+    PUSH    ESI                        // push ESI on stack
+    MOV     EBX, [EAX.FPhase]          // EBX = FPhase
+    SHL     EBX, 3                     // EBX = 8 * FPhase
+    MOV     EDI, [EAX + FMem[EBX]]     // EDI = X[0]
+    MOV     ESI, [EAX + FMem[EBX] + 4] // ESI = Y[0]
+    SHR     EBX, 3                     // EBX = FPhase
+    XOR     EBX, $1                    // Toggle FPhase!!
+    MOV     [EAX.FPhase], EBX          // FPhase = EBX
 
- FLD  Input.Double               // Input
- FLD  [EDI].Double               // X[0], Input
- FLD  Input.Double               // Input, X[0], Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                  // dEnOrMaL
- {$ENDIF}
- FST  [EDI].Double               // FMem[FPhase].X[0] := Input;
- FADD [ESI].Double               // Input + Y[0], X[0], Input
- MOV  EBX, [EAX.FCoefficients]   // edx = FCoefficients
- FMUL [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0]
- FSUBRP                          // (Input + Y[0]) * FCoefficients[0] - X[0]
- FST  [ESI].Double               // FMem[FPhase].Y[0] :=  "
- FMUL ST(0), ST(0)               // Sqr(FMem[FPhase].Y[0]), Input
- FLD  [EAX.FPrev].Double         // FPrev, Sqr(FMem[FPhase].Y[0]), Input
- FMUL ST(0), ST(0)               // Sqr(FPrev), Sqr(FMem[FPhase].Y[0]), Input
- FADDP                           // Sqr(FPrev) + Sqr(FMem[FPhase].Y[0]), Input
- FSQRT                           // Sqrt(Sqr(FPrev) + Sqr(FMem[FPhase].Y[0])), Input
- FXCH                            // Input, Sqrt(Sqr(FPrev) + Sqr(FMem[FPhase].Y[0]))
- FSTP [EAX.FPrev].Double         // FPrev := Input;
+    FLD     Input.Double               // Input
+    FLD     [EDI].Double               // X[0], Input
+    FLD     Input.Double               // Input, X[0], Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                  // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI].Double               // FMem[FPhase].X[0] := Input;
+    FADD    [ESI].Double               // Input + Y[0], X[0], Input
+    MOV     EBX, [EAX.FCoefficients]   // EDX = FCoefficients
+    FMUL    [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0]
+    FSUBRP                             // (Input + Y[0]) * FCoefficients[0] - X[0]
+    FST     [ESI].Double               // FMem[FPhase].Y[0] :=  "
+    FMUL    ST(0), ST(0)               // Sqr(FMem[FPhase].Y[0]), Input
+    FLD     [EAX.FPrev].Double         // FPrev, Sqr(FMem[FPhase].Y[0]), Input
+    FMUL    ST(0), ST(0)               // Sqr(FPrev), Sqr(FMem[FPhase].Y[0]), Input
+    FADDP                              // Sqr(FPrev) + Sqr(FMem[FPhase].Y[0]), Input
+    FSQRT                              // Sqrt(Sqr(FPrev) + Sqr(FMem[FPhase].Y[0])), Input
+    FXCH                               // Input, Sqrt(Sqr(FPrev) + Sqr(FMem[FPhase].Y[0]))
+    FSTP    [EAX.FPrev].Double         // FPrev := Input;
 
- POP ESI
- POP EDI
- POP EBX
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ELSE}
 begin
@@ -1545,51 +1546,51 @@ end;
 function TPhaseHalfPi64.ProcessSample2(const Input: Double): Double;
 {$IFNDEF PUREPASCAL}
 asm
- PUSH EBX                         // push EBX on stack
- PUSH EDI                         // push EDI on stack
- PUSH ESI                         // push ESI on stack
- MOV  EBX, [EAX.FPhase]           // EBX = FPhase
- SHL  EBX, 3                      // EBX = 8 * FPhase
- MOV  EDI, [EAX + FMem[EBX]]      // EDI = X[0]
- MOV  ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
- SHR  EBX, 3                      // EBX = FPhase
- XOR  EBX, $1                     // Toggle FPhase!!
- MOV  [EAX.FPhase],EBX            // FPhase = EBX
+    PUSH    EBX                         // push EBX on stack
+    PUSH    EDI                         // push EDI on stack
+    PUSH    ESI                         // push ESI on stack
+    MOV     EBX, [EAX.FPhase]           // EBX = FPhase
+    SHL     EBX, 3                      // EBX = 8 * FPhase
+    MOV     EDI, [EAX + FMem[EBX]]      // EDI = X[0]
+    MOV     ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
+    SHR     EBX, 3                      // EBX = FPhase
+    XOR     EBX, $1                     // Toggle FPhase!!
+    MOV     [EAX.FPhase],EBX            // FPhase = EBX
 
- FLD  Input.Double                // Input
- FLD  [EDI].Double                // X[0],Input
- FLD  Input.Double                // Input,X[0],Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                   // dEnOrMaL
- {$ENDIF}
- FST  [EDI].Double                // FMem[FPhase].X[0] := Input;
- FADD [ESI].Double                // Input + Y[0], X[0], Input
- MOV  EBX,[EAX.FCoefficients]     // EBX=FCoefficients
- FMUL [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0],Input
- FSUBRP                           // (Input + Y[0]) * FCoefficients[0] - X[0],Input
- FST  [ESI].Double                // FMem[FPhase].Y[0] :=  "
- FMUL ST(0), ST(0)                // Sqr(FMem[FPhase].Y[0]);
+    FLD     Input.Double                // Input
+    FLD     [EDI].Double                // X[0],Input
+    FLD     Input.Double                // Input,X[0],Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                   // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI].Double                // FMem[FPhase].X[0] := Input;
+    FADD    [ESI].Double                // Input + Y[0], X[0], Input
+    MOV     EBX,[EAX.FCoefficients]     // EBX=FCoefficients
+    FMUL    [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0],Input
+    FSUBRP                              // (Input + Y[0]) * FCoefficients[0] - X[0],Input
+    FST     [ESI].Double                // FMem[FPhase].Y[0] :=  "
+    FMUL    ST(0), ST(0)                // Sqr(FMem[FPhase].Y[0]);
 
- FLD  [EDI + 8].Double            // X[1], Input
- FLD  [EAX.FPrev].Double          // FPrev, X[1], Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                   // dEnOrMaL
- {$ENDIF}
- FST  [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
- FADD [ESI + 8].Double            // FPrev + Y[1], X[1], Input
- MOV  EBX,[EAX.FCoefficients]     // edx = FCoefficients
- FMUL [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
- FSUBRP                           // (FPrev + Y[1]) * FCoefficients[1] - X[1]
- FST  [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
- FMUL ST(0), ST(0)                // Sqr(FMem[FPhase].Y[1]);
- FADDP                            // Sqr(FMem[FPhase].Y[0]) + Sqr(FMem[FPhase].Y[1]
- FSQRT                            // Result := Sqrt(Sqr(FMem[FPhase].Y[0]) + Sqr(FMem[FPhase].Y[1]));
- FXCH                             // Input, Result
- FSTP [EAX.FPrev].Double          // FPrev := Input;
+    FLD     [EDI + 8].Double            // X[1], Input
+    FLD     [EAX.FPrev].Double          // FPrev, X[1], Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                   // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
+    FADD    [ESI + 8].Double            // FPrev + Y[1], X[1], Input
+    MOV     EBX,[EAX.FCoefficients]     // EDX = FCoefficients
+    FMUL    [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
+    FSUBRP                              // (FPrev + Y[1]) * FCoefficients[1] - X[1]
+    FST     [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
+    FMUL    ST(0), ST(0)                // Sqr(FMem[FPhase].Y[1]);
+    FADDP                               // Sqr(FMem[FPhase].Y[0]) + Sqr(FMem[FPhase].Y[1]
+    FSQRT                               // Result := Sqrt(Sqr(FMem[FPhase].Y[0]) + Sqr(FMem[FPhase].Y[1]));
+    FXCH                                // Input, Result
+    FSTP    [EAX.FPrev].Double          // FPrev := Input;
 
- POP ESI
- POP EDI
- POP EBX
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ELSE}
 begin
@@ -1609,59 +1610,59 @@ end;
 function TPhaseHalfPi64.ProcessSample3(const Input: Double): Double;
 {$IFNDEF PUREPASCAL}
 asm
- PUSH EBX                        // push EBX on stack
- PUSH EDI                        // push EDI on stack
- PUSH ESI                        // push ESI on stack
- MOV EBX, [EAX.FPhase]           // EBX = FPhase
- SHL EBX, 3                      // EBX = 8 * FPhase
- MOV EDI, [EAX + FMem[EBX]]      // EDI = X[0]
- MOV ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
- SHR EBX, 3                      // EBX = FPhase
- XOR EBX, $1                     // Toggle FPhase!!
- MOV [EAX.FPhase], EBX           // FPhase = EBX
+    PUSH    EBX                        // push EBX on stack
+    PUSH    EDI                        // push EDI on stack
+    PUSH    ESI                        // push ESI on stack
+    MOV     EBX, [EAX.FPhase]          // EBX = FPhase
+    SHL     EBX, 3                     // EBX = 8 * FPhase
+    MOV     EDI, [EAX + FMem[EBX]]     // EDI = X[0]
+    MOV     ESI, [EAX + FMem[EBX] + 4] // ESI = Y[0]
+    SHR     EBX, 3                     // EBX = FPhase
+    XOR     EBX, $1                    // Toggle FPhase!!
+    MOV     [EAX.FPhase], EBX          // FPhase = EBX
 
- FLD  Input.Double               // Input
- FLD  [EDI].Double               // X[0],Input
- FLD  Input.Double               // Input,X[0],Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                  // dEnOrMaL
- {$ENDIF}
- FST  [EDI].Double               // FMem[FPhase].X[0] := Input;
- FADD [ESI].Double               // Input + Y[0], X[0], Input
- MOV  EBX,[EAX.FCoefficients]    // edx=FCoefficients
- FMUL [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0],Input
- FSUBRP                          // (Input + Y[0]) * FCoefficients[0] - X[0],Input
- FSTP [ESI].Double               // FMem[FPhase].Y[0] :=  "
+    FLD     Input.Double               // Input
+    FLD     [EDI].Double               // X[0],Input
+    FLD     Input.Double               // Input,X[0],Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                  // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI].Double               // FMem[FPhase].X[0] := Input;
+    FADD    [ESI].Double               // Input + Y[0], X[0], Input
+    MOV     EBX,[EAX.FCoefficients]    // EDX=FCoefficients
+    FMUL    [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0],Input
+    FSUBRP                             // (Input + Y[0]) * FCoefficients[0] - X[0],Input
+    FSTP    [ESI].Double               // FMem[FPhase].Y[0] :=  "
 
- FLD  [EDI + 8].Double           // X[1], Input
- FLD  [EAX.FPrev].Double         // FPrev, X[1], Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                  // dEnOrMaL
- {$ENDIF}
- FST  [EDI + 8].Double           // FMem[FPhase].X[1] := FPrev;
- FADD [ESI + 8].Double           // FPrev + Y[1], X[1], Input
- MOV  EBX, [EAX.FCoefficients]   // edx=FCoefficients
- FMUL [EBX + 8].Double           // (FPrev + Y[1]) * FCoefficients[1], X[1]
- FSUBRP                          // (FPrev + Y[1]) * FCoefficients[1] - X[1]
- FST [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
- FMUL ST(0), ST(0)               // Sqr(FMem[FPhase].Y[1]);
+    FLD     [EDI + 8].Double           // X[1], Input
+    FLD     [EAX.FPrev].Double         // FPrev, X[1], Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                  // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI + 8].Double           // FMem[FPhase].X[1] := FPrev;
+    FADD    [ESI + 8].Double           // FPrev + Y[1], X[1], Input
+    MOV     EBX, [EAX.FCoefficients]   // EDX=FCoefficients
+    FMUL    [EBX + 8].Double           // (FPrev + Y[1]) * FCoefficients[1], X[1]
+    FSUBRP                             // (FPrev + Y[1]) * FCoefficients[1] - X[1]
+    FST     [ESI + 8].Double           // FMem[FPhase].Y[1] :=  "
+    FMUL    ST(0), ST(0)               // Sqr(FMem[FPhase].Y[1]);
 
- FLD [EDI + 16].Double           // X[2], Input
- FLD [ESI].Double                // Y[0], X[2], Input
- FST [EDI + 16].Double           // FMem[FPhase].X[2] := Y[0];
- FADD [ESI + 16].Double          // Y[2] + Y[0], X[2], Input
- FMUL [EBX + 16].Double          // (Y[0] + Y[2]) * FCoefficients[2], X[2]
- FSUBRP                          // (Y[0] + Y[2]) * FCoefficients[2] - X[2]
- FST [ESI + 16].Double           // FMem[FPhase].Y[2] :=  "
- FMUL ST(0), ST(0)               // Sqr(FMem[FPhase].Y[2]);
- FADDP                           // Sqr(FMem[FPhase].Y[1]) + Sqr(FMem[FPhase].Y[2]
- FSQRT                           // Result := Sqrt(Sqr(FMem[FPhase].Y[1]) + Sqr(FMem[FPhase].Y[2]));
- FXCH                            // Input, Result
- FSTP [EAX.FPrev].Double         // FPrev := Input;
+    FLD     [EDI + 16].Double          // X[2], Input
+    FLD     [ESI].Double               // Y[0], X[2], Input
+    FST     [EDI + 16].Double          // FMem[FPhase].X[2] := Y[0];
+    FADD    [ESI + 16].Double          // Y[2] + Y[0], X[2], Input
+    FMUL    [EBX + 16].Double          // (Y[0] + Y[2]) * FCoefficients[2], X[2]
+    FSUBRP                             // (Y[0] + Y[2]) * FCoefficients[2] - X[2]
+    FST     [ESI + 16].Double          // FMem[FPhase].Y[2] :=  "
+    FMUL    ST(0), ST(0)               // Sqr(FMem[FPhase].Y[2]);
+    FADDP                              // Sqr(FMem[FPhase].Y[1]) + Sqr(FMem[FPhase].Y[2]
+    FSQRT                              // Result := Sqrt(Sqr(FMem[FPhase].Y[1]) + Sqr(FMem[FPhase].Y[2]));
+    FXCH                               // Input, Result
+    FSTP    [EAX.FPrev].Double         // FPrev := Input;
 
- POP ESI
- POP EDI
- POP EBX
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ELSE}
 begin
@@ -1680,67 +1681,67 @@ end;
 function TPhaseHalfPi64.ProcessSample4(const Input: Double): Double;
 {$IFNDEF PUREPASCAL}
 asm
- PUSH EBX                        // push EBX on stack
- PUSH EDI                        // push EDI on stack
- PUSH ESI                        // push ESI on stack
- MOV EBX, [EAX.FPhase]           // EBX = FPhase
- SHL EBX, 3                      // EBX = 8 * FPhase
- MOV EDI, [EAX + FMem[EBX]]      // EDI = X[0]
- MOV ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
- SHR EBX, 3                      // EBX = FPhase
- XOR EBX, $1                     // Toggle FPhase!!
- MOV [EAX.FPhase], EBX           // FPhase = EBX
+    PUSH    EBX                        // push EBX on stack
+    PUSH    EDI                        // push EDI on stack
+    PUSH    ESI                        // push ESI on stack
+    MOV     EBX, [EAX.FPhase]          // EBX = FPhase
+    SHL     EBX, 3                     // EBX = 8 * FPhase
+    MOV     EDI, [EAX + FMem[EBX]]     // EDI = X[0]
+    MOV     ESI, [EAX + FMem[EBX] + 4] // ESI = Y[0]
+    SHR     EBX, 3                     // EBX = FPhase
+    XOR     EBX, $1                    // Toggle FPhase!!
+    MOV     [EAX.FPhase], EBX          // FPhase = EBX
 
- FLD  Input.Double               // Input
- FLD  [EDI].Double               // X[0],Input
- FLD  Input.Double               // Input, X[0], Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                  // dEnOrMaL
- {$ENDIF}
- FST  [EDI].Double               // FMem[FPhase].X[0] := Input;
- FADD [ESI].Double               // Input + Y[0], X[0], Input
- MOV  EBX,[EAX.FCoefficients]    // edx=FCoefficients
- FMUL [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0],Input
- FSUBRP                          // (Input + Y[0]) * FCoefficients[0] - X[0],Input
- FSTP [ESI].Double               // FMem[FPhase].Y[0] :=  "
+    FLD     Input.Double               // Input
+    FLD     [EDI].Double               // X[0],Input
+    FLD     Input.Double               // Input, X[0], Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                  // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI].Double               // FMem[FPhase].X[0] := Input;
+    FADD    [ESI].Double               // Input + Y[0], X[0], Input
+    MOV     EBX, [EAX.FCoefficients]   // EDX=FCoefficients
+    FMUL    [EBX].Double               // (Input + Y[0]) * FCoefficients[0], X[0],Input
+    FSUBRP                             // (Input + Y[0]) * FCoefficients[0] - X[0],Input
+    FSTP    [ESI].Double               // FMem[FPhase].Y[0] :=  "
 
- FLD  [EDI + 8].Double           // X[1], Input
- FLD  [EAX.FPrev].Double         // FPrev, X[1], Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                  // dEnOrMaL
- {$ENDIF}
- FST  [EDI + 8].Double           // FMem[FPhase].X[1] := FPrev;
- FADD [ESI + 8].Double           // FPrev + Y[1], X[1], Input
- MOV  EBX, [EAX.FCoefficients]   // edx=FCoefficients
- FMUL [EBX + 8].Double           // (FPrev + Y[1]) * FCoefficients[1], X[1]
- FSUBRP                          // (FPrev + Y[1]) * FCoefficients[1] - X[1]
- FSTP [ESI + 8].Double           // FMem[FPhase].Y[1] :=  "
+    FLD     [EDI + 8].Double           // X[1], Input
+    FLD     [EAX.FPrev].Double         // FPrev, X[1], Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                  // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI + 8].Double           // FMem[FPhase].X[1] := FPrev;
+    FADD    [ESI + 8].Double           // FPrev + Y[1], X[1], Input
+    MOV     EBX, [EAX.FCoefficients]   // EDX=FCoefficients
+    FMUL    [EBX + 8].Double           // (FPrev + Y[1]) * FCoefficients[1], X[1]
+    FSUBRP                             // (FPrev + Y[1]) * FCoefficients[1] - X[1]
+    FSTP    [ESI + 8].Double           // FMem[FPhase].Y[1] :=  "
 
- FLD  [EDI + 16].Double          // X[2], Input
- FLD  [ESI].Double               // Y[0], X[2], Input
- FST  [EDI + 16].Double          // FMem[FPhase].X[2] := Y[0];
- FADD [ESI + 16].Double          // Y[2] + Y[0], X[2], Input
- FMUL [EBX + 16].Double          // (Y[0] + Y[2]) * FCoefficients[2], X[2]
- FSUBRP                          // (Y[0] + Y[2]) * FCoefficients[2] - X[2]
- FST  [ESI + 16].Double          // FMem[FPhase].Y[2] :=  "
- FMUL ST(0), ST(0)               // Sqr(FMem[FPhase].Y[3]);
+    FLD     [EDI + 16].Double          // X[2], Input
+    FLD     [ESI].Double               // Y[0], X[2], Input
+    FST     [EDI + 16].Double          // FMem[FPhase].X[2] := Y[0];
+    FADD    [ESI + 16].Double          // Y[2] + Y[0], X[2], Input
+    FMUL    [EBX + 16].Double          // (Y[0] + Y[2]) * FCoefficients[2], X[2]
+    FSUBRP                             // (Y[0] + Y[2]) * FCoefficients[2] - X[2]
+    FST     [ESI + 16].Double          // FMem[FPhase].Y[2] :=  "
+    FMUL    ST(0), ST(0)               // Sqr(FMem[FPhase].Y[3]);
 
- FLD  [EDI + 24].Double          // X[3], Input
- FLD  [ESI + 8].Double           // X[1], X[3], Input
- FST  [EDI + 24].Double          // FMem[FPhase].X[3] := X[1];
- FADD [ESI + 24].Double          // FPrev + Y[3], X[3], Input
- FMUL [EBX + 24].Double          // (FPrev + Y[3]) * FCoefficients[3], X[3]
- FSUBRP                          // (FPrev + Y[3]) * FCoefficients[3] - X[3]
- FST  [ESI + 24].Double          // FMem[FPhase].Y[3] :=  "
- FMUL ST(0), ST(0)               // Sqr(FMem[FPhase].Y[3]);
- FADDP                           // Sqr(FMem[FPhase].Y[3]) + Sqr(FMem[FPhase].Y[4])
- FSQRT                           // Result := Sqrt(Sqr(FMem[FPhase].Y[3]) + Sqr(FMem[FPhase].Y[4]));
- FXCH                            // Input, Result
- FSTP [EAX.FPrev].Double         // FPrev := Input;
+    FLD     [EDI + 24].Double          // X[3], Input
+    FLD     [ESI + 8].Double           // X[1], X[3], Input
+    FST     [EDI + 24].Double          // FMem[FPhase].X[3] := X[1];
+    FADD    [ESI + 24].Double          // FPrev + Y[3], X[3], Input
+    FMUL    [EBX + 24].Double          // (FPrev + Y[3]) * FCoefficients[3], X[3]
+    FSUBRP                             // (FPrev + Y[3]) * FCoefficients[3] - X[3]
+    FST     [ESI + 24].Double          // FMem[FPhase].Y[3] :=  "
+    FMUL    ST(0), ST(0)               // Sqr(FMem[FPhase].Y[3]);
+    FADDP                              // Sqr(FMem[FPhase].Y[3]) + Sqr(FMem[FPhase].Y[4])
+    FSQRT                              // Result := Sqrt(Sqr(FMem[FPhase].Y[3]) + Sqr(FMem[FPhase].Y[4]));
+    FXCH                               // Input, Result
+    FSTP    [EAX.FPrev].Double         // FPrev := Input;
 
- POP ESI
- POP EDI
- POP EBX
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ELSE}
 begin
@@ -1759,84 +1760,85 @@ end;
 function TPhaseHalfPi64.ProcessSampleLarge(const Input: Double): Double;
 {$IFNDEF PUREPASCAL}
 asm
- PUSH EBX                         // push EBX on stack
- PUSH EDI                         // push EDI on stack
- PUSH ESI                         // push ESI on stack
- MOV  EBX, [EAX.FPhase]           // EBX = FPhase
- SHL  EBX, 3                      // EBX = 8 * FPhase
- MOV  EDI, [EAX + FMem[EBX]]      // EDI = X[0]
- MOV  ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
- SHR  EBX, 3                      // EBX = FPhase
- XOR  EBX, $1                     // Toggle FPhase!!
- MOV  [EAX.FPhase], EBX           // FPhase = EBX
+    PUSH    EBX                         // push EBX on stack
+    PUSH    EDI                         // push EDI on stack
+    PUSH    ESI                         // push ESI on stack
+    MOV     EBX, [EAX.FPhase]           // EBX = FPhase
+    SHL     EBX, 3                      // EBX = 8 * FPhase
+    MOV     EDI, [EAX + FMem[EBX]]      // EDI = X[0]
+    MOV     ESI, [EAX + FMem[EBX] + 4]  // ESI = Y[0]
+    SHR     EBX, 3                      // EBX = FPhase
+    XOR     EBX, $1                     // Toggle FPhase!!
+    MOV     [EAX.FPhase], EBX           // FPhase = EBX
 
- FLD  Input.Double                // Input
- FLD  [EDI].Double                // X[0], Input
- FLD  Input.Double                // Input, X[0], Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                   // dEnOrMaL
- {$ENDIF}
- FST  [EDI].Double                // FMem[FPhase].X[0] := Input;
- FADD [ESI].Double                // Input + Y[0], X[0], Input
- MOV  EBX, [EAX.FCoefficients]    // EBX = FCoefficients
- FMUL [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0], Input
- FSUBRP                           // (Input + Y[0]) * FCoefficients[0] - X[0], Input
- FSTP [ESI].Double                // FMem[FPhase].Y[0] :=  "
+    FLD     Input.Double                // Input
+    FLD     [EDI].Double                // X[0], Input
+    FLD     Input.Double                // Input, X[0], Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                   // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI].Double                // FMem[FPhase].X[0] := Input;
+    FADD    [ESI].Double                // Input + Y[0], X[0], Input
+    MOV     EBX, [EAX.FCoefficients]    // EBX = FCoefficients
+    FMUL    [EBX].Double                // (Input + Y[0]) * FCoefficients[0], X[0], Input
+    FSUBRP                              // (Input + Y[0]) * FCoefficients[0] - X[0], Input
+    FSTP    [ESI].Double                // FMem[FPhase].Y[0] :=  "
 
- FLD  [EDI + 8].Double            // X[1], Input
- FLD  [EAX.FPrev].Double          // FPrev, X[1], Input
- {$IFDEF HandleDenormals}
- FADD CDenorm64                   // dEnOrMaL
- {$ENDIF}
- FST  [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
- FADD [ESI + 8].Double            // FPrev + Y[1], X[1], Input
- FMUL [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
- FSUBRP                           // (FPrev + Y[1]) * FCoefficients[1] - X[1]
- FSTP [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
+    FLD     [EDI + 8].Double            // X[1], Input
+    FLD     [EAX.FPrev].Double          // FPrev, X[1], Input
+    {$IFDEF HandleDenormals}
+    FADD    CDenorm64                   // dEnOrMaL
+    {$ENDIF}
+    FST     [EDI + 8].Double            // FMem[FPhase].X[1] := FPrev;
+    FADD    [ESI + 8].Double            // FPrev + Y[1], X[1], Input
+    FMUL    [EBX + 8].Double            // (FPrev + Y[1]) * FCoefficients[1], X[1]
+    FSUBRP                              // (FPrev + Y[1]) * FCoefficients[1] - X[1]
+    FSTP    [ESI + 8].Double            // FMem[FPhase].Y[1] :=  "
 
- PUSH ECX                         // push ECX on stack
- MOV  ECX, [EAX.FNumberOfCoeffs]  // ECX = Self.FNumberOfCoeffs
- SUB  ECX, 4                      // "Den Rest mach ich selber"
+    PUSH    ECX                         // push ECX on stack
+    MOV     ECX, [EAX.FNumberOfCoeffs]  // ECX = Self.FNumberOfCoeffs
+    SUB     ECX, 4                      // "Den Rest mach ich selber"
+
 @Loopy:
- FLD  [EDI + 16].Double           // X[2], Input
- FLD  [ESI].Double                // Y[0], X[2], Input
- FST  [EDI + 16].Double           // FMem[FPhase].X[2] := Y[0];
- FADD [ESI + 16].Double           // FPrev + Y[2], X[2], Input
- FMUL [EBX + 16].Double           // (FPrev + Y[2]) * FCoefficients[2], X[2]
- FSUBRP                           // (FPrev + Y[2]) * FCoefficients[2] - X[2]
- FSTP [ESI + 16].Double           // FMem[FPhase].Y[2] :=  "
- ADD  ESI, 8
- ADD  EDI, 8
- ADD  EBX, 8
- LOOP @Loopy
- POP ECX                          // restore ECX
+    FLD     [EDI + 16].Double           // X[2], Input
+    FLD     [ESI].Double                // Y[0], X[2], Input
+    FST     [EDI + 16].Double           // FMem[FPhase].X[2] := Y[0];
+    FADD    [ESI + 16].Double           // FPrev + Y[2], X[2], Input
+    FMUL    [EBX + 16].Double           // (FPrev + Y[2]) * FCoefficients[2], X[2]
+    FSUBRP                              // (FPrev + Y[2]) * FCoefficients[2] - X[2]
+    FSTP    [ESI + 16].Double           // FMem[FPhase].Y[2] :=  "
+    ADD     ESI, 8
+    ADD     EDI, 8
+    ADD     EBX, 8
+    LOOP    @Loopy
+    POP     ECX                         // restore ECX
 
- FLD  [EDI + 16].Double           // X[10], Input
- FLD  [ESI].Double                // X[8], X[10], Input
- FST  [EDI + 16].Double           // FMem[FPhase].X[10] := X[8];
- FADD [ESI + 16].Double           // FPrev + Y[10], X[8], Input
- FMUL [EBX + 16].Double           // (FPrev + Y[10]) * FCoefficients[10], X[10]
- FSUBRP                           // (FPrev + Y[10]) * FCoefficients[10] - X[10]
- FST  [ESI + 16].Double           // FMem[FPhase].Y[10] :=  "
- FMUL ST(0), ST(0)                // Sqr(FMem[FPhase].Y[10]);
+    FLD     [EDI + 16].Double           // X[10], Input
+    FLD     [ESI].Double                // X[8], X[10], Input
+    FST     [EDI + 16].Double           // FMem[FPhase].X[10] := X[8];
+    FADD    [ESI + 16].Double           // FPrev + Y[10], X[8], Input
+    FMUL    [EBX + 16].Double           // (FPrev + Y[10]) * FCoefficients[10], X[10]
+    FSUBRP                              // (FPrev + Y[10]) * FCoefficients[10] - X[10]
+    FST     [ESI + 16].Double           // FMem[FPhase].Y[10] :=  "
+    FMUL    ST(0), ST(0)                // Sqr(FMem[FPhase].Y[10]);
 
- FLD  [EDI + 24].Double           // X[11], Input
- FLD  [ESI + 8].Double            // X[9], X[11], Input
- FST  [EDI + 24].Double           // FMem[FPhase].X[11] := X[9];
- FADD [ESI + 24].Double           // FPrev + Y[11], X[9], Input
- FMUL [EBX + 24].Double           // (FPrev + Y[11]) * FCoefficients[11], X[11]
- FSUBRP                           // (FPrev + Y[11]) * FCoefficients[11] - X[11]
- FST  [ESI + 24].Double           // FMem[FPhase].Y[11] :=  "
+    FLD     [EDI + 24].Double           // X[11], Input
+    FLD     [ESI + 8].Double            // X[9], X[11], Input
+    FST     [EDI + 24].Double           // FMem[FPhase].X[11] := X[9];
+    FADD    [ESI + 24].Double           // FPrev + Y[11], X[9], Input
+    FMUL    [EBX + 24].Double           // (FPrev + Y[11]) * FCoefficients[11], X[11]
+    FSUBRP                              // (FPrev + Y[11]) * FCoefficients[11] - X[11]
+    FST     [ESI + 24].Double           // FMem[FPhase].Y[11] :=  "
 
- FMUL ST(0), ST(0)                // Sqr(FMem[FPhase].Y[11])
- FADDP                            // Sqr(FMem[FPhase].Y[10]) + Sqr(FMem[FPhase].Y[11]);
- FSQRT                            // Result := Sqrt(Sqr(FMem[FPhase].Y[10]) + Sqr(FMem[FPhase].Y[11]));
- FXCH                             // Input, Result
- FSTP [EAX.FPrev].Double          // FPrev := Input;
+    FMUL    ST(0), ST(0)                // Sqr(FMem[FPhase].Y[11])
+    FADDP                               // Sqr(FMem[FPhase].Y[10]) + Sqr(FMem[FPhase].Y[11]);
+    FSQRT                               // Result := Sqrt(Sqr(FMem[FPhase].Y[10]) + Sqr(FMem[FPhase].Y[11]));
+    FXCH                                // Input, Result
+    FSTP    [EAX.FPrev].Double          // FPrev := Input;
 
- POP ESI
- POP EDI
- POP EBX
+    POP     ESI
+    POP     EDI
+    POP     EBX
 end;
 {$ELSE}
 var
