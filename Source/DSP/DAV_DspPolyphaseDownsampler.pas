@@ -551,7 +551,9 @@ begin
  Result := CHalf32 * (LocalY[FNumberOfCoeffs - 1] + LocalY[FNumberOfCoeffs - 2]);
 {$ELSE}
 asm
-    PUSHAD
+    PUSH    EBX
+    PUSH    ESI
+    PUSH    EDI
     MOV     ESI, [EAX.FX]             // ESI = FX
     MOV     EDI, [EAX.FY]             // EDI = FY
     MOV     EBX, [EAX.FCoefficients]  // ECX = FCoefficients
@@ -573,8 +575,9 @@ asm
     FSTP    [EDI + 4].Single
 
     MOV     ECX,[EAX.FNumberOfCoeffs] // ECX=self.FNumberOfCoeffs
-    sub     ECX, 4                    // "Den Rest mach ich selber"
-    @Loopy:
+    SUB     ECX, 4                    // "Den Rest mach ich selber"
+
+@Loopy:
     FLD     [ESI +  8].Single         // FX[a]
     FLD     [EDI].Single              // FY[b], FX[a]
     FST     [ESI +  8].Single         // FX[a] := FY[b];
@@ -606,7 +609,9 @@ asm
 
     FADDP                             // FY[a] + FY[aalt]
     FMUL    CHalf32                   // (FY[a] + FY[aalt]) * 0.5
-    POPAD
+    POP     EDI
+    POP     ESI
+    POP     EBX
 {$ENDIF}
 end;
 
@@ -925,7 +930,7 @@ asm
   FST     [ESI].Double             // FX[0] := Input[1];
   FSUB    [EDI].Double             // (Input[1] - FY[0])
   FMUL    [ECX].Double             // (Input[1] - FY[0]) * FCoefficients[0]
-  FADDP   ST, ST                   // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
+  FADDP                            // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
   FST     [EDI].Double
 // FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
 
@@ -938,7 +943,7 @@ asm
   FST     [EDI + 8].Double
 // FY[1] := (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
 
-  FADDP   ST, ST                   // FY[1] + FY[0]
+  FADDP                            // FY[1] + FY[0]
   FMUL    CHalf64                  // (FY[1] + FY[0]) * 0.5
   POPAD
 {$ENDIF}
@@ -979,7 +984,7 @@ asm
   FST     [ESI].Double             // FX[0] := Input[1];
   FSUB    [EDI].Double             // (Input[1] - FY[0])
   FMUL    [ECX].Double             // (Input[1] - FY[0]) * FCoefficients[0]
-  FADDP   ST, ST                   // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
+  FADDP                            // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
   FSTP    [EDI].Double
 
   FLD     [ESI + 8].Double         // FX[1]
@@ -987,7 +992,7 @@ asm
   FST     [ESI + 8].Double         // FX[1] := Input[0];
   FSUB    [EDI + 8].Double         // (Input[0] - FY[1])
   FMUL    [ECX + 8].Double         // (Input[0] - FY[1]) * FCoefficients[1]
-  FADDP   ST, ST                   // (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
+  FADDP                            // (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
   FST     [EDI + 8].Double
 
   FLD     [ESI + 16].Double        // FX[2], FY[1]
@@ -995,14 +1000,16 @@ asm
   FST     [ESI + 16].Double        // FX[2] := FY[0];
   FSUB    [EDI + 16].Double        // (FY[0] - FY[2]), FY[1]
   FMUL    [ECX + 16].Double        // (FY[0] - FY[2]) * FCoefficients[2], FY[1]
-  FADDP   ST, ST                   // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+  FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
   FST     [EDI + 16].Double
 
-  FADDP   ST, ST                   // FY[2] + FY[1]
-  FMUL    CHalf64                  // (FY[2] + FY[1])*0.5
+  FADDP                            // FY[2] + FY[1]
+  FMUL    CHalf64                  // (FY[2] + FY[1]) * 0.5
   POPAD
 {$ENDIF}
 end;
+
+{-$DEFINE PUREPASCAL}
 
 function TPolyphaseDownsampler64.ProcessSample4(
   const Input: TDAV2DoubleArray): Double;
@@ -1031,51 +1038,54 @@ begin
  Result := 0.5 * (LocalY[2] + LocalY[3]);
 {$ELSE}
 asm
-  PUSH    EDI
-  MOV     EDI, [EAX.FY]            // EDI = FY
+  PUSH    EBX
+  MOV     EBX, [EAX.FY]            // EBX = FY
   MOV     ECX, [EAX.FX]            // ESI = FX
   MOV     EAX, [EAX.FCoefficients] // ECX = FCoefficients
 
   FLD     [ECX].Double             // FX[0]
   FLD     [Input + 8].Double       // Input[1], FX[0]
-  FST     [ECX].Double             // FX[0] := Input[1];
-  FSUB    [EDI].Double             // (Input[1] - FY[0])
-  FMUL    [EAX].Double             // (Input[1] - FY[0]) * FCoefficients[0]
-  FADDP   ST, ST                   // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
-  FSTP    [EDI].Double
+  FST     [ECX].Double             // FX[0] := Input[1] , FX[0]
+  FSUB    [EBX].Double             // (Input[1] - FY[0]), FX[0]
+  FMUL    [EAX].Double             // (Input[1] - FY[0]) * FCoefficients[0], FX[0]
+  FADDP                            // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
+  FSTP    [EBX].Double
 // FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
 
   FLD     [ECX + 8].Double         // FX[1]
   FLD     [Input].Double           // Input[0], FX[1]
-  FST     [ECX + 8].Double         // FX[1] := Input[0];
-  FSUB    [EDI + 8].Double         // (Input[0] - FY[1])
-  FMUL    [EAX + 8].Double         // (Input[0] - FY[1]) * FCoefficients[1]
-  FADDP   ST, ST                   // (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
-  FSTP    [EDI + 8].Double
+  FST     [ECX + 8].Double         // FX[1] := Input[0], FX[1]
+  FSUB    [EBX + 8].Double         // (Input[0] - FY[1]), FX[1]
+  FMUL    [EAX + 8].Double         // (Input[0] - FY[1]) * FCoefficients[1], FX[1]
+  FADDP                            // (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
+  FSTP    [EBX + 8].Double
 // FY[1] := (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
 
   FLD     [ECX + 16].Double        // FX[2]
-  FLD     [EDI].Double             // FY[0], FX[2]
-  FST     [ECX + 16].Double        // FX[2] := FY[0];
-  FSUB    [EDI + 16].Double        // (FY[0] - FY[2])
-  FMUL    [EAX + 16].Double        // (FY[0] - FY[2]) * FCoefficients[2]
-  FADDP   ST, ST                   // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
-  FST     [EDI + 16].Double
+  FLD     [EBX].Double             // FY[0], FX[2]
+  FST     [ECX + 16].Double        // FX[2] := FY[0], FX[2]
+  FSUB    [EBX + 16].Double        // (FY[0] - FY[2]), FX[2]
+  FMUL    [EAX + 16].Double        // (FY[0] - FY[2]) * FCoefficients[2], FX[2]
+  FADDP                            // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+  FST     [EBX + 16].Double        // FY[2]
 // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
 
-  FLD     [ECX + 24].Double        // FX[2], FY[2]
-  FLD     [EDI + 8].Double         // FY[0], FX[2], FY[2]
-  FST     [ECX + 24].Double        // FX[2] := FY[0];
-  FSUB    [EDI + 24].Double        // (FY[0] - FY[2]), FY[2]
-  FMUL    [EAX + 24].Double        // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
-  FADDP   ST, ST                   // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
-  FST     [EDI + 24].Double
+  FLD     [ECX + 24].Double        // FX[3], FY[2]
+  FLD     [EBX + 8].Double         // FY[1], FX[3], FY[2]
+  FST     [ECX + 24].Double        // FX[3] := FY[1], FX[3], FY[2]
+  FSUB    [EBX + 24].Double        // (FY[1] - FY[3]), FX[3], FY[2]
+  FMUL    [EAX + 24].Double        // (FY[1] - FY[3]) * FCoefficients[3], FX[3], FY[2]
+  FADDP                            // (FY[1] - FY[3]) * FCoefficients[3] + FX[3], FY[2]
+  FST     [EBX + 24].Double        // FY[3], FY[2]
 // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
-  FADDP   ST, ST                   // FY[3] + FY[2]
-  FMUL    CHalf64                  // (FY[3] + FY[2])*0.5
-  POP     EDI
+
+  FADDP                            // FY[3] + FY[2]
+  FMUL    CHalf64                  // (FY[3] + FY[2]) * 0.5
+  POP     EBX
 {$ENDIF}
 end;
+
+{$UNDEF PUREPASCAL}
 
 function TPolyphaseDownsampler64.ProcessSampleLarge(
   const Input: TDAV2DoubleArray): Double;
@@ -1108,67 +1118,71 @@ begin
  Result := 0.5 * (LocalY[FNumberOfCoeffs - 1] + LocalY[FNumberOfCoeffs - 2]);
 {$ELSE}
 asm
-  PUSHAD
-  MOV     ESI, [EAX.FX]             // ESI = FX
-  MOV     EDI, [EAX.FY]             // EDI = FY
-  MOV     EBX, [EAX.FCoefficients]  // ECX = FCoefficients
+    PUSH    EBX
+    PUSH    ESI
+    PUSH    EDI
+    MOV     ESI, [EAX.FX]             // ESI = FX
+    MOV     EDI, [EAX.FY]             // EDI = FY
+    MOV     EBX, [EAX.FCoefficients]  // ECX = FCoefficients
 
-  FLD     [ESI].Double              // FX[0]
-  FLD     [Input + 8].Double        // Input[1], FX[0]
-  FST     [ESI].Double              // FX[0] := Input[1];
-  FSUB    [EDI].Double              // (Input[1] - FY[0])
-  FMUL    [EBX].Double              // (Input[1] - FY[0]) * FCoefficients[0]
-  FADDP   ST, ST                    // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
-  FSTP    [EDI].Double
-// FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
+    FLD     [ESI].Double              // FX[0]
+    FLD     [Input + 8].Double        // Input[1], FX[0]
+    FST     [ESI].Double              // FX[0] := Input[1];
+    FSUB    [EDI].Double              // (Input[1] - FY[0])
+    FMUL    [EBX].Double              // (Input[1] - FY[0]) * FCoefficients[0]
+    FADDP                             // (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
+    FSTP    [EDI].Double
+    // FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]
 
-  FLD     [ESI + 8].Double          // FX[1]
-  FLD     [Input].Double            // Input[0], FX[1]
-  FST     [ESI + 8].Double          // FX[1] := Input[0];
-  FSUB    [EDI + 8].Double          // (Input[0] - FY[1])
-  FMUL    [EBX + 8].Double          // (Input[0] - FY[1]) * FCoefficients[1]
-  FADDP   ST, ST                    // (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
-  FSTP    [EDI + 8].Double
-// FY[1] := (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
+    FLD     [ESI + 8].Double          // FX[1]
+    FLD     [Input].Double            // Input[0], FX[1]
+    FST     [ESI + 8].Double          // FX[1] := Input[0];
+    FSUB    [EDI + 8].Double          // (Input[0] - FY[1])
+    FMUL    [EBX + 8].Double          // (Input[0] - FY[1]) * FCoefficients[1]
+    FADDP                             // (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
+    FSTP    [EDI + 8].Double
+    // FY[1] := (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
 
-  MOV     ECX,[EAX.FNumberOfCoeffs] // ECX = self.FNumberOfCoeffs
-  sub     ECX, 4                    // "Den Rest mach ich selber"
-  @Loopy:
-  FLD     [ESI + 16].Double         // FX[a]
-  FLD     [EDI].Double              // FY[b], FX[a]
-  FST     [ESI + 16].Double         // FX[a] := FY[b];
-  FSUB    [EDI + 16].Double         // (FY[b] - FY[a])
-  FMUL    [EBX + 16].Double         // (FY[b] - FY[a]) * FCoefficients[a]
-  FADDP   ST, ST                    // (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
-  FSTP    [EDI + 16].Double
-// FY[a] := (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
+    MOV     ECX,[EAX.FNumberOfCoeffs] // ECX = self.FNumberOfCoeffs
+    SUB     ECX, 4                    // "Den Rest mach ich selber"
+@Loopy:
+    FLD     [ESI + 16].Double         // FX[a]
+    FLD     [EDI].Double              // FY[b], FX[a]
+    FST     [ESI + 16].Double         // FX[a] := FY[b];
+    FSUB    [EDI + 16].Double         // (FY[b] - FY[a])
+    FMUL    [EBX + 16].Double         // (FY[b] - FY[a]) * FCoefficients[a]
+    FADDP                             // (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
+    FSTP    [EDI + 16].Double
+    // FY[a] := (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
 
-  ADD     ESI, 8
-  ADD     EDI, 8
-  ADD     EBX, 8
-  LOOP    @Loopy                    // LOOP
+    ADD     ESI, 8
+    ADD     EDI, 8
+    ADD     EBX, 8
+    LOOP    @Loopy                    // LOOP
 
-  FLD     [ESI + 16].Double         // FX[a]
-  FLD     [EDI].Double              // FY[b], FX[a]
-  FST     [ESI + 16].Double         // FX[a] := FY[b];
-  FSUB    [EDI + 16].Double         // (FY[b] - FY[a])
-  FMUL    [EBX + 16].Double         // (FY[b] - FY[a]) * FCoefficients[a]
-  FADDP   ST, ST                    // (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
-  FST     [EDI + 16].Double
-// FY[a] := (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
+    FLD     [ESI + 16].Double         // FX[a]
+    FLD     [EDI].Double              // FY[b], FX[a]
+    FST     [ESI + 16].Double         // FX[a] := FY[b];
+    FSUB    [EDI + 16].Double         // (FY[b] - FY[a])
+    FMUL    [EBX + 16].Double         // (FY[b] - FY[a]) * FCoefficients[a]
+    FADDP                             // (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
+    FST     [EDI + 16].Double
+    // FY[a] := (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
 
-  FLD    [ESI + 24].Double          // FX[a], FY[a]
-  FLD    [EDI +  8].Double          // FY[b], FX[a], FY[a]
-  FST    [ESI + 24].Double          // FX[a] := FY[b];
-  FSUB   [EDI + 24].Double          // (FY[b] - FY[a]), FY[a]
-  FMUL   [EBX + 24].Double          // (FY[b] - FY[a]) * FCoefficients[a], FY[a]
-  FADDP  ST, ST                     // (FY[b] - FY[a]) * FCoefficients[a] + FX[a], FY[a]
-  FST    [EDI + 24].Double
-// FY[a] := (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
+    FLD     [ESI + 24].Double         // FX[a], FY[a]
+    FLD     [EDI +  8].Double         // FY[b], FX[a], FY[a]
+    FST     [ESI + 24].Double         // FX[a] := FY[b];
+    FSUB    [EDI + 24].Double         // (FY[b] - FY[a]), FY[a]
+    FMUL    [EBX + 24].Double         // (FY[b] - FY[a]) * FCoefficients[a], FY[a]
+    FADDP                             // (FY[b] - FY[a]) * FCoefficients[a] + FX[a], FY[a]
+    FST     [EDI + 24].Double
+    // FY[a] := (FY[b] - FY[a]) * FCoefficients[a] + FX[a]
 
-  FADDP  ST, ST                     // FY[a] + FY[aalt]
-  FMUL   CHalf64                    // (FY[a] + FY[aalt]) * 0.5
-  POPAD
+    FADDP                             // FY[a] + FY[aalt]
+    FMUL    CHalf64                   // (FY[a] + FY[aalt]) * 0.5
+    POP     EDI
+    POP     ESI
+    POP     EBX
 {$ENDIF}
 end;
 
