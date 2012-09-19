@@ -38,7 +38,7 @@ interface
 {$ENDIF}
 
 type
-  PComplexSingle = ^TComplex32;
+  PComplex32 = ^TComplex32;
 
   TComplex32 = record
     Re: Single;
@@ -76,7 +76,7 @@ type
   {$ENDIF}
   end;
 
-  PComplexDouble = ^TComplex64;
+  PComplex64 = ^TComplex64;
 
   TComplex64 = record
     Re: Double;

@@ -426,12 +426,12 @@ end;
 
 function BSplineInterpolation4Point3rdOrder(const Fractional: Single; Data: PDAV4SingleArray): Single;
 begin
- result := BSplineInterpolation4Point3rdOrder(Fractional, Data^);
+ Result := BSplineInterpolation4Point3rdOrder(Fractional, Data^);
 end;
 
 function BSplineInterpolation4Point3rdOrder(const Fractional: Double; Data: PDAV4DoubleArray): Double;
 begin
- result := BSplineInterpolation4Point3rdOrder(Fractional, Data^);
+ Result := BSplineInterpolation4Point3rdOrder(Fractional, Data^);
 end;
 
 function BSplineInterpolation6Point5thOrder(const Fractional: Single; const Data: TDAV6SingleArray): Single;

@@ -55,11 +55,11 @@ uses
 
 constructor TStkNReverb.Create(const SampleRate, T60: Single);
 begin
-  inherited Create(SampleRate);
-
   FT60 := T60;
   FAllpassCoefficient := 0.7;
   FEffectMix := 0.3;
+
+  inherited Create(SampleRate);
 
   SampleRateChanged;
   Clear;
@@ -84,13 +84,13 @@ const
   CLengths: array[0..14] of Integer = (
     1433, 1601, 1867, 2053, 2251, 2399, 347, 113, 37, 59, 53, 43, 37, 29, 19);
 var
-  Scaler   : Double;
+  ScaleFactor: Double;
   Delay, i : Integer;
 begin
- Scaler := SampleRate / 25641.0;
+ ScaleFactor := SampleRate / 25641.0;
  for i := 0 to Length(CLengths) - 1 do
   begin
-   Delay := round(Scaler * CLengths[i] - 0.5);
+   Delay := round(ScaleFactor * CLengths[i] - 0.5);
    if (Delay and 1) = 0
     then Delay := Delay + 1;
    while (not IsPrime(Delay)) do inc(Delay, 2);
@@ -111,25 +111,25 @@ begin
 
  for i := 0 to Length(FAllpassDelays) - 1 do
   begin
-   if assigned(FAllpassDelays[i]) then
+   if Assigned(FAllpassDelays[i]) then
     if FInternalLengths[i + 6] < FAllpassDelays[i].Length
      then FAllpassDelays[i].Delay := FInternalLengths[i + 6]
      else FreeAndNil(FAllpassDelays[i]);
 
    // create new allpass delay if necessary
-   if not assigned(FAllpassDelays[i])
+   if not Assigned(FAllpassDelays[i])
     then FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 6], ExtendToPowerOf2(FInternalLengths[i + 6]) - 1);
   end;
 
  for i := 0 to Length(FCombDelays) - 1 do
   begin
-   if assigned(FCombDelays[i]) then
+   if Assigned(FCombDelays[i]) then
     if FInternalLengths[i] < FCombDelays[i].Length
      then FCombDelays[i].Delay := FInternalLengths[i]
      else FreeAndNil(FCombDelays[i]);
 
    // create new comb delay if necessary
-   if not assigned(FCombDelays[i])
+   if not Assigned(FCombDelays[i])
     then FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], ExtendToPowerOf2(FInternalLengths[i]) - 1);
    FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
   end;

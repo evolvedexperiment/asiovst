@@ -42,7 +42,6 @@ type
   TPluginDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
@@ -82,6 +81,7 @@ begin
       Bandwidth := 1;
      end;
    end;
+ EditorFormClass := TEditorForm;
 end;
 
 procedure TPluginDataModule.VSTModuleClose(Sender: TObject);
@@ -91,12 +91,6 @@ begin
  for Channel := 0 to Length(FEQs) - 1 do
   for Band := 0 to Length(FEQs[Channel]) - 1 do
    if not Assigned(FEQs[Channel, Band]) then FreeAndNil(FEQs[Channel, Band]);
-end;
-
-procedure TPluginDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TEditorForm.Create(Self);
 end;
 
 procedure TPluginDataModule.VSTModuleParameterChange(Sender: TObject;

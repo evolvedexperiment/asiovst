@@ -110,18 +110,18 @@ const
   CReci441 : Single = 1 / 44100;
 begin
   inherited Create;
-  FComb[0]    := TFreeverbCombFilter.Create(round(CCombTuningL1 * SampleRate * CReci441));
-  FComb[1]    := TFreeverbCombFilter.Create(round(CCombTuningL2 * SampleRate * CReci441));
-  FComb[2]    := TFreeverbCombFilter.Create(round(CCombTuningL3 * SampleRate * CReci441));
-  FComb[3]    := TFreeverbCombFilter.Create(round(CCombTuningL4 * SampleRate * CReci441));
-  FComb[4]    := TFreeverbCombFilter.Create(round(CCombTuningL5 * SampleRate * CReci441));
-  FComb[5]    := TFreeverbCombFilter.Create(round(CCombTuningL6 * SampleRate * CReci441));
-  FComb[6]    := TFreeverbCombFilter.Create(round(CCombTuningL7 * SampleRate * CReci441));
-  FComb[7]    := TFreeverbCombFilter.Create(round(CCombTuningL8 * SampleRate * CReci441));
-  FAllpass[0] := TFreeverbAllpass.Create(round(CAllpassTuningL1 * SampleRate * CReci441));
-  FAllpass[1] := TFreeverbAllpass.Create(round(CAllpassTuningL2 * SampleRate * CReci441));
-  FAllpass[2] := TFreeverbAllpass.Create(round(CAllpassTuningL3 * SampleRate * CReci441));
-  FAllpass[3] := TFreeverbAllpass.Create(round(CAllpassTuningL4 * SampleRate * CReci441));
+  FComb[0]    := TFreeverbCombFilter.Create(Round(CCombTuningL1 * SampleRate * CReci441));
+  FComb[1]    := TFreeverbCombFilter.Create(Round(CCombTuningL2 * SampleRate * CReci441));
+  FComb[2]    := TFreeverbCombFilter.Create(Round(CCombTuningL3 * SampleRate * CReci441));
+  FComb[3]    := TFreeverbCombFilter.Create(Round(CCombTuningL4 * SampleRate * CReci441));
+  FComb[4]    := TFreeverbCombFilter.Create(Round(CCombTuningL5 * SampleRate * CReci441));
+  FComb[5]    := TFreeverbCombFilter.Create(Round(CCombTuningL6 * SampleRate * CReci441));
+  FComb[6]    := TFreeverbCombFilter.Create(Round(CCombTuningL7 * SampleRate * CReci441));
+  FComb[7]    := TFreeverbCombFilter.Create(Round(CCombTuningL8 * SampleRate * CReci441));
+  FAllpass[0] := TFreeverbAllpass.Create(Round(CAllpassTuningL1 * SampleRate * CReci441));
+  FAllpass[1] := TFreeverbAllpass.Create(Round(CAllpassTuningL2 * SampleRate * CReci441));
+  FAllpass[2] := TFreeverbAllpass.Create(Round(CAllpassTuningL3 * SampleRate * CReci441));
+  FAllpass[3] := TFreeverbAllpass.Create(Round(CAllpassTuningL4 * SampleRate * CReci441));
 
   Wet      := 1;
   Dry      := 1;
@@ -131,11 +131,11 @@ end;
 
 destructor TFreeverb.Destroy;
 var
-  i : Integer;
+  Index : Integer;
 begin
- for i := 0 to CCombFilterCount - 1 do FreeAndNil(FAllpass[i]);
- for i := 0 to CAllpassCount - 1 do FreeAndNil(FComb[i]);
- inherited Destroy;
+ for Index := 0 to CAllpassCount - 1 do FreeAndNil(FAllpass[Index]);
+ for Index := 0 to CCombFilterCount - 1 do FreeAndNil(FComb[Index]);
+ inherited;
 end;
 
 procedure TFreeverb.ProcessBlock64(const Data: PDAVDoubleFixedArray;
@@ -186,7 +186,7 @@ var
   i : Integer;
 begin
  for i := 0 to CCombFilterCount - 1 do FComb[i].Mute;
- for i := 0 to CAllpassCount - 1    do FAllpass[i].Mute;
+ for i := 0 to CAllpassCount - 1 do FAllpass[i].Mute;
 end;
 
 procedure TFreeverb.SetDamp(const Value: Double);
@@ -221,10 +221,10 @@ end;
 
 procedure TFreeverb.RoomsizeChanged;
 var
-  i : Integer;
+  Index : Integer;
 begin
- for i := 0 to CCombFilterCount - 1
-  do FComb[i].Feedback := FRoomSize;
+ for Index := 0 to CCombFilterCount - 1
+  do FComb[Index].Feedback := FRoomSize;
  Changed;
 end;
 
@@ -252,6 +252,7 @@ begin
  if FDry <> Value then
   begin
    FDry := Value;
+   DryChanged;
   end;
 end;
 

@@ -43,7 +43,6 @@ type
   TButterworthHPModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -87,6 +86,8 @@ begin
 
  Parameter[0] := 20;
  Parameter[1] := 4;
+
+ EditorFormClass := TFmButterworth;
 end;
 
 procedure TButterworthHPModule.VSTModuleClose(Sender: TObject);
@@ -96,12 +97,6 @@ begin
  for ChannelIndex := 0 to Length(FFilter) - 1
   do FreeAndNil(FFilter[ChannelIndex]);
 end;
-
-procedure TButterworthHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmButterworth.Create(Self);
-end;
-
 
 // parameter change
 

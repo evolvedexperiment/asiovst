@@ -1,19 +1,19 @@
 unit TetrisUnit;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
+{$I DAV_Compiler.inc}
 
 (*
-___ ____ ___ ____ _ ____    ___  _   _    ____ ____ _  _ ____ 
- |  |___  |  |__/ | [__     |__]  \_/     |__| |__/ |\ | |  | 
- |  |___  |  |  \ | ___]    |__]   |      |  | |  \ | \| |__| 
+___ ____ ___ ____ _ ____    ___  _   _    ____ ____ _  _ ____
+ |  |___  |  |__/ | [__     |__]  \_/     |__| |__/ |\ | |  |
+ |  |___  |  |  \ | ___]    |__]   |      |  | |  \ | \| |__|
                                                         arnaud@celermajer.net
 *)
+
 interface
 
-uses {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} 
-     Messages, Classes, Sysutils, Graphics;
+uses
+  {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} Messages, Classes, Sysutils,
+  Graphics;
 
 type
   TSprite = array [0..3, 0..3] of Integer;
@@ -24,16 +24,16 @@ type
     FCurrentSprite    : TSprite;
     FSprite           : Boolean;
     FCurrentColor     : TColor;
-    function GetCurrenTSprite: TSprite;
-    procedure SetCurrenTSprite(const Value: TSprite);
-    procedure SetCurrenTSpritePos(const Value: TPoint);
-    function CanSpriteBeHere(asprite: TSprite; apos: TPoint): Boolean;
+    function CanSpriteBeHere(ASprite: TSprite; APos: TPoint): Boolean;
+    function GetCurrentSprite: TSprite;
+    procedure SetCurrentSprite(const Value: TSprite);
+    procedure SetCurrentSpritePos(const Value: TPoint);
     procedure NewGameBoard;
-    procedure FusionCurrenTSprite;
+    procedure FusionCurrentSprite;
   public
-    GameBoard: array[0..9] of array[0..19] of Integer;
-    property CurrenTSprite: TSprite read GetCurrenTSprite write SetCurrenTSprite;
-    property CurrenTSpritePos: TPoint read FCurrentSpritePos write SetCurrenTSpritePos;
+    GameBoard: array [0..9, 0..19] of Integer;
+    property CurrentSprite: TSprite read GetCurrentSprite write SetCurrentSprite;
+    property CurrentSpritePos: TPoint read FCurrentSpritePos write SetCurrentSpritePos;
     procedure StepGame;
     procedure Rotate;
     procedure Left;
@@ -46,73 +46,74 @@ const
   AllSpriteKind: array[0..6] of TSprite =
   (((0, 1, 0, 0), (0, 1, 0, 0), (0, 1, 0, 0), (0, 1, 0, 0)),
    ((0, 0, 0, 0), (0, 1, 1, 0), (1, 1, 0, 0), (0, 0, 0, 0)),
-   ((0, 0, 0, 0), (1, 1, 0, 0), (0, 1, 1, 0), (0, 0, 0, 0)), ((0, 0, 0, 0),
-    (0, 1, 0, 0), (1, 1, 1, 0), (0, 0, 0, 0)), ((0, 0, 0, 0), (0, 0, 1, 0),
-    (1, 1, 1, 0), (0, 0, 0, 0)), ((0, 0, 0, 0), (1, 1, 1, 0), (0, 0, 1, 0),
-    (0, 0, 0, 0)), ((0, 0, 0, 0), (0, 1, 1, 0), (0, 1, 1, 0), (0, 0, 0, 0)));
+   ((0, 0, 0, 0), (1, 1, 0, 0), (0, 1, 1, 0), (0, 0, 0, 0)),
+   ((0, 0, 0, 0), (0, 1, 0, 0), (1, 1, 1, 0), (0, 0, 0, 0)),
+   ((0, 0, 0, 0), (0, 0, 1, 0), (1, 1, 1, 0), (0, 0, 0, 0)),
+   ((0, 0, 0, 0), (1, 1, 1, 0), (0, 0, 1, 0), (0, 0, 0, 0)),
+   ((0, 0, 0, 0), (0, 1, 1, 0), (0, 1, 1, 0), (0, 0, 0, 0)));
 
-function TrimInt(al, min, max: integer): integer;
+function TrimInt(Value, Min, Max: Integer): Integer;
     
 implementation
 
 { TTetris }
 
-function TrimInt(al, min, max: integer): integer;
+function TrimInt(Value, Min, Max: Integer): Integer;
 begin
- if al < min then result := min else
-  if al > max then result := max
-   else result := al;
+ if Value < Min then Result := Min else
+  if Value > Max then Result := Max
+   else Result := Value;
 end;
 
-function TTetris.CanSpriteBeHere(asprite: TSprite; apos: TPoint): Boolean;
+function TTetris.CanSpriteBeHere(ASprite: TSprite; APos: TPoint): Boolean;
 var
-  i, ii, jj, j: integer;
+  i, ii, jj, j: Integer;
 begin
-  result := true;
+  Result := True;
   for i := 0 to 3 do
     for j := 0 to 3 do
     begin
-      if asprite[i, j] = 0 then Continue;
-      ii := i + apos.X;
-      jj := j + apos.Y;
-      if ii < 0 then result := false;
-      if ii >= Length(GameBoard) then result := false;
-      if jj >= Length(GameBoard[0]) then result := false;
-      if result then
+      if ASprite[i, j] = 0 then Continue;
+      ii := i + APos.X;
+      jj := j + APos.Y;
+      if ii < 0 then Result := False;
+      if ii >= Length(GameBoard) then Result := False;
+      if jj >= Length(GameBoard[0]) then Result := False;
+      if Result then
       begin
-        if GameBoard[ii, jj] <> 0 then result := false;
+        if GameBoard[ii, jj] <> 0 then Result := False;
       end;
     end;
 end;
 
 procedure TTetris.StepGame;
 var
-  pos: TPoint;
+  Pos: TPoint;
 begin
-  pos := currenTSpritePos;
-  pos.Y := currenTSpritePos.Y + 1;
-  if CanSpriteBeHere(currenTSprite, Pos)
-   then currenTSpritePos := pos
-   else fusionCurrenTSprite;
+  Pos := CurrentSpritePos;
+  Pos.Y := CurrentSpritePos.Y + 1;
+  if CanSpriteBeHere(CurrentSprite, Pos)
+   then CurrentSpritePos := Pos
+   else FusionCurrentSprite;
 end;
 
 procedure TTetris.DefaultBitmap(bmp: Tbitmap);
 var
-  i, ii, jj, j: integer;
-  col1: cardinal;
-  factor: integer;
+  i, ii, jj, j: Integer;
+  Col1: Cardinal;
+  Factor: Integer;
 begin
-  factor := 20;
+  Factor := 20;
   with bmp do
    begin
     Width := 0;
     Canvas.Brush.Color := clBlack;
-    Height := factor * Length(GameBoard[0]);
-    Width := factor * Length(GameBoard);
+    Height := Factor * Length(GameBoard[0]);
+    Width := Factor * Length(GameBoard);
    end;
 
   for i := 0 to Length(GameBoard) - 1 do
-    for j := 0 to length(GameBoard[0]) - 1 do
+    for j := 0 to Length(GameBoard[0]) - 1 do
      begin
       if GameBoard[i, j] = 0 then
        with bmp.Canvas do
@@ -122,106 +123,104 @@ begin
         end;
       if GameBoard[i, j] <> 0 then
        begin
-        col1 := ColorToRGB(GameBoard[i, j]);
-        col1 := RGB(trimint(GetRValue(col1) - 50, 0, 255),
-          trimint(GetGValue(col1) - 50, 0, 255),
-          trimint(GetBValue(col1) - 50, 0, 255));
+        Col1 := ColorToRGB(GameBoard[i, j]);
+        Col1 := RGB(TrimInt(GetRValue(Col1) - 50, 0, 255),
+          TrimInt(GetGValue(Col1) - 50, 0, 255),
+          TrimInt(GetBValue(Col1) - 50, 0, 255));
         with bmp.Canvas do
          begin
-          Brush.Color := col1;
-          pen.Color := bmp.Canvas.Brush.Color;
-          RoundRect(factor * i, factor * j, factor * i + (factor - 1),
-                    factor * j + (factor - 1), 2, 2);
+          Brush.Color := Col1;
+          Pen.Color := bmp.Canvas.Brush.Color;
+          RoundRect(Factor * i, Factor * j, Factor * i + (Factor - 1),
+                    Factor * j + (Factor - 1), 2, 2);
           Brush.Color := GameBoard[i, j];
-          pen.Color := bmp.Canvas.Brush.Color;
-          RoundRect(1 + factor * i, 1 + factor * j, factor * i + factor,
-                    factor * j + factor, 2, 2);
+          Pen.Color := bmp.Canvas.Brush.Color;
+          RoundRect(1 + Factor * i, 1 + Factor * j, Factor * i + Factor,
+                    Factor * j + Factor, 2, 2);
         end;
        end;
      end;
   for i := 0 to 3 do
     for j := 0 to 3 do
-      if currenTSprite[i, j] <> 0 then
+      if CurrentSprite[i, j] <> 0 then
       begin
-        ii := i + currenTSpritePos.x;
-        jj := j + currenTSpritePos.y;
+        ii := i + CurrentSpritePos.x;
+        jj := j + CurrentSpritePos.y;
 
-        col1 := ColorToRGB(fCurrentColor);
-        col1 := RGB(trimint(GetRValue(col1) - 50, 0, 255),
-          trimint(GetGValue(col1) - 50, 0, 255), trimint(GetBValue(col1) - 50, 0, 255));
+        Col1 := ColorToRGB(FCurrentColor);
+        Col1 := RGB(TrimInt(GetRValue(Col1) - 50, 0, 255),
+          TrimInt(GetGValue(Col1) - 50, 0, 255), TrimInt(GetBValue(Col1) - 50, 0, 255));
         with bmp.Canvas do
          begin
-          Pen.Color := ColorToRGB(fCurrentColor);
-          Brush.Color := ColorToRGB(fCurrentColor);
-          RoundRect(factor * ii, factor * jj, factor * ii + (factor - 1), factor * jj + (factor - 1), 2, 2);
-          Brush.Color := col1;
-          Pen.Color := col1;
-          RoundRect(1 + factor * ii, 1 + factor * jj, factor * ii + factor, factor * jj + factor, 2, 2);
+          Pen.Color := ColorToRGB(FCurrentColor);
+          Brush.Color := ColorToRGB(FCurrentColor);
+          RoundRect(Factor * ii, Factor * jj, Factor * ii + (Factor - 1), Factor * jj + (Factor - 1), 2, 2);
+          Brush.Color := Col1;
+          Pen.Color := Col1;
+          RoundRect(1 + Factor * ii, 1 + Factor * jj, Factor * ii + Factor, Factor * jj + Factor, 2, 2);
          end;
       end;
 
 end;
 
-procedure TTetris.fusionCurrenTSprite;
+procedure TTetris.FusionCurrentSprite;
 var
-  k, i, ii, jj, j: integer;
+  k, i, ii, jj, j: Integer;
 begin
-  if fsprite then
-  begin
-
+  if FSprite then
+   begin
     for i := 0 to 3 do
-      for j := 0 to 3 do
+     for j := 0 to 3 do
       begin
-        if CurrenTSprite[i, j] = 0 then continue;
-        ii := i + CurrenTSpritePos.X;
-        jj := j + CurrenTSpritePos.Y;
-        GameBoard[ii, jj] := fCurrentColor;
+       if CurrentSprite[i, j] = 0 then continue;
+       ii := i + CurrentSpritePos.X;
+       jj := j + CurrentSpritePos.Y;
+       GameBoard[ii, jj] := FCurrentColor;
       end;
-    Fsprite := False;
-  end;
+    FSprite := False;
+   end;
   for j := 0 to Length(GameBoard[0]) - 1 do
-  begin
+   begin
     k := 0;
-    for i := 0 to length(GameBoard) - 1 do
-    begin
-      if GameBoard[i][j] <> 0 then inc(k);
-    end;
-    if k = length(GameBoard) then
-    begin
+    for i := 0 to Length(GameBoard) - 1 do
+     if GameBoard[i, j] <> 0 then
+      Inc(k);
+    if k = Length(GameBoard) then
+     begin
       inc(Flines);
       for jj := j downto 1 do
         for ii := 0 to Length(GameBoard) - 1 do
-          GameBoard[ii][jj] := GameBoard[ii][jj - 1];
+          GameBoard[ii, jj] := GameBoard[ii, jj - 1];
       for ii := 0 to Length(GameBoard) - 1 do
-        GameBoard[ii][0] := 0;
-    end;
-  end;
+        GameBoard[ii, 0] := 0;
+     end;
+   end;
 end;
 
-function TTetris.getcurrenTSprite: TSprite;
+function TTetris.getCurrentSprite: TSprite;
 var
-  i: integer;
+  i: Integer;
 begin
-  if Fsprite then
+  if FSprite then
     Result := FCurrentSprite
   else
   begin
-    FSprite := true;
+    FSprite := True;
     Randomize;
     i := Random(7);
     FCurrentSprite := AllSpriteKind[i];
     Result := FCurrentSprite;
     case i of
-      0: fCurrentColor := cllime;
-      1: fCurrentColor := clblue;
-      2: fCurrentColor := clOlive;
-      3: fCurrentColor := clRed;
-      4: fCurrentColor := clAqua;
-      5: fCurrentColor := clWhite;
-      6: fCurrentColor := clMoneyGreen;
+      0: FCurrentColor := cllime;
+      1: FCurrentColor := clblue;
+      2: FCurrentColor := clOlive;
+      3: FCurrentColor := clRed;
+      4: FCurrentColor := clAqua;
+      5: FCurrentColor := clWhite;
+      6: FCurrentColor := clMoneyGreen;
     end;
-    CurrenTSpritePos := point(3, 0);
-    if not CanSpriteBeHere(FCurrentSprite, CurrenTSpritePos) then
+    CurrentSpritePos := point(3, 0);
+    if not CanSpriteBeHere(FCurrentSprite, CurrentSpritePos) then
     begin
       NewGameBoard;
     end;
@@ -230,57 +229,54 @@ end;
 
 procedure TTetris.Left;
 var
-  pos: TPoint;
+  Pos: TPoint;
 begin
-  pos := CurrenTSpritePos;
-  pos.x := CurrenTSpritePos.X - 1;
-  if CanSpriteBeHere(CurrenTSprite, Pos) then
-    currenTSpritePos := pos
+  Pos := CurrentSpritePos;
+  Pos.x := CurrentSpritePos.X - 1;
+  if CanSpriteBeHere(CurrentSprite, Pos) then
+    CurrentSpritePos := Pos
 end;
 
 procedure TTetris.NewGameBoard;
 var
-  i, j: integer;
+  i, j: Integer;
 begin
-  flines := 0;
+  FLines := 0;
   for i := 0 to Length(GameBoard) - 1 do
-    for j := 0 to length(GameBoard[0]) - 1 do
+    for j := 0 to Length(GameBoard[0]) - 1 do
       GameBoard[i, j] := 0;
 end;
 
 procedure TTetris.Right;
 var
-  pos: TPoint;
+  Pos: TPoint;
 begin
-  pos := CurrenTSpritePos;
-  pos.x := CurrenTSpritePos.X + 1;
-  if CanSpriteBeHere(CurrenTSprite, Pos) then
-    CurrenTSpritePos := pos
+  Pos := CurrentSpritePos;
+  Pos.x := CurrentSpritePos.X + 1;
+  if CanSpriteBeHere(CurrentSprite, Pos) then
+    CurrentSpritePos := Pos
 end;
 
 procedure TTetris.Rotate;
 var
-  sprite: TSprite;
-  i, j: integer;
+  Sprite: TSprite;
+  i, j: Integer;
 begin
   for i := 0 to 3 do
     for j := 0 to 3 do
-    begin
-      sprite[3 - j, i] := CurrenTSprite[i, j];
-    end;
-  if CanSpriteBeHere(sprite, CurrenTSpritePos) then
-    CurrenTSprite := sprite;
+      Sprite[3 - j, i] := CurrentSprite[i, j];
+  if CanSpriteBeHere(Sprite, CurrentSpritePos) then
+    CurrentSprite := Sprite;
 end;
 
-procedure TTetris.SetcurrenTSprite(const Value: TSprite);
+procedure TTetris.SetCurrentSprite(const Value: TSprite);
 begin
   FCurrentSprite := Value;
 end;
 
-procedure TTetris.SetcurrenTSpritePos(const Value: tpoint);
+procedure TTetris.SetCurrentSpritePos(const Value: tpoint);
 begin
   FCurrentSpritePos := Value;
 end;
 
 end.
-

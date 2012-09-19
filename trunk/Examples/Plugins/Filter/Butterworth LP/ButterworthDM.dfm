@@ -64,8 +64,6 @@ object ButterworthLPModule: TButterworthLPModule
   OnProcess32Replacing = VSTModuleProcess
   OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 517
-  Top = 76
-  Height = 150
-  Width = 215
+  Height = 189
+  Width = 268
 end

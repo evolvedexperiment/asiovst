@@ -42,7 +42,7 @@ type
   TTetrisModule = class(TVSTModule)
     function VSTModuleCheckKey(Sender: TObject; Key: Char): Boolean;
     procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleCreate(Sender: TObject);
   private
   public
   end;
@@ -63,10 +63,9 @@ begin
  result := True;
 end;
 
-procedure TTetrisModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
+procedure TTetrisModule.VSTModuleCreate(Sender: TObject);
 begin
-  GUI := TFmTetris.Create(Self);
+ EditorFormClass := TFmTetris;
 end;
 
 procedure TTetrisModule.VSTModuleEditorKeyDown(Sender: TObject;

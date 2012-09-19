@@ -81,13 +81,12 @@ begin
   // delay-line of FLength := maxDelay + 1!
   FLength := AMaxDelay + 1;
 
-  // We need to delete the previously allocated Inputs.
-  FInputs := nil;
-  GetMem(FInputs, FLength * SizeOf(Single));
+  // We need to reallocate Inputs.
+  ReallocMem(FInputs, FLength * SizeOf(Single));
   Clear;
 
   FInPoint := 0;
-  Delay := round(ADelay);
+  Delay := Round(ADelay);
 end;
 
 procedure TStkDelay.DelayChanged(const Value: Integer);
@@ -105,7 +104,7 @@ begin
    end
   else
    begin
-    FOutPoint := FInPoint - round(Value);  // read chases write
+    FOutPoint := FInPoint - Round(Value);  // read chases write
     FDelay := Value;
    end;
 
@@ -115,51 +114,51 @@ end;
 
 destructor TStkDelay.Destroy;
 begin
-  inherited Destroy;
+  inherited;
 end;
 
 procedure TStkDelay.Clear;
 begin
  FillChar(FInputs^[0], FLength * SizeOf(Single), 0);
- if assigned(FOutputs)
+ if Assigned(FOutputs)
   then FOutputs^[0] := 0;
 end;
 
 function TStkDelay.ContentsAt(const TapDelay: Integer): Single;
 var
-  tap, i: Integer;
+  Tap, Index: Integer;
 begin
-  i := tapDelay;
-  if (i > FDelay)
-   then i := round(FDelay);
-  tap := FInPoint - i;
-  if (tap < 0)
-   then tap := tap + FLength; // Check for wraparound.
+  Index := tapDelay;
+  if (Index > FDelay)
+   then Index := Round(FDelay);
+  Tap := FInPoint - Index;
+  if (Tap < 0)
+   then Tap := Tap + FLength; // Check for wraparound.
   Result := FInputs^[Tap];
 end;
 
 function TStkDelay.GetEnergy: Single;
 var
-  i    : Integer;
+  Index: Integer;
   t, e : Single;
 begin
   e := 0;
   if (FInPoint >= FOutPoint) then
-   for i := FOutPoint to FInPoint - 1 do
+   for Index := FOutPoint to FInPoint - 1 do
     begin
-     t := FInputs^[i];
+     t := FInputs^[Index];
      e := e + t * t;
     end
   else
    begin
-    for i := FOutPoint to FLength - 1 do
+    for Index := FOutPoint to FLength - 1 do
      begin
-      t := FInputs^[i];
+      t := FInputs^[Index];
       e := e + t * t;
      end;
-    for i := 0 to FInPoint - 1 do
+    for Index := 0 to FInPoint - 1 do
      begin
-      t := FInputs^[i];
+      t := FInputs^[Index];
       e := e + t * t;
      end;
    end;
@@ -168,7 +167,7 @@ end;
 
 function TStkDelay.GetDelay: Integer;
 begin
-  Result := round(FDelay);
+  Result := Round(FDelay);
 end;
 
 function TStkDelay.GetNextOut: Single;
@@ -196,16 +195,16 @@ begin
  inc(FOutPoint);
  if (FOutPoint >= FLength)
   then FOutPoint := FOutPoint - FLength;
- result := FOutputs^[0];
+ Result := FOutputs^[0];
 end;
 
 procedure TStkDelay.Tick(const Input, Output: PDAVSingleFixedArray;
   const SampleFrames: Integer);
 var
-  i: integer;
+  Index: integer;
 begin
-  for i := 0 to SampleFrames - 1
-   do Output^[i] := Tick(Input^[i])
+  for Index := 0 to SampleFrames - 1
+   do Output^[Index] := Tick(Input^[Index])
 end;
 
 end.

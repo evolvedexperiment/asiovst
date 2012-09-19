@@ -1,5 +1,6 @@
 object TetrisModule: TTetrisModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor]
   Version = '1.0'
   EffectName = 'Tetris'
@@ -14,11 +15,9 @@ object TetrisModule: TTetrisModule
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
-  OnEditOpen = VSTModuleEditOpen
+  ParameterCategories = <>
   OnEditorKeyDown = VSTModuleEditorKeyDown
   OnCheckKey = VSTModuleCheckKey
-  Left = 269
-  Top = 51
   Height = 150
   Width = 215
 end

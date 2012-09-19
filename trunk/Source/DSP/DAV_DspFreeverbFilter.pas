@@ -127,6 +127,7 @@ uses
 
 constructor TFreeverbAllpass.Create(const Buffersize: Integer = 1);
 begin
+ FBuffer := nil;
  inherited Create;
  FBuffersize := Buffersize;
  BuffersizeChanged;
@@ -236,6 +237,7 @@ end;
 
 constructor TFreeverbCombFilter.Create(const Buffersize: Integer);
 begin
+ FBuffer := nil;
  inherited Create;
  FBuffersize := Buffersize;
  BuffersizeChanged;
