@@ -15,7 +15,7 @@ type
     procedure SetEffectMix(const Value: Single);
     function GetLastOutput: Single;
   protected
-    FLastOutput : array[0..1] of Single;
+    FLastOutput : array [0..1] of Single;
     FEffectMix  : Single;
     function IsPrime(const Number: Integer): Boolean;
     procedure EffectMixChanged; virtual;
@@ -74,24 +74,21 @@ function TStkReverb.IsPrime(const Number: Integer): Boolean;
 var
   i: Integer;
 begin
+ Result := False;
  if (Number = 2) then
   begin
    Result := True;
-   exit
+   Exit;
   end;
  if (Number and 1 > 0) then
   begin
    i := 3;
    repeat
-     if ((Number mod i) = 0) then
-      begin
-       Result := False;
-       exit
-      end;
+     if ((Number mod i) = 0) then Exit;
      i := i + 2;
-   until (i >= round(sqrt(Number) + 1));
+   until (i >= Round(Sqrt(Number) + 1));
    Result := True;
-  end else Result := False;
+  end;
 end;
 
 function TStkReverb.Tick(const Input: Single): Single;

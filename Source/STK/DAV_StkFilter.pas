@@ -115,12 +115,12 @@ begin
   FnumA := 1;
   GetMem(FB, FnumB * SizeOf(Single));
   GetMem(FA, FnumA * SizeOf(Single));
+  GetMem(FInputs, FnumB * SizeOf(Single));
+  GetMem(FOutputs, FnumA * SizeOf(Single));
   FGain  := 1.0;
   FB^[0] := 1.0;
   FA^[0] := 1.0;
 
-  GetMem(FInputs, FnumB * SizeOf(Single));
-  GetMem(FOutputs, FnumA * SizeOf(Single));
   Clear;
 end;
 
@@ -129,6 +129,7 @@ constructor TStkFilter.Create(const SampleRate: Single;
   const ACoefficientCount: Integer; ACoefficients: PDAVSingleFixedArray);
 begin
   inherited Create(SampleRate);
+
   // check the arguments
   if (ACoefficientCount < 1)
    then raise Exception.Create(RCStrNoACoeffs);
@@ -153,10 +154,10 @@ end;
 destructor TStkFilter.Destroy;
 begin
   inherited Destroy;
-  Dispose(FB);
-  Dispose(FA);
-  Dispose(FInputs);
-  Dispose(FOutputs);
+  FreeMem(FB);
+  FreeMem(FA);
+  FreeMem(FInputs);
+  FreeMem(FOutputs);
 end;
 
 procedure TStkFilter.Clear;
@@ -227,7 +228,6 @@ begin
     for i := 0 to FnumA - 1 do FA^[i] := FA^[i] * t;
     for i := 0 to FnumB - 1 do FB^[i] := FB^[i] * t;
    end;
-
 end;
 
 procedure TStkFilter.SetDenominator(ACoefficientCount: Integer;

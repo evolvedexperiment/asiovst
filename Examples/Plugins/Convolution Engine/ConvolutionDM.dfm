@@ -1,6 +1,7 @@
 object ConvolutionDataModule: TConvolutionDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Convolution'
@@ -9,7 +10,6 @@ object ConvolutionDataModule: TConvolutionDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   BlockSize = 8192
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   BlockModeSize = 8192
   InitialDelay = 2048
@@ -23,7 +23,6 @@ object ConvolutionDataModule: TConvolutionDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Latency Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -40,7 +39,6 @@ object ConvolutionDataModule: TConvolutionDataModule
       OnParameterChange = ParameterLatencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Maximum IR Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -60,11 +58,8 @@ object ConvolutionDataModule: TConvolutionDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
-  Left = 191
-  Top = 76
   Height = 150
   Width = 215
 end

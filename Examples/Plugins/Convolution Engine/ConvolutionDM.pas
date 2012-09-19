@@ -36,22 +36,22 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_DspConvolution, DAV_AudioFileWAV, 
-  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
+  Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspConvolution,
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
 
 type
   TConvolutionDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleCreate(Sender: TObject);
     procedure ParameterMaximumIROrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLatencyChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
     FConvolutionClassic    : TConvolution32;
     FConvolutionLowLatency : TLowLatencyConvolution32;
-    FSemaphore    : Integer;
+    FCriticalSection       : TCriticalSection;
   public
     procedure LoadIR(FileName: TFileName);
   end;
@@ -69,7 +69,12 @@ uses
 
 procedure TConvolutionDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FSemaphore := 0;
+  FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TConvolutionDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
@@ -79,6 +84,8 @@ begin
  FConvolutionClassic.FFTOrder := max(7, CeilLog2(InitialDelay)) + 1;
  FConvolutionLowLatency.MinimumIRBlockOrder := max(7, CeilLog2(InitialDelay));
  FConvolutionLowLatency.MaximumIRBlockOrder := 17;
+
+ EditorFormClass := TFmConvolution;
 end;
 
 procedure TConvolutionDataModule.VSTModuleClose(Sender: TObject);
@@ -87,37 +94,30 @@ begin
  FreeAndNil(FConvolutionClassic);
 end;
 
-procedure TConvolutionDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmConvolution.Create(Self);
-end;
-
 procedure TConvolutionDataModule.ParameterMaximumIROrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   if Value >= FConvolutionLowLatency.MinimumIRBlockOrder
    then FConvolutionLowLatency.MaximumIRBlockOrder := Round(Limit(Value, 7, 20))
    else Value := FConvolutionLowLatency.MinimumIRBlockOrder;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TConvolutionDataModule.ParameterLatencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   if Value > FConvolutionLowLatency.MaximumIRBlockOrder
    then Value := FConvolutionLowLatency.MaximumIRBlockOrder;
   FConvolutionLowLatency.MinimumIRBlockOrder := Round(Value);
   FConvolutionClassic.FFTOrder := Round(Value) + 1;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -125,8 +125,7 @@ procedure TConvolutionDataModule.LoadIR(FileName: TFileName);
 var
   ADC : TAudioDataCollection32;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   ADC := TAudioDataCollection32.Create(Self);
   with ADC do
@@ -141,7 +140,7 @@ begin
     FreeAndNil(ADC);
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -149,13 +148,12 @@ procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 begin
  // lock processing
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   FConvolutionClassic.ProcessBlock(@Inputs[0, 0], @Outputs[0, 0], SampleFrames);
   FConvolutionLowLatency.ProcessBlock(@Inputs[1, 0], @Outputs[1, 0], SampleFrames);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 

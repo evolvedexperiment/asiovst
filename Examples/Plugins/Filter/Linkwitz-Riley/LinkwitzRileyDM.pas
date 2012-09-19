@@ -97,7 +97,7 @@ end;
 procedure TLinkwitzRileyModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- Predefined := IntToStr(2 * Round(Parameter[Index]));
+ PreDefined := AnsiString(IntToStr(2 * Round(Parameter[Index])));
 end;
 
 procedure TLinkwitzRileyModule.ParameterFrequencyDisplay(
@@ -107,7 +107,7 @@ var
 begin
  Freq := Parameter[Index];
  if Freq >= 1000
-  then Predefined := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3);
+  then PreDefined := AnsiString(FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3));
 end;
 
 procedure TLinkwitzRileyModule.ParameterFrequencyLabel(

@@ -46,7 +46,6 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamPadDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -125,24 +124,21 @@ begin
  Parameter[4] := 0;
  Parameter[5] := 0;
  Parameter[6] := 0;
+
+ EditorFormClass := TFmUniQuE;
 end;
 
 procedure TUniQuEDataModule.VSTModuleClose(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to 1 do
+ for ChannelIndex := 0 to 1 do
   begin
-   FreeAndNil(FLow[ch]);
-   FreeAndNil(FMid[ch]);
-   FreeAndNil(FPres[ch]);
-   FreeAndNil(FHigh[ch]);
+   FreeAndNil(FLow[ChannelIndex]);
+   FreeAndNil(FMid[ChannelIndex]);
+   FreeAndNil(FPres[ChannelIndex]);
+   FreeAndNil(FHigh[ChannelIndex]);
   end;
-end;
-
-procedure TUniQuEDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmUniQuE.Create(Self);
 end;
 
 procedure TUniQuEDataModule.ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
@@ -154,8 +150,7 @@ end;
 
 procedure TUniQuEDataModule.ParamPresChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Gain,
-  Freq  : Single;
+  Gain, Frequency  : Single;
 begin
  if Value > 0
   then Gain := Value * 11.46 / CGainRange
@@ -164,10 +159,10 @@ begin
  if Assigned(FPres[0]) then FPres[0].Gain := Gain;
  if Assigned(FPres[1]) then FPres[1].Gain := Gain;
 
- Freq := 7278 + 108 * Value / CGainRange;
+ Frequency := 7278 + 108 * Value / CGainRange;
 
- if Assigned(FPres[0]) then FPres[0].Frequency := Freq;
- if Assigned(FPres[1]) then FPres[1].Frequency := Freq;
+ if Assigned(FPres[0]) then FPres[0].Frequency := Frequency;
+ if Assigned(FPres[1]) then FPres[1].Frequency := Frequency;
 
  // update GUI
  if Assigned(EditorForm) then
@@ -196,8 +191,7 @@ end;
 
 procedure TUniQuEDataModule.ParamHigh(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Gain,
-  Freq  : Single;
+  Gain, Frequency: Single;
 begin
  if Value > 0
   then Gain := Value * 15 / CGainRange
@@ -206,10 +200,10 @@ begin
  if Assigned(FHigh[0]) then FHigh[0].Gain := Gain;
  if Assigned(FHigh[1]) then FHigh[1].Gain := Gain;
 
- Freq := 4340 - 300 * Value / CGainRange;
+ Frequency := 4340 - 300 * Value / CGainRange;
 
- if Assigned(FHigh[0]) then FHigh[0].Frequency := Freq;
- if Assigned(FHigh[1]) then FHigh[1].Frequency := Freq;
+ if Assigned(FHigh[0]) then FHigh[0].Frequency := Frequency;
+ if Assigned(FHigh[1]) then FHigh[1].Frequency := Frequency;
 
  UpdateVolume;
 

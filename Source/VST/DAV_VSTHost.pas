@@ -62,12 +62,11 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF MSWINDOWS}Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF} {$IFDEF MSWINDOWS} Registry, {$ENDIF}
-  Contnrs, SysUtils, Classes, {$IFDEF VstHostGUI} {$IFDEF FMX} FMX.Types,
-  FMX.Dialogs, FMX.Controls, FMX.Forms, FMX.Platform, {$IFDEF MSWINDOWS}
-  FMX.Platform.Win, {$ENDIF} {$ELSE} Controls, Graphics, Forms, StdCtrls,
-  ComCtrls, Dialogs, {$ENDIF} {$ENDIF} DAV_Types, DAV_VSTEffect,
-  DAV_VSTOfflineTask {$IFDEF MemDLL}, DAV_DLLLoader{$ENDIF};
+  {$ELSE} Windows, Messages, {$ENDIF} Contnrs, SysUtils, Classes,
+  {$IFDEF VstHostGUI} {$IFDEF FMX} FMX.Types, FMX.Dialogs, FMX.Controls,
+  FMX.Forms, FMX.Platform, {$IFDEF MSWINDOWS} FMX.Platform.Win, {$ENDIF} {$ELSE}
+  Controls, Graphics, Forms, StdCtrls, ComCtrls, Dialogs, {$ENDIF} {$ENDIF}
+  DAV_Types, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL}, DAV_DLLLoader{$ENDIF};
 
 const
   CDefaultBlockSize = 2048;
@@ -669,7 +668,7 @@ function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 implementation
 
 uses
-  DAV_Common;
+  {$IFDEF MSWINDOWS} Registry, {$ENDIF} DAV_Common;
 
 {$IFDEF DELPHI10_UP} {$region 'Resource Strings'} {$ENDIF}
 resourcestring
