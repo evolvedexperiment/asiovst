@@ -259,7 +259,7 @@ end;
 
 procedure TBodeFrequencyShifterDataModule.VSTModuleProcessMultiChannel(
   const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Integer);
+  const SampleFrames: Cardinal);
 var
   Channel  : Integer;
   Sample   : Integer;

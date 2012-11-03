@@ -199,7 +199,7 @@ end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcessDouble(
   const Inputs, Outputs: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer);
+  const SampleFrames: Cardinal);
 var
   ChannelIndex : Integer;
   SampleIndex  : Integer;

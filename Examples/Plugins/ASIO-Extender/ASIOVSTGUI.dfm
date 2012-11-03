@@ -13,6 +13,7 @@ object FmASIOVST: TFmASIOVST
   Font.Style = []
   OldCreateOrder = False
   ShowHint = True
+  OnShow = FormShow
   DesignSize = (
     332
     236)
@@ -33,7 +34,6 @@ object FmASIOVST: TFmASIOVST
     Width = 236
     Height = 21
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     TabOrder = 0
     OnChange = CbASIOChange
   end

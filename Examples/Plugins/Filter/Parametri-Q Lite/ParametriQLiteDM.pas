@@ -418,12 +418,12 @@ end;
 
 procedure TParametriQLiteDataModule.VSTModuleProcessDoubleReplacing(
   const Inputs, Outputs: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer);
+  const SampleFrames: Cardinal);
 var
-  Sample  : Integer;
-  Channel : Integer;
-  Band    : Integer;
-  Temp  : TDAV2DoubleArray;
+  Sample: Integer;
+  Channel: Integer;
+  Band: Integer;
+  Temp: TDAV2DoubleArray;
 const
   CPeakRelease : Single = 0.99999;
 begin

@@ -1085,7 +1085,7 @@ asm
 {$ENDIF}
 end;
 
-{$UNDEF PUREPASCAL}
+{-$UNDEF PUREPASCAL}
 
 function TPolyphaseDownsampler64.ProcessSampleLarge(
   const Input: TDAV2DoubleArray): Double;

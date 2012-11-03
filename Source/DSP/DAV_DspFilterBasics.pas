@@ -258,10 +258,10 @@ begin
  Wq := Sqrt((FGainFactorSquared - Sqr(G1)) / (FGainFactorSquared - Sqr(G0))) * Sqr(K);
 
  C := Sqr(DW) * Abs(Sqr(Gb) - Sqr(G1)) - 2 * Wq * (Abs(Sqr(Gb) - G0 * G1) -
-   Sqrt((Sqr(Gb) - Sqr(G0)) * (Sqr(Gb) - Sqr(G1)))); 
- D := 2 * Wq * (abs(FGainFactorSquared - G0 * G1) - Sqrt((FGainFactorSquared - Sqr(G0)) * (FGainFactorSquared - Sqr(G1))));
- A := Sqrt((C + D) / abs(FGainFactorSquared - Sqr(Gb)));
- B := Sqrt((FGainFactor * C + Gb * D) / abs(FGainFactorSquared - Sqr(Gb)));
+   Sqrt((Sqr(Gb) - Sqr(G0)) * (Sqr(Gb) - Sqr(G1))));
+ D := 2 * Wq * (Abs(FGainFactorSquared - G0 * G1) - Sqrt((FGainFactorSquared - Sqr(G0)) * (FGainFactorSquared - Sqr(G1))));
+ A := Sqrt((C + D) / Abs(FGainFactorSquared - Sqr(Gb)));
+ B := Sqrt((FGainFactor * C + Gb * D) / Abs(FGainFactorSquared - Sqr(Gb)));
 
  Divider := 1 / (1 + Wq + A);
  FNominator[0] := (G1 + G0 * Wq + B) * Divider;
@@ -279,7 +279,7 @@ var
   t, K, G, V, A  : Double;
 begin
  K := ExpW0.Im / (1 + ExpW0.Re);
- A := Power(FGainFactor, (abs(Sqr(FShape) + 0.5 * FShape) - abs(Sqr(FShape) + 0.5 * FShape - 2)) * 0.5);
+ A := Power(FGainFactor, (Abs(Sqr(FShape) + 0.5 * FShape) - Abs(Sqr(FShape) + 0.5 * FShape - 2)) * 0.5);
 
  if FShape < -1 then
   begin
@@ -333,8 +333,8 @@ begin
   then d := ln(1 + Power(FBandWidth, Abs(FShape)))
   else d := ln(1 + FBandWidth);
  if Abs(FShape) > 1
-  then FAlpha := (ExpW0.Im / (1 + ExpW0.Re)) * d / (sqrt(0.5 * (1 + ExpW0.Re))) * 2
-  else FAlpha := (ExpW0.Im / (1 + ExpW0.Re)) * d / (sqrt(0.5 * (1 + ExpW0.Re))) * Power(2, abs(FShape));
+  then FAlpha := (ExpW0.Im / (1 + ExpW0.Re)) * d / (Sqrt(0.5 * (1 + ExpW0.Re))) * 2
+  else FAlpha := (ExpW0.Im / (1 + ExpW0.Re)) * d / (Sqrt(0.5 * (1 + ExpW0.Re))) * Power(2, Abs(FShape));
 end;
 
 procedure TBasicShapeFilter.SetShape(const Value: Double);
@@ -376,7 +376,7 @@ var
   t, A1, A2 : Double;
   cn, sA    : Double;
 begin
- sA := 2 * sqrt(FGainFactor) * FAlpha;
+ sA := 2 * Sqrt(FGainFactor) * FAlpha;
  cn := ExpW0.Re;
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
@@ -697,7 +697,7 @@ begin
               + 2 * cw * (FDenominator[2] + FDenominator[1] + 1)
               + (2 * Sqr(cw)-1) * (FDenominator[2] + 1)) * Divider;
  Imaginary := (2 * (1 - FDenominator[2])
-              + 2 * cw * (1 - FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
+              + 2 * cw * (1 - FDenominator[2])) * Sqrt(1 - Sqr(cw)) * Divider;
 end;
 
 
@@ -728,7 +728,7 @@ begin
               + cw * 2 * (FDenominator[1] + FDenominator[2] - 1)
               + (2 * Sqr(cw) - 1) * (FDenominator[2] + 1)) * Divider;
  Imaginary := ( 2 * (FDenominator[2] - 1)
-              + 2 * cw * (1 - FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
+              + 2 * cw * (1 - FDenominator[2])) * Sqrt(1 - Sqr(cw)) * Divider;
 end;
 
 

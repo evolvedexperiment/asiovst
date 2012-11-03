@@ -47,6 +47,7 @@ type
     procedure CbASIOChange(Sender: TObject);
     procedure LbAsioOutputClick(Sender: TObject);
     procedure CBShortCircuitClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   public
     procedure DisplayASIOInformation;
   end;
@@ -99,6 +100,12 @@ begin
      Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
     end;
   end;
+end;
+
+procedure TFmASIOVST.FormShow(Sender: TObject);
+begin
+  CbASIO.Items := FASIOHost.DriverList;
+  DisplayASIOInformation;
 end;
 
 procedure TFmASIOVST.LbAsioOutputClick(Sender: TObject);

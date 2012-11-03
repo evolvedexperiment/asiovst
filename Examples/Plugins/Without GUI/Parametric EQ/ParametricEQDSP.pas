@@ -443,7 +443,7 @@ end;
 
 procedure TParametricEQDataModule.VSTModuleProcessDoubleReplacing(
   const Inputs, Outputs: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer);
+  const SampleFrames: Cardinal);
 var
   Sample  : Integer;
   Channel : Integer;

@@ -199,6 +199,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    procedure ShowMenu;
     procedure Clear;
   published
     property Items: TStrings read FItems write SetItems;
@@ -786,11 +787,29 @@ begin
  BufferChanged;
 end;
 
-procedure TGuiSelectBox.MouseDown(Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TGuiSelectBox.ShowMenu;
 var
   i  : Integer;
   MI : TMenuItem;
+begin
+ if Assigned(FPopupMenu)
+  then FPopupMenu.Items.Clear
+  else FPopupMenu := TPopupMenu.Create(Self);
+ for i := 0 to FItems.Count - 1 do
+  begin
+   MI := TMenuItem.Create(FPopupMenu);
+   MI.Caption   := FItems[i];
+   MI.RadioItem := True;
+   MI.Checked   := i = ItemIndex;
+   MI.OnClick   := MenuItemClick;
+   MI.Tag       := i;
+   FPopupMenu.Items.Add(MI);
+  end;
+ FPopupMenu.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
+end;
+
+procedure TGuiSelectBox.MouseDown(Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
  if Button = mbLeft then
   case FAlignment of
@@ -822,24 +841,11 @@ begin
      inherited;
     end;
   end else
- if Button = mbRight then
+// if Button = mbRight then
   begin
-   if Assigned(FPopupMenu)
-    then FPopupMenu.Items.Clear
-    else FPopupMenu := TPopupMenu.Create(Self);
-   for i := 0 to FItems.Count - 1 do
-    begin
-     MI := TMenuItem.Create(FPopupMenu);
-     MI.Caption   := FItems[i];
-     MI.RadioItem := True;
-     MI.Checked   := i = ItemIndex;
-     MI.OnClick   := MenuItemClick;
-     MI.Tag       := i;
-     FPopupMenu.Items.Add(MI);
-    end;
    inherited;
-   FPopupMenu.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
-  end else inherited;
+   ShowMenu;
+  end; // else inherited;
 end;
 
 procedure TGuiSelectBox.MenuItemClick(Sender: TObject);

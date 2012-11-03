@@ -24,7 +24,7 @@ type
   TRpeqModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
-      const SampleFrames: Integer);
+      const SampleFrames: Cardinal);
     procedure ParameterBitDepthChange(Sender: TObject;
       const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject;

@@ -56,7 +56,6 @@ type
     FPeak            : Double;
     FKnee            : Double;
     FGain            : Double;
-    FLevel           : Double;
     FRatio           : Double;
     FRatioReciprocal : Double;
     FSampleRateInv   : Double;
@@ -67,7 +66,7 @@ type
     FThreshold       : Double;
     FThresholdReci   : Double;
     FMakeUpGain      : array [0..2] of Double;
-//    fInternal        : array [0..3] of Double;
+//    FInternal        : array [0..3] of Double;
     procedure SetRatio(const Value: Double); virtual;
     procedure CalculateAttackFactor; virtual;
     procedure CalculateReleaseFactor; virtual;
@@ -75,6 +74,7 @@ type
     procedure SampleRateChanged; override;
   public
     constructor Create; override;
+
     function TranslatePeakToGain(const PeakLevel: Double): Double; virtual;
     function CharacteristicCurve(const InputLevel: Double): Double; virtual;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; virtual;
@@ -82,6 +82,7 @@ type
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input : Double): Double; virtual;
     procedure Sidechain(const Input : Double); virtual;
+    procedure Reset;
 
     property GainReductionFactor : Double read FGain;            // in dB
     property GainReduction_dB : Double read GetGainReductiondB;  // in dB
@@ -132,7 +133,7 @@ implementation
 uses
   Math, DAV_Common, DAV_Approximations;
 
-const 
+const
   Harms : array [0..3] of Single = (1.4092750123e-07, -7.5166615806e-07,
                                     1.1523939535e-06, -6.3117489523e-07);
 
@@ -144,7 +145,6 @@ begin
   FRatio           := 1;
   FAttack_ms       := 5;
   FRelease_ms      := 5;
-  FLevel           := 0;
   FKnee            := 0.5;
   FRatio           := 1;
   FRatioReciprocal := 1;
@@ -153,6 +153,7 @@ begin
   CalculateInverseSampleRate;
   CalculateAttackFactor;
   CalculateReleaseFactor;
+  Reset;
 end;
 
 procedure TCustomLevelingAmplifier.CalculateInverseSampleRate;
@@ -176,34 +177,34 @@ end;
 
 function TCustomLevelingAmplifier.CharacteristicCurve(const InputLevel: Double): Double;
 begin
- result := TranslatePeakToGain(InputLevel) * InputLevel;
+ Result := TranslatePeakToGain(InputLevel) * InputLevel;
 end;
 
 function TCustomLevelingAmplifier.CharacteristicCurve_dB(const InputLevel_dB: Double): Double;
 begin
- result := Amp_to_dB(1E-30 + abs(CharacteristicCurve(dB_to_Amp(InputLevel_dB))));
+ Result := Amp_to_dB(1E-30 + Abs(CharacteristicCurve(dB_to_Amp(InputLevel_dB))));
 end;
 
 function TCustomLevelingAmplifier.GetGainReductiondB: Double;
 begin
- result := Amp_to_dB(FGain);
+ Result := Amp_to_dB(FGain);
 end;
 
 function TCustomLevelingAmplifier.GetInput_dB: Double;
 begin
- result := Amp_to_dB(FInputLevel);
+ Result := Amp_to_dB(FInputLevel);
 end;
 
 function TCustomLevelingAmplifier.GetOutput_dB: Double;
 begin
- result := Amp_to_dB(FOutputLevel);
+ Result := Amp_to_dB(FOutputLevel);
 end;
 
 procedure TCustomLevelingAmplifier.SetAttack_ms(const Value: Double);
 begin
- if FAttack_ms <> abs(Value) then
+ if FAttack_ms <> Abs(Value) then
   begin
-   FAttack_ms := abs(Value);
+   FAttack_ms := Abs(Value);
    CalculateAttackFactor;
   end;
 end;
@@ -215,9 +216,9 @@ end;
 
 procedure TCustomLevelingAmplifier.SetKnee(const Value: Double);
 begin
- if fKnee <> Value then
+ if FKnee <> Value then
   begin
-   fKnee := Value;
+   FKnee := Value;
   end;
 end;
 
@@ -228,18 +229,18 @@ end;
 
 procedure TCustomLevelingAmplifier.SetRatio(const Value: Double);
 begin
- if fRatio <> Value then
+ if FRatio <> Value then
   begin
-   fRatio := Value;
-   FRatioReciprocal := 1 / fRatio;
+   FRatio := Value;
+   FRatioReciprocal := 1 / FRatio;
   end;
 end;
 
 procedure TCustomLevelingAmplifier.SetRelease_ms(const Value: Double);
 begin
- if FRelease_ms <> abs(Value) then
+ if FRelease_ms <> Abs(Value) then
   begin
-   FRelease_ms := abs(Value);
+   FRelease_ms := Abs(Value);
    CalculateReleaseFactor;
   end;
 end;
@@ -264,9 +265,9 @@ function Diode1(x: Single): Single;
 var
   a, b : Double;
 begin
- x := abs(x - 0.4) + x - 0.4;
- a := abs(x);
- b := 10 * (1 + sqr(a));
+ x := Abs(x - 0.4) + x - 0.4;
+ a := Abs(x);
+ b := 10 * (1 + Sqr(a));
  Result := 0.5 * (x + (b * x) / (b * a + 1));
 end;
 
@@ -275,15 +276,15 @@ var
   a, b : Double;
 begin
  x := x * 10;
- x := abs(x - 0.4) + x - 0.4;
- a := abs(x);
- b := 10 * (1 + sqr(a));
+ x := Abs(x - 0.4) + x - 0.4;
+ a := Abs(x);
+ b := 10 * (1 + Sqr(a));
  Result := 0.005 * (x + (b * x) / (b * a + 1));
 end;
 
 function SimpleDiode(const x: Single): Single;
 begin
- Result := 0.5 * (abs(x) + x);
+ Result := 0.5 * (Abs(x) + x);
 end;
 
 procedure TCustomLevelingAmplifier.Sidechain(const Input: Double);
@@ -294,7 +295,7 @@ begin
  Value := Input * FInputLevel;
 
  // smooth input by attack
- FOldInput := abs(Value) + (FOldInput - abs(Value)) * FAttackFactor;
+ FOldInput := Abs(Value) + (FOldInput - Abs(Value)) * FAttackFactor;
 
  // add fall off (released) caused by electroluminicence effect of an LED
  FPeak := FPeak * FReleaseFactor;
@@ -312,10 +313,10 @@ function TCustomLevelingAmplifier.TranslatePeakToGain(const PeakLevel: Double): 
 var
   d : Single;
 begin
- d := SimpleDiode(PeakLevel * FThresholdReci - sqr(1 - Knee));
- d := d - sqr(Knee) * FastTanhOpt3Term(d);
-// result := Power(1 + d, (FRatio - 1));
- result := FastPower2MinError3(FastLog2ContinousError5(1 + d) * (FRatio - 1));
+ d := SimpleDiode(PeakLevel * FThresholdReci - Sqr(1 - Knee));
+ d := d - Sqr(Knee) * FastTanhOpt3Term(d);
+// Result := Power(1 + d, (FRatio - 1));
+ Result := FastPower2MinError3(FastLog2ContinousError5(1 + d) * (FRatio - 1));
 end;
 
 procedure TCustomLevelingAmplifier.ProcessBlock64(const Data: PDAVDoubleFixedArray;
@@ -323,16 +324,23 @@ procedure TCustomLevelingAmplifier.ProcessBlock64(const Data: PDAVDoubleFixedArr
 var
   Sample: Integer;
 begin
- for Sample := 0 to SampleCount - 1
-  do Data[Sample] := ProcessSample64(Data[Sample]);
+  for Sample := 0 to SampleCount - 1 do
+    Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TCustomLevelingAmplifier.ProcessSample64(Input: Double): Double;
 begin
- result := FInputLevel * (Harms[0] + Input * (1 + Input *
-           (Harms[1] + sqr(Input) * (Harms[2] + sqr(Input) * Harms[3]))));
- result := FOutputLevel * FGain * result;
+  Result := FInputLevel * (Harms[0] + Input * (1 + Input *
+    (Harms[1] + Sqr(Input) * (Harms[2] + Sqr(Input) * Harms[3]))));
+  Result := FOutputLevel * FGain * Result;
 end;
+
+procedure TCustomLevelingAmplifier.Reset;
+begin
+  FPeak := 0;
+  FOldInput := 0;
+end;
+
 
 { TLevelingAmplifierProgramDependentRelease }
 
@@ -368,7 +376,7 @@ begin
  Value := Input * FInputLevel;
 
  // smooth input by attack
- FOldInput := abs(Value) + (FOldInput - abs(Value)) * FAttackFactor;
+ FOldInput := Abs(Value) + (FOldInput - Abs(Value)) * FAttackFactor;
 
  // add fall off (released) caused by electroluminicence effect of an LED
  FPeak := FPeak * FReleaseFactor;

@@ -1613,7 +1613,7 @@ var
   Coder32 : TCustomChannel32DataCoder absolute Coder;
 begin
  Assert(Coder is TCustomChannel32DataCoder);
- Assert(Channels.Count = Coder.ChannelCount);
+ Assert(Cardinal(Channels.Count) = Coder.ChannelCount);
  for Channel := 0 to ChannelCount - 1
   do Move(Coder32.ChannelPointer[Channel]^[0],
        ChannelList[Channel].ChannelDataPointer^[Position],
@@ -1637,20 +1637,47 @@ end;
 procedure TCustomAudioDataCollection32.Trim;
 var
   ChannelIndex : Integer;
-  SampleIndex  : Integer;
+  SampleIndex  : Cardinal;
 label
-  Done;
+  DoneEnd, DoneStart;
 begin
- SampleIndex := SampleFrames - 1;
- while SampleIndex >= 0 do
+  // check if there are any sampleframes to trim
+  if SampleFrames = 0 then
+    Exit;
+
+  SampleIndex := SampleFrames - 1;
+  repeat
+    for ChannelIndex := 0 to FChannels.Count - 1 do
+      if ChannelDataPointer[ChannelIndex]^[SampleIndex] <> 0 then
+        goto DoneEnd;
+    Dec(SampleIndex);
+  until SampleIndex = 0;
+
+DoneEnd:
+  SampleFrames := SampleIndex + 1;
+
+  // check if signal is all zero
+  if SampleFrames = 0 then
+    Exit;
+
+  SampleIndex := 0;
+  while SampleIndex < SampleFrames do
   begin
-   for ChannelIndex := 0 to FChannels.Count - 1 do
-    if ChannelDataPointer[ChannelIndex]^[SampleIndex] <> 0 then
-     goto Done;
-   Dec(SampleIndex);
+    for ChannelIndex := 0 to FChannels.Count - 1 do
+      if ChannelDataPointer[ChannelIndex]^[SampleIndex] <> 0 then
+        goto DoneStart;
+    Inc(SampleIndex);
   end;
-Done:
- SampleFrames := SampleIndex + 1;
+
+DoneStart:
+  // move data to start
+  for ChannelIndex := 0 to FChannels.Count - 1 do
+    Move(ChannelDataPointer[ChannelIndex]^[SampleIndex],
+      ChannelDataPointer[ChannelIndex]^[0],
+      SampleFrames - SampleIndex * SizeOf(Single));
+
+  // reduce sampleframes
+  SampleFrames := SampleFrames - SampleIndex;
 end;
 
 
