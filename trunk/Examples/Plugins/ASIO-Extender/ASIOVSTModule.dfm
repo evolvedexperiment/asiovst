@@ -26,7 +26,6 @@ object ASIOVSTModule: TASIOVSTModule
       ReportVST2Properties = True
       ShortLabel = 'ASIO Dr'
       SmallStepFloat = 0.009999999776482582
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       VSTModule = Owner
       OnParameterChange = ASIODriverChange
@@ -69,7 +68,6 @@ object ASIOVSTModule: TASIOVSTModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess

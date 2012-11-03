@@ -41,7 +41,8 @@ type
   TSplitterDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray;
+      const SampleFrames: Cardinal);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);

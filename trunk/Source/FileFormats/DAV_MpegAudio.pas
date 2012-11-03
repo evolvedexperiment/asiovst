@@ -1103,7 +1103,7 @@ begin
  if FNonSeekable then
   begin
    Result := False;
-   exit;
+   Exit;
   end;
 
  CRC := nil;
@@ -1125,7 +1125,7 @@ begin
     if (not THeader(Header).ReadHeader(Self, CRC)) then
      begin
       Result := False;
-      exit;
+      Exit;
      end;
    until (FLastFrameNumber >= Frame);
 
@@ -1210,7 +1210,7 @@ begin
        if (FProtectionBit <> 0)
         then Value[1] := 0
         else Value[1] := 2;
-       FNumSlots := FFramesize - Value[0] - Value[1] - 4;                      // header size
+       FNumSlots := FFramesize - Value[0] - Value[1] - 4;  // header size
       end
      else
       begin  // MPEG-2 LSF
@@ -1220,7 +1220,7 @@ begin
        if (FProtectionBit <> 0)
         then Value[1] := 0
         else Value[1] := 2;
-       FNumSlots := FFramesize - Value[0] - Value[1] - 4;                      // header size
+       FNumSlots := FFramesize - Value[0] - Value[1] - 4;  // header size
       end;
     end
    else FNumSlots := 0;
@@ -1551,7 +1551,7 @@ begin
     if (ChannelBitrate = 1) or (ChannelBitrate = 2) then
      begin // table 3-B.2c or 3-B.2d
       if (FSubBandNumber <= 1) then Result := 4 else Result := 3;
-      exit;
+      Exit;
      end
     else
      begin
@@ -1559,7 +1559,7 @@ begin
       if (FSubBandNumber <= 10) then Result := 4
       else if (FSubBandNumber <= 22) then Result := 3
       else Result := 2;
-      exit;
+      Exit;
     end;
   end
  else
@@ -1568,7 +1568,7 @@ begin
    if (FSubBandNumber <= 3) then Result := 4
     else if (FSubBandNumber <= 10) then Result := 3
     else Result := 2;
-    exit;
+    Exit;
   end;
 end;
 
@@ -2917,7 +2917,7 @@ var
   IsRatio             : array [0..575] of Single;
   GranuleInfo         : PGranuleInfo;
   ModeExt, IoType     : Cardinal;
-  sfx, i, j, Lines    : Integer;
+  i, j, Lines         : Integer;
   temp, temp2         : Integer;
   MSStereo, IStereo   : Boolean;
   lsf                 : Boolean;
@@ -3257,7 +3257,7 @@ begin
  FFilter[0].OnNewPCMSample := NewPCMSample;
  FFilter[1].OnNewPCMSample := NewPCMSample;
  FBuffer := TStereoBuffer.Create;
- FScan := True;
+ FScan := Scan;
  FCRC := nil;
  FWhichC := chBoth;
  FBufferPos := 0;
@@ -3267,7 +3267,7 @@ constructor TCustomMpegAudio.Create(Filename: TFileName; Scan: Boolean = True);
 begin
  Create(Scan);
  FBitStream := TBitStream.Create(FileName);
- ScanStream;
+ if FScan then ScanStream;
 end;
 
 constructor TCustomMpegAudio.Create(Stream: TStream; Scan: Boolean = True);
@@ -3276,7 +3276,7 @@ begin
  FSampleFrames := 0;
  FTotalLength := 0;
  FBitStream := TBitStream.Create(Stream);
- ScanStream;
+ if FScan then ScanStream;
 end;
 
 destructor TCustomMpegAudio.Destroy;
@@ -3435,51 +3435,40 @@ end;
 function TCustomMpegAudio.ReadBuffer(chLeft, chRight: PDAVSingleFixedArray;
   Size: Integer): Integer;
 var
-  FrameRead     : Boolean;
   SamplesToRead : Integer;
 begin
  Result := 0;
- FrameRead := True;
+ if not Assigned(FBitStream) then
+  Exit;
+
  repeat
-  if (FBufferPos = 0) and Assigned(FBitStream) then
-   if (FrameRead and (FBitStream.CurrentFrame + 20 < FMPEGHeader.MaxNumberOfFrames(FBitStream))) and
-      (FBitStream.CurrentFrame < FMPEGHeader.MaxNumberOfFrames(FBitStream)) then
-    begin
-     DoDecode;
-     FrameRead := FMPEGHeader.ReadHeader(FBitStream, FCRC);
-     if not FrameRead then
-      begin
-       FillChar(FBuffer.OutputLeft[0],  FBuffer.BufferSize * SizeOf(Single), 0);
-       FillChar(FBuffer.OutputRight[0], FBuffer.BufferSize * SizeOf(Single), 0);
-       if Assigned(FOnEndOfFile)
-        then FOnEndOfFile(Self);
-      end
-     else
-      begin
-       if Assigned(FOnFrameChanged)
-        then FOnFrameChanged(Self);
-       FCurrentPos := FCurrentPos + 1152;
-      end;
-    end
-   else
-    begin
-     FBuffer.Clear;
-     if Assigned(FOnEndOfFile)
-      then FOnEndOfFile(Self);
-    end;
+  // check if buffer is empty
+  if FBufferPos = 0 then
+   begin
+    // read next header and decode
+    if (FBitStream.CurrentFrame < FMPEGHeader.MaxNumberOfFrames(FBitStream)) and
+      not FMPEGHeader.ReadHeader(FBitStream, FCRC) then
+     begin
+      if Assigned(FOnEndOfFile) then FOnEndOfFile(Self);
+      Exit;
+     end;
+    FBuffer.Reset;
+    DoDecode;
+   end;
+
+  // get the number of samples to read
   if (Size - Result) > (FBuffer.BufferSize - FBufferPos)
    then SamplesToRead := (FBuffer.BufferSize - FBufferPos)
    else SamplesToRead := (Size - Result);
+
+  // copy data from buffers to output
   Move(FBuffer.OutputLeft[FBufferPos],  chLeft[Result],  SamplesToRead * SizeOf(Single));
   Move(FBuffer.OutputRight[FBufferPos], chRight[Result], SamplesToRead * SizeOf(Single));
-  FBufferPos  := FBufferPos + SamplesToRead;
+
+  // advance buffer position and output sample count
+  FBufferPos  := (FBufferPos + SamplesToRead) mod FBuffer.BufferSize;
   Result := Result + SamplesToRead;
-  if FBufferPos >= FBuffer.BufferSize then
-   begin
-    FBufferPos := 0;
-    FBuffer.Reset;
-   end;
- until Result >= Size;
+ until Result = Size;
  Assert(Result <= Size);
 end;
 
@@ -3540,8 +3529,6 @@ begin
    FSampleFrames := FSampleFrames + 1152;
   end;
  FBitStream.Reset;
-
- FMPEGHeader.ReadHeader(FBitStream, FCRC);
 end;
 
 procedure TCustomMpegAudio.ParseID3v2Tag;

@@ -42,7 +42,6 @@ type
   TASIOVSTModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure AHBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
@@ -125,18 +124,6 @@ begin
  FreeAndNil(FASIOHost);
 end;
 
-procedure TASIOVSTModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- if GUI is TFmASIOVST then
-  with TFmASIOVST(GUI) do
-   try
-    CbASIO.Items := FASIOHost.DriverList;
-    DisplayASIOInformation;
-   except
-   end;
-end;
-
 procedure TASIOVSTModule.VSTModuleBlockSizeChange(Sender: TObject;
   const BlockSize: Integer);
 begin
@@ -169,7 +156,8 @@ begin
  InternalBufferSizeChanged;
 end;
 
-procedure TASIOVSTModule.AHBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+procedure TASIOVSTModule.AHBufferSwitch32(Sender: TObject; const InBuffer,
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   BufferByteSize : Integer;
 begin
@@ -183,7 +171,8 @@ begin
  FIntReadPos := (FIntReadPos + Integer(FASIOHost.BufferSize)) mod (FNrOfBuffers * Integer(FASIOHost.BufferSize));
 end;
 
-procedure TASIOVSTModule.AHBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
+procedure TASIOVSTModule.AHBufferSwitch64(Sender: TObject; const InBuffer,
+  OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
   BufferByteSize : Integer;
 begin

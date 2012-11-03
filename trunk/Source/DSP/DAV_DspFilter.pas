@@ -660,6 +660,7 @@ begin
     inherited;
     FGain_dB    := Self.FGain_dB;
     FGainFactor := Self.FGainFactor;
+    FGainFactorSquared := Self.FGainFactorSquared;
     FSRR        := Self.FSRR;
     FW0         := Self.FW0;
     FExpW0      := Self.FExpW0;
@@ -1118,11 +1119,11 @@ end;
 
 procedure TCustomBiquadIIRFilter.AssignTo(Dest: TPersistent);
 begin
+ inherited;
+
  if Dest is TCustomBiquadIIRFilter then
   with TCustomBiquadIIRFilter(Dest) do
    begin
-    inherited;
-
     // eventually copy internal coefficients & states
     if Dest.ClassType = Self.ClassType then
      begin
@@ -1132,9 +1133,9 @@ begin
       FZeros        := Self.FZeros;
       FState        := Self.FState;
       FStateStack   := Self.FStateStack;
-     end;
-   end
-  else inherited;
+     end
+    else CalculateCoefficients;
+   end;
 end;
 
 procedure TCustomBiquadIIRFilter.CalculatePoleZeroes;

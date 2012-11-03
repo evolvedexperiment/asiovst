@@ -811,7 +811,7 @@ procedure TFftReal2ComplexNativeFloat32.PerformFFTOne32(
 {$IFDEF PUREPASCAL}
 var
   TD : PDAV2SingleArray absolute TimeDomain;
-  FD : PComplexSingle absolute FreqDomain;
+  FD : PComplex32 absolute FreqDomain;
 begin
  FD.Re := TD[0] + TD[1];
  FD.Im := TD[0] - TD[1];
@@ -1808,7 +1808,7 @@ procedure TFftReal2ComplexNativeFloat32.PerformIFFTOne32(
 {$IFDEF PUREPASCAL}
 var
   TD : PDAV2SingleArray absolute TimeDomain;
-  FD : PComplexSingle absolute FreqDomain;
+  FD : PComplex32 absolute FreqDomain;
 begin
   TD[0] := FD.Re + FD.Im;
   TD[1] := FD.Re - FD.Im;
@@ -2995,7 +2995,7 @@ procedure TFftReal2ComplexNativeFloat64.PerformFFTOne64(
 {$IFDEF PUREPASCAL}
 var
   TD : PDAV2DoubleArray absolute TimeDomain;
-  FD : PComplexDouble absolute FreqDomain;
+  FD : PComplex64 absolute FreqDomain;
 begin
  FD.Re := TD[0] + TD[1];
  FD.Im := TD[0] - TD[1];
@@ -4001,7 +4001,7 @@ end;
 procedure TFftReal2ComplexNativeFloat64.PerformIFFTOne64(const FreqDomain: PDAVComplexDoubleFixedArray; const TimeDomain: PDAVDoubleFixedArray);
 {$IFDEF PUREPASCAL}
 var
-  FD : PComplexDouble absolute FreqDomain;
+  FD : PComplex64 absolute FreqDomain;
   TD : PDAV2DoubleArray absolute TimeDomain;
 begin
  TD[0] := FD.Re + FD.Im;

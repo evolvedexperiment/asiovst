@@ -4022,15 +4022,15 @@ var
   ChunkData      : Pointer;
   ChunkDataSize  : Integer;
   PatchChunkInfo : TVstPatchChunkInfo;
-  b              : Char;
+  ChunkName      : TChunkName;
   UseChunk       : Boolean;
 begin
  if not Assigned(FVstEffect) then exit;
 
  // read nineth byte to check, whether chunk are used here
- Stream.Seek(9, 0);
- Stream.Read(b, 1);
- UseChunk := (b <> #$78);
+ Stream.Seek(8, 0);
+ Stream.Read(ChunkName, 4);
+ UseChunk := (ChunkName[1] <> #$78);
  Stream.Seek(0, 0);
 
 // if eoProgramChunks in EffectOptions then

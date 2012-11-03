@@ -230,7 +230,7 @@ end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleProcessDoubleReplacing(
   const Inputs, Outputs: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer);
+  const SampleFrames: Cardinal);
 var
   SampleIndex  : Integer;
   ChannelIndex : Integer;

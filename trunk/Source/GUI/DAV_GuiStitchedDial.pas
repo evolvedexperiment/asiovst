@@ -133,6 +133,7 @@ type
     property ImageIndex;
     property Transparent;
     property Value;
+    property Visible;
     property WheelStep;
     property Wrap;
 
