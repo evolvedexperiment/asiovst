@@ -1,142 +1,177 @@
 object FmVSTEditor: TFmVSTEditor
-  Left = 383
-  Height = 132
-  Top = 242
-  Width = 320
-  HorzScrollBar.Page = 319
-  VertScrollBar.Page = 131
-  ActiveControl = CBPreset
-  BorderStyle = bsToolWindow
-  Caption = 'ITA VST Plugin Editor'
-  ClientHeight = 132
-  ClientWidth = 320
+  Left = 281
+  Top = 224
+  BorderStyle = bsDialog
+  Caption = 'VST Plugin Editor'
+  ClientHeight = 112
+  ClientWidth = 321
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
   Font.Height = -13
   Font.Name = 'Verdana'
   Font.Style = [fsBold]
+  OldCreateOrder = False
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnDeactivate = FormDeactivate
+  PixelsPerInch = 96
+  TextHeight = 16
   object ToolBar: TToolBar
+    Left = 0
+    Top = 0
+    Width = 321
     Height = 27
-    Width = 320
     ButtonHeight = 24
     Color = clBtnFace
     EdgeInner = esNone
     EdgeOuter = esNone
     ParentColor = False
     TabOrder = 0
-    object LbPreset: TLabel
-      Left = 5
-      Height = 24
+    object LblPreset: TLabel
+      Left = 0
+      Top = 0
       Width = 53
+      Height = 24
       AutoSize = False
       Caption = 'Preset: '
-      Color = clNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
       Layout = tlCenter
-      ParentColor = False
     end
-    object ToolButton1: TToolButton
-      Left = 1
-      Width = 4
-      Caption = 'ToolButton1'
-      Style = tbsSeparator
-    end
-    object ToolButton2: TToolButton
-      Left = 58
+    object BtnSeparator1: TToolButton
+      Left = 53
+      Top = 0
       Width = 8
-      Caption = 'ToolButton2'
+      Caption = 'BtnSeparator1'
       ImageIndex = 0
       Style = tbsSeparator
     end
-    object CBPreset: TComboBox
-      Left = 66
-      Height = 24
+    object CbxPreset: TComboBox
+      Left = 61
+      Top = 0
       Width = 144
-      AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
-      Color = clBtnFace
-      ItemHeight = 13
-      MaxLength = 0
-      OnChange = CBPresetChange
+      Height = 24
+      BevelInner = bvNone
+      BevelOuter = bvNone
       Style = csDropDownList
+      Color = clBtnFace
+      PopupMenu = PUPreset
       TabOrder = 0
+      OnChange = CbxPresetChange
     end
-    object ToolButton3: TToolButton
-      Left = 210
+    object BtnSeparator2: TToolButton
+      Left = 205
+      Top = 0
       Width = 8
-      Caption = 'ToolButton3'
+      Caption = 'BtnSeparator2'
       ImageIndex = 1
       Style = tbsSeparator
     end
-    object BtSetup: TButton
-      Left = 218
-      Height = 24
+    object BtnSetup: TButton
+      Left = 213
+      Top = 0
       Width = 51
-      BorderSpacing.InnerBorder = 4
+      Height = 24
       Caption = '&Setup'
-      OnClick = BtSetupClick
       TabOrder = 2
       TabStop = False
+      OnClick = BtnSetupClick
     end
-    object ToolButton4: TToolButton
-      Left = 269
+    object BtnSeparator3: TToolButton
+      Left = 264
+      Top = 0
       Width = 8
-      Caption = 'ToolButton4'
+      Caption = 'BtnSeparator3'
       ImageIndex = 2
       Style = tbsSeparator
     end
-    object BtExit: TButton
-      Left = 277
-      Height = 24
+    object BtnExit: TButton
+      Left = 272
+      Top = 0
       Width = 37
-      BorderSpacing.InnerBorder = 4
+      Height = 24
       Caption = 'E&xit'
-      OnClick = BtExitClick
       TabOrder = 1
       TabStop = False
+      OnClick = BtnExitClick
     end
   end
   object VSTPanel: TPanel
-    Height = 105
+    Left = 0
     Top = 27
-    Width = 320
+    Width = 321
+    Height = 85
     Align = alClient
     BevelOuter = bvNone
-    Font.Color = 6695441
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBtnText
     Font.Height = -11
     Font.Name = 'Verdana'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 1
   end
   object VstHost: TVstHost
-    VstPlugIns = <    
+    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
+    ManageIdleAutomaticly = False
+    ParameterQuantization = 0
+    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
+    Tempo = 120.000000000000000000
+    VendorVersion = 0
+    VstPlugIns = <
       item
         DisplayName = 'Plugin'
+        VstOfflineTasks = <>
       end>
-    ParameterQuantization = 0
-    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
-    Tempo = 120
-    VstVersion = 2300
-    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
-    VstTimeInfo.SampleRate = 44100
-    VstTimeInfo.Tempo = 120
+    VstTimeInfo.SampleRate = 44100.000000000000000000
+    VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
-    left = 96
-    top = 75
+    VstVersion = 2400
+    Left = 8
+    Top = 35
   end
-  object ASIOHost: TASIOHost
+  object AsioHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     PreventClipping = pcAnalog
-    ConvertOptimizations = [coSSE, co3DNow]
-    SampleRate = 44100
-    ASIOTime.Speed = 1
-    ASIOTime.SampleRate = 44100
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    OnReset = ASIOHostReset
-    OnLatencyChanged = ASIOHostReset
-    OnBufferSwitch32 = ASIOHostBufferSwitch32
-    left = 124
-    top = 75
+    SampleRate = 44100.000000000000000000
+    OnBufferSwitch32 = AsioHostBufferSwitch32
+    OnLatencyChanged = AsioHostReset
+    OnReset = AsioHostReset
+    Left = 52
+    Top = 35
+  end
+  object PUPreset: TPopupMenu
+    Left = 108
+    Top = 35
+    object MnuLoadPreset: TMenuItem
+      Caption = '&Load Preset...'
+      OnClick = MnuLoadPresetClick
+    end
+    object MnuSavePreset: TMenuItem
+      Caption = '&Save Preset...'
+      OnClick = MnuSavePresetClick
+    end
+  end
+  object OpenDialog: TOpenDialog
+    DefaultExt = 'fxp'
+    Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
+    Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
+    Left = 160
+    Top = 35
+  end
+  object SaveDialog: TSaveDialog
+    DefaultExt = 'fxp'
+    Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
+    Left = 220
+    Top = 35
   end
 end

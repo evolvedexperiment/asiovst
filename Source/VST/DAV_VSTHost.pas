@@ -74,6 +74,8 @@ const
 
 type
   {$IFDEF DELPHI10_UP} {$region 'General Types'} {$ENDIF}
+  EVstHostException = Exception;
+
   TVendorSpecificEvent = function(Index, Value: LongInt; Ptr: Pointer; Opt: Single): Integer of object;
   TVstAutomateEvent = procedure(Sender: TObject; Index: Integer; ParameterValue: Single) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; VstEvents: PVstEvents) of object;
@@ -732,7 +734,7 @@ end;
 
 function WhatIfNoEntry: Integer;
 begin
- raise Exception.Create(RStrNoEntryPoint);
+ raise EVstHostException.Create(RStrNoEntryPoint);
 end;
 
 function String2Language(LanguageString : string): TVSTHostLanguage;
@@ -1202,16 +1204,16 @@ begin
                                        begin
                                        end;
                                       else
-                                       {$IFDEF Debug} raise Exception.Create('TODO: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !') {$ENDIF Debug};
+                                       {$IFDEF Debug} raise EVstHostException.Create('TODO: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !') {$ENDIF Debug};
                                      end;
                                     {$ENDIF}
                                     {$ENDIF}
                                    end;
-    amEditFile                   : {$IFDEF Debug} raise Exception.Create('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
-    amGetChunkFile               : {$IFDEF Debug} raise Exception.Create('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
+    amEditFile                   : {$IFDEF Debug} raise EVstHostException.Create('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
+    amGetChunkFile               : {$IFDEF Debug} raise EVstHostException.Create('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
    else
     try
-      raise Exception.Create('Check: ' + IntToStr(Integer(Opcode)) + ' - ' +
+      raise EVstHostException.Create('Check: ' + IntToStr(Integer(Opcode)) + ' - ' +
                                          IntToStr(index) + ' - ' +
                                          IntToStr(value) + ' - ' +
                                          FloatToStr(opt));
@@ -1505,14 +1507,14 @@ begin
 
  if Index = -1
   then Result := FParamQuan
-  else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ELSE} Result := 0 {$ENDIF Debug}
+  else {$IFDEF Debug} raise EVstHostException.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ELSE} Result := 0 {$ENDIF Debug}
 end;
 
 function TCustomVstHost.AudioMasterGetPreviousPlug(
   InputPin: Integer): PVstEffect;
 begin
 // if PlugIndex = 0 then Result := 0;
- {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ELSE} Result := nil {$ENDIF Debug};
+ {$IFDEF Debug} raise EVstHostException.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ELSE} Result := nil {$ENDIF Debug};
 end;
 
 function TCustomVstHost.AudioMasterCanDo(CanDo: PAnsiChar): Boolean;
@@ -1542,7 +1544,7 @@ end;
 
 function TCustomVstHost.AudioMasterGetNextPlug(OutputPin: Integer): PVstEffect;
 begin
-{$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ELSE} Result := nil {$ENDIF Debug};
+{$IFDEF Debug} raise EVstHostException.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ELSE} Result := nil {$ENDIF Debug};
 end;
 
 function TCustomVstHost.AudioMasterGetSampleRate: Single;
@@ -1669,7 +1671,7 @@ begin
        11 : SmpteDiv := 24.976;
        12 : SmpteDiv := 59.94;
        13 : SmpteDiv := 60;
-      else  raise Exception.Create(RCStrInvalidSMTPEFrameRate);
+      else  raise EVstHostException.Create(RCStrInvalidSMTPEFrameRate);
     end;
 
     SmpteOffset := Round(OffsetInSecond * SmpteDiv * 80);
@@ -2129,7 +2131,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if (TVSTPlugins(Collection).VSTHost.CheckStringLengths) and (Length(Result) > 24)
-    then raise Exception.Create('String too short');
+    then raise EVstHostException.Create('String too short');
  finally
   // dispose memory
   Dispose(Temp);
@@ -2156,7 +2158,7 @@ begin
   // check whether the result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(Result) > 8)
-    then raise Exception.Create('String too short');
+    then raise EVstHostException.Create('String too short');
  finally
   // dispose memory
   Dispose(Temp);
@@ -2183,7 +2185,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(Result) > 8)
-    then raise Exception.Create('String too short');
+    then raise EVstHostException.Create('String too short');
  finally
 
   // dispose memory
@@ -2211,7 +2213,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(Result) > 8)
-    then raise Exception.Create('String too short');
+    then raise EVstHostException.Create('String too short');
  finally
 
   // dispose memory
@@ -2318,7 +2320,7 @@ var
 begin
  i := 0;
  try
-//  raise Exception.Create(IntToStr(Integer(effEditOpen)));
+//  raise EVstHostException.Create(IntToStr(Integer(effEditOpen)));
   i := VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
  finally
   if i > 0 then FEditOpen := True
@@ -2341,10 +2343,10 @@ end;
 procedure TCustomVstPlugIn.ShowEdit(Control: TFmxHandle);
 begin
  if not Active
-  then raise Exception.Create('Plugin not active!');
+  then raise EVstHostException.Create('Plugin not active!');
 
  if Control = 0
-  then raise Exception.Create('Control must exist!');
+  then raise EVstHostException.Create('Control must exist!');
  if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault) then
   begin
    if not FEditOpen then
@@ -2353,10 +2355,10 @@ begin
      FGUIControl := Control;
      EditIdle;
     end;
-//  else raise Exception.Create('Editor is already open!');
+//  else raise EVstHostException.Create('Editor is already open!');
   end
  else // VST plugin has no GUI itself
-  raise Exception.Create('Not implemented yet');
+  raise EVstHostException.Create('Not implemented yet');
 
  if Assigned(FOnShowEdit) then FOnShowEdit(Self, GUIControl);
 end;
@@ -2366,10 +2368,10 @@ end;
 procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
 begin
  if not Active
-  then raise Exception.Create('Plugin not active!');
+  then raise EVstHostException.Create('Plugin not active!');
 
  if Control = nil
-  then raise Exception.Create('Control must exist!');
+  then raise EVstHostException.Create('Control must exist!');
  if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault) then
   begin
    if not FEditOpen then
@@ -2378,7 +2380,7 @@ begin
      FGUIControl := Control;
      EditIdle;
     end;
-//  else raise Exception.Create('Editor is already open!');
+//  else raise EVstHostException.Create('Editor is already open!');
   end
  else // VST plugin has no GUI itself
   case FGUIStyle of
@@ -2629,7 +2631,7 @@ var
 begin
  // make sure the editor is visible
  if not Assigned(FGUIControl)
-  then raise Exception.Create('Editor not instanciated yet');
+  then raise EVstHostException.Create('Editor not instanciated yet');
 
  User32Handle := GetModuleHandle(user32);
  if User32Handle <> 0 then
@@ -2651,7 +2653,7 @@ begin
 end;
 {$ELSE}
 begin
- raise Exception.Create('Not implemented!');
+ raise EVstHostException.Create('Not implemented!');
 end;
 {$ENDIF}
 
@@ -3588,11 +3590,11 @@ begin
 
  // check if a VstEffect pointer has been created created!
  if FVstEffect = nil
-  then raise Exception.Create(RStrLoadingFailed);
+  then raise EVstHostException.Create(RStrLoadingFailed);
 
  // check if the VstEffect pointer is valid
  if FVstEffect.Magic <> 'PtsV' // reversed (due to reversed byte order)
-  then raise Exception.Create(RStrVSTPluginNotValid);
+  then raise EVstHostException.Create(RStrVSTPluginNotValid);
 
  // set host related variables
  FVstEffect.ReservedForHost := Self;
@@ -3621,7 +3623,7 @@ begin
   then Unload;
  try
    if Value^.Magic <> 'PtsV' // reversed (due to reversed byte order)
-    then raise Exception.Create(RStrVSTPluginNotValid);
+    then raise EVstHostException.Create(RStrVSTPluginNotValid);
   FVstEffect := Value;  
   DontRaiseExceptionsAndSetFPUcodeword;
   FLoaded := True;
@@ -3650,7 +3652,7 @@ const
 {$ENDIF}
 begin
  if not FileExists(FileName)
-  then raise Exception.CreateFmt(RStrFileDoesNotExist, [FileName]);
+  then raise EVstHostException.CreateFmt(RStrFileDoesNotExist, [FileName]);
 
  if FLoaded
   then Unload;
@@ -3672,7 +3674,7 @@ begin
      begin
       // check if the DLL is a jBridge boot strap DLL and eventually raise exception
       if CheckIsBootStrapDll(Filename)
-       then raise Exception.Create('Error: This is a jBridge bootstrap dll!');
+       then raise EVstHostException.Create('Error: This is a jBridge bootstrap dll!');
 
       with TRegistry.Create do
        try
@@ -3683,17 +3685,17 @@ begin
          {$ELSE}
          then str := ReadString(PROXY_REGVAL)
          {$ENDIF}
-         else raise Exception.Create('Error: jBridge not found!');
+         else raise EVstHostException.Create('Error: jBridge not found!');
        finally
         Free;
        end;
 
       if str = ''
-       then raise Exception.Create('Error: Unable to locate proxy DLL');
+       then raise EVstHostException.Create('Error: Unable to locate proxy DLL');
 
       FVstDllHandle := SafeLoadLibrary(str, 7);
       if (FVstDllHandle = 0)
-       then raise Exception.Create('Failed to load proxy');
+       then raise EVstHostException.Create('Failed to load proxy');
 
       @FMainFunction := nil;
       @FJBridgeMainFunction := GetProcAddress(FVstDllHandle, 'BridgeMain');
@@ -3702,12 +3704,15 @@ begin
     else
     {$ENDIF}
      begin
+      RaiseLastOSError;
+(*
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nil, LE, 0, @Buf[0], SizeOf(Buf), nil);
       if Buf = '' then
        begin
         str := AnsiString(IntToStr(LE)) + StrPas(Buf);
-        raise Exception.Create(string(str));
-       end else raise Exception.Create(string(StrPas(Buf)));
+        raise EVstHostEVstHostException.Create(string(str));
+       end else raise EVstHostEVstHostException.Create(string(StrPas(Buf)));
+*)
      end;
     {$ENDIF}
    end
@@ -3720,7 +3725,7 @@ begin
     if not Assigned(FMainFunction) then
      begin
       @FMainFunction := @WhatIfNoEntry;
-      raise Exception.Create(RStrNoEntryPoint);
+      raise EVstHostException.Create(RStrNoEntryPoint);
      end;
    end;
 
@@ -3786,7 +3791,7 @@ var
   FileStream: TFileStream;
 begin
  if not FileExists(FileName)
-  then raise Exception.Create(RStrBankFileDoesNotExist);
+  then raise EVstHostException.Create(RStrBankFileDoesNotExist);
  FileStream := TFileStream.Create(FileName, fmOpenRead);
  try
   LoadBank(FileStream);
@@ -3800,7 +3805,7 @@ var
   FileStream: TFileStream;
 begin
  if not FileExists(FileName)
-  then raise Exception.Create(StrPresetFileDoesNotExist);
+  then raise EVstHostException.Create(StrPresetFileDoesNotExist);
  FileStream := TFileStream.Create(FileName, fmOpenRead);
  try
   LoadPreset(FileStream);
@@ -3963,14 +3968,14 @@ begin
    // swap unique ID
    Flip32(FXChunkBank.fxId);
    if FXChunkBank.fxId <> FVstEffect^.UniqueID
-    then raise Exception.Create(RStrBankFileNotForThisPlugin);
+    then raise EVstHostException.Create(RStrBankFileNotForThisPlugin);
 
    // allocate chunk data memory
    ChunkDataSize := Stream.Size - Stream.Position;
    GetMem(ChunkData, ChunkDataSize);
    try
     if Stream.Read(ChunkData^, ChunkDataSize) <> ChunkDataSize
-     then raise Exception.Create('chunk error, actual stream smaller than chunk');
+     then raise EVstHostException.Create('chunk error, actual stream smaller than chunk');
     SetChunk(ChunkData, ChunkDataSize, False);
    finally
     Dispose(ChunkData);
@@ -3985,7 +3990,7 @@ begin
    // swap
    Flip32(FXSet.fxId);
    if FXSet.fxId <> FVstEffect^.UniqueID
-    then raise Exception.Create(RStrBankFileNotForThisPlugin);
+    then raise EVstHostException.Create(RStrBankFileNotForThisPlugin);
 
    with PatchChunkInfo do
     begin
@@ -4042,7 +4047,7 @@ begin
    // check unique ID
    Flip32(FXChunkset.fxId);
    if FVstEffect^.UniqueID <> FXChunkset.fxId
-    then raise Exception.Create(RStrPresetFileNotForThisPlugin);
+    then raise EVstHostException.Create(RStrPresetFileNotForThisPlugin);
 
    // set program name
    SetProgramName(FXChunkset.prgName);
@@ -4052,7 +4057,7 @@ begin
    GetMem(ChunkData, ChunkDataSize);
    try
     if Stream.Read(ChunkData^, ChunkDataSize) <> ChunkDataSize
-     then raise Exception.Create('chunk error, actual stream smaller than chunk');
+     then raise EVstHostException.Create('chunk error, actual stream smaller than chunk');
     SetChunk(ChunkData, ChunkDataSize, True);
    finally
     Dispose(ChunkData);
@@ -4065,7 +4070,7 @@ begin
    // check unique ID
    Flip32(FXPreset.fxId);
    if FVstEffect^.UniqueID <> FXPreset.fxId
-    then raise Exception.Create(RStrPresetFileNotForThisPlugin);
+    then raise EVstHostException.Create(RStrPresetFileNotForThisPlugin);
 
    with PatchChunkInfo do
     begin
@@ -4180,7 +4185,7 @@ end;
 procedure TCustomVstPlugIn.SetGUIStyle(const Value: TGUIStyle);
 begin
  if FEditOpen
-  then raise Exception.Create(RStrCloseEditorFirst)
+  then raise EVstHostException.Create(RStrCloseEditorFirst)
   else FGUIStyle := Value;
 end;
 {$ENDIF}

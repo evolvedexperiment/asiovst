@@ -75,6 +75,7 @@ type
     procedure SaveToStream(Stream: TStream); virtual; abstract;
     procedure LoadFromPointer(const Data: Pointer); virtual; abstract;
     procedure SaveToPointer(const Data: Pointer); virtual; abstract;
+
     property ChannelCount: Cardinal read FChannelCount write SetChannelCount;
     property BlockSize: Cardinal read FBlockSize write SetBlockSize;
     property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames;
@@ -2065,3 +2066,4 @@ begin
 end;
 
 end.
+

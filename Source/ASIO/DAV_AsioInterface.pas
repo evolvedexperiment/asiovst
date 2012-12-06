@@ -173,10 +173,11 @@ const
 
 constructor TStdCallAsio.Create(AsioCLSID: TClsID; var Success: Boolean);
 begin
- inherited Create;
- CoInitialize(nil);
- CoCreateInstance(AsioCLSID, nil, CLSCTX_INPROC_SERVER, AsioCLSID, ASIODriverInterface);
- Success := Assigned(ASIODriverInterface);
+  inherited Create;
+  CoInitialize(nil);
+  CoCreateInstance(AsioCLSID, nil, CLSCTX_INPROC_SERVER, AsioCLSID,
+    ASIODriverInterface);
+  Success := Assigned(ASIODriverInterface);
 end;
 
 destructor TStdCallAsio.Destroy;

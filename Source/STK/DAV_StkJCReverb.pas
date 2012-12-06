@@ -187,11 +187,11 @@ function TStkJCReverb.Tick(const Input: Single): Single;
 var
   Temp    : Single;
   FiltOut : Single;
-  Tmp     : Array [0..3] of Single;
+  Tmp     : array [0..3] of Single;
 begin
   Temp := FAllpassDelays[0].LastOutput;
   Tmp[1] := FAllpassCoefficient * Temp;
-  Tmp[1] := Tmp[1] + input;
+  Tmp[1] := Tmp[1] + Input;
   FAllpassDelays[0].Tick(Tmp[1]);
   Tmp[1] := -(FAllpassCoefficient * Tmp[1]) + Temp;
 

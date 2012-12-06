@@ -81,7 +81,7 @@ procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;
   MidiEvent: TVstMidiEvent);
 var
   Status  : Byte;
-  i       : Integer;
+  Index   : Integer;
   newNote : TSineSynthVoice;
 const
   CVeloDiv : Single = 1 / 128;
@@ -101,11 +101,11 @@ begin
   end
  else if ((Status = $90) and (MidiEvent.MidiData[2] = 0)) or (Status = $80) then // "note off" ?
   begin
-   for i:=0 to Voices.Count-1 do
+   for Index := 0 to Voices.Count - 1 do
     begin
-     if (Voices.Items[i].MidiKeyNr = MidiEvent.MidiData[1]) then
+     if (Voices.Items[Index].MidiKeyNr = MidiEvent.MidiData[1]) then
       begin
-       Voices.Delete(i);
+       Voices.Delete(Index);
        Break;
       end;
     end;

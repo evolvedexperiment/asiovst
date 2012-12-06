@@ -1,34 +1,34 @@
-unit DAV_ProcessorInfoComponent;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this Project is Christian-W. Budde               //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_ProcessorInfoComponent;
 
 interface
 
@@ -106,107 +106,107 @@ end;
 
 function TProcessorInfoComponent.GetAPICID: Byte;
 begin
- Result := ProcessorInfo.APICID;
+  Result := ProcessorInfo.APICID;
 end;
 
 function TProcessorInfoComponent.GetBrandID: Byte;
 begin
- Result := ProcessorInfo.BrandID;
+  Result := ProcessorInfo.BrandID;
 end;
 
 function TProcessorInfoComponent.GetCPUName: string;
 begin
- Result := ProcessorInfo.CPUName;
+  Result := ProcessorInfo.CPUName;
 end;
 
 function TProcessorInfoComponent.GetCPUType: TCPUType;
 begin
- Result := ProcessorInfo.CPUType;
+  Result := ProcessorInfo.CPUType;
 end;
 
 function TProcessorInfoComponent.GetExtendedFamily: Byte;
 begin
- Result := ProcessorInfo.ExtendedFamily;
+  Result := ProcessorInfo.ExtendedFamily;
 end;
 
 function TProcessorInfoComponent.GetExtendedModel: Byte;
 begin
- Result := ProcessorInfo.ExtendedModel;
+  Result := ProcessorInfo.ExtendedModel;
 end;
 
 function TProcessorInfoComponent.GetFamily: Byte;
 begin
- Result := ProcessorInfo.Family;
+  Result := ProcessorInfo.Family;
 end;
 
 function TProcessorInfoComponent.GetFlushLineSize: Byte;
 begin
- Result := ProcessorInfo.FlushLineSize;
+  Result := ProcessorInfo.FlushLineSize;
 end;
 
 function TProcessorInfoComponent.GetHas3DNow: Boolean;
 begin
- Result := ProcessorInfo.Has3DNow;
+  Result := ProcessorInfo.Has3DNow;
 end;
 
 function TProcessorInfoComponent.GetHasCacheInfo: Boolean;
 begin
- Result := ProcessorInfo.HasCacheInfo;
+  Result := ProcessorInfo.HasCacheInfo;
 end;
 
 function TProcessorInfoComponent.GetHasConditionalMov: Boolean;
 begin
- Result := ProcessorInfo.HasConditionalMove;
+  Result := ProcessorInfo.HasConditionalMove;
 end;
 
 function TProcessorInfoComponent.GetHasEx3DNow: Boolean;
 begin
- Result := ProcessorInfo.HasEx3DNow;
+  Result := ProcessorInfo.HasEx3DNow;
 end;
 
 function TProcessorInfoComponent.GetHasExMMX: Boolean;
 begin
- Result := ProcessorInfo.HasExMMX;
+  Result := ProcessorInfo.HasExMMX;
 end;
 
 function TProcessorInfoComponent.GetHasMMX: Boolean;
 begin
- Result := ProcessorInfo.HasMMX;
+  Result := ProcessorInfo.HasMMX;
 end;
 
 function TProcessorInfoComponent.GetHyperThreading: Boolean;
 begin
- Result := ProcessorInfo.HyperThreading;
+  Result := ProcessorInfo.HyperThreading;
 end;
 
 function TProcessorInfoComponent.GetLogicalCore: Byte;
 begin
- Result := ProcessorInfo.LogicalCore;
+  Result := ProcessorInfo.LogicalCore;
 end;
 
 function TProcessorInfoComponent.GetModel: Byte;
 begin
- Result := ProcessorInfo.Model;
+  Result := ProcessorInfo.Model;
 end;
 
 function TProcessorInfoComponent.GetProcessorType: Byte;
 begin
- Result := ProcessorInfo.ProcessorType;
+  Result := ProcessorInfo.ProcessorType;
 end;
 
 function TProcessorInfoComponent.GetStepping: Byte;
 begin
- Result := ProcessorInfo.Stepping;
+  Result := ProcessorInfo.Stepping;
 end;
 
 function TProcessorInfoComponent.GetSupportsSSE: TSSESupports;
 begin
- Result := ProcessorInfo.SupportsSSE;
+  Result := ProcessorInfo.SupportsSSE;
 end;
 
 function TProcessorInfoComponent.GetVendorString: string;
 begin
- Result := ProcessorInfo.VendorString;
+  Result := ProcessorInfo.VendorString;
 end;
 
 end.

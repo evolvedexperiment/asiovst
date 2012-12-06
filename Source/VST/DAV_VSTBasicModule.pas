@@ -1530,7 +1530,7 @@ procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outp
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
@@ -1555,16 +1555,17 @@ asm
     TEST    EBX, EBX
     JZ      @End
 
-    // TEST Outputs <> 0
+    // TEST Outputs <> 0 (if so, processing can take place)
     MOV     ECX, [Outputs]
     TEST    ECX, ECX
-    JZ      @End
+    JZ      @Process
 
-    // TEST Inputs <> 0
+    // TEST Inputs <> 0 (only if outputs is also nil)
     MOV     EDX, [Inputs]
     TEST    EDX, EDX
     JZ      @End
 
+@Process:
     // PUSH SampleFrames on stack
     PUSH    EAX
     MOV     EAX, EBX
@@ -1582,7 +1583,7 @@ procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const I
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
@@ -1607,16 +1608,17 @@ asm
     TEST    EBX, EBX
     JZ      @End
 
-    // TEST Outputs <> 0
+    // TEST Outputs <> 0 (if so, processing can take place)
     MOV     ECX, [Outputs]
     TEST    ECX, ECX
-    JZ      @End
+    JZ      @Process
 
-    // TEST Inputs <> 0
+    // TEST Inputs <> 0 (only if outputs is also nil)
     MOV     EDX, [Inputs]
     TEST    EDX, EDX
     JZ      @End
 
+@Process:
     // PUSH SampleFrames on stack
     PUSH    EAX
     MOV     EAX, EBX
@@ -1635,7 +1637,7 @@ procedure Process64ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
@@ -1660,16 +1662,17 @@ asm
     TEST    EBX, EBX
     JZ      @End
 
-    // TEST Outputs <> 0
+    // TEST Outputs <> 0 (if so, processing can take place)
     MOV     ECX, [Outputs]
     TEST    ECX, ECX
-    JZ      @End
+    JZ      @Process
 
-    // TEST Inputs <> 0
+    // TEST Inputs <> 0 (only if outputs is also nil)
     MOV     EDX, [Inputs]
     TEST    EDX, EDX
     JZ      @End
 
+@Process:
     // PUSH SampleFrames on stack
     PUSH    EAX
     MOV     EAX, EBX
@@ -1689,7 +1692,7 @@ procedure ProcessFuncUserPtr(const Effect: PVSTEffect; const Inputs,
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
@@ -1714,16 +1717,17 @@ asm
     TEST    EBX, EBX
     JZ      @End
 
-    // TEST Outputs <> 0
+    // TEST Outputs <> 0 (if so, processing can take place)
     MOV     ECX, [Outputs]
     TEST    ECX, ECX
-    JZ      @End
+    JZ      @Process
 
-    // TEST Inputs <> 0
+    // TEST Inputs <> 0 (only if outputs is also nil)
     MOV     EDX, [Inputs]
     TEST    EDX, EDX
     JZ      @End
 
+@Process:
     // PUSH SampleFrames on stack
     PUSH    EAX
     MOV     EAX, EBX
@@ -1742,7 +1746,7 @@ procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs,
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
@@ -1767,16 +1771,17 @@ asm
     TEST    EBX, EBX
     JZ      @End
 
-    // TEST Outputs <> 0
+    // TEST Outputs <> 0 (if so, processing can take place)
     MOV     ECX, [Outputs]
     TEST    ECX, ECX
-    JZ      @End
+    JZ      @Process
 
-    // TEST Inputs <> 0
+    // TEST Inputs <> 0 (only if outputs is also nil)
     MOV     EDX, [Inputs]
     TEST    EDX, EDX
     JZ      @End
 
+@Process:
     // PUSH SampleFrames on stack
     PUSH    EAX
     MOV     EAX, EBX
@@ -1794,7 +1799,7 @@ procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs,
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
- if not Assigned(Effect) or (SampleFrames <= 0) or (Inputs = nil) or (Outputs = nil)
+ if not Assigned(Effect) or (SampleFrames <= 0) or ((Inputs = nil) and (Outputs = nil))
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
@@ -1819,16 +1824,17 @@ asm
     TEST    EBX, EBX
     JZ      @End
 
-    // TEST Outputs <> 0
+    // TEST Outputs <> 0 (if so, processing can take place)
     MOV     ECX, [Outputs]
     TEST    ECX, ECX
-    JZ      @End
+    JZ      @Process
 
-    // TEST Inputs <> 0
+    // TEST Inputs <> 0 (only if outputs is also nil)
     MOV     EDX, [Inputs]
     TEST    EDX, EDX
     JZ      @End
 
+@Process:
     // PUSH SampleFrames on stack
     PUSH    EAX
     MOV     EAX, EBX

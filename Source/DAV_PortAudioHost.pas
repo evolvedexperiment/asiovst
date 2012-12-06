@@ -1,63 +1,64 @@
-unit DAV_PortAudioHost;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2011-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_PortAudioHost;
 
 interface
 
 {$I DAV_Compiler.inc}
 
 uses
-  SysUtils, Classes, DAV_Types, {$IFDEF MSWindows} DAV_PortAudioBinding, {$ENDIF}
-  {$IFDEF MacOS} DAV_PortAudioBindingStatic, {$ENDIF} DAV_PortAudioTypes;
+  SysUtils, Classes, DAV_Types, {$IFDEF MSWindows} DAV_PortAudioBinding,
+  {$ENDIF} {$IFDEF MacOS} DAV_PortAudioBindingStatic, {$ENDIF}
+  DAV_PortAudioTypes;
 
 type
   EPortAudio = class(Exception);
-  TPortAudioStreamCallbackEvent = function(Sender: TObject; InputBuffers,
-    OutputBuffers: TDAVArrayOfSingleFixedArray; FrameCount: NativeUInt;
-    TimeInfo: PPaStreamCallbackTimeInfo;
+  TPortAudioStreamCallbackEvent = function(Sender: TObject;
+    InputBuffers, OutputBuffers: TDAVArrayOfSingleFixedArray;
+    FrameCount: NativeUInt; TimeInfo: PPaStreamCallbackTimeInfo;
     StatusFlags: TPaStreamCallbackFlags): LongInt of object;
 
   TPortAudioHost = class
   private
-    FInputDevice         : LongInt;
-    FOutputDevice        : LongInt;
-    FSampleRate          : Double;
-    FDeviceList          : TStringList;
-    FInputDeviceList     : TStringList;
-    FOutputDeviceList    : TStringList;
-    FOnSampleRateChanged : TNotifyEvent;
-    FOutputLatency       : Double;
-    FInputLatency        : Double;
-    FInputBuffers        : TDAVArrayOfSingleFixedArray;
-    FOutputBuffers       : TDAVArrayOfSingleFixedArray;
+    FInputDevice: LongInt;
+    FOutputDevice: LongInt;
+    FSampleRate: Double;
+    FDeviceList: TStringList;
+    FInputDeviceList: TStringList;
+    FOutputDeviceList: TStringList;
+    FOnSampleRateChanged: TNotifyEvent;
+    FOutputLatency: Double;
+    FInputLatency: Double;
+    FInputBuffers: TDAVArrayOfSingleFixedArray;
+    FOutputBuffers: TDAVArrayOfSingleFixedArray;
     function GetActive: Boolean;
     function GetDefaultInputDevice: LongInt;
     function GetDefaultOutputDevice: LongInt;
@@ -74,10 +75,10 @@ type
     procedure SetOutputDevice(const Value: LongInt);
     procedure SetSampleRate(const Value: Double);
   protected
-    FInputStreamParameters  : TPaStreamParameters;
-    FOutputStreamParameters : TPaStreamParameters;
-    FStream                 : PPaStream;
-    FOnStreamCallback       : TPortAudioStreamCallbackEvent;
+    FInputStreamParameters: TPaStreamParameters;
+    FOutputStreamParameters: TPaStreamParameters;
+    FStream: PPaStream;
+    FOnStreamCallback: TPortAudioStreamCallbackEvent;
     procedure UpdateDeviceList;
     procedure UpdateInputStreamParameters;
     procedure UpdateOutputStreamParameters;
@@ -111,8 +112,10 @@ type
     property InputDeviceList: TStringList read FInputDeviceList;
     property OutputDeviceList: TStringList read FOutputDeviceList;
 
-    property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
-    property OnStreamCallback: TPortAudioStreamCallbackEvent read FOnStreamCallback write FOnStreamCallback;
+    property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged
+      write FOnSampleRateChanged;
+    property OnStreamCallback: TPortAudioStreamCallbackEvent
+      read FOnStreamCallback write FOnStreamCallback;
   end;
 
 implementation
@@ -123,11 +126,11 @@ resourcestring
   RCStrInvalidIndex = 'Invalid Index (%d)';
   RCStrVersionNotSupported = 'Version not supported (%s)';
 
-{ TPortAudioHost }
+  { TPortAudioHost }
 
 constructor TPortAudioHost.Create;
 var
-  PaError   : TPaError;
+  PaError: TPaError;
 begin
   FStream := nil;
   FSampleRate := 44100;
@@ -154,7 +157,7 @@ end;
 
 destructor TPortAudioHost.Destroy;
 var
-  PaError : TPaError;
+  PaError: TPaError;
 begin
   PaError := Pa_Terminate;
 
@@ -170,7 +173,7 @@ end;
 
 function TPortAudioHost.GetActive: Boolean;
 var
-  PaError : TPaError;
+  PaError: TPaError;
 begin
   if Assigned(FStream) then
   begin
@@ -234,9 +237,9 @@ end;
 
 procedure TPortAudioHost.Open;
 var
-  PaError    : TPaError;
-  StreamInfo : PPaStreamInfo;
-  ISP, OSP   : PPaStreamParameters;
+  PaError: TPaError;
+  StreamInfo: PPaStreamInfo;
+  ISP, OSP: PPaStreamParameters;
 begin
   ISP := nil;
   if FInputDevice >= 0 then
@@ -272,7 +275,7 @@ end;
 
 procedure TPortAudioHost.Close;
 var
-  PaError : TPaError;
+  PaError: TPaError;
 begin
   if Assigned(FStream) then
   begin
@@ -294,7 +297,7 @@ end;
 
 procedure TPortAudioHost.UpdateInputStreamParameters;
 var
-  DevInfo : PPaDeviceInfo;
+  DevInfo: PPaDeviceInfo;
 begin
   if FInputDevice >= 0 then
     with FInputStreamParameters do
@@ -314,7 +317,7 @@ end;
 
 procedure TPortAudioHost.UpdateOutputStreamParameters;
 var
-  DevInfo : PPaDeviceInfo;
+  DevInfo: PPaDeviceInfo;
 begin
   if FOutputDevice >= 0 then
     with FOutputStreamParameters do
@@ -403,7 +406,7 @@ end;
 
 procedure TPortAudioHost.Start;
 var
-  PaError : TPaError;
+  PaError: TPaError;
 begin
   if Assigned(FStream) then
   begin
@@ -418,7 +421,7 @@ end;
 
 procedure TPortAudioHost.Stop;
 var
-  PaError : TPaError;
+  PaError: TPaError;
 begin
   if Assigned(FStream) then
   begin
@@ -440,7 +443,8 @@ begin
     if Input <> nil then
       Move(Input^, FInputBuffers[0], Length(FInputBuffers) * SizeOf(Pointer));
     if Output <> nil then
-      Move(Output^, FOutputBuffers[0], Length(FOutputBuffers) * SizeOf(Pointer));
+      Move(Output^, FOutputBuffers[0], Length(FOutputBuffers) *
+        SizeOf(Pointer));
 
     Result := FOnStreamCallback(Self, FInputBuffers, FOutputBuffers, FrameCount,
       TimeInfo, StatusFlags);
@@ -451,7 +455,7 @@ end;
 
 procedure TPortAudioHost.Abort;
 var
-  PaError : TPaError;
+  PaError: TPaError;
 begin
   if Assigned(FStream) then
   begin
@@ -466,9 +470,9 @@ end;
 
 procedure TPortAudioHost.UpdateDeviceList;
 var
-  Index   : Integer;
-  DevInfo : PPaDeviceInfo;
-  HostApi : PPaHostApiInfo;
+  Index: Integer;
+  DevInfo: PPaDeviceInfo;
+  HostApi: PPaHostApiInfo;
 begin
   FInputDeviceList.Clear;
   FOutputDeviceList.Clear;
