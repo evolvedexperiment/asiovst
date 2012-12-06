@@ -1,88 +1,84 @@
 object FmSetup: TFmSetup
-  Left = 653
-  Height = 86
-  Top = 675
-  Width = 226
-  HorzScrollBar.Page = 225
-  VertScrollBar.Page = 85
-  ActiveControl = CBDrivers
-  BorderStyle = bsToolWindow
+  Left = 412
+  Top = 277
+  BorderStyle = bsDialog
   Caption = 'Setup'
+  ClientHeight = 92
+  ClientWidth = 235
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Verdana'
   Font.Style = [fsBold]
+  OldCreateOrder = False
+  Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  object LbPreset: TLabel
-    Left = 4
-    Height = 21
-    Top = 2
+  DesignSize = (
+    235
+    92)
+  PixelsPerInch = 96
+  TextHeight = 13
+  object LbAsioDriver: TLabel
+    Left = 8
+    Top = 7
     Width = 81
+    Height = 21
     AutoSize = False
     Caption = 'ASIO Driver:'
-    Color = clNone
     Layout = tlCenter
-    ParentColor = False
+    OnClick = LbAsioDriverClick
   end
-  object LbIn: TLabel
-    Left = 4
+  object LbInput: TLabel
+    Left = 8
+    Top = 39
+    Width = 46
     Height = 21
-    Top = 34
-    Width = 37
     AutoSize = False
     Caption = 'Input:'
-    Color = clNone
     Layout = tlCenter
-    ParentColor = False
   end
-  object Label1: TLabel
-    Left = 4
+  object LbOutput: TLabel
+    Left = 8
+    Top = 63
+    Width = 48
     Height = 21
-    Top = 58
-    Width = 37
     AutoSize = False
     Caption = 'Output:'
-    Color = clNone
     Layout = tlCenter
-    ParentColor = False
   end
   object CBDrivers: TComboBox
-    Left = 88
-    Height = 21
-    Top = 2
+    Left = 95
+    Top = 8
     Width = 132
-    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
-    Color = clBtnFace
-    ItemHeight = 13
-    MaxLength = 0
-    OnChange = CBDriversChange
+    Height = 21
     Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
+    Color = clBtnFace
     TabOrder = 0
+    OnChange = CBDriversChange
   end
   object CBInput: TComboBox
-    Left = 48
+    Left = 60
+    Top = 39
+    Width = 167
     Height = 21
-    Top = 34
-    Width = 172
-    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
-    Color = clBtnFace
-    ItemHeight = 13
-    MaxLength = 0
-    OnChange = CBInputChange
     Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
+    Color = clBtnFace
     TabOrder = 1
+    OnChange = CBInputChange
   end
   object CBOutput: TComboBox
-    Left = 48
+    Left = 60
+    Top = 63
+    Width = 167
     Height = 21
-    Top = 58
-    Width = 172
-    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
-    Color = clBtnFace
-    ItemHeight = 13
-    MaxLength = 0
-    OnChange = CBOutputChange
     Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
+    Color = clBtnFace
     TabOrder = 2
+    OnChange = CBOutputChange
   end
 end

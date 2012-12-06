@@ -2,7 +2,7 @@ unit DAV_VSTModuleWithMidi;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I ..\DAV_Compiler.Inc}
 
 uses
   Classes, DAV_Types, DAV_VSTCustomModule, DAV_VSTEffect;
@@ -15,7 +15,7 @@ type
 
   TVSTModuleWithMidi = class(TCustomVSTModule)
   protected
-    FMidiEvent          : TVstEvents;
+    FVstEvents          : TVstEvents;
     FOnProcessEvents    : TProcessEvents;
     FOnProcessEvent     : TProcessEvent;
     FOnProcessMidi      : TProcessMidiEvent;
@@ -39,7 +39,7 @@ type
     procedure MidiSendSysEx(const Data: array of Byte; const Offset: Integer = 0);
     procedure MidiCC(const Channel, Number, Value: Integer; const Offset: Integer = 0);
     procedure MidiChannelAftertouch(const Channel, Value: Integer; const Offset: Integer = 0);
-    procedure MidiNoteOff(const Channel, Note, Value: Integer; const Offset: Integer = 0);
+    procedure MidiNoteOff(const Channel, Note: Integer; const Value: Integer = 0; const Offset: Integer = 0);
     procedure MidiNoteOn(const Channel, Note, Value: Integer; const Offset: Integer = 0);
     procedure MidiPitchBend(ch, val: Integer; const Offset: Integer = 0);
     procedure MidiPitchBend2(const Channel, x1, x2: Integer; const Offset: Integer = 0);
@@ -62,14 +62,14 @@ var
   i: Integer;
 begin
   inherited;
-  FMidiEvent.numEvents := 0;
+  FVstEvents.numEvents := 0;
 
   for i := 0 to CMaxMidiEvents - 1 do
    begin
-    GetMem(FMidiEvent.Events[i], SizeOf(TVstMidiEvent));
-    FillChar(FMidiEvent.Events[i]^, SizeOf(TVstMidiEvent), 0);
-    PVstMidiEvent(FMidiEvent.Events[i])^.EventType := etMidi;
-    PVstMidiEvent(FMidiEvent.Events[i])^.ByteSize := 24;
+    GetMem(FVstEvents.Events[i], SizeOf(TVstMidiEvent));
+    FillChar(FVstEvents.Events[i]^, SizeOf(TVstMidiEvent), 0);
+    PVstMidiEvent(FVstEvents.Events[i])^.EventType := etMidi;
+    PVstMidiEvent(FVstEvents.Events[i])^.ByteSize := 24;
    end;
 end;
 
@@ -79,10 +79,10 @@ var
 begin
  try
   for i := 0 to CMaxMidiEvents - 1 do
-   if Assigned(FMidiEvent.Events[i]) then
+   if Assigned(FVstEvents.Events[i]) then
     begin
-     Dispose(FMidiEvent.Events[i]);
-     FMidiEvent.Events[i] := nil;
+     Dispose(FVstEvents.Events[i]);
+     FVstEvents.Events[i] := nil;
     end;
  finally
   inherited;
@@ -137,10 +137,10 @@ procedure TVSTModuleWithMidi.HostCallProcess(const Inputs, Outputs: TDAVArrayOfS
 begin
  inherited;
  {$IFDEF DebugLog} AddLogMessage('HostCallProcess - MIDI Processing'); {$ENDIF}
- if FMidiEvent.numEvents > 0 then
+ if FVstEvents.numEvents > 0 then
   begin
-   SendVstEventsToHost(FMidiEvent);
-   FMidiEvent.numEvents := 0;
+   SendVstEventsToHost(FVstEvents);
+   FVstEvents.numEvents := 0;
   end;
 end;
 
@@ -148,11 +148,11 @@ procedure TVSTModuleWithMidi.HostCallProcess32Replacing(const Inputs, Outputs: T
 begin
  inherited;
 
- if FMidiEvent.numEvents > 0 then
+ if FVstEvents.numEvents > 0 then
   begin
    {$IFDEF DebugLog} AddLogMessage('HostCallProcess32Replacing - MIDI Processing'); {$ENDIF}
-   SendVstEventsToHost(FMidiEvent);
-   FMidiEvent.numEvents := 0;
+   SendVstEventsToHost(FVstEvents);
+   FVstEvents.numEvents := 0;
   end;
 end;
 
@@ -160,17 +160,17 @@ procedure TVSTModuleWithMidi.HostCallProcess64Replacing(const Inputs, Outputs: T
 begin
  inherited;
  {$IFDEF DebugLog} AddLogMessage('HostCallProcess64Replacing - MIDI Processing'); {$ENDIF}
- if FMidiEvent.numEvents > 0 then
+ if FVstEvents.numEvents > 0 then
   begin
-   SendVstEventsToHost(FMidiEvent);
-   FMidiEvent.numEvents := 0;
+   SendVstEventsToHost(FVstEvents);
+   FVstEvents.numEvents := 0;
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiOut(const b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiOut'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := b1;
@@ -178,64 +178,64 @@ begin
    MidiData[2] := b3;
    MidiData[3] := b4;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then Inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1 then Inc(FVstEvents.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiCC(const Channel, Number, Value: Integer; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiCC'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := $B0 + Channel;
    MidiData[1] := Number;
    MidiData[2] := Value;
    DeltaFrames := Offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then Inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1 then Inc(FVstEvents.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiChannelAftertouch(const Channel, Value: Integer; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiChannelAftertouch'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := $D0 + Channel;
    MidiData[1] := Value;
    MidiData[2] := 0;
    DeltaFrames := Offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then Inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1 then Inc(FVstEvents.numEvents);
   end;
 end;
 
-procedure TVSTModuleWithMidi.MidiNoteOff(const Channel, Note, Value: Integer; const Offset: Integer = 0);
+procedure TVSTModuleWithMidi.MidiNoteOff(const Channel, Note: Integer; const Value: Integer = 0; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiNoteOff'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := $80 + Channel;
    MidiData[1] := Note;
    MidiData[2] := Value;
    DeltaFrames := Offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then Inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1 then Inc(FVstEvents.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiNoteOn(const Channel, Note, Value: Integer; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiNoteOn'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := $90 + Channel;
    MidiData[1] := Note;
    MidiData[2] := Value;
    DeltaFrames := Offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1
-    then inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1
+    then Inc(FVstEvents.numEvents);
   end;
 end;
 
@@ -244,7 +244,7 @@ var
   a, b: Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiPitchBend'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    a := (val div 128) + 64;
@@ -254,57 +254,57 @@ begin
    MidiData[1] := b;
    MidiData[2] := a;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1 then Inc(FVstEvents.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiPitchBend2(const Channel, x1, x2: Integer; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiPitchBend2'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := $E0 + Channel;
    MidiData[1] := x1;
    MidiData[2] := x2;
    DeltaFrames := Offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1 then Inc(FVstEvents.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiPolyAftertouch(const Channel, Note, Value: Integer; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiPolyAftertouch'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := $A0 + Channel;
    MidiData[1] := Note;
    MidiData[2] := Value;
    DeltaFrames := Offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1 then Inc(FVstEvents.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiProgramChange(const Channel, Value: Integer; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiProgramChange'); {$ENDIF}
- with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    EventType := etMidi;
    MidiData[0] := $C0 + Channel;
    MidiData[1] := Value;
    MidiData[2] := 0;
    DeltaFrames := Offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1
-    then Inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1
+    then Inc(FVstEvents.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MidiSendSysEx(const Data: array of Byte; const Offset: Integer = 0);
 begin
  {$IFDEF DebugLog} AddLogMessage('MidiSendSysEx'); {$ENDIF}
- with PVstMidiSysexEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
+ with PVstMidiSysexEvent(FVstEvents.Events[FVstEvents.numEvents])^ do
   begin
    dumpBytes := Length(Data);
    if EventType = etSysEx
@@ -313,8 +313,8 @@ begin
    EventType := etSysEx;
    DeltaFrames := Offset;
    Move(Data[0], sysexDump^, dumpBytes);
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1
-    then inc(FMidiEvent.numEvents);
+   if FVstEvents.numEvents < CMaxMidiEvents - 1
+    then Inc(FVstEvents.numEvents);
   end;
 end;
 

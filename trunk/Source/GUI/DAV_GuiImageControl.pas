@@ -105,8 +105,8 @@ type
     function GetCount: Integer; virtual; abstract;
     function GetItems(Index: Integer): TGuiCustomImageCollectionItem; virtual; abstract;
 
-    procedure LinkImageControl(Image: TGuiCustomImageControl);
-    procedure UnLinkImageControl(Image: TGuiCustomImageControl);
+    procedure LinkImageControl(ImageControl: TGuiCustomImageControl);
+    procedure UnLinkImageControl(ImageControl: TGuiCustomImageControl);
     procedure UnLinkImageControls;
 
     property Items[Index: Integer]: TGuiCustomImageCollectionItem read GetItems; default;
@@ -322,19 +322,19 @@ begin
 end;
 
 procedure TGuiCustomImageList.LinkImageControl(
-  Image: TGuiCustomImageControl);
+  ImageControl: TGuiCustomImageControl);
 begin
  Assert(Assigned(FLinkedControls));
- if FLinkedControls.IndexOf(Image) < 0
-  then FLinkedControls.Add(Image);
+ if FLinkedControls.IndexOf(ImageControl) < 0
+  then FLinkedControls.Add(ImageControl);
 end;
 
 procedure TGuiCustomImageList.UnLinkImageControl(
-  Image: TGuiCustomImageControl);
+  ImageControl: TGuiCustomImageControl);
 begin
  Assert(Assigned(FLinkedControls));
- if Assigned(Image)
-  then FLinkedControls.Remove(Image);
+ if Assigned(ImageControl)
+  then FLinkedControls.Remove(ImageControl);
 end;
 
 procedure TGuiCustomImageList.UnLinkImageControls;

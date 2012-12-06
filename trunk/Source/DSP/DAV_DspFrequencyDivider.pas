@@ -54,6 +54,8 @@ type
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
 
+    procedure Reset;
+
     property Phase: Single read FPhaseFactor;
   published
     property Shape: Single read FShape[0] write SetShape;
@@ -112,7 +114,7 @@ begin
    FPhaseSign := -FPhaseSign;
    if FPhaseSign < 0 then FPhaseFactor := -FPhaseFactor;
   end;
- result := FPhaseFactor * (FShape[0] + FShape[1] * Input);
+ Result := FPhaseFactor * (FShape[0] + FShape[1] * Input);
 end;
 
 function TOcatveDivider.ProcessSample64(Input: Double): Double;
@@ -122,7 +124,13 @@ begin
    FPhaseSign := -FPhaseSign;
    if FPhaseSign < 0 then FPhaseFactor := -FPhaseFactor;
   end;
- result := FPhaseFactor * (FShape[0] + FShape[1] * Input);
+ Result := FPhaseFactor * (FShape[0] + FShape[1] * Input);
+end;
+
+procedure TOcatveDivider.Reset;
+begin
+ FPhaseSign   := 1;
+ FPhaseFactor := 1;
 end;
 
 procedure TOcatveDivider.SetShape(Value: Single);

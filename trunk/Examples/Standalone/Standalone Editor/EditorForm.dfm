@@ -30,15 +30,8 @@ object FmVSTEditor: TFmVSTEditor
     EdgeOuter = esNone
     ParentColor = False
     TabOrder = 0
-    object ToolButton1: TToolButton
+    object LblPreset: TLabel
       Left = 0
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton1'
-      Style = tbsSeparator
-    end
-    object LbPreset: TLabel
-      Left = 4
       Top = 0
       Width = 53
       Height = 24
@@ -52,16 +45,16 @@ object FmVSTEditor: TFmVSTEditor
       ParentFont = False
       Layout = tlCenter
     end
-    object ToolButton2: TToolButton
-      Left = 57
+    object BtnSeparator1: TToolButton
+      Left = 53
       Top = 0
       Width = 8
-      Caption = 'ToolButton2'
+      Caption = 'BtnSeparator1'
       ImageIndex = 0
       Style = tbsSeparator
     end
-    object CBPreset: TComboBox
-      Left = 65
+    object CbxPreset: TComboBox
+      Left = 61
       Top = 0
       Width = 144
       Height = 24
@@ -72,43 +65,43 @@ object FmVSTEditor: TFmVSTEditor
       Color = clBtnFace
       PopupMenu = PUPreset
       TabOrder = 0
-      OnChange = CBPresetChange
+      OnChange = CbxPresetChange
     end
-    object ToolButton3: TToolButton
-      Left = 209
+    object BtnSeparator2: TToolButton
+      Left = 205
       Top = 0
       Width = 8
-      Caption = 'ToolButton3'
+      Caption = 'BtnSeparator2'
       ImageIndex = 1
       Style = tbsSeparator
     end
-    object BtSetup: TButton
-      Left = 217
+    object BtnSetup: TButton
+      Left = 213
       Top = 0
       Width = 51
       Height = 24
       Caption = '&Setup'
       TabOrder = 2
       TabStop = False
-      OnClick = BtSetupClick
+      OnClick = BtnSetupClick
     end
-    object ToolButton4: TToolButton
-      Left = 268
+    object BtnSeparator3: TToolButton
+      Left = 264
       Top = 0
       Width = 8
-      Caption = 'ToolButton4'
+      Caption = 'BtnSeparator3'
       ImageIndex = 2
       Style = tbsSeparator
     end
-    object BtExit: TButton
-      Left = 276
+    object BtnExit: TButton
+      Left = 272
       Top = 0
       Width = 37
       Height = 24
       Caption = 'E&xit'
       TabOrder = 1
       TabStop = False
-      OnClick = BtExitClick
+      OnClick = BtnExitClick
     end
   end
   object VSTPanel: TPanel
@@ -145,41 +138,41 @@ object FmVSTEditor: TFmVSTEditor
     Left = 8
     Top = 35
   end
-  object ASIOHost: TAsioHost
+  object AsioHost: TAsioHost
     AsioTime.Speed = 1.000000000000000000
     AsioTime.SampleRate = 44100.000000000000000000
     AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     PreventClipping = pcAnalog
     SampleRate = 44100.000000000000000000
-    OnBufferSwitch32 = ASIOHostBufferSwitch32
-    OnLatencyChanged = ASIOHostReset
-    OnReset = ASIOHostReset
+    OnBufferSwitch32 = AsioHostBufferSwitch32
+    OnLatencyChanged = AsioHostReset
+    OnReset = AsioHostReset
     Left = 52
     Top = 35
   end
   object PUPreset: TPopupMenu
-    Left = 92
+    Left = 108
     Top = 35
-    object MILoadPreset: TMenuItem
+    object MnuLoadPreset: TMenuItem
       Caption = '&Load Preset...'
-      OnClick = MILoadPresetClick
+      OnClick = MnuLoadPresetClick
     end
-    object MISavePreset: TMenuItem
+    object MnuSavePreset: TMenuItem
       Caption = '&Save Preset...'
-      OnClick = MISavePresetClick
+      OnClick = MnuSavePresetClick
     end
   end
-  object OD: TOpenDialog
+  object OpenDialog: TOpenDialog
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 136
+    Left = 160
     Top = 35
   end
-  object SD: TSaveDialog
+  object SaveDialog: TSaveDialog
     DefaultExt = 'fxp'
     Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
-    Left = 180
+    Left = 220
     Top = 35
   end
 end

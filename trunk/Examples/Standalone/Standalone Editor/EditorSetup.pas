@@ -32,7 +32,7 @@ unit EditorSetup;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}

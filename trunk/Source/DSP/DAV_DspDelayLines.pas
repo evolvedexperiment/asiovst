@@ -405,7 +405,10 @@ end;
 
 procedure TCustomDelayLineSamples32.BufferSizeChanged;
 begin
+ Assert(FBufferSize > 0);
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
+ if FBufferPos >= FBufferSize then
+   FBufferPos := 0;
 end;
 
 procedure TCustomDelayLineSamples32.Reset;

@@ -356,6 +356,8 @@ procedure TCustomBassBaron.ResetStates;
 begin
  FCrossover.ResetStates;
  FLowCut.ResetStates;
+ FLowpass.ResetStates;
+ FHighpass.ResetStates;
  FLimiter.Reset;
 end;
 

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Registry, Windows;
 
 type
-  TDAVAsioDriverDesc = class
+  TDavAsioDriverDescription = class
   private
     FGuid     : TGUID;
     FName     : string;
@@ -21,7 +21,7 @@ type
     property Filename: string read FFilename;
   end;
 
-  TDAVAsioDriverList = class
+  TDavAsioDriverList = class
   private
     FNameList      : TStrings;
     FIgnoreGuid    : TGuid;
@@ -30,7 +30,7 @@ type
     procedure ClearList;
     procedure LoadList;
     function GetDriverFileName(DrvGuidStr: string): string;
-    function GetItem(Index: Integer): TDAVAsioDriverDesc;
+    function GetItem(Index: Integer): TDavAsioDriverDescription;
     function GetCount: Integer;
   public
     constructor Create(Ignore: TGuid); reintroduce; overload;
@@ -40,7 +40,7 @@ type
     procedure SetIgnoredDriver(ignore: TGuid);
     procedure UpdateList;
     function DriverNumberByName(DriverName: string): Integer;
-    property Items[Index: Integer]: TDAVAsioDriverDesc read GetItem;
+    property Items[Index: Integer]: TDavAsioDriverDescription read GetItem;
     property Count: Integer read GetCount;
     property DriverNames: TStrings read FNameList;
   end;
@@ -56,14 +56,14 @@ const
 
 { TDAVIntAsioDriverDesc }
 
-constructor TDAVAsioDriverDesc.Create(nGuid: TGUID; nName: string; nFilename: string);
+constructor TDavAsioDriverDescription.Create(nGuid: TGUID; nName: string; nFilename: string);
 begin
  FGuid := nGuid;
  FName := nName;
  FFilename := nFilename;
 end;
 
-constructor TDAVAsioDriverDesc.Create(nGuid, nName, nFilename: string);
+constructor TDavAsioDriverDescription.Create(nGuid, nName, nFilename: string);
 begin
  FGuid := StringToGUID(nGuid);
  FName := nName;
@@ -73,7 +73,7 @@ end;
 
 { TDAVIntAsioDriverList }
 
-constructor TDAVAsioDriverList.Create;
+constructor TDavAsioDriverList.Create;
 begin
  inherited;
  FHasIgnoreGuid := False;
@@ -81,13 +81,13 @@ begin
  FList := TList.Create;
 end;
 
-constructor TDAVAsioDriverList.Create(Ignore: TGuid);
+constructor TDavAsioDriverList.Create(Ignore: TGuid);
 begin
  Create;
  SetIgnoredDriver(Ignore);
 end;
 
-destructor TDAVAsioDriverList.Destroy;
+destructor TDavAsioDriverList.Destroy;
 begin
  ClearList;
  FreeAndNil(FList);
@@ -95,7 +95,7 @@ begin
  inherited;
 end;
 
-procedure TDAVAsioDriverList.SetIgnoredDriver(Ignore: TGuid);
+procedure TDavAsioDriverList.SetIgnoredDriver(Ignore: TGuid);
 begin
  if (FIgnoreGuid.D1 <> Ignore.D1) and (FIgnoreGuid.D2 <> Ignore.D2) and
     (FIgnoreGuid.D3 <> Ignore.D3) then
@@ -105,7 +105,7 @@ begin
   end;
 end;
 
-procedure TDAVAsioDriverList.ClearList;
+procedure TDavAsioDriverList.ClearList;
 var
   DriverIndex : Integer;
 begin
@@ -116,12 +116,12 @@ begin
  FList.Clear;
 end;
 
-function TDAVAsioDriverList.GetCount: Integer;
+function TDavAsioDriverList.GetCount: Integer;
 begin
  Result := FList.Count;
 end;
 
-function TDAVAsioDriverList.GetDriverFileName(DrvGuidStr: string): string;
+function TDavAsioDriverList.GetDriverFileName(DrvGuidStr: string): string;
 var
   Filename : string;
   DirStr   : PChar;
@@ -155,12 +155,12 @@ begin
  end;
 end;
 
-function TDAVAsioDriverList.GetItem(Index: Integer): TDAVAsioDriverDesc;
+function TDavAsioDriverList.GetItem(Index: Integer): TDavAsioDriverDescription;
 begin
- Result := TDAVAsioDriverDesc(FList.Items[Index]);
+ Result := TDavAsioDriverDescription(FList.Items[Index]);
 end;
 
-procedure TDAVAsioDriverList.LoadList;
+procedure TDavAsioDriverList.LoadList;
 var
   SubKeys     : TStringList;
   KeyNo       : Integer;
@@ -168,7 +168,7 @@ var
   DrvGuidStr  : string;
   DrvFile     : string;
   DrvGuid     : TGuid;
-  DriverItem  : TDAVAsioDriverDesc;
+  DriverItem  : TDavAsioDriverDescription;
 begin
  SubKeys := TStringList.Create;
  with TRegistry.Create do
@@ -194,7 +194,7 @@ begin
           DrvName := ReadString(CAsioDescription);
           if DrvName = '' then DrvName := SubKeys[KeyNo];
 
-          DriverItem := TDAVAsioDriverDesc.Create(DrvGuidStr, DrvName, DrvFile);
+          DriverItem := TDavAsioDriverDescription.Create(DrvGuidStr, DrvName, DrvFile);
 
           FList.Add(DriverItem);
           FNameList.Add(DrvName);
@@ -213,13 +213,13 @@ begin
  end;
 end;
 
-procedure TDAVAsioDriverList.UpdateList;
+procedure TDavAsioDriverList.UpdateList;
 begin
  ClearList;
  LoadList;
 end;
 
-function TDAVAsioDriverList.DriverNumberByName(DriverName: string): Integer;
+function TDavAsioDriverList.DriverNumberByName(DriverName: string): Integer;
 var
   DriverIndex : Integer;
 begin

@@ -32,55 +32,58 @@ unit EditorForm;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
-{$DEFINE LoadFromMemory}
+{$I DAV_Compiler.inc}
+{-$DEFINE LoadFromMemory}
+{-$DEFINE LoadFromResource}
 
 uses
-  {$IFDEF FPC}LCLIntf, Buttons, {$ELSE}Windows, Messages, {$ENDIF}
+{$IFDEF FPC}LCLIntf, Buttons, {$ELSE}Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
   StdCtrls, ToolWin, Dialogs, Menus, DAV_Types, DAV_ASIOHost, DAV_VSTHost;
 
 type
   TFmVSTEditor = class(TForm)
-    ASIOHost: TASIOHost;
-    BtSetup: TButton;
-    BtExit: TButton;
-    CBPreset: TComboBox;
+    AsioHost: TAsioHost;
+    BtnExit: TButton;
+    BtnSeparator1: TToolButton;
+    BtnSeparator2: TToolButton;
+    BtnSeparator3: TToolButton;
+    BtnSetup: TButton;
+    CbxPreset: TComboBox;
+    LblPreset: TLabel;
     ToolBar: TToolBar;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    ToolButton4: TToolButton;
-    LbPreset: TLabel;
-    VSTPanel: TPanel;
     VstHost: TVstHost;
-    {$IFNDEF FPC}
-    MILoadPreset: TMenuItem;
-    MISavePreset: TMenuItem;
-    OD: TOpenDialog;
+    VSTPanel: TPanel;
+{$IFNDEF FPC}
+    MnuLoadPreset: TMenuItem;
+    MnuSavePreset: TMenuItem;
+    OpenDialog: TOpenDialog;
     PUPreset: TPopupMenu;
-    SD: TSaveDialog;
-    {$ENDIF}
+    SaveDialog: TSaveDialog;
+{$ENDIF}
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure ASIOHostReset(Sender: TObject);
-    procedure BtSetupClick(Sender: TObject);
-    procedure BtExitClick(Sender: TObject);
-    procedure CBPresetChange(Sender: TObject);
-    procedure MILoadPresetClick(Sender: TObject);
-    procedure MISavePresetClick(Sender: TObject);
+    procedure AsioHostBufferSwitch32(Sender: TObject;
+      const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure AsioHostReset(Sender: TObject);
+    procedure BtnSetupClick(Sender: TObject);
+    procedure BtnExitClick(Sender: TObject);
+    procedure CbxPresetChange(Sender: TObject);
+    procedure MnuLoadPresetClick(Sender: TObject);
+    procedure MnuSavePresetClick(Sender: TObject);
   private
-    FVSTInBuffer         : array of PDAVSingleFixedArray;
-    FVSTOutBuffer        : array of PDAVSingleFixedArray;
-    FInputChannelOffset  : Integer;
-    FOutputChannelOffset : Integer;
+    FVSTInBuffer: array of PDAVSingleFixedArray;
+    FVSTOutBuffer: array of PDAVSingleFixedArray;
+    FInputChannelOffset: Integer;
+    FOutputChannelOffset: Integer;
   public
-    property InputChannelOffset: Integer read FInputChannelOffset write FInputChannelOffset;
-    property OutputChannelOffset: Integer read FOutputChannelOffset write FOutputChannelOffset;
+    property InputChannelOffset: Integer read FInputChannelOffset
+      write FInputChannelOffset;
+    property OutputChannelOffset: Integer read FOutputChannelOffset
+      write FOutputChannelOffset;
   end;
 
 var
@@ -97,223 +100,238 @@ implementation
 uses
   IniFiles, DAV_VSTEffect, EditorSetup;
 
-function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
+function EnumNamesFunc(HModule: THandle; LpType, LpName: PChar; LParam: DWORD)
+  : Boolean; stdcall;
 begin
- Result := True;
- TStringList(lParam).Add(lpName);
+  Result := True;
+  TStringList(LParam).Add(LpName);
 end;
 
 procedure TFmVSTEditor.FormCreate(Sender: TObject);
 var
-  theRect             : TRect;
-  i                   : Integer;
-  str                 : string;
-  s, p                : AnsiString;
-  ContainedVSTPlugins : TStringList;
-  RS                  : TResourceStream;
-  {$IFDEF LoadFromMemory}
-  FileStream          : TFileStream;
-  {$ENDIF}
+  TheRect: TRect;
+  I: Integer;
+  Str: string;
+  S, P: AnsiString;
+  ContainedVSTPlugins: TStringList;
+  RS: TResourceStream;
+{$IFDEF LoadFromMemory}
+  FileStream: TFileStream;
+{$ENDIF}
 begin
- with VstHost[0] do
+  with VstHost[0] do
   begin
-   if ParamCount > 0 then
+    if ParamCount > 0 then
     begin
-     {$IFDEF LoadFromMemory}
-     FileStream := TFileStream.Create(ParamStr(1), fmOpenRead);
-     try
-       LoadFromStream(FileStream);
-     finally
-       FreeAndNil(FileStream);
-     end;
-     {$ELSE}
-     LoadFromFile(ParamStr(1));
-     {$ENDIF}
+{$IFDEF LoadFromMemory}
+      FileStream := TFileStream.Create(ParamStr(1), FmOpenRead);
+      try
+        LoadFromStream(FileStream);
+      finally
+        FreeAndNil(FileStream);
+      end;
+{$ELSE}
+      LoadFromFile(ParamStr(1));
+{$ENDIF}
     end
     else
-     begin
+    begin
       ContainedVSTPlugins := TStringList.Create;
       try
-       EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
+{$IFDEF LoadFromResource}
+        EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc,
+          LongWord(ContainedVSTPlugins));
 
-       if ContainedVSTPlugins.Count > 0 then
+        if ContainedVSTPlugins.Count > 0 then
         begin
-         RS := TResourceStream.Create(HInstance, ContainedVSTPlugins[0], 'DLL');
-         try
-          LoadFromStream(RS);
-         finally
-          FreeAndNil(RS);
-         end;
-        end else
-
-       if not FileExists(DLLFileName) then
-        with TOpenDialog.Create(Self) do
-         try
-          DefaultExt := 'dll';
-          Filter := 'VST Plugin (*.dll)|*.dll';
-          Options := Options + [ofFileMustExist];
-          if Execute then DLLFileName := FileName;
+          RS := TResourceStream.Create(HInstance,
+            ContainedVSTPlugins[0], 'DLL');
+          try
+            LoadFromStream(RS);
+          finally
+            FreeAndNil(RS);
+          end;
+        end
+        else
+{$ENDIF}
 
           if not FileExists(DLLFileName) then
-           begin
-            Application.Terminate;
-            Exit;
-           end;
+          with TOpenDialog.Create(Self) do
+            try
+              DefaultExt := 'dll';
+              Filter := 'VST Plugin (*.dll)|*.dll';
+              Options := Options + [OfFileMustExist];
+              if Execute then
+                DLLFileName := FileName;
 
-         finally
-          Free;
-         end;
+              if not FileExists(DLLFileName) then
+              begin
+                Application.Terminate;
+                Exit;
+              end;
+
+            finally
+              Free;
+            end;
       finally
-       FreeAndNil(ContainedVSTPlugins);
+        FreeAndNil(ContainedVSTPlugins);
       end;
-     end;
-
-   Active := True;
-   Idle;
-   ShowEdit(VSTPanel);
-   Idle;
-   EditIdle;
-   Caption := string(GetVendorString + ' ' + GetEffectName);
-  end;
- CBPreset.Clear;
-
- for i := 0 to VstHost[0].numPrograms - 1 do
-  begin
-   VstHost[0].GetProgramNameIndexed(-1, i, p);
-   s := AnsiString(IntToStr(i));
-   if i < 10 then s := '00' + s else
-   if i < 100 then s := '0' + s;
-   s := s + ' - ' + p;
-   CBPreset.Items.Add(string(s));
-  end;
- CBPreset.ItemIndex := 0;
-
- str := string(VstHost[0].GetProgramName);
- str := IntToStr(CBPreset.ItemIndex) + ' - ' + str;
- if CBPreset.ItemIndex < 10 then str := '00' + str else
- if CBPreset.ItemIndex < 100 then str := '0' + str;
- if (CBPreset.Text <> str) then
-  begin
-   CBPreset.Text := str;
-   for i := 0 to VstHost[0].numPrograms - 1 do
-    begin
-     VstHost[0].CurrentProgram := i;
-     str := string(VstHost[0].GetProgramName);
-     str := IntToStr(i) + ' - ' + str;
-     if i < 10 then str := '00' + str else
-     if i < 100 then str := '0' + str;
-     CBPreset.Items[i] := str;
     end;
-   VstHost[0].CurrentProgram := 0;
-   CBPreset.ItemIndex := 0;
+
+    Active := True;
+    Idle;
+    ShowEdit(VSTPanel);
+    Idle;
+    EditIdle;
+    Caption := string(GetVendorString + ' ' + GetEffectName);
   end;
- if (effFlagsHasEditor in VstHost[0].EffectOptions) then
+  CbxPreset.Clear;
+
+  for I := 0 to VstHost[0].NumPrograms - 1 do
   begin
-   theRect := VstHost[0].GetRect;
-   ClientWidth := theRect.Right - theRect.Left;
-   ClientHeight := theRect.Bottom - theRect.Top + ToolBar.Height;
+    VstHost[0].GetProgramNameIndexed(-1, I, P);
+    S := AnsiString(IntToStr(I));
+    if I < 10 then
+      S := '00' + S
+    else if I < 100 then
+      S := '0' + S;
+    S := S + ' - ' + P;
+    CbxPreset.Items.Add(string(S));
   end;
- SetLength(FVSTInBuffer, 2);
- SetLength(FVSTOutBuffer, 2);
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
-  try
-   Top  := ReadInteger('Layout', 'Main Top', Top);
-   Left := ReadInteger('Layout', 'Main Left', Left);
-  finally
-   Free;
+  CbxPreset.ItemIndex := 0;
+
+  Str := string(VstHost[0].GetProgramName);
+  Str := IntToStr(CbxPreset.ItemIndex) + ' - ' + Str;
+  if CbxPreset.ItemIndex < 10 then
+    Str := '00' + Str
+  else if CbxPreset.ItemIndex < 100 then
+    Str := '0' + Str;
+  if (CbxPreset.Text <> Str) then
+  begin
+    CbxPreset.Text := Str;
+    for I := 0 to VstHost[0].NumPrograms - 1 do
+    begin
+      VstHost[0].CurrentProgram := I;
+      Str := string(VstHost[0].GetProgramName);
+      Str := IntToStr(I) + ' - ' + Str;
+      if I < 10 then
+        Str := '00' + Str
+      else if I < 100 then
+        Str := '0' + Str;
+      CbxPreset.Items[I] := Str;
+    end;
+    VstHost[0].CurrentProgram := 0;
+    CbxPreset.ItemIndex := 0;
   end;
+  if (EffFlagsHasEditor in VstHost[0].EffectOptions) then
+  begin
+    TheRect := VstHost[0].GetRect;
+    ClientWidth := TheRect.Right - TheRect.Left;
+    ClientHeight := TheRect.Bottom - TheRect.Top + ToolBar.Height;
+  end;
+  SetLength(FVSTInBuffer, 2);
+  SetLength(FVSTOutBuffer, 2);
+  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
+    try
+      Top := ReadInteger('Layout', 'Main Top', Top);
+      Left := ReadInteger('Layout', 'Main Left', Left);
+    finally
+      Free;
+    end;
 end;
 
 procedure TFmVSTEditor.FormDestroy(Sender: TObject);
 var
   Channel: Integer;
 begin
- for Channel := 0 to Length(FVSTInBuffer) - 1
-  do Dispose(FVSTInBuffer[Channel]);
- for Channel := 0 to Length(FVSTOutBuffer) - 1
-  do Dispose(FVSTOutBuffer[Channel]);
+  for Channel := 0 to Length(FVSTInBuffer) - 1 do
+    Dispose(FVSTInBuffer[Channel]);
+  for Channel := 0 to Length(FVSTOutBuffer) - 1 do
+    Dispose(FVSTOutBuffer[Channel]);
 end;
 
-procedure TFmVSTEditor.FormClose(Sender: TObject;
-  var Action: TCloseAction);
+procedure TFmVSTEditor.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
- ASIOHost.Active := False;
- VSTHost[0].Active := False;
- Sleep(10);
- Application.ProcessMessages;
- ASIOHOST.Active := False;
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
-  try
-   WriteInteger('Layout', 'Main Top', Top);
-   WriteInteger('Layout', 'Main Left', Left);
-  finally
-   Free;
-  end;
+  ASIOHost.Active := False;
+  VSTHost[0].Active := False;
+  Sleep(10);
+  Application.ProcessMessages;
+  ASIOHOST.Active := False;
+  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
+    try
+      WriteInteger('Layout', 'Main Top', Top);
+      WriteInteger('Layout', 'Main Left', Left);
+    finally
+      Free;
+    end;
 end;
 
 procedure TFmVSTEditor.FormActivate(Sender: TObject);
 begin
- VstHost[0].EditActivate;
+  VstHost[0].EditActivate;
 end;
 
 procedure TFmVSTEditor.FormDeactivate(Sender: TObject);
 begin
- VstHost[0].EditDeActivate;
+  VstHost[0].EditDeActivate;
 end;
 
-procedure TFmVSTEditor.MILoadPresetClick(Sender: TObject);
+procedure TFmVSTEditor.MnuLoadPresetClick(Sender: TObject);
 begin
- with OD do
-  if Execute then
-   case FilterIndex of
-    1 : VstHost[0].LoadPreset(FileName);
-    2 : VstHost[0].LoadBank(FileName);
-   end;
+  with OpenDialog do
+    if Execute then
+      case FilterIndex of
+        1:
+          VstHost[0].LoadPreset(FileName);
+        2:
+          VstHost[0].LoadBank(FileName);
+      end;
 end;
 
-procedure TFmVSTEditor.MISavePresetClick(Sender: TObject);
+procedure TFmVSTEditor.MnuSavePresetClick(Sender: TObject);
 begin
- with SD do
-  if Execute then
-   case FilterIndex of
-    1 : VstHost[0].SavePreset(FileName);
-    2 : VstHost[0].SaveBank(FileName);
-   end;
+  with SaveDialog do
+    if Execute then
+      case FilterIndex of
+        1:
+          VstHost[0].SavePreset(FileName);
+        2:
+          VstHost[0].SaveBank(FileName);
+      end;
 end;
 
-procedure TFmVSTEditor.BtSetupClick(Sender: TObject);
+procedure TFmVSTEditor.BtnSetupClick(Sender: TObject);
 begin
- FmSetup.Visible := not FmSetup.Visible;
+  FmSetup.Visible := not FmSetup.Visible;
 end;
 
-procedure TFmVSTEditor.BtExitClick(Sender: TObject);
+procedure TFmVSTEditor.BtnExitClick(Sender: TObject);
 begin
- Close;
+  Close;
 end;
 
-procedure TFmVSTEditor.CBPresetChange(Sender: TObject);
+procedure TFmVSTEditor.CbxPresetChange(Sender: TObject);
 begin
- VstHost[0].CurrentProgram := CBPreset.ItemIndex;
+  VstHost[0].CurrentProgram := CbxPreset.ItemIndex;
 end;
 
-procedure TFmVSTEditor.ASIOHostReset(Sender: TObject);
+procedure TFmVSTEditor.AsioHostReset(Sender: TObject);
 var
   Channel: Integer;
 begin
- VSTHost.BlockSize := ASIOHost.BufferSize;
- for Channel := 0 to Length(FVSTInBuffer) - 1
-  do ReallocMem(FVSTInBuffer[Channel], VSTHost.BlockSize * SizeOf(Single));
- for Channel := 0 to Length(FVSTOutBuffer) - 1
-  do ReallocMem(FVSTOutBuffer[Channel], VSTHost.BlockSize * SizeOf(Single));
+  VSTHost.BlockSize := ASIOHost.BufferSize;
+  for Channel := 0 to Length(FVSTInBuffer) - 1 do
+    ReallocMem(FVSTInBuffer[Channel], VSTHost.BlockSize * SizeOf(Single));
+  for Channel := 0 to Length(FVSTOutBuffer) - 1 do
+    ReallocMem(FVSTOutBuffer[Channel], VSTHost.BlockSize * SizeOf(Single));
 end;
 
-procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleFixedArray);
+procedure TFmVSTEditor.AsioHostBufferSwitch32(Sender: TObject;
+  const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 begin
- if VSTHost[0].Active
-  then VSTHost[0].Process32Replacing(@InBuffer[InputChannelOffset],
-                                     @OutBuffer[OutputChannelOffset],
-                                     ASIOHost.BufferSize);
+  if VSTHost[0].Active then
+    VSTHost[0].Process32Replacing(@InBuffer[InputChannelOffset],
+      @OutBuffer[OutputChannelOffset], ASIOHost.BufferSize);
 end;
 
 end.

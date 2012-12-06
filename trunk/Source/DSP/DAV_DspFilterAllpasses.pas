@@ -77,14 +77,16 @@ type
   public
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
+
+    function MagnitudeLog10(const Frequency: Double): Double; override;
+    function Real(const Frequency: Double): Double; override;
+    function Imaginary(const Frequency: Double): Double; override;
+
     procedure Reset; override;
     procedure ResetStates; override;
     procedure ResetStatesInt64; override;
     procedure PushStates; override;
     procedure PopStates; override;
-    function MagnitudeLog10(const Frequency: Double): Double; override;
-    function Real(const Frequency: Double): Double; override;
-    function Imaginary(const Frequency: Double): Double; override;
   published
     property Frequency;
     property PhaseDelay;
@@ -133,8 +135,8 @@ var
   NormalizedFrequency : Single;
 begin
  NormalizedFrequency := 0.5 * FFrequency / SampleRate;
- FCoefficient := sin((1 - FPhaseDelay) * NormalizedFrequency)/
-   sin((1 + FPhaseDelay) * NormalizedFrequency);
+ FCoefficient := Sin((1 - FPhaseDelay) * NormalizedFrequency) /
+   Sin((1 + FPhaseDelay) * NormalizedFrequency);
 end;
 
 function TThiranAllpass1stOrder.ProcessSample32(Input: Single): Single;
