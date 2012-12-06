@@ -17,10 +17,9 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'FontOversampling'
-      DisplayName = 'FontOversampling'
+      DisplayName = 'Oversampling'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -31,11 +30,9 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParamFontOversamplingChange
-      OnCustomParameterDisplay = ParamFontOversamplingDisplay
+      OnParameterChange = ParamOversamplingChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'FontOversampling'
       DisplayName = 'OS Factor'
@@ -55,7 +52,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       OnCustomParameterDisplay = ParamOSFactorDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Order'
@@ -73,7 +69,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       OnCustomParameterDisplay = ParamOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Transition Bandw'
@@ -90,7 +85,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       OnParameterChange = ParamPreTransBWChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Characteristic'
@@ -108,7 +102,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       OnCustomParameterDisplay = ParamCharacterDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Order'
@@ -126,7 +119,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       OnCustomParameterDisplay = ParamOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Transition'
@@ -143,7 +135,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       OnParameterChange = ParamPostFilterBWChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Characteristic'
@@ -188,9 +179,9 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OnOfflinePrepare = VSTModuleOfflinePrepare
   OnOfflineRun = VSTModuleOfflineRun
   OnProcess = VSTModuleProcess32OversampleSingle
+  OnProcess32Replacing = VSTModuleProcess32OversampleSingle
   OnProcess64Replacing = VSTModuleProcess64OversampleSingle
   OnProcessEvents = VSTModuleProcessEvents
-  OnProcess32Replacing = VSTModuleProcess32OversampleSingle
   OnProcessVarIO = VSTModuleProcessVarIO
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
@@ -198,8 +189,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OnStopProcess = VSTModuleStopProcess
   OnSuspend = VSTModuleSuspend
   OnVendorSpecific = VSTModuleVendorSpecific
-  Left = 261
-  Top = 82
   Height = 150
   Width = 215
   object VstHost: TVstHost
@@ -213,7 +202,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       item
         DisplayName = 'Wrapped Plugin'
         VstOfflineTasks = <>
-        OnAudioMasterAutomate = ParamAutomate
+        OnAudioMasterAutomate = AudioMasterAutomate
         OnAudioMasterIdle = AudioMasterIdle
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000

@@ -16,7 +16,6 @@ object HrtfConvolverDataModule: THrtfConvolverDataModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'HRTF'
       DisplayName = 'Azimuth'
@@ -35,7 +34,6 @@ object HrtfConvolverDataModule: THrtfConvolverDataModule
       OnParameterChange = ParameterAzimuthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'HRTF'
       DisplayName = 'Elevation'
@@ -54,7 +52,6 @@ object HrtfConvolverDataModule: THrtfConvolverDataModule
       OnParameterChange = ParameterElevationChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'HRTF'
       DisplayName = 'Radius'
@@ -79,12 +76,9 @@ object HrtfConvolverDataModule: THrtfConvolverDataModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcess32Replacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 231
-  Top = 85
   Height = 150
   Width = 215
 end
