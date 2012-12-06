@@ -32,7 +32,7 @@ unit DAV_ChunkClasses;
 
 interface
 
-{$I ..\DAV_Compiler.Inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, Contnrs, SysUtils, DAV_Types;
@@ -1176,4 +1176,4 @@ begin
  Result := TMemoryStream(FStream);
 end;
 
-end.
+end.

@@ -33,6 +33,9 @@ unit DAV_FixedPoint;
 interface
 
 {$I DAV_Compiler.inc}
+{$IFDEF FPC}
+  {$UNDEF SUPPORTS_ENHANCED_RECORDS}
+{$ENDIF}
 
 uses
   Types, Math;
@@ -435,8 +438,12 @@ end;
 function ConvertToFixed24Dot8(Value: TFixed8Dot24): TFixed24Dot8;
 {$IFDEF PUREPASCAL}
 begin
-  Result := Integer(Cardinal(Cardinal(Cardinal(Value) shr 16) or
+  {$IFDEF FPC}
+  Result.Fixed := SarLongInt(Value.Fixed, 16);
+  {$ELSE}
+  Result.Fixed := Integer(Cardinal(Cardinal(Cardinal(Value) shr 16) or
     (Cardinal(Integer(Cardinal(0 - Cardinal(Cardinal(Value) shr 31)))) shl 16)));
+  {$ENDIF}
 
 //  Result.Fixed := (Value.Fixed and $80000000) or (Value.Fixed shr 16);
 {$ELSE}
@@ -2344,4 +2351,4 @@ end;
 
 {$ENDIF}
 
-end.
+end.

@@ -32,7 +32,7 @@ unit DAV_DspFilterButterworth;
 
 interface
 
-{$I ..\DAV_Compiler.INC}
+{$I ..\DAV_Compiler.inc}
 
 {$IFDEF Darwin}
   {$DEFINE PUREPASCAL} // for OSX use pure pascal code
@@ -1369,4 +1369,4 @@ initialization
     TButterworthLowPassFilter, TButterworthLowPassFilterAutomatable,
     TButterworthHighPassFilterAutomatable]);
 
-end.
+end.
