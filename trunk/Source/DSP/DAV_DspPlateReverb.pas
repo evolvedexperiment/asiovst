@@ -32,7 +32,7 @@ unit DAV_DspPlateReverb;
 
 interface
 
-{$I ..\DAV_Compiler.Inc}
+{$I ..\DAV_Compiler.inc}
 
 {$IFDEF CPUx86_64}
   {$DEFINE PUREPASCAL}
@@ -741,4 +741,4 @@ end;
 initialization
   RegisterDspProcessors32([TDiffusor, TModulatedDiffusor, TPlateReverb]);
 
-end.
+end.
