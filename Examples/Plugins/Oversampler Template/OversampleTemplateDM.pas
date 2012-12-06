@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, Graphics, Forms,
-  {$IFDEF UseCriticalSection} SyncObjs, {$ENDIF} 
+  {$IFDEF UseCriticalSection} SyncObjs, {$ENDIF}
   DAV_Types, DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VstHost,
   DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, DAV_DspUpDownsampling,
   DAV_VstOfflineTask, ExtCtrls;
@@ -49,9 +49,9 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: NativeUInt);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleEditIdle(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleEditSleep(Sender: TObject);
     procedure VSTModuleEditTop(Sender: TObject);
     procedure VSTModuleGetVU(var VU: Single);
@@ -78,23 +78,24 @@ type
     procedure VSTModuleOfflinePrepare(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
     procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
 
-    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
+    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamOSFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamPreFilterOrderValue(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPreTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPostOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPostFilterBWChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPostCharChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure AudioMasterIdle(Sender: TObject);
     procedure PluginIdle(Sender: TObject);
+    procedure AudioMasterAutomate(Sender: TObject;
+      Index: Integer; ParameterValue: Single);
   private
     FUpsampler        : array of TDAVUpsampling;
     FDownsampler      : array of TDAVDownsampling;
@@ -106,9 +107,6 @@ type
     FMaximumBlockSize : Integer;
     FTempBufferSize   : Integer;
     FManualIdle       : Boolean;
-    {$IFDEF UseSemaphore}
-    FSemaphore        : Integer;
-    {$ENDIF}
     {$IFDEF UseCriticalSection}
     FCriticalSection  : TCriticalSection;
     {$ENDIF}
@@ -149,21 +147,6 @@ begin
   TStringList(lParam).Add(lpName);
 end;
 
-(*
-function EnumRCDATANamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
-begin
-  Result := True;
-  ShowMessage(lpName);
-end;
-
-function EnumTypesFunc(hModule:THandle; lpType: PChar; lParam: DWORD): Boolean; stdcall;
-begin
-  Result := True;
-  ShowMessage(IntToStr(Integer(lpType)));
-//  ShowMessage(lpType);
-end;
-*)
-
 procedure TOversampleTemplateDataModule.VSTModuleCreate(Sender: TObject);
 var
   RN    : TStringList;
@@ -172,22 +155,19 @@ var
   ch, j : Integer;
   Param : Integer;
   Prog  : Integer;
-  str   : string;
+  str   : AnsiString;
 begin
  FBaseParCount            := numParams;
  FOSFactor                := 1;
  FOSActive                := False;
  FTempBufferSize          := 0;
- {$IFDEF UseSemaphore}
- FSemaphore               := 0;
- {$ENDIF}
  {$IFDEF UseCriticalSection}
  FCriticalSection         := TCriticalSection.Create;
  {$ENDIF}
- FMaximumBlockSize        := VstHost.BlockSize;
- OnProcess                := VSTModuleProcess32OversampleSingle;
- OnProcessReplacing       := VSTModuleProcess32OversampleSingle;
- OnProcessDoubleReplacing := VSTModuleProcess64OversampleSingle;
+ FMaximumBlockSize    := VstHost.BlockSize;
+ OnProcess            := VSTModuleProcess32OversampleSingle;
+ OnProcess32Replacing := VSTModuleProcess32OversampleSingle;
+ OnProcess64Replacing := VSTModuleProcess64OversampleSingle;
 
  RN := TStringList.Create;
  try
@@ -323,9 +303,6 @@ procedure TOversampleTemplateDataModule.VSTModuleDestroy(Sender: TObject);
 var
   Channel : Integer;
 begin
- {$IFDEF UseSemaphore}
- FSemaphore := 0;
- {$ENDIF}
  {$IFDEF UseCriticalSection}
  FreeAndNil(FCriticalSection);
  {$ENDIF}
@@ -352,7 +329,7 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
+  var GUI: TForm; ParentWindow: NativeUInt);
 var
   Rct      : array [0..1] of TRect;
   Oversize : Integer;
@@ -449,8 +426,8 @@ begin
   try
    PinProperties := VstHost[0].GetInputProperties(Index);
    Flags         := PinProperties.Flags;
-   vLabel        := StrPas(@PinProperties.Caption[0]);
-   shortLabel    := StrPas(@PinProperties.ShortLabel[0]);
+   vLabel        := StrPas(PAnsiChar(@PinProperties.Caption[0]));
+   shortLabel    := StrPas(PAnsiChar(@PinProperties.ShortLabel[0]));
   except
    Result        := False;
   end;
@@ -504,8 +481,8 @@ begin
   try
    PinProperties := VstHost[0].GetOutputProperties(Index);
    Flags         := PinProperties.Flags;
-   vLabel        := StrPas(@PinProperties.Caption[0]);
-   ShortLabel    := StrPas(@PinProperties.ShortLabel[0]);
+   vLabel        := StrPas(PAnsiChar(@PinProperties.Caption[0]));
+   ShortLabel    := StrPas(PAnsiChar(@PinProperties.ShortLabel[0]));
   except
    Result        := False;
   end;
@@ -514,12 +491,6 @@ end;
 procedure TOversampleTemplateDataModule.VSTModuleClose(Sender: TObject);
 begin
  VstHost[0].Active := False;
-end;
-
-procedure TOversampleTemplateDataModule.ParamAutomate(
-  Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
-begin
- Parameter[FBaseParCount + Index] := ParamValue;
 end;
 
 procedure TOversampleTemplateDataModule.ParamPreTransBWChange(
@@ -531,7 +502,7 @@ begin
   do FUpsampler[Channel].TransitionBandwidth := 0.01 * Value;
 end;
 
-procedure TOversampleTemplateDataModule.ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TOversampleTemplateDataModule.ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := ConvertOrderToString(Round(Parameter[Index]));
 end;
@@ -584,6 +555,12 @@ begin
   FCriticalSection.Leave;
  end;
  {$ENDIF}
+end;
+
+procedure TOversampleTemplateDataModule.AudioMasterAutomate(
+  Sender: TObject; Index: Integer; ParameterValue: Single);
+begin
+ Parameter[FBaseParCount + Index] := ParameterValue;
 end;
 
 procedure TOversampleTemplateDataModule.AudioMasterIdle(Sender: TObject);
@@ -677,7 +654,7 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.CustomParameterDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   n, pnr : Integer;
 begin
@@ -694,7 +671,7 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.CustomParameterLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   n, pnr : Integer;
 begin
@@ -769,7 +746,7 @@ begin
   end;
 end;
 
-procedure TOversampleTemplateDataModule.ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TOversampleTemplateDataModule.ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   4, 5, 6 : PreDefined := 'Chebyshev';
@@ -777,7 +754,7 @@ begin
  end;
 end;
 
-procedure TOversampleTemplateDataModule.ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TOversampleTemplateDataModule.ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := IntToStr(Round(Parameter[Index])) + 'x';
 end;
@@ -793,14 +770,6 @@ begin
  end;
 end;
 
-procedure TOversampleTemplateDataModule.ParamOversamplingDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- if Boolean(Round(Parameter[Index]))
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
-end;
-
 procedure TOversampleTemplateDataModule.ParamOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -808,20 +777,10 @@ begin
  FCriticalSection.Enter;
  try
  {$ENDIF}
-  {$IFDEF UseSemaphore}
-  while FSemaphore > 0 do sleep(1);
-  inc(FSemaphore);
-  try
-  {$ENDIF}
    FOSActive := Boolean(Round(Value));
    if FOSActive = True
     then SetOSFactor(Round(ParameterByName['OS Factor']))
     else SetOSFactor(1);
-  {$IFDEF UseSemaphore}
-  finally
-   Dec(FSemaphore);
-  end;
-  {$ENDIF}
  {$IFDEF UseCriticalSection}
  finally
   FCriticalSection.Leave;
@@ -839,19 +798,9 @@ begin
  FCriticalSection.Enter;
  try
  {$ENDIF}
-  {$IFDEF UseSemaphore}
-  while FSemaphore > 0 do sleep(1);
-  inc(FSemaphore);
-  try
-  {$ENDIF}
    if FOSActive = True
     then SetOSFactor(Round(Value))
     else SetOSFactor(1);
-  {$IFDEF UseSemaphore}
-  finally
-   Dec(FSemaphore);
-  end;
-  {$ENDIF}
  {$IFDEF UseCriticalSection}
  finally
   FCriticalSection.Leave;
@@ -874,6 +823,14 @@ end;
 procedure TOversampleTemplateDataModule.ManualIdleChanged;
 begin
  Timer.Enabled := ManualIdle;
+end;
+
+procedure TOversampleTemplateDataModule.ParameterOversamplingDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+begin
+ if Boolean(Round(Parameter[Index]))
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
 end;
 
 procedure TOversampleTemplateDataModule.SetOSFactor(const NewOSFactor: Integer);
@@ -944,11 +901,6 @@ begin
  FCriticalSection.Enter;
  try
  {$ENDIF}
-  {$IFDEF UseSemaphore}
-  while FSemaphore > 0 do;
-  Inc(FSemaphore);
-  try
-  {$ENDIF}
    CheckSampleFrames(SampleFrames);
 
    if FOSActive then
@@ -967,7 +919,7 @@ begin
   *)
      // process serial chain
      if VstHost[0].Active
-      then VstHost[0].ProcessReplacing(@FIn32[0], @FOut32[0], SampleFrames * FOSFactor)
+      then VstHost[0].Process32Replacing(@FIn32[0], @FOut32[0], SampleFrames * FOSFactor)
       else
        for Channel := 0 to min(numInputs, numOutputs) - 1
         do Move(FIn32[Channel, 0], FOut32[Channel, 0], SampleFrames * SizeOf(Single) * FOSFactor);
@@ -986,16 +938,11 @@ begin
    else
     begin
      if VstHost[0].Active
-      then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
+      then VstHost[0].Process32Replacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
       else
        for Channel := 0 to min(numInputs, numOutputs) - 1
         do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single) * FOSFactor);
     end;
-  {$IFDEF UseSemaphore}
-  finally
-   Dec(FSemaphore);
-  end;
-  {$ENDIF}
  {$IFDEF UseCriticalSection}
  finally
   FCriticalSection.Leave;
@@ -1012,11 +959,6 @@ begin
  FCriticalSection.Enter;
  try
  {$ENDIF}
-  {$IFDEF UseSemaphore}
-  while FSemaphore > 0 do;
-  Inc(FSemaphore);
-  try
-  {$ENDIF}
    CheckSampleFrames(SampleFrames);
 
    if FOSActive then
@@ -1028,7 +970,7 @@ begin
 
      // process serial chain
      if VstHost[0].Active
-      then VstHost[0].ProcessDoubleReplacing(@FIn64[0], @FOut64[0], SampleFrames * FOSFactor)
+      then VstHost[0].Process64Replacing(@FIn64[0], @FOut64[0], SampleFrames * FOSFactor)
       else
        for Channel := 0 to min(numInputs, numOutputs) - 1
         do Move(FIn64[Channel, 0], FOut64[Channel, 0], SampleFrames * SizeOf(Single) * FOSFactor);
@@ -1040,15 +982,10 @@ begin
     end
    else
     if VstHost[0].Active
-     then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
+     then VstHost[0].Process32Replacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
      else
       for Channel := 0 to min(numInputs, numOutputs) - 1
        do Move(Inputs[Channel], Outputs[Channel, 0], SampleFrames * SizeOf(Double) * FOSFactor);
-  {$IFDEF UseSemaphore}
-  finally
-   Dec(FSemaphore);
-  end;
-  {$ENDIF}
  {$IFDEF UseCriticalSection}
  finally
   FCriticalSection.Leave;

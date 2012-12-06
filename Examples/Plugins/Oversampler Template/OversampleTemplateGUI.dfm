@@ -37,62 +37,63 @@ object FmOversampler: TFmOversampler
     Height = 24
     Align = alTop
     Anchors = []
+    BorderColor = clBtnShadow
     BorderVisible = False
-    Caption = 'PnControl'
+    BorderWidth = 2.000000000000000000
     Color = 7701642
-    LineColor = clBlack
-    Linewidth = 0
     PanelColor = 7701642
     PopupMenu = PUSettings
-    BorderRadius = 0
     TabOrder = 0
     UseDockManager = True
-    object GuiLEDFontOversampling: TGuiLED
+    object LedOversampling: TGuiLED
       Left = 4
       Top = 4
       Width = 16
       Height = 16
+      BorderStrength_Percent = 100.000000000000000000
       Brightness_Percent = 20.000000000000000000
-      LineWidth = 2
       LEDColor = clLime
-      FontOversampling = fo4x
-      LineColor = clLime
-      OnClick = GuiLEDFontOversamplingClick
+      BorderWidth = 2.099999904632568000
+      Uniformity_Percent = 36.754447937011720000
+      Transparent = False
+      OnClick = LedOversamplingClick
     end
-    object LbFontOversampling: TGuiLabel
+    object LblOversampling: TGuiLabel
       Left = 26
       Top = 4
       Width = 80
       Height = 16
-      FontOversampling = fo4x
-      Caption = 'FontOversampling:'
+      Caption = 'Oversampling:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      OnClick = GuiLEDFontOversamplingClick
+      FontOversampling = fo4x
+      ParentFont = False
+      OnClick = LedOversamplingClick
     end
-    object LbFontOversamplingFactor: TGuiLabel
+    object LblOversamplingFactor: TGuiLabel
       Left = 134
       Top = 4
       Width = 27
       Height = 16
-      FontOversampling = fo2x
       Caption = '4x'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      FontOversampling = fo2x
+      ParentFont = False
       Visible = False
     end
-    object DialFontOversampling: TGuiDial
+    object DialOversampling: TGuiDial
       Left = 115
       Top = 4
       Width = 16
       Height = 16
-      FontOversampling = fo4x
+      AntiAlias = gaaLinear4x
       CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
@@ -101,7 +102,7 @@ object FmOversampler: TFmOversampler
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      OnChange = DialFontOversamplingChange
+      OnChange = DialOversamplingChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000

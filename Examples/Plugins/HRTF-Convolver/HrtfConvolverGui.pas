@@ -34,11 +34,11 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, ComCtrls, Controls, Spin, StdCtrls, GLScene, 
-  GLObjects, GLVectorFileObjects, GLMisc, GLWin32Viewer, 
-  DAV_GuiAudioDataDisplay, DAV_AudioData, Dialogs;
+uses
+{$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
+  Forms, Dialogs, ComCtrls, Controls, Spin, StdCtrls, GLScene, GLObjects,
+  GLVectorFileObjects, GLWin32Viewer, GLCoordinates, GLCrossPlatform,
+  BaseClasses, DAV_Types, DAV_VSTModule, DAV_GuiAudioDataDisplay, DAV_AudioData;
 
 type
   TFmHrtfConvolver = class(TForm)
@@ -70,15 +70,18 @@ type
     TSReverb: TTabSheet;
     procedure FormCreate(Sender: TObject);
     procedure BtLoadHrtfFileClick(Sender: TObject);
-    procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: Integer);
+    procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure SEAzimuthChange(Sender: TObject);
     procedure SEElevationChange(Sender: TObject);
   private
-    FOldMousePoint : TPoint;
+    FOldMousePoint: TPoint;
     procedure Zoom(Value: Single);
-  public  
+  public
     procedure AzimuthChanged;
     procedure ElevationChanged;
     procedure RadiusChanged;
@@ -94,203 +97,210 @@ implementation
 
 uses
   Math, VectorGeometry, MeshUtils, Jpeg, TGA, GLFile3DS, GLFileObj,
-  GLCrossPlatform, VectorLists, DAV_DspHrtf, HrtfConvolverDM,
+  VectorLists, DAV_DspHrtf, HrtfConvolverDM,
   DAV_VSTModuleWithPrograms;
 
 procedure TFmHrtfConvolver.FormCreate(Sender: TObject);
 var
-  rs             : TResourceStream;
-  i              : Integer;
-  tris, norms    : TAffineVectorList;
-  tex, buf       : TAffineVectorList;
-  morphTris      : TAffineVectorList;
-  morphNorms     : TAffineVectorList;
-  indices        : TIntegerList;
-  texIndices     : TIntegerList;
-  firstRemap     : TIntegerList;
-  subdivideRemap : TIntegerList;
-  bufRemap       : TIntegerList;
+  ResourceStream: TResourceStream;
+  i: Integer;
+  Tris, Norms: TAffineVectorList;
+  Tex, Buf: TAffineVectorList;
+  MorphTris: TAffineVectorList;
+  MorphNorms: TAffineVectorList;
+  Indices: TIntegerList;
+  TexIndices: TIntegerList;
+  FirstRemap: TIntegerList;
+  SubdivideRemap: TIntegerList;
+  BufRemap: TIntegerList;
 begin
- rs := TResourceStream.Create(hInstance, 'Head', '3DS');
- with rs do
-  try
-   GLHead.LoadFromStream('Head.3DS',rs);
-   for i := 0 to GLHead.MeshObjects.Count-1 do
-    begin
-     tex := TAffineVectorList.Create;
-     try
-      with GLHead.MeshObjects[i]
-       do tris := ExtractTriangles(tex);
-      try
-       indices := BuildVectorCountOptimizedIndices(tris);
-       try
-        firstRemap := TIntegerList(indices.CreateClone);
-        RemapAndCleanupReferences(tris, indices);
-        norms := BuildNormals(tris, indices);
-
-        // subdivide geometry
-        SubdivideTriangles(0.6, tris, indices, norms);
-        texIndices := BuildVectorCountOptimizedIndices(tex);
-        RemapAndCleanupReferences(tex, texIndices);
-
-        // subdivide texture space
-        SubdivideTriangles(0, tex, texIndices);
-
-        // Re-expand everything
-        buf := TAffineVectorList.Create;
+  ResourceStream := TResourceStream.Create(hInstance, 'Head', '3DS');
+  with ResourceStream do
+    try
+      GLHead.LoadFromStream('Head.3DS', ResourceStream);
+      for i := 0 to GLHead.MeshObjects.Count - 1 do
+      begin
+        Tex := TAffineVectorList.Create;
         try
-         ConvertIndexedListToList(tris, indices, buf);
-         tris.Assign(buf);
-         buf.Count := 0;
-         ConvertIndexedListToList(norms, indices, buf);
-         norms.Assign(buf);
-         buf.Count := 0;
-         ConvertIndexedListToList(tex, texIndices, buf);
-         tex.Assign(buf);
-        finally
-         FreeAndNil(buf);
-        end;
-
-        // Pack & Optimize the expanded stuff
-        FreeAndNil(indices);
-        indices := BuildVectorCountOptimizedIndices(tris, norms, tex);
-        subdivideRemap := TIntegerList(indices.CreateClone);
-        RemapReferences(norms, indices);
-        RemapReferences(tex, indices);
-        RemapAndCleanupReferences(tris, indices);
-
-        IncreaseCoherency(indices, 13);
-
-        with GLHead.MeshObjects[i] do
-         begin
-          bufRemap := TIntegerList.Create;
+          with GLHead.MeshObjects[i] do
+            Tris := ExtractTriangles(Tex);
           try
-           morphTris := ExtractTriangles;
-           try
-            bufRemap.Assign(firstRemap);
-            RemapAndCleanupReferences(morphTris, bufRemap);
-
-            morphNorms := MeshUtils.BuildNormals(morphTris, bufRemap);
+            Indices := BuildVectorCountOptimizedIndices(Tris);
             try
-             SubdivideTriangles(0.7, morphTris, bufRemap, morphNorms);
-             buf := TAffineVectorList.Create;
-             try
-              ConvertIndexedListToList(morphTris, bufRemap, buf);
-              morphTris.Assign(buf);
-              ConvertIndexedListToList(morphNorms, bufRemap, buf);
-              morphNorms.Assign(buf);
-             finally
-              FreeAndNil(buf);
-             end;
-             RemapReferences(morphTris, subdivideRemap);
-             RemapReferences(morphNorms, subdivideRemap);
+              FirstRemap := TIntegerList(Indices.CreateClone);
+              RemapAndCleanupReferences(Tris, Indices);
+              Norms := BuildNormals(Tris, Indices);
+
+              // subdivide geometry
+              SubdivideTriangles(0.6, Tris, Indices, Norms);
+              TexIndices := BuildVectorCountOptimizedIndices(Tex);
+              RemapAndCleanupReferences(Tex, TexIndices);
+
+              // subdivide texture space
+              SubdivideTriangles(0, Tex, TexIndices);
+
+              // Re-expand everything
+              Buf := TAffineVectorList.Create;
+              try
+                ConvertIndexedListToList(Tris, Indices, Buf);
+                Tris.Assign(Buf);
+                Buf.Count := 0;
+                ConvertIndexedListToList(Norms, Indices, Buf);
+                Norms.Assign(Buf);
+                Buf.Count := 0;
+                ConvertIndexedListToList(Tex, TexIndices, Buf);
+                Tex.Assign(Buf);
+              finally
+                FreeAndNil(Buf);
+              end;
+
+              // Pack & Optimize the expanded stuff
+              FreeAndNil(Indices);
+              Indices := BuildVectorCountOptimizedIndices(Tris, Norms, Tex);
+              SubdivideRemap := TIntegerList(Indices.CreateClone);
+              RemapReferences(Norms, Indices);
+              RemapReferences(Tex, Indices);
+              RemapAndCleanupReferences(Tris, Indices);
+
+              IncreaseCoherency(Indices, 13);
+
+              with GLHead.MeshObjects[i] do
+              begin
+                BufRemap := TIntegerList.Create;
+                try
+                  MorphTris := ExtractTriangles;
+                  try
+                    BufRemap.Assign(FirstRemap);
+                    RemapAndCleanupReferences(MorphTris, BufRemap);
+
+                    MorphNorms := MeshUtils.BuildNormals(MorphTris, BufRemap);
+                    try
+                      SubdivideTriangles(0.7, MorphTris, BufRemap, MorphNorms);
+                      Buf := TAffineVectorList.Create;
+                      try
+                        ConvertIndexedListToList(MorphTris, BufRemap, Buf);
+                        MorphTris.Assign(Buf);
+                        ConvertIndexedListToList(MorphNorms, BufRemap, Buf);
+                        MorphNorms.Assign(Buf);
+                      finally
+                        FreeAndNil(Buf);
+                      end;
+                      RemapReferences(MorphTris, SubdivideRemap);
+                      RemapReferences(MorphNorms, SubdivideRemap);
+                    finally
+                      FreeAndNil(MorphNorms);
+                    end;
+                  finally
+                    FreeAndNil(MorphTris);
+                  end;
+                finally
+                  FreeAndNil(BufRemap);
+                end;
+
+                Vertices := Tris;
+                Normals := Norms;
+                TexCoords := Tex;
+                FaceGroups.Clear;
+                with TFGVertexIndexList.CreateOwned(FaceGroups) do
+                begin
+                  VertexIndices := Indices;
+                  Mode := fgmmTriangles;
+                end;
+              end;
+              FreeAndNil(TexIndices);
+              FreeAndNil(SubdivideRemap);
+              FreeAndNil(FirstRemap);
+              FreeAndNil(Norms);
             finally
-             FreeAndNil(morphNorms);
+              FreeAndNil(Indices);
             end;
-           finally
-            FreeAndNil(morphTris);
-           end;
           finally
-           FreeAndNil(bufRemap);
+            FreeAndNil(Tris);
           end;
-
-          Vertices := tris;
-          Normals := norms;
-          TexCoords := tex;
-          FaceGroups.Clear;
-          with TFGVertexIndexList.CreateOwned(FaceGroups) do
-           begin
-            VertexIndices := indices;
-            Mode := fgmmTriangles;
-           end;
-         end;
-        FreeAndNil(texIndices);
-        FreeAndNil(subdivideRemap);
-        FreeAndNil(firstRemap);
-        FreeAndNil(norms);
-       finally
-        FreeAndNil(indices);
-       end;
-      finally
-       FreeAndNil(tris);
+        finally
+          FreeAndNil(Tex);
+        end;
       end;
-     finally
-      FreeAndNil(tex);
-     end;
+      GLHead.StructureChanged;
+    finally
+      Free;
     end;
-   GLHead.StructureChanged;
-  finally
-   Free;
-  end;
 
- with THrtfConvolverDataModule(Owner) do
+  with THrtfConvolverDataModule(Owner) do
   begin
-   AudioDataDisplay.AudioDataCollection := AudioDataCollectionHRTF;
+    AudioDataDisplay.AudioDataCollection := AudioDataCollectionHRTF;
   end;
 end;
 
 procedure TFmHrtfConvolver.BtLoadHrtfFileClick(Sender: TObject);
 begin
- with THrtfConvolverDataModule(Self.Owner), OpenDialog do
-  if Execute then
-   begin
-    HRTFs.LoadFromFile(FileName);
-    HrtfChanged;
-   end;
+  with THrtfConvolverDataModule(Self.Owner), OpenDialog do
+    if Execute then
+    begin
+      HRTFs.LoadFromFile(FileName);
+      HrtfChanged;
+    end;
 end;
 
 procedure TFmHrtfConvolver.GLSceneViewerMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
- FOldMousePoint.X := X;
- FOldMousePoint.Y := Y;
+  FOldMousePoint.X := X;
+  FOldMousePoint.Y := Y;
 end;
 
 procedure TFmHrtfConvolver.GLSceneViewerMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 const
-  Scale = 1/40;
+  Scale = 1 / 40;
 var
-   originalT2C, normalT2C, normalCameraRight, newPos : TVector;
-   pitchNow, dist: Single;
+  OriginalT2C, NormalT2C, NormalCameraRight, NewPos: TVector;
+  PitchNow, Dist: Single;
 begin
- if ssLeft in Shift then
+  if ssLeft in Shift then
   begin
-   with GLSceneViewer.Camera do
+    with GLSceneViewer.Camera do
     begin
-     originalT2C := VectorSubtract(AbsolutePosition, GLDummyCube.AbsolutePosition);
-     SetVector(normalT2C, originalT2C);
-     dist := VectorLength(normalT2C);
-     NormalizeVector(normalT2C);
-     normalCameraRight := VectorCrossProduct(AbsoluteUp, normalT2C);
-     if VectorLength(normalCameraRight) < 0.001
-      then SetVector(normalCameraRight, XVector) // arbitrary vector
-      else NormalizeVector(normalCameraRight);
-     pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
-     if not (ssAlt in Shift)
-      then pitchNow := ClampValue(pitchNow + DegToRad(FOldMousePoint.Y - Y), 0.002, PI - 0.77);
-     SetVector(normalT2C, AbsoluteUp);
-     RotateVector(normalT2C, normalCameraRight, -pitchNow);
-     if not (ssShift in Shift)
-      then RotateVector(normalT2C, AbsoluteUp, -DegToRad(FOldMousePoint.X - X));
-     ScaleVector(normalT2C, dist);
-     newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
-     if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
-     Position.AsVector := newPos;
+      OriginalT2C := VectorSubtract(AbsolutePosition,
+        GLDummyCube.AbsolutePosition);
+      SetVector(NormalT2C, OriginalT2C);
+      Dist := VectorLength(NormalT2C);
+      NormalizeVector(NormalT2C);
+      NormalCameraRight := VectorCrossProduct(AbsoluteUp, NormalT2C);
+      if VectorLength(NormalCameraRight) < 0.001 then
+        SetVector(NormalCameraRight, XVector) // arbitrary vector
+      else
+        NormalizeVector(NormalCameraRight);
+      PitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, NormalT2C));
+      if not(ssAlt in Shift) then
+        PitchNow := ClampValue(PitchNow + VectorGeometry.DegToRad(FOldMousePoint.Y - Y), 0.002,
+          PI - 0.77);
+      SetVector(NormalT2C, AbsoluteUp);
+      RotateVector(NormalT2C, NormalCameraRight, -PitchNow);
+      if not(ssShift in Shift) then
+        RotateVector(NormalT2C, AbsoluteUp, -VectorGeometry.DegToRad(FOldMousePoint.X - X));
+      ScaleVector(NormalT2C, Dist);
+      NewPos := VectorAdd(AbsolutePosition, VectorSubtract(NormalT2C,
+        OriginalT2C));
+      if Assigned(Parent) then
+        NewPos := Parent.AbsoluteToLocal(NewPos);
+      Position.AsVector := NewPos;
 
-     case GLLight.Position.Style of
-      csPoint: GLLight.Position.SetPoint(newPos);
-      csVector: GLLight.Position.SetVector(newPos);
-     end;
+      case GLLight.Position.Style of
+        csPoint:
+          GLLight.Position.SetPoint(NewPos);
+        csVector:
+          GLLight.Position.SetVector(NewPos);
+      end;
     end;
-   FOldMousePoint.X := X;
-   FOldMousePoint.Y := Y;
-  end else
- if ssRight in Shift then
+    FOldMousePoint.X := X;
+    FOldMousePoint.Y := Y;
+  end
+  else if ssRight in Shift then
   begin
-   Zoom(Power(0.995, (FOldMousePoint.Y - Y)));
-   FOldMousePoint.X := X;
-   FOldMousePoint.Y := Y;
+    Zoom(Power(0.995, (FOldMousePoint.Y - Y)));
+    FOldMousePoint.X := X;
+    FOldMousePoint.Y := Y;
   end;
 end;
 
@@ -298,85 +308,89 @@ procedure TFmHrtfConvolver.GLSceneViewerMouseWheel(Sender: TObject;
   Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
   var Handled: Boolean);
 const
-  Scale = 1/120;
+  Scale = 1 / 120;
 begin
- Zoom(Power(0.9, WheelDelta * Scale));
- Handled := true
+  Zoom(Power(0.9, WheelDelta * Scale));
+  Handled := true
 end;
 
 procedure TFmHrtfConvolver.SEAzimuthChange(Sender: TObject);
 begin
- if SEAzimuth.Value >  180 then SEAzimuth.Value := SEAzimuth.Value - 360 else
- if SEAzimuth.Value < -180 then SEAzimuth.Value := SEAzimuth.Value + 360;
+  if SEAzimuth.Value > 180 then
+    SEAzimuth.Value := SEAzimuth.Value - 360
+  else if SEAzimuth.Value < -180 then
+    SEAzimuth.Value := SEAzimuth.Value + 360;
 
- with THrtfConvolverDataModule(Owner) do
+  with THrtfConvolverDataModule(Owner) do
   begin
-   if Parameter[0] <> SEAzimuth.Value
-    then Parameter[0] := SEAzimuth.Value;
+    if Parameter[0] <> SEAzimuth.Value then
+      Parameter[0] := SEAzimuth.Value;
   end;
 end;
 
 procedure TFmHrtfConvolver.SEElevationChange(Sender: TObject);
 begin
- if SEElevation.Value >  90 then SEElevation.Value := SEElevation.Value - 180 else
- if SEElevation.Value < -90 then SEElevation.Value := SEElevation.Value + 180;
+  if SEElevation.Value > 90 then
+    SEElevation.Value := SEElevation.Value - 180
+  else if SEElevation.Value < -90 then
+    SEElevation.Value := SEElevation.Value + 180;
 
- with THrtfConvolverDataModule(Owner) do
+  with THrtfConvolverDataModule(Owner) do
   begin
-   if Parameter[1] <> SEElevation.Value
-    then Parameter[1] := SEElevation.Value;
+    if Parameter[1] <> SEElevation.Value then
+      Parameter[1] := SEElevation.Value;
   end;
 end;
 
 procedure TFmHrtfConvolver.AzimuthChanged;
 begin
- with THrtfConvolverDataModule(Owner) do
+  with THrtfConvolverDataModule(Owner) do
   begin
-   if SEAzimuth.Value <> Parameter[0]
-    then SEAzimuth.Value := Round(Parameter[0]);
-   AudioDataDisplay.Invalidate;
+    if SEAzimuth.Value <> Parameter[0] then
+      SEAzimuth.Value := Round(Parameter[0]);
+    AudioDataDisplay.Invalidate;
   end;
 end;
 
 procedure TFmHrtfConvolver.ElevationChanged;
 begin
- with THrtfConvolverDataModule(Owner) do
+  with THrtfConvolverDataModule(Owner) do
   begin
-   if SEElevation.Value <> Parameter[1]
-    then SEElevation.Value := Round(Parameter[1]);
-   AudioDataDisplay.Invalidate;
+    if SEElevation.Value <> Parameter[1] then
+      SEElevation.Value := Round(Parameter[1]);
+    AudioDataDisplay.Invalidate;
   end;
 end;
 
 procedure TFmHrtfConvolver.RadiusChanged;
 begin
- with THrtfConvolverDataModule(Owner) do
+  with THrtfConvolverDataModule(Owner) do
   begin
-   if SERadius.Value <> Parameter[2]
-    then SERadius.Value := Round(Parameter[2]);
-   AudioDataDisplay.Invalidate;
+    if SERadius.Value <> Parameter[2] then
+      SERadius.Value := Round(Parameter[2]);
+    AudioDataDisplay.Invalidate;
   end;
 end;
 
 procedure TFmHrtfConvolver.Zoom(Value: Single);
 var
-  vect : TVector;
+  Vect: TVector;
 begin
- if GLSceneViewer.Camera = GLCamera then
-  with GLCamera do
-   if Assigned(TargetObject) then
-    begin
-     vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
-     if ((VectorLength(vect) > 1.2) or (Value > 1)) and
-        ((VectorLength(vect) < 10)  or (Value < 1)) then
+  if GLSceneViewer.Camera = GLCamera then
+    with GLCamera do
+      if Assigned(TargetObject) then
       begin
-       ScaleVector(vect, Value - 1);
-       AddVector(vect, AbsolutePosition);
-       if Assigned(Parent)
-        then vect := Parent.AbsoluteToLocal(vect);
-       Position.AsVector := vect;
-      end;
-    end
+        Vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
+        if ((VectorLength(Vect) > 1.2) or (Value > 1)) and
+          ((VectorLength(Vect) < 10) or (Value < 1)) then
+        begin
+          ScaleVector(Vect, Value - 1);
+          AddVector(Vect, AbsolutePosition);
+          if Assigned(Parent) then
+            Vect := Parent.AbsoluteToLocal(Vect);
+          Position.AsVector := Vect;
+        end;
+      end
 end;
 
 end.
