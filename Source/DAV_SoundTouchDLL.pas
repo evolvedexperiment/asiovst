@@ -179,7 +179,16 @@ type
   // Returns nonzero if there aren't any samples available for outputting.
   TSoundTouchIsEmpty = function (Handle: TSoundTouchHandle): Integer; stdcall;
 
-  TSoundTouch = class(TObject)
+  TSoundTouchSettings = (
+    stsUseAntiAliasFilter    = 0, // Enable/disable anti-alias filter in pitch transposer (0 = disable)
+    stsAntiAliasFilterLength = 1, // Pitch transposer anti-alias filter length (8 .. 128 taps, default = 32)
+    stsUseQuickseek          = 2, // Enable/disable quick seeking algorithm in tempo changer routine (enabling quick seeking lowers CPU utilization but causes a minor sound quality compromising)
+    stsSequenceMs            = 3, // Time-stretch algorithm single processing sequence length in milliseconds. This determines to how long sequences the original sound is chopped in the time-stretch algorithm.
+    stsSeekWindowMs          = 4, // Time-stretch algorithm seeking window length in milliseconds for algorithm that finds the best possible overlapping location. This determines from how wide window the algorithm may look for an optimal joining location when mixing the sound sequences back together.
+    stsOverlapMs             = 5  // Time-stretch algorithm overlap length in milliseconds. When the chopped sound sequences are mixed back together, to form a continuous sound stream, this parameter defines over how long period the two consecutive sequences are let to overlap each other.
+  );
+
+  TSoundTouch = class
   private
     FHandle     : TSoundTouchHandle;
     FRate       : Single;
@@ -193,6 +202,12 @@ type
     function GetPitchChange: Single;
     function GetRateChange: Single;
     function GetTempoChange: Single;
+    function GetUseAntiAliasFilter: Boolean;
+    function GetUseQuickSeek: Boolean;
+    function GetAntiAliasFilterLength: Integer;
+    function GetOverlapMs: Integer;
+    function GetSeekWindowMs: Integer;
+    function GetSequenceMs: Integer;
     procedure SetRate(const Value: Single);
     procedure SetPitch(const Value: Single);
     procedure SetTempo(const Value: Single);
@@ -201,6 +216,12 @@ type
     procedure SetTempoChange(const Value: Single);
     procedure SetChannels(const Value: Cardinal);
     procedure SetSampleRate(const Value: Single);
+    procedure SetUseAntiAliasFilter(const Value: Boolean);
+    procedure SetUseQuickSeek(const Value: Boolean);
+    procedure SetAntiAliasFilterLength(const Value: Integer);
+    procedure SetOverlapMs(const Value: Integer);
+    procedure SetSeekWindowMs(const Value: Integer);
+    procedure SetSequenceMs(const Value: Integer);
   protected
     procedure SamplerateChanged; virtual;
     procedure ChannelsChanged; virtual;
@@ -215,11 +236,11 @@ type
     procedure Flush; virtual;
     procedure Clear; virtual;
 
-    procedure PutSamples(const Samples: PSingle; const NumSamples: Cardinal);
-    function ReceiveSamples(const OutBuffer: PSingle; const MaxSamples: Integer): Cardinal;
+    procedure PutSamples(const InBuffer: PSingle; const NumSamples: Cardinal);
+    function ReceiveSamples(const OutBuffer: PSingle; const NumSamples: Integer): Cardinal;
 
-    function SetSetting(const SettingId: Integer; const Value: Integer): Boolean;
-    function GetSetting(const SettingId: Integer): Integer;
+    function SetSetting(const SettingId: TSoundTouchSettings; const Value: Integer): Boolean;
+    function GetSetting(const SettingId: TSoundTouchSettings): Integer;
 
     property VersionString: AnsiString read GetVersionString;
     property VersionID: Cardinal read GetVersionId;
@@ -235,6 +256,13 @@ type
     property NumSamples: Cardinal read GetNumSamples;
     property NumUnprocessedSamples: Cardinal read GetNumUnprocessedSamples;
     property IsEmpty: Integer read GetIsEmpty;
+
+    property UseAntiAliasFilter: Boolean read GetUseAntiAliasFilter write SetUseAntiAliasFilter;
+    property AntiAliasFilterLength: Integer read GetAntiAliasFilterLength write SetAntiAliasFilterLength;
+    property UseQuickSeek: Boolean read GetUseQuickSeek write SetUseQuickSeek;
+    property SequenceMs: Integer read GetSequenceMs write SetSequenceMs;
+    property SeekWindow: Integer read GetSeekWindowMs write SetSeekWindowMs;
+    property OverlapMs: Integer read GetOverlapMs write SetOverlapMs;
   end;
 
 var
@@ -297,6 +325,11 @@ begin
  SoundTouchClear(FHandle);
 end;
 
+function TSoundTouch.GetAntiAliasFilterLength: Integer;
+begin
+ Result := Integer(GetSetting(stsAntiAliasFilterLength));
+end;
+
 function TSoundTouch.GetIsEmpty: Integer;
 begin
  Result := SoundTouchIsEmpty(FHandle);
@@ -310,6 +343,11 @@ end;
 function TSoundTouch.GetNumUnprocessedSamples: Cardinal;
 begin
  Result := SoundTouchNumUnprocessedSamples(FHandle);
+end;
+
+function TSoundTouch.GetOverlapMs: Integer;
+begin
+ Result := Integer(GetSetting(stsOverlapMs));
 end;
 
 function TSoundTouch.GetPitchChange: Single;
@@ -327,6 +365,16 @@ begin
  Result := 100 * (FTempo - 1.0);
 end;
 
+function TSoundTouch.GetUseAntiAliasFilter: Boolean;
+begin
+
+end;
+
+function TSoundTouch.GetUseQuickSeek: Boolean;
+begin
+ Result := Boolean(GetSetting(stsUseQuickseek));
+end;
+
 class function TSoundTouch.GetVersionId: Cardinal;
 begin
  Result := SoundTouchGetVersionId;
@@ -337,6 +385,14 @@ begin
  Result := StrPas(SoundTouchGetVersionString);
 end;
 
+procedure TSoundTouch.SetAntiAliasFilterLength(const Value: Integer);
+var
+  Success: Boolean;
+begin
+ Success := SetSetting(stsAntiAliasFilterLength, Integer(Value));
+ Assert(Success = True);
+end;
+
 procedure TSoundTouch.SetChannels(const Value: Cardinal);
 begin
  if FChannels <> Value then
@@ -344,6 +400,14 @@ begin
    FChannels := Value;
    ChannelsChanged;
   end;
+end;
+
+procedure TSoundTouch.SetOverlapMs(const Value: Integer);
+var
+  Success: Boolean;
+begin
+ Success := SetSetting(stsOverlapMs, Integer(Value));
+ assert(Success = True);
 end;
 
 procedure TSoundTouch.ChannelsChanged;
@@ -366,10 +430,10 @@ begin
  SoundTouchSetPitch(FHandle, FPitch);
 end;
 
-procedure TSoundTouch.PutSamples(const Samples: PSingle;
+procedure TSoundTouch.PutSamples(const InBuffer: PSingle;
   const NumSamples: Cardinal);
 begin
- SoundTouchPutSamples(FHandle, Samples, NumSamples);
+ SoundTouchPutSamples(FHandle, InBuffer, NumSamples);
 end;
 
 procedure TSoundTouch.RateChanged;
@@ -378,9 +442,9 @@ begin
 end;
 
 function TSoundTouch.ReceiveSamples(const OutBuffer: PSingle;
-  const MaxSamples: Integer): Cardinal;
+  const NumSamples: Integer): Cardinal;
 begin
- Result := SoundTouchReceiveSamples(FHandle, OutBuffer, MaxSamples);
+ Result := SoundTouchReceiveSamples(FHandle, OutBuffer, NumSamples);
 end;
 
 procedure TSoundTouch.SetPitchChange(const Value: Single);
@@ -431,15 +495,57 @@ begin
  Tempo := 1.0 + 0.01 * Value;
 end;
 
-function TSoundTouch.GetSetting(const SettingId: Integer): Integer;
+function TSoundTouch.GetSeekWindowMs: Integer;
 begin
- Result := SoundTouchGetSetting(FHandle, SettingId);
+ Result := Integer(GetSetting(stsSeekWindowMs));
 end;
 
-function TSoundTouch.SetSetting(const SettingId: Integer;
+function TSoundTouch.GetSequenceMs: Integer;
+begin
+ Result := Integer(GetSetting(stsSequenceMs));
+end;
+
+procedure TSoundTouch.SetUseAntiAliasFilter(const Value: Boolean);
+var
+  Success: Boolean;
+begin
+ Success := SetSetting(stsUseAntiAliasFilter, Integer(Value));
+ assert(Success = True);
+end;
+
+procedure TSoundTouch.SetUseQuickSeek(const Value: Boolean);
+var
+  Success: Boolean;
+begin
+ Success := SetSetting(stsUseQuickseek, Integer(Value));
+ assert(Success = True);
+end;
+
+function TSoundTouch.GetSetting(const SettingId: TSoundTouchSettings): Integer;
+begin
+ Result := SoundTouchGetSetting(FHandle, Integer(SettingId));
+end;
+
+procedure TSoundTouch.SetSeekWindowMs(const Value: Integer);
+var
+  Success: Boolean;
+begin
+ Success := SetSetting(stsSeekWindowMs, Integer(Value));
+ assert(Success = True);
+end;
+
+procedure TSoundTouch.SetSequenceMs(const Value: Integer);
+var
+  Success: Boolean;
+begin
+ Success := SetSetting(stsSequenceMs, Integer(Value));
+ assert(Success = True);
+end;
+
+function TSoundTouch.SetSetting(const SettingId: TSoundTouchSettings;
   const Value: Integer): Boolean;
 begin
- Result := SoundTouchSetSetting(FHandle, SettingId, Value);
+ Result := SoundTouchSetSetting(FHandle, Integer(SettingId), Value);
 end;
 
 procedure TSoundTouch.TempoChanged;

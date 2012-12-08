@@ -1,6 +1,7 @@
 object StkReverbModule: TStkReverbModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Stk Reverb'
@@ -8,7 +9,6 @@ object StkReverbModule: TStkReverbModule
   VendorName = 'Delphi ASIO & VST Projects'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default Network Reverb'
   IORatio = 1.000000000000000000
   UniqueID = 'STKR'
@@ -36,7 +36,6 @@ object StkReverbModule: TStkReverbModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'T60'
       LargeStepFloat = 2.000000000000000000
@@ -50,7 +49,6 @@ object StkReverbModule: TStkReverbModule
       OnParameterChange = ParamT60Change
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 2.000000000000000000
@@ -63,7 +61,6 @@ object StkReverbModule: TStkReverbModule
       OnParameterChange = ParamMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Algorithm'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -82,13 +79,10 @@ object StkReverbModule: TStkReverbModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNetwork
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacingNetwork
   OnProcess32Replacing = VSTModuleProcessNetwork
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacingNetwork
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 284
-  Top = 121
   Height = 150
   Width = 215
 end

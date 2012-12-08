@@ -90,8 +90,6 @@ object TanhWaveshaperModule: TTanhWaveshaperModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
   Height = 150
   Width = 215
 end

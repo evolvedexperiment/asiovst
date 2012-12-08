@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Classes, SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule,
+  Windows, Classes, SysUtils, SyncObjs, DAV_Types, DAV_SECommon, DAV_SEModule,
   DAV_Complex, DAV_DspConvolution, DAV_AudioData;
 
 type
@@ -56,7 +56,7 @@ type
     FConvolver           : TConvolution32;
     FImpulseResponse     : TAudioData32;
 
-    FSemaphore           : Integer;
+    FCriticalSection     : TCriticalSection;
     FStaticCount         : Integer;
     FFileName            : PAnsiChar;
     FMaxIRSize           : Integer;
@@ -100,7 +100,7 @@ end;
 constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FSemaphore           := 0;
+ FCriticalSection     := TCriticalSection.Create;
  FConvolver           := TConvolution32.Create;
  FMaxIRSize           := 16384;
  FDesiredLatencyIndex := 5;
@@ -359,13 +359,12 @@ begin
                        ChooseProcess;
                       end;
        pinMaxIRSize : begin
-                       while FSemaphore > 0 do;
-                       Inc(FSemaphore);
+                       FCriticalSection.Enter;
                        try
                         if FConvolver.IRSize > FMaxIRSize
                          then FConvolver.IRSize := FMaxIRSize;
                        finally
-                        Dec(FSemaphore);
+                        FCriticalSection.Leave;
                        end;
                       end;
   pinDesiredLatency : FConvolver.FFTOrder := 6 + FDesiredLatencyIndex;
@@ -376,8 +375,7 @@ procedure TSEConvolutionModule.LoadIR(FileName: TFileName);
 var
   ADC : TAudioDataCollection32;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   ADC := TAudioDataCollection32.Create(nil);
   with ADC do
@@ -395,7 +393,7 @@ begin
     FreeAndNil(ADC);
    end;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -406,8 +404,7 @@ var
 begin
  if (ID >= 0) and (ID < FContainedIRs.Count) then
   begin
-   while FSemaphore > 0 do;
-   Inc(FSemaphore);
+   FCriticalSection.Enter;
    try
     ADC := TAudioDataCollection32.Create(nil);
     with ADC do
@@ -430,7 +427,7 @@ begin
       FreeAndNil(ADC);
      end;
    finally
-    Dec(FSemaphore);
+    FCriticalSection.Leave;
    end;
   end;
 end;
@@ -463,14 +460,13 @@ end;
 procedure TSEConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  // lock processing
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   FConvolver.ProcessBlock(PDAVSingleFixedArray(@FInputBuffer[BufferOffset]),
                           PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]),
                           SampleFrames);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 

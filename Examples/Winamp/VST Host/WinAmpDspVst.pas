@@ -65,8 +65,8 @@ type
     FSampleRate    : Integer;
     FSampleFrames  : Integer;
     FEditorForm    : TFmWinAmpVST;
-    FRegistryKey   : AnsiString;
-    FFxpName       : AnsiString;
+    FRegistryKey   : string;
+    FFxpName       : TFileName;
 {
     FRealDelay     : Integer;
     FPDCBuffer     : TArrayOfSingleArray;
@@ -103,9 +103,6 @@ type
     {$IFDEF UseCriticalSection}
     FCriticalSection  : TCriticalSection;
     {$ENDIF}
-    {$IFDEF UseSimpleSemaphore}
-    FSimpleSemaphore  : Integer;
-    {$ENDIF}
 
     FVstHost          : TVstHost;
     FWinAmpDspModule  : PWinampDSPModule;
@@ -121,8 +118,8 @@ type
       BitPerSample, ChannelCount, SampleRate: Integer): Integer;
   published
     property WinAmpDspModule: TWinampDSPModule read GetWinampDSPModule;
-    property RegistryKey: AnsiString read FRegistryKey;
-    property FxpName: AnsiString read FFxpName;
+    property RegistryKey: string read FRegistryKey;
+    property FxpName: TFileName read FFxpName;
     property VstHost: TVstHost read FVstHost;
     property Bypass: Boolean read FBypass write FBypass;
     property Enhanced: Boolean read GetEnhanced write SetEnhanced;
@@ -193,8 +190,8 @@ begin
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
   if (ContainedVSTPlugins.Count > 0) and (ContainedVSTPlugins[0] <> 'DLL') then
    begin
-    WADSPHeader.Description := PAnsiChar(ContainedVSTPlugins[0]);
-    WADSPModule.Description := PAnsiChar(ContainedVSTPlugins[0]);
+    WADSPHeader.Description := PAnsiChar(AnsiString(ContainedVSTPlugins[0]));
+    WADSPModule.Description := PAnsiChar(AnsiString(ContainedVSTPlugins[0]));
    end;
  finally
   FreeAndNil(ContainedVSTPlugins);
@@ -379,10 +376,6 @@ begin
  FEnhanceFak      := 1;
  FBypass          := False;
 
- {$IFDEF UseSimpleSemaphore}
- FSimpleSemaphore := 0;
- {$ENDIF}
-
  {$IFDEF UseCriticalSection}
  FCriticalSection := TCriticalSection.Create;
  {$ENDIF}
@@ -394,7 +387,7 @@ begin
   
 //  GetModuleFileName(HInstance, @FFxpName[1], 254);
   GetModuleFileName(AWinAmpDspModule.hDLLinstance, @FFxpName[1], 254);
-  FFxpName := StrPas(@FFxpName[1]);
+  FFxpName := StrPas(PChar(@FFxpName[1]));
   FRegistryKey := ExtractFileName(FFxpName);
   if FRegistryKey = 'dsp_vst.dll'                          
    then FRegistryKey := 'Software\WinAmp\VST Host DSP Plugin'
@@ -482,7 +475,7 @@ begin
     FreeAndNil(FEditorForm);
     if Assigned(FEditorForm)
      then FreeAndNil(FEditorForm);
-   except  
+   except
    end;
   FVstHost[0].Active := False;
 
@@ -496,22 +489,11 @@ begin
   for i := 0 to Length(FOutputBuffer) - 1 do Dispose(FOutputBuffer[i]);
   FreeAndNil(FVstHost);
 
-  {$IFDEF UseSimpleSemaphore}
-  while FSimpleSemaphore > 0 do;
-  Inc(FSimpleSemaphore);
-
-  try
-  {$ENDIF}
-   {$IFDEF UseCriticalSection}
-   FreeAndNil(FCriticalSection);
-   {$ENDIF UseCriticalSection}
-  {$IFDEF UseSimpleSemaphore}
-  finally
-   Dec(FSimpleSemaphore);
-  end;
-  {$ENDIF}
+  {$IFDEF UseCriticalSection}
+  FreeAndNil(FCriticalSection);
+  {$ENDIF UseCriticalSection}
  finally
-  inherited;
+   inherited;
  end;
 end;
 
@@ -534,11 +516,6 @@ end;
 
 procedure TWinAmpObject.Config;
 begin
- {$IFDEF UseSimpleSemaphore}
- while FSimpleSemaphore > 0 do;
- Inc(FSimpleSemaphore);
- try
- {$ENDIF}
   {$IFDEF UseCriticalSection}
   // Acquire critical section
   FCriticalSection.Acquire;
@@ -561,22 +538,12 @@ begin
    FCriticalSection.Release;
   end;
   {$ENDIF}
- {$IFDEF UseSimpleSemaphore}
- finally
-  Dec(FSimpleSemaphore);
- end;
- {$ENDIF}
 
  FEditorForm.Show;
 end;
 
 procedure TWinAmpObject.Quit;
 begin
- {$IFDEF UseSimpleSemaphore}
- while FSimpleSemaphore > 0 do;
- Inc(FSimpleSemaphore);
- try
- {$ENDIF}
   {$IFDEF UseCriticalSection}
   FCriticalSection.Acquire;
   try
@@ -605,11 +572,6 @@ begin
    FCriticalSection.Release;
   end;
   {$ENDIF}
- {$IFDEF UseSimpleSemaphore}
- finally
-  Dec(FSimpleSemaphore);
- end;
- {$ENDIF}
 end;
 
 procedure TWinAmpObject.ConvertInterleaved8bitToFloat(const Data: Pointer;
@@ -906,11 +868,6 @@ begin
  if not Assigned(FVstHost) or not FVstHost[0].Active or FBypass
   then exit;
 
- {$IFDEF UseSimpleSemaphore}
- while FSimpleSemaphore > 0 do;
- Inc(FSimpleSemaphore);
- try
- {$ENDIF}
   {$IFDEF UseCriticalSection}
   FCriticalSection.Acquire;
   try
@@ -997,7 +954,7 @@ begin
    FWinAmpConvertIn(Samples, ChannelCount, SampleFrames);
 
    // process VST plugin
-   FVstHost[0].ProcessReplacing(@FInputBuffer[0], @FOutputBuffer[0], FEnhanceFak * SampleFrames);
+   FVstHost[0].Process32Replacing(@FInputBuffer[0], @FOutputBuffer[0], FEnhanceFak * SampleFrames);
 
    // convert float to interleaved data
    FWinAmpConvertOut(Samples, ChannelCount, SampleFrames);
@@ -1007,20 +964,10 @@ begin
    FCriticalSection.Release;
   end;
  {$ENDIF}
- {$IFDEF UseSimpleSemaphore}
- finally
-  Dec(FSimpleSemaphore);
- end;
- {$ENDIF}
 end;
 
 procedure TWinAmpObject.LoadVSTDLL(const VSTDLL: TFileName);
 begin
- {$IFDEF UseSimpleSemaphore}
- while FSimpleSemaphore > 0 do;
- Inc(FSimpleSemaphore);
- try
- {$ENDIF}
   {$IFDEF UseCriticalSection}
   FCriticalSection.Acquire;
   try
@@ -1048,11 +995,6 @@ begin
    FCriticalSection.Release;
   end;
   {$ENDIF}
- {$IFDEF UseSimpleSemaphore}
- finally
-  Dec(FSimpleSemaphore);
- end;
- {$ENDIF}
 
  if Assigned(FEditorForm)
   then FEditorForm.UpdatePluginInformation;

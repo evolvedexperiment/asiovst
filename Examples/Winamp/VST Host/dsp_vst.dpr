@@ -20,7 +20,7 @@ uses
   WinAmpDspVstGui in 'WinAmpDspVstGui.pas' {FmWinAmpVST};
 
 exports
-  winampDSPGetHeader2 name 'winampDSPGetHeader2';
+  winampDSPGetHeader2 name 'winampDSPGetHeader2',
   winampDSPGetHeader2;
 
 end.

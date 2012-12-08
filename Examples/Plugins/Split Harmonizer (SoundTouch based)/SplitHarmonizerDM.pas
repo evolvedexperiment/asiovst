@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, SyncObjs, DAV_Types, DAV_VSTModule, DAV_DspDelayLines, DAV_DspFilter, 
-  DAV_DspFilterButterworth, DAV_SoundTouchDLLResource; //DAV_SoundTouch;
+  DAV_DspFilterButterworth, DAV_SoundTouchDLL;
 
 const
   CInputDelay = 5384;

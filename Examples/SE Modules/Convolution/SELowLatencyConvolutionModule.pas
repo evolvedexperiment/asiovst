@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Classes, SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule,
+  Windows, Classes, SysUtils, SyncObjs, DAV_Types, DAV_SECommon, DAV_SEModule,
   DAV_Complex, DAV_DspConvolution, DAV_AudioData;
 
 type
@@ -57,7 +57,7 @@ type
     FImpulseResponse     : TAudioData32;
 
 
-    FSemaphore           : Integer;
+    FCriticalSection     : TCriticalSection;
     FStaticCount         : Integer;
     FFileName            : PAnsiChar;
     FMaxIRBlockOrder     : Integer;
@@ -101,7 +101,7 @@ constructor TSELowLatencyConvolutionModule.Create(SEAudioMaster: TSE2AudioMaster
 begin
  inherited Create(SEAudioMaster, Reserved);
  FFileName            := '';
- FSemaphore           := 0;
+ FCriticalSection     := TCriticalSection.Create;
  FConvolver           := TLowLatencyConvolution32.Create;
  FMaxIRBlockOrder     := FConvolver.MaximumIRBlockOrder;
  FDesiredLatencyIndex := 5;
@@ -120,6 +120,7 @@ end;
 
 destructor TSELowLatencyConvolutionModule.Destroy;
 begin
+ FreeAndNil(FCriticalSection);
  FreeAndNil(FContainedIRs);
  FreeAndNil(FConvolver);
  FreeAndNil(FImpulseResponse);
@@ -359,25 +360,23 @@ begin
                        ChooseProcess;
                       end;
      pinMaxFFTOrder : begin
-                       while FSemaphore > 0 do;
-                       Inc(FSemaphore);
+                       FCriticalSection.Enter;
                        try
                         if FMaxIRBlockOrder <= FConvolver.MinimumIRBlockOrder
                          then FMaxIRBlockOrder := FConvolver.MinimumIRBlockOrder + 1;
                         FConvolver.MaximumIRBlockOrder := FMaxIRBlockOrder
                        finally
-                        Dec(FSemaphore);
+                        FCriticalSection.Leave;
                        end;
                       end;
   pinDesiredLatency : begin
-                       while FSemaphore > 0 do;
-                       Inc(FSemaphore);
+                       FCriticalSection.Enter;
                        try
                         if 5 + FDesiredLatencyIndex >= FConvolver.MaximumIRBlockOrder
                          then FDesiredLatencyIndex := FConvolver.MaximumIRBlockOrder - 5;
                         FConvolver.MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
                        finally
-                        Dec(FSemaphore);
+                        FCriticalSection.Leave;
                        end;
                       end;
  end; inherited;
@@ -387,8 +386,7 @@ procedure TSELowLatencyConvolutionModule.LoadIR(FileName: TFileName);
 var
   ADC : TAudioDataCollection32;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   ADC := TAudioDataCollection32.Create(nil);
   with ADC do
@@ -406,7 +404,7 @@ begin
     FreeAndNil(ADC);
    end;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -417,8 +415,7 @@ var
 begin
  if (ID >= 0) and (ID < FContainedIRs.Count) then
   begin
-   while FSemaphore > 0 do;
-   Inc(FSemaphore);
+   FCriticalSection.Enter;
    try
     ADC := TAudioDataCollection32.Create(nil);
     with ADC do
@@ -441,7 +438,7 @@ begin
       FreeAndNil(ADC);
      end;
    finally
-    Dec(FSemaphore);
+    FCriticalSection.Leave;
    end;
   end;
 end;
@@ -474,14 +471,13 @@ end;
 procedure TSELowLatencyConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  // lock processing
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   FConvolver.ProcessBlock(PDAVSingleFixedArray(@FInputBuffer[BufferOffset]),
                           PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]),
                           SampleFrames);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 

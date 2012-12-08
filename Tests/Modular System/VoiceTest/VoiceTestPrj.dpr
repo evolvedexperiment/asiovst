@@ -4,27 +4,19 @@ library VoiceTestPrj;
 uses
   Forms,
   DVSTEffect,
-  DVSTModule,
+  DVSTBasicModule,
   VoiceTestModuleU in 'VoiceTestModuleU.pas' {VoiceTestModule: TVSTModule},
   VoiceTestFormU in 'VoiceTestFormU.pas' {VoiceTestForm},
   VoiceTestVoiceU in 'VoiceTestVoiceU.pas' {VoiceTestVoice: TDataModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VoiceTestModule: TVoiceTestModule;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    VoiceTestModule := TVoiceTestModule.Create(Application);
-    VoiceTestModule.Effect^.user := VoiceTestModule;
-    VoiceTestModule.AudioMaster := audioMaster;
-    Result := VoiceTestModule.Effect;
-  except
-    Result := nil;
-  end;
+  Result := VstModuleMain(AudioMasterCallback, TVoiceTestModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

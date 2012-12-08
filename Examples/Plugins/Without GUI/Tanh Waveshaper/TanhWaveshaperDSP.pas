@@ -153,9 +153,6 @@ procedure TTanhWaveshaperModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
- {$IFDEF UseSemaphore}
- FSemaphore := 0;
- {$ENDIF}
  {$IFDEF UseCriticalSection}
  FreeAndNil(FCriticalSection);
  {$ENDIF}

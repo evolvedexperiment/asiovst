@@ -5,32 +5,23 @@ library StkPitchShift;
 
 uses
   FastMM4,  // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
-  {$IFDEF UseMadExcept}
-  madExcept, // either download madExcept or remove mad* if there is an error here
-  madLinkDisAsm,
+  {$IFDEF UseFastMove}
+  FastMove,
   {$ENDIF}
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   StkPitchShiftDM in 'StkPitchShiftDM.pas' {StkPitchShiftModule: TVSTModule},
   StkPitchShiftGUI in 'StkPitchShiftGUI.pas' {FmStkPitchShift};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    with TStkPitchShiftModule.Create(Application) do
-     begin
-      AudioMaster := AudioMasterCallback;
-      Result := Effect;
-     end;
-  except
-    Result := nil;
-  end;
+  Result := VstModuleMain(AudioMasterCallback, TStkPitchShiftModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

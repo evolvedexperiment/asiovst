@@ -10,28 +10,20 @@ uses
   {$ENDIF}
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   SimpleSamplerModule in 'SimpleSamplerModule.pas' {VSTSSModule: TVSTModule},
   SimpleSamplerGUI in 'SimpleSamplerGUI.pas' {VSTGUI},
   SimpleSamplerVoice in 'SimpleSamplerVoice.pas',
   VoiceList in 'VoiceList.pas';
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TVSTSSModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TVSTSSModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.
-                                                             

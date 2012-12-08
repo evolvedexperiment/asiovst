@@ -1,6 +1,7 @@
 object StkPitchShiftModule: TStkPitchShiftModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Stk PitchShift'
@@ -8,7 +9,6 @@ object StkPitchShiftModule: TStkPitchShiftModule
   VendorName = 'Delphi ASIO & VST Projects'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default Network PitchShift'
   IORatio = 1.000000000000000000
   UniqueID = 'STKR'
@@ -36,7 +36,6 @@ object StkPitchShiftModule: TStkPitchShiftModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Semitones'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -53,7 +52,6 @@ object StkPitchShiftModule: TStkPitchShiftModule
       OnParameterChange = ParamDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Effect Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -70,13 +68,10 @@ object StkPitchShiftModule: TStkPitchShiftModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 284
-  Top = 121
   Height = 150
   Width = 215
 end

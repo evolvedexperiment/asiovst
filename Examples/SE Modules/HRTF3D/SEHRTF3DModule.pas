@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Complex,
+  SysUtils, SyncObjs, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Complex,
   DAV_HalfFloat, DAV_DspConvolution, DAV_DspHrtf;
 
 type
@@ -29,7 +29,7 @@ type
     FHRTFLength          : Integer;
     FAzimuth, FPolar     : Single;
 
-    FSemaphore           : Integer;
+    FCriticalSection     : TCriticalSection;
     FStaticCount         : Integer;
     FMaxIRBlockOrder     : Integer;
     FRealLatency         : Integer;
@@ -58,7 +58,7 @@ resourcestring
 constructor TSEHRTF3DModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FSemaphore           := 0;
+ FCriticalSection     := TCriticalSection.Create;
  FHRTF                := THrtfs.Create;
  FHRTFLength          := 512;
  FConvolver[0]        := TLowLatencyConvolution32.Create;
@@ -71,6 +71,7 @@ end;
 
 destructor TSEHRTF3DModule.Destroy;
 begin
+ FreeAndNil(FCriticalSection);
  FreeAndNil(FConvolver[0]);
  FreeAndNil(FConvolver[1]);
  FreeAndNil(FHRTF);
@@ -123,8 +124,7 @@ end;
 procedure TSEHRTF3DModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  // lock processing
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   FConvolver[0].ProcessBlock(PDAVSingleFixedArray(@FInputBuffer[0][BufferOffset]),
                              PDAVSingleFixedArray(@FOutputBuffer[0][BufferOffset]),
@@ -133,7 +133,7 @@ begin
                              PDAVSingleFixedArray(@FOutputBuffer[1][BufferOffset]),
                              SampleFrames);
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -283,37 +283,34 @@ begin
                           Pin[3].TransmitStatusChange(SampleClock, Pin[1].Status);
                          end;
         pinFileName : begin
-                       while FSemaphore > 0 do;
-                       Inc(FSemaphore);
+                       FCriticalSection.Enter;
                        try
                         if FileExists(FFileName)
                          then FHRTF.LoadFromFile(StrPas(FFileName));
                        finally
-                        Dec(FSemaphore);
+                        FCriticalSection.Leave;
                        end;
                       end;
   pinPolar, pinAzimuth : LoadCurrentHrirs;
         pinMaxFFTOrder : begin
-                          while FSemaphore > 0 do;
-                          Inc(FSemaphore);
+                          FCriticalSection.Enter;
                           try
                            if FMaxIRBlockOrder <= FConvolver[0].MinimumIRBlockOrder
                             then FMaxIRBlockOrder := FConvolver[0].MinimumIRBlockOrder + 1;
                            FConvolver[0].MaximumIRBlockOrder := FMaxIRBlockOrder;
                            FConvolver[1].MaximumIRBlockOrder := FMaxIRBlockOrder;
                           finally
-                           Dec(FSemaphore);
+                           FCriticalSection.Leave;
                           end;
                          end;
      pinDesiredLatency : begin
-                          while FSemaphore > 0 do;
-                          Inc(FSemaphore);
+                          FCriticalSection.Enter;
                           try
                            FConvolver[0].MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
                            FConvolver[1].MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
                            FRealLatency := FConvolver[0].Latency;
                           finally
-                           Dec(FSemaphore);
+                           FCriticalSection.Leave;
                           end;
                          end;
  end;

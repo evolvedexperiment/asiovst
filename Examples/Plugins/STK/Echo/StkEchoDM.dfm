@@ -1,6 +1,7 @@
 object StkEchoModule: TStkEchoModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Stk Echo'
@@ -8,7 +9,6 @@ object StkEchoModule: TStkEchoModule
   VendorName = 'Delphi ASIO & VST Projects'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default Network Echo'
   IORatio = 1.000000000000000000
   UniqueID = 'STKR'
@@ -36,7 +36,6 @@ object StkEchoModule: TStkEchoModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay'
       LargeStepFloat = 2.000000000000000000
@@ -50,7 +49,6 @@ object StkEchoModule: TStkEchoModule
       OnParameterChange = ParamDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Effect Mix'
       LargeStepFloat = 2.000000000000000000
@@ -65,13 +63,10 @@ object StkEchoModule: TStkEchoModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 284
-  Top = 121
   Height = 150
   Width = 215
 end
