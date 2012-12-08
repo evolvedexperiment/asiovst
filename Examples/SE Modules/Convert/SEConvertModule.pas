@@ -1,3 +1,35 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{   SynthEdit is witten by Jef McClintock (see http://www.synthedit.com/       }
+{                                                                              }
+{******************************************************************************}
+
 unit SEConvertModule;
 
 interface
@@ -15,154 +47,182 @@ type
 
   TSEFloatToIntModule = class(TSEConvertModule)
   protected
-    FFloat   : Single;
-    FInteger : Integer;
+    FFloat: Single;
+    FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEIntToFloatModule = class(TSEConvertModule)
   protected
-    FFloat   : Single;
-    FInteger : Integer;
+    FFloat: Single;
+    FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEDoubleToIntModule = class(TSEConvertModule)
   protected
-    FDouble  : Double;
-    FInteger : Integer;
+    FDouble: Double;
+    FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEIntToDoubleModule = class(TSEConvertModule)
   protected
-    FDouble  : Double;
-    FInteger : Integer;
+    FDouble: Double;
+    FInteger: Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEFloatToTextModule = class(TSEConvertModule)
   protected
-    FFloat : Single;
-    FText  : PAnsiChar;
+    FFloat: Single;
+    FText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEDoubleToTextModule = class(TSEConvertModule)
   protected
-    FDouble : Double;
-    FText   : PAnsiChar;
+    FDouble: Double;
+    FText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEIntToTextModule = class(TSEConvertModule)
   protected
-    FInteger : Integer;
-    FText    : PAnsiChar;
+    FInteger: Integer;
+    FText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSETextToGuiTextModule = class(TSEConvertModule)
   protected
-    FText    : PAnsiChar;
-    FOutText : PAnsiChar;
-    FGuiText : PAnsiChar;
+    FText: PAnsiChar;
+    FOutText: PAnsiChar;
+    FGuiText: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEIntToGuiIntModule = class(TSEConvertModule)
   protected
-    FInt    : PAnsiChar;
-    FGuiInt : PAnsiChar;
+    FInt: PAnsiChar;
+    FGuiInt: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEFloatToGuiFloatModule = class(TSEConvertModule)
   protected
-    FFloat    : PAnsiChar;
-    FGuiFloat : PAnsiChar;
+    FFloat: PAnsiChar;
+    FGuiFloat: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEDoubleToGuiDoubleModule = class(TSEConvertModule)
   protected
-    FDouble    : PAnsiChar;
-    FGuiDouble : PAnsiChar;
+    FDouble: PAnsiChar;
+    FGuiDouble: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEBooleanToGuiBooleanModule = class(TSEConvertModule)
   protected
-    FBoolean    : PAnsiChar;
-    FGuiBoolean : PAnsiChar;
+    FBoolean: PAnsiChar;
+    FGuiBoolean: PAnsiChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSESampleToFloatModule = class(TSEModuleBase)
   protected
-    FSamples    : PDAVSingleFixedArray;
-    FLastSample : Single;
-    FFloat      : Single;
-    FLower      : Single;
-    FUpper      : Single;
+    FSamples: PDAVSingleFixedArray;
+    FLastSample: Single;
+    FFloat: Single;
+    FLower: Single;
+    FUpper: Single;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure CalculateOutput; virtual;
     procedure Open; override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
   TSESampleToDoubleModule = class(TSEModuleBase)
   protected
-    FSamples    : PDAVSingleFixedArray;
-    FLastSample : Double;
-    FDouble     : Double;
-    FLower      : Double;
-    FUpper      : Double;
+    FSamples: PDAVSingleFixedArray;
+    FLastSample: Double;
+    FDouble: Double;
+    FLower: Double;
+    FUpper: Double;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure CalculateOutput; virtual;
     procedure Open; override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
@@ -175,909 +235,997 @@ uses
 
 procedure TSEConvertModule.Open;
 begin
- inherited Open;
+  inherited Open;
 
- OnProcess := SubProcessStatic;
+  OnProcess := SubProcessStatic;
 
- // 'transmit' new output status to next module 'downstream'
- if Assigned(Pin[0])
-  then Pin[0].TransmitStatusChange(SampleClock, stStatic);
- if Assigned(Pin[1])
-  then Pin[1].TransmitStatusChange(SampleClock, stStatic);
+  // 'transmit' new output status to next module 'downstream'
+  if Assigned(Pin[0]) then
+    Pin[0].TransmitStatusChange(SampleClock, stStatic);
+  if Assigned(Pin[1]) then
+    Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
 // The most important part, processing the audio
-procedure TSEConvertModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TSEConvertModule.SubProcessStatic(const BufferOffset,
+  SampleFrames: Integer);
 begin
- CallHost(SEAudioMasterSleepMode);
+  CallHost(SEAudioMasterSleepMode);
 end;
-
 
 { TSEFloatToIntModule }
 
 // describe your module
-class procedure TSEFloatToIntModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEFloatToIntModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Float To Integer';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Float To Integer';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Float To Integer';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Float To Integer';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEFloatToIntModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FInteger := Round(FFloat);
- inherited;
+  if CurrentPin.PinID = 0 then
+    FInteger := Round(FFloat);
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEFloatToIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEFloatToIntModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Float';
-       VariableAddress := @FFloat;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '100';
+        Name := 'Float';
+        VariableAddress := @FFloat;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Integer';
-       VariableAddress := @FInteger;
-       Direction       := drOut;
-       Datatype        := dtInteger;
-       DefaultValue    := '100';
+        Name := 'Integer';
+        VariableAddress := @FInteger;
+        Direction := drOut;
+        Datatype := dtInteger;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEIntToFloatModule }
 
 // describe your module
-class procedure TSEIntToFloatModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEIntToFloatModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Integer To Float';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Integer To Float';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Integer To Float';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Integer To Float';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEIntToFloatModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FFloat := FInteger;
- inherited;
+  if CurrentPin.PinID = 0 then
+    FFloat := FInteger;
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEIntToFloatModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEIntToFloatModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Integer';
-       VariableAddress := @FInteger;
-       Direction       := drIn;
-       Datatype        := dtInteger;
-       DefaultValue    := '100';
+        Name := 'Integer';
+        VariableAddress := @FInteger;
+        Direction := drIn;
+        Datatype := dtInteger;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Float';
-       VariableAddress := @FFloat;
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '100';
+        Name := 'Float';
+        VariableAddress := @FFloat;
+        Direction := drOut;
+        Datatype := dtSingle;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
-
 
 { TSEDoubleToIntModule }
 
 // describe your module
-class procedure TSEDoubleToIntModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEDoubleToIntModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Double To Integer';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Double To Integer';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Double To Integer';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Double To Integer';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEDoubleToIntModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FInteger := Round(FDouble);
- inherited;
+  if CurrentPin.PinID = 0 then
+    FInteger := Round(FDouble);
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEDoubleToIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEDoubleToIntModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Double';
-       VariableAddress := @FDouble;
-       Direction       := drIn;
-       Datatype        := dtDouble;
-       DefaultValue    := '100';
+        Name := 'Double';
+        VariableAddress := @FDouble;
+        Direction := drIn;
+        Datatype := dtDouble;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Integer';
-       VariableAddress := @FInteger;
-       Direction       := drOut;
-       Datatype        := dtInteger;
-       DefaultValue    := '100';
+        Name := 'Integer';
+        VariableAddress := @FInteger;
+        Direction := drOut;
+        Datatype := dtInteger;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEIntToDoubleModule }
 
 // describe your module
-class procedure TSEIntToDoubleModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEIntToDoubleModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Integer To Double';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Integer To Double';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Integer To Double';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Integer To Double';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEIntToDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FDouble := FInteger;
- inherited;
+  if CurrentPin.PinID = 0 then
+    FDouble := FInteger;
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEIntToDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEIntToDoubleModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Integer';
-       VariableAddress := @FInteger;
-       Direction       := drIn;
-       Datatype        := dtInteger;
-       DefaultValue    := '100';
+        Name := 'Integer';
+        VariableAddress := @FInteger;
+        Direction := drIn;
+        Datatype := dtInteger;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Double';
-       VariableAddress := @FDouble;
-       Direction       := drOut;
-       Datatype        := dtDouble;
-       DefaultValue    := '100';
+        Name := 'Double';
+        VariableAddress := @FDouble;
+        Direction := drOut;
+        Datatype := dtDouble;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
-
 
 { TSEFloatToTextModule }
 
 // describe your module
-class procedure TSEFloatToTextModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEFloatToTextModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Float To Text';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Float To Text';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Float To Text';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Float To Text';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEFloatToTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FText := PAnsiChar(AnsiString(FloatToStr(FFloat)) + #0);
- inherited;
+  if CurrentPin.PinID = 0 then
+    FText := PAnsiChar(AnsiString(FloatToStr(FFloat)) + #0);
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEFloatToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEFloatToTextModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Float';
-       VariableAddress := @FFloat;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '100';
+        Name := 'Float';
+        VariableAddress := @FFloat;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Text';
-       VariableAddress := @FText;
-       Direction       := drOut;
-       Datatype        := dtText;
-       DefaultValue    := '100';
+        Name := 'Text';
+        VariableAddress := @FText;
+        Direction := drOut;
+        Datatype := dtText;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEFloatToTextModule }
 
 // describe your module
-class procedure TSEDoubleToTextModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEDoubleToTextModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Double To Text';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Double To Text';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Double To Text';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Double To Text';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEDoubleToTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FText := PAnsiChar(AnsiString(FloatToStr(FDouble)) + #0);
- inherited;
+  if CurrentPin.PinID = 0 then
+    FText := PAnsiChar(AnsiString(FloatToStr(FDouble)) + #0);
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEDoubleToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEDoubleToTextModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Double';
-       VariableAddress := @FDouble;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '100';
+        Name := 'Double';
+        VariableAddress := @FDouble;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Text';
-       VariableAddress := @FText;
-       Direction       := drOut;
-       Datatype        := dtText;
-       DefaultValue    := '100';
+        Name := 'Text';
+        VariableAddress := @FText;
+        Direction := drOut;
+        Datatype := dtText;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEIntToTextModule }
 
 // describe your module
-class procedure TSEIntToTextModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEIntToTextModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Integer To Text';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Integer To Text';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Integer To Text';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Integer To Text';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEIntToTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FText := PAnsiChar(AnsiString(IntToStr(FInteger)) + #0);
- inherited;
+  if CurrentPin.PinID = 0 then
+    FText := PAnsiChar(AnsiString(IntToStr(FInteger)) + #0);
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEIntToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEIntToTextModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Integer';
-       VariableAddress := @FInteger;
-       Direction       := drIn;
-       Datatype        := dtInteger;
-       DefaultValue    := '100';
+        Name := 'Integer';
+        VariableAddress := @FInteger;
+        Direction := drIn;
+        Datatype := dtInteger;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Text';
-       VariableAddress := @FText;
-       Direction       := drOut;
-       Datatype        := dtText;
-       DefaultValue    := '100';
+        Name := 'Text';
+        VariableAddress := @FText;
+        Direction := drOut;
+        Datatype := dtText;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSETextToGuiTextModule }
 
 // describe your module
-class procedure TSETextToGuiTextModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSETextToGuiTextModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Text To GUI Text';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Text To GUI Text';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Text To GUI Text';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Text To GUI Text';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSETextToGuiTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0 then
+  if CurrentPin.PinID = 0 then
   begin
-   FOutText := PAnsiChar(FText + #0);
-   Pin[1].TransmitStatusChange(SampleClock, stStatic);
+    FOutText := PAnsiChar(FText + #0);
+    Pin[1].TransmitStatusChange(SampleClock, stStatic);
   end;
- inherited;
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSETextToGuiTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSETextToGuiTextModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    0:
+      with Properties^ do
       begin
-       Name            := 'Text';
-       VariableAddress := @FText;
-       Direction       := drIn;
-       Datatype        := dtText;
-       DefaultValue    := 'Text';
+        Name := 'Text';
+        VariableAddress := @FText;
+        Direction := drIn;
+        Datatype := dtText;
+        DefaultValue := 'Text';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Text';
-       VariableAddress := @FOutText;
-       Flags           := [iofPatchStore, iofHidePin];
-       Direction       := drOut;
-       Datatype        := dtText;
-       DefaultValue    := 'Text';
+        Name := 'Text';
+        VariableAddress := @FOutText;
+        Flags := [iofPatchStore, iofHidePin];
+        Direction := drOut;
+        Datatype := dtText;
+        DefaultValue := 'Text';
       end;
-  2: with Properties^ do
+    2:
+      with Properties^ do
       begin
-       Name            := 'GUI Text';
-       Flags           := [iofUICommunication, iofPatchStore, iofHidePin];
-       Direction       := drIn;
-       Datatype        := dtText;
-       DefaultValue    := 'Text';
+        Name := 'GUI Text';
+        Flags := [iofUICommunication, iofPatchStore, iofHidePin];
+        Direction := drIn;
+        Datatype := dtText;
+        DefaultValue := 'Text';
       end;
-  3: with Properties^ do
+    3:
+      with Properties^ do
       begin
-       Name            := 'GUI Text';
-       VariableAddress := @FGUIText;
-       Flags           := [iofUICommunication];
-       Direction       := drOut;
-       Datatype        := dtText;
-       DefaultValue    := 'Text';
+        Name := 'GUI Text';
+        VariableAddress := @FGuiText;
+        Flags := [iofUICommunication];
+        Direction := drOut;
+        Datatype := dtText;
+        DefaultValue := 'Text';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEIntToGuiIntModule }
 
 // describe your module
-class procedure TSEIntToGuiIntModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEIntToGuiIntModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Integer To GUI Integer';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Integer To GUI Integer';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Integer To GUI Integer';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Integer To GUI Integer';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEIntToGuiIntModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FGUIInt := FInt;
- inherited;
+  if CurrentPin.PinID = 0 then
+    FGuiInt := FInt;
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEIntToGuiIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEIntToGuiIntModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Integer';
-       VariableAddress := @FInt;
-       Direction       := drIn;
-       Datatype        := dtInteger;
-       DefaultValue    := '100';
+        Name := 'Integer';
+        VariableAddress := @FInt;
+        Direction := drIn;
+        Datatype := dtInteger;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'GUI Integer';
-       VariableAddress := @FGuiInt;
-       Flags           := [iofUICommunication];
-       Direction       := drOut;
-       Datatype        := dtInteger;
-       DefaultValue    := '100';
+        Name := 'GUI Integer';
+        VariableAddress := @FGuiInt;
+        Flags := [iofUICommunication];
+        Direction := drOut;
+        Datatype := dtInteger;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEFloatToGuiFloatModule }
 
 // describe your module
-class procedure TSEFloatToGuiFloatModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEFloatToGuiFloatModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Float To GUI Float';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Float To GUI Float';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Float To GUI Float';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Float To GUI Float';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEFloatToGuiFloatModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FGUIFloat := FFloat;
- inherited;
+  if CurrentPin.PinID = 0 then
+    FGuiFloat := FFloat;
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEFloatToGuiFloatModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEFloatToGuiFloatModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Float';
-       VariableAddress := @FFloat;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '100';
+        Name := 'Float';
+        VariableAddress := @FFloat;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'GUI Float';
-       VariableAddress := @FGuiFloat;
-       Flags           := [iofUICommunication];
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '100';
+        Name := 'GUI Float';
+        VariableAddress := @FGuiFloat;
+        Flags := [iofUICommunication];
+        Direction := drOut;
+        Datatype := dtSingle;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEDoubleToGuiDoubleModule }
 
 // describe your module
-class procedure TSEDoubleToGuiDoubleModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEDoubleToGuiDoubleModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Double To GUI Double';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Double To GUI Double';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Double To GUI Double';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Double To GUI Double';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 procedure TSEDoubleToGuiDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FGUIDouble := FDouble;
- inherited;
+  if CurrentPin.PinID = 0 then
+    FGuiDouble := FDouble;
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEDoubleToGuiDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEDoubleToGuiDoubleModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Double';
-       VariableAddress := @FDouble;
-       Direction       := drIn;
-       Datatype        := dtDouble;
-       DefaultValue    := '100';
+        Name := 'Double';
+        VariableAddress := @FDouble;
+        Direction := drIn;
+        Datatype := dtDouble;
+        DefaultValue := '100';
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'GUI Double';
-       VariableAddress := @FGuiDouble;
-       Flags           := [iofUICommunication];
-       Direction       := drOut;
-       Datatype        := dtDouble;
-       DefaultValue    := '100';
+        Name := 'GUI Double';
+        VariableAddress := @FGuiDouble;
+        Flags := [iofUICommunication];
+        Direction := drOut;
+        Datatype := dtDouble;
+        DefaultValue := '100';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSEBooleanToGuiBooleanModule }
 
 // describe your module
-class procedure TSEBooleanToGuiBooleanModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEBooleanToGuiBooleanModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Boolean To GUI Boolean';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Boolean To GUI Boolean';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Boolean To GUI Boolean';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'DAV Boolean To GUI Boolean';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
-procedure TSEBooleanToGuiBooleanModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEBooleanToGuiBooleanModule.PlugStateChange(const CurrentPin
+  : TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FGUIBoolean := FBoolean;
- inherited;
+  if CurrentPin.PinID = 0 then
+    FGuiBoolean := FBoolean;
+  inherited;
 end;
 
 // describe the pins (plugs)
-function TSEBooleanToGuiBooleanModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEBooleanToGuiBooleanModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Boolean';
-       VariableAddress := @FBoolean;
-       Direction       := drIn;
-       Datatype        := dtBoolean;
+        Name := 'Boolean';
+        VariableAddress := @FBoolean;
+        Direction := drIn;
+        Datatype := dtBoolean;
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'GUI Boolean';
-       VariableAddress := @FGuiBoolean;
-       Flags           := [iofUICommunication];
-       Direction       := drOut;
-       Datatype        := dtBoolean;
+        Name := 'GUI Boolean';
+        VariableAddress := @FGuiBoolean;
+        Flags := [iofUICommunication];
+        Direction := drOut;
+        Datatype := dtBoolean;
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 { TSESampleToFloatModule }
 
 procedure TSESampleToFloatModule.Open;
 begin
- inherited Open;
+  inherited Open;
 
- OnProcess := SubProcess;
+  OnProcess := SubProcess;
 
- if Assigned(Pin[1])
-  then Pin[1].TransmitStatusChange(SampleClock, stStatic);
+  if Assigned(Pin[1]) then
+    Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
-class procedure TSESampleToFloatModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
+class procedure TSESampleToFloatModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Volt To Float';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Volt To Float';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'Volt To Float';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'Volt To Float';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 function TSESampleToFloatModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Volt';
-       VariableAddress := @FSamples;
-       Flags           := [iofLinearInput];
-       Direction       := drIn;
-       Datatype        := dtFSample;
+        Name := 'Volt';
+        VariableAddress := @FSamples;
+        Flags := [iofLinearInput];
+        Direction := drIn;
+        Datatype := dtFSample;
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Single';
-       VariableAddress := @FFloat;
-       Direction       := drOut;
-       Datatype        := dtSingle;
+        Name := 'Single';
+        VariableAddress := @FFloat;
+        Direction := drOut;
+        Datatype := dtSingle;
       end;
-  2: with Properties^ do
+    2:
+      with Properties^ do
       begin
-       Name            := 'Upper';
-       VariableAddress := @FUpper;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
+        Name := 'Upper';
+        VariableAddress := @FUpper;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '1';
       end;
-  3: with Properties^ do
+    3:
+      with Properties^ do
       begin
-       Name            := 'Lower';
-       VariableAddress := @FLower;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
+        Name := 'Lower';
+        VariableAddress := @FLower;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '0';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 procedure TSESampleToFloatModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- case CurrentPin.PinID of
-  0: begin
-      FFloat := FSamples^[0];
+  case CurrentPin.PinID of
+    0:
+      begin
+        FFloat := FSamples^[0];
+        CalculateOutput;
+      end;
+    2 .. 3:
       CalculateOutput;
-     end;
-  2..3: CalculateOutput;
- end;
- inherited;
+  end;
+  inherited;
 end;
 
 procedure TSESampleToFloatModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 begin
- if FLastSample <> FSamples^[0] then
+  if FLastSample <> FSamples^[0] then
   begin
-   FLastSample := FSamples^[0];
-   CalculateOutput;
+    FLastSample := FSamples^[0];
+    CalculateOutput;
   end;
 end;
 
 procedure TSESampleToFloatModule.CalculateOutput;
 begin
- FFloat := FLower + FLastSample * (FUpper - FLower);
- Pin[1].TransmitStatusChange(SampleClock, stOneOff);
+  FFloat := FLower + FLastSample * (FUpper - FLower);
+  Pin[1].TransmitStatusChange(SampleClock, stOneOff);
 end;
-
 
 { TSESampleToDoubleModule }
 
 procedure TSESampleToDoubleModule.Open;
 begin
- inherited Open;
+  inherited Open;
 
- OnProcess := SubProcess;
+  OnProcess := SubProcess;
 
- if Assigned(Pin[1])
-  then Pin[1].TransmitStatusChange(SampleClock, stStatic);
+  if Assigned(Pin[1]) then
+    Pin[1].TransmitStatusChange(SampleClock, stStatic);
 end;
 
-class procedure TSESampleToDoubleModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
+class procedure TSESampleToDoubleModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 begin
- with Properties^ do
+  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Volt To Double';
+    // describe the plugin, this is the name the end-user will see.
+    Name := 'Volt To Double';
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'Volt To Double';
+    // return a unique string 32 characters max
+    // if posible include manufacturer and plugin identity
+    // this is used internally by SE to identify the plug.
+    // No two plugs may have the same id.
+    ID := 'Volt To Double';
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
-   SDKVersion := CSeSdkVersion;
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
+    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 function TSESampleToDoubleModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Volt';
-       VariableAddress := @FSamples;
-       Flags           := [iofLinearInput];
-       Direction       := drIn;
-       Datatype        := dtFSample;
+        Name := 'Volt';
+        VariableAddress := @FSamples;
+        Flags := [iofLinearInput];
+        Direction := drIn;
+        Datatype := dtFSample;
       end;
-  1: with Properties^ do
+    1:
+      with Properties^ do
       begin
-       Name            := 'Single';
-       VariableAddress := @FDouble;
-       Direction       := drOut;
-       Datatype        := dtSingle;
+        Name := 'Single';
+        VariableAddress := @FDouble;
+        Direction := drOut;
+        Datatype := dtSingle;
       end;
-  2: with Properties^ do
+    2:
+      with Properties^ do
       begin
-       Name            := 'Upper';
-       VariableAddress := @FUpper;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
+        Name := 'Upper';
+        VariableAddress := @FUpper;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '1';
       end;
-  3: with Properties^ do
+    3:
+      with Properties^ do
       begin
-       Name            := 'Lower';
-       VariableAddress := @FLower;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
+        Name := 'Lower';
+        VariableAddress := @FLower;
+        Direction := drIn;
+        Datatype := dtSingle;
+        DefaultValue := '0';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 procedure TSESampleToDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- case CurrentPin.PinID of
-  0: begin
-      FDouble := FSamples^[0];
+  case CurrentPin.PinID of
+    0:
+      begin
+        FDouble := FSamples^[0];
+        CalculateOutput;
+      end;
+    2 .. 3:
       CalculateOutput;
-     end;
-  2..3: CalculateOutput;
- end;
- inherited;
+  end;
+  inherited;
 end;
 
 procedure TSESampleToDoubleModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 begin
- if FLastSample <> FSamples^[0] then
+  if FLastSample <> FSamples^[0] then
   begin
-   FLastSample := FSamples^[0];
-   CalculateOutput;
+    FLastSample := FSamples^[0];
+    CalculateOutput;
   end;
 end;
 
 procedure TSESampleToDoubleModule.CalculateOutput;
 begin
- FDouble := FLower + FLastSample * (FUpper - FLower);
- Pin[1].TransmitStatusChange(SampleClock, stOneOff);
+  FDouble := FLower + FLastSample * (FUpper - FLower);
+  Pin[1].TransmitStatusChange(SampleClock, stOneOff);
 end;
 
 end.

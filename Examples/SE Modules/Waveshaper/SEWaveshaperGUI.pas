@@ -1,3 +1,35 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{   SynthEdit is witten by Jef McClintock (see http://www.synthedit.com/       }
+{                                                                              }
+{******************************************************************************}
+
 unit SEWaveshaperGUI;
 
 interface
@@ -6,39 +38,45 @@ uses
   Windows, Classes, DAV_SECommon, DAV_SEModule, DAV_SEGUI, SEWaveshaperModule;
 
 const
-  pinShape =  0;
-  CDefaultValue : array [0..CWsNodeCount-1, 0..1] of Single =
-  ((-5,-5), (-4,-4), (-3,-3), (-2,-2), (-1, -1), (0, 0), (1, 1), (2 ,2),
-   (3, 3), (4, 4), (5, 5));
+  pinShape = 0;
+  CDefaultValue: array [0 .. CWsNodeCount - 1, 0 .. 1] of Single = ((-5, -5),
+    (-4, -4), (-3, -3), (-2, -2), (-1, -1), (0, 0), (1, 1), (2, 2), (3, 3),
+    (4, 4), (5, 5));
 
 type
-  PPoints = array [0..CWsNodeCount-1] of TPoint;
+  PPoints = array [0 .. CWsNodeCount - 1] of TPoint;
 
 type
   TSEWaveshaperGui = class(TSEGUIBase)
   private
-    FDragNode      : Integer;
-    FPtPrev        : TSEPoint;
-    FInhibitUpdate : Boolean;
-    FNodes         : array [0..CWsNodeCount-1] of TPoint; // x,y co-ords of control points
+    FDragNode: Integer;
+    FPtPrev: TSEPoint;
+    FInhibitUpdate: Boolean;
+    FNodes: array [0 .. CWsNodeCount - 1] of TPoint;
+    // x,y co-ords of control points
 
     function DefaultValue: TSeSdkString;
     function GetValueS: TSeSdkString;
     function Handle: THandle;
     function InvalidateControl: Integer;
-    procedure DrawScale(hDC: HDC; wi: PSEWndInfo);
+    procedure DrawScale(hDC: hDC; wi: PSEWndInfo);
     procedure OnValueChanged;
     procedure SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
     procedure SetValueS(Astring: TSeSdkString);
   protected
-    procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
-    procedure GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer); override;
-    procedure GuiLButtonDown(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint); override;
-    procedure GuiLButtonUp(wi: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); override;
-    procedure GuiMouseMove(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint); override;
+    procedure GuiPaint(hDC: hDC; wi: PSEWndInfo); override;
+    procedure GuiModuleMsg(AUserMsgID, ALength: Integer;
+      AData: Pointer); override;
+    procedure GuiLButtonDown(wi: PSEWndInfo; nFlags: Cardinal;
+      Pnt: TSEPoint); override;
+    procedure GuiLButtonUp(wi: PSEWndInfo; nFlags: Cardinal;
+      Point: TSEPoint); override;
+    procedure GuiMouseMove(wi: PSEWndInfo; nFlags: Cardinal;
+      Pnt: TSEPoint); override;
     procedure GuiPinValueChange(CurrentPin: TSeGuiPin); override;
   public
-    constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
+    constructor Create(SEGuiCallback: TSEGuiCallback;
+      AHostPtr: Pointer); override;
     procedure Initialise(const LoadedFromFile: Boolean); override;
     class procedure UpdateNodes(FNodes: PPoints; var AValues: TSeSdkString);
   end;
@@ -48,214 +86,221 @@ implementation
 uses
   SysUtils, Math;
 
-constructor TSEWaveshaperGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
+constructor TSEWaveshaperGui.Create(SEGuiCallback: TSEGuiCallback;
+  AHostPtr: Pointer);
 begin
- inherited;
- FDragNode := -1;
- FInhibitUpdate := False;
+  inherited;
+  FDragNode := -1;
+  FInhibitUpdate := False;
 
- CallHost(seGuiHostSetWindowSize, 100, 100);
- CallHost(seGuiHostSetWindowSizeable, 1);
+  CallHost(seGuiHostSetWindowSize, 100, 100);
+  CallHost(seGuiHostSetWindowSizeable, 1);
 end;
 
 // convert string value into segment list
-class procedure TSEWaveshaperGui.UpdateNodes(FNodes: PPoints; var AValues: TSeSdkString);
+class procedure TSEWaveshaperGui.UpdateNodes(FNodes: PPoints;
+  var AValues: TSeSdkString);
 var
-  s          : TSeSdkString;
-  i          : Integer;
-  p1, p2, p3 : Integer;
-  x, y       : Single;
+  s: TSeSdkString;
+  i: Integer;
+  p1, p2, p3: Integer;
+  x, y: Single;
 begin
- s := AValues;
+  s := AValues;
 
- // convert CString of numbers to array of screen co-ords
- i := 0;
- while (Length(s) > 0) and (i < CWsNodeCount) do
+  // convert CString of numbers to array of screen co-ords
+  i := 0;
+  while (Length(s) > 0) and (i < CWsNodeCount) do
   begin
-   p1 := Pos('(', s);
-   p2 := Pos(',', s);
-   p3 := Pos(')', s);
-   if (p3 < 1) then exit;
+    p1 := Pos('(', s);
+    p2 := Pos(',', s);
+    p3 := Pos(')', s);
+    if (p3 < 1) then
+      exit;
 
-   x := StrToFloat(Copy(s, p1 + 1, p2 - p1 - 1));
-   y := StrToFloat(Copy(s, p2 + 1, p3 - p2 - 1));
-   x := (5 + x) * 10; // convert to screen co-ords
-   y := (5 - y) * 10;
+    x := StrToFloat(Copy(s, p1 + 1, p2 - p1 - 1));
+    y := StrToFloat(Copy(s, p2 + 1, p3 - p2 - 1));
+    x := (5 + x) * 10; // convert to screen co-ords
+    y := (5 - y) * 10;
 
-   FNodes[i].x := Round(x);
-   FNodes[i].y := Round(y);
-   inc(i);
+    FNodes[i].x := Round(x);
+    FNodes[i].y := Round(y);
+    inc(i);
 
-   inc(p3);
-   s := copy(s, p3, Length(s) - p3); //.Right( s.length - p3 - 1);
+    inc(p3);
+    s := Copy(s, p3, Length(s) - p3); // .Right( s.length - p3 - 1);
   end;
 
   if (i = 0) then // if string empty, set defaults
-   begin
-//    UpdateNodes(FNodes, CDefaultValue);
-   end;
+  begin
+    // UpdateNodes(FNodes, CDefaultValue);
+  end;
 end;
 
 procedure TSEWaveshaperGui.Initialise(const LoadedFromFile: Boolean);
 begin
- inherited Initialise(LoadedFromFile);
- OnValueChanged; // initial value
+  inherited Initialise(LoadedFromFile);
+  OnValueChanged; // initial value
 end;
 
 procedure TSEWaveshaperGui.GuiPinValueChange(CurrentPin: TSeGuiPin);
 begin
- OnValueChanged;
+  OnValueChanged;
 end;
 
 procedure TSEWaveshaperGui.OnValueChanged;
 begin
   if Length(GetValueS) = 0 then // set a default straight line
-   begin
+  begin
     SetValueS(DefaultValue);
     exit; // rely on recursion to re-call this routine
-   end;
+  end;
 
   if not FInhibitUpdate then
-   begin
-//    UpdateNodes(FNodes, GetValueS);
+  begin
+    // UpdateNodes(FNodes, GetValueS);
     InvalidateControl;
-   end;
+  end;
 end;
 
 function TSEWaveshaperGui.GetValueS: TSeSdkString;
 begin
- Result := Pin[pinShape].ValueAsString;
+  Result := Pin[pinShape].ValueAsString;
 end;
 
-procedure TSEWaveshaperGui.SetValueS(AString: TSeSdkString);
+procedure TSEWaveshaperGui.SetValueS(Astring: TSeSdkString);
 begin
- Pin[pinShape].SetValueText(AString);
+  Pin[pinShape].SetValueText(Astring);
 end;
 
 function TSEWaveshaperGui.DefaultValue: TSeSdkString;
 begin
-// Result := CDefaultValue;
+  // Result := CDefaultValue;
 end;
 
-procedure TSEWaveshaperGui.DrawScale(hDC: HDC; wi: PSEWndInfo);
+procedure TSEWaveshaperGui.DrawScale(hDC: hDC; wi: PSEWndInfo);
 var
-  VertScale  : Single;
-  HorzScale  : Single;
-  Mid        : TPoint;
-  Pen        : HPEN;
-  OldPen     : HGDIOBJ;
-  TickWidth  : Integer;
-  v          : Integer;
-  x, y       : Single;
-  FontHeight : Integer;
-  LgFnt      : LOGFONT;
-  Font       : HFONT;
-  OldFont    : HGDIOBJ;
-  txt        : string;
-  fv         : Single;
-  orig_ta    : Integer;
+  VertScale: Single;
+  HorzScale: Single;
+  Mid: TPoint;
+  Pen: HPEN;
+  OldPen: HGDIOBJ;
+  TickWidth: Integer;
+  v: Integer;
+  x, y: Single;
+  FontHeight: Integer;
+  LgFnt: LOGFONT;
+  Font: HFONT;
+  OldFont: HGDIOBJ;
+  txt: string;
+  fv: Single;
+  orig_ta: Integer;
 begin
- VertScale := wi.height / 2.15;
- HorzScale := wi.width / 2.15;
- Mid.x     := wi.width div 2;
- Mid.y     := wi.height div 2;
- TickWidth := 2;
+  VertScale := wi.height / 2.15;
+  HorzScale := wi.width / 2.15;
+  Mid.x := wi.width div 2;
+  Mid.y := wi.height div 2;
+  TickWidth := 2;
 
- // create a green pen
- pen := CreatePen(PS_SOLID, 1, RGB(0, 128, 0)); // dark green
+  // create a green pen
+  Pen := CreatePen(PS_SOLID, 1, RGB(0, 128, 0)); // dark green
 
- // 'select' it
- OldPen := SelectObject(hDC, pen);
+  // 'select' it
+  OldPen := SelectObject(hDC, Pen);
 
- // BACKGROUND LINES
+  // BACKGROUND LINES
 
- // horizontal line
- MoveToEx(hDC, 0, Mid.y, nil);
- LineTo(hDC, wi.width, Mid.y );
+  // horizontal line
+  MoveToEx(hDC, 0, Mid.y, nil);
+  LineTo(hDC, wi.width, Mid.y);
 
- // horiz center line
- MoveToEx(hDC, Mid.x, 0, nil);
- LineTo(hDC, Mid.x, wi.height );
+  // horiz center line
+  MoveToEx(hDC, Mid.x, 0, nil);
+  LineTo(hDC, Mid.x, wi.height);
 
- // vertical center line
- MoveToEx(hDC, Mid.x,0, nil);
- LineTo(hDC, Mid.x, wi.height);
+  // vertical center line
+  MoveToEx(hDC, Mid.x, 0, nil);
+  LineTo(hDC, Mid.x, wi.height);
 
- // diagonal
- MoveToEx(hDC, 0, wi.height, nil);
- LineTo(hDC, wi.width,0);
+  // diagonal
+  MoveToEx(hDC, 0, wi.height, nil);
+  LineTo(hDC, wi.width, 0);
 
- v := -10;
- while v <= 10 do
+  v := -10;
+  while v <= 10 do
   begin
-   y := v * VertScale * 0.1;
-   x := v * HorzScale * 0.1;
+    y := v * VertScale * 0.1;
+    x := v * HorzScale * 0.1;
 
-   if v mod 5 = 0
-    then TickWidth := 4
-    else TickWidth := 2;
+    if v mod 5 = 0 then
+      TickWidth := 4
+    else
+      TickWidth := 2;
 
-   // X-Axis ticks
-   MoveToEx(hDC, Mid.x - TickWidth, Round(Mid.y + y), nil);
-   LineTo(hDC, Mid.x + TickWidth, Round(Mid.y + y));
+    // X-Axis ticks
+    MoveToEx(hDC, Mid.x - TickWidth, Round(Mid.y + y), nil);
+    LineTo(hDC, Mid.x + TickWidth, Round(Mid.y + y));
 
-   // Y-Axis ticks
-   MoveToEx(hDC, Round(Mid.x + x), Mid.y - TickWidth, nil);
-   LineTo(hDC, Round(Mid.x + x), Mid.y + TickWidth );
-   inc(v, 2);
+    // Y-Axis ticks
+    MoveToEx(hDC, Round(Mid.x + x), Mid.y - TickWidth, nil);
+    LineTo(hDC, Round(Mid.x + x), Mid.y + TickWidth);
+    inc(v, 2);
   end;
 
- // cleanup
- SelectObject(hDC, OldPen);
- DeleteObject(pen);
+  // cleanup
+  SelectObject(hDC, OldPen);
+  DeleteObject(Pen);
 
- // labels
- if (wi.height > 30) then
+  // labels
+  if (wi.height > 30) then
   begin
-   // Set up the Font
+    // Set up the Font
 
-//    DcFontInfo oldfont(p_child.Skin,&pDC, _T('tty'));
-   FontHeight := 10; // p_child.Skin.getFontDescription(_T('tty')).AverageCharSize.cy;
+    // DcFontInfo oldfont(p_child.Skin,&pDC, _T('tty'));
+    FontHeight := 10;
+    // p_child.Skin.getFontDescription(_T('tty')).AverageCharSize.cy;
 
-    FillChar(LgFnt, SizeOf(LOGFONT), 0);   // Clear out structure.
+    FillChar(LgFnt, SizeOf(LOGFONT), 0); // Clear out structure.
 
-    StrCopy(LgFnt.lfFaceName, 'Terminal');    // face name
+    StrCopy(LgFnt.lfFaceName, 'Terminal'); // face name
     LgFnt.lfHeight := -FontHeight;
 
     Font := CreateFontIndirect(LgFnt);
     OldFont := SelectObject(hDC, Font);
 
-    SetTextColor( hDC, RGB(0,250,0) );
-    SetBkMode( hDC, TRANSPARENT );
-    SetTextAlign( hDC, TA_LEFT );
+    SetTextColor(hDC, RGB(0, 250, 0));
+    SetBkMode(hDC, TRANSPARENT);
+    SetTextAlign(hDC, TA_LEFT);
 
     // Y-Axis text
     fv := -5;
     while fv < 5.1 do
-     begin
+    begin
       y := fv * VertScale / 5;
       if fv <> -1 then
-       begin
+      begin
         txt := FloatToStrF(fv, ffGeneral, 2, 1) + #0;
-        TextOut(hDC, Mid.x + TickWidth, Mid.y - Round(y - FontHeight * 0.5), PChar(txt), Length(txt));
-       end;
+        TextOut(hDC, Mid.x + TickWidth, Mid.y - Round(y - FontHeight * 0.5),
+          PChar(txt), Length(txt));
+      end;
       fv := fv + 2;
-     end;
+    end;
 
     orig_ta := SetTextAlign(hDC, TA_CENTER);
 
     // X-Axis text
     fv := -4;
     while fv < 4 do
-     begin
+    begin
       y := fv * HorzScale / 5;
       if fv <> -1 then
-       begin
+      begin
         txt := FloatToStrF(fv, ffGeneral, 2, 1) + #0;
-        TextOut(hDC, Mid.x + Round(y), Mid.y + TickWidth, PChar(txt), Length(txt));
-       end;
+        TextOut(hDC, Mid.x + Round(y), Mid.y + TickWidth, PChar(txt),
+          Length(txt));
+      end;
       fv := fv + 2;
-     end;
+    end;
 
     // cleanup
     SelectObject(hDC, OldFont);
@@ -264,199 +309,205 @@ begin
   end;
 end;
 
-procedure TSEWaveshaperGui.GuiPaint(hDC: HDC; wi :PSEWndInfo);
+procedure TSEWaveshaperGui.GuiPaint(hDC: hDC; wi: PSEWndInfo);
 var
-  CtlWidth, i      : Integer;
-  CtlHeight, x, y  : Integer;
-  dx, dy           : Double;
-  VertScale        : Single;
-  HorzScale        : Single;
-  Mid              : TPoint;
-  BackgroundBrush  : HBRUSH;
-  Rct              : TRect;
-  Pen              : HPEN;
-  OldPen, OldFont : HGDIOBJ;
-  LgFnt            : LOGFONT;
-  Font             : HFONT;
-  pt                : TPoint;
-  txt              : string;
-  pts              : array [0..4] of TSEPoint; // holds square node points
+  CtlWidth, i: Integer;
+  CtlHeight, x, y: Integer;
+  dx, dy: Double;
+  VertScale: Single;
+  HorzScale: Single;
+  Mid: TPoint;
+  BackgroundBrush: HBRUSH;
+  Rct: TRect;
+  Pen: HPEN;
+  OldPen, OldFont: HGDIOBJ;
+  LgFnt: LOGFONT;
+  Font: HFONT;
+  pt: TPoint;
+  txt: string;
+  pts: array [0 .. 4] of TSEPoint; // holds square node points
 
 const
-  FontHeight : Integer = 10;
+  FontHeight: Integer = 10;
 
 begin
- CtlWidth  := wi.width;
- CtlHeight := wi.height;
- VertScale := CtlHeight * 0.01;
- HorzScale := CtlWidth * 0.01;
- Mid.x     := CtlWidth div 2;
- Mid.y     := CtlHeight div 2;
+  CtlWidth := wi.width;
+  CtlHeight := wi.height;
+  VertScale := CtlHeight * 0.01;
+  HorzScale := CtlWidth * 0.01;
+  Mid.x := CtlWidth div 2;
+  Mid.y := CtlHeight div 2;
 
- // Fill in solid background black
- BackgroundBrush := CreateSolidBrush(RGB(0, 0, 0));
+  // Fill in solid background black
+  BackgroundBrush := CreateSolidBrush(RGB(0, 0, 0));
 
- Rct.top    := 0;
- Rct.left   := 0;
- Rct.right  := wi.width + 1;
- Rct.bottom := wi.height + 1;
- FillRect(hDC, Rct, BackgroundBrush);
+  Rct.top := 0;
+  Rct.left := 0;
+  Rct.right := wi.width + 1;
+  Rct.bottom := wi.height + 1;
+  FillRect(hDC, Rct, BackgroundBrush);
 
- // cleanup objects
- DeleteObject(BackgroundBrush);
+  // cleanup objects
+  DeleteObject(BackgroundBrush);
 
- // draw scale markings
- DrawScale(hDC, wi);
+  // draw scale markings
+  DrawScale(hDC, wi);
 
- // create a green pen
- pen := CreatePen(PS_SOLID, 1, RGB(0, 255, 0)); // light green
+  // create a green pen
+  Pen := CreatePen(PS_SOLID, 1, RGB(0, 255, 0)); // light green
 
   // 'select' it
-  OldPen := SelectObject(hDC, pen);
+  OldPen := SelectObject(hDC, Pen);
 
   i := CWsNodeCount - 1;
 
-  MoveToEx(hDC, Round(FNodes[i].x * HorzScale + 0.5), Round(FNodes[i].y * VertScale + 0.5), nil);
+  MoveToEx(hDC, Round(FNodes[i].x * HorzScale + 0.5),
+    Round(FNodes[i].y * VertScale + 0.5), nil);
   Dec(i);
 
   while i >= 0 do
-   begin
-    LineTo(hDC, Round(FNodes[i].x * HorzScale + 0.5), Round(FNodes[i].y * VertScale + 0.5));
+  begin
+    LineTo(hDC, Round(FNodes[i].x * HorzScale + 0.5),
+      Round(FNodes[i].y * VertScale + 0.5));
     Dec(i);
-   end;
+  end;
 
   // Nodes
   for i := CWsNodeCount - 1 downto 0 do
-   begin
+  begin
     x := Round(FNodes[i].x * HorzScale - CNodeSize * 0.5 + 0.5);
     y := Round(FNodes[i].y * VertScale - CNodeSize * 0.5 + 0.5);
     pts[0] := Point(x, y);
-    pts[1] := Point(x + CNodeSize,y);
-    pts[2] := Point(x + CNodeSize,y + CNodeSize);
-    pts[3] := Point(x ,y + CNodeSize);
+    pts[1] := Point(x + CNodeSize, y);
+    pts[2] := Point(x + CNodeSize, y + CNodeSize);
+    pts[3] := Point(x, y + CNodeSize);
     pts[4] := pts[0];
     Polyline(hDC, pts, 5);
-   end;
+  end;
 
   // display drag node co-ords
   if FDragNode > -1 then
-   begin
-    FillChar(LgFnt, SizeOf(LOGFONT), 0);   // Clear out structure.
+  begin
+    FillChar(LgFnt, SizeOf(LOGFONT), 0); // Clear out structure.
 
-    StrCopy(LgFnt.lfFaceName, 'Terminal');    // face name
+    StrCopy(LgFnt.lfFaceName, 'Terminal'); // face name
     LgFnt.lfHeight := -FontHeight;
 
     Font := CreateFontIndirect(&LgFnt);
-    OldFont := SelectObject( hDC, Font );
+    OldFont := SelectObject(hDC, Font);
 
-    SetTextColor( hDC, RGB(0,250,0) );
-    SetBkMode( hDC, TRANSPARENT );
-    SetTextAlign( hDC, TA_LEFT );
+    SetTextColor(hDC, RGB(0, 250, 0));
+    SetBkMode(hDC, TRANSPARENT);
+    SetTextAlign(hDC, TA_LEFT);
 
     pt := FNodes[FDragNode];
     dx := pt.x * 0.1 - 5.0;
     dy := 5.0 - pt.y * 0.1;
     txt := FloatToStrF(dx, ffFixed, 3, 1) + ', ' +
-           FloatToStrF(dy, ffFixed, 3, 1);
+      FloatToStrF(dy, ffFixed, 3, 1);
 
     TextOut(hDC, 0, 0, @txt[1], Length(txt));
 
     // cleanup
     SelectObject(hDC, OldFont);
     DeleteObject(Font);
-   end;
+  end;
 
   // cleanup
   SelectObject(hDC, OldPen);
-  DeleteObject(pen);
+  DeleteObject(Pen);
 end;
 
-procedure TSEWaveshaperGui.GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer);
+procedure TSEWaveshaperGui.GuiModuleMsg(AUserMsgID, ALength: Integer;
+  AData: Pointer);
 (*
-var
+  var
   Msg    : TChunkName;
   Size   : Integer;
   Handle : THandle;
 *)
 begin
-(*
- assert(ALength = SizeOf(values));
- Move(Values, AData, ALength);
+  (*
+    assert(ALength = SizeOf(values));
+    Move(Values, AData, ALength);
 
- // aknowledge
- h    := Handle;
- msg  := 'ack';
- size := 3;
+    // aknowledge
+    h    := Handle;
+    msg  := 'ack';
+    size := 3;
 
- ////////////// EXPERIMENTAL ////////////
- SendStringToAudio(4, @Handle);
- SendStringToAudio(4, @Size);
- SendStringToAudio(Size, Msg);
- ///////////////////////////////////////
-*)
+    ////////////// EXPERIMENTAL ////////////
+    SendStringToAudio(4, @Handle);
+    SendStringToAudio(4, @Size);
+    SendStringToAudio(Size, Msg);
+    ///////////////////////////////////////
+  *)
 
- InvalidateControl;
+  InvalidateControl;
 end;
 
-procedure TSEWaveshaperGui.GuiLButtonDown(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint);
+procedure TSEWaveshaperGui.GuiLButtonDown(wi: PSEWndInfo; nFlags: Cardinal;
+  Pnt: TSEPoint);
 var
-  i         : Integer;
-  VertScale : Single;
-  HorzScale : Single;
-  pt        : TPoint;
-  rct       : TRect;
+  i: Integer;
+  VertScale: Single;
+  HorzScale: Single;
+  pt: TPoint;
+  Rct: TRect;
 begin
-  VertScale     := wi.height * 0.01;
-  HorzScale     := wi.width * 0.01;
+  VertScale := wi.height * 0.01;
+  HorzScale := wi.width * 0.01;
 
   FDragNode := -1;
 
   for i := CWsNodeCount - 1 downto 0 do
-   begin
+  begin
     pt := Point(Round(FNodes[i].x * HorzScale), Round(FNodes[i].y * VertScale));
-    rct := Rect(pt.x - CNodeSize div 2, pt.y - CNodeSize div 2,
-                pt.x + CNodeSize div 2, pt.y + CNodeSize div 2);
-    if PtInRect(rct, Pnt) then
-     begin
+    Rct := Rect(pt.x - CNodeSize div 2, pt.y - CNodeSize div 2,
+      pt.x + CNodeSize div 2, pt.y + CNodeSize div 2);
+    if PtInRect(Rct, Pnt) then
+    begin
       FDragNode := i;
-      FPtPrev   := Pnt;
+      FPtPrev := Pnt;
       SetCapture(wi); // get mouse moves
       break;
-     end;
-   end;
+    end;
+  end;
 end;
 
-procedure TSEWaveshaperGui.GuiMouseMove(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint);
+procedure TSEWaveshaperGui.GuiMouseMove(wi: PSEWndInfo; nFlags: Cardinal;
+  Pnt: TSEPoint);
 var
-  i           : Integer;
-  VertScale   : Single;
-  HorzScale   : Single;
-  Left, Right : Single;
-//  x, y        : Single;
-  pt          : TPoint;
-  v           : TSeSdkString;
+  i: Integer;
+  VertScale: Single;
+  HorzScale: Single;
+  left, right: Single;
+  // x, y        : Single;
+  pt: TPoint;
+  v: TSeSdkString;
 begin
-  if not GetCapture(wi) then exit;
+  if not GetCapture(wi) then
+    exit;
 
   if FDragNode > -1 then
-   begin
-    VertScale     := wi.height * 0.01;
-    HorzScale     := wi.width * 0.01;
+  begin
+    VertScale := wi.height * 0.01;
+    HorzScale := wi.width * 0.01;
 
-    Left  := 0;
-    Right := 100;
+    left := 0;
+    right := 100;
 
-    if FDragNode > 0
-     then Left := FNodes[FDragNode - 1].x + 1;
+    if FDragNode > 0 then
+      left := FNodes[FDragNode - 1].x + 1;
 
-    if FDragNode < CWsNodeCount - 1
-     then right := FNodes[FDragNode + 1].x - 1;
+    if FDragNode < CWsNodeCount - 1 then
+      right := FNodes[FDragNode + 1].x - 1;
 
-    if FDragNode = 0
-     then Right := 0;
+    if FDragNode = 0 then
+      right := 0;
 
-    if FDragNode = CWsNodeCount - 1
-     then left := 100;
+    if FDragNode = CWsNodeCount - 1 then
+      left := 100;
 
     pt := FNodes[FDragNode];
     pt.x := Round(pt.x + (Pnt.x - FPtPrev.x) / HorzScale);
@@ -472,53 +523,56 @@ begin
     FPtPrev := Pnt;
 
     for i := 0 to CWsNodeCount - 1 do
-     begin
-(*
-      pt := FNodes[i];
-      char pt[20];
-      x := pt.x * 0.1 - 5.0;
-      y := 5.0 - pt.y * 0.1;
-      sprintf(pt, '(%3.1f,%3.1f)', x, y);
-      strcat(v, pt);
-      assert(Length(v) < 280);
-*)
-     end;
+    begin
+      (*
+        pt := FNodes[i];
+        char pt[20];
+        x := pt.x * 0.1 - 5.0;
+        y := 5.0 - pt.y * 0.1;
+        sprintf(pt, '(%3.1f,%3.1f)', x, y);
+        strcat(v, pt);
+        assert(Length(v) < 280);
+      *)
+    end;
 
-    FInhibitUpdate := True; // prevent jitter due to Single.text.Single conversion
+    FInhibitUpdate := True;
+    // prevent jitter due to Single.text.Single conversion
     SetValueS(v); // should default to current patch
     FInhibitUpdate := False;
     InvalidateControl;
   end;
 
-  //TODO
-//  SetValueString(CurrentPatch, v); // should default to current patch
+  // TODO
+  // SetValueString(CurrentPatch, v); // should default to current patch
 end;
 
-procedure TSEWaveshaperGui.GuiLButtonUp(wi: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint);
+procedure TSEWaveshaperGui.GuiLButtonUp(wi: PSEWndInfo; nFlags: Cardinal;
+  Point: TSEPoint);
 begin
- if (not GetCapture(wi))
-  then exit;
+  if (not GetCapture(wi)) then
+    exit;
 
- ReleaseCapture(wi); // don't want further mouse move events
- FDragNode := -1;
+  ReleaseCapture(wi); // don't want further mouse move events
+  FDragNode := -1;
 
- // clear on-screen drag co-ords
- InvalidateControl;
+  // clear on-screen drag co-ords
+  InvalidateControl;
 end;
 
-procedure TSEWaveshaperGui.SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
+procedure TSEWaveshaperGui.SendStringToAudio(AMsgID, ALength: Integer;
+  AData: Pointer);
 begin
- CallHost(seGuiHostSendStringToAudio, ALength, AMsgID, AData);
+  CallHost(seGuiHostSendStringToAudio, ALength, AMsgID, AData);
 end;
 
 function TSEWaveshaperGui.Handle: THandle;
 begin
- Result := CallHost(seGuiHostGetHandle);
+  Result := CallHost(seGuiHostGetHandle);
 end;
 
 function TSEWaveshaperGui.InvalidateControl: Integer;
 begin
- Result := CallHost(seGuiHostRequestRepaint);
+  Result := CallHost(seGuiHostRequestRepaint);
 end;
 
 end.

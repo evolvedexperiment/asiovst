@@ -1,3 +1,35 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{   SynthEdit is witten by Jef McClintock (see http://www.synthedit.com/       }
+{                                                                              }
+{******************************************************************************}
+
 unit SEGFXModule;
 
 interface
@@ -7,21 +39,25 @@ uses
 
 type
   TSEGFXBaseModuleClass = class of TSEGFXBaseModule;
+
   TSEGFXBaseModule = class(TSEModuleBase)
   protected
-    FLock : Boolean;
+    FLock: Boolean;
     procedure Open; override;
     class function GetGfxName: string; virtual; abstract;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    class procedure GetModuleProperties(Properties
+      : PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
   TSEGFXAmountModule = class(TSEGFXBaseModule)
   protected
-    FAmount : Integer;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    FAmount: Integer;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEGFXAddColorNoiseModule = class(TSEGFXAmountModule)
@@ -51,8 +87,9 @@ type
 
   TSEGFXHueModule = class(TSEGFXAmountModule)
   protected
-    FDither : Boolean;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    FDither: Boolean;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   public
     class function GetGfxName: string; override;
   end;
@@ -139,8 +176,9 @@ type
 
   TSEGFXBrushedMetalModule = class(TSEGFXAmountModule)
   protected
-    FGradient : Single;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    FGradient: Single;
+    function GetPinProperties(const Index: Integer;
+      Properties: PSEPinProperties): Boolean; override;
   public
     class function GetGfxName: string; override;
   end;
@@ -155,54 +193,59 @@ implementation
 function TSEGFXBaseModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- Result := True;
- case Index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
+  Result := True;
+  case Index of
+    // typical input plug (inputs are listed first)
+    0:
+      with Properties^ do
       begin
-       Name            := 'Lock';
-       VariableAddress := @FLock;
-       Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
-       Direction       := drIn;
-       Datatype        := dtBoolean;
-       DefaultValue    := '0';
+        Name := 'Lock';
+        VariableAddress := @FLock;
+        Flags := [iofUICommunication, iofLinearInput, iofPatchStore];
+        Direction := drIn;
+        Datatype := dtBoolean;
+        DefaultValue := '0';
       end;
-  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
+  else
+    Result := False;
+    // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  end;
 end;
 
 procedure TSEGFXBaseModule.Open;
 begin
- inherited Open;
+  inherited Open;
 
- // choose which function is used to process audio
- OnProcess := SubProcess;
+  // choose which function is used to process audio
+  OnProcess := SubProcess;
 end;
 
 // The most important part, processing the audio
-procedure TSEGFXBaseModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSEGFXBaseModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
 begin
- CallHost(SEAudioMasterSleepMode);
+  CallHost(SEAudioMasterSleepMode);
 end;
 
 // describe your module
-class procedure TSEGFXBaseModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEGFXBaseModule.GetModuleProperties
+  (Properties: PSEModuleProperties);
 var
-  str : AnsiString;
+  str: AnsiString;
 begin
- // describe the plugin, this is the name the end-user will see.
- with Properties^ do
+  // describe the plugin, this is the name the end-user will see.
+  with Properties^ do
   begin
-   str  := 'GFX ' + GetGfxName;
-   Name := PAnsiChar(str);
-   ID   := PAnsiChar(str);
+    str := 'GFX ' + GetGfxName;
+    Name := PAnsiChar(str);
+    ID := PAnsiChar(str);
 
-   // Info, may include Author, Web page whatever
-   About := 'by Christian-W. Budde';
+    // Info, may include Author, Web page whatever
+    About := 'by Christian-W. Budde';
 
-   Flags      := [];
-   GuiFlags   := [gfControlView, gfStructureView];
-   SdkVersion := CSeSdkVersion;
+    Flags := [];
+    GuiFlags := [gfControlView, gfStructureView];
+    SdkVersion := CSeSdkVersion;
   end;
 end;
 
@@ -212,61 +255,61 @@ end;
 function TSEGFXAmountModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- Result := inherited GetPinProperties(Index, Properties);
- if Index = 1 then
-  with Properties^ do
-   begin
-    Name            := 'Amount';
-    VariableAddress := @FAmount;
-    Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
-    Direction       := drIn;
-    Datatype        := dtEnum;
-    DefaultValue    := '0';
-    DatatypeExtra   := 'range 0,255';
-    Result          := True;
-   end;
+  Result := inherited GetPinProperties(Index, Properties);
+  if Index = 1 then
+    with Properties^ do
+    begin
+      Name := 'Amount';
+      VariableAddress := @FAmount;
+      Flags := [iofUICommunication, iofLinearInput, iofPatchStore];
+      Direction := drIn;
+      Datatype := dtEnum;
+      DefaultValue := '0';
+      DatatypeExtra := 'range 0,255';
+      Result := True;
+    end;
 end;
 
 { TSEGFXInvertModule }
 
 class function TSEGFXInvertModule.GetGfxName: string;
 begin
- Result := 'Invert';
+  Result := 'Invert';
 end;
 
 { TSEGFXGrayScaleModule }
 
 class function TSEGFXGrayScaleModule.GetGfxName: string;
 begin
- Result := 'Grayscale';
+  Result := 'Grayscale';
 end;
 
 { TSEGFXEmbossModule }
 
 class function TSEGFXEmbossModule.GetGfxName: string;
 begin
- Result := 'Emboss';
+  Result := 'Emboss';
 end;
 
 { TSEGFXAddColorNoiseModule }
 
 class function TSEGFXAddColorNoiseModule.GetGfxName: string;
 begin
- Result := 'Add Color Noise';
+  Result := 'Add Color Noise';
 end;
 
 { TSEGFXAddMonoNoiseModule }
 
 class function TSEGFXAddMonoNoiseModule.GetGfxName: string;
 begin
- Result := 'Add Mono Noise';
+  Result := 'Add Mono Noise';
 end;
 
 { TSEGFXContrastModule }
 
 class function TSEGFXContrastModule.GetGfxName: string;
 begin
- Result := 'Contrast';
+  Result := 'Contrast';
 end;
 
 { TSEGFXHueModule }
@@ -274,127 +317,127 @@ end;
 function TSEGFXHueModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- Result := inherited GetPinProperties(Index, Properties);
- if Index = 2 then
-  with Properties^ do
-   begin
-    Name            := 'Dither';
-    VariableAddress := @FDither;
-    Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
-    Direction       := drIn;
-    Datatype        := dtBoolean;
-    Result          := True;
-   end;
+  Result := inherited GetPinProperties(Index, Properties);
+  if Index = 2 then
+    with Properties^ do
+    begin
+      Name := 'Dither';
+      VariableAddress := @FDither;
+      Flags := [iofUICommunication, iofLinearInput, iofPatchStore];
+      Direction := drIn;
+      Datatype := dtBoolean;
+      Result := True;
+    end;
 end;
 
 class function TSEGFXHueModule.GetGfxName: string;
 begin
- Result := 'Hue';
+  Result := 'Hue';
 end;
 
 { TSEGFXFishEyeModule }
 
 class function TSEGFXFishEyeModule.GetGfxName: string;
 begin
- Result := 'Fish Eye';
+  Result := 'Fish Eye';
 end;
 
 { TSEGFXLightnessModule }
 
 class function TSEGFXLightnessModule.GetGfxName: string;
 begin
- Result := 'Lightness';
+  Result := 'Lightness';
 end;
 
 { TSEGFXDarknessModule }
 
 class function TSEGFXDarknessModule.GetGfxName: string;
 begin
- Result := 'Darkness';
+  Result := 'Darkness';
 end;
 
 { TSEGFXSaturationModule }
 
 class function TSEGFXSaturationModule.GetGfxName: string;
 begin
- Result := 'Saturation';
+  Result := 'Saturation';
 end;
 
 { TSEGFXSplitBlurModule }
 
 class function TSEGFXSplitBlurModule.GetGfxName: string;
 begin
- Result := 'Split Blur';
+  Result := 'Split Blur';
 end;
 
 { TSEGFXSplitBlur2Module }
 
 class function TSEGFXSplitBlur2Module.GetGfxName: string;
 begin
- Result := 'Split Blur²';
+  Result := 'Split Blur²';
 end;
 
 { TSEGFXGaussianBlurModule }
 
 class function TSEGFXGaussianBlurModule.GetGfxName: string;
 begin
- Result := 'Gaussian Blur';
+  Result := 'Gaussian Blur';
 end;
 
 { TSEGFXMosaicModule }
 
 class function TSEGFXMosaicModule.GetGfxName: string;
 begin
- Result := 'Mosaic';
+  Result := 'Mosaic';
 end;
 
 { TSEGFXTwistModule }
 
 class function TSEGFXTwistModule.GetGfxName: string;
 begin
- Result := 'Twist';
+  Result := 'Twist';
 end;
 
 { TSEGFXSplitlightModule }
 
 class function TSEGFXSplitlightModule.GetGfxName: string;
 begin
- Result := 'Splitlight';
+  Result := 'Splitlight';
 end;
 
 { TSEGFXTraceModule }
 
 class function TSEGFXTraceModule.GetGfxName: string;
 begin
- Result := 'Trace';
+  Result := 'Trace';
 end;
 
 { TSEGFXSolarizeModule }
 
 class function TSEGFXSolarizeModule.GetGfxName: string;
 begin
- Result := 'Solarize';
+  Result := 'Solarize';
 end;
 
 { TSEGFXPosterizeModule }
 
 class function TSEGFXPosterizeModule.GetGfxName: string;
 begin
- Result := 'Posterize';
+  Result := 'Posterize';
 end;
 
 { TSEGFXTileModule }
 
 class function TSEGFXTileModule.GetGfxName: string;
 begin
- Result := 'Tile';
+  Result := 'Tile';
 end;
 
 { TSEGFXSpotlightModule }
 
 class function TSEGFXSpotlightModule.GetGfxName: string;
 begin
- Result := 'Spotlight';
+  Result := 'Spotlight';
 end;
 
 { TSEGFXBrushedMetalModule }
@@ -402,29 +445,29 @@ end;
 function TSEGFXBrushedMetalModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- Result := inherited GetPinProperties(Index, Properties);
- if Index = 2 then
-  with Properties^ do
-   begin
-    Name            := 'Gradient';
-    VariableAddress := @FGradient;
-    Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
-    Direction       := drIn;
-    Datatype        := dtSingle;
-    Result          := True;
-   end;
+  Result := inherited GetPinProperties(Index, Properties);
+  if Index = 2 then
+    with Properties^ do
+    begin
+      Name := 'Gradient';
+      VariableAddress := @FGradient;
+      Flags := [iofUICommunication, iofLinearInput, iofPatchStore];
+      Direction := drIn;
+      Datatype := dtSingle;
+      Result := True;
+    end;
 end;
 
 class function TSEGFXBrushedMetalModule.GetGfxName: string;
 begin
- Result := 'Brushed Metal';
+  Result := 'Brushed Metal';
 end;
 
 { TSEGFXBrushedMetal2Module }
 
 class function TSEGFXBrushedMetal2Module.GetGfxName: string;
 begin
- Result := 'Brushed Metal²';
+  Result := 'Brushed Metal²';
 end;
 
 end.
