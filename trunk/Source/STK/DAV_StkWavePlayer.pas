@@ -16,7 +16,7 @@ type
   TStkWavePlayer = class(TStkLFO)
   private
     FOneShot    : Boolean;
-    FSampleData : psingle;
+    FSampleData : PSingle;
     FLoopstart  : Integer;
     FLoopend    : Integer;
     FStart      : Single;
@@ -109,14 +109,14 @@ procedure TStkWavePlayer.LoadFile(const FileName: TFileName);
 var
   ADC : TAudioDataCollection32;
 begin
-  ADC := TAudioDataCollection32.Create(Self);
+  ADC := TAudioDataCollection32.Create(nil);
   with ADC do
    try
     LoadFromFile(FileName);
     FSize := ADC.SampleFrames;
     FInvSize := 1 / FSize;
     GetMem(FSampleData, FSize * SizeOf(Single));
-    Move(ADC[0].ChannelDataPointer^[0], FSampleData^[0], FSize * SizeOf(Single));
+    Move(ADC[0].ChannelDataPointer^[0], FSampleData^, FSize * SizeOf(Single));
     FLength := FSize * FSampleRateInv;
     FLoopstart := 0;
     FLoopend := FSize - 1;

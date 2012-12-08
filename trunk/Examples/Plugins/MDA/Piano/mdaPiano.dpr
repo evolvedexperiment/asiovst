@@ -4,25 +4,18 @@ library mdaPiano;
 uses
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   PianoDM in 'PianoDM.pas' {PianoDataModule: TVSTModule},
   PianoData in 'PianoData.pas';
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TPianoDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TPianoDataModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Complex,
+  SysUtils, SyncObjs, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Complex,
   DAV_HalfFloat, DAV_DspConvolution;
 
 type
@@ -21,7 +21,7 @@ type
     FInputBuffer         : array [0..1] of PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer        : array [0..1] of PDAVSingleFixedArray;
     FConvolver           : array [0..1] of TLowLatencyConvolution32;
-    FSemaphore           : Integer;
+    FCriticalSection     : TCriticalSection;
     FStaticCount         : Integer;
     FMaxIRBlockOrder     : Integer;
     FRealLatency         : Integer;
@@ -49,7 +49,7 @@ resourcestring
 constructor TSERealverbStereoModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FSemaphore           := 0;
+ FCriticalSection     := TCriticalSection.Create;
  FConvolver[0]        := TLowLatencyConvolution32.Create;
  FConvolver[1]        := TLowLatencyConvolution32.Create;
  FMaxIRBlockOrder     := FConvolver[0].MaximumIRBlockOrder;
@@ -60,6 +60,7 @@ end;
 destructor TSERealverbStereoModule.Destroy;
 begin
  FreeAndNil(FConvolver);
+ FreeAndNil(FCriticalSection);
  inherited;
 end;
 
@@ -120,8 +121,7 @@ end;
 procedure TSERealverbStereoModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  // lock processing
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   FConvolver[0].ProcessBlock(PDAVSingleFixedArray(@FInputBuffer[0][BufferOffset]),
                              PDAVSingleFixedArray(@FOutputBuffer[0][BufferOffset]),
@@ -130,7 +130,7 @@ begin
                              PDAVSingleFixedArray(@FOutputBuffer[1][BufferOffset]),
                              SampleFrames);
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -253,26 +253,24 @@ begin
                        Pin[3].TransmitStatusChange(SampleClock, Status);
                       end;
      pinMaxFFTOrder : begin
-                       while FSemaphore > 0 do;
-                       Inc(FSemaphore);
+                       FCriticalSection.Enter;
                        try
                         if FMaxIRBlockOrder <= FConvolver[0].MinimumIRBlockOrder
                          then FMaxIRBlockOrder := FConvolver[0].MinimumIRBlockOrder + 1;
                         FConvolver[0].MaximumIRBlockOrder := FMaxIRBlockOrder;
                         FConvolver[1].MaximumIRBlockOrder := FMaxIRBlockOrder;
                        finally
-                        Dec(FSemaphore);
+                        FCriticalSection.Leave;
                        end;
                       end;
   pinDesiredLatency : begin
-                       while FSemaphore > 0 do;
-                       Inc(FSemaphore);
+                       FCriticalSection.Enter;
                        try
                         FConvolver[0].MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
                         FConvolver[1].MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
                         FRealLatency := FConvolver[0].Latency;
                        finally
-                        Dec(FSemaphore);
+                        FCriticalSection.Leave;
                        end;
                       end;
  end; inherited;

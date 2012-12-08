@@ -175,7 +175,7 @@ var
   rct  : ERect;
   i    : Integer;
   s    : string;
-  temp : string;
+  temp : AnsiString;
 begin
  // make sure the VST host exists
  if not assigned(TWinAmpObject(Owner).VSTHost)
@@ -186,8 +186,8 @@ begin
    if GetVendorString = '' then
     if GetEffectName = ''
      then Caption := ExtractFileName(DLLFileName)
-     else Caption := GetEffectName
-    else Caption := GetVendorString + ' - '  + GetEffectName;
+     else Caption := string(GetEffectName)
+    else Caption := string(GetVendorString + ' - '  + GetEffectName);
 
    CBPreset.Clear;
    if not Active then exit;
@@ -197,13 +197,13 @@ begin
      s := IntToStr(i);
      if i < 10 then s := '00' + s else
      if i < 100 then s := '0' + s;
-     s := s + ' - ' + temp;
+     s := s + ' - ' + string(temp);
      CBPreset.Items.Add(s)
     end;
    CBPreset.ItemIndex := 0;
 
    try
-    s := GetProgramName;
+    s := string(GetProgramName);
     s := IntToStr(CBPreset.ItemIndex) + ' - ' + s;
     if CBPreset.ItemIndex < 10 then s := '00' + s else
     if CBPreset.ItemIndex < 100 then s := '0' + s;
@@ -213,7 +213,7 @@ begin
       for i := 0 to numPrograms - 1 do
        begin
         CurrentProgram := i;
-        s := GetProgramName;
+        s := string(GetProgramName);
         s := IntToStr(i) + ' - ' + s;
         if i < 10 then s := '00' + s else
         if i < 100 then s := '0' + s;
@@ -262,7 +262,7 @@ begin
     begin
      EdVSTName.Text := ExtractFileName(DLLFileName);
      EdVSTName.Text := Copy(EdVSTName.Text, 0, Pos('.dll', EdVSTName.Text) - 1);
-    end else EdVSTName.Text := GetEffectName;
+    end else EdVSTName.Text := string(GetEffectName);
   end;
 end;
 

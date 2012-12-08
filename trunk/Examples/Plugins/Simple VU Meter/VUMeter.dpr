@@ -12,26 +12,18 @@ uses
   {$ENDIF}
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   VUMeterModule in 'VUMeterModule.pas' {VSTVUMeterModule: TVSTModule},
   VUMeterGUI in 'VUMeterGUI.pas' {VSTVUMeterGUI};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TVSTVUMeterModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TVSTVUMeterModule);
 end;
 
 exports
-  Main name 'main',
-  Main name 'VSTPluginMain';
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

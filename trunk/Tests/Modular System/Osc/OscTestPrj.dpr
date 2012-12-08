@@ -4,26 +4,18 @@ library OscTestPrj;
 uses
   Forms,
   DVSTEffect,
-  DVSTModule,
+  DAV_VSTBasicModule,
   OscTestModuleU in 'OscTestModuleU.pas' {OscTestModule: TVSTModule},
   OscTestFormU in 'OscTestFormU.pas' {OscTestForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  OscTestModule: TOscTestModule;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    OscTestModule := TOscTestModule.Create(Application);
-    OscTestModule.Effect^.user := OscTestModule;
-    OscTestModule.AudioMaster := audioMaster;
-    Result := OscTestModule.Effect;
-  except
-    Result := nil;
-  end;
+  Result := VstModuleMain(AudioMasterCallback, TOscTestModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

@@ -10,27 +10,19 @@ uses
   {$ENDIF}
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   TetrisDM in 'TetrisDM.pas' {TetrisModule: TVSTModule},
   TetrisEditor in 'TetrisEditor.pas' {FmTetris},
   TetrisUnit in 'TetrisUnit.pas';
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TTetrisModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TTetrisModule);
 end;
 
 exports
-  Main name 'main',
-  Main name 'VSTPluginMain';
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

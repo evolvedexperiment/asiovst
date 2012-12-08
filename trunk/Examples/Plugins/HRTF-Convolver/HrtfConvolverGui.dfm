@@ -164,7 +164,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
           Buffer.FogEnvironment.FogEnd = 10.000000000000000000
           Buffer.FogEnvironment.FogDistance = fdEyePlane
           Buffer.BackgroundColor = clBlack
-          FieldOfView = 92.246604919433600000
+          FieldOfView = 92.246604919433590000
           OnMouseDown = GLSceneViewerMouseDown
           OnMouseMove = GLSceneViewerMouseMove
           OnMouseWheel = GLSceneViewerMouseWheel
@@ -240,7 +240,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
     object GLHRTFs: TGLPoints
       NoZWrite = False
       Static = False
-      Size = 3.000000000000000000
+      size = 3.000000000000000000
       Style = psSmooth
       PointParameters.Enabled = True
       PointParameters.PointParams = {00000000000000400000803F}

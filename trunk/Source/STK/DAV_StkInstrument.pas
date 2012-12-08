@@ -11,7 +11,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon;
+  DAV_Common, DAV_Types, DAV_StkCommon;
 
 type
   TStkInstrument = class(TStk)

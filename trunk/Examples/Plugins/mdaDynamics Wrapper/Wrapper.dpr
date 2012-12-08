@@ -14,24 +14,17 @@ uses
   {$ENDIF}
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTMainModule,
   WrapperDM in 'WrapperDM.pas' {WrapperDataModule: TVSTModule};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TWrapperDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-   Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TWrapperDataModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

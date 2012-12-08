@@ -10,26 +10,18 @@ uses
   {$ENDIF}
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   PSDM in 'PSDM.pas' {PascalScriptDataModule: TVSTModule},
   PSGUI in 'PSGUI.pas' {FmPascalScript};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TPascalScriptDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+  Result := VstModuleMain(AudioMasterCallback, TPascalScriptDataModule);
 end;
 
 exports
-  Main name 'main',
-  Main name 'VSTPluginMain';
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

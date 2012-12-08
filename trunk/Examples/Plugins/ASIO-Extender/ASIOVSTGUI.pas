@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes,
   Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule, DAV_ASIOHost;
 
 type
@@ -44,10 +44,10 @@ type
     CBShortCircuit: TCheckBox;
     LbAsioOutput: TLabel;
     Memo: TMemo;
-    procedure CbASIOChange(Sender: TObject);
-    procedure LbAsioOutputClick(Sender: TObject);
-    procedure CBShortCircuitClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure CbASIOChange(Sender: TObject);
+    procedure CBShortCircuitClick(Sender: TObject);
+    procedure LbAsioOutputClick(Sender: TObject);
   public
     procedure DisplayASIOInformation;
   end;
@@ -62,6 +62,14 @@ implementation
 
 uses
   ASIOVSTModule;
+
+{ TFmASIOVST }
+
+procedure TFmASIOVST.FormShow(Sender: TObject);
+begin
+  CbASIO.Items := TASIOVSTModule(Owner).ASIOHost.DriverList;
+  DisplayASIOInformation;
+end;
 
 procedure TFmASIOVST.CBShortCircuitClick(Sender: TObject);
 begin
@@ -100,12 +108,6 @@ begin
      Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
     end;
   end;
-end;
-
-procedure TFmASIOVST.FormShow(Sender: TObject);
-begin
-  CbASIO.Items := FASIOHost.DriverList;
-  DisplayASIOInformation;
 end;
 
 procedure TFmASIOVST.LbAsioOutputClick(Sender: TObject);

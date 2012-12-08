@@ -15,12 +15,12 @@ uses
   madListModules,
   {$ENDIF}
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   HMDM in 'HMDM.pas' {HMModule: TVSTModule};
 
 {$I DAV_Compiler.inc}
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
   HMModule: THMModule;
 begin
@@ -120,8 +120,8 @@ begin
 end;
 
 exports
-  Main name 'main',
-  Main name 'VSTPluginMain';
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

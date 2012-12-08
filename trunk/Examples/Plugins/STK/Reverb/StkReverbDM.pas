@@ -36,16 +36,16 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_VSTModule, DAV_StkJCReverb, DAV_StkNReverb, 
+  SyncObjs, Forms, DAV_Types, DAV_VSTModule, DAV_StkJCReverb, DAV_StkNReverb,
   DAV_StkPerryCookReverb;
 
 type
   TStkReverbModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcessNetwork(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessJC(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
     procedure VSTModuleProcessPC(const Inputs, Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
@@ -59,12 +59,12 @@ type
     procedure ParamT60Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamAlgorithmChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
-    FNReverb   : TStkNReverb;
-    FJCReverb  : TStkJCReverb;
-    FPCReverb  : TStkPerryCookReverb;
-    FSemaphore : Integer;
+    FNReverb: TStkNReverb;
+    FJCReverb: TStkJCReverb;
+    FPCReverb: TStkPerryCookReverb;
+    FCriticalSection: TCriticalSection;
   public
   end;
 
@@ -81,7 +81,12 @@ uses
 
 procedure TStkReverbModule.VSTModuleCreate(Sender: TObject);
 begin
- FSemaphore := 0;
+  FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TStkReverbModule.VSTModuleDestroy(Sender: TObject);
+begin
+  FCriticalSection.Free;
 end;
 
 procedure TStkReverbModule.VSTModuleOpen(Sender: TObject);
@@ -115,6 +120,8 @@ begin
  Params[1] :=  60;
  Params[2] :=   2;
  Programs[4].SetParameters(Params);
+
+ EditorFormClass := TFmStkReverb;
 end;
 
 procedure TStkReverbModule.VSTModuleClose(Sender: TObject);
@@ -124,21 +131,16 @@ begin
  FreeAndNil(FJCReverb);
 end;
 
-procedure TStkReverbModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmStkReverb.Create(Self);
-end;
-
 const
   CFixMix: array [0..1] of Single = (0.2, 0.8);
+  CHalf32: Single = 0.5;
 
 procedure TStkReverbModule.VSTModuleProcessNetwork(const Inputs,
   Outputs: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal);
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -147,7 +149,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FNReverb.LastOutputRight;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -156,8 +158,7 @@ procedure TStkReverbModule.VSTModuleProcessJC(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -166,7 +167,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FJCReverb.LastOutputRight;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -175,8 +176,7 @@ procedure TStkReverbModule.VSTModuleProcessPC(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -185,7 +185,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FPCReverb.LastOutputRight;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -194,8 +194,7 @@ procedure TStkReverbModule.VSTModuleProcessBlendA(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -205,7 +204,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FNReverb.LastOutputLeft);
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -214,8 +213,7 @@ procedure TStkReverbModule.VSTModuleProcessBlendB(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -225,7 +223,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FPCReverb.LastOutputLeft);
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -234,8 +232,7 @@ procedure TStkReverbModule.VSTModuleProcessDoubleReplacingNetwork(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -244,7 +241,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FNReverb.LastOutputRight;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -253,8 +250,7 @@ procedure TStkReverbModule.VSTModuleProcessDoubleReplacingJC(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -263,7 +259,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FJCReverb.LastOutputRight;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -272,8 +268,7 @@ procedure TStkReverbModule.VSTModuleProcessDoubleReplacingPC(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -282,7 +277,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CFixMix[1] * FPCReverb.LastOutputRight;
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -291,8 +286,7 @@ procedure TStkReverbModule.VSTModuleProcessDoubleReplacingBlendA(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -302,7 +296,7 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FNReverb.LastOutputLeft);
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -311,8 +305,7 @@ procedure TStkReverbModule.VSTModuleProcessDoubleReplacingBlendB(const Inputs,
 var
   Sample : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -322,28 +315,27 @@ begin
     Outputs[1, Sample] := CFixMix[0] * Inputs[1, Sample] + CHalf32 * CFixMix[1] * (FJCReverb.LastOutputRight + FPCReverb.LastOutputLeft);
    end;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TStkReverbModule.ParamT60Change(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   FNReverb.T60 := 0.001 * Value;
   FJCReverb.T60 := 0.001 * Value;
   FPCReverb.T60 := 0.001 * Value;
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
  if EditorForm is TFmStkReverb
   then TFmStkReverb(EditorForm).UpdateT60;
 end;
 
 procedure TStkReverbModule.ParamAlgorithmDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  case Round(Parameter[Index]) of
   0 : PreDefined := 'modified STK "NRev"';
@@ -360,26 +352,26 @@ begin
  case Round(Value) of
   0 : begin
        OnProcess := VSTModuleProcessNetwork;
-       OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingNetwork;
+       OnProcess64Replacing := VSTModuleProcessDoubleReplacingNetwork;
       end;
   1 : begin
        OnProcess := VSTModuleProcessJC;
-       OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingJC;
+       OnProcess64Replacing := VSTModuleProcessDoubleReplacingJC;
       end;
   2 : begin
        OnProcess := VSTModuleProcessPC;
-       OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingPC;
+       OnProcess64Replacing := VSTModuleProcessDoubleReplacingPC;
       end;
   3 : begin
        OnProcess := VSTModuleProcessBlendA;
-       OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingBlendA;
+       OnProcess64Replacing := VSTModuleProcessDoubleReplacingBlendA;
       end;
   4 : begin
        OnProcess := VSTModuleProcessBlendB;
-       OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingBlendB;
+       OnProcess64Replacing := VSTModuleProcessDoubleReplacingBlendB;
       end;
  end;
- OnProcessReplacing := OnProcess;
+ OnProcess32Replacing := OnProcess;
 end;
 
 procedure TStkReverbModule.ParamMixChange(

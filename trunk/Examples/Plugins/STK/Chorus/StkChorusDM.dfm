@@ -1,6 +1,7 @@
 object StkChorusModule: TStkChorusModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Stk Chorus'
@@ -8,7 +9,6 @@ object StkChorusModule: TStkChorusModule
   VendorName = 'Delphi ASIO & VST Projects'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default Network Chorus'
   IORatio = 1.000000000000000000
   UniqueID = 'STKR'
@@ -36,7 +36,6 @@ object StkChorusModule: TStkChorusModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Depth'
       LargeStepFloat = 2.000000000000000000
@@ -49,7 +48,6 @@ object StkChorusModule: TStkChorusModule
       OnParameterChange = ParamModDepthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Frequency'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -66,7 +64,6 @@ object StkChorusModule: TStkChorusModule
       OnParameterChange = ParamModFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Effect Mix'
       LargeStepFloat = 2.000000000000000000
@@ -81,13 +78,10 @@ object StkChorusModule: TStkChorusModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnProcess32Replacing = VSTModuleProcess
+  OnProcess64Replacing = VSTModuleProcessDoubleReplacing
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 284
-  Top = 121
   Height = 150
   Width = 215
 end

@@ -12,26 +12,18 @@ uses
   {$ENDIF}
   Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   WavedisplayModule in 'WavedisplayModule.pas' {WavedisplayModule: TVSTModule},
   WavedisplayGUI in 'WavedisplayGUI.pas' {WavedisplayGUI};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TWavedisplayModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
-  except
-    Result := nil;
-  end;
+  Result := VstModuleMain(AudioMasterCallback, TWavedisplayModule);
 end;
 
 exports
-  Main name 'main',
-  Main name 'VSTPluginMain';
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

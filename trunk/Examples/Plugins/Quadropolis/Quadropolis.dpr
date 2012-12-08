@@ -23,7 +23,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   QuadropolisDM in 'QuadropolisDM.pas' {QuadropolisDataModule: TVSTModule},
-  FmQuadropolis in 'FmQuadropolis.pas' {QuadropolisGUI};
+  QuadropolisGUI in 'QuadropolisGUI.pas' {QuadropolisGUI};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

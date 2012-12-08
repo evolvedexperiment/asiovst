@@ -37,9 +37,9 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
-  Forms, DAV_Types, DAV_Complex, DAV_DspFftReal2Complex, DAV_VSTModule, 
-  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF} DAV_AudioFileWAV, 
-  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
+  SyncObjs, Forms, DAV_Types, DAV_Complex, DAV_DspFftReal2Complex,
+  DAV_VSTModule, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
 
 type
   TConvolutionDataModule = class(TVSTModule)
@@ -52,7 +52,7 @@ type
     FSignalFreq     : PDAVComplexSingleFixedArray;
     FSignalTime     : array of PDAVSingleFixedArray;
     FBuffer         : PDAVSingleFixedArray;
-    FSemaphore      : Integer;
+    FCriticalSection: TCriticalSection;
     {$IFDEF Use_IPPS}
     FFft            : TFftReal2ComplexIPPSFloat32;
     {$ELSE}
@@ -86,7 +86,7 @@ uses
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSemaphore := 0;
+ FCriticalSection := TCriticalSection.Create;
  FFilterKernel := nil;
  FFilterFreq   := nil;
  FSignalFreq   := nil;
@@ -166,8 +166,7 @@ var
 begin
  if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
-   while FSemaphore > 0 do;
-   inc(FSemaphore);
+   FCriticalSection.Enter;
    try
     ADC := TAudioDataCollection32.Create(Self);
     with ADC do
@@ -184,7 +183,7 @@ begin
     // calculate frequency
     FFft.PerformFFT(FFilterFreq, FFilterKernel);
    finally
-    Dec(FSemaphore);
+    FCriticalSection.Leave;
    end;
   end;
 end;
@@ -203,8 +202,7 @@ var
   SamplesPos  : Integer;
   SampleCount : Integer;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   if SampleFrames <= 0 then exit;
   SamplesPos := 0;
@@ -244,7 +242,7 @@ begin
 *)
 
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 

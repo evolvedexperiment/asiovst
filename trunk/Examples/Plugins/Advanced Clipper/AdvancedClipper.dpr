@@ -7,7 +7,6 @@ uses
   FastMM4,
   {$IFDEF UseFastMove}
   FastMove,
-  RTLVCLOptimize,
   {$ENDIF}
   {$IFDEF UseMadExcept}
   madExcept,
