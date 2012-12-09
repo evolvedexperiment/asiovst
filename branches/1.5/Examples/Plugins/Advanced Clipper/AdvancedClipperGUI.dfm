@@ -354,8 +354,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
     PanelColor = 7373965
     ParentColor = True
     TabOrder = 2
-    UseDockManager = True
     Transparent = True
+    UseDockManager = True
     object LbClipInput: TGuiLabel
       Left = 11
       Top = 36

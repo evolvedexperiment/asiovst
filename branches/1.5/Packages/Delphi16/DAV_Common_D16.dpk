@@ -3,27 +3,27 @@ package DAV_Common_D16;
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
-{$ASSERTIONS OFF}
+{$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO OFF}
+{$DEBUGINFO ON}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
-{$LOCALSYMBOLS OFF}
+{$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
-{$REFERENCEINFO OFF}
+{$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $500000}
-{$DEFINE RELEASE}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'ASIO & VST Project - Base Package'}
 {$IMPLICITBUILD ON}
@@ -33,13 +33,12 @@ requires
   designide;
 
 contains
-  DAV_Common in '..\..\Source\DAV_Common.pas',
-  DAV_CommonRegister in '..\..\Source\DAV_CommonRegister.pas',
   DAV_Approximations in '..\..\Source\DAV_Approximations.pas',
   DAV_AudioData in '..\..\Source\DAV_AudioData.pas',
   DAV_AudioFile in '..\..\Source\FileFormats\DAV_AudioFile.pas',
   DAV_AudioFileAIFF in '..\..\Source\FileFormats\DAV_AudioFileAIFF.pas',
   DAV_AudioFileAU in '..\..\Source\FileFormats\DAV_AudioFileAU.pas',
+  DAV_AudioFileDataCache in '..\..\Source\FileFormats\DAV_AudioFileDataCache.pas',
   DAV_AudioFileWAV in '..\..\Source\FileFormats\DAV_AudioFileWAV.pas',
   DAV_AudioMemory in '..\..\Source\DAV_AudioMemory.pas',
   DAV_Bindings in '..\..\Source\DAV_Bindings.pas',
@@ -57,17 +56,22 @@ contains
   DAV_ChunkWaveBasic in '..\..\Source\FileFormats\DAV_ChunkWaveBasic.pas',
   DAV_ChunkWaveCustom in '..\..\Source\FileFormats\DAV_ChunkWaveCustom.pas',
   DAV_Classes in '..\..\Source\DAV_Classes.pas',
+  DAV_Common in '..\..\Source\DAV_Common.pas',
+  DAV_CommonRegister in '..\..\Source\DAV_CommonRegister.pas',
   DAV_Complex in '..\..\Source\DAV_Complex.pas',
   DAV_ComplexData in '..\..\Source\DAV_ComplexData.pas',
   DAV_CRC in '..\..\Source\DAV_CRC.pas',
   DAV_DLLLoader in '..\..\Source\DAV_DLLLoader.pas',
   DAV_EllipticFunctions in '..\..\Source\DAV_EllipticFunctions.pas',
+  DAV_FileFormat in '..\..\Source\FileFormats\DAV_FileFormat.pas',
+  DAV_FixedPoint in '..\..\Source\DAV_FixedPoint.pas',
   DAV_HalfFloat in '..\..\Source\DAV_HalfFloat.pas',
   DAV_Huffman in '..\..\Source\DAV_Huffman.pas',
   DAV_InvMDCT in '..\..\Source\DAV_InvMDCT.pas',
   DAV_Math in '..\..\Source\DAV_Math.pas',
   DAV_MemoryUtils in '..\..\Source\DAV_MemoryUtils.pas',
-  DAV_MidiFile in '..\..\Source\DAV_MidiFile.pas',
+  DAV_MidiFileChunks in '..\..\Source\FileFormats\DAV_MidiFileChunks.pas',
+  DAV_MidiFileEvents in '..\..\Source\FileFormats\DAV_MidiFileEvents.pas',
   DAV_MpegAudio in '..\..\Source\FileFormats\DAV_MpegAudio.pas',
   DAV_MpegAudioLayer3 in '..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas',
   DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas',
@@ -80,6 +84,6 @@ contains
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
   DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
-  DAV_FixedPoint in '..\..\Source\DAV_FixedPoint.pas';
+  DAV_MidiFile in '..\..\Source\FileFormats\DAV_MidiFile.pas';
 
 end.

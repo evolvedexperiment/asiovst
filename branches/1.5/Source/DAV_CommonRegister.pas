@@ -41,16 +41,16 @@ implementation
 {$IFNDEF FPC}{$R ..\..\Resources\DAV_CommonRegister.res}{$ENDIF}
 
 uses
-  {$IFDEF FPC} LResources, {$ENDIF} {$IFNDEF FPC} DAV_MidiFile, {$ENDIF}
+  {$IFDEF FPC} LResources, {$ENDIF} {$IFNDEF FPC} {$ENDIF}
   Classes, DAV_Common, DAV_SampleRateSource, DAV_AudioData, DAV_ComplexData,
   DAV_ProcessorInfoComponent;
 
 procedure Register;
 begin
-  RegisterComponents('ASIO/VST Basics', [{$IFNDEF FPC} TMidiFile, {$ENDIF}
-    TSampleRateSource, TAudioData32Component, TAudioData64Component,
-    TComplexData32, TComplexData64, TAudioDataCollection32,
-    TAudioDataCollection64, TProcessorInfoComponent]);
+  RegisterComponents('ASIO/VST Basics', [TSampleRateSource,
+    TAudioData32Component, TAudioData64Component, TComplexData32,
+    TComplexData64, TAudioDataCollection32, TAudioDataCollection64,
+    TProcessorInfoComponent]);
 end;
 
 end.

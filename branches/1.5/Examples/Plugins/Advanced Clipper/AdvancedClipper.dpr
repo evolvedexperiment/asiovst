@@ -4,15 +4,6 @@ library AdvancedClipper;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4,
-  {$IFDEF UseFastMove}
-  FastMove,
-  RTLVCLOptimize,
-  {$ENDIF}
-  {$IFDEF UseMadExcept}
-  madExcept,
-  madLinkDisAsm,
-  {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

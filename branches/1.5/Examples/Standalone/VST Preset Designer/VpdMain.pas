@@ -108,7 +108,7 @@ type
   private
     FIniFile    : TFileName;
     FVstPlugin  : TFileName;
-    FMidiFile   : TMidiFile;
+    FMidiFile   : TDavMidiFile;
     FAudioFile  : TFileName;
     FInBuffer   : TDAVArrayOfSingleFixedArray;
     FOutBuffer  : TDAVArrayOfSingleFixedArray;

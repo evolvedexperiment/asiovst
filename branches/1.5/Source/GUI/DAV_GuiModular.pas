@@ -6,8 +6,7 @@ interface
 
 uses
   Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
-  DAV_GuiBaseControl, DAV_ModularManager, DAV_ModularContainer,
-  DAV_ModularPin;
+  DAV_GuiBaseControl;
 
 type
   TCustomGuiModular = class(TCustomControl)

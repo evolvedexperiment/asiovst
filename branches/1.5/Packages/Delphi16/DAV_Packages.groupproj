@@ -9,22 +9,16 @@
 			<Projects Include="DAV_DSP_D16.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="DAV_ASIOHost_D16.dproj">
+			<Projects Include="DAV_VSTPlugin_D16.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="DAV_VSTHost_D16.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="DAV_VSTPlugin_D16.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="DAV_SEHost_D16.dproj">
+			<Projects Include="DAV_ASIOHost_D16.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="DAV_GUI_D16.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="DAV_Modular_D16.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -39,82 +33,64 @@
 			<MSBuild Projects="DAV_Common_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_Common_D16:Clean">
-			<MSBuild Projects="DAV_Common_D16.dproj" Targets="Clean"/>
+			<MSBuild Targets="Clean" Projects="DAV_Common_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_Common_D16:Make">
-			<MSBuild Projects="DAV_Common_D16.dproj" Targets="Make"/>
+			<MSBuild Targets="Make" Projects="DAV_Common_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_DSP_D16">
 			<MSBuild Projects="DAV_DSP_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_DSP_D16:Clean">
-			<MSBuild Projects="DAV_DSP_D16.dproj" Targets="Clean"/>
+			<MSBuild Targets="Clean" Projects="DAV_DSP_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_DSP_D16:Make">
-			<MSBuild Projects="DAV_DSP_D16.dproj" Targets="Make"/>
-		</Target>
-		<Target Name="DAV_ASIOHost_D16">
-			<MSBuild Projects="DAV_ASIOHost_D16.dproj"/>
-		</Target>
-		<Target Name="DAV_ASIOHost_D16:Clean">
-			<MSBuild Projects="DAV_ASIOHost_D16.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="DAV_ASIOHost_D16:Make">
-			<MSBuild Projects="DAV_ASIOHost_D16.dproj" Targets="Make"/>
-		</Target>
-		<Target Name="DAV_VSTHost_D16">
-			<MSBuild Projects="DAV_VSTHost_D16.dproj"/>
-		</Target>
-		<Target Name="DAV_VSTHost_D16:Clean">
-			<MSBuild Projects="DAV_VSTHost_D16.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="DAV_VSTHost_D16:Make">
-			<MSBuild Projects="DAV_VSTHost_D16.dproj" Targets="Make"/>
+			<MSBuild Targets="Make" Projects="DAV_DSP_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_VSTPlugin_D16">
 			<MSBuild Projects="DAV_VSTPlugin_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_VSTPlugin_D16:Clean">
-			<MSBuild Projects="DAV_VSTPlugin_D16.dproj" Targets="Clean"/>
+			<MSBuild Targets="Clean" Projects="DAV_VSTPlugin_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_VSTPlugin_D16:Make">
-			<MSBuild Projects="DAV_VSTPlugin_D16.dproj" Targets="Make"/>
+			<MSBuild Targets="Make" Projects="DAV_VSTPlugin_D16.dproj"/>
 		</Target>
-		<Target Name="DAV_SEHost_D16">
-			<MSBuild Projects="DAV_SEHost_D16.dproj"/>
+		<Target Name="DAV_VSTHost_D16">
+			<MSBuild Projects="DAV_VSTHost_D16.dproj"/>
 		</Target>
-		<Target Name="DAV_SEHost_D16:Clean">
-			<MSBuild Projects="DAV_SEHost_D16.dproj" Targets="Clean"/>
+		<Target Name="DAV_VSTHost_D16:Clean">
+			<MSBuild Targets="Clean" Projects="DAV_VSTHost_D16.dproj"/>
 		</Target>
-		<Target Name="DAV_SEHost_D16:Make">
-			<MSBuild Projects="DAV_SEHost_D16.dproj" Targets="Make"/>
+		<Target Name="DAV_VSTHost_D16:Make">
+			<MSBuild Targets="Make" Projects="DAV_VSTHost_D16.dproj"/>
+		</Target>
+		<Target Name="DAV_ASIOHost_D16">
+			<MSBuild Projects="DAV_ASIOHost_D16.dproj"/>
+		</Target>
+		<Target Name="DAV_ASIOHost_D16:Clean">
+			<MSBuild Targets="Clean" Projects="DAV_ASIOHost_D16.dproj"/>
+		</Target>
+		<Target Name="DAV_ASIOHost_D16:Make">
+			<MSBuild Targets="Make" Projects="DAV_ASIOHost_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_GUI_D16">
 			<MSBuild Projects="DAV_GUI_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_GUI_D16:Clean">
-			<MSBuild Projects="DAV_GUI_D16.dproj" Targets="Clean"/>
+			<MSBuild Targets="Clean" Projects="DAV_GUI_D16.dproj"/>
 		</Target>
 		<Target Name="DAV_GUI_D16:Make">
-			<MSBuild Projects="DAV_GUI_D16.dproj" Targets="Make"/>
-		</Target>
-		<Target Name="DAV_Modular_D16">
-			<MSBuild Projects="DAV_Modular_D16.dproj"/>
-		</Target>
-		<Target Name="DAV_Modular_D16:Clean">
-			<MSBuild Projects="DAV_Modular_D16.dproj" Targets="Clean"/>
-		</Target>
-		<Target Name="DAV_Modular_D16:Make">
-			<MSBuild Projects="DAV_Modular_D16.dproj" Targets="Make"/>
+			<MSBuild Targets="Make" Projects="DAV_GUI_D16.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="DAV_Common_D16;DAV_DSP_D16;DAV_ASIOHost_D16;DAV_VSTHost_D16;DAV_VSTPlugin_D16;DAV_SEHost_D16;DAV_GUI_D16;DAV_Modular_D16"/>
+			<CallTarget Targets="DAV_Common_D16;DAV_DSP_D16;DAV_VSTPlugin_D16;DAV_VSTHost_D16;DAV_ASIOHost_D16;DAV_GUI_D16"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="DAV_Common_D16:Clean;DAV_DSP_D16:Clean;DAV_ASIOHost_D16:Clean;DAV_VSTHost_D16:Clean;DAV_VSTPlugin_D16:Clean;DAV_SEHost_D16:Clean;DAV_GUI_D16:Clean;DAV_Modular_D16:Clean"/>
+			<CallTarget Targets="DAV_Common_D16:Clean;DAV_DSP_D16:Clean;DAV_VSTPlugin_D16:Clean;DAV_VSTHost_D16:Clean;DAV_ASIOHost_D16:Clean;DAV_GUI_D16:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="DAV_Common_D16:Make;DAV_DSP_D16:Make;DAV_ASIOHost_D16:Make;DAV_VSTHost_D16:Make;DAV_VSTPlugin_D16:Make;DAV_SEHost_D16:Make;DAV_GUI_D16:Make;DAV_Modular_D16:Make"/>
+			<CallTarget Targets="DAV_Common_D16:Make;DAV_DSP_D16:Make;DAV_VSTPlugin_D16:Make;DAV_VSTHost_D16:Make;DAV_ASIOHost_D16:Make;DAV_GUI_D16:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

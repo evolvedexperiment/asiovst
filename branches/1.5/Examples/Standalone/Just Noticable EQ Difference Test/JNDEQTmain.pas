@@ -212,9 +212,8 @@ implementation
 {$R *.dfm}
 
 uses
-  IniFiles, Math, Mapi, ShellApi, AnsiStrings,
-  ZLibEx, // get this library here: http://www.dellapasqua.com/delphizlib/
-  DAV_GuiCommon, DAV_Common, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
+  IniFiles, Math, Mapi, ShellApi, AnsiStrings, ZLib, DAV_GuiCommon,
+  DAV_Common, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
 
 procedure TFmJNDEQT.FormCreate(Sender: TObject);
 var
@@ -968,7 +967,7 @@ begin
    FS := TFileStream.Create(FileBaseName + '.JND', fmCreate);
    with FS do
     try
-     CS := TZCompressionStream.Create(FS, zcMax);
+     CS := TZCompressionStream.Create(FS);
      try
       FLog.SaveToStream(CS);
      finally

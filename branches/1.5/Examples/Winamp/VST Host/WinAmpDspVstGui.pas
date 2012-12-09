@@ -175,7 +175,7 @@ var
   rct  : ERect;
   i    : Integer;
   s    : string;
-  temp : string;
+  temp : AnsiString;
 begin
  // make sure the VST host exists
  if not assigned(TWinAmpObject(Owner).VSTHost)

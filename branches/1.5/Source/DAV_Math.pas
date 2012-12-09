@@ -249,7 +249,6 @@ begin
 end;
 {$ELSE}
 {$IFDEF CPUx86_64}
-
 begin
   Result := 2 * Random - 1;
 end;

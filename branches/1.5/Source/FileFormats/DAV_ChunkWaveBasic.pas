@@ -1,34 +1,34 @@
-unit DAV_ChunkWaveBasic;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_ChunkWaveBasic;
 
 interface
 
@@ -42,27 +42,27 @@ type
   /////////////////////////////// Base Chunks ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TWavDefinedChunk = class(TDefinedChunk)
+  TWavDefinedChunk = class(TDavDefinedChunk)
   public
     constructor Create; override;
   end;
 
-  TWavFixedDefinedChunk = class(TFixedDefinedChunk)
+  TWavFixedDefinedChunk = class(TDavFixedDefinedChunk)
   public
     constructor Create; override;
   end;
 
-  TWavChunkText = class(TCustomTextChunk)
+  TWavChunkText = class(TDavCustomTextChunk)
   public
     constructor Create; override;
   end;
 
-  TWavUnknownChunk = class(TUnknownChunk)
+  TWavUnknownChunk = class(TDavUnknownChunk)
   public
     constructor Create; override;
   end;
 
-  TWavBinaryChunk = class(TCustomBinaryChunk)
+  TWavBinaryChunk = class(TDavCustomBinaryChunk)
   public
     constructor Create; override;
   end;
@@ -306,25 +306,25 @@ type
 
   TAssociatedDataListChunk = class(TWavDefinedChunk)
   private
-    function GetSubChunk(Index: Integer): TCustomChunk;
+    function GetSubChunk(Index: Integer): TDavCustomChunk;
     function GetCount: Integer;
     function GetTypeID: string;
     procedure SetTypeID(const Value: string);
   protected
-    FChunkList : TChunkList;
-    function GetChunkClass(ChunkName : TChunkName): TCustomChunkClass; virtual;
+    FChunkList : TDavChunkList;
+    function GetChunkClass(ChunkName : TChunkName): TDavCustomChunkClass; virtual;
     function GetChunkSize: Cardinal; override;
     procedure AssignTo(Dest: TPersistent); override; 
-    procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream: TStream); virtual;
+    procedure ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream: TStream); virtual;
   public
     AssociatedDataListRecord : TAssociatedDataListRecord;
     constructor Create; override;
     destructor Destroy; override;
-    procedure AddChunk(Chunk : TCustomChunk); virtual;
+    procedure AddChunk(Chunk : TDavCustomChunk); virtual;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
     class function GetClassChunkName: TChunkName; override;
-    property SubChunk[Index : Integer] : TCustomChunk read GetSubChunk;
+    property SubChunk[Index : Integer] : TDavCustomChunk read GetSubChunk;
     property Count : Integer read GetCount;
   published
     property TypeID: string read GetTypeID write SetTypeID;
@@ -801,17 +801,17 @@ type
   end;
 
 var
-  WaveChunkClasses : array of TDefinedChunkClass;
+  WaveChunkClasses : array of TDavDefinedChunkClass;
 
-procedure RegisterWaveChunk(AClass: TDefinedChunkClass);
-procedure RegisterWaveChunks(AClasses: array of TDefinedChunkClass);
-function IsWaveChunkClassRegistered(AClass: TDefinedChunkClass): Boolean;
-function WaveChunkClassByName(Value: string): TDefinedChunkClass;
-function WaveChunkClassByChunkName(Value: TChunkName): TDefinedChunkClass;
+procedure RegisterWaveChunk(AClass: TDavDefinedChunkClass);
+procedure RegisterWaveChunks(AClasses: array of TDavDefinedChunkClass);
+function IsWaveChunkClassRegistered(AClass: TDavDefinedChunkClass): Boolean;
+function WaveChunkClassByName(Value: string): TDavDefinedChunkClass;
+function WaveChunkClassByChunkName(Value: TChunkName): TDavDefinedChunkClass;
 
 implementation
 
-function WaveChunkClassByName(Value: string): TDefinedChunkClass;
+function WaveChunkClassByName(Value: string): TDavDefinedChunkClass;
 var
   X: Integer;
 begin
@@ -826,7 +826,7 @@ begin
   end;
 end;
 
-function WaveChunkClassByChunkName(Value: TChunkName): TDefinedChunkClass;
+function WaveChunkClassByChunkName(Value: TChunkName): TDavDefinedChunkClass;
 var
   X: Integer;
 begin
@@ -839,7 +839,7 @@ begin
    end;
 end;
 
-function IsWaveChunkClassRegistered(AClass: TDefinedChunkClass): Boolean;
+function IsWaveChunkClassRegistered(AClass: TDavDefinedChunkClass): Boolean;
 var
   X : Integer;
 begin
@@ -854,7 +854,7 @@ begin
   end;
 end;
 
-procedure RegisterWaveChunk(AClass: TDefinedChunkClass);
+procedure RegisterWaveChunk(AClass: TDavDefinedChunkClass);
 begin
  Classes.RegisterClass(AClass);
  Assert(not IsWaveChunkClassRegistered(AClass));
@@ -862,7 +862,7 @@ begin
  WaveChunkClasses[Length(WaveChunkClasses) - 1] := AClass;
 end;
 
-procedure RegisterWaveChunks(AClasses: array of TDefinedChunkClass);
+procedure RegisterWaveChunks(AClasses: array of TDavDefinedChunkClass);
 var
   i : Integer;
 begin
@@ -1539,7 +1539,7 @@ end;
 constructor TAssociatedDataListChunk.Create;
 begin
  inherited;
- FChunkList := TChunkList.Create;
+ FChunkList := TDavChunkList.Create;
 end;
 
 destructor TAssociatedDataListChunk.Destroy;
@@ -1548,7 +1548,7 @@ begin
  inherited;
 end;
 
-procedure TAssociatedDataListChunk.AddChunk(Chunk: TCustomChunk);
+procedure TAssociatedDataListChunk.AddChunk(Chunk: TDavCustomChunk);
 begin
  FChunkList.Add(Chunk);
 end;
@@ -1623,9 +1623,9 @@ begin
 end;
 
 procedure TAssociatedDataListChunk.ConvertStreamToChunk(
-  ChunkClass: TCustomChunkClass; Stream: TStream);
+  ChunkClass: TDavCustomChunkClass; Stream: TStream);
 var
-  Chunk : TCustomChunk;
+  Chunk : TDavCustomChunk;
 begin
  Chunk := ChunkClass.Create;
  Chunk.ChunkFlags := ChunkFlags;
@@ -1634,11 +1634,11 @@ begin
 end;
 
 function TAssociatedDataListChunk.GetChunkClass(
-  ChunkName: TChunkName): TCustomChunkClass;
+  ChunkName: TChunkName): TDavCustomChunkClass;
 var
   X: Integer;
 begin
- Result := TUnknownChunk;
+ Result := TDavUnknownChunk;
  for X := 0 to Length(WaveChunkClasses) - 1 do
   if CompareChunkNames(WaveChunkClasses[X].GetClassChunkName, ChunkName) then
    begin
@@ -1666,7 +1666,7 @@ begin
  Result := FChunkList.Count;
 end;
 
-function TAssociatedDataListChunk.GetSubChunk(Index: Integer): TCustomChunk;
+function TAssociatedDataListChunk.GetSubChunk(Index: Integer): TDavCustomChunk;
 begin
  if (Index >= 0) and (Index < FChunkList.Count)
   then Result := FChunkList[Index]
