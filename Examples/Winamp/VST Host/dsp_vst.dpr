@@ -5,13 +5,8 @@ library dsp_vst;
 {$I DAV_Compiler.inc}
 
 uses
+  {$IFDEF UseFastMM4}
   FastMM4,
-  {$IFDEF UseMadExcept}
-  madExcept,
-  madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   {$ENDIF}
   {$IFDEF UseFastMove}
   FastMove,
@@ -20,7 +15,7 @@ uses
   WinAmpDspVstGui in 'WinAmpDspVstGui.pas' {FmWinAmpVST};
 
 exports
-  winampDSPGetHeader2 name 'winampDSPGetHeader2';
+  winampDSPGetHeader2 name 'winampDSPGetHeader2',
   winampDSPGetHeader2;
 
 end.

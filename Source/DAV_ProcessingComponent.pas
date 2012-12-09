@@ -38,14 +38,14 @@ uses
   Classes, DAV_Types;
 
 type
-  TDspBaseProcessFuncS = procedure(var Data: Single; const channel: Integer)
+  TDspBaseProcessFuncS = procedure(var Data: Single; const Channel: Integer)
     of object;
-  TDspBaseProcessFuncD = procedure(var Data: Double; const channel: Integer)
+  TDspBaseProcessFuncD = procedure(var Data: Double; const Channel: Integer)
     of object;
   TDspBaseProcessFuncSA = procedure(var ProcessBuffer: TDAVSingleDynArray;
-    const channel, SampleFrames: Integer) of object;
+    const Channel, SampleFrames: Integer) of object;
   TDspBaseProcessFuncDA = procedure(var ProcessBuffer: TDAVDoubleDynArray;
-    const channel, SampleFrames: Integer) of object;
+    const Channel, SampleFrames: Integer) of object;
   TDspBaseProcessFuncSAA = procedure(var ProcessBuffer
     : TDAVArrayOfSingleDynArray; const SampleFrames: Integer) of object;
   TDspBaseProcessFuncDAA = procedure(var ProcessBuffer

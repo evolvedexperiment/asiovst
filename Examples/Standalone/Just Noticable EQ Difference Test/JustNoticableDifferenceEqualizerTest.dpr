@@ -3,11 +3,6 @@ program JustNoticableDifferenceEqualizerTest;
 uses
   FastMM4,
   FastMove,
-  madExcept,
-  madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   Forms,
   JNDEQTmain in 'JNDEQTmain.pas' {FmJNDEQT},
   JNDEQTaudio in 'JNDEQTaudio.pas' {FmSetup},

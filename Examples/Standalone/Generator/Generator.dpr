@@ -5,13 +5,6 @@ uses
   {$IFDEF UseFastMove}
   FastMove,
   {$ENDIF}
-  {$IFDEF UseMadExcept}
-  madExcept,
-  madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
-  {$ENDIF}
   Forms,
   GenMain in 'GenMain.pas' {FmGenerator};
 

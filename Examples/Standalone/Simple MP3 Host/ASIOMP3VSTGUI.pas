@@ -113,7 +113,7 @@ begin
  with FBufferedPlayer do
   begin
    BufferSize := 65536;
-   BlockSize  := 4096
+   BlockSize  := 4096;
    Pitch := 0;
    Interpolation := biBSpline6Point5thOrder;
    SampleRate := ASIOHost.SampleRate;

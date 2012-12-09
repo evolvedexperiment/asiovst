@@ -176,6 +176,7 @@ object FmJNDEQT: TFmJNDEQT
     DefaultValue = 3.000000000000000000
     Max = 3.000000000000000000
     Min = -30.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 3.000000000000000000
     SlideColor = clBlack
@@ -403,6 +404,7 @@ object FmJNDEQT: TFmJNDEQT
       DefaultValue = 3.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
+      ReadOnly = False
       ParentColor = False
       Value = 3.000000000000000000
       SlideColor = clBlack
@@ -422,6 +424,7 @@ object FmJNDEQT: TFmJNDEQT
       DefaultValue = 1000.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
+      ReadOnly = False
       ParentColor = False
       Value = 1000.000000000000000000
       SlideColor = clBlack
@@ -440,6 +443,7 @@ object FmJNDEQT: TFmJNDEQT
       DefaultValue = 15.000000000000000000
       Max = 15.000000000000000000
       Min = -15.000000000000000000
+      ReadOnly = False
       ParentColor = False
       Value = 15.000000000000000000
       SlideColor = clBlack

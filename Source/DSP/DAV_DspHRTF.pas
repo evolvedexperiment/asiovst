@@ -1,49 +1,47 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_DspHrtf;
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  This unit uses a spherical coordinate system with the following           //
-//  specifications:                                                           //
-//                                                                            //
-//  - the azimuth is the angle to the front [-Pi..Pi]                         //
-//  - the elevation is the angle to the equator [-Pi/2..Pi/2]                 //
-//  - the radial distance r is assumed to be 1 and is not used                //
-//                                                                            //
-//  With this definition a point (0, 0, 1) equals a point in front of the     //
-//  listener, while a point (Pi/2, 0, 1) means a point hard left to the       //
-//  listener. Finally the point (*, Pi/2, 1) means a point above the          //
-//  listener. Note: the azimuth angle is not important anymore in case the    //
-//  source is on the pole.                                                    //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+//  This unit uses a spherical coordinate system with the following
+//  specifications:
+//
+//  - the azimuth is the angle to the front [-Pi..Pi]
+//  - the elevation is the angle to the equator [-Pi/2..Pi/2]
+//  - the radial distance r is assumed to be 1 and is not used
+//
+//  With this definition a point (0, 0, 1) equals a point in front of the
+//  listener, while a point (Pi/2, 0, 1) means a point hard left to the
+//  listener. Finally the point (*, Pi/2, 1) means a point above the
+//  listener. Note: the azimuth angle is not important anymore in case the
+//  source is on the pole.
 
 interface
 
@@ -66,7 +64,7 @@ type
 
   TInterpolationType = (itNearest, itLinear, itLinear3);
 
-  TCustomHrir = class(TDefinedChunk)
+  TCustomHrir = class(TDavDefinedChunk)
   private
     procedure SetSampleFrames(const Value: Integer);
     procedure SetBytesPerSample(const Value: Integer);
@@ -131,7 +129,7 @@ type
     Notes     : ShortString;
   end;
 
-  TCustomHrirGeneralInformation = class(TDefinedChunk)
+  TCustomHrirGeneralInformation = class(TDavDefinedChunk)
   private
     function GetString(const Index: Integer): string;
     procedure SetString(const Index: Integer; const Value: string);
@@ -162,7 +160,7 @@ type
     Desc   : ShortString;
   end;
 
-  TCustomHrirSubjectInformation = class(TDefinedChunk)
+  TCustomHrirSubjectInformation = class(TDavDefinedChunk)
   private
     function GetString(const Index: Integer): string;
     procedure SetString(const Index: Integer; const Value: string);
@@ -187,7 +185,7 @@ type
     RoomType : ShortString;
   end;
 
-  TCustomHrirRoomInformation = class(TDefinedChunk)
+  TCustomHrirRoomInformation = class(TDavDefinedChunk)
   private
     procedure SetX(const Value: Single);
     procedure SetY(const Value: Single);
@@ -217,7 +215,7 @@ type
     Notes        : ShortString;
   end;
 
-  TCustomHrirMicrophoneInformation = class(TDefinedChunk)
+  TCustomHrirMicrophoneInformation = class(TDavDefinedChunk)
   private
     function GetString(const Index: Integer): string;
     procedure SetString(const Index: Integer; const Value: string);
@@ -244,7 +242,7 @@ type
     Loudspeaker : ShortString;
   end;
 
-  TCustomHrirOutboardInformation = class(TDefinedChunk)
+  TCustomHrirOutboardInformation = class(TDavDefinedChunk)
   private
     function GetString(const Index: Integer): string;
     procedure SetString(const Index: Integer; const Value: string);
@@ -273,7 +271,7 @@ type
     Flags           : Integer;
   end;
 
-  TCustomHrirMeasurementInformation = class(TDefinedChunk)
+  TCustomHrirMeasurementInformation = class(TDavDefinedChunk)
   private
     function GetString(const Index: Integer): string;
     function GetSymmetric: Boolean;
@@ -308,7 +306,7 @@ type
   end;
 *)
 
-  TCustomHrtfs = class(TChunkContainer)
+  TCustomHrtfs = class(TDavChunkContainer)
   private
     FOnHrtfChanged     : TNotifyEvent;
     FInterpolationType : TInterpolationType;
@@ -351,7 +349,7 @@ type
     FMeasurementInformation : TCustomHrirMeasurementInformation;
     FHrirList               : TObjectList;
     FSampleRate             : Single;
-    procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass;
+    procedure ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass;
       Stream: TStream); override;
     procedure Interpolate2Hrir(const Azimuth, Polar: Single;
       const SampleFrames: Integer;
@@ -398,7 +396,7 @@ type
       const Left, Right: PDavDoubleFixedArray); overload; virtual;
 
     class function GetClassChunkName: TChunkName; override;
-    procedure AddChunk(Chunk: TCustomChunk); override;
+    procedure AddChunk(Chunk: TDavCustomChunk); override;
 
     property Hrir[Index: Integer]: TCustomHrir read GetHrir;
     property HrirCount: Integer read GetHrirCount;
@@ -2764,7 +2762,7 @@ begin
   do TCustomHrir(FHrirList[i]).SwapChannels;
 end;
 
-procedure TCustomHrtfs.AddChunk(Chunk: TCustomChunk);
+procedure TCustomHrtfs.AddChunk(Chunk: TDavCustomChunk);
 begin
  inherited;
  if Chunk is TCustomHrir
@@ -2814,7 +2812,7 @@ begin
   then FOnHrtfChanged(Self);
 end;
 
-procedure TCustomHrtfs.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream);
+procedure TCustomHrtfs.ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream : TStream);
 begin
  if ChunkClass = TCustomHrirGeneralInformation then
   begin

@@ -1,34 +1,34 @@
-unit DAV_ChunkClasses;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_ChunkClasses;
 
 interface
 
@@ -38,18 +38,18 @@ uses
   Classes, Contnrs, SysUtils, DAV_Types;
 
 type
-  TChunkFlag = (cfSizeFirst, cfReversedByteOrder, cfPadSize,
+  TDavChunkFlag = (cfSizeFirst, cfReversedByteOrder, cfPadSize,
     cfIncludeChunkInSize);
-  TChunkFlags = set of TChunkFlag;
+  TDavChunkFlags = set of TDavChunkFlag;
   {$IFDEF DELPHI5}
-  TCustomChunk = class(TPersistent)
+  TDavCustomChunk = class(TPersistent)
   {$ELSE}
-  TCustomChunk = class(TInterfacedPersistent, IStreamPersist)
+  TDavCustomChunk = class(TInterfacedPersistent, IStreamPersist)
   {$ENDIF}
   protected
     FChunkName  : TChunkName;
     FChunkSize  : Cardinal;
-    FChunkFlags : TChunkFlags;
+    FChunkFlags : TDavChunkFlags;
     function GetChunkName: AnsiString; virtual;
     function GetChunkSize: Cardinal; virtual;
     function CalculateZeroPad: Integer;
@@ -64,17 +64,17 @@ type
     procedure SaveToFile(FileName : TFileName); virtual;
     property ChunkName: AnsiString read GetChunkName write SetChunkName;
     property ChunkSize: Cardinal read GetChunkSize;
-    property ChunkFlags: TChunkFlags read FChunkFlags write FChunkFlags default [];
+    property ChunkFlags: TDavChunkFlags read FChunkFlags write FChunkFlags default [];
   end;
 
-  TCustomChunkClass = class of TCustomChunk;
+  TDavCustomChunkClass = class of TDavCustomChunk;
 
-  TDummyChunk = class(TCustomChunk)
+  TDavDummyChunk = class(TDavCustomChunk)
   public
     procedure LoadFromStream(Stream : TStream); override;
   end;
 
-  TUnknownChunk = class(TCustomChunk)
+  TDavUnknownChunk = class(TDavCustomChunk)
   private
     function GetData(Index: Integer): Byte;
     procedure SetData(Index: Integer; const Value: Byte);
@@ -92,7 +92,7 @@ type
     property DataStream: TMemoryStream read FDataStream;
   end;
 
-  TDefinedChunk = class(TCustomChunk)
+  TDavDefinedChunk = class(TDavCustomChunk)
   protected
     FFilePosition : Cardinal;
     procedure SetChunkName(const Value: AnsiString); override;
@@ -105,9 +105,9 @@ type
     property FilePosition : Cardinal read FFilePosition;
   end;
 
-  TDefinedChunkClass = class of TDefinedChunk;
+  TDavDefinedChunkClass = class of TDavDefinedChunk;
 
-  TFixedDefinedChunk = class(TDefinedChunk)
+  TDavFixedDefinedChunk = class(TDavDefinedChunk)
   private
     function GetStartAddress: Pointer;
     procedure SetStartAddress(const Value: Pointer);
@@ -123,61 +123,61 @@ type
     procedure SaveToStream(Stream : TStream); override;
   end;
 
-  TChunkList = class(TObjectList)
+  TDavChunkList = class(TObjectList)
   protected
-    function GetItem(Index: Integer): TCustomChunk;
-    procedure SetItem(Index: Integer; AChunk: TCustomChunk);
+    function GetItem(Index: Integer): TDavCustomChunk;
+    procedure SetItem(Index: Integer; AChunk: TDavCustomChunk);
   public
-    function Add(AChunk: TCustomChunk): Integer;
-    function Extract(Item: TCustomChunk): TCustomChunk;
-    function Remove(AChunk: TCustomChunk): Integer;
-    function IndexOf(AChunk: TCustomChunk): Integer;
-    procedure Insert(Index: Integer; AChunk: TCustomChunk);
-    function First: TCustomChunk;
-    function Last: TCustomChunk;
-    property Items[Index: Integer]: TCustomChunk read GetItem write SetItem; default;
+    function Add(AChunk: TDavCustomChunk): Integer;
+    function Extract(Item: TDavCustomChunk): TDavCustomChunk;
+    function Remove(AChunk: TDavCustomChunk): Integer;
+    function IndexOf(AChunk: TDavCustomChunk): Integer;
+    procedure Insert(Index: Integer; AChunk: TDavCustomChunk);
+    function First: TDavCustomChunk;
+    function Last: TDavCustomChunk;
+    property Items[Index: Integer]: TDavCustomChunk read GetItem write SetItem; default;
   end;
 
-  TCustomChunkContainer = class(TDefinedChunk)
+  TDavCustomChunkContainer = class(TDavDefinedChunk)
   private
-    function GetSubChunk(Index: Integer): TCustomChunk;
+    function GetSubChunk(Index: Integer): TDavCustomChunk;
     function GetCount: Integer;
   protected
-    FChunkList : TChunkList;
-    function GetChunkClass(ChunkName : TChunkName): TCustomChunkClass; virtual; abstract;
+    FChunkList : TDavChunkList;
+    function GetChunkClass(ChunkName : TChunkName): TDavCustomChunkClass; virtual; abstract;
     function GetChunkSize: Cardinal; override;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream: TStream); virtual;
+    procedure ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream: TStream); virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure AddChunk(Chunk : TCustomChunk); virtual;
+    procedure AddChunk(Chunk : TDavCustomChunk); virtual;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
-    property SubChunk[Index : Integer]: TCustomChunk read GetSubChunk;
+    property SubChunk[Index : Integer]: TDavCustomChunk read GetSubChunk;
     property Count : Integer read GetCount;
   end;
 
-  TChunkContainer = class(TCustomChunkContainer)
+  TDavChunkContainer = class(TDavCustomChunkContainer)
   protected
-    FRegisteredChunks : array of TDefinedChunkClass;
-    function GetChunkClass(ChunkName : TChunkName): TCustomChunkClass; override;
+    FRegisteredChunks : array of TDavDefinedChunkClass;
+    function GetChunkClass(ChunkName : TChunkName): TDavCustomChunkClass; override;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    procedure RegisterChunkClass(ChunkClass : TDefinedChunkClass);
+    procedure RegisterChunkClass(ChunkClass : TDavDefinedChunkClass);
     procedure RegisterChunkClasses; overload;
-    procedure RegisterChunkClasses(ChunkClasses: array of TDefinedChunkClass); overload;
+    procedure RegisterChunkClasses(ChunkClasses: array of TDavDefinedChunkClass); overload;
   published
     property Count;
   end;
 
-  TUnknownChunkContainer = class(TUnknownChunk)
+  TDavUnknownChunkContainer = class(TDavUnknownChunk)
   private
-    function GetSubChunk(Index: Integer): TCustomChunk;
+    function GetSubChunk(Index: Integer): TDavCustomChunk;
     function GetCount: Integer;
-    function ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream: TStream): TCustomChunk; virtual;
+    function ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream: TStream): TDavCustomChunk; virtual;
   protected
-    FChunkList : TChunkList;
+    FChunkList : TDavChunkList;
     function CheckForSubchunks: Boolean; virtual;
     function GetChunkSize: Cardinal; override;
   public
@@ -185,19 +185,19 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
-    property SubChunk[Index : Integer] : TCustomChunk read GetSubChunk;
+    property SubChunk[Index : Integer] : TDavCustomChunk read GetSubChunk;
   published
     property Count : Integer read GetCount;
   end;
 
-  TPNGChunkContainer = class(TUnknownChunkContainer)
+  TDavPNGChunkContainer = class(TDavUnknownChunkContainer)
   protected
     function CheckForSubchunks: Boolean; override;
   public
     procedure LoadFromStream(Stream : TStream); override;
   end;
 
-  TCustomBinaryChunk = class(TDefinedChunk)
+  TDavCustomBinaryChunk = class(TDavDefinedChunk)
   protected
     FBinaryData : Array of Byte;
     procedure AssignTo(Dest: TPersistent); override;
@@ -206,7 +206,7 @@ type
     procedure SaveToStream(Stream : TStream); override;
   end;
 
-  TCustomTextChunk = class(TDefinedChunk)
+  TDavCustomTextChunk = class(TDavDefinedChunk)
   protected
     FText : AnsiString;
     procedure SetText(const Value: AnsiString);
@@ -217,7 +217,7 @@ type
     procedure SaveToStream(Stream : TStream); override;
   end;
 
-  TCustomStreamChunk = class(TDefinedChunk)
+  TDavCustomStreamChunk = class(TDavDefinedChunk)
   protected
     FStream : TStream;
     procedure AssignTo(Dest: TPersistent); override;
@@ -228,7 +228,7 @@ type
     procedure SaveToStream(Stream : TStream); override;
   end;
 
-  TCustomMemoryStreamChunk = class(TCustomStreamChunk)
+  TDavCustomMemoryStreamChunk = class(TDavCustomStreamChunk)
   private
     function GetMemoryStream: TMemoryStream;
   public
@@ -257,47 +257,47 @@ begin
 end;
 
 
-{ TCustomChunk }
+{ TDavCustomChunk }
 
-function TCustomChunk.CalculateZeroPad: Integer;
+function TDavCustomChunk.CalculateZeroPad: Integer;
 begin
  Result := (2 - (FChunkSize and 1)) and 1;
 end;
 
-procedure TCustomChunk.CheckAddZeroPad(Stream: TStream);
+procedure TDavCustomChunk.CheckAddZeroPad(Stream: TStream);
 begin
  // insert pad byte if necessary
  if cfPadSize in ChunkFlags
   then Stream.Write(CZeroPad, CalculateZeroPad);
 end;
 
-constructor TCustomChunk.Create;
+constructor TDavCustomChunk.Create;
 begin
  FChunkName := '';
  FChunkSize := 0;
 end;
 
-procedure TCustomChunk.AssignTo(Dest: TPersistent);
+procedure TDavCustomChunk.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomChunk then
+ if Dest is TDavCustomChunk then
   begin
-   TCustomChunk(Dest).FChunkName := FChunkName;
-   TCustomChunk(Dest).FChunkSize := FChunkSize;
+   TDavCustomChunk(Dest).FChunkName := FChunkName;
+   TDavCustomChunk(Dest).FChunkSize := FChunkSize;
   end
  else inherited;
 end;
 
-function TCustomChunk.GetChunkName: AnsiString;
+function TDavCustomChunk.GetChunkName: AnsiString;
 begin
  Result := AnsiString(FChunkName);
 end;
 
-function TCustomChunk.GetChunkSize: Cardinal;
+function TDavCustomChunk.GetChunkSize: Cardinal;
 begin
  Result := FChunkSize;
 end;
 
-procedure TCustomChunk.LoadFromFile(FileName: TFileName);
+procedure TDavCustomChunk.LoadFromFile(FileName: TFileName);
 var
   FileStream : TFileStream;
 begin
@@ -310,7 +310,7 @@ begin
   end;
 end;
 
-procedure TCustomChunk.SaveToFile(FileName: TFileName);
+procedure TDavCustomChunk.SaveToFile(FileName: TFileName);
 var
   FileStream : TFileStream;
 begin
@@ -323,7 +323,7 @@ begin
   end;
 end;
 
-procedure TCustomChunk.LoadFromStream(Stream: TStream);
+procedure TDavCustomChunk.LoadFromStream(Stream: TStream);
 begin
  with Stream do
   begin
@@ -347,7 +347,7 @@ begin
   then Flip32(FChunkSize);
 end;
 
-procedure TCustomChunk.SaveToStream(Stream: TStream);
+procedure TDavCustomChunk.SaveToStream(Stream: TStream);
 var
   TempSize : Cardinal;
 begin
@@ -372,7 +372,7 @@ begin
    end;
 end;
 
-procedure TCustomChunk.SetChunkName(const Value: AnsiString);
+procedure TDavCustomChunk.SetChunkName(const Value: AnsiString);
 var
   ChunkNameSize : Integer;
 begin
@@ -382,9 +382,9 @@ begin
 end;
 
 
-{ TDummyChunk }
+{ TDavDummyChunk }
 
-procedure TDummyChunk.LoadFromStream(Stream: TStream);
+procedure TDavDummyChunk.LoadFromStream(Stream: TStream);
 begin
  with Stream do
   begin
@@ -396,9 +396,9 @@ begin
 end;
 
 
-{ TUnknownChunk }
+{ TDavUnknownChunk }
 
-function TUnknownChunk.CalculateChecksum: Integer;
+function TDavUnknownChunk.CalculateChecksum: Integer;
 var
   b : Byte;
 begin
@@ -414,28 +414,28 @@ begin
   end;
 end;
 
-constructor TUnknownChunk.Create;
+constructor TDavUnknownChunk.Create;
 begin
  inherited;
  FDataStream := TMemoryStream.Create;
 end;
 
-destructor TUnknownChunk.Destroy;
+destructor TDavUnknownChunk.Destroy;
 begin
  FreeAndNil(FDataStream);
  inherited;
 end;
 
-procedure TUnknownChunk.AssignTo(Dest: TPersistent);
+procedure TDavUnknownChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TUnknownChunk then
+ if Dest is TDavUnknownChunk then
   begin
-   TUnknownChunk(Dest).FDataStream.CopyFrom(FDataStream, FDataStream.Size);
+   TDavUnknownChunk(Dest).FDataStream.CopyFrom(FDataStream, FDataStream.Size);
   end;
 end;
 
-function TUnknownChunk.GetData(Index: Integer): Byte;
+function TDavUnknownChunk.GetData(Index: Integer): Byte;
 begin
  if (Index >= 0) and (Index < FDataStream.Size)
   then
@@ -447,7 +447,7 @@ begin
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-procedure TUnknownChunk.LoadFromStream(Stream: TStream);
+procedure TDavUnknownChunk.LoadFromStream(Stream: TStream);
 begin
  with Stream do
   begin
@@ -468,7 +468,7 @@ begin
   end;
 end;
 
-procedure TUnknownChunk.SaveToStream(Stream: TStream);
+procedure TDavUnknownChunk.SaveToStream(Stream: TStream);
 begin
  with Stream do
   begin
@@ -482,7 +482,7 @@ begin
   end;
 end;
 
-procedure TUnknownChunk.SetData(Index: Integer; const Value: Byte);
+procedure TDavUnknownChunk.SetData(Index: Integer; const Value: Byte);
 begin
  if (Index >= 0) and (Index < FDataStream.Size)
   then
@@ -495,23 +495,23 @@ begin
 end;
 
 
-{ TDefinedChunk }
+{ TDavDefinedChunk }
 
-constructor TDefinedChunk.Create;
+constructor TDavDefinedChunk.Create;
 begin
  inherited;
  FFilePosition := 0;
  FChunkName := GetClassChunkName;
 end;
 
-procedure TDefinedChunk.AssignTo(Dest: TPersistent);
+procedure TDavDefinedChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TDefinedChunk
-  then TDefinedChunk(Dest).FFilePosition := FFilePosition;
+ if Dest is TDavDefinedChunk
+  then TDavDefinedChunk(Dest).FFilePosition := FFilePosition;
 end;
 
-procedure TDefinedChunk.LoadFromStream(Stream: TStream);
+procedure TDavDefinedChunk.LoadFromStream(Stream: TStream);
 var
   TempChunkName : TChunkName;
 begin
@@ -536,7 +536,7 @@ begin
   end;
 end;
 
-procedure TDefinedChunk.SetChunkName(const Value: AnsiString);
+procedure TDavDefinedChunk.SetChunkName(const Value: AnsiString);
 begin
  inherited;
  if Value <> FChunkName
@@ -545,41 +545,41 @@ begin
 end;
 
 
-{ TFixedDefinedChunk }
+{ TDavFixedDefinedChunk }
 
-constructor TFixedDefinedChunk.Create;
+constructor TDavFixedDefinedChunk.Create;
 begin
  inherited;
  SetLength(FStartAddresses, 1);
  FChunkSize := GetClassChunkSize;
 end;
 
-procedure TFixedDefinedChunk.AssignTo(Dest: TPersistent);
+procedure TDavFixedDefinedChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TFixedDefinedChunk then
+ if Dest is TDavFixedDefinedChunk then
   begin
-   SetLength(TFixedDefinedChunk(Dest).FStartAddresses, Length(FStartAddresses));
-   Move(FStartAddresses[0], TFixedDefinedChunk(Dest).FStartAddresses[0], Length(FStartAddresses) * SizeOf(Pointer));
+   SetLength(TDavFixedDefinedChunk(Dest).FStartAddresses, Length(FStartAddresses));
+   Move(FStartAddresses[0], TDavFixedDefinedChunk(Dest).FStartAddresses[0], Length(FStartAddresses) * SizeOf(Pointer));
   end;
 end;
 
-function TFixedDefinedChunk.GetChunkSize: Cardinal;
+function TDavFixedDefinedChunk.GetChunkSize: Cardinal;
 begin
  Result := GetClassChunkSize;
 end;
 
-function TFixedDefinedChunk.GetStartAddress: Pointer;
+function TDavFixedDefinedChunk.GetStartAddress: Pointer;
 begin
  Result := FStartAddresses[0];
 end;
 
-procedure TFixedDefinedChunk.SetStartAddress(const Value: Pointer);
+procedure TDavFixedDefinedChunk.SetStartAddress(const Value: Pointer);
 begin
  FStartAddresses[0] := Value;
 end;
 
-procedure TFixedDefinedChunk.LoadFromStream(Stream: TStream);
+procedure TDavFixedDefinedChunk.LoadFromStream(Stream: TStream);
 var
   BytesReaded : Integer;
 begin
@@ -599,7 +599,7 @@ begin
   end;
 end;
 
-procedure TFixedDefinedChunk.SaveToStream(Stream: TStream);
+procedure TDavFixedDefinedChunk.SaveToStream(Stream: TStream);
 var
   BytesWritten: Cardinal;
 begin
@@ -617,104 +617,104 @@ begin
 end;
 
 
-{ TChunkList }
+{ TDavChunkList }
 
-function TChunkList.Add(AChunk: TCustomChunk): Integer;
+function TDavChunkList.Add(AChunk: TDavCustomChunk): Integer;
 begin
  Result := inherited Add(TObject(AChunk));
 end;
 
-function TChunkList.Extract(Item: TCustomChunk): TCustomChunk;
+function TDavChunkList.Extract(Item: TDavCustomChunk): TDavCustomChunk;
 begin
- Result := TCustomChunk(inherited Extract(TObject(Item)));
+ Result := TDavCustomChunk(inherited Extract(TObject(Item)));
 end;
 
-function TChunkList.First: TCustomChunk;
+function TDavChunkList.First: TDavCustomChunk;
 begin
- Result := TCustomChunk(inherited First);
+ Result := TDavCustomChunk(inherited First);
 end;
 
-function TChunkList.GetItem(Index: Integer): TCustomChunk;
+function TDavChunkList.GetItem(Index: Integer): TDavCustomChunk;
 begin
- Result := TCustomChunk(inherited GetItem(Index));
+ Result := TDavCustomChunk(inherited GetItem(Index));
 end;
 
-function TChunkList.IndexOf(AChunk: TCustomChunk): Integer;
+function TDavChunkList.IndexOf(AChunk: TDavCustomChunk): Integer;
 begin
  Result := inherited IndexOf(TObject(AChunk));
 end;
 
-procedure TChunkList.Insert(Index: Integer; AChunk: TCustomChunk);
+procedure TDavChunkList.Insert(Index: Integer; AChunk: TDavCustomChunk);
 begin
  inherited Insert(Index, TObject(AChunk));
 end;
 
-function TChunkList.Last: TCustomChunk;
+function TDavChunkList.Last: TDavCustomChunk;
 begin
- Result := TCustomChunk(inherited Last);
+ Result := TDavCustomChunk(inherited Last);
 end;
 
-function TChunkList.Remove(AChunk: TCustomChunk): Integer;
+function TDavChunkList.Remove(AChunk: TDavCustomChunk): Integer;
 begin
  Result := inherited Remove(TObject(AChunk));
 end;
 
-procedure TChunkList.SetItem(Index: Integer; AChunk: TCustomChunk);
+procedure TDavChunkList.SetItem(Index: Integer; AChunk: TDavCustomChunk);
 begin
  inherited SetItem(Index, TObject(AChunk));
 end;
 
 
-{ TCustomChunkContainer }
+{ TDavCustomChunkContainer }
 
-constructor TCustomChunkContainer.Create;
+constructor TDavCustomChunkContainer.Create;
 begin
  inherited;
- FChunkList := TChunkList.Create;
+ FChunkList := TDavChunkList.Create;
 end;
 
-destructor TCustomChunkContainer.Destroy;
+destructor TDavCustomChunkContainer.Destroy;
 begin
  FreeAndNil(FChunkList);
  inherited;
 end;
 
-procedure TCustomChunkContainer.AssignTo(Dest: TPersistent);
+procedure TDavCustomChunkContainer.AssignTo(Dest: TPersistent);
 {$IFDEF DELPHI5}
 var
   i : Integer;
 {$ENDIF}
 begin
  inherited;
- if Dest is TCustomChunkContainer then
+ if Dest is TDavCustomChunkContainer then
   begin
    {$IFDEF DELPHI5}
-   for i := 0 to TCustomChunkContainer(Dest).FChunkList.Count - 1
-    do TCustomChunk(TCustomChunkContainer(Dest).FChunkList[i]).Assign(TCustomChunk(FChunkList[i]));
+   for i := 0 to TDavCustomChunkContainer(Dest).FChunkList.Count - 1
+    do TDavCustomChunk(TDavCustomChunkContainer(Dest).FChunkList[i]).Assign(TDavCustomChunk(FChunkList[i]));
    {$ELSE}
-   TCustomChunkContainer(Dest).FChunkList.Assign(FChunkList);
+   TDavCustomChunkContainer(Dest).FChunkList.Assign(FChunkList);
    {$ENDIF}
   end;
 end;
 
-procedure TCustomChunkContainer.AddChunk(Chunk: TCustomChunk);
+procedure TDavCustomChunkContainer.AddChunk(Chunk: TDavCustomChunk);
 begin
  FChunkList.Add(Chunk);
 end;
 
-function TCustomChunkContainer.GetCount: Integer;
+function TDavCustomChunkContainer.GetCount: Integer;
 begin
  Result := FChunkList.Count;
 end;
 
-function TCustomChunkContainer.GetSubChunk(Index: Integer): TCustomChunk;
+function TDavCustomChunkContainer.GetSubChunk(Index: Integer): TDavCustomChunk;
 begin
  if (Index >= 0) and (Index < FChunkList.Count)
   then Result := FChunkList[Index]
   else Result := nil;
 end;
 
-procedure TCustomChunkContainer.LoadFromStream(Stream: TStream);
+procedure TDavCustomChunkContainer.LoadFromStream(Stream: TStream);
 var
   ChunkEnd  : Integer;
   ChunkName : TChunkName;
@@ -748,9 +748,9 @@ begin
   end;
 end;
 
-procedure TCustomChunkContainer.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream);
+procedure TDavCustomChunkContainer.ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream : TStream);
 var
-  Chunk : TCustomChunk;
+  Chunk : TDavCustomChunk;
 begin
  Chunk := ChunkClass.Create;
  Chunk.ChunkFlags := ChunkFlags;
@@ -758,7 +758,7 @@ begin
  AddChunk(Chunk);
 end;
 
-function TCustomChunkContainer.GetChunkSize: Cardinal;
+function TDavCustomChunkContainer.GetChunkSize: Cardinal;
 var
   i : Integer;
 begin
@@ -767,7 +767,7 @@ begin
   do Inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
 end;
 
-procedure TCustomChunkContainer.SaveToStream(Stream: TStream);
+procedure TDavCustomChunkContainer.SaveToStream(Stream: TStream);
 var
   i : Integer;
 begin
@@ -782,23 +782,23 @@ begin
 end;
 
 
-{ TChunkContainer }
+{ TDavChunkContainer }
 
-procedure TChunkContainer.AssignTo(Dest: TPersistent);
+procedure TDavChunkContainer.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TChunkContainer then
+ if Dest is TDavChunkContainer then
   begin
-   SetLength(TChunkContainer(Dest).FRegisteredChunks, Length(FRegisteredChunks));
-   Move(FRegisteredChunks, TChunkContainer(Dest).FRegisteredChunks, Length(FRegisteredChunks) * SizeOf(TCustomChunkClass));
+   SetLength(TDavChunkContainer(Dest).FRegisteredChunks, Length(FRegisteredChunks));
+   Move(FRegisteredChunks, TDavChunkContainer(Dest).FRegisteredChunks, Length(FRegisteredChunks) * SizeOf(TDavCustomChunkClass));
   end;
 end;
 
-function TChunkContainer.GetChunkClass(ChunkName: TChunkName): TCustomChunkClass;
+function TDavChunkContainer.GetChunkClass(ChunkName: TChunkName): TDavCustomChunkClass;
 var
   Index : Integer;
 begin
- Result := TUnknownChunk;
+ Result := TDavUnknownChunk;
  for Index := 0 to Length(FRegisteredChunks) - 1 do
   if CompareChunkNames(FRegisteredChunks[Index].GetClassChunkName, ChunkName) then
    begin
@@ -807,7 +807,7 @@ begin
    end;
 end;
 
-procedure TChunkContainer.RegisterChunkClass(ChunkClass: TDefinedChunkClass);
+procedure TDavChunkContainer.RegisterChunkClass(ChunkClass: TDavDefinedChunkClass);
 var
   i : Integer;
 begin
@@ -820,7 +820,7 @@ begin
  FRegisteredChunks[Length(FRegisteredChunks) - 1] := ChunkClass;
 end;
 
-procedure TChunkContainer.RegisterChunkClasses(ChunkClasses: array of TDefinedChunkClass);
+procedure TDavChunkContainer.RegisterChunkClasses(ChunkClasses: array of TDavDefinedChunkClass);
 var
   i : Integer;
 begin
@@ -828,30 +828,30 @@ begin
   do RegisterChunkClass(ChunkClasses[i]);
 end;
 
-procedure TChunkContainer.RegisterChunkClasses;
+procedure TDavChunkContainer.RegisterChunkClasses;
 var
   i : Integer;
 begin
  for i := 0 to FChunkList.Count - 1
-  do RegisterChunkClass(TDefinedChunkClass(FChunkList[i].ClassType));
+  do RegisterChunkClass(TDavDefinedChunkClass(FChunkList[i].ClassType));
 end;
 
 
-{ TUnknownChunkContainer }
+{ TDavUnknownChunkContainer }
 
-constructor TUnknownChunkContainer.Create;
+constructor TDavUnknownChunkContainer.Create;
 begin
  inherited;
- FChunkList := TChunkList.Create;
+ FChunkList := TDavChunkList.Create;
 end;
 
-destructor TUnknownChunkContainer.Destroy;
+destructor TDavUnknownChunkContainer.Destroy;
 begin
  FreeAndNil(FChunkList);
  inherited;
 end;
 
-function TUnknownChunkContainer.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream): TCustomChunk;
+function TDavUnknownChunkContainer.ConvertStreamToChunk(ChunkClass: TDavCustomChunkClass; Stream : TStream): TDavCustomChunk;
 begin
  Result := ChunkClass.Create;
  Result.ChunkFlags := ChunkFlags;
@@ -859,7 +859,7 @@ begin
  FChunkList.Add(Result);
 end;
 
-function TUnknownChunkContainer.CheckForSubchunks: Boolean;
+function TDavUnknownChunkContainer.CheckForSubchunks: Boolean;
 var
   TempSize : Cardinal;
   TempName : TChunkName;
@@ -906,7 +906,7 @@ begin
   end;
 end;
 
-procedure TUnknownChunkContainer.LoadFromStream(Stream: TStream);
+procedure TDavUnknownChunkContainer.LoadFromStream(Stream: TStream);
 begin
  inherited;
 
@@ -916,11 +916,11 @@ begin
     then FDataStream.Position := 4
     else FDataStream.Position := 0;
    while FDataStream.Position + 8 < FChunkSize
-    do ConvertStreamToChunk(TUnknownChunkContainer, FDataStream);
+    do ConvertStreamToChunk(TDavUnknownChunkContainer, FDataStream);
   end;
 end;
 
-procedure TUnknownChunkContainer.SaveToStream(Stream: TStream);
+procedure TDavUnknownChunkContainer.SaveToStream(Stream: TStream);
 var
   i : Integer;
 begin
@@ -934,7 +934,7 @@ begin
   then Stream.Write(CZeroPad, CalculateZeroPad);
 end;
 
-function TUnknownChunkContainer.GetChunkSize: Cardinal;
+function TDavUnknownChunkContainer.GetChunkSize: Cardinal;
 var
   i : Integer;
 begin
@@ -943,12 +943,12 @@ begin
   do Inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
 end;
 
-function TUnknownChunkContainer.GetCount: Integer;
+function TDavUnknownChunkContainer.GetCount: Integer;
 begin
  Result := FChunkList.Count;
 end;
 
-function TUnknownChunkContainer.GetSubChunk(Index: Integer): TCustomChunk;
+function TDavUnknownChunkContainer.GetSubChunk(Index: Integer): TDavCustomChunk;
 begin
  if (Index >= 0) and (Index < FChunkList.Count)
   then Result := FChunkList[Index]
@@ -956,9 +956,9 @@ begin
 end;
 
 
-{ TPNGChunkContainer }
+{ TDavPNGChunkContainer }
 
-function TPNGChunkContainer.CheckForSubchunks: Boolean;
+function TDavPNGChunkContainer.CheckForSubchunks: Boolean;
 var
   TempSize : Cardinal;
   TempName : TChunkName;
@@ -1006,11 +1006,11 @@ begin
   end;
 end;
 
-procedure TPNGChunkContainer.LoadFromStream(Stream: TStream);
+procedure TDavPNGChunkContainer.LoadFromStream(Stream: TStream);
 var
   PngMagic : TChunkName;
   CheckSum : Integer;
-  SubChunk : TUnknownChunkContainer;
+  SubChunk : TDavUnknownChunkContainer;
 begin
  with Stream do
   begin
@@ -1031,7 +1031,7 @@ begin
    FDataStream.Position := 0;
    while FDataStream.Position + 8 < FChunkSize do
     begin
-     SubChunk := TUnknownChunkContainer(ConvertStreamToChunk(TUnknownChunkContainer, FDataStream));
+     SubChunk := TDavUnknownChunkContainer(ConvertStreamToChunk(TDavUnknownChunkContainer, FDataStream));
 
      // read checksum
      FDataStream.Read(CheckSum, 4);
@@ -1042,26 +1042,26 @@ begin
 end;
 
 
-{ TCustomBinaryChunk }
+{ TDavCustomBinaryChunk }
 
-procedure TCustomBinaryChunk.AssignTo(Dest: TPersistent);
+procedure TDavCustomBinaryChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TCustomBinaryChunk then
+ if Dest is TDavCustomBinaryChunk then
   begin
-   SetLength(TCustomBinaryChunk(Dest).FBinaryData, Length(FBinaryData));
-   Move(FBinaryData, TCustomBinaryChunk(Dest).FBinaryData, SizeOf(FBinaryData));
+   SetLength(TDavCustomBinaryChunk(Dest).FBinaryData, Length(FBinaryData));
+   Move(FBinaryData, TDavCustomBinaryChunk(Dest).FBinaryData, SizeOf(FBinaryData));
   end;
 end;
 
-procedure TCustomBinaryChunk.LoadFromStream(Stream: TStream);
+procedure TDavCustomBinaryChunk.LoadFromStream(Stream: TStream);
 begin
  inherited;
  SetLength(FBinaryData, FChunkSize);
  Stream.Read(FBinaryData[0], Length(FBinaryData));
 end;
 
-procedure TCustomBinaryChunk.SaveToStream(Stream: TStream);
+procedure TDavCustomBinaryChunk.SaveToStream(Stream: TStream);
 begin
  FChunkSize := Length(FBinaryData);
  inherited;
@@ -1069,18 +1069,18 @@ begin
 end;
 
 
-{ TCustomTextChunk }
+{ TDavCustomTextChunk }
 
-procedure TCustomTextChunk.AssignTo(Dest: TPersistent);
+procedure TDavCustomTextChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TCustomTextChunk then
+ if Dest is TDavCustomTextChunk then
   begin
-   TCustomTextChunk(Dest).FText  := FText;
+   TDavCustomTextChunk(Dest).FText  := FText;
   end;
 end;
 
-procedure TCustomTextChunk.LoadFromStream(Stream: TStream);
+procedure TDavCustomTextChunk.LoadFromStream(Stream: TStream);
 begin
  inherited;
  SetLength(FText, FChunkSize);
@@ -1091,7 +1091,7 @@ begin
   then Stream.Position := Stream.Position + CalculateZeroPad;
 end;
 
-procedure TCustomTextChunk.SaveToStream(Stream: TStream);
+procedure TDavCustomTextChunk.SaveToStream(Stream: TStream);
 begin
  FChunkSize := Length(FText);
 
@@ -1103,7 +1103,7 @@ begin
   then Stream.Position := Stream.Position + CalculateZeroPad;
 end;
 
-procedure TCustomTextChunk.SetText(const Value: AnsiString);
+procedure TDavCustomTextChunk.SetText(const Value: AnsiString);
 begin
  if FText <> Value then
   begin
@@ -1113,32 +1113,32 @@ begin
 end;
 
 
-{ TCustomStreamChunk }
+{ TDavCustomStreamChunk }
 
-procedure TCustomStreamChunk.AssignTo(Dest: TPersistent);
+procedure TDavCustomStreamChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TCustomStreamChunk then
+ if Dest is TDavCustomStreamChunk then
   begin
    FStream.Position := 0;
-   TCustomStreamChunk(Dest).FStream.Position := 0;
-   TCustomStreamChunk(Dest).FStream.CopyFrom(FStream, FStream.Size); 
+   TDavCustomStreamChunk(Dest).FStream.Position := 0;
+   TDavCustomStreamChunk(Dest).FStream.CopyFrom(FStream, FStream.Size); 
   end;
 end;
 
-destructor TCustomStreamChunk.Destroy;
+destructor TDavCustomStreamChunk.Destroy;
 begin
  FreeAndNil(FStream);
  inherited;
 end;
 
-function TCustomStreamChunk.GetChunkSize: Cardinal;
+function TDavCustomStreamChunk.GetChunkSize: Cardinal;
 begin
  FChunkSize := FStream.Size;
  Result := inherited GetChunkSize;
 end;
 
-procedure TCustomStreamChunk.LoadFromStream(Stream: TStream);
+procedure TDavCustomStreamChunk.LoadFromStream(Stream: TStream);
 begin
  inherited;
  FStream.Position := 0;
@@ -1150,7 +1150,7 @@ begin
   then Stream.Position := Stream.Position + CalculateZeroPad;
 end;
 
-procedure TCustomStreamChunk.SaveToStream(Stream: TStream);
+procedure TDavCustomStreamChunk.SaveToStream(Stream: TStream);
 begin
  FChunkSize := FStream.Size;
  inherited;
@@ -1163,17 +1163,17 @@ begin
 end;
 
 
-{ TCustomMemoryStreamChunk }
+{ TDavCustomMemoryStreamChunk }
 
-constructor TCustomMemoryStreamChunk.Create;
+constructor TDavCustomMemoryStreamChunk.Create;
 begin
  inherited;
  FStream := TMemoryStream.Create;
 end;
 
-function TCustomMemoryStreamChunk.GetMemoryStream: TMemoryStream;
+function TDavCustomMemoryStreamChunk.GetMemoryStream: TMemoryStream;
 begin
  Result := TMemoryStream(FStream);
 end;
 
-end.
+end.

@@ -771,7 +771,7 @@ var
   MemoryStream : TMemoryStream;
   Index        : Integer;
 
-  procedure SaveChunkToStream(Chunk: TCustomChunk);
+  procedure SaveChunkToStream(Chunk: TDavCustomChunk);
   begin
    MemoryStream.Clear;
    Chunk.SaveToStream(MemoryStream);
@@ -888,7 +888,7 @@ begin
     for Index := 0 to FAdditionalChunkList.Count - 1 do
      begin
       MemoryStream.Clear;
-      TDefinedChunk(FAdditionalChunkList[Index]).SaveToStream(MemoryStream);
+      TDavDefinedChunk(FAdditionalChunkList[Index]).SaveToStream(MemoryStream);
 
       // copy memory stream to stream
       MemoryStream.Seek(0, soFromBeginning);
@@ -903,7 +903,7 @@ begin
     for Index := 0 to FDataChunkList.Count - 1 do
      begin
       MemoryStream.Clear;
-      TDefinedChunk(FDataChunkList[Index]).SaveToStream(MemoryStream);
+      TDavDefinedChunk(FDataChunkList[Index]).SaveToStream(MemoryStream);
 
       // copy memory stream to stream
       MemoryStream.Seek(0, soFromBeginning);

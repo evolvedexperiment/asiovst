@@ -23,20 +23,20 @@ implementation
 {$IFNDEF FPC}{$R ..\..\Resources\DAV_GuiRegister.res}{$ENDIF}
 
 uses
-  {$IFDEF FPC} LResources, {$ELSE} DAV_GuiLevelMeter,
-  DAV_GuiModular, DAV_GuiBackgrounds, DAV_GuiEdit, {$ENDIF}
-  DAV_GuiADSRGraph, DAV_GuiAudioDataDisplay, DAV_GuiButton, DAV_GuiCheckBox,
-  DAV_GuiCorrelationMeter, DAV_GuiDial, DAV_GuiDialDesign, DAV_GuiDialRenderer,
-  DAV_GuiDynamicWaveform, DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiFader,
-  DAV_GuiFont, DAV_GuiFontList, DAV_GuiFontDesign, DAV_GuiGroup,
-  DAV_GuiInscription, DAV_GuiImageControl, DAV_GuiImageList, DAV_GuiGraphXY,
-  DAV_GuiGraphXYDesign, DAV_GuiLabel, DAV_GuiLED, DAV_GuiMediaButton,
-  DAV_GuiMidiKeys, DAV_GuiRadioButton, DAV_GuiPaintBox, DAV_GuiPanel,
-  DAV_GuiPixelMap, DAV_GuiPixelMapDesign, DAV_GuiPng, DAV_GuiPngList,
-  DAV_GuiPngDesign, DAV_GuiSelectBox, DAV_GuiSlider, DAV_GuiStaticWaveform,
-  DAV_GuiStitchedButton, DAV_GuiStitchedControls, DAV_GuiStitchedDial,
-  DAV_GuiStitchedDisplay, DAV_GuiStitchedImageList, DAV_GuiStitchedRadioSwitch,
-  DAV_GuiStitchedPngList, DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
+  {$IFDEF FPC} LResources, {$ELSE} DAV_GuiLevelMeter, DAV_GuiBackgrounds,
+  DAV_GuiEdit, {$ENDIF} DAV_GuiADSRGraph, DAV_GuiAudioDataDisplay,
+  DAV_GuiButton, DAV_GuiCheckBox, DAV_GuiCorrelationMeter, DAV_GuiDial,
+  DAV_GuiDialDesign, DAV_GuiDialRenderer, DAV_GuiDynamicWaveform,
+  DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiFader, DAV_GuiFont, DAV_GuiFontList,
+  DAV_GuiFontDesign, DAV_GuiGroup, DAV_GuiInscription, DAV_GuiImageControl,
+  DAV_GuiImageList, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiLabel,
+  DAV_GuiLED, DAV_GuiMediaButton, DAV_GuiMidiKeys, DAV_GuiRadioButton,
+  DAV_GuiPaintBox, DAV_GuiPanel, DAV_GuiPixelMap, DAV_GuiPixelMapDesign,
+  DAV_GuiPng, DAV_GuiPngList, DAV_GuiPngDesign, DAV_GuiSelectBox,
+  DAV_GuiSlider, DAV_GuiStaticWaveform, DAV_GuiStitchedButton,
+  DAV_GuiStitchedControls, DAV_GuiStitchedDial, DAV_GuiStitchedDisplay,
+  DAV_GuiStitchedImageList, DAV_GuiStitchedRadioSwitch, DAV_GuiStitchedPngList,
+  DAV_GuiStitchedSwitch, DAV_GuiVUMeter;
 
 procedure Register;
 begin
@@ -49,8 +49,8 @@ begin
     TGuiImageList, TGuiLabel, TGuiLED, TGuiMediaButton, TGuiMidiKeys,
     TGuiControlsRadioButton, TGuiPaintBox, TGuiPanel, TGuiPngList,
     TGuiSelectBox, TGuiSlider, TGuiStaticWaveform, TGuiSwitch, TGuiVUMeter
-    {$IFNDEF FPC}, TGuiLevelMeter, TGuiColorLevelMeter, TGuiModular,
-    TGuiBackground, TGuiControlsEdit {$ENDIF}]);
+    {$IFNDEF FPC}, TGuiLevelMeter, TGuiColorLevelMeter, TGuiBackground,
+    TGuiControlsEdit {$ENDIF}]);
 
   RegisterComponents('ASIO/VST GUI Stitched', [
     TGuiStitchedButton, TGuiStitchedDial, TGuiStitchedDisplay,

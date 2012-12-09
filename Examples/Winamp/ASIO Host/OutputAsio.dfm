@@ -37,7 +37,6 @@ object FmASIOConfig: TFmASIOConfig
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
-    ItemHeight = 13
     ParentFont = False
     TabOrder = 0
     OnChange = CBDriverChange

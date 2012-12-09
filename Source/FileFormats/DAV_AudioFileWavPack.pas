@@ -3,8 +3,8 @@ unit DAV_AudioFileWAVPack;
 interface
 
 uses
-  Classes, Contnrs, SysUtils, DAVDCommon, DAudioFile, DChunkClasses,
-  DWaveFileTypes;
+  Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_ChunkClasses,
+  DAV_WaveFileTypes;
 
 const
   cChunkHeaderFormat   = '4L';

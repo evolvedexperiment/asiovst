@@ -1,5 +1,3 @@
-unit DAV_SampleRateSource;
-
 {******************************************************************************}
 {                                                                              }
 {  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
@@ -29,6 +27,8 @@ unit DAV_SampleRateSource;
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
+
+unit DAV_SampleRateSource;
 
 interface
 

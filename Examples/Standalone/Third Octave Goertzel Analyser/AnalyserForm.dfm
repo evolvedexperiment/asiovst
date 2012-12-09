@@ -30,9 +30,9 @@ object FmAnalyser: TFmAnalyser
   object LbChannels: TLabel
     Left = 7
     Top = 36
-    Width = 77
+    Width = 69
     Height = 13
-    Caption = 'Output Channel:'
+    Caption = 'Input Channel:'
   end
   object LbSpeed: TLabel
     Left = 7
@@ -153,13 +153,13 @@ object FmAnalyser: TFmAnalyser
     TabOrder = 8
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnDblClick = AnalyserChartDblClick
+    ColorPaletteIndex = 13
     object BarSeries: TBarSeries
       Marks.Arrow.Visible = True
       Marks.Callout.Brush.Color = clBlack
       Marks.Callout.Arrow.Visible = True
       Marks.Visible = False
       ShowInLegend = False
-      Gradient.Direction = gdTopBottom
       MultiBar = mbNone
       XValues.Name = 'X'
       XValues.Order = loAscending

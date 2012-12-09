@@ -39,7 +39,7 @@ uses
   DAV_GuiPngTypes, DAV_GuiPngClasses;
 
 type
-  TCustomChunkPng = class(TDefinedChunk)
+  TCustomChunkPng = class(TDavDefinedChunk)
   public
     constructor Create; override;
   end;
@@ -618,29 +618,29 @@ type
     property TranslatedKeyword: string read FTranslatedKeyword write FTranslatedKeyword;
   end;
 
-  TUnknownPngChunk = class(TUnknownChunk)
+  TUnknownPngChunk = class(TDavUnknownChunk)
   public
     constructor Create; override;
   end;
 
   TPngChunkList = class(TPersistent)
   private
-    FChunks : array of TCustomChunk;
+    FChunks : array of TDavCustomChunk;
     function GetCount: Integer;
   protected
-    function GetChunk(Index: Integer): TCustomChunk;
+    function GetChunk(Index: Integer): TDavCustomChunk;
     procedure AssignTo(Dest: TPersistent); override;
   public
     destructor Destroy; override;
 
-    procedure Add(Item: TCustomChunk);
+    procedure Add(Item: TDavCustomChunk);
     procedure Clear; virtual;
     procedure Delete(Index: Integer);
-    function IndexOf(Item: TCustomChunk): Integer;
-    procedure Remove(Item: TCustomChunk);
+    function IndexOf(Item: TDavCustomChunk): Integer;
+    procedure Remove(Item: TDavCustomChunk);
 
     property Count: Integer read GetCount;
-    property Chunks[Index: Integer]: TCustomChunk read GetChunk; default;
+    property Chunks[Index: Integer]: TDavCustomChunk read GetChunk; default;
   end;
 
 procedure RegisterPngChunk(ChunkClass: TCustomChunkPngWithHeaderClass);
@@ -2689,7 +2689,7 @@ begin
  inherited;
 end;
 
-procedure TPngChunkList.Add(Item: TCustomChunk);
+procedure TPngChunkList.Add(Item: TDavCustomChunk);
 begin
  SetLength(FChunks, Length(FChunks) + 1);
  FChunks[Length(FChunks) - 1] := Item;
@@ -2735,7 +2735,7 @@ begin
  SetLength(FChunks, Length(FChunks) - 1);
 end;
 
-function TPngChunkList.GetChunk(Index: Integer): TCustomChunk;
+function TPngChunkList.GetChunk(Index: Integer): TDavCustomChunk;
 begin
  if Cardinal(Index) >= Cardinal(Count)
   then raise EPngError.CreateFmt(RCStrIndexOutOfBounds, [Index])
@@ -2747,7 +2747,7 @@ begin
  Result := Length(FChunks);
 end;
 
-function TPngChunkList.IndexOf(Item: TCustomChunk): Integer;
+function TPngChunkList.IndexOf(Item: TDavCustomChunk): Integer;
 begin
  for Result := 0 to Count - 1 do
   if FChunks[Result] = Item
@@ -2755,7 +2755,7 @@ begin
  Result := -1;
 end;
 
-procedure TPngChunkList.Remove(Item: TCustomChunk);
+procedure TPngChunkList.Remove(Item: TDavCustomChunk);
 begin
  Delete(IndexOf(Item));
 end;

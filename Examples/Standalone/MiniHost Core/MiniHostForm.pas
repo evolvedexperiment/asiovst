@@ -219,7 +219,7 @@ type
     FColBack        : Boolean;
     FAboutForm      : TFmAbout;
 
-    FMidiFile       : TMidiFile;
+    FMidiFile       : TDavMidiFile;
     FMIDIInput      : TMidiInput;
     FMIDIOutput     : TMidiOutput;
     FWavWriter      : TWavWriter;
@@ -238,7 +238,7 @@ type
     procedure MidiData(const aDeviceIndex: Integer; const aStatus, aData1, aData2: byte);
     procedure MIDIInChange(Sender: TObject);
     procedure MIDIOutChange(Sender: TObject);
-    procedure MyMidiEvent(event: PMidiEvent);
+    procedure MyMidiEvent(Event: PMidiEvent);
     procedure ProcessEvents(Sender: TObject; ev: PVstEvents);
     procedure ProcessNoteOnOff(ch, n, v: byte);
     procedure SetChannel(Sender: TObject);
@@ -267,7 +267,7 @@ type
     procedure StopAudio;
     procedure WMDropFiles(var msg: TMessage); message WM_DROPFILES;
 
-    property MidiFile: TMidiFile read FMidiFile;
+    property MidiFile: TDavMidiFile read FMidiFile;
   published
     property CurrentProgram: Integer read FCurProg;
     property CurrentProgramName: AnsiString read FCurProgName;
@@ -559,7 +559,7 @@ begin
  ININame := GetApplicationDirectory + '\' + ChangeFileExt(GetApplicationFilename, '.ini');
 {$ENDIF}
 
- FMidiFile := TMidiFile.Create(nil);
+ FMidiFile := TDavMidiFile.Create(nil);
  FMidiFile.OnMidiEvent := MyMidiEvent;
  FMidiFile.ManualCall := True;
  FRecordState := rsStop;
@@ -1645,12 +1645,12 @@ begin
  VSTHost[0].CurrentProgram := (Sender as TMenuItem).Tag;
 end;
 
-procedure TFmMiniHost.MyMidiEvent(event: PMidiEvent);
+procedure TFmMiniHost.MyMidiEvent(Event: PMidiEvent);
 begin
  with Event^ do
-  if (Event and $F0) = $90 then NoteOn(event, data1, data2) else
-  if (Event and $F0) = $80 then NoteOff(event, data1)
-   else AddMidiData(event, data1, data2);
+  if (Event and $F0) = $90 then NoteOn(Event, data1, data2) else
+  if (Event and $F0) = $80 then NoteOff(Event, data1)
+   else AddMidiData(Event, data1, data2);
 end;
 
 procedure TFmMiniHost.StartPlayback1Click(Sender: TObject);
@@ -1828,7 +1828,7 @@ end;
 procedure TFmMiniHost.ProcessEvents(Sender: TObject; ev: PVstEvents);
 var
   i: Integer;
-  event: PVstMidiEvent;
+  Event: PVstMidiEvent;
   Sysex : PVstMidiSysexEvent;
   aStream: TMemoryStream;
 begin
@@ -1839,9 +1839,9 @@ begin
   for i := 0 to ev^.numEvents - 1 do
    if (ev.events[i].EventType = etMidi) then
     begin
-     event := PVstMidiEvent(ev^.events[i]);
-     FMidiOutput.Send(FCurrentMIDIOut - 1, event^.mididata[0],
-       event^.mididata[1], event^.mididata[2]);
+     Event := PVstMidiEvent(ev^.events[i]);
+     FMidiOutput.Send(FCurrentMIDIOut - 1, Event^.mididata[0],
+       Event^.mididata[1], Event^.mididata[2]);
     end else
    if ev.events[i].EventType = etSysex then
     begin
@@ -1996,7 +1996,7 @@ end;
 
 // By Daniel:  Dav_MidiIO midiInProc midiIncallback is called
 // concurrently by different service threads
-// we need to protect the midi event arrary and the DataCnt
+// we need to protect the midi Event arrary and the DataCnt
 // against concurrent access
 procedure TFmMiniHost.AddMIDIData(d1, d2, d3: byte; pos: Integer = 0);
 begin

@@ -30,14 +30,14 @@ object FmASIOMP3VST: TFmASIOMP3VST
         HorizontalOnly = True
         ImageIndex = -1
         MinHeight = 23
-        Width = 107
+        Width = 103
       end
       item
         Break = False
         Control = ActionToolBar
         ImageIndex = -1
         MinHeight = 26
-        Width = 445
+        Width = 449
       end>
     EdgeInner = esNone
     EdgeOuter = esNone
@@ -45,7 +45,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
     object ActionMainMenuBar: TActionMainMenuBar
       Left = 0
       Top = 1
-      Width = 103
+      Width = 99
       Height = 23
       UseSystemFont = False
       ActionManager = ActionManager
@@ -61,9 +61,9 @@ object FmASIOMP3VST: TFmASIOMP3VST
       Spacing = 0
     end
     object ActionToolBar: TActionToolBar
-      Left = 116
+      Left = 112
       Top = 0
-      Width = 436
+      Width = 440
       Height = 26
       ActionManager = ActionManager
       ColorMap.HighlightColor = 14410210
@@ -211,7 +211,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
     Left = 104
     Top = 40
     Bitmap = {
-      494C010101002400240010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000500040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

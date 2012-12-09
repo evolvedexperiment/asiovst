@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit OutputAsio;
 
 interface
@@ -7,7 +37,7 @@ uses
   DAV_ASIOHost;
 
 type
-  TSmallIntArray = array [0..40000] of Smallint;
+  TSmallIntArray = array [0 .. 40000] of Smallint;
   PSmallIntArray = ^TSmallIntArray;
 
   TFmASIOConfig = class(TForm)
@@ -16,24 +46,25 @@ type
     CBDriver: TComboBox;
     BtControlPanel: TButton;
     procedure FormCreate(Sender: TObject);
-    procedure CBDriverChange(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
+    procedure CBDriverChange(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure ASIOHostLatencyChanged(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject;
+      const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
   private
-    FVolume : Single;
-    FPan    : Single;
+    FVolume: Single;
+    FPan: Single;
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
-    AB         : array of PDAVSingleFixedArray;
-    ABSize     : Integer;
-    RP, WP     : Integer;
-    GPBSN      : Single;
-    GlobalPos  : Integer;
-    PauseState : Boolean;
-    NCh, Bps   : Integer;
+    AB: array of PDAVSingleFixedArray;
+    ABSize: Integer;
+    RP, WP: Integer;
+    GPBSN: Single;
+    GlobalPos: Integer;
+    PauseState: Boolean;
+    NCh, Bps: Integer;
     function CanPlay: Integer;
     property Volume: Single read FVolume write FVolume;
     property Pan: Single read FPan write FPan;
@@ -50,7 +81,7 @@ procedure Close; cdecl;
 function Write(Buffer: Pointer; Length: Integer): Integer; cdecl;
 function CanWrite: Integer; cdecl;
 function IsPlaying: Integer; cdecl;
-function Pause(IsPause: Integer): integer; cdecl;
+function Pause(IsPause: Integer): Integer; cdecl;
 procedure SetVolume(Volume: Integer); cdecl;
 procedure SetPan(Pan: Integer); cdecl;
 procedure Flush(t: Integer); cdecl;
@@ -60,65 +91,63 @@ type
   POut_Module = ^TOut_Module;
 
   TOut_Module = record
-    Version      : Integer; // module version (OUT_VER)
-    Description  : PChar;   // description of module, with version string
-    Id           : Integer; // module id. each input module gets its own [non-nullsoft modules should be >= 65536]
-    hMainWindow  : HWND;    // winamp's main window (filled in by winamp)
-    hDllInstance : HINST;   // DLL instance handle (filled in by winamp)
+    Version: Integer; // module version (OUT_VER)
+    Description: PChar; // description of module, with version string
+    Id: Integer;
+    // module id. each input module gets its own [non-nullsoft modules should be >= 65536]
+    hMainWindow: HWND; // winamp's main window (filled in by winamp)
+    hDllInstance: HINST; // DLL instance handle (filled in by winamp)
 
-    Config: procedure(hwndParent: HWND); cdecl; // configuration dialog
-    About: procedure(hwndParent: HWND); cdecl;  // about dialog
+    Config: procedure(HwndParent: HWND); cdecl; // configuration dialog
+    About: procedure(HwndParent: HWND); cdecl; // about dialog
 
     Init: procedure; cdecl; // called when loaded
     Quit: procedure; cdecl; // called when unloaded
 
-
     { following functions and procedures are called by input plug-in
       you do not need to use these directly. }
 
-    Open: function(Samplerate, NumChannels, BitsPerSample,
-        BufferLen_ms, PreBuffer_ms: Integer): Integer;
-        cdecl;
+    Open: function(Samplerate, NumChannels, BitsPerSample, BufferLen_ms,
+      PreBuffer_ms: Integer): Integer; cdecl;
     { returns >=0 on success, <0 on failure
       NOTENOTENOTE: BufferLen_ms and PreBuffer_ms are ignored in most
       if not all output plug-ins.
-         ... so don't expect the max latency returned to be what you asked for.
+      ... so don't expect the max latency returned to be what you asked for.
       returns max latency in ms (0 for diskwriters, etc)
       BufferLen_ms and PreBuffer_ms must be in ms. 0 to use defaults.
       PreBuffer_ms must be <= BufferLen_ms }
 
     Close: procedure; cdecl;
-          { close the ol' output device. }
+    { close the ol' output device. }
 
-    Write: function(Buffer: Pointer; Length: Integer): Integer; cdecl;
-                    { 0 on success. Length == bytes to write (<= 8192 always).
-                                                     Buffer is straight audio data.
-                      1 returns not able to write (yet). Non-blocking, always. }
+    Write: function(Buffer:Pointer; Length:Integer): Integer; cdecl;
+    { 0 on success. Length == bytes to write (<= 8192 always).
+      Buffer is straight audio data.
+      1 returns not able to write (yet). Non-blocking, always. }
 
     CanWrite: function: Integer; cdecl;
-                    { returns number of bytes possible to write at a given time.
-                     Never will decrease unless you call Write (or Close, heh) }
+    { returns number of bytes possible to write at a given time.
+      Never will decrease unless you call Write (or Close, heh) }
 
     IsPlaying: function: Integer; cdecl;
-     { non 0 if output is still going or if data in buffers waiting to be
-     written (i.e. closing while IsPlaying() returns 1 would truncate the song }
+    { non 0 if output is still going or if data in buffers waiting to be
+      written (i.e. closing while IsPlaying() returns 1 would truncate the song }
 
-    Pause: function(pause: Integer): Integer; cdecl;
-                                                { returns previous pause state }
+    Pause: function(Pause: Integer): Integer; cdecl;
+    { returns previous pause state }
 
-    SetVolume: procedure(volume: Integer); cdecl;
-      { volume is 0-255 }
-    SetPan: procedure(pan: Integer); cdecl;
-      { pan is -128 to 128 }
+    SetVolume: procedure(Volume: Integer); cdecl;
+    { volume is 0-255 }
+    SetPan: procedure(Pan: Integer); cdecl;
+    { pan is -128 to 128 }
 
     Flush: procedure(t: Integer); cdecl;
-                         { flushes buffers and restarts output at time t (in ms)
-                           (used for seeking) }
+    { flushes buffers and restarts output at time t (in ms)
+      (used for seeking) }
 
-    GetOutputTime: function: Integer;
-        cdecl;     { returns played time in MS }
+    GetOutputTime: function: Integer; cdecl; { returns played time in MS }
     GetWrittenTime: function: Integer; cdecl;
-                 { returns time written in MS (used for synching up vis stuff) }
+    { returns time written in MS (used for synching up vis stuff) }
   end;
 
 var
@@ -134,68 +163,69 @@ uses
 
 { WinAmp Interface }
 
-procedure Config(hwndParent: hwnd); cdecl; // configuration dialog
+procedure Config(HwndParent: HWND); cdecl; // configuration dialog
 begin
- ASIOOutput.Show;
+  ASIOOutput.Show;
 end;
 
-procedure About(hwndParent: hwnd); cdecl;  // about dialog
+procedure About(HwndParent: HWND); cdecl; // about dialog
 begin
- ASIOOutput.Show;
+  ASIOOutput.Show;
 end;
 
 procedure Init; cdecl; // called when loaded
 begin
- ASIOOutput := TFmASIOConfig.Create(Application);
+  ASIOOutput := TFmASIOConfig.Create(Application);
 end;
 
 procedure Quit; cdecl; // called when unloaded
 begin
- with TRegistry.Create do
-  try
-   if OpenKey('Software\WinAmp\ASIO Output', True) then
-    begin
-     WriteBool('Visible', ASIOOutput.Visible);
-     WriteInteger('Left', ASIOOutput.Left);
-     WriteInteger('Top', ASIOOutput.Top);
+  with TRegistry.Create do
+    try
+      if OpenKey('Software\WinAmp\ASIO Output', True) then
+      begin
+        WriteBool('Visible', ASIOOutput.Visible);
+        WriteInteger('Left', ASIOOutput.Left);
+        WriteInteger('Top', ASIOOutput.Top);
+      end;
+    finally
+      CloseKey;
+      Free;
     end;
-  finally
-   CloseKey;
-   Free;
-  end;
- ASIOOutput.ASIOHost.Active := False;
- FreeAndNil(ASIOOutput);
+  ASIOOutput.ASIOHost.Active := False;
+  FreeAndNil(ASIOOutput);
 end;
 
 // returns >=0 on success, <0 on failure
 // called by input plug-in just before starting play
-function Open(Samplerate, NumChannels, BitsPerSample,
-  BufferLen_ms, PreBuffer_ms: Integer): Integer; cdecl;
+function Open(Samplerate, NumChannels, BitsPerSample, BufferLen_ms,
+  PreBuffer_ms: Integer): Integer; cdecl;
 var
   Channel: Integer;
 begin
- Assert(Assigned(ASIOOutput));
- with ASIOOutput do
+  Assert(Assigned(ASIOOutput));
+  with ASIOOutput do
   begin
-   SetLength(ASIOOutput.AB, Max(NumChannels, 2));
-   ABSize := Max(8192, ASIOHost.BufferSize);
-   for Channel := 0 to Max(NumChannels, 2) - 1
-    do ReallocMem(AB[Channel], ABSize * SizeOf(Single));
-   ASIOHost.Samplerate := Samplerate;
-   if ASIOHost.Samplerate <> Samplerate
-    then ShowMessage('Samplerate ' + IntToStr(Round(Samplerate)) + ' not yet supported!');
-   ASIOHost.Active := True;
-   NCh := NumChannels;
-   Bps := BitsPerSample;
-   GlobalPos := 0;
-   GPBSN := 1 / (1000 * Bps * Samplerate * NCh);
+    SetLength(ASIOOutput.AB, Max(NumChannels, 2));
+    ABSize := Max(8192, ASIOHost.BufferSize);
+    for Channel := 0 to Max(NumChannels, 2) - 1 do
+      ReallocMem(AB[Channel], ABSize * SizeOf(Single));
+    ASIOHost.Samplerate := Samplerate;
+    if ASIOHost.Samplerate <> Samplerate then
+      ShowMessage('Samplerate ' + IntToStr(Round(Samplerate)) +
+        ' not yet supported!');
+    ASIOHost.Active := True;
+    NCh := NumChannels;
+    Bps := BitsPerSample;
+    GlobalPos := 0;
+    GPBSN := 1 / (1000 * Bps * Samplerate * NCh);
   end;
- Result := Integer(ASIOOutput.ASIOHost.Active);
+  Result := Integer(ASIOOutput.ASIOHost.Active);
 end;
 
 procedure Close; cdecl; // called by input plug-in to close output device
 begin
- ASIOOutput.ASIOHost.Active := False;
+  ASIOOutput.ASIOHost.Active := False;
 end;
 
 { 0 on success. Length == bytes to write (<= 8192 always).
@@ -207,50 +237,52 @@ const
 var
   i, n: Integer;
 begin
- Result := 1;
- with ASIOOutput do
-  if Bps = 16 then
-   for i := 0 to (Length div (nCh * 2)) - 1 do
-    begin
-     for n := 0 to NCh - 1
-      do AB[n, RP] := FVolume * PSmallIntArray(Buffer)^[i * nCh + n] * DivFak;
-     Inc(RP);
-     if RP >= ABSize then RP := 0;
-     Result := 0;
-    end;
+  Result := 1;
+  with ASIOOutput do
+    if Bps = 16 then
+      for i := 0 to (Length div (NCh * 2)) - 1 do
+      begin
+        for n := 0 to NCh - 1 do
+          AB[n, RP] := FVolume * PSmallIntArray(Buffer)^[i * NCh + n] * DivFak;
+        Inc(RP);
+        if RP >= ABSize then
+          RP := 0;
+        Result := 0;
+      end;
 end;
 
 function CanWrite: Integer; cdecl;
 begin
- Result := ASIOOutput.CanPlay;
+  Result := ASIOOutput.CanPlay;
 end;
 
 function IsPlaying: Integer; cdecl;
 begin
- Result := 0;
+  Result := 0;
 end;
 
-function Pause(IsPause: Integer): Integer; cdecl; // returns previous pause state
+function Pause(IsPause: Integer): Integer; cdecl;
+// returns previous pause state
 begin
- with ASIOOutput do
+  with ASIOOutput do
   begin
-   Result := Integer(PauseState);
-   PauseState := Boolean(IsPause);
-   ASIOHost.Active := not PauseState;
+    Result := Integer(PauseState);
+    PauseState := Boolean(IsPause);
+    ASIOHost.Active := not PauseState;
   end;
 end;
 
 procedure SetVolume(Volume: Integer); cdecl; { volume is 0-255 }
 begin
- Assert(Assigned(ASIOOutput));
- if (Volume >= 0) and (Volume <= 255)
-  then ASIOOutput.Volume := Volume * 0.003921568627450980392156862745098;
+  Assert(Assigned(ASIOOutput));
+  if (Volume >= 0) and (Volume <= 255) then
+    ASIOOutput.Volume := Volume * 0.003921568627450980392156862745098;
 end;
 
 procedure SetPan(Pan: Integer); cdecl; { pan is -128 to 128 }
 begin
- Assert(Assigned(ASIOOutput));
- ASIOOutput.Pan := Pan * 0.0078125;
+  Assert(Assigned(ASIOOutput));
+  ASIOOutput.Pan := Pan * 0.0078125;
 end;
 
 { Flushes buffers and restarts output at time t (in ms) (used for seeking)
@@ -263,7 +295,8 @@ end;
 
 function GetOutputTime: Integer; cdecl; { returns played time in MS }
 begin
- with ASIOOutput do Result := Round(GlobalPos * GPBSN);
+  with ASIOOutput do
+    Result := Round(GlobalPos * GPBSN);
 end;
 
 { TFmASIOConfig }
@@ -274,9 +307,9 @@ begin
   FVolume := 1;
   FPan := 0;
   with TRegistry.Create do
-     try
+    try
       if OpenKeyReadOnly('Software\WinAmp\ASIO Output') then
-       begin
+      begin
         if ValueExists('Visible') then
           if ReadBool('Visible') then
             Show;
@@ -285,22 +318,23 @@ begin
         if ValueExists('Top') then
           Top := ReadInteger('Top');
         if ValueExists('Driver') then
-         begin
+        begin
           CBDriver.ItemIndex := ReadInteger('Driver');
           ASIOHost.DriverIndex := ReadInteger('Driver');
-         end;
-       end;
-     finally
+        end;
+      end;
+    finally
       CloseKey;
       Free;
-     end;
+    end;
 end;
 
 function TFmASIOConfig.CanPlay: Integer;
 begin
-  if WP < RP
-   then Result := ABSize - RP + WP
-   else Result := WP - RP;
+  if WP < RP then
+    Result := ABSize - RP + WP
+  else
+    Result := WP - RP;
 end;
 
 procedure TFmASIOConfig.CreateParams(var Params: TCreateParams);
@@ -313,28 +347,28 @@ procedure TFmASIOConfig.CBDriverChange(Sender: TObject);
 var
   act: Boolean;
 begin
- act := ASIOHost.Active;
- ASIOHost.Active := False;
- ASIOHost.DriverIndex := CBDriver.ItemIndex;
- ASIOHost.Active := act;
- with TRegistry.Create do
-  try
-   if OpenKey('Software\WinAmp\ASIO Output', True) then
-     WriteInteger('Driver', ASIOHost.DriverIndex);
-  finally
-   CloseKey;
-   Free;
-  end;
+  act := ASIOHost.Active;
+  ASIOHost.Active := False;
+  ASIOHost.DriverIndex := CBDriver.ItemIndex;
+  ASIOHost.Active := act;
+  with TRegistry.Create do
+    try
+      if OpenKey('Software\WinAmp\ASIO Output', True) then
+        WriteInteger('Driver', ASIOHost.DriverIndex);
+    finally
+      CloseKey;
+      Free;
+    end;
 end;
 
 procedure TFmASIOConfig.BtControlPanelClick(Sender: TObject);
 begin
- ASIOHost.ControlPanel;
+  ASIOHost.ControlPanel;
 end;
 
 procedure TFmASIOConfig.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- GPBSN := 1 / (1000 * Bps * ASIOHost.Samplerate * NCh);
+  GPBSN := 1 / (1000 * Bps * ASIOHost.Samplerate * NCh);
 end;
 
 procedure TFmASIOConfig.ASIOHostBufferSwitch32(Sender: TObject;
@@ -342,28 +376,28 @@ procedure TFmASIOConfig.ASIOHostBufferSwitch32(Sender: TObject;
 var
   n, l: Integer;
 begin
- l := min(Length(OutBuffer), Length(AB));
- if ABSize - WP >= ASIOHost.BufferSize then
+  l := Min(Length(OutBuffer), Length(AB));
+  if ABSize - WP >= ASIOHost.BufferSize then
   begin
-   for n := 0 to l - 1
-    do Move(AB[n, WP], OutBuffer[n, 0], ASIOHost.BufferSize * SizeOf(Single));
-   WP := WP + ASIOHost.BufferSize;
-   if WP >= ABSize
-    then WP := 0;
+    for n := 0 to l - 1 do
+      Move(AB[n, WP], OutBuffer[n, 0], ASIOHost.BufferSize * SizeOf(Single));
+    WP := WP + ASIOHost.BufferSize;
+    if WP >= ABSize then
+      WP := 0;
   end
- else
+  else
   begin
-   for n := 0 to l - 1
-    do Move(AB[n, WP], OutBuffer[n, 0], (ABSize - WP) * SizeOf(Single));
-   WP := ASIOHost.BufferSize - (ABSize - WP);
-   for n := 0 to l - 1
-    do Move(AB[n, 0], OutBuffer[n, 0], WP * SizeOf(Single));
+    for n := 0 to l - 1 do
+      Move(AB[n, WP], OutBuffer[n, 0], (ABSize - WP) * SizeOf(Single));
+    WP := ASIOHost.BufferSize - (ABSize - WP);
+    for n := 0 to l - 1 do
+      Move(AB[n, 0], OutBuffer[n, 0], WP * SizeOf(Single));
   end;
 end;
 
 procedure TFmASIOConfig.ASIOHostLatencyChanged(Sender: TObject);
 begin
- GPBSN := 1 / (1000 * Bps * ASIOHost.Samplerate * NCh);
+  GPBSN := 1 / (1000 * Bps * ASIOHost.Samplerate * NCh);
 end;
 
 end.
