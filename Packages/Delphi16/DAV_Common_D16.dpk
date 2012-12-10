@@ -61,7 +61,6 @@ contains
   DAV_Complex in '..\..\Source\DAV_Complex.pas',
   DAV_ComplexData in '..\..\Source\DAV_ComplexData.pas',
   DAV_CRC in '..\..\Source\DAV_CRC.pas',
-  DAV_DLLLoader in '..\..\Source\DAV_DLLLoader.pas',
   DAV_EllipticFunctions in '..\..\Source\DAV_EllipticFunctions.pas',
   DAV_FileFormat in '..\..\Source\FileFormats\DAV_FileFormat.pas',
   DAV_FixedPoint in '..\..\Source\DAV_FixedPoint.pas',
@@ -70,6 +69,7 @@ contains
   DAV_InvMDCT in '..\..\Source\DAV_InvMDCT.pas',
   DAV_Math in '..\..\Source\DAV_Math.pas',
   DAV_MemoryUtils in '..\..\Source\DAV_MemoryUtils.pas',
+  DAV_MidiFile in '..\..\Source\FileFormats\DAV_MidiFile.pas',
   DAV_MidiFileChunks in '..\..\Source\FileFormats\DAV_MidiFileChunks.pas',
   DAV_MidiFileEvents in '..\..\Source\FileFormats\DAV_MidiFileEvents.pas',
   DAV_MpegAudio in '..\..\Source\FileFormats\DAV_MpegAudio.pas',
@@ -83,7 +83,6 @@ contains
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
-  DAV_MidiFile in '..\..\Source\FileFormats\DAV_MidiFile.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
 
 end.
