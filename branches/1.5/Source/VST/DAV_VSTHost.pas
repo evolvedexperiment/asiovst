@@ -54,19 +54,13 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-{$IFNDEF FPC}
-  {$DEFINE MemDLL}
-{$ENDIF}
-
 {-$DEFINE Debug64}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF MSWINDOWS}Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF} Contnrs, SysUtils, Classes,
-  {$IFDEF VstHostGUI} {$IFDEF FMX} FMX.Types, FMX.Dialogs, FMX.Controls,
-  FMX.Forms, FMX.Platform, {$IFDEF MSWINDOWS} FMX.Platform.Win, {$ENDIF} {$ELSE}
-  Controls, Graphics, Forms, StdCtrls, ComCtrls, Dialogs, {$ENDIF} {$ENDIF}
-  DAV_Types, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL}, DAV_DLLLoader{$ENDIF};
+  {$IFDEF VstHostGUI} Controls, Graphics, Forms, StdCtrls, ComCtrls,
+  Dialogs, {$ENDIF} DAV_Types, DAV_VSTEffect, DAV_VSTOfflineTask;
 
 const
   CDefaultBlockSize = 2048;
@@ -139,9 +133,6 @@ type
     FLoaded                        : Boolean;
     FVstDllFileName                : TFileName;
     FVstDllHandle                  : THandle;
-    {$IFDEF MemDLL}
-    FInternalDllLoader             : TDLLLoader;
-    {$ENDIF}
     FMainFunction                  : TMainProc;
     {$IFDEF jBridge}
     FJBridgeMainFunction           : TJBridgeMainProc;
@@ -313,9 +304,6 @@ type
     // load plugin
     function CheckValidPlugin(const FileName: TFilename): Boolean;
     procedure LoadFromFile(const FileName: TFilename);
-    {$IFDEF MemDLL}
-    procedure LoadFromStream(const Stream: TStream);
-    {$ENDIF}
     procedure LoadFromVSTEffect(const Value: PVSTEffect);
     procedure UnLoad;
 
@@ -1787,20 +1775,6 @@ begin
    finally
     Unload;
    end;
-  {$IFDEF MemDLL}
-  if Assigned(FInternalDllLoader) then
-   try
-    {$IFDEF VstHostGUI}
-    if EditVisible then CloseEdit;
-    {$IFNDEF FMX}
-    if Assigned(GUIControl) and FGUIControlCreated
-     then FreeAndNil(FGUIControl);
-    {$ENDIF}
-    {$ENDIF}
-   finally
-    FreeAndNil(FInternalDllLoader);
-   end;
-  {$ENDIF}
  finally
   inherited;
  end;
@@ -1845,10 +1819,6 @@ begin
     begin
      if FileExists(Self.FVstDllFileName)
       then LoadFromFile(Self.FVstDllFileName) else
-     {$IFDEF MemDLL}
-     if Assigned(Self.FInternalDllLoader)
-      then FInternalDllLoader.Assign(Self.FInternalDllLoader) else
-     {$ENDIF}
      if Assigned(Self.FVstEffect)
       then LoadFromVSTEffect(Self.FVstEffect);
 
@@ -3611,10 +3581,6 @@ begin
  if FVstDllFileName <> Value then
   if FileExists(Value)
    then LoadFromFile(Value) else
-  {$IFDEF MemDLL}
-  if not Assigned(FInternalDLLLoader)
-   then Unload;
-  {$ENDIF}
 end;
 
 procedure TCustomVstPlugIn.LoadFromVSTEffect(const Value: PVSTEffect);
@@ -3737,32 +3703,6 @@ begin
  end;
 end;
 
-{$IFDEF MemDLL}
-procedure TCustomVstPlugIn.LoadFromStream(const Stream: TStream);
-begin
- if FLoaded
-  then Unload;
-
- if not Assigned(FInternalDLLLoader)
-  then FInternalDLLLoader := TDLLLoader.Create;
- try
-  FInternalDLLLoader.Load(Stream);
-  FMainFunction := FInternalDllLoader.FindExport('VSTPluginMain');
-  if not Assigned(FMainFunction)
-   then FMainFunction := FInternalDllLoader.FindExport('main');
-
-  if not Assigned(FMainFunction)
-   then FMainFunction := FInternalDllLoader.FindExportPerIndex(0);
-
-  InitializeVstEffect;
-  FLoaded := True;
- except
-  Unload;
-  raise;
- end;
-end;
-{$ENDIF}
-
 procedure TCustomVstPlugIn.UnLoad;
 begin
  Active := False;
@@ -3773,13 +3713,6 @@ begin
    FVstDllHandle := 0;
    FVstDllFileName := '';
   end;
- {$IFDEF MemDLL}
- if Assigned(FInternalDllLoader) then
-  begin
-   FInternalDllLoader.Unload;
-   FreeAndNil(FInternalDllLoader);
-  end;
- {$ENDIF}
 
  FMainFunction := nil;
  FVstEffect := nil;
