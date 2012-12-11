@@ -381,7 +381,7 @@ end;
 
 function ASIOGetNumDevices:Integer; cdecl;
 begin
- if assigned(theHost)
+ if Assigned(theHost)
   then result:=theHost.DriverList.Count
   else result:=0;
 end;
@@ -414,7 +414,7 @@ function ASIOSetOutputVolume(Channel:Integer;Volume:Single):Integer; cdecl;
 var i : Integer;
 begin
  result:=0;
- if assigned(theHost) then
+ if Assigned(theHost) then
   if (Channel>0) and (Channel<=theHost.FOutputChannels)
    then theHost.FOutputVolume[Channel-1]:=Volume
    else
@@ -440,7 +440,7 @@ var i : Integer;
 begin
  Volume:=dB_to_Amp(Volume);
  result:=0;
- if assigned(theHost) then
+ if Assigned(theHost) then
   if (Channel>0) and (Channel<=theHost.FOutputChannels)
    then theHost.FOutputVolume[Channel-1]:=Volume
    else
@@ -456,7 +456,7 @@ end;
 function ASIOSetSineFrequency(Channel:Integer;Frequency:Single):Integer; cdecl;
 begin
  result:=0;
- if assigned(theHost)
+ if Assigned(theHost)
   then theHost.SineFrequency[Channel]:=Frequency
   else result:=1;
 end;
@@ -807,7 +807,7 @@ end;
 
 function ASIOGetBufferSize(minSize, maxSize, preferredSize, granularity : PInteger):Integer; cdecl;
 begin
- if assigned(theHost) then
+ if Assigned(theHost) then
   begin
    minSize^:=theHost.Fmin;
    maxSize^:=theHost.Fmax;
@@ -820,7 +820,7 @@ end;
 
 function ASIOGetChannels(InputChannels, OutputChannels: PInteger):Integer; cdecl;
 begin
- if assigned(theHost) then
+ if Assigned(theHost) then
   begin
    InputChannels^:=theHost.InputChannels;
    OutputChannels^:=theHost.OutputChannels;
@@ -846,7 +846,7 @@ begin
  theHost.FLog.Add('Start Audio (before)');
  theHost.FLog.SaveToFile('ASIOLabVIEW.log');
  {$ENDIF}
- if assigned(theHost)
+ if Assigned(theHost)
   then theHost.Active:=True;
  Result:=Integer(not theHost.Active);
  {$IFDEF Debug}
@@ -861,7 +861,7 @@ begin
  theHost.FLog.Add('Stop Audio (before)');
  theHost.FLog.SaveToFile('ASIOLabVIEW.log');
  {$ENDIF}
- if assigned(theHost)
+ if Assigned(theHost)
   then theHost.Active:=False;
  Result:=Integer(theHost.Active);
  {$IFDEF Debug}
@@ -887,7 +887,7 @@ end;
 
 function ASIOControlPanel:Integer; cdecl;
 begin
- if assigned(theHost)
+ if Assigned(theHost)
   then result:=theHost.ControlPanel
   else result:=1;
 end;
@@ -1348,13 +1348,13 @@ begin
      except
       exit;
      end;
-     if assigned(Driver) then
+     if Assigned(Driver) then
       begin
        Driver.GetDriverName(DrName);
        FDriverVersion := Driver.GetDriverVersion;
       end;
     end;
-   if assigned(fOnDriverChanged) then OnDriverChanged(self);
+   if Assigned(fOnDriverChanged) then OnDriverChanged(self);
    Active := tmpActive;
   end;
 end;
@@ -1539,7 +1539,7 @@ procedure TLabviewASIO.OpenDriver;
 var tmpActive: Boolean;
 begin
  tmpActive := false;
- if assigned(Driver) then
+ if Assigned(Driver) then
  begin
   try
    tmpActive := Active;
@@ -1565,7 +1565,7 @@ end;
 
 procedure TLabviewASIO.CloseDriver;
 begin
- if assigned(Driver) then
+ if Assigned(Driver) then
  begin
   try
    if BuffersCreated then DestroyBuffers;
@@ -1582,7 +1582,7 @@ end;
 
 function TLabviewASIO.ControlPanel:Integer;
 begin
- if assigned(Driver)
+ if Assigned(Driver)
   then result:=Driver.ControlPanel
   else result:=1;
 end;
@@ -1608,8 +1608,8 @@ begin
    ASIOTime.FBufferTime);  // process a buffer with time
   AM_LatencyChanged:
    begin
-    if assigned(Driver) then Driver.GetLatencies(inp, outp);
-    if assigned(FOnLatencyChanged) then FOnLatencyChanged(Self);
+    if Assigned(Driver) then Driver.GetLatencies(inp, outp);
+    if Assigned(FOnLatencyChanged) then FOnLatencyChanged(Self);
    end;
  end;
 end;
@@ -1770,11 +1770,11 @@ begin
  for j := 0 to FOutputChannels - 1 do
   begin
    PChannelArray := currentbuffer^.buffers[Index];
-   if assigned(PChannelArray)
+   if Assigned(PChannelArray)
     then FOutConvertors[j](PSingle(SingleOutBuffer[j]),PChannelArray, BufferSize);
    inc(currentbuffer);
   end;
- if assigned(Driver)
+ if Assigned(Driver)
   then Driver.OutputReady;
  FWatchDog:=True;
 end;
@@ -1783,7 +1783,7 @@ procedure TLabviewASIO.SetSampleRate(const Value: Double);
 begin
  FSampleRate := Value;
  ASIOTime.SampleRate := Value;
- if assigned(Driver) then Driver.SetSampleRate(Value);
+ if Assigned(Driver) then Driver.SetSampleRate(Value);
 end;
 
 procedure TLabviewASIO.SetActive(Value: Boolean);
@@ -1854,7 +1854,7 @@ end;
 
 function TLabviewASIO.CanSampleRate(sampleRate: TASIOSampleRate): TASIOError;
 begin
- if assigned(Driver) then
+ if Assigned(Driver) then
   result := Driver.CanSampleRate(sampleRate)
  else
   result := ASE_NotPresent;

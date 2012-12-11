@@ -69,7 +69,7 @@ end;
 
 procedure TCustomGuiAudioDataDisplayAxis.AxisChanged;
 begin
- if assigned(FOnChanged)
+ if Assigned(FOnChanged)
   then FOnChanged(Self);
 end;
 

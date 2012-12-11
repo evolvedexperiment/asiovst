@@ -189,7 +189,7 @@ end;
 
 procedure TFmRecordAudio.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if assigned(FBufferedRecorder)
+ if Assigned(FBufferedRecorder)
   then FBufferedRecorder.SampleRate := ASIOHost.SampleRate;
 end;
 

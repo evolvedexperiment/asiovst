@@ -174,9 +174,9 @@ begin
      end;
      Memo.Lines.Add('Flags: '         + IOFlagsToString(Pin.Flags));
      Memo.Lines.Add('Name: '          + Pin.Name);
-     if assigned(Pin.DefaultValue)
+     if Assigned(Pin.DefaultValue)
       then Memo.Lines.Add('DefaultValue: '  + Pin.DefaultValue);
-     if assigned(Pin.DatatypeExtra)
+     if Assigned(Pin.DatatypeExtra)
       then Memo.Lines.Add('DatatypeExtra: ' + Pin.DatatypeExtra);
      Memo.Lines.Add('Spare: '         + IntToStr(Pin.Spare));
      inc(PinNr);

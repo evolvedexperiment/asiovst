@@ -159,7 +159,7 @@ var
   StgMedium : TStgMedium;
   FormatEtc : TFormatEtc;
 begin
- if assigned(FPageForm) then FreeAndNil(FPageForm); 
+ if Assigned(FPageForm) then FreeAndNil(FPageForm); 
  Result := E_INVALIDARG;
  if(lpdobj = nil) then exit;
  with FormatEtc do

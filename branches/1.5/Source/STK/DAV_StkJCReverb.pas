@@ -90,45 +90,45 @@ begin
 
  for i := 0 to Length(FAllpassDelays) - 1 do
   begin
-   if assigned(FAllpassDelays[i]) then
+   if Assigned(FAllpassDelays[i]) then
     if FInternalLengths[i + 4] < FAllpassDelays[i].Length
      then FAllpassDelays[i].Delay := FInternalLengths[i + 4]
      else FreeAndNil(FAllpassDelays[i]);
 
    // create new allpass delay if necessary
-   if not assigned(FAllpassDelays[i])
+   if not Assigned(FAllpassDelays[i])
     then FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 4], ExtendToPowerOf2(FInternalLengths[i + 4]) - 1);
   end;
 
  for i := 0 to Length(FCombDelays) - 1 do
   begin
-   if assigned(FCombDelays[i]) then
+   if Assigned(FCombDelays[i]) then
     if FInternalLengths[i] < FCombDelays[i].Length
      then FCombDelays[i].Delay := FInternalLengths[i]
      else FreeAndNil(FCombDelays[i]);
 
    // create new comb delay if necessary
-   if not assigned(FCombDelays[i])
+   if not Assigned(FCombDelays[i])
     then FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], ExtendToPowerOf2(FInternalLengths[i]) - 1);
    FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
   end;
 
- if assigned(FOutLeftDelay) then
+ if Assigned(FOutLeftDelay) then
   if FInternalLengths[7] < FOutLeftDelay.Length
    then FOutLeftDelay.Delay := FInternalLengths[7]
    else FreeAndNil(FOutLeftDelay);
 
  // create new comb delay if necessary
- if not assigned(FOutLeftDelay)
+ if not Assigned(FOutLeftDelay)
   then FOutLeftDelay := TStkDelay.Create(SampleRate, FInternalLengths[7], ExtendToPowerOf2(FInternalLengths[7]) - 1);
 
- if assigned(FOutRightDelay) then
+ if Assigned(FOutRightDelay) then
   if FInternalLengths[8] < FOutRightDelay.Length
    then FOutRightDelay.Delay := FInternalLengths[8]
    else FreeAndNil(FOutRightDelay);
 
  // create new comb delay if necessary
- if not assigned(FOutRightDelay)
+ if not Assigned(FOutRightDelay)
   then FOutRightDelay := TStkDelay.Create(SampleRate, FInternalLengths[8], ExtendToPowerOf2(FInternalLengths[8]) - 1);
 end;
 

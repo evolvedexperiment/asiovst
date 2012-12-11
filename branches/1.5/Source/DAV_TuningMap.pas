@@ -283,7 +283,7 @@ begin
     begin
      // Now open the file
      ifs := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
-     if not assigned(ifs)
+     if not Assigned(ifs)
       then raise Exception.CreateFmt('Error opening the file: %s', [FileName]);
 
      while (ifs.position < ifs.size) do

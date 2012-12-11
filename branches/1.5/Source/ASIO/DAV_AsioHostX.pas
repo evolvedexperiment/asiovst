@@ -850,19 +850,19 @@ begin
   kASIOSelectorSupported    :   // return 1 if a selector is supported
    begin
     case value of
-     kASIOEngineVersion        : if assigned(theHost) then Result := Integer(assEngineVersion in theHost.FASIOSelectorSupport) else Result := 1;
-     kASIOResetRequest         : if assigned(theHost) then Result := Integer(assResetRequest in theHost.FASIOSelectorSupport) else Result := 1;
-     kASIOBufferSizeChange     : if assigned(theHost) then Result := Integer(assBufferSizeChange in theHost.FASIOSelectorSupport) else Result := 1;
-     kASIOResyncRequest        : if assigned(theHost) then Result := Integer(assResyncRequest in theHost.FASIOSelectorSupport) else Result := 1;
-     kASIOLatenciesChanged     : if assigned(theHost) then Result := Integer(assLatenciesChanged in theHost.FASIOSelectorSupport) else Result := 1;
-     kASIOSupportsTimeInfo     : if assigned(theHost) then Result := Integer(assSupportsTimeInfo in theHost.FASIOSelectorSupport) else Result := 0;
-     kASIOSupportsTimeCode     : if assigned(theHost) then Result := Integer(assSupportsTimeCode in theHost.FASIOSelectorSupport) else Result := 0;
-     kASIOSupportsInputMonitor : if assigned(theHost) then Result := Integer(assSupportsInputMonitor in theHost.FASIOSelectorSupport) else Result := 0;
+     kASIOEngineVersion        : if Assigned(theHost) then Result := Integer(assEngineVersion in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOResetRequest         : if Assigned(theHost) then Result := Integer(assResetRequest in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOBufferSizeChange     : if Assigned(theHost) then Result := Integer(assBufferSizeChange in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOResyncRequest        : if Assigned(theHost) then Result := Integer(assResyncRequest in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOLatenciesChanged     : if Assigned(theHost) then Result := Integer(assLatenciesChanged in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOSupportsTimeInfo     : if Assigned(theHost) then Result := Integer(assSupportsTimeInfo in theHost.FASIOSelectorSupport) else Result := 0;
+     kASIOSupportsTimeCode     : if Assigned(theHost) then Result := Integer(assSupportsTimeCode in theHost.FASIOSelectorSupport) else Result := 0;
+     kASIOSupportsInputMonitor : if Assigned(theHost) then Result := Integer(assSupportsInputMonitor in theHost.FASIOSelectorSupport) else Result := 0;
     end;
    end;
   kASIOEngineVersion        :  Result := 2;   // ASIO 2 is supported
   kASIOResetRequest         :
-   if assigned(theHost) then
+   if Assigned(theHost) then
     begin
      PMReset.Msg := PM_ASIO;
      PMReset.WParam := AM_ResetRequest;
@@ -871,7 +871,7 @@ begin
      Result := 1;
     end;
   kASIOBufferSizeChange     :
-   if assigned(theHost) then
+   if Assigned(theHost) then
     begin
      PMReset.Msg := PM_ASIO;
      PMReset.WParam := AM_ResetRequest;
@@ -881,7 +881,7 @@ begin
     end;
   kASIOResyncRequest        :  ;
   kASIOLatenciesChanged     :
-   if assigned(theHost) then
+   if Assigned(theHost) then
     begin
      PMReset.Msg := PM_ASIO;
      PMReset.WParam := AM_LatencyChanged;
@@ -1035,7 +1035,7 @@ begin
      except
       exit;
      end;
-     if assigned(FDriver) then
+     if Assigned(FDriver) then
       begin
        FDriver.GetDriverName(DrName);
        FDriverVersion := FDriver.GetDriverVersion;
@@ -1044,7 +1044,7 @@ begin
        CanOutputGain; CanOutputMeter;
       end;
     end;
-   if assigned(fOnDriverChanged) then OnDriverChanged(self);
+   if Assigned(fOnDriverChanged) then OnDriverChanged(self);
    Active := tmpActive;
   end;
 end;
@@ -1210,7 +1210,7 @@ var
 
 begin
  tmpActive := False;
- if assigned(FDriver) then
+ if Assigned(FDriver) then
  begin
   try
    tmpActive := Active;
@@ -1227,7 +1227,7 @@ begin
    if CreateBeRoASIO(FASIOdriverlist[FDriverIndex].id, FDriver) then
     {$ENDIF}
     try
-     if assigned(FDriver) then
+     if Assigned(FDriver) then
       case FDriver.Init(fHandle) of
        0                    : FDriver := nil; // equals to false here
        ASE_NotPresent       : raise Exception.Create('Driver not present');
@@ -1256,7 +1256,7 @@ end;
 
 procedure TCustomASIOHostBasic.CloseDriver;
 begin
- if assigned(FDriver) then
+ if Assigned(FDriver) then
  begin
   try
    if FBuffersCreated then DestroyBuffers;
@@ -1273,7 +1273,7 @@ end;
 
 procedure TCustomASIOHostBasic.ControlPanel;
 begin
- if assigned(FDriver)
+ if Assigned(FDriver)
   then FDriver.ControlPanel;
 end;
 
@@ -1316,8 +1316,8 @@ begin
    ASIOTime.FBufferTime);  // process a buffer with time
   AM_LatencyChanged:
    begin
-    if assigned(FDriver) then FDriver.GetLatencies(inp, outp);
-    if assigned(FOnLatencyChanged) then FOnLatencyChanged(Self);
+    if Assigned(FDriver) then FDriver.GetLatencies(inp, outp);
+    if Assigned(FOnLatencyChanged) then FOnLatencyChanged(Self);
    end;
  end;
 end;
@@ -1354,7 +1354,7 @@ begin
  PMUpdSamplePos.LParam := params.timeInfo.samplePosition.lo;
  Dispatch(PMUpdSamplePos);
 
- if assigned(FOnBufferSwitch) then FOnBufferSwitch(Self,@(FInputBuffer^),index);
+ if Assigned(FOnBufferSwitch) then FOnBufferSwitch(Self,@(FInputBuffer^),index);
  FDriver.OutputReady;
 end;
 
@@ -1364,7 +1364,7 @@ begin
  if (FSampleRate <= 0) or (FSampleRate > 1048575)
   then FSampleRate := 44100;
  ASIOTime.SampleRate := Value;
- if assigned(FDriver) then FDriver.SetSampleRate(Value);
+ if Assigned(FDriver) then FDriver.SetSampleRate(Value);
 end;
 
 procedure TCustomASIOHostBasic.SetActive(Value: Boolean);
@@ -1396,7 +1396,7 @@ begin
    if FBuffersCreated then
     try
      currentbuffer := FOutputBuffer;
-     if assigned(currentbuffer) then
+     if Assigned(currentbuffer) then
       for i := 0 to FOutputChannelCount - 1 do
        with FOutputChannelInfos[i] do
         begin
@@ -1409,13 +1409,13 @@ begin
          assert(assigned(currentbuffer));
          with currentbuffer^ do
           begin
-           if assigned(buffers[0]) then FillChar(buffers[0]^, FBufferSize * sz, 0);
-           if assigned(buffers[1]) then FillChar(buffers[1]^, FBufferSize * sz, 0);
+           if Assigned(buffers[0]) then FillChar(buffers[0]^, FBufferSize * sz, 0);
+           if Assigned(buffers[1]) then FillChar(buffers[1]^, FBufferSize * sz, 0);
           end;
          inc(currentbuffer);
         end;
      currentbuffer := FInputBuffer;
-     if assigned(currentbuffer) then
+     if Assigned(currentbuffer) then
       for i := 0 to FInputChannelCount - 1 do
        with FInputChannelInfos[i] do
         begin
@@ -1428,8 +1428,8 @@ begin
          assert(assigned(currentbuffer));
          with currentbuffer^ do
           begin
-           if assigned(buffers[0]) then FillChar(buffers[0]^, FBufferSize * sz, 0);
-           if assigned(buffers[1]) then FillChar(buffers[1]^, FBufferSize * sz, 0);
+           if Assigned(buffers[0]) then FillChar(buffers[0]^, FBufferSize * sz, 0);
+           if Assigned(buffers[1]) then FillChar(buffers[1]^, FBufferSize * sz, 0);
           end;
          inc(currentbuffer);
         end;
@@ -1445,7 +1445,7 @@ end;
 
 function TCustomASIOHostBasic.CanSampleRate(sampleRate: TASIOSampleRate): TASIOError;
 begin
- if assigned(FDriver)
+ if Assigned(FDriver)
   then result := FDriver.CanSampleRate(SampleRate)
   else result := ASE_NotPresent;
 end;
@@ -1615,16 +1615,16 @@ end;
 procedure TCustomASIOHost.SetOnBufferSwitch32(const Value: TBufferSwitchEvent32);
 begin
  FOnBufferSwitch32 := Value;
- if assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if assigned(FOnBufferSwitch32) then ConvertMethod := cm32
+ if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
+ if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
   else ConvertMethod := cmNone;
 end;
 
 procedure TCustomASIOHost.SetOnBufferSwitch64(const Value: TBufferSwitchEvent64);
 begin
  FOnBufferSwitch64 := Value;
- if assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if assigned(FOnBufferSwitch32) then ConvertMethod := cm32
+ if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
+ if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
   else ConvertMethod := cmNone;
 end;
 
@@ -1779,7 +1779,7 @@ begin
 
  currentbuffer := FInputBuffer;
 
- if assigned(FOnBufferSwitchNative) then FOnBufferSwitchNative(Self, @(FInputBuffer^), index) else
+ if Assigned(FOnBufferSwitchNative) then FOnBufferSwitchNative(Self, @(FInputBuffer^), index) else
  if FConvertMethod = cm64 then
   begin
    // 64bit float processing
@@ -1843,7 +1843,7 @@ begin
    for j := 0 to FOutputChannelCount - 1 do
     begin
      PChannelArray := currentbuffer^.buffers[Index];
-     if assigned(PChannelArray)
+     if Assigned(PChannelArray)
       then FOutConverters[j].oc64(@FDoubleOutBuffer[j, 0], PChannelArray, FBufferSize);
      inc(currentbuffer);
     end;
@@ -1924,7 +1924,7 @@ begin
    for j := 0 to FOutputChannelCount - 1 do
     begin
      PChannelArray := currentbuffer^.buffers[Index];
-     if assigned(PChannelArray)
+     if Assigned(PChannelArray)
       then FOutConverters[j].oc32(@FSingleOutBuffer[j, 0], PChannelArray, FBufferSize);
      inc(currentbuffer);
     end;
@@ -1973,8 +1973,8 @@ end;
 
 destructor TCustomASIOHostAudioData.Destroy;
 begin
- if assigned(FAudioDataInput)  then FreeAndNil(FAudioDataInput);
- if assigned(FAudioDataOutput) then FreeAndNil(FAudioDataOutput);
+ if Assigned(FAudioDataInput)  then FreeAndNil(FAudioDataInput);
+ if Assigned(FAudioDataOutput) then FreeAndNil(FAudioDataOutput);
 
  {$IFDEF ASIOMixer} FreeAndNil(FASIOMixer); {$ENDIF}
  inherited;
@@ -1985,16 +1985,16 @@ end;
 procedure TCustomASIOHostAudioData.SetOnBufferSwitch32(const Value: TBufferSwitchAudioData32Event);
 begin
  FOnBufferSwitch32 := Value;
- if assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if assigned(FOnBufferSwitch32) then ConvertMethod := cm32
+ if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
+ if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
   else ConvertMethod := cmNone;
 end;
 
 procedure TCustomASIOHostAudioData.SetOnBufferSwitch64(const Value: TBufferSwitchAudioData64Event);
 begin
  FOnBufferSwitch64 := Value;
- if assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if assigned(FOnBufferSwitch32) then ConvertMethod := cm32
+ if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
+ if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
   else ConvertMethod := cmNone;
 end;
 
@@ -2017,8 +2017,8 @@ begin
             FAudioDataOutput := TASIOAudioDataCollection64.Create(Self, OutputChannelCount, BufferSize);
            end;
    end;
-   if assigned(OldIn)  then FreeAndNil(OldIn);
-   if assigned(OldOut) then FreeAndNil(OldOut);
+   if Assigned(OldIn)  then FreeAndNil(OldIn);
+   if Assigned(OldOut) then FreeAndNil(OldOut);
   end;
 end;
 
@@ -2044,13 +2044,13 @@ end;
 procedure TCustomASIOHostAudioData.SetupBuffersize;
 begin
  inherited;
- if assigned(FAudioDataInput) then
+ if Assigned(FAudioDataInput) then
   with FAudioDataInput do
    begin
     ChannelCount := InputChannelCount;
     SampleFrames := BufferSize;
    end;
- if assigned(FAudioDataOutput) then
+ if Assigned(FAudioDataOutput) then
   with FAudioDataOutput do
    begin
     ChannelCount := InputChannelCount;
@@ -2113,9 +2113,9 @@ begin
    for i := 0 to FOutputChannelCount - 1 do FOutputVolume[i] := 1;
    {$IFDEF ASIOMixer} SetupMixer; {$ENDIF}
 
-   if assigned(FAudioDataInput)
+   if Assigned(FAudioDataInput)
     then FAudioDataInput.ChannelCount := FInputChannelCount;
-   if assigned(FAudioDataOutput)
+   if Assigned(FAudioDataOutput)
     then FAudioDataOutput.ChannelCount := FOutputChannelCount;
   end;
 end;
@@ -2184,7 +2184,7 @@ begin
      for ch := 0 to FOutputChannelCount - 1 do
       begin
        PChannelArray := currentbuffer^.buffers[Index];
-       if assigned(PChannelArray)
+       if Assigned(PChannelArray)
         then FOutConverters[ch].oc64(PDouble(ChannelDataPointerList[ch]),
                PChannelArray, FBufferSize);
        inc(currentbuffer);
@@ -2236,7 +2236,7 @@ begin
      for ch := 0 to FOutputChannelCount - 1 do
       begin
        PChannelArray := currentbuffer^.buffers[Index];
-       if assigned(PChannelArray)
+       if Assigned(PChannelArray)
         then FOutConverters[ch].oc32(PSingle(ChannelDataPointerList[ch]),
                PChannelArray, FBufferSize);
        inc(currentbuffer);

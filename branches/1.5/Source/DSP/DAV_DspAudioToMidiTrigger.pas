@@ -125,7 +125,7 @@ var
   Band : Integer;
 begin
  for Band := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Band])
+  if Assigned(FFilter[Band])
    then FreeAndNil(FFilter[Band]);
   inherited;
 end;
@@ -234,7 +234,7 @@ var
 begin
  CalculateReciprocalSamplerate;
  for Band := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Band]) then FFilter[Band].SampleRate := SampleRate;
+  if Assigned(FFilter[Band]) then FFilter[Band].SampleRate := SampleRate;
  inherited;
 end;
 
@@ -276,14 +276,14 @@ begin
  // eventually filter audio data
  if not (amFilterBypass in FFlags) then
   for Band := 0 to Length(FFilter) - 1 do
-   if assigned(FFilter[Band])
+   if Assigned(FFilter[Band])
     then Result := FFilter[Band].ProcessSample64(Result);
 
  // check if interval is over
  if (FSampleCount >= 0) then
   if (abs(Result) > FThresholdFactor) then
    begin
-    if assigned(FOnTrigger)
+    if Assigned(FOnTrigger)
      then FOnTrigger(Self, Amp_to_dB(abs(Result)));
 
     // reset sample count
@@ -305,14 +305,14 @@ begin
  // eventually filter audio data
  if not (amFilterBypass in FFlags) then
   for Band := 0 to Length(FFilter) - 1 do
-   if assigned(FFilter[Band])
+   if Assigned(FFilter[Band])
     then Result := FFilter[Band].ProcessSample64(Result);
 
  // check if interval is over
  if (FSampleCount >= 0) then
   if (abs(Result) > FThresholdFactor) then
    begin
-    if assigned(FOnTrigger)
+    if Assigned(FOnTrigger)
      then FOnTrigger(Self, Amp_to_dB(abs(Result)));
 
     // reset sample count

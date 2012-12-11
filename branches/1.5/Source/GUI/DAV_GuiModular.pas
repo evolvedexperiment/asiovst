@@ -129,7 +129,7 @@ begin
 //    Font.Assign(Self.Font);
 
     // check whether a module manager is assigned
-    if not assigned(FModuleManager) then Exit;
+    if not Assigned(FModuleManager) then Exit;
 
     // render modules
     for ModuleNo := 0 to FModuleManager.ModuleCount - 1

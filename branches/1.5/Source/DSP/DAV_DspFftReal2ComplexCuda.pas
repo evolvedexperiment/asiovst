@@ -159,8 +159,8 @@ end;
 
 destructor TFftReal2ComplexCuda32.Destroy;
 begin
- if assigned(FGPUTimeDomain) then CudaFree(FGPUTimeDomain);
- if assigned(FGPUFreqDomain) then CudaFree(FGPUFreqDomain);
+ if Assigned(FGPUTimeDomain) then CudaFree(FGPUTimeDomain);
+ if Assigned(FGPUFreqDomain) then CudaFree(FGPUFreqDomain);
  inherited;
 end;
 
@@ -185,7 +185,7 @@ begin
   then raise Exception.Create(CudaErrorToString(CudaError));
 
  // Free old memory
- if assigned(OldPtr) then CudaFree(OldPtr);
+ if Assigned(OldPtr) then CudaFree(OldPtr);
 
 
  // Frequency Domain
@@ -202,7 +202,7 @@ begin
   then raise Exception.Create(CudaErrorToString(CudaError));
 
  // Free old memory
- if assigned(OldPtr) then CudaFree(OldPtr);
+ if Assigned(OldPtr) then CudaFree(OldPtr);
 end;
 
 procedure TFftReal2ComplexCuda32.PerformFFT(const FrequencyDomain,

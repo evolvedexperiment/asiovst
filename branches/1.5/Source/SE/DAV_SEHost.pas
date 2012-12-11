@@ -132,7 +132,6 @@ type
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure LoadFromFile(FileName: TFileName);
-    procedure LoadFromStream(Stream: TStream);
     procedure UnLoad;
 
     property Loaded: Boolean read FLoaded;

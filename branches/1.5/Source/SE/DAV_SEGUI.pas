@@ -294,7 +294,7 @@ end;
 function DispatchEffectClass(Effect: PSEGUIStructBase; Opcode: Integer;
   Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 begin
-  if assigned(Effect) then
+  if Assigned(Effect) then
   begin
     assert(assigned(Effect.SEGUIBase));
     result := Effect.SEGUIBase.Dispatcher(TSEGuiPluginOpcodes(Opcode), Index,
@@ -396,72 +396,72 @@ end;
 
 procedure TSEGUIBase.GuiDisconnect(PinIndex: Integer);
 begin
-  if assigned(FOnDisconnect) then
+  if Assigned(FOnDisconnect) then
     FOnDisconnect(Self, PinIndex);
 end;
 
 procedure TSEGUIBase.GuiPinValueChange(CurrentPin: TSEGuiPin);
 begin
-  if assigned(FOnPinValueChange) then
+  if Assigned(FOnPinValueChange) then
     FOnPinValueChange(Self, CurrentPin);
 end;
 
 function TSEGUIBase.GuiIdle: Boolean;
 begin
-  if assigned(FOnIdle) then
+  if Assigned(FOnIdle) then
     FOnIdle(Self);
-  result := assigned(FOnIdle);
+  result := Assigned(FOnIdle);
 end;
 
 procedure TSEGUIBase.GuiLButtonDown(WI: PSEWndInfo; nFlags: Cardinal;
   Point: TSEpoint);
 begin
-  if assigned(FOnLButtonDown) then
+  if Assigned(FOnLButtonDown) then
     FOnLButtonDown(Self);
 end;
 
 procedure TSEGUIBase.GuiLButtonUp(WI: PSEWndInfo; nFlags: Cardinal;
   Point: TSEpoint);
 begin
-  if assigned(FOnLButtonUp) then
+  if Assigned(FOnLButtonUp) then
     FOnLButtonUp(Self);
 end;
 
 procedure TSEGUIBase.GuiModuleMsg(UserMsg_id, MsgLength: Integer;
   MsgData: Pointer);
 begin
-  if assigned(FOnLButtonUp) then
+  if Assigned(FOnLButtonUp) then
     FOnLButtonUp(Self);
 end;
 
 procedure TSEGUIBase.GuiMouseMove(WI: PSEWndInfo; nFlags: Cardinal;
   Point: TSEpoint);
 begin
-  if assigned(FOnMouseMove) then
+  if Assigned(FOnMouseMove) then
     FOnMouseMove(Self);
 end;
 
 procedure TSEGUIBase.GuiNewConnection(PinIndex: Integer);
 begin
-  if assigned(FOnNewConnection) then
+  if Assigned(FOnNewConnection) then
     FOnNewConnection(Self);
 end;
 
 procedure TSEGUIBase.GuiWindowClose(WI: PSEWndInfo);
 begin
-  if assigned(FOnWindowClose) then
+  if Assigned(FOnWindowClose) then
     FOnWindowClose(Self);
 end;
 
 procedure TSEGUIBase.GuiWindowOpen(WI: PSEWndInfo);
 begin
-  if assigned(FOnWindowOpen) then
+  if Assigned(FOnWindowOpen) then
     FOnWindowOpen(Self);
 end;
 
 procedure TSEGUIBase.GuiPaint(hDC: hDC; WI: PSEWndInfo);
 begin
-  if assigned(FOnPaint) then
+  if Assigned(FOnPaint) then
     FOnPaint(Self);
 end;
 

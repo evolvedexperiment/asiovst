@@ -253,7 +253,7 @@ begin
 
  FreeAndNil(FAudioFile);
  for Channel := 0 to Length(FBuffer) - 1 do
-  if assigned(FBuffer[Channel]) then Dispose(FBuffer[Channel]);
+  if Assigned(FBuffer[Channel]) then Dispose(FBuffer[Channel]);
 
  FreeAndNil(FCriticalSection); 
  inherited;

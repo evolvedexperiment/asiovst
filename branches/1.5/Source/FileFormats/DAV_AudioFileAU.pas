@@ -397,7 +397,7 @@ begin
   else Result := nil;
  end;
 
- if assigned(Result) then
+ if Assigned(Result) then
   with Result do
    begin
     BlockSize := Self.FBlockSize;
@@ -427,11 +427,11 @@ begin
    // advance offset
    Position := Position + FAUHeader.Offset;
 
-   if assigned(FOnBeginRead)
+   if Assigned(FOnBeginRead)
     then FOnBeginRead(Self);
 
    DataDecoder := CreateDataCoder;
-   if not assigned(DataDecoder) then exit;
+   if not Assigned(DataDecoder) then exit;
 
    with DataDecoder do
     try
@@ -439,13 +439,13 @@ begin
      while Samples + SampleFrames <= Cardinal(FAUHeader.DataSize) do
       begin
        LoadFromStream(Stream);
-       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+       if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
        Samples := Samples + SampleFrames;
       end;
 
       SampleFrames := Cardinal(FAUHeader.DataSize) - Samples;
       LoadFromStream(Stream);
-      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+      if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
     finally
      FreeAndNil(DataDecoder);
     end;
@@ -473,21 +473,21 @@ begin
      end;
 
     DataDecoder := CreateDataCoder;
-    if not assigned(DataDecoder) then exit;
+    if not Assigned(DataDecoder) then exit;
 
     with DataDecoder do
      try
       Samples   := 0;
       while Samples + SampleFrames <= Cardinal(FAUHeader.DataSize) do
        begin
-        if assigned(FOnEncode) then FOnEncode(Self, DataDecoder, Samples);
+        if Assigned(FOnEncode) then FOnEncode(Self, DataDecoder, Samples);
         SaveToStream(Stream);
 
         Samples := Samples + SampleFrames;
        end;
 
        SampleFrames := Cardinal(FAUHeader.DataSize) - Samples;
-       if assigned(FOnEncode) then FOnEncode(Self, DataDecoder, Samples);
+       if Assigned(FOnEncode) then FOnEncode(Self, DataDecoder, Samples);
        SaveToStream(Stream);
       finally
       FreeAndNil(DataDecoder);

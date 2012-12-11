@@ -566,7 +566,7 @@ end;
 
 destructor TGuiDialLayerCollectionItem.Destroy;
 begin
- if assigned(FPrimitive) then FreeAndNil(FPrimitive);
+ if Assigned(FPrimitive) then FreeAndNil(FPrimitive);
  inherited;
 end;
 
@@ -577,7 +577,7 @@ end;
 
 function TGuiDialLayerCollectionItem.GetPrimitiveClassName: string;
 begin
- if assigned(FPrimitive)
+ if Assigned(FPrimitive)
   then Result := FPrimitive.ClassName
   else Result := '';
 end;

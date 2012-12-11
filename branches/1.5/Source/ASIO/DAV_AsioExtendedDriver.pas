@@ -204,7 +204,7 @@ uses SysUtils, Math, MMSystem;
 procedure TDavASIOExtDrvrProcessingThread.Execute;
 begin
   while not Terminated do
-    if assigned(Driver) then
+    if Assigned(Driver) then
       Driver.ProcessBuffers
     else Terminate;
 end;
@@ -249,11 +249,11 @@ begin
   GetMem(DoubleBuffer[0], size * samplesize);
   GetMem(DoubleBuffer[1], size * samplesize);
 
-  if not assigned(DoubleBuffer[0]) or not assigned(DoubleBuffer[1]) then
+  if not Assigned(DoubleBuffer[0]) or not Assigned(DoubleBuffer[1]) then
   begin
     IsActive := false;
-    if assigned(DoubleBuffer[0]) then FreeMem(DoubleBuffer[0]);
-    if assigned(DoubleBuffer[1]) then FreeMem(DoubleBuffer[1]);
+    if Assigned(DoubleBuffer[0]) then FreeMem(DoubleBuffer[0]);
+    if Assigned(DoubleBuffer[1]) then FreeMem(DoubleBuffer[1]);
   end else begin
     IsActive := true;
     Buffers[0] := DoubleBuffer[0];
@@ -268,8 +268,8 @@ begin
   if not IsActive then exit;
   IsActive := false;
 
-  if assigned(DoubleBuffer[0]) then FreeMem(DoubleBuffer[0]);
-  if assigned(DoubleBuffer[1]) then FreeMem(DoubleBuffer[1]);
+  if Assigned(DoubleBuffer[0]) then FreeMem(DoubleBuffer[0]);
+  if Assigned(DoubleBuffer[1]) then FreeMem(DoubleBuffer[1]);
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion 'Channel list implementation'} {$ENDIF}
@@ -919,7 +919,7 @@ end;
 
 function TDavASIOExtendedDriver.Start: TASIOError;
 begin
-  if assigned(fHostCallbacks) then
+  if Assigned(fHostCallbacks) then
   begin
     InitializeTimeInfo;
     fCurrentBuffer := 0;
@@ -939,7 +939,7 @@ end;
 
 procedure TDavASIOExtendedDriver.StartProcessingThread;
 begin
-  if assigned(fProcessingThread) then StopProcessingThread;
+  if Assigned(fProcessingThread) then StopProcessingThread;
 
   fProcessingThread := TDavASIOExtDrvrProcessingThread.Create(true);
   fProcessingThread.Driver := self;
@@ -948,7 +948,7 @@ end;
 
 procedure TDavASIOExtendedDriver.StopProcessingThread;
 begin
-  if assigned(fProcessingThread) then
+  if Assigned(fProcessingThread) then
   begin
     with fProcessingThread do
     begin
@@ -1024,7 +1024,7 @@ begin
 
   UpdateTimings;
 
-  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.bufferSwitch) then
+  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.bufferSwitch) then
     fHostCallbacks^.bufferSwitch(DoubleBufferIndex, DirectProcess);
 end;
 
@@ -1038,7 +1038,7 @@ begin
 
   UpdateTimings;
 
-  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.bufferSwitchTimeInfo) then
+  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.bufferSwitchTimeInfo) then
     fHostCallbacks^.bufferSwitchTimeInfo(fAsioTime, DoubleBufferIndex, DirectProcess);
 
   fAsioTime.TimeInfo.Flags := fAsioTime.TimeInfo.Flags and not (kSampleRateChanged or kClockSourceChanged);
@@ -1046,7 +1046,7 @@ end;
 
 procedure TDavASIOExtendedDriver.ASIOSampleRateDidChange(SampleRate: TASIOSampleRate);
 begin
-  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.sampleRateDidChange) then
+  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.sampleRateDidChange) then
     fHostCallbacks^.sampleRateDidChange(SampleRate);
 end;
 
@@ -1054,7 +1054,7 @@ function TDavASIOExtendedDriver.ASIOMessage(Selector, Value: Integer; msg: Point
 begin
   if Selector = kAsioResetRequest then SaveDriverSettings;
 
-  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.asioMessage) then
+  if Assigned(fHostCallbacks) and Assigned(fHostCallbacks^.asioMessage) then
     result := fHostCallbacks^.asioMessage(Selector, Value, msg, Opt)
   else result := 0;
 end;

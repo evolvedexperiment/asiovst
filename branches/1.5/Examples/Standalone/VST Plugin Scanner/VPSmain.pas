@@ -164,7 +164,7 @@ end;
 
 procedure TVSTScanThread.ListEnahncedVSTproperties;
 begin
- if assigned(FListViewItem) then
+ if Assigned(FListViewItem) then
   with FVSTHost[0], FListViewItem.SubItems do
    try
     Add(EffectName);
@@ -317,10 +317,10 @@ var
 begin
  // free existing threads
  for i := 0 to CNumThreads - 1 do
-  if assigned(FThreads[i]) then
+  if Assigned(FThreads[i]) then
    try
     FThreads[i].Terminate;
-    if not assigned(FThreads[i].FatalException) and not FThreads[i].Terminated
+    if not Assigned(FThreads[i].FatalException) and not FThreads[i].Terminated
      then FThreads[i].WaitFor;
    finally
     FreeAndNil(FThreads[i]);
@@ -356,7 +356,7 @@ begin
  FreeeExistingThreads;
  FFileIndex := 0;
 
- if not assigned(FFilesToScan)
+ if not Assigned(FFilesToScan)
   then FFilesToScan := TStringList.Create
   else FFilesToScan.Clear;
 

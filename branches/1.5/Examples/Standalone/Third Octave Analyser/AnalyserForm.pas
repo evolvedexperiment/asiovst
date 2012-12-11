@@ -202,7 +202,7 @@ begin
      do Inc(Downsampling);
 
    // eventually create filter
-   if not assigned(FFilterArray[Band].Lowpass)
+   if not Assigned(FFilterArray[Band].Lowpass)
     then FFilterArray[Band].Lowpass := TChebyshev1LowpassFilter.Create(10);
 
    with FFilterArray[Band].Lowpass do
@@ -216,7 +216,7 @@ begin
    DesiredFreq := CThirdOctaveFrequencies[CNumFrequencies - Band - 1] / HalfThirdMulFak;
 
    // eventually create filter
-   if not assigned(FFilterArray[Band].Highpass)
+   if not Assigned(FFilterArray[Band].Highpass)
     then FFilterArray[Band].Highpass := TChebyshev1HighpassFilter.Create(12);
     
    with FFilterArray[Band].Highpass do

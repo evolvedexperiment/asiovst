@@ -193,8 +193,8 @@ end;
 procedure TCustomBarberpoleFilter.SampleRateChanged;
 begin
  inherited;
- if assigned(FLFO) then FLFO.SampleRate := SampleRate;
- if assigned(FLowpass) then FLowpass.SampleRate := SampleRate;
+ if Assigned(FLFO) then FLFO.SampleRate := SampleRate;
+ if Assigned(FLowpass) then FLowpass.SampleRate := SampleRate;
 end;
 
 procedure TCustomBarberpoleFilter.SetFrequency(const Value: Single);
@@ -264,8 +264,8 @@ end;
 procedure TCustomBarberpoleTuner.SampleRateChanged;
 begin
  inherited;
- if assigned(FBarberpoleFilter) then FBarberpoleFilter.SampleRate := SampleRate;
- if assigned(FZCTuner) then FZCTuner.SampleRate := SampleRate;
+ if Assigned(FBarberpoleFilter) then FBarberpoleFilter.SampleRate := SampleRate;
+ if Assigned(FZCTuner) then FZCTuner.SampleRate := SampleRate;
 end;
 
 procedure TCustomBarberpoleTuner.SetFrequency(const Value: Single);

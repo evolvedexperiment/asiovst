@@ -224,7 +224,7 @@ begin
  // check and eventually add new filters
  for FilterNo := 0 to Length(FNotchFilters) - 1 do
   begin
-   if not assigned(FNotchFilters[FilterNo]) then
+   if not Assigned(FNotchFilters[FilterNo]) then
     begin
      FNotchFilters[FilterNo] := TBasicPeakFilter.Create;
      with FNotchFilters[FilterNo] do

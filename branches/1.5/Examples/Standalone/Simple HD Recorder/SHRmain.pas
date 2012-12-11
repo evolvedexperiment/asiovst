@@ -210,7 +210,7 @@ end;
 procedure TFmSimpleHDRecorder.FormDestroy(Sender: TObject);
 begin
  FreeAndNil(FBackground);
- if assigned(FStorageThread) then
+ if Assigned(FStorageThread) then
   begin
    if FStorageThread.Suspended then FStorageThread.Resume;
    FStorageThread.Terminate;
@@ -282,7 +282,7 @@ begin
   try
    if ReadBool('Application', 'Use Threads', True) then
     begin
-     if assigned(FStorageThread) then
+     if Assigned(FStorageThread) then
       begin
        if FStorageThread.Suspended then FStorageThread.Resume;
        FStorageThread.Terminate;
@@ -317,7 +317,7 @@ procedure TFmSimpleHDRecorder.SwitchRecordingBuffer;
 begin
  FDataBufferIndex := 1 - FDataBufferIndex;
  FDataBufferPos := 0;
- if not assigned(FStorageThread)
+ if not Assigned(FStorageThread)
   then StoreData(FDataBufferIndex)
   else FStorageThread.Resume;
 end;

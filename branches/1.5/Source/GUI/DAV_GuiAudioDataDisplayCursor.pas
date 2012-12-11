@@ -98,7 +98,7 @@ end;
 
 procedure TCustomGuiAudioDataDisplayCursor.CursorChanged;
 begin
- if assigned(FOnChanged)
+ if Assigned(FOnChanged)
   then FOnChanged(Self);
 end;
 

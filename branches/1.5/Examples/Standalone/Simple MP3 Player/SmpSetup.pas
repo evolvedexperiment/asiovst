@@ -116,7 +116,7 @@ begin
         OutputChannelInfos[2 * i + 1].name);
      end;
     CBOutput.ItemIndex := 0;
-    if assigned(OnReset)
+    if Assigned(OnReset)
      then OnReset(Self);
 
     with TIniFile.Create(FmSimpleMp3Player.IniFile) do

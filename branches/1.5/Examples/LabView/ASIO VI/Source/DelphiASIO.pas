@@ -154,7 +154,7 @@ end;
 
 destructor TDelphiASIO.Destroy;
 begin
- if assigned(ASIODriverinterface)
+ if Assigned(ASIODriverinterface)
   then ASIODriverinterface := nil;
  CoUninitialize;
  inherited Destroy;
@@ -365,7 +365,7 @@ begin
  if Result
   then ASIODriver := DelphiASIO
   else ASIODriver := nil;
- Result := assigned(ASIODriver);
+ Result := Assigned(ASIODriver);
 end;
 
 function CreateDelphiASIO(const AsioCLSID:TClsId;var ASIODriver:TDelphiASIO):Boolean; overload;
@@ -376,7 +376,7 @@ begin
    ASIODriver.Destroy;
    ASIODriver := nil;
   end;
- Result := assigned(ASIODriver);
+ Result := Assigned(ASIODriver);
 end;
 
 initialization
