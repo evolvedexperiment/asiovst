@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkBlowHole;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -37,64 +67,66 @@ uses
 type
   TStkBlowHole = class(TStkControlableInstrument)
   protected
-    FDelays        : array[0..2] of TStkDelayL;
-    FReedTable     : TStkReedTable;
-    FFilter        : TStkOneZero;
-    FTonehole      : TStkPoleZero;
-    FVent          : TStkPoleZero;
-    FEnvelope      : TStkEnvelope;
-    FNoise         : TStkNoise;
-    FVibrato       : TStkLfo;
-    FLength        : Integer;
-    FScatter       : Single;
-    FThCoeff       : Single;
-    FRth           : Single;
-    FRhCoeff       : Single;
-    FRhGain        : Single;
-    FOutputGain    : Single;
-    FNoiseGain     : Single;
-    FVibratoGain   : Single;
-    FBaseFrequency : Single;
+    FDelays: array [0 .. 2] of TStkDelayL;
+    FReedTable: TStkReedTable;
+    FFilter: TStkOneZero;
+    FTonehole: TStkPoleZero;
+    FVent: TStkPoleZero;
+    FEnvelope: TStkEnvelope;
+    FNoise: TStkNoise;
+    FVibrato: TStkLfo;
+    FLength: Integer;
+    FScatter: Single;
+    FThCoeff: Single;
+    FRth: Single;
+    FRhCoeff: Single;
+    FRhGain: Single;
+    FOutputGain: Single;
+    FNoiseGain: Single;
+    FVibratoGain: Single;
+    FBaseFrequency: Single;
 
-    //! Set instrument parameters for a particular frequency.
+    // ! Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
     function GetFrequency: Single; override;
 
     procedure FrequencyChanged; virtual;
 
-    //! Set the tonehole state (0.0 := closed, 1.0 := fully open).
+    // ! Set the tonehole state (0.0 := closed, 1.0 := fully open).
     procedure SetTonehole(const Value: Single);
 
-    //! Set the register hole state (0.0 := closed, 1.0 := fully open).
+    // ! Set the register hole state (0.0 := closed, 1.0 := fully open).
     procedure SetVent(const Value: Single);
 
   public
-    //! Class constructor.
-    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
+    // ! Class constructor.
+    constructor Create(const SampleRate, LowestFrequency: Single);
+      reintroduce; virtual;
 
-    //! Class destructor.
+    // ! Class destructor.
     destructor Destroy; override;
 
-    //! Reset and clear all internal state.
+    // ! Reset and clear all internal state.
     procedure Clear;
 
-    //! Apply breath pressure to instrument with given amplitude and rate of increase.
+    // ! Apply breath pressure to instrument with given amplitude and rate of increase.
     procedure StartBlowing(const Amplitude, Rate: Single);
 
-    //! Decrease breath pressure with given rate of decrease.
+    // ! Decrease breath pressure with given rate of decrease.
     procedure StopBlowing(const Rate: Single);
 
-    //! Start a note with the given frequency and amplitude.
+    // ! Start a note with the given frequency and amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    //! Stop a note with the given amplitude (speed of decay).
+    // ! Stop a note with the given amplitude (speed of decay).
     procedure NoteOff(const Amplitude: Single); override;
 
-    //! Compute one output sample.
+    // ! Compute one output sample.
     function Tick: Single; override;
 
-    //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    // ! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -117,18 +149,18 @@ begin
   FDelays[2] := TStkDelayL.Create(SampleRate, 4.0 * SampleRate / 22050.0, 100);
   FReedTable := TStkReedTable.Create(SampleRate);
   FReedTable.Offset := 0.7;
-  FReedTable.Slope  := -0.3;
+  FReedTable.Slope := -0.3;
   FFilter := TStkOneZero.Create(SampleRate);
   FEnvelope := TStkEnvelope.Create(SampleRate);
   FNoise := TStkNoise.Create(SampleRate);
 
   // Calculate the initial FTonehole three-port scattering coefficient
-  r_b := 0.0075;    // main bore radius
-  FRth := 0.003;          // FTonehole radius
+  r_b := 0.0075; // main bore radius
+  FRth := 0.003; // FTonehole radius
   FScatter := -power(FRth, 2) / (power(FRth, 2) + 2 * power(r_b, 2));
 
   // Calculate FTonehole coefficients
-  te := 1.4 * FRth;    // effective FLength of the open hole
+  te := 1.4 * FRth; // effective FLength of the open hole
   FThCoeff := (te * 2 * SampleRate - 347.23) / (te * 2 * SampleRate + 347.23);
   FTonehole := TStkPoleZero.Create(SampleRate);
   // Start with FTonehole open
@@ -137,9 +169,9 @@ begin
   FTonehole.setB1(-1.0);
 
   // Calculate register hole FFilter coefficients
-  r_rh := 0.0015;    // register FVent radius
-  te := 1.4 * r_rh;       // effective FLength of the open hole
-  xi := 0.0;         // series resistance term
+  r_rh := 0.0015; // register FVent radius
+  te := 1.4 * r_rh; // effective FLength of the open hole
+  xi := 0.0; // series resistance term
   zeta := 347.23 + 2 * PI * power(r_b, 2) * xi / 1.1769;
   psi := 2 * PI * power(r_b, 2) * te / (PI * power(r_rh, 2));
   FRhCoeff := (zeta - 2 * SampleRate * psi) / (zeta + 2 * SampleRate * psi);
@@ -184,12 +216,13 @@ end;
 
 procedure TStkBlowHole.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Value then
+  if FBaseFrequency <> Value then
   begin
-   if (Value <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Value;
-   FrequencyChanged;
+    if (Value <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Value;
+    FrequencyChanged;
   end;
 end;
 
@@ -197,18 +230,20 @@ procedure TStkBlowHole.FrequencyChanged;
 var
   Delay: Single;
 begin
- // Delay := FLength - approximate FFilter delay.
- Delay := (SampleRate / FBaseFrequency) * 0.5 - 3.5;
- Delay := Delay - (FDelays[0].Delay + FDelays[2].Delay);
+  // Delay := FLength - approximate FFilter delay.
+  Delay := (SampleRate / FBaseFrequency) * 0.5 - 3.5;
+  Delay := Delay - (FDelays[0].Delay + FDelays[2].Delay);
 
- if (Delay <= 0.0) then Delay := 0.3
- else if (Delay > FLength) then Delay := FLength;
- FDelays[1].Delay := Delay;
+  if (Delay <= 0.0) then
+    Delay := 0.3
+  else if (Delay > FLength) then
+    Delay := FLength;
+  FDelays[1].Delay := Delay;
 end;
 
 function TStkBlowHole.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkBlowHole.SetVent(const Value: Single);
@@ -219,9 +254,12 @@ begin
   // any point between "Open" (newValue := 1) and "Closed"
   // (newValue := 0).
 
-  if (Value <= 0.0) then Gain := 0.0
-   else if (Value >= 1.0) then Gain := FRhGain
-   else Gain := Value * FRhGain;
+  if (Value <= 0.0) then
+    Gain := 0.0
+  else if (Value >= 1.0) then
+    Gain := FRhGain
+  else
+    Gain := Value * FRhGain;
   FVent.Gain := Gain;
 end;
 
@@ -229,20 +267,23 @@ procedure TStkBlowHole.SetTonehole(const Value: Single);
 var
   NewCoeff: Single;
 begin
- // This method allows setting of the FTonehole "open-ness" at
- // any point between "Open" (newValue := 1) and "Closed"
- // (newValue := 0).
- if (Value <= 0.0) then NewCoeff := 0.9995
-  else if (Value >= 1.0) then NewCoeff := FThCoeff
-  else NewCoeff := (Value * (FThCoeff - 0.9995)) + 0.9995;
- FTonehole.SetA1(-NewCoeff);
- FTonehole.SetB0(NewCoeff);
+  // This method allows setting of the FTonehole "open-ness" at
+  // any point between "Open" (newValue := 1) and "Closed"
+  // (newValue := 0).
+  if (Value <= 0.0) then
+    NewCoeff := 0.9995
+  else if (Value >= 1.0) then
+    NewCoeff := FThCoeff
+  else
+    NewCoeff := (Value * (FThCoeff - 0.9995)) + 0.9995;
+  FTonehole.setA1(-NewCoeff);
+  FTonehole.setB0(NewCoeff);
 end;
 
 procedure TStkBlowHole.StartBlowing(const Amplitude, Rate: Single);
 begin
- FEnvelope.Rate := Rate;
- FEnvelope.Target := Amplitude;
+  FEnvelope.Rate := Rate;
+  FEnvelope.Target := Amplitude;
 end;
 
 procedure TStkBlowHole.StopBlowing(const Rate: Single);
@@ -253,65 +294,66 @@ end;
 
 procedure TStkBlowHole.NoteOn(const Frequency, Amplitude: Single);
 begin
-  SetFrequency(frequency);
+  SetFrequency(Frequency);
   StartBlowing(0.55 + (Amplitude * 0.30), Amplitude * 0.005);
   FOutputGain := Amplitude + 0.001;
 end;
 
 procedure TStkBlowHole.NoteOff(const Amplitude: Single);
 begin
- StopBlowing(Amplitude * 0.01);
+  StopBlowing(Amplitude * 0.01);
 end;
 
 function TStkBlowHole.Tick: Single;
 var
   pth, pa, pb, pressureDiff, breathPressure, temp: Single;
 begin
- // Calculate the breath pressure (FEnvelope + FNoise + FVibrato)
- breathPressure := FEnvelope.Tick;
- breathPressure := breathpressure + breathPressure * FNoiseGain * FNoise.Tick;
- breathPressure := breathpressure + breathPressure * FVibratoGain *
-   FVibrato.Tick;
+  // Calculate the breath pressure (FEnvelope + FNoise + FVibrato)
+  breathPressure := FEnvelope.Tick;
+  breathPressure := breathPressure + breathPressure * FNoiseGain * FNoise.Tick;
+  breathPressure := breathPressure + breathPressure * FVibratoGain *
+    FVibrato.Tick;
 
- // Calculate the differential pressure := reflected - mouthpiece pressures
- pressureDiff := FDelays[0].LastOutput - breathPressure;
+  // Calculate the differential pressure := reflected - mouthpiece pressures
+  pressureDiff := FDelays[0].LastOutput - breathPressure;
 
- // Do two-port junction scattering for register FVent
- pa := breathPressure + pressureDiff * FReedTable.Tick(pressureDiff);
- pb := FDelays[1].LastOutput;
- FVent.Tick(pa + pb);
+  // Do two-port junction scattering for register FVent
+  pa := breathPressure + pressureDiff * FReedTable.Tick(pressureDiff);
+  pb := FDelays[1].LastOutput;
+  FVent.Tick(pa + pb);
 
- FLastOutput := FOutputGain * FDelays[0].Tick(FVent.LastOutput + pb);
+  FLastOutput := FOutputGain * FDelays[0].Tick(FVent.LastOutput + pb);
 
- // Do three-port junction scattering (under FTonehole)
- pa := pa + FVent.LastOutput;
- pb := FDelays[2].LastOutput;
- pth := FTonehole.LastOutput;
- temp := FScatter * (pa + pb - 2 * pth);
+  // Do three-port junction scattering (under FTonehole)
+  pa := pa + FVent.LastOutput;
+  pb := FDelays[2].LastOutput;
+  pth := FTonehole.LastOutput;
+  temp := FScatter * (pa + pb - 2 * pth);
 
- FDelays[2].Tick(FFilter.Tick(pa + temp) * -0.95);
- FDelays[1].Tick(pb + temp);
- FTonehole.Tick(pa + pb - pth + temp);
+  FDelays[2].Tick(FFilter.Tick(pa + temp) * -0.95);
+  FDelays[1].Tick(pb + temp);
+  FTonehole.Tick(pa + pb - pth + temp);
 
- Result := lastOutput;
+  result := LastOutput;
 end;
 
-procedure TStkBlowHole.ControlChange(const Number: Integer; const Value: Single);
+procedure TStkBlowHole.ControlChange(const Number: Integer;
+  const Value: Single);
 var
   norm: Single;
 begin
   norm := Limit(Value, 0, 1);
 
- if (number = CMidiReedStiffness) then // 2
-   FReedTable.Slope := -0.44 + (0.26 * norm)
- else if (number = CMidiNoiseLevel) then // 4
-   FNoiseGain := (norm * 0.4)
- else if (number = CMidiModFrequency) then // 11
-   setTonehole(norm)
- else if (number = CMidiModWheel) then // 1
-   setVent(norm)
- else if (number = CMidiAfterTouchCont) then // 128
-   FEnvelope.CurrentValue := norm;
+  if (Number = CMidiReedStiffness) then // 2
+    FReedTable.Slope := -0.44 + (0.26 * norm)
+  else if (Number = CMidiNoiseLevel) then // 4
+    FNoiseGain := (norm * 0.4)
+  else if (Number = CMidiModFrequency) then // 11
+    SetTonehole(norm)
+  else if (Number = CMidiModWheel) then // 1
+    SetVent(norm)
+  else if (Number = CMidiAfterTouchCont) then // 128
+    FEnvelope.CurrentValue := norm;
 end;
 
 end.

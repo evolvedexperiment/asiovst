@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkWurley;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -28,7 +58,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_StkCommon, DAV_StkFm, 
+{$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_StkCommon, DAV_StkFm,
   DAV_StkWavePlayer;
 
 type
@@ -86,10 +116,10 @@ end;
 
 procedure TStkWurley.FrequencyChanged;
 begin
- FWaves[0].Frequency := FBaseFrequency * FRatios[0];
- FWaves[1].Frequency := FBaseFrequency * FRatios[1];
- FWaves[2].Frequency := FRatios[2];  // Note here a 'fixed resonance'.
- FWaves[3].Frequency := FRatios[3];
+  FWaves[0].Frequency := FBaseFrequency * FRatios[0];
+  FWaves[1].Frequency := FBaseFrequency * FRatios[1];
+  FWaves[2].Frequency := FRatios[2]; // Note here a 'fixed resonance'.
+  FWaves[3].Frequency := FRatios[3];
 end;
 
 procedure TStkWurley.NoteOn(const Frequency, Amplitude: Single);
@@ -111,7 +141,7 @@ begin
   FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
   temp := FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
   FTwoZero.Tick(temp);
-  FWaves[2].AddPhaseOffset(temp);
+  FWaves[2].addPhaseOffset(temp);
   temp := (1.0 - FControlB) * FGains[0] * FAdsr[0].Tick * FWaves[0].Tick;
   temp := temp + FControlB * FGains[2] * FAdsr[2].Tick * FWaves[2].Tick;
 

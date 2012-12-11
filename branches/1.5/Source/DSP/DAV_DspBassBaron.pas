@@ -1,34 +1,34 @@
-unit DAV_DspBassBaron;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_DspBassBaron;
 
 interface
 
@@ -40,18 +40,18 @@ uses
   DAV_DspPsychoacousticBassEnhancer;
 
 type
-  TSplit32 = procedure (Input: Single; out Low, High: Single) of object;
-  TSplit64 = procedure (Input: Double; out Low, High: Double) of object;
+  TSplit32 = procedure(Input: Single; out Low, High: Single) of object;
+  TSplit64 = procedure(Input: Double; out Low, High: Double) of object;
   TSplitFilter = (sfSimple, sfLinkwitzRiley);
   TBassBaronAlgorithm = (bbaStraight, bbaPerfectHarmony, bbaResurrection,
     bbaSteam);
 
   TCustomBassBaron = class(TCustomPsychoAcousticBassEnhancer)
   private
-    FDecay       : Single;
-    FGains       : array [0..4] of Single;
-    FResponse    : Single;
-    FSplitFilter : TSplitFilter;
+    FDecay: Single;
+    FGains: array [0 .. 4] of Single;
+    FResponse: Single;
+    FSplitFilter: TSplitFilter;
     FAlgorithm: TBassBaronAlgorithm;
     procedure SetLowcutFrequency(const Value: Single);
     procedure SetDecay(const Value: Single);
@@ -62,16 +62,16 @@ type
     procedure SetAlgorithm(const Value: TBassBaronAlgorithm);
   protected
     // split band filters
-    FCrossover       : TButterworthSplitBandFilter;
-    FLowpass         : TButterworthLowpassFilter;
-    FHighpass        : TButterworthHighpassFilter;
-    FLowCut          : TButterworthLowCutFilter;
-    FLimiter         : TCustomLimiter;
-    FSplit32         : TSplit32;
-    FSplit64         : TSplit64;
-    FSign            : Single;
-    FOrder           : Byte;
-    FLowCutFrequency : Single;
+    FCrossover: TButterworthSplitBandFilter;
+    FLowpass: TButterworthLowpassFilter;
+    FHighpass: TButterworthHighpassFilter;
+    FLowCut: TButterworthLowCutFilter;
+    FLimiter: TCustomLimiter;
+    FSplit32: TSplit32;
+    FSplit64: TSplit64;
+    FSign: Single;
+    FOrder: Byte;
+    FLowCutFrequency: Single;
 
     procedure AlgorithmChanged; virtual;
     procedure DecayChanged; virtual;
@@ -98,9 +98,9 @@ type
     property OutputLevel: Single read FGains[4] write FGains[4];
     property SplitFilter: TSplitFilter read FSplitFilter write SetSplitFilter;
     property SplitOrder: Byte read FOrder write SetSplitOrder;
-    property LowcutFrequency: Single read FLowCutFrequency write SetLowcutFrequency;
-    property
-    Algorithm: TBassBaronAlgorithm read FAlgorithm write SetAlgorithm;
+    property LowcutFrequency: Single read FLowCutFrequency
+      write SetLowcutFrequency;
+    property Algorithm: TBassBaronAlgorithm read FAlgorithm write SetAlgorithm;
 
     property Response: Single read FResponse write SetResponse;
 
@@ -130,300 +130,301 @@ uses
 
 constructor TCustomBassBaron.Create;
 begin
- inherited;
- FOrder := 3;
- FResponse := 20;
- FSplitFilter := sfSimple;
- UpdateSplitFilters;
+  inherited;
+  FOrder := 3;
+  FResponse := 20;
+  FSplitFilter := sfSimple;
+  UpdateSplitFilters;
 
- // create & setup limiter
- FLimiter := TLightweightSoftKneeLimiter.Create;
- with TLightweightSoftKneeLimiter(FLimiter) do
+  // create & setup limiter
+  FLimiter := TLightweightSoftKneeLimiter.Create;
+  with TLightweightSoftKneeLimiter(FLimiter) do
   begin
-   Attack := FResponse;
-   Release := FResponse;
-   Threshold_dB := 0;
-   Knee_dB := 6;
-   MakeUpGain_dB := 3;
-   SampleRate := SampleRate;
+    Attack := FResponse;
+    Release := FResponse;
+    Threshold_dB := 0;
+    Knee_dB := 6;
+    MakeUpGain_dB := 3;
+    SampleRate := SampleRate;
   end;
 
- // create crossover filter
- FCrossover := TButterworthSplitBandFilter.Create(FOrder);
- FCrossover.SampleRate := SampleRate;
- FLowpass := TButterworthLowpassFilter.Create(FOrder);
- FLowpass.SampleRate := SampleRate;
- FHighpass := TButterworthHighpassFilter.Create(FOrder);
- FHighpass.SampleRate := SampleRate;
+  // create crossover filter
+  FCrossover := TButterworthSplitBandFilter.Create(FOrder);
+  FCrossover.SampleRate := SampleRate;
+  FLowpass := TButterworthLowpassFilter.Create(FOrder);
+  FLowpass.SampleRate := SampleRate;
+  FHighpass := TButterworthHighpassFilter.Create(FOrder);
+  FHighpass.SampleRate := SampleRate;
 
- // create & setup low cut filter
- FLowCutFrequency := 20;
- FLowCut := TButterworthHighpassFilter.Create(1);
- FLowCut.SampleRate := SampleRate;
- FLowCut.Frequency  := FLowCutFrequency;
+  // create & setup low cut filter
+  FLowCutFrequency := 20;
+  FLowCut := TButterworthHighpassFilter.Create(1);
+  FLowCut.SampleRate := SampleRate;
+  FLowCut.Frequency := FLowCutFrequency;
 
- FGains[0] := 1;
- FGains[1] := 1;
- FGains[2] := 1;
- FGains[3] := 0;
+  FGains[0] := 1;
+  FGains[1] := 1;
+  FGains[2] := 1;
+  FGains[3] := 0;
 
- FrequencyChanged;
+  FrequencyChanged;
 end;
 
 destructor TCustomBassBaron.Destroy;
 begin
- FreeAndNil(FLimiter);
+  FreeAndNil(FLimiter);
 
- FreeAndNil(FCrossover);
- FreeAndNil(FLowpass);
- FreeAndNil(FHighpass);
+  FreeAndNil(FCrossover);
+  FreeAndNil(FLowpass);
+  FreeAndNil(FHighpass);
 
- FreeAndNil(FLowCut);
+  FreeAndNil(FLowCut);
 
- inherited;
+  inherited;
 end;
 
 procedure TCustomBassBaron.SetAlgorithm(const Value: TBassBaronAlgorithm);
 begin
- if FAlgorithm <> Value then
+  if FAlgorithm <> Value then
   begin
-   FAlgorithm := Value;
-   AlgorithmChanged;
+    FAlgorithm := Value;
+    AlgorithmChanged;
   end;
 end;
 
 procedure TCustomBassBaron.SetDecay(const Value: Single);
 begin
- if FDecay <> Value then
+  if FDecay <> Value then
   begin
-   FDecay := Value;
-   DecayChanged;
+    FDecay := Value;
+    DecayChanged;
   end;
 end;
 
-procedure TCustomBassBaron.SetLowcutFrequency(
-  const Value: Single);
+procedure TCustomBassBaron.SetLowcutFrequency(const Value: Single);
 begin
- if FLowCutFrequency <> Value then
+  if FLowCutFrequency <> Value then
   begin
-   FLowCutFrequency := Value;
-   LowcutFrequencyChanged;
+    FLowCutFrequency := Value;
+    LowcutFrequencyChanged;
   end;
 end;
 
 procedure TCustomBassBaron.SetResponse(const Value: Single);
 begin
- if FResponse <> Value then
+  if FResponse <> Value then
   begin
-   FResponse := Value;
-   ResponseChanged;
+    FResponse := Value;
+    ResponseChanged;
   end;
 end;
 
 procedure TCustomBassBaron.SetSplitFilter(const Value: TSplitFilter);
 begin
- if FSplitFilter <> Value then
+  if FSplitFilter <> Value then
   begin
-   FSplitFilter := Value;
-   SplitFilterChanged;
+    FSplitFilter := Value;
+    SplitFilterChanged;
   end;
 end;
 
 procedure TCustomBassBaron.SetSplitOrder(const Value: Byte);
 begin
- if FOrder <> Value then
+  if FOrder <> Value then
   begin
-   FOrder := Value;
-   OrderChanged;
+    FOrder := Value;
+    OrderChanged;
   end;
 end;
 
 procedure TCustomBassBaron.SplitFilterChanged;
 begin
- UpdateSplitFilters;
+  UpdateSplitFilters;
 end;
 
 procedure TCustomBassBaron.UpdateSplitFilters;
 begin
- case FSplitFilter of
-          sfSimple : begin
-                      FSplit32 := SplitSimple32;
-                      FSplit64 := SplitSimple64;
-                     end;
-   sfLinkwitzRiley : begin
-                      FSplit32 := SplitLinkwitzRiley32;
-                      FSplit64 := SplitLinkwitzRiley64;
-                     end;
- end;
+  case FSplitFilter of
+    sfSimple:
+      begin
+        FSplit32 := SplitSimple32;
+        FSplit64 := SplitSimple64;
+      end;
+    sfLinkwitzRiley:
+      begin
+        FSplit32 := SplitLinkwitzRiley32;
+        FSplit64 := SplitLinkwitzRiley64;
+      end;
+  end;
 end;
 
-procedure TCustomBassBaron.SplitLinkwitzRiley32(Input: Single; out Low,
-  High: Single);
+procedure TCustomBassBaron.SplitLinkwitzRiley32(Input: Single;
+  out Low, High: Single);
 begin
- FCrossover.ProcessSample32(FGains[0] * Input, Low, High);
- Low  := FLowpass.ProcessSample32(Low - CDenorm32);
- High := FHighpass.ProcessSample32(FSign * High - CDenorm32);
+  FCrossover.ProcessSample32(FGains[0] * Input, Low, High);
+  Low := FLowpass.ProcessSample32(Low - CDenorm32);
+  High := FHighpass.ProcessSample32(FSign * High - CDenorm32);
 end;
 
-procedure TCustomBassBaron.SplitLinkwitzRiley64(Input: Double; out Low,
-  High: Double);
+procedure TCustomBassBaron.SplitLinkwitzRiley64(Input: Double;
+  out Low, High: Double);
 begin
- FCrossover.ProcessSample64(FGains[0] * Input, Low, High);
- Low  := FLowpass.ProcessSample64(Low - CDenorm32);
- High := FHighpass.ProcessSample64(FSign * High - CDenorm32);
+  FCrossover.ProcessSample64(FGains[0] * Input, Low, High);
+  Low := FLowpass.ProcessSample64(Low - CDenorm32);
+  High := FHighpass.ProcessSample64(FSign * High - CDenorm32);
 end;
 
 procedure TCustomBassBaron.SplitSimple32(Input: Single; out Low, High: Single);
 begin
- FCrossover.ProcessSample32(FGains[0] * Input, Low, High);
+  FCrossover.ProcessSample32(FGains[0] * Input, Low, High);
 end;
 
 procedure TCustomBassBaron.SplitSimple64(Input: Double; out Low, High: Double);
 begin
- FCrossover.ProcessSample64(FGains[0] * Input, Low, High);
+  FCrossover.ProcessSample64(FGains[0] * Input, Low, High);
 end;
-
 
 procedure TCustomBassBaron.AlgorithmChanged;
 var
-  OldLimiter : TCustomLimiter;
+  OldLimiter: TCustomLimiter;
 begin
- OldLimiter := FLimiter;
- case FAlgorithm of
-  bbaStraight :
-    begin
-     FLimiter := TRCLimiter.Create;
-     with TRCLimiter(FLimiter) do
+  OldLimiter := FLimiter;
+  case FAlgorithm of
+    bbaStraight:
       begin
-       Attack := FResponse;
-       Release := FResponse;
-       Threshold_dB := 0;
-       MakeUpGain_dB := 0;
-       SampleRate := SampleRate;
+        FLimiter := TRCLimiter.Create;
+        with TRCLimiter(FLimiter) do
+        begin
+          Attack := FResponse;
+          Release := FResponse;
+          Threshold_dB := 0;
+          MakeUpGain_dB := 0;
+          SampleRate := SampleRate;
+        end;
       end;
-    end;
-  bbaPerfectHarmony :
-    begin
-     FLimiter := TLightweightSoftKneeLimiter.Create;
-     with TLightweightSoftKneeLimiter(FLimiter) do
+    bbaPerfectHarmony:
       begin
-       Attack := FResponse;
-       Release := FResponse;
-       Threshold_dB := 0;
-       Knee_dB := 6;
-       MakeUpGain_dB := 3;
-       SampleRate := SampleRate;
+        FLimiter := TLightweightSoftKneeLimiter.Create;
+        with TLightweightSoftKneeLimiter(FLimiter) do
+        begin
+          Attack := FResponse;
+          Release := FResponse;
+          Threshold_dB := 0;
+          Knee_dB := 6;
+          MakeUpGain_dB := 3;
+          SampleRate := SampleRate;
+        end;
       end;
-    end;
-  bbaResurrection :
-    begin
-     FLimiter := TLightweightSoftKneeFeedbackLikeLimiter.Create;
-     with TLightweightSoftKneeFeedbackLikeLimiter(FLimiter) do
+    bbaResurrection:
       begin
-       Attack := 20;
-       Release := 20;
-       Threshold_dB := 0;
-       Knee_dB := 6;
-       MakeUpGain_dB := 3;
-       SampleRate := SampleRate;
+        FLimiter := TLightweightSoftKneeFeedbackLikeLimiter.Create;
+        with TLightweightSoftKneeFeedbackLikeLimiter(FLimiter) do
+        begin
+          Attack := 20;
+          Release := 20;
+          Threshold_dB := 0;
+          Knee_dB := 6;
+          MakeUpGain_dB := 3;
+          SampleRate := SampleRate;
+        end;
       end;
-    end;
-  bbaSteam :
-    begin
-     FLimiter := TLightweightSoftKneeLimiter.Create;
-     with TLightweightSoftKneeLimiter(FLimiter) do
+    bbaSteam:
       begin
-       Attack := FResponse;
-       Release := FResponse;
-       Threshold_dB := -5;
-       Knee_dB := 2;
-       MakeUpGain_dB := 6;
-       SampleRate := SampleRate;
+        FLimiter := TLightweightSoftKneeLimiter.Create;
+        with TLightweightSoftKneeLimiter(FLimiter) do
+        begin
+          Attack := FResponse;
+          Release := FResponse;
+          Threshold_dB := -5;
+          Knee_dB := 2;
+          MakeUpGain_dB := 6;
+          SampleRate := SampleRate;
+        end;
       end;
-    end;
- end;
+  end;
 
- FreeAndNil(OldLimiter);
- Changed;
+  FreeAndNil(OldLimiter);
+  Changed;
 end;
 
 procedure TCustomBassBaron.DecayChanged;
 begin
- Changed;
+  Changed;
 end;
 
 procedure TCustomBassBaron.ResetStates;
 begin
- FCrossover.ResetStates;
- FLowCut.ResetStates;
- FLowpass.ResetStates;
- FHighpass.ResetStates;
- FLimiter.Reset;
+  FCrossover.ResetStates;
+  FLowCut.ResetStates;
+  FLowpass.ResetStates;
+  FHighpass.ResetStates;
+  FLimiter.Reset;
 end;
 
 procedure TCustomBassBaron.ResponseChanged;
 begin
- FLimiter.Attack := FResponse;
- FLimiter.Release := FResponse;
- Changed;
+  FLimiter.Attack := FResponse;
+  FLimiter.Release := FResponse;
+  Changed;
 end;
 
 procedure TCustomBassBaron.FrequencyChanged;
 begin
- FCrossover.Frequency := Frequency;
- FLowpass.Frequency := Frequency;
- FHighpass.Frequency := Frequency;
- Changed;
+  FCrossover.Frequency := Frequency;
+  FLowpass.Frequency := Frequency;
+  FHighpass.Frequency := Frequency;
+  Changed;
 end;
 
 procedure TCustomBassBaron.LowcutFrequencyChanged;
 begin
- FLowCut.Frequency := FLowCutFrequency;
- Changed;
+  FLowCut.Frequency := FLowCutFrequency;
+  Changed;
 end;
 
 procedure TCustomBassBaron.OrderChanged;
 begin
- FCrossover.Order := FOrder;
- FLowpass.Order := FOrder;
- FHighpass.Order := FOrder;
- FSign := 1 - 2 * (FOrder mod 2);
+  FCrossover.Order := FOrder;
+  FLowpass.Order := FOrder;
+  FHighpass.Order := FOrder;
+  FSign := 1 - 2 * (FOrder mod 2);
 end;
 
 function TCustomBassBaron.ProcessSample32(Input: Single): Single;
 var
-  Low, High, Harmonic : Single;
+  Low, High, Harmonic: Single;
 begin
- FSplit32(Input, Low, High);
- Harmonic := Limit(0.5 * FLimiter.ProcessSample64(4 *
-             FLowCut.ProcessSample64(
-             Low * (1 + Low * -2 * FDecay))));
+  FSplit32(Input, Low, High);
+  Harmonic := Limit(0.5 * FLimiter.ProcessSample64(4 * FLowCut.ProcessSample64
+    (Low * (1 + Low * -2 * FDecay))));
 
- Result := FGains[4] * (FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High);
+  Result := FGains[4] * (FGains[2] * Low + FGains[3] * Harmonic +
+    FGains[1] * High);
 end;
 
 function TCustomBassBaron.ProcessSample64(Input: Double): Double;
 var
-  Low, High, Harmonic : Double;
+  Low, High, Harmonic: Double;
 begin
- FSplit64(Input, Low, High);
- Harmonic := Limit(0.5 * FLimiter.ProcessSample64(4 *
-             FLowCut.ProcessSample64(
-             Low * (1 + Low * -2 * FDecay))));
+  FSplit64(Input, Low, High);
+  Harmonic := Limit(0.5 * FLimiter.ProcessSample64(4 * FLowCut.ProcessSample64
+    (Low * (1 + Low * -2 * FDecay))));
 
- Result := FGains[4] * FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High;
+  Result := FGains[4] * FGains[2] * Low + FGains[3] * Harmonic +
+    FGains[1] * High;
 end;
 
 procedure TCustomBassBaron.SampleRateChanged;
 begin
- FCrossover.SampleRate := SampleRate;
- FLowpass.SampleRate := SampleRate;
- FHighpass.SampleRate := SampleRate;
- FLowCut.SampleRate := SampleRate;
- FLimiter.SampleRate := SampleRate;
+  FCrossover.SampleRate := SampleRate;
+  FLowpass.SampleRate := SampleRate;
+  FHighpass.SampleRate := SampleRate;
+  FLowCut.SampleRate := SampleRate;
+  FLimiter.SampleRate := SampleRate;
 end;
 
 initialization
-  RegisterDspProcessors32([TBassBaron]);
+
+RegisterDspProcessors32([TBassBaron]);
 
 end.

@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkPerryCookReverb;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -25,18 +55,18 @@ type
     procedure SetT60(const Value: SIngle);
     procedure UpdateDelayTimes;
   protected
-    FAllpassDelays      : array [0..1] of TStkDelay;
-    FCombDelays         : array [0..1] of TStkDelay;
-    FAllpassCoefficient : Single;
-    FCombCoefficient    : array [0..1] of Single;
-    FInternalLengths    : array [0..3] of Integer;
+    FAllpassDelays: array [0 .. 1] of TStkDelay;
+    FCombDelays: array [0 .. 1] of TStkDelay;
+    FAllpassCoefficient: SIngle;
+    FCombCoefficient: array [0 .. 1] of SIngle;
+    FInternalLengths: array [0 .. 3] of Integer;
 
     procedure CalculateInternalLengths; virtual;
     procedure T60Changed; virtual;
     procedure SampleRateChanged; override;
   public
     // class constructor taking a T60 decay time argument.
-    constructor Create(const SampleRate: Single = 44100); override;
+    constructor Create(const SampleRate: SIngle = 44100); override;
 
     // class destructor.
     destructor Destroy; override;
@@ -45,7 +75,7 @@ type
     procedure Clear; override;
 
     // compute one output sample.
-    function Tick(const Input: Single): Single; override;
+    function Tick(const Input: SIngle): SIngle; override;
 
     property T60: SIngle read FT60 write SetT60;
   end;
@@ -55,101 +85,109 @@ implementation
 uses
   SysUtils, DAV_StkFilter;
 
-constructor TStkPerryCookReverb.Create(const SampleRate: Single = 44100);
+constructor TStkPerryCookReverb.Create(const SampleRate: SIngle = 44100);
 begin
- FT60 := 1;
- FAllpassCoefficient := 0.7;
- FEffectMix := 0.5;
- FAllpassDelays[0] := nil;
- FAllpassDelays[1] := nil;
- FCombDelays[0] := nil;
- FCombDelays[1] := nil;
- inherited Create(SampleRate);
- Clear;
+  FT60 := 1;
+  FAllpassCoefficient := 0.7;
+  FEffectMix := 0.5;
+  FAllpassDelays[0] := nil;
+  FAllpassDelays[1] := nil;
+  FCombDelays[0] := nil;
+  FCombDelays[1] := nil;
+  inherited Create(SampleRate);
+  Clear;
 end;
 
 destructor TStkPerryCookReverb.Destroy;
 begin
- FreeAndNil(FAllpassDelays[0]);
- FreeAndNil(FAllpassDelays[1]);
- FreeAndNil(FCombDelays[0]);
- FreeAndNil(FCombDelays[1]);
- inherited Destroy;
+  FreeAndNil(FAllpassDelays[0]);
+  FreeAndNil(FAllpassDelays[1]);
+  FreeAndNil(FCombDelays[0]);
+  FreeAndNil(FCombDelays[1]);
+  inherited Destroy;
 end;
 
 procedure TStkPerryCookReverb.SampleRateChanged;
 begin
- inherited;
- UpdateDelayTimes;
+  inherited;
+  UpdateDelayTimes;
 end;
 
 procedure TStkPerryCookReverb.SetT60(const Value: SIngle);
 begin
- if FT60 <> Value then
+  if FT60 <> Value then
   begin
-   FT60 := Value;
-   T60Changed;
+    FT60 := Value;
+    T60Changed;
   end;
 end;
 
 procedure TStkPerryCookReverb.T60Changed;
 begin
- UpdateDelayTimes;
+  UpdateDelayTimes;
 end;
 
 procedure TStkPerryCookReverb.UpdateDelayTimes;
 var
-  i : Integer;
+  i: Integer;
 begin
- CalculateInternalLengths;
- for i := 0 to 1 do
+  CalculateInternalLengths;
+  for i := 0 to 1 do
   begin
-   if Assigned(FAllpassDelays[i]) then FreeAndNil(FAllpassDelays[i]);
-   FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], FInternalLengths[i]);
+    if Assigned(FAllpassDelays[i]) then
+      FreeAndNil(FAllpassDelays[i]);
+    FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i],
+      FInternalLengths[i]);
 
-   if Assigned(FCombDelays[i]) then FreeAndNil(FCombDelays[i]);
-   FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 2], FInternalLengths[i + 2]);
-   FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i + 2] / (FT60 * SampleRate)));
+    if Assigned(FCombDelays[i]) then
+      FreeAndNil(FCombDelays[i]);
+    FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 2],
+      FInternalLengths[i + 2]);
+    FCombCoefficient[i] :=
+      Power(10, (-3 * FInternalLengths[i + 2] / (FT60 * SampleRate)));
   end;
 end;
 
 procedure TStkPerryCookReverb.CalculateInternalLengths;
 const
-  CFInternalLengths: array[0..3] of Integer = (353, 1097, 1777, 2137);
+  CFInternalLengths: array [0 .. 3] of Integer = (353, 1097, 1777, 2137);
 var
   ScaleFactor: Double;
-  Delay, i : Integer;
+  Delay, i: Integer;
 begin
- // Delay FInternalLengths for 44100 Hz sample rate.
- ScaleFactor := SampleRate / 44100.0;
+  // Delay FInternalLengths for 44100 Hz sample rate.
+  ScaleFactor := SampleRate / 44100.0;
 
- // Scale the delay FInternalLengths if necessary.
- if (ScaleFactor <> 1.0) then
-  for i := 0 to 3 do
-   begin
-    Delay := Round(Floor(ScaleFactor * CFInternalLengths[i]));
-    if ((Delay and 1) = 0)
-     then Delay := Delay + 1;
-    while (not isPrime(Delay)) do Delay := Delay + 2;
-    FInternalLengths[i] := Delay;
-   end
- else Move(CFInternalLengths[0], FInternalLengths[0], Length(FInternalLengths) * SizeOf(Integer));
+  // Scale the delay FInternalLengths if necessary.
+  if (ScaleFactor <> 1.0) then
+    for i := 0 to 3 do
+    begin
+      Delay := Round(Floor(ScaleFactor * CFInternalLengths[i]));
+      if ((Delay and 1) = 0) then
+        Delay := Delay + 1;
+      while (not isPrime(Delay)) do
+        Delay := Delay + 2;
+      FInternalLengths[i] := Delay;
+    end
+  else
+    Move(CFInternalLengths[0], FInternalLengths[0], Length(FInternalLengths) *
+      SizeOf(Integer));
 end;
 
 procedure TStkPerryCookReverb.Clear;
 begin
- inherited;
- FAllpassDelays[0].Clear;
- FAllpassDelays[1].Clear;
- FCombDelays[0].Clear;
- FCombDelays[1].Clear;
- FLastOutput[0] := 0.0;
- FLastOutput[1] := 0.0;
+  inherited;
+  FAllpassDelays[0].Clear;
+  FAllpassDelays[1].Clear;
+  FCombDelays[0].Clear;
+  FCombDelays[1].Clear;
+  FLastOutput[0] := 0.0;
+  FLastOutput[1] := 0.0;
 end;
 
-function TStkPerryCookReverb.Tick(const Input: Single): Single;
+function TStkPerryCookReverb.Tick(const Input: SIngle): SIngle;
 var
-  temp, temp0, temp1, temp2, temp3: Single;
+  temp, temp0, temp1, temp2, temp3: SIngle;
 begin
   temp := FAllpassDelays[0].LastOutput;
   temp0 := FAllpassCoefficient * temp;

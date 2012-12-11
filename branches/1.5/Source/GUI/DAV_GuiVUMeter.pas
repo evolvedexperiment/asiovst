@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_GuiVUMeter;
 
 interface
@@ -5,18 +35,18 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, Graphics, Forms,
+{$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, Graphics, Forms,
   Messages, SysUtils, Controls, DAV_GuiBaseControl;
 
 type
   TCustomGuiVUMeter = class(TBufferedGraphicControl)
   private
-    FAutoSize      : Boolean;
-    FVUMeterBitmap : TBitmap;
-    FGlyphCount    : Integer;
-    FLastGlyph     : Integer;
-    FGlyphIndex    : Integer;
-    FStitchKind    : TGuiStitchKind;
+    FAutoSize: Boolean;
+    FVUMeterBitmap: TBitmap;
+    FGlyphCount: Integer;
+    FLastGlyph: Integer;
+    FGlyphIndex: Integer;
+    FStitchKind: TGuiStitchKind;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetVUMeterBitmap(const Value: TBitmap);
@@ -56,18 +86,18 @@ type
 
 implementation
 
-//uses Consts;
+// uses Consts;
 
 { TCustomGuiVUMeter }
 
 constructor TCustomGuiVUMeter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FGlyphIndex             := 0;
-  FGlyphCount             := 1;
-  FLastGlyph              := -1;
-  FStitchKind             := skHorizontal;
-  FVUMeterBitmap          := TBitmap.Create;
+  FGlyphIndex := 0;
+  FGlyphCount := 1;
+  FLastGlyph := -1;
+  FStitchKind := skHorizontal;
+  FVUMeterBitmap := TBitmap.Create;
   FVUMeterBitmap.OnChange := SettingsChanged;
 end;
 
@@ -79,130 +109,137 @@ end;
 
 procedure TCustomGuiVUMeter.DoAutoSize;
 begin
- if FVUMeterBitmap.Empty or (FGlyphCount = 0) then Exit;
+  if FVUMeterBitmap.Empty or (FGlyphCount = 0) then
+    Exit;
 
- if FStitchKind = skVertical then
+  if FStitchKind = skVertical then
   begin
-   Width  := FVUMeterBitmap.Width;
-   Height := FVUMeterBitmap.Height div FGlyphCount;
+    Width := FVUMeterBitmap.Width;
+    Height := FVUMeterBitmap.Height div FGlyphCount;
   end
- else
+  else
   begin
-   Width  := FVUMeterBitmap.Width div FGlyphCount;
-   Height := FVUMeterBitmap.Height;
+    Width := FVUMeterBitmap.Width div FGlyphCount;
+    Height := FVUMeterBitmap.Height;
   end;
 end;
 
 procedure TCustomGuiVUMeter.UpdateBuffer;
 var
-  theRect : TRect;
-  GlyphNr : Integer;
+  theRect: TRect;
+  GlyphNr: Integer;
 begin
- if (Width <= 0) and (Height <= 0) then
-  with FBuffer.Canvas do
-   begin
-    Brush.Color := Self.Color;
-    FillRect(ClipRect);
-   end
- else
-  with FBuffer.Canvas do
-   begin
-    GlyphNr := FGlyphIndex;
-    if (GlyphNr >= FGlyphCount) then GlyphNr := FGlyphCount - 1 else
-    if (GlyphNr < 0) then GlyphNr := 0;
-    if GlyphNr = FLastGlyph then Exit;
-    theRect := ClientRect;
+  if (Width <= 0) and (Height <= 0) then
+    with FBuffer.Canvas do
+    begin
+      Brush.Color := Self.Color;
+      FillRect(ClipRect);
+    end
+  else
+    with FBuffer.Canvas do
+    begin
+      GlyphNr := FGlyphIndex;
+      if (GlyphNr >= FGlyphCount) then
+        GlyphNr := FGlyphCount - 1
+      else if (GlyphNr < 0) then
+        GlyphNr := 0;
+      if GlyphNr = FLastGlyph then
+        Exit;
+      theRect := ClientRect;
 
-    if FStitchKind = skVertical then
-     begin
-      theRect.Top    := FVUMeterBitmap.Height * GlyphNr div FGlyphCount;
-      theRect.Bottom := FVUMeterBitmap.Height * (GlyphNr + 1) div FGlyphCount;
-     end
-    else
-     begin
-      theRect.Left  := FVUMeterBitmap.Width * GlyphNr div FGlyphCount;
-      theRect.Right := FVUMeterBitmap.Width * (GlyphNr + 1) div FGlyphCount;
-     end;
+      if FStitchKind = skVertical then
+      begin
+        theRect.Top := FVUMeterBitmap.Height * GlyphNr div FGlyphCount;
+        theRect.Bottom := FVUMeterBitmap.Height * (GlyphNr + 1) div FGlyphCount;
+      end
+      else
+      begin
+        theRect.Left := FVUMeterBitmap.Width * GlyphNr div FGlyphCount;
+        theRect.Right := FVUMeterBitmap.Width * (GlyphNr + 1) div FGlyphCount;
+      end;
 
-    Lock;
-    CopyRect(Clientrect, FVUMeterBitmap.Canvas, theRect);
-    Unlock;
-    FLastGlyph := GlyphNr;
-   end;
+      Lock;
+      CopyRect(ClientRect, FVUMeterBitmap.Canvas, theRect);
+      Unlock;
+      FLastGlyph := GlyphNr;
+    end;
 end;
 
 procedure TCustomGuiVUMeter.SetAutoSize(const Value: Boolean);
 begin
- if FAutoSize <> Value then
+  if FAutoSize <> Value then
   begin
-   FAutoSize := Value;
-   AutoSizeChanged;
+    FAutoSize := Value;
+    AutoSizeChanged;
   end;
 end;
 
 procedure TCustomGuiVUMeter.AutoSizeChanged;
 begin
- if Autosize then DoAutoSize;
+  if AutoSize then
+    DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SetVUMeterBitmap(const Value: TBitmap);
 begin
- FVUMeterBitmap.Assign(Value);
- DoAutoSize;
+  FVUMeterBitmap.Assign(Value);
+  DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SetGlyphCount(const Value: Integer);
 begin
- if FGlyphCount <> Value then
+  if FGlyphCount <> Value then
   begin
-   FGlyphCount := Value;
-   GlyphCountChanged;
+    FGlyphCount := Value;
+    GlyphCountChanged;
   end;
 end;
 
 procedure TCustomGuiVUMeter.GlyphCountChanged;
 begin
- FLastGlyph := -1;
- DoAutoSize;
+  FLastGlyph := -1;
+  DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SetGlyphIndex(Value: Integer);
 begin
- if Value < 0 then Value := 0 else
- if Value > FGlyphCount then Value := FGlyphCount;
+  if Value < 0 then
+    Value := 0
+  else if Value > FGlyphCount then
+    Value := FGlyphCount;
 
- if FGlyphIndex <> Value then
+  if FGlyphIndex <> Value then
   begin
-   FGlyphIndex := Value;
-   GlyphIndexChanged;
+    FGlyphIndex := Value;
+    GlyphIndexChanged;
   end;
 end;
 
 procedure TCustomGuiVUMeter.GlyphIndexChanged;
 begin
- Invalidate;
+  Invalidate;
 end;
 
 procedure TCustomGuiVUMeter.SetStitchKind(const Value: TGuiStitchKind);
 begin
- if FStitchKind <> Value then
+  if FStitchKind <> Value then
   begin
-   FStitchKind := Value;
-   StitchKindChanged;
+    FStitchKind := Value;
+    StitchKindChanged;
   end;
 end;
 
 procedure TCustomGuiVUMeter.StitchKindChanged;
 begin
- FLastGlyph := -1;
- DoAutoSize;
+  FLastGlyph := -1;
+  DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SettingsChanged(Sender: TObject);
 begin
- FVUMeterBitmap.Canvas.Brush.Color := Self.Color;
- Invalidate;
- FLastGlyph := -1;
+  FVUMeterBitmap.Canvas.Brush.Color := Self.Color;
+  Invalidate;
+  FLastGlyph := -1;
 end;
 
 end.

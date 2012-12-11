@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkOnePole;
 
 // based on DAV_Stk by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -23,7 +53,8 @@ type
     constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor which sets the pole position during instantiation.
-    constructor Create(const SampleRate, thePole: Single); reintroduce; overload; virtual;
+    constructor Create(const SampleRate, thePole: Single); reintroduce;
+      overload; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -38,48 +69,49 @@ type
     procedure SetA1(const Value: Single);
 
     // Set the pole position in the z-plane.
-  {
-    This method sets the pole position along the real-axis of the
-    z-plane and normalizes the coefficients for a maximum gain of one.
-    A positive pole value produces a low-pass filter, while a negative
-    pole value produces a high-pass filter.  This method does not
-    affect the filter \e gain value.
-  }
+    {
+      This method sets the pole position along the real-axis of the
+      z-plane and normalizes the coefficients for a maximum gain of one.
+      A positive pole value produces a low-pass filter, while a negative
+      pole value produces a high-pass filter.  This method does not
+      affect the filter \e gain value.
+    }
     procedure SetPole(const Value: Single);
 
     // Input one sample to the filter and return one output.
     function Tick(const Sample: Single): Single; overload; override;
 
     // Processes 'SampleFrames' samples inplace
-    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+    procedure Tick(const Data: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload;
   end;
 
 implementation
 
 constructor TStkOnePole.Create(const SampleRate: Single);
 var
-  a: array[0..1] of Single;
+  a: array [0 .. 1] of Single;
   b: Single;
 begin
   inherited Create(SampleRate);
-  B := 0.1;
-  A[0] := 1.0;
-  A[1] := -0.9;
-  inherited setCoefficients(1, @B, 2, @A);
+  b := 0.1;
+  a[0] := 1.0;
+  a[1] := -0.9;
+  inherited setCoefficients(1, @b, 2, @a);
 end;
 
 constructor TStkOnePole.Create(const SampleRate, thePole: Single);
 var
-  a: array[0..1] of Single;
+  a: array [0 .. 1] of Single;
   b: Single;
 begin
   inherited Create(SampleRate);
-  A[0] := 1.0;
-  A[1] := -0.9;
+  a[0] := 1.0;
+  a[1] := -0.9;
   // Normalize coefficients for peak unity gain.
-  B := (1.0 - abs(thePole));
-  A[1] := -thePole;
-  inherited SetCoefficients(1, @B, 2, @A);
+  b := (1.0 - abs(thePole));
+  a[1] := -thePole;
+  inherited setCoefficients(1, @b, 2, @a);
 end;
 
 destructor TStkOnePole.Destroy;
@@ -92,14 +124,14 @@ begin
   inherited Clear;
 end;
 
-procedure TStkOnePole.setB0(const Value: Single);
+procedure TStkOnePole.SetB0(const Value: Single);
 begin
   FB^[0] := Value;
 end;
 
-procedure TStkOnePole.setA1(const Value: Single);
+procedure TStkOnePole.SetA1(const Value: Single);
 begin
- PDAV4SingleArray(FA)^[1] := Value;
+  PDAV4SingleArray(FA)^[1] := Value;
 end;
 
 procedure TStkOnePole.SetPole(const Value: Single);
@@ -112,18 +144,19 @@ end;
 function TStkOnePole.Tick(const Sample: Single): Single;
 begin
   FInputs^[0] := Gain * Sample;
-  FOutputs^[0] := FB^[0] * FInputs^[0] -
-    PDAV4SingleArray(FA)^[1] * PDAV4SingleArray(FOutputs)^[1];
+  FOutputs^[0] := FB^[0] * FInputs^[0] - PDAV4SingleArray(FA)^[1] *
+    PDAV4SingleArray(FOutputs)^[1];
   PDAV4SingleArray(FOutputs)^[1] := FOutputs^[0];
   Result := FOutputs^[0];
 end;
 
-procedure TStkOnePole.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure TStkOnePole.Tick(const Data: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
 var
-  Sample: integer;
+  Sample: Integer;
 begin
-  for Sample := 0 to SampleFrames - 1
-   do Data^[Sample] := Tick(Data^[Sample]);
+  for Sample := 0 to SampleFrames - 1 do
+    Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

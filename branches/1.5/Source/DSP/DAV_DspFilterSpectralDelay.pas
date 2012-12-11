@@ -1,36 +1,41 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_DspFilterSpectralDelay;
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The code is based on the paper SPECTRAL DELAY FILTERS WITH FEEDBACK AND   //
-//  TIME-VARYING COEFFICIENTS by Jussi Pekonen, Vesa Välimäki,                //
-//  Jonathan S. Abel and Julius O. Smith                                      //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+// The code is based on the paper SPECTRAL DELAY FILTERS WITH FEEDBACK AND
+// TIME-VARYING COEFFICIENTS by Jussi Pekonen, Vesa Välimäki,
+// Jonathan S. Abel and Julius O. Smith
+//
+// Portions created by Christian-W. Budde are Copyright (C) 2008-2012
+// by Christian-W. Budde. All Rights Reserved.
 
 interface
 
@@ -42,8 +47,8 @@ uses
 type
   TSpectralDelayFilter = class(TCustomIIRFilter)
   private
-    FFilterCount : Integer;
-    FFilters     : array of TFirstOrderAllpassFilter;
+    FFilterCount: Integer;
+    FFilters: array of TFirstOrderAllpassFilter;
     procedure SetFilterCount(const Value: Integer);
   protected
     procedure FilterCountChanged;
@@ -74,157 +79,158 @@ uses
 
 procedure TSpectralDelayFilter.CalculateCoefficients;
 begin
- inherited;
- // do nothing!
+  inherited;
+  // do nothing!
 end;
 
 constructor TSpectralDelayFilter.Create;
 begin
- inherited;
- FFilterCount := 16;
- FilterCountChanged;
+  inherited;
+  FFilterCount := 16;
+  FilterCountChanged;
 end;
 
 function TSpectralDelayFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
- result := Log10(MagnitudeSquared(Frequency));
+  result := Log10(MagnitudeSquared(Frequency));
 end;
 
 function TSpectralDelayFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- Result := 1;
- for Filter := 0 to Length(FFilters) - 1
-  do Result := Result * FFilters[Filter].MagnitudeSquared(Frequency);
+  result := 1;
+  for Filter := 0 to Length(FFilters) - 1 do
+    result := result * FFilters[Filter].MagnitudeSquared(Frequency);
 end;
 
 procedure TSpectralDelayFilter.PopStates;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- inherited;
- for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].PopStates;
+  inherited;
+  for Filter := 0 to Length(FFilters) - 1 do
+    FFilters[Filter].PopStates;
 end;
 
 function TSpectralDelayFilter.ProcessSample32(Input: Single): Single;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- Result := Input;
- for Filter := 0 to Length(FFilters) - 1
-  do Result := FFilters[Filter].ProcessSample64(Result);
+  result := Input;
+  for Filter := 0 to Length(FFilters) - 1 do
+    result := FFilters[Filter].ProcessSample64(result);
 end;
 
 function TSpectralDelayFilter.ProcessSample64(Input: Double): Double;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- Result := Input;
- for Filter := 0 to Length(FFilters) - 1
-  do Result := FFilters[Filter].ProcessSample64(Result);
+  result := Input;
+  for Filter := 0 to Length(FFilters) - 1 do
+    result := FFilters[Filter].ProcessSample64(result);
 end;
 
 procedure TSpectralDelayFilter.PushStates;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- inherited;
- for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].PushStates;
+  inherited;
+  for Filter := 0 to Length(FFilters) - 1 do
+    FFilters[Filter].PushStates;
 end;
 
 procedure TSpectralDelayFilter.Reset;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- inherited;
- for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].Reset;
+  inherited;
+  for Filter := 0 to Length(FFilters) - 1 do
+    FFilters[Filter].Reset;
 end;
 
 procedure TSpectralDelayFilter.ResetStates;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- inherited;
- for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].ResetStates;
+  inherited;
+  for Filter := 0 to Length(FFilters) - 1 do
+    FFilters[Filter].ResetStates;
 end;
 
 procedure TSpectralDelayFilter.ResetStatesInt64;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- inherited;
- for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].ResetStatesInt64;
+  inherited;
+  for Filter := 0 to Length(FFilters) - 1 do
+    FFilters[Filter].ResetStatesInt64;
 end;
 
 procedure TSpectralDelayFilter.SampleRateChanged;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- inherited;
- for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].SampleRate := SampleRate;
+  inherited;
+  for Filter := 0 to Length(FFilters) - 1 do
+    FFilters[Filter].SampleRate := SampleRate;
 end;
 
 procedure TSpectralDelayFilter.SetFilterCount(const Value: Integer);
 begin
- if FFilterCount <> Value then
+  if FFilterCount <> Value then
   begin
-   FFilterCount := Value;
-   FilterCountChanged;
+    FFilterCount := Value;
+    FilterCountChanged;
   end;
 end;
 
 procedure TSpectralDelayFilter.FilterCountChanged;
 var
-  Filter    : Integer;
-  OldLength : Integer;
+  Filter: Integer;
+  OldLength: Integer;
 begin
- if Length(FFilters) < FFilterCount then
+  if Length(FFilters) < FFilterCount then
   begin
-   OldLength := Length(FFilters);
-   SetLength(FFilters, FFilterCount);
-   for Filter := OldLength to FFilterCount - 1 do
+    OldLength := Length(FFilters);
+    SetLength(FFilters, FFilterCount);
+    for Filter := OldLength to FFilterCount - 1 do
     begin
-     FFilters[Filter] := TFirstOrderAllpassFilter.Create;
-     with FFilters[Filter] do
+      FFilters[Filter] := TFirstOrderAllpassFilter.Create;
+      with FFilters[Filter] do
       begin
-       SampleRate := Self.SampleRate;
-       Frequency := 0.9;
+        SampleRate := Self.SampleRate;
+        Frequency := 0.9;
       end;
     end;
   end
- else
+  else
   begin
-   for Filter := FFilterCount to Length(FFilters) - 1
-    do FreeAndNil(FFilters[Filter]);
-   SetLength(FFilters, FFilterCount);
+    for Filter := FFilterCount to Length(FFilters) - 1 do
+      FreeAndNil(FFilters[Filter]);
+    SetLength(FFilters, FFilterCount);
   end;
 end;
 
 procedure TSpectralDelayFilter.FrequencyChanged;
 var
-  Filter : Integer;
+  Filter: Integer;
 begin
- inherited;
+  inherited;
 
-//  @CWB: there is no TFirstOrderAllpassFilter.Frequency
+  // @CWB: there is no TFirstOrderAllpassFilter.Frequency
 
-// for Filter := 0 to Length(FFilters) - 1
-//  do FFilters[Filter].Frequency := Frequency;
+  // for Filter := 0 to Length(FFilters) - 1
+  // do FFilters[Filter].Frequency := Frequency;
 
- for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].FractionalDelay := Frequency;
+  for Filter := 0 to Length(FFilters) - 1 do
+    FFilters[Filter].FractionalDelay := Frequency;
 
 end;
 
 initialization
-  RegisterDspProcessor32(TSpectralDelayFilter);
-  RegisterDspProcessor64(TSpectralDelayFilter);
+
+RegisterDspProcessor32(TSpectralDelayFilter);
+RegisterDspProcessor64(TSpectralDelayFilter);
 
 end.

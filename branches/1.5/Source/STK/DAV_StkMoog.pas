@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkMoog;
 
 {  STK moog-like swept filter sampling synthesis class.
@@ -31,10 +61,10 @@ type
     // Set the modulation (vibrato) speed in Hz.
     procedure SetModulationSpeed(const Value: Single);
   protected
-    FFilters    : array[0..1] of TStkFormantSweep;
-    FModDepth   : Single;
-    FFilterQ    : Single;
-    FFilterRate : Single;
+    FFilters: array [0 .. 1] of TStkFormantSweep;
+    FModDepth: Single;
+    FFilterQ: Single;
+    FFilterRate: Single;
 
     procedure FrequencyChanged; override;
   public
@@ -48,7 +78,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by number and value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -77,18 +108,18 @@ end;
 
 destructor TStkMoog.Destroy;
 begin
- FreeAndNil(FAttacks[0]);
- FreeAndNil(FLoops[0]);
- FreeAndNil(FLoops[1]);
- FreeAndNil(FFilters[0]);
- FreeAndNil(FFilters[1]);
- inherited Destroy;
+  FreeAndNil(FAttacks[0]);
+  FreeAndNil(FLoops[0]);
+  FreeAndNil(FLoops[1]);
+  FreeAndNil(FFilters[0]);
+  FreeAndNil(FFilters[1]);
+  inherited Destroy;
 end;
 
 procedure TStkMoog.FrequencyChanged;
 begin
-//  rate := FAttacks[0].Size * 0.01 * FBaseFrequency * FSampleRateInv;
-//  FAttacks[0].Rate := rate;
+  // rate := FAttacks[0].Size * 0.01 * FBaseFrequency * FSampleRateInv;
+  // FAttacks[0].Rate := rate;
   FAttacks[0].Frequency := FBaseFrequency;
   FLoops[0].Frequency := FBaseFrequency;
 end;
@@ -104,7 +135,7 @@ begin
 
   temp := FFilterQ + 0.05;
   FFilters[0].SetStates(2000.0, temp);
-  FFilters[1].setStates(2000.0, temp);
+  FFilters[1].SetStates(2000.0, temp);
 
   temp := FFilterQ + 0.099;
   FFilters[0].setTargets(Frequency, temp);
@@ -129,10 +160,10 @@ var
   temp: Single;
 begin
   if (FModDepth <> 0.0) then
-   begin
+  begin
     temp := FLoops[1].Tick * FModDepth;
     FLoops[0].Frequency := FBaseFrequency * (1.0 + temp);
-   end;
+  end;
 
   temp := inherited Tick;
   temp := FFilters[0].Tick(temp);

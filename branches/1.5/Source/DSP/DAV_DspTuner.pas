@@ -1,34 +1,34 @@
-unit DAV_DspTuner;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_DspTuner;
 
 interface
 
@@ -50,9 +50,9 @@ type
 
   TCustomDownsampledTuner = class(TCustomTuner)
   private
-    FMaximumFrequency : Single;
-    FMinimumFrequency : Single;
-    FDownsampleBW     : Single;
+    FMaximumFrequency: Single;
+    FMinimumFrequency: Single;
+    FDownsampleBW: Single;
     function GetDSFilterOrder: Cardinal;
     procedure SetDSFilterOrder(const Value: Cardinal);
     procedure SetMaximumFrequency(const Value: Single);
@@ -60,10 +60,10 @@ type
     procedure SetupMaximumFrequency;
     procedure SetDownsampleBW(Value: Single);
   protected
-    FLowpass           : TButterworthLowPassFilter;
-    FHighpass          : TButterworthHighPassFilter;
-    FDownSampleFactor  : Integer;
-    FDownSampleCounter : Integer;
+    FLowpass: TButterworthLowPassFilter;
+    FHighpass: TButterworthHighPassFilter;
+    FDownSampleFactor: Integer;
+    FDownSampleCounter: Integer;
     procedure ProcessDownsampled(DownSampled: Single); virtual; abstract;
     procedure SampleRateChanged; override;
     procedure CalculateDownsampleFactor; virtual;
@@ -74,52 +74,58 @@ type
     constructor Create; override;
     procedure ProcessSample32(Input: Single); override;
 
-    property DownSampleFilterOrder: Cardinal read GetDSFilterOrder write SetDSFilterOrder;
-    property DownSampleBandwidth: Single read FDownsampleBW write SetDownsampleBW;
-    property MaximumFrequency: Single read FMaximumFrequency write SetMaximumFrequency;
-    property MinimumFrequency: Single read FMinimumFrequency write SetMinimumFrequency;
+    property DownSampleFilterOrder: Cardinal read GetDSFilterOrder
+      write SetDSFilterOrder;
+    property DownSampleBandwidth: Single read FDownsampleBW
+      write SetDownsampleBW;
+    property MaximumFrequency: Single read FMaximumFrequency
+      write SetMaximumFrequency;
+    property MinimumFrequency: Single read FMinimumFrequency
+      write SetMinimumFrequency;
   end;
 
   TCustomZeroCrossingTuner = class(TCustomDownsampledTuner)
   private
-    FSmoothFactor   : Single;
+    FSmoothFactor: Single;
     procedure SetSmoothFactor(const Value: Single);
     procedure SetOneCrossingOnly(const Value: Boolean);
   protected
-    FIsAbove         : Boolean;
-    FSamples         : Integer;
-    FAverageSamples  : Single;
-    FOneCrossingOnly : Boolean;
-    FFrequencyFactor : Single;
-    {$IFDEF OnlineFreqCalc}
-    FCurrentFreq     : Single;
-    {$ENDIF}
+    FIsAbove: Boolean;
+    FSamples: Integer;
+    FAverageSamples: Single;
+    FOneCrossingOnly: Boolean;
+    FFrequencyFactor: Single;
+{$IFDEF OnlineFreqCalc}
+    FCurrentFreq: Single;
+{$ENDIF}
     function GetCurrentFrequency: Single; override;
     procedure SmoothFactorChanged; virtual;
-    procedure ProcessDownsampled(Downsampled: Single); override;
+    procedure ProcessDownsampled(DownSampled: Single); override;
     function CalculateCurrentFrequency: Single; virtual;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     property SmoothFactor: Single read FSmoothFactor write SetSmoothFactor;
-    property OneCrossingOnly: Boolean read FOneCrossingOnly write SetOneCrossingOnly;
+    property OneCrossingOnly: Boolean read FOneCrossingOnly
+      write SetOneCrossingOnly;
   end;
 
   TCustomLinearZeroCrossingTuner = class(TCustomZeroCrossingTuner)
   protected
-    FLastSample : Single;
-    FLastOffset : Single;
-    procedure ProcessDownsampled(Downsampled: Single); override;
+    FLastSample: Single;
+    FLastOffset: Single;
+    procedure ProcessDownsampled(DownSampled: Single); override;
   end;
 
-  TTunerNoteString = array [0..1] of AnsiChar;
+  TTunerNoteString = array [0 .. 1] of AnsiChar;
+
   TCustomAdvancedTuner = class(TCustomLinearZeroCrossingTuner)
   private
-    FCurrentNote             : TTunerNoteString;
-    FCurrentDetune           : Single;
-    FAttack, FAttackFactor   : Single;
-    FRelease, FReleaseFactor : Single;
-    FLevel, FThreshold       : Single;
+    FCurrentNote: TTunerNoteString;
+    FCurrentDetune: Single;
+    FAttack, FAttackFactor: Single;
+    FRelease, FReleaseFactor: Single;
+    FLevel, FThreshold: Single;
 
     procedure SetAttack(const Value: Single);
     procedure SetRelease(const Value: Single);
@@ -131,7 +137,7 @@ type
     procedure CalculateReleaseFactor; virtual;
     procedure CalculateDownsampleFactor; override;
     function CalculateCurrentFrequency: Single; override;
-    procedure ProcessDownsampled(Downsampled: Single); override;
+    procedure ProcessDownsampled(DownSampled: Single); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
@@ -146,16 +152,16 @@ type
   private
     procedure CalculateBufferLength;
   protected
-    FBuffer              : PDAVSingleFixedArray;
-    FCepstrum            : PDAVComplexSingleFixedArray;
-    FCepstrumCalculation : TPowerCepstrum32;
-    FBufferLength        : Integer;
-    FBufferPos           : Integer;
-    {$IFDEF OnlineFreqCalc}
-    FCurrentFreq         : Single;
-    {$ENDIF}
+    FBuffer: PDAVSingleFixedArray;
+    FCepstrum: PDAVComplexSingleFixedArray;
+    FCepstrumCalculation: TPowerCepstrum32;
+    FBufferLength: Integer;
+    FBufferPos: Integer;
+{$IFDEF OnlineFreqCalc}
+    FCurrentFreq: Single;
+{$ENDIF}
     function GetCurrentFrequency: Single; override;
-    procedure ProcessDownsampled(Downsampled: Single); override;
+    procedure ProcessDownsampled(DownSampled: Single); override;
     function CalculateCurrentFrequency: Single; virtual;
     procedure CalculateDownsampleFactor; override;
     procedure SampleRateChanged; override;
@@ -172,18 +178,18 @@ type
       const Input: PDAVSingleFixedArray);
     procedure SetThreshold(const Value: Single);
   protected
-    FBlockBuilder : TBuildingBlocksCircular32;
-    FYinBuffer    : PDAVSingleFixedArray;
-    FThreshold    : Single;
-    FPeriod       : Single;
-    FBlockSize    : Integer;
-    {$IFDEF OnlineFreqCalc}
-    FCurrentFreq : Single;
-    {$ENDIF}
+    FBlockBuilder: TBuildingBlocksCircular32;
+    FYinBuffer: PDAVSingleFixedArray;
+    FThreshold: Single;
+    FPeriod: Single;
+    FBlockSize: Integer;
+{$IFDEF OnlineFreqCalc}
+    FCurrentFreq: Single;
+{$ENDIF}
     procedure AssignTo(Dest: TPersistent); override;
     function GetCurrentFrequency: Single; override;
     function CalculateCurrentFrequency: Single; virtual;
-    procedure ProcessDownsampled(Downsampled: Single); override;
+    procedure ProcessDownsampled(DownSampled: Single); override;
     procedure CalculateDownsampleFactor; override;
     procedure SampleRateChanged; override;
     procedure ThresholdChanged; virtual;
@@ -234,129 +240,130 @@ uses
 
 constructor TCustomDownsampledTuner.Create;
 begin
- inherited;
+  inherited;
 
- FLowpass  := TButterworthLowPassFilter.Create(4);
- FHighpass := TButterworthHighPassFilter.Create(2);
- FMaximumFrequency := 4000;
- FMinimumFrequency := 100;
- FDownsampleBW     := 0.7;
+  FLowpass := TButterworthLowPassFilter.Create(4);
+  FHighpass := TButterworthHighPassFilter.Create(2);
+  FMaximumFrequency := 4000;
+  FMinimumFrequency := 100;
+  FDownsampleBW := 0.7;
 
- FDownSampleCounter := 1;
+  FDownSampleCounter := 1;
 
- MinimumFrequencyChanged;
- SetupMaximumFrequency;
- SampleRateChanged;
+  MinimumFrequencyChanged;
+  SetupMaximumFrequency;
+  SampleRateChanged;
 end;
 
 procedure TCustomDownsampledTuner.SampleRateChanged;
 begin
- inherited;
- CalculateDownsampleFactor;
- FLowpass.SampleRate := SampleRate;
- FHighpass.SampleRate := SampleRate / FDownSampleFactor;
+  inherited;
+  CalculateDownsampleFactor;
+  FLowpass.SampleRate := SampleRate;
+  FHighpass.SampleRate := SampleRate / FDownSampleFactor;
 end;
 
 procedure TCustomDownsampledTuner.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomDownsampledTuner then
-  with TCustomDownsampledTuner(Dest) do
-   begin
+  if Dest is TCustomDownsampledTuner then
+    with TCustomDownsampledTuner(Dest) do
+    begin
+      inherited;
+      FLowpass.Assign(Self.FLowpass);
+      FHighpass.Assign(Self.FHighpass);
+      FDownSampleFactor := Self.FDownSampleFactor;
+      FDownSampleCounter := Self.FDownSampleCounter;
+    end
+  else
     inherited;
-    FLowpass.Assign(Self.FLowpass);
-    FHighpass.Assign(Self.FHighpass);
-    FDownSampleFactor  := Self.FDownSampleFactor;
-    FDownSampleCounter := Self.FDownSampleCounter;
-   end
- else inherited;
 end;
 
 procedure TCustomDownsampledTuner.CalculateDownsampleFactor;
 var
-  NewFactor      : Integer;
-  CurrentNyquist : Single;
+  NewFactor: Integer;
+  CurrentNyquist: Single;
 begin
- CurrentNyquist := 0.5 * SampleRate;
- NewFactor := 1;
- while FDownsampleBW * 0.5 * CurrentNyquist > MaximumFrequency do
+  CurrentNyquist := 0.5 * SampleRate;
+  NewFactor := 1;
+  while FDownsampleBW * 0.5 * CurrentNyquist > MaximumFrequency do
   begin
-   CurrentNyquist := 0.5 * CurrentNyquist;
-   NewFactor := NewFactor shl 1;
+    CurrentNyquist := 0.5 * CurrentNyquist;
+    NewFactor := NewFactor shl 1;
   end;
- FDownSampleFactor := NewFactor;
+  FDownSampleFactor := NewFactor;
 end;
 
 function TCustomDownsampledTuner.GetDSFilterOrder: Cardinal;
 begin
- Result := FLowpass.Order;
+  Result := FLowpass.Order;
 end;
 
 procedure TCustomDownsampledTuner.SetupMaximumFrequency;
 begin
- FLowpass.Frequency := FMaximumFrequency;
-end; 
+  FLowpass.Frequency := FMaximumFrequency;
+end;
 
 procedure TCustomDownsampledTuner.MaximumFrequencyChanged;
 begin
- SetupMaximumFrequency;
- CalculateDownsampleFactor;
- FHighpass.SampleRate := SampleRate / FDownSampleFactor;
- Changed;
+  SetupMaximumFrequency;
+  CalculateDownsampleFactor;
+  FHighpass.SampleRate := SampleRate / FDownSampleFactor;
+  Changed;
 end;
 
 procedure TCustomDownsampledTuner.MinimumFrequencyChanged;
 begin
- FHighpass.Frequency := FMinimumFrequency;
- Changed;
+  FHighpass.Frequency := FMinimumFrequency;
+  Changed;
 end;
 
 procedure TCustomDownsampledTuner.ProcessSample32(Input: Single);
 var
-  LowpassedSignal : Double;
+  LowpassedSignal: Double;
 begin
- LowpassedSignal := FLowpass.ProcessSample64(Input);
- Dec(FDownSampleCounter);
- if FDownSampleCounter = 0 then
+  LowpassedSignal := FLowpass.ProcessSample64(Input);
+  Dec(FDownSampleCounter);
+  if FDownSampleCounter = 0 then
   begin
-   FDownSampleCounter := FDownSampleFactor;
-   ProcessDownsampled(FHighpass.ProcessSample64(LowpassedSignal));
+    FDownSampleCounter := FDownSampleFactor;
+    ProcessDownsampled(FHighpass.ProcessSample64(LowpassedSignal));
   end;
 end;
 
 procedure TCustomDownsampledTuner.SetDownsampleBW(Value: Single);
 begin
- Value := Limit(Value, 0, 1);
- if Value <> FDownsampleBW then
+  Value := Limit(Value, 0, 1);
+  if Value <> FDownsampleBW then
   begin
-   FDownsampleBW := Value;
-   CalculateDownsampleFactor;
+    FDownsampleBW := Value;
+    CalculateDownsampleFactor;
   end;
 end;
 
 procedure TCustomDownsampledTuner.SetDSFilterOrder(const Value: Cardinal);
 begin
- if FLowpass.Order <> Value then
+  if FLowpass.Order <> Value then
   begin
-   FLowpass.Order := Value;
-   CalculateDownsampleFactor;
+    FLowpass.Order := Value;
+    CalculateDownsampleFactor;
   end;
 end;
 
 procedure TCustomDownsampledTuner.SetMaximumFrequency(const Value: Single);
 begin
- if FMaximumFrequency <> Value then
+  if FMaximumFrequency <> Value then
   begin
-   FMaximumFrequency := Value;
-   MaximumFrequencyChanged;
+    FMaximumFrequency := Value;
+    MaximumFrequencyChanged;
   end;
 end;
 
 procedure TCustomDownsampledTuner.SetMinimumFrequency(const Value: Single);
 begin
- if FMinimumFrequency <> Value then
+  if FMinimumFrequency <> Value then
   begin
-   FMinimumFrequency := Value;
-   MinimumFrequencyChanged;
+    FMinimumFrequency := Value;
+    MinimumFrequencyChanged;
   end;
 end;
 
@@ -364,377 +371,406 @@ end;
 
 constructor TCustomZeroCrossingTuner.Create;
 begin
- inherited;
- FOneCrossingOnly := True;
- FFrequencyFactor := 1;
- FSmoothFactor    := 0.99;
- FAverageSamples  := FFrequencyFactor * SampleRate / (DownSampleFilterOrder * 440);
+  inherited;
+  FOneCrossingOnly := True;
+  FFrequencyFactor := 1;
+  FSmoothFactor := 0.99;
+  FAverageSamples := FFrequencyFactor * SampleRate /
+    (DownSampleFilterOrder * 440);
 end;
 
 function TCustomZeroCrossingTuner.GetCurrentFrequency: Single;
 begin
- {$IFDEF OnlineFreqCalc}
- Result := FCurrentFreq;
- {$ELSE}
- Result := CalculateCurrentFrequency;
- {$ENDIF}
+{$IFDEF OnlineFreqCalc}
+  Result := FCurrentFreq;
+{$ELSE}
+  Result := CalculateCurrentFrequency;
+{$ENDIF}
 end;
 
-procedure TCustomZeroCrossingTuner.ProcessDownsampled(Downsampled: Single);
+procedure TCustomZeroCrossingTuner.ProcessDownsampled(DownSampled: Single);
 begin
- if (Downsampled < 0) = FIsAbove then
+  if (DownSampled < 0) = FIsAbove then
   begin
-   FIsAbove := not FIsAbove;
+    FIsAbove := not FIsAbove;
 
-   if FOneCrossingOnly and FIsAbove then
+    if FOneCrossingOnly and FIsAbove then
     begin
-     inc(FSamples);
-     exit;
+      inc(FSamples);
+      exit;
     end;
 
-   FAverageSamples := FSmoothFactor * FAverageSamples +
-     (1 - FSmoothFactor) * FSamples;
-   FSamples := 1;
+    FAverageSamples := FSmoothFactor * FAverageSamples + (1 - FSmoothFactor)
+      * FSamples;
+    FSamples := 1;
 
-   {$IFDEF OnlineFreqCalc}
-   FCurrentFreq := CalculateCurrentFrequency;
-   {$ENDIF}
+{$IFDEF OnlineFreqCalc}
+    FCurrentFreq := CalculateCurrentFrequency;
+{$ENDIF}
   end
- else inc(FSamples);
+  else
+    inc(FSamples);
 end;
 
 procedure TCustomZeroCrossingTuner.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomZeroCrossingTuner then
-  with TCustomZeroCrossingTuner(Dest) do
-   begin
+  if Dest is TCustomZeroCrossingTuner then
+    with TCustomZeroCrossingTuner(Dest) do
+    begin
+      inherited;
+      FIsAbove := Self.FIsAbove;
+      FSamples := Self.FSamples;
+      FAverageSamples := Self.FAverageSamples;
+      FOneCrossingOnly := Self.FOneCrossingOnly;
+      FFrequencyFactor := Self.FFrequencyFactor;
+{$IFDEF OnlineFreqCalc}
+      FCurrentFreq := Self.FCurrentFreq;
+{$ENDIF}
+    end
+  else
     inherited;
-    FIsAbove         := Self.FIsAbove;
-    FSamples         := Self.FSamples;
-    FAverageSamples  := Self.FAverageSamples;
-    FOneCrossingOnly := Self.FOneCrossingOnly;
-    FFrequencyFactor := Self.FFrequencyFactor;
-    {$IFDEF OnlineFreqCalc}
-    FCurrentFreq     := Self.FCurrentFreq;
-    {$ENDIF}
-   end
- else inherited;
 end;
 
 function TCustomZeroCrossingTuner.CalculateCurrentFrequency: Single;
 begin
- Result := FFrequencyFactor * SampleRate / (FDownSampleFactor * FAverageSamples);
+  Result := FFrequencyFactor * SampleRate /
+    (FDownSampleFactor * FAverageSamples);
 end;
 
 procedure TCustomZeroCrossingTuner.SetOneCrossingOnly(const Value: Boolean);
 begin
- if FOneCrossingOnly <> Value then
+  if FOneCrossingOnly <> Value then
   begin
-   FOneCrossingOnly := Value;
-   if FOneCrossingOnly
-    then FFrequencyFactor := 1
-    else FFrequencyFactor := 0.5;
+    FOneCrossingOnly := Value;
+    if FOneCrossingOnly then
+      FFrequencyFactor := 1
+    else
+      FFrequencyFactor := 0.5;
   end;
 end;
 
 procedure TCustomZeroCrossingTuner.SetSmoothFactor(const Value: Single);
 begin
- if FSmoothFactor <> Value then
+  if FSmoothFactor <> Value then
   begin
-   FSmoothFactor := Value;
-   SmoothFactorChanged;
+    FSmoothFactor := Value;
+    SmoothFactorChanged;
   end;
 end;
 
 procedure TCustomZeroCrossingTuner.SmoothFactorChanged;
 begin
-// FSmoothFactor := exp( -ln2 / (FSmooth * 0.001 * SampleRate));
+  // FSmoothFactor := exp( -ln2 / (FSmooth * 0.001 * SampleRate));
 end;
-
 
 { TCustomLinearZeroCrossingTuner }
 
-procedure TCustomLinearZeroCrossingTuner.ProcessDownsampled(
-  Downsampled: Single);
+procedure TCustomLinearZeroCrossingTuner.ProcessDownsampled
+  (DownSampled: Single);
 var
-  Offset : Single;
+  Offset: Single;
 begin
- if (Downsampled < 0) = FIsAbove then
+  if (DownSampled < 0) = FIsAbove then
   begin
-   FIsAbove := not FIsAbove;
+    FIsAbove := not FIsAbove;
 
-   if FOneCrossingOnly and FIsAbove then
+    if FOneCrossingOnly and FIsAbove then
     begin
-     inc(FSamples);
-     exit;
+      inc(FSamples);
+      exit;
     end;
 
-   Offset := (FLastSample / (FLastSample - Downsampled));
+    Offset := (FLastSample / (FLastSample - DownSampled));
 
-   FAverageSamples := FSmoothFactor * FAverageSamples +
-     (1 - FSmoothFactor) * (FSamples - FLastOffset + Offset);
-   FSamples := 1;
-   FLastOffset := Offset;
+    FAverageSamples := FSmoothFactor * FAverageSamples + (1 - FSmoothFactor) *
+      (FSamples - FLastOffset + Offset);
+    FSamples := 1;
+    FLastOffset := Offset;
 
-   {$IFDEF OnlineFreqCalc}
-   FCurrentFreq := CalculateCurrentFrequency;
-   {$ENDIF}
+{$IFDEF OnlineFreqCalc}
+    FCurrentFreq := CalculateCurrentFrequency;
+{$ENDIF}
   end
- else inc(FSamples);
- FLastSample := Downsampled;
+  else
+    inc(FSamples);
+  FLastSample := DownSampled;
 end;
 
 { TCustomAdvancedTuner }
 
 function TCustomAdvancedTuner.CalculateCurrentFrequency: Single;
 var
-  CurrentNote : Single;
+  CurrentNote: Single;
 begin
- Result := inherited CalculateCurrentFrequency;
+  Result := inherited CalculateCurrentFrequency;
 
- CurrentNote := 12 * FastLog2ContinousError4(FCurrentFreq / 440);
- while CurrentNote < -6 do CurrentNote := CurrentNote + 12;
- while CurrentNote >  6 do CurrentNote := CurrentNote - 12;
+  CurrentNote := 12 * FastLog2ContinousError4(FCurrentFreq / 440);
+  while CurrentNote < -6 do
+    CurrentNote := CurrentNote + 12;
+  while CurrentNote > 6 do
+    CurrentNote := CurrentNote - 12;
 
- case Round(CurrentNote) of
-  -6, 6 : FCurrentNote := 'Eb';
-  -5    : FCurrentNote := 'E';
-  -4    : FCurrentNote := 'F';
-  -3    : FCurrentNote := 'F#';
-  -2    : FCurrentNote := 'G';
-  -1    : FCurrentNote := 'G#';
-   0    : FCurrentNote := 'A';
-   1    : FCurrentNote := 'Bb';
-   2    : FCurrentNote := 'B';
-   3    : FCurrentNote := 'C';
-   4    : FCurrentNote := 'C#';
-   5    : FCurrentNote := 'D';
- end;
+  case Round(CurrentNote) of
+    - 6, 6:
+      FCurrentNote := 'Eb';
+    -5:
+      FCurrentNote := 'E';
+    -4:
+      FCurrentNote := 'F';
+    -3:
+      FCurrentNote := 'F#';
+    -2:
+      FCurrentNote := 'G';
+    -1:
+      FCurrentNote := 'G#';
+    0:
+      FCurrentNote := 'A';
+    1:
+      FCurrentNote := 'Bb';
+    2:
+      FCurrentNote := 'B';
+    3:
+      FCurrentNote := 'C';
+    4:
+      FCurrentNote := 'C#';
+    5:
+      FCurrentNote := 'D';
+  end;
 
- FCurrentDetune := 100 * CurrentNote - round(CurrentNote);
+  FCurrentDetune := 100 * CurrentNote - Round(CurrentNote);
 
- FCurrentFreq := 440 * FastPower2ContinousError3(CurrentNote * COneTwelfth32);
+  FCurrentFreq := 440 * FastPower2ContinousError3(CurrentNote * COneTwelfth32);
 end;
 
 procedure TCustomAdvancedTuner.CalculateDownsampleFactor;
 begin
- inherited;
- CalculateAttackFactor;
- CalculateReleaseFactor;
+  inherited;
+  CalculateAttackFactor;
+  CalculateReleaseFactor;
 end;
 
 procedure TCustomAdvancedTuner.SetAttack(const Value: Single);
 begin
- if FAttack <> Value then
+  if FAttack <> Value then
   begin
-   FAttack := Value;
-   AttackChanged;
+    FAttack := Value;
+    AttackChanged;
   end;
 end;
 
 procedure TCustomAdvancedTuner.SetRelease(const Value: Single);
 begin
- if FRelease <> Value then
+  if FRelease <> Value then
   begin
-   FRelease := Value;
-   ReleaseChanged;
+    FRelease := Value;
+    ReleaseChanged;
   end;
 end;
 
 procedure TCustomAdvancedTuner.SetThreshold(const Value: Single);
 begin
- FThreshold := Limit(Value, -1, 1);
+  FThreshold := Limit(Value, -1, 1);
 end;
 
 procedure TCustomAdvancedTuner.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomAdvancedTuner then
-  with TCustomAdvancedTuner(Dest) do
-   begin
+  if Dest is TCustomAdvancedTuner then
+    with TCustomAdvancedTuner(Dest) do
+    begin
+      inherited;
+      FCurrentNote := Self.FCurrentNote;
+      FCurrentDetune := Self.FCurrentDetune;
+      FAttack := Self.FAttack;
+      FAttackFactor := Self.FAttackFactor;
+      FRelease := Self.FRelease;
+      FReleaseFactor := Self.FReleaseFactor;
+      FLevel := Self.FLevel;
+      FThreshold := Self.FThreshold;
+    end
+  else
     inherited;
-    FCurrentNote   := Self.FCurrentNote;
-    FCurrentDetune := Self.FCurrentDetune;
-    FAttack        := Self.FAttack;
-    FAttackFactor  := Self.FAttackFactor;
-    FRelease       := Self.FRelease;
-    FReleaseFactor := Self.FReleaseFactor;
-    FLevel         := Self.FLevel;
-    FThreshold     := Self.FThreshold;
-   end
- else inherited;
 end;
 
 procedure TCustomAdvancedTuner.AttackChanged;
 begin
- CalculateAttackFactor;
+  CalculateAttackFactor;
 end;
 
 procedure TCustomAdvancedTuner.ReleaseChanged;
 begin
- CalculateReleaseFactor;
+  CalculateReleaseFactor;
 end;
 
 procedure TCustomAdvancedTuner.CalculateAttackFactor;
 begin
-  if FAttack = 0 then FAttackFactor := 0
-  else FAttackFactor := 1 - exp( -ln2 / (FAttack * 0.001 * SampleRate / FDownSampleFactor));
+  if FAttack = 0 then
+    FAttackFactor := 0
+  else
+    FAttackFactor := 1 -
+      exp(-ln2 / (FAttack * 0.001 * SampleRate / FDownSampleFactor));
 end;
 
 procedure TCustomAdvancedTuner.CalculateReleaseFactor;
 begin
-  if FRelease = 0 then FReleaseFactor := 0
-  else FReleaseFactor := exp( -ln2 / (FRelease * 0.001 * SampleRate / FDownSampleFactor));
+  if FRelease = 0 then
+    FReleaseFactor := 0
+  else
+    FReleaseFactor :=
+      exp(-ln2 / (FRelease * 0.001 * SampleRate / FDownSampleFactor));
 end;
 
 constructor TCustomAdvancedTuner.Create;
 begin
- inherited;
- FAttack := 1;
- FRelease := 10;
- FThreshold := 0;
+  inherited;
+  FAttack := 1;
+  FRelease := 10;
+  FThreshold := 0;
 end;
 
-procedure TCustomAdvancedTuner.ProcessDownsampled(Downsampled: Single);
+procedure TCustomAdvancedTuner.ProcessDownsampled(DownSampled: Single);
 var
-  Offset : Single;
+  Offset: Single;
 begin
- if abs(Downsampled) > FLevel
-  then FLevel := FLevel + (abs(Downsampled) - FLevel) * FAttackFactor
-  else FLevel := abs(Downsampled) + (FLevel - abs(Downsampled)) * FReleaseFactor;
+  if abs(DownSampled) > FLevel then
+    FLevel := FLevel + (abs(DownSampled) - FLevel) * FAttackFactor
+  else
+    FLevel := abs(DownSampled) + (FLevel - abs(DownSampled)) * FReleaseFactor;
 
- if (Downsampled < FThreshold * FLevel) = FIsAbove then
+  if (DownSampled < FThreshold * FLevel) = FIsAbove then
   begin
-   FIsAbove := not FIsAbove;
+    FIsAbove := not FIsAbove;
 
-   if FOneCrossingOnly and FIsAbove then
+    if FOneCrossingOnly and FIsAbove then
     begin
-     inc(FSamples);
-     exit;
+      inc(FSamples);
+      exit;
     end;
 
-   Offset := (FLastSample / (FLastSample - Downsampled));
+    Offset := (FLastSample / (FLastSample - DownSampled));
 
-   FAverageSamples := FSmoothFactor * FAverageSamples +
-     (1 - FSmoothFactor) * (FSamples - FLastOffset + Offset);
-   FSamples := 1;
-   FLastOffset := Offset;
+    FAverageSamples := FSmoothFactor * FAverageSamples + (1 - FSmoothFactor) *
+      (FSamples - FLastOffset + Offset);
+    FSamples := 1;
+    FLastOffset := Offset;
 
-   {$IFDEF OnlineFreqCalc}
-   FCurrentFreq := CalculateCurrentFrequency;
-   {$ENDIF}
+{$IFDEF OnlineFreqCalc}
+    FCurrentFreq := CalculateCurrentFrequency;
+{$ENDIF}
   end
- else inc(FSamples);
- FLastSample := Downsampled;
+  else
+    inc(FSamples);
+  FLastSample := DownSampled;
 end;
 
 { TCustomCepstrumTuner }
 
 constructor TCustomCepstrumTuner.Create;
 begin
- inherited;
- FCepstrumCalculation := TPowerCepstrum32.Create;
- FBufferLength := 0;
- CalculateBufferLength;
+  inherited;
+  FCepstrumCalculation := TPowerCepstrum32.Create;
+  FBufferLength := 0;
+  CalculateBufferLength;
 end;
 
 destructor TCustomCepstrumTuner.Destroy;
 begin
- FreeAndNil(FCepstrumCalculation);
- inherited;
+  FreeAndNil(FCepstrumCalculation);
+  inherited;
 end;
 
 procedure TCustomCepstrumTuner.SampleRateChanged;
 begin
- inherited;
- CalculateBufferLength;
+  inherited;
+  CalculateBufferLength;
 end;
 
 procedure TCustomCepstrumTuner.CalculateDownsampleFactor;
 begin
- inherited;
- CalculateBufferLength;
+  inherited;
+  CalculateBufferLength;
 end;
 
 procedure TCustomCepstrumTuner.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomCepstrumTuner then
-  with TCustomCepstrumTuner(Dest) do
-   begin
+  if Dest is TCustomCepstrumTuner then
+    with TCustomCepstrumTuner(Dest) do
+    begin
+      inherited;
+      FBuffer := Self.FBuffer;
+      FCepstrum := Self.FCepstrum;
+      FCepstrumCalculation := Self.FCepstrumCalculation;
+      FBufferLength := Self.FBufferLength;
+      FBufferPos := Self.FBufferPos;
+{$IFDEF OnlineFreqCalc}
+      FCurrentFreq := Self.FCurrentFreq;
+{$ENDIF}
+    end
+  else
     inherited;
-    FBuffer              := Self.FBuffer;
-    FCepstrum            := Self.FCepstrum;
-    FCepstrumCalculation := Self.FCepstrumCalculation;
-    FBufferLength        := Self.FBufferLength;
-    FBufferPos           := Self.FBufferPos;
-    {$IFDEF OnlineFreqCalc}
-    FCurrentFreq         := Self.FCurrentFreq;
-    {$ENDIF}
-   end
- else inherited;
 end;
 
 procedure TCustomCepstrumTuner.CalculateBufferLength;
 var
-  NewBufferLength : Integer;
+  NewBufferLength: Integer;
 begin
- // buffer of about 25ms
- NewBufferLength := Round(0.025 * SampleRate / FDownSampleFactor);
+  // buffer of about 25ms
+  NewBufferLength := Round(0.025 * SampleRate / FDownSampleFactor);
 
- // round to nearest power of 2
- NewBufferLength := RoundToPowerOf2(NewBufferLength);
+  // round to nearest power of 2
+  NewBufferLength := RoundToPowerOf2(NewBufferLength);
 
- if NewBufferLength <> FBufferLength then
+  if NewBufferLength <> FBufferLength then
   begin
-   FBufferLength := NewBufferLength;
+    FBufferLength := NewBufferLength;
 
-   // set cepstrum length
-   FCepstrumCalculation.FFTOrder := round(Log2(NewBufferLength));
+    // set cepstrum length
+    FCepstrumCalculation.FFTOrder := Round(Log2(NewBufferLength));
 
-   // reallocate buffer memory
-   ReallocMem(FBuffer, NewBufferLength * SizeOf(Single));
-   FillChar(FBuffer^, NewBufferLength * SizeOf(Single), 0);
+    // reallocate buffer memory
+    ReallocMem(FBuffer, NewBufferLength * SizeOf(Single));
+    FillChar(FBuffer^, NewBufferLength * SizeOf(Single), 0);
 
-   // reset buffer position
-   FBufferPos := 0;
+    // reset buffer position
+    FBufferPos := 0;
   end;
 end;
 
 function TCustomCepstrumTuner.CalculateCurrentFrequency: Single;
 var
-  i   : Integer;
-  max : Single;
-  mps : Integer;
+  i: Integer;
+  max: Single;
+  mps: Integer;
 begin
- mps := 0;
- max := FCepstrum[0].Re;
- for i := 1 to FBufferLength - 1 do
-  if FCepstrum[i].Re > max then
-   begin
-    max := FCepstrum[i].Re;
-    mps := i;
-   end;
+  mps := 0;
+  max := FCepstrum[0].Re;
+  for i := 1 to FBufferLength - 1 do
+    if FCepstrum[i].Re > max then
+    begin
+      max := FCepstrum[i].Re;
+      mps := i;
+    end;
 
- Result := SampleRate / (FDownSampleFactor * mps);
+  Result := SampleRate / (FDownSampleFactor * mps);
 end;
 
 function TCustomCepstrumTuner.GetCurrentFrequency: Single;
 begin
- {$IFDEF OnlineFreqCalc}
- Result := FCurrentFreq;
- {$ELSE}
- Result := CalculateCurrentFrequency;
- {$ENDIF}
+{$IFDEF OnlineFreqCalc}
+  Result := FCurrentFreq;
+{$ELSE}
+  Result := CalculateCurrentFrequency;
+{$ENDIF}
 end;
 
-procedure TCustomCepstrumTuner.ProcessDownsampled(Downsampled: Single);
+procedure TCustomCepstrumTuner.ProcessDownsampled(DownSampled: Single);
 begin
- FBuffer[FBufferPos] := DownSampled;
- Inc(FBufferPos);
- if FBufferPos = FBufferLength then
+  FBuffer[FBufferPos] := DownSampled;
+  inc(FBufferPos);
+  if FBufferPos = FBufferLength then
   begin
-   FBufferPos := 0;
-   ApplyHammingWindow(FBuffer, FBufferLength);
-   FCepstrumCalculation.CalculateCepstrum(FBuffer, FCepstrum);
+    FBufferPos := 0;
+    ApplyHammingWindow(FBuffer, FBufferLength);
+    FCepstrumCalculation.CalculateCepstrum(FBuffer, FCepstrum);
   end;
 end;
 
@@ -742,189 +778,191 @@ end;
 
 constructor TCustomYinTuner.Create;
 begin
- FYinBuffer := nil;
- FBlockBuilder := TBuildingBlocksCircular32.Create;
- FBlockBuilder.OnProcess := BlockProcessingHandler;
- inherited;
- FThreshold := 0.15;
+  FYinBuffer := nil;
+  FBlockBuilder := TBuildingBlocksCircular32.Create;
+  FBlockBuilder.OnProcess := BlockProcessingHandler;
+  inherited;
+  FThreshold := 0.15;
 end;
 
 destructor TCustomYinTuner.Destroy;
 begin
- FreeAndNil(FBlockBuilder);
- Dispose(FYinBuffer);
- inherited;
+  FreeAndNil(FBlockBuilder);
+  Dispose(FYinBuffer);
+  inherited;
 end;
 
 procedure TCustomYinTuner.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomYinTuner then
-  with TCustomYinTuner(Dest) do
-   begin
+  if Dest is TCustomYinTuner then
+    with TCustomYinTuner(Dest) do
+    begin
+      inherited;
+      FBlockBuilder.Assign(Self.FBlockBuilder);
+{$IFDEF OnlineFreqCalc}
+      FCurrentFreq := Self.FCurrentFreq;
+{$ENDIF}
+    end
+  else
     inherited;
-    FBlockBuilder.Assign(Self.FBlockBuilder);
-    {$IFDEF OnlineFreqCalc}
-    FCurrentFreq := Self.FCurrentFreq;
-    {$ENDIF}
-   end
- else inherited;
 end;
 
 procedure TCustomYinTuner.CalculateBufferLength;
 begin
- FBlockSize := Round(min(0.025, 1 / FMinimumFrequency) *
-   (SampleRate / FDownSampleFactor)) * 2;
- with FBlockBuilder do
+  FBlockSize := Round(min(0.025, 1 / FMinimumFrequency) *
+    (SampleRate / FDownSampleFactor)) * 2;
+  with FBlockBuilder do
   begin
-   BlockSize := Self.FBlockSize;
-   OverlapSize := BlockSize - (BlockSize div 4);
+    BlockSize := Self.FBlockSize;
+    OverlapSize := BlockSize - (BlockSize div 4);
   end;
- ReallocMem(FYinBuffer, FBlockBuilder.BlockSize div 2);
+  ReallocMem(FYinBuffer, FBlockBuilder.BlockSize div 2);
 end;
 
 function TCustomYinTuner.CalculateCurrentFrequency: Single;
 begin
- Result := SampleRate / (FDownSampleFactor * FPeriod);
+  Result := SampleRate / (FDownSampleFactor * FPeriod);
 end;
 
 function QuadFrac(s0, s1, s2, pf: Single): Single;
 begin
- Result := s0 + (pf * 0.5) * (pf * (s0 - 2 * s1 + s2 ) - 3 * s0 + 4 * s1 - s2);
+  Result := s0 + (pf * 0.5) * (pf * (s0 - 2 * s1 + s2) - 3 * s0 + 4 * s1 - s2);
 end;
 
-function ParabolicMinimum(Input: PDAVSingleFixedArray; SampleCount, Position,
-  Span: Cardinal): Single;
+function ParabolicMinimum(Input: PDAVSingleFixedArray;
+  SampleCount, Position, Span: Cardinal): Single;
 var
-  Res, Frac  : Single;
-  s0, s1, s2 : Single;
-  Resold     : Single;
+  Res, Frac: Single;
+  s0, s1, s2: Single;
+  Resold: Single;
 const
-  CStepSize : Single = 1 / 256;
+  CStepSize: Single = 1 / 256;
 begin
 
- // init resold to - something (in case x[Position+-span]<0))
- Result := Position;
- Resold := 100000;
+  // init resold to - something (in case x[Position+-span]<0))
+  Result := Position;
+  Resold := 100000;
 
- if (Position > Span) and (Position < SampleCount - Span) then
+  if (Position > Span) and (Position < SampleCount - Span) then
   begin
-   s0 := Input^[Position - Span];
-   s1 := Input^[Position       ];
-   s2 := Input^[Position + Span];
+    s0 := Input^[Position - Span];
+    s1 := Input^[Position];
+    s2 := Input^[Position + Span];
 
-   Frac := 0;
-   // increase Frac
-   repeat
-    Res := QuadFrac(s0, s1, s2, Frac);
-    if (Res < Resold)
-     then Resold := Res
-     else
+    Frac := 0;
+    // increase Frac
+    repeat
+      Res := QuadFrac(s0, s1, s2, Frac);
+      if (Res < Resold) then
+        Resold := Res
+      else
       begin
-       Result := Result + (Frac - CStepSize) * Span - Span * 0.5;
-       Break;
+        Result := Result + (Frac - CStepSize) * Span - Span * 0.5;
+        Break;
       end;
-    Frac := Frac + CStepSize;
-   until Frac >= 2;
+      Frac := Frac + CStepSize;
+    until Frac >= 2;
   end;
 end;
 
-function FindMinimum(Input: PDAVSingleFixedArray; SampleCount: Cardinal): Cardinal;
+function FindMinimum(Input: PDAVSingleFixedArray; SampleCount: Cardinal)
+  : Cardinal;
 var
-  Sample    : Cardinal;
-  Temp : Single;
+  Sample: Cardinal;
+  Temp: Single;
 begin
- Result := 0;
- Temp := Input^[0];
- for Sample := 1 to SampleCount - 1 do
-  if Input^[Sample] < Temp then
-   begin
-    Temp := Input^[Sample];
-    Result := Sample;
-   end;
+  Result := 0;
+  Temp := Input^[0];
+  for Sample := 1 to SampleCount - 1 do
+    if Input^[Sample] < Temp then
+    begin
+      Temp := Input^[Sample];
+      Result := Sample;
+    end;
 end;
 
 procedure TCustomYinTuner.BlockProcessingHandler(Sender: TObject;
   const Input: PDAVSingleFixedArray);
 var
-  j, Tau      : Cardinal;
-  period      : Integer;
-  temp        : array [0..1] of Single;
-  SampleCount : Cardinal;
+  j, Tau: Cardinal;
+  period: Integer;
+  Temp: array [0 .. 1] of Single;
+  SampleCount: Cardinal;
 begin
- temp[0] := 0;
- temp[1] := 0;
- FYinBuffer^[0] := 1;
- SampleCount := (FBlockSize div 2);
- for Tau := 1 to SampleCount - 1 do
+  Temp[0] := 0;
+  Temp[1] := 0;
+  FYinBuffer^[0] := 1;
+  SampleCount := (FBlockSize div 2);
+  for Tau := 1 to SampleCount - 1 do
   begin
-   FYinBuffer^[tau] := 0;
-   for j := 0 to SampleCount - 1 do
+    FYinBuffer^[Tau] := 0;
+    for j := 0 to SampleCount - 1 do
     begin
-     temp[0] := Input^[j] - Input^[j + tau];
-     FYinBuffer^[tau] := FYinBuffer^[tau] + Sqr(temp[0]);
+      Temp[0] := Input^[j] - Input^[j + Tau];
+      FYinBuffer^[Tau] := FYinBuffer^[Tau] + Sqr(Temp[0]);
     end;
-   temp[1] := temp[1] + FYinBuffer^[tau];
-   FYinBuffer^[tau] := FYinBuffer^[tau] * tau / temp[1];
-   Period := Tau - 3;
-   if (tau > 4) and (FYinBuffer^[period] < Threshold) and
-      (FYinBuffer^[Period] < FYinBuffer^[Period + 1])
-    then
-     begin
-      FPeriod := ParabolicMinimum(FYinBuffer, (FBlockSize div 2), Period, 1);
-      {$IFDEF OnlineFreqCalc}
+    Temp[1] := Temp[1] + FYinBuffer^[Tau];
+    FYinBuffer^[Tau] := FYinBuffer^[Tau] * Tau / Temp[1];
+    period := Tau - 3;
+    if (Tau > 4) and (FYinBuffer^[period] < Threshold) and
+      (FYinBuffer^[period] < FYinBuffer^[period + 1]) then
+    begin
+      FPeriod := ParabolicMinimum(FYinBuffer, (FBlockSize div 2), period, 1);
+{$IFDEF OnlineFreqCalc}
       FCurrentFreq := CalculateCurrentFrequency;
-      if FCurrentFreq < 0.55 * FCurrentFreq
-       then FCurrentFreq := 0.5 * FCurrentFreq;
-      {$ENDIF}
-      Exit;
-     end;
+      if FCurrentFreq < 0.55 * FCurrentFreq then
+        FCurrentFreq := 0.5 * FCurrentFreq;
+{$ENDIF}
+      exit;
+    end;
   end;
 
- FPeriod := ParabolicMinimum(FYinBuffer, (FBlockSize div 2), FindMinimum(FYinBuffer, (FBlockSize div 2)), 1);
+  FPeriod := ParabolicMinimum(FYinBuffer, (FBlockSize div 2),
+    FindMinimum(FYinBuffer, (FBlockSize div 2)), 1);
 
- {$IFDEF OnlineFreqCalc}
- FCurrentFreq := CalculateCurrentFrequency;
- {$ENDIF}
+{$IFDEF OnlineFreqCalc}
+  FCurrentFreq := CalculateCurrentFrequency;
+{$ENDIF}
 end;
 
 procedure TCustomYinTuner.CalculateDownsampleFactor;
 begin
- inherited;
- CalculateBufferLength;
+  inherited;
+  CalculateBufferLength;
 end;
 
 function TCustomYinTuner.GetCurrentFrequency: Single;
 begin
- {$IFDEF OnlineFreqCalc}
- Result := FCurrentFreq;
- {$ELSE}
- Result := CalculateCurrentFrequency;
- {$ENDIF}
+{$IFDEF OnlineFreqCalc}
+  Result := FCurrentFreq;
+{$ELSE}
+  Result := CalculateCurrentFrequency;
+{$ENDIF}
 end;
 
-procedure TCustomYinTuner.ProcessDownsampled(Downsampled: Single);
+procedure TCustomYinTuner.ProcessDownsampled(DownSampled: Single);
 begin
- FBlockBuilder.ProcessSample32(Downsampled);
+  FBlockBuilder.ProcessSample32(DownSampled);
 end;
 
 procedure TCustomYinTuner.SampleRateChanged;
 begin
- inherited;
- CalculateBufferLength;
+  inherited;
+  CalculateBufferLength;
 end;
 
 procedure TCustomYinTuner.SetThreshold(const Value: Single);
 begin
- if FThreshold <> Abs(Value) then
+  if FThreshold <> abs(Value) then
   begin
-   FThreshold := Abs(Value);
-   ThresholdChanged;
+    FThreshold := abs(Value);
+    ThresholdChanged;
   end;
 end;
 
 procedure TCustomYinTuner.ThresholdChanged;
 begin
- Changed;
+  Changed;
 end;
 
 end.

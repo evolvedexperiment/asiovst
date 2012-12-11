@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkBrass;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -11,11 +41,11 @@ unit DAV_StkBrass;
   held by Stanford University, Yamaha, and others.
 
   Control Change Numbers:
-    - Lip Tension = 2
-    - Slide FLength = 4
-    - Vibrato Frequency = 11
-    - Vibrato Gain = 1
-    - Volume = 128
+  - Lip Tension = 2
+  - Slide FLength = 4
+  - Vibrato Frequency = 11
+  - Vibrato Gain = 1
+  - Volume = 128
 }
 
 interface
@@ -29,17 +59,17 @@ uses
 type
   TStkBrass = class(TStkControlableInstrument)
   protected
-    FDelayLine     : TStkDelayA;
-    FLipFilter     : TStkBiQuad;
-    FDcBlock       : TStkPoleZero;
-    FAdsr          : TStkADSR;
-    FVibrato       : TStkLFO;
-    FLength        : Integer;
-    FLipTarget     : Single;
-    FSlideTarget   : Single;
-    FVibratoGain   : Single;
-    FMaxPressure   : Single;
-    FBaseFrequency : Single;
+    FDelayLine: TStkDelayA;
+    FLipFilter: TStkBiQuad;
+    FDcBlock: TStkPoleZero;
+    FAdsr: TStkADSR;
+    FVibrato: TStkLFO;
+    FLength: Integer;
+    FLipTarget: Single;
+    FSlideTarget: Single;
+    FVibratoGain: Single;
+    FMaxPressure: Single;
+    FBaseFrequency: Single;
 
     // Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
@@ -48,7 +78,8 @@ type
     procedure FrequencyChanged; virtual;
   public
     // Class constructor, taking the lowest desired playing frequency.
-    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, LowestFrequency: Single);
+      reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -75,7 +106,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
 
   end;
 
@@ -107,7 +139,7 @@ begin
   FLipTarget := 0.0;
 
   // Necessary to initialize variables.
-  setFrequency(220.0);
+  SetFrequency(220.0);
 end;
 
 destructor TStkBrass.Destroy;
@@ -129,12 +161,13 @@ end;
 
 procedure TStkBrass.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Frequency then
+  if FBaseFrequency <> Frequency then
   begin
-   if (Value <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Frequency;
-   FrequencyChanged;
+    if (Value <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Frequency;
+    FrequencyChanged;
   end;
 end;
 
@@ -150,7 +183,7 @@ end;
 
 function TStkBrass.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkBrass.SetLip(const Frequency: Single);
@@ -158,8 +191,8 @@ var
   Freakency: Single;
 begin
   Freakency := Frequency;
-  if (Frequency <= 0.0)
-   then Freakency := 220.0;
+  if (Frequency <= 0.0) then
+    Freakency := 220.0;
 
   FLipFilter.setResonance(Freakency, 0.997, False);
 end;
@@ -192,23 +225,23 @@ function TStkBrass.Tick: Single;
 var
   deltaPressure, borePressure, mouthPressure, breathPressure: Single;
 begin
-  breathPressure := FMaxPressure * FAdsr.tick;
-  breathPressure := breathPressure + FVibratoGain * FVibrato.tick;
+  breathPressure := FMaxPressure * FAdsr.Tick;
+  breathPressure := breathPressure + FVibratoGain * FVibrato.Tick;
 
   mouthPressure := 0.3 * breathPressure;
   borePressure := 0.85 * FDelayLine.LastOutput;
   deltaPressure := mouthPressure - borePressure; // Differential pressure.
-  deltaPressure := FLipFilter.tick(deltaPressure);      // Force - > position.
+  deltaPressure := FLipFilter.Tick(deltaPressure); // Force - > position.
   deltaPressure := deltaPressure * deltaPressure;
-          // Basic position to area mapping.
+  // Basic position to area mapping.
   if (deltaPressure > 1.0) then
-    deltaPressure := 1.0;         // Non-linear saturation.
+    deltaPressure := 1.0; // Non-linear saturation.
   // The following input scattering assumes the mouthPressure := area.
   FLastOutput := deltaPressure * mouthPressure + (1.0 - deltaPressure) *
     borePressure;
-  FLastOutput := FDelayLine.tick(FDcBlock.tick(lastOutput));
+  FLastOutput := FDelayLine.Tick(FDcBlock.Tick(LastOutput));
 
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
 procedure TStkBrass.ControlChange(const Number: Integer; const Value: Single);
@@ -217,18 +250,18 @@ var
 begin
   norm := Limit(Value, 0, 1);
 
-  if (number = CMidiLipTension) then
-   begin // 2
+  if (Number = CMidiLipTension) then
+  begin // 2
     temp := FLipTarget * power(4.0, (2.0 * norm) - 1.0);
-    setLip(temp);
-   end
-  else if (number = CMidiSlideLength) then // 4
+    SetLip(temp);
+  end
+  else if (Number = CMidiSlideLength) then // 4
     FDelayLine.Delay := FSlideTarget * (0.5 + norm)
-  else if (number = CMidiModFrequency) then // 11
+  else if (Number = CMidiModFrequency) then // 11
     FVibrato.Frequency := norm * 12
-  else if (number = CMidiModWheel) then // 1
+  else if (Number = CMidiModWheel) then // 1
     FVibratoGain := norm * 0.4
-  else if (number = CMidiAfterTouchCont) then // 128
+  else if (Number = CMidiAfterTouchCont) then // 128
     FAdsr.Target := norm;
 end;
 

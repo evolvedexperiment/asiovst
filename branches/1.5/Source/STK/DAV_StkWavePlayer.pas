@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkWavePlayer;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -15,21 +45,21 @@ uses
 type
   TStkWavePlayer = class(TStkLFO)
   private
-    FOneShot    : Boolean;
-    FSampleData : psingle;
-    FLoopstart  : Integer;
-    FLoopend    : Integer;
-    FStart      : Single;
-    FEnd        : Single;
+    FOneShot: Boolean;
+    FSampleData: psingle;
+    FLoopstart: Integer;
+    FLoopend: Integer;
+    FStart: Single;
+    FEnd: Single;
 
-    pfofs       : Single;
+    pfofs: Single;
 
     procedure SetOneShot(const Value: Boolean);
   protected
-    FSize       : Longint;
-    FInvSize    : Single;
-    FLength     : Single;
-    FIsFinished : Boolean;
+    FSize: Longint;
+    FInvSize: Single;
+    FLength: Single;
+    FIsFinished: Boolean;
 
     procedure OneShotChanged; virtual;
 
@@ -46,7 +76,8 @@ type
     constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor, load file on create
-    constructor Create(const SampleRate: Single; const FileName: String); reintroduce; overload; virtual;
+    constructor Create(const SampleRate: Single; const FileName: String);
+      reintroduce; overload; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -71,33 +102,35 @@ implementation
 constructor TStkWavePlayer.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
-  pfofs       := 0;
-  FSize       := 0;
+  pfofs := 0;
+  FSize := 0;
   FSampleData := nil;
-  FLoopstart  := 0;
-  FLoopend    := 0;
-  FStart      := 0;
-  FEnd        := 0;
+  FLoopstart := 0;
+  FLoopend := 0;
+  FStart := 0;
+  FEnd := 0;
 end;
 
-constructor TStkWavePlayer.Create(const SampleRate: Single; const FileName: String);
+constructor TStkWavePlayer.Create(const SampleRate: Single;
+  const FileName: String);
 begin
-  if SampleRate <= 0
-   then raise Exception.Create('Samplerate must be larger than zero');
+  if SampleRate <= 0 then
+    raise Exception.Create('Samplerate must be larger than zero');
   inherited Create(SampleRate);
-  FSize       := 0;
+  FSize := 0;
   FSampleData := nil;
-  FLoopstart  := 0;
-  FLoopend    := 0;
-  FStart      := 0;
-  FEnd        := 0;
+  FLoopstart := 0;
+  FLoopend := 0;
+  FStart := 0;
+  FEnd := 0;
   LoadFile(FileName);
 end;
 
 destructor TStkWavePlayer.Destroy;
 begin
   inherited Destroy;
-  if Assigned(FSampleData) then Dispose(FSampleData);
+  if Assigned(FSampleData) then
+    Dispose(FSampleData);
 end;
 
 procedure TStkWavePlayer.Reset;
@@ -107,46 +140,48 @@ end;
 
 procedure TStkWavePlayer.LoadFile(const FileName: TFileName);
 var
-  ADC : TAudioDataCollection32;
+  ADC: TAudioDataCollection32;
 begin
   ADC := TAudioDataCollection32.Create(Self);
   with ADC do
-   try
-    LoadFromFile(FileName);
-    FSize := ADC.SampleFrames;
-    FInvSize := 1 / FSize;
-    GetMem(FSampleData, FSize * SizeOf(Single));
-    Move(ADC[0].ChannelDataPointer^[0], FSampleData^[0], FSize * SizeOf(Single));
-    FLength := FSize * FSampleRateInv;
-    FLoopstart := 0;
-    FLoopend := FSize - 1;
-    FStart := 0;
-    FEnd := (FSize - 1) * FInvSize;
-    FOneShot := True;
-    FIsFinished := False;
-   finally
-    FreeAndNil(ADC);
-   end;
+    try
+      LoadFromFile(FileName);
+      FSize := ADC.SampleFrames;
+      FInvSize := 1 / FSize;
+      GetMem(FSampleData, FSize * SizeOf(Single));
+      Move(ADC[0].ChannelDataPointer^[0], FSampleData^[0],
+        FSize * SizeOf(Single));
+      FLength := FSize * FSampleRateInv;
+      FLoopstart := 0;
+      FLoopend := FSize - 1;
+      FStart := 0;
+      FEnd := (FSize - 1) * FInvSize;
+      FOneShot := True;
+      FIsFinished := False;
+    finally
+      FreeAndNil(ADC);
+    end;
 end;
 
 function TStkWavePlayer.Tick: Single;
 var
-  x, y   : Longint;
-  q      : Single;
-  s1, s2 : psingle;
+  x, y: Longint;
+  q: Single;
+  s1, s2: psingle;
 begin
   phase := pfofs + phase + (FFreq * FSampleRateInv);
   if FOneShot then
-   begin
+  begin
     FIsFinished := (phase >= 1);
     if FIsFinished then
-     begin
+    begin
       Result := 0;
       exit;
-     end;
-   end
+    end;
+  end
   else
-    while (phase >= 1) do phase := phase - 1;
+    while (phase >= 1) do
+      phase := phase - 1;
   q := (phase * (FEnd - FStart) + FStart);
   if q > 1 then
     q := 1
@@ -165,24 +200,25 @@ end;
 
 procedure TStkWavePlayer.SetLoop(StartPosition, EndPosition: Integer);
 begin
-  if StartPosition < 0 then StartPosition := 0
-  else if StartPosition > FSize - 1
-   then StartPosition := FSize - 1;
-  if EndPosition < 1
-   then EndPosition := 1
-  else if EndPosition > FSize - 1
-   then EndPosition := FSize - 1;
-  if StartPosition > EndPosition
-   then StartPosition := 0;
+  if StartPosition < 0 then
+    StartPosition := 0
+  else if StartPosition > FSize - 1 then
+    StartPosition := FSize - 1;
+  if EndPosition < 1 then
+    EndPosition := 1
+  else if EndPosition > FSize - 1 then
+    EndPosition := FSize - 1;
+  if StartPosition > EndPosition then
+    StartPosition := 0;
   FLoopstart := StartPosition;
   FLoopend := EndPosition;
-  FStart := FLoopStart * FInvSize;
-  FEnd := FLoopEnd * FInvSize;
+  FStart := FLoopstart * FInvSize;
+  FEnd := FLoopend * FInvSize;
 end;
 
 procedure TStkWavePlayer.SetPos(const Value: Longint);
 begin
-  Phase := Value * FInvSize;
+  phase := Value * FInvSize;
 end;
 
 procedure TStkWavePlayer.SetRate(const Value: Single);
@@ -192,17 +228,16 @@ end;
 
 procedure TStkWavePlayer.SetOneShot(const Value: Boolean);
 begin
- if FOneShot <> Value then
+  if FOneShot <> Value then
   begin
-   FOneShot := Value;
-   OneShotChanged;
+    FOneShot := Value;
+    OneShotChanged;
   end;
 end;
 
 procedure TStkWavePlayer.OneShotChanged;
 begin
- // nothing todo yet!
+  // nothing todo yet!
 end;
-
 
 end.

@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_VSTModule;
 
 interface
@@ -5,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, {$ENDIF} Classes, DAV_VSTModuleWithDsp;
+{$IFDEF FPC} LCLIntf, LResources, {$ENDIF} Classes, DAV_VSTModuleWithDsp;
 
 type
   TVSTModule = class(TDspVSTModule)
@@ -102,14 +132,13 @@ type
     property OnSuspend;
     property OnVendorSpecific;
 
-    {$IFDEF UseDelphi}
+{$IFDEF UseDelphi}
     property OldCreateOrder default True;
-    {$ENDIF}
+{$ENDIF}
   end;
 
-
 {$IFDEF FPC}
-//function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boolean;
+  // function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boolean;
 {$ENDIF}
 
 implementation
@@ -118,68 +147,72 @@ uses
   Forms {$IFNDEF FPC} , RtlConsts {$ENDIF};
 
 { TVSTModule }
-    
+
 {$IFNDEF FPC}
 
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
- {$IFDEF UseDelphi}
- inherited Create(AOwner);
- if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
-  try
-   if not InitInheritedComponent(Self, TDspVSTModule) then
-     raise EResNotFound.CreateFmt('Resource %s not found', [ClassName]);
-   try
-    if Assigned(OnCreate) and OldCreateOrder then OnCreate(Self);
-   except
-    Forms.Application.HandleException(Self);
-   end;
-  except
-  end;
- {$ELSE}
- inherited Create(AOwner);
- if Assigned(OnCreate) then OnCreate(Self);
- {$ENDIF}
+{$IFDEF UseDelphi}
+  inherited Create(AOwner);
+  if (ClassType <> TVSTModule) and not(csDesigning in ComponentState) then
+    try
+      if not InitInheritedComponent(Self, TDspVSTModule) then
+        raise EResNotFound.CreateFmt('Resource %s not found', [ClassName]);
+      try
+        if Assigned(OnCreate) and OldCreateOrder then
+          OnCreate(Self);
+      except
+        Forms.Application.HandleException(Self);
+      end;
+    except
+    end;
+{$ELSE}
+  inherited Create(AOwner);
+  if Assigned(OnCreate) then
+    OnCreate(Self);
+{$ENDIF}
 end;
 
 {$ELSE}
 
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
- {$IFDEF UseDelphi}
- inherited Create(AOwner);
- if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
-  try
-   if not InitInheritedComponent(Self, TDspVSTModule)
-    then raise EStreamError.CreateFmt('Resource %s not found', [ClassName]);
-   if OldCreateOrder then DoCreate;
-  except
-  end;
- {$ELSE}
- inherited Create(AOwner);
- {$ENDIF}
- {$IFDEF DebugLog} AddLogMessage('After TVSTModule Create'); {$ENDIF}
+{$IFDEF UseDelphi}
+  inherited Create(AOwner);
+  if (ClassType <> TVSTModule) and not(csDesigning in ComponentState) then
+    try
+      if not InitInheritedComponent(Self, TDspVSTModule) then
+        raise EStreamError.CreateFmt('Resource %s not found', [ClassName]);
+      if OldCreateOrder then
+        DoCreate;
+    except
+    end;
+{$ELSE}
+  inherited Create(AOwner);
+{$ENDIF}
+{$IFDEF DebugLog} AddLogMessage('After TVSTModule Create'); {$ENDIF}
 end;
 
 {$ENDIF}
 
 destructor TVSTModule.Destroy;
 begin
- {$IFNDEF UseDelphi}
- if Assigned(FOnDestroy) then FOnDestroy(Self);
- {$ENDIF}
- inherited;
+{$IFNDEF UseDelphi}
+  if Assigned(FOnDestroy) then
+    FOnDestroy(Self);
+{$ENDIF}
+  inherited;
 end;
 
 {$IFDEF FPC}
 (*
-function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
-begin
- Result := InitLazResourceComponent(Instance, RootAncestor);
-end;
+  function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
+  begin
+  Result := InitLazResourceComponent(Instance, RootAncestor);
+  end;
 
-initialization
-//  Set8087CW(Default8087CW or $3F);
+  initialization
+  //  Set8087CW(Default8087CW or $3F);
   RegisterInitComponentHandler(TVSTModule, @InitResourceComponent);
 *)
 {$ENDIF}

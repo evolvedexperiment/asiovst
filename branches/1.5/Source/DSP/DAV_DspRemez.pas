@@ -1,34 +1,34 @@
-unit DAV_DspRemez;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2006-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_DspRemez;
 
 interface
 
@@ -42,12 +42,14 @@ type
 
   TRemezFilterDesigner = class(TComponent)
   private
-    FFilterTyp  : TFilterKind;
-    FSampleRate : Double;
+    FFilterTyp: TFilterKind;
+    FSampleRate: Double;
   protected
     procedure SetSampleRate(const Value: Double); virtual;
-    procedure CalculateFilterKernel(var Data: TDAVSingleDynArray); overload; virtual;
-    procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); overload; virtual; abstract;
+    procedure CalculateFilterKernel(var Data: TDAVSingleDynArray);
+      overload; virtual;
+    procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); overload;
+      virtual; abstract;
     property FilterTyp: TFilterKind read FFilterTyp write FFilterTyp;
   public
     constructor Create(AOwner: TComponent); override;
@@ -57,35 +59,37 @@ type
 
   TRemezLowpassFilterDesigner = class(TRemezFilterDesigner)
   private
-    FCutoffFrequency : Double;
-    FRippleRatio     : Double;
+    FCutoffFrequency: Double;
+    FRippleRatio: Double;
     procedure SetCutoffFrequency(const Value: Double);
   public
     procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
-    property CutoffFrequency: Double read FCutoffFrequency write SetCutoffFrequency;
+    property CutoffFrequency: Double read FCutoffFrequency
+      write SetCutoffFrequency;
     property RippleRatio: Double read FRippleRatio write FRippleRatio;
   end;
 
   TRemezHighpassFilterDesigner = class(TRemezFilterDesigner)
   private
-    FCutoffFrequency : Double;
-    FRippleRatio     : Double;
+    FCutoffFrequency: Double;
+    FRippleRatio: Double;
     procedure SetCutoffFrequency(const Value: Double);
   public
     procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
-    property CutoffFrequency: Double read FCutoffFrequency write SetCutoffFrequency;
+    property CutoffFrequency: Double read FCutoffFrequency
+      write SetCutoffFrequency;
     property RippleRatio: Double read FRippleRatio write FRippleRatio;
   end;
 
   TRemezBandpassFilterDesigner = class(TRemezFilterDesigner)
   private
-    FLowFrequency  : Double;
-    FHighFrequency : Double;
-    FRippleRatio   : Double;
+    FLowFrequency: Double;
+    FHighFrequency: Double;
+    FRippleRatio: Double;
     procedure SetLowFrequency(const Value: Double);
     procedure SetHighFrequency(const Value: Double);
   public
@@ -99,9 +103,9 @@ type
 
   TRemezBandstopFilterDesigner = class(TRemezFilterDesigner)
   private
-    FLowFrequency  : Double;
-    FHighFrequency : Double;
-    FRippleRatio   : Double;
+    FLowFrequency: Double;
+    FHighFrequency: Double;
+    FRippleRatio: Double;
     procedure SetLowFrequency(const Value: Double);
     procedure SetHighFrequency(const Value: Double);
   public
@@ -127,86 +131,83 @@ type
   TSymmetryKind = (skOdd, skEven);
   TIntegerArray = array of Integer;
 
-{
- CreateDenseGrid
- =================
- Creates the dense grid of frequencies from the specified bands.
- Also creates the Desired Frequency Response function (D[]) and
- the Weight function (W[]) on that dense grid
+  {
+    CreateDenseGrid
+    =================
+    Creates the dense grid of frequencies from the specified bands.
+    Also creates the Desired Frequency Response function (D[]) and
+    the Weight function (W[]) on that dense grid
 
- INPUT:
- ------
- Integer        r         - 1 / 2 the number of filter coefficients
- Integer        numtaps   - Number of taps in the resulting filter
- Integer        numband   - Number of bands in user specification
- Double         bands[]   - User - specified band edges [2 * numband]
- Double         des[]     - Desired response per band [numband]
- Double         weight[]  - Weight per band [numband]
- TSymmetryKind  symmetry  - Symmetry of filter - used for grid check
+    INPUT:
+    ------
+    Integer        r         - 1 / 2 the number of filter coefficients
+    Integer        numtaps   - Number of taps in the resulting filter
+    Integer        numband   - Number of bands in user specification
+    Double         bands[]   - User - specified band edges [2 * numband]
+    Double         des[]     - Desired response per band [numband]
+    Double         weight[]  - Weight per band [numband]
+    TSymmetryKind  symmetry  - Symmetry of filter - used for grid check
 
- OUTPUT:
- -------
- Integer    gridsize      - Number of elements in the dense frequency grid
- Double     Grid[]        - Frequencies (0 to 0.5) on the dense grid [gridsize]
- Double     D[]           - Desired response on the dense grid [gridsize]
- Double     W[]           - Weight function on the dense grid [gridsize]
-}
+    OUTPUT:
+    -------
+    Integer    gridsize      - Number of elements in the dense frequency grid
+    Double     Grid[]        - Frequencies (0 to 0.5) on the dense grid [gridsize]
+    Double     D[]           - Desired response on the dense grid [gridsize]
+    Double     W[]           - Weight function on the dense grid [gridsize]
+  }
 
 procedure CreateDenseGrid(r, numtaps, numband: Integer;
-  bands, des, weight: TDAVDoubleDynArray;
-  gridsize: Integer;
-  Grid, D, W: TDAVDoubleDynArray;
-  symmetry: TSymmetryKind);
+  bands, des, weight: TDAVDoubleDynArray; gridsize: Integer;
+  Grid, D, W: TDAVDoubleDynArray; symmetry: TSymmetryKind);
 var
   i, j, k, band: Integer;
   delf, lowf, Highf: Double;
 begin
   delf := 0.5 / (CGridDensity * r);
 
- // For differentiator, hilbert, symmetry is odd and Grid[0] = max(delf, band[0])
+  // For differentiator, hilbert, symmetry is odd and Grid[0] = max(delf, band[0])
   if (symmetry = skOdd) and (delf > bands[0]) then
     bands[0] := delf;
 
   j := 0;
   for band := 0 to numband - 1 do
-   begin
+  begin
     Grid[j] := bands[2 * band];
     lowf := bands[2 * band];
-    highf := bands[2 * band + 1];
-    k := round((highf - lowf) / delf { +  0.5});
- { .5 for rounding }  //eigentlich int
+    Highf := bands[2 * band + 1];
+    k := round((Highf - lowf) / delf { +  0.5 } );
+    { .5 for rounding }  // eigentlich int
     for i := 0 to k - 1 do
-     begin
+    begin
       D[j] := des[band];
       W[j] := weight[band];
       Grid[j] := lowf;
       lowf := lowf + delf;
       Inc(j);
-     end;
-    Grid[j - 1] := highf;
-   end;
+    end;
+    Grid[j - 1] := Highf;
+  end;
 
- // Similar to above, if odd symmetry, last grid point can't be .5
- // - but, if there are even taps, leave the last grid point at .5
-{ if ((symmetry = skOdd) and (Grid[gridsize - 1] > (0.5 - delf)) and ((numtaps  mod  2)=1)) //=1???
-  then} Grid[gridsize - 1] := 0.5 - delf;
+  // Similar to above, if odd symmetry, last grid point can't be .5
+  // - but, if there are even taps, leave the last grid point at .5
+  { if ((symmetry = skOdd) and (Grid[gridsize - 1] > (0.5 - delf)) and ((numtaps  mod  2)=1)) //=1???
+    then } Grid[gridsize - 1] := 0.5 - delf;
 end;
 
-
 {
- InitialGuess
- ==============
- Places Extremal Frequencies evenly throughout the dense grid.
+  InitialGuess
+  ==============
+  Places Extremal Frequencies evenly throughout the dense grid.
 
 
- INPUT:
- ------
- Integer r          - 1 / 2 the number of filter coefficients
- Integer gridsize   - Number of elements in the dense frequency grid
+  INPUT:
+  ------
+  Integer r          - 1 / 2 the number of filter coefficients
+  Integer gridsize   - Number of elements in the dense frequency grid
 
- OUTPUT:
- -------
- int Ext[]          - Extremal indexes to dense frequency grid [r + 1]
+  OUTPUT:
+  -------
+  int Ext[]          - Extremal indexes to dense frequency grid [r + 1]
 }
 
 procedure InitialGuess(r: Integer; Ext: TIntegerArray; gridsize: Integer);
@@ -217,24 +218,23 @@ begin
     Ext[i] := i * (gridsize - 1) div r;
 end;
 
-
 {
- CalcParms
- ===========
+  CalcParms
+  ===========
 
- INPUT:
- ------
- Integer    r       - 1 / 2 the number of filter coefficients
- Integer    Ext[]   - Extremal indexes to dense frequency grid [r + 1]
- Double     Grid[]  - Frequencies (0 to 0.5) on the dense grid [gridsize]
- Double     D[]     - Desired response on the dense grid [gridsize]
- Double     W[]     - Weight function on the dense grid [gridsize]
+  INPUT:
+  ------
+  Integer    r       - 1 / 2 the number of filter coefficients
+  Integer    Ext[]   - Extremal indexes to dense frequency grid [r + 1]
+  Double     Grid[]  - Frequencies (0 to 0.5) on the dense grid [gridsize]
+  Double     D[]     - Desired response on the dense grid [gridsize]
+  Double     W[]     - Weight function on the dense grid [gridsize]
 
- OUTPUT:
- ------- 
- Double ad[]    - 'b' in Oppenheim & Schafer [r + 1]
- Double x[]     - [r + 1]
- Double y[]     - 'C' in Oppenheim & Schafer [r + 1]
+  OUTPUT:
+  -------
+  Double ad[]    - 'b' in Oppenheim & Schafer [r + 1]
+  Double x[]     - [r + 1]
+  Double y[]     - 'C' in Oppenheim & Schafer [r + 1]
 }
 
 procedure CalcParms(r: Integer; Ext: TIntegerArray;
@@ -243,74 +243,74 @@ var
   i, j, k, ld: Integer;
   sign, xi, delta, denom, numer: Double;
 begin
-// Find x[]
+  // Find x[]
   for i := 0 to r do
     x[i] := cos(CPi2 * Grid[Ext[i]]);
 
- // Calculate ad[]  - Oppenheim & Schafer eq 7.132
-  ld := ((r - 1) div 15) + 1;   { Skips around to avoid round errors }
+  // Calculate ad[]  - Oppenheim & Schafer eq 7.132
+  ld := ((r - 1) div 15) + 1; { Skips around to avoid round errors }
 
   for i := 0 to r do
-   begin
+  begin
     denom := 1.0;
     xi := x[i];
     for j := 0 to ld - 1 do
-     begin
+    begin
       k := j;
       while (k <= r) do
-       begin
+      begin
         if (k <> i) then
           denom := denom * 2.0 * (xi - x[k]);
         k := k + ld
-       end;
-     end;
+      end;
+    end;
     if abs(denom) < 0.00001 then
       denom := 0.00001;
     ad[i] := 1.0 / denom;
-   end;
+  end;
 
- // Calculate delta  - Oppenheim & Schafer eq 7.131
+  // Calculate delta  - Oppenheim & Schafer eq 7.131
   numer := 0;
   denom := 0;
   sign := 1;
   for i := 0 to r do
-   begin
+  begin
     numer := numer + ad[i] * D[Ext[i]];
     denom := denom + ad[i] / W[Ext[i]] * sign;
     sign := -sign;
-   end;
+  end;
   if denom > 0 then
     delta := numer / denom
   else
-    delta := 1e6; {kludge!!}
+    delta := 1E6; { kludge!! }
   sign := 1;
 
- // Calculate y[]  - Oppenheim & Schafer eq 7.133b
+  // Calculate y[]  - Oppenheim & Schafer eq 7.133b
   for i := 0 to r do
-   begin
+  begin
     y[i] := D[Ext[i]] - sign * delta / W[Ext[i]];
     sign := -sign;
-   end;
+  end;
 end;
 
 {
- ComputeA
- ==========
- Using values calculated in CalcParms, ComputeA calculates the
- actual filter response at a given frequency (freq).  Uses
- eq 7.133a from Oppenheim & Schafer.
+  ComputeA
+  ==========
+  Using values calculated in CalcParms, ComputeA calculates the
+  actual filter response at a given frequency (freq).  Uses
+  eq 7.133a from Oppenheim & Schafer.
 
- INPUT:
- ------ 
- Double      freq  - Frequency (0 to 0.5) at which to calculate A
- Integer     r     - 1 / 2 the number of filter coefficients
- Double      ad[]  - 'b' in Oppenheim & Schafer [r + 1]
- Double      x[]   - [r + 1]
- Double      y[]   - 'C' in Oppenheim & Schafer [r + 1]
+  INPUT:
+  ------
+  Double      freq  - Frequency (0 to 0.5) at which to calculate A
+  Integer     r     - 1 / 2 the number of filter coefficients
+  Double      ad[]  - 'b' in Oppenheim & Schafer [r + 1]
+  Double      x[]   - [r + 1]
+  Double      y[]   - 'C' in Oppenheim & Schafer [r + 1]
 
- OUTPUT:
- ------- 
- Returns Double value of A[freq]
+  OUTPUT:
+  -------
+  Returns Double value of A[freq]
 }
 
 function ComputeA(freq: Double; r: Integer;
@@ -323,133 +323,133 @@ begin
   numer := 0;
   xc := cos(CPi2 * freq);
   for i := 0 to r do
-   begin
+  begin
     c := xc - x[i];
     if abs(c) < 1.0E-7 then
-     begin
+    begin
       numer := y[i];
       denom := 1;
       break;
-     end;
+    end;
     c := ad[i] / c;
     denom := denom + c;
     numer := numer + c * y[i];
-   end;
+  end;
   ComputeA := numer / denom;
 end;
 
-{                       
- CalcError
- ===========
- Calculates the Error function from the desired frequency response
- on the dense grid (D[]), the weight function on the dense grid (W[]),
- and the present response calculation (A[])
+{
+  CalcError
+  ===========
+  Calculates the Error function from the desired frequency response
+  on the dense grid (D[]), the weight function on the dense grid (W[]),
+  and the present response calculation (A[])
 
- INPUT:
- ------ 
- Integer  r           - 1 / 2 the number of filter coefficients
- Double     ad[]      - [r + 1]
- Double     x[]       - [r + 1]
- Double     y[]       - [r + 1]
- Integer gridsize     - Number of elements in the dense frequency grid
- Double     Grid[]    - Frequencies on the dense grid [gridsize]
- Double     D[]       - Desired response on the dense grid [gridsize]
- Double     W[]       - Weight function on the desnse grid [gridsize]
+  INPUT:
+  ------
+  Integer  r           - 1 / 2 the number of filter coefficients
+  Double     ad[]      - [r + 1]
+  Double     x[]       - [r + 1]
+  Double     y[]       - [r + 1]
+  Integer gridsize     - Number of elements in the dense frequency grid
+  Double     Grid[]    - Frequencies on the dense grid [gridsize]
+  Double     D[]       - Desired response on the dense grid [gridsize]
+  Double     W[]       - Weight function on the desnse grid [gridsize]
 
- OUTPUT:
- ------- 
- Double     E[]       - Error function on dense grid [gridsize]
+  OUTPUT:
+  -------
+  Double     E[]       - Error function on dense grid [gridsize]
 }
 
-procedure CalcError(r: Integer; ad, x, y: TDAVDoubleDynArray;
-  gridsize: Integer; Grid, D, W, E: TDAVDoubleDynArray);
+procedure CalcError(r: Integer; ad, x, y: TDAVDoubleDynArray; gridsize: Integer;
+  Grid, D, W, E: TDAVDoubleDynArray);
 var
   i: Integer;
   A: Double;
 begin
   for i := 0 to gridsize - 1 do
-   begin
+  begin
     A := ComputeA(Grid[i], r, ad, x, y);
     E[i] := W[i] * (D[i] - A);
-   end;
+  end;
 end;
 
-{                       
- Search
- ========
- Searches for the maxima / minima of the error curve.  If more than
- r + 1 extrema are found, it uses the following heuristic (thanks
- Chris Hanson):
- 1) Adjacent non - alternating extrema deleted first.
- 2) If there are more than one excess extrema, delete the
+{
+  Search
+  ========
+  Searches for the maxima / minima of the error curve.  If more than
+  r + 1 extrema are found, it uses the following heuristic (thanks
+  Chris Hanson):
+  1) Adjacent non - alternating extrema deleted first.
+  2) If there are more than one excess extrema, delete the
   one with the smallest error.  This will create a non - alternation
   condition that is fixed by 1).
- 3) If there is exactly one excess extremum, delete the smaller
+  3) If there is exactly one excess extremum, delete the smaller
   of the first / last extremum
 
 
- INPUT:
- ------ 
- Integer     r        - 1 / 2 the number of filter coefficients
- Integer     Ext[]    - Indexes to Grid[] of extremal frequencies [r + 1]
- Integer     Gridsize - Number of elements in the dense frequency grid
- Double      E[]      - Array of error values.  [gridsize]
- OUTPUT:
- ------- 
- Integer     Ext[]    - New indexes to extremal frequencies [r + 1]
+  INPUT:
+  ------
+  Integer     r        - 1 / 2 the number of filter coefficients
+  Integer     Ext[]    - Indexes to Grid[] of extremal frequencies [r + 1]
+  Integer     Gridsize - Number of elements in the dense frequency grid
+  Double      E[]      - Array of error values.  [gridsize]
+  OUTPUT:
+  -------
+  Integer     Ext[]    - New indexes to extremal frequencies [r + 1]
 }
 
 procedure Search(r: Integer; Ext: TIntegerArray; gridsize: Integer;
   E: TDAVDoubleDynArray);
 var
-  i, j, k, l, extra: Integer;   { Counters }
+  i, j, k, l, extra: Integer; { Counters }
   alt, up: Boolean;
   foundExt: TIntegerArray; { Array of found extremals }
 begin
 
- // Allocate enough space for found extremals.
+  // Allocate enough space for found extremals.
   SetLength(foundExt, 2 * r);
   k := 0;
 
- // Check for extremum at 0.
+  // Check for extremum at 0.
   if ((E[0] > 0.0) and (E[0] > E[1])) or ((E[0] < 0.0) and (E[0] < E[1])) then
-   begin
+  begin
     foundExt[k] := 0;
     Inc(k)
-   end;
+  end;
 
- // Check for extrema inside dense grid
-  for i := 1 to gridsize - 2 do       {<<bugfix: was gridsize - 1}
+  // Check for extrema inside dense grid
+  for i := 1 to gridsize - 2 do { <<bugfix: was gridsize - 1 }
     if ((E[i] >= E[i - 1]) and (E[i] > E[i + 1]) and (E[i] > 0.0)) or
       ((E[i] <= E[i - 1]) and (E[i] < E[i + 1]) and (E[i] < 0.0)) then
-     begin
+    begin
       foundExt[k] := i;
       Inc(k)
-     end;
+    end;
 
- // Check for extremum at 0.5
+  // Check for extremum at 0.5
   j := gridsize - 1;
-  if ((E[j] > 0.0) and (E[j] > E[j - 1])) or ((E[j] < 0.0) and
-    (E[j] < E[j - 1])) then
-   begin
+  if ((E[j] > 0.0) and (E[j] > E[j - 1])) or ((E[j] < 0.0) and (E[j] < E[j - 1]))
+  then
+  begin
     foundExt[k] := j;
     Inc(k)
-   end;
+  end;
 
- // Remove extra extremals
+  // Remove extra extremals
   extra := k - (r + 1);
 
   while (extra > 0) do
-   begin
+  begin
     if E[foundExt[0]] > 0.0 then
-      up := True    // first one is a maxima
+      up := True // first one is a maxima
     else
-      up := False;  // first one is a minima
+      up := False; // first one is a minima
 
     l := 0;
     alt := True;
     for j := 1 to k - 1 do
-     begin
+    begin
       if abs(E[foundExt[j]]) < abs(E[foundExt[l]]) then
         l := j; // new smallest error.
       if up and (E[foundExt[j]] < 0.0) then
@@ -457,50 +457,50 @@ begin
       else if (not up) and (E[foundExt[j]] > 0.0) then
         up := True // switch to a maxima
       else
-       begin
-//              k := j;
+      begin
+        // k := j;
         alt := False;
         break;
- // Ooops, found two non - alternating extrema. Delete smallest of them.
-       end;
-     end; // if the loop finishes, all extrema are alternating
+        // Ooops, found two non - alternating extrema. Delete smallest of them.
+      end;
+    end; // if the loop finishes, all extrema are alternating
 
-  // If there's only one extremal and all are alternating,
-  // delete the smallest of the first / last extremals.
+    // If there's only one extremal and all are alternating,
+    // delete the smallest of the first / last extremals.
     if alt and (extra = 1) then
       if abs(E[foundExt[k - 1]]) < abs(E[foundExt[0]]) then
-        l := foundExt[k - 1]  // Delete last extremal
+        l := foundExt[k - 1] // Delete last extremal
       else
-        l := foundExt[0];     // Delete first extremal
+        l := foundExt[0]; // Delete first extremal
 
-    for j := l to k - 1          // Loop that does the deletion
+    for j := l to k - 1 // Loop that does the deletion
       do
       foundExt[j] := foundExt[j + 1];
     Dec(k);
     Dec(extra);
-   end;
+  end;
 
   for i := 0 to r do
-    Ext[i] := foundExt[i];   { Copy found extremals to Ext[] }
+    Ext[i] := foundExt[i]; { Copy found extremals to Ext[] }
 
   SetLength(foundExt, 0);
 end;
 
-{                    
- FreqSample
- ============
- Simple frequency sampling algorithm to determine the impulse
- response h[] from A's found in ComputeA
+{
+  FreqSample
+  ============
+  Simple frequency sampling algorithm to determine the impulse
+  response h[] from A's found in ComputeA
 
- INPUT:
- ------ 
- Integer       N        - Number of filter coefficients
- Double        A[]      - Sample points of desired response [N / 2]
- TSymmetrykind Symmetry - Symmetry of desired filter
+  INPUT:
+  ------
+  Integer       N        - Number of filter coefficients
+  Double        A[]      - Sample points of desired response [N / 2]
+  TSymmetrykind Symmetry - Symmetry of desired filter
 
- OUTPUT:
- -------
- Double h[]         - Impulse Response of final filter [N]
+  OUTPUT:
+  -------
+  Double h[]         - Impulse Response of final filter [N]
 }
 
 procedure FreqSample(N: Integer; A, h: TDAVDoubleDynArray; symm: TSymmetryKind);
@@ -510,66 +510,65 @@ var
 begin
   M := (N - 1) * 0.5;
   if (symm = skEven) then
-   begin
+  begin
     if (N mod 2) <> 0 then
       for i := 0 to N - 1 do
-       begin
+      begin
         val := A[0];
         x := CPi2 * (i - M) / N;
         for k := 1 to trunc(M) do
           val := val + 2.0 * A[k] * cos(x * k);
         h[i] := val / N;
-       end
+      end
     else
-     begin
+    begin
       for i := 0 to N - 1 do
-       begin
+      begin
         val := A[0];
         x := CPi2 * (i - M) / N;
         for k := 1 to ((N div 2) - 1) // for (k=1; k<=(N / 2 - 1); k +  + )
           do
           val := val + 2.0 * A[k] * cos(x * k);
         h[i] := val / N;
-       end;
-     end;
-   end
-  else
-  if (N mod 2) <> 0 then
+      end;
+    end;
+  end
+  else if (N mod 2) <> 0 then
     for i := 0 to N - 1 do
-     begin
+    begin
       val := 0;
       x := CPi2 * (i - M) / N;
       for k := 1 to trunc(M) do
         val := val + 2.0 * A[k] * sin(x * k);
       h[i] := val / N;
-     end
+    end
   else
     for i := 0 to N - 1 do
-     begin
+    begin
       val := A[N div 2] * sin(Pi * (i - M));
       x := CPi2 * (i - M) / N;
       for k := 1 to ((N div 2) - 1) do
         val := val + 2.0 * A[k] * sin(x * k);
       h[i] := val / N;
-     end;
+    end;
 end;
 
-{                  
- isDone
- ========
- Checks to see if the error function is small enough to consider
- the result to have converged.
+{
+  isDone
+  ========
+  Checks to see if the error function is small enough to consider
+  the result to have converged.
 
- INPUT:
- ------
- Integer    r       - 1 / 2 the number of filter coeffiecients
- Integer    Ext[]   - Indexes to extremal frequencies [r + 1]
- Double     E[]     - Error function on the dense grid [gridsize]
+  INPUT:
+  ------
+  Integer    r       - 1 / 2 the number of filter coeffiecients
+  Integer    Ext[]   - Indexes to extremal frequencies [r + 1]
+  Double     E[]     - Error function on the dense grid [gridsize]
 
- OUTPUT:
- ------- 
- Returns 1 if the result converged
- Returns 0 if the result has not converged
+  OUTPUT:
+  -------
+  Returns 1 if the result converged
+  Returns 0 if the result has not converged
 }
 
 function IsDone(r: Integer; Ext: TIntegerArray; E: TDAVDoubleDynArray): Boolean;
@@ -580,39 +579,39 @@ begin
   min := abs(E[Ext[0]]);
   max := min;
   for i := 1 to r do
-   begin
+  begin
     current := abs(E[Ext[i]]);
     if current < min then
       min := current;
     if current > max then
       max := current;
-   end;
+  end;
   IsDone := ((max - min) / max) < 0.0001;
 end;
 
-{                   
- Remez
- =======
- Calculates the optimal (in the Chebyshev / minimax sense)
- FIR filter impulse response given a set of band edges,
- the desired reponse on those bands, and the weight given to
- the error in those bands.
+{
+  Remez
+  =======
+  Calculates the optimal (in the Chebyshev / minimax sense)
+  FIR filter impulse response given a set of band edges,
+  the desired reponse on those bands, and the weight given to
+  the error in those bands.
 
- INPUT:
- ------ 
- Integer     numtaps   - Number of filter coefficients
- Integer     numband   - Number of bands in filter specification
- Double      bands[]   - User - specified band edges [2 numband]
- Double      des[]     - User - specified band responses [numband]
- Double      weight[]  - User - specified error weights [numband]
- Integer     type      - Type of filter
+  INPUT:
+  ------
+  Integer     numtaps   - Number of filter coefficients
+  Integer     numband   - Number of bands in filter specification
+  Double      bands[]   - User - specified band edges [2 numband]
+  Double      des[]     - User - specified band responses [numband]
+  Double      weight[]  - User - specified error weights [numband]
+  Integer     type      - Type of filter
 
- OUTPUT:
- -------
- Double h[]        - Impulse response of final filter [numtaps]
+  OUTPUT:
+  -------
+  Double h[]        - Impulse response of final filter [numtaps]
 }
 
-procedure remez(var h: TDAVDoubleDynArray;
+procedure Remez(var h: TDAVDoubleDynArray;
   const bands, des, weight: TDAVDoubleDynArray; FilterTyp: TFilterKind);
 var
   i, iter, gridsize, r: Integer;
@@ -630,19 +629,19 @@ begin
   else
     symmetry := skOdd;
 
-  r := numtaps div 2;      { number of extrema }
+  r := numtaps div 2; { number of extrema }
   if ((numtaps mod 2) <> 0) and (symmetry = skEven) then
     Inc(r);
 
   gridsize := 0;
   for i := 0 to numband - 1 do
     gridsize := gridsize + round(2 * r * CGridDensity *
-      (bands[2 * i + 1] - bands[2 * i])); //ceil???
+      (bands[2 * i + 1] - bands[2 * i])); // ceil???
 
   if symmetry = skOdd then
     Dec(gridsize);
 
- // Dynamically allocate memory for arrays with proper sizes
+  // Dynamically allocate memory for arrays with proper sizes
   SetLength(Grid, gridsize);
   SetLength(D, gridsize);
   SetLength(W, gridsize);
@@ -653,83 +652,80 @@ begin
   SetLength(y, r + 1);
   SetLength(ad, r + 1);
 
- // Create dense frequency grid
-  CreateDenseGrid(r, numtaps, numband, bands, des, weight, gridsize,
-    Grid, D, W, symmetry);
+  // Create dense frequency grid
+  CreateDenseGrid(r, numtaps, numband, bands, des, weight, gridsize, Grid, D, W,
+    symmetry);
   InitialGuess(r, Ext, gridsize);
 
- // For Differentiator: (fix grid)
+  // For Differentiator: (fix grid)
   if (FilterTyp = fkDifferentiator) then
     for i := 0 to gridsize - 1 do
-     begin
+    begin
       D[i] := D[i] * Grid[i];
       if D[i] > 0.0001 then
         W[i] := W[i] / Grid[i];
-     end;
+    end;
 
- // For odd or Negative symmetry filters, alter the D[] and W[] according to Parks McClellan
+  // For odd or Negative symmetry filters, alter the D[] and W[] according to Parks McClellan
   if (symmetry = skEven) then
-   begin
+  begin
     if ((numtaps mod 2) = 0) then
       for i := 0 to gridsize - 1 do
-       begin
+      begin
         c := cos(Pi * Grid[i]);
         D[i] := D[i] / c;
         W[i] := W[i] * c;
-       end;
-   end
-  else
-  if ((numtaps mod 2) <> 0) then
+      end;
+  end
+  else if ((numtaps mod 2) <> 0) then
     for i := 0 to gridsize - 1 do
-     begin
+    begin
       c := sin(CPi2 * Grid[i]);
       D[i] := D[i] / c;
       W[i] := W[i] * c;
-     end
+    end
   else
     for i := 0 to gridsize - 1 do
-     begin
+    begin
       c := sin(Pi * Grid[i]);
       D[i] := D[i] / c;
       W[i] := W[i] * c;
-     end;
+    end;
 
- // Perform the Remez Exchange algorithm
+  // Perform the Remez Exchange algorithm
   for iter := 0 to CMaxIterations - 1 do
-   begin
+  begin
     CalcParms(r, Ext, Grid, D, W, ad, x, y);
     CalcError(r, ad, x, y, gridsize, Grid, D, W, E);
     Search(r, Ext, gridsize, E);
-    if (isDone(r, Ext, E)) then
+    if (IsDone(r, Ext, E)) then
       break;
-   end;
-  if iter = 39 then
-  ;
-  CalcParms(r, Ext, Grid, D, W, ad, x, y); {not needed?}
+  end;
+  if iter = 39 then;
+  CalcParms(r, Ext, Grid, D, W, ad, x, y); { not needed? }
 
- // Find the 'taps' of the filter for use with Frequency Sampling.  If odd
- // or Negative symmetry, fix the taps according to Parks McClellan.
+  // Find the 'taps' of the filter for use with Frequency Sampling.  If odd
+  // or Negative symmetry, fix the taps according to Parks McClellan.
   for i := 0 to (numtaps div 2) - 1 do
-   begin
+  begin
     if (symmetry = skEven) then
-     begin
+    begin
       if (numtaps mod 2) <> 0 then
         c := 1
       else
         c := cos(Pi * i / numtaps);
-     end
-    else
-    if (numtaps mod 2) <> 0 then
+    end
+    else if (numtaps mod 2) <> 0 then
       c := sin(CPi2 * i / numtaps)
     else
       c := sin(Pi * i / numtaps);
     taps[i] := ComputeA(i / numtaps, r, ad, x, y) * c;
-   end;
+  end;
 
- // Frequency sampling design with calculated taps
+  // Frequency sampling design with calculated taps
   FreqSample(numtaps, taps, h, symmetry);
 
- // Delete allocated memory
+  // Delete allocated memory
   SetLength(Grid, 0);
   SetLength(taps, 0);
   SetLength(W, 0);
@@ -751,8 +747,8 @@ begin
   FSampleRate := 44100;
 end;
 
-procedure TRemezFilterDesigner.CalculateFilterKernel(
-  var Data: TDAVSingleDynArray);
+procedure TRemezFilterDesigner.CalculateFilterKernel
+  (var Data: TDAVSingleDynArray);
 var
   i: Integer;
   DblArray: TDAVDoubleDynArray;
@@ -765,14 +761,14 @@ end;
 
 procedure TRemezFilterDesigner.SetSampleRate(const Value: Double);
 begin
- if FSampleRate <> Value then
+  if FSampleRate <> Value then
   begin
-   FSampleRate := Value;
+    FSampleRate := Value;
   end;
 end;
 
-procedure TRemezLowpassFilterDesigner.CalculateFilterKernel(
-  var Data: TDAVDoubleDynArray);
+procedure TRemezLowpassFilterDesigner.CalculateFilterKernel
+  (var Data: TDAVDoubleDynArray);
 var
   bands, weights, desired: TDAVDoubleDynArray;
 begin
@@ -805,8 +801,8 @@ end;
 
 { TRemezHighpassFilterDesigner }
 
-procedure TRemezHighpassFilterDesigner.CalculateFilterKernel(
-  var Data: TDAVDoubleDynArray);
+procedure TRemezHighpassFilterDesigner.CalculateFilterKernel
+  (var Data: TDAVDoubleDynArray);
 var
   bands, weights, desired: TDAVDoubleDynArray;
 begin
@@ -834,15 +830,15 @@ end;
 procedure TRemezHighpassFilterDesigner.SetCutoffFrequency(const Value: Double);
 begin
   if FCutoffFrequency <> Value then
-   begin
+  begin
     FCutoffFrequency := Value;
-   end;
+  end;
 end;
 
 { TRemezBandpassFilterDesigner }
 
-procedure TRemezBandpassFilterDesigner.CalculateFilterKernel(
-  var Data: TDAVDoubleDynArray);
+procedure TRemezBandpassFilterDesigner.CalculateFilterKernel
+  (var Data: TDAVDoubleDynArray);
 var
   bands, weights, desired: TDAVDoubleDynArray;
 begin
@@ -858,9 +854,9 @@ begin
   bands[3] := FHighFrequency;
   bands[4] := 1.1 * FHighFrequency;
   bands[5] := 0.5;
-  weights[0] := rippleRatio;
+  weights[0] := RippleRatio;
   weights[1] := 1.0;
-  weights[2] := rippleRatio;
+  weights[2] := RippleRatio;
   Remez(Data, bands, desired, weights, fkBandPass);
 end;
 
@@ -886,8 +882,8 @@ end;
 
 { TRemezBandstopFilterDesigner }
 
-procedure TRemezBandstopFilterDesigner.CalculateFilterKernel(
-  var Data: TDAVDoubleDynArray);
+procedure TRemezBandstopFilterDesigner.CalculateFilterKernel
+  (var Data: TDAVDoubleDynArray);
 var
   bands, weights, desired: TDAVDoubleDynArray;
 begin
@@ -903,9 +899,9 @@ begin
   bands[3] := FHighFrequency;
   bands[4] := 1.1 * FHighFrequency;
   bands[5] := 0.5;
-  weights[0] := rippleRatio;
+  weights[0] := RippleRatio;
   weights[1] := 1.0;
-  weights[2] := rippleRatio;
+  weights[2] := RippleRatio;
   Remez(Data, bands, desired, weights, fkBandPass);
 end;
 

@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkPoleZero;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -35,38 +65,39 @@ type
     procedure SetA1(const Value: Single);
 
     // Set the filter for allpass behavior using \e coefficient.
-  {
-    This method uses \e coefficient to create an allpass filter,
-    which has unity gain at all frequencies.  Note that the \e
-    coefficient magnitude must be less than one to maintain stability.
-  }
+    {
+      This method uses \e coefficient to create an allpass filter,
+      which has unity gain at all frequencies.  Note that the \e
+      coefficient magnitude must be less than one to maintain stability.
+    }
     procedure SetAllpass(const Coefficient: Single);
 
     // Create a DC blocking filter with the given pole position in the z-plane.
-  {
-    This method sets the given pole position, together with a zero
-    at z=1, to create a DC blocking filter.  \e thePole should be
-    close to one to minimize low-frequency attenuation.
-  }
+    {
+      This method sets the given pole position, together with a zero
+      at z=1, to create a DC blocking filter.  \e thePole should be
+      close to one to minimize low-frequency attenuation.
+    }
     procedure SetBlockZero(const Value: Single = 0.99);
 
     // Set the filter gain.
-  {
-    The gain is applied at the filter input and does not affect the
-    coefficient values.  The default gain value is 1.0.
-   }
+    {
+      The gain is applied at the filter input and does not affect the
+      coefficient values.  The default gain value is 1.0.
+    }
     // Input one sample to the filter and return one output.
     function Tick(const Input: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload; 
+    procedure Tick(const Data: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload;
   end;
 
 implementation
 
 constructor TStkPoleZero.Create(const SampleRate: Single);
 var
-  a, b: array[0..1] of Single;
+  a, b: array [0 .. 1] of Single;
 begin
   inherited Create(SampleRate);
   // Default setting for pass-through.
@@ -74,7 +105,7 @@ begin
   b[1] := 0;
   a[0] := 1;
   a[1] := 0;
-  inherited setCoefficients(2, @B, 2, @A);
+  inherited setCoefficients(2, @b, 2, @a);
 end;
 
 destructor TStkPoleZero.Destroy;
@@ -87,19 +118,19 @@ begin
   inherited Clear;
 end;
 
-procedure TStkPoleZero.setB0(const Value: Single);
+procedure TStkPoleZero.SetB0(const Value: Single);
 begin
   FB^[0] := Value;
 end;
 
-procedure TStkPoleZero.setB1(const Value: Single);
+procedure TStkPoleZero.SetB1(const Value: Single);
 begin
- PDav4SingleArray(FB)^[1] := Value;
+  PDav4SingleArray(FB)^[1] := Value;
 end;
 
-procedure TStkPoleZero.setA1(const Value: Single);
+procedure TStkPoleZero.SetA1(const Value: Single);
 begin
- PDav4SingleArray(FA)^[1] := Value;
+  PDav4SingleArray(FA)^[1] := Value;
 end;
 
 procedure TStkPoleZero.SetAllpass(const Coefficient: Single);
@@ -110,9 +141,9 @@ begin
   PDav4SingleArray(FA)^[1] := Coefficient;
 end;
 
-procedure TStkPoleZero.SetBlockZero(const Value: Single = 0.99);//0.99
+procedure TStkPoleZero.SetBlockZero(const Value: Single = 0.99); // 0.99
 begin
-  fB^[0] := 1.0;
+  FB^[0] := 1.0;
   PDav4SingleArray(FB)^[1] := -1.0;
   FA^[0] := 1.0; // just in case
   PDav4SingleArray(FA)^[1] := -Value;
@@ -121,20 +152,21 @@ end;
 function TStkPoleZero.Tick(const Input: Single): Single;
 begin
   FInputs^[0] := FGain * Input;
-  FOutputs^[0] := fB^[0] * FInputs^[0] +
-    PDav4SingleArray(FB)^[1] * PDav4SingleArray(FInputs)^[1] -
-    PDav4SingleArray(FA)^[1] * PDav4SingleArray(FOutputs)^[1];
+  FOutputs^[0] := FB^[0] * FInputs^[0] + PDav4SingleArray(FB)^[1] *
+    PDav4SingleArray(FInputs)^[1] - PDav4SingleArray(FA)^[1] *
+    PDav4SingleArray(FOutputs)^[1];
   PDav4SingleArray(FInputs)^[1] := FInputs^[0];
   PDav4SingleArray(FOutputs)^[1] := FOutputs^[0];
   Result := FOutputs^[0];
 end;
 
-procedure TStkPoleZero.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure TStkPoleZero.Tick(const Data: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
 var
-  Sample: integer;
+  Sample: Integer;
 begin
-  for Sample := 0 to SampleFrames - 1
-   do Data^[Sample] := Tick(Data^[Sample]);
+  for Sample := 0 to SampleFrames - 1 do
+    Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkSampler;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -19,16 +49,16 @@ uses
 type
   TStkSampler = class(TStkControlableInstrument)
   protected
-    FADSR          : TStkAdsr;
-    FAttacks       : array[0..4] of TStkWavePlayer;
-    FLoops         : array[0..4] of TStkWavePlayer;
-    FFilter        : TStkOnepole;
-    FAttackGain    : Single;
-    FLoopGain      : Single;
-    FBaseFrequency : Single;
-    FLoopratios    : Single;
-    FAttackRatios  : array[0..4] of Single;
-    FWhichOne      : Integer;
+    FADSR: TStkAdsr;
+    FAttacks: array [0 .. 4] of TStkWavePlayer;
+    FLoops: array [0 .. 4] of TStkWavePlayer;
+    FFilter: TStkOnepole;
+    FAttackGain: Single;
+    FLoopGain: Single;
+    FBaseFrequency: Single;
+    FLoopratios: Single;
+    FAttackRatios: array [0 .. 4] of Single;
+    FWhichOne: Integer;
 
     // Set instrument parameters for a particular AFrequency.
     procedure SetFrequency(const Value: Single); override;
@@ -78,14 +108,14 @@ end;
 
 destructor TStkSampler.Destroy;
 begin
- FreeAndNil(FADSR);
- FreeAndNil(FFilter);
- inherited Destroy;
+  FreeAndNil(FADSR);
+  FreeAndNil(FFilter);
+  inherited Destroy;
 end;
 
 function TStkSampler.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkSampler.KeyOn;
@@ -106,14 +136,15 @@ end;
 
 procedure TStkSampler.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Value then
+  if FBaseFrequency <> Value then
   begin
-   if (Value <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Value;
-   FrequencyChanged;
+    if (Value <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Value;
+    FrequencyChanged;
   end;
- inherited;
+  inherited;
 end;
 
 function TStkSampler.Tick: Single;
@@ -121,12 +152,12 @@ begin
   FLastOutput := FAttackGain * FAttacks[FWhichOne].Tick;
   FLastOutput := FLastOutput + FLoopGain * FLoops[FWhichOne].Tick;
   FLastOutput := FFilter.Tick(FLastOutput) * FADSR.Tick;
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
 procedure TStkSampler.Clear;
 begin
- // nothing in here yet
+  // nothing in here yet
 end;
 
 end.

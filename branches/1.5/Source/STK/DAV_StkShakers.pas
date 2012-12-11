@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkShakers;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -15,35 +45,35 @@ unit DAV_StkShakers;
   sandpaper, and more.
 
   Control Change Numbers:
-    - Shake Energy = 2
-    - System Decay = 4
-    - Number Of Objects = 11
-    - Resonance Frequency = 1
-    - Shake Energy = 128
-    - Instrument Selection = 1071
-      - Maraca = 0
-      - Cabasa = 1
-      - Shekere = 2
-      - Guiro = 3
-      - Water Drops = 4
-      - Bamboo Chimes = 5
-      - Tambourine = 6
-      - Sleigh Bells = 7
-      - Sticks = 8
-      - Crunch = 9
-      - Wrench = 10
-      - Sand Paper = 11
-      - Coke Can = 12
-      - Next Mug = 13
-      - Penny + Mug = 14
-      - Nickle + Mug = 15
-      - Dime + Mug = 16
-      - Quarter + Mug = 17
-      - Franc + Mug = 18
-      - Peso + Mug = 19
-      - Big Rocks = 20
-      - Little Rocks = 21
-      - Tuned Bamboo Chimes = 22
+  - Shake Energy = 2
+  - System Decay = 4
+  - Number Of Objects = 11
+  - Resonance Frequency = 1
+  - Shake Energy = 128
+  - Instrument Selection = 1071
+    - Maraca = 0
+    - Cabasa = 1
+    - Shekere = 2
+    - Guiro = 3
+    - Water Drops = 4
+    - Bamboo Chimes = 5
+    - Tambourine = 6
+    - Sleigh Bells = 7
+    - Sticks = 8
+    - Crunch = 9
+    - Wrench = 10
+    - Sand Paper = 11
+    - Coke Can = 12
+    - Next Mug = 13
+    - Penny + Mug = 14
+    - Nickle + Mug = 15
+    - Dime + Mug = 16
+    - Quarter + Mug = 17
+    - Franc + Mug = 18
+    - Peso + Mug = 19
+    - Big Rocks = 20
+    - Little Rocks = 21
+    - Tuned Bamboo Chimes = 22
 }
 
 interface
@@ -60,35 +90,35 @@ const
 type
   TStkShakers = class(TStkControlableInstrument)
   protected
-    FShakeEnergy    : Single;
-    FSndLevel       : Single;
-    FBaseGain       : Single;
-    FSoundDecay     : Single;
-    FSystemDecay    : Single;
-    FNObjects       : Single;
-    FCollLikely     : Single;
-    FTotalEnergy    : Single;
-    FRatchet        : Single;
-    FRatchetDelta   : Single;
-    FCenterFreqs    : array[0..CMaxFreqs - 1] of Single;
-    FTCenterFreqs   : array[0..CMaxFreqs - 1] of Single;
-    FGains          : array[0..CMaxFreqs - 1] of Single;
-    FFreqRand       : array[0..CMaxFreqs - 1] of Single;
-    FResons         : array[0..CMaxFreqs - 1] of Single;
-    FInputs         : array[0..CMaxFreqs - 1] of Single;
-    FCoeffs         : array[0..CMaxFreqs - 1, 0..1] of Single;
-    FOutputs        : array[0..CMaxFreqs - 1, 0..1] of Single;
-    FFinalZCoeffs   : array[0..2] of Single;
-    FFinalZ         : array[0..2] of Single;
-    FDecayScale     : array[0..CNumInstr - 1] of Single;
-    FDefDecays      : array[0..CNumInstr - 1] of Single;
-    FDefObjs        : array[0..CNumInstr - 1] of Single;
-    FFreqalloc      : array[0..CMaxFreqs - 1] of Integer;
-    FNFreqs         : Integer;
-    FRatchetPos     : Integer;
-    FLastRatchetPos : Integer;
-    FInstType       : Integer;
-  //  int setupName(char* instr);
+    FShakeEnergy: Single;
+    FSndLevel: Single;
+    FBaseGain: Single;
+    FSoundDecay: Single;
+    FSystemDecay: Single;
+    FNObjects: Single;
+    FCollLikely: Single;
+    FTotalEnergy: Single;
+    FRatchet: Single;
+    FRatchetDelta: Single;
+    FCenterFreqs: array [0 .. CMaxFreqs - 1] of Single;
+    FTCenterFreqs: array [0 .. CMaxFreqs - 1] of Single;
+    FGains: array [0 .. CMaxFreqs - 1] of Single;
+    FFreqRand: array [0 .. CMaxFreqs - 1] of Single;
+    FResons: array [0 .. CMaxFreqs - 1] of Single;
+    FInputs: array [0 .. CMaxFreqs - 1] of Single;
+    FCoeffs: array [0 .. CMaxFreqs - 1, 0 .. 1] of Single;
+    FOutputs: array [0 .. CMaxFreqs - 1, 0 .. 1] of Single;
+    FFinalZCoeffs: array [0 .. 2] of Single;
+    FFinalZ: array [0 .. 2] of Single;
+    FDecayScale: array [0 .. CNumInstr - 1] of Single;
+    FDefDecays: array [0 .. CNumInstr - 1] of Single;
+    FDefObjs: array [0 .. CNumInstr - 1] of Single;
+    FFreqalloc: array [0 .. CMaxFreqs - 1] of Integer;
+    FNFreqs: Integer;
+    FRatchetPos: Integer;
+    FLastRatchetPos: Integer;
+    FInstType: Integer;
+    // int setupName(char* instr);
     function SetFreqAndReson(Which: Integer; Freq, Reson: Single): Integer;
     procedure SetDecays(SndDecay, SysDecay: Single);
     procedure SetFinalZs(z0, z1, z2: Single);
@@ -107,10 +137,10 @@ type
     destructor Destroy; override;
 
     // Start a note with the given instrument and amplitude.
-  {
-    Use the instrument numbers above, converted to frequency values
-    as if MIDI note numbers, to select a particular instrument.
-  }
+    {
+      Use the instrument numbers above, converted to frequency values
+      as if MIDI note numbers, to select a particular instrument.
+    }
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
@@ -120,13 +150,14 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
 
 function NoiseTick: Single;
- //  Return random Single float between -1.0 and 1.0
+// Return random Single float between -1.0 and 1.0
 begin
   Result := 2 * random - 1;
 end;
@@ -140,7 +171,7 @@ const
   CMaracasCenterFreq = 3200.0;
   CMaracasReson = 0.96;
 
-// Shekere
+  // Shekere
   CShekereSoundDecay = 0.96;
   CShekereSystemDecay = 0.999;
   CShekereGain = 20.0;
@@ -148,7 +179,7 @@ const
   CShekereCenterFreq = 5500.0;
   CShekereReson = 0.6;
 
-// Sandpaper
+  // Sandpaper
   CSandpaperSoundDecay = 0.999;
   CSandpaperSystemDecay = 0.999;
   CSandpaperGain = 0.5;
@@ -156,7 +187,7 @@ const
   CSandpaperCenterFreq = 4500.0;
   CSandpaperReson = 0.6;
 
-// Cabasa
+  // Cabasa
   CCabasaSoundDecay = 0.96;
   CCabasaSystemDecay = 0.997;
   CCabasaGain = 40.0;
@@ -164,7 +195,7 @@ const
   CCabasaCenterFreq = 3000.0;
   CCabasaReson = 0.7;
 
-// Bamboo Wind Chimes
+  // Bamboo Wind Chimes
   CBambooSoundDecay = 0.95;
   CBambooSystemDecay = 0.9999;
   CBambooGain = 2.0;
@@ -174,7 +205,7 @@ const
   CBambooCenterFreq2 = 1.2 * 2800.0;
   CBambooReson = 0.995;
 
-// Tuned Bamboooo Wind Chimes (Anklung)
+  // Tuned Bamboooo Wind Chimes (Anklung)
   CTunedBambooSoundDecay = 0.95;
   CTunedBambooSystemDecay = 0.9999;
   CTunedBambooGain = 1.0;
@@ -188,7 +219,7 @@ const
   CTunedBambooCenterFreq6 = 2350.0;
   CTunedBambooReson = 0.996;
 
-// Water Drops
+  // Water Drops
   CWaterDropsSoundDecay = 0.95;
   CWaterDropsSystemDecay = 0.996;
   CWaterDropsGain = 1.0;
@@ -199,7 +230,7 @@ const
   CWaterDropsReson = 0.9985;
   CWaterDropsFreqSweep = 1.0001;
 
-// Tambourine
+  // Tambourine
   CTambourineSoundDecay = 0.95;
   CTambourineSystemDecay = 0.9985;
   CTambourineGain = 5.0;
@@ -211,7 +242,7 @@ const
   CTambourineCymbFreq2 = 8100;
   CTambourineCymbReson = 0.99;
 
-// Sleighbells
+  // Sleighbells
   CSleighbellsSoundDecay = 0.97;
   CSleighbellsSystemDecayY = 0.9994;
   CSleighbellsGain = 1.0;
@@ -223,7 +254,7 @@ const
   CSleighbellsCymbFreq4 = 9800;
   CSleighbellsCymbReson = 0.99;
 
-// Guiro
+  // Guiro
   CGuiroSoundDecay = 0.95;
   CGuiroGain = 10.0;
   CGuiroNumParts = 128;
@@ -232,7 +263,7 @@ const
   CGuiroGourdFreq2 = 4000.0;
   CGuiroGourdReson2 = 0.97;
 
-// Wrench
+  // Wrench
   CWrenchSoundDecay = 0.95;
   CWrenchGain = 5;
   CWrenchNumParts = 128;
@@ -241,7 +272,7 @@ const
   CWrenchFreq2 = 8000.0;
   CWrenchReson2 = 0.992;
 
-// Cokecan
+  // Cokecan
   CCokeCanSoundDecay = 0.97;
   CCokeCanSystemDecay = 0.999;
   CCokeCanGain = 0.8;
@@ -254,10 +285,10 @@ const
   CCokeCanMetalFreq3 = 3596;
   CCokeCanMetalRes = 0.992;
 
-// PhOLIES (Physically-Oriented Library of Imitated Environmental
-// Sounds), Perry Cook,=1997-8
+  // PhOLIES (Physically-Oriented Library of Imitated Environmental
+  // Sounds), Perry Cook,=1997-8
 
-// Stix1
+  // Stix1
   CStix1SoundDecay = 0.96;
   CStix1SystemDecay = 0.998;
   CStix1Gain = 30.0;
@@ -265,7 +296,7 @@ const
   CStix1CenterFreq = 5500.0;
   CStix1Reson = 0.6;
 
-// Crunch1
+  // Crunch1
   CCrunch1SoundDecay = 0.95;
   CCrunch1SystemDecay = 0.99806;
   CCrunch1Gain = 20.0;
@@ -273,7 +304,7 @@ const
   CCrunch1CenterFreq = 800.0;
   CCrunch1Reson = 0.95;
 
-// Nextmug
+  // Nextmug
   CNextMugSoundDecay = 0.97;
   CNextMugSystemDecay = 0.9995;
   CNextMugGain = 0.8;
@@ -314,7 +345,7 @@ const
   CPesoFreq2 = 10060;
   CPesoRes = 0.9996;
 
-// Big Gravel
+  // Big Gravel
   CBigGravelSoundDecay = 0.98;
   CBigGravelSystemDecay = 0.9965;
   CBigGravelGain = 20.0;
@@ -322,7 +353,7 @@ const
   CBigGravelFreq = 6460;
   CBigGravelRes = 0.932;
 
-// Little Gravel
+  // Little Gravel
   CLittleGravelSoundDecay = 0.98;
   CLittleGravelSystemDecay = 0.99586;
   CLittleGravelGain = 20.0;
@@ -330,7 +361,7 @@ const
   CLittleGravelFreq = 9000;
   CLittleGravelRes = 0.843;
 
-// Finally ... the class code!
+  // Finally ... the class code!
 
 constructor TStkShakers.Create(const SampleRate: Single);
 var
@@ -343,7 +374,7 @@ begin
   FSndLevel := 0.0;
 
   for i := 0 to CMaxFreqs - 1 do
-   begin
+  begin
     FInputs[i] := 0.0;
     FOutputs[i][0] := 0.0;
     FOutputs[i][1] := 0.0;
@@ -354,7 +385,7 @@ begin
     FResons[i] := 0.0;
     FFreqRand[i] := 0.0;
     FFreqalloc[i] := 0;
-   end;
+  end;
 
   FSoundDecay := 0.0;
   FSystemDecay := 0.0;
@@ -381,39 +412,39 @@ end;
 
 function TStkShakers.GetFrequency: Single;
 begin
- result := 0;
+  Result := 0;
 end;
 
 const
   CMaxShake = 2000.0;
 
-{
-char instrs[CNumInstr][10]:=begin
-  "Maraca", "CCabasasa", "Sekere", "Guiro",
-  "Waterdrp", "CBamboooo", "CTambourineourn", "Sleighbl",
-  "Stix1", "Crunch1", "Wrench", "CSandpaper",
-  "CokeCan", "NextMug", "PennyMug", "NicklMug",
-  "DimeMug", "QuartMug", "FrancMug", "PesoMug",
-  "BigRocks", "LitlRoks", "CTunedBamboooo"
-end;
+  {
+    char instrs[CNumInstr][10]:=begin
+    "Maraca", "CCabasasa", "Sekere", "Guiro",
+    "Waterdrp", "CBamboooo", "CTambourineourn", "Sleighbl",
+    "Stix1", "Crunch1", "Wrench", "CSandpaper",
+    "CokeCan", "NextMug", "PennyMug", "NicklMug",
+    "DimeMug", "QuartMug", "FrancMug", "PesoMug",
+    "BigRocks", "LitlRoks", "CTunedBamboooo"
+    end;
 
-int TStkShakers.SsetupName(instr: PChar)
-begin
-  int Which:=0;
+    int TStkShakers.SsetupName(instr: PChar)
+    begin
+    int Which:=0;
 
-  for (int i=0;i<CNumInstr;i++)  begin
+    for (int i=0;i<CNumInstr;i++)  begin
     if ( !strcmp(instr,instrs[i]) )
-      Which:=i;
-  end;
+    Which:=i;
+    end;
 
-#if defined(_STK_DEBUG_)
-  cerr << "TShakers: Setting instrument to " << instrs[Which] << endl;
-#endif
+    #if defined(_STK_DEBUG_)
+    cerr << "TShakers: Setting instrument to " << instrs[Which] << endl;
+    #endif
 
-  result:= SetupNum(Which);
-end;
+    result:= SetupNum(Which);
+    end;
 
-}
+  }
 
 procedure TStkShakers.SetFinalZs;
 begin
@@ -428,25 +459,26 @@ begin
   FSystemDecay := SysDecay;
 end;
 
-function TStkShakers.SetFreqAndReson(Which: Integer; Freq, Reson: Single): Integer;
+function TStkShakers.SetFreqAndReson(Which: Integer;
+  Freq, Reson: Single): Integer;
 begin
   if (Which < CMaxFreqs) then
-   begin
+  begin
     FResons[Which] := Reson;
     FCenterFreqs[Which] := Freq;
     FTCenterFreqs[Which] := Freq;
     FCoeffs[Which][1] := Reson * Reson;
     FCoeffs[Which][0] := -Reson * 2.0 * cos(Freq * 2 * Pi * FSampleRateInv);
     Result := 1;
-   end
+  end
   else
     Result := 0;
 end;
 
 procedure TStkShakers.SetFrequency(const Value: Single);
 begin
- inherited;
- // nothing in here yet!
+  inherited;
+  // nothing in here yet!
 end;
 
 function TStkShakers.SetupNum(Inst: Integer): Integer;
@@ -455,7 +487,7 @@ var
   temp: Single;
 begin
   if (Inst = 1) then
-   begin // Cabasa
+  begin // Cabasa
     rv := Inst;
     FNObjects := CCabasaNumBeads;
     FDefObjs[Inst] := CCabasaNumBeads;
@@ -469,9 +501,9 @@ begin
     FFreqalloc[0] := 0;
     SetFreqAndReson(0, CCabasaCenterFreq, CCabasaReson);
     SetFinalZs(1.0, -1.0, 0.0);
-   end
+  end
   else if (Inst = 2) then
-   begin // Shekere
+  begin // Shekere
     rv := Inst;
     FNObjects := CShekereNumBeans;
     FDefObjs[Inst] := CShekereNumBeans;
@@ -485,9 +517,9 @@ begin
     FFreqalloc[0] := 0;
     SetFreqAndReson(0, CShekereCenterFreq, CShekereReson);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if (Inst = 3) then
-   begin //  Guiro
+  begin // Guiro
     rv := Inst;
     FNObjects := CGuiroNumParts;
     FDefObjs[Inst] := CGuiroNumParts;
@@ -507,9 +539,9 @@ begin
     SetFreqAndReson(1, CGuiroGourdFreq2, CGuiroGourdReson2);
     FRatchet := 0;
     FRatchetPos := 10;
-   end
+  end
   else if (Inst = 4) then
-   begin //  Water Drops
+  begin // Water Drops
     rv := Inst;
     FNObjects := CWaterDropsNumSources;
     FDefObjs[Inst] := CWaterDropsNumSources;
@@ -532,9 +564,9 @@ begin
     SetFreqAndReson(1, CWaterDropsCenterFreq0, CWaterDropsReson);
     SetFreqAndReson(2, CWaterDropsCenterFreq0, CWaterDropsReson);
     SetFinalZs(1.0, 0.0, 0.0);
-   end
+  end
   else if (Inst = 5) then
-   begin // Bamboooo
+  begin // Bamboooo
     rv := Inst;
     FNObjects := CBambooNumTubes;
     FDefObjs[Inst] := CBambooNumTubes;
@@ -557,9 +589,9 @@ begin
     SetFreqAndReson(1, CBambooCenterFreq1, CBambooReson);
     SetFreqAndReson(2, CBambooCenterFreq2, CBambooReson);
     SetFinalZs(1.0, 0.0, 0.0);
-   end
+  end
   else if (Inst = 6) then
-   begin // Tambourine
+  begin // Tambourine
     rv := Inst;
     FNObjects := CTambourineNumTimbRels;
     FDefObjs[Inst] := CTambourineNumTimbRels;
@@ -582,9 +614,9 @@ begin
     SetFreqAndReson(1, CTambourineCymbFreq1, CTambourineCymbReson);
     SetFreqAndReson(2, CTambourineCymbFreq2, CTambourineCymbReson);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if (Inst = 7) then
-   begin // Sleighbell
+  begin // Sleighbell
     rv := Inst;
     FNObjects := CSleighbellsNumBells;
     FDefObjs[Inst] := CSleighbellsNumBells;
@@ -600,19 +632,19 @@ begin
     FGains[3] := temp * 0.5;
     FGains[4] := temp * 0.3;
     for i := 0 to FNFreqs - 1 do
-     begin
+    begin
       FFreqalloc[i] := 1;
       FFreqRand[i] := 0.03;
-     end;
+    end;
     SetFreqAndReson(0, CSleighbellsCymbFreq0, CSleighbellsCymbReson);
     SetFreqAndReson(1, CSleighbellsCymbFreq1, CSleighbellsCymbReson);
     SetFreqAndReson(2, CSleighbellsCymbFreq2, CSleighbellsCymbReson);
     SetFreqAndReson(3, CSleighbellsCymbFreq3, CSleighbellsCymbReson);
     SetFreqAndReson(4, CSleighbellsCymbFreq4, CSleighbellsCymbReson);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if (Inst = 8) then
-   begin // Stix1
+  begin // Stix1
     rv := Inst;
     FNObjects := CStix1NumBeans;
     FDefObjs[Inst] := CStix1NumBeans;
@@ -627,9 +659,9 @@ begin
     FFreqalloc[0] := 0;
     SetFreqAndReson(0, CStix1CenterFreq, CStix1Reson);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if (Inst = 9) then
-   begin // Crunch1
+  begin // Crunch1
     rv := Inst;
     FNObjects := CCrunch1NumBeads;
     FDefObjs[Inst] := CCrunch1NumBeads;
@@ -643,9 +675,9 @@ begin
     FFreqalloc[0] := 0;
     SetFreqAndReson(0, CCrunch1CenterFreq, CCrunch1Reson);
     SetFinalZs(1.0, -1.0, 0.0);
-   end
+  end
   else if (Inst = 10) then
-   begin // Wrench
+  begin // Wrench
     rv := Inst;
     FNObjects := CWrenchNumParts;
     FDefObjs[Inst] := CWrenchNumParts;
@@ -665,9 +697,9 @@ begin
     SetFreqAndReson(1, CWrenchFreq2, CWrenchReson2);
     FRatchet := 0;
     FRatchetPos := 10;
-   end
+  end
   else if (Inst = 11) then
-   begin // Sandpaper
+  begin // Sandpaper
     rv := Inst;
     FNObjects := CSandpaperNumGains;
     FDefObjs[Inst] := CSandpaperNumGains;
@@ -681,9 +713,9 @@ begin
     FFreqalloc[0] := 0;
     SetFreqAndReson(0, CSandpaperCenterFreq, CSandpaperReson);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if (Inst = 12) then
-   begin // CokeCan
+  begin // CokeCan
     rv := Inst;
     FNObjects := CCokeCanNumParts;
     FDefObjs[Inst] := CCokeCanNumParts;
@@ -709,9 +741,9 @@ begin
     SetFreqAndReson(3, CCokeCanMetalFreq2, CCokeCanMetalRes);
     SetFreqAndReson(4, CCokeCanMetalFreq3, CCokeCanMetalRes);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if ((Inst > 12) and (Inst < 20)) then
-   begin // Nextmug
+  begin // Nextmug
     rv := Inst;
     FNObjects := CNextMugNumParts;
     FDefObjs[Inst] := CNextMugNumParts;
@@ -738,7 +770,7 @@ begin
     SetFinalZs(1.0, 0.0, -1.0);
 
     if (Inst = 14) then
-     begin // Mug + Penny
+    begin // Mug + Penny
       FNFreqs := 7;
       FGains[4] := temp;
       FGains[5] := temp * 0.8;
@@ -746,9 +778,9 @@ begin
       SetFreqAndReson(4, CPennyFreq0, CPennyRes);
       SetFreqAndReson(5, CPennyFreq1, CPennyRes);
       SetFreqAndReson(6, CPennyFreq2, CPennyRes);
-     end
+    end
     else if (Inst = 15) then
-     begin // Mug + Nickel
+    begin // Mug + Nickel
       FNFreqs := 6;
       FGains[4] := temp;
       FGains[5] := temp * 0.8;
@@ -756,9 +788,9 @@ begin
       SetFreqAndReson(4, CNickelFreq0, CNickelRes);
       SetFreqAndReson(5, CNickelFreq1, CNickelRes);
       SetFreqAndReson(6, CNickelFreq2, CNickelRes);
-     end
+    end
     else if (Inst = 16) then
-     begin // Mug + Dime
+    begin // Mug + Dime
       FNFreqs := 6;
       FGains[4] := temp;
       FGains[5] := temp * 0.8;
@@ -766,9 +798,9 @@ begin
       SetFreqAndReson(4, CDimeFreq0, CDimeRes);
       SetFreqAndReson(5, CDimeFreq1, CDimeRes);
       SetFreqAndReson(6, CDimeFreq2, CDimeRes);
-     end
+    end
     else if (Inst = 17) then
-     begin // Mug + Quarter
+    begin // Mug + Quarter
       FNFreqs := 6;
       FGains[4] := temp * 1.3;
       FGains[5] := temp * 1.0;
@@ -776,9 +808,9 @@ begin
       SetFreqAndReson(4, CQuarterFreq0, CQuarterRes);
       SetFreqAndReson(5, CQuarterFreq1, CQuarterRes);
       SetFreqAndReson(6, CQuarterFreq2, CQuarterRes);
-     end
+    end
     else if (Inst = 18) then
-     begin // Mug + Franc
+    begin // Mug + Franc
       FNFreqs := 6;
       FGains[4] := temp * 0.7;
       FGains[5] := temp * 0.4;
@@ -786,9 +818,9 @@ begin
       SetFreqAndReson(4, CFrancFreq0, CFrancRes);
       SetFreqAndReson(5, CFrancFreq1, CFrancRes);
       SetFreqAndReson(6, CFrancFreq2, CFrancRes);
-     end
+    end
     else if (Inst = 19) then
-     begin // Mug + Peso
+    begin // Mug + Peso
       FNFreqs := 6;
       FGains[4] := temp;
       FGains[5] := temp * 1.2;
@@ -796,10 +828,10 @@ begin
       SetFreqAndReson(4, CPesoFreq0, CPesoRes);
       SetFreqAndReson(5, CPesoFreq1, CPesoRes);
       SetFreqAndReson(6, CPesoFreq2, CPesoRes);
-     end
-   end
+    end
+  end
   else if (Inst = 20) then
-   begin // Big Rocks
+  begin // Big Rocks
     FNFreqs := 1;
     rv := Inst;
     FNObjects := CBigGravelNumParts;
@@ -814,9 +846,9 @@ begin
     FFreqRand[0] := 0.11;
     SetFreqAndReson(0, CBigGravelFreq, CBigGravelRes);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if (Inst = 21) then
-   begin // Little Rocks
+  begin // Little Rocks
     FNFreqs := 1;
     rv := Inst;
     FNObjects := CLittleGravelNumParts;
@@ -831,9 +863,9 @@ begin
     FFreqRand[0] := 0.18;
     SetFreqAndReson(0, CLittleGravelFreq, CLittleGravelRes);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else if (Inst = 22) then
-   begin // Tuned Bamboo
+  begin // Tuned Bamboo
     rv := Inst;
     FNObjects := CTunedBambooNumTubes;
     FDefObjs[Inst] := CTunedBambooNumTubes;
@@ -872,9 +904,9 @@ begin
     SetFreqAndReson(5, CTunedBambooCenterFreq5, CTunedBambooReson);
     SetFreqAndReson(6, CTunedBambooCenterFreq6, CTunedBambooReson);
     SetFinalZs(1.0, 0.0, -1.0);
-   end
+  end
   else
-   begin // Maracas (Inst = 0) or default
+  begin // Maracas (Inst = 0) or default
     rv := 0;
     FNObjects := CMaracasNumBeans;
     FDefObjs[0] := CMaracasNumBeans;
@@ -888,7 +920,7 @@ begin
     FFreqalloc[0] := 0;
     SetFreqAndReson(0, CMaracasCenterFreq, CMaracasReson);
     SetFinalZs(1.0, -1.0, 0.0);
-   end;
+  end;
   Result := rv;
 end;
 
@@ -897,104 +929,104 @@ var
   notenum: Integer;
 begin
   // Yep ... pretty kludgey, but it works!
-//  noteNum:=round((12*log10(frequency/220)/log10(2)) + 57.01) mod 32;
-  notenum := round(frequency) mod 23;
-  //if (FInstType <>  noteNum) then
-  FInstType := SetupNum(noteNum);
-  FShakeEnergy := FShakeEnergy + amplitude * CMaxShake * 0.1;
+  // noteNum:=round((12*log10(frequency/220)/log10(2)) + 57.01) mod 32;
+  notenum := round(Frequency) mod 23;
+  // if (FInstType <>  noteNum) then
+  FInstType := SetupNum(notenum);
+  FShakeEnergy := FShakeEnergy + Amplitude * CMaxShake * 0.1;
   if (FShakeEnergy > CMaxShake) then
     FShakeEnergy := CMaxShake;
   if ((FInstType = 10) or (FInstType = 3)) then
     FRatchetPos := FRatchetPos + 1;
 end;
 
-procedure TStkShakers.noteOff(const Amplitude: Single);
+procedure TStkShakers.NoteOff(const Amplitude: Single);
 begin
   FShakeEnergy := 0.0;
-  if ((FInstType = 10) or (FInstType = 3))
-   then FRatchetPos := 0;
+  if ((FInstType = 10) or (FInstType = 3)) then
+    FRatchetPos := 0;
 end;
 
 const
   MIN_ENERGY = 0.3;
 
-function TStkShakers.tick: Single;
+function TStkShakers.Tick: Single;
 var
   Data, temp_rand: Single;
   i: Integer;
 begin
   if (FInstType = 4) then
-   begin
+  begin
     if (FShakeEnergy > MIN_ENERGY) then
-     begin
+    begin
       FLastOutput := WuterTick;
       FLastOutput := lastoutput * 0.0001;
-     end
+    end
     else
-     begin
+    begin
       FLastOutput := 0.0;
-     end;
-   end
+    end;
+  end
   else if (FInstType = 22) then
     FLastOutput := TunedBambooTick
   else if ((FInstType = 10) or (FInstType = 3)) then
-   begin
+  begin
     if (FRatchetPos > 0) then
-     begin
+    begin
       FRatchet := FRatchet - (FRatchetDelta + (0.002 * FTotalEnergy));
       if (FRatchet < 0.0) then
-       begin
+      begin
         FRatchet := 1.0;
         FRatchetPos := FRatchetPos - 1;
-       end;
+      end;
       FTotalEnergy := FRatchet;
       FLastOutput := RatchetTick;
       FLastOutput := FLastOutput * 0.0001;
-     end
+    end
     else
       FLastOutput := 0.0;
-   end
-  else
-  if (FShakeEnergy > MIN_ENERGY) then
-   begin
+  end
+  else if (FShakeEnergy > MIN_ENERGY) then
+  begin
     FShakeEnergy := FShakeEnergy * FSystemDecay;
-               // Exponential system decay
+    // Exponential system decay
     if (random(1024) < FNObjects) then
-     begin
+    begin
       FSndLevel := FSndLevel + FShakeEnergy;
       for i := 0 to FNFreqs - 1 do
         if (FFreqalloc[i] > 0) then
-         begin
+        begin
           temp_rand := FTCenterFreqs[i] * (1.0 + (FFreqRand[i] * NoiseTick));
-          FCoeffs[i][0] := -FResons[i] * 2.0 * cos(temp_rand * 2 * Pi * FSampleRateInv);
-         end;
-     end;
-    FInputs[0] := FSndLevel * NoiseTick;      // Actual Sound is Random
+          FCoeffs[i][0] := -FResons[i] * 2.0 *
+            cos(temp_rand * 2 * Pi * FSampleRateInv);
+        end;
+    end;
+    FInputs[0] := FSndLevel * NoiseTick; // Actual Sound is Random
     for i := 1 to FNFreqs - 1 do
       FInputs[i] := FInputs[0];
-    FSndLevel := FSndLevel * FSoundDecay;     // Exponential Sound decay
+    FSndLevel := FSndLevel * FSoundDecay; // Exponential Sound decay
     FFinalZ[2] := FFinalZ[1];
     FFinalZ[1] := FFinalZ[0];
     FFinalZ[0] := 0;
     for i := 0 to FNFreqs - 1 do
-     begin
-      FInputs[i] := FInputs[i] - FOutputs[i][0] * FCoeffs[i][0];  // Do
-      FInputs[i] := FInputs[i] - FOutputs[i][1] * FCoeffs[i][1];  // resonant
-      FOutputs[i][1] := FOutputs[i][0];            // filter
-      FOutputs[i][0] := FInputs[i];                // calculations
+    begin
+      FInputs[i] := FInputs[i] - FOutputs[i][0] * FCoeffs[i][0]; // Do
+      FInputs[i] := FInputs[i] - FOutputs[i][1] * FCoeffs[i][1]; // resonant
+      FOutputs[i][1] := FOutputs[i][0]; // filter
+      FOutputs[i][0] := FInputs[i]; // calculations
       FFinalZ[0] := FFinalZ[0] + FGains[i] * FOutputs[i][1];
-     end;
-    Data := FFinalZCoeffs[0] * FFinalZ[0];     // Extra zero(s) for shape
-    Data := Data + FFinalZCoeffs[1] * FFinalZ[1];    // Extra zero(s) for shape
-    Data := Data + FFinalZCoeffs[2] * FFinalZ[2];    // Extra zero(s) for shape
+    end;
+    Data := FFinalZCoeffs[0] * FFinalZ[0]; // Extra zero(s) for shape
+    Data := Data + FFinalZCoeffs[1] * FFinalZ[1]; // Extra zero(s) for shape
+    Data := Data + FFinalZCoeffs[2] * FFinalZ[2]; // Extra zero(s) for shape
     if (Data > 10000.0) then
       Data := 10000.0;
     if (Data < -10000.0) then
       Data := -10000.0;
     FLastOutput := Data * 0.0001;
-   end
+  end
   else
-    FLastOutput := 0.0;//  Single generic_tick  begin
+    FLastOutput := 0.0; // Single generic_tick  begin
 
   Result := FLastOutput;
 end;
@@ -1006,49 +1038,48 @@ var
 begin
   norm := Limit(Value, 0, 1);
 
-  if (number = CMidiBreath) then
-   begin // 2 ... energy
+  if (Number = CMidiBreath) then
+  begin // 2 ... energy
     FShakeEnergy := FShakeEnergy + norm * CMaxShake * 0.1;
     if (FShakeEnergy > CMaxShake) then
       FShakeEnergy := CMaxShake;
     if ((FInstType = 10) or (FInstType = 3)) then
-     begin
+    begin
       FRatchetPos := round(abs(Value - FLastRatchetPos));
       FRatchetDelta := 0.0002 * FRatchetPos;
       FLastRatchetPos := round(Value);
-     end;
-   end
-  else if (number = CMidiModFrequency) then
-   begin // 4 ... decay
+    end;
+  end
+  else if (Number = CMidiModFrequency) then
+  begin // 4 ... decay
     if ((FInstType <> 3) and (FInstType <> 10)) then
-     begin
-      FSystemDecay := FDefDecays[FInstType] + ((Value - 64.0) *
-        FDecayScale[FInstType] *
-        (1.0 -
-        FDefDecays[FInstType]) / 64.0);
+    begin
+      FSystemDecay := FDefDecays[FInstType] +
+        ((Value - 64.0) * FDecayScale[FInstType] *
+        (1.0 - FDefDecays[FInstType]) / 64.0);
       FGains[0] := log10(FNObjects) * FBaseGain / FNObjects;
       for i := 1 to FNFreqs - 1 do
         FGains[i] := FGains[0];
       if (FInstType = 6) then
-       begin // Tambourine
+      begin // Tambourine
         FGains[0] := FGains[0] * CTambourineShellGain;
         FGains[1] := FGains[1] * 0.8;
-       end
+      end
       else if (FInstType = 7) then
-       begin // sleighbell
+      begin // sleighbell
         FGains[3] := FGains[3] * 0.5;
         FGains[4] := FGains[4] * 0.3;
-       end
+      end
       else if (FInstType = 12) then
         for i := 1 to FNFreqs - 1 do
-          FGains[i] := FGains[i] * 1.8// cokecan
-      ;
+          FGains[i] := FGains[i] * 1.8 // cokecan
+            ;
       for i := 0 to FNFreqs - 1 do
         FGains[i] := FGains[i] * ((128 - Value) / 100.0 + 0.36);
-     end;
-   end
-  else if (number = CMidiFootControl) then
-   begin // 11 ... number of objects
+    end;
+  end
+  else if (Number = CMidiFootControl) then
+  begin // 11 ... number of objects
     if (FInstType = 5) then // CBamboooo
       FNObjects := (Value * FDefObjs[FInstType] / 64.0) + 0.3
     else
@@ -1057,34 +1088,34 @@ begin
     for i := 1 to FNFreqs - 1 do
       FGains[i] := FGains[0];
     if (FInstType = 6) then
-     begin // Tambourine
+    begin // Tambourine
       FGains[0] := FGains[0] * CTambourineShellGain;
       FGains[1] := FGains[1] * 0.8;
-     end
+    end
     else if (FInstType = 7) then
-     begin // sleighbell
+    begin // sleighbell
       FGains[3] := FGains[3] * 0.5;
       FGains[4] := FGains[4] * 0.3;
-     end
+    end
     else if (FInstType = 12) then
       for i := 1 to FNFreqs - 1 do
-        FGains[i] := FGains[i] * 1.8;// cokecan
+        FGains[i] := FGains[i] * 1.8; // cokecan
     if ((FInstType <> 3) and (FInstType <> 10)) then
-     begin
-    // reverse calculate decay setting
+    begin
+      // reverse calculate decay setting
       temp := (64.0 * (FSystemDecay - FDefDecays[FInstType]) /
         (FDecayScale[FInstType] * (1 - FDefDecays[FInstType])) + 64.0);
-    // scale gains by decay setting
+      // scale gains by decay setting
       for i := 0 to FNFreqs - 1 do
         FGains[i] := FGains[i] * ((128 - temp) / 100.0 + 0.36);
-     end;
-   end
-  else if (number = CMidiModWheel) then
-   begin // 1 ... resonance frequency
+    end;
+  end
+  else if (Number = CMidiModWheel) then
+  begin // 1 ... resonance frequency
     for i := 0 to FNFreqs - 1 do
-     begin
+    begin
       if ((FInstType = 6) or (FInstType = 2) or (FInstType = 7)) then
- // limit range a bit for Tambourine
+        // limit range a bit for Tambourine
         temp := FCenterFreqs[i] * power(1.008, Value - 64)
       else
         temp := FCenterFreqs[i] * power(1.015, Value - 64);
@@ -1092,25 +1123,25 @@ begin
 
       FCoeffs[i][0] := -FResons[i] * 2.0 * cos(temp * 2 * Pi / SampleRate);
       FCoeffs[i][1] := FResons[i] * FResons[i];
-     end;
-   end
-  else if (number = CMidiAfterTouchCont) then
-   begin // 128
+    end;
+  end
+  else if (Number = CMidiAfterTouchCont) then
+  begin // 128
     FShakeEnergy := FShakeEnergy + norm * CMaxShake * 0.1;
     if (FShakeEnergy > CMaxShake) then
       FShakeEnergy := CMaxShake;
     if ((FInstType = 10) or (FInstType = 3)) then
-     begin
+    begin
       FRatchetPos := round(abs(Value - FLastRatchetPos));
       FRatchetDelta := 0.0002 * FRatchetPos;
       FLastRatchetPos := round(Value);
-     end;
-   end
-  else if (number = CMidiShakerInst) then
-   begin // 1071
-    FInstType := round(norm * 22);  //  Just to be safe
+    end;
+  end
+  else if (Number = CMidiShakerInst) then
+  begin // 1071
+    FInstType := round(norm * 22); // Just to be safe
     SetupNum(FInstType);
-   end;
+  end;
 end;
 
 // KLUDGE-O-MATIC-O-RAMA
@@ -1121,54 +1152,54 @@ var
   j: Integer;
 begin
   FShakeEnergy := FShakeEnergy * FSystemDecay;
-               // Exponential system decay
+  // Exponential system decay
   if (random(32767) < FNObjects) then
-   begin
+  begin
     FSndLevel := FShakeEnergy;
     j := random(3);
     if (j = 0) then
-     begin
+    begin
       FCenterFreqs[0] := CWaterDropsCenterFreq1 * (0.75 + (0.25 * NoiseTick));
       FGains[0] := abs(NoiseTick);
-     end
+    end
     else if (j = 1) then
-     begin
+    begin
       FCenterFreqs[1] := CWaterDropsCenterFreq1 * (1.0 + (0.25 * NoiseTick));
       FGains[1] := abs(NoiseTick);
-     end
+    end
     else
-     begin
+    begin
       FCenterFreqs[2] := CWaterDropsCenterFreq1 * (1.25 + (0.25 * NoiseTick));
       FGains[2] := abs(NoiseTick);
-     end;
-   end;
+    end;
+  end;
 
   FGains[0] := FGains[0] * FResons[0];
   if (FGains[0] > 0.001) then
-   begin
+  begin
     FCenterFreqs[0] := FCenterFreqs[0] * CWaterDropsFreqSweep;
-    FCoeffs[0][0] := -FResons[0] * 2.0 * cos(FCenterFreqs[0] *
-      2 * Pi / SampleRate);
-   end;
+    FCoeffs[0][0] := -FResons[0] * 2.0 *
+      cos(FCenterFreqs[0] * 2 * Pi / SampleRate);
+  end;
   FGains[1] := FGains[1] * FResons[1];
   if (FGains[1] > 0.001) then
-   begin
+  begin
     FCenterFreqs[1] := FCenterFreqs[1] * CWaterDropsFreqSweep;
-    FCoeffs[1][0] := -FResons[1] * 2.0 * cos(FCenterFreqs[1] *
-      2 * Pi / SampleRate);
-   end;
+    FCoeffs[1][0] := -FResons[1] * 2.0 *
+      cos(FCenterFreqs[1] * 2 * Pi / SampleRate);
+  end;
   FGains[2] := FGains[2] * FResons[2];
   if (FGains[2] > 0.001) then
-   begin
+  begin
     FCenterFreqs[2] := FCenterFreqs[2] * CWaterDropsFreqSweep;
-    FCoeffs[2][0] := -FResons[2] * 2.0 * cos(FCenterFreqs[2] *
-      2 * Pi / SampleRate);
-   end;
+    FCoeffs[2][0] := -FResons[2] * 2.0 *
+      cos(FCenterFreqs[2] * 2 * Pi / SampleRate);
+  end;
 
-  FSndLevel := FSndLevel * FSoundDecay;        // Each (all) event(s) 
-                                 // decay(s) exponentially 
+  FSndLevel := FSndLevel * FSoundDecay; // Each (all) event(s)
+  // decay(s) exponentially
   FInputs[0] := FSndLevel;
-  FInputs[0] := FInputs[0] * NoiseTick;     // Actual Sound is Random
+  FInputs[0] := FInputs[0] * NoiseTick; // Actual Sound is Random
   FInputs[1] := FInputs[0] * FGains[1];
   FInputs[2] := FInputs[0] * FGains[2];
   FInputs[0] := FInputs[0] * FGains[0];
@@ -1228,46 +1259,44 @@ var
   Data, temp: Single;
   Which, i: Integer;
 begin
- Which := 0;
- if (FShakeEnergy > MIN_ENERGY) then
+  Which := 0;
+  if (FShakeEnergy > MIN_ENERGY) then
   begin
-   FShakeEnergy := FShakeEnergy * FSystemDecay;    // Exponential system decay
-   if (random(1024) < FNObjects) then
+    FShakeEnergy := FShakeEnergy * FSystemDecay; // Exponential system decay
+    if (random(1024) < FNObjects) then
     begin
-     FSndLevel := FSndLevel + FShakeEnergy;
-     Which := random(7);
+      FSndLevel := FSndLevel + FShakeEnergy;
+      Which := random(7);
     end;
-   temp := FSndLevel * NoiseTick;      // Actual Sound is Random
-   for i := 0 to FNFreqs - 1 do
-     FInputs[i] := 0;
-   FInputs[Which mod 7] := temp;
-   FSndLevel := FSndLevel * FSoundDecay;
-                  // Exponential Sound decay
-   FFinalZ[2] := FFinalZ[1];
-   FFinalZ[1] := FFinalZ[0];
-   FFinalZ[0] := 0;
-   for i := 0 to FNFreqs - 1 do
+    temp := FSndLevel * NoiseTick; // Actual Sound is Random
+    for i := 0 to FNFreqs - 1 do
+      FInputs[i] := 0;
+    FInputs[Which mod 7] := temp;
+    FSndLevel := FSndLevel * FSoundDecay;
+    // Exponential Sound decay
+    FFinalZ[2] := FFinalZ[1];
+    FFinalZ[1] := FFinalZ[0];
+    FFinalZ[0] := 0;
+    for i := 0 to FNFreqs - 1 do
     begin
-     FInputs[i] := FInputs[i] - FOutputs[i][0] * FCoeffs[i][0];  // Do
-     FInputs[i] := FInputs[i] - FOutputs[i][1] * FCoeffs[i][1];  // resonant
-     FOutputs[i][1] := FOutputs[i][0];            // filter
-     FOutputs[i][0] := FInputs[i];                // calculations
-     FFinalZ[0] := FFinalZ[0] + FGains[i] * FOutputs[i][1];
+      FInputs[i] := FInputs[i] - FOutputs[i][0] * FCoeffs[i][0]; // Do
+      FInputs[i] := FInputs[i] - FOutputs[i][1] * FCoeffs[i][1]; // resonant
+      FOutputs[i][1] := FOutputs[i][0]; // filter
+      FOutputs[i][0] := FInputs[i]; // calculations
+      FFinalZ[0] := FFinalZ[0] + FGains[i] * FOutputs[i][1];
     end;
-   Data := FFinalZCoeffs[0] * FFinalZ[0];     // Extra zero(s) for shape
-   Data := Data + FFinalZCoeffs[1] * FFinalZ[1];    // Extra zero(s) for shape
-   Data := Data + FFinalZCoeffs[2] * FFinalZ[2];    // Extra zero(s) for shape
-   if (Data > 10000.0) then
-     Data := 10000.0
-   else
-   if (Data < -10000.0) then
-     Data := -10000.0;
-   Data := Data * 0.0001;
+    Data := FFinalZCoeffs[0] * FFinalZ[0]; // Extra zero(s) for shape
+    Data := Data + FFinalZCoeffs[1] * FFinalZ[1]; // Extra zero(s) for shape
+    Data := Data + FFinalZCoeffs[2] * FFinalZ[2]; // Extra zero(s) for shape
+    if (Data > 10000.0) then
+      Data := 10000.0
+    else if (Data < -10000.0) then
+      Data := -10000.0;
+    Data := Data * 0.0001;
   end
- else
-   Data := 0.0;
- Result := Data;
+  else
+    Data := 0.0;
+  Result := Data;
 end;
 
 end.
-

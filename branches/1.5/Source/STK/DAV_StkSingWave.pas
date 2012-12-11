@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkSingWave;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -45,24 +75,25 @@ type
     function GetVibratoRate: Single;
 
   protected
-    FWave          : TStkWavePlayer;
-    FModulator     : TStkModulate;
-    FEnvelope      : TStkEnvelope;
-    FPitchEnvelope : TStkEnvelope;
-    FRate          : Single;
-    FSweepRate     : Single;
-    FLastOutput    : Single;
+    FWave: TStkWavePlayer;
+    FModulator: TStkModulate;
+    FEnvelope: TStkEnvelope;
+    FPitchEnvelope: TStkEnvelope;
+    FRate: Single;
+    FSweepRate: Single;
+    FLastOutput: Single;
 
     // Set instrument parameters for a particular frequency.
     procedure SetFrequency(Frequency: Single);
 
   public
     // Class constructor taking filename argument.
-  {
-    An StkError will be thrown if the file is not found, its format is
-    unknown, or a read error occurs.
-  }
-    constructor Create(const SampleRate: Single; const FileName: string); reintroduce; virtual;
+    {
+      An StkError will be thrown if the file is not found, its format is
+      unknown, or a read error occurs.
+    }
+    constructor Create(const SampleRate: Single; const FileName: string);
+      reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -108,7 +139,7 @@ begin
   FModulator.RandomGain := 0.005;
   FEnvelope := TStkEnvelope.Create(SampleRate);
   FPitchEnvelope := TStkEnvelope.Create(SampleRate);
-  setFrequency(75.0);
+  SetFrequency(75.0);
   FPitchEnvelope.Rate := 1.0;
   Tick;
   Tick;
@@ -117,11 +148,11 @@ end;
 
 destructor TStkSingWave.Destroy;
 begin
- FreeAndNil(FWave);
- FreeAndNil(FModulator);
- FreeAndNil(FEnvelope);
- FreeAndNil(FPitchEnvelope);
- inherited Destroy;
+  FreeAndNil(FWave);
+  FreeAndNil(FModulator);
+  FreeAndNil(FEnvelope);
+  FreeAndNil(FPitchEnvelope);
+  inherited Destroy;
 end;
 
 procedure TStkSingWave.Reset;
@@ -130,12 +161,12 @@ begin
   FLastOutput := 0.0;
 end;
 
-procedure TStkSingWave.setFrequency;
+procedure TStkSingWave.SetFrequency;
 var
   temp: Single;
 begin
   temp := FRate;
-  FRate := frequency * FSampleRateInv;
+  FRate := Frequency * FSampleRateInv;
   temp := temp - FRate;
   if (temp < 0) then
     temp := -temp;
@@ -150,17 +181,17 @@ end;
 
 function TStkSingWave.GetVibratoRate: Single;
 begin
- result := FModulator.VibratoRate;
+  result := FModulator.VibratoRate;
 end;
 
 procedure TStkSingWave.SetVibratoGain(const Value: Single);
 begin
- FModulator.VibratoGain := Value;
+  FModulator.VibratoGain := Value;
 end;
 
 function TStkSingWave.GetVibratoGain: Single;
 begin
- result := FModulator.VibratoGain
+  result := FModulator.VibratoGain
 end;
 
 procedure TStkSingWave.SetRandomGain(const Value: Single);
@@ -170,10 +201,10 @@ end;
 
 function TStkSingWave.GetRandomGain: Single;
 begin
- result := FModulator.RandomGain;
+  result := FModulator.RandomGain;
 end;
 
-procedure TStkSingWave.setSweepRate(const Value: Single);
+procedure TStkSingWave.SetSweepRate(const Value: Single);
 begin
   FSweepRate := Value;
 end;
@@ -185,7 +216,7 @@ end;
 
 function TStkSingWave.GetGainRate: Single;
 begin
- result := FEnvelope.Rate;
+  result := FEnvelope.Rate;
 end;
 
 procedure TStkSingWave.SetGainTarget(const Value: Single);
@@ -195,7 +226,7 @@ end;
 
 function TStkSingWave.GetGainTarget: Single;
 begin
- result := FEnvelope.Target;
+  result := FEnvelope.Target;
 end;
 
 procedure TStkSingWave.NoteOn;
@@ -213,17 +244,17 @@ var
   newrate: Single;
 begin
   // Set the FWave FRate.
-  newRate := FPitchEnvelope.Tick;
-  newRate := newrate + newRate * FModulator.Tick;
-  FWave.Frequency := newRate;
+  newrate := FPitchEnvelope.Tick;
+  newrate := newrate + newrate * FModulator.Tick;
+  FWave.Frequency := newrate;
   FLastOutput := FWave.Tick;
   FLastOutput := FLastOutput * FEnvelope.Tick;
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
 function TStkSingWave.LastOut: Single;
 begin
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
 end.

@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkChorus;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -18,20 +48,22 @@ type
     procedure SetModFrequency(const Value: Single);
     procedure SetEffectMix(const Value: Single);
   protected
-    FDelayLine   : array[0..1] of TStkDelayL;
-    FBaseLength  : Single;
-    FModDepth    : Single;
-    FEffectMix   : Single;
-    FLastOutput  : array[0..1] of Single;
-    FMods        : array[0..1] of TStkLFO;
+    FDelayLine: array [0 .. 1] of TStkDelayL;
+    FBaseLength: Single;
+    FModDepth: Single;
+    FEffectMix: Single;
+    FLastOutput: array [0 .. 1] of Single;
+    FMods: array [0 .. 1] of TStkLFO;
     procedure SampleRateChanged; override;
   public
-    constructor Create(const SampleRate, BaseDelay: Single); reintroduce; overload; virtual;
+    constructor Create(const SampleRate, BaseDelay: Single); reintroduce;
+      overload; virtual;
     constructor Create(const SampleRate: Single = 44100); overload; override;
     destructor Destroy; override;
     procedure Clear;
     function Tick(const Input: Single): Single; overload;
-    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+    procedure Tick(const Input, Output: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload;
 
     property LastOutput: Single read GetLastOutput;
     property LastOutputLeft: Single read FLastOutput[0];
@@ -50,8 +82,10 @@ uses
 constructor TStkChorus.Create(const SampleRate, BaseDelay: Single);
 begin
   inherited Create(SampleRate);
-  FDelayLine[0] := TStkDelayL.Create(SampleRate, round(BaseDelay), round(BaseDelay * 1.414) + 2);
-  FDelayLine[1] := TStkDelayL.Create(SampleRate, round(BaseDelay), round(BaseDelay) + 2);
+  FDelayLine[0] := TStkDelayL.Create(SampleRate, round(BaseDelay),
+    round(BaseDelay * 1.414) + 2);
+  FDelayLine[1] := TStkDelayL.Create(SampleRate, round(BaseDelay),
+    round(BaseDelay) + 2);
   FBaseLength := BaseDelay;
 
   FMods[0] := TStkLFO.Create(SampleRate);
@@ -65,7 +99,7 @@ end;
 
 constructor TStkChorus.Create(const SampleRate: Single = 44100);
 begin
- Create(SampleRate, SampleRate);
+  Create(SampleRate, SampleRate);
 end;
 
 destructor TStkChorus.Destroy;
@@ -87,31 +121,33 @@ end;
 
 procedure TStkChorus.SampleRateChanged;
 begin
- inherited;
- if Assigned(FMods[0]) then FMods[0].SampleRate := SampleRate;
- if Assigned(FMods[1]) then FMods[1].SampleRate := SampleRate;
+  inherited;
+  if Assigned(FMods[0]) then
+    FMods[0].SampleRate := SampleRate;
+  if Assigned(FMods[1]) then
+    FMods[1].SampleRate := SampleRate;
 end;
 
 procedure TStkChorus.SetEffectMix(const Value: Single);
 begin
- FEffectMix := Limit(Value, 0, 1);
+  FEffectMix := Limit(Value, 0, 1);
 end;
 
 procedure TStkChorus.SetModDepth(const Value: Single);
 begin
- if FModDepth <> Value then
+  if FModDepth <> Value then
   begin
-   FModDepth := Value;
-   FBaseLength := SampleRate * FModDepth;
+    FModDepth := Value;
+    FBaseLength := SampleRate * FModDepth;
   end;
 end;
 
 procedure TStkChorus.SetModFrequency(const Value: Single);
 begin
- if FMods[0].Frequency <> Value then
+  if FMods[0].Frequency <> Value then
   begin
-   FMods[0].Frequency := Value;
-   FMods[1].Frequency := Value * 1.1111;
+    FMods[0].Frequency := Value;
+    FMods[1].Frequency := Value * 1.1111;
   end;
 end;
 
@@ -122,7 +158,7 @@ end;
 
 function TStkChorus.GetModFrequency: Single;
 begin
- result := FMods[0].Frequency
+  Result := FMods[0].Frequency
 end;
 
 function TStkChorus.Tick(const Input: Single): Single;
@@ -136,12 +172,13 @@ begin
   Result := (FLastOutput[0] + FLastOutput[1]) * 0.5;
 end;
 
-procedure TStkChorus.Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure TStkChorus.Tick(const Input, Output: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
 var
   Sample: Integer;
 begin
- for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := Tick(Input^[Sample]);
+  for Sample := 0 to SampleFrames - 1 do
+    Output^[Sample] := Tick(Input^[Sample]);
 end;
 
 end.

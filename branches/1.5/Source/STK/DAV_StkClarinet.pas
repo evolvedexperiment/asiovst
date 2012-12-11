@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkClarinet;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -32,17 +62,17 @@ type
   TStkClarinet = class(TStkControlableInstrument)
   private
   protected
-    FDelayLine     : TStkDelayL;
-    FReedTable     : TStkReedTable;
-    FFilter        : TStkOneZero;
-    FEnvelope      : TStkEnvelope;
-    FNoise         : TStkNoise;
-    FVibrato       : TStkLfo;
-    FLength        : Integer;
-    FOutputGain    : Single;
-    FNoiseGain     : Single;
-    FVibratoGain   : Single;
-    FBaseFrequency : Single;
+    FDelayLine: TStkDelayL;
+    FReedTable: TStkReedTable;
+    FFilter: TStkOneZero;
+    FEnvelope: TStkEnvelope;
+    FNoise: TStkNoise;
+    FVibrato: TStkLfo;
+    FLength: Integer;
+    FOutputGain: Single;
+    FNoiseGain: Single;
+    FVibratoGain: Single;
+    FBaseFrequency: Single;
 
     // Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
@@ -51,7 +81,8 @@ type
     procedure FrequencyChanged; virtual;
   public
     // Class constructor, taking the lowest desired playing frequency.
-    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, LowestFrequency: Single);
+      reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -75,7 +106,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e Number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -86,7 +118,7 @@ uses
 constructor TStkClarinet.Create;
 begin
   inherited Create(SampleRate);
-  FLength := round(SampleRate / lowestFrequency + 1);
+  FLength := round(SampleRate / LowestFrequency + 1);
   FDelayLine := TStkDelayL.Create(SampleRate, (FLength / 2.0), FLength);
   FReedTable := TStkReedTable.Create(SampleRate);
   FReedTable.Offset := 0.7;
@@ -120,12 +152,13 @@ end;
 
 procedure TStkClarinet.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Value then
+  if FBaseFrequency <> Value then
   begin
-   if (Value <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Value;
-   FrequencyChanged;
+    if (Value <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Value;
+    FrequencyChanged;
   end;
 end;
 
@@ -133,16 +166,18 @@ procedure TStkClarinet.FrequencyChanged;
 var
   Delay: Single;
 begin
- // Delay := FLength - approximate FFilter delay.
- Delay := (SampleRate / FBaseFrequency) * 0.5 - 1.5;
- if (Delay <= 0.0) then Delay := 0.3
- else if (Delay > FLength) then Delay := FLength;
- FDelayLine.Delay := Delay;
+  // Delay := FLength - approximate FFilter delay.
+  Delay := (SampleRate / FBaseFrequency) * 0.5 - 1.5;
+  if (Delay <= 0.0) then
+    Delay := 0.3
+  else if (Delay > FLength) then
+    Delay := FLength;
+  FDelayLine.Delay := Delay;
 end;
 
 function TStkClarinet.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkClarinet.StartBlowing(const Amplitude, Rate: Single);
@@ -176,7 +211,8 @@ begin
   // Calculate the breath pressure (FEnvelope + FNoise + FVibrato)
   breathPressure := FEnvelope.Tick;
   breathPressure := breathPressure + breathPressure * FNoiseGain * FNoise.Tick;
-  breathPressure := breathPressure + breathPressure * FVibratoGain * FVibrato.Tick;
+  breathPressure := breathPressure + breathPressure * FVibratoGain *
+    FVibrato.Tick;
 
   // Perform commuted loss filtering.
   pressureDiff := -0.95 * FFilter.Tick(FDelayLine.LastOutput);
@@ -185,15 +221,17 @@ begin
   pressureDiff := pressureDiff - breathPressure;
 
   // Perform non-linear scattering using pressure difference in reed function.
-  FLastOutput := FDelayLine.Tick(breathPressure + pressureDiff * FReedTable.Tick(pressureDiff));
+  FLastOutput := FDelayLine.Tick(breathPressure + pressureDiff *
+    FReedTable.Tick(pressureDiff));
 
   // Apply output gain.
   FLastOutput := FLastOutput * FOutputGain;
 
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
-procedure TStkClarinet.ControlChange(const Number: Integer; const Value: Single);
+procedure TStkClarinet.ControlChange(const Number: Integer;
+  const Value: Single);
 var
   norm: Single;
 begin

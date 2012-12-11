@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkModal;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -30,27 +60,28 @@ type
     procedure SetDirectGain(const Value: Single);
 
   protected
-    FEnvelope       : TStkEnvelope;
-    FWave           : TStkWavePlayer;
-    FFilters        : array[0..CMaxModes - 1] of TStkBiquad;
-    FOnePole        : TStkOnePole;
-    FVibrato        : TStkLfo;
-    FNModes         : Integer;
-    FVibratoGain    : Single;
-    FMasterGain     : Single;
-    FDirectGain     : Single;
-    FStickHardness  : Single;
-    FStrikePosition : Single;
-    FBaseFrequency  : Single;
-    FRadii          : array[0..CMaxModes - 1] of Single;
-    FRatios         : array[0..CMaxModes - 1] of Single;
+    FEnvelope: TStkEnvelope;
+    FWave: TStkWavePlayer;
+    FFilters: array [0 .. CMaxModes - 1] of TStkBiquad;
+    FOnePole: TStkOnePole;
+    FVibrato: TStkLfo;
+    FNModes: Integer;
+    FVibratoGain: Single;
+    FMasterGain: Single;
+    FDirectGain: Single;
+    FStickHardness: Single;
+    FStrikePosition: Single;
+    FBaseFrequency: Single;
+    FRadii: array [0 .. CMaxModes - 1] of Single;
+    FRatios: array [0 .. CMaxModes - 1] of Single;
 
     // Set instrument parameters for a particular AFrequency.
     procedure SetFrequency(const Value: Single); override;
     function GetFrequency: Single; override;
   public
     // Class constructor, taking the desired number of modes to create.
-    constructor Create(const SampleRate: Single; const Modes: Integer = 4); reintroduce; virtual;
+    constructor Create(const SampleRate: Single; const Modes: Integer = 4);
+      reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -59,7 +90,8 @@ type
     procedure Clear;
 
     // Set the ARatio and ARadius for a specified mode filter.
-    procedure SetRatioAndRadius(const ModeIndex: Integer; const Ratio, Radius: Single);
+    procedure SetRatioAndRadius(const ModeIndex: Integer;
+      const Ratio, Radius: Single);
 
     // Set the AGain for a specified mode filter.
     procedure SetModeGain(const ModeIndex: Integer; const Value: Single);
@@ -80,7 +112,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
 
     property DirectGain: Single read FDirectGain write SetDirectGain;
     property MasterGain: Single read FMasterGain write SetMasterGain;
@@ -91,7 +124,8 @@ implementation
 uses
   SysUtils;
 
-constructor TStkModal.Create(const SampleRate: Single; const Modes: Integer = 4);
+constructor TStkModal.Create(const SampleRate: Single;
+  const Modes: Integer = 4);
 var
   i: Integer;
 begin
@@ -104,10 +138,10 @@ begin
   // what it's going to be.
 
   for i := 0 to CMaxModes - 1 do
-   begin
+  begin
     FFilters[i] := TStkBiquad.Create(SampleRate);
     FFilters[i].setEqualGainZeroes;
-   end;
+  end;
 
   FEnvelope := TStkEnvelope.Create(SampleRate);
   FOnePole := TStkOnePole.Create(SampleRate);
@@ -131,16 +165,17 @@ destructor TStkModal.Destroy;
 var
   i: Integer;
 begin
- FreeAndNil(FEnvelope);
- FreeAndNil(FOnePole);
- FreeAndNil(FVibrato);
- for i := 0 to CMaxModes - 1 do FreeAndNil(FFilters[i]);
- inherited Destroy;
+  FreeAndNil(FEnvelope);
+  FreeAndNil(FOnePole);
+  FreeAndNil(FVibrato);
+  for i := 0 to CMaxModes - 1 do
+    FreeAndNil(FFilters[i]);
+  inherited Destroy;
 end;
 
 function TStkModal.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkModal.Clear;
@@ -156,34 +191,37 @@ procedure TStkModal.SetFrequency(const Value: Single);
 var
   i: Integer;
 begin
- if FBaseFrequency <> Value then
+  if FBaseFrequency <> Value then
   begin
-   FBaseFrequency := Value;
-   for i := 0 to FNModes - 1
-    do SetRatioAndRadius(i, FRatios[i], FRadii[i]);
+    FBaseFrequency := Value;
+    for i := 0 to FNModes - 1 do
+      SetRatioAndRadius(i, FRatios[i], FRadii[i]);
   end;
 end;
 
-procedure TStkModal.SetRatioAndRadius(const ModeIndex: Integer; const Ratio, Radius: Single);
+procedure TStkModal.SetRatioAndRadius(const ModeIndex: Integer;
+  const Ratio, Radius: Single);
 var
   nyquist, temp: Single;
 begin
-  if not ModeIndex in [0..FNModes]
-   then raise Exception.CreateFmt('Mode index out of bounds (%d)', [ModeIndex]);
+  if not ModeIndex in [0 .. FNModes] then
+    raise Exception.CreateFmt('Mode index out of bounds (%d)', [ModeIndex]);
 
   nyquist := SampleRate * 0.5;
-  if (Ratio * FBaseFrequency < nyquist)
-   then FRatios[ModeIndex] := Ratio
-   else
-    begin
-     temp := Ratio;
-     while (temp * FBaseFrequency > nyquist) do temp := temp * 0.5;
-     FRatios[ModeIndex] := temp;
-    end;
+  if (Ratio * FBaseFrequency < nyquist) then
+    FRatios[ModeIndex] := Ratio
+  else
+  begin
+    temp := Ratio;
+    while (temp * FBaseFrequency > nyquist) do
+      temp := temp * 0.5;
+    FRatios[ModeIndex] := temp;
+  end;
   FRadii[ModeIndex] := Radius;
-  if (Ratio < 0)
-   then temp := -Ratio
-   else temp := Ratio * FBaseFrequency;
+  if (Ratio < 0) then
+    temp := -Ratio
+  else
+    temp := Ratio * FBaseFrequency;
 
   FFilters[ModeIndex].SetResonance(temp, Radius);
 end;
@@ -200,9 +238,10 @@ end;
 
 procedure TStkModal.SetModeGain(const ModeIndex: Integer; const Value: Single);
 begin
-  if not ModeIndex in [0..FNModes]
-   then raise Exception.CreateFmt('Mode index out of bounds (%d)', [ModeIndex])
-   else FFilters[ModeIndex].Gain := Value;
+  if not ModeIndex in [0 .. FNModes] then
+    raise Exception.CreateFmt('Mode index out of bounds (%d)', [ModeIndex])
+  else
+    FFilters[ModeIndex].Gain := Value;
 end;
 
 procedure TStkModal.Strike(const Amplitude: Single);
@@ -219,12 +258,13 @@ begin
   FWave.Reset;
 
   for i := 0 to FNModes - 1 do
-   begin
-    if (FRatios[i] < 0)
-     then temp := -FRatios[i]
-     else temp := FRatios[i] * FBaseFrequency;
-    FFilters[i].setResonance(temp, FRadii[i]);
-   end;
+  begin
+    if (FRatios[i] < 0) then
+      temp := -FRatios[i]
+    else
+      temp := FRatios[i] * FBaseFrequency;
+    FFilters[i].SetResonance(temp, FRadii[i]);
+  end;
 end;
 
 procedure TStkModal.NoteOn(const Frequency, Amplitude: Single);
@@ -246,12 +286,13 @@ var
   i: Integer;
 begin
   for i := 0 to FNModes - 1 do
-   begin
-    if (FRatios[i] < 0)
-     then temp := -FRatios[i]
-     else temp := FRatios[i] * FBaseFrequency;
-    FFilters[i].setResonance(temp, FRadii[i] * Amplitude);
-   end;
+  begin
+    if (FRatios[i] < 0) then
+      temp := -FRatios[i]
+    else
+      temp := FRatios[i] * FBaseFrequency;
+    FFilters[i].SetResonance(temp, FRadii[i] * Amplitude);
+  end;
 end;
 
 function TStkModal.Tick: Single;
@@ -262,21 +303,21 @@ begin
   temp := FMasterGain * FOnePole.Tick(FWave.Tick * FEnvelope.Tick);
 
   temp2 := 0.0;
-  for i := 0 to FNModes - 1
-   do temp2 := temp2 + FFilters[i].Tick(temp);
+  for i := 0 to FNModes - 1 do
+    temp2 := temp2 + FFilters[i].Tick(temp);
 
   temp2 := temp2 - temp2 * FDirectGain;
   temp2 := temp2 + FDirectGain * temp;
 
   if (FVibratoGain <> 0.0) then
-   begin
+  begin
     // Calculate AM and apply to master out
     temp := 1.0 + (FVibrato.Tick * FVibratoGain);
     temp2 := temp * temp2;
-   end;
+  end;
 
   FLastOutput := temp2;
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
 procedure TStkModal.ControlChange(const Number: Integer; const Value: Single);

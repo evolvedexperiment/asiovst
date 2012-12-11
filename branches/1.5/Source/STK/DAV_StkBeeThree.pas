@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkBeeThree;
 
 { STK Hammond-oid organ FM synthesis instrument.
@@ -84,7 +114,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkBeeThree.noteOn(const Frequency, Amplitude: Single);
+procedure TStkBeeThree.NoteOn(const Frequency, Amplitude: Single);
 begin
   FGains[0] := Amplitude * FFmGains[95];
   FGains[1] := Amplitude * FFmGains[95];
@@ -99,13 +129,13 @@ var
   temp: Single;
 begin
   if (FModDepth > 0.0) then
-   begin
+  begin
     temp := 1.0 + (FModDepth * FVibrato.Tick * 0.1);
     FWaves[0].Frequency := FBaseFrequency * temp * FRatios[0];
     FWaves[1].Frequency := FBaseFrequency * temp * FRatios[1];
     FWaves[2].Frequency := FBaseFrequency * temp * FRatios[2];
     FWaves[3].Frequency := FBaseFrequency * temp * FRatios[3];
-   end;
+  end;
 
   FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
   temp := FControlA * 4.0 * FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
@@ -115,7 +145,7 @@ begin
   temp := temp + FGains[1] * FAdsr[1].Tick * FWaves[1].Tick;
   temp := temp + FGains[0] * FAdsr[0].Tick * FWaves[0].Tick;
   FLastOutput := temp * 0.125;
-  Result := lastOutput;
+  Result := LastOutput;
 end;
 
 end.
