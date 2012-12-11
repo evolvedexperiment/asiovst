@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkSitar;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -23,15 +53,15 @@ uses
 type
   TStkSitar = class(TStkInstrument)
   protected
-    FDelayLine     : TStkDelayA;
-    FLoopFilter    : TStkOneZero;
-    FNoise         : TStkNoise;
-    FLength        : Longint;
-    FAmGain        : Single;
-    FDelay         : Single;
-    FTargetDelay   : Single;
-    FLoopGain      : Single;
-    FBaseFrequency : Single;
+    FDelayLine: TStkDelayA;
+    FLoopFilter: TStkOneZero;
+    FNoise: TStkNoise;
+    FLength: Longint;
+    FAmGain: Single;
+    FDelay: Single;
+    FTargetDelay: Single;
+    FLoopGain: Single;
+    FBaseFrequency: Single;
 
     // Set instrument parameters for a particular Frequency.
     procedure SetFrequency(const Value: Single); override;
@@ -39,10 +69,11 @@ type
 
     procedure FrequencyChanged; virtual;
   public
-    FEnvelope     : TStkADSR;
+    FEnvelope: TStkADSR;
 
     // Class constructor, taking the lowest desired playing Frequency.
-    constructor Create(const SampleRate, lowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, lowestFrequency: Single);
+      reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -89,16 +120,16 @@ end;
 
 destructor TStkSitar.Destroy;
 begin
- FreeAndNil(FDelayLine);
- FreeAndNil(FLoopFilter);
- FreeAndNil(FEnvelope);
- FreeAndNil(FNoise);
- inherited Destroy;
+  FreeAndNil(FDelayLine);
+  FreeAndNil(FLoopFilter);
+  FreeAndNil(FEnvelope);
+  FreeAndNil(FNoise);
+  inherited Destroy;
 end;
 
 function TStkSitar.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkSitar.Clear;
@@ -109,22 +140,24 @@ end;
 
 procedure TStkSitar.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Frequency then
+  if FBaseFrequency <> Frequency then
   begin
-   if (Value <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Value;
-   FrequencyChanged; 
+    if (Value <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Value;
+    FrequencyChanged;
   end;
 end;
 
 procedure TStkSitar.FrequencyChanged;
 begin
- FTargetDelay := (SampleRate / FBaseFrequency);
- FDelay := FTargetDelay * (1.0 + (0.05 * FNoise.Tick));
- FDelayLine.Delay := FDelay;
- FLoopGain := 0.995 + (FBaseFrequency * 0.0000005);
- if (FLoopGain > 0.9995) then FLoopGain := 0.9995;
+  FTargetDelay := (SampleRate / FBaseFrequency);
+  FDelay := FTargetDelay * (1.0 + (0.05 * FNoise.Tick));
+  FDelayLine.Delay := FDelay;
+  FLoopGain := 0.995 + (FBaseFrequency * 0.0000005);
+  if (FLoopGain > 0.9995) then
+    FLoopGain := 0.9995;
 end;
 
 procedure TStkSitar.Pluck;
@@ -135,7 +168,7 @@ end;
 procedure TStkSitar.NoteOn(const Frequency, Amplitude: Single);
 begin
   SetFrequency(Frequency);
-  pluck(Amplitude);
+  Pluck(Amplitude);
   FAmGain := 0.1 * Amplitude;
 end;
 
@@ -151,15 +184,16 @@ end;
 function TStkSitar.Tick: Single;
 begin
   if (abs(FTargetDelay - FDelay) > 0.001) then
-   begin
-    if (FTargetDelay < FDelay)
-     then FDelay := FDelay * 0.99999
-     else FDelay := FDelay * 1.00001;
+  begin
+    if (FTargetDelay < FDelay) then
+      FDelay := FDelay * 0.99999
+    else
+      FDelay := FDelay * 1.00001;
     FDelayLine.Delay := FDelay;
-   end;
+  end;
   FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput *
     FLoopGain) + (FAmGain * FEnvelope.Tick * FNoise.Tick));
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
 end.

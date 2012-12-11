@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkPitchShift;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -20,18 +50,19 @@ type
     procedure SetShift(const Value: Single);
     procedure SetEffectMix(const Value: Single);
   protected
-    FDelayLine    : array[0..1] of TStkDelayL;
-    FEffectMix    : Single;
-    FRate, FShift : Single;
-    FLastOutput   : Single;
-    FDelay, FEnv  : array[0..1] of Single;
+    FDelayLine: array [0 .. 1] of TStkDelayL;
+    FEffectMix: Single;
+    FRate, FShift: Single;
+    FLastOutput: Single;
+    FDelay, FEnv: array [0 .. 1] of Single;
     procedure ShiftChanged; virtual;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
     procedure Clear;
     function Tick(const Input: Single): Single; overload;
-    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
+    procedure Tick(const Input, Output: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload; virtual;
 
     property LastOutput: Single read FLastOutput;
     property EffectMix: Single read FEffectMix write SetEffectMix;
@@ -57,9 +88,9 @@ end;
 
 destructor TStkPitchShifter.Destroy;
 begin
- FreeAndNil(FDelayLine[0]);
- FreeAndNil(FDelayLine[1]);
- inherited Destroy;
+  FreeAndNil(FDelayLine[0]);
+  FreeAndNil(FDelayLine[1]);
+  inherited Destroy;
 end;
 
 procedure TStkPitchShifter.Clear;
@@ -76,50 +107,57 @@ end;
 
 procedure TStkPitchShifter.SetShift(const Value: Single);
 begin
- if Shift <> Value then
+  if Shift <> Value then
   begin
-   FShift := Value;
-   ShiftChanged;
+    FShift := Value;
+    ShiftChanged;
   end;
 end;
 
 procedure TStkPitchShifter.ShiftChanged;
 begin
- if (FShift < 1.0) then FRate := 1.0 - FShift else
- if (FShift > 1.0) then FRate := 1.0 - FShift
+  if (FShift < 1.0) then
+    FRate := 1.0 - FShift
+  else if (FShift > 1.0) then
+    FRate := 1.0 - FShift
   else
-   begin
+  begin
     FRate := 0.0;
     FDelay[0] := 512;
-   end;
+  end;
 end;
 
 function TStkPitchShifter.Tick(const Input: Single): Single;
 begin
   FDelay[0] := FDelay[0] + FRate;
-  while (FDelay[0] > 1012) do FDelay[0] := FDelay[0] - 1000;
-  while (FDelay[0] < 12) do FDelay[0] := FDelay[0] + 1000;
+  while (FDelay[0] > 1012) do
+    FDelay[0] := FDelay[0] - 1000;
+  while (FDelay[0] < 12) do
+    FDelay[0] := FDelay[0] + 1000;
 
   FDelay[1] := FDelay[0] + 500;
-  while (FDelay[1] > 1012) do FDelay[1] := FDelay[1] - 1000;
-  while (FDelay[1] < 12) do FDelay[1] := FDelay[1] + 1000;
+  while (FDelay[1] > 1012) do
+    FDelay[1] := FDelay[1] - 1000;
+  while (FDelay[1] < 12) do
+    FDelay[1] := FDelay[1] + 1000;
   FDelayLine[0].Delay := round(FDelay[0]);
   FDelayLine[1].Delay := round(FDelay[1]);
   FEnv[1] := abs(FDelay[0] - 512) * 0.002;
   FEnv[0] := 1.0 - FEnv[1];
-  FLastOutput := FEnv[0] * FDelayLine[0].Tick(input);
-  FLastOutput := FLastOutput + FEnv[1] * FDelayLine[1].Tick(input);
+  FLastOutput := FEnv[0] * FDelayLine[0].Tick(Input);
+  FLastOutput := FLastOutput + FEnv[1] * FDelayLine[1].Tick(Input);
   FLastOutput := FLastOutput * FEffectMix;
-  FLastOutput := FLastOutput + (1.0 - FEffectMix) * input;
+  FLastOutput := FLastOutput + (1.0 - FEffectMix) * Input;
   Result := FLastOutput;
 end;
 
-procedure TStkPitchShifter.Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure TStkPitchShifter.Tick(const Input, Output: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
 var
   Sample: Integer;
 begin
-  for Sample := 0 to SampleFrames - 1
-   do Output^[Sample] := Tick(Input^[Sample])
+  for Sample := 0 to SampleFrames - 1 do
+    Output^[Sample] := Tick(Input^[Sample])
 end;
 
 end.

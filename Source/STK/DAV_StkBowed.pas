@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkBowed;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -32,20 +62,21 @@ type
     // Set vibrato gain.
     procedure SetVibrato(const Value: Single);
   protected
-    FNeckDelay    : TStkDelayl;
-    FBridgeDelay  : TStkDelayl;
-    FBowTable     : TStkBowTable;
-    FStringFilter : TStkOnePole;
-    FBodyFilter   : TStkBiquad;
-    FVibrato      : TStkLfo;
-    FAdsr         : TStkAdsr;
-    FMaxVelocity  : Single;
-    FBaseDelay    : Single;
-    FFrequency    : Single;
-    FVibratoGain  : Single;
-    FBetaRatio    : Single;
+    FNeckDelay: TStkDelayl;
+    FBridgeDelay: TStkDelayl;
+    FBowTable: TStkBowTable;
+    FStringFilter: TStkOnePole;
+    FBodyFilter: TStkBiquad;
+    FVibrato: TStkLfo;
+    FAdsr: TStkAdsr;
+    FMaxVelocity: Single;
+    FBaseDelay: Single;
+    FFrequency: Single;
+    FVibratoGain: Single;
+    FBetaRatio: Single;
   public
-    constructor Create(const SampleRate, lowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, lowestFrequency: Single);
+      reintroduce; virtual;
     destructor Destroy; override;
 
     // Set instrument parameters for a particular frequency.
@@ -70,7 +101,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
 
     property Vibrato: Single read FVibratoGain write SetVibrato;
     property Frequency: Single read FFrequency write SetFrequency;
@@ -109,8 +141,8 @@ begin
 
   FBetaRatio := 0.127236;
 
- // Necessary to initialize internal variables.
-  setFrequency(220.0);
+  // Necessary to initialize internal variables.
+  SetFrequency(220.0);
 end;
 
 destructor TStkBowed.Destroy;
@@ -133,18 +165,20 @@ end;
 
 procedure TStkBowed.SetFrequency(const Value: Single);
 begin
- if FFrequency <> Value then
+  if FFrequency <> Value then
   begin
-   FFrequency := Value;
-   if (Value <= 0.0) then FFrequency := 220.0;
+    FFrequency := Value;
+    if (Value <= 0.0) then
+      FFrequency := 220.0;
 
-   // Delay := length - approximate filter delay.
-   FBaseDelay := SampleRate / FFrequency - 4.0;
-   if (FBaseDelay <= 0.0) then FBaseDelay := 0.3;
-   FBridgeDelay.Delay := FBaseDelay * FBetaRatio;
-                   // bow to bridge length
-   FNeckDelay.Delay := FBaseDelay * (1.0 - FBetaRatio);
-   // bow to nut (finger) length
+    // Delay := length - approximate filter delay.
+    FBaseDelay := SampleRate / FFrequency - 4.0;
+    if (FBaseDelay <= 0.0) then
+      FBaseDelay := 0.3;
+    FBridgeDelay.Delay := FBaseDelay * FBetaRatio;
+    // bow to bridge length
+    FNeckDelay.Delay := FBaseDelay * (1.0 - FBetaRatio);
+    // bow to nut (finger) length
   end;
 end;
 
@@ -155,7 +189,7 @@ begin
   FMaxVelocity := 0.03 + (0.2 * Amplitude);
 end;
 
-procedure TStkBowed.stopBowing(const Rate: Single);
+procedure TStkBowed.StopBowing(const Rate: Single);
 begin
   FAdsr.Rate := Rate;
   FAdsr.KeyOff;
@@ -163,18 +197,18 @@ end;
 
 procedure TStkBowed.NoteOn(const Frequency, Amplitude: Single);
 begin
- StartBowing(Amplitude, Amplitude * 0.001);
- SetFrequency(Frequency);
+  StartBowing(Amplitude, Amplitude * 0.001);
+  SetFrequency(Frequency);
 end;
 
 procedure TStkBowed.NoteOff(const Amplitude: Single);
 begin
- StopBowing((1.0 - Amplitude) * 0.005);
+  StopBowing((1.0 - Amplitude) * 0.005);
 end;
 
 procedure TStkBowed.SetVibrato(const Value: Single);
 begin
- FVibratoGain := Value;
+  FVibratoGain := Value;
 end;
 
 function TStkBowed.Tick: Single;
@@ -184,10 +218,10 @@ begin
   bowVelocity := FMaxVelocity * FAdsr.Tick;
   bridgeRefl := -FStringFilter.Tick(FBridgeDelay.LastOutput);
   nutRefl := -FNeckDelay.LastOutput;
-  stringVel := bridgeRefl + nutRefl;               // Sum is String Velocity
-  velDiff := bowVelocity - stringVel;              // Differential Velocity
-  newVel := velDiff * FBowTable.Tick(velDiff);   // Non-Linear Bow Function
-  FNeckDelay.Tick(bridgeRefl + newVel);           // Do string propagations
+  stringVel := bridgeRefl + nutRefl; // Sum is String Velocity
+  velDiff := bowVelocity - stringVel; // Differential Velocity
+  newVel := velDiff * FBowTable.Tick(velDiff); // Non-Linear Bow Function
+  FNeckDelay.Tick(bridgeRefl + newVel); // Do string propagations
   FBridgeDelay.Tick(nutRefl + newVel);
 
   if (FVibratoGain > 0.0) then
@@ -197,25 +231,25 @@ begin
   Result := LastOutput;
 end;
 
-procedure TStkBowed.controlChange(const Number: Integer; const Value: Single);
+procedure TStkBowed.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin
   norm := Limit(Value, 0, 1);
 
-  if (number = CMIDIBowPressure) then // 2
+  if (Number = CMIDIBowPressure) then // 2
     FBowTable.Slope := (5.0 - (4.0 * norm))
-  else if (number = CMIDIBowPosition) then
-   begin // 4
+  else if (Number = CMIDIBowPosition) then
+  begin // 4
     FBetaRatio := 0.027236 + (0.2 * norm);
     FBridgeDelay.Delay := (FBaseDelay * FBetaRatio);
     FNeckDelay.Delay := (FBaseDelay * (1.0 - FBetaRatio));
-   end
-  else if (number = CMIDIModFrequency) then // 11
+  end
+  else if (Number = CMIDIModFrequency) then // 11
     FVibrato.Frequency := (norm * 12.0)
-  else if (number = CMIDIModWheel) then // 1
+  else if (Number = CMIDIModWheel) then // 1
     FVibratoGain := (norm * 0.4)
-  else if (number = CMIDIAfterTouchCont) then // 128
+  else if (Number = CMIDIAfterTouchCont) then // 128
     FAdsr.Target := norm;
 end;
 

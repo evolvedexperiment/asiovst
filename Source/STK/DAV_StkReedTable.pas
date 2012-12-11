@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkReedTable;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -22,38 +52,39 @@ type
   TStkReedTable = class(TStk)
   private
     // Set the table FOffSet value.
-  {
-    The table offset roughly corresponds to the size
-    of the initial reed tip opening (a greater offset
-    represents a smaller opening).
-  }
+    {
+      The table offset roughly corresponds to the size
+      of the initial reed tip opening (a greater offset
+      represents a smaller opening).
+    }
     procedure SetOffset(const Value: Single);
 
     // Set the table slope value.
-  {
-   The table slope roughly corresponds to the reed
-   stiffness (a greater slope represents a harder
-   reed).
-  }
+    {
+      The table slope roughly corresponds to the reed
+      stiffness (a greater slope represents a harder
+      reed).
+    }
     procedure SetSlope(const Value: Single);
 
   protected
-    FOffSet     : Single;
-    FSlope      : Single;
-    FLastOutput : Single;
+    FOffSet: Single;
+    FSlope: Single;
+    FLastOutput: Single;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     // Return the function value for \e input.
-  {
-    The function input represents the differential
-    pressure across the reeds.
-  }
+    {
+      The function input represents the differential
+      pressure across the reeds.
+    }
     function Tick(const Input: Single): Single; overload; virtual;
 
     // Processes 'SampleFrames' samples in-place
-    procedure Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer); overload; virtual;
+    procedure Tick(const Data: PDavSingleFixedArray;
+      const SampleFrames: Integer); overload; virtual;
 
     property OffSet: Single read FOffSet write SetOffset;
     property Slope: Single read FSlope write SetSlope;
@@ -65,8 +96,8 @@ implementation
 constructor TStkReedTable.Create;
 begin
   inherited Create(SampleRate);
-  FOffSet := 0.6;  // FOffSet is a bias, related to reed rest position.
-  FSlope := -0.8;  // FSlope corresponds loosely to reed stiffness.
+  FOffSet := 0.6; // FOffSet is a bias, related to reed rest position.
+  FSlope := -0.8; // FSlope corresponds loosely to reed stiffness.
 end;
 
 destructor TStkReedTable.Destroy;
@@ -102,12 +133,13 @@ begin
   Result := FLastOutput;
 end;
 
-procedure TStkReedTable.Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer);
+procedure TStkReedTable.Tick(const Data: PDavSingleFixedArray;
+  const SampleFrames: Integer);
 var
-  Sample: integer;
+  Sample: Integer;
 begin
-  for Sample := 0 to SampleFrames - 1
-   do Data^[Sample] := Tick(Data^[Sample]);
+  for Sample := 0 to SampleFrames - 1 do
+    Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

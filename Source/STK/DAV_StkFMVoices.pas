@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkFMVoices;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -30,16 +60,17 @@ uses
 type
   TStkFMVoices = class(TStkFM)
   protected
-    FCurrentVowel : Integer;
-    FPhonems      : TStkPhonemes;
-    FMods, FTilt  : array[0..2] of Single;
+    FCurrentVowel: Integer;
+    FPhonems: TStkPhonemes;
+    FMods, FTilt: array [0 .. 2] of Single;
     procedure SetFrequency(const Value: Single); override;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
     procedure NoteOn(const Frequency, Amplitude: Single); override;
     function Tick: Single; override;
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -87,8 +118,8 @@ end;
 
 destructor TStkFMVoices.Destroy;
 begin
- FreeAndNil(FPhonems);
- inherited Destroy;
+  FreeAndNil(FPhonems);
+  inherited Destroy;
 end;
 
 procedure TStkFMVoices.SetFrequency(const Value: Single);
@@ -100,25 +131,25 @@ begin
   i := 0;
 
   if (FCurrentVowel < 32) then
-   begin
+  begin
     i := FCurrentVowel;
     temp2 := 0.9;
-   end
+  end
   else if (FCurrentVowel < 64) then
-   begin
+  begin
     i := FCurrentVowel - 32;
     temp2 := 1.0;
-   end
+  end
   else if (FCurrentVowel < 96) then
-   begin
+  begin
     i := FCurrentVowel - 64;
     temp2 := 1.1;
-   end
+  end
   else if (FCurrentVowel <= 128) then
-   begin
+  begin
     i := FCurrentVowel - 96;
     temp2 := 1.2;
-   end;
+  end;
 
   FBaseFrequency := Value;
   temp := (temp2 * FPhonems.FormantFrequency(i, 0) / FBaseFrequency) + 0.5;
@@ -168,29 +199,30 @@ begin
   Result := temp * 0.33;
 end;
 
-procedure TStkFMVoices.ControlChange(const Number: Integer; const Value: Single);
+procedure TStkFMVoices.ControlChange(const Number: Integer;
+  const Value: Single);
 var
   norm: Single;
 begin
   norm := Limit(Value, 0, 1);
 
   if (Number = CMidiBreath) then // 2
-    FGains[3] := FFmGains[round(norm * 99.9)]
+    FGains[3] := FFMGains[round(norm * 99.9)]
   else if (Number = CMidiFootControl) then
-   begin // 4
+  begin // 4
     FCurrentVowel := round(norm * 128.0);
     SetFrequency(FBaseFrequency);
-   end
+  end
   else if (Number = CMidiModFrequency) then // 11
     ModulationSpeed := norm * 12.0
   else if (Number = CMidiModWheel) then // 1
     ModulationDepth := norm
   else if (Number = CMidiAfterTouchCont) then
-   begin // 128
+  begin // 128
     FTilt[0] := norm;
     FTilt[1] := sqr(norm);
     FTilt[2] := FTilt[1] * norm;
-   end;
+  end;
 end;
 
 end.

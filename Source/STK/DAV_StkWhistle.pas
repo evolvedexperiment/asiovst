@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkWhistle;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -8,11 +38,11 @@ unit DAV_StkWhistle;
   whistle (a la Cook).
 
   Control Change Numbers:
-    - FNoise Gain = 4
-    - Fipple Modulation Frequency = 11
-    - Fipple Modulation Gain = 1
-    - Blowing Frequency Modulation = 2
-    - Volume = 128
+  - FNoise Gain = 4
+  - Fipple Modulation Frequency = 11
+  - Fipple Modulation Gain = 1
+  - Blowing Frequency Modulation = 2
+  - Volume = 128
 }
 interface
 
@@ -25,25 +55,25 @@ uses
 type
   TStkWhistle = class(TStkControlableInstrument)
   protected
-    FTempVector    : TStkVector3D;
-    FTempVectorP   : TStkVector3D;
-    FOnePole       : TStkOnePole;
-    FNoise         : TStkNoise;
-    FEnvelope      : TStkEnvelope;
-    FPea           : TStkSphere;
-    FBumper        : TStkSphere;
-    FCan           : TStkSphere;           // Declare a Spherical "can".
-    FSine          : TStkLfo;
-    FBaseFrequency : Single;
-    FmaxPressure   : Single;
-    FNoiseGain     : Single;
-    FFippleFreqMod : Single;
-    FippleGainMod  : Single;
-    FBlowFreqMod   : Single;
-    FTickSize      : Single;
-    FCanLoss       : Single;
-    FSubSample     : Integer;
-    FSubSampCount  : Integer;
+    FTempVector: TStkVector3D;
+    FTempVectorP: TStkVector3D;
+    FOnePole: TStkOnePole;
+    FNoise: TStkNoise;
+    FEnvelope: TStkEnvelope;
+    FPea: TStkSphere;
+    FBumper: TStkSphere;
+    FCan: TStkSphere; // Declare a Spherical "can".
+    FSine: TStkLfo;
+    FBaseFrequency: Single;
+    FmaxPressure: Single;
+    FNoiseGain: Single;
+    FFippleFreqMod: Single;
+    FippleGainMod: Single;
+    FBlowFreqMod: Single;
+    FTickSize: Single;
+    FCanLoss: Single;
+    FSubSample: Integer;
+    FSubSampCount: Integer;
 
     // Set instrument parameters for a particular frequency.
     procedure SetFrequency(const frequency: Single); override;
@@ -65,16 +95,17 @@ type
     procedure StopBlowing(const Rate: Single);
 
     // Start a note with the given frequency and amplitude.
-    procedure NoteOn(const frequency, amplitude: Single); override;
+    procedure NoteOn(const frequency, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure NoteOff(const amplitude: Single); override;
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const number: Integer; const Value: Single); override;
+    procedure ControlChange(const number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -101,17 +132,17 @@ begin
   FPea := TStkSphere.Create(CPeaRadius);
   FBumper := TStkSphere.Create(CBumpRadius);
   FSine := TStkLfo.Create(SampleRate);
-  FSine.Frequency := 2800.0;
+  FSine.frequency := 2800.0;
   FCan.SetPosition(0, 0, 0); // set can location
   FCan.SetVelocity(0, 0, 0); // and the velocity
   FEnvelope := TStkEnvelope.Create(SampleRate);
   FOnePole := TStkOnePole.Create(SampleRate);
   FNoise := TStkNoise.Create(SampleRate);
-  FOnePole.setPole(0.95);  // 0.99
-  FBumper.setPosition(0.0, CCanRadius - CBumpRadius, 0);
-  FBumper.setPosition(0.0, CCanRadius - CBumpRadius, 0);
-  FPea.setPosition(0, CCanRadius / 2, 0);
-  FPea.setVelocity(35, 15, 0);
+  FOnePole.setPole(0.95); // 0.99
+  FBumper.SetPosition(0.0, CCanRadius - CBumpRadius, 0);
+  FBumper.SetPosition(0.0, CCanRadius - CBumpRadius, 0);
+  FPea.SetPosition(0, CCanRadius / 2, 0);
+  FPea.SetVelocity(35, 15, 0);
 
   FEnvelope.Rate := CEnvRate;
   FEnvelope.keyOn;
@@ -132,15 +163,15 @@ end;
 
 destructor TStkWhistle.Destroy;
 begin
- FreeAndNil(FTempVector);
- FreeAndNil(FCan);
- FreeAndNil(FPea);
- FreeAndNil(FBumper);
- FreeAndNil(FSine);
- FreeAndNil(FEnvelope);
- FreeAndNil(FOnePole);
- FreeAndNil(FNoise);
- inherited Destroy;
+  FreeAndNil(FTempVector);
+  FreeAndNil(FCan);
+  FreeAndNil(FPea);
+  FreeAndNil(FBumper);
+  FreeAndNil(FSine);
+  FreeAndNil(FEnvelope);
+  FreeAndNil(FOnePole);
+  FreeAndNil(FNoise);
+  inherited Destroy;
 end;
 
 procedure TStkWhistle.Clear;
@@ -151,7 +182,7 @@ procedure TStkWhistle.SetFrequency;
 var
   freakency: Single;
 begin
-  freakency := frequency * 4;  // the Whistle is a transposing instrument
+  freakency := frequency * 4; // the Whistle is a transposing instrument
   if (frequency <= 0.0) then
     freakency := 220.0;
   FBaseFrequency := freakency;
@@ -165,7 +196,7 @@ end;
 
 procedure TStkWhistle.StopBlowing;
 begin
-  FEnvelope.Rate := rate;
+  FEnvelope.Rate := Rate;
   FEnvelope.KeyOff;
 end;
 
@@ -177,54 +208,54 @@ end;
 
 procedure TStkWhistle.NoteOff;
 begin
-  StopBlowing(amplitude * 0.02);
+  StopBlowing(Amplitude * 0.02);
 end;
 
 function TStkWhistle.Tick: Single;
 var
-(*
-  soundMix       : Single;
-  tempFreq       : Single;
-  temp, temp1    : Double;
-  temp2, tempX   : Double;
-  tempY, phi     : Double;
-  cosphi, sinphi : Double;
-*)
-  dmod, envout   : Double;
-  gain           : Double;
+  (*
+    soundMix       : Single;
+    tempFreq       : Single;
+    temp, temp1    : Double;
+    temp2, tempX   : Double;
+    tempY, phi     : Double;
+    cosphi, sinphi : Double;
+  *)
+  dmod, envout: Double;
+  gain: Double;
 begin
-  envOut := 0;
+  envout := 0;
   gain := 0.5;
   FSubSampCount := FSubSampCount - 1;
   if (FSubSampCount <= 0) then
-   begin
+  begin
     FTempVectorP := FPea.Position;
     FSubSampCount := FSubSample;
-{   temp := FBumper.isInside(FTempVectorP);
-    envOut:=FEnvelope.Tick;
+    { temp := FBumper.isInside(FTempVectorP);
+      envOut:=FEnvelope.Tick;
 
-    if (temp < (CBumpRadius + CPeaRadius)) then
-    begin
+      if (temp < (CBumpRadius + CPeaRadius)) then
+      begin
       tempX:=envOut * FTickSize * 2000 * FNoise.Tick;
       tempY:=-envOut * FTickSize * 1000 * (1.0 + FNoise.Tick);
       FPea.addVelocity(tempX,tempY,0);
       FPea.Tick(FTickSize);
-    end;
+      end;
 
-{    dmod :=exp(-temp * 0.01);  // exp. distance falloff of fipple/FPea effect
-    temp:=FOnePole.Tick(dmod);  // smooth it a little
-    gain:=(1.0 - (FippleGainMod*0.5)) + (2.0 * FippleGainMod * temp);
-    gain :=gain*gain;        // squared distance/gain
-    tempFreq:=1.0 + FFippleFreqMod*(0.25-temp) + FBlowFreqMod*(envOut-1.0);
-    tempFreq :=tempfreq* FBaseFrequency;
+      {    dmod :=exp(-temp * 0.01);  // exp. distance falloff of fipple/FPea effect
+      temp:=FOnePole.Tick(dmod);  // smooth it a little
+      gain:=(1.0 - (FippleGainMod*0.5)) + (2.0 * FippleGainMod * temp);
+      gain :=gain*gain;        // squared distance/gain
+      tempFreq:=1.0 + FFippleFreqMod*(0.25-temp) + FBlowFreqMod*(envOut-1.0);
+      tempFreq :=tempfreq* FBaseFrequency;
 
-    FSine.SetFrequency(tempFreq);
+      FSine.SetFrequency(tempFreq);
 
-    FTempVectorP:=FPea.getPosition;
-    temp:=FCan.isInside(FTempVectorP);
-    temp :=-temp;       // We know (hope) it's inside, just how much??
-    if (temp < (CPeaRadius * 1.25)) then
-    begin
+      FTempVectorP:=FPea.getPosition;
+      temp:=FCan.isInside(FTempVectorP);
+      temp :=-temp;       // We know (hope) it's inside, just how much??
+      if (temp < (CPeaRadius * 1.25)) then
+      begin
       FPea.getVelocity(FTempVector);  //  This is the FCan/FPea collision
       tempX:=FTempVectorP.getX;  // calculation.  Could probably
       tempY:=FTempVectorP.getY;  // simplify using tables, etc.
@@ -240,11 +271,11 @@ begin
       FPea.Tick(FTickSize);
       FPea.setVelocity(tempX*FCanLoss, tempY*FCanLoss, 0);
       FPea.Tick(FTickSize);
-    end;
+      end;
 
-    temp:=FTempVectorP.getLength;
-    if (temp > 0.01) then
-    begin
+      temp:=FTempVectorP.getLength;
+      if (temp > 0.01) then
+      begin
       tempX:=FTempVectorP.getX;
       tempY:=FTempVectorP.getY;
       phi:=arctan2(tempY,tempX);
@@ -253,24 +284,24 @@ begin
       sinphi:=sin(phi);
       tempX:=3.0 * temp * cosphi;
       tempY:=3.0 * temp * sinphi;
-    end
-    else begin
+      end
+      else begin
       tempX:=0.0;
       tempY:=0.0;
-    end;
+      end;
 
-    temp:=(0.9 + 0.1*FSubSample*FNoise.Tick) * envOut * 0.6 * FTickSize;
-    FPea.addVelocity(temp * tempX,
-    (temp*tempY) - (CGravity*FTickSize),0);
-    FPea.Tick(FTickSize);
- }
-    //    FBumper.Tick(0.0);
-   end;
-{
-  temp:=envOut * envOut * gain / 2;
-  soundMix:=temp * (FSine.Tick + (FNoiseGain*FNoise.Tick));
-  lastOutput:=0.25 * soundMix; // should probably do one-zero filter here
- }
+      temp:=(0.9 + 0.1*FSubSample*FNoise.Tick) * envOut * 0.6 * FTickSize;
+      FPea.addVelocity(temp * tempX,
+      (temp*tempY) - (CGravity*FTickSize),0);
+      FPea.Tick(FTickSize);
+    }
+    // FBumper.Tick(0.0);
+  end;
+  {
+    temp:=envOut * envOut * gain / 2;
+    soundMix:=temp * (FSine.Tick + (FNoiseGain*FNoise.Tick));
+    lastOutput:=0.25 * soundMix; // should probably do one-zero filter here
+  }
   Result := lastOutput;
 end;
 
@@ -291,7 +322,8 @@ begin
   else if (number = CMidiBreath) then // 2
     FBlowFreqMod := norm * 0.5
   else if (number = CMidiSustain) then // 64
-    if (Value < 1.0) then FSubSample := 1;
+    if (Value < 1.0) then
+      FSubSample := 1;
 end;
 
 end.

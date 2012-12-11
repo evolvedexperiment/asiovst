@@ -1,36 +1,34 @@
-unit DAV_DspLFO;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Some parts of this unit are inspired by code by Didier Dambrin            //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_DspLFO;
 
 interface
 
@@ -49,14 +47,14 @@ type
 
   TCustomLFOSineLike = class(TCustomOscillator)
   protected
-    FIntSpeed  : Integer;
-    FSpeed     : Single;
-    FMax, FMin : Single;
-    FValue     : Single;
-    FPos       : Integer;
-    FScale     : Single;
-    FPosMul    : Single;
-    FHalfScale : Single;
+    FIntSpeed: Integer;
+    FSpeed: Single;
+    FMax, FMin: Single;
+    FValue: Single;
+    FPos: Integer;
+    FScale: Single;
+    FPosMul: Single;
+    FHalfScale: Single;
     function GetValue: Single; virtual;
     procedure SetMin(const Value: Single);
     procedure SetMax(const Value: Single);
@@ -71,14 +69,14 @@ type
 
   TCustomLFOTriangleLike = class(TCustomOscillator)
   protected
-    FIntSpeed  : Integer;
-    FSpeed     : Single;
-    FMax, FMin : Single;
-    FValue     : Single;
-    FPos       : Integer;
-    FScale     : Single;
-    FPosMul    : Single;
-    FHalfScale : Single;
+    FIntSpeed: Integer;
+    FSpeed: Single;
+    FMax, FMin: Single;
+    FValue: Single;
+    FPos: Integer;
+    FScale: Single;
+    FPosMul: Single;
+    FHalfScale: Single;
     function GetValue: Single; virtual;
     procedure SetMin(const Value: Single);
     procedure SetMax(const Value: Single);
@@ -117,11 +115,11 @@ uses
 constructor TCustomLFOSineLike.Create;
 begin
   inherited;
-  FMax   := 1;
-  FMin   := 0;
+  FMax := 1;
+  FMin := 0;
   FValue := 1;
-  FPos   := 0;
-  Speed  := 100;
+  FPos := 0;
+  Speed := 100;
   FScale := FMax - ((FMin + FMax) * 0.5);
   FPosMul := Sqrt(FScale * 2) / $80000000;
   FHalfScale := Sqrt(FScale * 2) * 0.5;
@@ -129,39 +127,38 @@ end;
 
 procedure TCustomLFOSineLike.SetMin(const Value: Single);
 begin
- if FMin <> Value then
+  if FMin <> Value then
   begin
-   FMin := Value;
-   FScale := FMax - ((FMin + FMax) * 0.5);
+    FMin := Value;
+    FScale := FMax - ((FMin + FMax) * 0.5);
   end;
 end;
 
 procedure TCustomLFOSineLike.SetMax(const Value: Single);
 begin
- if FMax <> Value then
+  if FMax <> Value then
   begin
-   FMax := Value;
-   FScale := FMax - ((FMin + FMax) * 0.5);
+    FMax := Value;
+    FScale := FMax - ((FMin + FMax) * 0.5);
   end;
 end;
 
 procedure TCustomLFOSineLike.SetSpeed(const Value: Single);
 begin
- if FSpeed <> Value then
+  if FSpeed <> Value then
   begin
-   FSpeed := Value;
-   FIntSpeed := Round($100000000 / FSpeed);
+    FSpeed := Value;
+    FIntSpeed := Round($100000000 / FSpeed);
   end;
 end;
 
 function TCustomLFOSineLike.GetValue: Single;
 begin
- Result := Abs(FPos * FPosMul) - FHalfScale;
- Result := Result * (FHalfScale * 2 - Abs(Result)) * 2;
- Result := Result + (FMin + FMax) * 0.5;
- FPos := FPos + FIntSpeed;
+  Result := Abs(FPos * FPosMul) - FHalfScale;
+  Result := Result * (FHalfScale * 2 - Abs(Result)) * 2;
+  Result := Result + (FMin + FMax) * 0.5;
+  FPos := FPos + FIntSpeed;
 end;
-
 
 { TCustomLFOTriangleLike }
 
@@ -180,28 +177,28 @@ end;
 
 procedure TCustomLFOTriangleLike.SetMin(const Value: Single);
 begin
- if FMin <> Value then
+  if FMin <> Value then
   begin
-   FMin := Value;
-   FScale := FMax - (FMin + FMax) * 0.5;
+    FMin := Value;
+    FScale := FMax - (FMin + FMax) * 0.5;
   end;
 end;
 
 procedure TCustomLFOTriangleLike.SetMax(const Value: Single);
 begin
- if FMax <> Value then
+  if FMax <> Value then
   begin
-   FMax := Value;
-   FScale := FMax - (FMin + FMax) * 0.5;
+    FMax := Value;
+    FScale := FMax - (FMin + FMax) * 0.5;
   end;
 end;
 
 procedure TCustomLFOTriangleLike.SetSpeed(const Value: Single);
 begin
- if FSpeed <> Value then
+  if FSpeed <> Value then
   begin
-   FSpeed := Value;
-   FIntSpeed := Round($100000000 / FSpeed);
+    FSpeed := Value;
+    FIntSpeed := Round($100000000 / FSpeed);
   end;
 end;
 

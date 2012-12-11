@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkTubeBell;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -33,7 +63,8 @@ uses
 type
   TStkTubeBell = class(TStkFM)
   public
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    constructor Create(const SampleRate: Single;
+      const Operators: Integer = 4); override;
     destructor Destroy; override;
 
     // Start a note with the given frequency and amplitude.
@@ -45,7 +76,8 @@ type
 
 implementation
 
-constructor TStkTubeBell.Create(const SampleRate: Single; const Operators: Integer = 4);
+constructor TStkTubeBell.Create(const SampleRate: Single;
+  const Operators: Integer = 4);
 begin
   inherited Create(SampleRate, Operators);
   FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
@@ -81,40 +113,40 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkTubeBell.noteOn;
+procedure TStkTubeBell.NoteOn;
 begin
-  FGains[0] := amplitude * FFmGains[94];
-  FGains[1] := amplitude * FFmGains[76];
-  FGains[2] := amplitude * FFmGains[99];
-  FGains[3] := amplitude * FFmGains[71];
-  setFrequency(frequency);
+  FGains[0] := Amplitude * FFmGains[94];
+  FGains[1] := Amplitude * FFmGains[76];
+  FGains[2] := Amplitude * FFmGains[99];
+  FGains[3] := Amplitude * FFmGains[71];
+  setFrequency(Frequency);
   keyOn;
 end;
 
-function TStkTubeBell.tick: Single;
+function TStkTubeBell.Tick: Single;
 var
   temp, temp2: Single;
 begin
-  temp := FGains[1] * FAdsr[1].tick * FWaves[1].tick;
+  temp := FGains[1] * FAdsr[1].Tick * FWaves[1].Tick;
   temp := temp * 2 * FControlA;
   FWaves[0].addPhaseOffset(temp);
 
   FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
-  temp := FGains[3] * FAdsr[3].tick * FWaves[3].tick;
-  FTwoZero.tick(temp);
+  temp := FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
+  FTwoZero.Tick(temp);
   temp := temp * FEnvelope.Target;
   FWaves[2].addPhaseOffset(temp);
 
-  temp := FGains[0] * FAdsr[0].tick * FWaves[0].tick;
-//  temp:=( 1.0 - (control2 * 0.5)) * FGains[0] * FAdsr[0].tick * FWaves[0].tick;
-  temp :={temp+control2 * 0.5 * }temp + FGains[2] * FAdsr[2].tick * FWaves[2].tick;
+  temp := FGains[0] * FAdsr[0].Tick * FWaves[0].Tick;
+  // temp:=( 1.0 - (control2 * 0.5)) * FGains[0] * FAdsr[0].tick * FWaves[0].tick;
+  temp := { temp+control2 * 0.5 * } temp + FGains[2] * FAdsr[2].Tick *
+    FWaves[2].Tick;
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 := FVibrato.tick * modDepth;
+  temp2 := FVibrato.Tick * modDepth;
   temp := temp * (1.0 + temp2);
   FLastOutput := temp * 0.5;
   Result := FLastOutput;
 end;
 
 end.
-

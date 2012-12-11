@@ -1,41 +1,41 @@
-unit DAV_GuiEQSlide;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_GuiEQSlide;
 
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+{$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls, DAV_GuiCommon,
   DAV_GuiCustomControl, DAV_GuiPixelMap;
 
@@ -43,14 +43,15 @@ type
   TCustomGuiEQSlide = class;
   TGuiEQSlide = class;
 
-  TGetColorEvent = function(Sender: TObject; const Frequency: Single): TColor of object;
+  TGetColorEvent = function(Sender: TObject; const Frequency: Single)
+    : TColor of object;
 
   TCustomGuiEQSlideAxis = class(TPersistent)
   protected
-    FOwner        : TCustomGuiEQSlide;
-    FUpper        : Single;
-    FLower        : Single;
-    FRange        : Single;
+    FOwner: TCustomGuiEQSlide;
+    FUpper: Single;
+    FLower: Single;
+    FRange: Single;
     procedure AssignTo(Dest: TPersistent); override;
     procedure Changed; virtual;
     procedure CalculateRange;
@@ -64,10 +65,10 @@ type
 
   TCustomGuiEQSlideXAxis = class(TCustomGuiEQSlideAxis)
   private
-    FInvUpper       : Single;
-    FInvLower       : Single;
-    FLog2Ratio      : Single;
-    FInvLog2Ratio   : Single;
+    FInvUpper: Single;
+    FInvLower: Single;
+    FLog2Ratio: Single;
+    FInvLog2Ratio: Single;
     procedure SetLowerFrequency(const Value: Single);
     procedure SetUpperFrequency(const Value: Single);
   protected
@@ -104,13 +105,13 @@ type
 
   TCustomGuiEQSlide = class(TGuiCustomControl)
   private
-    FAutoColor    : Boolean;
-    FBorderRadius : Integer;
-    FBorderWidth  : Integer;
-    FBorderColor  : TColor;
-    FXAxis        : TGuiEQSlideXAxis;
-    FOnPaint      : TNotifyEvent;
-    FOnGetColor   : TGetColorEvent;
+    FAutoColor: Boolean;
+    FBorderRadius: Integer;
+    FBorderWidth: Integer;
+    FBorderColor: TColor;
+    FXAxis: TGuiEQSlideXAxis;
+    FOnPaint: TNotifyEvent;
+    FOnGetColor: TGetColorEvent;
     procedure SetAutoColor(const Value: Boolean);
     procedure SetBorderColor(const Value: TColor);
     procedure SetBorderRadius(const Value: Integer);
@@ -129,10 +130,14 @@ type
 
     procedure UpdateBuffer; override;
 
-    property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
-    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
-    property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
-    property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
+    property AutoColor: Boolean read FAutoColor write SetAutoColor
+      default False;
+    property BorderRadius: Integer read FBorderRadius write SetBorderRadius
+      default 0;
+    property BorderWidth: Integer read FBorderWidth write SetBorderWidth
+      default 1;
+    property BorderColor: TColor read FBorderColor write SetBorderColor
+      default $202020;
 
     property XAxis: TGuiEQSlideXAxis read FXAxis write SetXAxis;
 
@@ -185,10 +190,10 @@ type
     property PopupMenu;
     property ShowHint;
     property Visible;
-    {$IFNDEF FPC}
+{$IFNDEF FPC}
     property BiDiMode;
     property OnCanResize;
-    {$ENDIF}
+{$ENDIF}
   end;
 
 implementation
@@ -200,413 +205,438 @@ uses
 
 constructor TCustomGuiEQSlideAxis.Create(AOwner: TCustomGuiEQSlide);
 begin
- FOwner := AOwner;
+  FOwner := AOwner;
 end;
 
 procedure TCustomGuiEQSlideAxis.Changed;
 begin
- FOwner.BufferChanged;
+  FOwner.BufferChanged;
 end;
 
 procedure TCustomGuiEQSlideAxis.RangeChanged;
 begin
- CalculateRange;
+  CalculateRange;
 end;
 
 procedure TCustomGuiEQSlideAxis.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomGuiEQSlideAxis then
-  with TCustomGuiEQSlideAxis(Dest) do
-   begin
-    FOwner        := Self.FOwner;
-    FUpper        := Self.FUpper;
-    FLower        := Self.FLower;
-    FRange        := Self.FRange;
-   end
- else inherited;
+  if Dest is TCustomGuiEQSlideAxis then
+    with TCustomGuiEQSlideAxis(Dest) do
+    begin
+      FOwner := Self.FOwner;
+      FUpper := Self.FUpper;
+      FLower := Self.FLower;
+      FRange := Self.FRange;
+    end
+  else
+    inherited;
 end;
 
 procedure TCustomGuiEQSlideAxis.CalculateRange;
 begin
- FRange := FUpper - FLower;
+  FRange := FUpper - FLower;
 end;
-
 
 { TCustomGuiEQSlideXAxis }
 
 constructor TCustomGuiEQSlideXAxis.Create(AOwner: TCustomGuiEQSlide);
 begin
- inherited;
- FLower := 20;
- FUpper := 20000;
- CalculateUpperFrequencyReciprocal;
- CalculateLowerFrequencyReciprocal;
- CalculateFrequencyRangeRatios;
+  inherited;
+  FLower := 20;
+  FUpper := 20000;
+  CalculateUpperFrequencyReciprocal;
+  CalculateLowerFrequencyReciprocal;
+  CalculateFrequencyRangeRatios;
 end;
 
 procedure TCustomGuiEQSlideXAxis.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomGuiEQSlideXAxis then
-  with TCustomGuiEQSlideXAxis(Dest) do
-   begin
+  if Dest is TCustomGuiEQSlideXAxis then
+    with TCustomGuiEQSlideXAxis(Dest) do
+    begin
+      inherited;
+      FInvUpper := Self.FInvUpper;
+      FInvLower := Self.FInvLower;
+      FLog2Ratio := Self.FLog2Ratio;
+      FInvLog2Ratio := Self.FInvLog2Ratio;
+    end
+  else
     inherited;
-    FInvUpper     := Self.FInvUpper;
-    FInvLower     := Self.FInvLower;
-    FLog2Ratio    := Self.FLog2Ratio;
-    FInvLog2Ratio := Self.FInvLog2Ratio;
-   end
- else inherited;
 end;
 
-function TCustomGuiEQSlideXAxis.LogarithmicFrequencyToLinear(Value: Double): Double;
+function TCustomGuiEQSlideXAxis.LogarithmicFrequencyToLinear
+  (Value: Double): Double;
 begin
- Result := Log2(Value * FInvLower) * FInvLog2Ratio;
+  Result := Log2(Value * FInvLower) * FInvLog2Ratio;
 end;
 
-function TCustomGuiEQSlideXAxis.LinearToLogarithmicFrequency(Value: Double): Double;
+function TCustomGuiEQSlideXAxis.LinearToLogarithmicFrequency
+  (Value: Double): Double;
 begin
- Result := Power(2, Value * FLog2Ratio) * FLower;
+  Result := Power(2, Value * FLog2Ratio) * FLower;
 end;
 
-function TCustomGuiEQSlideXAxis.FastLogarithmicFrequencyToLinear(Value: Single): Single;
+function TCustomGuiEQSlideXAxis.FastLogarithmicFrequencyToLinear
+  (Value: Single): Single;
 begin
- Result := FastLog2MinError3(Value * FInvLower) * FInvLog2Ratio;
+  Result := FastLog2MinError3(Value * FInvLower) * FInvLog2Ratio;
 end;
 
-function TCustomGuiEQSlideXAxis.FastLinearToLogarithmicFrequency(Value: Single): Single;
+function TCustomGuiEQSlideXAxis.FastLinearToLogarithmicFrequency
+  (Value: Single): Single;
 begin
- Result := FastPower2MinError3(Value * FLog2Ratio) * FLower;
+  Result := FastPower2MinError3(Value * FLog2Ratio) * FLower;
 end;
 
 procedure TCustomGuiEQSlideXAxis.SetLowerFrequency(const Value: Single);
 begin
- if FLower <> Value then
+  if FLower <> Value then
   begin
-   FLower := Value;
-   LowerFrequencyChanged;
+    FLower := Value;
+    LowerFrequencyChanged;
   end;
 end;
 
 procedure TCustomGuiEQSlideXAxis.SetUpperFrequency(const Value: Single);
 begin
- if FUpper <> Value then
+  if FUpper <> Value then
   begin
-   FUpper := Value;
-   UpperFrequencyChanged;
+    FUpper := Value;
+    UpperFrequencyChanged;
   end;
 end;
 
 procedure TCustomGuiEQSlideXAxis.UpperFrequencyChanged;
 begin
- RangeChanged;
- CalculateUpperFrequencyReciprocal;
- CalculateFrequencyRangeRatios;
- Changed;
+  RangeChanged;
+  CalculateUpperFrequencyReciprocal;
+  CalculateFrequencyRangeRatios;
+  Changed;
 end;
 
 procedure TCustomGuiEQSlideXAxis.LowerFrequencyChanged;
 begin
- RangeChanged;
- CalculateLowerFrequencyReciprocal;
- CalculateFrequencyRangeRatios;
- Changed;
+  RangeChanged;
+  CalculateLowerFrequencyReciprocal;
+  CalculateFrequencyRangeRatios;
+  Changed;
 end;
 
 procedure TCustomGuiEQSlideXAxis.CalculateUpperFrequencyReciprocal;
 begin
- Assert(FUpper <> 0);
+  Assert(FUpper <> 0);
 
- // calculate reciprocal of upper frequency
- FInvUpper := 1 / FUpper;
+  // calculate reciprocal of upper frequency
+  FInvUpper := 1 / FUpper;
 end;
 
 procedure TCustomGuiEQSlideXAxis.CalculateLowerFrequencyReciprocal;
 begin
- Assert(FLower <> 0);
+  Assert(FLower <> 0);
 
- // calculate reciprocal of lower frequency
- FInvLower := 1 / FLower;
+  // calculate reciprocal of lower frequency
+  FInvLower := 1 / FLower;
 end;
 
 procedure TCustomGuiEQSlideXAxis.CalculateFrequencyRangeRatios;
 begin
- Assert(FUpper <> 0);
- Assert(FInvLower <> 0);
+  Assert(FUpper <> 0);
+  Assert(FInvLower <> 0);
 
- // calculate lograithmic frequency ratio (as new logarithm base)
- FLog2Ratio := Log2(FUpper * FInvLower);
- FInvLog2Ratio := 1 / FLog2Ratio;
+  // calculate lograithmic frequency ratio (as new logarithm base)
+  FLog2Ratio := Log2(FUpper * FInvLower);
+  FInvLog2Ratio := 1 / FLog2Ratio;
 end;
-
 
 { TCustomGuiEQSlide }
 
 constructor TCustomGuiEQSlide.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner);
- ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
-   csDoubleClicks, csReplicatable, csOpaque];
- TabStop := False; // Ensure we're not a tab-stop
- Color := clBtnFace;
+  inherited Create(AOwner);
+  ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
+    csDoubleClicks, csReplicatable, csOpaque];
+  TabStop := False; // Ensure we're not a tab-stop
+  Color := clBtnFace;
 
- FXAxis           := TGuiEQSlideXAxis.Create(Self);
+  FXAxis := TGuiEQSlideXAxis.Create(Self);
 
- FAutoColor       := False;
- FBorderColor     := $202020;
- FBorderWidth     := 1;
+  FAutoColor := False;
+  FBorderColor := $202020;
+  FBorderWidth := 1;
 end;
 
 destructor TCustomGuiEQSlide.Destroy;
 begin
- FreeAndNil(FXAxis);
- inherited Destroy;
+  FreeAndNil(FXAxis);
+  inherited Destroy;
 end;
 
 procedure TCustomGuiEQSlide.AssignTo(Dest: TPersistent);
 begin
- inherited;
- if Dest is TCustomGuiEQSlide then
-  with TCustomGuiEQSlide(Dest) do
-   begin
-    FAutoColor    := Self.FAutoColor;
-    FBorderRadius := Self.FBorderRadius;
-    FBorderWidth  := Self.FBorderWidth;
-    FBorderColor  := Self.FBorderColor;
-    FOnPaint      := Self.FOnPaint;
-    FOnGetColor   := Self.FOnGetColor;
+  inherited;
+  if Dest is TCustomGuiEQSlide then
+    with TCustomGuiEQSlide(Dest) do
+    begin
+      FAutoColor := Self.FAutoColor;
+      FBorderRadius := Self.FBorderRadius;
+      FBorderWidth := Self.FBorderWidth;
+      FBorderColor := Self.FBorderColor;
+      FOnPaint := Self.FOnPaint;
+      FOnGetColor := Self.FOnGetColor;
 
-    FXAxis.Assign(Self.FXAxis);
-   end;
+      FXAxis.Assign(Self.FXAxis);
+    end;
 end;
 
 procedure TCustomGuiEQSlide.SetBorderColor(const Value: TColor);
 begin
- if FBorderColor <> Value then
+  if FBorderColor <> Value then
   begin
-   FBorderColor := Value;
-   BorderColorChanged;
+    FBorderColor := Value;
+    BorderColorChanged;
   end;
 end;
 
 procedure TCustomGuiEQSlide.SetBorderRadius(const Value: Integer);
 begin
- if FBorderRadius <> Value then
+  if FBorderRadius <> Value then
   begin
-   FBorderRadius := Value;
-   BorderRadiusChanged;
+    FBorderRadius := Value;
+    BorderRadiusChanged;
   end;
 end;
 
 procedure TCustomGuiEQSlide.SetAutoColor(const Value: Boolean);
 begin
- if FAutoColor <> Value then
+  if FAutoColor <> Value then
   begin
-   FAutoColor := Value;
+    FAutoColor := Value;
   end;
 end;
 
 procedure TCustomGuiEQSlide.SetBorderWidth(const Value: Integer);
 begin
- if FBorderWidth <> Value then
+  if FBorderWidth <> Value then
   begin
-   FBorderWidth := Value;
-   BorderWidthChanged;
+    FBorderWidth := Value;
+    BorderWidthChanged;
   end;
 end;
 
 procedure TCustomGuiEQSlide.AutoColorChanged;
 begin
- if FAutoColor then
+  if FAutoColor then
   begin
-(*
-   FChartColor32 := Lighten(Color32(Color),60);
-   FChartColor := WinColor(FChartColor32);
-*)
-   BufferChanged;
+    (*
+      FChartColor32 := Lighten(Color32(Color),60);
+      FChartColor := WinColor(FChartColor32);
+    *)
+    BufferChanged;
   end;
 end;
 
 procedure TCustomGuiEQSlide.SetXAxis(const Value: TGuiEQSlideXAxis);
 begin
- FXAxis.Assign(Value);
+  FXAxis.Assign(Value);
 end;
 
 procedure TCustomGuiEQSlide.BorderWidthChanged;
 begin
- BufferChanged;
+  BufferChanged;
 end;
 
 procedure TCustomGuiEQSlide.BorderColorChanged;
 begin
- BufferChanged;
+  BufferChanged;
 end;
 
 procedure TCustomGuiEQSlide.BorderRadiusChanged;
 begin
- BufferChanged;
+  BufferChanged;
 end;
 
 procedure TCustomGuiEQSlide.UpdateBuffer;
 begin
- inherited;
+  inherited;
 
- RenderRoundedFrameRectangle(FBuffer);
+  RenderRoundedFrameRectangle(FBuffer);
 end;
 
-procedure TCustomGuiEQSlide.RenderRoundedFrameRectangle(
-  PixelMap: TGuiCustomPixelMap);
+procedure TCustomGuiEQSlide.RenderRoundedFrameRectangle
+  (PixelMap: TGuiCustomPixelMap);
 var
-  X, Y              : Integer;
-  ScnLne            : array [0..1] of PPixel32Array;
-  BackColor         : TPixel32;
-  BorderColor       : TPixel32;
-  CombColor         : TPixel32;
-  ColorArray        : array of TPixel32;
-  Radius            : Single;
-  XStart            : Single;
-  BorderWidth       : Single;
-  SqrRadMinusBorder : Single;
-  RadMinusBorderOne : Single;
-  SqrDist, SqrYDist : Single;
-  SqrRadMinusOne    : Single;
-  Scale, Temp       : Single;
+  X, Y: Integer;
+  ScnLne: array [0 .. 1] of PPixel32Array;
+  BackColor: TPixel32;
+  BorderColor: TPixel32;
+  CombColor: TPixel32;
+  ColorArray: array of TPixel32;
+  Radius: Single;
+  XStart: Single;
+  BorderWidth: Single;
+  SqrRadMinusBorder: Single;
+  RadMinusBorderOne: Single;
+  SqrDist, SqrYDist: Single;
+  SqrRadMinusOne: Single;
+  Scale, Temp: Single;
 begin
- with PixelMap do
+  with PixelMap do
   begin
-   BackColor := ConvertColor(Color);
-   if FBorderWidth > 0
-    then BorderColor := ConvertColor(FBorderColor)
-    else BorderColor := BackColor;
+    BackColor := ConvertColor(Color);
+    if FBorderWidth > 0 then
+      BorderColor := ConvertColor(FBorderColor)
+    else
+      BorderColor := BackColor;
 
-   // initialize variables
-   Radius := FBorderRadius;
-   if 0.5 * Width < Radius then Radius := 0.5 * Width;
-   if 0.5 * Height < Radius then Radius := 0.5 * Height;
-   BorderWidth := Math.Max(FBorderWidth, 1);
-   Scale := 1 / (Width - 2 * FBorderRadius);
+    // initialize variables
+    Radius := FBorderRadius;
+    if 0.5 * Width < Radius then
+      Radius := 0.5 * Width;
+    if 0.5 * Height < Radius then
+      Radius := 0.5 * Height;
+    BorderWidth := Math.Max(FBorderWidth, 1);
+    Scale := 1 / (Width - 2 * FBorderRadius);
 
-   RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
-   SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
-   SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
+    RadMinusBorderOne := BranchlessClipPositive(Radius - BorderWidth);
+    SqrRadMinusBorder := Sqr(BranchlessClipPositive(Radius - BorderWidth - 1));
+    SqrRadMinusOne := Sqr(BranchlessClipPositive(Radius - 1));
 
-   // calculate colors
-   SetLength(ColorArray, Width);
-   if Assigned(FOnGetColor) then
-    for X := 0 to Width - 1
-     do ColorArray[X] := ConvertColor(FOnGetColor(Self,
-       FXAxis.LinearToLogarithmicFrequency((X - FBorderRadius) * Scale)))
-   else
-    for X := 0 to Width - 1
-     do ColorArray[X] := BackColor;
+    // calculate colors
+    SetLength(ColorArray, Width);
+    if Assigned(FOnGetColor) then
+      for X := 0 to Width - 1 do
+        ColorArray[X] :=
+          ConvertColor(FOnGetColor(Self,
+          FXAxis.LinearToLogarithmicFrequency((X - FBorderRadius) * Scale)))
+    else
+      for X := 0 to Width - 1 do
+        ColorArray[X] := BackColor;
 
-   // draw upper & lower part (with rounded corners)
-   for Y := 0 to Round(Radius) - 1  do
+    // draw upper & lower part (with rounded corners)
+    for Y := 0 to Round(Radius) - 1 do
     begin
-     SqrYDist := Sqr(Y - (Radius - 1));
-     XStart := Sqr(Radius) - SqrYDist;
-     if XStart <= 0
-      then Continue
-      else XStart := Sqrt(XStart) - 0.5;
-     ScnLne[0] := Scanline[Y];
-     ScnLne[1] := Scanline[Height - 1 - Y];
+      SqrYDist := Sqr(Y - (Radius - 1));
+      XStart := Sqr(Radius) - SqrYDist;
+      if XStart <= 0 then
+        Continue
+      else
+        XStart := Sqrt(XStart) - 0.5;
+      ScnLne[0] := Scanline[Y];
+      ScnLne[1] := Scanline[Height - 1 - Y];
 
-     for X := Round((Radius - 1) - XStart) to Round((Width - 1) - (Radius - 1) + XStart) do
+      for X := Round((Radius - 1) - XStart)
+        to Round((Width - 1) - (Radius - 1) + XStart) do
       begin
-       CombColor := ColorArray[X];
+        CombColor := ColorArray[X];
 
-       // calculate squared distance
-       if X < (Radius - 1)
-        then SqrDist := Sqr(X - (Radius - 1)) + SqrYDist else
+        // calculate squared distance
+        if X < (Radius - 1) then
+          SqrDist := Sqr(X - (Radius - 1)) + SqrYDist
+        else
 
-       if X > (Width - 1) - (Radius - 1)
-        then SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
-        else SqrDist := SqrYDist;
+          if X > (Width - 1) - (Radius - 1) then
+          SqrDist := Sqr(X - (Width - 1) + (Radius - 1)) + SqrYDist
+        else
+          SqrDist := SqrYDist;
 
-       if SqrDist >= SqrRadMinusBorder then
-        if SqrDist <= Sqr(RadMinusBorderOne) then
-         begin
-          Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
-          CombColor := CombinePixel(BorderColor, CombColor, Round($FF - Temp * $FF));
-         end else
-        if SqrDist < SqrRadMinusOne
-         then CombColor := BorderColor
-         else
+        if SqrDist >= SqrRadMinusBorder then
+          if SqrDist <= Sqr(RadMinusBorderOne) then
           begin
-           CombColor := BorderColor;
-           CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
+            Temp := RadMinusBorderOne - FastSqrtBab2(SqrDist);
+            CombColor := CombinePixel(BorderColor, CombColor,
+              Round($FF - Temp * $FF));
+          end
+          else if SqrDist < SqrRadMinusOne then
+            CombColor := BorderColor
+          else
+          begin
+            CombColor := BorderColor;
+            CombColor.A := Round($FF * (Radius - FastSqrtBab2(SqrDist)));
           end;
 
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
-       BlendPixelInplace(CombColor, ScnLne[1][X]);
-       EMMS;
+        BlendPixelInplace(CombColor, ScnLne[0][X]);
+        BlendPixelInplace(CombColor, ScnLne[1][X]);
+        EMMS;
       end;
     end;
 
-   for Y := Round(Radius) to Height - 1 - Round(Radius) do
+    for Y := Round(Radius) to Height - 1 - Round(Radius) do
     begin
-     ScnLne[0] := Scanline[Y];
-     for X := 0 to Width - 1 do
+      ScnLne[0] := Scanline[Y];
+      for X := 0 to Width - 1 do
       begin
-       CombColor := ColorArray[X];
+        CombColor := ColorArray[X];
 
-       // check whether value is a pure border
-       if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1)
-        then CombColor := BorderColor else
+        // check whether value is a pure border
+        if (Y < BorderWidth - 1) or (Y > Height - 1 - BorderWidth + 1) then
+          CombColor := BorderColor
+        else
 
-       // check whether value is an upper half border
-       if (Y < BorderWidth) then
-        begin
-         Temp := BorderWidth - Y;
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-          then CombColor := BorderColor else
-         if (X < BorderWidth) then
+          // check whether value is an upper half border
+          if (Y < BorderWidth) then
           begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF))
-          end else
-         if (X > Width - 1 - BorderWidth) then
-          begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF))
+            Temp := BorderWidth - Y;
+            if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1) then
+              CombColor := BorderColor
+            else if (X < BorderWidth) then
+            begin
+              Temp := Temp + (BorderWidth - X) * (1 - Temp);
+              CombColor := CombinePixel(BorderColor, CombColor,
+                Round(Temp * $FF))
+            end
+            else if (X > Width - 1 - BorderWidth) then
+            begin
+              Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+              CombColor := CombinePixel(BorderColor, CombColor,
+                Round(Temp * $FF))
+            end
+            else
+              CombColor := CombinePixel(BorderColor, CombColor,
+                Round(Temp * $FF));
           end
-         else
-          CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
-        end else
+          else
 
-       // check whether value is a lower half border
-       if (Y > Height - 1 - BorderWidth) then
-        begin
-         Temp := Y - (Height - 1 - BorderWidth);
-         if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-          then CombColor := BorderColor else
-         if (X < BorderWidth) then
-          begin
-           Temp := Temp + (BorderWidth - X) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
-          end else
-         if (X > Width - 1 - BorderWidth) then
-          begin
-           Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
-           CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
-          end
-         else CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
-        end else
+            // check whether value is a lower half border
+            if (Y > Height - 1 - BorderWidth) then
+            begin
+              Temp := Y - (Height - 1 - BorderWidth);
+              if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1) then
+                CombColor := BorderColor
+              else if (X < BorderWidth) then
+              begin
+                Temp := Temp + (BorderWidth - X) * (1 - Temp);
+                CombColor := CombinePixel(BorderColor, CombColor,
+                  Round(Temp * $FF));
+              end
+              else if (X > Width - 1 - BorderWidth) then
+              begin
+                Temp := Temp + (X - Width + 1 + BorderWidth) * (1 - Temp);
+                CombColor := CombinePixel(BorderColor, CombColor,
+                  Round(Temp * $FF));
+              end
+              else
+                CombColor := CombinePixel(BorderColor, CombColor,
+                  Round(Temp * $FF));
+            end
+            else
 
-       if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1)
-        then CombColor := BorderColor else
-       if (X < BorderWidth) then
-        begin
-         Temp := BorderWidth - X;
-         CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
-        end else
-       if (X > Width - 1 - BorderWidth) then
-        begin
-         Temp := X - (Width - 1 - BorderWidth);
-         CombColor := CombinePixel(BorderColor, CombColor, Round(Temp * $FF));
-        end;
+              if (X < BorderWidth - 1) or (X > Width - 1 - BorderWidth + 1) then
+              CombColor := BorderColor
+            else if (X < BorderWidth) then
+            begin
+              Temp := BorderWidth - X;
+              CombColor := CombinePixel(BorderColor, CombColor,
+                Round(Temp * $FF));
+            end
+            else if (X > Width - 1 - BorderWidth) then
+            begin
+              Temp := X - (Width - 1 - BorderWidth);
+              CombColor := CombinePixel(BorderColor, CombColor,
+                Round(Temp * $FF));
+            end;
 
-       BlendPixelInplace(CombColor, ScnLne[0][X]);
-       EMMS;
+        BlendPixelInplace(CombColor, ScnLne[0][X]);
+        EMMS;
       end;
     end;
   end;

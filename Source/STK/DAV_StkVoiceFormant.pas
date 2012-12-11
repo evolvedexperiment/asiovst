@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkVoiceFormant;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -33,14 +63,14 @@ type
   TStkVoiceFormant = class(TStkInstrument)
   private
   protected
-    FVoiced        : TStkSingWave;
-    FPhonemes      : TStkPhonemes;
-    FNoise         : TStkNoise;
-    FNoiseEnv      : TStkEnvelope;
-    FFilters       : array[0..3] of TStkFormantSweep;
-    FOnePole       : TStkOnepole;
-    FOneZero       : TStkOnezero;
-    FBaseFrequency : Single;
+    FVoiced: TStkSingWave;
+    FPhonemes: TStkPhonemes;
+    FNoise: TStkNoise;
+    FNoiseEnv: TStkEnvelope;
+    FFilters: array [0 .. 3] of TStkFormantSweep;
+    FOnePole: TStkOnepole;
+    FOneZero: TStkOnezero;
+    FBaseFrequency: Single;
 
     // Set instrument parameters for a particular Frequency.
     procedure SetFrequency(const Value: Single); override;
@@ -105,10 +135,10 @@ begin
   FVoiced.GainTarget := 0.0;
   FNoise := TStkNoise.Create(SampleRate);
   for i := 0 to 3 do
-   begin
+  begin
     FFilters[i] := TStkFormantSweep.Create(SampleRate);
     FFilters[i].SweepRate := 0.001;
-   end;
+  end;
 
   FPhonemes := TStkPhonemes.Create(SampleRate);
   FOneZero := TStkOnezero.Create(SampleRate);
@@ -128,14 +158,15 @@ destructor TStkVoiceFormant.Destroy;
 var
   i: Integer;
 begin
- FreeAndNil(FVoiced);
- FreeAndNil(FNoise);
- FreeAndNil(FOneZero);
- FreeAndNil(FOnePole);
- FreeAndNil(FNoiseEnv);
- FreeAndNil(FPhonemes);
- for i := 0 to 3 do FreeAndNil(FFilters[i]);
- inherited Destroy;
+  FreeAndNil(FVoiced);
+  FreeAndNil(FNoise);
+  FreeAndNil(FOneZero);
+  FreeAndNil(FOnePole);
+  FreeAndNil(FNoiseEnv);
+  FreeAndNil(FPhonemes);
+  for i := 0 to 3 do
+    FreeAndNil(FFilters[i]);
+  inherited Destroy;
 end;
 
 procedure TStkVoiceFormant.Clear;
@@ -150,45 +181,50 @@ end;
 
 procedure TStkVoiceFormant.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Frequency then
+  if FBaseFrequency <> Frequency then
   begin
-   if Value <= 0.0
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Frequency;
-   FrequencyChanged;
+    if Value <= 0.0 then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Frequency;
+    FrequencyChanged;
   end;
 end;
 
 procedure TStkVoiceFormant.FrequencyChanged;
 begin
- FVoiced.Frequency := FBaseFrequency;
+  FVoiced.Frequency := FBaseFrequency;
 end;
 
 function TStkVoiceFormant.SetPhoneme(const Phoneme: string): Boolean;
 var
-  found : Boolean;
-  i     : Integer;
+  found: Boolean;
+  i: Integer;
 begin
   found := False;
   i := 0;
   while ((i < 32) and (not found)) do
-   begin
+  begin
     if (FPhonemes.Name(i) = Phoneme) then
-     begin
+    begin
       found := True;
-      FFilters[0].setTargets(FPhonemes.formantFrequency(i, 0), FPhonemes.formantRadius(i, 0),
+      FFilters[0].setTargets(FPhonemes.formantFrequency(i, 0),
+        FPhonemes.formantRadius(i, 0),
         power(10.0, FPhonemes.formantGain(i, 0) / 20.0));
-      FFilters[1].setTargets(FPhonemes.formantFrequency(i, 1), FPhonemes.formantRadius(i, 1),
+      FFilters[1].setTargets(FPhonemes.formantFrequency(i, 1),
+        FPhonemes.formantRadius(i, 1),
         power(10.0, FPhonemes.formantGain(i, 1) / 20.0));
-      FFilters[2].setTargets(FPhonemes.formantFrequency(i, 2), FPhonemes.formantRadius(i, 2),
+      FFilters[2].setTargets(FPhonemes.formantFrequency(i, 2),
+        FPhonemes.formantRadius(i, 2),
         power(10.0, FPhonemes.formantGain(i, 2) / 20.0));
-      FFilters[3].setTargets(FPhonemes.formantFrequency(i, 3), FPhonemes.formantRadius(i, 3),
+      FFilters[3].setTargets(FPhonemes.formantFrequency(i, 3),
+        FPhonemes.formantRadius(i, 3),
         power(10.0, FPhonemes.formantGain(i, 3) / 20.0));
       SetVoiced(FPhonemes.voiceGain(i));
       SetUnVoiced(FPhonemes.noiseGain(i));
-     end;
+    end;
     i := i + 1;
-   end;
+  end;
   Result := found;
 end;
 
@@ -202,11 +238,13 @@ begin
   FNoiseEnv.Target := Value;
 end;
 
-procedure TStkVoiceFormant.SetFilterSweepRate(const Index: Integer; const Rate: Single);
+procedure TStkVoiceFormant.SetFilterSweepRate(const Index: Integer;
+  const Rate: Single);
 begin
-  if Index in [0..3]
-   then FFilters[Index].SweepRate := Rate
-   else raise Exception.CreateFmt('Sweeprate index out of bounds (%d)', [Index]);
+  if Index in [0 .. 3] then
+    FFilters[Index].SweepRate := Rate
+  else
+    raise Exception.CreateFmt('Sweeprate index out of bounds (%d)', [Index]);
 end;
 
 procedure TStkVoiceFormant.SetPitchSweepRate(const Value: Single);
@@ -229,7 +267,7 @@ procedure TStkVoiceFormant.NoteOn;
 begin
   SetFrequency(Frequency);
   FVoiced.GainTarget := Amplitude;
-  FOnePole.SetPole(0.97 - (Amplitude * 0.2));
+  FOnePole.setPole(0.97 - (Amplitude * 0.2));
 end;
 
 procedure TStkVoiceFormant.NoteOff;
@@ -241,70 +279,75 @@ function TStkVoiceFormant.Tick: Single;
 var
   temp: Single;
 begin
-  temp := FOnePole.Tick(FOneZero.Tick(FVoiced.Tick)) + FNoiseEnv.Tick * FNoise.Tick;
-  FLastOutput := FFilters[0].Tick(temp) + FFilters[1].Tick(temp) +
-    FFilters[2].Tick(temp) + FFilters[3].Tick(temp);
+  temp := FOnePole.Tick(FOneZero.Tick(FVoiced.Tick)) + FNoiseEnv.Tick *
+    FNoise.Tick;
+  FLastOutput := FFilters[0].Tick(temp) + FFilters[1].Tick(temp) + FFilters[2]
+    .Tick(temp) + FFilters[3].Tick(temp);
   Result := FLastOutput;
 end;
 
 procedure TStkVoiceFormant.ControlChange;
 var
-  temp, norm : Single;
-  i          : Integer;
+  temp, norm: Single;
+  i: Integer;
 begin
   norm := Limit(Value, 0, 1);
 
   if (Number = CMidiBreath) then
-   begin // 2
+  begin // 2
     SetVoiced(1.0 - norm);
     SetUnVoiced(0.01 * norm);
-   end
+  end
   else if (Number = CMidiFootControl) then
-   begin // 4
+  begin // 4
     temp := 0.0;
     i := round(norm * 128);
     if (i < 32) then
       temp := 0.9
     else if (i < 64) then
-     begin
+    begin
       i := i - 32;
       temp := 1.0;
-     end
+    end
     else if (i < 96) then
-     begin
+    begin
       i := i - 64;
       temp := 1.1;
-     end
+    end
     else if (i < 128) then
-     begin
+    begin
       i := i - 96;
       temp := 1.2;
-     end
+    end
     else if (i = 128) then
-     begin
+    begin
       i := 0;
       temp := 1.4;
-     end;
+    end;
     FFilters[0].setTargets(temp * FPhonemes.formantFrequency(i, 0),
-      FPhonemes.formantRadius(i, 0), power(10.0, FPhonemes.formantGain(i, 0) / 20.0));
+      FPhonemes.formantRadius(i, 0), power(10.0, FPhonemes.formantGain(i,
+      0) / 20.0));
     FFilters[1].setTargets(temp * FPhonemes.formantFrequency(i, 1),
-      FPhonemes.formantRadius(i, 1), power(10.0, FPhonemes.formantGain(i, 1) / 20.0));
+      FPhonemes.formantRadius(i, 1), power(10.0, FPhonemes.formantGain(i,
+      1) / 20.0));
     FFilters[2].setTargets(temp * FPhonemes.formantFrequency(i, 2),
-      FPhonemes.formantRadius(i, 2), power(10.0, FPhonemes.formantGain(i, 2) / 20.0));
+      FPhonemes.formantRadius(i, 2), power(10.0, FPhonemes.formantGain(i,
+      2) / 20.0));
     FFilters[3].setTargets(temp * FPhonemes.formantFrequency(i, 3),
-      FPhonemes.formantRadius(i, 3), power(10.0, FPhonemes.formantGain(i, 3) / 20.0));
+      FPhonemes.formantRadius(i, 3), power(10.0, FPhonemes.formantGain(i,
+      3) / 20.0));
     SetVoiced(FPhonemes.voiceGain(i));
     SetUnVoiced(FPhonemes.noiseGain(i));
-   end
+  end
   else if (Number = CMidiModFrequency) then // 11
-    FVoiced.VibratoRate := norm * 12  // 0 to 12 Hz
+    FVoiced.VibratoRate := norm * 12 // 0 to 12 Hz
   else if (Number = CMidiModWheel) then // 1
     FVoiced.VibratoGain := norm * 0.2
   else if (Number = CMidiAfterTouchCont) then
-   begin // 128
+  begin // 128
     SetVoiced(norm);
     FOnePole.setPole(0.97 - (norm * 0.2));
-   end;
+  end;
 end;
 
 end.

@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkMultiOsc2;
 
 interface
@@ -21,7 +51,7 @@ type
     constructor Create(const SampleRate: Integer); override;
     function Process: Single; override;
 
-    property Morph: Single read GetMorph write SetMorph;
+    property morph: Single read GetMorph write SetMorph;
     property ActiveWave: Integer read GetActiveWave write SetActiveWave;
   end;
 
@@ -204,62 +234,81 @@ begin
   j := srate / freq;
   phase := cnt / j;
   case Wave of
-    0 : y := fsine(phase, Pwm);
-    1 : y := fsaw(phase, Pwm);
-    2 : y := fpulse(phase, Pwm);
-    3 : y := ftri(phase, Pwm);
-    4 : y := tmp;
-    5 : y := random * 2 - 1;
-    6 : y := fpower(phase, Pwm);
-    7 : y := fgauss(phase, Pwm);
-    8 : y := fdiode(phase, Pwm);
-    9 : y := fstretchsine(phase, Pwm);
-    10 : y := fpulsesine(phase, Pwm);
-    11 : y := fabssine(phase, Pwm);
-    12 : y := fabsstretchsine(phase, Pwm);
-    13 : y := fchirp(phase, Pwm);
+    0:
+      y := fsine(phase, Pwm);
+    1:
+      y := fsaw(phase, Pwm);
+    2:
+      y := fpulse(phase, Pwm);
+    3:
+      y := ftri(phase, Pwm);
+    4:
+      y := tmp;
+    5:
+      y := random * 2 - 1;
+    6:
+      y := fpower(phase, Pwm);
+    7:
+      y := fgauss(phase, Pwm);
+    8:
+      y := fdiode(phase, Pwm);
+    9:
+      y := fstretchsine(phase, Pwm);
+    10:
+      y := fpulsesine(phase, Pwm);
+    11:
+      y := fabssine(phase, Pwm);
+    12:
+      y := fabsstretchsine(phase, Pwm);
+    13:
+      y := fchirp(phase, Pwm);
 
-    14 : if ((Pwm = 1) or (phase < Pwm)) then
+    14:
+      if ((Pwm = 1) or (phase < Pwm)) then
         y := sin(pi * phase / Pwm)
       else
         y := -sin(pi * (phase - Pwm) / (1 - Pwm));
-    15 : if ((Pwm = 1) or (phase < Pwm)) then
+    15:
+      if ((Pwm = 1) or (phase < Pwm)) then
         y := phase / Pwm
       else
         y := ((phase - Pwm) / (1 - Pwm)) - 1;
-    16 : if (Pwm = 0) then
-       begin
+    16:
+      if (Pwm = 0) then
+      begin
         if (phase < 0.5 * (Pwm + 1)) then
           y := -2 * (phase - Pwm) / (1 - Pwm)
         else
           y := -1 + (2 * phase - (Pwm + 1)) / (1 - Pwm);
-       end else
-      if (Pwm = 1) then
-       begin
+      end
+      else if (Pwm = 1) then
+      begin
         if (phase < 0.5 * Pwm) then
           y := 2 * phase / Pwm
         else
           y := 1 - (2 * phase - Pwm) / Pwm;
-       end else
-      if (phase < Pwm / 2) then
+      end
+      else if (phase < Pwm / 2) then
         y := 2 * phase / Pwm
-      else
-      if ((phase >= Pwm / 2) and (phase < Pwm)) then
+      else if ((phase >= Pwm / 2) and (phase < Pwm)) then
         y := 1 - (2 * phase - Pwm) / Pwm
       else if ((phase >= Pwm) and (phase < 0.5 * (Pwm + 1))) then
         y := -2 * (phase - Pwm) / (1 - Pwm)
       else
         y := -1 + (2 * phase - (Pwm + 1)) / (1 - Pwm);
-    17 : y := fsine(phase * (Pwm), 0) * ((1 - Pwm) + 1) - (1 - Pwm);
-    18 : y := fsinex(phase, Pwm);
-  else y := 0;
-   end;
+    17:
+      y := fsine(phase * (Pwm), 0) * ((1 - Pwm) + 1) - (1 - Pwm);
+    18:
+      y := fsinex(phase, Pwm);
+  else
+    y := 0;
+  end;
   cnt := cnt + 1;
   while (cnt > j) do
-   begin
+  begin
     cnt := cnt - j;
     tmp := random * 2 - 1;
-   end;
+  end;
   Result := y;
 end;
 

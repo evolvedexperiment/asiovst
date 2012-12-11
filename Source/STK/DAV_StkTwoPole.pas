@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkTwoPole;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -35,26 +65,28 @@ type
     procedure SetA2(const Value: Single);
 
     // Sets the filter coefficients for a resonance at \e frequency (in Hz).
-  {
-    This method determines the filter coefficients corresponding to
-    two complex-conjugate poles with the given \e frequency (in Hz)
-    and \e radius from the z-plane origin.  If \e normalize is true,
-    the coefficients are then normalized to produce unity gain at \e
-    frequency (the actual maximum filter gain tends to be slightly
-    greater than unity when \e radius is not close to one).  The
-    resulting filter frequency response has a resonance at the given
-    \e frequency.  The closer the poles are to the unit-circle (\e
-    radius close to one), the narrower the resulting resonance width.
-    An unstable filter will result for \e radius >= 1.0.  For a better
-    resonance filter, use a BiQuad filter. \sa BiQuad filter class
-  }
-    procedure SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);
+    {
+      This method determines the filter coefficients corresponding to
+      two complex-conjugate poles with the given \e frequency (in Hz)
+      and \e radius from the z-plane origin.  If \e normalize is true,
+      the coefficients are then normalized to produce unity gain at \e
+      frequency (the actual maximum filter gain tends to be slightly
+      greater than unity when \e radius is not close to one).  The
+      resulting filter frequency response has a resonance at the given
+      \e frequency.  The closer the poles are to the unit-circle (\e
+      radius close to one), the narrower the resulting resonance width.
+      An unstable filter will result for \e radius >= 1.0.  For a better
+      resonance filter, use a BiQuad filter. \sa BiQuad filter class
+    }
+    procedure SetResonance(const Frequency, Radius: Single;
+      const Normalize: Boolean = False);
 
     // Input one sample to the filter and return one output.
     function Tick(const Sample: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+    procedure Tick(const Data: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload;
   end;
 
 implementation
@@ -62,14 +94,14 @@ implementation
 constructor TStkTwoPole.Create(const SampleRate: Single);
 var
   b: Single;
-  a: array[0..2] of Single;
+  a: array [0 .. 2] of Single;
 begin
   inherited Create(SampleRate);
-  B := 1.0;
-  A[0] := 1;
-  A[1] := 0;
-  A[2] := 0;
-  inherited setCoefficients(1, @B, 3, @A);
+  b := 1.0;
+  a[0] := 1;
+  a[1] := 0;
+  a[2] := 0;
+  inherited setCoefficients(1, @b, 3, @a);
 end;
 
 destructor TStkTwoPole.Destroy;
@@ -89,43 +121,44 @@ end;
 
 procedure TStkTwoPole.SetA1(const Value: Single);
 begin
- PDAV4SingleArray(FA)^[1] := Value;
+  PDAV4SingleArray(FA)^[1] := Value;
 end;
 
 procedure TStkTwoPole.SetA2(const Value: Single);
 begin
- PDAV4SingleArray(FA)^[2] := Value;
+  PDAV4SingleArray(FA)^[2] := Value;
 end;
 
-procedure TStkTwoPole.setResonance;
+procedure TStkTwoPole.SetResonance;
 var
   real, imag: Single;
 begin
   PDAV4SingleArray(FA)^[2] := sqr(Radius);
-  PDAV4SingleArray(FA)^[1] := 2.0 * radius * cos(2 * Pi * Frequency * FSampleRateInv);
+  PDAV4SingleArray(FA)^[1] := 2.0 * Radius *
+    cos(2 * Pi * Frequency * FSampleRateInv);
 
   if Normalize then
-   begin
+  begin
     // Normalize the filter gain ... not terribly efficient.
-    real := 1 - radius + (PDAV4SingleArray(FA)^[2] - radius) *
+    real := 1 - Radius + (PDAV4SingleArray(FA)^[2] - Radius) *
       cos(4 * Pi * Frequency * FSampleRateInv);
-    imag := (PDAV4SingleArray(FA)^[2] - radius) *
+    imag := (PDAV4SingleArray(FA)^[2] - Radius) *
       sin(4 * Pi * Frequency * FSampleRateInv);
     FB^[0] := sqrt(real * real + imag * imag);
-   end;
+  end;
 end;
 
 function TStkTwoPole.Tick(const Sample: Single): Single;
 begin
- FInputs^[0] := FGain * Sample;
- FOutputs^[0] := FB^[0] * FInputs^[0] -
-   PDAV4SingleArray(FA)^[2] * PDAV4SingleArray(FOutputs)^[2] -
-   PDAV4SingleArray(FA)^[1] * PDAV4SingleArray(FOutputs)^[1];
+  FInputs^[0] := FGain * Sample;
+  FOutputs^[0] := FB^[0] * FInputs^[0] - PDAV4SingleArray(FA)^[2] *
+    PDAV4SingleArray(FOutputs)^[2] - PDAV4SingleArray(FA)^[1] *
+    PDAV4SingleArray(FOutputs)^[1];
 
- Move(PDAV4SingleArray(FOutputs)^[0],
-      PDAV4SingleArray(FOutputs)^[1], 2 * SizeOf(Single));
+  Move(PDAV4SingleArray(FOutputs)^[0], PDAV4SingleArray(FOutputs)^[1],
+    2 * SizeOf(Single));
 
- Result := FOutputs^[0];
+  Result := FOutputs^[0];
 
 end;
 
@@ -134,8 +167,8 @@ procedure TStkTwoPole.Tick(const Data: PDAVSingleFixedArray;
 var
   Sample: Integer;
 begin
-  for Sample := 0 to SampleFrames - 1
-   do Data^[Sample] := Tick(Data^[Sample]);
+  for Sample := 0 to SampleFrames - 1 do
+    Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

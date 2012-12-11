@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkResonate;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -8,11 +38,11 @@ unit DAV_StkResonate;
   filter, with volume controlled by an ADSR.
 
   Control Change Numbers:
-    - Resonance Frequency (0-Nyquist) = 2
-    - Pole Radii = 4
-    - Notch Frequency (0-Nyquist) = 11
-    - Zero Radii = 1
-    - Envelope Gain = 128
+  - Resonance Frequency (0-Nyquist) = 2
+  - Pole Radii = 4
+  - Notch Frequency (0-Nyquist) = 11
+  - Zero Radii = 1
+  - Envelope Gain = 128
 }
 
 interface
@@ -20,18 +50,19 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkAdsr, DAV_StkBiquad, DAV_StkNoise;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkAdsr, DAV_StkBiquad,
+  DAV_StkNoise;
 
 type
   TStkResonate = class(TStkControlableInstrument)
   protected
-    FAdsr          : TStkAdsr;
-    FFilter        : TStkBiquad;
-    FNoise         : TStkNoise;
-    FPoleFrequency : Single;
-    FPoleRadius    : Single;
-    FZeroFrequency : Single;
-    FZeroRadius    : Single;
+    FAdsr: TStkAdsr;
+    FFilter: TStkBiquad;
+    FNoise: TStkNoise;
+    FPoleFrequency: Single;
+    FPoleRadius: Single;
+    FZeroFrequency: Single;
+    FZeroRadius: Single;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
@@ -64,7 +95,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -88,10 +120,10 @@ end;
 
 destructor TStkResonate.Destroy;
 begin
- FreeAndNil(FAdsr);
- FreeAndNil(FFilter);
- FreeAndNil(FNoise);
- inherited Destroy;
+  FreeAndNil(FAdsr);
+  FreeAndNil(FFilter);
+  FreeAndNil(FNoise);
+  inherited Destroy;
 end;
 
 procedure TStkResonate.KeyOn;
@@ -118,30 +150,31 @@ end;
 
 procedure TStkResonate.SetResonance(const Frequency, Radius: Single);
 begin
- FPoleFrequency := Frequency;
- if (frequency < 0.0) then FPoleFrequency := 0.0;
- FPoleRadius := radius;
- if (radius < 0.0) then
-   FPoleRadius := 0.0
- else if (radius >= 1.0) then
-   FPoleRadius := 0.9999;
- FFilter.SetResonance(FPoleFrequency, FPoleRadius, True);
+  FPoleFrequency := Frequency;
+  if (Frequency < 0.0) then
+    FPoleFrequency := 0.0;
+  FPoleRadius := Radius;
+  if (Radius < 0.0) then
+    FPoleRadius := 0.0
+  else if (Radius >= 1.0) then
+    FPoleRadius := 0.9999;
+  FFilter.SetResonance(FPoleFrequency, FPoleRadius, True);
 end;
 
 procedure TStkResonate.SetNotch(const Frequency, Radius: Single);
 begin
-  FZeroFrequency := frequency;
-  if (frequency < 0.0) then
+  FZeroFrequency := Frequency;
+  if (Frequency < 0.0) then
     FZeroFrequency := 0.0;
-  FZeroRadius := radius;
-  if (radius < 0.0) then
+  FZeroRadius := Radius;
+  if (Radius < 0.0) then
     FZeroRadius := 0.0;
   FFilter.SetNotch(FZeroFrequency, FZeroRadius);
 end;
 
 procedure TStkResonate.SetEqualGainZeroes;
 begin
- FFilter.SetEqualGainZeroes;
+  FFilter.SetEqualGainZeroes;
 end;
 
 function TStkResonate.Tick: Single;
@@ -150,21 +183,22 @@ begin
   Result := FLastOutput;
 end;
 
-procedure TStkResonate.ControlChange(const Number: Integer; const Value: Single);
+procedure TStkResonate.ControlChange(const Number: Integer;
+  const Value: Single);
 var
   norm: Single;
 begin
   norm := Limit(Value, 0, 1);
 
-  if (number = 2) then // 2
+  if (Number = 2) then // 2
     SetResonance(norm * SampleRate * 0.5, FPoleRadius)
-  else if (number = 4) then // 4
+  else if (Number = 4) then // 4
     SetResonance(FPoleFrequency, norm * 0.9999)
-  else if (number = 11) then // 11
+  else if (Number = 11) then // 11
     SetNotch(norm * SampleRate * 0.5, FZeroRadius)
-  else if (number = 1) then
+  else if (Number = 1) then
     SetNotch(FZeroFrequency, norm)
-  else if (number = CMidiAfterTouchCont) then // 128
+  else if (Number = CMidiAfterTouchCont) then // 128
     FAdsr.Target := norm;
 end;
 

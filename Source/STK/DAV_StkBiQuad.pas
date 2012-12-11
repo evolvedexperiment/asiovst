@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkBiQuad;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -44,48 +74,50 @@ type
     procedure SetA2(const Value: Single);
 
     // Sets the filter coefficients for a resonance at \e frequency (in Hz).
-  {
-    This method determines the filter coefficients corresponding to
-    two complex-conjugate poles with the given \e frequency (in Hz)
-    and \e radius from the z-plane origin.  If \e Normalize is true,
-    the filter zeros are placed at z := 1, z := -1, and the coefficients
-    are then normalized to produce a constant unity peak gain
-    (independent of the filter \e gain parameter).  The resulting
-    filter frequency response has a resonance at the given \e
-    frequency.  The closer the poles are to the unit-circle (\e radius
-    close to one), the narrower the resulting resonance width.
-  }
-    procedure SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);
+    {
+      This method determines the filter coefficients corresponding to
+      two complex-conjugate poles with the given \e frequency (in Hz)
+      and \e radius from the z-plane origin.  If \e Normalize is true,
+      the filter zeros are placed at z := 1, z := -1, and the coefficients
+      are then normalized to produce a constant unity peak gain
+      (independent of the filter \e gain parameter).  The resulting
+      filter frequency response has a resonance at the given \e
+      frequency.  The closer the poles are to the unit-circle (\e radius
+      close to one), the narrower the resulting resonance width.
+    }
+    procedure SetResonance(const Frequency, Radius: Single;
+      const Normalize: Boolean = False);
 
     // Set the filter coefficients for a notch at \e frequency (in Hz).
-  {
-    This method determines the filter coefficients corresponding to
-    two complex-conjugate zeros with the given \e frequency (in Hz)
-    and \e radius from the z-plane origin.  No filter normalization
-    is attempted.
-  }
+    {
+      This method determines the filter coefficients corresponding to
+      two complex-conjugate zeros with the given \e frequency (in Hz)
+      and \e radius from the z-plane origin.  No filter normalization
+      is attempted.
+    }
     procedure SetNotch(const Frequency, Radius: Single);
 
     // Sets the filter zeroes for equal resonance gain.
-  {
-    When using the filter as a resonator, zeroes places at z := 1, z
-    := -1 will result in a constant gain at resonance of 1 / (1 - R),
-    where R is the pole radius setting.
-  }
+    {
+      When using the filter as a resonator, zeroes places at z := 1, z
+      := -1 will result in a constant gain at resonance of 1 / (1 - R),
+      where R is the pole radius setting.
+    }
     procedure SetEqualGainZeroes;
 
     // Input one sample to the filter and return one output.
     function Tick(const Sample: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+    procedure Tick(const Data: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload;
   end;
 
 implementation
 
 constructor TStkBiQuad.Create(const SampleRate: Single);
 var
-  a, b: array[0..2] of Single;
+  a, b: array [0 .. 2] of Single;
 begin
   inherited Create(SampleRate);
   b[0] := 1;
@@ -94,7 +126,7 @@ begin
   a[0] := 1;
   a[1] := 0;
   a[2] := 0;
-  inherited setCoefficients(3, @B, 3, @A);
+  inherited setCoefficients(3, @b, 3, @a);
 end;
 
 destructor TStkBiQuad.Destroy;
@@ -114,42 +146,45 @@ end;
 
 procedure TStkBiQuad.SetB1(const Value: Single);
 begin
- PDav4SingleArray(FB)^[1] := Value;
+  PDav4SingleArray(FB)^[1] := Value;
 end;
 
-procedure TStkBiQuad.setB2(const Value: Single);
+procedure TStkBiQuad.SetB2(const Value: Single);
 begin
- PDav4SingleArray(FB)^[2] := Value;
+  PDav4SingleArray(FB)^[2] := Value;
 end;
 
 procedure TStkBiQuad.SetA1(const Value: Single);
 begin
- PDav4SingleArray(FA)^[1] := Value;
+  PDav4SingleArray(FA)^[1] := Value;
 end;
 
-procedure TStkBiQuad.setA2(const Value: Single);
+procedure TStkBiQuad.SetA2(const Value: Single);
 begin
- PDav4SingleArray(FA)^[2] := Value;
+  PDav4SingleArray(FA)^[2] := Value;
 end;
 
-procedure TStkBiQuad.SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);
+procedure TStkBiQuad.SetResonance(const Frequency, Radius: Single;
+  const Normalize: Boolean = False);
 begin
   PDav4SingleArray(FA)^[2] := Radius * Radius;
-  PDav4SingleArray(FA)^[1] := -2.0 * Radius * cos(2 * Pi * Frequency * FSampleRateInv);
+  PDav4SingleArray(FA)^[1] := -2.0 * Radius *
+    cos(2 * Pi * Frequency * FSampleRateInv);
   if (Normalize) then
-   begin
+  begin
     // Use zeros at +- 1 and Normalize the filter peak gain.
     PDav4SingleArray(FB)^[0] := 0.5 - 0.5 * PDav4SingleArray(FA)^[2];
     PDav4SingleArray(FB)^[1] := 0.0;
     PDav4SingleArray(FB)^[2] := -PDav4SingleArray(FB)^[0];
-   end;
+  end;
 end;
 
 procedure TStkBiQuad.SetNotch(const Frequency, Radius: Single);
 begin
   // This method does not attempt to Normalize the filter gain.
   PDav4SingleArray(FA)^[2] := Radius * Radius;
-  PDav4SingleArray(FA)^[1] := -2.0 * Radius * cos(2 * Pi * Frequency * FSampleRateInv);
+  PDav4SingleArray(FA)^[1] := -2.0 * Radius *
+    cos(2 * Pi * Frequency * FSampleRateInv);
 end;
 
 procedure TStkBiQuad.SetEqualGainZeroes;
@@ -162,28 +197,29 @@ end;
 function TStkBiQuad.Tick(const Sample: Single): Single;
 begin
   FInputs^[0] := FGain * Sample;
-  FOutputs^[0] := FB^[0] * FInputs^[0] +
-    PDav4SingleArray(FB)^[1] * PDav4SingleArray(FInputs)^[1] +
-    PDav4SingleArray(FB)^[2] * PDav4SingleArray(FInputs)^[2];
-  FOutputs^[0] := FOutputs^[0] -
-    PDav4SingleArray(FA)^[2] * PDav4SingleArray(FOutputs)^[2] +
-    PDav4SingleArray(FA)^[1] * PDav4SingleArray(FOutputs)^[1];
+  FOutputs^[0] := FB^[0] * FInputs^[0] + PDav4SingleArray(FB)^[1] *
+    PDav4SingleArray(FInputs)^[1] + PDav4SingleArray(FB)^[2] *
+    PDav4SingleArray(FInputs)^[2];
+  FOutputs^[0] := FOutputs^[0] - PDav4SingleArray(FA)^[2] *
+    PDav4SingleArray(FOutputs)^[2] + PDav4SingleArray(FA)^[1] *
+    PDav4SingleArray(FOutputs)^[1];
 
- Move(PDAV4SingleArray(FInputs)^[0],
-      PDAV4SingleArray(FInputs)^[1], 2 * SizeOf(Single));
+  Move(PDav4SingleArray(FInputs)^[0], PDav4SingleArray(FInputs)^[1],
+    2 * SizeOf(Single));
 
- Move(PDAV4SingleArray(FOutputs)^[0],
-      PDAV4SingleArray(FOutputs)^[1], 2 * SizeOf(Single));
+  Move(PDav4SingleArray(FOutputs)^[0], PDav4SingleArray(FOutputs)^[1],
+    2 * SizeOf(Single));
 
- Result := FOutputs^[0];
+  Result := FOutputs^[0];
 end;
 
-procedure TStkBiQuad.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure TStkBiQuad.Tick(const Data: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
 var
-  Sample: integer;
+  Sample: Integer;
 begin
-  for Sample := 0 to SampleFrames - 1
-   do Data^[Sample] := Tick(Data^[Sample]);
+  for Sample := 0 to SampleFrames - 1 do
+    Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

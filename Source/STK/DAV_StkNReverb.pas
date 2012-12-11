@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkNReverb;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -26,17 +56,18 @@ type
     procedure T60Changed;
     procedure CalculateInternalLengths;
   protected
-    FAllpassDelays      : array [0..7] of TStkDelay;
-    FCombDelays         : array [0..5] of TStkDelay;
-    FLowpassState       : Single;
-    FAllpassCoefficient : Single;
-    FT60                : Single;
-    FInternalLengths    : array [0..14] of Integer;
-    FCombCoefficient    : array [0..5] of Single;
+    FAllpassDelays: array [0 .. 7] of TStkDelay;
+    FCombDelays: array [0 .. 5] of TStkDelay;
+    FLowpassState: Single;
+    FAllpassCoefficient: Single;
+    FT60: Single;
+    FInternalLengths: array [0 .. 14] of Integer;
+    FCombCoefficient: array [0 .. 5] of Single;
     procedure SampleRateChanged; override;
   public
     constructor Create(const SampleRate: Single = 44100); overload; override;
-    constructor Create(const SampleRate, T60: Single); reintroduce; overload; virtual;
+    constructor Create(const SampleRate, T60: Single); reintroduce;
+      overload; virtual;
     destructor Destroy; override;
 
     // Reset and clear all internal state.
@@ -67,7 +98,7 @@ end;
 
 constructor TStkNReverb.Create(const SampleRate: Single = 44100);
 begin
- Create(SampleRate, 0.5);
+  Create(SampleRate, 0.5);
 end;
 
 destructor TStkNReverb.Destroy;
@@ -75,72 +106,80 @@ var
   i: Integer;
 begin
   inherited Destroy;
-  for i := 0 to Length(FCombDelays) - 1 do FreeAndNil(FCombDelays[i]);
-  for i := 0 to Length(FAllpassDelays) - 1 do FreeAndNil(FAllpassDelays[i]);
+  for i := 0 to Length(FCombDelays) - 1 do
+    FreeAndNil(FCombDelays[i]);
+  for i := 0 to Length(FAllpassDelays) - 1 do
+    FreeAndNil(FAllpassDelays[i]);
 end;
 
 procedure TStkNReverb.CalculateInternalLengths;
 const
-  CLengths: array[0..14] of Integer = (
-    1433, 1601, 1867, 2053, 2251, 2399, 347, 113, 37, 59, 53, 43, 37, 29, 19);
+  CLengths: array [0 .. 14] of Integer = (1433, 1601, 1867, 2053, 2251, 2399,
+    347, 113, 37, 59, 53, 43, 37, 29, 19);
 var
   ScaleFactor: Double;
-  Delay, i : Integer;
+  Delay, i: Integer;
 begin
- ScaleFactor := SampleRate / 25641.0;
- for i := 0 to Length(CLengths) - 1 do
+  ScaleFactor := SampleRate / 25641.0;
+  for i := 0 to Length(CLengths) - 1 do
   begin
-   Delay := round(ScaleFactor * CLengths[i] - 0.5);
-   if (Delay and 1) = 0
-    then Delay := Delay + 1;
-   while (not IsPrime(Delay)) do inc(Delay, 2);
-   FInternalLengths[i] := Delay;
+    Delay := round(ScaleFactor * CLengths[i] - 0.5);
+    if (Delay and 1) = 0 then
+      Delay := Delay + 1;
+    while (not IsPrime(Delay)) do
+      inc(Delay, 2);
+    FInternalLengths[i] := Delay;
   end;
 end;
 
 procedure TStkNReverb.SampleRateChanged;
 const
-  CLengths: array[0..14] of Integer = (
-    1433, 1601, 1867, 2053, 2251, 2399, 347, 113, 37, 59, 53, 43, 37, 29, 19);
+  CLengths: array [0 .. 14] of Integer = (1433, 1601, 1867, 2053, 2251, 2399,
+    347, 113, 37, 59, 53, 43, 37, 29, 19);
 var
-  i : Integer;
+  i: Integer;
 begin
- inherited;
+  inherited;
 
- CalculateInternalLengths;
+  CalculateInternalLengths;
 
- for i := 0 to Length(FAllpassDelays) - 1 do
+  for i := 0 to Length(FAllpassDelays) - 1 do
   begin
-   if Assigned(FAllpassDelays[i]) then
-    if FInternalLengths[i + 6] < FAllpassDelays[i].Length
-     then FAllpassDelays[i].Delay := FInternalLengths[i + 6]
-     else FreeAndNil(FAllpassDelays[i]);
+    if Assigned(FAllpassDelays[i]) then
+      if FInternalLengths[i + 6] < FAllpassDelays[i].Length then
+        FAllpassDelays[i].Delay := FInternalLengths[i + 6]
+      else
+        FreeAndNil(FAllpassDelays[i]);
 
-   // create new allpass delay if necessary
-   if not Assigned(FAllpassDelays[i])
-    then FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 6], ExtendToPowerOf2(FInternalLengths[i + 6]) - 1);
+    // create new allpass delay if necessary
+    if not Assigned(FAllpassDelays[i]) then
+      FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 6],
+        ExtendToPowerOf2(FInternalLengths[i + 6]) - 1);
   end;
 
- for i := 0 to Length(FCombDelays) - 1 do
+  for i := 0 to Length(FCombDelays) - 1 do
   begin
-   if Assigned(FCombDelays[i]) then
-    if FInternalLengths[i] < FCombDelays[i].Length
-     then FCombDelays[i].Delay := FInternalLengths[i]
-     else FreeAndNil(FCombDelays[i]);
+    if Assigned(FCombDelays[i]) then
+      if FInternalLengths[i] < FCombDelays[i].Length then
+        FCombDelays[i].Delay := FInternalLengths[i]
+      else
+        FreeAndNil(FCombDelays[i]);
 
-   // create new comb delay if necessary
-   if not Assigned(FCombDelays[i])
-    then FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], ExtendToPowerOf2(FInternalLengths[i]) - 1);
-   FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
+    // create new comb delay if necessary
+    if not Assigned(FCombDelays[i]) then
+      FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i],
+        ExtendToPowerOf2(FInternalLengths[i]) - 1);
+    FCombCoefficient[i] :=
+      Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
   end;
 end;
 
 procedure TStkNReverb.SetT60(const Value: Single);
 begin
- if T60 <> Value then
+  if T60 <> Value then
   begin
-   FT60 := Value;
-   T60Changed;
+    FT60 := Value;
+    T60Changed;
   end;
 end;
 
@@ -148,16 +187,19 @@ procedure TStkNReverb.T60Changed;
 var
   i: Integer;
 begin
- for i := 0 to Length(FCombDelays) - 1
-  do FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
+  for i := 0 to Length(FCombDelays) - 1 do
+    FCombCoefficient[i] :=
+      Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
 end;
 
 procedure TStkNReverb.Clear;
 var
   i: Integer;
 begin
-  for i := 0 to Length(FCombDelays) - 1 do FCombDelays[i].Clear;
-  for i := 0 to Length(FAllpassDelays) - 1 do FAllpassDelays[i].Clear;
+  for i := 0 to Length(FCombDelays) - 1 do
+    FCombDelays[i].Clear;
+  for i := 0 to Length(FAllpassDelays) - 1 do
+    FAllpassDelays[i].Clear;
   FLastOutput[0] := 0.0;
   FLastOutput[1] := 0.0;
   FLowpassState := 0.0;
@@ -165,24 +207,24 @@ end;
 
 function TStkNReverb.Tick(const Input: Single): Single;
 var
-  temp : Single;
-  tmp  : Array [0..3] of Single;
-  i    : Integer;
+  temp: Single;
+  tmp: Array [0 .. 3] of Single;
+  i: Integer;
 begin
   tmp[0] := 0.0;
   for i := 0 to Length(FCombDelays) - 1 do
-   begin
+  begin
     temp := Input + (FCombCoefficient[i] * FCombDelays[i].LastOutput);
     tmp[0] := tmp[0] + FCombDelays[i].Tick(temp);
-   end;
+  end;
   for i := 0 to 2 do
-   begin
+  begin
     temp := FAllpassDelays[i].LastOutput;
     tmp[1] := FAllpassCoefficient * temp;
     tmp[1] := tmp[1] + tmp[0];
     FAllpassDelays[i].Tick(tmp[1]);
     tmp[0] := -(FAllpassCoefficient * tmp[1]) + temp;
-   end;
+  end;
 
   // One-pole lowpass filter.
   FLowpassState := 0.7 * FLowpassState + 0.3 * tmp[0];

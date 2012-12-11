@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkBlowBottle;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -8,10 +38,10 @@ unit DAV_StkBlowBottle;
   polynomial jet excitation (a la Cook).
 
   Control Change Numbers:
-    - Noise Gain = 4
-    - Vibrato Frequency = 11
-    - Vibrato Gain = 1
-    - Volume = 128
+  - Noise Gain = 4
+  - Vibrato Frequency = 11
+  - Vibrato Gain = 1
+  - Volume = 128
 }
 
 interface
@@ -26,17 +56,17 @@ type
   TStkBlowBottle = class(TStkControlableInstrument)
   private
   protected
-    FJetTable      : TStkJetTable;
-    FResonator     : TStkBiquad;
-    FDCBlock       : TStkPoleZero;
-    FNoise         : TStkNoise;
-    FAdsr          : TStkAdsr;
-    FVibrato       : TStkLfo;
-    FMaxPressure   : Single;
-    FNoiseGain     : Single;
-    FVibratoGain   : Single;
-    FOutputGain    : Single;
-    FBaseFrequency : Single;
+    FJetTable: TStkJetTable;
+    FResonator: TStkBiquad;
+    FDCBlock: TStkPoleZero;
+    FNoise: TStkNoise;
+    FAdsr: TStkAdsr;
+    FVibrato: TStkLfo;
+    FMaxPressure: Single;
+    FNoiseGain: Single;
+    FVibratoGain: Single;
+    FOutputGain: Single;
+    FBaseFrequency: Single;
 
     // Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
@@ -69,7 +99,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -83,17 +114,17 @@ const
 constructor TStkBlowBottle.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
-  FJetTable := TStkJetTable.Create(Samplerate);
-  FDCBlock := TStkPoleZero.Create(Samplerate);
+  FJetTable := TStkJetTable.Create(SampleRate);
+  FDCBlock := TStkPoleZero.Create(SampleRate);
   FDCBlock.SetBlockZero;
-  FVibrato := TStkLfo.Create(Samplerate);
+  FVibrato := TStkLfo.Create(SampleRate);
   FVibrato.Frequency := 5.925;
   FVibratoGain := 0.0;
-  FResonator := TStkBiquad.Create(Samplerate);
+  FResonator := TStkBiquad.Create(SampleRate);
   FResonator.SetResonance(500.0, CBottleRadius, True);
-  FAdsr := TStkAdsr.Create(Samplerate);
+  FAdsr := TStkAdsr.Create(SampleRate);
   FAdsr.SetAllTimes(0.005, 0.01, 0.8, 0.010);
-  FNoise := TStkNoise.Create(Samplerate);
+  FNoise := TStkNoise.Create(SampleRate);
   FNoiseGain := 20.0;
   FMaxPressure := 0.0;
 end;
@@ -116,23 +147,24 @@ end;
 
 procedure TStkBlowBottle.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Value then
+  if FBaseFrequency <> Value then
   begin
-   if (FBaseFrequency <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Value;
-   FrequencyChanged;
+    if (FBaseFrequency <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Value;
+    FrequencyChanged;
   end;
 end;
 
 procedure TStkBlowBottle.FrequencyChanged;
 begin
- FResonator.SetResonance(FBaseFrequency, CBottleRadius, True);
+  FResonator.SetResonance(FBaseFrequency, CBottleRadius, True);
 end;
 
 function TStkBlowBottle.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkBlowBottle.StartBlowing(const Amplitude, Rate: Single);
@@ -172,25 +204,28 @@ begin
   RandPressure := FNoiseGain * FNoise.Tick * BreathPressure *
     (1.0 + PressureDiff);
 
-  FResonator.Tick(BreathPressure + RandPressure -
-    FJetTable.Tick(PressureDiff) * PressureDiff);
+  FResonator.Tick(BreathPressure + RandPressure - FJetTable.Tick(PressureDiff) *
+    PressureDiff);
 
   FLastOutput := 0.2 * FOutputGain * FDCBlock.Tick(PressureDiff);
 
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
-procedure TStkBlowBottle.ControlChange(const Number: Integer; const Value: Single);
+procedure TStkBlowBottle.ControlChange(const Number: Integer;
+  const Value: Single);
 var
   Norm: Single;
 begin
   Norm := Limit(Value, 0, 1);
 
   case Number of
-          CMidiNoiseLevel : FNoiseGain := Norm * 30.0; // 4
-        CMidiModFrequency : FVibrato.Frequency := Norm * 12.0 // 11
-            CMidiModWheel : FVibratoGain := Norm * 0.4 // 1
-   CMidiAfterTouchContour : FAdsr.Target := Norm; // 128
+    CMidiNoiseLevel:
+      FNoiseGain := Norm * 30.0; // 4
+    CMidiModFrequency:
+      FVibrato.Frequency := Norm * 12.0 // 11
+        CMidiModWheel: FVibratoGain := Norm * 0.4 // 1
+        CMidiAfterTouchContour: FAdsr.Target := Norm; // 128
   end;
 end;
 

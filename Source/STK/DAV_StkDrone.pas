@@ -1,16 +1,46 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkDrone;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{  STK "drone" plucked string model.
+{ STK "drone" plucked string model.
 
-   This class implements a simple plucked string physical model based on the
-   Karplus-Strong algorithm.
+  This class implements a simple plucked string physical model based on the
+  Karplus-Strong algorithm.
 
-   This is a digital waveguide model, making its use possibly subject to
-   patents held by Stanford University, Yamaha, and others.
-   There exist at least two patents, assigned to Stanford, bearing the names
-   of Karplus and/or Strong.
+  This is a digital waveguide model, making its use possibly subject to
+  patents held by Stanford University, Yamaha, and others.
+  There exist at least two patents, assigned to Stanford, bearing the names
+  of Karplus and/or Strong.
 }
 
 interface
@@ -26,20 +56,21 @@ type
   private
     procedure FrequencyChanged;
   protected
-    FDelayLine     : TStkDelayA;
-    FLoopFilter    : TStkOneZero;
-    FEnvelope      : TStkAdsr;
-    FNoise         : TStkNoise;
-    FLength        : Integer;
-    FLoopGain      : Single;
-    FBaseFrequency : Single;
+    FDelayLine: TStkDelayA;
+    FLoopFilter: TStkOneZero;
+    FEnvelope: TStkAdsr;
+    FNoise: TStkNoise;
+    FLength: Integer;
+    FLoopGain: Single;
+    FBaseFrequency: Single;
 
     // Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
     function GetFrequency: Single; override;
   public
     // Class constructor, taking the lowest desired playing frequency.
-    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, LowestFrequency: Single);
+      reintroduce; virtual;
 
     destructor Destroy; override;
 
@@ -79,11 +110,11 @@ end;
 
 destructor TStkDrone.Destroy;
 begin
- FreeAndNil(FDelayLine);
- FreeAndNil(FLoopFilter);
- FreeAndNil(FEnvelope);
- FreeAndNil(FNoise);
- inherited;
+  FreeAndNil(FDelayLine);
+  FreeAndNil(FLoopFilter);
+  FreeAndNil(FEnvelope);
+  FreeAndNil(FNoise);
+  inherited;
 end;
 
 procedure TStkDrone.Clear;
@@ -94,13 +125,14 @@ end;
 
 procedure TStkDrone.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Value then
+  if FBaseFrequency <> Value then
   begin
-   if (Value <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Value;
+    if (Value <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Value;
 
-   FrequencyChanged;
+    FrequencyChanged;
   end;
 end;
 
@@ -108,23 +140,26 @@ procedure TStkDrone.FrequencyChanged;
 var
   Delay: Single;
 begin
- // Delay = FLength - approximate filter Delay.
+  // Delay = FLength - approximate filter Delay.
   Delay := (FSampleRate / FBaseFrequency) - 0.5;
-  if (Delay <= 0.0) then Delay := 0.3
-  else if (Delay > FLength) then Delay := FLength;
+  if (Delay <= 0.0) then
+    Delay := 0.3
+  else if (Delay > FLength) then
+    Delay := FLength;
   FDelayLine.Delay := Delay;
   FLoopGain := 0.997 + (FBaseFrequency * 0.000002);
-  if (FLoopGain >= 1.0) then FLoopGain := 0.99999;
+  if (FLoopGain >= 1.0) then
+    FLoopGain := 0.99999;
 end;
 
 function TStkDrone.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkDrone.Pluck(const Amplitude: Single);
 begin
- FEnvelope.KeyOn;
+  FEnvelope.KeyOn;
 end;
 
 procedure TStkDrone.NoteOn(const Frequency, Amplitude: Single);
@@ -140,10 +175,10 @@ end;
 
 function TStkDrone.Tick: Single;
 begin
- // Here's the whole inner loop of the instrument!!
-  FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput * FLoopGain) +
-    (0.005 * FEnvelope.Tick * FNoise.Tick));
-  Result := FLastOutput;
+  // Here's the whole inner loop of the instrument!!
+  FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput *
+    FLoopGain) + (0.005 * FEnvelope.Tick * FNoise.Tick));
+  result := FLastOutput;
 end;
 
 end.

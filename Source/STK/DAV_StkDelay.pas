@@ -1,20 +1,50 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkDelay;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
 interface
 
-{  TStkDelay
-   STK non-interpolating TStkDelay line class.
+{ TStkDelay
+  STK non-interpolating TStkDelay line class.
 
-   This protected filter subclass implements a non-interpolating digital
-   delay-line. A fixed maximum length of 4095 and a delay of zero is set using
-   the default constructor.
-   Alternatively, the delay and maximum length can be set during instantiation
-   with an overloaded constructor.
+  This protected filter subclass implements a non-interpolating digital
+  delay-line. A fixed maximum length of 4095 and a delay of zero is set using
+  the default constructor.
+  Alternatively, the delay and maximum length can be set during instantiation
+  with an overloaded constructor.
 
-   A non-interpolating delay line is typically used in fixed delay-length
-   applications, such as for reverberation.
+  A non-interpolating delay line is typically used in fixed delay-length
+  applications, such as for reverberation.
 }
 
 {$I ..\DAV_Compiler.inc}
@@ -26,21 +56,24 @@ type
   TStkDelay = class(TStkFilter)
   private
     function GetNextOut: Single; // only for delay settings greater than zero!
-    function GetEnergy: Single; // calculate and return the signal Energy in the delay-line.
-    procedure SetDelay(const Value: Integer); // The valid range for ADelay is from 0 to the maximum delay-line length.
+    function GetEnergy: Single;
+    // calculate and return the signal Energy in the delay-line.
+    procedure SetDelay(const Value: Integer);
+    // The valid range for ADelay is from 0 to the maximum delay-line length.
     function GetDelay: Integer;
   protected
-    FInPoint  : Integer;
-    FOutPoint : Integer;
-    FLength   : Integer;
-    FDelay    : Single;
+    FInPoint: Integer;
+    FOutPoint: Integer;
+    FLength: Integer;
+    FDelay: Single;
     procedure DelayChanged(const Value: Integer); virtual;
   public
     // Default constructor creates a delay-line with maximum FLength of 4095 samples and zero TStkDelay.
     constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor which specifies the current and maximum delay-line lengths.
-    constructor Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer); overload; virtual;
+    constructor Create(const SampleRate, ADelay: Single;
+      const AMaxDelay: Integer); overload; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -49,14 +82,15 @@ type
     procedure Clear; override;
 
     // Return the value at \e tapDelay samples from the delay-line input.
-  {
-    The valid range for \e tapDelay is 1 to the delay-line FLength.
-  }
+    {
+      The valid range for \e tapDelay is 1 to the delay-line FLength.
+    }
     function ContentsAt(const TapDelay: Integer): Single;
 
     // Input one sample to the delay-line and return one output.
     function Tick(const Input: Single): Single; overload; override;
-    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; override;
+    procedure Tick(const Input, Output: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload; override;
 
     property NextOut: Single read GetNextOut;
     property Energy: Single read GetEnergy;
@@ -73,7 +107,8 @@ begin
   Create(SampleRate, 4095, 4095);
 end;
 
-constructor TStkDelay.Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer);
+constructor TStkDelay.Create(const SampleRate, ADelay: Single;
+  const AMaxDelay: Integer);
 begin
   inherited Create(SampleRate);
   // Writing before reading allows delays from 0 to FLength - 1.
@@ -92,24 +127,24 @@ end;
 procedure TStkDelay.DelayChanged(const Value: Integer);
 begin
   if (Value > FLength - 1) then
-   begin // The value is too big.
+  begin // The value is too big.
     // Force TStkDelay to maxLength.
     FOutPoint := FInPoint + 1;
     FDelay := FLength - 1;
-   end
+  end
   else if (Value < 0) then
-   begin
+  begin
     FOutPoint := FInPoint;
     FDelay := 0;
-   end
+  end
   else
-   begin
-    FOutPoint := FInPoint - Round(Value);  // read chases write
+  begin
+    FOutPoint := FInPoint - Round(Value); // read chases write
     FDelay := Value;
-   end;
+  end;
 
-  while (FOutPoint < 0)
-   do FOutPoint := FOutPoint + FLength;  // modulo maximum FLength
+  while (FOutPoint < 0) do
+    FOutPoint := FOutPoint + FLength; // modulo maximum FLength
 end;
 
 destructor TStkDelay.Destroy;
@@ -119,49 +154,49 @@ end;
 
 procedure TStkDelay.Clear;
 begin
- FillChar(FInputs^[0], FLength * SizeOf(Single), 0);
- if Assigned(FOutputs)
-  then FOutputs^[0] := 0;
+  FillChar(FInputs^[0], FLength * SizeOf(Single), 0);
+  if Assigned(FOutputs) then
+    FOutputs^[0] := 0;
 end;
 
 function TStkDelay.ContentsAt(const TapDelay: Integer): Single;
 var
   Tap, Index: Integer;
 begin
-  Index := tapDelay;
-  if (Index > FDelay)
-   then Index := Round(FDelay);
+  Index := TapDelay;
+  if (Index > FDelay) then
+    Index := Round(FDelay);
   Tap := FInPoint - Index;
-  if (Tap < 0)
-   then Tap := Tap + FLength; // Check for wraparound.
+  if (Tap < 0) then
+    Tap := Tap + FLength; // Check for wraparound.
   Result := FInputs^[Tap];
 end;
 
 function TStkDelay.GetEnergy: Single;
 var
   Index: Integer;
-  t, e : Single;
+  t, e: Single;
 begin
   e := 0;
   if (FInPoint >= FOutPoint) then
-   for Index := FOutPoint to FInPoint - 1 do
+    for Index := FOutPoint to FInPoint - 1 do
     begin
-     t := FInputs^[Index];
-     e := e + t * t;
+      t := FInputs^[Index];
+      e := e + t * t;
     end
   else
-   begin
+  begin
     for Index := FOutPoint to FLength - 1 do
-     begin
+    begin
       t := FInputs^[Index];
       e := e + t * t;
-     end;
+    end;
     for Index := 0 to FInPoint - 1 do
-     begin
+    begin
       t := FInputs^[Index];
       e := e + t * t;
-     end;
-   end;
+    end;
+  end;
   Result := e;
 end;
 
@@ -177,34 +212,34 @@ end;
 
 procedure TStkDelay.SetDelay(const Value: Integer);
 begin
- if Value <> Delay
-  then DelayChanged(Value);
+  if Value <> Delay then
+    DelayChanged(Value);
 end;
 
 function TStkDelay.Tick(const Input: Single): Single;
 begin
- FInputs^[FInPoint] := Input;
- Inc(FInPoint);
+  FInputs^[FInPoint] := Input;
+  Inc(FInPoint);
 
- // Check for end condition
- if (FInPoint = FLength)
-  then FInPoint := FInPoint - FLength;
+  // Check for end condition
+  if (FInPoint = FLength) then
+    FInPoint := FInPoint - FLength;
 
- // Read out next value
- FOutputs^[0] := FInputs^[FOutPoint];
- inc(FOutPoint);
- if (FOutPoint >= FLength)
-  then FOutPoint := FOutPoint - FLength;
- Result := FOutputs^[0];
+  // Read out next value
+  FOutputs^[0] := FInputs^[FOutPoint];
+  Inc(FOutPoint);
+  if (FOutPoint >= FLength) then
+    FOutPoint := FOutPoint - FLength;
+  Result := FOutputs^[0];
 end;
 
 procedure TStkDelay.Tick(const Input, Output: PDAVSingleFixedArray;
   const SampleFrames: Integer);
 var
-  Index: integer;
+  Index: Integer;
 begin
-  for Index := 0 to SampleFrames - 1
-   do Output^[Index] := Tick(Input^[Index])
+  for Index := 0 to SampleFrames - 1 do
+    Output^[Index] := Tick(Input^[Index])
 end;
 
 end.

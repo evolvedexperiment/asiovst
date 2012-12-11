@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkVector3D;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -18,32 +48,31 @@ type
     constructor Create(const initX, initY, initZ: Double); reintroduce; virtual;
 
     // Get the current X value.
-    function getX: double;
+    function getX: Double;
 
     // Get the current Y value.
-    function getY: double;
+    function getY: Double;
 
     // Get the current Z value.
-    function getZ: double;
+    function getZ: Double;
 
     // Calculate the vector length.
     function GetLength: Double;
 
     // Set the X, Y, and Z values simultaniously.
-    procedure SetXYZ(anX, aY, aZ: double);
+    procedure SetXYZ(anX, aY, aZ: Double);
 
     // Set the X value.
-    procedure SetX(const aval: double);
+    procedure SetX(const aval: Double);
 
     // Set the Y value.
-    procedure SetY(const aval: double);
+    procedure SetY(const aval: Double);
 
     // Set the Z value.
-    procedure SetZ(const aval: double);
+    procedure SetZ(const aval: Double);
 
   protected
-    myX, myY, myZ: double
-  end;
+    myX, myY, myZ: Double end;
 
 implementation
 
@@ -69,9 +98,9 @@ begin
   Result := myZ;
 end;
 
-function TStkVector3D.getLength;
+function TStkVector3D.GetLength;
 var
-  temp: double;
+  temp: Double;
 begin
   temp := myX * myX;
   temp := temp + myY * myY;
@@ -80,24 +109,24 @@ begin
   Result := temp;
 end;
 
-procedure TStkVector3D.setXYZ;
+procedure TStkVector3D.SetXYZ;
 begin
   myX := anX;
   myY := aY;
   myZ := aZ;
 end;
 
-procedure TStkVector3D.setX;
+procedure TStkVector3D.SetX;
 begin
   myX := aval;
 end;
 
-procedure TStkVector3D.setY;
+procedure TStkVector3D.SetY;
 begin
   myY := aval;
 end;
 
-procedure TStkVector3D.setZ;
+procedure TStkVector3D.SetZ;
 begin
   myZ := aval;
 end;

@@ -30,37 +30,33 @@
 
 unit DAV_PitchConverter;
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Pitch converters                                                          //
-//  The four representations for pitch in MPEG4-SA:                           //
-//                                                                            //
-//  - MIDI pitch number representation. A pitch is represented as an          //
-//    integer number of semitones above or below middle C, represented        //
-//    as 60.                                                                  //
-//    For example, 57 is the A below middle C.                                //
-//                                                                            //
-//  - Frequency, or cps representation. A pitch is represented as some        //
-//    number of cycles per second.                                            //
-//    For example, 220 Hz is the A below middle C.                            //
-//                                                                            //
-//  - pitch-class, or pch representation. A pitch is represented as an        //
-//    integer part, which represents the octave number, where 8 shall be      //
-//    the octave containing middle C (C4); plus a fractional part, which      //
-//    represents the pitch-class, where .00 shall be C, .01 shall be C#,      //
-//    .02 shall be D, and so forth. Fractional parts larger than .11 (B)      //
-//    have no meaning in this representation; fractional parts between        //
-//    the pitch-class steps are rounded to the nearest pitch-class.           //
-//    For example, 7.09 is the A below middle C.                              //
-//                                                                            //
-//  - octave-fraction, or oct representation. A pitch is represented as       //
-//    an integer part, which represents the octave number, where 8 shall      //
-//    be the octave containing middle C (C4); plus a fractional part, which   //
-//    represents a fraction of an octave, where each step of 1/12 represents  //
-//    a semitone.                                                             //
-//    For example, 7.75 is the A below middle C, in equal-tempered tuning.    //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+// Pitch converters
+// The four representations for pitch in MPEG4-SA:
+//
+// - MIDI pitch number representation. A pitch is represented as an
+// integer number of semitones above or below middle C, represented
+// as 60.
+// For example, 57 is the A below middle C.
+//
+// - Frequency, or cps representation. A pitch is represented as some
+// number of cycles per second.
+// For example, 220 Hz is the A below middle C.
+//
+// - pitch-class, or pch representation. A pitch is represented as an
+// integer part, which represents the octave number, where 8 shall be
+// the octave containing middle C (C4); plus a fractional part, which
+// represents the pitch-class, where .00 shall be C, .01 shall be C#,
+// .02 shall be D, and so forth. Fractional parts larger than .11 (B)
+// have no meaning in this representation; fractional parts between
+// the pitch-class steps are rounded to the nearest pitch-class.
+// For example, 7.09 is the A below middle C.
+//
+// - octave-fraction, or oct representation. A pitch is represented as
+// an integer part, which represents the octave number, where 8 shall
+// be the octave containing middle C (C4); plus a fractional part, which
+// represents a fraction of an octave, where each step of 1/12 represents
+// a semitone.
+// For example, 7.75 is the A below middle C, in equal-tempered tuning.
 
 interface
 
@@ -72,12 +68,12 @@ uses
 type
   TPitchConverter = class
   private
-    FCps          : Double;
-    FPch          : Double;
-    FOct          : Double;
-    FMidi         : Integer;
-    FName         : string;
-    FGlobalTuneA4 : Double;
+    FCps: Double;
+    FPch: Double;
+    FOct: Double;
+    FMidi: Integer;
+    FName: string;
+    FGlobalTuneA4: Double;
     procedure SetCPS(const Value: Double);
     procedure SetMidi(const Value: Integer);
     procedure SetOct(const Value: Double);
@@ -109,8 +105,8 @@ type
   end;
 
 const
-  CNotes: array[0..11] of String =
-    ('C ', 'C#', 'D ', 'D#', 'E ', 'F ', 'F#', 'G ', 'G#', 'A ', 'A#', 'B ');
+  CNotes: array [0 .. 11] of String = ('C ', 'C#', 'D ', 'D#', 'E ', 'F ', 'F#',
+    'G ', 'G#', 'A ', 'A#', 'B ');
 
 implementation
 
@@ -121,21 +117,24 @@ uses
 
 constructor TPitchConverter.Create;
 begin
- inherited;
- FGlobalTuneA4 := 440;
- DecimalSeparator := '.';
+  inherited;
+  FGlobalTuneA4 := 440;
+  DecimalSeparator := '.';
 end;
 
 function TPitchConverter.CyclesPerSampleToMidi(Value: Double): Integer;
 begin
- if Value < 0 then Value := 0;
- Result := abs(round(12 * log2(Value / FGlobalTuneA4) + 69));
- if Result > 127 then Result := -1;
+  if Value < 0 then
+    Value := 0;
+  Result := abs(round(12 * log2(Value / FGlobalTuneA4) + 69));
+  if Result > 127 then
+    Result := -1;
 end;
 
 function TPitchConverter.CyclesPerSampleToOct(Value: Double): Double;
 begin
-  if Value < 0 then Value := 0;
+  if Value < 0 then
+    Value := 0;
   Result := log2(Value / FGlobalTuneA4) + 8.75;
 end;
 
@@ -143,7 +142,8 @@ function TPitchConverter.CyclesPerSampleToPch(Value: Double): Double;
 var
   k, z: Double;
 begin
-  if Value < 0 then Value := 0;
+  if Value < 0 then
+    Value := 0;
   k := log2(Value / FGlobalTuneA4) + 8.75;
   z := round(12 * frac(k));
   Result := int(k) + z * 1E-2;
@@ -151,56 +151,65 @@ end;
 
 function TPitchConverter.MidiToCyclesPerSample(const Value: Integer): Double;
 begin
-  if (Value >= 0) and (Value <= 127)
-   then Result := FGlobalTuneA4 * power(2, (Value - 69) / 12)
-   else Result := -1;
+  if (Value >= 0) and (Value <= 127) then
+    Result := FGlobalTuneA4 * power(2, (Value - 69) / 12)
+  else
+    Result := -1;
 end;
 
 function TPitchConverter.MidiToName(const Value: Integer): String;
 begin
- if (Value >= 0) and (Value <= 127)
-  then Result := CNotes[Value mod 12] + IntToStr(Value div 12 - 2)
-  else Result := '---';
+  if (Value >= 0) and (Value <= 127) then
+    Result := CNotes[Value mod 12] + IntToStr(Value div 12 - 2)
+  else
+    Result := '---';
 end;
 
 function TPitchConverter.MidiToOct(const Value: Integer): Double;
 begin
- if (Value >= 0) and (Value <= 127)
-  then Result := (Value + 36) / 12
-  else Result := -1;
+  if (Value >= 0) and (Value <= 127) then
+    Result := (Value + 36) / 12
+  else
+    Result := -1;
 end;
 
 function TPitchConverter.MidiToPch(Value: Integer): Double;
 var
   k: Double;
 begin
- if (Value >= 0) and (Value <= 127) then
+  if (Value >= 0) and (Value <= 127) then
   begin
-   Value := round(Value);
-   k := (Value + 36) / 12;
-   Result := int(k) + 12 * frac(k) * 1E-2;
-  end else Result := -1;
+    Value := round(Value);
+    k := (Value + 36) / 12;
+    Result := int(k) + 12 * frac(k) * 1E-2;
+  end
+  else
+    Result := -1;
 end;
 
 function TPitchConverter.OctToCyclesPerSample(Value: Double): Double;
 begin
- if Value < 0 then Value := 0;
- Result := FGlobalTuneA4 * Power(2, Value - 8.75);
+  if Value < 0 then
+    Value := 0;
+  Result := FGlobalTuneA4 * power(2, Value - 8.75);
 end;
 
 function TPitchConverter.OctToMidi(const Value: Double): Integer;
 begin
-  if (Value <= 3)
-   then Result := -1
-   else Result := round(12 * (Value - 3));
-  if Result > 127 then Result := -1;
+  if (Value <= 3) then
+    Result := -1
+  else
+    Result := round(12 * (Value - 3));
+  if Result > 127 then
+    Result := -1;
 end;
 
 function TPitchConverter.OctToPch(Value: Double): Double;
 var
   z: Double;
 begin
-  if Value < 0 then Value := 0;
+  if Value < 0 then
+    Value := 0;
   z := round(frac(Value) * 12);
   Result := int(Value) + z * 1E-2;
 end;
@@ -209,9 +218,11 @@ function TPitchConverter.PchToCyclesPerSample(Value: Double): Double;
 var
   z: Double;
 begin
-  if Value < 0 then Value := 0;
+  if Value < 0 then
+    Value := 0;
   z := round(frac(Value) * 100);
-  if (z < 0) or (z > 11) then z := 0;
+  if (z < 0) or (z > 11) then
+    z := 0;
   Result := FGlobalTuneA4 * power(2, Value + z / 12 - 8.75);
 end;
 
@@ -219,57 +230,61 @@ function TPitchConverter.PchToMidi(const Value: Double): Integer;
 var
   z: Double;
 begin
-  if Value <= 3 then Result := -1
+  if Value <= 3 then
+    Result := -1
   else
-   begin
+  begin
     z := round(100 * frac(Value)) * 1E-2;
     if (z < 0) or (z > 0.11) then
       z := 0;
     Result := round(100 * z + 12 * (Value - 3));
-   end;
-  if Result > 127 then Result := -1;
+  end;
+  if Result > 127 then
+    Result := -1;
 end;
 
 function TPitchConverter.PchToOct(Value: Double): Double;
 var
   z: Double;
 begin
-  if Value < 0 then Value := 0;
+  if Value < 0 then
+    Value := 0;
   z := round(frac(Value) * 100) * 1E-2;
-  if (z < 0) or (z > 0.11) then z := 0;
+  if (z < 0) or (z > 0.11) then
+    z := 0;
   Result := int(Value) + 100 * z / 12;
 end;
 
 procedure TPitchConverter.SetCPS(const Value: Double);
 begin
- if FCps <> Value then
+  if FCps <> Value then
   begin
-   FCps  := Value;
-   FOct  := CyclesPerSampleToOct(FCps);
-   FPch  := CyclesPerSampleToPch(FCps);
-   FMidi := CyclesPerSampleToMidi(FCps);
-   FName := MidiToName(FMidi);
+    FCps := Value;
+    FOct := CyclesPerSampleToOct(FCps);
+    FPch := CyclesPerSampleToPch(FCps);
+    FMidi := CyclesPerSampleToMidi(FCps);
+    FName := MidiToName(FMidi);
   end;
 end;
 
 procedure TPitchConverter.SaveFreqFile(const FileName: TFileName);
 var
-  f    : textfile;
-  i, j : Integer;
-  s    : string;
+  f: textfile;
+  i, j: Integer;
+  s: string;
 begin
   assignfile(f, FileName);
   rewrite(f);
   s := 'const FrequTable : array[0..127] of double = (';
   writeln(f, s);
   for i := 0 to 126 do
-   begin
+  begin
     s := FloatToStr(MidiToCyclesPerSample(i)) + ',';
     for j := 1 to Length(s) - 1 do
       if s[j] = ',' then
         s[j] := '.';
     writeln(f, s);
-   end;
+  end;
   s := FloatToStr(MidiToCyclesPerSample(127)) + ');';
   for j := 1 to Length(s) - 1 do
     if s[j] = ',' then
@@ -280,13 +295,13 @@ end;
 
 procedure TPitchConverter.SetMidi(const Value: Integer);
 begin
- if FMidi <> Value then
+  if FMidi <> Value then
   begin
-   FMidi := Value;
-   FOct  := MidiToOct(FMidi);
-   FPch  := MidiToPch(FMidi);
-   FCps  := MidiToCyclesPerSample(FMidi);
-   FName := MidiToName(FMidi);
+    FMidi := Value;
+    FOct := MidiToOct(FMidi);
+    FPch := MidiToPch(FMidi);
+    FCps := MidiToCyclesPerSample(FMidi);
+    FName := MidiToName(FMidi);
   end;
 end;
 
@@ -296,51 +311,54 @@ var
   s: string;
 begin
   s := UpperCase(Value);
-  if Length(s) = 2
-   then s := s[1] + '  ' + s[2];
+  if Length(s) = 2 then
+    s := s[1] + '  ' + s[2];
   if Length(s) = 3 then
-   if s[2] = '-'
-    then s := s[1] + ' ' + s[2] + s[3]
-    else s := s[1] + s[2] + ' ' + s[3];
-  if Length(s) <> 4 then exit;
+    if s[2] = '-' then
+      s := s[1] + ' ' + s[2] + s[3]
+    else
+      s := s[1] + s[2] + ' ' + s[3];
+  if Length(s) <> 4 then
+    exit;
   c := -1;
   for i := 0 to 11 do
-   if CNotes[i] = copy(s, 1, 2) then
+    if CNotes[i] = copy(s, 1, 2) then
     begin
-     c := i;
-     break;
+      c := i;
+      break;
     end;
-   try
+  try
     i := StrToInt(copy(s, 3, 2)) + 2;
     n := i * 12 + c;
-   except
+  except
     n := -1;
-   end;
-  if c < 0 then n := -1;
+  end;
+  if c < 0 then
+    n := -1;
   Midi := n;
 end;
 
 procedure TPitchConverter.SetOct(const Value: Double);
 begin
- if FOct <> Value then
+  if FOct <> Value then
   begin
-   FOct := Value;
-   FCps := OctToCyclesPerSample(FOct);
-   FPch := OctToPch(FOct);
-   FMidi := OctToMidi(FOct);
-   FName := MidiToName(FMidi);
+    FOct := Value;
+    FCps := OctToCyclesPerSample(FOct);
+    FPch := OctToPch(FOct);
+    FMidi := OctToMidi(FOct);
+    FName := MidiToName(FMidi);
   end;
 end;
 
 procedure TPitchConverter.SetPch(const Value: Double);
 begin
- if FPch <> Value then
+  if FPch <> Value then
   begin
-   FPch := Value;
-   FCps := PchToCyclesPerSample(FPch);
-   FOct := PchToOct(FPch);
-   FMidi := PchToMidi(FPch);
-   FName := MidiToName(FMidi);
+    FPch := Value;
+    FCps := PchToCyclesPerSample(FPch);
+    FOct := PchToOct(FPch);
+    FMidi := PchToMidi(FPch);
+    FName := MidiToName(FMidi);
   end;
 end;
 

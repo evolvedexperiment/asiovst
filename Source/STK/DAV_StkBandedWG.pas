@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkBandedWG;
 
 { Banded waveguide modeling class.
@@ -8,18 +38,18 @@ unit DAV_StkBandedWG;
   Instruments", Proceedings of the 1999 International Computer Music Conference.
 
   Control Change Numbers:
-    - Bow Pressure = 2
-    - Bow Motion = 4
-    - Strike Position = 8
-    - Vibrato Frequency = 11
-    - Gain = 1
-    - Bow Velocity = 128
-    - Set Striking = 64
-    - Instrument Presets = 16
-      - Uniform Bar = 0
-      - Tuned Bar = 1
-      - Glass Harmonica = 2
-      - Tibetan Bowl = 3
+  - Bow Pressure = 2
+  - Bow Motion = 4
+  - Strike Position = 8
+  - Vibrato Frequency = 11
+  - Gain = 1
+  - Bow Velocity = 128
+  - Set Striking = 64
+  - Instrument Presets = 16
+  - Uniform Bar = 0
+  - Tuned Bar = 1
+  - Glass Harmonica = 2
+  - Tibetan Bowl = 3
 }
 
 interface
@@ -36,28 +66,28 @@ const
 type
   TStkBandedWG = class(TStkInstrument)
   protected
-    FDoPluck               : Boolean;
-    FTrackVelocity         : Boolean;
-    FNModes, FPresetModes  : Integer;
-    FBowTabl               : TBowTable;
-    FADSR                  : TAdsr;
-    FBandpass              : array[0..CMaxBandedModes - 1] of TBiquad;
-    FDelay                 : array[0..CMaxBandedModes - 1] of TDelayl;
-    FFreakency             : Single;
-    FBaseGain              : Single;
-    FMaxVelocity           : Single;
-    FGains, FBaseGains     : Single;
-    FExcitation, FModes    : array[0..CMaxBandedModes - 1] of Single;
-    FIntegrationConstant   : Single;
-    FVelocityInput         : Single;
-    FBowVelocity           : Single;
-    FBowTarget             : Single;
-    FStrikeAmp             : Single;
-    FBowPosition           : Single;
-    FStrikePosition        : Integer;
+    FDoPluck: Boolean;
+    FTrackVelocity: Boolean;
+    FNModes, FPresetModes: Integer;
+    FBowTabl: TBowTable;
+    FADSR: TAdsr;
+    FBandpass: array [0 .. CMaxBandedModes - 1] of TBiquad;
+    FDelay: array [0 .. CMaxBandedModes - 1] of TDelayl;
+    FFreakency: Single;
+    FBaseGain: Single;
+    FMaxVelocity: Single;
+    FGains, FBaseGains: Single;
+    FExcitation, FModes: array [0 .. CMaxBandedModes - 1] of Single;
+    FIntegrationConstant: Single;
+    FVelocityInput: Single;
+    FBowVelocity: Single;
+    FBowTarget: Single;
+    FStrikeAmp: Single;
+    FBowPosition: Single;
+    FStrikePosition: Integer;
   public
     constructor Create(const SampleRate: Single); override;
-    destructor Destroy; override; 
+    destructor Destroy; override;
     procedure Clear;
 
     // Set strike position (0.0 - 1.0).
@@ -100,10 +130,10 @@ begin
   inherited Create(SampleRate);
   FDoPluck := True;
   for i := 0 to CMaxBandedModes - 1 do
-   begin
+  begin
     FDelay[i] := TDelayl.Create(srate);
     FBandpass[i] := TBiquad.Create(srate);
-   end;
+  end;
 
   FBowTabl := TBowTable.Create(srate);
   FBowTabl.setSlope(3.0);
@@ -134,10 +164,10 @@ begin
   FBowTabl.Free;
   FADSR.Free;
   for i := 0 to CMaxBandedModes - 1 do
-   begin
+  begin
     FDelay[i].Free;
     FBandpass[i].Free;
-   end;
+  end;
 end;
 
 procedure TStkBandedWG.Clear;
@@ -145,10 +175,10 @@ var
   i: Integer;
 begin
   for i := 0 to FNModes - 1 do
-   begin
+  begin
     FDelay[i].Clear;
     FBandpass[i].Clear;
-   end;
+  end;
 end;
 
 procedure TStkBandedWG.setPreset;
@@ -156,98 +186,98 @@ var
   i: Integer;
 begin
   case preset of
-    1 : // Tuned Bar
-     begin
-      FPresetModes := 4;
-      FModes[0] := 1.0;
-      FModes[1] := 4.0198391420;
-      FModes[2] := 10.7184986595;
-      FModes[3] := 18.0697050938;
+    1: // Tuned Bar
+      begin
+        FPresetModes := 4;
+        FModes[0] := 1.0;
+        FModes[1] := 4.0198391420;
+        FModes[2] := 10.7184986595;
+        FModes[3] := 18.0697050938;
 
-      for i := 0 to FPresetModes - 1 do
-       begin
-        FBaseGains[i] := power(0.999, i + 1);
-        FExcitation[i] := 1.0;
-       end;
+        for i := 0 to FPresetModes - 1 do
+        begin
+          FBaseGains[i] := power(0.999, i + 1);
+          FExcitation[i] := 1.0;
+        end;
 
-     end;
+      end;
 
-    2 : // Glass Harmonica
-     begin
-      FPresetModes := 5;
-      FModes[0] := 1.0;
-      FModes[1] := 2.32;
-      FModes[2] := 4.25;
-      FModes[3] := 6.63;
-      FModes[4] := 9.38;
-    // FModes[5]:= 12.22;
+    2: // Glass Harmonica
+      begin
+        FPresetModes := 5;
+        FModes[0] := 1.0;
+        FModes[1] := 2.32;
+        FModes[2] := 4.25;
+        FModes[3] := 6.63;
+        FModes[4] := 9.38;
+        // FModes[5]:= 12.22;
 
-      for i := 0 to FPresetModes - 1 do
-       begin
-        FBaseGains[i] := power(0.999, i + 1);
-        FExcitation[i] := 1.0;
-       end;
+        for i := 0 to FPresetModes - 1 do
+        begin
+          FBaseGains[i] := power(0.999, i + 1);
+          FExcitation[i] := 1.0;
+        end;
 
-     end;
+      end;
 
-    3 : // Tibetan Prayer Bowl (ICMC'02)
-     begin
-      FPresetModes := 12;
-      FModes[0] := 0.996108344;
-      FBaseGains[0] := 0.999925960128219;
-      FExcitation[0] := 11.900357 / 10.0;
-      FModes[1] := 1.0038916562;
-      FBaseGains[1] := 0.999925960128219;
-      FExcitation[1] := 11.900357 / 10.;
-      FModes[2] := 2.979178;
-      FBaseGains[2] := 0.999982774366897;
-      FExcitation[2] := 10.914886 / 10.;
-      FModes[3] := 2.99329767;
-      FBaseGains[3] := 0.999982774366897;
-      FExcitation[3] := 10.914886 / 10.;
-      FModes[4] := 5.704452;
-      FBaseGains[4] := 1.0; //0.999999999999999999987356406352;
-      FExcitation[4] := 42.995041 / 10.;
-      FModes[5] := 5.704452;
-      FBaseGains[5] := 1.0; //0.999999999999999999987356406352;
-      FExcitation[5] := 42.995041 / 10.;
-      FModes[6] := 8.9982;
-      FBaseGains[6] := 1.0; //0.999999999999999999996995497558225;
-      FExcitation[6] := 40.063034 / 10.;
-      FModes[7] := 9.01549726;
-      FBaseGains[7] := 1.0; //0.999999999999999999996995497558225;
-      FExcitation[7] := 40.063034 / 10.;
-      FModes[8] := 12.83303;
-      FBaseGains[8] := 0.999965497558225;
-      FExcitation[8] := 7.063034 / 10.;
-      FModes[9] := 12.807382;
-      FBaseGains[9] := 0.999965497558225;
-      FExcitation[9] := 7.063034 / 10.;
-      FModes[10] := 17.2808219;
-      FBaseGains[10] := 0.9999999999999999999965497558225;
-      FExcitation[10] := 57.063034 / 10.;
-      FModes[11] := 21.97602739726;
-      FBaseGains[11] := 0.999999999999999965497558225;
-      FExcitation[11] := 57.063034 / 10.;
+    3: // Tibetan Prayer Bowl (ICMC'02)
+      begin
+        FPresetModes := 12;
+        FModes[0] := 0.996108344;
+        FBaseGains[0] := 0.999925960128219;
+        FExcitation[0] := 11.900357 / 10.0;
+        FModes[1] := 1.0038916562;
+        FBaseGains[1] := 0.999925960128219;
+        FExcitation[1] := 11.900357 / 10.;
+        FModes[2] := 2.979178;
+        FBaseGains[2] := 0.999982774366897;
+        FExcitation[2] := 10.914886 / 10.;
+        FModes[3] := 2.99329767;
+        FBaseGains[3] := 0.999982774366897;
+        FExcitation[3] := 10.914886 / 10.;
+        FModes[4] := 5.704452;
+        FBaseGains[4] := 1.0; // 0.999999999999999999987356406352;
+        FExcitation[4] := 42.995041 / 10.;
+        FModes[5] := 5.704452;
+        FBaseGains[5] := 1.0; // 0.999999999999999999987356406352;
+        FExcitation[5] := 42.995041 / 10.;
+        FModes[6] := 8.9982;
+        FBaseGains[6] := 1.0; // 0.999999999999999999996995497558225;
+        FExcitation[6] := 40.063034 / 10.;
+        FModes[7] := 9.01549726;
+        FBaseGains[7] := 1.0; // 0.999999999999999999996995497558225;
+        FExcitation[7] := 40.063034 / 10.;
+        FModes[8] := 12.83303;
+        FBaseGains[8] := 0.999965497558225;
+        FExcitation[8] := 7.063034 / 10.;
+        FModes[9] := 12.807382;
+        FBaseGains[9] := 0.999965497558225;
+        FExcitation[9] := 7.063034 / 10.;
+        FModes[10] := 17.2808219;
+        FBaseGains[10] := 0.9999999999999999999965497558225;
+        FExcitation[10] := 57.063034 / 10.;
+        FModes[11] := 21.97602739726;
+        FBaseGains[11] := 0.999999999999999965497558225;
+        FExcitation[11] := 57.063034 / 10.;
 
-     end;
+      end;
 
   else // Uniform Bar
-   begin
-    FPresetModes := 4;
-    FModes[0] := 1.0;
-    FModes[1] := 2.756;
-    FModes[2] := 5.404;
-    FModes[3] := 8.933;
+    begin
+      FPresetModes := 4;
+      FModes[0] := 1.0;
+      FModes[1] := 2.756;
+      FModes[2] := 5.404;
+      FModes[3] := 8.933;
 
-    for i := 0 to FPresetModes - 1 do
-     begin
-      FBaseGains[i] := power(0.9, i + 1);
-      FExcitation[i] := 1.0;
-     end;
+      for i := 0 to FPresetModes - 1 do
+      begin
+        FBaseGains[i] := power(0.9, i + 1);
+        FExcitation[i] := 1.0;
+      end;
 
-   end;
-   end;
+    end;
+  end;
 
   FNModes := FPresetModes;
   setFrequency(FFreakency);
@@ -261,37 +291,38 @@ begin
   FFreakency := frequency;
   if (frequency <= 0.0) then
     FFreakency := 220.0
-  else
-  if (FFreakency > 1568.0) then
+  else if (FFreakency > 1568.0) then
     FFreakency := 1568.0;
   base := srate / FFreakency;
   for i := 0 to FPresetModes - 1 do
-   begin
+  begin
     // Calculate the FDelay line lengths for each mode.
     length := round(base / FModes[i]);
     if (length > 2.0) then
-     begin
+    begin
       FDelay[i].setDelay(length);
       FGains[i] := FBaseGains[i];
-     end else
-     begin
+    end
+    else
+    begin
       FNModes := i;
       break;
-     end;
-    //  cerr << endl;
+    end;
+    // cerr << endl;
 
     // Set the FBandpass filter resonances
-    radius := 1.0 - PI * 32 / srate; //FFreakency * FModes[i] / Stk::sampleRate/32;
+    radius := 1.0 - PI * 32 / srate;
+    // FFreakency * FModes[i] / Stk::sampleRate/32;
     if (radius < 0.0) then
       radius := 0.0;
     FBandpass[i].setResonance(FFreakency * FModes[i], radius, True);
 
     FDelay[i].Clear;
     FBandpass[i].Clear;
-   end;
+  end;
 
-  //int olen:=(int)(FDelay[0].getDelay);
-  //FStrikePosition:=(int)(FStrikePosition*(length/FModes[0])/olen);
+  // int olen:=(int)(FDelay[0].getDelay);
+  // FStrikePosition:=(int)(FStrikePosition*(length/FModes[0])/olen);
 end;
 
 procedure TStkBandedWG.setStrikePosition;
@@ -320,7 +351,7 @@ begin
   min_len := FDelay[FNModes - 1].getDelay;
   for i := 0 to FNModes - 1 do
     for j := 0 to round(FDelay[i].getDelay / min_len) - 1 do
-      FDelay[i].tick(FExcitation[i] * amp / FNModes);
+      FDelay[i].Tick(FExcitation[i] * amp / FNModes);
 end;
 
 procedure TStkBandedWG.noteOn;
@@ -338,17 +369,17 @@ begin
     stopBowing((1.0 - amplitude) * 0.005);
 end;
 
-function TStkBandedWG.tick: Single;
+function TStkBandedWG.Tick: Single;
 var
   k: Integer;
   Data, input: Single;
 begin
   if (FDoPluck) then
-    input := 0.0//  input:=FStrikeAmp/FNModes;
-//  FStrikeAmp:=0.0;
+    input := 0.0 // input:=FStrikeAmp/FNModes;
+    // FStrikeAmp:=0.0;
 
   else
-   begin
+  begin
     if (FIntegrationConstant = 0.0) then
       FVelocityInput := 0.0
     else
@@ -358,28 +389,28 @@ begin
       FVelocityInput := FVelocityInput + (FBaseGain * FDelay[k].lastOut);
 
     if (FTrackVelocity) then
-     begin
+    begin
       FBowVelocity := FBowVelocity * 0.9995;
       FBowVelocity := FBowVelocity + FBowTarget;
       FBowTarget := FBowTarget * 0.995;
-     end
+    end
     else
-      FBowVelocity := FADSR.tick * FMaxVelocity;
+      FBowVelocity := FADSR.Tick * FMaxVelocity;
 
     input := FBowVelocity - FVelocityInput;
-    input := input * FBowTabl.tick(input);
+    input := input * FBowTabl.Tick(input);
     input := input / FNModes;
-   end;
+  end;
 
   Data := 0.0;
   for k := 0 to FNModes - 1 do
-   begin
-    FBandpass[k].tick(input + FGains[k] * FDelay[k].lastOut);
-    FDelay[k].tick(FBandpass[k].lastOut);
+  begin
+    FBandpass[k].Tick(input + FGains[k] * FDelay[k].lastOut);
+    FDelay[k].Tick(FBandpass[k].lastOut);
     Data := Data + FBandpass[k].lastOut;
-   end;
+  end;
 
-  //lastOutput:=data * FNModes;
+  // lastOutput:=data * FNModes;
   lastOutput := Data * 4;
   Result := lastOutput;
 end;
@@ -389,66 +420,66 @@ var
   norm: Single;
   i: Integer;
 begin
-  norm := Value;// * ONE_OVER_128;
+  norm := Value; // * ONE_OVER_128;
   if (norm < 0) then
     norm := 0.0
   else if (norm > 1.0) then
     norm := 1.0;
 
   if (number = __SK_BowPressure_) then
-   begin // 2
+  begin // 2
     if (norm = 0.0) then
       FDoPluck := True
     else
-     begin
+    begin
       FDoPluck := False;
       FBowTabl.setSlope(10.0 - (9.0 * norm));
-     end;
-   end
+    end;
+  end
   else if (number = 4) then
-   begin // 4
+  begin // 4
     if (not FTrackVelocity) then
       FTrackVelocity := True;
     FBowTarget := FBowTarget + 0.005 * (norm - FBowPosition);
     FBowPosition := norm;
-    //FADSR.setTarget(FBowPosition);
-   end
+    // FADSR.setTarget(FBowPosition);
+  end
   else if (number = 8) then // 8
     setStrikePosition(norm)
   else if (number = __SK_AfterTouch_Cont_) then
-   begin // 128
-    //FBowTarget += 0.02 * (norm - FBowPosition);
-    //FBowPosition:=norm;
+  begin // 128
+    // FBowTarget += 0.02 * (norm - FBowPosition);
+    // FBowPosition:=norm;
     if (FTrackVelocity) then
       FTrackVelocity := False;
     FMaxVelocity := 0.13 * norm;
     FADSR.setTarget(norm);
-   end
+  end
   else if (number = __SK_ModWheel_) then
-   begin // 1
-    //    FBaseGain:=0.9989999999 + (0.001 * norm );
+  begin // 1
+    // FBaseGain:=0.9989999999 + (0.001 * norm );
     FBaseGain := 0.8999999999999999 + (0.1 * norm);
-    //  cerr << "Yuck!" << endl;
+    // cerr << "Yuck!" << endl;
     for i := 0 to FNModes - 1 do
       FGains[i] := FBaseGains[i] * FBaseGain;
-    //      FGains[i]= pow(FBaseGain, (int)(FDelay[i].getDelay+i));
-   end
+    // FGains[i]= pow(FBaseGain, (int)(FDelay[i].getDelay+i));
+  end
   else if (number = __SK_ModFrequency_) then // 11
     FIntegrationConstant := norm
   else if (number = __SK_Sustain_) then
-   begin // 64
+  begin // 64
     if (norm < 0.5) then
       FDoPluck := True
     else
       FDoPluck := False;
-   end
+  end
   else if (number = __SK_Portamento_) then
-   begin // 65
+  begin // 65
     if (norm < 0.5) then
       FTrackVelocity := False
     else
       FTrackVelocity := True;
-   end
+  end
   else if (number = __SK_ProphesyRibbon_) then // 16
     setPreset(round(Value * 3));
 end;

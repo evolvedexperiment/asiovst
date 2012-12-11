@@ -1,34 +1,34 @@
-unit DAV_DspFrequencyShifter;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit DAV_DspFrequencyShifter;
 
 interface
 
@@ -40,9 +40,9 @@ uses
 type
   TCustomBodeFrequencyShifter = class(TDspSampleRatePersistent)
   private
-    FFrequency           : Single;
-    FCoefficientCount    : Integer;
-    FTransitionBandwidth : Single;
+    FFrequency: Single;
+    FCoefficientCount: Integer;
+    FTransitionBandwidth: Single;
     procedure SetFrequency(const Value: Single);
     procedure SetCoefficientCount(const Value: Integer);
     procedure SetTransitionBandwidth(const Value: Single);
@@ -54,7 +54,8 @@ type
     constructor Create; override;
     procedure Clear; virtual; abstract;
 
-    property Frequency: Single read FFrequency write SetFrequency; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+    property Frequency: Single read FFrequency write SetFrequency;
+    {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} { <
       The Frequency property descibes the frequency in Hz, by what the audio
       signal is shifted. A positive frequency means the signal is shifted
       upwards, while a negative frequency means a shift downwards.
@@ -62,13 +63,17 @@ type
       if this frequency is increased above the nyquist frequency.
 
     }{$ENDREGION 'Documentation'}{$ENDIF}
-    property CoefficientCount: Integer read FCoefficientCount write SetCoefficientCount; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+    property CoefficientCount: Integer read FCoefficientCount
+      write SetCoefficientCount;
+    {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} { <
       The CoefficientCount property describe the internal number of
       coefficients for the algorithm. The algorithm uses a polyphase hilbert
       transform. Further informations can be found in the according classes.
 
     }{$ENDREGION 'Documentation'}{$ENDIF}
-    property TransitionBandwidth: Single read FTransitionBandwidth write SetTransitionBandwidth; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+    property TransitionBandwidth: Single read FTransitionBandwidth
+      write SetTransitionBandwidth;
+    {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} { <
       The TransitionBandwidth property describe the internal transition
       bandwidth of the underlying polyphase filter.
 
@@ -77,8 +82,8 @@ type
 
   TCustomBodeFrequencyShifter32 = class(TCustomBodeFrequencyShifter)
   private
-    FLfo     : TLFOSine32;
-    FHilbert : TPhaseHalfPi32;
+    FLfo: TLFOSine32;
+    FHilbert: TPhaseHalfPi32;
   protected
     procedure CoefficientCountChanged; override;
     procedure FrequencyChanged; override;
@@ -89,7 +94,8 @@ type
     destructor Destroy; override;
     procedure Clear; override;
 
-    procedure ProcessSample(Input: Single; out Upshift, Downshift: Single); virtual; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} {<
+    procedure ProcessSample(Input: Single; out Upshift, Downshift: Single);
+      virtual; {$IFDEF DELPHI10_UP}{$REGION 'Documentation'} { <
       The ProcessSample method simulateously processes the upshifted signal
       and the downshifted signal for the given frequency.
       NOTE: If the frequency is negative the Upshift and Downshift variables
@@ -113,106 +119,106 @@ uses
 
 constructor TCustomBodeFrequencyShifter.Create;
 begin
- inherited;
- FFrequency := 1000;
+  inherited;
+  FFrequency := 1000;
 end;
 
 procedure TCustomBodeFrequencyShifter.SetCoefficientCount(const Value: Integer);
 begin
- if FCoefficientCount <> Value then
+  if FCoefficientCount <> Value then
   begin
-   FCoefficientCount := Value;
-   CoefficientCountChanged;
+    FCoefficientCount := Value;
+    CoefficientCountChanged;
   end;
 end;
 
 procedure TCustomBodeFrequencyShifter.SetFrequency(const Value: Single);
 begin
- if FFrequency <> Value then
+  if FFrequency <> Value then
   begin
-   FFrequency := Value;
-   FrequencyChanged;
+    FFrequency := Value;
+    FrequencyChanged;
   end;
 end;
 
-procedure TCustomBodeFrequencyShifter.SetTransitionBandwidth(
-  const Value: Single);
+procedure TCustomBodeFrequencyShifter.SetTransitionBandwidth
+  (const Value: Single);
 begin
- if FTransitionBandwidth <> Value then
+  if FTransitionBandwidth <> Value then
   begin
-   FTransitionBandwidth := Value;
-   TransitionBandwidthChanged;
+    FTransitionBandwidth := Value;
+    TransitionBandwidthChanged;
   end;
 end;
-
 
 { TCustomBodeFrequencyShifter32 }
 
 constructor TCustomBodeFrequencyShifter32.Create;
 begin
- inherited;
+  inherited;
 
- // create and setup LFO
- FLfo := TLFOSine32.Create;
- with FLfo do
+  // create and setup LFO
+  FLfo := TLFOSine32.Create;
+  with FLfo do
   begin
-   SampleRate := Self.SampleRate;
-   Frequency := FFrequency;
+    SampleRate := Self.SampleRate;
+    Frequency := FFrequency;
   end;
 
- // create and setup polyphase hilbert transform
- FHilbert := TPhaseHalfPi32.Create;
- FHilbert.SetCoefficients(8, 0.1);
+  // create and setup polyphase hilbert transform
+  FHilbert := TPhaseHalfPi32.Create;
+  FHilbert.SetCoefficients(8, 0.1);
 end;
 
 destructor TCustomBodeFrequencyShifter32.Destroy;
 begin
- FreeAndNil(FLFO);
- FreeAndNil(FHilbert);
+  FreeAndNil(FLfo);
+  FreeAndNil(FHilbert);
 
- inherited;
+  inherited;
 end;
 
 procedure TCustomBodeFrequencyShifter32.Clear;
 begin
- FLfo.Phase := 0;
- FHilbert.ClearBuffers;
+  FLfo.Phase := 0;
+  FHilbert.ClearBuffers;
 end;
 
 procedure TCustomBodeFrequencyShifter32.CoefficientCountChanged;
 begin
- Assert(FCoefficientCount >= 1);
- Assert(FCoefficientCount <= 32);
- FHilbert.NumberOfCoefficients := FCoefficientCount;
+  Assert(FCoefficientCount >= 1);
+  Assert(FCoefficientCount <= 32);
+  FHilbert.NumberOfCoefficients := FCoefficientCount;
 end;
 
 procedure TCustomBodeFrequencyShifter32.FrequencyChanged;
 begin
- FLfo.Frequency := Frequency;
+  FLfo.Frequency := Frequency;
 end;
 
 procedure TCustomBodeFrequencyShifter32.SampleRateChanged;
 begin
- FLfo.SampleRate := SampleRate;
+  FLfo.SampleRate := SampleRate;
 end;
 
 procedure TCustomBodeFrequencyShifter32.TransitionBandwidthChanged;
 begin
- FHilbert.Transition := FTransitionBandwidth;
+  FHilbert.Transition := FTransitionBandwidth;
 end;
 
-procedure TCustomBodeFrequencyShifter32.ProcessSample(Input: Single; out Upshift, Downshift: Single);
+procedure TCustomBodeFrequencyShifter32.ProcessSample(Input: Single;
+  out Upshift, Downshift: Single);
 var
-  Cmplx : TComplex32;
+  Cmplx: TComplex32;
 const
-  CSqrtHalf32 : Single = 0.70710678118654752440084436210485;
+  CSqrtHalf32: Single = 0.70710678118654752440084436210485;
 begin
- FHilbert.ProcessHilbertSample(Input, Cmplx.Re, Cmplx.Im);
- Cmplx.Im := FLfo.Sine * Cmplx.Im;
- Cmplx.Re := FLfo.Cosine * Cmplx.Re;
- FLfo.CalculateNextSample;
- Upshift   := (Cmplx.Re - Cmplx.Im) * CSqrtHalf32;
- Downshift := (Cmplx.Re + Cmplx.Im) * CSqrtHalf32;
+  FHilbert.ProcessHilbertSample(Input, Cmplx.Re, Cmplx.Im);
+  Cmplx.Im := FLfo.Sine * Cmplx.Im;
+  Cmplx.Re := FLfo.Cosine * Cmplx.Re;
+  FLfo.CalculateNextSample;
+  Upshift := (Cmplx.Re - Cmplx.Im) * CSqrtHalf32;
+  Downshift := (Cmplx.Re + Cmplx.Im) * CSqrtHalf32;
 end;
 
 end.

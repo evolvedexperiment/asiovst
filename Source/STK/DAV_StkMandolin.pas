@@ -1,25 +1,55 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkMandolin;
 
 // based on DAV_Stk by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{  Stk TStkMandolin instrument model class.
+{ Stk TStkMandolin instrument model class.
 
-   This class inherits from PluckTwo and uses "commuted synthesis" techniques
-   to model a mandolin instrument.
+  This class inherits from PluckTwo and uses "commuted synthesis" techniques
+  to model a mandolin instrument.
 
-   This is a digital waveguide model, making its use possibly subject to
-   patents held by Stanford University, Yamaha, and others.
-   Commuted Synthesis, in particular, is covered by patents, granted, pending,
-   and/or applied-for. All are assigned to the Board of Trustees,
-   Stanford University. For information, contact the Office of Technology
-   Licensing, Stanford University.
+  This is a digital waveguide model, making its use possibly subject to
+  patents held by Stanford University, Yamaha, and others.
+  Commuted Synthesis, in particular, is covered by patents, granted, pending,
+  and/or applied-for. All are assigned to the Board of Trustees,
+  Stanford University. For information, contact the Office of Technology
+  Licensing, Stanford University.
 
-   Control Change Numbers:
-     - Body Size = 2
-     - Pluck APosition = 4
-     - String Sustain = 11
-     - String Detuning = 1
-     - Microphone APosition = 128
+  Control Change Numbers:
+  - Body Size = 2
+  - Pluck APosition = 4
+  - String Sustain = 11
+  - String Detuning = 1
+  - Microphone APosition = 128
 }
 
 interface
@@ -35,16 +65,17 @@ type
     // Set the body Size (a value of 1.0 produces the "default" Size).
     procedure SetBodySize(const Value: Single);
   protected
-    FSoundFile  : array[0..11] of TStkWavePlayer;
-    FBodySize   : Single;
-    FDirectBody : Single;
-    FMic        : Integer;
-    FDampTime   : Integer;
-    FWaveDone   : Boolean;
+    FSoundFile: array [0 .. 11] of TStkWavePlayer;
+    FBodySize: Single;
+    FDirectBody: Single;
+    FMic: Integer;
+    FDampTime: Integer;
+    FWaveDone: Boolean;
 
     procedure BodySizeChanged; virtual;
   public
-    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, LowestFrequency: Single);
+      reintroduce; virtual;
     destructor Destroy; override;
 
     // Pluck the strings with the given amplitude (0.0 - 1.0) using the current frequency.
@@ -60,7 +91,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by number and value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
 
     property BodySize: Single read FBodySize write SetBodySize;
   end;
@@ -73,46 +105,49 @@ uses
 constructor TStkMandolin.Create;
 begin
   inherited Create(SampleRate, LowestFrequency);
-  FSoundFile[ 0] := TStkWavePlayer.Create(SampleRate, 'mand1.wav');
-  FSoundFile[ 1] := TStkWavePlayer.Create(SampleRate, 'mand2.wav');
-  FSoundFile[ 2] := TStkWavePlayer.Create(SampleRate, 'mand3.wav');
-  FSoundFile[ 3] := TStkWavePlayer.Create(SampleRate, 'mand4.wav');
-  FSoundFile[ 4] := TStkWavePlayer.Create(SampleRate, 'mand5.wav');
-  FSoundFile[ 5] := TStkWavePlayer.Create(SampleRate, 'mand6.wav');
-  FSoundFile[ 6] := TStkWavePlayer.Create(SampleRate, 'mand7.wav');
-  FSoundFile[ 7] := TStkWavePlayer.Create(SampleRate, 'mand8.wav');
-  FSoundFile[ 8] := TStkWavePlayer.Create(SampleRate, 'mand9.wav');
-  FSoundFile[ 9] := TStkWavePlayer.Create(SampleRate, 'mand10.wav');
+  FSoundFile[0] := TStkWavePlayer.Create(SampleRate, 'mand1.wav');
+  FSoundFile[1] := TStkWavePlayer.Create(SampleRate, 'mand2.wav');
+  FSoundFile[2] := TStkWavePlayer.Create(SampleRate, 'mand3.wav');
+  FSoundFile[3] := TStkWavePlayer.Create(SampleRate, 'mand4.wav');
+  FSoundFile[4] := TStkWavePlayer.Create(SampleRate, 'mand5.wav');
+  FSoundFile[5] := TStkWavePlayer.Create(SampleRate, 'mand6.wav');
+  FSoundFile[6] := TStkWavePlayer.Create(SampleRate, 'mand7.wav');
+  FSoundFile[7] := TStkWavePlayer.Create(SampleRate, 'mand8.wav');
+  FSoundFile[8] := TStkWavePlayer.Create(SampleRate, 'mand9.wav');
+  FSoundFile[9] := TStkWavePlayer.Create(SampleRate, 'mand10.wav');
   FSoundFile[10] := TStkWavePlayer.Create(SampleRate, 'mand11.wav');
   FSoundFile[11] := TStkWavePlayer.Create(SampleRate, 'mand12.wav');
   FDirectBody := 1.0;
   FMic := 0;
   FDampTime := 0;
-// FWaveDone := FSoundFile[FMic].isFinished;
+  // FWaveDone := FSoundFile[FMic].isFinished;
 end;
 
 destructor TStkMandolin.Destroy;
 var
   i: Integer;
 begin
- for i := 0 to 11 do FreeAndNil(FSoundFile[i]);
- inherited Destroy;
+  for i := 0 to 11 do
+    FreeAndNil(FSoundFile[i]);
+  inherited Destroy;
 end;
 
 procedure TStkMandolin.Pluck(const Amplitude: Single);
 begin
- // This function gets interesting, because pluck
- // may be longer than string length, so we just
- // reset the FSoundFile and add in the pluck in
- // the Tick method.
+  // This function gets interesting, because pluck
+  // may be longer than string length, so we just
+  // reset the FSoundFile and add in the pluck in
+  // the Tick method.
   FSoundFile[FMic].reset;
   FWaveDone := False;
   FPluckAmplitude := Amplitude;
-  if (Amplitude < 0.0) then FPluckAmplitude := 0.0
-  else if (Amplitude > 1.0) then FPluckAmplitude := 1.0;
- // Set the pick APosition, which puts zeroes at APosition * length.
+  if (Amplitude < 0.0) then
+    FPluckAmplitude := 0.0
+  else if (Amplitude > 1.0) then
+    FPluckAmplitude := 1.0;
+  // Set the pick APosition, which puts zeroes at APosition * length.
   FCombDelay.Delay := (0.5 * FPluckPosition * FLastLength);
-  FDampTime := round(FLastLength);   // See Tick method below.
+  FDampTime := round(FLastLength); // See Tick method below.
 end;
 
 procedure TStkMandolin.Pluck(const Amplitude, Position: Single);
@@ -130,66 +165,67 @@ end;
 
 procedure TStkMandolin.SetBodySize(const Value: Single);
 begin
- if FBodySize <> Value then
+  if FBodySize <> Value then
   begin
-   FBodySize := Value;
-   BodySizeChanged;
+    FBodySize := Value;
+    BodySizeChanged;
   end;
 end;
 
 procedure TStkMandolin.BodySizeChanged;
 var
-  Rate : Single;
-  i    : Integer;
+  Rate: Single;
+  i: Integer;
 begin
   // Scale the commuted body response by its sample rate (22050).
   Rate := FBodySize;
-  for i := 0 to 11
-   do FSoundFile[i].Frequency := Rate;
+  for i := 0 to 11 do
+    FSoundFile[i].Frequency := Rate;
 end;
 
 function TStkMandolin.Tick: Single;
 var
   temp: Single;
 begin
-// if ( not FWaveDone ) then
-   begin
-   // Scale the pluck excitation with comb
-   // filtering for the duration of the file.
+  // if ( not FWaveDone ) then
+  begin
+    // Scale the pluck excitation with comb
+    // filtering for the duration of the file.
     temp := FSoundFile[FMic].Tick * FPluckAmplitude;
     temp := temp - FCombDelay.Tick(temp);
-//    FWaveDone:=FSoundFile[FMic].isFinished;
-   end;
+    // FWaveDone:=FSoundFile[FMic].isFinished;
+  end;
 
   // Damping hack to help aprocedure overflow on re-plucking.
   if (FDampTime >= 0) then
-   begin
+  begin
     FDampTime := FDampTime - 1;
     // Calculate 1st delay filtered reflection plus pluck excitation.
-    FLastOutput := FDelayLine.Tick(
-      FFilter.Tick(temp + (FDelayLine.LastOutput * 0.7)));
+    FLastOutput := FDelayLine.Tick
+      (FFilter.Tick(temp + (FDelayLine.LastOutput * 0.7)));
     // Calculate 2nd delay just like the 1st.
-    FLastOutput := FLastOutput + FDelayLine2.Tick(
-      FFilter2.Tick(temp + (FDelayLine2.LastOutput * 0.7)));
-   end
+    FLastOutput := FLastOutput + FDelayLine2.Tick
+      (FFilter2.Tick(temp + (FDelayLine2.LastOutput * 0.7)));
+  end
   else
-   begin // No damping hack after 1 period.
+  begin // No damping hack after 1 period.
     FLoopgain := 0.999;
     // Calculate 1st delay filtered reflection plus pluck excitation.
-    FLastOutput := FDelayLine.Tick(
-      FFilter.Tick(temp + (FDelayLine.LastOutput * FLoopGain)));
+    FLastOutput := FDelayLine.Tick
+      (FFilter.Tick(temp + (FDelayLine.LastOutput * FLoopgain)));
     // Calculate 2nd delay just like the 1st.
-    FLastOutput := FLastOutput + FDelayLine2.Tick(
-      FFilter2.Tick(temp + (FDelayLine2.LastOutput * FLoopGain)));
-   end;
+    FLastOutput := FLastOutput + FDelayLine2.Tick
+      (FFilter2.Tick(temp + (FDelayLine2.LastOutput * FLoopgain)));
+  end;
 
   FLastOutput := FLastOutput * 0.3;
   Result := FLastOutput;
 end;
 
-procedure TStkMandolin.ControlChange(const Number: Integer; const Value: Single);
+procedure TStkMandolin.ControlChange(const Number: Integer;
+  const Value: Single);
 var
-  norm : Single;
+  norm: Single;
 begin
   norm := Limit(Value, 0, 1);
 

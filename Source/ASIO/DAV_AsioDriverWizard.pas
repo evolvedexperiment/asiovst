@@ -1,13 +1,37 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_AsioDriverWizard;
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  The main class for the ASIO Driver Wizard. The Execute method drives the   //
-//  process.                                                                  //
-//                                                                            //
-//  Part of the ASIO Driver Framework by Christian Budde and Tobybear.         //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+// The main class for the ASIO Driver Wizard. The Execute method drives the
+// process.
 
 interface
 
@@ -33,30 +57,30 @@ type
     function GetAuthor: string;
     function GetComment: string;
     function GetPage: string;
-    {$IFDEF DELPHI6_UP}
+{$IFDEF DELPHI6_UP}
     function GetGlyph: cardinal;
-    {$ELSE}
+{$ELSE}
     function GetGlyph: HICON;
-    {$ENDIF}
+{$ENDIF}
   end;
 
 implementation
 
-{-$R ..\..\Resources\DAV_AsioDriverWizard.res}
+{ -$R ..\..\Resources\DAV_AsioDriverWizard.res }
 
 uses
   Dialogs, DAV_AsioDriverProjectCreator, DAV_AsioDriverModuleCreator,
   DAV_AsioDriverControlPanelCreator, DAV_AsioDriverWizardFrm;
 
 const
-  CWizardId      = '{079A1F78-23D1-4C7A-A995-B0A75D892A21}';
-  CWizardPage    = 'ASIO';
-  CWizardName    = 'ASIO Driver';
-  CWizardAuthor  = 'Christian Budde';
+  CWizardId = '{079A1F78-23D1-4C7A-A995-B0A75D892A21}';
+  CWizardPage = 'ASIO';
+  CWizardName = 'ASIO Driver';
+  CWizardAuthor = 'Christian Budde';
   CWizardComment = 'ASIO Driver Wizard';
-  CWizardIcon    = 'AsioDriverWIZARD';
+  CWizardIcon = 'AsioDriverWIZARD';
 
-resourcestring  
+resourcestring
   // error messages
   CProjectCreationErrorMessage =
     'The wizard encountered an error while generating the main project file.';
@@ -68,8 +92,8 @@ resourcestring
 procedure TAsioDriverWizard.CreateControlPanelForm(Config: TConfig);
 begin
   try
-    (BorlandIDEServices as IOTAModuleServices).CreateModule(
-      TAsioDriverControlPanelCreator.Create(Config));
+    (BorlandIDEServices as IOTAModuleServices)
+      .CreateModule(TAsioDriverControlPanelCreator.Create(Config));
   except
     MessageDlg(CEditorFormCreationErrorMessage, mtError, [mbOK], 0);
   end;
@@ -78,8 +102,8 @@ end;
 procedure TAsioDriverWizard.CreateProject(Config: TConfig);
 begin
   try
-    (BorlandIDEServices as IOTAModuleServices).CreateModule(
-      TAsioDriverProjectCreator.Create(Config));
+    (BorlandIDEServices as IOTAModuleServices)
+      .CreateModule(TAsioDriverProjectCreator.Create(Config));
   except
     MessageDlg(CProjectCreationErrorMessage, mtError, [mbOK], 0);
   end;
@@ -88,8 +112,8 @@ end;
 procedure TAsioDriverWizard.CreateAsioDriverModule(Config: TConfig);
 begin
   try
-    (BorlandIDEServices as IOTAModuleServices).CreateModule(
-      TAsioDriverModuleCreator.Create(Config));
+    (BorlandIDEServices as IOTAModuleServices)
+      .CreateModule(TAsioDriverModuleCreator.Create(Config));
   except
     MessageDlg(CAsioDriverModuleCreationErrorMessage, mtError, [mbOK], 0);
   end;
@@ -127,8 +151,10 @@ begin
 end;
 
 {$IFDEF DELPHI6_UP}
+
 function TAsioDriverWizard.GetGlyph: cardinal;
 {$ELSE}
+
 function TAsioDriverWizard.GetGlyph: HICON;
 {$ENDIF}
 begin

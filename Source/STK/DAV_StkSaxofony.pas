@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkSaxofony;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -44,25 +74,26 @@ type
     procedure FrequencyChanged;
 
   protected
-    FDelays        : array[0..1] of TStkDelayL;
-    FReedTable     : TStkReedTable;
-    FFilter        : TStkOnezero;
-    FEnvelope      : TStkEnvelope;
-    FNoise         : TStkNoise;
-    FVibrato       : TStkLfo;
-    FLength        : Integer;
-    FOutputGain    : Single;
-    FNoiseGain     : Single;
-    FVibratoGain   : Single;
-    FPosition      : Single;
-    FBaseFrequency : Single;
+    FDelays: array [0 .. 1] of TStkDelayL;
+    FReedTable: TStkReedTable;
+    FFilter: TStkOnezero;
+    FEnvelope: TStkEnvelope;
+    FNoise: TStkNoise;
+    FVibrato: TStkLfo;
+    FLength: Integer;
+    FOutputGain: Single;
+    FNoiseGain: Single;
+    FVibratoGain: Single;
+    FPosition: Single;
+    FBaseFrequency: Single;
 
     // Set instrument parameters for a particular AFrequency.
     procedure SetFrequency(const Value: Single); override;
     function GetFrequency: Single; override;
   public
     // Class constructor, taking the lowest desired playing AFrequency.
-    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, LowestFrequency: Single);
+      reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -86,7 +117,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
   end;
 
 implementation
@@ -100,8 +132,10 @@ begin
   FLength := round(SampleRate / LowestFrequency + 1);
   // Initialize blowing FPosition to 0.2 of FLength / 2.
   FPosition := 0.2;
-  FDelays[0] := TStkDelayL.Create(SampleRate, (1.0 - FPosition) * (FLength shr 1), FLength);
-  FDelays[1] := TStkDelayL.Create(SampleRate, FPosition * (FLength shr 1), FLength);
+  FDelays[0] := TStkDelayL.Create(SampleRate, (1.0 - FPosition) *
+    (FLength shr 1), FLength);
+  FDelays[1] := TStkDelayL.Create(SampleRate,
+    FPosition * (FLength shr 1), FLength);
 
   FReedTable := TStkReedTable.Create(SampleRate);
   FReedTable.Offset := 0.7;
@@ -120,14 +154,14 @@ end;
 
 destructor TStkSaxofony.Destroy;
 begin
- FreeAndNil(FDelays[0]);
- FreeAndNil(FDelays[1]);
- FreeAndNil(FReedTable);
- FreeAndNil(FFilter);
- FreeAndNil(FEnvelope);
- FreeAndNil(FNoise);
- FreeAndNil(FVibrato);
- inherited Destroy;
+  FreeAndNil(FDelays[0]);
+  FreeAndNil(FDelays[1]);
+  FreeAndNil(FReedTable);
+  FreeAndNil(FFilter);
+  FreeAndNil(FEnvelope);
+  FreeAndNil(FNoise);
+  FreeAndNil(FVibrato);
+  inherited Destroy;
 end;
 
 procedure TStkSaxofony.Clear;
@@ -139,12 +173,13 @@ end;
 
 procedure TStkSaxofony.SetFrequency(const Value: Single);
 begin
- if FBaseFrequency <> Value then
+  if FBaseFrequency <> Value then
   begin
-   if (Value <= 0.0)
-    then FBaseFrequency := 220.0
-    else FBaseFrequency := Value;
-   FrequencyChanged;
+    if (Value <= 0.0) then
+      FBaseFrequency := 220.0
+    else
+      FBaseFrequency := Value;
+    FrequencyChanged;
   end;
 end;
 
@@ -152,37 +187,39 @@ procedure TStkSaxofony.FrequencyChanged;
 var
   Delay: Single;
 begin
- Delay := (SampleRate / FBaseFrequency) - 3.0;
- if (Delay <= 0.0) then Delay := 0.3
- else if (Delay > FLength) then Delay := FLength;
+  Delay := (SampleRate / FBaseFrequency) - 3.0;
+  if (Delay <= 0.0) then
+    Delay := 0.3
+  else if (Delay > FLength) then
+    Delay := FLength;
 
- FDelays[0].Delay := (1.0 - FPosition) * Delay;
- FDelays[1].Delay := FPosition * Delay;
+  FDelays[0].Delay := (1.0 - FPosition) * Delay;
+  FDelays[1].Delay := FPosition * Delay;
 end;
 
 function TStkSaxofony.GetFrequency: Single;
 begin
- result := FBaseFrequency;
+  result := FBaseFrequency;
 end;
 
 procedure TStkSaxofony.SetBlowPosition(const Position: Single);
 begin
   if FPosition <> Limit(Position, 0, 1) then
-   begin
+  begin
     FPosition := Limit(Position, 0, 1);
     BlowPositionChanged;
-   end;
+  end;
 end;
 
 procedure TStkSaxofony.BlowPositionChanged;
 var
   TotalDelay: Single;
 begin
- TotalDelay := FDelays[0].Delay;
- TotalDelay := TotalDelay + FDelays[1].Delay;
+  TotalDelay := FDelays[0].Delay;
+  TotalDelay := TotalDelay + FDelays[1].Delay;
 
- FDelays[0].Delay := (1.0 - FPosition) * TotalDelay;
- FDelays[1].Delay := FPosition * TotalDelay;
+  FDelays[0].Delay := (1.0 - FPosition) * TotalDelay;
+  FDelays[1].Delay := FPosition * TotalDelay;
 end;
 
 procedure TStkSaxofony.StartBlowing(const Amplitude, Rate: Single);
@@ -193,7 +230,7 @@ end;
 
 procedure TStkSaxofony.StopBlowing(const Rate: Single);
 begin
-  FEnvelope.Rate  := Rate;
+  FEnvelope.Rate := Rate;
   FEnvelope.Target := 0.0;
 end;
 
@@ -223,32 +260,33 @@ begin
   FLastOutput := temp - FDelays[1].LastOutput;
   pressureDiff := breathPressure - FLastOutput;
   FDelays[1].Tick(temp);
-  FDelays[0].Tick(breathPressure - (pressureDiff *
-    FReedTable.Tick(pressureDiff)) - temp);
+  FDelays[0].Tick(breathPressure -
+    (pressureDiff * FReedTable.Tick(pressureDiff)) - temp);
 
   FLastOutput := FLastOutput * FOutputGain;
-  Result := FLastOutput;
+  result := FLastOutput;
 end;
 
-procedure TStkSaxofony.ControlChange(const Number: Integer; const Value: Single);
+procedure TStkSaxofony.ControlChange(const Number: Integer;
+  const Value: Single);
 var
   norm: Single;
 begin
   norm := Limit(Value, 0, 1);
 
-  if (number = CMidiReedStiffness) then // 2
+  if (Number = CMidiReedStiffness) then // 2
     FReedTable.Slope := 0.1 + (0.4 * norm)
-  else if (number = CMidiNoiseLevel) then // 4
+  else if (Number = CMidiNoiseLevel) then // 4
     FNoiseGain := (norm * 0.4)
-  else if (number = 29) then // 29
+  else if (Number = 29) then // 29
     FVibrato.Frequency := norm * 12.0
-  else if (number = CMidiModWheel) then // 1
+  else if (Number = CMidiModWheel) then // 1
     FVibratoGain := (norm * 0.5)
-  else if (number = CMidiAfterTouchCont) then // 128
+  else if (Number = CMidiAfterTouchCont) then // 128
     FEnvelope.CurrentValue := norm
-  else if (number = 11) then // 11
+  else if (Number = 11) then // 11
     SetBlowPosition(norm)
-  else if (number = 26) then // reed table offset
+  else if (Number = 26) then // reed table offset
     FReedTable.Offset := 0.4 + (norm * 0.6);
 end;
 

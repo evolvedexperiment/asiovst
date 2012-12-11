@@ -1,3 +1,33 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_VSTPrograms;
 
 interface
@@ -8,38 +38,41 @@ uses
   Classes, DAV_VSTBasicModule;
 
 type
-  TChunkEvent = procedure(Sender: TObject; const Index : Integer; const isPreset : Boolean) of object;
+  TChunkEvent = procedure(Sender: TObject; const Index: Integer;
+    const isPreset: Boolean) of object;
 
   TCustomVstProgram = class(TCollectionItem)
   private
-    FDisplayName      : string;
-    FVSTModule        : TBasicVSTModule;
-    FOnInitialize     : TNotifyEvent;
-    FOnStoreChunk     : TChunkEvent;
-    FOnLoadChunk      : TChunkEvent;
+    FDisplayName: string;
+    FVSTModule: TBasicVSTModule;
+    FOnInitialize: TNotifyEvent;
+    FOnStoreChunk: TChunkEvent;
+    FOnLoadChunk: TChunkEvent;
 
     procedure SetParameter(AIndex: Integer; AValue: Single);
     function GetParameter(AIndex: Integer): Single;
   protected
-    FParameter        : array of Single;
-    FChunkData        : TMemoryStream;
+    FParameter: array of Single;
+    FChunkData: TMemoryStream;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
   public
-    {$IFDEF FPC}
+{$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
-    {$ELSE}
+{$ELSE}
     constructor Create(Collection: TCollection); override;
-    {$ENDIF}
+{$ENDIF}
     destructor Destroy; override;
     function ParameterCount: Integer;
     procedure SetParameterCount(const Value: Integer);
     procedure SetParameters(const Parameters: array of Single);
     procedure CopyParameters(const ProgramNr: Integer);
-    property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
+    property Parameter[AIndex: Integer]: Single read GetParameter
+      write SetParameter;
     property Chunk: TMemoryStream read FChunkData write FChunkData;
-    property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
+    property DisplayName{$IFNDEF FPC}: string read GetDisplayName
+      write SetDisplayName{$ENDIF};
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
     property OnInitialize: TNotifyEvent read FOnInitialize write FOnInitialize;
     property OnLoadChunk: TChunkEvent read FOnLoadChunk write FOnLoadChunk;
@@ -60,7 +93,8 @@ type
   protected
     function GetItem(Index: Integer): TVstProgram;
     procedure SetItem(Index: Integer; const Value: TVstProgram);
-    property Items[Index: Integer]: TVstProgram read GetItem write SetItem; default;
+    property Items[Index: Integer]: TVstProgram read GetItem
+      write SetItem; default;
   public
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
@@ -83,141 +117,150 @@ resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
 {$IFDEF FPC}
+
 constructor TCustomVstProgram.Create(ACollection: TCollection);
 {$ELSE}
+
 constructor TCustomVstProgram.Create(Collection: TCollection);
 {$ENDIF}
 begin
- inherited;
- FDisplayName := 'Init';
- FVSTModule := (Collection As TCustomVstPrograms).VSTModule;
- VSTModule.Effect^.numPrograms := Collection.Count;
- with TVSTModuleWithPrograms(VSTModule) do
+  inherited;
+  FDisplayName := 'Init';
+  FVSTModule := (Collection As TCustomVstPrograms).VSTModule;
+  VSTModule.Effect^.numPrograms := Collection.Count;
+  with TVSTModuleWithPrograms(VSTModule) do
   begin
-   if not (effFlagsProgramChunks in VSTModule.Effect^.EffectFlags)
-    then SetLength(FParameter, numParams)
-    else FChunkData := TMemoryStream.Create;
-   if CurrentProgram < 0 then CurrentProgram := 0;
+    if not(effFlagsProgramChunks in VSTModule.Effect^.EffectFlags) then
+      SetLength(FParameter, numParams)
+    else
+      FChunkData := TMemoryStream.Create;
+    if CurrentProgram < 0 then
+      CurrentProgram := 0;
   end;
 end;
 
 destructor TCustomVstProgram.Destroy;
 begin
- try
-  SetLength(FParameter, 0);
-  FreeAndNil(FChunkData);
- finally
-  inherited;
- end;
+  try
+    SetLength(FParameter, 0);
+    FreeAndNil(FChunkData);
+  finally
+    inherited;
+  end;
 end;
 
 function TCustomVstProgram.GetDisplayName: string;
 begin
- Result := FDisplayName;
+  Result := FDisplayName;
 end;
 
 procedure TCustomVstProgram.SetDisplayName(const AValue: string);
 begin
- FDisplayName := Copy(AValue, 0, 50);
+  FDisplayName := Copy(AValue, 0, 50);
 end;
 
 procedure TCustomVstProgram.AssignTo(Dest: TPersistent);
 var
   i: Integer;
 begin
- if Dest is TCustomVstProgram then
-  with TCustomVstProgram(Dest) do
-   begin
-    if Length(Self.FParameter) > 0 then
-     begin
-      SetLength(FParameter, Length(Self.FParameter));
-      for i := 0 to Length(Self.FParameter) - 1
-       do Parameter[i] := Self.Parameter[i];
-     end;
+  if Dest is TCustomVstProgram then
+    with TCustomVstProgram(Dest) do
+    begin
+      if Length(Self.FParameter) > 0 then
+      begin
+        SetLength(FParameter, Length(Self.FParameter));
+        for i := 0 to Length(Self.FParameter) - 1 do
+          Parameter[i] := Self.Parameter[i];
+      end;
 
-    if Self.FChunkData.Size > 0 then
-     begin
-      FChunkData.Size := Self.FChunkData.Size;
-      Move(Self.FChunkData.Memory^, FChunkData.Memory^, FChunkData.Size);
-      FChunkData.Position := Self.FChunkData.Position;
-     end;
+      if Self.FChunkData.Size > 0 then
+      begin
+        FChunkData.Size := Self.FChunkData.Size;
+        Move(Self.FChunkData.Memory^, FChunkData.Memory^, FChunkData.Size);
+        FChunkData.Position := Self.FChunkData.Position;
+      end;
 
-    OnInitialize := Self.OnInitialize;
-    OnStoreChunk := Self.OnStoreChunk;
-    OnLoadChunk  := Self.OnLoadChunk;
-    DisplayName  := Self.DisplayName;
-   end
-  else inherited;
+      OnInitialize := Self.OnInitialize;
+      OnStoreChunk := Self.OnStoreChunk;
+      OnLoadChunk := Self.OnLoadChunk;
+      DisplayName := Self.DisplayName;
+    end
+  else
+    inherited;
 end;
 
 procedure TCustomVstProgram.CopyParameters(const ProgramNr: Integer);
 begin
- with TVSTModuleWithPrograms(FVSTModule)
-  do SetParameters(Programs[ProgramNr].FParameter);
+  with TVSTModuleWithPrograms(FVSTModule) do
+    SetParameters(Programs[ProgramNr].FParameter);
 end;
 
 procedure TCustomVstProgram.SetParameter(AIndex: Integer; AValue: Single);
 begin
- Assert(FVSTModule is TVSTModuleWithPrograms);
- with TVSTModuleWithPrograms(FVSTModule) do
+  Assert(FVSTModule is TVSTModuleWithPrograms);
+  with TVSTModuleWithPrograms(FVSTModule) do
   begin
-   if effFlagsProgramChunks in Flags then exit;
-   if (AIndex >= 0) and (AIndex < numParams)
-    then FParameter[AIndex] := AValue
-//    else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [AIndex]);
+    if effFlagsProgramChunks in Flags then
+      exit;
+    if (AIndex >= 0) and (AIndex < numParams) then
+      FParameter[AIndex] := AValue
+      // else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [AIndex]);
   end;
 end;
 
 function TCustomVstProgram.GetParameter(AIndex: Integer): Single;
 begin
- Assert(FVSTModule is TVSTModuleWithPrograms);
- if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(FVSTModule).numParams)
-  then Result := FParameter[AIndex] else
-   begin
+  Assert(FVSTModule is TVSTModuleWithPrograms);
+  if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(FVSTModule).numParams)
+  then
+    Result := FParameter[AIndex]
+  else
+  begin
     Result := 0;
-//    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [AIndex]);
-   end;
+    // raise Exception.CreateFmt(RCStrIndexOutOfBounds, [AIndex]);
+  end;
 end;
 
 procedure TCustomVstProgram.SetParameterCount(const Value: Integer);
 begin
- SetLength(FParameter, Value);
+  SetLength(FParameter, Value);
 end;
 
 procedure TCustomVstProgram.SetParameters(const Parameters: array of Single);
 var
-  Index : Integer;
+  Index: Integer;
 begin
- // check for no parameters
- if Length(Parameters) = 0 then Exit;
+  // check for no parameters
+  if Length(Parameters) = 0 then
+    exit;
 
- // check for parameter mismatch
- if Length(Parameters) > ParameterCount
-  then raise Exception.CreateFmt(RCStrParameterMismatch, [Length(Parameters)]);
+  // check for parameter mismatch
+  if Length(Parameters) > ParameterCount then
+    raise Exception.CreateFmt(RCStrParameterMismatch, [Length(Parameters)]);
 
- // update parameters
- for Index := 0 to Length(Parameters) - 1
-  do Parameter[Index] := Parameters[Index];
+  // update parameters
+  for Index := 0 to Length(Parameters) - 1 do
+    Parameter[Index] := Parameters[Index];
 end;
 
 function TCustomVstProgram.ParameterCount: Integer;
 begin
- Result := Length(FParameter);
+  Result := Length(FParameter);
 end;
-
 
 { TCustomVstPrograms }
 
 constructor TCustomVstPrograms.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner, TVstProgram);
- FVSTModule := TVSTModuleWithPrograms(AOwner);
+  inherited Create(AOwner, TVstProgram);
+  FVSTModule := TVSTModuleWithPrograms(AOwner);
 end;
 
 destructor TCustomVstPrograms.Destroy;
 begin
- while Count > 0 do Delete(0);
- inherited;
+  while Count > 0 do
+    Delete(0);
+  inherited;
 end;
 
 function TCustomVstPrograms.Add: TVstProgram;
@@ -227,22 +270,22 @@ end;
 
 function TCustomVstPrograms.GetItem(Index: Integer): TVstProgram;
 begin
- Result := TVstProgram(inherited GetItem(Index));
+  Result := TVstProgram(inherited GetItem(Index));
 end;
 
 function TCustomVstPrograms.Insert(Index: Integer): TVstProgram;
 begin
- Result := TVstProgram(inherited Insert(Index));
+  Result := TVstProgram(inherited Insert(Index));
 end;
 
 procedure TCustomVstPrograms.Delete(Index: Integer);
 begin
- inherited Delete(Index);
+  inherited Delete(Index);
 end;
 
 procedure TCustomVstPrograms.SetItem(Index: Integer; const Value: TVstProgram);
 begin
- inherited SetItem(Index, Value);
+  inherited SetItem(Index, Value);
 end;
 
 end.

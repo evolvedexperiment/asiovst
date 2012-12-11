@@ -1,22 +1,52 @@
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
+
 unit DAV_StkFlute;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{  STK TStkFlute physical model class.
+{ STK TStkFlute physical model class.
 
-   This class implements a simple TStkFlute physical model, as discussed by
-   Karjalainen, Smith, Waryznyk, etc.  The jet model uses a polynomial, a la
-   Cook.
+  This class implements a simple TStkFlute physical model, as discussed by
+  Karjalainen, Smith, Waryznyk, etc.  The jet model uses a polynomial, a la
+  Cook.
 
-   This is a digital waveguide model, making its use possibly subject to
-   patents held by Stanford University, Yamaha, and others.
+  This is a digital waveguide model, making its use possibly subject to
+  patents held by Stanford University, Yamaha, and others.
 
-   Control Change Numbers:
-     - Jet Delay = 2
-     - Noise Gain = 4
-     - Vibrato Frequency = 11
-     - Vibrato Gain = 1
-     - Breath Pressure = 128
+  Control Change Numbers:
+  - Jet Delay = 2
+  - Noise Gain = 4
+  - Vibrato Frequency = 11
+  - Vibrato Gain = 1
+  - Breath Pressure = 128
 }
 
 interface
@@ -39,23 +69,23 @@ type
     // Set the FLength of the jet delay in terms of a ratio of jet delay to air column delay lengths.
     procedure SetJetDelay(const Value: Single);
   protected
-    FJetDelay      : TStkDelayL;
-    FBoreDelay     : TStkDelayL;
-    FJetTable      : TStkJetTable;
-    FFilter        : TStkOnePole;
-    FDCBlock       : TStkPoleZero;
-    FNoise         : TStkNoise;
-    FAdsr          : TStkADSR;
-    FVibrato       : TStkLFO;
-    FLength        : Integer;
-    FLastFrequency : Single;
-    FMaxPressure   : Single;
-    FJetReflection : Single;
-    FEndReflection : Single;
-    FNoiseGain     : Single;
-    FVibratoGain   : Single;
-    FOutputGain    : Single;
-    FJetRatio      : Single;
+    FJetDelay: TStkDelayL;
+    FBoreDelay: TStkDelayL;
+    FJetTable: TStkJetTable;
+    FFilter: TStkOnePole;
+    FDCBlock: TStkPoleZero;
+    FNoise: TStkNoise;
+    FAdsr: TStkADSR;
+    FVibrato: TStkLFO;
+    FLength: Integer;
+    FLastFrequency: Single;
+    FMaxPressure: Single;
+    FJetReflection: Single;
+    FEndReflection: Single;
+    FNoiseGain: Single;
+    FVibratoGain: Single;
+    FOutputGain: Single;
+    FJetRatio: Single;
 
     procedure JetRatioChanged; virtual;
     procedure FrequencyChanged; virtual;
@@ -64,7 +94,8 @@ type
     procedure SetFrequency(const Value: Single); override;
   public
     // Class constructor, taking the lowest desired playing AFrequency.
-    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
+    constructor Create(const SampleRate, LowestFrequency: Single);
+      reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -88,7 +119,8 @@ type
     function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); override;
+    procedure ControlChange(const Number: Integer;
+      const Value: Single); override;
 
     property JetDelay: Single read FJetRatio write SetJetDelay;
     property JetReflection: Single read FJetReflection write SetJetReflection;
@@ -124,7 +156,7 @@ begin
   FAdsr.SetAllTimes(0.005, 0.01, 0.8, 0.010);
   FEndReflection := 0.5;
   FJetReflection := 0.5;
-  FNoiseGain := 0.15;             // Breath pressure random component.
+  FNoiseGain := 0.15; // Breath pressure random component.
   FVibratoGain := 0.05; // Breath periodic FVibrato component.
   FJetRatio := 0.32;
 
@@ -155,13 +187,14 @@ end;
 
 procedure TStkFlute.SetFrequency(const Value: Single);
 begin
- if FLastFrequency <> Value then
+  if FLastFrequency <> Value then
   begin
-   if (Value <= 0.0)
-    then FLastFrequency := 220.0
-    else FLastFrequency := Value;
+    if (Value <= 0.0) then
+      FLastFrequency := 220.0
+    else
+      FLastFrequency := Value;
 
-   FrequencyChanged;
+    FrequencyChanged;
   end;
 end;
 
@@ -169,13 +202,15 @@ procedure TStkFlute.FrequencyChanged;
 var
   Delay: Single;
 begin
- // Delay := FLength - approximate FFilter delay.
- Delay := SampleRate / (0.66666 * FLastFrequency - 2.0);
- if (Delay <= 0.0) then Delay := 0.3
- else if (Delay > FLength) then Delay := FLength;
+  // Delay := FLength - approximate FFilter delay.
+  Delay := SampleRate / (0.66666 * FLastFrequency - 2.0);
+  if (Delay <= 0.0) then
+    Delay := 0.3
+  else if (Delay > FLength) then
+    Delay := FLength;
 
- FBoreDelay.Delay := Delay;
- FJetDelay.Delay := Delay * FJetRatio;
+  FBoreDelay.Delay := Delay;
+  FJetDelay.Delay := Delay * FJetRatio;
 end;
 
 procedure TStkFlute.StartBlowing(const Amplitude, Rate: Single);
@@ -200,7 +235,7 @@ end;
 
 procedure TStkFlute.NoteOff(const Amplitude: Single);
 begin
- StopBlowing(Amplitude * 0.02);
+  StopBlowing(Amplitude * 0.02);
 end;
 
 procedure TStkFlute.SetJetReflection(const Coefficient: Single);
@@ -215,10 +250,10 @@ end;
 
 procedure TStkFlute.SetJetDelay(const Value: Single);
 begin
- if FJetRatio <> Value then
+  if FJetRatio <> Value then
   begin
-   FJetRatio := Value;
-   JetRatioChanged;
+    FJetRatio := Value;
+    JetRatioChanged;
   end;
 end;
 
@@ -226,9 +261,9 @@ procedure TStkFlute.JetRatioChanged;
 var
   Delay: Single;
 begin
- // Delay := FLength - approximate FFilter delay.
- Delay := SampleRate / (0.66666 * FLastFrequency - 2.0);
- FJetDelay.Delay := Delay * FJetRatio; // Scaled by ratio.
+  // Delay := FLength - approximate FFilter delay.
+  Delay := SampleRate / (0.66666 * FLastFrequency - 2.0);
+  FJetDelay.Delay := Delay * FJetRatio; // Scaled by ratio.
 end;
 
 function TStkFlute.Tick: Single;
@@ -237,8 +272,8 @@ var
 begin
   // Calculate the breath pressure (envelope + FNoise + FVibrato)
   breathPressure := FMaxPressure * FAdsr.Tick;
-  breathPressure := breathpressure + breathPressure * FNoiseGain * FNoise.Tick;
-  breathPressure := breathpressure + breathPressure * FVibratoGain *
+  breathPressure := breathPressure + breathPressure * FNoiseGain * FNoise.Tick;
+  breathPressure := breathPressure + breathPressure * FVibratoGain *
     FVibrato.Tick;
 
   temp := FFilter.Tick(FBoreDelay.LastOutput);
@@ -258,15 +293,15 @@ var
 begin
   norm := Limit(Value, 0, 1);
 
-  if (number = CMidiJetDelay) then // 2
+  if (Number = CMidiJetDelay) then // 2
     SetJetDelay((0.08 + (0.48 * norm)))
-  else if (number = CMidiNoiseLevel) then // 4
+  else if (Number = CMidiNoiseLevel) then // 4
     FNoiseGain := (norm * 0.4)
-  else if (number = CMidiModFrequency) then // 11
+  else if (Number = CMidiModFrequency) then // 11
     FVibrato.Frequency := norm * 12
-  else if (number = CMidiModWheel) then // 1
+  else if (Number = CMidiModWheel) then // 1
     FVibratoGain := (norm * 0.4)
-  else if (number = CMidiAfterTouchCont) then // 128
+  else if (Number = CMidiAfterTouchCont) then // 128
     FAdsr.Target := norm;
 end;
 
