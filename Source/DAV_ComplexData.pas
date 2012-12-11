@@ -241,7 +241,7 @@ end;
 
 destructor TComplexChannel32.Destroy;
 begin
-  if assigned(FChannelDataPtr) then
+  if Assigned(FChannelDataPtr) then
   begin
     Dispose(FChannelDataPtr);
     FChannelDataPtr := nil;
@@ -338,7 +338,7 @@ end;
 
 destructor TComplexChannel64.Destroy;
 begin
-  if assigned(FChannelDataPtr) then
+  if Assigned(FChannelDataPtr) then
   begin
     Dispose(FChannelDataPtr);
     FChannelDataPtr := nil;
@@ -435,7 +435,7 @@ end;
 
 destructor TCustomComplexData.Destroy;
 begin
-  if assigned(FChannels) then
+  if Assigned(FChannels) then
     FreeAndNil(FChannels);
   inherited;
 end;

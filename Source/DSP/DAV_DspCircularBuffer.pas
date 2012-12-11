@@ -848,7 +848,7 @@ end;
 
 procedure TCustomCircularMultiBuffer.ChannelCountChanged;
 begin
- if assigned(FOnChannelCountChanged)
+ if Assigned(FOnChannelCountChanged)
   then FOnChannelCountChanged(Self);
 end;
 

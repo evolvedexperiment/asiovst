@@ -146,35 +146,35 @@ end;
 procedure TVSTSSModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FVocoder)
+ if Assigned(FVocoder)
   then FVocoder.SampleRate := SampleRate;
 end;
 
 procedure TVSTSSModule.ParameterBandwidthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FVocoder)
+ if Assigned(FVocoder)
   then FVocoder.SynthesisBandwidth := Value;
 end;
 
 procedure TVSTSSModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FVocoder)
+ if Assigned(FVocoder)
   then FVocoder.Release := Value;
 end;
 
 procedure TVSTSSModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FVocoder)
+ if Assigned(FVocoder)
   then FVocoder.Attack := Value;
 end;
 
 procedure TVSTSSModule.VocInputVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FVocoder) then
+ if Assigned(FVocoder) then
   if Value <= -80
    then FVocoder.InputLevel := 0
    else FVocoder.InputLevel := dB_to_Amp(Value);
@@ -185,7 +185,7 @@ end;
 procedure TVSTSSModule.VocSynthVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FVocoder) then
+ if Assigned(FVocoder) then
   if Value <= -80
    then FVocoder.SynthLevel := 0
    else FVocoder.SynthLevel := dB_to_Amp(Value);
@@ -196,7 +196,7 @@ end;
 procedure TVSTSSModule.VocVocoderVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FVocoder) then
+ if Assigned(FVocoder) then
   if Value <= -80
    then FVocoder.VocoderLevel := 0
    else FVocoder.VocoderLevel := dB_to_Amp(Value);

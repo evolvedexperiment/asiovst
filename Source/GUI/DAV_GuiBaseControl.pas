@@ -658,7 +658,7 @@ end;
 destructor TCustomGuiBaseMouseControl.Destroy;
 begin
   FreeAndNil(FRedrawTimer);
-  if assigned(MouseState) then FreeAndNil(MouseState);
+  if Assigned(MouseState) then FreeAndNil(MouseState);
   inherited;
 end;
 
@@ -839,7 +839,7 @@ end;
 
 procedure TGUIShadow.Changed;
 begin
- if assigned(FOnChange)
+ if Assigned(FOnChange)
   then FOnChange(Self);
 end;
 

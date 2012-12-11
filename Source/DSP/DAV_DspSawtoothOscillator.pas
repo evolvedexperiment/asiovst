@@ -280,7 +280,7 @@ begin
  SetLength(FDownsampler, FOsOrder);
 
  for i := 0 to Length(FDownsampler) - 1 do
-  if not assigned(FDownsampler[i])
+  if not Assigned(FDownsampler[i])
    then FDownsampler[i] := TPolyphaseDownsampler32.Create;
 end;
 

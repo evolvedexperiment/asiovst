@@ -192,7 +192,7 @@ end;
 
 procedure TFmAsioBufferdAudioFilePlayer.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if assigned(FBufferedPlayer)
+ if Assigned(FBufferedPlayer)
   then FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
 end;
 

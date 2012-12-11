@@ -97,7 +97,7 @@ begin
     finally
      CloseKey;
     end;
-   if assigned(VstHost) and (VstHost[0].EditVisible)
+   if Assigned(VstHost) and (VstHost[0].EditVisible)
     then VstHost[0].CloseEdit;
   finally
    Free;
@@ -118,16 +118,16 @@ var
   x       : Integer;
 begin
  // make sure the VST host exists
- if (not assigned(TWinAmpObject(Owner).VSTHost)) or
+ if (not Assigned(TWinAmpObject(Owner).VSTHost)) or
     (not TWinAmpObject(Owner).VSTHost[0].EditVisible) then exit;
 
  // process messages to ensure drawing has taken place
- if assigned(Application)
+ if Assigned(Application)
   then Application.ProcessMessages;
 
  sleep(10);
     
- if assigned(Application)
+ if Assigned(Application)
   then Application.ProcessMessages;
 
  if TWinAmpObject(Owner).VSTHost[0].Active then
@@ -178,7 +178,7 @@ var
   temp : AnsiString;
 begin
  // make sure the VST host exists
- if not assigned(TWinAmpObject(Owner).VSTHost)
+ if not Assigned(TWinAmpObject(Owner).VSTHost)
   then exit;
 
  with TWinAmpObject(Owner).VSTHost[0] do

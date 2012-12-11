@@ -208,8 +208,8 @@ end;
 
 destructor TCustomAsioHostAudioData.Destroy;
 begin
- if assigned(FAudioDataInput)  then FreeAndNil(FAudioDataInput);
- if assigned(FAudioDataOutput) then FreeAndNil(FAudioDataOutput);
+ if Assigned(FAudioDataInput)  then FreeAndNil(FAudioDataInput);
+ if Assigned(FAudioDataOutput) then FreeAndNil(FAudioDataOutput);
 
  {$IFDEF AsioMixer} FreeAndNil(FAsioMixer); {$ENDIF}
  inherited;
@@ -220,16 +220,16 @@ end;
 procedure TCustomAsioHostAudioData.SetOnBufferSwitch32(const Value: TBufferSwitchAudioData32Event);
 begin
  FOnBufferSwitch32 := Value;
- if assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if assigned(FOnBufferSwitch32) then ConvertMethod := cm32
+ if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
+ if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
   else ConvertMethod := cmNone;
 end;
 
 procedure TCustomAsioHostAudioData.SetOnBufferSwitch64(const Value: TBufferSwitchAudioData64Event);
 begin
  FOnBufferSwitch64 := Value;
- if assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
- if assigned(FOnBufferSwitch32) then ConvertMethod := cm32
+ if Assigned(FOnBufferSwitch64) then ConvertMethod := cm64 else
+ if Assigned(FOnBufferSwitch32) then ConvertMethod := cm32
   else ConvertMethod := cmNone;
 end;
 
@@ -249,8 +249,8 @@ begin
           FAudioDataOutput := TAsioAudioDataCollection64.Create(Self, OutputChannelCount, BufferSize);
          end;
  end;
- if assigned(OldIn)  then FreeAndNil(OldIn);
- if assigned(OldOut) then FreeAndNil(OldOut);
+ if Assigned(OldIn)  then FreeAndNil(OldIn);
+ if Assigned(OldOut) then FreeAndNil(OldOut);
 end;
 
 procedure TCustomAsioHostAudioData.SetConvertMethod(
@@ -293,13 +293,13 @@ end;
 procedure TCustomAsioHostAudioData.DetermineBuffersize;
 begin
  inherited;
- if assigned(FAudioDataInput) then
+ if Assigned(FAudioDataInput) then
   with FAudioDataInput do
    begin
     ChannelCount := InputChannelCount;
     SampleFrames := BufferSize;
    end;
- if assigned(FAudioDataOutput) then
+ if Assigned(FAudioDataOutput) then
   with FAudioDataOutput do
    begin
     ChannelCount := InputChannelCount;
@@ -362,9 +362,9 @@ begin
    for Channel := 0 to FOutputChannelCount - 1 do FOutputVolume[Channel] := 1;
    {$IFDEF AsioMixer} SetupMixer; {$ENDIF}
 
-   if assigned(FAudioDataInput)
+   if Assigned(FAudioDataInput)
     then FAudioDataInput.ChannelCount := FInputChannelCount;
-   if assigned(FAudioDataOutput)
+   if Assigned(FAudioDataOutput)
     then FAudioDataOutput.ChannelCount := FOutputChannelCount;
   end;
 end;
@@ -433,7 +433,7 @@ begin
      for Channel := 0 to FOutputChannelCount - 1 do
       begin
        PChannelArray := CurrentBuffer^[0].buffers[Index];
-       if assigned(PChannelArray)
+       if Assigned(PChannelArray)
         then FOutConverters[Channel].oc64(PDouble(ChannelDataPointerList[Channel]),
                PChannelArray, FBufferSize);
        inc(CurrentBuffer);
@@ -485,7 +485,7 @@ begin
      for Channel := 0 to FOutputChannelCount - 1 do
       begin
        PChannelArray := CurrentBuffer^[0].Buffers[Index];
-       if assigned(PChannelArray)
+       if Assigned(PChannelArray)
         then FOutConverters[Channel].oc32(PSingle(ChannelDataPointer[Channel]),
                PChannelArray, FBufferSize);
        inc(CurrentBuffer);

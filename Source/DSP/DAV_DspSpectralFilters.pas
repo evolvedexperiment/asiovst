@@ -249,7 +249,7 @@ begin
    Slope := wsSymmetric;
   end;
 
- if assigned(OldWindow) then
+ if Assigned(OldWindow) then
   begin
    FWindowFunction.Length := OldWindow.Length;
    FreeAndNil(OldWindow);
@@ -537,7 +537,7 @@ begin
    Slope := wsSymmetric;
   end;
 
- if assigned(OldWindow) then
+ if Assigned(OldWindow) then
   begin
    FWindowFunction.Length := OldWindow.Length;
    FreeAndNil(OldWindow);

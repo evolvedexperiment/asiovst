@@ -311,7 +311,7 @@ begin
      for i := 0 to Num - 1 do Best2^[i] := Best^[i];
      BestMax2 := BestMax;
 
-     if assigned(FOnCoefficientUpdate)
+     if Assigned(FOnCoefficientUpdate)
       then FOnCoefficientUpdate(Self, Best2, Log10(Bestmax2));
 
      for j := 0 to SampleFrames - 1 do

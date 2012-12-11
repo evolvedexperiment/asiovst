@@ -104,7 +104,7 @@ begin
      end;
     CBInput.ItemIndex := 0;
     CBOutput.ItemIndex := 0;
-    if assigned(OnReset)
+    if Assigned(OnReset)
      then OnReset(Self);
     Active := True;
    end;

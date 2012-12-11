@@ -47,7 +47,7 @@ begin
   if PropCount > 0 then
    begin
     Objct := GetObject;
-    if assigned(Objct)
+    if Assigned(Objct)
      then Result := Objct.ClassName
      else Result := '';
    end else Result := '';
@@ -71,7 +71,7 @@ begin
   if PropCount > 0 then
    begin
     Objct := GetObject;
-    if assigned(Objct)
+    if Assigned(Objct)
      then Result := GetTypeData(Objct.ClassInfo)^.PropCount > 0
      else Result := False;
    end

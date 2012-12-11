@@ -278,7 +278,7 @@ begin
  FeedbackInput := VectorTransform(DelayedSignal, FFeedbackMatrix);
 
  // Process Feedback Path
- if assigned(FOnProcessFeedbackPath)
+ if Assigned(FOnProcessFeedbackPath)
   then FOnProcessFeedbackPath(FeedbackInput);
 
  FDelayBuffers[0]^[FDelayPos[0]] := FInputVector[0] * Input + FeedbackInput[0];
@@ -333,7 +333,7 @@ begin
  FeedbackInput := VectorTransform(DelayedSignal, FFeedbackMatrix);
 
  // Process Feedback Path
- if assigned(FOnProcessFeedbackPath)
+ if Assigned(FOnProcessFeedbackPath)
   then FOnProcessFeedbackPath(FeedbackInput);
 
  FDelayBuffers[0]^[FDelayPos[0]] := FInputVector[0] * InLeft + FInputVector[1] * InRight + FeedbackInput[0];
@@ -532,7 +532,7 @@ begin
  FeedbackInput := VectorTransform(DelayedSignal, FFeedbackMatrix);
 
  // Process Feedback Path
- if assigned(FOnProcessFeedbackPath)
+ if Assigned(FOnProcessFeedbackPath)
   then FOnProcessFeedbackPath(FeedbackInput);
 
  FDelayBuffers[0]^[FDelayPos[0]] := FInputVector[0] * Input + FeedbackInput[0];
@@ -587,7 +587,7 @@ begin
  FeedbackInput := VectorTransform(DelayedSignal, FFeedbackMatrix);
 
  // Process Feedback Path
- if assigned(FOnProcessFeedbackPath)
+ if Assigned(FOnProcessFeedbackPath)
   then FOnProcessFeedbackPath(FeedbackInput);
 
  FDelayBuffers[0]^[FDelayPos[0]] := FInputVector[0] * InLeft + FInputVector[1] * InRight + FeedbackInput[0];

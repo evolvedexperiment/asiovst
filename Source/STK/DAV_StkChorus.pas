@@ -88,8 +88,8 @@ end;
 procedure TStkChorus.SampleRateChanged;
 begin
  inherited;
- if assigned(FMods[0]) then FMods[0].SampleRate := SampleRate;
- if assigned(FMods[1]) then FMods[1].SampleRate := SampleRate;
+ if Assigned(FMods[0]) then FMods[0].SampleRate := SampleRate;
+ if Assigned(FMods[1]) then FMods[1].SampleRate := SampleRate;
 end;
 
 procedure TStkChorus.SetEffectMix(const Value: Single);

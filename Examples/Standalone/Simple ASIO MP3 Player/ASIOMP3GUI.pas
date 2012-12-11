@@ -162,7 +162,7 @@ end;
 procedure TFmASIOMP3.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 begin
- if assigned(FMP3)
+ if Assigned(FMP3)
   then FMP3.ReadBuffer(OutBuffer[0], OutBuffer[1], ASIOHost.Buffersize)
   else
    begin
@@ -187,7 +187,7 @@ begin
  else
   begin
    ASIOHost.Active := False;
-   if assigned(FMP3) then FMP3.Reset; 
+   if Assigned(FMP3) then FMP3.Reset; 
    BtStartStop.Caption := 'Start Audio';
   end;
 end;
@@ -199,7 +199,7 @@ end;
 
 procedure TFmASIOMP3.EdFileChange(Sender: TObject);
 begin
- if assigned(FMP3) then FreeAndNil(FMP3);
+ if Assigned(FMP3) then FreeAndNil(FMP3);
  if Fileexists(EdFile.Text) then
   begin
    FMP3 := TMPEGAudio.Create(EdFile.Text);

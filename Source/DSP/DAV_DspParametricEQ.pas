@@ -184,7 +184,7 @@ begin
  SetLength(FFilterArray, FBandCount);
 
  for Band := 0 to Length(FFilterArray) - 1 do
-  if not assigned(FFilterArray[Band]) then
+  if not Assigned(FFilterArray[Band]) then
    begin
     FFilterArray[Band] := TBasicPeakFilter.Create;
     FFilterArray[Band].OnChange := OnChangeEventHandler;

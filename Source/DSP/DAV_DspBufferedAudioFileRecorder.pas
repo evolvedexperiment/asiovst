@@ -247,7 +247,7 @@ begin
  AudioFileClass := FileNameToFormat(FileName);
  if Assigned(AudioFileClass) then
   begin
-   if assigned(FAudioFile)
+   if Assigned(FAudioFile)
     then FreeAndNil(FAudioFile);
 
    FAudioFile := AudioFileClass.Create(FileName);
@@ -264,7 +264,7 @@ begin
  AudioFileClass := StreamToFormat(Stream);
  if Assigned(AudioFileClass) then
   begin
-   if assigned(FAudioFile)
+   if Assigned(FAudioFile)
     then FreeAndNil(FAudioFile);
 
    FAudioFile := AudioFileClass.Create(Stream);
@@ -276,7 +276,7 @@ end;
 
 procedure TCustomBufferThread.AudioFileChanged;
 begin
- if assigned(FAudioFile) then
+ if Assigned(FAudioFile) then
   begin
    FSampleRate := FAudioFile.SampleRate;
    SampleRateChanged;
@@ -403,7 +403,7 @@ begin
      IdleLoops := 20;
 
      FBuffer.ReadBuffer(FStreamBuffer, FStreamBufSize);
-     if assigned(FAudioFile) then
+     if Assigned(FAudioFile) then
       begin
        FAudioFile.OnEncode := EncodeHandler;
        FSubBlockPosition := 0;
@@ -503,7 +503,7 @@ begin
      IdleLoops := 20;
 
      FBuffer.ReadBuffer(FStreamBuffer[0], FStreamBuffer[1], FStreamBufSize);
-     if assigned(FAudioFile) then
+     if Assigned(FAudioFile) then
       begin
        FAudioFile.OnEncode := EncodeHandler;
        FSubBlockPosition := 0;
@@ -602,7 +602,7 @@ begin
      IdleLoops := 20;
 
      FBuffer.ReadBuffer(FStreamBuffer, FStreamBufSize);
-     if assigned(FAudioFile) then
+     if Assigned(FAudioFile) then
       begin
        FAudioFile.OnEncode := EncodeHandler;
        FSubBlockPosition := 0;

@@ -97,7 +97,7 @@ end;
 destructor TStkWavePlayer.Destroy;
 begin
   inherited Destroy;
-  if assigned(FSampleData) then Dispose(FSampleData);
+  if Assigned(FSampleData) then Dispose(FSampleData);
 end;
 
 procedure TStkWavePlayer.Reset;

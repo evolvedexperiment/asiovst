@@ -324,11 +324,11 @@ var
   Stage   : Cardinal;
 begin
  for Channel := 0 to Length(FDelayLine) - 1 do
-  if assigned(FDelayLine[Channel]) then
+  if Assigned(FDelayLine[Channel]) then
    for Stage := 0 to Length(FDelayLine[Channel]) - 1
     do FDelayLine[Channel, Stage].Samplerate := SampleRate;
  for Channel := 0 to Length(FDelayLine) - 1 do
-  if assigned(FCrosstalkFilter[Channel]) then
+  if Assigned(FCrosstalkFilter[Channel]) then
    for Stage := 0 to Length(FCrosstalkFilter[Channel]) - 1
     do FCrosstalkFilter[Channel, Stage].Samplerate := SampleRate;
 end;

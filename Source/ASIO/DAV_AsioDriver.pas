@@ -610,9 +610,9 @@ end;
 
 procedure TDavASIODriver.InitControlPanel;
 begin
-  if assigned(fControlPanelClass) then
+  if Assigned(fControlPanelClass) then
   begin
-    if not assigned(GlobalDriverControlPanel) then GlobalDriverControlPanel := fControlPanelClass.Create(nil);
+    if not Assigned(GlobalDriverControlPanel) then GlobalDriverControlPanel := fControlPanelClass.Create(nil);
     GlobalDriverControlPanel.Driver := self;
     GlobalDriverControlPanel.PanelLoaded;
     if GlobalDriverControlPanel.Visible then GlobalDriverControlPanel.BringToFront;

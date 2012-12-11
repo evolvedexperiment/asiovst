@@ -613,8 +613,8 @@ begin
   begin
    Lock;
    Brush.Color := Self.Color;
-   OwnerDraw := FDialBitmap.Empty and not assigned(FImageList);
-   if OwnerDraw and assigned(FDialImageList) and assigned(FDialImageItem)
+   OwnerDraw := FDialBitmap.Empty and not Assigned(FImageList);
+   if OwnerDraw and Assigned(FDialImageList) and Assigned(FDialImageItem)
     then OwnerDraw := FDialImageItem.FDialBitmap.Empty;
 
    if OwnerDraw then
@@ -697,14 +697,14 @@ end;
 
 function TCustomGuiStitchedControl.GetDialImageIndex: Integer;
 begin
- if assigned(FDialImageItem)
+ if Assigned(FDialImageItem)
   then Result := FDialImageItem.Index
   else Result := -1;
 end;
 
 procedure TCustomGuiStitchedControl.DoAutoSize;
 begin
- if assigned(FImageList) then
+ if Assigned(FImageList) then
   begin
    Width := FImageList.Width;
    Height := FImageList.Height;
@@ -735,7 +735,7 @@ end;
 
 procedure TCustomGuiStitchedControl.SetGlyphCount(const Value: Integer);
 begin
- if assigned(FImageList) then exit;
+ if Assigned(FImageList) then exit;
  if FGlyphCount <> Value then
   begin
    FGlyphCount := Value;
@@ -762,7 +762,7 @@ end;
 procedure TCustomGuiStitchedControl.SetDialImageIndex(Value: Integer);
 begin
  // check if dial image list is available
- if not assigned(FDialImageList) then exit;
+ if not Assigned(FDialImageList) then exit;
 
  // limit range to existing dial images
  if Value < 0 then Value := 0 else
@@ -783,7 +783,7 @@ begin
  if FDialImageList <> Value then
   begin
    FDialImageList := Value;
-   if not assigned(FDialImageList)
+   if not Assigned(FDialImageList)
     then FDialImageItem := nil;
    Invalidate;
   end;
@@ -794,7 +794,7 @@ begin
  if FImageList <> Value then
   begin
    FImageList := Value;
-   if assigned(FImageList) then
+   if Assigned(FImageList) then
     begin
      Width := FImageList.Width;
      Height := FImageList.Height;
@@ -1253,7 +1253,7 @@ end;
 
 procedure TCustomGuiSwitch.GlyphNrChanged;
 begin
- if assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = [])
+ if Assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = [])
   then FOnChange(Self);
  Invalidate;
 end; 

@@ -806,9 +806,9 @@ var
 begin
  for n := 0 to 3 do
   begin
-   if assigned(FDampingFilter[n])
+   if Assigned(FDampingFilter[n])
     then FDampingFilter[n].SampleRate := SampleRate;
-   if assigned(FVibrato[n])
+   if Assigned(FVibrato[n])
     then FVibrato[n].SampleRate := SampleRate;
   end;
 end;

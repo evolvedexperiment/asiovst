@@ -155,7 +155,7 @@ begin
  if (PlayList.ItemIndex >= 0) and FileExists(PlayList.Items[PlayList.ItemIndex]) then
   begin
    FBufferedPlayer.Filename := PlayList.Items[PlayList.ItemIndex];
-   if assigned(FBufferedPlayer.MpegAudio) then
+   if Assigned(FBufferedPlayer.MpegAudio) then
     with FBufferedPlayer.MpegAudio do
      begin
       LbInformation.Caption := Id3Artist + ' - ' + Id3Album + ' - ' +
@@ -175,7 +175,7 @@ var
   TmpStr   : string;
 begin
  LbBufferValue.Caption := IntToStr(Round(FBufferedPlayer.BufferFill)) + ' %';
- if assigned(FBufferedPlayer.MpegAudio) then
+ if Assigned(FBufferedPlayer.MpegAudio) then
   with FBufferedPlayer.MpegAudio do
    begin
     LbBitrateInfo.Caption := IntToStr(Bitrate div 1000) + 'kB/s';
@@ -195,7 +195,7 @@ end;
 
 procedure TFmSimpleMp3Player.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if assigned(FBufferedPlayer)
+ if Assigned(FBufferedPlayer)
   then FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
 end;
 

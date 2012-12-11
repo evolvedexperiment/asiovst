@@ -544,7 +544,7 @@ begin
     // Band oscillator
     SetLength(FSineOsc[Channel], FSineCount);
     for Band := 1 to FSineCount - 1 do
-     if not assigned(FSineOsc[Channel, Band]) then
+     if not Assigned(FSineOsc[Channel, Band]) then
       begin
        FSineOsc[Channel, Band] := TSimpleOscillator.Create;
        FSineOsc[Channel, Band].Assign(FSineOsc[Channel, 0]);
@@ -769,14 +769,14 @@ begin
   // pink noise
   SetLength(FPinkNoise, FChannelCount);
   for Channel := 0 to FChannelCount - 1 do
-   if not assigned(FPinkNoise[Channel])
+   if not Assigned(FPinkNoise[Channel])
     then FPinkNoise[Channel] := TPinkNoiseGenerator.Create;
 
   // Band oscillator
   SetLength(FSineOsc, FChannelCount, FSineCount);
   for Channel := 0 to FChannelCount - 1 do
    for Band := 0 to FSineCount - 1 do
-    if not assigned(FSineOsc[Channel, Band]) then
+    if not Assigned(FSineOsc[Channel, Band]) then
      begin
       FSineOsc[Channel, Band] := TSimpleOscillator.Create;
       FSineOsc[Channel, Band].SampleRate := ASIOHost.SampleRate;
@@ -786,7 +786,7 @@ begin
   // sweep oscillator
   SetLength(FSweepOsc, FChannelCount);
   for Channel := 0 to FChannelCount - 1 do
-   if not assigned(FSweepOsc[Channel]) then
+   if not Assigned(FSweepOsc[Channel]) then
     begin
      FSweepOsc[Channel] := TRangeSweepOscillator64.Create;
      FSweepOsc[Channel].SampleRate := ASIOHost.SampleRate;
@@ -821,7 +821,7 @@ begin
     do FSineOsc[Channel, Band].SampleRate := ASIOHost.SampleRate;
   for Channel := 0 to Length(FSweepOsc) - 1
    do FSweepOsc[Channel].SampleRate := ASIOHost.SampleRate;
-  if assigned(FAudioFile)
+  if Assigned(FAudioFile)
    then FAudioFile.SampleRate := ASIOHost.SampleRate;
  finally
   FCriticalSection.Leave;

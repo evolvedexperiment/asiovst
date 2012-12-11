@@ -458,7 +458,7 @@ end;
 procedure TCustomDitherIIRNoiseShaper.SampleRateChanged;
 begin
  inherited;
- if assigned(FFilter)
+ if Assigned(FFilter)
   then FFilter.SampleRate := SampleRate;
 end;
 
