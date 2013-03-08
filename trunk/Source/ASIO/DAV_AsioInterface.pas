@@ -188,7 +188,7 @@ begin
 end;
 
 function TStdCallAsio.Init(SysHandle: HWND): TASIOBool; assembler;
-{$IFDEF sPUREPASCAL}
+{$IFDEF PUREPASCAL}
 begin
   ASIODriverInterface.Init(SysHandle);
 {$ELSE}
