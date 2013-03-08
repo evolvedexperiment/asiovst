@@ -721,8 +721,8 @@ begin
   FHandle := AllocateHWnd(WndProc);
 
   {$IFNDEF AllowMultipleAsioHosts}
-  if GAsioHost <> nil
-   then raise Exception.Create(RCStrOnlyOneAsioHost) else
+  if GAsioHost <> nil then
+    raise Exception.Create(RCStrOnlyOneAsioHost) else
   {$ENDIF}
   GAsioHost        := Self;
   FUnAlignedBuffer := nil;
@@ -734,13 +734,13 @@ begin
   FEngineVersion   := 2;
   FAsioSupports    := [assSupportsTimeInfo, assSupportsTimeCode];
 
-  // set the callbacks record fields
-  with FCallbacks do
+   // set the callbacks record fields
+   with FCallbacks do
    begin
-    BufferSwitch := AsioBufferSwitch;
-    SampleRateDidChange := AsioSampleRateDidChange;
-    BufferSwitchTimeInfo := AsioBufferSwitchTimeInfo;
-    AsioMessage := AsioMessageHandler;
+     BufferSwitch := AsioBufferSwitch;
+     SampleRateDidChange := AsioSampleRateDidChange;
+     BufferSwitchTimeInfo := AsioBufferSwitchTimeInfo;
+     AsioMessage := AsioMessageHandler;
    end;
 
   // set the driver itself to nil for now
@@ -752,7 +752,7 @@ begin
 
   FAsioDriverList := TDAVAsioDriverList.Create;
   try
-   FAsioDriverList.UpdateList;
+    FAsioDriverList.UpdateList;
   except
   end;
 
@@ -761,21 +761,21 @@ end;
 
 destructor TCustomAsioHostBasic.Destroy;
 begin
- try
-  if GAsioHost = Self
-   then GAsioHost := nil;
-  if Assigned(FOnDestroy) then FOnDestroy(Self);
-  if Active then Active := False;
-  CloseDriver;
-  DeallocateHWnd(FHandle);
-  FAsioDriverList.Free;
-  SetLength(FInConverters, 0);
-  SetLength(FOutConverters, 0);
-  FreeAndNil(FAsioTime);
- finally
-  inherited;
-  GAsioHost := nil;
- end;
+  try
+    if GAsioHost = Self
+     then GAsioHost := nil;
+    if Assigned(FOnDestroy) then FOnDestroy(Self);
+    if Active then Active := False;
+    CloseDriver;
+    DeallocateHWnd(FHandle);
+    FAsioDriverList.Free;
+    SetLength(FInConverters, 0);
+    SetLength(FOutConverters, 0);
+    FreeAndNil(FAsioTime);
+  finally
+    inherited;
+    GAsioHost := nil;
+  end;
 end;
 
 
@@ -783,12 +783,14 @@ end;
 
 procedure TCustomAsioHostBasic.DefaultHandler(var Message);
 begin
-  with TMessage(Message) do Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+  with TMessage(Message) do
+    Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 
 procedure TCustomAsioHostBasic.WndProc(var Msg: TMessage);
 begin
-  with Msg do Dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+  with Msg do
+    Dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 
 {$ELSE}
@@ -796,12 +798,14 @@ function DefWindowProc(hWnd:THandle; Msg:UINT; wParam:WPARAM; lParam:LPARAM):LRe
 
 procedure TCustomAsioHostBasic.DefaultHandler(var Message);
 begin
-  with TLMessage(Message) do Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+  with TLMessage(Message) do
+    Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 
 procedure TCustomAsioHostBasic.WndProc(var Msg: TLMessage);
 begin
- with Msg do Dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+  with Msg do
+    Dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 {$ENDIF}
 
@@ -813,30 +817,30 @@ var
   ClockSourceCount : Integer;
 //  ClockSourceIndex : Integer;
 begin
- FillChar(ClockSources, SizeOf(ClockSources), 0); 
- if Assigned(FDriver)
-  then FDriver.GetClockSources(@ClockSources[0], ClockSourceCount);
+  FillChar(ClockSources, SizeOf(ClockSources), 0);
+  if Assigned(FDriver) then
+    FDriver.GetClockSources(@ClockSources[0], ClockSourceCount);
 
 (*
- for ClockSourceIndex := 0 to ClockSourceCount - 1 do
-  if ClockSources[ClockSourceIndex].IsCurrentSource <> 0
-   then Exit;
+  for ClockSourceIndex := 0 to ClockSourceCount - 1 do
+  if ClockSources[ClockSourceIndex].IsCurrentSource <> 0 then
+    Exit;
 *)
 end;
 
 procedure TCustomAsioHostBasic.ResetDriverSpecificData;
 begin
- FDriverName := '';
- FInputLatency := 0;
- FOutputLatency := 0;
- FInputChannelCount := 0;
- FOutputChannelCount := 0;
- FBufferSize := 0;
+  FDriverName := '';
+  FInputLatency := 0;
+  FOutputLatency := 0;
+  FInputChannelCount := 0;
+  FOutputChannelCount := 0;
+  FBufferSize := 0;
 end;
 
 function TCustomAsioHostBasic.GetDriverList: TStrings;
 begin
-  result := FAsioDriverList.DriverNames;
+  Result := FAsioDriverList.DriverNames;
 end;
 
 procedure TCustomAsioHostBasic.SetIgnoredDriver(ignore: TGuid);
@@ -855,46 +859,49 @@ var
   DrName    : array[0..255] of AnsiChar;
   tmpActive : Boolean;
 begin
- if (Value <> FDriverIndex) then
+  if (Value <> FDriverIndex) then
   begin
-   tmpActive := Active;
-   Active := False;
-   if Value < -1 then FDriverIndex := -1 else
-    if Value >= FAsioDriverList.Count
-     then FDriverIndex := -1
-     else FDriverIndex := Value;
+    tmpActive := Active;
+    Active := False;
+    if Value < -1 then
+      FDriverIndex := -1
+    else if Value >= FAsioDriverList.Count then
+      FDriverIndex := -1
+    else
+      FDriverIndex := Value;
 
-   // check if no driver has been selected and reset all driver specific data  
-   if FDriverIndex = -1 then
+    // check if no driver has been selected and reset all driver specific data
+    if FDriverIndex = -1 then
     begin
-     ResetDriverSpecificData;
-     CloseDriver;
-    end
-   else
-    begin
-     try
-      CloseDriver;
-      FDriverName := FAsioDriverList.Items[FDriverIndex].Name;
-      OpenDriver;
-     except
-      FDriverIndex := -1;
       ResetDriverSpecificData;
-      raise;
-     end;
+      CloseDriver;
+    end
+    else
+    begin
+      try
+        CloseDriver;
+        FDriverName := FAsioDriverList.Items[FDriverIndex].Name;
+        OpenDriver;
+      except
+        FDriverIndex := -1;
+        ResetDriverSpecificData;
+        raise;
+      end;
 
-     if Assigned(FDriver) then
+      if Assigned(FDriver) then
       begin
-       FDriver.GetDriverName(DrName);
-       if DrName <> ''
-        then FDriverName := string(DrName);
-       FDriverVersion := FDriver.GetDriverVersion;
-       UpdateCanDos;
-       GetCurrentClockSource;
+        FDriver.GetDriverName(DrName);
+        if DrName <> '' then
+          FDriverName := string(DrName);
+        FDriverVersion := FDriver.GetDriverVersion;
+        UpdateCanDos;
+        GetCurrentClockSource;
       end;
     end;
-   if Assigned(FOnDriverChanged)
-    then FOnDriverChanged(self);
-   Active := tmpActive;
+
+    if Assigned(FOnDriverChanged) then
+      FOnDriverChanged(self);
+    Active := tmpActive;
   end;
 end;
 
@@ -1113,64 +1120,65 @@ var
   OldActive    : Boolean;
   ErrorMessage : PAnsiChar;
 begin
- // store last active state and deactivate current driver
- OldActive := False;
- if Assigned(FDriver) then
+  // store last active state and deactivate current driver
+  OldActive := False;
+  if Assigned(FDriver) then
   try
-   Active := False;
-   CloseDriver;
+    Active := False;
+    CloseDriver;
   except
   end;
 
- // if a driver index has been assigned open/create Asio interface
- if FDriverIndex >= 0 then
+  // if a driver index has been assigned open/create Asio interface
+  if FDriverIndex >= 0 then
   try
-   {$IFDEF OpenAsio}
-   if OpenAsioCreate(FAsioDriverList.Items[FDriverIndex].Guid, FDriver) then
-   {$ELSE}
-   if CreateStdCallAsio(FAsioDriverList.Items[FDriverIndex].Guid, FDriver) then
+    {$IFDEF OpenAsio}
+    if OpenAsioCreate(FAsioDriverList.Items[FDriverIndex].Guid, FDriver) then
+    {$ELSE}
+    if CreateStdCallAsio(FAsioDriverList.Items[FDriverIndex].Guid, FDriver) then
     {$ENDIF}
     try
-     if Assigned(FDriver) then
-      case FDriver.Init(FHandle) of
-       0 : begin
-            // equals false
-            GetMem(ErrorMessage, 128);
-            try
-             FDriver.GetErrorMessage(ErrorMessage);
-             raise Exception.Create(string(ErrorMessage));
-            finally
-             Dispose(ErrorMessage);
+      if Assigned(FDriver) then
+        case FDriver.Init(FHandle) of
+          0 :
+            begin
+              // equals false
+              GetMem(ErrorMessage, 128);
+              try
+               FDriver.GetErrorMessage(ErrorMessage);
+               raise Exception.Create(string(ErrorMessage));
+              finally
+               Dispose(ErrorMessage);
+              end;
             end;
-           end;
 
-       // the below codes are here due to incompatibility of some soundcards    
-       ASE_NotPresent       : raise Exception.Create(RCStrDriverNotPresent);
-       ASE_HWMalfunction    : raise Exception.Create(RCStrHardwareMalfunction);
-       ASE_InvalidParameter : raise Exception.Create(RCStrInputParameterInvalid);
-       ASE_InvalidMode      : raise Exception.Create(RCStrInvalidMode);
-       ASE_SPNotAdvancing   : raise Exception.Create(RCStrSPNotAdvancing);
-       ASE_NoClock          : raise Exception.Create(RCStrNoClock);
-       ASE_NoMemory         : raise Exception.Create(RCStrNoMemory);
-      end;
+          // the below codes are here due to incompatibility of some soundcards
+          ASE_NotPresent       : raise Exception.Create(RCStrDriverNotPresent);
+          ASE_HWMalfunction    : raise Exception.Create(RCStrHardwareMalfunction);
+          ASE_InvalidParameter : raise Exception.Create(RCStrInputParameterInvalid);
+          ASE_InvalidMode      : raise Exception.Create(RCStrInvalidMode);
+          ASE_SPNotAdvancing   : raise Exception.Create(RCStrSPNotAdvancing);
+          ASE_NoClock          : raise Exception.Create(RCStrNoClock);
+          ASE_NoMemory         : raise Exception.Create(RCStrNoMemory);
+        end;
     except
-     FDriver := nil;
+      FDriver := nil;
     end;
   except
-   FDriver := nil;
+    FDriver := nil;
   end;
 
- // check driver is assigned
- if FDriver = nil
-  then raise Exception.Create(RStrAsioDriverFailed);
+  // check driver is assigned
+  if FDriver = nil then
+    raise Exception.Create(RStrAsioDriverFailed);
 
- // create and check buffers
- FBuffersCreated := CreateBuffers;
- if not FBuffersCreated
-  then raise Exception.Create(RStrAsioNoBuffersCreated);
+  // create and check buffers
+  FBuffersCreated := CreateBuffers;
+  if not FBuffersCreated then
+    raise Exception.Create(RStrAsioNoBuffersCreated);
 
- // eventually reactivate
- Active := OldActive and FBuffersCreated;
+  // eventually reactivate
+  Active := OldActive and FBuffersCreated;
 end;
 
 procedure TCustomAsioHostBasic.CloseDriver;
