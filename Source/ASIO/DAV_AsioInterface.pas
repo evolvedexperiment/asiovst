@@ -50,6 +50,10 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF CPUx86_64}
+  {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 {$IFDEF MSWINDOWS}
 uses
   Windows, ActiveX, DAV_ASIO;
@@ -143,33 +147,6 @@ const
   baFuture            = 88;
   baOutputReady       = 92;
 {$ENDIF}
-{$IFDEF CPUx86_64}
-const
-  baQueryInterface    = $0;
-  baAddRef            = $8;
-  baRelease           = $10;
-  baInit              = $18;
-  baGetDriverName     = $20;
-  baGetDriverVersion  = $28;
-  baGetErrorMessage   = $30;
-  baStart             = $38;
-  baStop              = $40;
-  baGetChannels       = $48;
-  baGetLatencies      = $50;
-  baGetBufferSize     = $58;
-  baCanSampleRate     = $60;
-  baGetSampleRate     = $68;
-  baSetSampleRate     = $70;
-  baGetClockSources   = $78;
-  baSetClockSource    = $80;
-  baGetSamplePosition = $88;
-  baGetChannelInfo    = $90;
-  baCreateBuffers     = $98;
-  baDisposeBuffers    = $A0;
-  baControlPanel      = $A8;
-  baFuture            = $B0;
-  baOutputReady       = $B8;
-{$ENDIF}
 
 constructor TStdCallAsio.Create(AsioCLSID: TClsID; var Success: Boolean);
 begin
@@ -188,21 +165,12 @@ begin
 end;
 
 function TStdCallAsio.Init(SysHandle: HWND): TASIOBool; assembler;
-{$IFDEF sPUREPASCAL}
+{$IFDEF PUREPASCAL}
 begin
   ASIODriverInterface.Init(SysHandle);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baInit]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR SysHandle
 {$IFDEF FPC}
@@ -223,16 +191,7 @@ begin
   ASIODriverInterface.GetDriverName(Name);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetDriverName]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR Name
 {$IFDEF FPC}
@@ -253,16 +212,7 @@ begin
   Result := ASIODriverInterface.GetDriverVersion;
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetDriverVersion]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
 {$IFDEF FPC}
     MOV     ECX, SELF
@@ -282,16 +232,7 @@ begin
   ASIODriverInterface.GetErrorMessage(ErrorString);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetErrorMessage]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR ErrorString
 {$IFDEF FPC}
@@ -312,16 +253,7 @@ begin
   Result := ASIODriverInterface.Start;
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baStart]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
 {$IFDEF FPC}
     MOV     ECX, SELF
@@ -341,16 +273,7 @@ begin
   Result := ASIODriverInterface.Stop;
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baStop]
-{$ELSE}
+{$IFDEF CPUx86}
   // x86 (32-Bit)
 {$IFDEF FPC}
     MOV     ECX, SELF
@@ -370,16 +293,7 @@ begin
   Result := ASIODriverInterface.GetChannels(NumInputChannels, NumOutputChannels);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetChannels]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR NumOutputChannels
     PUSH    DWORD PTR NumInputChannels
@@ -401,16 +315,7 @@ begin
   Result := ASIODriverInterface.GetLatencies(InputLatency, OutputLatency);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetLatencies]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR OutputLatency
     PUSH    DWORD PTR InputLatency
@@ -432,16 +337,7 @@ begin
   Result := ASIODriverInterface.GetBufferSize(MinSize, MaxSize, PreferredSize, Granularity);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetBufferSize]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR Granularity
     PUSH    DWORD PTR PreferredSize
@@ -465,20 +361,7 @@ begin
   Result := ASIODriverInterface.CanSampleRate(SampleRate);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-(*
-    PUSH    QWORD PTR [SampleRate + 4]
-    PUSH    QWORD PTR SampleRate
-*)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baCanSampleRate]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR [SampleRate + 4]
     PUSH    DWORD PTR SampleRate
@@ -500,16 +383,7 @@ begin
   Result := ASIODriverInterface.GetSampleRate(SampleRate);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetSampleRate]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR SampleRate
 {$IFDEF FPC}
@@ -530,16 +404,7 @@ begin
   Result := ASIODriverInterface.SetSampleRate(SampleRate);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baSetSampleRate]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR [SampleRate + 4]
     PUSH    DWORD PTR SampleRate
@@ -561,16 +426,7 @@ begin
   Result := ASIODriverInterface.GetClockSources(Clocks, NumSources);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-    // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetClockSources]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR NumSources
     PUSH    DWORD PTR Clocks
@@ -592,16 +448,7 @@ begin
   Result := ASIODriverInterface.SetClockSource(Reference);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baSetClockSource]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR Reference
 {$IFDEF FPC}
@@ -623,16 +470,7 @@ begin
   Result := ASIODriverInterface.GetSamplePosition(SamplePosition, TimeStamp);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-  // x86 (64-Bit)
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetSamplePosition]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR TimeStamp
     PUSH    DWORD PTR SamplePosition
@@ -654,15 +492,7 @@ begin
   Result := ASIODriverInterface.GetChannelInfo(Info);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baGetChannelInfo]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR Info
 {$IFDEF FPC}
@@ -683,15 +513,7 @@ begin
   Result := ASIODriverInterface.CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baCreateBuffers]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR Callbacks
     PUSH    DWORD PTR BufferSize
@@ -715,15 +537,7 @@ begin
   Result := ASIODriverInterface.DisposeBuffers;
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baDisposeBuffers]
-{$ELSE}
+{$IFDEF CPUx86}
   // x86 (32-Bit)
 {$IFDEF FPC}
     MOV     ECX, SELF
@@ -743,15 +557,7 @@ begin
   Result := ASIODriverInterface.ControlPanel;
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baControlPanel]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
 {$IFDEF FPC}
     MOV     ECX, SELF
@@ -771,15 +577,7 @@ begin
   Result := ASIODriverInterface.Future(Selector, Opt);
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baFuture]
-{$ELSE}
+{$IFDEF CPUx86}
     // x86 (32-Bit)
     PUSH    DWORD PTR Opt
     PUSH    DWORD PTR Selector
@@ -801,15 +599,7 @@ begin
   Result := ASIODriverInterface.OutputReady;
 {$ELSE}
 asm
-{$IFDEF CPUx86_64}
-{$IFDEF FPC}
-    MOV     RAX, QWORD PTR [RCX + ASIODriverInterface]
-{$ELSE}
-    MOV     RAX, QWORD PTR [SELF + ASIODriverInterface]
-{$ENDIF}
-    MOV     RAX, [RAX]
-    CALL    QWORD PTR [RAX + baOutputReady]
-{$ELSE}
+{$IFDEF CPUx86}
   // x86 (32-Bit)
 {$IFDEF FPC}
     MOV     ECX, DWORD PTR SELF
@@ -827,30 +617,31 @@ function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: IStdCallAsio
 var
   StdCallASIO: TStdCallAsio;
 begin
- try
-  StdCallASIO := TStdCallAsio.Create(AsioCLSID, Result);
-  if Result
-   then ASIODriver := StdCallASIO
-   else ASIODriver := nil;
-  Result := Assigned(ASIODriver);
- except
-  Result := False;
- end;
+  try
+    StdCallASIO := TStdCallAsio.Create(AsioCLSID, Result);
+    if Result then
+      ASIODriver := StdCallASIO
+    else
+      ASIODriver := nil;
+    Result := Assigned(ASIODriver);
+  except
+    Result := False;
+  end;
 end;
 
 function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: TStdCallAsio): Boolean; overload;
 begin
- try
-  ASIODriver := TStdCallAsio.Create(AsioCLSID, Result);
-  if not Result then
-   begin
-    ASIODriver.Destroy;
-    ASIODriver := nil;
-   end;
-  Result := Assigned(ASIODriver);
- except
-  Result := False;
- end;
+  try
+    ASIODriver := TStdCallAsio.Create(AsioCLSID, Result);
+    if not Result then
+    begin
+      ASIODriver.Destroy;
+      ASIODriver := nil;
+    end;
+    Result := Assigned(ASIODriver);
+  except
+    Result := False;
+  end;
 end;
 
 {$ENDIF}
