@@ -164,7 +164,7 @@ begin
  inherited Destroy;
 end;
 
-function TStdCallAsio.Init(SysHandle: HWND): TASIOBool; assembler;
+function TStdCallAsio.Init(SysHandle: HWND): TASIOBool; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   ASIODriverInterface.Init(SysHandle);
@@ -185,7 +185,7 @@ asm
 {$ENDIF}
 end;
 
-procedure TStdCallAsio.GetDriverName(Name: PAnsiChar); assembler;
+procedure TStdCallAsio.GetDriverName(Name: PAnsiChar); {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   ASIODriverInterface.GetDriverName(Name);
@@ -206,7 +206,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.GetDriverVersion: LongInt; assembler;
+function TStdCallAsio.GetDriverVersion: LongInt; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetDriverVersion;
@@ -226,7 +226,7 @@ asm
 {$ENDIF}
 end;
 
-procedure TStdCallAsio.GetErrorMessage(ErrorString: PAnsiChar); assembler;
+procedure TStdCallAsio.GetErrorMessage(ErrorString: PAnsiChar); {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   ASIODriverInterface.GetErrorMessage(ErrorString);
@@ -247,7 +247,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.Start: TASIOError; assembler;
+function TStdCallAsio.Start: TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.Start;
@@ -267,7 +267,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.Stop: TASIOError; assembler;
+function TStdCallAsio.Stop: TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.Stop;
@@ -287,7 +287,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; assembler;
+function TStdCallAsio.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetChannels(NumInputChannels, NumOutputChannels);
@@ -309,7 +309,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; assembler;
+function TStdCallAsio.GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetLatencies(InputLatency, OutputLatency);
@@ -331,7 +331,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; assembler;
+function TStdCallAsio.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetBufferSize(MinSize, MaxSize, PreferredSize, Granularity);
@@ -355,7 +355,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
+function TStdCallAsio.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.CanSampleRate(SampleRate);
@@ -377,7 +377,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; assembler;
+function TStdCallAsio.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetSampleRate(SampleRate);
@@ -398,7 +398,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
+function TStdCallAsio.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.SetSampleRate(SampleRate);
@@ -420,7 +420,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; assembler;
+function TStdCallAsio.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetClockSources(Clocks, NumSources);
@@ -442,7 +442,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.SetClockSource(Reference: LongInt): TAsioError; assembler;
+function TStdCallAsio.SetClockSource(Reference: LongInt): TAsioError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.SetClockSource(Reference);
@@ -464,7 +464,7 @@ asm
 end;
 
 function TStdCallAsio.GetSamplePosition(out SamplePosition: TASIOSamples;
-  out TimeStamp: TASIOTimeStamp): TASIOError; assembler;
+  out TimeStamp: TASIOTimeStamp): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetSamplePosition(SamplePosition, TimeStamp);
@@ -486,7 +486,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; assembler;
+function TStdCallAsio.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.GetChannelInfo(Info);
@@ -507,7 +507,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; assembler;
+function TStdCallAsio.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
@@ -531,7 +531,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.DisposeBuffers: TASIOError; assembler;
+function TStdCallAsio.DisposeBuffers: TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.DisposeBuffers;
@@ -551,7 +551,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.ControlPanel: TASIOError; assembler;
+function TStdCallAsio.ControlPanel: TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.ControlPanel;
@@ -571,7 +571,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.Future(Selector: LongInt; Opt: Pointer): TASIOError; assembler;
+function TStdCallAsio.Future(Selector: LongInt; Opt: Pointer): TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.Future(Selector, Opt);
@@ -593,7 +593,7 @@ asm
 {$ENDIF}
 end;
 
-function TStdCallAsio.OutputReady: TASIOError; assembler;
+function TStdCallAsio.OutputReady: TASIOError; {$IFNDEF FPC} assembler; {$ENDIF}
 {$IFDEF PUREPASCAL}
 begin
   Result := ASIODriverInterface.OutputReady;

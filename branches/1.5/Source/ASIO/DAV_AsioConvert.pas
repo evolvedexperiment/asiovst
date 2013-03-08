@@ -51,19 +51,28 @@ uses
 type
   TProcessorType = (ptFPU, ptSSE, pt3DNow);
 
+  TInplaceProcessing32 = procedure(Data: PSingle; SampleCount: Integer);
+  TInplaceProcessing64 = procedure(Data: PDouble; SampleCount: Integer);
+
+  TInConverter32 = procedure(Source: Pointer; Target: PSingle; SampleCount: LongInt);
+  TInConverter64 = procedure(Source: Pointer; Target: PDouble; SampleCount: LongInt);
+
   TInConverter = record
-    ic32: procedure(Source: Pointer; Target: PSingle; SampleCount: LongInt);
-    ic64: procedure(Source: Pointer; Target: PDouble; SampleCount: LongInt);
+    ic32: TInConverter32;
+    ic64: TInConverter64
   end;
 
+  TOutConverter32 = procedure(Source: PSingle; Target: Pointer; SampleCount: LongInt);
+  TOutConverter64 = procedure(Source: PDouble; Target: Pointer; SampleCount: LongInt);
+
   TOutConverter = record
-    oc32: procedure(Source: PSingle; Target: Pointer; SampleCount: LongInt);
-    oc64: procedure(Source: PDouble; Target: Pointer; SampleCount: LongInt);
+    oc32: TOutConverter32;
+    oc64: TOutConverter64;
   end;
 
   TClipBuffer = record
-    cb32: procedure(Data: PSingle; SampleCount: Integer);
-    cb64: procedure(Data: PDouble; SampleCount: Integer);
+    cb32: TInplaceProcessing32;
+    cb64: TInplaceProcessing64;
   end;
 
   TClipCheckFunction = function(Source: Pointer; SampleCount: LongInt): Boolean;
@@ -134,65 +143,45 @@ var
   ClipCheckInt32LSB24: TClipCheckFunction; // 32 bit data with 24 bit alignment
 
 var
-  MixBuffers: record mb32: procedure(Data: PSingle; MixBuffer: PSingle;
-    SampleCount: Integer);
-  mb64: procedure(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer);
-end;
+  MixBuffers: record
+    mb32: procedure(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer);
+    mb64: procedure(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer);
+  end;
 
-Volume:
-record v32:
-procedure(Data: PSingle; Volume: Single; SampleCount: Integer);
-v64:
+  Volume: record
+    v32: procedure(Data: PSingle; Volume: Single; SampleCount: Integer);
+    v64: procedure(Data: PDouble; Volume: Double; SampleCount: Integer);
+  end;
 
-procedure(Data: PDouble; Volume: Double; SampleCount: Integer);
-end;
+  FadeInLinear: record
+    v32: TInplaceProcessing32;
+    v64: TInplaceProcessing64;
+  end;
 
-FadeInLinear:
-record v32:
-procedure(Data: PSingle; SampleCount: Integer);
-v64:
+  FadeOutLinear: record
+    v32: TInplaceProcessing32;
+    v64: TInplaceProcessing64;
+  end;
 
-procedure(Data: PDouble; SampleCount: Integer);
-end;
+  FadeLinear: record
+    v32: procedure(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single);
+    v64: procedure(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient: Double);
+  end;
 
-FadeOutLinear:
-record v32:
-procedure(Data: PSingle; SampleCount: Integer);
-v64:
+  FadeExponential: record
+    v32: procedure(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single);
+    v64: procedure(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient: Double);
+  end;
 
-procedure(Data: PDouble; SampleCount: Integer);
-end;
+  Trigger: record
+    v32: function(Data: PSingle; SampleCount: Integer; TriggerFactor: Double): Integer;
+    v64: function(Data: PDouble; SampleCount: Integer; TriggerFactor: Double): Integer;
+  end;
 
-FadeLinear:
-record v32:
-procedure(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single);
-v64:
-
-procedure(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient: Double);
-end;
-
-FadeExponential:
-record v32:
-procedure(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single);
-v64:
-
-procedure(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient: Double);
-end;
-
-Trigger:
-record v32:
-function(Data: PSingle; SampleCount: Integer; TriggerFaktor: Double): Integer;
-v64:
-
-function(Data: PDouble; SampleCount: Integer; TriggerFaktor: Double): Integer;
-end;
-
-ClipDigital:
-TClipBuffer;
-ClipAnalog:
-TClipBuffer;
-EnableSSE:
-Boolean;
+var
+  ClipDigital: TClipBuffer;
+  ClipAnalog: TClipBuffer;
+  EnableSSE: Boolean;
 
 implementation
 
@@ -700,7 +689,7 @@ asm
   {$ENDIF}
 end;
 
-function Trigger_FPU(Data: PSingle; SampleCount: Integer; TriggerFaktor: Double)
+function Trigger_FPU(Data: PSingle; SampleCount: Integer; TriggerFactor: Double)
   : Integer; overload;
 {$IFDEF PUREPASCAL}
 var
@@ -709,7 +698,7 @@ begin
   Result := 0;
   for SampleIndex := 0 to SampleCount - 1 do
   begin
-    if Abs(Data^) > TriggerFaktor then
+    if Abs(Data^) > TriggerFactor then
       Exit
     else
       Inc(Result);
@@ -718,18 +707,18 @@ begin
   Result := -1;
 {$ELSE}
 asm
-  FLD TriggerFaktor.Double
+  FLD TriggerFactor.Double
   MOV ECX, EAX                  // ECX = EAX
 
 @FadeLoop:
-  FLD  [ECX+4*EDX-4].Single   // Value, TriggerFaktor
-  FABS                        // |Value|, TriggerFaktor
+  FLD  [ECX+4*EDX-4].Single   // Value, TriggerFactor
+  FABS                        // |Value|, TriggerFactor
 
   FCOMI ST(0), ST(1)          // CurrentFadeFak <-> 1 ?
   FSTSW AX                    // AX = FPU Status Word
   SAHF                        // AX -> EFLAGS register
-  FSTP ST(0)                  // TriggerFaktor
-  JB @TriggerFound            // if |Value| > TriggerFaktor then Exit!
+  FSTP ST(0)                  // TriggerFactor
+  JB @TriggerFound            // if |Value| > TriggerFactor then Exit!
 
   DEC EDX
   JNZ @FadeLoop
@@ -745,7 +734,7 @@ asm
   {$ENDIF}
 end;
 
-function Trigger_FPU(Data: PDouble; SampleCount: Integer; TriggerFaktor: Double)
+function Trigger_FPU(Data: PDouble; SampleCount: Integer; TriggerFactor: Double)
   : Integer; overload;
 {$IFDEF PUREPASCAL}
 var
@@ -754,7 +743,7 @@ begin
   Result := 0;
   for SampleIndex := 0 to SampleCount - 1 do
   begin
-    if Abs(Data^) > TriggerFaktor then
+    if Abs(Data^) > TriggerFactor then
       Exit
     else
       Inc(Result);
@@ -763,18 +752,18 @@ begin
   Result := -1;
 {$ELSE}
 asm
-  FLD TriggerFaktor.Double
+  FLD TriggerFactor.Double
   MOV ECX, EAX                  // ECX = EAX
 
 @FadeLoop:
-  FLD  [ECX+8*EDX-8].Double   // Value, TriggerFaktor
-  FABS                        // |Value|, TriggerFaktor
+  FLD  [ECX+8*EDX-8].Double   // Value, TriggerFactor
+  FABS                        // |Value|, TriggerFactor
 
   FCOMI ST(0), ST(1)          // CurrentFadeFak <-> 1 ?
   FSTSW AX                    // AX = FPU Status Word
   SAHF                        // AX -> EFLAGS register
-  FSTP ST(0)                  // TriggerFaktor
-  JB @TriggerFound            // if |Value| > TriggerFaktor then Exit!
+  FSTP ST(0)                  // TriggerFactor
+  JB @TriggerFound            // if |Value| > TriggerFactor then Exit!
 
   DEC EDX
   JNZ @FadeLoop

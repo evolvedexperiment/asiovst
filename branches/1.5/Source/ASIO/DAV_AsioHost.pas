@@ -41,7 +41,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
+  {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources, Windows,
   {$ELSE}Windows, Messages,{$ENDIF}
   {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_AsioInterface {$ENDIF},
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAV_ASIOMixer,{$ENDIF}
@@ -138,6 +138,9 @@ type
   {$IFDEF SUPPORTS_REGION} {$endregion 'Delphi5 Control panel'} {$ENDIF}
 
   {$IFDEF SUPPORTS_REGION} {$region 'TAsioHostBasic'} {$ENDIF}
+
+  { TCustomAsioHostBasic }
+
   TCustomAsioHostBasic = class(TCustomAudioDevice)
   private
     FMin, FMax            : Integer;
@@ -221,7 +224,6 @@ type
     procedure DetermineBuffersize; virtual;
     procedure AquireCurrentSampleRate;
     procedure SetSampleRate(Value: Double); virtual;
-    
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -718,7 +720,11 @@ end;
 
 constructor TCustomAsioHostBasic.Create(AOwner: TComponent);
 begin
+  {$IFDEF FPC}
+  FHandle := LCLIntf.AllocateHWnd(WndProc);
+  {$ELSE}
   FHandle := AllocateHWnd(WndProc);
+  {$ENDIF}
 
   {$IFNDEF AllowMultipleAsioHosts}
   if GAsioHost <> nil then
@@ -767,7 +773,11 @@ begin
     if Assigned(FOnDestroy) then FOnDestroy(Self);
     if Active then Active := False;
     CloseDriver;
+    {$IFDEF FPC}
+    LCLIntf.DeallocateHWnd(FHandle);
+    {$ELSE}
     DeallocateHWnd(FHandle);
+    {$ENDIF}
     FAsioDriverList.Free;
     SetLength(FInConverters, 0);
     SetLength(FOutConverters, 0);
@@ -1480,7 +1490,7 @@ begin
  Result := ACC.meter;
 end;
 
-procedure TCustomAsioHostBasic.SetInputGain(Channel:Integer; Gain: Integer);
+procedure TCustomAsioHostBasic.SetInputGain(Channel, Gain: Integer);
 var
   ACC : TAsioChannelControls;
 begin
@@ -1494,7 +1504,7 @@ begin
  FDriver.Future(kAsioSetInputGain, @ACC);
 end;
 
-procedure TCustomAsioHostBasic.SetOutputGain(Channel:Integer; Gain: Integer);
+procedure TCustomAsioHostBasic.SetOutputGain(Channel, Gain: Integer);
 var
   ACC : TAsioChannelControls;
 begin

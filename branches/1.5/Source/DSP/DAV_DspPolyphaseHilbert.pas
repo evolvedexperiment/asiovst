@@ -45,117 +45,82 @@ uses
   DAV_Types, DAV_DspPolyphaseFilter;
 
 type
-  TPhaseMem32 = array [0 .. 1] of record X: PDAVSingleFixedArray;
-Y:
-PDAVSingleFixedArray;
-end;
-TPhaseMem64 = array [0 .. 1] of record X: PDAVDoubleFixedArray;
-Y:
-PDAVDoubleFixedArray;
-end;
-TProcessHilbertSample32 =
-procedure(const Input: Single; out OutputA, OutputB: Single) of object;
-TProcessEnvelopeSample32 =
-function(const Input: Single): Single of object;
-TProcessHilbertSample64 =
-procedure(const Input: Double; out OutputA, OutputB: Double) of object;
-TProcessEnvelopeSample64 =
-function(const Input: Double): Double of object;
+  TPhaseMem32 = array [0 .. 1] of record
+    X: PDAVSingleFixedArray;
+    Y: PDAVSingleFixedArray;
+  end;
+  TPhaseMem64 = array [0 .. 1] of record
+    X: PDAVDoubleFixedArray;
+    Y: PDAVDoubleFixedArray;
+  end;
+  TProcessHilbertSample32 = procedure(const Input: Single; out OutputA, OutputB: Single) of object;
+  TProcessEnvelopeSample32 = function(const Input: Single): Single of object;
+  TProcessHilbertSample64 = procedure(const Input: Double; out OutputA, OutputB: Double) of object;
+  TProcessEnvelopeSample64 = function(const Input: Double): Double of object;
 
-TCustomPhaseHalfPi = class(TCustomPolyphaseFilter);
+  TCustomPhaseHalfPi = class(TCustomPolyphaseFilter);
 
-TPhaseHalfPi32 = class(TCustomPhaseHalfPi)private FPHilbertSample32
-  : TProcessHilbertSample32;
-FPEnvSample32:
-TProcessEnvelopeSample32;
-FPrev:
-Single;
-FPhase:
-Integer;
-FMem:
-TPhaseMem32;
-protected
-  procedure ChooseProcedures;
-  override;
-  procedure NumberOfCoeffsChanged;
-  override;
-  procedure ProcessSampleLarge(const Input: Single;
-    out OutputA, OutputB: Single);
-  overload;
-  procedure ProcessSample1(const Input: Single; out OutputA, OutputB: Single);
-  overload;
-  procedure ProcessSample2(const Input: Single; out OutputA, OutputB: Single);
-  overload;
-  procedure ProcessSample3(const Input: Single; out OutputA, OutputB: Single);
-  overload;
-  procedure ProcessSample4(const Input: Single; out OutputA, OutputB: Single);
-  overload;
-  function ProcessSampleLarge(const Input: Single): Single;
-  overload;
-  function ProcessSample1(const Input: Single): Single;
-  overload;
-  function ProcessSample2(const Input: Single): Single;
-  overload;
-  function ProcessSample3(const Input: Single): Single;
-  overload;
-  function ProcessSample4(const Input: Single): Single;
-  overload;
-public
-  constructor Create;
-  override;
-  destructor Destroy;
-  override;
-  procedure ProcessBlock(const Input, OutputA, OutputB: PDAVSingleFixedArray;
-    SampleFrames: Integer);
-  procedure ClearBuffers;
+  TPhaseHalfPi32 = class(TCustomPhaseHalfPi)
+  private
+    FPHilbertSample32 : TProcessHilbertSample32;
+    FPEnvSample32: TProcessEnvelopeSample32;
+    FPrev: Single;
+    FPhase: Integer;
+    FMem: TPhaseMem32;
+  protected
+    procedure ChooseProcedures; override;
+    procedure NumberOfCoeffsChanged; override;
+    procedure ProcessSampleLarge(const Input: Single; out OutputA, OutputB: Single); overload;
+    procedure ProcessSample1(const Input: Single; out OutputA, OutputB: Single); overload;
+    procedure ProcessSample2(const Input: Single; out OutputA, OutputB: Single); overload;
+    procedure ProcessSample3(const Input: Single; out OutputA, OutputB: Single); overload;
+    procedure ProcessSample4(const Input: Single; out OutputA, OutputB: Single); overload;
+    function ProcessSampleLarge(const Input: Single): Single; overload;
+    function ProcessSample1(const Input: Single): Single; overload;
+    function ProcessSample2(const Input: Single): Single; overload;
+    function ProcessSample3(const Input: Single): Single; overload;
+    function ProcessSample4(const Input: Single): Single; overload;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure ProcessBlock(const Input, OutputA, OutputB: PDAVSingleFixedArray;
+      SampleFrames: Integer);
+    procedure ClearBuffers;
 
-  property ProcessHilbertSample: TProcessHilbertSample32 read FPHilbertSample32;
-  property ProcessEnvelopeSample: TProcessEnvelopeSample32 read FPEnvSample32;
+    property ProcessHilbertSample: TProcessHilbertSample32 read FPHilbertSample32;
+    property ProcessEnvelopeSample: TProcessEnvelopeSample32 read FPEnvSample32;
   end;
 
-  TPhaseHalfPi64 = class(TCustomPhaseHalfPi)private FPHilbertSample64
-    : TProcessHilbertSample64;
-  FPEnvSample64: TProcessEnvelopeSample64;
-  FPrev: Double;
-  FPhase: Integer; // 0 or 1
-  FMem: TPhaseMem64;
-protected
-  procedure ChooseProcedures;
-  override;
-  procedure NumberOfCoeffsChanged;
-  override;
-  procedure ProcessSampleLarge(const Input: Double;
-    out OutputA, OutputB: Double);
-  overload;
-  procedure ProcessSample1(const Input: Double; out OutputA, OutputB: Double);
-  overload;
-  procedure ProcessSample2(const Input: Double; out OutputA, OutputB: Double);
-  overload;
-  procedure ProcessSample3(const Input: Double; out OutputA, OutputB: Double);
-  overload;
-  procedure ProcessSample4(const Input: Double; out OutputA, OutputB: Double);
-  overload;
-  function ProcessSampleLarge(const Input: Double): Double;
-  overload;
-  function ProcessSample1(const Input: Double): Double;
-  overload;
-  function ProcessSample2(const Input: Double): Double;
-  overload;
-  function ProcessSample3(const Input: Double): Double;
-  overload;
-  function ProcessSample4(const Input: Double): Double;
-  overload;
-public
-  constructor Create;
-  override;
-  destructor Destroy;
-  override;
-  procedure ProcessBlock(const Input, OutputA, OutputB: PDAVDoubleFixedArray;
-    SampleFrames: Integer);
-  procedure ClearBuffers;
+  TPhaseHalfPi64 = class(TCustomPhaseHalfPi)
+  private
+    FPHilbertSample64: TProcessHilbertSample64;
+    FPEnvSample64: TProcessEnvelopeSample64;
+    FPrev: Double;
+    FPhase: Integer; // 0 or 1
+    FMem: TPhaseMem64;
+  protected
+    procedure ChooseProcedures; override;
+    procedure NumberOfCoeffsChanged; override;
+    procedure ProcessSampleLarge(const Input: Double; out OutputA, OutputB: Double); overload;
+    procedure ProcessSample1(const Input: Double; out OutputA, OutputB: Double); overload;
+    procedure ProcessSample2(const Input: Double; out OutputA, OutputB: Double); overload;
+    procedure ProcessSample3(const Input: Double; out OutputA, OutputB: Double); overload;
+    procedure ProcessSample4(const Input: Double; out OutputA, OutputB: Double); overload;
+    function ProcessSampleLarge(const Input: Double): Double; overload;
+    function ProcessSample1(const Input: Double): Double; overload;
+    function ProcessSample2(const Input: Double): Double; overload;
+    function ProcessSample3(const Input: Double): Double; overload;
+    function ProcessSample4(const Input: Double): Double; overload;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
 
-  property ProcessHilbertSample: TProcessHilbertSample64 read FPHilbertSample64;
-  property ProcessEnvelopeSample: TProcessEnvelopeSample64 read FPEnvSample64;
+    procedure ProcessBlock(const Input, OutputA, OutputB: PDAVDoubleFixedArray;
+      SampleFrames: Integer);
+    procedure ClearBuffers;
+
+    property ProcessHilbertSample: TProcessHilbertSample64 read FPHilbertSample64;
+    property ProcessEnvelopeSample: TProcessEnvelopeSample64 read FPEnvSample64;
   end;
 
 implementation
@@ -164,7 +129,6 @@ uses
   DAV_Common;
 
 {$IFDEF HandleDenormals}
-
 var
   CDenorm32: Single;
   CDenorm64: Double;
@@ -244,16 +208,12 @@ begin
   until (Pos >= SampleFrames);
 end;
 
-/// /////////////////////////////////////////////////////////////////////////////
-// //
-// Name: ClearBuffers                                                        //
-// ------------------                                                        //
-// //
-// Description:                                                              //
-// Clears filter memory, as if it processed silence since an infinite      //
-// amount of time.                                                         //
-// //
-/// /////////////////////////////////////////////////////////////////////////////
+// Name: ClearBuffers
+// ------------------
+//
+// Description:
+// Clears filter memory, as if it processed silence since an infinite
+// amount of time.
 
 procedure TPhaseHalfPi32.ClearBuffers;
 begin

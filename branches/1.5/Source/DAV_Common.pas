@@ -722,6 +722,7 @@ end;
 function FreqLinearToLog(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
+ // Result := 20 * Exp(value * ln(20000 / 20));
  Result := CTwenty64 * Exp(value * 6.907755279);
 {$ELSE}
 const
@@ -750,6 +751,7 @@ const
   fltl2 : Single = 1.44764826019E-1;
 {$IFDEF PUREPASCAL}
 begin
+// Result := ln(value / 20) / ln(20000 / 20);
  Result := ln(value * fltl1) * fltl2;
 {$ELSE}
 asm

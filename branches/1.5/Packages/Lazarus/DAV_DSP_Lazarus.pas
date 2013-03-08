@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit DAV_DSP_Lazarus; 
+unit DAV_DSP_Lazarus;
 
 interface
 
@@ -26,19 +26,19 @@ uses
   DAV_DspStateVariableFilter, DAV_DspUpDownsampling, DAV_DspWaveshaper, 
   DAV_DspWindowing, DAV_DspR128, DAV_DspSpectralEffects, 
   DAV_DspSpectralFilters, DAV_DspSpectralNoiseReduction, DAV_DspChorus, 
-  DAV_DspDelayLines, DAV_DspDynamicLimiters, DAV_DspDynamicLookaheadLimiter, 
-  DAV_DspExciter, DAV_DspFilterTransform, DAV_DspFrequencyShifter, 
-  DAV_DspHumRemoval, DAV_DspLeslie, DAV_DspLorenzOscilator, DAV_DspModDelay, 
+  DAV_DspDelayLines, DAV_DspDynamicLookaheadLimiter, DAV_DspExciter, 
+  DAV_DspFilterTransform, DAV_DspFrequencyShifter, DAV_DspHumRemoval, 
+  DAV_DspLeslie, DAV_DspLorenzOscilator, DAV_DspModDelay, 
   DAV_DspNoiseShapingFilterDesigner, DAV_DspParametricEQ, 
   DAV_DspPinkNoiseGenerator, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('DAV_DspRegister', @DAV_DspRegister.Register); 
-end; 
+  RegisterUnit('DAV_DspRegister', @DAV_DspRegister.Register);
+end;
 
 initialization
-  RegisterPackage('DAV_DSP_Lazarus', @Register); 
+  RegisterPackage('DAV_DSP_Lazarus', @Register);
 end.
