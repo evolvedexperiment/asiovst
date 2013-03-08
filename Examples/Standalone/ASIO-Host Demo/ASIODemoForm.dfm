@@ -36,7 +36,7 @@ object FmASIO: TFmASIO
     Top = 202
     Width = 262
     Height = 13
-    Caption = '(C)opyright in 2004-2010 by  Delphi ASIO && VST Project'
+    Caption = '(C)opyright in 2004-2013 by Delphi ASIO && VST Project'
   end
   object LbFreq: TLabel
     Left = 8

@@ -56,6 +56,8 @@ unit DAV_OpenAsio;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   Windows, ActiveX, DAV_ASIO;
 

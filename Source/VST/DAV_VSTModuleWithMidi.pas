@@ -132,29 +132,36 @@ var
   Event: Integer;
 begin
  {$IFDEF DebugLog} AddLogMessage('ProcessEvents'); {$ENDIF}
- if Assigned(FOnProcessEvents) then FOnProcessEvents(Self, Events);
+ if Assigned(FOnProcessEvents) then
+   FOnProcessEvents(Self, Events);
  with Events do
-  for Event := 0 to numEvents - 1 do
+   for Event := 0 to numEvents - 1 do
    case Events[Event]^.EventType of
-    etMidi  : ProcessMidiEvent(PVstMidiEvent(Events[Event])^);
-    etSysEx : ProcessMidiSysExEvent(PVstMidiSysExEvent(Events[Event])^);
-    else ProcessEvent(Events[Event]^);
+     etMidi  :
+       ProcessMidiEvent(PVstMidiEvent(Events[Event])^);
+     etSysEx :
+       ProcessMidiSysExEvent(PVstMidiSysExEvent(Events[Event])^);
+     else
+       ProcessEvent(Events[Event]^);
    end;
 end;
 
 procedure TVSTModuleWithMidi.ProcessEvent(const Event: TVstEvent);
 begin
- if Assigned(FOnProcessMidi) then FOnProcessEvent(Self, Event);
+ if Assigned(FOnProcessMidi) then
+   FOnProcessEvent(Self, Event);
 end;
 
 procedure TVSTModuleWithMidi.ProcessMidiEvent(const MidiEvent: TVstMidiEvent);
 begin
- if Assigned(FOnProcessMidi) then FOnProcessMidi(Self, MidiEvent);
+ if Assigned(FOnProcessMidi) then
+   FOnProcessMidi(Self, MidiEvent);
 end;
 
 procedure TVSTModuleWithMidi.ProcessMidiSysExEvent(const MidiSysExEvent: TVstMidiSysexEvent);
 begin
- if Assigned(FOnProcessMidiSysEx) then FOnProcessMidiSysEx(Self, MidiSysExEvent);
+ if Assigned(FOnProcessMidiSysEx) then
+   FOnProcessMidiSysEx(Self, MidiSysExEvent);
 end;
 
 function TVSTModuleWithMidi.HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;

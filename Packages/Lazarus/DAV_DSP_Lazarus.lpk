@@ -5,7 +5,7 @@
     <Name Value="DAV_DSP_Lazarus"/>
     <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\..\Resources"/>
@@ -26,7 +26,7 @@
       </CodeGeneration>
       <Linking>
         <Debugging>
-          <GenerateDebugInfo Value="True"/>
+          <DebugInfoType Value="dsStabs"/>
         </Debugging>
       </Linking>
       <Other>
@@ -37,7 +37,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="68">
+    <Files Count="67">
       <Item1>
         <Filename Value="..\..\Resources\DAV_DspRegister.lrs"/>
         <Type Value="LRS"/>
@@ -264,53 +264,49 @@
         <UnitName Value="DAV_DspDelayLines"/>
       </Item56>
       <Item57>
-        <Filename Value="..\..\Source\DSP\DAV_DspDynamicLimiters.pas"/>
-        <UnitName Value="DAV_DspDynamicLimiters"/>
-      </Item57>
-      <Item58>
         <Filename Value="..\..\Source\DSP\DAV_DspDynamicLookaheadLimiter.pas"/>
         <UnitName Value="DAV_DspDynamicLookaheadLimiter"/>
-      </Item58>
-      <Item59>
+      </Item57>
+      <Item58>
         <Filename Value="..\..\Source\DSP\DAV_DspExciter.pas"/>
         <UnitName Value="DAV_DspExciter"/>
-      </Item59>
-      <Item60>
+      </Item58>
+      <Item59>
         <Filename Value="..\..\Source\DSP\DAV_DspFilterTransform.pas"/>
         <UnitName Value="DAV_DspFilterTransform"/>
-      </Item60>
-      <Item61>
+      </Item59>
+      <Item60>
         <Filename Value="..\..\Source\DSP\DAV_DspFrequencyShifter.pas"/>
         <UnitName Value="DAV_DspFrequencyShifter"/>
-      </Item61>
-      <Item62>
+      </Item60>
+      <Item61>
         <Filename Value="..\..\Source\DSP\DAV_DspHumRemoval.pas"/>
         <UnitName Value="DAV_DspHumRemoval"/>
-      </Item62>
-      <Item63>
+      </Item61>
+      <Item62>
         <Filename Value="..\..\Source\DSP\DAV_DspLeslie.pas"/>
         <UnitName Value="DAV_DspLeslie"/>
-      </Item63>
-      <Item64>
+      </Item62>
+      <Item63>
         <Filename Value="..\..\Source\DSP\DAV_DspLorenzOscilator.pas"/>
         <UnitName Value="DAV_DspLorenzOscilator"/>
-      </Item64>
-      <Item65>
+      </Item63>
+      <Item64>
         <Filename Value="..\..\Source\DSP\DAV_DspModDelay.pas"/>
         <UnitName Value="DAV_DspModDelay"/>
-      </Item65>
-      <Item66>
+      </Item64>
+      <Item65>
         <Filename Value="..\..\Source\DSP\DAV_DspNoiseShapingFilterDesigner.pas"/>
         <UnitName Value="DAV_DspNoiseShapingFilterDesigner"/>
-      </Item66>
-      <Item67>
+      </Item65>
+      <Item66>
         <Filename Value="..\..\Source\DSP\DAV_DspParametricEQ.pas"/>
         <UnitName Value="DAV_DspParametricEQ"/>
-      </Item67>
-      <Item68>
+      </Item66>
+      <Item67>
         <Filename Value="..\..\Source\DSP\DAV_DspPinkNoiseGenerator.pas"/>
         <UnitName Value="DAV_DspPinkNoiseGenerator"/>
-      </Item68>
+      </Item67>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="4">
@@ -329,8 +325,8 @@
       </Item4>
     </RequiredPkgs>
     <UsageOptions>
-      <IncludePath Value="..\Source"/>
-      <UnitPath Value="$(PkgOutDir);..\Source\DSP"/>
+      <IncludePath Value="..\..\Source"/>
+      <UnitPath Value="$(PkgOutDir);..\..\Source\DSP"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

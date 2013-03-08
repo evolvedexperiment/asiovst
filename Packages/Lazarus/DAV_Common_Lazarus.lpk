@@ -143,8 +143,8 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <IncludePath Value="..\Source"/>
-      <UnitPath Value="$(PkgOutDir);..\Source"/>
+      <IncludePath Value="..\..\Source"/>
+      <UnitPath Value="$(PkgOutDir);..\..\Source"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

@@ -15,40 +15,37 @@ object FmASIO: TFmASIO
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  LCLVersion = '1.0.7.0'
   object LbDrivername: TLabel
     Left = 7
     Height = 14
     Top = 12
-    Width = 34
+    Width = 32
     Caption = 'Driver:'
-    Color = clNone
     ParentColor = False
   end
   object LbChannels: TLabel
     Left = 7
     Height = 14
     Top = 36
-    Width = 86
+    Width = 83
     Caption = 'Output Channels:'
-    Color = clNone
     ParentColor = False
   end
   object LbCopyright: TLabel
     Left = 87
     Height = 14
     Top = 202
-    Width = 318
-    Caption = '(C)opyright in 2004-2006 by  Christian Budde and Tobias Fleischer'
-    Color = clNone
+    Width = 260
+    Caption = '(C)opyright in 2004-2013 by Delphi ASIO && VST Project'
     ParentColor = False
   end
   object LbFreq: TLabel
     Left = 8
     Height = 14
     Top = 72
-    Width = 98
+    Width = 97
     Caption = 'Frequency: 1000 Hz'
-    Color = clNone
     ParentColor = False
   end
   object LbVolume: TLabel
@@ -57,16 +54,14 @@ object FmASIO: TFmASIO
     Top = 112
     Width = 122
     Caption = 'Volume: 1,00 equals 0 dB'
-    Color = clNone
     ParentColor = False
   end
   object LbPanorama: TLabel
     Left = 8
     Height = 14
     Top = 152
-    Width = 63
+    Width = 62
     Caption = 'Panorama: C'
-    Color = clNone
     ParentColor = False
   end
   object DriverCombo: TComboBox
@@ -74,14 +69,12 @@ object FmASIO: TFmASIO
     Height = 21
     Top = 7
     Width = 273
-    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
     ItemHeight = 13
-    MaxLength = 0
     OnChange = DriverComboChange
     Style = csDropDownList
     TabOrder = 0
   end
-  object Bt_CP: TButton
+  object BtControlPanel: TButton
     Left = 352
     Height = 21
     Top = 7
@@ -89,7 +82,7 @@ object FmASIO: TFmASIO
     BorderSpacing.InnerBorder = 4
     Caption = 'Control Panel'
     Enabled = False
-    OnClick = Bt_CPClick
+    OnClick = BtControlPanelClick
     TabOrder = 1
   end
   object ChannelBox: TComboBox
@@ -97,14 +90,12 @@ object FmASIO: TFmASIO
     Height = 21
     Top = 32
     Width = 233
-    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
     ItemHeight = 13
-    MaxLength = 0
     OnChange = ChannelBoxChange
     Style = csDropDownList
     TabOrder = 2
   end
-  object Bt_Play: TButton
+  object BtStartStop: TButton
     Left = 352
     Height = 21
     Top = 32
@@ -113,7 +104,7 @@ object FmASIO: TFmASIO
     Caption = 'Start Audio'
     Default = True
     Enabled = False
-    OnClick = Bt_PlayClick
+    OnClick = BtStartStopClick
     TabOrder = 3
   end
   object SbFreq: TScrollBar
@@ -123,6 +114,7 @@ object FmASIO: TFmASIO
     Width = 462
     LargeChange = 1000
     Max = 100000
+    PageSize = 0
     Position = 56633
     SmallChange = 10
     TabOrder = 4
@@ -134,6 +126,7 @@ object FmASIO: TFmASIO
     Top = 128
     Width = 462
     Max = 100000
+    PageSize = 0
     Position = 100000
     TabOrder = 5
     OnChange = SbVolumeChange
@@ -143,19 +136,22 @@ object FmASIO: TFmASIO
     Height = 16
     Top = 168
     Width = 462
+    PageSize = 0
     Position = 50
     TabOrder = 6
     OnChange = SbPanChange
   end
-  object ASIOHost: TASIOHost
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1
+    AsioTime.SampleRate = 44100
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+    PreFillOutBuffer = bpfZero
     PreventClipping = pcDigital
     SampleRate = 44100
-    ASIOTime.Speed = 1
-    ASIOTime.SampleRate = 44100
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+    OnBufferSwitch32 = ASIOHostBufferSwitch32
+    OnReset = ASIOHostReset
     OnSampleRateChanged = ASIOHostSampleRateChanged
-    OnBufferSwitch64 = ASIOHostBufferSwitch64
-    Left = 308
-    Top = 32
+    left = 8
+    top = 8
   end
 end

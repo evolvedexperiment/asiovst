@@ -100,6 +100,7 @@ type
     LUT: array of Integer;
     constructor Create(const BitCount: Integer);
     destructor Destroy; override;
+
     function GetPointer: PInteger;
   end;
 
@@ -1088,7 +1089,7 @@ begin
     TempBuffer[1][ci + 5] := v + TempBuffer[0][ci + 3];
     TempBuffer[1][ci + 7] := v - TempBuffer[0][ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   NbrCoef := 1 shl (FOrder - 1);
@@ -1197,7 +1198,7 @@ begin
     FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
     FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -1289,7 +1290,7 @@ begin
     FreqDomain[ci + 5] := v + FBuffer^[ci + 3];
     FreqDomain[ci + 7] := v - FBuffer^[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -1324,9 +1325,9 @@ begin
         TempBuffer[0][2 * NbrCoef - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -1459,7 +1460,7 @@ begin
     TempBuffer[1][ci + 5] := v + FBuffer^[ci + 3];
     TempBuffer[1][ci + 7] := v - FBuffer^[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -1492,9 +1493,9 @@ begin
         TempBuffer[0][2 * NbrCoef - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -1611,7 +1612,7 @@ begin
     FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
     FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -1648,9 +1649,9 @@ begin
         TempBuffer[0][2 * NbrCoef - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -1762,7 +1763,7 @@ begin
     TempBuffer[1][ci + 5] := v + TempBuffer[0][ci + 3];
     TempBuffer[1][ci + 7] := v - TempBuffer[0][ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -1797,9 +1798,9 @@ begin
         TempBuffer[0][NbrCoefD - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -2157,7 +2158,7 @@ begin
     FBuffer^[ci + 5] := (tmp[0] + tmp[1]) * CSQRT2Div2;
     FBuffer^[ci + 7] := (tmp[1] - tmp[0]) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // penultimate and last pass at once
@@ -2183,7 +2184,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -2274,7 +2275,7 @@ begin
     FBuffer^[ci + 5] := (tmp[0] + tmp[1]) * CSQRT2Div2;
     FBuffer^[ci + 7] := (tmp[1] - tmp[0]) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // penultimate and last pass at once
@@ -2300,7 +2301,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[1] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[1] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -2419,7 +2420,7 @@ begin
           tmp[2] * tmp[1];
       end;
 
-      INC(ci, NbrCoefD);
+      Inc(ci, NbrCoefD);
     until (ci >= FFftSize);
 
     // prepare to the next pass
@@ -2445,7 +2446,7 @@ begin
     TempBuffer[1][ci + 5] := (tmp[2] + tmp[3]) * CSQRT2Div2;
     TempBuffer[1][ci + 7] := (tmp[3] - tmp[2]) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // penultimate and last pass at once
@@ -2471,7 +2472,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -2585,9 +2586,9 @@ begin
           tmp[2] * tmp[1];
       end;
 
-      INC(ci, NbrCoefD);
-      INC(TempBuffer[0], NbrCoefD);
-      INC(TempBuffer[1], NbrCoefD);
+      Inc(ci, NbrCoefD);
+      Inc(TempBuffer[0], NbrCoefD);
+      Inc(TempBuffer[1], NbrCoefD);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -2615,7 +2616,7 @@ begin
     TempBuffer[1][ci + 5] := (tmp[0] + tmp[1]) * CSQRT2Div2;
     TempBuffer[1][ci + 7] := (tmp[1] - tmp[0]) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // penultimate and last pass at once
@@ -2641,7 +2642,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[1] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[1] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -2756,7 +2757,7 @@ begin
           tmp[2] * tmp[1];
       end;
 
-      INC(ci, NbrCoefD);
+      Inc(ci, NbrCoefD);
     until (ci >= FFftSize);
 
     // prepare to the next pass
@@ -2790,7 +2791,7 @@ begin
     FBuffer^[ci + 5] := (tmp[2] + tmp[3]) * CSQRT2Div2;
     FBuffer^[ci + 7] := (tmp[3] - tmp[2]) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // penultimate and last pass at once
@@ -2816,7 +2817,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -2929,7 +2930,7 @@ begin
         TempBuffer[1][ci + NbrCoef + NbrCoefH + i] := vi * c - vr * s;
       end;
 
-      INC(ci, NbrCoefD);
+      Inc(ci, NbrCoefD);
     until (ci >= FFftSize);
 
     // prepare to the next pass
@@ -2955,7 +2956,7 @@ begin
     FBuffer^[ci + 5] := (vr + vi) * CSQRT2Div2;
     FBuffer^[ci + 7] := (vi - vr) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // penultimate and last pass at once
@@ -2981,7 +2982,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -3380,7 +3381,7 @@ begin
     FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
     FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   NbrCoef := 1 shl (FOrder - 1);
@@ -3482,7 +3483,7 @@ begin
     FBuffer^[ci + 5] := v + TempBuffer[ci + 3];
     FBuffer^[ci + 7] := v - TempBuffer[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // last pass
@@ -3597,7 +3598,7 @@ begin
     FreqDomain[ci + 5] := v + FBuffer^[ci + 3];
     FreqDomain[ci + 7] := v - FBuffer^[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -3632,9 +3633,9 @@ begin
         TempBuffer[0][2 * NbrCoef - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -3765,7 +3766,7 @@ begin
     TempBuffer[1][ci + 5] := v + FBuffer^[ci + 3];
     TempBuffer[1][ci + 7] := v - FBuffer^[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -3798,9 +3799,9 @@ begin
         TempBuffer[0][2 * NbrCoef - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -3917,7 +3918,7 @@ begin
     FBuffer^[ci + 5] := v + FreqDomain[ci + 3];
     FBuffer^[ci + 7] := v - FreqDomain[ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -3954,9 +3955,9 @@ begin
         TempBuffer[0][2 * NbrCoef - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -4068,7 +4069,7 @@ begin
     TempBuffer[1][ci + 5] := v + TempBuffer[0][ci + 3];
     TempBuffer[1][ci + 7] := v - TempBuffer[0][ci + 3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // next pass
@@ -4103,9 +4104,9 @@ begin
         TempBuffer[0][NbrCoefD - i] := v - TempBuffer[1][NbrCoefH + i];
       end;
 
-      INC(ci, NbrCoef * 2);
-      INC(TempBuffer[0], NbrCoef * 2);
-      INC(TempBuffer[1], NbrCoef * 2);
+      Inc(ci, NbrCoef * 2);
+      Inc(TempBuffer[0], NbrCoef * 2);
+      Inc(TempBuffer[1], NbrCoef * 2);
     until (ci >= FFftSize);
     Dec(TempBuffer[0], FFftSize);
     Dec(TempBuffer[1], FFftSize);
@@ -4462,7 +4463,7 @@ begin
         TempBuffer[1][ci + NbrCoef + NbrCoefH + i] := vi * c - vr * s;
       end;
 
-      INC(ci, NbrCoefD);
+      Inc(ci, NbrCoefD);
     until (ci >= FFftSize);
 
     // Prepare to the next Pass
@@ -4496,7 +4497,7 @@ begin
     TempBuffer[1][ci + 5] := (vr + vi) * CSQRT2Div2;
     TempBuffer[1][ci + 7] := (vi - vr) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // Penultimate and last Pass at once
@@ -4522,7 +4523,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -4582,7 +4583,7 @@ begin
         TempBuffer[1][ci + NbrCoef + NbrCoefH + i] := vi * c - vr * s;
       end;
 
-      INC(ci, NbrCoefD);
+      Inc(ci, NbrCoefD);
     until (ci >= FFftSize);
 
     // Prepare to the next Pass
@@ -4616,7 +4617,7 @@ begin
     TempBuffer[1][ci + 5] := (vr + vi) * CSQRT2Div2;
     TempBuffer[1][ci + 7] := (vi - vr) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // Penultimate and last Pass at once
@@ -4642,7 +4643,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -4702,7 +4703,7 @@ begin
         TempBuffer[1][ci + NbrCoef + NbrCoefH + i] := vi * c - vr * s;
       end;
 
-      INC(ci, NbrCoefD);
+      Inc(ci, NbrCoefD);
     until (ci >= FFftSize);
 
     // Prepare to the next Pass
@@ -4737,7 +4738,7 @@ begin
     FBuffer^[ci + 5] := (vr + vi) * CSQRT2Div2;
     FBuffer^[ci + 7] := (vi - vr) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // Penultimate and last Pass at once
@@ -4764,7 +4765,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 
@@ -4825,7 +4826,7 @@ begin
         TempBuffer[1][ci + NbrCoef + NbrCoefH + i] := vi * c - vr * s;
       end;
 
-      INC(ci, NbrCoefD);
+      Inc(ci, NbrCoefD);
     until (ci >= FFftSize);
 
     // Prepare to the next Pass
@@ -4860,7 +4861,7 @@ begin
     FBuffer^[ci + 5] := (vr + vi) * CSQRT2Div2;
     FBuffer^[ci + 7] := (vi - vr) * CSQRT2Div2;
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 
   // Penultimate and last Pass at once
@@ -4887,7 +4888,7 @@ begin
     TimeDomain[FBitRevLUT.LUT[ci + 6]] := tmp[2] + tmp[3];
     TimeDomain[FBitRevLUT.LUT[ci + 7]] := tmp[2] - tmp[3];
 
-    INC(ci, 8);
+    Inc(ci, 8);
   until (ci >= FFftSize);
 end;
 

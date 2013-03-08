@@ -5,9 +5,7 @@ program ASIODemo;
 uses
   Interfaces, // this includes the LCL widgetset
   Forms,
-  AsioDemoForm in 'ASIODemoForm.pas' {FmASIO}, HostASIOLaz;
-
-{$R *.RES}
+  AsioDemoForm in 'ASIODemoForm.pas' {FmASIO};
 
 begin
   Application.Initialize;
