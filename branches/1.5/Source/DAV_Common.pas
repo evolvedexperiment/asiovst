@@ -1296,6 +1296,11 @@ begin
 end;
 
 procedure DontRaiseExceptionsAndSetFPUcodeword;
+{$IFDEF PUREPASCAL}
+begin
+  SetFPUExceptionMask(exAllArithmeticExceptions);
+  SetSSEExceptionMask(exAllArithmeticExceptions);
+{$ELSE}
 {$IFDEF FPC}
 var
   FpuCodeword : Word;
@@ -1312,7 +1317,9 @@ const
 asm
     FNCLEX                  // Don't raise pending exceptions enabled by the new flags
     FLDCW   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
- {$ENDIF}
+
+{$ENDIF}
+{$ENDIF}
 end;
 
 function GetMXCSR: Cardinal;

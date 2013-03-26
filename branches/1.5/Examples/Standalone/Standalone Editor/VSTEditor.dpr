@@ -2,7 +2,7 @@ program VSTEditor;
 
 {$I DAV_Compiler.inc}
 
-{$R 'EmbeddedVST.res' 'EmbeddedVST.rc'}
+{-$R 'EmbeddedVST.res' 'EmbeddedVST.rc'}
 
 uses
   FastMM4,
