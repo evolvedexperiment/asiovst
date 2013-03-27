@@ -38,14 +38,13 @@ object FmSelectBox: TFmSelectBox
     Top = 8
     Width = 100
     Height = 22
-    BorderRadius = 7.000000000000000000
-    BorderWidth = 1.500000000000000000
-    ButtonColor = 5530731
-    ItemIndex = -1
     Items.Strings = (
       'Test 1'
       'Test 2'
       'Test 3')
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 5530731
     SelectBoxColor = 7373965
   end
   object SelectBoxB: TGuiSelectBox
@@ -53,14 +52,13 @@ object FmSelectBox: TFmSelectBox
     Top = 8
     Width = 100
     Height = 23
-    BorderRadius = 7.000000000000000000
-    BorderWidth = 1.500000000000000000
-    ButtonColor = 5530731
-    ItemIndex = -1
     Items.Strings = (
       'Test 1'
       'Test 2'
       'Test 3')
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 5530731
     SelectBoxColor = 7373965
   end
   object SelectBoxC: TGuiSelectBox
@@ -68,15 +66,14 @@ object FmSelectBox: TFmSelectBox
     Top = 39
     Width = 100
     Height = 24
-    BorderRadius = 7.000000000000000000
-    BorderWidth = 1.500000000000000000
-    ButtonColor = 5530731
-    ItemIndex = -1
     Items.Strings = (
       'Test A'
       'Test B'
       'Test C'
       'Test D')
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 5530731
     SelectBoxColor = 7373965
   end
   object SelectBoxD: TGuiSelectBox
@@ -84,15 +81,14 @@ object FmSelectBox: TFmSelectBox
     Top = 39
     Width = 100
     Height = 25
-    BorderRadius = 7.000000000000000000
-    BorderWidth = 1.500000000000000000
-    ButtonColor = 5530731
-    ItemIndex = -1
     Items.Strings = (
       'Test 1'
       'Test 2'
       'Test 3'
       'Test 4')
+    BorderRadius = 7.000000000000000000
+    BorderWidth = 1.500000000000000000
+    ButtonColor = 5530731
     SelectBoxColor = 7373965
   end
   object CbTransparent: TCheckBox
@@ -125,6 +121,7 @@ object FmSelectBox: TFmSelectBox
     FontShadow.Visible = True
     Max = 19.000000000000000000
     Min = 1.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 1.000000000000000000
     ShowText = True
@@ -151,6 +148,7 @@ object FmSelectBox: TFmSelectBox
     FontShadow.Visible = True
     Max = 5.000000000000000000
     Min = 1.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 1.000000000000000000
     ShowText = True

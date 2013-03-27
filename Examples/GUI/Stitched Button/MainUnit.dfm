@@ -205,7 +205,6 @@ object FmStitchedButtonTest: TFmStitchedButtonTest
           4C0000000049454E44AE426082}
         DisplayName = 'My Button'
         GlyphCount = 4
-        StitchKind = skHorizontal
         Height = 50
         Width = 400
       end>

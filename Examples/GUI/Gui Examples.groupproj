@@ -1,4 +1,4 @@
-	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{2A61F091-0A8A-4FAE-BA43-2C196CFA6459}</ProjectGuid>
 		</PropertyGroup>
@@ -10,6 +10,9 @@
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Button\ButtonTest.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Stitched Dial\DialTest.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="EQ-Graph\EqGraphTest.dproj">
@@ -43,9 +46,6 @@
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Stitched Button\StitchedButtonTest.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Stitched Dial\DialTest.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Stitched Switch\SwitchTest.dproj">
@@ -85,6 +85,15 @@
 		</Target>
 		<Target Name="ButtonTest:Make">
 			<MSBuild Targets="Make" Projects="Button\ButtonTest.dproj"/>
+		</Target>
+		<Target Name="DialTest">
+			<MSBuild Projects="Stitched Dial\DialTest.dproj"/>
+		</Target>
+		<Target Name="DialTest:Clean">
+			<MSBuild Targets="Clean" Projects="Stitched Dial\DialTest.dproj"/>
+		</Target>
+		<Target Name="DialTest:Make">
+			<MSBuild Targets="Make" Projects="Stitched Dial\DialTest.dproj"/>
 		</Target>
 		<Target Name="EqGraphTest">
 			<MSBuild Projects="EQ-Graph\EqGraphTest.dproj"/>
@@ -185,15 +194,6 @@
 		<Target Name="StitchedButtonTest:Make">
 			<MSBuild Targets="Make" Projects="Stitched Button\StitchedButtonTest.dproj"/>
 		</Target>
-		<Target Name="DialTest">
-			<MSBuild Projects="Stitched Dial\DialTest.dproj"/>
-		</Target>
-		<Target Name="DialTest:Clean">
-			<MSBuild Targets="Clean" Projects="Stitched Dial\DialTest.dproj"/>
-		</Target>
-		<Target Name="DialTest:Make">
-			<MSBuild Targets="Make" Projects="Stitched Dial\DialTest.dproj"/>
-		</Target>
 		<Target Name="SwitchTest">
 			<MSBuild Projects="Stitched Switch\SwitchTest.dproj"/>
 		</Target>
@@ -204,13 +204,13 @@
 			<MSBuild Targets="Make" Projects="Stitched Switch\SwitchTest.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="AdsrTest;AudioDataDisplayTest;ButtonTest;EqGraphTest;EqSlideTest;GraphXyTest;GroupBoxTest;LabelTest;LedTest;MidiKeysTest;PanelTest;SelectBox;StaticWaveformTest;StitchedButtonTest;DialTest;SwitchTest"/>
+			<CallTarget Targets="AdsrTest;AudioDataDisplayTest;ButtonTest;DialTest;EqGraphTest;EqSlideTest;GraphXyTest;GroupBoxTest;LabelTest;LedTest;MidiKeysTest;PanelTest;SelectBox;StaticWaveformTest;StitchedButtonTest;SwitchTest"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="AdsrTest:Clean;AudioDataDisplayTest:Clean;ButtonTest:Clean;EqGraphTest:Clean;EqSlideTest:Clean;GraphXyTest:Clean;GroupBoxTest:Clean;LabelTest:Clean;LedTest:Clean;MidiKeysTest:Clean;PanelTest:Clean;SelectBox:Clean;StaticWaveformTest:Clean;StitchedButtonTest:Clean;DialTest:Clean;SwitchTest:Clean"/>
+			<CallTarget Targets="AdsrTest:Clean;AudioDataDisplayTest:Clean;ButtonTest:Clean;DialTest:Clean;EqGraphTest:Clean;EqSlideTest:Clean;GraphXyTest:Clean;GroupBoxTest:Clean;LabelTest:Clean;LedTest:Clean;MidiKeysTest:Clean;PanelTest:Clean;SelectBox:Clean;StaticWaveformTest:Clean;StitchedButtonTest:Clean;SwitchTest:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="AdsrTest:Make;AudioDataDisplayTest:Make;ButtonTest:Make;EqGraphTest:Make;EqSlideTest:Make;GraphXyTest:Make;GroupBoxTest:Make;LabelTest:Make;LedTest:Make;MidiKeysTest:Make;PanelTest:Make;SelectBox:Make;StaticWaveformTest:Make;StitchedButtonTest:Make;DialTest:Make;SwitchTest:Make"/>
+			<CallTarget Targets="AdsrTest:Make;AudioDataDisplayTest:Make;ButtonTest:Make;DialTest:Make;EqGraphTest:Make;EqSlideTest:Make;GraphXyTest:Make;GroupBoxTest:Make;LabelTest:Make;LedTest:Make;MidiKeysTest:Make;PanelTest:Make;SelectBox:Make;StaticWaveformTest:Make;StitchedButtonTest:Make;SwitchTest:Make"/>
 		</Target>
-		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

@@ -27,6 +27,7 @@ object FmAdsrTest: TFmAdsrTest
     ADSRSettings.Decay = 0.500000000000000000
     ADSRSettings.Sustain = 0.500000000000000000
     ADSRSettings.Release = 0.500000000000000000
+    LineWidth = 0
     GridWidth = 3
   end
 end
