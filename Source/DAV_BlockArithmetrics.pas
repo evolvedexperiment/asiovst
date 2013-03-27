@@ -87,20 +87,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 4].Single
-  FADD    [EDX + ECX * 4].Single
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 4].Single
+    FADD    [EDX + ECX * 4].Single
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockAdditionInplace64Native(Destination, Source: PDouble;
@@ -117,20 +117,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 8].Double
-  FADD    [EDX + ECX * 8].Double
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 8].Double
+    FADD    [EDX + ECX * 8].Double
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockSubtractInplace32Native(Destination, Source: PSingle;
@@ -147,20 +147,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 4].Single
-  FSUB    [EDX + ECX * 4].Single
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 4].Single
+    FSUB    [EDX + ECX * 4].Single
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockSubtractInplace64Native(Destination, Source: PDouble;
@@ -177,20 +177,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 8].Double
-  FSUB    [EDX + ECX * 8].Double
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 8].Double
+    FSUB    [EDX + ECX * 8].Double
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockReverseSubtractInplace32Native(Destination, Source: PSingle;
@@ -207,20 +207,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EDX + ECX * 4].Single
-  FSUB    [EAX + ECX * 4].Single
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FSUB    [EAX + ECX * 4].Single
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockReverseSubtractInplace64Native(Destination, Source: PDouble;
@@ -237,20 +237,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FSUB    [EAX + ECX * 8].Double
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FSUB    [EAX + ECX * 8].Double
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockOffsetInplace32Native(Destination: PSingle; Value: Single;
@@ -266,22 +266,23 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Value.Single
+    FLD     Value.Single
 
 @Start:
-  FLD     [EAX + ECX * 4].Single
-  FADD    ST(0), ST(1)
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 4].Single
+    FADD    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
+
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockOffsetInplace64Native(Destination: PDouble; Value: Double;
@@ -297,22 +298,22 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Value.Single
+    FLD     Value.Single
 
 @Start:
-  FLD     [EAX + ECX * 8].Double
-  FADD    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 8].Double
+    FADD    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockMultiplyInplace32Native(Destination, Source: PSingle;
@@ -329,17 +330,17 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 4].Single
-  FMUL    [EDX + ECX * 4].Single
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 4].Single
+    FMUL    [EDX + ECX * 4].Single
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
   {$ENDIF}
@@ -359,20 +360,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 8].Single
-  FMUL    [EDX + ECX * 8].Single
-  FSTP    [EAX + ECX * 8].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 8].Single
+    FMUL    [EDX + ECX * 8].Single
+    FSTP    [EAX + ECX * 8].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockDivideInplace32Native(Destination, Source: PSingle;
@@ -389,20 +390,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 4].Single
-  FDIV    [EDX + ECX * 4].Single
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 4].Single
+    FDIV    [EDX + ECX * 4].Single
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockDivideInplace64Native(Destination, Source: PDouble;
@@ -419,20 +420,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EAX + ECX * 8].Double
-  FDIV    [EDX + ECX * 8].Double
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 8].Double
+    FDIV    [EDX + ECX * 8].Double
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockReverseDivideInplace32Native(Destination, Source: PSingle;
@@ -449,20 +450,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EDX + ECX * 4].Single
-  FDIV    [EAX + ECX * 4].Single
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FDIV    [EAX + ECX * 4].Single
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockReverseDivideInplace64Native(Destination, Source: PDouble;
@@ -479,20 +480,20 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FDIV    [EAX + ECX * 8].Double
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FDIV    [EAX + ECX * 8].Double
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockScaleInplace32Native(Destination: PSingle; Value: Single;
@@ -508,23 +509,24 @@ begin
   end;
 {$ELSE}
 asm
-  MOV     ECX, Count
-  LEA     EAX, EAX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    MOV     ECX, Count
+    LEA     EAX, EAX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Value.Single
+    FLD     Value.Single
 
 @Start:
-  FLD     [EAX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
+
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockScaleInplace64Native(Destination: PDouble; Value: Double;
@@ -540,23 +542,24 @@ begin
   end;
 {$ELSE}
 asm
-  MOV     ECX, Count
-  LEA     EAX, EAX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    MOV     ECX, Count
+    LEA     EAX, EAX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Value.Double
+    FLD     Value.Double
 
 @Start:
-  FLD     [EAX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
+
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockScale32Native(Destination, Source: PSingle; Count: Integer;
@@ -573,23 +576,24 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Value.Single
+    FLD     Value.Single
 
 @Start:
-  FLD     [EDX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
+
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockScale64Native(Destination, Source: PDouble; Count: Integer;
@@ -606,24 +610,25 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Value.Double
+    FLD     Value.Double
 
 @Start:
-  FLD     [EAX + ECX * 8].Double
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EAX + ECX * 8].Double
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
+
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockAdditionScale32Native(Destination, Source: PSingle;
@@ -639,24 +644,25 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, [EAX + ECX * 4]
-  LEA     EDX, [EDX + ECX * 4]
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, [EAX + ECX * 4]
+    LEA     EDX, [EDX + ECX * 4]
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Scale.Single
+    FLD     Scale.Single
 
 @Start:
-  FLD     [EDX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FADD    [EAX + ECX * 4].Single
-  FSTP    [EAX + ECX * 4].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FADD    [EAX + ECX * 4].Single
+    FSTP    [EAX + ECX * 4].Single
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
+
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BlockAdditionScale64Native(Destination, Source: PDouble;
@@ -672,24 +678,25 @@ begin
   end;
 {$ELSE}
 asm
-  LEA     EAX, [EAX + ECX * 8]
-  LEA     EDX, [EDX + ECX * 8]
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, [EAX + ECX * 8]
+    LEA     EDX, [EDX + ECX * 8]
+    NEG     ECX
+    JNL     @Done
 
-  FLD     Scale.Double
+    FLD     Scale.Double
 
 @Start:
-  FLD     [EDX + ECX * 8].Single
-  FMUL    ST(0), ST(1)
-  FADD    [EAX + ECX * 8].Single
-  FSTP    [EAX + ECX * 8].Single
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Single
+    FMUL    ST(0), ST(1)
+    FADD    [EAX + ECX * 8].Single
+    FSTP    [EAX + ECX * 8].Single
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
+
 @Done:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure BindFunctions;

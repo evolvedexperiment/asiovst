@@ -381,11 +381,11 @@ end;
 
 initialization
 
-SetProcessorFeatures;
-CreateGlobalBindings;
+  SetProcessorFeatures;
+  CreateGlobalBindings;
 
 finalization
 
-FreeGlobalBindings;
+  FreeGlobalBindings;
 
 end.

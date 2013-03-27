@@ -101,7 +101,6 @@ implementation
 constructor TProcessorInfoComponent.Create(AOwner: TComponent);
 begin
   inherited;
-
 end;
 
 function TProcessorInfoComponent.GetAPICID: Byte;

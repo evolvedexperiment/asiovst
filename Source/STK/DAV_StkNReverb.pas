@@ -123,7 +123,7 @@ begin
   ScaleFactor := SampleRate / 25641.0;
   for i := 0 to Length(CLengths) - 1 do
   begin
-    Delay := round(ScaleFactor * CLengths[i] - 0.5);
+    Delay := Round(ScaleFactor * CLengths[i] - 0.5);
     if (Delay and 1) = 0 then
       Delay := Delay + 1;
     while (not IsPrime(Delay)) do
@@ -207,48 +207,48 @@ end;
 
 function TStkNReverb.Tick(const Input: Single): Single;
 var
-  temp: Single;
-  tmp: Array [0 .. 3] of Single;
+  Temp: Single;
+  Tmp: array [0 .. 3] of Single;
   i: Integer;
 begin
-  tmp[0] := 0.0;
+  Tmp[0] := 0.0;
   for i := 0 to Length(FCombDelays) - 1 do
   begin
-    temp := Input + (FCombCoefficient[i] * FCombDelays[i].LastOutput);
-    tmp[0] := tmp[0] + FCombDelays[i].Tick(temp);
+    Temp := Input + (FCombCoefficient[i] * FCombDelays[i].LastOutput);
+    Tmp[0] := Tmp[0] + FCombDelays[i].Tick(Temp);
   end;
   for i := 0 to 2 do
   begin
-    temp := FAllpassDelays[i].LastOutput;
-    tmp[1] := FAllpassCoefficient * temp;
-    tmp[1] := tmp[1] + tmp[0];
-    FAllpassDelays[i].Tick(tmp[1]);
-    tmp[0] := -(FAllpassCoefficient * tmp[1]) + temp;
+    Temp := FAllpassDelays[i].LastOutput;
+    Tmp[1] := FAllpassCoefficient * Temp;
+    Tmp[1] := Tmp[1] + Tmp[0];
+    FAllpassDelays[i].Tick(Tmp[1]);
+    Tmp[0] := -(FAllpassCoefficient * Tmp[1]) + Temp;
   end;
 
   // One-pole lowpass filter.
-  FLowpassState := 0.7 * FLowpassState + 0.3 * tmp[0];
-  temp := FAllpassDelays[3].LastOutput;
-  tmp[1] := FAllpassCoefficient * temp;
-  tmp[1] := tmp[1] + FLowpassState;
-  FAllpassDelays[3].Tick(tmp[1]);
-  tmp[1] := -(FAllpassCoefficient * tmp[1]) + temp;
+  FLowpassState := 0.7 * FLowpassState + 0.3 * Tmp[0];
+  Temp := FAllpassDelays[3].LastOutput;
+  Tmp[1] := FAllpassCoefficient * Temp;
+  Tmp[1] := Tmp[1] + FLowpassState;
+  FAllpassDelays[3].Tick(Tmp[1]);
+  Tmp[1] := -(FAllpassCoefficient * Tmp[1]) + Temp;
 
-  temp := FAllpassDelays[4].LastOutput;
-  tmp[2] := FAllpassCoefficient * temp;
-  tmp[2] := tmp[2] + tmp[1];
-  FAllpassDelays[4].Tick(tmp[2]);
-  FLastOutput[0] := FEffectMix * (-(FAllpassCoefficient * tmp[2]) + temp);
+  Temp := FAllpassDelays[4].LastOutput;
+  Tmp[2] := FAllpassCoefficient * Temp;
+  Tmp[2] := Tmp[2] + Tmp[1];
+  FAllpassDelays[4].Tick(Tmp[2]);
+  FLastOutput[0] := FEffectMix * (-(FAllpassCoefficient * Tmp[2]) + Temp);
 
-  temp := FAllpassDelays[5].LastOutput;
-  tmp[3] := FAllpassCoefficient * temp;
-  tmp[3] := tmp[3] + tmp[1];
-  FAllpassDelays[5].Tick(tmp[3]);
-  FLastOutput[1] := FEffectMix * (-(FAllpassCoefficient * tmp[3]) + temp);
+  Temp := FAllpassDelays[5].LastOutput;
+  Tmp[3] := FAllpassCoefficient * Temp;
+  Tmp[3] := Tmp[3] + Tmp[1];
+  FAllpassDelays[5].Tick(Tmp[3]);
+  FLastOutput[1] := FEffectMix * (-(FAllpassCoefficient * Tmp[3]) + Temp);
 
-  temp := (1.0 - FEffectMix) * Input;
-  FLastOutput[0] := FLastOutput[0] + temp;
-  FLastOutput[1] := FLastOutput[1] + temp;
+  Temp := (1.0 - FEffectMix) * Input;
+  FLastOutput[0] := FLastOutput[0] + Temp;
+  FLastOutput[1] := FLastOutput[1] + Temp;
 
   Result := (FLastOutput[0] + FLastOutput[1]) * 0.5;
 end;

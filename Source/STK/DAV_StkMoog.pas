@@ -126,20 +126,20 @@ end;
 
 procedure TStkMoog.NoteOn(const Frequency, Amplitude: Single);
 var
-  temp: Single;
+  Temp: Single;
 begin
   SetFrequency(Frequency);
   keyOn;
   FAttackGain := Amplitude * 0.5;
   FLoopGain := Amplitude;
 
-  temp := FFilterQ + 0.05;
-  FFilters[0].SetStates(2000.0, temp);
-  FFilters[1].SetStates(2000.0, temp);
+  Temp := FFilterQ + 0.05;
+  FFilters[0].SetStates(2000.0, Temp);
+  FFilters[1].SetStates(2000.0, Temp);
 
-  temp := FFilterQ + 0.099;
-  FFilters[0].setTargets(Frequency, temp);
-  FFilters[1].setTargets(Frequency, temp);
+  Temp := FFilterQ + 0.099;
+  FFilters[0].setTargets(Frequency, Temp);
+  FFilters[1].setTargets(Frequency, Temp);
 
   FFilters[0].SweepRate := FFilterRate * 22050.0 * FSampleRateInv;
   FFilters[1].SweepRate := FFilterRate * 22050.0 * FSampleRateInv;
@@ -157,17 +157,17 @@ end;
 
 function TStkMoog.Tick: Single;
 var
-  temp: Single;
+  Temp: Single;
 begin
   if (FModDepth <> 0.0) then
   begin
-    temp := FLoops[1].Tick * FModDepth;
-    FLoops[0].Frequency := FBaseFrequency * (1.0 + temp);
+    Temp := FLoops[1].Tick * FModDepth;
+    FLoops[0].Frequency := FBaseFrequency * (1.0 + Temp);
   end;
 
-  temp := inherited Tick;
-  temp := FFilters[0].Tick(temp);
-  FLastOutput := FFilters[1].Tick(temp);
+  Temp := inherited Tick;
+  Temp := FFilters[0].Tick(Temp);
+  FLastOutput := FFilters[1].Tick(Temp);
   Result := lastOutput * 3.0;
 end;
 

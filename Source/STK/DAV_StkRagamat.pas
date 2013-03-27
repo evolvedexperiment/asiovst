@@ -143,19 +143,6 @@ procedure TStkRagamat.Tick(var i1, i2: Single);
 var
   temp, rateScaler: Single;
 begin
-  {
-    i1 := FReverbs[0].Tick(FSitar.Tick);
-    i2 := i1;
-    FCounter := FCounter - 1;
-    if (FCounter <= 0) then
-    begin
-    rateScaler := 22050.0 * FSampleRateInv;
-    FCounter := round(FTempo / rateScaler);
-    FSitar.noteOn(Midi2Pitch[ragaUp[FKey][FRagaPoint]], 0.5 + random * 0.3)
-    end;
-    exit;
-    //x }
-
   i1 := FReverbs[0].Tick(FDrones[0].Tick + FDrones[2].Tick + FSitar.Tick);
   i2 := FReverbs[1].Tick(1.5 * FDrones[1].Tick + 0.5 * FVoicdrums.Tick + 0.5 *
     FTabla.Tick);
@@ -168,15 +155,15 @@ begin
   begin
     rateScaler := 22050.0 * FSampleRateInv;
     FCounter := round(FTempo / rateScaler);
-    if (random < FDrone_prob) then
-      FDrones[0].NoteOn(FDroneFreqs[0] + random(10), 0.1);
-    if (random < FDrone_prob) then
-      FDrones[1].NoteOn(FDroneFreqs[1] + random(10), 0.1);
-    if (random < FDrone_prob) then
-      FDrones[2].NoteOn(FDroneFreqs[2] + random(10), 0.1);
-    if (random < FNote_prob) then
+    if (Random < FDrone_prob) then
+      FDrones[0].NoteOn(FDroneFreqs[0] + Random(10), 0.1);
+    if (Random < FDrone_prob) then
+      FDrones[1].NoteOn(FDroneFreqs[1] + Random(10), 0.1);
+    if (Random < FDrone_prob) then
+      FDrones[2].NoteOn(FDroneFreqs[2] + Random(10), 0.1);
+    if (Random < FNote_prob) then
     begin
-      temp := random;
+      temp := Random;
       if (temp < 0.1) then
         FRagaStep := 0
       else if (temp < 0.5) then
@@ -189,21 +176,21 @@ begin
       if (FRagaPoint > 11) then
         FRagaPoint := 11;
       if (FRagaStep > 0) then
-        FSitar.NoteOn(Midi2Pitch[ragaUp[FKey][FRagaPoint]], 0.05 + random * 0.3)
+        FSitar.NoteOn(Midi2Pitch[ragaUp[FKey][FRagaPoint]], 0.05 + Random * 0.3)
       else
         FSitar.NoteOn(Midi2Pitch[ragaDown[FKey][FRagaPoint]],
-          0.05 + random * 0.3);
+          0.05 + Random * 0.3);
     end;
-    if (random < FVoic_prob) then
+    if (Random < FVoic_prob) then
     begin
-      FVoiceNote := random(11);
-      FVoicdrums.NoteOn(FVoiceNote, 0.3 + (0.4 * FDrum_prob) + random * 0.3 *
+      FVoiceNote := Random(11);
+      FVoicdrums.NoteOn(FVoiceNote, 0.3 + (0.4 * FDrum_prob) + Random * 0.3 *
         FVoic_prob);
     end;
-    if (random < FDrum_prob) then
+    if (Random < FDrum_prob) then
     begin
-      FVoiceNote := random(CTablaNumWaves);
-      FTabla.NoteOn(FVoiceNote, 0.2 + (0.2 * FDrum_prob) + random * 0.6 *
+      FVoiceNote := Random(CTablaNumWaves);
+      FTabla.NoteOn(FVoiceNote, 0.2 + (0.2 * FDrum_prob) + Random * 0.6 *
         FDrum_prob);
     end;
   end;

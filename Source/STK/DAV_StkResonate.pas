@@ -112,6 +112,7 @@ begin
   FFilter := TStkBiquad.Create(SampleRate);
   FPoleFrequency := 4000.0;
   FPoleRadius := 0.95;
+
   // Set the FFilter parameters.
   FFilter.SetResonance(FPoleFrequency, FPoleRadius, True);
   FZeroFrequency := 0.0;

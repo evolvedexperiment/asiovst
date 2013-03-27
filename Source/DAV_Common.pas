@@ -259,12 +259,12 @@ function Swap16(Value: SmallInt): SmallInt;
 var
   t: Byte;
 begin
- with T16Bit(Value) do
+  with T16Bit(Value) do
   begin
-   t := b[0];
-   b[0] := b[1];
-   b[1] := t;
-   Result := v;
+    t := b[0];
+    b[0] := b[1];
+    b[1] := t;
+    Result := v;
   end;
 end;
 
@@ -272,15 +272,15 @@ function Swap32(Value: LongInt): LongInt;
 var
   Temp: Byte;
 begin
- with T32Bit(Value) do
+  with T32Bit(Value) do
   begin
-   Temp := b[0];
-   b[0] := b[3];
-   b[3] := Temp;
-   Temp := b[1];
-   b[1] := b[2];
-   b[2] := Temp;
-   Result := v;
+    Temp := b[0];
+    b[0] := b[3];
+    b[3] := Temp;
+    Temp := b[1];
+    b[1] := b[2];
+    b[2] := Temp;
+    Result := v;
   end;
 end;
 
@@ -288,21 +288,21 @@ function Swap64(Value: Int64): Int64;
 var
   Temp: Byte;
 begin
- with T64Bit(Value) do
+  with T64Bit(Value) do
   begin
-   Temp := b[0];
-   b[0] := b[7];
-   b[7] := Temp;
-   Temp := b[1];
-   b[1] := b[6];
-   b[6] := Temp;
-   Temp := b[2];
-   b[2] := b[5];
-   b[5] := Temp;
-   Temp := b[3];
-   b[3] := b[4];
-   b[4] := Temp;
-   Result := v;
+    Temp := b[0];
+    b[0] := b[7];
+    b[7] := Temp;
+    Temp := b[1];
+    b[1] := b[6];
+    b[6] := Temp;
+    Temp := b[2];
+    b[2] := b[5];
+    b[5] := Temp;
+    Temp := b[3];
+    b[3] := b[4];
+    b[4] := Temp;
+    Result := v;
   end;
 end;
 
@@ -311,24 +311,24 @@ var
   Temp: Byte;
   T80B: T80Bit absolute Value;
 begin
- with T80B do
+  with T80B do
   begin
-   Temp := b[0];
-   b[0] := b[9];
-   b[9] := Temp;
-   Temp := b[1];
-   b[1] := b[8];
-   b[8] := Temp;
-   Temp := b[2];
-   b[2] := b[7];
-   b[7] := Temp;
-   Temp := b[3];
-   b[3] := b[6];
-   b[6] := Temp;
-   Temp := b[4];
-   b[4] := b[5];
-   b[5] := Temp;
-   Result := V;
+    Temp := b[0];
+    b[0] := b[9];
+    b[9] := Temp;
+    Temp := b[1];
+    b[1] := b[8];
+    b[8] := Temp;
+    Temp := b[2];
+    b[2] := b[7];
+    b[7] := Temp;
+    Temp := b[3];
+    b[3] := b[6];
+    b[6] := Temp;
+    Temp := b[4];
+    b[4] := b[5];
+    b[5] := Temp;
+    Result := V;
   end;
 end;
 
@@ -336,11 +336,11 @@ procedure Flip16(var Value);
 var
   t: Byte;
 begin
- with T16Bit(Value) do
+  with T16Bit(Value) do
   begin
-   t := b[0];
-   b[0] := b[1];
-   b[1] := t;
+    t := b[0];
+    b[0] := b[1];
+    b[1] := t;
   end;
 end;
 
@@ -348,14 +348,14 @@ procedure Flip32(var Value);
 var
   Temp: Byte;
 begin
- with T32Bit(Value) do
+  with T32Bit(Value) do
   begin
-   Temp := b[0];
-   b[0] := b[3];
-   b[3] := Temp;
-   Temp := b[1];
-   b[1] := b[2];
-   b[2] := Temp;
+    Temp := b[0];
+    b[0] := b[3];
+    b[3] := Temp;
+    Temp := b[1];
+    b[1] := b[2];
+    b[2] := Temp;
   end;
 end;
 
@@ -363,20 +363,20 @@ procedure Flip64(var Value);
 var
   Temp: Byte;
 begin
- with T64Bit(Value) do
+  with T64Bit(Value) do
   begin
-   Temp := b[0];
-   b[0] := b[7];
-   b[7] := Temp;
-   Temp := b[1];
-   b[1] := b[6];
-   b[6] := Temp;
-   Temp := b[2];
-   b[2] := b[5];
-   b[5] := Temp;
-   Temp := b[3];
-   b[3] := b[4];
-   b[4] := Temp;
+    Temp := b[0];
+    b[0] := b[7];
+    b[7] := Temp;
+    Temp := b[1];
+    b[1] := b[6];
+    b[6] := Temp;
+    Temp := b[2];
+    b[2] := b[5];
+    b[5] := Temp;
+    Temp := b[3];
+    b[3] := b[4];
+    b[4] := Temp;
   end;
 end;
 
@@ -385,23 +385,23 @@ var
   Temp: Byte;
   T80B: T80Bit absolute Value;
 begin
- with T80B do
+  with T80B do
   begin
-   Temp := b[0];
-   b[0] := b[9];
-   b[9] := Temp;
-   Temp := b[1];
-   b[1] := b[8];
-   b[8] := Temp;
-   Temp := b[2];
-   b[2] := b[7];
-   b[7] := Temp;
-   Temp := b[3];
-   b[3] := b[6];
-   b[6] := Temp;
-   Temp := b[4];
-   b[4] := b[5];
-   b[5] := Temp;
+    Temp := b[0];
+    b[0] := b[9];
+    b[9] := Temp;
+    Temp := b[1];
+    b[1] := b[8];
+    b[8] := Temp;
+    Temp := b[2];
+    b[2] := b[7];
+    b[7] := Temp;
+    Temp := b[3];
+    b[3] := b[6];
+    b[6] := Temp;
+    Temp := b[4];
+    b[4] := b[5];
+    b[5] := Temp;
   end;
 end;
 
@@ -410,37 +410,39 @@ end;
 
 function ms2Samples(const ms, SampleRate: Single): Single;
 begin
- Result := ms * SampleRate * 0.001;
+  Result := ms * SampleRate * 0.001;
 end;
 
 function Samples2ms(const Samples, SampleRate: Single): Single;
 begin
- Result := Samples * 1000 / SampleRate;
+  Result := Samples * 1000 / SampleRate;
 end;
 
 function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer;
 begin
- Result := Round(SyncFactor * SampleRate * 60 / BPM);
+  Result := Round(SyncFactor * SampleRate * 60 / BPM);
 end;
 
 function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single;
 begin
- Result := BaseFactor;
- if Dotted then Result := Result * 1.5;
- if Triads then Result := Result / 3;
+  Result := BaseFactor;
+  if Dotted then
+    Result := Result * 1.5;
+  if Triads then
+    Result := Result / 3;
 end;
 
 function Compare4(S1, S2: PAnsiChar): Boolean;
 var
   i, Diff : Byte;
 begin
- Result := False;
- for i := 0 to 3 do
+  Result := True;
+  for i := 0 to 3 do
   begin
-   Diff := Byte(S1[i]) - Byte(S2[i]);
-   if not (Diff in [0, 32, 224]) then Exit;
+    Diff := Byte(S1[i]) - Byte(S2[i]);
+    if not (Diff in [0, 32, 224]) then
+      Exit(False);
   end;
- Result := True;
 end;
 
 
@@ -455,18 +457,18 @@ end;
 
 function FrequencyToBark(Frequency: Single): Single;
 begin
- if (Frequency < 0) then Frequency := 0;
- Frequency := Frequency * 0.001;
- Result := 13.0 * ArcTan(0.76 * Frequency) +
-   3.5 * ArcTan(Sqr(Frequency * 0.1333333333333333));
+  if (Frequency < 0) then Frequency := 0;
+  Frequency := Frequency * 0.001;
+  Result := 13.0 * ArcTan(0.76 * Frequency) +
+    3.5 * ArcTan(Sqr(Frequency * 0.1333333333333333));
 end;
 
 function FrequencyToBark(Frequency: Double): Double;
 begin
- if (Frequency < 0) then Frequency := 0;
- Frequency := Frequency * 0.001;
- Result := 13.0 * ArcTan(0.76 * Frequency) +
-   3.5 * ArcTan(Sqr(Frequency / 7.5));
+  if (Frequency < 0) then Frequency := 0;
+  Frequency := Frequency * 0.001;
+  Result := 13.0 * ArcTan(0.76 * Frequency) +
+    3.5 * ArcTan(Sqr(Frequency / 7.5));
 end;
 
 
@@ -481,23 +483,23 @@ end;
 
 function Frequency2CriticalBandwidth(Frequency: Single): Single;
 begin
- Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
+  Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
 end;
 
 function Frequency2CriticalBandwidth(Frequency: Double): Double;
 begin
- Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
+  Result := 25 + 75 * Power(1 + 1.4 * Sqr(Frequency * 0.001), 0.69);
 end;
 
 
 function GermaniumDiode(Voltage: Double): Double;
 begin
- Result := 0.085 * (Voltage + Abs(Voltage)) * sqr(Voltage) * Voltage
+  Result := 0.085 * (Voltage + Abs(Voltage)) * sqr(Voltage) * Voltage
 end;
 
 function SiliconDiode(Voltage: Double): Double;
 begin
- Result := 40.6728602E-9 * (Exp(17.7493332 * (Voltage + 0.3)) - 1);
+  Result := 40.6728602E-9 * (Exp(17.7493332 * (Voltage + 0.3)) - 1);
 end;
 
 
@@ -511,36 +513,36 @@ procedure Exchange8(var ValueA, ValueB);
 var
   Temp : Byte;
 begin
- Temp := Byte(ValueA);
- Byte(ValueA) := Byte(ValueB);
- Byte(ValueB) := Temp;
+  Temp := Byte(ValueA);
+  Byte(ValueA) := Byte(ValueB);
+  Byte(ValueB) := Temp;
 end;
 
 procedure Exchange16(var ValueA, ValueB);
 var
   Temp : Word;
 begin
- Temp := Word(ValueA);
- Word(ValueA) := Word(ValueB);
- Word(ValueB) := Temp;
+  Temp := Word(ValueA);
+  Word(ValueA) := Word(ValueB);
+  Word(ValueB) := Temp;
 end;
 
 procedure Exchange32(var ValueA, ValueB);
 var
   Temp : Integer;
 begin
- Temp := Integer(ValueA);
- Integer(ValueA) := Integer(ValueB);
- Integer(ValueB) := Temp;
+  Temp := Integer(ValueA);
+  Integer(ValueA) := Integer(ValueB);
+  Integer(ValueB) := Temp;
 end;
 
 function BitCount(Value: Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
- Value := Value - (Value shr 1) and $55555555;
- Value := (Value and $33333333) + ((Value shr 2) and $33333333);
- Value := (Value + (Value shr 4)) and $0F0F0F0F;
- Result := (Value * $01010101) shr 24;
+  Value := Value - (Value shr 1) and $55555555;
+  Value := (Value and $33333333) + ((Value shr 2) and $33333333);
+  Value := (Value + (Value shr 4)) and $0F0F0F0F;
+  Result := (Value * $01010101) shr 24;
 {$ELSE}
 asm
     MOV     EAX, Value
@@ -565,10 +567,10 @@ end;
 
 function BitCount(Value: Int64): Int64;
 begin
- Value := Value - (Value shr 1) and $5555555555555555;
- Value := (Value and $3333333333333333) + ((Value shr 2) and $3333333333333333);
- Value := (Value + (Value shr 4)) and $0F0F0F0F0F0F0F0F;
- Result := (Value * $0101010101010101) shr 56;
+  Value := Value - (Value shr 1) and $5555555555555555;
+  Value := (Value and $3333333333333333) + ((Value shr 2) and $3333333333333333);
+  Value := (Value + (Value shr 4)) and $0F0F0F0F0F0F0F0F;
+  Result := (Value * $0101010101010101) shr 56;
 end;
 
 
@@ -580,16 +582,18 @@ end;
 
 function dB_to_Amp(const Value: Single): Single;
 begin
- if (Value > -400.0)
-  then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
-  else Result := 0;
+  if (Value > -400.0) then
+    Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
+  else
+    Result := 0;
 end;
 
 function dB_to_Amp(const Value: Double): Double;
 begin
- if (Value > -1000.0)
-  then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
-  else Result := 0;
+  if (Value > -1000.0) then
+    Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
+  else
+    Result := 0;
 end;                                                             // e^(x) = 2^(log2(e^x)) = 2^(x / ln(2))
 
 
@@ -606,7 +610,7 @@ end;                                                             // e^(x) = 2^(l
 function SqrAmp2dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Result := 10 * Log10(Value);
+  Result := 10 * Log10(Value);
 {$ELSE}
 asm
     FLDLG2
@@ -619,7 +623,7 @@ end;
 function SqrAmp2dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- Result := 10 * Log10(Value);
+  Result := 10 * Log10(Value);
 {$ELSE}
 asm
     FLDLG2
@@ -632,7 +636,7 @@ end;
 function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Result := CTwenty32 * Log10(Value);
+  Result := CTwenty32 * Log10(Value);
 {$ELSE}
 asm
     FLDLG2
@@ -645,7 +649,7 @@ end;
 function Amp_to_dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- Result := CTwenty64 * Log10(Value);
+  Result := CTwenty64 * Log10(Value);
 {$ELSE}
 asm
     FLDLG2
@@ -658,10 +662,10 @@ end;
 procedure Amp_to_dB(var v: TDAV4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
- v[0] := Amp_to_dB(v[0]);
- v[1] := Amp_to_dB(v[1]);
- v[2] := Amp_to_dB(v[2]);
- v[3] := Amp_to_dB(v[3]);
+  v[0] := Amp_to_dB(v[0]);
+  v[1] := Amp_to_dB(v[1]);
+  v[2] := Amp_to_dB(v[2]);
+  v[3] := Amp_to_dB(v[3]);
 {$ELSE}
 asm
     FLDLG2
@@ -697,7 +701,7 @@ end;
 function FreqLinearToLog(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Result := CTwenty32 * Exp(value * 6.907755279);
+  Result := CTwenty32 * Exp(value * 6.907755279);
 {$ELSE}
 const
   fltl2: Single = 6.907755279;
@@ -722,8 +726,8 @@ end;
 function FreqLinearToLog(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- // Result := 20 * Exp(value * ln(20000 / 20));
- Result := CTwenty64 * Exp(value * 6.907755279);
+//  Result := 20 * Exp(Value * ln(20000 / 20));
+  Result := CTwenty64 * Exp(Value * 6.907755279);
 {$ELSE}
 const
   fltl2: Double = 6.907755279;
@@ -751,8 +755,8 @@ const
   fltl2 : Single = 1.44764826019E-1;
 {$IFDEF PUREPASCAL}
 begin
-// Result := ln(value / 20) / ln(20000 / 20);
- Result := ln(value * fltl1) * fltl2;
+//  Result := Ln(Value / 20) / ln(20000 / 20);
+  Result := Ln(Value * fltl1) * fltl2;
 {$ELSE}
 asm
     FLDLN2
@@ -769,7 +773,7 @@ const
   fltl2 : Double = 1.44764826019E-1;
 {$IFDEF PUREPASCAL}
 begin
- Result := ln(value * fltl1) * fltl2;
+  Result := Ln(Value * fltl1) * fltl2;
 {$ELSE}
 asm
     FLDLN2
@@ -782,22 +786,22 @@ end;
 
 function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single;
 begin
- Result := Min * Exp(Value * ln(Max / Min));
+  Result := Min * Exp(Value * ln(Max / Min));
 end;
 
 function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
 begin
- Result := Min * Exp(Value * ln(Max / Min));
+  Result := Min * Exp(Value * ln(Max / Min));
 end;
 
 function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
 begin
- Result := ln(Value / Min) / ln(Max / Min);
+  Result := ln(Value / Min) / ln(Max / Min);
 end;
 
 function ScaleLogToLinear(const Value: Double; const Min, Max: Double): Double; overload;
 begin
- Result := ln(Value / Min - Max / Min);
+  Result := ln(Value / Min - Max / Min);
 end;
 
 
@@ -807,147 +811,183 @@ end;
 // Limit a Value to be Lower <= Value <= Upper
 function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single;
 begin
- if Value < Lower then Result := Lower else
- if Value > Upper then Result := Upper else Result := Value;
+  if Value < Lower then
+    Result := Lower
+  else
+  if Value > Upper then
+    Result := Upper
+  else
+    Result := Value;
 end;
 
 // Limit a Value to be Lower <= Value <= Upper
 function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double;
 begin
- if Value < Lower then Result := Lower else
- if Value > Upper then Result := Upper else Result := Value;
+  if Value < Lower then
+    Result := Lower
+  else
+  if Value > Upper then
+    Result := Upper
+  else
+    Result := Value;
 end;
 
 // Limit a Value to be Lower <= Value <= Upper
 function Limit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer;
 begin
- if Value < Lower then Result := Lower else
- if Value > Upper then Result := Upper else Result := Value;
+  if Value < Lower then
+    Result := Lower
+  else
+  if Value > Upper then
+    Result := Upper
+  else
+    Result := Value;
 end;
 
 // Limit a Value to be Lower <= Value <= Upper
 function RoundLimit(const Value: Single; Lower: Integer = 0; Upper: Integer = 1): Integer;
 begin
- Result := Round(Value);
- if Result < Lower then Result := Lower else
- if Result > Upper then Result := Upper;
+  Result := Round(Value);
+  if Result < Lower then
+    Result := Lower
+  else
+  if Result > Upper then
+    Result := Upper;
 end;
 
 // Limit a Value to be Lower <= Value <= Upper
 function RoundLimit(const Value: Double; Lower: Integer = 0; Upper: Integer = 1): Integer;
 begin
- Result := Round(Value);
- if Result < Lower then Result := Lower else
- if Result > Upper then Result := Upper;
+  Result := Round(Value);
+  if Result < Lower then
+    Result := Lower
+  else
+  if Result > Upper then
+    Result := Upper;
 end;
 
 // Limit a Value to be Lower <= Value <= Upper
 function IntLimit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer;
 begin
- if Value < Lower then Result := Lower else
- if Value > Upper then Result := Upper else Result := Value;
+  if Value < Lower then
+    Result := Lower
+  else
+  if Value > Upper then
+    Result := Upper
+  else
+    Result := Value;
 end;
 
 function BranchlessClip(const Value, Lower, Upper: Single): Single;
 begin
- Result := (Abs(Value - Lower) + (Lower + Upper) - Abs(Value - Upper)) * 0.5;
+  Result := (Abs(Value - Lower) + (Lower + Upper) - Abs(Value - Upper)) * 0.5;
 end;
 
 function BranchlessClip(const Value, Lower, Upper: Double): Double;
 begin
- Result := (Abs(Value - Lower) + (Lower + Upper) - Abs(Value - Upper)) * 0.5;
+  Result := (Abs(Value - Lower) + (Lower + Upper) - Abs(Value - Upper)) * 0.5;
 end;
 
 function BranchlessClipLower(Value: Single; const Lower: Single): Single;
 begin
- Value := Value - Lower;
- Result := (Value + Abs(Value)) * 0.5 + Lower;
+  Value := Value - Lower;
+  Result := (Value + Abs(Value)) * 0.5 + Lower;
 end;
 
 function BranchlessClipLower(Value: Double; const Lower: Double): Double;
 begin
- Value := Value - Lower;
- Result := (Value + Abs(Value)) * 0.5 + Lower;
+  Value := Value - Lower;
+  Result := (Value + Abs(Value)) * 0.5 + Lower;
 end;
 
 function BranchlessClipUpper(Value: Single; const Upper: Single): Single;
 begin
- Value := Upper - Value;
- Result := Upper -(Value + Abs(Value)) * 0.5;
+  Value := Upper - Value;
+  Result := Upper -(Value + Abs(Value)) * 0.5;
 end;
 
 function BranchlessClipUpper(Value: Double; const Upper: Double): Double;
 begin
- Value := Upper - Value;
- Result := Upper -(Value + Abs(Value)) * 0.5;
+  Value := Upper - Value;
+  Result := Upper -(Value + Abs(Value)) * 0.5;
 end;
 
 function BranchlessClipPositive(Value: Single): Single;
 begin
- Result := (Value + Abs(Value)) * 0.5;
+  Result := (Value + Abs(Value)) * 0.5;
 end;
 
 function BranchlessClipPositive(Value: Double): Double;
 begin
- Result := (Value + Abs(Value)) * 0.5;
+  Result := (Value + Abs(Value)) * 0.5;
 end;
 
 function BranchlessClipNegative(Value: Single): Single;
 begin
- Result := (Abs(Value) - Value) * 0.5;
+  Result := (Abs(Value) - Value) * 0.5;
 end;
 
 function BranchlessClipNegative(Value: Double): Double;
 begin
- Result := (Abs(Value) - Value) * 0.5;
+  Result := (Abs(Value) - Value) * 0.5;
 end;
 
 procedure WrapInt(var Value: Integer; Upper: Integer; Lower: Integer = 0);
 begin
- while Value >= Upper do Value := Value - Upper;
- while Value <  Lower do Value := Value + Upper;
+  while Value >= Upper do
+    Value := Value - Upper;
+  while Value <  Lower do
+    Value := Value + Upper;
 end;
 
 function Smallest(const A, B: Single): Single;
 begin
- if A < B
-  then Result := A
-  else Result := B;
+  if A < B then
+    Result := A
+  else
+    Result := B;
 end;
 
 function Smallest(const A, B: Double): Double;
 begin
- if A < B
-  then Result := A
-  else Result := B;
+  if A < B then
+    Result := A
+  else
+    Result := B;
 end;
 
 function Largest(const A, B: Single): Single;
 begin
- if A > B
-  then Result := A
-  else Result := B;
+  if A > B then
+    Result := A
+  else
+    Result := B;
 end;
 
 function Largest(const A, B: Double): Double;
 begin
- if A > B
-  then Result := A
-  else Result := B;
+  if A > B then
+    Result := A
+  else
+    Result := B;
 end;
 
 function LimitAngle(const Angle: Single): Single;
 begin
  Result := Angle;
- while Result <    0 do Result := Result + 360;
- while Result >= 360 do Result := Result - 360;
+ while Result <    0 do
+   Result := Result + 360;
+ while Result >= 360 do
+   Result := Result - 360;
 end;
 
 function LimitAngle(const Angle: Double): Double;
 begin
  Result := Angle;
- while Result <    0 do Result := Result + 360;
- while Result >= 360 do Result := Result - 360;
+ while Result <    0 do
+   Result := Result + 360;
+ while Result >= 360 do
+   Result := Result - 360;
 end;
 
 
@@ -956,7 +996,7 @@ end;
 function FastFractional(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Result := Value - Round(Value - 0.5);
+  Result := Value - Round(Value - 0.5);
 {$ELSE}
 asm
     FLD     Value.Single
@@ -970,7 +1010,7 @@ end;
 function FastFractional(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- Result := Value - Round(Value - 0.5);
+  Result := Value - Round(Value - 0.5);
 {$ELSE}
 asm
     FLD     Value.Double
@@ -985,14 +1025,14 @@ procedure FastAbs(var Value: Single);
 var
   i : Integer absolute Value;
 begin
- i := i and $7FFFFFFF;
+  i := i and $7FFFFFFF;
 end;
 
 procedure FastAbs(var Value: Double);
 var
   i : array [0..1] of Integer absolute Value;
 begin
- i[0] := i[0] and $7FFFFFFF;
+  i[0] := i[0] and $7FFFFFFF;
 end;
 
 procedure FastAbs(var Value: TDAV4SingleArray); overload;
@@ -1000,10 +1040,10 @@ procedure FastAbs(var Value: TDAV4SingleArray); overload;
 var
   i : array [0..3] of Integer absolute Value;
 begin
- i[0] := i[0] and $7FFFFFFF;
- i[1] := i[1] and $7FFFFFFF;
- i[2] := i[2] and $7FFFFFFF;
- i[3] := i[3] and $7FFFFFFF;
+  i[0] := i[0] and $7FFFFFFF;
+  i[1] := i[1] and $7FFFFFFF;
+  i[2] := i[2] and $7FFFFFFF;
+  i[3] := i[3] and $7FFFFFFF;
 {$ELSE}
 asm
     FLD     [EAX].Single
@@ -1044,7 +1084,7 @@ end;
 function LaurentRoundInt(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Value);
+  Result := Round(Value);
 {$ELSE}
 asm
     FLD     Value.Single
@@ -1058,7 +1098,7 @@ end;
 function LaurentRoundInt(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Value);
+  Result := Round(Value);
 {$ELSE}
 asm
     FLD     Value.Double
@@ -1074,11 +1114,11 @@ procedure LaurentRoundInt(Input: PSingle; Output: PInteger; SampleFrames: Intege
 var
   i : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+  for i := 0 to SampleFrames - 1 do
   begin
-   Output^ := Round(Input^);
-   Inc(Output);
-   Inc(Input);
+    Output^ := Round(Input^);
+    Inc(Output);
+    Inc(Input);
   end;
 {$ELSE}
 asm
@@ -1097,7 +1137,7 @@ end;
 function LaurentFastFloor(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Floor(Value);
+  Result := Floor(Value);
 {$ELSE}
 asm
     FLD     Value.Single
@@ -1111,7 +1151,7 @@ end;
 function LaurentFastFloor(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Floor(Value);
+  Result := Floor(Value);
 {$ELSE}
 asm
     FLD     Value.Double
@@ -1127,11 +1167,11 @@ procedure LaurentFastFloor(Input: PSingle; Output: PInteger; SampleFrames: Integ
 var
   i : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+  for i := 0 to SampleFrames - 1 do
   begin
-   Output^ := Floor(Input^);
-   Inc(Output);
-   Inc(Input);
+    Output^ := Floor(Input^);
+    Inc(Output);
+    Inc(Input);
   end;
 {$ELSE}
 asm
@@ -1152,7 +1192,7 @@ end;
 function LaurentFastCeil(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Ceil(Value);
+  Result := Ceil(Value);
 {$ELSE}
 asm
     FLD     Value.Single
@@ -1167,7 +1207,7 @@ end;
 function LaurentFastCeil(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Ceil(Value);
+  Result := Ceil(Value);
 {$ELSE}
 asm
     FLD     Value.Double
@@ -1184,11 +1224,11 @@ procedure LaurentFastCeil(Input: PSingle; Output: PInteger; SampleFrames: Intege
 var
   i : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+  for i := 0 to SampleFrames - 1 do
   begin
-   Output^ := Ceil(Input^);
-   Inc(Output);
-   Inc(Input);
+    Output^ := Ceil(Input^);
+    Inc(Output);
+    Inc(Input);
   end;
 {$ELSE}
 asm
@@ -1210,7 +1250,7 @@ end;
 function LaurentFastTrunc(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Trunc(Value);
+  Result := Trunc(Value);
 {$ELSE}
 var
   IntCast : Integer absolute Value;
@@ -1231,7 +1271,7 @@ end;
 function LaurentFastTrunc(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Trunc(Value);
+  Result := Trunc(Value);
 {$ELSE}
 var
   ByteCast : array [0..7] of Byte absolute Value;
@@ -1253,7 +1293,7 @@ end;
 function FastRound(Sample: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Sample);
+  Result := Round(Sample);
 {$ELSE}
 asm
     FLD     Sample.Single
@@ -1265,7 +1305,7 @@ end;
 function FastRound(Sample: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Sample);
+  Result := Round(Sample);
 {$ELSE}
 asm
     FLD     Sample.Double
@@ -1278,21 +1318,22 @@ function FastSgn(const Value: Single): Integer;
 var
   IntCast : Integer absolute Value;
 begin
- Result := 1 - ((Intcast shr 31) shl 1);
+  Result := 1 - ((Intcast shr 31) shl 1);
 end;
 
 function OnOff(const Value: Single): Boolean;
 begin
- Result := Value > 0.5
+  Result := Value > 0.5
 end;
 
 function UnDenormalize(const Value : Single) : Single;
 var
   IntValue : Integer absolute Value;
 begin
- if (IntValue and $7F8000) = 0
-  then Result := 0.0
-  else Result := Value;
+  if (IntValue and $7F8000) = 0 then
+    Result := 0.0
+  else
+    Result := Value;
 end;
 
 procedure DontRaiseExceptionsAndSetFPUcodeword;
@@ -1404,25 +1445,25 @@ function GetApplicationFilename: string;
 var
   s : PAnsiChar;
 begin
- GetMem(s, $7FF);
- GetModuleFileNameA(hInstance, s, SizeOf(s));
- Result := ExtractFilename(string(StrPas(s)));
+  GetMem(s, $7FF);
+  GetModuleFileNameA(hInstance, s, SizeOf(s));
+  Result := ExtractFilename(string(StrPas(s)));
 end;
 
 function GetApplicationDirectory: string;
 var
   s : PAnsiChar;
 begin
- GetMem(s, $7FF);
- GetModuleFilenameA(hInstance, s, SizeOf(s));
- Result := ExtractFileDir(string(StrPas(s)));
+  GetMem(s, $7FF);
+  GetModuleFilenameA(hInstance, s, SizeOf(s));
+  Result := ExtractFileDir(string(StrPas(s)));
 end;
 {$ENDIF}
 
 {$IFNDEF DELPHI12_UP}
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
 begin
- Result := C in CharSet;
+  Result := C in CharSet;
 end;
 
 {$IFDEF MSWINDOWS}
@@ -1444,32 +1485,33 @@ function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 var
   C : Integer;
 begin
- repeat
-  SetLength(Result, Length(Result) + 1);
-  {$IFDEF DELPHI2009_UP}
-  C := AnsiPos(string(Delimiter), S);
-  {$ELSE}
-  C := Pos(Delimiter, S);
-  {$ENDIF}
-  if C = 0 then C := Length(S) + 1;
-  Result[Length(Result)- 1] := Copy(S, 1, C- 1);
-  Delete(S, 1, C);
- until Length(S)= 0;
+  repeat
+    SetLength(Result, Length(Result) + 1);
+    {$IFDEF DELPHI2009_UP}
+    C := AnsiPos(string(Delimiter), S);
+    {$ELSE}
+    C := Pos(Delimiter, S);
+    {$ENDIF}
+    if C = 0 then C := Length(S) + 1;
+    Result[Length(Result)- 1] := Copy(S, 1, C- 1);
+    Delete(S, 1, C);
+  until Length(S)= 0;
 end;
 
 function MakeGoodFileName(s: string): string;
 var
   i: Integer;
 begin
- Result := '';
- for i := 1 to Length(s) do
-  {$IFDEF DELPHI2009_UP}
-  if CharInSet(s[i], ['*', '\', '/', '[', ']', '"', '|', '<', '>', '?', ':'])
-  {$ELSE}
-  if not (s[i] in ['*', '\', '/', '[', ']', '"', '|', '<', '>', '?', ':'])
-  {$ENDIF}
-   then Result := Result + s[i]
-   else Result := Result + '-';
+  Result := '';
+  for i := 1 to Length(s) do
+    {$IFDEF DELPHI2009_UP}
+    if CharInSet(s[i], ['*', '\', '/', '[', ']', '"', '|', '<', '>', '?', ':']) then
+    {$ELSE}
+    if not (s[i] in ['*', '\', '/', '[', ']', '"', '|', '<', '>', '?', ':']) then
+    {$ENDIF}
+      Result := Result + s[i]
+    else
+      Result := Result + '-';
 end;
 {$ENDIF}
 

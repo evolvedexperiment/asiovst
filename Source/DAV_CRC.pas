@@ -61,7 +61,7 @@ end;
 
 function TCRC16.GetCRC: Word;
 begin
-  result := FCRC;
+  Result := FCRC;
   Clear;
 end;
 

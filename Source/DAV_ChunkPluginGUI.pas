@@ -96,17 +96,17 @@ end;
 
 class function TDAVPluginGuiChunk.GetClassChunkName: TChunkName;
 begin
-  result := 'PGUI';
+  Result := 'PGUI';
 end;
 
 class function TDAVPluginGuiChunk.GetClassChunkSize: Integer;
 begin
-  result := SizeOf(TDAVPluginGuiChunkRecord);
+  Result := SizeOf(TDAVPluginGuiChunkRecord);
 end;
 
 function TDAVPluginGuiChunk.GetKnobsPerRow: TGuiAntiAlias;
 begin
-  result := TGuiAntiAlias(FPluginGuiChunkRecord.FontAntiAliasing);
+  Result := TGuiAntiAlias(FPluginGuiChunkRecord.FontAntiAliasing);
 end;
 
 procedure TDAVPluginGuiChunk.SetFontAntiAliasing(const Value: TGuiAntiAlias);
