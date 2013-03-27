@@ -37,16 +37,16 @@ unit DAV_StkTubeBell;
   This class implements two simple FM Pairs summed together, also referred to
   as algorithm 5 of the TX81Z.
 
-    Algorithm 5 is :  4.3--\
-                             + -. Out
-                      2.1--/
+    Algorithm 5 is :  4.3 --\
+                            +--> Out
+                      2.1 --/
 
   Control Change Numbers:
-    - Modulator Index One:=2
-    - Crossfade of Outputs:=4
-    - LFO Speed:=11
-    - LFO Depth:=1
-    - FAdsr 2 & 4 Target:=128
+    - Modulator Index One = 2
+    - Crossfade of Outputs = 4
+    - LFO Speed = 11
+    - LFO Depth = 1
+    - FAdsr 2 & 4 Target = 128
 
   The basic Chowning/Stanford FM patent expired in 1995, but there exist
   follow-on patents, mostly assigned to Yamaha. If you are of the type who

@@ -73,34 +73,35 @@ resourcestring
 
 procedure TCustomSampleRateSource.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomSampleRateSource then
+  if Dest is TCustomSampleRateSource then
   begin
-   TCustomSampleRateSource(Dest).FSampleRate     := FSampleRate;
-   TCustomSampleRateSource(Dest).FSampleRateReci := FSampleRateReci;
+    TCustomSampleRateSource(Dest).FSampleRate     := FSampleRate;
+    TCustomSampleRateSource(Dest).FSampleRateReci := FSampleRateReci;
   end
- else inherited;
+  else
+    inherited;
 end;
 
 constructor TCustomSampleRateSource.Create(AOwner: TComponent);
 begin
- inherited;
- FSampleRate := 44100;
+  inherited;
+  FSampleRate := 44100;
 end;
 
 procedure TCustomSampleRateSource.SetSampleRate(const Value: Double);
 begin
- if FSampleRate <> abs(Value) then
+  if FSampleRate <> abs(Value) then
   begin
-   if Value = 0
-    then raise Exception.Create(RCStrInvalidSampleRate);
-   FSampleRate := abs(Value);
-   SampleRateChanged;
+    if Value = 0 then
+      raise Exception.Create(RCStrInvalidSampleRate);
+    FSampleRate := abs(Value);
+    SampleRateChanged;
   end;
 end;
 
 procedure TCustomSampleRateSource.SampleRateChanged;
 begin
- FSampleRateReci := 1 / FSampleRate;
+  FSampleRateReci := 1 / FSampleRate;
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 

@@ -126,53 +126,53 @@ type
 
   TCustomVstPlugIn = class(TCollectionItem)
   private
-    FActive                        : Boolean;
-    FAutomationState               : TAutomationState;
-    FDisplayName                   : string;
-    FEditOpen                      : Boolean;
-    FLoaded                        : Boolean;
-    FVstDllFileName                : TFileName;
-    FVstDllHandle                  : THandle;
-    FMainFunction                  : TMainProc;
+    FActive: Boolean;
+    FAutomationState: TAutomationState;
+    FDisplayName: string;
+    FEditOpen: Boolean;
+    FLoaded: Boolean;
+    FVstDllFileName: TFileName;
+    FVstDllHandle: THandle;
+    FMainFunction: TMainProc;
     {$IFDEF jBridge}
-    FJBridgeMainFunction           : TJBridgeMainProc;
-    FJBridgeDLL                    : AnsiString;
+    FJBridgeMainFunction: TJBridgeMainProc;
+    FJBridgeDLL: AnsiString;
     {$ENDIF}
-    FVstEffect                     : PVstEffect;
-    FNeedIdle                      : Boolean;
+    FVstEffect: PVstEffect;
+    FNeedIdle: Boolean;
     {$IFDEF VstHostGUI}
-    FGUIControlCreated             : Boolean;
-    FGUIStyle                      : TGUIStyle;
-    FOnShowEdit                    : TVstShowEditEvent;
-    FOnCloseEdit                   : TNotifyEvent;
+    FGUIControlCreated: Boolean;
+    FGUIStyle: TGUIStyle;
+    FOnShowEdit: TVstShowEditEvent;
+    FOnCloseEdit: TNotifyEvent;
     {$ENDIF}
-    FOnAfterLoad                   : TNotifyEvent;
-    FOnAMAutomate                  : TVstAutomateEvent;
-    FOnAMBeginEdit                 : TVstAutomationNotifyEvent;
-    FOnAMEndEdit                   : TVstAutomationNotifyEvent;
-    FOnAMIdle                      : TNotifyEvent;
-    FOnAMIOChanged                 : TNotifyEvent;
-    FOnAMNeedIdle                  : TNotifyEvent;
-    FOnAMOfflineGetCurrentMetaPass : TNotifyEvent;
-    FOnAMOfflineGetCurrentPass     : TNotifyEvent;
-    FOnAMOfflineRead               : TVstOfflineEvent;
-    FOnAMOfflineStart              : TNotifyEvent;
-    FOnAMOfflineWrite              : TVstOfflineEvent;
-    FOnAMPinConnected              : TVstPinConnectedEvent;
-    FOnAMSetOutputSampleRate       : TVstSampleRateChangedEvent;
-    FOnAMUpdateDisplay             : TNotifyEvent;
-    FOnAMWantMidi                  : TNotifyEvent;
-    FOnProcessEvents               : TVstProcessEventsEvent;
-    FOnVendorSpecific              : TVendorSpecificEvent;
-    FPlugCategory                  : TVstPluginCategory;
-    FProcessLevel                  : TCurrentProcessLevel;
-    FProgramNr                     : Integer;
-    FReplaceOrAccumulate           : TReplaceOrAccumulate;
-    FVstOfflineTasks               : TOwnedCollection;
-    FVstVersion                    : Integer;
-    FWantMidi                      : Boolean;
-    FVSTCanDos                     : TVstCanDos;
-    FVSTCanDosScannedComplete      : Boolean;
+    FOnAfterLoad: TNotifyEvent;
+    FOnAMAutomate: TVstAutomateEvent;
+    FOnAMBeginEdit: TVstAutomationNotifyEvent;
+    FOnAMEndEdit: TVstAutomationNotifyEvent;
+    FOnAMIdle: TNotifyEvent;
+    FOnAMIOChanged: TNotifyEvent;
+    FOnAMNeedIdle: TNotifyEvent;
+    FOnAMOfflineGetCurrentMetaPass: TNotifyEvent;
+    FOnAMOfflineGetCurrentPass: TNotifyEvent;
+    FOnAMOfflineRead: TVstOfflineEvent;
+    FOnAMOfflineStart: TNotifyEvent;
+    FOnAMOfflineWrite: TVstOfflineEvent;
+    FOnAMPinConnected: TVstPinConnectedEvent;
+    FOnAMSetOutputSampleRate: TVstSampleRateChangedEvent;
+    FOnAMUpdateDisplay: TNotifyEvent;
+    FOnAMWantMidi: TNotifyEvent;
+    FOnProcessEvents: TVstProcessEventsEvent;
+    FOnVendorSpecific: TVendorSpecificEvent;
+    FPlugCategory: TVstPluginCategory;
+    FProcessLevel: TCurrentProcessLevel;
+    FProgramNr: Integer;
+    FReplaceOrAccumulate: TReplaceOrAccumulate;
+    FVstOfflineTasks: TOwnedCollection;
+    FVstVersion: Integer;
+    FWantMidi: Boolean;
+    FVSTCanDos: TVstCanDos;
+    FVSTCanDosScannedComplete: Boolean;
 
     function GetEffOptions: TEffFlags;
     function GetInitialDelay: Integer;
@@ -208,10 +208,10 @@ type
   protected
     {$IFDEF VstHostGUI}
     {$IFDEF FMX}
-    FGUIControl  : TFmxHandle;
+    FGUIControl: TFmxHandle;
     {$ELSE}
-    FGUIControl  : TWinControl;
-    FGUIElements : TObjectList;
+    FGUIControl: TWinControl;
+    FGUIElements: TObjectList;
     procedure ShowHostGuiSelector(Control: TWinControl);
     procedure ShowHostGuiList(Control: TWinControl);
     procedure ShowHostGuiCustom(Control: TWinControl);
@@ -237,8 +237,8 @@ type
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
-    function BeginLoadBank(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
-    function BeginLoadProgram(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
+    function BeginLoadBank(const PatchChunkInfo: PVstPatchChunkInfo): Integer;
+    function BeginLoadProgram(const PatchChunkInfo: PVstPatchChunkInfo): Integer;
     function CanBeAutomated(const Index: Integer): Integer;
     function ConnectInput(const InputIndex: Integer; const State: Boolean): Integer;
     function ConnectOutput(const OutputIndex: Integer; const State: Boolean): Integer;
@@ -284,7 +284,7 @@ type
     // Offline Functions
     function OfflineNotify(const VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
     function OfflinePrepare(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
-    function OfflineRun(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count :Integer): Integer;
+    function OfflineRun(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count:Integer): Integer;
 
     function ProcessEvents(const VstEvents: TVstEvents): Integer;
     function ProcessVarIo(const VarIo: TVstVariableIo): Integer;
@@ -346,7 +346,7 @@ type
     function EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
     function EditKeyUp(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
     function EditOpen(const Handle: THandle): Integer;
-    procedure SetEditKnobMode(Mode : TKnobMode);
+    procedure SetEditKnobMode(Mode: TKnobMode);
     {$IFDEF FMX}
     procedure ShowEdit(Control: TFmxHandle); overload;
     {$ELSE}
@@ -498,15 +498,15 @@ type
   {$IFDEF DELPHI10_UP} {$region 'TVstTimeInformation'} {$ENDIF}
   TCustomVstTimeInformation = class(TPersistent)
   private
-    FOnChange    : TNotifyEvent;
-    function GetVTI(Index :Integer) : Integer;
-    function GetVTIDouble(Index :Integer) : Double;
-    function GetVTIflags :TVstTimeInfoFlags;
-    procedure SetVTI(Index,Value :Integer);
-    procedure SetVTIDouble(Index :Integer; Value: Double);
-    procedure SetVTIflags(Flags:TVstTimeInfoFlags);
+    FOnChange: TNotifyEvent;
+    function GetVTI(Index: Integer): Integer;
+    function GetVTIDouble(Index: Integer): Double;
+    function GetVTIflags: TVstTimeInfoFlags;
+    procedure SetVTI(Index,Value: Integer);
+    procedure SetVTIDouble(Index: Integer; Value: Double);
+    procedure SetVTIflags(Flags: TVstTimeInfoFlags);
   protected
-    FVstTimeInfo : TVstTimeInfo;
+    FVstTimeInfo: TVstTimeInfo;
     procedure Change; dynamic;
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -551,23 +551,23 @@ type
   {$IFDEF DELPHI10_UP} {$region 'TVstHost'} {$ENDIF}
   TCustomVstHost = class(TComponent)
   private
-    FAutoIdle           : Boolean;
-    FCheckStringLengths : Boolean;
-    FInputLatency       : Integer;
-    FLanguage           : TVstHostLanguage;
-    FNumAutomatable     : Integer;
-    FOutputLatency      : Integer;
-    FParamQuan          : Integer;
-    FPlugInDir          : string;
-    FProductString      : AnsiString;
-    FVendorString       : AnsiString;
-    FVendorVersion      : Integer;
-    FHostVersion        : Integer;
-    FHostCanDos         : THostCanDos;
-    FVTI                : TVstTimeInformation;
-    FBlockSize          : Integer;
-    FOnCreate           : TNotifyEvent;
-    FOnDestroy          : TNotifyEvent;
+    FAutoIdle: Boolean;
+    FCheckStringLengths: Boolean;
+    FInputLatency: Integer;
+    FLanguage: TVstHostLanguage;
+    FNumAutomatable: Integer;
+    FOutputLatency: Integer;
+    FParamQuan: Integer;
+    FPlugInDir: string;
+    FProductString: AnsiString;
+    FVendorString: AnsiString;
+    FVendorVersion: Integer;
+    FHostVersion: Integer;
+    FHostCanDos: THostCanDos;
+    FVTI: TVstTimeInformation;
+    FBlockSize: Integer;
+    FOnCreate: TNotifyEvent;
+    FOnDestroy: TNotifyEvent;
     FOnGetTempoAtSamplePosition: TVSTGetTempoAtSamplePositionEvent;
     function GetHostTempo: Single;
     function GetItem(Index: Integer): TCustomVstPlugIn;
@@ -579,7 +579,7 @@ type
     procedure SetVstPlugIns(const Value: TVstPlugIns);
     procedure VstTimeInfoChanged(Sender: TObject);
   protected
-    FVstPlugIns : TVstPlugIns;
+    FVstPlugIns: TVstPlugIns;
     procedure AssignTo(Dest: TPersistent); override;
     procedure BlockSizeChanged; virtual;
     procedure CreateVstPluginList; virtual;
@@ -608,12 +608,12 @@ type
     property Language: TVstHostLanguage read FLanguage write FLanguage default hlEnglish;
     property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
     property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
-    property ManageIdleAutomaticly : Boolean read FAutoIdle write FAutoIdle;
-    property NumAutomatableParameters : Integer read FNumAutomatable write FNumAutomatable default 0;
+    property ManageIdleAutomaticly: Boolean read FAutoIdle write FAutoIdle;
+    property NumAutomatableParameters: Integer read FNumAutomatable write FNumAutomatable default 0;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
     property OnGetTempoAtSamplePosition: TVSTGetTempoAtSamplePositionEvent read FOnGetTempoAtSamplePosition write FOnGetTempoAtSamplePosition;
-    property ParameterQuantization : Integer read FParamQuan write FParamQuan default MAXINT;
+    property ParameterQuantization: Integer read FParamQuan write FParamQuan default MAXINT;
     property PlugInDir: string read FPlugInDir write FPlugInDir;
     property ProductString: AnsiString read FProductString write FProductString;
     property Tempo: Single read GetHostTempo write SetHostTempo;
@@ -648,7 +648,7 @@ type
   {$IFDEF DELPHI10_UP} {$endregion 'TVstHost'} {$ENDIF}
 
 var
-  GAudioMaster : TAudioMasterCallbackFunc;
+  GAudioMaster: TAudioMasterCallbackFunc;
 
 function String2Language(LanguageString: string): TVstHostLanguage;
 function PlugCategory2String(Category: TVstPluginCategory): string;
@@ -690,14 +690,14 @@ resourcestring
 {$IFDEF DELPHI10_UP} {$endregion 'Resource Strings'} {$ENDIF}
 
 var
-  GTempPlugin  : TCustomVstPlugIn;
+  GTempPlugin: TCustomVstPlugIn;
   {$IFDEF SearchPluginAndHost}
-  GHostList    : TObjectList;
+  GHostList: TObjectList;
   {$ENDIF}
   {$IFDEF VstHostGUI}
   {$IFNDEF FMX}
-  GHostDialog  : TCommonDialog;
-  GHostWindows : TObjectList;
+  GHostDialog: TCommonDialog;
+  GHostWindows: TObjectList;
   {$ENDIF}
   {$ENDIF}
 
@@ -725,19 +725,19 @@ begin
   raise EVstHostException.Create(RStrNoEntryPoint);
 end;
 
-function String2Language(LanguageString : string): TVSTHostLanguage;
+function String2Language(LanguageString: string): TVSTHostLanguage;
 begin
- if      LanguageString = 'English'  then
+ if LanguageString = 'English' then
    Result := hlEnglish
- else if LanguageString = 'French'   then
+ else if LanguageString = 'French' then
    Result := hlGerman
- else if LanguageString = 'German'   then
+ else if LanguageString = 'German' then
    Result := hlFrench
- else if LanguageString = 'Italian'  then
+ else if LanguageString = 'Italian' then
    Result := hlItalian
  else if LanguageString = 'Japanese' then
    Result := hlSpanish
- else if LanguageString = 'Spanish'  then
+ else if LanguageString = 'Spanish' then
    Result := hlJapanese
  else
    Result := hlEnglish
@@ -1297,9 +1297,9 @@ begin
             with (GHostWindows.Items[GHostWindows.Add(TForm.Create(Host))] as TForm) do
             begin
               Caption := string(PVstWindow(ptr).title);
-              Left  := PVstWindow(ptr).xPos;
-              Top    := PVstWindow(ptr).xPos;
-              Width  := PVstWindow(ptr).Width;
+              Left := PVstWindow(ptr).xPos;
+              Top := PVstWindow(ptr).xPos;
+              Width := PVstWindow(ptr).Width;
               Height := PVstWindow(ptr).Height;
               case PVstWindow(ptr).Style of
                 0: BorderStyle := bsSizeToolWin;
@@ -1506,12 +1506,12 @@ constructor TCustomVstTimeInformation.Create;
 begin
   with FVstTimeInfo do
   begin
-    SampleRate         := CDefaultSampleRate;
-    TimeSigNumerator   := 4;
+    SampleRate := CDefaultSampleRate;
+    TimeSigNumerator := 4;
     TimeSigDenominator := 4;
-    SmpteFrameRate     := 1;
-    SamplePos          := 0;
-    PpqPos             := 0;
+    SmpteFrameRate := 1;
+    SamplePos := 0;
+    PpqPos := 0;
   end;
   Flags := [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid,
            vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid];
@@ -1642,10 +1642,10 @@ begin
   {$IFDEF SearchPluginAndHost}
   GHostList.Add(Self);
   {$ENDIF}
-  FBlockSize   := CDefaultBlockSize;
+  FBlockSize := CDefaultBlockSize;
   FHostVersion := 2300;
-  FLanguage    := hlEnglish;
-  FHostCanDos  := [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
+  FLanguage := hlEnglish;
+  FHostCanDos := [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
     hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo,
     hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow,
     hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess];
@@ -2148,10 +2148,10 @@ begin
     begin
       if FLoaded then
         Unload;
-      FLoaded            := False;
-      FActive            := False;
-      FEditOpen          := False;
-      FMainFunction      := nil;
+      FLoaded := False;
+      FActive := False;
+      FEditOpen := False;
+      FMainFunction := nil;
       {$IFDEF VstHostGUI}
       FGUIControlCreated := False;
       {$ENDIF}
@@ -2202,7 +2202,7 @@ begin
   if FActive then
     Close;
 
-  FActive   := True;
+  FActive := True;
   FEditOpen := False;
   FNeedIdle := False;
   FWantMidi := False;
@@ -2263,7 +2263,7 @@ begin
 
    tmp := '';
    FPlugCategory := GetPlugCategory;
-   FVstVersion   := GetVstVersion;
+   FVstVersion := GetVstVersion;
 
    if (Integer(FVstEffect.uniqueID) = 0) and (PlugCategory = vpcShell) then
      with TStringList.Create do
@@ -3014,7 +3014,7 @@ begin
     if @PrintWindow <> nil then
     begin
       EditorRect := GetRect;
-      Bitmap.Width  := EditorRect.Right - EditorRect.Left;
+      Bitmap.Width := EditorRect.Right - EditorRect.Left;
       Bitmap.Height := EditorRect.Bottom - EditorRect.Top;
       Bitmap.Canvas.Lock;
       try
@@ -3973,7 +3973,7 @@ begin
       begin
         if ParameterIndex >= 0 then
         begin
-          (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
+          (GUIControl.FindComponent('LbL') as TLabel).Caption :=
             RStrValue + ': ' + string(GetParamDisplay(ParameterIndex)) + ' ' +
             string(GetParamLabel(ParameterIndex));
         end;
@@ -4074,10 +4074,10 @@ end;
 procedure TCustomVstPlugIn.LoadFromFile(const FileName: TFilename);
 {$IFNDEF FPC}
 var
-  LE  : Integer;
+  LE: Integer;
 (*
-  Buf : array [0..255] of AnsiChar;
-  str : AnsiString;
+  Buf: array [0..255] of AnsiChar;
+  str: AnsiString;
 *)
 {$ENDIF}
 
@@ -4289,11 +4289,11 @@ end;
 
 procedure TCustomVstPlugIn.SavePreset(Stream: TStream);
 var
-  FXChunkSet : TFXChunkSet;
-  Str        : AnsiString;
-  IntChkSize : Integer;
-  ChunkData  : Pointer;
-  FXPreset   : TFXPreset;
+  FXChunkSet: TFXChunkSet;
+  Str: AnsiString;
+  IntChkSize: Integer;
+  ChunkData: Pointer;
+  FXPreset: TFXPreset;
 begin
   Stream.Seek(0, soFromBeginning);
   if not Assigned(FVstEffect) then
@@ -4410,10 +4410,10 @@ begin
 
     with PatchChunkInfo do
     begin
-      version        := 1;
-      pluginUniqueID := FVstEffect.uniqueID;
-      pluginVersion  := FVstEffect.version;
-      numElements    := FVstEffect.numPrograms; // Number of Programs (Bank)
+      Version := 1;
+      PluginUniqueID := FVstEffect.uniqueID;
+      PluginVersion  := FVstEffect.version;
+      NumElements    := FVstEffect.numPrograms; // Number of Programs (Bank)
       BeginLoadBank(@PatchChunkInfo);
     end;
 
@@ -4436,15 +4436,15 @@ end;
 
 procedure TCustomVstPlugIn.LoadPreset(Stream: TStream);
 var
-  FXPreset       : TFXPreset;
-  FXChunkset     : TFXChunkset;
-  Param          : Single;
-  ParamNo        : Integer;
-  ChunkData      : Pointer;
-  ChunkDataSize  : Integer;
-  PatchChunkInfo : TVstPatchChunkInfo;
-  ChunkName      : TChunkName;
-  UseChunk       : Boolean;
+  FXPreset: TFXPreset;
+  FXChunkset: TFXChunkset;
+  Param: Single;
+  ParamNo: Integer;
+  ChunkData: Pointer;
+  ChunkDataSize: Integer;
+  PatchChunkInfo: TVstPatchChunkInfo;
+  ChunkName: TChunkName;
+  UseChunk: Boolean;
 begin
   if not Assigned(FVstEffect) then
     Exit;
@@ -4491,10 +4491,10 @@ begin
 
     with PatchChunkInfo do
     begin
-      version := 1;
-      pluginUniqueID := FVstEffect.uniqueID;
-      pluginVersion  := FVstEffect.version;
-      numElements    := FVstEffect.numParams; // Number of Programs (Bank)
+      Version := 1;
+      PluginUniqueID := FVstEffect.uniqueID;
+      PluginVersion := FVstEffect.version;
+      NumElements := FVstEffect.numParams; // Number of Programs (Bank)
     end;
     BeginLoadProgram(@PatchChunkInfo);
 
@@ -4511,12 +4511,12 @@ end;
 
 procedure TCustomVstPlugIn.SaveBank(Stream: TStream);
 var
-  FXSet         : TFXSet;
-  FXChunkBank   : TFXChunkBank;
-  PrgNo         : Integer;
-  ChunkDataSize : Integer;
-  ChunkData     : Pointer;
-  FXPreset      : TFXPreset;
+  FXSet: TFXSet;
+  FXChunkBank: TFXChunkBank;
+  PrgNo: Integer;
+  ChunkDataSize: Integer;
+  ChunkData: Pointer;
+  FXPreset: TFXPreset;
 begin
   if not Assigned(FVstEffect) then
     Exit;

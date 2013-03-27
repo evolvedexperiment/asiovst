@@ -73,16 +73,19 @@ uses
 type
   eSection = (SEC_None, SEC_Unknown, SEC_Tuning, SEC_ExactTuning);
 
-function StripBlanks(s: string): String;
+function StripBlanks(s: string): string;
 var
   j: Integer;
 begin
-  if s = '' then exit;
+  if s = '' then
+    Exit;
   j := 1;
-  while ((s[j] <> #0) and ((s[j] = ' ') or (s[j] = #9))) do Inc(j);
-  s := copy(s, j, length(s) - j + 1);
-  j := length(s);
-  while ((j > 1) and ((s[j] = ' ') or (s[j] = #9))) do Dec(j);
+  while ((s[j] <> #0) and ((s[j] = ' ') or (s[j] = #9))) do
+    Inc(j);
+  s := Copy(s, j, Length(s) - j + 1);
+  j := Length(s);
+  while ((j > 1) and ((s[j] = ' ') or (s[j] = #9))) do
+    Dec(j);
   Result := copy(s, 1, j);
 end;
 
@@ -94,9 +97,9 @@ end;
 
 constructor TTuningMap.Create;
 begin
- inherited;
- DecimalSeparator := '.';
- Reset;
+  inherited;
+  DecimalSeparator := '.';
+  Reset;
 end;
 
 //////////////////////////////////////////////////////////////////////
@@ -107,64 +110,67 @@ procedure TTuningMap.Reset;
 var
   i: Integer;
 begin
- // This function _must_ never produce an error, so we don't need
- // to return a bool value...
- FBaseFreq := 8.1757989156437073336; // Means A = 440Hz
- for i := 0 to 127 do FTunes[i] := 100 * i;
+  // This function _must_ never produce an error, so we don't need
+  // to return a bool value...
+  FBaseFreq := 8.1757989156437073336; // means A = 440Hz
+  for i := 0 to 127 do
+    FTunes[i] := 100 * i;
 end;
 
 procedure TTuningMap.SaveToFile(const FileName: TFileName; const SaveBaseFrequency: Boolean = False);
 var
-  i   : Integer;
-  ofs : TFileStream;
-  s   : String;
+  i: Integer;
+  FS : TFileStream;
+  s: string;
 const
-  endl = #13#10;
+  CRLF = #13#10;
 begin
-  ofs := TFileStream.Create(FileName, fmCreate);
-  s := ';' + endl;
-  ofs.Write(s[1], length(s));
-  s := '; AnaMark / VAZ 1.5 Plus tuning map file' + endl;
-  ofs.Write(s[1], length(s));
-  s := ';' + endl;
-  ofs.Write(s[1], length(s));
-  s := ';' + endl;
-  ofs.Write(s[1], length(s));
-  s := '; 1. VAZ-section with quantized tunings' + endl;
-  ofs.Write(s[1], length(s));
-  s := ';' + endl;
-  ofs.Write(s[1], length(s));
-  s := '[Tuning]' + endl;
-  ofs.Write(s[1], length(s));
+  FS := TFileStream.Create(FileName, fmCreate);
+  try
+    s := ';' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := '; AnaMark / VAZ 1.5 Plus tuning map file' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := ';' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := ';' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := '; 1. VAZ-section with quantized tunings' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := ';' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := '[Tuning]' + CRLF;
+    FS.Write(s[1], Length(s));
 
-  for i := 0 to 127 do
-   begin
-    s := 'note ' + IntToStr(i) + ' = ' + IntToStr(round(FTunes[i])) + endl;
-    ofs.Write(s[1], length(s));
-   end;
+    for i := 0 to 127 do
+     begin
+      s := 'note ' + IntToStr(i) + ' = ' + IntToStr(round(FTunes[i])) + CRLF;
+      FS.Write(s[1], Length(s));
+     end;
 
-  s := ';' + endl;
-  ofs.Write(s[1], length(s));
-  s := '; 2. AnaMark-specific section with exact tunings' + endl;
-  ofs.Write(s[1], length(s));
-  s := ';' + endl;
-  ofs.Write(s[1], length(s));
-  s := '[Exact Tuning]' + endl;
-  ofs.Write(s[1], length(s));
+    s := ';' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := '; 2. AnaMark-specific section with exact tunings' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := ';' + CRLF;
+    FS.Write(s[1], Length(s));
+    s := '[Exact Tuning]' + CRLF;
+    FS.Write(s[1], Length(s));
 
-  if (SaveBaseFrequency) then
-   begin
-    s := 'basefreq = ' + FloatToStr(FBaseFreq) + endl;
-    ofs.Write(s[1], length(s));
-   end;
+    if (SaveBaseFrequency) then
+     begin
+      s := 'basefreq = ' + FloatToStr(FBaseFreq) + CRLF;
+      FS.Write(s[1], Length(s));
+     end;
 
-  for i := 0 to 127 do
-   begin
-    s := 'note ' + IntToStr(i) + ' = ' + FloatToStr(round(FTunes[i])) + endl;
-    ofs.Write(s[1], length(s));
-   end;
-
-  FreeAndNil(ofs);
+    for i := 0 to 127 do
+     begin
+      s := 'note ' + IntToStr(i) + ' = ' + FloatToStr(round(FTunes[i])) + CRLF;
+      FS.Write(s[1], Length(s));
+     end;
+  finally
+    FreeAndNil(FS);
+  end;
 end;
 
 procedure TTuningMap.LoadFromFile(const FileName: TFileName);
@@ -208,7 +214,7 @@ var
       else
       if (lc = 2) and (numnotes = 0) then
         numnotes := StrToInt(s)
-      else if ((lc > 2) and (length(s) > 0) and (s[1] <> '!') and (s[1] <> ';')) then
+      else if ((lc > 2) and (Length(s) > 0) and (s[1] <> '!') and (s[1] <> ';')) then
        begin
         j := pos('/', s);
         k := pos('.', s);
@@ -216,7 +222,7 @@ var
         if (j > 0) and ((k = 0) or (j < k)) then
          begin
           s1 := copy(s, 1, j - 1);
-          s2 := copy(s, j + 1, length(s) - j);
+          s2 := copy(s, j + 1, Length(s) - j);
           s1 := stripblanks(s1);
           s2 := stripblanks(s2);
           k := pos(' ', s2);
@@ -250,7 +256,7 @@ var
     FTunes[lc + 1] := d;
 
     for lc := 0 to 126 do
-     begin
+    begin
       k := lc;
       while k > numnotes - 1 do
         k := k - numnotes;
@@ -259,177 +265,180 @@ var
 
       d := 1200 * (lc div numnotes) + tunes[k];
       FTunes[lc + 1] := d;
-     end;
+    end;
 
-    closefile(f);
+    CloseFile(f);
   end;
 
 begin
- secCurr := SEC_None;
- bTuningFound := False;
- bExactTuningFound := False;
- lET_LastNoteFound := -1;
- lLineCount := 0;
+  secCurr := SEC_None;
+  bTuningFound := False;
+  bExactTuningFound := False;
+  lET_LastNoteFound := -1;
+  lLineCount := 0;
 
- // Initialize data
- // Important, because notes not listed in the tuning file
- // should always have standard tuning.
- Reset;
- for i := 0 to 127 do lTunes[i] := round(FTunes[i]);
+  // Initialize data
+  // Important, because notes not listed in the tuning file
+  // should always have standard tuning.
+  Reset;
+  for i := 0 to 127 do lTunes[i] := round(FTunes[i]);
 
-  if uppercase(extractfileext(FileName)) = '.SCL'
-   then ImportScala(FileName)
-   else
+  if uppercase(extractfileext(FileName)) = '.SCL' then
+    ImportScala(FileName)
+  else
+  begin
+    // Now open the file
+    ifs := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
+    if not Assigned(ifs) then
+      raise Exception.CreateFmt('Error opening the file: %s', [FileName]);
+
+    while (ifs.position < ifs.size) do
     begin
-     // Now open the file
-     ifs := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
-     if not Assigned(ifs)
-      then raise Exception.CreateFmt('Error opening the file: %s', [FileName]);
+      // Increase Line counter to make it easier detecting errors, if
+      // a more detailed output is wanted.
+      Inc(lLineCount);
 
-     while (ifs.position < ifs.size) do
-      begin
-       // Increase Line counter to make it easier detecting errors, if
-       // a more detailed output is wanted.
-       Inc(lLineCount);
-
-       // Read line, until '\n', '\r' or '\0' is reached
-       // Thus it is able to read WIN/DOS-style as well as UNIX-style files
-       // By the way: Skip empty lines or multiple line-end-characters
-       // Is not case sensitive, so all chars are converted to lower ones
-       nCurrPos := 0;
-       szLine := '';
-       repeat
+      // Read line, until '\n', '\r' or '\0' is reached
+      // Thus it is able to read WIN/DOS-style as well as UNIX-style files
+      // By the way: Skip empty lines or multiple line-end-characters
+      // Is not case sensitive, so all chars are converted to lower ones
+      nCurrPos := 0;
+      szLine := '';
+      repeat
         while ((ifs.position < ifs.size) and (nCurrPos < 510)) do
-         begin
+        begin
           ch := ' ';
           ifs.Read(ch, 1);
           if ((ch = #0) or (ch = #10) or (ch = #13)) then
             break;
           szLine := szLine + ch;
           Inc(nCurrPos);
-         end
-       until ((ifs.position >= ifs.size) or (nCurrPos <> 0));
-       if (nCurrPos >= 510) then
+        end
+      until ((ifs.position >= ifs.size) or (nCurrPos <> 0));
+
+      if (nCurrPos >= 510) then
+      begin
+        FreeAndNil(ifs);
+        raise Exception.CreateFmt('Line too long (line %d)', [lLineCount]);
+      end;
+      if szLine = '' then
+        Continue;
+
+      szLine := lowercase(szLine);
+      szLine[nCurrPos + 1] := #0;
+
+      szCurr := szLine;
+
+      // Skip empty lines
+      if (szCurr = #0) then continue;
+
+      // Skip leading and trailing spaces/tabs
+      szCurr := StripBlanks(szCurr);
+
+      // Skip comment lines
+      if (szCurr[1] = ';') then Continue;
+
+      // Check for new section
+      if (szCurr[1] = '[') then
+      begin
+        if (szCurr[Length(szCurr)] <> ']') then
         begin
-         FreeAndNil(ifs);
-         raise Exception.CreateFmt('Line too long (line %d)', [lLineCount]);
-        end;
-       if szLine = '' then continue;
-
-       szLine := lowercase(szLine);
-       szLine[nCurrPos + 1] := #0;
-
-       szCurr := szLine;
-
-       // Skip empty lines
-       if (szCurr = #0) then continue;
-
-       // Skip leading and trailing spaces/tabs
-       szCurr := StripBlanks(szCurr);
-
-       // Skip comment lines
-       if (szCurr[1] = ';') then Continue;
-
-       // Check for new section
-       if (szCurr[1] = '[') then
-        begin
-         if (szCurr[length(szCurr)] <> ']') then
-          begin
-           FreeAndNil(ifs);
-           raise Exception.CreateFmt('Syntax error: Section-tag must be the only string in the line! (line %d)', [lLineCount]);
-          end;
-         // Known section found?
-         secCurr := SEC_Unknown;
-         if (szCurr = '[tuning]') then
-          begin
-           secCurr := SEC_Tuning;
-           bTuningFound := True;
-          end;
-         if (szCurr = '[exact tuning]') then
-          begin
-           secCurr := SEC_ExactTuning;
-           bExactTuningFound := True;
-          end;
-
-         // Now process next line
-         Continue;
+          FreeAndNil(ifs);
+          raise Exception.CreateFmt('Syntax error: Section-tag must be the only string in the line! (line %d)', [lLineCount]);
         end;
 
-       // Skip all lines which are in none or in an unknown section
-       if ((secCurr = SEC_None) or (secCurr = SEC_Unknown)) then Continue;
-
-       // Separate parameter name and value
-       j := pos('=', szCurr);
-       if j < 1 then
+        // Known section found?
+        secCurr := SEC_Unknown;
+        if (szCurr = '[tuning]') then
         begin
-         FreeAndNil(ifs);
-         raise Exception.CreateFmt('Syntax error: "=" missing! (line %s)', [lLineCount]);
+          secCurr := SEC_Tuning;
+          bTuningFound := True;
         end;
-       szParam := copy(szCurr, 1, j - 1);
-       szValue := copy(szCurr, j + 1, length(szCurr) - j);
+        if (szCurr = '[exact tuning]') then
+        begin
+          secCurr := SEC_ExactTuning;
+          bExactTuningFound := True;
+        end;
 
-       // Skip leading and trailing spaces/tabs
-       szParam := StripBlanks(szParam);
-       szValue := StripBlanks(szValue);
+        // Now process next line
+        Continue;
+      end;
 
-       // Now process the different sections:
-       case secCurr of
+      // Skip all lines which are in none or in an unknown section
+      if ((secCurr = SEC_None) or (secCurr = SEC_Unknown)) then Continue;
+
+      // Separate parameter name and value
+      j := pos('=', szCurr);
+      if j < 1 then
+      begin
+        FreeAndNil(ifs);
+        raise Exception.CreateFmt('Syntax error: "=" missing! (line %s)', [lLineCount]);
+      end;
+      szParam := copy(szCurr, 1, j - 1);
+      szValue := copy(szCurr, j + 1, Length(szCurr) - j);
+
+      // Skip leading and trailing spaces/tabs
+      szParam := StripBlanks(szParam);
+      szValue := StripBlanks(szValue);
+
+      // Now process the different sections:
+      case secCurr of
         SEC_Tuning :
           if (copy(szParam, 1, 4) = 'note') then
-           begin
+          begin
             // Get MIDI-Note number
-            lNoteIndex := StrToInt(copy(szParam, 5, length(szParam) - 4));
+            lNoteIndex := StrToInt(copy(szParam, 5, Length(szParam) - 4));
             // Check for correct range [0;127] and ignore it, if it's out of range.
             if ((lNoteIndex >= 0) and (lNoteIndex <= 127))
              then lTunes[lNoteIndex] := StrToInt(szValue);
-           end;// Check for note-tag
+          end;// Check for note-tag
 
         SEC_ExactTuning :
-         begin
-          // Check for note-tag
-          if (copy(szParam, 1, 4) = 'note') then
-           begin
-            // note-tag found
-            // Get MIDI-Note number
-            lNoteIndex := StrToInt(copy(szParam, 5, length(szParam) - 4));
+          begin
+            // Check for note-tag
+            if (copy(szParam, 1, 4) = 'note') then
+            begin
+              // note-tag found
+              // Get MIDI-Note number
+              lNoteIndex := StrToInt(copy(szParam, 5, Length(szParam) - 4));
 
-            // Check for correct range [0;127] and ignore it, if it's out of range.
-            if ((lNoteIndex >= 0) and (lNoteIndex <= 127)) then
-              FTunes[lNoteIndex] := StrToFloat(szValue);
+              // Check for correct range [0;127] and ignore it, if it's out of range.
+              if ((lNoteIndex >= 0) and (lNoteIndex <= 127)) then
+                FTunes[lNoteIndex] := StrToFloat(szValue);
 
-            if (lET_LastNoteFound < lNoteIndex) then
-              lET_LastNoteFound := lNoteIndex;
-           end;
+              if (lET_LastNoteFound < lNoteIndex) then
+                lET_LastNoteFound := lNoteIndex;
+            end;
           // Check for basefreq parameter
-          if (copy(szParam, 1, 8) = 'basefreq')
-           then FBaseFreq := StrToFloat(szValue); // basefreq found
-         end;
-       end;
-     end;
+          if (copy(szParam, 1, 8) = 'basefreq') then
+            FBaseFreq := StrToFloat(szValue); // basefreq found
+          end;
+      end;
+    end;
 
     if ((not bTuningFound) and (not bExactTuningFound)) then
-     begin
+    begin
       FreeAndNil(ifs);
       raise Exception.Create('No tuning data found!');
-     end;
+    end;
 
     if (not bExactTuningFound) then
-     for i := 0 to 127
-      do FTunes[i] := lTunes[i] // There are no exact tuning values, so map the quantized
+      for i := 0 to 127 do
+        FTunes[i] := lTunes[i] // There are no exact tuning values, so map the quantized
      // values to the exact ones:
     else
     if ((lET_LastNoteFound >= 0) and (lET_LastNoteFound < 127)) then
-     begin
+    begin
       // Now loop the given data (auto expand):
       j := lET_LastNoteFound; // Highest MIDI note number
-      P := FTunes[j];     // Period length
+      P := FTunes[j];     // Period Length
       for i := j to 127 do
         FTunes[i] := FTunes[i - j] + P;
-     end;// [Exact Tuning] section found, so ignore the values found
+    end;// [Exact Tuning] section found, so ignore the values found
     // in the [Tuning] section and do the "auto expand":
 
     FreeAndNil(ifs);
-   end;
+  end;
 end;
 
 function TTuningMap.GetNoteFreq(Index: Integer): Double;
@@ -439,30 +448,33 @@ end;
 
 function TTuningMap.GetRelativeTune(Index: Integer): Double;
 begin
- // First make sure, that the note index is in the valid range
- // If not, return a "standard value"
-  if ((Index >= 0) and (Index <= 127))
-   then Result := FTunes[Index]
-   else Result := 100 * Index;
+  // First make sure, that the note index is in the valid range
+  // If not, return a "standard value"
+  if ((Index >= 0) and (Index <= 127)) then
+    Result := FTunes[Index]
+  else
+    Result := 100 * Index;
 end;
 
 procedure TTuningMap.SetBaseFreq(const Value: Double);
 var
   pstr: array[0..255] of Char;
 begin
- // First make sure, that the base frequency is in the valid range
-  if (Value > 0)
-   then FBaseFreq := Value
-   else raise Exception.CreateFmt('Base frequency out of range: %s', [FloatToStr(Value)]);
+  // First make sure, that the base frequency is in the valid range
+  if (Value > 0) then
+    FBaseFreq := Value
+  else
+    raise Exception.CreateFmt('Base frequency out of range: %s', [FloatToStr(Value)]);
 end;
 
 procedure TTuningMap.SetRelativeTune(Index: Integer; Value: Double);
 begin
- // First make sure, that the note index is in the valid range
- // If not, return false;
- if ((Index >= 0) and (Index <= 127))
-  then FTunes[Index] := Value
-  else raise Exception.CreateFmt('Note index out of range: %d', [Index]);
+  // First make sure, that the note index is in the valid range
+  // If not, return false;
+  if ((Index >= 0) and (Index <= 127)) then
+    FTunes[Index] := Value
+  else
+    raise Exception.CreateFmt('Note index out of range: %d', [Index]);
 end;
 
 end.

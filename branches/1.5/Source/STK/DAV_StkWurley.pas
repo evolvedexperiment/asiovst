@@ -37,9 +37,9 @@ unit DAV_StkWurley;
   This class implements two simple FM Pairs summed together, also referred to
   as algorithm 5 of the TX81Z.
 
-  Algorithm 5 is :  4.3--\
-                          + -. Out
-                    2.1--/
+  Algorithm 5 is :  4.3 --\
+                           + -> Out
+                    2.1 --/
 
   Control Change Numbers:
     - Modulator Index One = 2

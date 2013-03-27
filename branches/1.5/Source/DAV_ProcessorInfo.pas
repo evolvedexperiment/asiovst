@@ -504,7 +504,7 @@ function HasCPUIDInstruction: Boolean;
 const
   CFlag = $200000;
 asm
-    {$IFDEF CPU32}
+{$IFDEF CPU32}
     PUSHFD                 // save EFLAGS to stack
     POP     EAX            // store EFLAGS in EAX
     MOV     ECX, EAX       // save in ECX for later testing
@@ -517,9 +517,9 @@ asm
     AND     EAX, CFlag
     XOR     EAX, ECX       // check if ID bit changed
     SETNZ   Result         // set result
-    {$ENDIF CPU32}
+{$ENDIF CPU32}
 
-    {$IFDEF CPU64}
+{$IFDEF CPU64}
     MOV       EDX, False
     PUSHFQ
     POP       RAX
@@ -536,13 +536,13 @@ asm
     PUSH      RAX
     POPFQ
     MOV       EAX, EDX
-    {$ENDIF CPU64}
+{$ENDIF CPU64}
 end;
 
 procedure CallCPUID(ValueEAX, ValueECX: Cardinal; out ReturnedEAX, ReturnedEBX,
   ReturnedECX, ReturnedEDX);
 asm
-    {$IFDEF CPU32}
+{$IFDEF CPU32}
     // save context
     PUSH    EDI
     PUSH    EBX
@@ -567,10 +567,10 @@ asm
     // restore context
     POP     EBX
     POP     EDI
-    {$ENDIF CPU32}
+{$ENDIF CPU32}
 
     // yet to be tested...
-    {$IFDEF CPU64}
+{$IFDEF CPU64}
     // save context
     PUSH    RDI
     PUSH    RBX
@@ -593,7 +593,7 @@ asm
     // restore context
     POP     RBX
     POP     RDI
-    {$ENDIF CPU64}
+{$ENDIF CPU64}
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -660,136 +660,142 @@ var
   FeatureID    : Cardinal;
   FeatureClass : TProcessorFeaturesClass;
 begin
- if HasCPUIDInstruction then
+  if HasCPUIDInstruction then
   begin
-   CallCPUID(0, 0, FeatureID, VendorStr[0], VendorStr[8], VendorStr[4]);
-   FVendorString := string(VendorStr);
+    CallCPUID(0, 0, FeatureID, VendorStr[0], VendorStr[8], VendorStr[4]);
+    FVendorString := string(VendorStr);
 
-   if FVendorString = 'GenuineIntel' then FeatureClass := TProcessorFeaturesIntel else
-   if FVendorString = 'AuthenticAMD' then FeatureClass := TProcessorFeaturesAMD else
-   if FVendorString = 'CyrixInstead' then FeatureClass := TProcessorFeaturesCyrix else
-   if FVendorString = 'CentaurHauls' then FeatureClass := TProcessorFeaturesCentaur else
-   if FVendorString = 'VIA VIA VIA ' then FeatureClass := TProcessorFeaturesVIA else
+    if FVendorString = 'GenuineIntel' then FeatureClass := TProcessorFeaturesIntel else
+    if FVendorString = 'AuthenticAMD' then FeatureClass := TProcessorFeaturesAMD else
+    if FVendorString = 'CyrixInstead' then FeatureClass := TProcessorFeaturesCyrix else
+    if FVendorString = 'CentaurHauls' then FeatureClass := TProcessorFeaturesCentaur else
+    if FVendorString = 'VIA VIA VIA ' then FeatureClass := TProcessorFeaturesVIA else
 
-   // yet unsupported
-   if FVendorString = 'Geode by NSC' then FeatureClass := TProcessorFeaturesStandard else
-   if FVendorString = 'NexGenDriven' then FeatureClass := TProcessorFeaturesStandard else
-   if FVendorString = 'RiseRiseRise' then FeatureClass := TProcessorFeaturesStandard else
-   if FVendorString = 'SiS SiS SiS ' then FeatureClass := TProcessorFeaturesStandard else
-   if FVendorString = 'UMC UMC UMC ' then FeatureClass := TProcessorFeaturesStandard else
+    // yet unsupported
+    if FVendorString = 'Geode by NSC' then FeatureClass := TProcessorFeaturesStandard else
+    if FVendorString = 'NexGenDriven' then FeatureClass := TProcessorFeaturesStandard else
+    if FVendorString = 'RiseRiseRise' then FeatureClass := TProcessorFeaturesStandard else
+    if FVendorString = 'SiS SiS SiS ' then FeatureClass := TProcessorFeaturesStandard else
+    if FVendorString = 'UMC UMC UMC ' then FeatureClass := TProcessorFeaturesStandard else
 
-   if FVendorString = 'TransmetaCPU' then FeatureClass := TProcessorFeaturesTransmeta else
-   if FVendorString = 'GenuineTMx86'
-    then FeatureClass := TProcessorFeaturesTransmeta
-    else FeatureClass := TProcessorFeaturesStandard;
+    if FVendorString = 'TransmetaCPU' then FeatureClass := TProcessorFeaturesTransmeta else
+    if FVendorString = 'GenuineTMx86' then
+      FeatureClass := TProcessorFeaturesTransmeta
+    else
+      FeatureClass := TProcessorFeaturesStandard;
 
-   FFeatures := FeatureClass.Create(FeatureID);
+    FFeatures := FeatureClass.Create(FeatureID);
   end
- else
+  else
   begin
-   FVendorString := '';
+    FVendorString := '';
   end;
 end;
 
 destructor TProcessorInfo.Destroy;
 begin
- FreeAndNil(FFeatures);
- inherited;
+  FreeAndNil(FFeatures);
+  inherited;
 end;
 
 function TProcessorInfo.GetAPICID: Byte;
 begin
- Result := FFeatures.APICID;
+  Result := FFeatures.APICID;
 end;
 
 function TProcessorInfo.GetBrandID: Byte;
 begin
- Result := FFeatures.BrandID
+  Result := FFeatures.BrandID
 end;
 
 function TProcessorInfo.GetCPUName: string;
 begin
- Result := FFeatures.CPUName;
+  Result := FFeatures.CPUName;
 end;
 
 function TProcessorInfo.GetCPUType: TCPUType;
 begin
- Result := FFeatures.CPUType;
+  Result := FFeatures.CPUType;
 end;
 
 function TProcessorInfo.GetExFeatures: Cardinal;
 begin
- Result := FFeatures.ExFeatures;
+  Result := FFeatures.ExFeatures;
 end;
 
 function TProcessorInfo.GetExtendedFamily: Byte;
 begin
- Result := FFeatures.ExtendedFamily;
+  Result := FFeatures.ExtendedFamily;
 end;
 
 function TProcessorInfo.GetExtendedModel: Byte;
 begin
- Result := FFeatures.ExtendedModel;
+  Result := FFeatures.ExtendedModel;
 end;
 
 function TProcessorInfo.GetFamily: Byte;
 begin
- Result := FFeatures.Family;
+  Result := FFeatures.Family;
 end;
 
 function TProcessorInfo.GetFlushLineSize: Byte;
 begin
- Result := FFeatures.FlushLineSize;
+  Result := FFeatures.FlushLineSize;
 end;
 
 function TProcessorInfo.GetHas3DNow: Boolean;
 begin
- if FFeatures is TCustomProcessorExtendedFeatures
-  then Result := TCustomProcessorExtendedFeatures(FFeatures).Has3DNow
-  else Result := False;
+  if FFeatures is TCustomProcessorExtendedFeatures then
+    Result := TCustomProcessorExtendedFeatures(FFeatures).Has3DNow
+  else
+    Result := False;
 end;
 
 function TProcessorInfo.GetHasCacheInfo: Boolean;
 begin
- Result := FFeatures.HasCacheInfo;
+  Result := FFeatures.HasCacheInfo;
 end;
 
 function TProcessorInfo.GetHasConditionalMove: Boolean;
 begin
- if FFeatures is TCustomProcessorExtendedFeatures
-  then Result := TCustomProcessorExtendedFeatures(FFeatures).HasCMOV
-  else Result := False;
+  if FFeatures is TCustomProcessorExtendedFeatures then
+    Result := TCustomProcessorExtendedFeatures(FFeatures).HasCMOV
+  else
+    Result := False;
 end;
 
 function TProcessorInfo.GetHasEx3DNow: Boolean;
 begin
- if FFeatures is TCustomProcessorExtendedFeatures
-  then Result := TCustomProcessorExtendedFeatures(FFeatures).HasEx3DNow
-  else Result := False;
+  if FFeatures is TCustomProcessorExtendedFeatures then
+    Result := TCustomProcessorExtendedFeatures(FFeatures).HasEx3DNow
+  else
+    Result := False;
 end;
 
 function TProcessorInfo.GetHasExMMX: Boolean;
 begin
- if FFeatures is TCustomProcessorExtendedFeatures
-  then Result := TCustomProcessorExtendedFeatures(FFeatures).HasExMMX
-  else Result := False;
+  if FFeatures is TCustomProcessorExtendedFeatures then
+    Result := TCustomProcessorExtendedFeatures(FFeatures).HasExMMX
+  else
+    Result := False;
 end;
 
 function TProcessorInfo.GetHasMMX: Boolean;
 begin
- if FFeatures is TCustomProcessorExtendedFeatures
-  then Result := TCustomProcessorExtendedFeatures(FFeatures).HasMMX
-  else Result := False;
+  if FFeatures is TCustomProcessorExtendedFeatures then
+    Result := TCustomProcessorExtendedFeatures(FFeatures).HasMMX
+  else
+    Result := False;
 end;
 
 function TProcessorInfo.GetHyperThreading: Boolean;
 begin
- Result := FFeatures.HyperThreading;
+  Result := FFeatures.HyperThreading;
 end;
 
 function TProcessorInfo.GetLogicalCore: Byte;
 begin
- Result := FFeatures.LogicalCore;
+  Result := FFeatures.LogicalCore;
 end;
 
 function TProcessorInfo.GetModel: Byte;
@@ -799,19 +805,20 @@ end;
 
 function TProcessorInfo.GetProcessorType: Byte;
 begin
- Result := FFeatures.ProcessorType;
+  Result := FFeatures.ProcessorType;
 end;
 
 function TProcessorInfo.GetStepping: Byte;
 begin
- Result := FFeatures.Stepping;
+  Result := FFeatures.Stepping;
 end;
 
 function TProcessorInfo.GetSupportsSSE: TSSESupports;
 begin
- if FFeatures is TCustomProcessorExtendedFeatures
-  then Result := TCustomProcessorExtendedFeatures(FFeatures).SupportsSSE
-  else Result := [];
+  if FFeatures is TCustomProcessorExtendedFeatures then
+    Result := TCustomProcessorExtendedFeatures(FFeatures).SupportsSSE
+  else
+    Result := [];
 end;
 
 
@@ -821,65 +828,65 @@ constructor TCustomProcessorFeatures.Create(FeatureID: Cardinal);
 var
   VersionInfo, AdditionalInfo, ExFeatures: Cardinal;
 begin
- // clear variables
- FillChar(FCPUName, SizeOf(FCPUName), 0);
+  // clear variables
+  FillChar(FCPUName, SizeOf(FCPUName), 0);
 
- if FeatureID >= 1 then
+  if FeatureID >= 1 then
   begin
-   CallCPUID(1, 0, VersionInfo, AdditionalInfo, ExFeatures, FFeatures);
+    CallCPUID(1, 0, VersionInfo, AdditionalInfo, ExFeatures, FFeatures);
 
-   FProcessorType := (VersionInfo and $00003000) shr 12;
-   FFamily := (VersionInfo and $00000F00) shr 8;
-   FModel := (VersionInfo and $000000F0) shr 4;
-   FStepping := (VersionInfo and $0000000F);
-   FExtendedModel := (VersionInfo and $000F0000) shr 16;
-   FExtendedFamily := (VersionInfo and $0FF00000) shr 20;
+    FProcessorType := (VersionInfo and $00003000) shr 12;
+    FFamily := (VersionInfo and $00000F00) shr 8;
+    FModel := (VersionInfo and $000000F0) shr 4;
+    FStepping := (VersionInfo and $0000000F);
+    FExtendedModel := (VersionInfo and $000F0000) shr 16;
+    FExtendedFamily := (VersionInfo and $0FF00000) shr 20;
 
-   if FCpuType = ctIntel then
+    if FCpuType = ctIntel then
     begin
-     FExFeatures := ExFeatures;
-     FBrandID := AdditionalInfo and $000000FF;
-     FFlushLineSize := (AdditionalInfo and $0000FF00) shr 8;
-     FAPICID := (AdditionalInfo and $FF000000) shr 24;
+      FExFeatures := ExFeatures;
+      FBrandID := AdditionalInfo and $000000FF;
+      FFlushLineSize := (AdditionalInfo and $0000FF00) shr 8;
+      FAPICID := (AdditionalInfo and $FF000000) shr 24;
 
-     if HyperThreading then
+      if HyperThreading then
       begin
-       FLogicalCore := (AdditionalInfo and $00FF0000) shr 16;
-       if FLogicalCore = 0
-        then FLogicalCore := 1;
+        FLogicalCore := (AdditionalInfo and $00FF0000) shr 16;
+        if FLogicalCore = 0 then
+          FLogicalCore := 1;
       end;
     end;
   end
- else
+  else
   begin
-   FFeatures      := 0;
-   FExFeatures    := 0;
-   FBrandID       := 0;
-   FFlushLineSize := 0;
-   FAPICID        := 0;
-   FLogicalCore   := 0;
+    FFeatures      := 0;
+    FExFeatures    := 0;
+    FBrandID       := 0;
+    FFlushLineSize := 0;
+    FAPICID        := 0;
+    FLogicalCore   := 0;
   end;
 end;
 
 destructor TCustomProcessorFeatures.Destroy;
 begin
- FreeAndNil(FCacheInfo);
- inherited;
+  FreeAndNil(FCacheInfo);
+  inherited;
 end;
 
 function TCustomProcessorFeatures.GetCPUName: string;
 begin
- Result := string(FCPUName);
+  Result := string(FCPUName);
 end;
 
 function TCustomProcessorFeatures.GetHasCacheInfo: Boolean;
 begin
- Result := FCacheInfo <> nil;
+  Result := FCacheInfo <> nil;
 end;
 
 function TCustomProcessorFeatures.GetHyperThreading: Boolean;
 begin
- Result := (FFeatures and $10000000) <> 0;
+  Result := (FFeatures and $10000000) <> 0;
 end;
 
 
@@ -887,17 +894,17 @@ end;
 
 function TCustomProcessorExtendedFeatures.GetHasCMOV: Boolean;
 begin
- Result := (FFeatures and $00008000) <> 0;
+  Result := (FFeatures and $00008000) <> 0;
 end;
 
 function TCustomProcessorExtendedFeatures.GetHasFPU: Boolean;
 begin
- Result := (FFeatures and $00000001) <> 0;
+  Result := (FFeatures and $00000001) <> 0;
 end;
 
 function TCustomProcessorExtendedFeatures.GetHasMMX: Boolean;
 begin
- Result := (FFeatures and $00800000) <> 0;
+  Result := (FFeatures and $00800000) <> 0;
 end;
 
 
@@ -905,10 +912,10 @@ end;
 
 destructor TCustomL1L2CacheInformation.Destroy;
 begin
- FreeAndNil(FL1DataCache);
- FreeAndNil(FL1CodeCache);
- FreeAndNil(FL2Cache);
- inherited;
+  FreeAndNil(FL1DataCache);
+  FreeAndNil(FL1CodeCache);
+  FreeAndNil(FL2Cache);
+  inherited;
 end;
 
 
@@ -916,8 +923,8 @@ end;
 
 destructor TCustomL3CacheInformation.Destroy;
 begin
- FreeAndNil(FL3Cache);
- inherited;
+  FreeAndNil(FL3Cache);
+  inherited;
 end;
 
 
@@ -930,59 +937,59 @@ var
   L2, L3   : TCacheSizeInfo;
   I, J     : Integer;
 begin
- inherited;
+  inherited;
 
- CallCPUID(2, 0, FCacheDescriptors[0], FCacheDescriptors[4],
-   FCacheDescriptors[8], FCacheDescriptors[12]);
+  CallCPUID(2, 0, FCacheDescriptors[0], FCacheDescriptors[4],
+    FCacheDescriptors[8], FCacheDescriptors[12]);
 
- if ExtendedFeatureID >= $80000006
-  then CallCPUID($80000006, 0, Unused, Unused, FL2CacheInfo, Unused);
+  if ExtendedFeatureID >= $80000006 then
+    CallCPUID($80000006, 0, Unused, Unused, FL2CacheInfo, Unused);
 
- if (FL2CacheInfo <> 0) then
+  if (FL2CacheInfo <> 0) then
   begin
-   L2.Size := FL2CacheInfo shr 16;
-   L2.LineSize := FL2CacheInfo and $FF;
-   L2.Associativity := (FL2CacheInfo shr 12) and $F;
+    L2.Size := FL2CacheInfo shr 16;
+    L2.LineSize := FL2CacheInfo and $FF;
+    L2.Associativity := (FL2CacheInfo shr 12) and $F;
   end;
 
- for I := Low(FCacheDescriptors) to High(FCacheDescriptors) do
-  if FCacheDescriptors[I] <> 0 then
-   for J := Low(CIntelCacheDescription) to High(CIntelCacheDescription) do
-    if CIntelCacheDescription[J].D = FCacheDescriptors[I] then
-     with CIntelCacheDescription[J] do
-      case Family of
-        cfL1InstructionCache:
-          begin
-           Inc(L1I.Size, Size);
-           L1I.LineSize := LineSize;
-           L1I.Associativity := WaysOfAssoc;
-          end;
-        cfL1DataCache:
-          begin
-           Inc(L1D.Size, Size);
-           L1D.LineSize := LineSize;
-           L1D.Associativity := WaysOfAssoc;
-          end;
-        cfL2Cache:
-          if (FL2CacheInfo = 0) then
-           begin
-            Inc(L2.Size, Size);
-            L2.LineSize := LineSize;
-            L2.Associativity := WaysOfAssoc;
-           end;
-        cfL3Cache:
-          begin
-            Inc(L3.Size,Size);
-            L3.LineSize := LineSize;
-            L3.Associativity := WaysOfAssoc;
-            FL3LinesPerSector := LinePerSector;
-          end;
-      end;
+  for I := Low(FCacheDescriptors) to High(FCacheDescriptors) do
+    if FCacheDescriptors[I] <> 0 then
+      for J := Low(CIntelCacheDescription) to High(CIntelCacheDescription) do
+        if CIntelCacheDescription[J].D = FCacheDescriptors[I] then
+          with CIntelCacheDescription[J] do
+            case Family of
+              cfL1InstructionCache:
+                begin
+                  Inc(L1I.Size, Size);
+                  L1I.LineSize := LineSize;
+                  L1I.Associativity := WaysOfAssoc;
+                end;
+              cfL1DataCache:
+                begin
+                 Inc(L1D.Size, Size);
+                 L1D.LineSize := LineSize;
+                 L1D.Associativity := WaysOfAssoc;
+                end;
+              cfL2Cache:
+                if (FL2CacheInfo = 0) then
+                begin
+                  Inc(L2.Size, Size);
+                  L2.LineSize := LineSize;
+                  L2.Associativity := WaysOfAssoc;
+                end;
+              cfL3Cache:
+                begin
+                  Inc(L3.Size,Size);
+                  L3.LineSize := LineSize;
+                  L3.Associativity := WaysOfAssoc;
+                  FL3LinesPerSector := LinePerSector;
+                end;
+            end;
 
- FL1DataCache := TCacheUnitInformation.Create(L1D.Associativity, L1D.LineSize, L1D.Size);
- FL1CodeCache := TCacheUnitInformation.Create(L1I.Associativity, L1I.LineSize, L1I.Size);
- FL2Cache := TCacheUnitInformation.Create(L2.Associativity, L2.LineSize, L2.Size);
- FL3Cache := TCacheUnitInformation.Create(L3.Associativity, L3.LineSize, L3.Size);
+  FL1DataCache := TCacheUnitInformation.Create(L1D.Associativity, L1D.LineSize, L1D.Size);
+  FL1CodeCache := TCacheUnitInformation.Create(L1I.Associativity, L1I.LineSize, L1I.Size);
+  FL2Cache := TCacheUnitInformation.Create(L2.Associativity, L2.LineSize, L2.Size);
+  FL3Cache := TCacheUnitInformation.Create(L3.Associativity, L3.LineSize, L3.Size);
 end;
 
 
@@ -995,28 +1002,28 @@ var
 begin
   inherited;
 
- CallCPUID($80000005, 0, FL1MByteInstructionTLB, FL1KByteInstructionTLB,
-   L1DataCache, L1CodeCache);
+  CallCPUID($80000005, 0, FL1MByteInstructionTLB, FL1KByteInstructionTLB,
+    L1DataCache, L1CodeCache);
 
- if ExtendedFeatureID >= $80000006
-  then CallCPUID($80000006, 0, FL2MByteInstructionTLB, FL2KByteInstructionTLB,
+  if ExtendedFeatureID >= $80000006 then
+    CallCPUID($80000006, 0, FL2MByteInstructionTLB, FL2KByteInstructionTLB,
     FL2CacheInfo, FL3CacheInfo);
 
- FL1DataCache := TCacheUnitInformation.Create(
-   L1DataCache[ciAssociativity], L1DataCache[ciLineSize],
-   L1DataCache[ciSize]);
+  FL1DataCache := TCacheUnitInformation.Create(
+    L1DataCache[ciAssociativity], L1DataCache[ciLineSize],
+    L1DataCache[ciSize]);
 
- FL1CodeCache := TCacheUnitInformation.Create(
-   L1CodeCache[ciAssociativity], L1CodeCache[ciLineSize],
-   L1CodeCache[ciSize]);
+  FL1CodeCache := TCacheUnitInformation.Create(
+    L1CodeCache[ciAssociativity], L1CodeCache[ciLineSize],
+    L1CodeCache[ciSize]);
 
- FL2Cache := TCacheUnitInformation.Create(
-   (FL2CacheInfo shr 12) and $F, FL2CacheInfo and $FF,
-   FL2CacheInfo shr 16);
+  FL2Cache := TCacheUnitInformation.Create(
+    (FL2CacheInfo shr 12) and $F, FL2CacheInfo and $FF,
+    FL2CacheInfo shr 16);
 
- FL3Cache := TCacheUnitInformation.Create(
-   (FL3CacheInfo shr 12) and $F, FL3CacheInfo and $FF,
-   FL3CacheInfo shr 19);
+  FL3Cache := TCacheUnitInformation.Create(
+    (FL3CacheInfo shr 12) and $F, FL3CacheInfo and $FF,
+    FL3CacheInfo shr 19);
 end;
 
 
@@ -1026,7 +1033,7 @@ constructor TCyrixCacheInformation.Create(ExtendedFeatureID: Cardinal);
 var
   Unused : Cardinal;
 begin
- CallCPUID($80000005, 0, Unused, FTLBInfo, FL1CacheInfo, Unused);
+  CallCPUID($80000005, 0, Unused, FTLBInfo, FL1CacheInfo, Unused);
 end;
 
 
@@ -1038,23 +1045,23 @@ var
   L1DataCache : array [TCacheInfoStructure] of Byte;
   L1CodeCache : array [TCacheInfoStructure] of Byte;
 begin
- CallCPUID($80000005, 0, Unused, FCodeTLB, L1DataCache,
-   L1CodeCache);
+  CallCPUID($80000005, 0, Unused, FCodeTLB, L1DataCache,
+    L1CodeCache);
 
- if ExtendedFeatureID >= $80000006
-  then CallCPUID($80000006, 0, Unused, Unused, FL2DataCache, Unused);
+  if ExtendedFeatureID >= $80000006 then
+    CallCPUID($80000006, 0, Unused, Unused, FL2DataCache, Unused);
 
- FL1DataCache := TCacheUnitInformation.Create(
-   L1DataCache[ciAssociativity], L1DataCache[ciLineSize],
-   L1DataCache[ciSize]);
+  FL1DataCache := TCacheUnitInformation.Create(
+    L1DataCache[ciAssociativity], L1DataCache[ciLineSize],
+    L1DataCache[ciSize]);
 
- FL1CodeCache := TCacheUnitInformation.Create(
-   L1CodeCache[ciAssociativity], L1CodeCache[ciLineSize],
-   L1CodeCache[ciSize]);
+  FL1CodeCache := TCacheUnitInformation.Create(
+    L1CodeCache[ciAssociativity], L1CodeCache[ciLineSize],
+    L1CodeCache[ciSize]);
 
- FL2Cache := TCacheUnitInformation.Create(
-   (FL2DataCache shr 12) and $F, FL2DataCache and $FF,
-    FL2DataCache shr 16);
+  FL2Cache := TCacheUnitInformation.Create(
+    (FL2DataCache shr 12) and $F, FL2DataCache and $FF,
+     FL2DataCache shr 16);
 end;
 
 
@@ -1066,32 +1073,33 @@ var
   L1DataCache : array [TCacheInfoStructure] of Byte;
   L1CodeCache : array [TCacheInfoStructure] of Byte;
 begin
- CallCPUID($80000005, 0, Unused, FCodeTLB, FL1DataCache, FL1CodeCache);
+  CallCPUID($80000005, 0, Unused, FCodeTLB, FL1DataCache, FL1CodeCache);
 
- if ExtendedFeatureID >= $80000006
-  then CallCPUID($80000006, 0, Unused, Unused, FL2CacheInfo, Unused);
+  if ExtendedFeatureID >= $80000006 then
+    CallCPUID($80000006, 0, Unused, Unused, FL2CacheInfo, Unused);
 
- FL1DataCache := TCacheUnitInformation.Create(
-   L1DataCache[ciAssociativity], L1DataCache[ciLineSize],
-   L1DataCache[ciSize]);
+  FL1DataCache := TCacheUnitInformation.Create(
+    L1DataCache[ciAssociativity], L1DataCache[ciLineSize],
+    L1DataCache[ciSize]);
 
- FL1CodeCache := TCacheUnitInformation.Create(
-   L1CodeCache[ciAssociativity], L1CodeCache[ciLineSize],
-   L1CodeCache[ciSize]);
+  FL1CodeCache := TCacheUnitInformation.Create(
+    L1CodeCache[ciAssociativity], L1CodeCache[ciLineSize],
+    L1CodeCache[ciSize]);
 
- FL2Cache := TCacheUnitInformation.Create(
-   (FL2CacheInfo shr 12) and $F, FL2CacheInfo and $FF,
-    FL2CacheInfo shr 16);
+  FL2Cache := TCacheUnitInformation.Create(
+    (FL2CacheInfo shr 12) and $F, FL2CacheInfo and $FF,
+     FL2CacheInfo shr 16);
 end;
+
 
 { TCacheUnitInformation }
 
 constructor TCacheUnitInformation.Create(Associativity, LineSize: Byte;
   Size: Cardinal);
 begin
- FAssociativity := Associativity;
- FLineSize := LineSize;
- FSize := Size;
+  FAssociativity := Associativity;
+  FLineSize := LineSize;
+  FSize := Size;
 end;
 
 
@@ -1099,13 +1107,13 @@ end;
 
 constructor TProcessorFeaturesStandard.Create(FeatureID: Cardinal);
 begin
- FCpuType := ctUnknown;
- inherited;
+  FCpuType := ctUnknown;
+  inherited;
 end;
 
 class function TProcessorFeaturesStandard.GetManufacturer: string;
 begin
- Result := 'Unknown';
+  Result := 'Unknown';
 end;
 
 
@@ -1117,126 +1125,164 @@ var
   PhysicalCoreInfo : Cardinal;
   AddressSize      : Cardinal;
 begin
- FCpuType := ctIntel;
+  FCpuType := ctIntel;
 
- inherited Create(FeatureID);
+  inherited Create(FeatureID);
 
- if FeatureID >= 4 then
+  if FeatureID >= 4 then
   begin
-   CallCPUID(4, 0, PhysicalCoreInfo, Unused, Unused, Unused);
-   FPhysicalCore := ((PhysicalCoreInfo and $FC000000) shr 26) + 1;
+    CallCPUID(4, 0, PhysicalCoreInfo, Unused, Unused, Unused);
+    FPhysicalCore := ((PhysicalCoreInfo and $FC000000) shr 26) + 1;
   end;
 
- // check Intel extended
- CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
+  // check Intel extended
+  CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
 
- if ExFeatID >= $80000001 then
+  if ExFeatID >= $80000001 then
   begin
-   FHasExtendedInfo := True;
-   CallCPUID($80000001, 0, Unused, Unused, FEx64Features2,
-     FEx64Features);
+    FHasExtendedInfo := True;
+    CallCPUID($80000001, 0, Unused, Unused, FEx64Features2,
+      FEx64Features);
   end;
 
-   // get CPU name
- if ExFeatID >= $80000002
-  then CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
- if ExFeatID >= $80000003
-  then CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
- if ExFeatID >= $80000004
-  then CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
+  // get CPU name
+  if ExFeatID >= $80000002 then
+    CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
+  if ExFeatID >= $80000003 then
+    CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
+  if ExFeatID >= $80000004 then
+    CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
 
- if ExFeatID >= $80000008 then
+  if ExFeatID >= $80000008 then
   begin
-   CallCPUID($80000008, 0, AddressSize, Unused, Unused, Unused);
-   FPhysicalAddressBits := AddressSize and $000000FF;
-   FVirtualAddressBits := (AddressSize and $0000FF00) shr 8;
+    CallCPUID($80000008, 0, AddressSize, Unused, Unused, Unused);
+    FPhysicalAddressBits := AddressSize and $000000FF;
+    FVirtualAddressBits := (AddressSize and $0000FF00) shr 8;
   end;
 
- if FeatureID >= 2
-  then FCacheInfo := TIntelCacheInformation.Create(ExFeatID);
+  if FeatureID >= 2 then
+    FCacheInfo := TIntelCacheInformation.Create(ExFeatID);
 
- if not FHasExtendedInfo then
+  if not FHasExtendedInfo then
   begin
-   case FFamily of
-     4: case FModel of
-            1: FCPUName := 'Intel 486DX Processor';
-            2: FCPUName := 'Intel 486SX Processor';
-            3: FCPUName := 'Intel DX2 Processor';
-            4: FCPUName := 'Intel 486 Processor';
-            5: FCPUName := 'Intel SX2 Processor';
-            7: FCPUName := 'Write-Back Enhanced Intel DX2 Processor';
-            8: FCPUName := 'Intel DX4 Processor';
-          else FCPUName := 'Intel 486 Processor';
-        end;
-     5: FCPUName := 'Pentium';
-     6: case FModel of
-            1: FCPUName := 'Pentium Pro';
-            3: FCPUName := 'Pentium II';
-            5: if (FCacheInfo is TCustomL1L2CacheInformation) and
-                  Assigned(TCustomL1L2CacheInformation(FCacheInfo).L2Cache) then
-                case TCustomL1L2CacheInformation(FCacheInfo).L2Cache.Size of
-                    0: FCPUName := 'Celeron';
-                 1024: FCPUName := 'Pentium II Xeon';
-                 2048: FCPUName := 'Pentium II Xeon';
-                 else  FCPUName := 'Pentium II';
-                end
-               else FCPUName := 'Celeron';
-            6: if (FCacheInfo is TCustomL1L2CacheInformation) and
-                  Assigned(TCustomL1L2CacheInformation(FCacheInfo).L2Cache) then
-                case TCustomL1L2CacheInformation(FCacheInfo).L2Cache.Size of
-                   0: FCPUName := 'Celeron';
-                 128: FCPUName := 'Celeron';
-                 else FCPUName := 'Pentium II';
-                end
-               else FCPUName := 'Celeron';
-            7: if (FCacheInfo is TCustomL1L2CacheInformation) and
-                  Assigned(TCustomL1L2CacheInformation(FCacheInfo).L2Cache) then
-                case TCustomL1L2CacheInformation(FCacheInfo).L2Cache.Size of
-                 1024: FCPUName := 'Pentium III Xeon';
-                 2048: FCPUName := 'Pentium III Xeon';
-                 else  FCPUName := 'Pentium III';
-                end
-               else FCPUName := 'Pentium III';
-            8: case FBrandID of
-                   1: FCPUName := 'Celeron';
-                   2: FCPUName := 'Pentium III';
-                   3: FCPUName := 'Pentium III Xeon';
-                   4: FCPUName := 'Pentium III';
-                else FCPUName := 'Pentium III';
-               end;
-           10: FCPUName := 'Pentium III Xeon';
-           11: FCPUName := 'Pentium III';
-         else StrPCopy(FCPUName, AnsiString(Format('P6 (Model %d)', [FModel])));
-        end;
-    15: case FBrandID of
-            1: FCPUName := 'Celeron';
-            8: FCPUName := 'Pentium 4';
-           14: FCPUName := 'Xeon';
-         else  FCPUName := 'Pentium 4';
-        end;
+    case FFamily of
+      4:
+        case FModel of
+          1:
+            FCPUName := 'Intel 486DX Processor';
+          2:
+            FCPUName := 'Intel 486SX Processor';
+          3:
+            FCPUName := 'Intel DX2 Processor';
+          4:
+            FCPUName := 'Intel 486 Processor';
+          5:
+            FCPUName := 'Intel SX2 Processor';
+          7:
+            FCPUName := 'Write-Back Enhanced Intel DX2 Processor';
+          8:
+            FCPUName := 'Intel DX4 Processor';
+          else
+            FCPUName := 'Intel 486 Processor';
+         end;
+     5:
+       FCPUName := 'Pentium';
+     6:
+       case FModel of
+         1:
+           FCPUName := 'Pentium Pro';
+         3:
+           FCPUName := 'Pentium II';
+         5:
+           if (FCacheInfo is TCustomL1L2CacheInformation) and
+             Assigned(TCustomL1L2CacheInformation(FCacheInfo).L2Cache) then
+             case TCustomL1L2CacheInformation(FCacheInfo).L2Cache.Size of
+               0:
+                 FCPUName := 'Celeron';
+               1024:
+                 FCPUName := 'Pentium II Xeon';
+               2048:
+                 FCPUName := 'Pentium II Xeon';
+               else
+                 FCPUName := 'Pentium II';
+             end
+           else
+             FCPUName := 'Celeron';
+         6:
+           if (FCacheInfo is TCustomL1L2CacheInformation) and
+             Assigned(TCustomL1L2CacheInformation(FCacheInfo).L2Cache) then
+             case TCustomL1L2CacheInformation(FCacheInfo).L2Cache.Size of
+                 0: FCPUName := 'Celeron';
+               128: FCPUName := 'Celeron';
+               else FCPUName := 'Pentium II';
+             end
+           else FCPUName := 'Celeron';
+         7:
+           if (FCacheInfo is TCustomL1L2CacheInformation) and
+             Assigned(TCustomL1L2CacheInformation(FCacheInfo).L2Cache) then
+             case TCustomL1L2CacheInformation(FCacheInfo).L2Cache.Size of
+               1024:
+                 FCPUName := 'Pentium III Xeon';
+               2048:
+                 FCPUName := 'Pentium III Xeon';
+               else
+                 FCPUName := 'Pentium III';
+             end
+           else
+             FCPUName := 'Pentium III';
+         8:
+           case FBrandID of
+             1:
+               FCPUName := 'Celeron';
+             2:
+               FCPUName := 'Pentium III';
+             3:
+               FCPUName := 'Pentium III Xeon';
+             4:
+               FCPUName := 'Pentium III';
+             else FCPUName := 'Pentium III';
+           end;
+         10:
+           FCPUName := 'Pentium III Xeon';
+         11:
+           FCPUName := 'Pentium III';
+         else
+           StrPCopy(FCPUName, AnsiString(Format('P6 (Model %d)', [FModel])));
+       end;
+     15:
+       case FBrandID of
+         1:
+           FCPUName := 'Celeron';
+         8:
+           FCPUName := 'Pentium 4';
+         14:
+           FCPUName := 'Xeon';
+         else
+           FCPUName := 'Pentium 4';
+       end;
     else
       StrPCopy(FCPUName, AnsiString(Format('P%d', [FFamily])));
     end;
   end;
 
- // detect MMX, SSE & Co.
- FSupportsSSE := [];
- if (FFeatures and $02000000) <> 0 then Include(FSupportsSSE, ssSSE);
- if (FFeatures and $04000000) <> 0 then Include(FSupportsSSE, ssSSE2);
- if (FExFeatures and $00000001) <> 0 then Include(FSupportsSSE, ssSSE3);
- if (FExFeatures and $00000200) <> 0 then Include(FSupportsSSE, ssSSE3X);
- if (FExFeatures and $00080000) <> 0 then Include(FSupportsSSE, ssSSE4A);
- if (FExFeatures and $00100000) <> 0 then Include(FSupportsSSE, ssSSE4B);
- if (FExFeatures and $10000000) <> 0 then Include(FSupportsSSE, ssAVX);
+  // detect MMX, SSE & Co.
+  FSupportsSSE := [];
+  if (FFeatures and $02000000) <> 0 then Include(FSupportsSSE, ssSSE);
+  if (FFeatures and $04000000) <> 0 then Include(FSupportsSSE, ssSSE2);
+  if (FExFeatures and $00000001) <> 0 then Include(FSupportsSSE, ssSSE3);
+  if (FExFeatures and $00000200) <> 0 then Include(FSupportsSSE, ssSSE3X);
+  if (FExFeatures and $00080000) <> 0 then Include(FSupportsSSE, ssSSE4A);
+  if (FExFeatures and $00100000) <> 0 then Include(FSupportsSSE, ssSSE4B);
+  if (FExFeatures and $10000000) <> 0 then Include(FSupportsSSE, ssAVX);
 
- // detect misc. features
- FIs64Bits := FHasExtendedInfo and ((FEx64Features and $20000000) <> 0);
- FDepCapable := FHasExtendedInfo and ((FEx64Features and $00100000) <> 0);
+  // detect misc. features
+  FIs64Bits := FHasExtendedInfo and ((FEx64Features and $20000000) <> 0);
+  FDepCapable := FHasExtendedInfo and ((FEx64Features and $00100000) <> 0);
 end;
 
 class function TProcessorFeaturesIntel.GetManufacturer: string;
 begin
- Result := 'Intel';
+  Result := 'Intel';
 end;
 
 
@@ -1246,122 +1292,143 @@ constructor TProcessorFeaturesAMD.Create(FeatureID: Cardinal);
 var
   ExFeatID, Unused, VersionInfo, AdditionalInfo: Cardinal;
 begin
- FCpuType := ctAMD;
+  FCpuType := ctAMD;
 
- // check AMD extended
- if FeatureID >= 1 then
+  // check AMD extended
+  if FeatureID >= 1 then
   begin
-   CallCPUID(1, 0, VersionInfo, AdditionalInfo, FFeatures2, FFeatures);
+    CallCPUID(1, 0, VersionInfo, AdditionalInfo, FFeatures2, FFeatures);
 
-   FBrandID := AdditionalInfo and $000000FF;
-   FFlushLineSize := (AdditionalInfo and $0000FF00) shr 8;
-   FAPICID := (AdditionalInfo and $FF000000) shr 24;
-   if HyperThreading then
+    FBrandID := AdditionalInfo and $000000FF;
+    FFlushLineSize := (AdditionalInfo and $0000FF00) shr 8;
+    FAPICID := (AdditionalInfo and $FF000000) shr 24;
+    if HyperThreading then
     begin
-     FLogicalCore := (AdditionalInfo and $00FF0000) shr 16;
-     if FLogicalCore = 0
-      then FLogicalCore := 1;
+      FLogicalCore := (AdditionalInfo and $00FF0000) shr 16;
+      if FLogicalCore = 0 then
+        FLogicalCore := 1;
     end;
   end;
 
- CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
+  CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
 
- if ExFeatID <> 0 then
+  if ExFeatID <> 0 then
   begin
-   // AMD only
-   FHasExtendedInfo := True;
+    // AMD only
+    FHasExtendedInfo := True;
 
-   if ExFeatID >= $80000001 then
+    if ExFeatID >= $80000001 then
     begin
-     CallCPUID($80000001, 0, VersionInfo, AdditionalInfo, FExFeatures2, FExFeatures);
-     FFamily := (VersionInfo and $00000F00) shr 8;
-     FModel := (VersionInfo and $000000F0) shr 4;
-     FStepping := (VersionInfo and $0000000F);
-     FExtendedModel := (VersionInfo and $000F0000) shr 16;
-     FExtendedFamily := (VersionInfo and $0FF00000) shr 20;
-     FExBrandID := AdditionalInfo and $0000FFFF;
+      CallCPUID($80000001, 0, VersionInfo, AdditionalInfo, FExFeatures2, FExFeatures);
+      FFamily := (VersionInfo and $00000F00) shr 8;
+      FModel := (VersionInfo and $000000F0) shr 4;
+      FStepping := (VersionInfo and $0000000F);
+      FExtendedModel := (VersionInfo and $000F0000) shr 16;
+      FExtendedFamily := (VersionInfo and $0FF00000) shr 20;
+      FExBrandID := AdditionalInfo and $0000FFFF;
     end;
 
-   // get CPU name
-   if ExFeatID >= $80000002
-    then CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
-   if ExFeatID >= $80000003
-    then CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
-   if ExFeatID >= $80000004
-    then CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
+    // get CPU name
+    if ExFeatID >= $80000002 then
+      CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
+    if ExFeatID >= $80000003 then
+      CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
+    if ExFeatID >= $80000004 then
+      CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
 
-   if ExFeatID >= $80000005
-    then FCacheInfo := TAMDCacheInformation.Create(ExFeatID);
+    if ExFeatID >= $80000005 then
+      FCacheInfo := TAMDCacheInformation.Create(ExFeatID);
 
-   if ExFeatID >= $80000007
-    then CallCPUID($80000007, 0, Unused, Unused, Unused, FAdvancedPowerManagement);
+    if ExFeatID >= $80000007 then
+      CallCPUID($80000007, 0, Unused, Unused, Unused, FAdvancedPowerManagement);
 
-   if ExFeatID >= $80000008 then
+    if ExFeatID >= $80000008 then
     begin
-     CallCPUID($80000008, 0, Unused, VersionInfo, AdditionalInfo, Unused);
-     FPhysicalAddressSize := VersionInfo and $000000FF;
-     FVirtualAddressSize := (VersionInfo and $0000FF00) shr 8;
-     FPhysicalCore := (AdditionalInfo and $000000FF) + 1;
+      CallCPUID($80000008, 0, Unused, VersionInfo, AdditionalInfo, Unused);
+      FPhysicalAddressSize := VersionInfo and $000000FF;
+      FVirtualAddressSize := (VersionInfo and $0000FF00) shr 8;
+      FPhysicalCore := (AdditionalInfo and $000000FF) + 1;
     end;
   end
- else
+  else
   begin
-   inherited Create(FeatureID);
+    inherited Create(FeatureID);
 
-   case FFamily of
-     4: FCPUName := 'Am486(R) or Am5x86';
-     5: case FModel of
-          0: FCPUName := 'AMD-K5 (Model 0)';
-          1: FCPUName := 'AMD-K5 (Model 1)';
-          2: FCPUName := 'AMD-K5 (Model 2)';
-          3: FCPUName := 'AMD-K5 (Model 3)';
-          6: FCPUName := 'AMD-K6® (Model 6)';
-          7: FCPUName := 'AMD-K6® (Model 7)';
-          8: FCPUName := 'AMD-K6®-2 (Model 8)';
-          9: FCPUName := 'AMD-K6®-III (Model 9)';
-        else StrFmt(FCPUName, PAnsiChar(AnsiString('Unknown AMD (Model %d)')), [FModel]);
+    case FFamily of
+      4:
+        FCPUName := 'Am486(R) or Am5x86';
+      5:
+        case FModel of
+          0:
+            FCPUName := 'AMD-K5 (Model 0)';
+          1:
+            FCPUName := 'AMD-K5 (Model 1)';
+          2:
+            FCPUName := 'AMD-K5 (Model 2)';
+          3:
+            FCPUName := 'AMD-K5 (Model 3)';
+          6:
+            FCPUName := 'AMD-K6® (Model 6)';
+          7:
+            FCPUName := 'AMD-K6® (Model 7)';
+          8:
+            FCPUName := 'AMD-K6®-2 (Model 8)';
+          9:
+            FCPUName := 'AMD-K6®-III (Model 9)';
+          else
+            StrFmt(FCPUName, PAnsiChar(AnsiString('Unknown AMD (Model %d)')), [FModel]);
        end;
-     6: case FModel of
-          1: FCPUName := 'AMD Athlon™ (Model 1)';
-          2: FCPUName := 'AMD Athlon™ (Model 2)';
-          3: FCPUName := 'AMD Duron™ (Model 3)';
-          4: FCPUName := 'AMD Athlon™ (Model 4)';
-          6: FCPUName := 'AMD Athlon™ XP (Model 6)';
-          7: FCPUName := 'AMD Duron™ (Model 7)';
-          8: FCPUName := 'AMD Athlon™ XP (Model 8)';
-         10: FCPUName := 'AMD Athlon™ XP (Model 10)';
-        else StrFmt(FCPUName, PAnsiChar(AnsiString('Unknown AMD (Model %d)')), [FModel]);
-       end;
-     8:
-
-     else
-       FCPUName := 'Unknown AMD Chip';
-   end;
- end;
-
- // hier ist noch etwas komisch!!!
- FHasExMMX := FHasExtendedInfo and ((FExFeatures and $00400000) <> 0);
- FHas3DNow := FHasExtendedInfo and ((FExFeatures and $80000000) <> 0);
- FHasEx3DNow := FHasExtendedInfo and ((FExFeatures and $40000000) <> 0);
- FSupportsSSE := [];
- if (FFeatures and $02000000) <> 0 then Include(FSupportsSSE, ssSSE);
- if (FFeatures and $04000000) <> 0 then Include(FSupportsSSE, ssSSE2);
- if (FFeatures2 and $00000001) <> 0 then Include(FSupportsSSE, ssSSE3);
- if FHasExtendedInfo then
-  begin
-   if (FExFeatures2 and $00000040) <> 0
-    then Include(FSupportsSSE, ssSSE4A);
-   if (FExFeatures2 and $00000800) <> 0
-    then Include(FSupportsSSE, ssSSE5);
+      6:
+        case FModel of
+          1:
+            FCPUName := 'AMD Athlon™ (Model 1)';
+          2:
+            FCPUName := 'AMD Athlon™ (Model 2)';
+          3:
+            FCPUName := 'AMD Duron™ (Model 3)';
+          4:
+            FCPUName := 'AMD Athlon™ (Model 4)';
+          6:
+            FCPUName := 'AMD Athlon™ XP (Model 6)';
+          7:
+            FCPUName := 'AMD Duron™ (Model 7)';
+          8:
+            FCPUName := 'AMD Athlon™ XP (Model 8)';
+         10:
+           FCPUName := 'AMD Athlon™ XP (Model 10)';
+         else
+           StrFmt(FCPUName, PAnsiChar(AnsiString('Unknown AMD (Model %d)')), [FModel]);
+        end;
+      8:
+      else
+        FCPUName := 'Unknown AMD Chip';
+    end;
   end;
 
- FIs64Bits := FHasExtendedInfo and ((FExFeatures and $20000000) <> 0);
- FDEPCapable := FHasExtendedInfo and ((FExFeatures and $00100000) <> 0);
+  // something is still a bit odd here...
+  FHasExMMX := FHasExtendedInfo and ((FExFeatures and $00400000) <> 0);
+  FHas3DNow := FHasExtendedInfo and ((FExFeatures and $80000000) <> 0);
+  FHasEx3DNow := FHasExtendedInfo and ((FExFeatures and $40000000) <> 0);
+  FSupportsSSE := [];
+
+  if (FFeatures and $02000000) <> 0 then Include(FSupportsSSE, ssSSE);
+  if (FFeatures and $04000000) <> 0 then Include(FSupportsSSE, ssSSE2);
+  if (FFeatures2 and $00000001) <> 0 then Include(FSupportsSSE, ssSSE3);
+  if FHasExtendedInfo then
+  begin
+    if (FExFeatures2 and $00000040) <> 0 then
+      Include(FSupportsSSE, ssSSE4A);
+    if (FExFeatures2 and $00000800) <> 0 then
+      Include(FSupportsSSE, ssSSE5);
+  end;
+
+  FIs64Bits := FHasExtendedInfo and ((FExFeatures and $20000000) <> 0);
+  FDEPCapable := FHasExtendedInfo and ((FExFeatures and $00100000) <> 0);
 end;
 
 class function TProcessorFeaturesAMD.GetManufacturer: string;
 begin
- Result := 'AMD';
+  Result := 'AMD';
 end;
 
 
@@ -1371,51 +1438,55 @@ constructor TProcessorFeaturesCyrix.Create(FeatureID: Cardinal);
 var
   ExFeatID, Unused, VersionInfo, AdditionalInfo: Cardinal;
 begin
- FCpuType := ctCyrix;
+  FCpuType := ctCyrix;
 
- // check Cyrix extended
- CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
- if ExFeatID <> 0 then
+  // check Cyrix extended
+  CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
+  if ExFeatID <> 0 then
   begin
-   // Cyrix only
-   FHasExtendedInfo := True;
-   if ExFeatID >= $80000001 then
+    // Cyrix only
+    FHasExtendedInfo := True;
+    if ExFeatID >= $80000001 then
     begin
-     CallCPUID($80000001, 0, VersionInfo, AdditionalInfo, Unused, FFeatures);
-     FProcessorType := (VersionInfo and $0000F000) shr 12;
-     FFamily := (VersionInfo and $00000F00) shr 8;
-     FModel := (VersionInfo and $000000F0) shr 4;
-     FStepping := (VersionInfo and $0000000F);
+      CallCPUID($80000001, 0, VersionInfo, AdditionalInfo, Unused, FFeatures);
+      FProcessorType := (VersionInfo and $0000F000) shr 12;
+      FFamily := (VersionInfo and $00000F00) shr 8;
+      FModel := (VersionInfo and $000000F0) shr 4;
+      FStepping := (VersionInfo and $0000000F);
     end;
 
-   if ExFeatID >= $80000002
-    then CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
-   if ExFeatID >= $80000003
-    then CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
-   if ExFeatID >= $80000004
-    then CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
+    if ExFeatID >= $80000002 then
+      CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
+    if ExFeatID >= $80000003 then
+      CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
+    if ExFeatID >= $80000004 then
+      CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
 
-   if ExFeatID >= $80000005
-    then FCacheInfo := TCyrixCacheInformation.Create(ExFeatID);
+    if ExFeatID >= $80000005 then
+      FCacheInfo := TCyrixCacheInformation.Create(ExFeatID);
   end
- else
+  else
   begin
-   inherited Create(FeatureID);
-   case FFamily of
-    4: FCPUName := 'Cyrix MediaGX';
-    5: case FModel of
-         2: FCPUName := 'Cyrix 6x86';
-         4: FCPUName := 'Cyrix GXm';
-       end;
-    6: FCPUName := '6x86MX';
-    else StrPCopy(FCPUName, AnsiString(Format('%dx86', [FFamily])));
-   end;
+    inherited Create(FeatureID);
+    case FFamily of
+      4:
+        FCPUName := 'Cyrix MediaGX';
+      5:
+        case FModel of
+          2: FCPUName := 'Cyrix 6x86';
+          4: FCPUName := 'Cyrix GXm';
+        end;
+      6:
+        FCPUName := '6x86MX';
+      else
+        StrPCopy(FCPUName, AnsiString(Format('%dx86', [FFamily])));
+    end;
   end;
 end;
 
 class function TProcessorFeaturesCyrix.GetManufacturer: string;
 begin
- Result := 'Cyrix';
+  Result := 'Cyrix';
 end;
 
 
@@ -1425,48 +1496,50 @@ constructor TProcessorFeaturesVIA.Create(FeatureID: Cardinal);
 var
   ExFeatID, Unused, VersionInfo: Cardinal;
 begin
- FCpuType := ctVIA;
+  FCpuType := ctVIA;
 
- // check VIA extended
- CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
- if ExFeatID <> 0 then
+  // check VIA extended
+  CallCPUID($80000000, 0, ExFeatID, Unused, Unused, Unused);
+  if ExFeatID <> 0 then
   begin
-   if ExFeatID >= $80000001 then
+    if ExFeatID >= $80000001 then
     begin
-     FHasExtendedInfo := True;
-     CallCPUID($80000001, 0, VersionInfo, Unused, Unused, FExFeatures);
-     FProcessorType := (VersionInfo and $00003000) shr 12;
-     FFamily := (VersionInfo and $00000F00) shr 8;
-     FModel := (VersionInfo and $000000F0) shr 4;
-     FStepping := (VersionInfo and $0000000F);
+      FHasExtendedInfo := True;
+      CallCPUID($80000001, 0, VersionInfo, Unused, Unused, FExFeatures);
+      FProcessorType := (VersionInfo and $00003000) shr 12;
+      FFamily := (VersionInfo and $00000F00) shr 8;
+      FModel := (VersionInfo and $000000F0) shr 4;
+      FStepping := (VersionInfo and $0000000F);
     end;
-   if ExFeatID >= $80000002
-    then CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
-   if ExFeatID >= $80000003
-    then CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
-   if ExFeatID >= $80000004
-    then CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
+    if ExFeatID >= $80000002 then
+      CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
+    if ExFeatID >= $80000003 then
+      CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
+    if ExFeatID >= $80000004 then
+      CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
 
-   if ExFeatID >= $80000005
-    then FCacheInfo := TViaCacheInformation.Create(ExFeatID);
+    if ExFeatID >= $80000005 then
+      FCacheInfo := TViaCacheInformation.Create(ExFeatID);
 
-   CallCPUID($C0000000, 0, ExFeatID, Unused, Unused, Unused);
-   if ExFeatID >= $C0000001
-    then CallCPUID($C0000001, 0, Unused, Unused, Unused, FExFeatures);
+    CallCPUID($C0000000, 0, ExFeatID, Unused, Unused, Unused);
+    if ExFeatID >= $C0000001 then
+      CallCPUID($C0000001, 0, Unused, Unused, Unused, FExFeatures);
   end
-   else inherited Create(FeatureID);
+  else
+    inherited Create(FeatureID);
 
- if not FHasExtendedInfo
-  then FCPUName := 'C3';
+  if not FHasExtendedInfo then
+    FCPUName := 'C3';
 
- FSupportsSSE := [];
- if (FFeatures and $02000000) <> 0 then Include(FSupportsSSE, ssSSE);
- FHas3DNow := (FFeatures and $80000000) <> 0;
+  FSupportsSSE := [];
+  if (FFeatures and $02000000) <> 0 then
+    Include(FSupportsSSE, ssSSE);
+  FHas3DNow := (FFeatures and $80000000) <> 0;
 end;
 
 class function TProcessorFeaturesVIA.GetManufacturer: string;
 begin
- Result := 'VIA';
+  Result := 'VIA';
 end;
 
 
@@ -1476,36 +1549,37 @@ constructor TProcessorFeaturesTransmeta.Create(FeatureID: Cardinal);
 var
   ExFeatID, Unused, VersionInfo: Cardinal;
 begin
- FCpuType := ctTransmeta;
+  FCpuType := ctTransmeta;
 
- if (FeatureID >= 1) then
+  if (FeatureID >= 1) then
   begin
-   CallCPUID(1, 0, VersionInfo, Unused, Unused, FFeatures);
-   FProcessorType := (VersionInfo and $00003000) shr 12;
-   FFamily := (VersionInfo and $00000F00) shr 8;
-   FModel := (VersionInfo and $000000F0) shr 4;
-   FStepping := (VersionInfo and $0000000F);
+    CallCPUID(1, 0, VersionInfo, Unused, Unused, FFeatures);
+    FProcessorType := (VersionInfo and $00003000) shr 12;
+    FFamily := (VersionInfo and $00000F00) shr 8;
+    FModel := (VersionInfo and $000000F0) shr 4;
+    FStepping := (VersionInfo and $0000000F);
   end;
 
- // small CPU description, overriden if ExFeatID >= 80000002
- CallCPUID($80000000, 0, ExFeatID, FCPUName[0], FCPUName[8], FCPUName[4]);
- if ExFeatID <> 0 then
+  // small CPU description, overriden if ExFeatID >= 80000002
+  CallCPUID($80000000, 0, ExFeatID, FCPUName[0], FCPUName[8], FCPUName[4]);
+  if ExFeatID <> 0 then
   begin
-   FHasExtendedInfo := True;
+    FHasExtendedInfo := True;
 
-   if ExFeatID >= $80000001
-    then CallCPUID($80000001, 0, Unused, Unused, Unused, FExFeatures);
-   if ExFeatID >= $80000002
-    then CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
-   if ExFeatID >= $80000003
-    then CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
-   if ExFeatID >= $80000004
-    then CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
+    if ExFeatID >= $80000001 then
+      CallCPUID($80000001, 0, Unused, Unused, Unused, FExFeatures);
+    if ExFeatID >= $80000002 then
+      CallCPUID($80000002, 0, FCPUName[0], FCPUName[4], FCPUName[8], FCPUName[12]);
+    if ExFeatID >= $80000003 then
+      CallCPUID($80000003, 0, FCPUName[16], FCPUName[20], FCPUName[24], FCPUName[28]);
+    if ExFeatID >= $80000004 then
+      CallCPUID($80000004, 0, FCPUName[32], FCPUName[36], FCPUName[40], FCPUName[44]);
 
-   if ExFeatID >= $80000005
-    then FCacheInfo := TTransmetaCacheInformation.Create(ExFeatID);
+    if ExFeatID >= $80000005 then
+      FCacheInfo := TTransmetaCacheInformation.Create(ExFeatID);
   end
- else FCPUName := 'Crusoe';
+  else
+    FCPUName := 'Crusoe';
 
   CallCPUID($80860000, 0, ExFeatID, Unused, Unused, Unused);
   if ExFeatID <> 0 then
@@ -1535,7 +1609,7 @@ end;
 
 class function TProcessorFeaturesTransmeta.GetManufacturer: string;
 begin
- Result := 'Transmeta';
+  Result := 'Transmeta';
 end;
 
 initialization

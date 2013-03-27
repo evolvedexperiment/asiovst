@@ -321,12 +321,12 @@ begin
   Value[3] := 0;
 {$ELSE}
 asm
-  XOR     EDX, EDX
-  MOV     [EAX     ], EDX
-  MOV     [EAX +  4], EDX
-  MOV     [EAX +  8], EDX
-  MOV     [EAX + 12], EDX
-  {$ENDIF}
+    XOR     EDX, EDX
+    MOV     [EAX     ], EDX
+    MOV     [EAX +  4], EDX
+    MOV     [EAX +  8], EDX
+    MOV     [EAX + 12], EDX
+{$ENDIF}
 end;
 
 function VectorAdd(const v1, v2: TDAVVector32): TDAVVector32;
@@ -338,33 +338,33 @@ begin
   Result[3] := v1[3] + v2[3];
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6F,$00           /// movq  mm0, [EAX]
-  DB      $0F,$0F,$02,$9E       /// pfadd mm0, [EDX]
-  DB      $0F,$7F,$01           /// movq  [ECX], mm0
-  DB      $0F,$6F,$48,$08       /// movq  mm1, [EAX + 8]
-  DB      $0F,$0F,$4A,$08,$9E   /// pfadd mm1, [EDX + 8]
-  DB      $0F,$7F,$49,$08       /// movq  [ECX + 8], mm1
-  DB      $0F,$0E               /// femms
-  RET
+    DB      $0F,$6F,$00           /// movq  mm0, [EAX]
+    DB      $0F,$0F,$02,$9E       /// pfadd mm0, [EDX]
+    DB      $0F,$7F,$01           /// movq  [ECX], mm0
+    DB      $0F,$6F,$48,$08       /// movq  mm1, [EAX + 8]
+    DB      $0F,$0F,$4A,$08,$9E   /// pfadd mm1, [EDX + 8]
+    DB      $0F,$7F,$49,$08       /// movq  [ECX + 8], mm1
+    DB      $0F,$0E               /// femms
+    RET
 
 @FPU:
-  FLD     DWORD PTR [EAX]
-  FADD    DWORD PTR [EDX]
-  FSTP    DWORD PTR [ECX]
-  FLD     DWORD PTR [EAX + 4]
-  FADD    DWORD PTR [EDX + 4]
-  FSTP    DWORD PTR [ECX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FADD    DWORD PTR [EDX + 8]
-  FSTP    DWORD PTR [ECX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FADD    DWORD PTR [EDX + 12]
-  FSTP    DWORD PTR [ECX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FADD    DWORD PTR [EDX]
+    FSTP    DWORD PTR [ECX]
+    FLD     DWORD PTR [EAX + 4]
+    FADD    DWORD PTR [EDX + 4]
+    FSTP    DWORD PTR [ECX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FADD    DWORD PTR [EDX + 8]
+    FSTP    DWORD PTR [ECX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FADD    DWORD PTR [EDX + 12]
+    FSTP    DWORD PTR [ECX + 12]
+{$ENDIF}
 end;
 
 procedure VectorAdd(const v1, v2: TDAVVector32; var vr: TDAVVector32);
@@ -376,33 +376,33 @@ begin
   vr[3] := v1[3] + v2[3];
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6F,$00           /// movq  mm0, [EAX]
-  DB      $0F,$0F,$02,$9E       /// pfadd mm0, [EDX]
-  DB      $0F,$7F,$01           /// movq  [ECX], mm0
-  DB      $0F,$6F,$48,$08       /// movq  mm1, [EAX + 8]
-  DB      $0F,$0F,$4A,$08,$9E   /// pfadd mm1, [EDX + 8]
-  DB      $0F,$7F,$49,$08       /// movq  [ECX + 8], mm1
-  DB      $0F,$0E               /// femms
-  RET
+    DB      $0F,$6F,$00           /// movq  mm0, [EAX]
+    DB      $0F,$0F,$02,$9E       /// pfadd mm0, [EDX]
+    DB      $0F,$7F,$01           /// movq  [ECX], mm0
+    DB      $0F,$6F,$48,$08       /// movq  mm1, [EAX + 8]
+    DB      $0F,$0F,$4A,$08,$9E   /// pfadd mm1, [EDX + 8]
+    DB      $0F,$7F,$49,$08       /// movq  [ECX + 8], mm1
+    DB      $0F,$0E               /// femms
+    RET
 
 @FPU:
-  FLD     DWORD PTR [EAX]
-  FADD    DWORD PTR [EDX]
-  FSTP    DWORD PTR [ECX]
-  FLD     DWORD PTR [EAX + 4]
-  FADD    DWORD PTR [EDX + 4]
-  FSTP    DWORD PTR [ECX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FADD    DWORD PTR [EDX + 8]
-  FSTP    DWORD PTR [ECX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FADD    DWORD PTR [EDX + 12]
-  FSTP    DWORD PTR [ECX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FADD    DWORD PTR [EDX]
+    FSTP    DWORD PTR [ECX]
+    FLD     DWORD PTR [EAX + 4]
+    FADD    DWORD PTR [EDX + 4]
+    FSTP    DWORD PTR [ECX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FADD    DWORD PTR [EDX + 8]
+    FSTP    DWORD PTR [ECX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FADD    DWORD PTR [EDX + 12]
+    FSTP    DWORD PTR [ECX + 12]
+{$ENDIF}
 end;
 
 function VectorAdd(const Value: TDAVVector32; const FTST: Single): TDAVVector32;
@@ -422,33 +422,33 @@ begin
   v1[3] := v1[3] + v2[3];
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
-  DB      $0F,$0F,$02,$9E       /// PFADD MM0, [EDX]
-  DB      $0F,$7F,$00           /// MOVQ  [EAX], MM0
-  DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
-  DB      $0F,$0F,$4A,$08,$9E   /// PFADD MM1, [EDX + 8]
-  DB      $0F,$7F,$48,$08       /// MOVQ  [EAX + 8], MM1
-  DB      $0F,$0E               /// FEMMS
-  RET
+    DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
+    DB      $0F,$0F,$02,$9E       /// PFADD MM0, [EDX]
+    DB      $0F,$7F,$00           /// MOVQ  [EAX], MM0
+    DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
+    DB      $0F,$0F,$4A,$08,$9E   /// PFADD MM1, [EDX + 8]
+    DB      $0F,$7F,$48,$08       /// MOVQ  [EAX + 8], MM1
+    DB      $0F,$0E               /// FEMMS
+    RET
 
 @FPU:
-  FLD     DWORD PTR [EAX]
-  FADD    DWORD PTR [EDX]
-  FSTP    DWORD PTR [EAX]
-  FLD     DWORD PTR [EAX + 4]
-  FADD    DWORD PTR [EDX + 4]
-  FSTP    DWORD PTR [EAX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FADD    DWORD PTR [EDX + 8]
-  FSTP    DWORD PTR [EAX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FADD    DWORD PTR [EDX + 12]
-  FSTP    DWORD PTR [EAX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FADD    DWORD PTR [EDX]
+    FSTP    DWORD PTR [EAX]
+    FLD     DWORD PTR [EAX + 4]
+    FADD    DWORD PTR [EDX + 4]
+    FSTP    DWORD PTR [EAX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FADD    DWORD PTR [EDX + 8]
+    FSTP    DWORD PTR [EAX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FADD    DWORD PTR [EDX + 12]
+    FSTP    DWORD PTR [EAX + 12]
+{$ENDIF}
 end;
 
 procedure AddVector(var Value: TDAVVector32; const FTST: Single);
@@ -467,33 +467,33 @@ begin
   Result[2] := v1[2] - v2[2];
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
-  DB      $0F,$0F,$02,$9A       /// PFSUB MM0, [EDX]
-  DB      $0F,$7F,$01           /// MOVQ  [ECX], MM0
-  DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
-  DB      $0F,$0F,$4A,$08,$9A   /// PFSUB MM1, [EDX + 8]
-  DB      $0F,$7F,$49,$08       /// MOVQ  [ECX + 8], MM1
-  DB      $0F,$0E               /// FEMMS
-  RET
+    DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
+    DB      $0F,$0F,$02,$9A       /// PFSUB MM0, [EDX]
+    DB      $0F,$7F,$01           /// MOVQ  [ECX], MM0
+    DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
+    DB      $0F,$0F,$4A,$08,$9A   /// PFSUB MM1, [EDX + 8]
+    DB      $0F,$7F,$49,$08       /// MOVQ  [ECX + 8], MM1
+    DB      $0F,$0E               /// FEMMS
+    RET
 
 @FPU:
-  FLD     DWORD PTR [EAX]
-  FSUB    DWORD PTR [EDX]
-  FSTP    DWORD PTR [ECX]
-  FLD     DWORD PTR [EAX + 4]
-  FSUB    DWORD PTR [EDX + 4]
-  FSTP    DWORD PTR [ECX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FSUB    DWORD PTR [EDX + 8]
-  FSTP    DWORD PTR [ECX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FSUB    DWORD PTR [EDX + 12]
-  FSTP    DWORD PTR [ECX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FSUB    DWORD PTR [EDX]
+    FSTP    DWORD PTR [ECX]
+    FLD     DWORD PTR [EAX + 4]
+    FSUB    DWORD PTR [EDX + 4]
+    FSTP    DWORD PTR [ECX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FSUB    DWORD PTR [EDX + 8]
+    FSTP    DWORD PTR [ECX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FSUB    DWORD PTR [EDX + 12]
+    FSTP    DWORD PTR [ECX + 12]
+{$ENDIF}
 end;
 
 procedure VectorSubtract(const v1, v2: TDAVVector32; var Result: TDAVVector32);
@@ -509,28 +509,29 @@ asm
   JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
-  DB      $0F,$0F,$02,$9A       /// PFSUB MM0, [EDX]
-  DB      $0F,$7F,$01           /// MOVQ  [ECX], MM0
-  DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
-  DB      $0F,$0F,$4A,$08,$9A   /// PFSUB MM1, [EDX + 8]
-  DB      $0F,$7F,$49,$08       /// MOVQ  [ECX + 8], MM1
-  DB      $0F,$0E               /// FEMMS
-  RET
+    DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
+    DB      $0F,$0F,$02,$9A       /// PFSUB MM0, [EDX]
+    DB      $0F,$7F,$01           /// MOVQ  [ECX], MM0
+    DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
+    DB      $0F,$0F,$4A,$08,$9A   /// PFSUB MM1, [EDX + 8]
+    DB      $0F,$7F,$49,$08       /// MOVQ  [ECX + 8], MM1
+    DB      $0F,$0E               /// FEMMS
+    RET
+
 @FPU:
-  FLD     DWORD PTR [EAX     ]
-  FSUB    DWORD PTR [EDX     ]
-  FSTP    DWORD PTR [ECX     ]
-  FLD     DWORD PTR [EAX +  4]
-  FSUB    DWORD PTR [EDX +  4]
-  FSTP    DWORD PTR [ECX +  4]
-  FLD     DWORD PTR [EAX +  8]
-  FSUB    DWORD PTR [EDX +  8]
-  FSTP    DWORD PTR [ECX +  8]
-  FLD     DWORD PTR [EAX + 12]
-  FSUB    DWORD PTR [EDX + 12]
-  FSTP    DWORD PTR [ECX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX     ]
+    FSUB    DWORD PTR [EDX     ]
+    FSTP    DWORD PTR [ECX     ]
+    FLD     DWORD PTR [EAX +  4]
+    FSUB    DWORD PTR [EDX +  4]
+    FSTP    DWORD PTR [ECX +  4]
+    FLD     DWORD PTR [EAX +  8]
+    FSUB    DWORD PTR [EDX +  8]
+    FSTP    DWORD PTR [ECX +  8]
+    FLD     DWORD PTR [EAX + 12]
+    FSUB    DWORD PTR [EDX + 12]
+    FSTP    DWORD PTR [ECX + 12]
+{$ENDIF}
 end;
 
 function VectorSubtract(const v1: TDAVVector32; delta: Single): TDAVVector32;
@@ -550,32 +551,32 @@ begin
   v1[3] := v1[3] - v2[3];
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
-  DB      $0F,$0F,$02,$9A       /// PFSUB MM0, [EDX]
-  DB      $0F,$7F,$00           /// MOVQ  [EAX], MM0
-  DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
-  DB      $0F,$0F,$4A,$08,$9A   /// PFSUB MM1, [EDX + 8]
-  DB      $0F,$7F,$48,$08       /// MOVQ  [EAX + 8], MM1
-  DB      $0F,$0E               /// FEMMS
-  RET
+    DB      $0F,$6F,$00           /// MOVQ  MM0, [EAX]
+    DB      $0F,$0F,$02,$9A       /// PFSUB MM0, [EDX]
+    DB      $0F,$7F,$00           /// MOVQ  [EAX], MM0
+    DB      $0F,$6F,$48,$08       /// MOVQ  MM1, [EAX + 8]
+    DB      $0F,$0F,$4A,$08,$9A   /// PFSUB MM1, [EDX + 8]
+    DB      $0F,$7F,$48,$08       /// MOVQ  [EAX + 8], MM1
+    DB      $0F,$0E               /// FEMMS
+    RET
 @FPU:
-  FLD     DWORD PTR [EAX     ]
-  FSUB    DWORD PTR [EDX     ]
-  FSTP    DWORD PTR [EAX     ]
-  FLD     DWORD PTR [EAX +  4]
-  FSUB    DWORD PTR [EDX +  4]
-  FSTP    DWORD PTR [EAX +  4]
-  FLD     DWORD PTR [EAX +  8]
-  FSUB    DWORD PTR [EDX +  8]
-  FSTP    DWORD PTR [EAX +  8]
-  FLD     DWORD PTR [EAX + 12]
-  FSUB    DWORD PTR [EDX + 12]
-  FSTP    DWORD PTR [EAX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX     ]
+    FSUB    DWORD PTR [EDX     ]
+    FSTP    DWORD PTR [EAX     ]
+    FLD     DWORD PTR [EAX +  4]
+    FSUB    DWORD PTR [EDX +  4]
+    FSTP    DWORD PTR [EAX +  4]
+    FLD     DWORD PTR [EAX +  8]
+    FSUB    DWORD PTR [EDX +  8]
+    FSTP    DWORD PTR [EAX +  8]
+    FLD     DWORD PTR [EAX + 12]
+    FSUB    DWORD PTR [EDX + 12]
+    FSTP    DWORD PTR [EAX + 12]
+{$ENDIF}
 end;
 
 procedure CombineVector(var vr: TDAVVector32; const Value: TDAVVector32;
@@ -588,40 +589,41 @@ begin
   vr[3] := vr[3] + Value[3] * FTST;
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6E,$11           /// MOVD  MM2, [ECX]
-  DB      $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
-  DB      $0F,$6F,$02           /// MOVQ  MM0, [EDX]
-  DB      $0F,$0F,$C2,$B4       /// PFMUL MM0, MM2
-  DB      $0F,$0F,$00,$9E       /// PFADD MM0, [EAX]
-  DB      $0F,$7F,$00           /// MOVQ  [EAX], MM0
-  DB      $0F,$6F,$4A,$08       /// MOVQ  MM1, [EDX + 8]
-  DB      $0F,$0F,$CA,$B4       /// PFMUL MM1, MM2
-  DB      $0F,$0F,$48,$08,$9E   /// PFADD MM1, [EAX + 8]
-  DB      $0F,$7F,$48,$08       /// MOVQ  [EAX + 8], MM1
-  DB      $0F,$0E               /// FEMMS
-  RET
+    DB      $0F,$6E,$11           /// MOVD  MM2, [ECX]
+    DB      $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
+    DB      $0F,$6F,$02           /// MOVQ  MM0, [EDX]
+    DB      $0F,$0F,$C2,$B4       /// PFMUL MM0, MM2
+    DB      $0F,$0F,$00,$9E       /// PFADD MM0, [EAX]
+    DB      $0F,$7F,$00           /// MOVQ  [EAX], MM0
+    DB      $0F,$6F,$4A,$08       /// MOVQ  MM1, [EDX + 8]
+    DB      $0F,$0F,$CA,$B4       /// PFMUL MM1, MM2
+    DB      $0F,$0F,$48,$08,$9E   /// PFADD MM1, [EAX + 8]
+    DB      $0F,$7F,$48,$08       /// MOVQ  [EAX + 8], MM1
+    DB      $0F,$0E               /// FEMMS
+    RET
+
 @FPU:
-  FLD     DWORD PTR [EDX     ]
-  FMUL    DWORD PTR [ECX     ]
-  FADD    DWORD PTR [EAX     ]
-  FSTP    DWORD PTR [EAX     ]
-  FLD     DWORD PTR [EDX +  4]
-  FMUL    DWORD PTR [ECX     ]
-  FADD    DWORD PTR [EAX +  4]
-  FSTP    DWORD PTR [EAX +  4]
-  FLD     DWORD PTR [EDX +  8]
-  FMUL    DWORD PTR [ECX     ]
-  FADD    DWORD PTR [EAX +  8]
-  FSTP    DWORD PTR [EAX +  8]
-  FLD     DWORD PTR [EDX + 12]
-  FMUL    DWORD PTR [ECX     ]
-  FADD    DWORD PTR [EAX + 12]
-  FSTP    DWORD PTR [EAX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EDX     ]
+    FMUL    DWORD PTR [ECX     ]
+    FADD    DWORD PTR [EAX     ]
+    FSTP    DWORD PTR [EAX     ]
+    FLD     DWORD PTR [EDX +  4]
+    FMUL    DWORD PTR [ECX     ]
+    FADD    DWORD PTR [EAX +  4]
+    FSTP    DWORD PTR [EAX +  4]
+    FLD     DWORD PTR [EDX +  8]
+    FMUL    DWORD PTR [ECX     ]
+    FADD    DWORD PTR [EAX +  8]
+    FSTP    DWORD PTR [EAX +  8]
+    FLD     DWORD PTR [EDX + 12]
+    FMUL    DWORD PTR [ECX     ]
+    FADD    DWORD PTR [EAX + 12]
+    FSTP    DWORD PTR [EAX + 12]
+{$ENDIF}
 end;
 
 function VectorCombine(const v1, v2: TDAVVector32; const F1, F2: Single)
@@ -643,62 +645,62 @@ begin
   vr[3] := (F1 * v1[3]) + (F2 * v2[3]);
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:    // 246354
-  DB      $0F,$6E,$4D,$0C       /// MOVD  MM1, [EBP+$0C]
-  DB      $0F,$62,$C9           /// PUNPCKLDQ MM1, MM1
-  DB      $0F,$6E,$55,$08       /// MOVD  MM2, [EBP+$08]
-  DB      $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
+    DB      $0F,$6E,$4D,$0C       /// MOVD  MM1, [EBP+$0C]
+    DB      $0F,$62,$C9           /// PUNPCKLDQ MM1, MM1
+    DB      $0F,$6E,$55,$08       /// MOVD  MM2, [EBP+$08]
+    DB      $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
 
-  DB      $0F,$6F,$18           /// MOVQ  MM3, [EAX]
-  DB      $0F,$0F,$D9,$B4       /// PFMUL MM3, MM1
-  DB      $0F,$6F,$22           /// MOVQ  MM4, [EDX]
-  DB      $0F,$0F,$E2,$B4       /// PFMUL MM4, MM2
-  DB      $0F,$0F,$DC,$9E       /// PFADD MM3, MM4
-  DB      $0F,$7F,$19           /// MOVQ  [ECX], MM3
+    DB      $0F,$6F,$18           /// MOVQ  MM3, [EAX]
+    DB      $0F,$0F,$D9,$B4       /// PFMUL MM3, MM1
+    DB      $0F,$6F,$22           /// MOVQ  MM4, [EDX]
+    DB      $0F,$0F,$E2,$B4       /// PFMUL MM4, MM2
+    DB      $0F,$0F,$DC,$9E       /// PFADD MM3, MM4
+    DB      $0F,$7F,$19           /// MOVQ  [ECX], MM3
 
-  DB      $0F,$6F,$68,$08       /// MOVQ  MM5, [EAX + 8]
-  DB      $0F,$0F,$E9,$B4       /// PFMUL MM5, MM1
-  DB      $0F,$6F,$72,$08       /// MOVQ  MM6, [EDX + 8]
-  DB      $0F,$0F,$F2,$B4       /// PFMUL MM6, MM2
-  DB      $0F,$0F,$EE,$9E       /// PFADD MM5, MM6
-  DB      $0F,$7F,$69,$08       /// MOVQ  [ECX + 8], MM5
+    DB      $0F,$6F,$68,$08       /// MOVQ  MM5, [EAX + 8]
+    DB      $0F,$0F,$E9,$B4       /// PFMUL MM5, MM1
+    DB      $0F,$6F,$72,$08       /// MOVQ  MM6, [EDX + 8]
+    DB      $0F,$0F,$F2,$B4       /// PFMUL MM6, MM2
+    DB      $0F,$0F,$EE,$9E       /// PFADD MM5, MM6
+    DB      $0F,$7F,$69,$08       /// MOVQ  [ECX + 8], MM5
 
-  DB      $0F,$0E               /// FEMMS
-  POP     EBP
-  RET     $08
+    DB      $0F,$0E               /// FEMMS
+    POP     EBP
+    RET     $08
 
 @FPU:
-  FLD     DWORD PTR [EAX]
-  FMUL    DWORD PTR [EBP + $C]
-  FLD     DWORD PTR [EDX]
-  FMUL    DWORD PTR [EBP + $8]
-  FADDP   ST(1), ST(0)
-  FSTP    DWORD PTR [ECX]
+    FLD     DWORD PTR [EAX]
+    FMUL    DWORD PTR [EBP + $C]
+    FLD     DWORD PTR [EDX]
+    FMUL    DWORD PTR [EBP + $8]
+    FADDP   ST(1), ST(0)
+    FSTP    DWORD PTR [ECX]
 
-  FLD     DWORD PTR [EAX + 4]
-  FMUL    DWORD PTR [EBP + $C]
-  FLD     DWORD PTR [EDX + 4]
-  FMUL    DWORD PTR [EBP + 8]
-  FADDP   ST(1), ST(0)
-  FSTP    DWORD PTR [ECX + 4]
+    FLD     DWORD PTR [EAX + 4]
+    FMUL    DWORD PTR [EBP + $C]
+    FLD     DWORD PTR [EDX + 4]
+    FMUL    DWORD PTR [EBP + 8]
+    FADDP   ST(1), ST(0)
+    FSTP    DWORD PTR [ECX + 4]
 
-  FLD     DWORD PTR [EAX + 8]
-  FMUL    DWORD PTR [EBP + $C]
-  FLD     DWORD PTR [EDX + 8]
-  FMUL    DWORD PTR [EBP + $8]
-  FADDP   ST(1), ST(0)
-  FSTP    DWORD PTR [ECX + 8]
+    FLD     DWORD PTR [EAX + 8]
+    FMUL    DWORD PTR [EBP + $C]
+    FLD     DWORD PTR [EDX + 8]
+    FMUL    DWORD PTR [EBP + $8]
+    FADDP   ST(1), ST(0)
+    FSTP    DWORD PTR [ECX + 8]
 
-  FLD     DWORD PTR [EAX + 12]
-  FMUL    DWORD PTR [EBP + $C]
-  FLD     DWORD PTR [EDX + 12]
-  FMUL    DWORD PTR [EBP + $8]
-  FADDP   ST(1), ST(0)
-  FSTP    DWORD PTR [ECX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX + 12]
+    FMUL    DWORD PTR [EBP + $C]
+    FLD     DWORD PTR [EDX + 12]
+    FMUL    DWORD PTR [EBP + $8]
+    FADDP   ST(1), ST(0)
+    FSTP    DWORD PTR [ECX + 12]
+{$ENDIF}
 end;
 
 procedure VectorCombine(const v1, v2: TDAVVector32; const F2: Single;
@@ -711,52 +713,52 @@ begin
   vr[3] := v1[3] + (F2 * v2[3]);
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 
 @3DNow:
-  DB      $0F,$6E,$55,$08       /// MOVD  MM2, [EBP+$08]
-  DB      $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
+    DB      $0F,$6E,$55,$08       /// MOVD  MM2, [EBP+$08]
+    DB      $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
 
-  DB      $0F,$6F,$22           /// MOVQ  MM4, [EDX]
-  DB      $0F,$6F,$72,$08       /// MOVQ  MM6, [EDX + 8]
+    DB      $0F,$6F,$22           /// MOVQ  MM4, [EDX]
+    DB      $0F,$6F,$72,$08       /// MOVQ  MM6, [EDX + 8]
 
-  DB      $0F,$0F,$E2,$B4       /// PFMUL MM4, MM2
-  DB      $0F,$0F,$F2,$B4       /// PFMUL MM6, MM2
+    DB      $0F,$0F,$E2,$B4       /// PFMUL MM4, MM2
+    DB      $0F,$0F,$F2,$B4       /// PFMUL MM6, MM2
 
-  DB      $0F,$0F,$20,$9E       /// PFADD MM4, [EAX]
-  DB      $0F,$0F,$70,$08,$9E   /// PFADD MM6, [EAX + 8]
+    DB      $0F,$0F,$20,$9E       /// PFADD MM4, [EAX]
+    DB      $0F,$0F,$70,$08,$9E   /// PFADD MM6, [EAX + 8]
 
-  DB      $0F,$7F,$21           /// MOVQ  [ECX], MM4
-  DB      $0F,$7F,$71,$08       /// MOVQ  [ECX + 8], MM6
+    DB      $0F,$7F,$21           /// MOVQ  [ECX], MM4
+    DB      $0F,$7F,$71,$08       /// MOVQ  [ECX + 8], MM6
 
-  DB      $0F,$0E               /// FEMMS
-  POP     EBP
-  RET     $04
+    DB      $0F,$0E               /// FEMMS
+    POP     EBP
+    RET     $04
 
 @FPU:
-  FLD     DWORD PTR [EBP + $08]
+    FLD     DWORD PTR [EBP + $08]
 
-  FLD     DWORD PTR [EDX]
-  FMUL    ST, ST(1)
-  FADD    DWORD PTR [EAX]
-  FSTP    DWORD PTR [ECX]
+    FLD     DWORD PTR [EDX]
+    FMUL    ST, ST(1)
+    FADD    DWORD PTR [EAX]
+    FSTP    DWORD PTR [ECX]
 
-  FLD     DWORD PTR [EDX + 4]
-  FMUL    ST, ST(1)
-  FADD    DWORD PTR [EAX + 4]
-  FSTP    DWORD PTR [ECX + 4]
+    FLD     DWORD PTR [EDX + 4]
+    FMUL    ST, ST(1)
+    FADD    DWORD PTR [EAX + 4]
+    FSTP    DWORD PTR [ECX + 4]
 
-  FLD     DWORD PTR [EDX + 8]
-  FMUL    ST, ST(1)
-  FADD    DWORD PTR [EAX + 8]
-  FSTP    DWORD PTR [ECX + 8]
+    FLD     DWORD PTR [EDX + 8]
+    FMUL    ST, ST(1)
+    FADD    DWORD PTR [EAX + 8]
+    FSTP    DWORD PTR [ECX + 8]
 
-  FLD     DWORD PTR [EDX + 12]
-  FMULP
-  FADD    DWORD PTR [EAX + 12]
-  FSTP    DWORD PTR [ECX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EDX + 12]
+    FMULP
+    FADD    DWORD PTR [EAX + 12]
+    FSTP    DWORD PTR [ECX + 12]
+{$ENDIF}
 end;
 
 function VectorCombine3(const v1, v2, V3: TDAVVector32;
@@ -773,41 +775,41 @@ procedure VectorCombine3(const v1, v2, V3: TDAVVector32;
 begin
 {$IFNDEF PUREPASCAL}
   asm
-    TEST    vSIMD, 1
-    JZ      @FPU
+      TEST    vSIMD, 1
+      JZ      @FPU
 
   @3DNow:
-    DB     $0F,$6E,$4D,$14       /// MOVD  MM1, [EBP+$14]
-    DB     $0F,$62,$C9           /// PUNPCKLDQ MM1, MM1
-    DB     $0F,$6E,$55,$10       /// MOVD  MM2, [EBP+$10]
-    DB     $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
-    DB     $0F,$6E,$5D,$0C       /// MOVD  MM3, [EBP+$0C]
-    DB     $0F,$62,$DB           /// PUNPCKLDQ MM3, MM3
+      DB     $0F,$6E,$4D,$14       /// MOVD  MM1, [EBP+$14]
+      DB     $0F,$62,$C9           /// PUNPCKLDQ MM1, MM1
+      DB     $0F,$6E,$55,$10       /// MOVD  MM2, [EBP+$10]
+      DB     $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
+      DB     $0F,$6E,$5D,$0C       /// MOVD  MM3, [EBP+$0C]
+      DB     $0F,$62,$DB           /// PUNPCKLDQ MM3, MM3
 
-    DB     $0F,$6F,$20           /// MOVQ  MM4, [EAX]
-    DB     $0F,$0F,$E1,$B4       /// PFMUL MM4, MM1
-    DB     $0F,$6F,$2A           /// MOVQ  MM5, [EDX]
-    DB     $0F,$0F,$EA,$B4       /// PFMUL MM5, MM2
-    DB     $0F,$0F,$E5,$9E       /// PFADD MM4, MM5
-    DB     $0F,$6F,$31           /// MOVQ  MM6, [ECX]
-    DB     $0F,$0F,$F3,$B4       /// PFMUL MM6, MM3
-    DB     $0F,$0F,$E6,$9E       /// PFADD MM4, MM6
-    DB     $0F,$7F,$23           /// MOVQ  [EBX], MM4
+      DB     $0F,$6F,$20           /// MOVQ  MM4, [EAX]
+      DB     $0F,$0F,$E1,$B4       /// PFMUL MM4, MM1
+      DB     $0F,$6F,$2A           /// MOVQ  MM5, [EDX]
+      DB     $0F,$0F,$EA,$B4       /// PFMUL MM5, MM2
+      DB     $0F,$0F,$E5,$9E       /// PFADD MM4, MM5
+      DB     $0F,$6F,$31           /// MOVQ  MM6, [ECX]
+      DB     $0F,$0F,$F3,$B4       /// PFMUL MM6, MM3
+      DB     $0F,$0F,$E6,$9E       /// PFADD MM4, MM6
+      DB     $0F,$7F,$23           /// MOVQ  [EBX], MM4
 
-    DB     $0F,$6F,$78,$08       /// MOVQ  MM7, [EAX + 8]
-    DB     $0F,$0F,$F9,$B4       /// PFMUL MM7, MM1
-    DB     $0F,$6F,$42,$08       /// MOVQ  MM0, [EDX + 8]
-    DB     $0F,$0F,$C2,$B4       /// PFMUL MM0, MM2
-    DB     $0F,$0F,$F8,$9E       /// PFADD MM7, MM0
-    DB     $0F,$6F,$69,$08       /// MOVQ  MM5, [ECX + 8]
-    DB     $0F,$0F,$EB,$B4       /// PFMUL MM5, MM3
-    DB     $0F,$0F,$FD,$9E       /// PFADD MM7, MM5
-    DB     $0F,$7F,$7B,$08       /// MOVQ  [EBX + 8], MM7
+      DB     $0F,$6F,$78,$08       /// MOVQ  MM7, [EAX + 8]
+      DB     $0F,$0F,$F9,$B4       /// PFMUL MM7, MM1
+      DB     $0F,$6F,$42,$08       /// MOVQ  MM0, [EDX + 8]
+      DB     $0F,$0F,$C2,$B4       /// PFMUL MM0, MM2
+      DB     $0F,$0F,$F8,$9E       /// PFADD MM7, MM0
+      DB     $0F,$6F,$69,$08       /// MOVQ  MM5, [ECX + 8]
+      DB     $0F,$0F,$EB,$B4       /// PFMUL MM5, MM3
+      DB     $0F,$0F,$FD,$9E       /// PFADD MM7, MM5
+      DB     $0F,$7F,$7B,$08       /// MOVQ  [EBX + 8], MM7
 
-    DB     $0F,$0E               /// FEMMS
-    POP    EBX
-    POP    EBP
-    RET    $10
+      DB     $0F,$0E               /// FEMMS
+      POP    EBX
+      POP    EBP
+      RET    $10
   @FPU:      // 263
   end;
 {$ENDIF}
@@ -823,42 +825,44 @@ begin
   Result := v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2] + v1[3] * v2[3];
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX]
-  FMUL    DWORD PTR [EDX]
-  FLD     DWORD PTR [EAX + 4]
-  FMUL    DWORD PTR [EDX + 4]
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 8]
-  FMUL    DWORD PTR [EDX + 8]
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 12]
-  FMUL    DWORD PTR [EDX + 12]
-  FADDP   ST(1), ST(0)
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FMUL    DWORD PTR [EDX]
+    FLD     DWORD PTR [EAX + 4]
+    FMUL    DWORD PTR [EDX + 4]
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 8]
+    FMUL    DWORD PTR [EDX + 8]
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 12]
+    FMUL    DWORD PTR [EDX + 12]
+    FADDP   ST(1), ST(0)
+{$ENDIF}
 end;
 
 function PointProject(const p, origin, direction: TDAVVector32): Single;
 {$IFDEF PUREPASCAL}
 begin
-  Result := direction[0] * (p[0] - origin[0]) + direction[1] * (p[1] - origin[1]
-    ) + direction[2] * (p[2] - origin[2]) + direction[3] * (p[3] - origin[3]);
+  Result := direction[0] * (p[0] - origin[0]) +
+    direction[1] * (p[1] - origin[1]) +
+    direction[2] * (p[2] - origin[2]) +
+    direction[3] * (p[3] - origin[3]);
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX     ]
-  FSUB    DWORD PTR [EDX     ]
-  FMUL    DWORD PTR [ECX     ]
-  FLD     DWORD PTR [EAX +  4]
-  FSUB    DWORD PTR [EDX +  4]
-  FMUL    DWORD PTR [ECX +  4]
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX +  8]
-  FSUB    DWORD PTR [EDX +  8]
-  FMUL    DWORD PTR [ECX +  8]
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 12]
-  FSUB    DWORD PTR [EDX + 12]
-  FMUL    DWORD PTR [ECX + 12]
-  FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX     ]
+    FSUB    DWORD PTR [EDX     ]
+    FMUL    DWORD PTR [ECX     ]
+    FLD     DWORD PTR [EAX +  4]
+    FSUB    DWORD PTR [EDX +  4]
+    FMUL    DWORD PTR [ECX +  4]
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX +  8]
+    FSUB    DWORD PTR [EDX +  8]
+    FMUL    DWORD PTR [ECX +  8]
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 12]
+    FSUB    DWORD PTR [EDX + 12]
+    FMUL    DWORD PTR [ECX + 12]
+    FADDP   ST(1), ST(0)
   {$ENDIF}
 end;
 
@@ -878,32 +882,32 @@ begin
   vr[3] := 0;
 end;
 
-function Lerp(const start, stop, t: Single): Single;
+function Lerp(const Start, Stop, t: Single): Single;
 begin
-  Result := start + (stop - start) * t;
+  Result := Start + (Stop - Start) * t;
 end;
 
-function AngleLerp(start, stop, t: Single): Single;
+function AngleLerp(Start, Stop, t: Single): Single;
 var
-  delta: Single;
+  Delta: Single;
 begin
-  start := NormalizeAngle(start);
-  stop := NormalizeAngle(stop);
-  delta := stop - start;
-  if delta > PI then
-    delta := -delta - C2PI
+  Start := NormalizeAngle(Start);
+  Stop := NormalizeAngle(Stop);
+  Delta := Stop - Start;
+  if Delta > PI then
+    Delta := -delta - C2PI
   else // positive Delta, Angle on opposite side, becomes negative i.e. changes direction
-    if delta < -PI then
-      delta := delta + C2PI;
+    if Delta < -PI then
+      Delta := Delta + C2PI;
   // negative Delta, Angle on opposite side, becomes positive i.e. changes direction
-  Result := start + delta * t;
+  Result := Start + Delta * t;
 end;
 
-function DistanceBetweenAngles(angle1, angle2: Single): Single;
+function DistanceBetweenAngles(Angle1, Angle2: Single): Single;
 begin
-  angle1 := NormalizeAngle(angle1);
-  angle2 := NormalizeAngle(angle2);
-  Result := Abs(angle2 - angle1);
+  Angle1 := NormalizeAngle(Angle1);
+  Angle2 := NormalizeAngle(Angle2);
+  Result := Abs(Angle2 - Angle1);
   if Result > PI then
     Result := C2PI - Result;
 end;
@@ -936,14 +940,14 @@ begin
   Result := Sqrt(Result);
 {$ELSE}
 asm
-  FLDZ                              // initialize sum
+    FLDZ                              // initialize sum
 @Loop:
-  FLD     DWORD PTR [EAX + 4 * EDX] // load AL component
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  SUB     EDX, 1
-  JNL     @Loop
-  FSQRT
+    FLD     DWORD PTR [EAX + 4 * EDX] // load AL component
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    SUB     EDX, 1
+    JNL     @Loop
+    FSQRT
   {$ENDIF}
 end;
 
@@ -955,15 +959,15 @@ begin
   Result := Sqrt(VectorNorm(Value));
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX]
-  FMUL    ST, ST
-  FLD     DWORD PTR [EAX + 4]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 8]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FSQRT
+    FLD     DWORD PTR [EAX]
+    FMUL    ST, ST
+    FLD     DWORD PTR [EAX + 4]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 8]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FSQRT
   {$ENDIF}
 end;
 
@@ -979,18 +983,18 @@ begin
     Value[3] * Value[3];
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX];
-  FMUL    ST, ST
-  FLD     DWORD PTR [EAX + 4];
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 8];
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 12];
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  {$ENDIF}
+    FLD     DWORD PTR [EAX];
+    FMUL    ST, ST
+    FLD     DWORD PTR [EAX + 4];
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 8];
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 12];
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+{$ENDIF}
 end;
 
 function VectorNorm(var Value: array of Single): Single;
@@ -1003,14 +1007,14 @@ begin
     Result := Result + Value[i] * Value[i];
 {$ELSE}
 asm
-  FLDZ                              // initialize sum
+    FLDZ                              // initialize sum
 @Loop:
-  FLD     DWORD PTR [EAX + 4 * EDX] // load AL component
-  FMUL    ST, ST                    // make square
-  FADDP   ST(1), ST(0)              // add previous calculated sum
-  SUB     EDX, 1
-  JNL     @Loop
-  {$ENDIF}
+    FLD     DWORD PTR [EAX + 4 * EDX] // load AL component
+    FMUL    ST, ST                    // make square
+    FADDP   ST(1), ST(0)              // add previous calculated sum
+    SUB     EDX, 1
+    JNL     @Loop
+{$ENDIF}
 end;
 
 procedure NormalizeVector(var Value: TDAVVector32);
@@ -1025,57 +1029,59 @@ begin
   Value[3] := 0;
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
-@3DNow:
-  DB      $0F,$6F,$00           /// movq        mm0,[EAX]
-  DB      $0F,$6E,$48,$08       /// movd        mm1,[EAX + 8]
-  DB      $0F,$6F,$E0           /// movq        mm4,mm0
-  DB      $0F,$6F,$D9           /// movq        mm3,mm1
-  DB      $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
-  DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
-  DB      $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
-  DB      $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
-  DB      $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
-  DB      $0F,$6F,$D1           /// movq        mm2,mm1
+    TEST    vSIMD, 1
+    JZ      @FPU
 
-  DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
-  DB      $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
-  DB      $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
-  DB      $0F,$62,$C9           /// punpckldq   mm1,mm1
-  DB      $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
-  DB      $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
-  DB      $0F,$7E,$58,$08       /// movd        [EAX + 8],mm3
-  DB      $0F,$7F,$20           /// movq        [EAX],mm4
+@3DNow:
+    DB      $0F,$6F,$00           /// movq        mm0,[EAX]
+    DB      $0F,$6E,$48,$08       /// movd        mm1,[EAX + 8]
+    DB      $0F,$6F,$E0           /// movq        mm4,mm0
+    DB      $0F,$6F,$D9           /// movq        mm3,mm1
+    DB      $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
+    DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+    DB      $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
+    DB      $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
+    DB      $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
+    DB      $0F,$6F,$D1           /// movq        mm2,mm1
+
+    DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+    DB      $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
+    DB      $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
+    DB      $0F,$62,$C9           /// punpckldq   mm1,mm1
+    DB      $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
+    DB      $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
+    DB      $0F,$7E,$58,$08       /// movd        [EAX + 8],mm3
+    DB      $0F,$7F,$20           /// movq        [EAX],mm4
+
 @NormEnd:
-  DB      $0F,$0E               /// femms
-  XOR     EDX, EDX
-  MOV     [EAX + 12], EDX
-  RET
+    DB      $0F,$0E               /// femms
+    XOR     EDX, EDX
+    MOV     [EAX + 12], EDX
+    RET
 
 @FPU:
-  FLD     DWORD PTR [EAX]
-  FMUL    ST, ST
-  FLD     DWORD PTR [EAX + 4]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 8]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FSQRT
-  FLD1
-  FDIVRP  ST, ST
-  FLD     ST
-  FMUL    DWORD PTR [EAX]
-  FSTP    DWORD PTR [EAX]
-  FLD     ST
-  FMUL    DWORD PTR [EAX + 4]
-  FSTP    DWORD PTR [EAX + 4]
-  FMUL    DWORD PTR [EAX + 8]
-  FSTP    DWORD PTR [EAX + 8]
-  XOR     EDX, EDX
-  MOV     [EAX + 12], EDX
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FMUL    ST, ST
+    FLD     DWORD PTR [EAX + 4]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 8]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FSQRT
+    FLD1
+    FDIVRP  ST, ST
+    FLD     ST
+    FMUL    DWORD PTR [EAX]
+    FSTP    DWORD PTR [EAX]
+    FLD     ST
+    FMUL    DWORD PTR [EAX + 4]
+    FSTP    DWORD PTR [EAX + 4]
+    FMUL    DWORD PTR [EAX + 8]
+    FSTP    DWORD PTR [EAX + 8]
+    XOR     EDX, EDX
+    MOV     [EAX + 12], EDX
+{$ENDIF}
 end;
 
 function VectorNormalize(const Value: TDAVVector32): TDAVVector32;
@@ -1090,57 +1096,59 @@ begin
   Result[3] := 0;
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
-@3DNow:
-  DB      $0F,$6F,$00           /// movq        mm0,[EAX]
-  DB      $0F,$6E,$48,$08       /// movd        mm1,[EAX + 8]
-  DB      $0F,$6F,$E0           /// movq        mm4,mm0
-  DB      $0F,$6F,$D9           /// movq        mm3,mm1
-  DB      $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
-  DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
-  DB      $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
-  DB      $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
-  DB      $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
-  DB      $0F,$6F,$D1           /// movq        mm2,mm1
+    TEST    vSIMD, 1
+    JZ      @FPU
 
-  DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
-  DB      $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
-  DB      $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
-  DB      $0F,$62,$C9           /// punpckldq   mm1,mm1
-  DB      $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
-  DB      $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
-  DB      $0F,$7E,$5A,$08       /// movd        [EDX + 8],mm3
-  DB      $0F,$7F,$22           /// movq        [EDX],mm4
+@3DNow:
+    DB      $0F,$6F,$00           /// movq        mm0,[EAX]
+    DB      $0F,$6E,$48,$08       /// movd        mm1,[EAX + 8]
+    DB      $0F,$6F,$E0           /// movq        mm4,mm0
+    DB      $0F,$6F,$D9           /// movq        mm3,mm1
+    DB      $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
+    DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+    DB      $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
+    DB      $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
+    DB      $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
+    DB      $0F,$6F,$D1           /// movq        mm2,mm1
+
+    DB      $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+    DB      $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
+    DB      $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
+    DB      $0F,$62,$C9           /// punpckldq   mm1,mm1
+    DB      $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
+    DB      $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
+    DB      $0F,$7E,$5A,$08       /// movd        [EDX + 8],mm3
+    DB      $0F,$7F,$22           /// movq        [EDX],mm4
+
 @NormEnd:
-  DB      $0F,$0E               /// femms
-  XOR     EAX, EAX
-  MOV     [EDX + 12], EAX
-  RET
+    DB      $0F,$0E               /// femms
+    XOR     EAX, EAX
+    MOV     [EDX + 12], EAX
+    RET
 
 @FPU:
-  FLD     DWORD PTR [EAX]
-  FMUL    ST, ST
-  FLD     DWORD PTR [EAX + 4]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 8]
-  FMUL    ST, ST
-  FADDP   ST, ST
-  FSQRT
-  FLD1
-  FDIVRP  ST, ST
-  FLD     ST
-  FMUL    DWORD PTR [EAX]
-  FSTP    DWORD PTR [EDX]
-  FLD     ST
-  FMUL    DWORD PTR [EAX + 4]
-  FSTP    DWORD PTR [EDX + 4]
-  FMUL    DWORD PTR [EAX + 8]
-  FSTP    DWORD PTR [EDX + 8]
-  XOR     EAX, EAX
-  MOV     [EDX + 12], EAX
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FMUL    ST, ST
+    FLD     DWORD PTR [EAX + 4]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 8]
+    FMUL    ST, ST
+    FADDP   ST, ST
+    FSQRT
+    FLD1
+    FDIVRP  ST, ST
+    FLD     ST
+    FMUL    DWORD PTR [EAX]
+    FSTP    DWORD PTR [EDX]
+    FLD     ST
+    FMUL    DWORD PTR [EAX + 4]
+    FSTP    DWORD PTR [EDX + 4]
+    FMUL    DWORD PTR [EAX + 8]
+    FSTP    DWORD PTR [EDX + 8]
+    XOR     EAX, EAX
+    MOV     [EDX + 12], EAX
+{$ENDIF}
 end;
 
 function VectorNegate(const Value: TDAVVector32): TDAVVector32;
@@ -1152,19 +1160,19 @@ begin
   Result[3] := -Value[3];
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX]
-  FCHS
-  FSTP    DWORD PTR [EDX]
-  FLD     DWORD PTR [EAX + 4]
-  FCHS
-  FSTP    DWORD PTR [EDX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FCHS
-  FSTP    DWORD PTR [EDX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FCHS
-  FSTP    DWORD PTR [EDX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FCHS
+    FSTP    DWORD PTR [EDX]
+    FLD     DWORD PTR [EAX + 4]
+    FCHS
+    FSTP    DWORD PTR [EDX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FCHS
+    FSTP    DWORD PTR [EDX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FCHS
+    FSTP    DWORD PTR [EDX + 12]
+{$ENDIF}
 end;
 
 // NegateVector
@@ -1178,37 +1186,37 @@ begin
   Value[3] := -Value[3];
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX]
-  FCHS
-  FSTP    DWORD PTR [EAX]
-  FLD     DWORD PTR [EAX + 4]
-  FCHS
-  FSTP    DWORD PTR [EAX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FCHS
-  FSTP    DWORD PTR [EAX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FCHS
-  FSTP    DWORD PTR [EAX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FCHS
+    FSTP    DWORD PTR [EAX]
+    FLD     DWORD PTR [EAX + 4]
+    FCHS
+    FSTP    DWORD PTR [EAX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FCHS
+    FSTP    DWORD PTR [EAX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FCHS
+    FSTP    DWORD PTR [EAX + 12]
+{$ENDIF}
 end;
 
 procedure NegateVector(var Value: array of Single);
-{$IFNDEF PUREPASCAL}
-asm
-@Loop:
-  FLD DWORD PTR [EAX + 4 * EDX]
-  FCHS
-  WAIT
-  FSTP DWORD PTR [EAX + 4 * EDX]
-  DEC EDX
-  JNS @Loop
-  {$ELSE}
+{$IFDEF PUREPASCAL}
 var
   i: Integer;
 begin
   for i := Low(Value) to High(Value) do
     Value[i] := -Value[i];
+{$ELSE}
+asm
+@Loop:
+    FLD DWORD PTR [EAX + 4 * EDX]
+    FCHS
+    WAIT
+    FSTP DWORD PTR [EAX + 4 * EDX]
+    DEC EDX
+    JNS @Loop
 {$ENDIF}
 end;
 
@@ -1221,41 +1229,41 @@ begin
   Value[3] := Value[3] * Factor;
 {$ELSE}
 asm
-  TEST     vSIMD, 1
-  JZ       @FPU
+    TEST     vSIMD, 1
+    JZ       @FPU
 
 @3DNow:
-  DB       $0F,$6E,$4D,$08       /// movd        mm1, [ebp + 8]
-  DB       $0F,$62,$C9           /// punpckldq   mm1, mm1
+    DB       $0F,$6E,$4D,$08       /// movd        mm1, [ebp + 8]
+    DB       $0F,$62,$C9           /// punpckldq   mm1, mm1
 
-  DB       $0F,$6F,$00           /// movq        mm0, [EAX]
-  DB       $0F,$6F,$50,$08       /// movq        mm2, [EAX + 8]
-  DB       $0F,$0F,$C1,$B4       /// pfmul       mm0, mm1
-  DB       $0F,$0F,$D1,$B4       /// pfmul       mm2, mm1
-  DB       $0F,$7F,$00           /// movq        [EAX], mm0
-  DB       $0F,$7F,$50,$08       /// movq        [EAX + 8], mm2
+    DB       $0F,$6F,$00           /// movq        mm0, [EAX]
+    DB       $0F,$6F,$50,$08       /// movq        mm2, [EAX + 8]
+    DB       $0F,$0F,$C1,$B4       /// pfmul       mm0, mm1
+    DB       $0F,$0F,$D1,$B4       /// pfmul       mm2, mm1
+    DB       $0F,$7F,$00           /// movq        [EAX], mm0
+    DB       $0F,$7F,$50,$08       /// movq        [EAX + 8], mm2
 
-  DB       $0F,$0E               /// femms
+    DB       $0F,$0E               /// femms
 
-  POP      EBP
-  RET      $04
+    POP      EBP
+    RET      $04
 
 @FPU:
-  FLD      DWORD PTR [EBP + 8]
+    FLD      DWORD PTR [EBP + 8]
 
-  FLD      DWORD PTR [EAX]
-  FMUL     ST, ST(1)
-  FSTP     DWORD PTR [EAX]
-  FLD      DWORD PTR [EAX + 4]
-  FMUL     ST, ST(1)
-  FSTP     DWORD PTR [EAX + 4]
-  FLD      DWORD PTR [EAX + 8]
-  FMUL     ST, ST(1)
-  FSTP     DWORD PTR [EAX + 8]
-  FLD      DWORD PTR [EAX + 12]
-  FMULP
-  FSTP     DWORD PTR [EAX + 12]
-  {$ENDIF}
+    FLD      DWORD PTR [EAX]
+    FMUL     ST, ST(1)
+    FSTP     DWORD PTR [EAX]
+    FLD      DWORD PTR [EAX + 4]
+    FMUL     ST, ST(1)
+    FSTP     DWORD PTR [EAX + 4]
+    FLD      DWORD PTR [EAX + 8]
+    FMUL     ST, ST(1)
+    FSTP     DWORD PTR [EAX + 8]
+    FLD      DWORD PTR [EAX + 12]
+    FMULP
+    FSTP     DWORD PTR [EAX + 12]
+{$ENDIF}
 end;
 
 procedure ScaleVector(var Value: TDAVVector32; const Factor: TDAVVector32);
@@ -1276,19 +1284,19 @@ begin
   Result[3] := Value[3] * Factor;
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX]
-  FLD     DWORD PTR [EAX + 4]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX]
+    FLD     DWORD PTR [EAX + 4]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX + 12]
+{$ENDIF}
 end;
 
 procedure VectorScale(const Value: TDAVVector32; const Factor: Single;
@@ -1301,27 +1309,27 @@ begin
   vr[3] := Value[3] * Factor;
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX]
-  FLD     DWORD PTR [EAX + 4]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX + 4]
-  FLD     DWORD PTR [EAX + 8]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX + 8]
-  FLD     DWORD PTR [EAX + 12]
-  FMUL    DWORD PTR [EBP + 8]
-  FSTP    DWORD PTR [EDX + 12]
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX]
+    FLD     DWORD PTR [EAX + 4]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX + 4]
+    FLD     DWORD PTR [EAX + 8]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX + 8]
+    FLD     DWORD PTR [EAX + 12]
+    FMUL    DWORD PTR [EBP + 8]
+    FSTP    DWORD PTR [EDX + 12]
+{$ENDIF}
 end;
 
 procedure DivideVector(var Value: TDAVVector32; const divider: TDAVVector32);
 begin
-  Value[0] := Value[0] / divider[0];
-  Value[1] := Value[1] / divider[1];
-  Value[2] := Value[2] / divider[2];
-  Value[3] := Value[3] / divider[3];
+  Value[0] := Value[0] / Divider[0];
+  Value[1] := Value[1] / Divider[1];
+  Value[2] := Value[2] / Divider[2];
+  Value[3] := Value[3] / Divider[3];
 end;
 
 function VectorEquals(const v1, v2: TDAVVector32): Boolean;
@@ -1331,24 +1339,26 @@ begin
     (v1[3] = v2[3]);
 {$ELSE}
 asm
-  MOV     ECX, [EDX]
-  CMP     ECX, [EAX]
-  JNE     @Diff
-  MOV     ECX, [EDX+$4]
-  CMP     ECX, [EAX+$4]
-  JNE     @Diff
-  MOV     ECX, [EDX+$8]
-  CMP     ECX, [EAX+$8]
-  JNE     @Diff
-  MOV     ECX, [EDX+$C]
-  CMP     ECX, [EAX+$C]
-  JNE     @Diff
+    MOV     ECX, [EDX]
+    CMP     ECX, [EAX]
+    JNE     @Diff
+    MOV     ECX, [EDX+$4]
+    CMP     ECX, [EAX+$4]
+    JNE     @Diff
+    MOV     ECX, [EDX+$8]
+    CMP     ECX, [EAX+$8]
+    JNE     @Diff
+    MOV     ECX, [EDX+$C]
+    CMP     ECX, [EAX+$C]
+    JNE     @Diff
+
 @Equal:
-  MOV     EAX, 1
-  RET
+    MOV     EAX, 1
+    RET
+
 @Diff:
-  XOR     EAX, EAX
-  {$ENDIF}
+    XOR     EAX, EAX
+{$ENDIF}
 end;
 
 // VectorIsNull (Homogeneous)
@@ -1368,22 +1378,22 @@ begin
     Abs(v2[3] - v1[3]);
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX     ]
-  FSUB    DWORD PTR [EDX     ]
-  FABS
-  FLD     DWORD PTR [EAX +  4]
-  FSUB    DWORD PTR [EDX +  4]
-  FABS
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX +  8]
-  FSUB    DWORD PTR [EDX +  8]
-  FABS
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 12]
-  FSUB    DWORD PTR [EDX + 12]
-  FABS
-  FADDP   ST(1), ST(0)
-  {$ENDIF}
+    FLD     DWORD PTR [EAX     ]
+    FSUB    DWORD PTR [EDX     ]
+    FABS
+    FLD     DWORD PTR [EAX +  4]
+    FSUB    DWORD PTR [EDX +  4]
+    FABS
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX +  8]
+    FSUB    DWORD PTR [EDX +  8]
+    FABS
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 12]
+    FSUB    DWORD PTR [EDX + 12]
+    FABS
+    FADDP   ST(1), ST(0)
+{$ENDIF}
 end;
 
 function VectorDistance(const v1, v2: TDAVVector32): Single;
@@ -1393,23 +1403,23 @@ begin
     Sqr(v2[3] - v1[3]));
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX     ]
-  FSUB    DWORD PTR [EDX     ]
-  FMUL    ST, ST
-  FLD     DWORD PTR [EAX +  4]
-  FSUB    DWORD PTR [EDX +  4]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX +  8]
-  FSUB    DWORD PTR [EDX +  8]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 12]
-  FSUB    DWORD PTR [EDX + 12]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FSQRT
-  {$ENDIF}
+    FLD     DWORD PTR [EAX     ]
+    FSUB    DWORD PTR [EDX     ]
+    FMUL    ST, ST
+    FLD     DWORD PTR [EAX +  4]
+    FSUB    DWORD PTR [EDX +  4]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX +  8]
+    FSUB    DWORD PTR [EDX +  8]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 12]
+    FSUB    DWORD PTR [EDX + 12]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FSQRT
+{$ENDIF}
 end;
 
 // VectorDistance2 (Homogeneous)
@@ -1421,22 +1431,22 @@ begin
     Sqr(v2[3] - v1[3]);
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX    ]
-  FSUB    DWORD PTR [EDX    ]
-  FMUL    ST, ST
-  FLD     DWORD PTR [EAX + 4]
-  FSUB    DWORD PTR [EDX + 4]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 8]
-  FSUB    DWORD PTR [EDX + 8]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 12]
-  FSUB    DWORD PTR [EDX + 12]
-  FMUL    ST, ST
-  FADDP   ST(1), ST(0)
-  {$ENDIF}
+    FLD     DWORD PTR [EAX    ]
+    FSUB    DWORD PTR [EDX    ]
+    FMUL    ST, ST
+    FLD     DWORD PTR [EAX + 4]
+    FSUB    DWORD PTR [EDX + 4]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 8]
+    FSUB    DWORD PTR [EDX + 8]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 12]
+    FSUB    DWORD PTR [EDX + 12]
+    FMUL    ST, ST
+    FADDP   ST(1), ST(0)
+{$ENDIF}
 end;
 
 // CreateRotationMatrix
@@ -2106,30 +2116,31 @@ begin
   Result := 1 / Sqrt(Value);
 {$ELSE}
 asm
-  TEST    vSIMD, 1
-  JZ      @FPU
+    TEST    vSIMD, 1
+    JZ      @FPU
 @3DNow:
-  LEA     EAX, [ebp + 8]
-  DB      $0F,$6E,$00           /// movd mm0, [EAX]
-  DB      $0F,$0F,$C8,$97       /// pfrsqrt  mm1, mm0
+    LEA     EAX, [ebp + 8]
+    DB      $0F,$6E,$00           /// movd mm0, [EAX]
+    DB      $0F,$0F,$C8,$97       /// pfrsqrt  mm1, mm0
 
-  DB      $0F,$6F,$D1           /// movq     mm2, mm1
-  DB      $0F,$0F,$C9,$B4       /// pfmul    mm1, mm1
-  DB      $0F,$0F,$C8,$A7       /// pfrsqit1 mm1, mm0
-  DB      $0F,$0F,$CA,$B6       /// pfrcpit2 mm1, mm2
+    DB      $0F,$6F,$D1           /// movq     mm2, mm1
+    DB      $0F,$0F,$C9,$B4       /// pfmul    mm1, mm1
+    DB      $0F,$0F,$C8,$A7       /// pfrsqit1 mm1, mm0
+    DB      $0F,$0F,$CA,$B6       /// pfrcpit2 mm1, mm2
 
-  DB      $0F,$7E,$08           /// movd [EAX], mm1
-  DB      $0F,$0E               /// femms
-  FLD     DWORD PTR [EAX]
-  JMP     @End
+    DB      $0F,$7E,$08           /// movd [EAX], mm1
+    DB      $0F,$0E               /// femms
+    FLD     DWORD PTR [EAX]
+    JMP     @End
 
 @FPU:
-  FLD Value
-  FSQRT
-  FLD1
-  FDIVRP ST(1), ST(0)
+    FLD Value
+    FSQRT
+    FLD1
+    FDIVRP ST(1), ST(0)
+
 @End:
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure SetPlane(var Destination: TDAVHomogeneousVector64;
@@ -2157,18 +2168,18 @@ begin
     Plane[3] * Point[3];
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX     ]
-  FMUL    DWORD PTR [EDX     ]
-  FLD     DWORD PTR [EAX +  4]
-  FMUL    DWORD PTR [EDX +  4]
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX +  8]
-  FMUL    DWORD PTR [EDX +  8]
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 12]
-  FMUL    DWORD PTR [EDX + 12]
-  FADDP   ST(1), ST(0)
-  {$ENDIF}
+    FLD     DWORD PTR [EAX     ]
+    FMUL    DWORD PTR [EDX     ]
+    FLD     DWORD PTR [EAX +  4]
+    FMUL    DWORD PTR [EDX +  4]
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX +  8]
+    FMUL    DWORD PTR [EDX +  8]
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 12]
+    FMUL    DWORD PTR [EDX + 12]
+    FADDP   ST(1), ST(0)
+{$ENDIF}
 end;
 
 function PointIsInHalfSpace(const Point, PlanePoint,
@@ -2178,23 +2189,23 @@ begin
   Result := (PointPlaneDistance(Point, PlanePoint, PlaneNormal) > 0);
 {$ELSE}
 asm
-  FLD     DWORD PTR [EAX]
-  FSUB    DWORD PTR [EDX]
-  FMUL    DWORD PTR [ECX]
-  FLD     DWORD PTR [EAX + 4]
-  FSUB    DWORD PTR [EDX + 4]
-  FMUL    DWORD PTR [ECX + 4]
-  FADDP   ST(1), ST(0)
-  FLD     DWORD PTR [EAX + 8]
-  FSUB    DWORD PTR [EDX + 8]
-  FMUL    DWORD PTR [ECX + 8]
-  FADDP   ST(1), ST(0)
-  FTST
-  FSTSW   AX
-  SAHF
-  SETNBE  AL
-  FFREE   ST(0)
-  {$ENDIF}
+    FLD     DWORD PTR [EAX]
+    FSUB    DWORD PTR [EDX]
+    FMUL    DWORD PTR [ECX]
+    FLD     DWORD PTR [EAX + 4]
+    FSUB    DWORD PTR [EDX + 4]
+    FMUL    DWORD PTR [ECX + 4]
+    FADDP   ST(1), ST(0)
+    FLD     DWORD PTR [EAX + 8]
+    FSUB    DWORD PTR [EDX + 8]
+    FMUL    DWORD PTR [ECX + 8]
+    FADDP   ST(1), ST(0)
+    FTST
+    FSTSW   AX
+    SAHF
+    SETNBE  AL
+    FFREE   ST(0)
+{$ENDIF}
 end;
 
 function PointPlaneDistance(const Point, PlanePoint,
@@ -2216,15 +2227,15 @@ begin
 {$HINTS ON}
 {$ELSE}
 asm
-  FLD     QWORD PTR [EAX]
-  FSTP    DWORD PTR [EDX]
-  FLD     QWORD PTR [EAX + 8]
-  FSTP    DWORD PTR [EDX + 4]
-  FLD     QWORD PTR [EAX + 16]
-  FSTP    DWORD PTR [EDX + 8]
-  FLD     QWORD PTR [EAX + 24]
-  FSTP    DWORD PTR [EDX + 12]
-  {$ENDIF}
+    FLD     QWORD PTR [EAX]
+    FSTP    DWORD PTR [EDX]
+    FLD     QWORD PTR [EAX + 8]
+    FSTP    DWORD PTR [EDX + 4]
+    FLD     QWORD PTR [EAX + 16]
+    FSTP    DWORD PTR [EDX + 8]
+    FLD     QWORD PTR [EAX + 24]
+    FSTP    DWORD PTR [EDX + 12]
+{$ENDIF}
 end;
 
 function VectorFltToDbl(const Value: TDAVVector32): TDAVVector64;
@@ -2236,15 +2247,15 @@ begin
   Result[3] := Value[3];
 {$ELSE}
 asm
-  FLD  DWORD PTR [EAX]
-  FSTP QWORD PTR [EDX]
-  FLD  DWORD PTR [EAX + 8]
-  FSTP QWORD PTR [EDX + 4]
-  FLD  DWORD PTR [EAX + 16]
-  FSTP QWORD PTR [EDX + 8]
-  FLD  DWORD PTR [EAX + 24]
-  FSTP QWORD PTR [EDX + 12]
-  {$ENDIF}
+    FLD  DWORD PTR [EAX]
+    FSTP QWORD PTR [EDX]
+    FLD  DWORD PTR [EAX + 8]
+    FSTP QWORD PTR [EDX + 4]
+    FLD  DWORD PTR [EAX + 16]
+    FSTP QWORD PTR [EDX + 8]
+    FLD  DWORD PTR [EAX + 24]
+    FSTP QWORD PTR [EDX + 12]
+{$ENDIF}
 end;
 
 function MakeDblVector(var Value: array of Double): TDAVHomogeneousVector64;
@@ -2256,15 +2267,15 @@ begin
   Result[3] := Value[3];
 {$ELSE}
 asm
-  PUSH EDI
-  PUSH ESI
-  MOV EDI, ECX
-  MOV ESI, EAX
-  MOV ECX, 8
-  REP MOVSD
-  POP ESI
-  POP EDI
-  {$ENDIF}
+    PUSH EDI
+    PUSH ESI
+    MOV EDI, ECX
+    MOV ESI, EAX
+    MOV ECX, 8
+    REP MOVSD
+    POP ESI
+    POP EDI
+{$ENDIF}
 end;
 
 function GetOrthodromicAngle(AL, BX: TSphereVector3D): Single;

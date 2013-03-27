@@ -149,7 +149,7 @@ uses
 function ReadFromChannelsStaticCallback(Data: PDAVSingleFixedArray;
   FrameCount: Integer; UserData: Pointer): Integer; cdecl;
 begin
-  result := TDiracLE(UserData).ReadFromChannelsCallback(Data, FrameCount);
+  Result := TDiracLE(UserData).ReadFromChannelsCallback(Data, FrameCount);
 end;
 
 { TDiracLE }
@@ -182,12 +182,12 @@ end;
 
 function TDiracLE.GetCacheGranularity: Integer;
 begin
-  result := round(DiracGetProperty(Integer(dpCacheGranularity), FDiracHandle));
+  Result := round(DiracGetProperty(Integer(dpCacheGranularity), FDiracHandle));
 end;
 
 function TDiracLE.GetCompactSupport: Boolean;
 begin
-  result := DiracGetProperty(Integer(dpCompactSupport), FDiracHandle) > 0.5;
+  Result := DiracGetProperty(Integer(dpCompactSupport), FDiracHandle) > 0.5;
 end;
 
 class function TDiracLE.GetDiracVersion: string;
@@ -195,43 +195,43 @@ var
   Vers: PChar;
 begin
   Vers := DiracVersion;
-  result := StrPas(Vers)
+  Result := StrPas(Vers)
 end;
 
 function TDiracLE.GetFormantFactor: Extended;
 begin
-  result := DiracGetProperty(Integer(dpFormantFactor), FDiracHandle);
+  Result := DiracGetProperty(Integer(dpFormantFactor), FDiracHandle);
 end;
 
 function TDiracLE.GetPitchCorrection: Boolean;
 begin
-  result := DiracGetProperty(Integer(dpDoPitchCorrection), FDiracHandle) > 0.5;
+  Result := DiracGetProperty(Integer(dpDoPitchCorrection), FDiracHandle) > 0.5;
 end;
 
 function TDiracLE.GetPitchCorrectionBasicTuning: Extended;
 begin
-  result := DiracGetProperty(Integer(dpPitchCorrectionBasicTuning),
+  Result := DiracGetProperty(Integer(dpPitchCorrectionBasicTuning),
     FDiracHandle);
 end;
 
 function TDiracLE.GetPitchCorrectionSlur: Extended;
 begin
-  result := DiracGetProperty(Integer(dpPitchCorrectionSlur), FDiracHandle);
+  Result := DiracGetProperty(Integer(dpPitchCorrectionSlur), FDiracHandle);
 end;
 
 function TDiracLE.GetPitchCorrectionTolerance: Extended;
 begin
-  result := DiracGetProperty(Integer(dpPitchCorrectionTolerance), FDiracHandle);
+  Result := DiracGetProperty(Integer(dpPitchCorrectionTolerance), FDiracHandle);
 end;
 
 function TDiracLE.GetPitchFactor: Extended;
 begin
-  result := DiracGetProperty(Integer(dpPitchFactor), FDiracHandle);
+  Result := DiracGetProperty(Integer(dpPitchFactor), FDiracHandle);
 end;
 
 function TDiracLE.GetTimeFactor: Extended;
 begin
-  result := DiracGetProperty(Integer(dpTimeFactor), FDiracHandle);
+  Result := DiracGetProperty(Integer(dpTimeFactor), FDiracHandle);
 end;
 
 procedure TDiracLE.SetCacheGranularity(const Value: Integer);
@@ -339,7 +339,7 @@ function TDiracLE.ReadFromChannelsCallback(Data: PDAVSingleFixedArray;
 begin
   move(FInternalData^[FIntDataPos], Data^, FrameCount * SizeOf(Single));
   FIntDataPos := FIntDataPos + FrameCount;
-  result := FrameCount;
+  Result := FrameCount;
 end;
 
 const

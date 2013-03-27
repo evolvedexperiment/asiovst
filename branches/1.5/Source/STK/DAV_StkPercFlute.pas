@@ -36,8 +36,8 @@ unit DAV_StkPercFlute;
 
   This class implements algorithm 4 of the TX81Z.
 
-  Algorithm 4 is :   4.3--\
-                       2-- + -.1-.Out
+  Algorithm 4 is :   4.3 --\
+                      2  --+-> 1 --> Out
 
   Control Change Numbers:
     - Total Modulator Index = 2

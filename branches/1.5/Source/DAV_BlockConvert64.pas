@@ -174,28 +174,27 @@ begin
     Inc(SourceWord);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 2
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 2
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CSmallToFloat
+    FLD     CSmallToFloat
 
 @Start:
-  FILD    [EDX + ECX * 2].Word
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FILD    [EDX + ECX * 2].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt24LSBToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -211,36 +210,35 @@ begin
     Inc(SourceByte, 3);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CInt32ToFloat
-  PUSH    EBX
+    FLD     CInt32ToFloat
+    PUSH    EBX
 
 @Start:
-  MOV     EBX, [EDX].DWord
-  SHL     EBX, 8
-  AND     EBX, $FFFFFF00
+    MOV     EBX, [EDX].DWord
+    SHL     EBX, 8
+    AND     EBX, $FFFFFF00
 
-  MOV     [ESP - 4], EBX
-  FILD    [ESP - 4].Single
-  FMUL    ST(0), ST(1)
+    MOV     [ESP - 4], EBX
+    FILD    [ESP - 4].Single
+    FMUL    ST(0), ST(1)
 
-  FSTP    [EAX + ECX * 8].Double
-  ADD     EDX, 3
-  ADD     ECX, 1
-  JS      @Start
+    FSTP    [EAX + ECX * 8].Double
+    ADD     EDX, 3
+    ADD     ECX, 1
+    JS      @Start
 
-  POP     EBX
-  FSTP    ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSBToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -255,28 +253,27 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CInt32ToFloat
+    FLD     CInt32ToFloat
 
 @Start:
-  FILD    [EDX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB16ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -291,28 +288,27 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CSmallToFloat
+    FLD     CSmallToFloat
 
 @Start:
-  FILD    [EDX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB18ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -327,28 +323,27 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD      CInt18ToFloat
+    FLD      CInt18ToFloat
 
 @Start:
-  FILD    [EDX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB20ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -363,28 +358,27 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CInt20ToFloat
+    FLD     CInt20ToFloat
 
 @Start:
-  FILD    [EDX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB24ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -399,28 +393,27 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CInt24ToFloat
+    FLD     CInt24ToFloat
 
 @Start:
-  FILD    [EDX + ECX * 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    FILD    [EDX + ECX * 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt16MSBToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -435,33 +428,32 @@ begin
     Inc(SourceWord);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 2
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 2
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CSmallToFloat
+    PUSH    EBX
+    FLD     CSmallToFloat
 
 @Start:
-  MOV     BX, [EDX + 2 * ECX]
-  XCHG    BH, BL
-  MOV     [ESP - 4], BX
-  FILD    [ESP - 4].Word
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    MOV     BX, [EDX + 2 * ECX]
+    XCHG    BH, BL
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt24MSBToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -480,39 +472,38 @@ begin
     Inc(SourceBytes, 3);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CInt24ToFloat
-  PUSH    EBX
+    FLD     CInt24ToFloat
+    PUSH    EBX
 
 @Start:
-  XOR     EBX, EBX
+    XOR     EBX, EBX
 
-  MOV     BL, [EDX + 2]
-  MOV     BH, [EDX + 1]
-  ROR     EBX, 8
-  MOV     BH, [EDX]
-  ROL     EBX, 8
+    MOV     BL, [EDX + 2]
+    MOV     BH, [EDX + 1]
+    ROR     EBX, 8
+    MOV     BH, [EDX]
+    ROL     EBX, 8
 
-  MOV     [ESP - 4], EBX
-  FILD    [ESP - 4].Single
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     EDX, 3
-  ADD     ECX, 1
-  JS      @Start
+    MOV     [ESP - 4], EBX
+    FILD    [ESP - 4].Single
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     EDX, 3
+    ADD     ECX, 1
+    JS      @Start
 
-  POP     EBX
-  FSTP    ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSBToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -527,33 +518,32 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CInt32ToFloat
+    PUSH    EBX
+    FLD     CInt32ToFloat
 
 @Start:
-  MOV     EBX, [EDX + ECX * 4]
-  BSWAP   EBX
-  MOV     [ESP - 4], BX
-  FILD    [ESP - 4].Word
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB16ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -568,33 +558,32 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CSmallToFloat
+    PUSH    EBX
+    FLD     CSmallToFloat
 
 @Start:
-  MOV     EBX, [EDX + ECX * 4]
-  BSWAP   EBX
-  MOV     [ESP - 4], BX
-  FILD    [ESP - 4].Word
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB18ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -609,33 +598,32 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CInt18ToFloat
+    PUSH    EBX
+    FLD     CInt18ToFloat
 
 @Start:
-  MOV     EBX, [EDX + ECX * 4]
-  BSWAP   EBX
-  MOV     [ESP - 4], BX
-  FILD    [ESP - 4].Word
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB20ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -650,33 +638,32 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CInt20ToFloat
+    PUSH    EBX
+    FLD     CInt20ToFloat
 
 @Start:
-  MOV     EBX, [EDX + ECX * 4]
-  BSWAP   EBX
-  MOV     [ESP - 4], BX
-  FILD    [ESP - 4].Word
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB24ToFloat64Native(Destination: PDouble;
   Source: Pointer; Count: Integer);
@@ -691,33 +678,33 @@ begin
     Inc(SourceInt);
     Inc(Destination);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 8
-  LEA     EDX, EDX + ECX * 4
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 8
+    LEA     EDX, EDX + ECX * 4
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CInt24ToFloat
+    PUSH    EBX
+    FLD     CInt24ToFloat
 
 @Start:
-  MOV     EBX, [EDX + ECX * 4]
-  BSWAP   EBX
-  MOV     [ESP - 4], BX
-  FILD    [ESP - 4].Word
-  FMUL    ST(0), ST(1)
-  FSTP    [EAX + ECX * 8].Double
-  ADD     ECX, 1
-  JS      @Start
+    MOV     EBX, [EDX + ECX * 4]
+    BSWAP   EBX
+    MOV     [ESP - 4], BX
+    FILD    [ESP - 4].Word
+    FMUL    ST(0), ST(1)
+    FSTP    [EAX + ECX * 8].Double
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
+
 // ... from float
 
 procedure BlockConvertInt16LSBFromFloat64Native(Destination: Pointer;
@@ -733,28 +720,27 @@ begin
     Inc(Source);
     Inc(DestWord);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 2
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 2
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CFloatToSmall
+    FLD     CFloatToSmall
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [EAX + ECX * 2].Word
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 2].Word
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt24LSBFromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -775,35 +761,34 @@ begin
     Inc(DestByte);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CFloatToInt24
-  PUSH    EBX
+    FLD     CFloatToInt24
+    PUSH    EBX
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [ESP - 4].Single
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].Single
 
-  MOV     EBX, [ESP - 4]
-  AND     EBX, $FFFFFF
-  MOV     [EAX].DWord, EBX
+    MOV     EBX, [ESP - 4]
+    AND     EBX, $FFFFFF
+    MOV     [EAX].DWord, EBX
 
-  ADD     EAX, 3
-  ADD     ECX, 1
-  JS      @Start
+    ADD     EAX, 3
+    ADD     ECX, 1
+    JS      @Start
 
-  POP     EBX
-  FSTP    ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSBFromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -818,28 +803,27 @@ begin
     Inc(Source);
     Inc(DestInt);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CFloatToInt32
+    FLD     CFloatToInt32
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [EAX + ECX * 4].DWord
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].DWord
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB16FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -854,28 +838,27 @@ begin
     Inc(Source);
     Inc(DestInt);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CFloatToSmall
+    FLD     CFloatToSmall
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [EAX + ECX * 4].DWord
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].DWord
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB18FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -890,28 +873,27 @@ begin
     Inc(Source);
     Inc(DestInt);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD      CFloatToInt18
+    FLD      CFloatToInt18
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [EAX + ECX * 4].DWord
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].DWord
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB20FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -926,28 +908,27 @@ begin
     Inc(Source);
     Inc(DestInt);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CFloatToInt20
+    FLD     CFloatToInt20
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [EAX + ECX * 4].DWord
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].DWord
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32LSB24FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -962,28 +943,27 @@ begin
     Inc(Source);
     Inc(DestInt);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CFloatToInt24
+    FLD     CFloatToInt24
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [EAX + ECX * 4].DWord
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [EAX + ECX * 4].DWord
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt16MSBFromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -999,30 +979,29 @@ begin
     Inc(DestWord);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 2
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 2
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  XOR     EBX, EBX
-  FLD     CFloatToSmall
+    PUSH    EBX
+    XOR     EBX, EBX
+    FLD     CFloatToSmall
 
 @Start:
-  FLD     [EDX + 8 * ECX].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [ESP - 4].Word
-  MOV     BX, [ESP - 4]
-  XCHG    BH, BL
-  MOV     [EAX + ECX * 2], BX
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + 8 * ECX].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].Word
+    MOV     BX, [ESP - 4]
+    XCHG    BH, BL
+    MOV     [EAX + ECX * 2], BX
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
 end;
@@ -1047,37 +1026,36 @@ begin
     Inc(DestByte);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  FLD     CFloatToInt24
-  PUSH    EBX
+    FLD     CFloatToInt24
+    PUSH    EBX
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [ESP - 4].Single
-  MOV     EBX, [ESP - 4]
-  MOV     [EAX], BL
-  MOV     [EAX + 1], BH
-  ROR     EBX, 8
-  MOV     [EAX + 2], BH
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].Single
+    MOV     EBX, [ESP - 4]
+    MOV     [EAX], BL
+    MOV     [EAX + 1], BH
+    ROR     EBX, 8
+    MOV     [EAX + 2], BH
 
-  ADD     EAX, 3
-  ADD     ECX, 1
-  JS      @Start
+    ADD     EAX, 3
+    ADD     ECX, 1
+    JS      @Start
 
 
-  POP     EBX
-  FSTP    ST(0)
+    POP     EBX
+    FSTP    ST(0)
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSBFromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -1093,33 +1071,32 @@ begin
     Inc(DestInt);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CFloatToInt32
+    PUSH    EBX
+    FLD     CFloatToInt32
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [ESP - 4].DWord
-  MOV     EBX, [ESP - 4]
-  BSWAP   EBX
-  MOV     [EAX + ECX * 4], EBX
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB16FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -1135,34 +1112,32 @@ begin
     Inc(DestInt);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CFloatToSmall
+    PUSH    EBX
+    FLD     CFloatToSmall
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [ESP - 4].DWord
-  MOV     EBX, [ESP - 4]
-  BSWAP   EBX
-  MOV     [EAX + ECX * 4], EBX
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
-
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB18FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -1178,34 +1153,33 @@ begin
     Inc(DestInt);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CFloatToInt18
+    PUSH    EBX
+    FLD     CFloatToInt18
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [ESP - 4].DWord
-  MOV     EBX, [ESP - 4]
-  BSWAP   EBX
-  MOV     [EAX + ECX * 4], EBX
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB20FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -1221,33 +1195,32 @@ begin
     Inc(DestInt);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
-  LEA     EAX, EAX + ECX * 4
-  LEA     EDX, EDX + ECX * 8
-  NEG     ECX
-  JNL     @Done
+    LEA     EAX, EAX + ECX * 4
+    LEA     EDX, EDX + ECX * 8
+    NEG     ECX
+    JNL     @Done
 
-  PUSH    EBX
-  FLD     CFloatToInt20
+    PUSH    EBX
+    FLD     CFloatToInt20
 
 @Start:
-  FLD     [EDX + ECX * 8].Double
-  FMUL    ST(0), ST(1)
-  FISTP   [ESP - 4].DWord
-  MOV     EBX, [ESP - 4]
-  BSWAP   EBX
-  MOV     [EAX + ECX * 4], EBX
-  ADD     ECX, 1
-  JS      @Start
+    FLD     [EDX + ECX * 8].Double
+    FMUL    ST(0), ST(1)
+    FISTP   [ESP - 4].DWord
+    MOV     EBX, [ESP - 4]
+    BSWAP   EBX
+    MOV     [EAX + ECX * 4], EBX
+    ADD     ECX, 1
+    JS      @Start
 
-  FSTP    ST(0)
-  POP     EBX
+    FSTP    ST(0)
+    POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
 
 procedure BlockConvertInt32MSB24FromFloat64Native(Destination: Pointer;
   Source: PDouble; Count: Integer);
@@ -1263,7 +1236,6 @@ begin
     Inc(DestInt);
     Inc(Source);
   end;
-end;
 {$ELSE}
 asm
   LEA     EAX, EAX + ECX * 4
@@ -1288,12 +1260,14 @@ asm
   POP     EBX
 
 @Done:
-end;
 {$ENDIF}
+end;
+
 {$IFNDEF PUREPASCAL}
-{ SSE optimizations }
 
 { 3D-Now optimizations }
+
+{ SSE optimizations }
 
 {$ENDIF}
 

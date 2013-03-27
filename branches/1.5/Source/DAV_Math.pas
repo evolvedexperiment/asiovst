@@ -161,7 +161,10 @@ const
   CMinusOneSixteenth: Single = -0.0625;
 
 var
-  ln10, ln2, ln22, ln2Rez: Double;
+  CLn10: Double; // = Ln(10)
+  CLn2: Double; // = Ln(2)
+  CLn2Half: Double; // = Ln(2) / 2
+  CLn2Reciprocal: Double; // = 1 / Ln(2)
   GRandSeed: Longint = 0;
 
 implementation
@@ -193,6 +196,7 @@ begin
     Result := 1;
 end;
 {$ENDIF}
+
 { Math }
 
 function ModZeroBesselI0(Value: Double): Double;
@@ -254,17 +258,17 @@ begin
 end;
 {$ELSE}
 asm
-  IMUL    EDX, GRandSeed, 08088405H
-  Inc     EDX
-  MOV     GRandSeed, EDX
-  FLD     CTwoMulTwo2Neg32
-  PUSH    0
-  PUSH    EDX
-  FILD    QWORD PTR [ESP]
-  ADD     ESP, 8
-  FMULP   ST(1), ST(0)
-  FLD1
-  FSUBP   ST, ST
+    IMUL    EDX, GRandSeed, 08088405H
+    Inc     EDX
+    MOV     GRandSeed, EDX
+    FLD     CTwoMulTwo2Neg32
+    PUSH    0
+    PUSH    EDX
+    FILD    QWORD PTR [ESP]
+    ADD     ESP, 8
+    FMULP   ST(1), ST(0)
+    FLD1
+    FSUBP   ST, ST
 end;
 {$ENDIF}
 {$ENDIF}
@@ -352,10 +356,10 @@ begin
 end;
 {$ELSE}
 asm
-  FLD     Frequency.Extended
-  FSINCOS
-  FSTP    TBYTE PTR [EDX]    // Cos
-  FSTP    TBYTE PTR [EAX]    // Sin
+    FLD     Frequency.Extended
+    FSINCOS
+    FSTP    TBYTE PTR [EDX]    // Cos
+    FSTP    TBYTE PTR [EAX]    // Sin
 end;
 {$ENDIF}
 {$ENDIF}
@@ -376,10 +380,10 @@ begin
 end;
 {$ELSE}
 asm
-  FLD     Frequency.Double
-  FSINCOS
-  FSTP    [CosValue].Double
-  FSTP    [SinValue].Double
+    FLD     Frequency.Double
+    FSINCOS
+    FSTP    [CosValue].Double
+    FSTP    [SinValue].Double
 end;
 {$ENDIF}
 {$ENDIF}
@@ -399,10 +403,10 @@ begin
 end;
 {$ELSE}
 asm
-  FLD     Frequency
-  FSINCOS
-  FSTP    [CosValue].Single
-  FSTP    [SinValue].Single
+    FLD     Frequency
+    FSINCOS
+    FSTP    [CosValue].Single
+    FSTP    [SinValue].Single
 end;
 {$ENDIF}
 {$ENDIF}
@@ -432,9 +436,9 @@ begin
     Result := Result shl 1;
 {$ELSE}
 asm
-  BSR     ECX, EAX
-  SHR     EAX, CL
-  SHL     EAX, CL
+    BSR     ECX, EAX
+    SHR     EAX, CL
+    SHL     EAX, CL
   {$ENDIF}
 end;
 
@@ -447,14 +451,14 @@ begin
     Result := Result shl 1;
 {$ELSE}
 asm
-  Dec     EAX
-  JLE     @1
-  BSR     ECX, EAX
-  MOV     EAX, 2
-  SHL     EAX, cl
-  RET
+    DEC     EAX
+    JLE     @1
+    BSR     ECX, EAX
+    MOV     EAX, 2
+    SHL     EAX, cl
+    RET
 @1:
-  MOV     EAX, 1
+    MOV     EAX, 1
   {$ENDIF}
 end;
 
@@ -492,10 +496,10 @@ begin
 end;
 {$ELSE}
 asm
-  FLD     Value.Extended
-  FXTRACT
-  FSTP    ST(0)
-  FISTP   Result.Integer
+    FLD     Value.Extended
+    FXTRACT
+    FSTP    ST(0)
+    FISTP   Result.Integer
 end;
 {$ENDIF}
 {$ENDIF}
@@ -504,93 +508,83 @@ function TruncLog2(Value: Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
   Result := Round(Log2(Value));
-end;
 {$ELSE}
-
 var
   Temp: Integer;
-  asm
-    MOV     Temp, Value;
-    FILD    Temp.Integer
-    FXTRACT
-    FSTP    ST(0)
-    FISTP   Result.Integer
-end;
+asm
+      MOV     Temp, Value;
+      FILD    Temp.Integer
+      FXTRACT
+      FSTP    ST(0)
+      FISTP   Result.Integer
 {$ENDIF}
+end;
 
 function CeilLog2(Value: Extended): Integer;
 {$IFDEF PUREPASCAL}
 begin
   Result := Round(Log2(Value) + 1);
-end;
 {$ELSE}
 {$IFDEF CPUx86_64}
-
 begin
   Result := Round(Log2(Value) + 1);
-end;
 {$ELSE}
 asm
-  FLD     Value.Extended
-  FLD1
-  FSUBP   ST, ST
-  FXTRACT
-  FSTP    ST(0)
-  FLD1
-  FADDP   ST(1), ST(0)
-  FISTP   Result.Integer
+    FLD     Value.Extended
+    FLD1
+    FSUBP   ST, ST
+    FXTRACT
+    FSTP    ST(0)
+    FLD1
+    FADDP   ST(1), ST(0)
+    FISTP   Result.Integer
+{$ENDIF}
+{$ENDIF}
 end;
-{$ENDIF}
-{$ENDIF}
 
 function CeilLog2(Value: Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
   Result := Round(Log2(Value) + 1);
-end;
 {$ELSE}
-
 var
   Temp: Integer;
-  asm
-    Dec     Value
+asm
+    DEC     Value
     MOV     Temp, Value;
     FILD    Temp.Integer
     FXTRACT
     FSTP    ST(0)
     FISTP   Result.Integer
     Inc     Result
-end;
 {$ENDIF}
+end;
 
 function Power2(const X: Extended): Extended;
 {$IFDEF PUREPASCAL}
 begin
   Result := Power(2, X);
-end;
 {$ELSE}
 {$IFDEF CPUx86_64}
-
 begin
   Result := Power(2, X);
-end;
 {$ELSE}
 asm
-  FLD     X
-  FLD     ST(0)         // i := Round(y);
-  FRNDINT
-  FSUB    ST(1), ST     // f := y - i;
-  FXCH    ST(1)         // z := 2**f
-  F2XM1
-  FLD1
-  FADDP
-  FSCALE                // Result := z * 2**i
-  FSTP    ST(1)
+    FLD     X
+    FLD     ST(0)         // i := Round(y);
+    FRNDINT
+    FSUB    ST(1), ST     // f := y - i;
+    FXCH    ST(1)         // z := 2**f
+    F2XM1
+    FLD1
+    FADDP
+    FSCALE                // Result := z * 2**i
+    FSTP    ST(1)
+{$ENDIF}
+{$ENDIF}
 end;
-{$ENDIF}
-{$ENDIF}
-// IsNan
 
+// IsNan
 function IsNan32(const Value: Single): Boolean;
 begin
   Result := ((PCardinal(@Value)^ and $7F800000) = $7F800000) and
@@ -1291,10 +1285,10 @@ end;
 
 procedure InitConstants;
 begin
-  ln2 := Ln(2);
-  ln22 := ln2 * 0.5;
-  ln2Rez := 1 / ln2;
-  ln10 := Ln(10);
+  CLn2 := Ln(2);
+  CLn2Half := CLn2 * 0.5;
+  CLn2Reciprocal := 1 / CLn2;
+  CLn10 := Ln(10);
   Randomize;
   GRandSeed := Random(MaxInt);
 end;

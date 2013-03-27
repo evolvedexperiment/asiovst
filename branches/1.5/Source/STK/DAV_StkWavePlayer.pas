@@ -52,8 +52,6 @@ type
     FStart: Single;
     FEnd: Single;
 
-    pfofs: Single;
-
     procedure SetOneShot(const Value: Boolean);
   protected
     FSize: Longint;
@@ -102,7 +100,6 @@ implementation
 constructor TStkWavePlayer.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
-  pfofs := 0;
   FSize := 0;
   FSampleData := nil;
   FLoopstart := 0;
@@ -169,7 +166,7 @@ var
   q: Single;
   s1, s2: psingle;
 begin
-  phase := pfofs + phase + (FFreq * FSampleRateInv);
+  phase := phase + (FFreq * FSampleRateInv);
   if FOneShot then
   begin
     FIsFinished := (phase >= 1);
