@@ -12,6 +12,7 @@ object FmEqGraphTest: TFmEqGraphTest
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignSize = (
     670
     506)
@@ -46,6 +47,8 @@ object FmEqGraphTest: TFmEqGraphTest
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     YAxis.Granularity = 6.000000000000000000
+    YAxis.MouseActions = []
+    Anchors = [akLeft, akTop, akBottom]
     Color = clBtnFace
     ParentColor = False
   end
@@ -78,7 +81,8 @@ object FmEqGraphTest: TFmEqGraphTest
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     YAxis.Granularity = 6.000000000000000000
-    Anchors = [akLeft, akBottom]
+    YAxis.MouseActions = []
+    Anchors = [akLeft, akRight, akBottom]
     Color = clBtnFace
     ParentColor = False
   end
@@ -111,7 +115,8 @@ object FmEqGraphTest: TFmEqGraphTest
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     YAxis.Granularity = 6.000000000000000000
-    Anchors = [akTop, akRight]
+    YAxis.MouseActions = []
+    Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clBtnFace
     ParentColor = False
   end
@@ -143,6 +148,7 @@ object FmEqGraphTest: TFmEqGraphTest
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     YAxis.Granularity = 6.000000000000000000
+    YAxis.MouseActions = []
     Anchors = [akRight, akBottom]
     Color = clBtnFace
     ParentColor = False

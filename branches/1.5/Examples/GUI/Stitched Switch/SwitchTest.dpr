@@ -9,7 +9,6 @@ uses
 
 begin
   Application.Initialize;
-  Application.MainFormOnTaskbar := True;
   Application.CreateForm(TFmSwitchTest, FmSwitchTest);
   Application.Run;
 end.

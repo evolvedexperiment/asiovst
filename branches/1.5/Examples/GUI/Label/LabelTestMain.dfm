@@ -125,6 +125,7 @@ object FmLabelTest: TFmLabelTest
     FontShadow.Saturation = 4.000000000000000000
     FontShadow.Visible = True
     Max = 8.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 4.000000000000000000
     ShowText = True
@@ -154,6 +155,7 @@ object FmLabelTest: TFmLabelTest
     FontShadow.Saturation = 4.000000000000000000
     FontShadow.Visible = True
     Max = 8.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 1.000000000000000000
     ShowText = True
@@ -183,6 +185,7 @@ object FmLabelTest: TFmLabelTest
     FontShadow.Saturation = 4.000000000000000000
     FontShadow.Visible = True
     Max = 255.000000000000000000
+    ReadOnly = False
     ParentColor = False
     Value = 255.000000000000000000
     ShowText = True
@@ -213,6 +216,7 @@ object FmLabelTest: TFmLabelTest
     FontShadow.Visible = True
     Max = 8.000000000000000000
     Min = -8.000000000000000000
+    ReadOnly = False
     ParentColor = False
     ShowText = True
     SlideColor = 5333094
