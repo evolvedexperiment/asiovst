@@ -24,12 +24,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVTVSTModule);
+  Result := VstModuleMain(AudioMasterCallback, TVTVSTModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TVTVSTModule);
+  Result := WinampDSPModuleHeader(TVTVSTModule);
 end;
 
 exports 

@@ -22,12 +22,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TLightweightUpwardCompressorDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TLightweightUpwardCompressorDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TLightweightUpwardCompressorDataModule);
+  Result := WinampDSPModuleHeader(TLightweightUpwardCompressorDataModule);
 end;
 
 exports

@@ -65,46 +65,47 @@ uses
 
 procedure TFmASIOVST.CBShortCircuitClick(Sender: TObject);
 begin
- with TASIOVSTModule(Owner) do
+  with TASIOVSTModule(Owner) do
   begin
-   if not CBShortCircuit.Checked
-    then AsioHost.OnBufferSwitch32 := AHBufferSwitch32
-    else AsioHost.OnBufferSwitch32 := AHShortCircuit;
+    if not CBShortCircuit.Checked then
+      AsioHost.OnBufferSwitch32 := AHBufferSwitch32
+    else
+      AsioHost.OnBufferSwitch32 := AHShortCircuit;
   end;
 end;
 
 procedure TFmASIOVST.CbASIOChange(Sender: TObject);
 begin
- with TASIOVSTModule(Owner) do
+  with TASIOVSTModule(Owner) do
   begin
-   Parameter[0] := CbASIO.ItemIndex;
-   DisplayASIOInformation;
+    Parameter[0] := CbASIO.ItemIndex;
+    DisplayASIOInformation;
   end;
 end;
 
 procedure TFmASIOVST.DisplayASIOInformation;
 begin
- with TASIOVSTModule(Owner), AsioHost, Memo do
+  with TASIOVSTModule(Owner), AsioHost, Memo do
   begin
-   Clear;
-   Lines.Add('Driver: ' + DriverName);
-   Lines.Add('Buffersize: ' + IntToStr(BufferSize));
-   Lines.Add('Latency: ' + IntToStr(InputLatency + OutputLatency + Integer(BufferSize)));
-   if OutputChannelCount > 0 then
+    Clear;
+    Lines.Add('Driver: ' + DriverName);
+    Lines.Add('Buffersize: ' + IntToStr(BufferSize));
+    Lines.Add('Latency: ' + IntToStr(InputLatency + OutputLatency + Integer(BufferSize)));
+    if OutputChannelCount > 0 then
     begin
-     Lines.Add('Channel 1: ' + OutputChannelInfos[0].name);
-     Lines.Add('Channel 2: ' + OutputChannelInfos[1].name);
-     Lines.Add('Format In 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
-     Lines.Add('Format In 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
-     Lines.Add('Format Out 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
-     Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
+      Lines.Add('Channel 1: ' + OutputChannelInfos[0].name);
+      Lines.Add('Channel 2: ' + OutputChannelInfos[1].name);
+      Lines.Add('Format In 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
+      Lines.Add('Format In 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
+      Lines.Add('Format Out 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
+      Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
     end;
   end;
 end;
 
 procedure TFmASIOVST.FormShow(Sender: TObject);
 begin
-  CbASIO.Items := FASIOHost.DriverList;
+  CbASIO.Items := TASIOVSTModule(Owner).ASIOHost.DriverList;
   DisplayASIOInformation;
 end;
 

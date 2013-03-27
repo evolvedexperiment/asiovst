@@ -18,12 +18,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVocInputDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TVocInputDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TVocInputDataModule);
+  Result := WinampDSPModuleHeader(TVocInputDataModule);
 end;
 
 exports 

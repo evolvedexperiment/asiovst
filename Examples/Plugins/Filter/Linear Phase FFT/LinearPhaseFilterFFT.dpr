@@ -19,12 +19,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TLinearPhaseFilterFFTDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TLinearPhaseFilterFFTDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TLinearPhaseFilterFFTDataModule);
+  Result := WinampDSPModuleHeader(TLinearPhaseFilterFFTDataModule);
 end;
 
 exports 

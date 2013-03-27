@@ -16,12 +16,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TOversampleTemplateDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TOversampleTemplateDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TOversampleTemplateDataModule);
+  Result := WinampDSPModuleHeader(TOversampleTemplateDataModule);
 end;
 
 exports 

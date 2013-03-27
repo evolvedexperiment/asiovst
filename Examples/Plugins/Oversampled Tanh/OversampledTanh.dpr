@@ -22,12 +22,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TOversampledTanhModule);
+  Result := VstModuleMain(AudioMasterCallback, TOversampledTanhModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TOversampledTanhModule);
+  Result := WinampDSPModuleHeader(TOversampledTanhModule);
 end;
 
 exports

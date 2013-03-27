@@ -19,12 +19,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TFirEQDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TFirEQDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TFirEQDataModule);
+  Result := WinampDSPModuleHeader(TFirEQDataModule);
 end;
 
 exports 

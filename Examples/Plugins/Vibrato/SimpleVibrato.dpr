@@ -20,12 +20,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSimpleVibratoModule);
+  Result := VstModuleMain(AudioMasterCallback, TSimpleVibratoModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSimpleVibratoModule);
+  Result := WinampDSPModuleHeader(TSimpleVibratoModule);
 end;
 
 exports

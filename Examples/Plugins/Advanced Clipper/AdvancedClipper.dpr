@@ -12,12 +12,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TAdvancedClipperDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TAdvancedClipperDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TAdvancedClipperDataModule);
+  Result := WinampDSPModuleHeader(TAdvancedClipperDataModule);
 end;
 
 exports

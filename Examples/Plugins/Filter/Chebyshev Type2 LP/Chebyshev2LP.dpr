@@ -22,12 +22,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TChebyshev2LPModule);
+  Result := VstModuleMain(AudioMasterCallback, TChebyshev2LPModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TChebyshev2LPModule);
+  Result := WinampDSPModuleHeader(TChebyshev2LPModule);
 end;
 
 exports

@@ -20,13 +20,13 @@ function BaxxpanderMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffe
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TBaxxpanderModule);
+  Result := VstModuleMain(AudioMasterCallback, TBaxxpanderModule);
  {$ELSE}
- Result := BaxxpanderMain(AudioMasterCallback);
+  Result := BaxxpanderMain(AudioMasterCallback);
  {$ENDIF}
- Result^.numInputs := 2;
- Result^.numOutputs := 2;
- Result^.UniqueID[0] := '2';
+  Result^.numInputs := 2;
+  Result^.numOutputs := 2;
+  Result^.UniqueID[0] := '2';
 end;
 
 exports 

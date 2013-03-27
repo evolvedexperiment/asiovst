@@ -27,12 +27,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSubBoostDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TSubBoostDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSubBoostDataModule);
+  Result := WinampDSPModuleHeader(TSubBoostDataModule);
 end;
 
 exports

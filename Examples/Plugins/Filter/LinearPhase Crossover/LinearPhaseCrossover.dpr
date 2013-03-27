@@ -21,12 +21,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TLinearPhaseCrossoverModule);
+  Result := VstModuleMain(AudioMasterCallback, TLinearPhaseCrossoverModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TLinearPhaseCrossoverModule);
+  Result := WinampDSPModuleHeader(TLinearPhaseCrossoverModule);
 end;
 
 exports 

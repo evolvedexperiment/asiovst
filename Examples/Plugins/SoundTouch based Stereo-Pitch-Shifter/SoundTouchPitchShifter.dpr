@@ -22,12 +22,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSoundTouchPitchShifterModule);
+  Result := VstModuleMain(AudioMasterCallback, TSoundTouchPitchShifterModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSoundTouchPitchShifterModule);
+  Result := WinampDSPModuleHeader(TSoundTouchPitchShifterModule);
 end;
 
 exports

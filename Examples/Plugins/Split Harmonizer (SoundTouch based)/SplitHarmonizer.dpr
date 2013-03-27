@@ -24,12 +24,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSplitHarmonizerModule);
+  Result := VstModuleMain(AudioMasterCallback, TSplitHarmonizerModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSplitHarmonizerModule);
+  Result := WinampDSPModuleHeader(TSplitHarmonizerModule);
 end;
 
 exports

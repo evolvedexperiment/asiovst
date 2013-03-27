@@ -20,12 +20,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TBarberpoleFlangerModule);
+  Result := VstModuleMain(AudioMasterCallback, TBarberpoleFlangerModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TBarberpoleFlangerModule);
+  Result := WinampDSPModuleHeader(TBarberpoleFlangerModule);
 end;
 
 exports

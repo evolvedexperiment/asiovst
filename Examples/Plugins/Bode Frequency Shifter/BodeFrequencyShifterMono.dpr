@@ -21,13 +21,13 @@ function BodeFrequencyShifterMain(AudioMasterCallback: TAudioMasterCallbackFunc)
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TBodeFrequencyShifterDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TBodeFrequencyShifterDataModule);
  {$ELSE}
- Result := BodeFrequencyShifterMain(AudioMasterCallback);
+  Result := BodeFrequencyShifterMain(AudioMasterCallback);
  {$ENDIF}
- Result^.numInputs := 1;
- Result^.numOutputs := 1;
- Result^.UniqueID[0] := '1';
+  Result^.numInputs := 1;
+  Result^.numOutputs := 1;
+  Result^.UniqueID[0] := '1';
 end;
 
 exports 

@@ -114,7 +114,9 @@ var
   Str: string;
   S, P: AnsiString;
   ContainedVSTPlugins: TStringList;
+{$IFDEF LoadFromResource}
   RS: TResourceStream;
+{$ENDIF}
 {$IFDEF LoadFromMemory}
   FileStream: TFileStream;
 {$ENDIF}
@@ -155,24 +157,24 @@ begin
         else
 {$ENDIF}
 
-          if not FileExists(DLLFileName) then
-          with TOpenDialog.Create(Self) do
-            try
-              DefaultExt := 'dll';
-              Filter := 'VST Plugin (*.dll)|*.dll';
-              Options := Options + [OfFileMustExist];
-              if Execute then
-                DLLFileName := FileName;
+        if not FileExists(DLLFileName) then
+        with TOpenDialog.Create(Self) do
+          try
+            DefaultExt := 'dll';
+            Filter := 'VST Plugin (*.dll)|*.dll';
+            Options := Options + [OfFileMustExist];
+            if Execute then
+              DLLFileName := FileName;
 
-              if not FileExists(DLLFileName) then
-              begin
-                Application.Terminate;
-                Exit;
-              end;
-
-            finally
-              Free;
+            if not FileExists(DLLFileName) then
+            begin
+              Application.Terminate;
+              Exit;
             end;
+
+          finally
+            Free;
+          end;
       finally
         FreeAndNil(ContainedVSTPlugins);
       end;

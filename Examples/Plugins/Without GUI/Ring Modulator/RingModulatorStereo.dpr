@@ -31,13 +31,13 @@ function RingModulatorMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTE
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TRingModulatorDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TRingModulatorDataModule);
  {$ELSE}
- Result := RingModulatorMain(AudioMasterCallback);
+  Result := RingModulatorMain(AudioMasterCallback);
  {$ENDIF}
- Result^.numInputs := 2;
- Result^.numOutputs := 2;
- Result^.UniqueID[0] := '2';
+  Result^.numInputs := 2;
+  Result^.numOutputs := 2;
+  Result^.UniqueID[0] := '2';
 end;
 
 exports 

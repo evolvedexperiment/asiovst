@@ -12,12 +12,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSchaebichefLPModule);
+  Result := VstModuleMain(AudioMasterCallback, TSchaebichefLPModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSchaebichefLPModule);
+  Result := WinampDSPModuleHeader(TSchaebichefLPModule);
 end;
 
 exports 

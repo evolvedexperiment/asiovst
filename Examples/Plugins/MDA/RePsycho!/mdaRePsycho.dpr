@@ -17,12 +17,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TRePsychoDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TRePsychoDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TRePsychoDataModule);
+  Result := WinampDSPModuleHeader(TRePsychoDataModule);
 end;
 
 exports 

@@ -25,12 +25,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TFrequencyDomainPitchShifterModule);
+  Result := VstModuleMain(AudioMasterCallback, TFrequencyDomainPitchShifterModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TFrequencyDomainPitchShifterModule);
+  Result := WinampDSPModuleHeader(TFrequencyDomainPitchShifterModule);
 end;
 
 exports

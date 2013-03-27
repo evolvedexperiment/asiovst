@@ -6,13 +6,7 @@ library ASIOVST;
 uses
   FastMM4, // either download the library or comment if there is an error here
   {$IFDEF UseFastMove}
-  FastMove, // either download the library or comment if there is an error here
-  {$ENDIF}
-  {$IFDEF UseMadExcept}
-  madExcept, // either download madExcept or remove mad* if there is an error here
-  madLinkDisAsm,
-  madListProcesses,
-  madListModules,
+  FastMove,
   {$ENDIF}
   DAV_WinAmp,
   DAV_VSTEffect,
@@ -22,12 +16,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TASIOVSTModule);
+  Result := VstModuleMain(AudioMasterCallback, TASIOVSTModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TASIOVSTModule);
+  Result := WinampDSPModuleHeader(TASIOVSTModule);
 end;
 
 exports

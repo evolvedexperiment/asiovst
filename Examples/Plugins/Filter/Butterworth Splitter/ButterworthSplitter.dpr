@@ -19,12 +19,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TButterworthSplitterModule);
+  Result := VstModuleMain(AudioMasterCallback, TButterworthSplitterModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TButterworthSplitterModule);
+  Result := WinampDSPModuleHeader(TButterworthSplitterModule);
 end;
 
 exports 
