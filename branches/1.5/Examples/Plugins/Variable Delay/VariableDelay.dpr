@@ -22,12 +22,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVariableDelayVST);
+  Result := VstModuleMain(AudioMasterCallback, TVariableDelayVST);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TVariableDelayVST);
+  Result := WinampDSPModuleHeader(TVariableDelayVST);
 end;
 
 exports

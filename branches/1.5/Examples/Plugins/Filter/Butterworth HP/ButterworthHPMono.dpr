@@ -29,13 +29,13 @@ function ButterworthHPMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTE
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TButterworthHPModule);
+  Result := VstModuleMain(AudioMasterCallback, TButterworthHPModule);
  {$ELSE}
- Result := ButterworthHPMain(AudioMasterCallback);
+  Result := ButterworthHPMain(AudioMasterCallback);
  {$ENDIF}
- Result^.numInputs := 1;
- Result^.numOutputs := 1;
- Result^.UniqueID[0] := '1';
+  Result^.numInputs := 1;
+  Result^.numOutputs := 1;
+  Result^.UniqueID[0] := '1';
 end;
 
 exports 

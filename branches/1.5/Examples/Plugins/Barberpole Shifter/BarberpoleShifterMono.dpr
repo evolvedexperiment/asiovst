@@ -23,13 +23,13 @@ function BarberpoleShifterMain(AudioMasterCallback: TAudioMasterCallbackFunc): P
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TBarberpoleShifterDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TBarberpoleShifterDataModule);
  {$ELSE}
- Result := BarberpoleShifterMain(AudioMasterCallback);
+  Result := BarberpoleShifterMain(AudioMasterCallback);
  {$ENDIF}
- Result^.numInputs := 1;
- Result^.numOutputs := 1;
- Result^.UniqueID[0] := '1';
+  Result^.numInputs := 1;
+  Result^.numOutputs := 1;
+  Result^.UniqueID[0] := '1';
 end;
 
 exports 

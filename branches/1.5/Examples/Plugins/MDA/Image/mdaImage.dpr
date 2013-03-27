@@ -9,12 +9,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TImageDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TImageDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TImageDataModule);
+  Result := WinampDSPModuleHeader(TImageDataModule);
 end;
 
 exports 

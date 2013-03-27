@@ -20,12 +20,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TLA1701DataModule);
+  Result := VstModuleMain(AudioMasterCallback, TLA1701DataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TLA1701DataModule);
+  Result := WinampDSPModuleHeader(TLA1701DataModule);
 end;
 
 exports

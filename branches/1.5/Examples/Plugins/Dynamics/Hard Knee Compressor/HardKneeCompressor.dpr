@@ -22,12 +22,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, THardKneeCompressorDataModule);
+  Result := VstModuleMain(AudioMasterCallback, THardKneeCompressorDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(THardKneeCompressorDataModule);
+  Result := WinampDSPModuleHeader(THardKneeCompressorDataModule);
 end;
 
 exports

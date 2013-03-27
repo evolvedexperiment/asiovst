@@ -14,7 +14,7 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TPhaserModule);
+  Result := VstModuleMain(AudioMasterCallback, TPhaserModule);
 end;
 
 exports

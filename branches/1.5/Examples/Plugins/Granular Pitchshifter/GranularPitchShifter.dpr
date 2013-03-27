@@ -20,12 +20,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TGranularPitchShifterModule);
+  Result := VstModuleMain(AudioMasterCallback, TGranularPitchShifterModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TGranularPitchShifterModule);
+  Result := WinampDSPModuleHeader(TGranularPitchShifterModule);
 end;
 
 exports

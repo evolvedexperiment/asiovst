@@ -24,12 +24,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSmoothMultibandCompressorDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TSmoothMultibandCompressorDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSmoothMultibandCompressorDataModule);
+  Result := WinampDSPModuleHeader(TSmoothMultibandCompressorDataModule);
 end;
 
 exports

@@ -14,12 +14,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TLinearPhaseFromIIRDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TLinearPhaseFromIIRDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TLinearPhaseFromIIRDataModule);
+  Result := WinampDSPModuleHeader(TLinearPhaseFromIIRDataModule);
 end;
 
 exports 

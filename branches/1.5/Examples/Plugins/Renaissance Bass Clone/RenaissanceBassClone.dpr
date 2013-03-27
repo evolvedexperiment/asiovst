@@ -20,12 +20,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TResurrectionBassCloneModule);
+  Result := VstModuleMain(AudioMasterCallback, TResurrectionBassCloneModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TResurrectionBassCloneModule);
+  Result := WinampDSPModuleHeader(TResurrectionBassCloneModule);
 end;
 
 exports

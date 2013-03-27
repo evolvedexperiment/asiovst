@@ -54,14 +54,14 @@ type
     procedure ParameterAccuracyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterAccuracyChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FASIOHost        : TASIOHost;
-    FInBuffer        : array of PDavSingleFixedArray;
-    FOutBuffer       : array of PDavSingleFixedArray;
-    FIntBufSize      : Integer;
-    FIntWritePos     : Integer;
-    FIntReadPos      : Integer;
-    FNrOfBuffers     : Integer;
-    FBufferUnderruns : Integer;
+    FASIOHost: TASIOHost;
+    FInBuffer: array of PDavSingleFixedArray;
+    FOutBuffer: array of PDavSingleFixedArray;
+    FIntBufSize: Integer;
+    FIntWritePos: Integer;
+    FIntReadPos: Integer;
+    FNrOfBuffers: Integer;
+    FBufferUnderruns: Integer;
     procedure AHLatencyChanged(Sender: TObject);
     procedure InternalBufferSizeChanged;
   public

@@ -15,12 +15,12 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TPlugInPlugModule);
+  Result := VstModuleMain(AudioMasterCallback, TPlugInPlugModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TPlugInPlugModule);
+  Result := WinampDSPModuleHeader(TPlugInPlugModule);
 end;
 
 exports

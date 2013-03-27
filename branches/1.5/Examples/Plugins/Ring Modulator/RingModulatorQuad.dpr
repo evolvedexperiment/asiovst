@@ -24,13 +24,13 @@ function RingModulatorMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTE
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TRingModulatorDataModule);
+  Result := VstModuleMain(AudioMasterCallback, TRingModulatorDataModule);
  {$ELSE}
- Result := RingModulatorMain(AudioMasterCallback);
+  Result := RingModulatorMain(AudioMasterCallback);
  {$ENDIF}
- Result^.numInputs := 4;
- Result^.numOutputs := 4;
- Result^.UniqueID[0] := '4';
+  Result^.numInputs := 4;
+  Result^.numOutputs := 4;
+  Result^.UniqueID[0] := '4';
 end;
 
 exports 

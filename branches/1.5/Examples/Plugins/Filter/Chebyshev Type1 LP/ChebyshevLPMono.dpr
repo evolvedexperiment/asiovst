@@ -29,13 +29,13 @@ function ChebyshevLPMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEff
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TChebyshevLPModule);
+  Result := VstModuleMain(AudioMasterCallback, TChebyshevLPModule);
  {$ELSE}
- Result := ChebyshevLPMain(AudioMasterCallback);
+  Result := ChebyshevLPMain(AudioMasterCallback);
  {$ENDIF}
- Result^.numInputs := 1;
- Result^.numOutputs := 1;
- Result^.UniqueID[0] := '1';
+  Result^.numInputs := 1;
+  Result^.numOutputs := 1;
+  Result^.UniqueID[0] := '1';
 end;
 
 exports 
