@@ -3,6 +3,11 @@ program ASIODemo;
 {$I DAV_Compiler.inc}
 
 uses
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
 {$IFDEF CPU32}
 (*
   FastMM4,  // either download the library or comment if there is an error here

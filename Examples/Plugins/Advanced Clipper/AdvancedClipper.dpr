@@ -4,6 +4,8 @@ library AdvancedClipper;
 {$I DAV_Compiler.inc}
 
 uses
+  madExcept,
+  madLinkDisAsm,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

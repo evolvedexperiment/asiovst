@@ -56,7 +56,6 @@ object FmRecordAudio: TFmRecordAudio
     Top = 7
     Width = 273
     Height = 21
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -76,7 +75,6 @@ object FmRecordAudio: TFmRecordAudio
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end

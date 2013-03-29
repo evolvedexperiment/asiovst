@@ -140,7 +140,6 @@ object Player: TPlayer
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      ItemHeight = 14
       ItemIndex = 1
       ParentCtl3D = False
       ParentFont = False
@@ -288,7 +287,6 @@ object Player: TPlayer
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      ItemHeight = 14
       ItemIndex = 1
       ParentCtl3D = False
       ParentFont = False
@@ -403,7 +401,6 @@ object Player: TPlayer
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
-      ItemHeight = 14
       ItemIndex = 0
       ParentFont = False
       TabOrder = 4

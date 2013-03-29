@@ -1,34 +1,34 @@
-unit LunchBoxEventList;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2006-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit LunchBoxEventList;
 
 interface
 
@@ -44,12 +44,14 @@ type
     FCount: Integer;
     FCapacity: Integer;
     FOwnsObjects: Boolean;
-    function FindInstanceOf(AClass: TClass; AExact: Boolean; AStartAt: Integer): Integer;
+    function FindInstanceOf(AClass: TClass; AExact: Boolean;
+      AStartAt: Integer): Integer;
   protected
     function Get(Index: Integer): TLunchBoxSample;
     procedure Grow; virtual;
     procedure Put(Index: Integer; SimpleSamplerVoice: TLunchBoxSample);
-    procedure Notify(SimpleSamplerVoice: TLunchBoxSample; Action: TListNotification); virtual;
+    procedure Notify(SimpleSamplerVoice: TLunchBoxSample;
+      Action: TListNotification); virtual;
     procedure SetCapacity(NewCapacity: Integer);
     procedure SetCount(NewCount: Integer);
   public
@@ -72,9 +74,10 @@ type
     function Remove(SimpleSamplerVoice: TLunchBoxSample): Integer;
     procedure Pack;
     procedure Sort(Compare: TListSortCompare);
-    {$IFNDEF FPC}
-    procedure Assign(ListA: TLunchBoxEventList; AOperator: TListAssignOp = laCopy; ListB: TLunchBoxEventList = nil);
-    {$ENDIF}
+{$IFNDEF FPC}
+    procedure Assign(ListA: TLunchBoxEventList;
+      AOperator: TListAssignOp = laCopy; ListB: TLunchBoxEventList = nil);
+{$ENDIF}
     property Capacity: Integer read FCapacity write SetCapacity;
     property Count: Integer read FCount write SetCount;
     property Items[Index: Integer]: TLunchBoxSample read Get write Put; default;
@@ -88,29 +91,31 @@ implementation
 
 constructor TLunchBoxEventList.Create;
 begin
- inherited Create;
- FOwnsObjects := True;
+  inherited Create;
+  FOwnsObjects := True;
 end;
 
 constructor TLunchBoxEventList.Create(AOwnsObjects: Boolean);
 begin
- inherited Create;
- FOwnsObjects := AOwnsObjects;
+  inherited Create;
+  FOwnsObjects := AOwnsObjects;
 end;
 
 destructor TLunchBoxEventList.Destroy;
 begin
- inherited Destroy;
- Clear;
+  inherited Destroy;
+  Clear;
 end;
 
 function TLunchBoxEventList.Add(SimpleSamplerVoice: TLunchBoxSample): Integer;
 begin
- Result := FCount;
- if Result = FCapacity then Grow;
- FList^[Result] := SimpleSamplerVoice;
- Inc(FCount);
- if SimpleSamplerVoice <> nil then Notify(SimpleSamplerVoice, lnAdded);
+  Result := FCount;
+  if Result = FCapacity then
+    Grow;
+  FList^[Result] := SimpleSamplerVoice;
+  Inc(FCount);
+  if SimpleSamplerVoice <> nil then
+    Notify(SimpleSamplerVoice, lnAdded);
 end;
 
 procedure TLunchBoxEventList.Clear;
@@ -120,7 +125,8 @@ begin
 end;
 
 procedure TLunchBoxEventList.Delete(Index: Integer);
-var Temp: TLunchBoxSample;
+var
+  Temp: TLunchBoxSample;
 begin
   if (Index < 0) or (Index >= FCount) then
     Error(@SListIndexError, Index);
@@ -137,12 +143,12 @@ class procedure TLunchBoxEventList.Error(const Msg: string; Data: Integer);
 
   function ReturnAddr: Pointer;
   asm
-          MOV     EAX,[EBP+4]
+    MOV     EAX,[EBP+4]
   end;
 
-begin
-  raise EListError.CreateFmt(Msg, [Data]) at ReturnAddr;
-end;
+  begin
+    raise EListError.CreateFmt(Msg, [Data])at ReturnAddr;
+  end;
 
 class procedure TLunchBoxEventList.Error(Msg: PResStringRec; Data: Integer);
 begin
@@ -164,8 +170,9 @@ end;
 
 function TLunchBoxEventList.Expand: TLunchBoxEventList;
 begin
- if FCount = FCapacity then Grow;
- Result := Self;
+  if FCount = FCapacity then
+    Grow;
+  Result := Self;
 end;
 
 function TLunchBoxEventList.First: TLunchBoxSample;
@@ -175,112 +182,131 @@ end;
 
 function TLunchBoxEventList.Get(Index: Integer): TLunchBoxSample;
 begin
- if (Index < 0) or (Index >= FCount)
-  then Error(@SListIndexError, Index);
- Result := FList^[Index];
+  if (Index < 0) or (Index >= FCount) then
+    Error(@SListIndexError, Index);
+  Result := FList^[Index];
 end;
 
 procedure TLunchBoxEventList.Grow;
-var Delta: Integer;
+var
+  Delta: Integer;
 begin
- if FCapacity > 64
-  then Delta := FCapacity div 4
-  else if FCapacity > 8 then Delta := 16 else Delta := 4;
- SetCapacity(FCapacity + Delta);
+  if FCapacity > 64 then
+    Delta := FCapacity div 4
+  else if FCapacity > 8 then
+    Delta := 16
+  else
+    Delta := 4;
+  SetCapacity(FCapacity + Delta);
 end;
 
-function TLunchBoxEventList.IndexOf(SimpleSamplerVoice: TLunchBoxSample): Integer;
+function TLunchBoxEventList.IndexOf(SimpleSamplerVoice
+  : TLunchBoxSample): Integer;
 begin
- Result := 0;
- while (Result < FCount) and (FList^[Result] <> SimpleSamplerVoice)
-  do Inc(Result);
- if Result = FCount
-  then Result := -1;
+  Result := 0;
+  while (Result < FCount) and (FList^[Result] <> SimpleSamplerVoice) do
+    Inc(Result);
+  if Result = FCount then
+    Result := -1;
 end;
 
-procedure TLunchBoxEventList.Insert(Index: Integer; SimpleSamplerVoice: TLunchBoxSample);
+procedure TLunchBoxEventList.Insert(Index: Integer;
+  SimpleSamplerVoice: TLunchBoxSample);
 begin
- if (Index < 0) or (Index > FCount)
-  then Error(@SListIndexError, Index);
- if FCount = FCapacity
-  then Grow;
- if Index < FCount
-  then System.Move(FList^[Index], FList^[Index + 1], (FCount - Index) * SizeOf(Pointer));
- FList^[Index] := SimpleSamplerVoice;
- Inc(FCount);
- if SimpleSamplerVoice <> nil
-  then Notify(SimpleSamplerVoice, lnAdded);
+  if (Index < 0) or (Index > FCount) then
+    Error(@SListIndexError, Index);
+  if FCount = FCapacity then
+    Grow;
+  if Index < FCount then
+    System.Move(FList^[Index], FList^[Index + 1],
+      (FCount - Index) * SizeOf(Pointer));
+  FList^[Index] := SimpleSamplerVoice;
+  Inc(FCount);
+  if SimpleSamplerVoice <> nil then
+    Notify(SimpleSamplerVoice, lnAdded);
 end;
 
 function TLunchBoxEventList.Last: TLunchBoxSample;
 begin
- Result := Get(FCount - 1);
+  Result := Get(FCount - 1);
 end;
 
 procedure TLunchBoxEventList.Move(CurIndex, NewIndex: Integer);
-var Item: Pointer;
+var
+  Item: Pointer;
 begin
- if CurIndex <> NewIndex then
+  if CurIndex <> NewIndex then
   begin
-   if (NewIndex < 0) or (NewIndex >= FCount)
-    then Error(@SListIndexError, NewIndex);
-   Item := Get(CurIndex);
-   FList^[CurIndex] := nil;
-   Delete(CurIndex);
-   Insert(NewIndex, nil);
-   FList^[NewIndex] := Item;
+    if (NewIndex < 0) or (NewIndex >= FCount) then
+      Error(@SListIndexError, NewIndex);
+    Item := Get(CurIndex);
+    FList^[CurIndex] := nil;
+    Delete(CurIndex);
+    Insert(NewIndex, nil);
+    FList^[NewIndex] := Item;
   end;
 end;
 
-procedure TLunchBoxEventList.Put(Index: Integer; SimpleSamplerVoice: TLunchBoxSample);
-var Temp: Pointer;
+procedure TLunchBoxEventList.Put(Index: Integer;
+  SimpleSamplerVoice: TLunchBoxSample);
+var
+  Temp: Pointer;
 begin
- if (Index < 0) or (Index >= FCount)
-  then Error(@SListIndexError, Index);
- if SimpleSamplerVoice <> FList^[Index] then
+  if (Index < 0) or (Index >= FCount) then
+    Error(@SListIndexError, Index);
+  if SimpleSamplerVoice <> FList^[Index] then
   begin
-   Temp := FList^[Index];
-   FList^[Index] := SimpleSamplerVoice;
-   if Temp <> nil then Notify(Temp, lnDeleted);
-   if SimpleSamplerVoice <> nil then Notify(SimpleSamplerVoice, lnAdded);
+    Temp := FList^[Index];
+    FList^[Index] := SimpleSamplerVoice;
+    if Temp <> nil then
+      Notify(Temp, lnDeleted);
+    if SimpleSamplerVoice <> nil then
+      Notify(SimpleSamplerVoice, lnAdded);
   end;
 end;
 
-function TLunchBoxEventList.Remove(SimpleSamplerVoice: TLunchBoxSample): Integer;
+function TLunchBoxEventList.Remove(SimpleSamplerVoice: TLunchBoxSample)
+  : Integer;
 begin
- Result := IndexOf(SimpleSamplerVoice);
- if Result >= 0 then Delete(Result);
+  Result := IndexOf(SimpleSamplerVoice);
+  if Result >= 0 then
+    Delete(Result);
 end;
 
 procedure TLunchBoxEventList.Pack;
-var I: Integer;
+var
+  I: Integer;
 begin
- for I := FCount - 1 downto 0 do
-  if Items[I] = nil
-   then Delete(I);
+  for I := FCount - 1 downto 0 do
+    if Items[I] = nil then
+      Delete(I);
 end;
 
 procedure TLunchBoxEventList.SetCapacity(NewCapacity: Integer);
 begin
- if (NewCapacity < FCount) or (NewCapacity > MaxListSize)
-  then Error(@SListCapacityError, NewCapacity);
- if NewCapacity <> FCapacity then
+  if (NewCapacity < FCount) or (NewCapacity > MaxListSize) then
+    Error(@SListCapacityError, NewCapacity);
+  if NewCapacity <> FCapacity then
   begin
-   ReallocMem(FList, NewCapacity * SizeOf(Pointer));
-   FCapacity := NewCapacity;
+    ReallocMem(FList, NewCapacity * SizeOf(Pointer));
+    FCapacity := NewCapacity;
   end;
 end;
 
 procedure TLunchBoxEventList.SetCount(NewCount: Integer);
-var I: Integer;
+var
+  I: Integer;
 begin
- if (NewCount < 0) or (NewCount > MaxListSize)
-  then Error(@SListCountError, NewCount);
- if NewCount > FCapacity then SetCapacity(NewCount);
- if NewCount > FCount
-  then FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
-  else for I := FCount - 1 downto NewCount do Delete(I);
- FCount := NewCount;
+  if (NewCount < 0) or (NewCount > MaxListSize) then
+    Error(@SListCountError, NewCount);
+  if NewCount > FCapacity then
+    SetCapacity(NewCount);
+  if NewCount > FCount then
+    FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
+  else
+    for I := FCount - 1 downto NewCount do
+      Delete(I);
+  FCount := NewCount;
 end;
 
 procedure QuickSort(SorTLunchBoxEventList: PPointerList; L, R: Integer;
@@ -289,67 +315,79 @@ var
   I, J: Integer;
   P, T: Pointer;
 begin
- repeat
-  I := L;
-  J := R;
-  P := SorTLunchBoxEventList^[(L + R) shr 1];
   repeat
-   while SCompare(SorTLunchBoxEventList^[I], P) < 0 do Inc(I);
-   while SCompare(SorTLunchBoxEventList^[J], P) > 0 do Dec(J);
-   if I <= J then
-    begin
-     T := SorTLunchBoxEventList^[I];
-     SorTLunchBoxEventList^[I] := SorTLunchBoxEventList^[J];
-     SorTLunchBoxEventList^[J] := T;
-     Inc(I);
-     Dec(J);
-    end;
-  until I > J;
-  if L < J then QuickSort(SorTLunchBoxEventList, L, J, SCompare);
-  L := I;
- until I >= R;
+    I := L;
+    J := R;
+    P := SorTLunchBoxEventList^[(L + R) shr 1];
+    repeat
+      while SCompare(SorTLunchBoxEventList^[I], P) < 0 do
+        Inc(I);
+      while SCompare(SorTLunchBoxEventList^[J], P) > 0 do
+        Dec(J);
+      if I <= J then
+      begin
+        T := SorTLunchBoxEventList^[I];
+        SorTLunchBoxEventList^[I] := SorTLunchBoxEventList^[J];
+        SorTLunchBoxEventList^[J] := T;
+        Inc(I);
+        Dec(J);
+      end;
+    until I > J;
+    if L < J then
+      QuickSort(SorTLunchBoxEventList, L, J, SCompare);
+    L := I;
+  until I >= R;
 end;
 
 procedure TLunchBoxEventList.Sort(Compare: TListSortCompare);
 begin
- if (FList <> nil) and (Count > 0) then QuickSort(FList, 0, Count - 1, Compare);
+  if (FList <> nil) and (Count > 0) then
+    QuickSort(FList, 0, Count - 1, Compare);
 end;
 
-function TLunchBoxEventList.Extract(SimpleSamplerVoice: TLunchBoxSample): TLunchBoxSample;
-var I: Integer;
+function TLunchBoxEventList.Extract(SimpleSamplerVoice: TLunchBoxSample)
+  : TLunchBoxSample;
+var
+  I: Integer;
 begin
- Result := nil;
- I := IndexOf(SimpleSamplerVoice);
- if I >= 0 then
+  Result := nil;
+  I := IndexOf(SimpleSamplerVoice);
+  if I >= 0 then
   begin
-   Result := SimpleSamplerVoice;
-   FList^[I] := nil;
-   Delete(I);
-   Notify(Result, lnExtracted);
+    Result := SimpleSamplerVoice;
+    FList^[I] := nil;
+    Delete(I);
+    Notify(Result, lnExtracted);
   end;
 end;
 
-procedure TLunchBoxEventList.Notify(SimpleSamplerVoice: TLunchBoxSample; Action: TListNotification);
+procedure TLunchBoxEventList.Notify(SimpleSamplerVoice: TLunchBoxSample;
+  Action: TListNotification);
 begin
- if OwnsObjects then if Action = lnDeleted then SimpleSamplerVoice.Free;
+  if OwnsObjects then
+    if Action = lnDeleted then
+      SimpleSamplerVoice.Free;
 end;
 
 {$IFNDEF FPC}
-procedure TLunchBoxEventList.Assign(ListA: TLunchBoxEventList; AOperator: TListAssignOp; ListB: TLunchBoxEventList);
+
+procedure TLunchBoxEventList.Assign(ListA: TLunchBoxEventList;
+  AOperator: TListAssignOp; ListB: TLunchBoxEventList);
 var
   I: Integer;
   LTemp, LSource: TLunchBoxEventList;
 begin
- // ListB given?
- if ListB <> nil then
+  // ListB given?
+  if ListB <> nil then
   begin
-   LSource := ListB;
-   Assign(ListA);
+    LSource := ListB;
+    Assign(ListA);
   end
- else LSource := ListA;
+  else
+    LSource := ListA;
 
- // on with the show
- case AOperator of
+  // on with the show
+  case AOperator of
 
     // 12345, 346 = 346 : only those in the new list
     laCopy:
@@ -375,7 +413,8 @@ begin
     // 12345, 346 = 1256 : only those not in both lists
     laXor:
       begin
-        LTemp := TLunchBoxEventList.Create(False); // Temp holder of 4 byte values
+        LTemp := TLunchBoxEventList.Create(False);
+        // Temp holder of 4 byte values
         try
           LTemp.Capacity := LSource.Count;
           for I := 0 to LSource.Count - 1 do
@@ -420,16 +459,16 @@ end;
 
 function TLunchBoxEventList.FindInstanceOf(AClass: TClass; AExact: Boolean;
   AStartAt: Integer): Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
- Result := -1;
- for I := AStartAt to Count - 1 do
-  if (AExact and (Items[I].ClassType = AClass)) or
-     (not AExact and Items[I].InheritsFrom(AClass))
-   then
+  Result := -1;
+  for I := AStartAt to Count - 1 do
+    if (AExact and (Items[I].ClassType = AClass)) or
+      (not AExact and Items[I].InheritsFrom(AClass)) then
     begin
-     Result := I;
-     break;
+      Result := I;
+      break;
     end;
 end;
 

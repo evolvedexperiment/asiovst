@@ -158,10 +158,10 @@ begin
    MIPanicClick(nil);
    if (MidiBox.ItemIndex >= 0) and (MidiBox.Items.Count > 0) then
     begin
-     MidiFile.Filename := pshortstr(MidiBox.Items.Objects[MidiBox.ItemIndex])^;
+     MidiFile.Filename := PShortStr(MidiBox.Items.Objects[MidiBox.ItemIndex])^;
      LbMidiFile.Caption := MidiBox.Items[MidiBox.ItemIndex];
      MidiFile.ReadFile;
-     SbTempo.position := MidiFile.Bpm;
+     SbTempo.Position := MidiFile.Bpm;
      MidiFile.StartPlaying;
      MidiPlaying := True;
     end;

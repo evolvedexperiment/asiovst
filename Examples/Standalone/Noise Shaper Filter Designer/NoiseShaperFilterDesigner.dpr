@@ -2,6 +2,10 @@ program NoiseShaperFilterDesigner;
 
 uses
   FastMM4,
+  madExcept,
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
   FastMove,
   Forms,
   NSFDmain in 'NSFDmain.pas' {FmNoiseshapingFilterDesigner};

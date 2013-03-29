@@ -34,7 +34,7 @@ object FmASIO: TFmASIO
   object LbCopyright: TLabel
     Left = 87
     Top = 202
-    Width = 262
+    Width = 259
     Height = 13
     Caption = '(C)opyright in 2004-2013 by Delphi ASIO && VST Project'
   end

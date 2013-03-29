@@ -238,7 +238,7 @@ type
     procedure MidiData(const aDeviceIndex: Integer; const aStatus, aData1, aData2: byte);
     procedure MIDIInChange(Sender: TObject);
     procedure MIDIOutChange(Sender: TObject);
-    procedure MyMidiEvent(Event: PMidiEvent);
+    procedure MyMidiEvent(Event: TVstEvent);
     procedure ProcessEvents(Sender: TObject; ev: PVstEvents);
     procedure ProcessNoteOnOff(ch, n, v: byte);
     procedure SetChannel(Sender: TObject);
@@ -1645,7 +1645,7 @@ begin
  VSTHost[0].CurrentProgram := (Sender as TMenuItem).Tag;
 end;
 
-procedure TFmMiniHost.MyMidiEvent(Event: PMidiEvent);
+procedure TFmMiniHost.MyMidiEvent(var Event: TVstEvent);
 begin
  with Event^ do
   if (Event and $F0) = $90 then NoteOn(Event, data1, data2) else

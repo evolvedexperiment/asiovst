@@ -34,12 +34,12 @@ object FmASIO: TFmASIO
     ParentFont = False
   end
   object LbCopyright: TLabel
-    Left = 87
+    Left = 91
     Top = 134
     Width = 262
     Height = 13
     Anchors = [akLeft, akBottom]
-    Caption = '(C)opyright in 2004-2009 by  Delphi ASIO && VST Project'
+    Caption = '(C)opyright in 2003-2013 by  Delphi ASIO && VST Project'
   end
   object LbVolume: TLabel
     Left = 8

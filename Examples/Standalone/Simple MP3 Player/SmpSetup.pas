@@ -1,34 +1,34 @@
-unit SmpSetup;
+{******************************************************************************}
+{                                                                              }
+{  Version: MPL 1.1 or LGPL 2.1 with linking exception                         }
+{                                                                              }
+{  The contents of this file are subject to the Mozilla Public License         }
+{  Version 1.1 (the "License"); you may not use this file except in            }
+{  compliance with the License. You may obtain a copy of the License at        }
+{  http://www.mozilla.org/MPL/                                                 }
+{                                                                              }
+{  Software distributed under the License is distributed on an "AS IS"         }
+{  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the     }
+{  License for the specific language governing rights and limitations under    }
+{  the License.                                                                }
+{                                                                              }
+{  Alternatively, the contents of this file may be used under the terms of     }
+{  the Free Pascal modified version of the GNU Lesser General Public           }
+{  License Version 2.1 (the "FPC modified LGPL License"), in which case the    }
+{  provisions of this license are applicable instead of those above.           }
+{  Please see the file LICENSE.txt for additional information concerning       }
+{  this license.                                                               }
+{                                                                              }
+{  The code is part of the Delphi ASIO & VST Project                           }
+{                                                                              }
+{  The initial developer of this code is Christian-W. Budde                    }
+{                                                                              }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
+{  by Christian-W. Budde. All Rights Reserved.                                 }
+{                                                                              }
+{******************************************************************************}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
-//                                                                            //
-//  The contents of this file are subject to the Mozilla Public License       //
-//  Version 1.1 (the "License"); you may not use this file except in          //
-//  compliance with the License. You may obtain a copy of the License at      //
-//  http://www.mozilla.org/MPL/                                               //
-//                                                                            //
-//  Software distributed under the License is distributed on an "AS IS"       //
-//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
-//  License for the specific language governing rights and limitations under  //
-//  the License.                                                              //
-//                                                                            //
-//  Alternatively, the contents of this file may be used under the terms of   //
-//  the Free Pascal modified version of the GNU Lesser General Public         //
-//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
-//  provisions of this license are applicable instead of those above.         //
-//  Please see the file LICENSE.txt for additional information concerning     //
-//  this license.                                                             //
-//                                                                            //
-//  The code is part of the Delphi ASIO & VST Project                         //
-//                                                                            //
-//  The initial developer of this code is Christian-W. Budde                  //
-//                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2012        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+unit SmpSetup;
 
 interface
 
@@ -57,93 +57,89 @@ var
 
 implementation
 
-uses
-  IniFiles, Dialogs, SmpMain;
-
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
 {$ENDIF}
+
+uses
+  IniFiles, Dialogs, SmpMain;
 
 resourcestring
   RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
 
 procedure TFmSetup.FormCreate(Sender: TObject);
 begin
- CBDrivers.Items := FmSimpleMp3Player.ASIOHost.DriverList;
- if CBDrivers.Items.Count = 0 then
+  CBDrivers.Items := FmSimpleMp3Player.ASIOHost.DriverList;
+  if CBDrivers.Items.Count = 0 then
   begin
-   MessageDlg(RCStrNoASIODriverPresent, mtError, [mbOK], 0);
-   Application.Terminate;
+    MessageDlg(RCStrNoASIODriverPresent, mtError, [mbOK], 0);
+    Application.Terminate;
   end;
 
- with TIniFile.Create(FmSimpleMp3Player.IniFile) do
-  try
-   Top := ReadInteger('Layout', 'Setup Top', Top);
-   Left := ReadInteger('Layout', 'Setup Left', Left);
-   CBDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver', CBDrivers.ItemIndex);
-   CBDriversChange(Self);
-  finally
-   Free;
-  end;
+  with TIniFile.Create(FmSimpleMp3Player.IniFile) do
+    try
+      Top := ReadInteger('Layout', 'Setup Top', Top);
+      Left := ReadInteger('Layout', 'Setup Left', Left);
+      CBDrivers.ItemIndex := ReadInteger('Setup', 'ASIO Driver',
+        CBDrivers.ItemIndex);
+      CBDriversChange(Self);
+    finally
+      Free;
+    end;
 end;
 
 procedure TFmSetup.FormDestroy(Sender: TObject);
 begin
- with TIniFile.Create(FmSimpleMp3Player.IniFile) do
-  try
-   WriteInteger('Layout', 'Setup Top', Top);
-   WriteInteger('Layout', 'Setup Left', Left);
-   WriteInteger('Setup', 'ASIO Driver', CBDrivers.ItemIndex);
-  finally
-   Free;
-  end;
+  with TIniFile.Create(FmSimpleMp3Player.IniFile) do
+    try
+      WriteInteger('Layout', 'Setup Top', Top);
+      WriteInteger('Layout', 'Setup Left', Left);
+      WriteInteger('Setup', 'ASIO Driver', CBDrivers.ItemIndex);
+    finally
+      Free;
+    end;
 end;
 
 procedure TFmSetup.CBDriversChange(Sender: TObject);
 var
-  i : Integer;
+  i: Integer;
 begin
- with FmSimpleMp3Player.ASIOHost do
-  if CBDrivers.ItemIndex >= 0 then
-   begin
-    Active := False;
-    DriverIndex := CBDrivers.ItemIndex;
-    CBOutput.Clear;
-    for i := 0 to (OutputChannelCount div 2) - 1 do
-     begin
-      CBOutput.Items.Add(
-        OutputChannelInfos[2 * i].name + ' / ' +
-        OutputChannelInfos[2 * i + 1].name);
-     end;
-    CBOutput.ItemIndex := 0;
-    if Assigned(OnReset)
-     then OnReset(Self);
+  with FmSimpleMp3Player.ASIOHost do
+    if CBDrivers.ItemIndex >= 0 then
+    begin
+      Active := False;
+      DriverIndex := CBDrivers.ItemIndex;
+      CBOutput.Clear;
+      for i := 0 to (OutputChannelCount div 2) - 1 do
+      begin
+        CBOutput.Items.Add(OutputChannelInfos[2 * i].name + ' / ' +
+          OutputChannelInfos[2 * i + 1].name);
+      end;
+      CBOutput.ItemIndex := 0;
+      if Assigned(OnReset) then
+        OnReset(Self);
 
-    with TIniFile.Create(FmSimpleMp3Player.IniFile) do
-     try
-      WriteInteger('Setup', 'Asio Driver', CbDrivers.ItemIndex);
-     finally
-      Free;
-     end;
+      with TIniFile.Create(FmSimpleMp3Player.IniFile) do
+        try
+          WriteInteger('Setup', 'Asio Driver', CBDrivers.ItemIndex);
+        finally
+          Free;
+        end;
 
-    BtControlPanel.Enabled := True;
-   end;
+      BtControlPanel.Enabled := True;
+    end;
 end;
 
 procedure TFmSetup.CBOutputChange(Sender: TObject);
 begin
- FmSimpleMp3Player.OutputChannelOffset := CBOutput.ItemIndex * 2;
+  FmSimpleMp3Player.OutputChannelOffset := CBOutput.ItemIndex * 2;
 end;
 
 procedure TFmSetup.BtControlPanelClick(Sender: TObject);
 begin
- FmSimpleMp3Player.AsioHost.ControlPanel;
+  FmSimpleMp3Player.ASIOHost.ControlPanel;
 end;
 
-{$IFDEF FPC}
-initialization
-  {$i SmpSetup.lrs}
-{$ENDIF}
-
 end.
-

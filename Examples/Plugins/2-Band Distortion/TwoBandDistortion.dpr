@@ -4,7 +4,11 @@ library TwoBandDistortion;
 {$I DAV_Compiler.inc}
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
+  FastMM4,
+  madExcept,
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules, // either download the library or comment if there is an error here
   {$IFDEF UseFastMove}
   FastMove,
   {$ENDIF}
