@@ -69,45 +69,45 @@ uses
 
 procedure TAudio2MidiTriggerModule.VSTModuleOpen(Sender: TObject);
 begin
- FAudio2MidiTrigger := TAudio2MidiTrigger.Create;
- with FAudio2MidiTrigger do
+  FAudio2MidiTrigger := TAudio2MidiTrigger.Create;
+  with FAudio2MidiTrigger do
   begin
-   SampleRate := Self.SampleRate;
-   Threshold  := -30;
-   Interval   := 0.02;
-   Flags      := [amFilterOutput];
-   OnTrigger  := MidiTrigger;
+    SampleRate := Self.SampleRate;
+    Threshold  := -30;
+    Interval   := 0.02;
+    Flags      := [amFilterOutput];
+    OnTrigger  := MidiTrigger;
   end;
- FMidiNote := 64;
+  FMidiNote := 64;
 
- // initialize parameters
- Parameter[0] := -30;
- Parameter[1] :=   0;
- Parameter[2] :=  20;
- Parameter[3] :=  64;
- Parameter[4] :=   0;
+  // initialize parameters
+  Parameter[0] := -30;
+  Parameter[1] :=   0;
+  Parameter[2] :=  20;
+  Parameter[3] :=  64;
+  Parameter[4] :=   0;
 
- // set editor GUI
- // EditorFormClass := TFmAudio2MidiTrigger;
+  // set editor GUI
+  // EditorFormClass := TFmAudio2MidiTrigger;
 end;
 
 procedure TAudio2MidiTriggerModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FAudio2MidiTrigger);
+  FreeAndNil(FAudio2MidiTrigger);
 end;
 
 procedure TAudio2MidiTriggerModule.ParameterIntervalChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FAudio2MidiTrigger)
-  then FAudio2MidiTrigger.Interval := 0.001 * Value;
+  if Assigned(FAudio2MidiTrigger) then
+    FAudio2MidiTrigger.Interval := 0.001 * Value;
 end;
 
 procedure TAudio2MidiTriggerModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Assigned(FAudio2MidiTrigger)
-  then FAudio2MidiTrigger.Threshold := Value;
+  if Assigned(FAudio2MidiTrigger) then
+    FAudio2MidiTrigger.Threshold := Value;
 end;
 
 procedure TAudio2MidiTriggerModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -155,9 +155,9 @@ procedure TAudio2MidiTriggerModule.VSTModuleProcess(const Inputs,
 var
   Sample : Integer;
 begin
- for Sample := 0 to SampleFrames - 1
-  do Outputs[0, Sample] := FAudio2MidiTrigger.ProcessSample32(Inputs[0, Sample]);
- SendVstEventsToHost(FMidiEvent);
+  for Sample := 0 to SampleFrames - 1 do
+    Outputs[0, Sample] := FAudio2MidiTrigger.ProcessSample32(Inputs[0, Sample]);
+  SendVstEventsToHost(FVSTEvents);
 end;
 
 end.

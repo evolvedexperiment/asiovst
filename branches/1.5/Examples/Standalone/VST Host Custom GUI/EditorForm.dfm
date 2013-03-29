@@ -41,8 +41,8 @@ object FmVSTEditor: TFmVSTEditor
       item
         DisplayName = 'Plugin'
         VstOfflineTasks = <>
-        OnCloseEdit = CloseCustomEdit
         OnShowEdit = ShowCustomEdit
+        OnCloseEdit = CloseCustomEdit
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

@@ -39,7 +39,6 @@ object FmSetup: TFmSetup
     Width = 143
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = CBDriversChange
   end
@@ -49,7 +48,6 @@ object FmSetup: TFmSetup
     Width = 166
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 1
     OnChange = CBOutputChange
   end

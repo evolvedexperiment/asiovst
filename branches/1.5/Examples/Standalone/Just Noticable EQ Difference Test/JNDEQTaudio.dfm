@@ -56,7 +56,6 @@ object FmSetup: TFmSetup
     BorderWidth = 2.000000000000000000
     ButtonColor = 8620693
     FontOversampling = fo4x
-    ItemIndex = -1
     SelectBoxColor = 10333885
     OnChange = SbDriversChange
   end
@@ -72,7 +71,6 @@ object FmSetup: TFmSetup
     BorderWidth = 2.000000000000000000
     ButtonColor = 8620693
     FontOversampling = fo4x
-    ItemIndex = -1
     SelectBoxColor = 10333885
     OnChange = SbChannelsChange
   end

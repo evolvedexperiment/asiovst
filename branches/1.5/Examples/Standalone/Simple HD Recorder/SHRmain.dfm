@@ -167,6 +167,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Alignment = taCenter
     BorderColor = clBlack
     BorderWidth = 1.500000000000000000
+    BorderRadius = 7.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Start'
     Font.Charset = DEFAULT_CHARSET
@@ -175,7 +176,6 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     FontOversampling = fo4x
-    BorderRadius = 7.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clWhite
     Shadow.OffsetX = 0
@@ -194,6 +194,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Alignment = taCenter
     BorderColor = clBlack
     BorderWidth = 1.500000000000000000
+    BorderRadius = 5.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Setup'
     Font.Charset = DEFAULT_CHARSET
@@ -202,7 +203,6 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     FontOversampling = fo4x
-    BorderRadius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clWhite
     Shadow.OffsetX = 0
@@ -221,6 +221,7 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Alignment = taCenter
     BorderColor = clBlack
     BorderWidth = 1.500000000000000000
+    BorderRadius = 5.000000000000000000
     ButtonColor = clBtnShadow
     Caption = 'Exit'
     Font.Charset = DEFAULT_CHARSET
@@ -229,7 +230,6 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     FontOversampling = fo4x
-    BorderRadius = 5.000000000000000000
     Shadow.Blur = 4.000000000000000000
     Shadow.Color = clWhite
     Shadow.OffsetX = 0

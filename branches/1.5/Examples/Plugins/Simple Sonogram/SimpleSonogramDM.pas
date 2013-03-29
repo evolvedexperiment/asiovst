@@ -35,7 +35,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils, Classes, 
   Forms, SyncObjs, DAV_Types, DAV_Complex, DAV_Classes, DAV_Sonogram, 
-  DAV_VSTModule, DAV_DspWindowFunctions, DAV_DspWindowFunctionsAdvanced;
+  DAV_VSTModule, DAV_DspWindowFunctions;
 
 type
   TSonogramDataModule = class(TVSTModule)

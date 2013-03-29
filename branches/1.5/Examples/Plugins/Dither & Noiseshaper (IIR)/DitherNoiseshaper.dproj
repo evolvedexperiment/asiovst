@@ -2,7 +2,7 @@
 		<PropertyGroup>
 			<ProjectGuid>{E8C0C67C-2A0A-4B4B-B994-4868625019BD}</ProjectGuid>
 			<MainSource>DitherNoiseshaper.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 			<ProjectVersion>13.4</ProjectVersion>
 			<FrameworkType>None</FrameworkType>

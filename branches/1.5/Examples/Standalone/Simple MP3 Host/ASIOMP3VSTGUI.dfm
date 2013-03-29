@@ -30,14 +30,14 @@ object FmASIOMP3VST: TFmASIOMP3VST
         HorizontalOnly = True
         ImageIndex = -1
         MinHeight = 23
-        Width = 103
+        Width = 95
       end
       item
         Break = False
         Control = ActionToolBar
         ImageIndex = -1
         MinHeight = 26
-        Width = 449
+        Width = 457
       end>
     EdgeInner = esNone
     EdgeOuter = esNone
@@ -45,7 +45,7 @@ object FmASIOMP3VST: TFmASIOMP3VST
     object ActionMainMenuBar: TActionMainMenuBar
       Left = 0
       Top = 1
-      Width = 99
+      Width = 91
       Height = 23
       UseSystemFont = False
       ActionManager = ActionManager
@@ -61,9 +61,9 @@ object FmASIOMP3VST: TFmASIOMP3VST
       Spacing = 0
     end
     object ActionToolBar: TActionToolBar
-      Left = 112
+      Left = 104
       Top = 0
-      Width = 440
+      Width = 448
       Height = 26
       ActionManager = ActionManager
       ColorMap.HighlightColor = 14410210
