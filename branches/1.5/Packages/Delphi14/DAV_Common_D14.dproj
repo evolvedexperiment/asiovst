@@ -24,7 +24,7 @@
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\DSP;..\..\Source\Math;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-			<DCC_DependencyCheckOutputName>..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_Common_D14.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_Common_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00500000</DCC_ImageBase>
 			<GenPackage>true</GenPackage>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
@@ -80,14 +80,12 @@
 			<DCCReference Include="..\..\Source\DAV_Complex.pas"/>
 			<DCCReference Include="..\..\Source\DAV_ComplexData.pas"/>
 			<DCCReference Include="..\..\Source\DAV_CRC.pas"/>
-			<DCCReference Include="..\..\Source\DAV_DLLLoader.pas"/>
 			<DCCReference Include="..\..\Source\DAV_EllipticFunctions.pas"/>
 			<DCCReference Include="..\..\Source\DAV_HalfFloat.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Huffman.pas"/>
 			<DCCReference Include="..\..\Source\DAV_InvMDCT.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Math.pas"/>
 			<DCCReference Include="..\..\Source\DAV_MemoryUtils.pas"/>
-			<DCCReference Include="..\..\Source\DAV_MidiFile.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_MpegAudio.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas"/>
 			<DCCReference Include="..\..\Source\DAV_OpenToolsUtils.pas"/>
@@ -153,7 +151,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2011-09-07 20:28</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2013-03-27 12:37</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages>
 						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\7.0\Bpl\GR32_Charts_D14.bpl">GR32 Charts</Excluded_Packages>

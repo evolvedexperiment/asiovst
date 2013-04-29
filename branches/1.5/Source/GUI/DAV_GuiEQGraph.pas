@@ -23,7 +23,7 @@
 {                                                                              }
 {  The initial developer of this code is Christian-W. Budde                    }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
@@ -231,6 +231,7 @@ type
     FESP: TGuiPixelEquallySpacedPolyline;
     FDataCache: PDAVDoubleFixedArray;
     FDataCacheSize: Integer;
+    FDataCacheChanged: Boolean;
     FVisible: Boolean;
     procedure SetColor(const Value: TColor);
     procedure SetLineWidth(const Value: Single);
@@ -988,8 +989,7 @@ begin
     Alpha := $FF;
     LineWidth := CFixed24Dot8Two;
     Assert(Collection.Owner is TCustomGuiEQGraph);
-    GeometricShape.SetAllMargins(Trunc(TCustomGuiEQGraph(Collection.Owner)
-      .BorderWidth));
+    GeometricShape.SetAllMargins(Trunc(TCustomGuiEQGraph(Collection.Owner).BorderWidth));
   end;
 
   FColor := clRed;
@@ -1015,7 +1015,7 @@ begin
   begin
     FDataCacheSize := NewDataSize;
     ReallocMem(FDataCache, FDataCacheSize * SizeOf(Double));
-    CalculateDataCache;
+    FDataCacheChanged := True;
   end;
 end;
 
@@ -1081,14 +1081,28 @@ procedure TGuiEQGraphSeriesCollectionItem.PaintToGraphAntialias
   (const Graph: TCustomGuiEQGraph; const PixelMap: TGuiCustomPixelMap);
 begin
   if Visible then
+  begin
+    if FDataCacheChanged then
+    begin
+      FDataCacheChanged := False;
+      CalculateDataCache;
+    end;
     FESP.Draw(PixelMap);
+  end;
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.PaintToGraphDraft
   (const Graph: TCustomGuiEQGraph; const PixelMap: TGuiCustomPixelMap);
 begin
   if Visible then
+  begin
+    if FDataCacheChanged then
+    begin
+      FDataCacheChanged := False;
+      CalculateDataCache;
+    end;
     FESP.DrawDraft(PixelMap);
+  end;
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.AlphaChanged;
@@ -1126,30 +1140,13 @@ end;
 
 function TGuiEQGraphSeriesCollectionItem.GetValueHandler(Sender: TObject;
   PixelPosition: Integer): TFixed24Dot8;
-(*
-  var
-  Level : Single;
-  Freq  : Single;
-*)
 begin
   Assert(Collection.Owner is TCustomGuiEQGraph);
+  PixelPosition := Limit(PixelPosition, 0, FDataCacheSize - 1);
   with TCustomGuiEQGraph(Collection.Owner) do
-    if (PixelPosition >= 0) and (PixelPosition < FDataCacheSize) then
-      Result := ConvertToFixed24Dot8
-        (((YAxis.UpperLevel - FDataCache[PixelPosition]) *
-        YAxis.RangeReciprocal) * GraphHeight)
-    else
-      Result.Fixed := 0;
-
-  (*
-    Assert(Collection.Owner is TCustomGuiEQGraph);
-    with TCustomGuiEQGraph(Collection.Owner) do
-    begin
-    Freq := FXAxis.LinearToLogarithmicFrequency(PixelPosition / Width);
-    Level := FOnGetFilterGain(Self, Freq);
-    Result := ConvertToFixed24Dot8(((YAxis.UpperLevel - Level) / YAxis.Range) * GraphHeight);
-    end;
-  *)
+    Result := ConvertToFixed24Dot8
+      (((YAxis.UpperLevel - FDataCache[PixelPosition]) *
+      YAxis.RangeReciprocal) * GraphHeight)
 end;
 
 procedure TGuiEQGraphSeriesCollectionItem.SetDisplayName(const Value: string);
