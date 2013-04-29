@@ -23,7 +23,7 @@
 {                                                                              }
 {  The initial developer of this code is Christian-W. Budde                    }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
@@ -1023,7 +1023,7 @@ begin
   if (FExpW0.Im = 0) then
     FAlpha := FExpW0.Im / (2 * FBandWidth)
   else
-    FAlpha := Sinh(ln22 * Sqrt(0.5 * (1 + FExpW0.Re)) * FBandWidth *
+    FAlpha := Sinh(CLn2Half * Sqrt(0.5 * (1 + FExpW0.Re)) * FBandWidth *
       (FW0 / FExpW0.Im)) * FExpW0.Im;
 end;
 
@@ -1037,6 +1037,7 @@ begin
     BandwidthChanged;
   end;
 end;
+
 
 { TCustomBiquadIIRFilter }
 

@@ -23,7 +23,7 @@
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\DSP;..\..\Source\Math;..\..\Source\Modular;..\..\Source\GUI;..\..\Source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-			<DCC_DependencyCheckOutputName>..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_GUI_D14.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_GUI_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00520000</DCC_ImageBase>
 			<GenPackage>true</GenPackage>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
@@ -70,7 +70,6 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDesign.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDial.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDialDesign.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiDialNew.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDynamicWaveform.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiEQGraph.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiEQSlide.pas"/>
@@ -88,7 +87,6 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiMediaButton.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeys.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeyZones.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiModular.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPaintBox.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPanel.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPixelMap.pas"/>
@@ -189,7 +187,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2011-08-31 10:16</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2013-03-27 12:37</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

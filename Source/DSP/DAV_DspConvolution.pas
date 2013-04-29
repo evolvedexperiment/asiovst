@@ -23,7 +23,7 @@
 {                                                                              }
 {  The initial developer of this code is Christian-W. Budde                    }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
@@ -36,9 +36,7 @@ interface
 { -$DEFINE CheckDataIntegrety }
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex
-{$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
-{$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex;
 
 // TODO: check and implement all assignto functions!!!
 
@@ -64,13 +62,7 @@ type
 
   TConvolution32 = class(TCustomConvolution, IDspProcessor32)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    function GetFft: TFftReal2ComplexCUDA32;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
     procedure SetIRSizePadded(const Value: Integer);
     procedure SetIRSize(const Value: Integer);
   protected
@@ -96,13 +88,7 @@ type
     procedure PerformConvolution(SignalIn,
       SignalOut: PDAVSingleFixedArray); virtual;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat32 read GetFft;
-{$ELSE} {$IFDEF Use_CUDA}
-    property Fft: TFftReal2ComplexCUDA32 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat32 read GetFft;
-{$ENDIF}{$ENDIF}
     property IRSizePadded: Integer read FIRSizePadded write SetIRSizePadded;
   public
     constructor Create; override;
@@ -124,11 +110,7 @@ type
 
   TConvolution64 = class(TCustomConvolution, IDspProcessor64)
   private
-{$IFDEF Use_IPPS}
-    function GetFft: TFftReal2ComplexIPPSFloat64;
-{$ELSE}
     function GetFft: TFftReal2ComplexNativeFloat64;
-{$ENDIF}
     procedure SetIRSizePadded(const Value: Integer);
   protected
     FImpulseResponse: PDAVDoubleFixedArray;
@@ -156,11 +138,7 @@ type
     property IRSize: Integer read FIRSize;
     property IRSizePadded: Integer read FIRSizePadded write SetIRSizePadded;
 
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat64 read GetFft;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat64 read GetFft;
-{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -208,13 +186,7 @@ type
 
   TLowLatencyConvolutionStage32 = class(TCustomLowLatencyConvolutionStage32)
   protected
-{$IFDEF Use_IPPS}
-    FFFT: TFftReal2ComplexIPPSFloat32;
-{$ELSE} {$IFDEF Use_CUDA}
-    FFFT: TFftReal2ComplexCUDA32;
-{$ELSE}
     FFFT: TFftReal2ComplexNativeFloat32;
-{$ENDIF}{$ENDIF}
     FFFTSize: Integer;
     FFFTSizeHalf: Integer;
     procedure AssignTo(Dest: TPersistent); override;
@@ -228,13 +200,7 @@ type
       SignalOut: PDAVSingleFixedArray); override;
     procedure CalculateIRSpectrums(const IR: PDAVSingleFixedArray);
   published
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat32 read FFFT;
-{$ELSE} {$IFDEF Use_CUDA}
-    property Fft: TFftReal2ComplexCUDA32 read FFFT;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat32 read FFFT;
-{$ENDIF}{$ENDIF}
   end;
 
   // ToDo: - Input and Output buffers should become circular buffers in this
@@ -343,11 +309,7 @@ type
 
   TLowLatencyConvolutionStage64 = class(TCustomLowLatencyConvolutionStage64)
   protected
-{$IFDEF Use_IPPS}
-    FFFT: TFftReal2ComplexIPPSFloat64;
-{$ELSE}
     FFFT: TFftReal2ComplexNativeFloat64;
-{$ENDIF}
     FFFTSize: Integer;
     FFFTSizeHalf: Integer;
     procedure AssignTo(Dest: TPersistent); override;
@@ -360,11 +322,7 @@ type
       SignalOut: PDAVDoubleFixedArray); override;
     procedure CalculateIRSpectrums(const IR: PDAVDoubleFixedArray);
   published
-{$IFDEF Use_IPPS}
-    property Fft: TFftReal2ComplexIPPSFloat64 read FFFT;
-{$ELSE}
     property Fft: TFftReal2ComplexNativeFloat64 read FFFT;
-{$ENDIF}
   end;
 
   TLowLatencyConvolution64 = class(TCustomLowLatencyConvolution)
@@ -513,14 +471,8 @@ begin
   FIRSizePadded := 0;
   FIRSize := 0;
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat32.Create(6);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFFT := TFftReal2ComplexCUDA32.Create(6);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat32.Create(6);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FFTOrderChanged;
 end;
 
@@ -627,27 +579,10 @@ begin
   ImpulseResponseChanged;
 end;
 
-{$IFDEF Use_IPPS}
-
-function TConvolution32.GetFft: TFftReal2ComplexIPPSFloat32;
-begin
-  Result := TFftReal2ComplexIPPSFloat32(FFFT);
-end;
-
-{$ELSE} {$IFDEF Use_CUDA}
-
-function TConvolution32.GetFft: TFftReal2ComplexCUDA32;
-begin
-  Result := TFftReal2ComplexCUDA32(FFFT);
-end;
-
-{$ELSE}
-
 function TConvolution32.GetFft: TFftReal2ComplexNativeFloat32;
 begin
   Result := TFftReal2ComplexNativeFloat32(FFFT);
 end;
-{$ENDIF}{$ENDIF}
 
 procedure TConvolution32.IRSizePaddedChanged;
 begin
@@ -831,12 +766,8 @@ begin
   FIRSizePadded := 0;
   FIRSize := 0;
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat64.Create(6);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat64.Create(6);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}
   FFTOrderChanged;
 end;
 
@@ -934,20 +865,10 @@ begin
   FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Double), 0);
 end;
 
-{$IFDEF Use_IPPS}
-
-function TConvolution64.GetFft: TFftReal2ComplexIPPSFloat64;
-begin
-  Result := TFftReal2ComplexIPPSFloat64(FFFT);
-end;
-
-{$ELSE}
-
 function TConvolution64.GetFft: TFftReal2ComplexNativeFloat64;
 begin
   Result := TFftReal2ComplexNativeFloat64(FFFT);
 end;
-{$ENDIF}
 
 procedure TConvolution64.IRSizePaddedChanged;
 begin
@@ -1171,14 +1092,8 @@ constructor TLowLatencyConvolutionStage32.Create(const IROrder: Byte;
 begin
   inherited Create(IROrder, StartPos, Latency, Count);
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat32.Create(IROrder + 1);
-{$ELSE} {$IFDEF Use_CUDA}
-  FFFT := TFftReal2ComplexCUDA32.Create(IROrder + 1);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat32.Create(IROrder + 1);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}{$ENDIF}
   FFFT.AutoScaleType := astDivideInvByN;
   FFTOrderChanged;
 end;
@@ -1872,12 +1787,8 @@ constructor TLowLatencyConvolutionStage64.Create(const IROrder: Byte;
 begin
   inherited Create(IROrder, StartPos, Latency, Count);
 
-{$IFDEF Use_IPPS}
-  FFFT := TFftReal2ComplexIPPSFloat64.Create(IROrder + 1);
-{$ELSE}
   FFFT := TFftReal2ComplexNativeFloat64.Create(IROrder + 1);
   FFFT.DataOrder := doPackedComplex;
-{$ENDIF}
   FFFT.AutoScaleType := astDivideInvByN;
   FFTOrderChanged;
 end;

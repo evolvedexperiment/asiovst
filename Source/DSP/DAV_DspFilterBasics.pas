@@ -23,7 +23,7 @@
 {                                                                              }
 {  The initial developer of this code is Christian-W. Budde                    }
 {                                                                              }
-{  Portions created by Christian-W. Budde are Copyright (C) 2003-2012          }
+{  Portions created by Christian-W. Budde are Copyright (C) 2003-2013          }
 {  by Christian-W. Budde. All Rights Reserved.                                 }
 {                                                                              }
 {******************************************************************************}
@@ -242,12 +242,12 @@ begin
     GainRelation := 1
   else
     GainRelation := (Sqr(Gb) - Sqr(G0)) / (FGainFactorSquared - Sqr(G0));
-  OctaveBandwidth := 2 * FW0 * sinh(ln22 * FBandwidth);
+  OctaveBandwidth := 2 * FW0 * sinh(CLn2Half * FBandwidth);
   G1 := Sqr(G0) * Sqr(Sqr(FW0) - Sqr(Pi)) + FGainFactorSquared *
     Sqr(Pi * OctaveBandwidth) * GainRelation /
     (Sqr(Sqr(FW0) - Sqr(Pi)) + Sqr(Pi * OctaveBandwidth) * GainRelation);
   G1 := Sqrt(Abs(G1));
-  DW := 2 * K * sinh(FW0 / FExpW0.Im * ln22 * FBandwidth);
+  DW := 2 * K * sinh(FW0 / FExpW0.Im * CLn2Half * FBandwidth);
   Wq := Sqrt((FGainFactorSquared - Sqr(G1)) / (FGainFactorSquared - Sqr(G0))
     ) * Sqr(K);
 
