@@ -4,8 +4,8 @@ library ASIOVI;
 
 uses
   FastMM4,
+//  FastMove,
   ASIOVIObject in 'ASIOVIObject.pas',
-  DelphiASIO in 'DelphiASIO.pas',
   Registry in 'Registry.pas';
 
 exports ASIOControlPanel;
