@@ -1032,8 +1032,8 @@ begin
  FDriver.GetChannels(FInputChannelCount, FOutputChannelCount);
 
  // allocate memory for input and output buffers
- GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannelCount + FOutputChannelCount) + 16);
- Buffer := PAsioBufferInfos(Integer(FUnAlignedBuffer) + 16 - (Integer(FUnAlignedBuffer) mod 16));
+ GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannelCount + FOutputChannelCount) + $F);
+ Buffer := PAsioBufferInfos(PtrUInt(FUnAlignedBuffer) and (not $F));
 
  // setup input channel info and converter
  FInputBuffers := Buffer;

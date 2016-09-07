@@ -1,44 +1,23 @@
 library ASIOVI;
 
-{%TogetherDiagram 'ModelSupport_ASIOVI\default.txaPackage'}
-
 uses
   FastMM4,
-//  FastMove,
-  ASIOVIObject in 'ASIOVIObject.pas',
-  Registry in 'Registry.pas';
+  Registry in 'Registry.pas',
+  DAV_AsioVi in 'DAV_AsioVi.pas',
+  DAV_LabView in 'DAV_LabView.pas';
 
-exports ASIOControlPanel;
-exports ASIOGetNumDevices;
-exports ASIOInitDriver;
-exports ASIOSetDriverIndex;
-exports ASIOGetDriverName;
-exports ASIOGetDriverNames;
-exports ASIOCanSampleRate;
-exports ASIOSetSampleRate;
-exports ASIODriverStart;
-exports ASIODriverStop;
-exports ASIOGetBufferSize;
-exports ASIOGetChannels;
-exports ASIOOutputType;
-exports ASIOGetOutputLevel;
-exports ASIOGetInputLevel;
-exports ASIOSetOutputVolume;
-exports ASIOSetOutputVolumedB;
-exports ASIOSetSineFrequency;
-exports ASIOReadWriteSize;
-exports ASIOReadWriteSizeFixed;
-exports ASIOReadWrite;
-exports ASIOReadWriteX;
-exports ASIOAutopilot;
-exports ASIOSetExtraBufferSize;
-exports ASIOBufferUnderrun;
-exports ASIOResetBufferUnderruns;
-exports ASIOGetLoopCounts;
-exports ASIOSetLoopCounts;
-exports ASIOSetClipFunction;
-exports ASIOCalcMeters;
+exports
+  ASIOInitialize, ASIOTerminate, ASIOControlPanel, ASIOGetNumDevices,
+  ASIOInitDriver, ASIOInitDriverIndex, ASIOSetDriverIndex, ASIOGetDriverName,
+  ASIOGetDriverNames, ASIOCanSampleRate, ASIOSetSampleRate, ASIODriverStart,
+  ASIODriverStop, ASIOGetBufferSize, ASIOGetChannels, ASIOOutputType,
+  ASIOGetOutputLevel, ASIOGetInputLevel, ASIOSetOutputVolume,
+  ASIOSetOutputVolumedB, ASIOSetSineFrequency, ASIOReadWriteSize,
+  ASIOReadWriteSizeFixed, ASIOReadWrite, ASIOReadWriteX, ASIOAutopilot,
+  ASIOSetExtraBufferSize, ASIOBufferUnderrun, ASIOResetBufferUnderruns,
+  ASIOGetLoopCounts, ASIOSetLoopCounts, ASIOSetClipFunction, ASIOCalcMeters,
+  ASIORegisterCallback, ASIOUnegisterCallback, ASIOAbortCallback,
+  ASIOSetUserEventRef;
 
 begin
 end.
-

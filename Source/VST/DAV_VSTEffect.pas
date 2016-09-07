@@ -1073,7 +1073,7 @@ function KeyCodeToInteger(VKC: TVstKeyCode): Integer;
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, AnsiStrings;
 
 { this function converts four char variables to one LongInt. }
 function FourCharToLong(C1, C2, C3, C4: AnsiChar): Longint;
@@ -1085,31 +1085,33 @@ function FMod(d1, d2: Double): Double;
 var
    i: Integer;
 begin
- try
-  i := Trunc(d1 / d2);
- except
-  on EInvalidOp do i := High(Longint);
- end;
- Result := d1 - (i * d2);
+  try
+    i := Trunc(d1 / d2);
+  except
+    on EInvalidOp do i := High(Longint);
+  end;
+  Result := d1 - (i * d2);
 end;
 
 procedure dB2string(Value: Single; text: PAnsiChar);
 begin
- if (Value <= 0)
-  then StrCopy(text, '   -oo  ')
-  else Float2String(20 * log10(Value), text);
+  if (Value <= 0) then
+    StrCopy(text, '   -oo  ')
+  else
+    Float2String(20 * log10(Value), text);
 end;
 
 procedure dB2stringRound(Value: Single; text: PAnsiChar);
 begin
- if (Value <= 0)
-  then StrCopy(text, '    -96 ')
-  else Long2String(Round(20 * Log10(Value)), text);
+  if (Value <= 0) then
+    StrCopy(text, '    -96 ')
+  else
+    Long2String(Round(20 * Log10(Value)), text);
 end;
 
 procedure Float2String(Value: Single; Text: PAnsiChar);
 begin
- StrPCopy(Text, AnsiString(Format('%f', [Value])));
+  StrPCopy(Text, AnsiString(Format('%f', [Value])));
 end;
 
 procedure Long2string(Value: Longint; Text: PAnsiChar);

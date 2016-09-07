@@ -133,7 +133,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LMessages, {$ELSE}Windows, Messages, {$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Stdctrls, ExtCtrls;
+  SysUtils, Classes, Controls, Forms, Dialogs, Stdctrls, ExtCtrls;
 
 type
   TChunkType = (ctIllegal, ctHeader, ctTrack);
@@ -304,7 +304,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TMidiTRack.PutEvent(Event: PMidiEvent);
+procedure TMidiTrack.PutEvent(Event: PMidiEvent);
 var
   command : Integer;
   i       : Integer;

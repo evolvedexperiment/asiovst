@@ -2,15 +2,6 @@ library ASIOVI;
 
 {$MODE Delphi}
 
-{%TogetherDiagram 'ModelSupport_ASIOVI\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_ASIOVI\ASIOVI\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_ASIOVI\ASIOVIObject\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_ASIOVI\ASIOVIObject\default.txvpck'}
-{%TogetherDiagram 'ModelSupport_ASIOVI\DelphiASIO\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_ASIOVI\ASIOVI\default.txvpck'}
-{%TogetherDiagram 'ModelSupport_ASIOVI\Registry\default.txaPackage'}
-{%TogetherDiagram 'ModelSupport_ASIOVI\default.txvpck'}
-
 uses
   {FastMM4,}
   ASIOVIObject in 'ASIOVIObject.pas',

@@ -82,113 +82,115 @@ uses
 
 procedure TBugpassLiteDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FCriticalSection := TCriticalSection.Create;
- FFilterKernel    := nil;
- FSignalPadded    := nil;
- FFilterFreq      := nil;
- FSignalFreq      := nil;
- BlockModeOverlap := BlockModeSize div 2;
- InitialDelay     := (BlockModeOverlap * 3) div 4
+  FCriticalSection := TCriticalSection.Create;
+  FFilterKernel    := nil;
+  FSignalPadded    := nil;
+  FFilterFreq      := nil;
+  FSignalFreq      := nil;
+  BlockModeOverlap := BlockModeSize div 2;
+  InitialDelay     := (BlockModeOverlap * 3) div 4
 end;
 
 procedure TBugpassLiteDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(FCriticalSection);
+  FreeAndNil(FCriticalSection);
 end;
 
 procedure TBugpassLiteDataModule.VSTModuleOpen(Sender: TObject);
 begin
- {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
- FFft.DataOrder := doComplex;
+  {$IFDEF Use_IPPS}
+  FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
+  FFft.DataOrder := doComplex;
 
- ReallocateAlignedMemory(Pointer(FFilterFreq), (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
- ReallocateAlignedMemory(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
- FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
- FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
- {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
- FFft.DataOrder := doPackedComplex;
+  ReallocateAlignedMemory(Pointer(FFilterFreq), (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
+  ReallocateAlignedMemory(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplex32));
+  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
+  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplex32), 0);
+  {$ELSE} {$IFDEF Use_CUDA}
+  FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
+  FFft.DataOrder := doPackedComplex;
 
- ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
- ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
- FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
- {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
- FFft.DataOrder := doPackedComplex;
+  ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
+  ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
+  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
+  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
+  {$ELSE}
+  FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
+  FFft.DataOrder := doPackedComplex;
 
- ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
- ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
- FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
- {$ENDIF}{$ENDIF}
+  ReallocateAlignedMemory(FFilterFreq, BlockModeSize * SizeOf(Single));
+  ReallocateAlignedMemory(FSignalFreq, BlockModeSize * SizeOf(Single));
+  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
+  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
+  {$ENDIF}{$ENDIF}
 
- ReallocateAlignedMemory(FFilterKernel, BlockModeSize * SizeOf(Single));
- ReallocateAlignedMemory(FSignalPadded, BlockModeSize * SizeOf(Single));
- FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
- FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
+  ReallocateAlignedMemory(FFilterKernel, BlockModeSize * SizeOf(Single));
+  ReallocateAlignedMemory(FSignalPadded, BlockModeSize * SizeOf(Single));
+  FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
+  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 
- FFft.AutoScaleType := astDivideInvByN;
+  FFft.AutoScaleType := astDivideInvByN;
 
- // set editor form class
- EditorFormClass := TFmBugpassLite;
+  // set editor form class
+  EditorFormClass := TFmBugpassLite;
 
- // Parameters and Programs
- Parameter[0] := 100;
- Parameter[1] := 16000;
- Programs[1].CopyParameters(0);
- Programs[2].CopyParameters(0);
+  // Parameters and Programs
+  Parameter[0] := 100;
+  Parameter[1] := 16000;
+  Programs[1].CopyParameters(0);
+  Programs[2].CopyParameters(0);
 
- // finally calculate the first filter kernel
- CalculateFilterKernel;
+  // finally calculate the first filter kernel
+  CalculateFilterKernel;
 end;
 
 procedure TBugpassLiteDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAlignedMemory(FFilterKernel);
- FreeAlignedMemory(FSignalPadded);
- FreeAlignedMemory(FFilterFreq);
- FreeAlignedMemory(FSignalFreq);
- FreeAndNil(FFft);
+  FreeAlignedMemory(FFilterKernel);
+  FreeAlignedMemory(FSignalPadded);
+  FreeAlignedMemory(FFilterFreq);
+  FreeAlignedMemory(FSignalFreq);
+  FreeAndNil(FFft);
 end;
 
 procedure TBugpassLiteDataModule.ParamFreqLowChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- CalculateFilterKernel;
+  CalculateFilterKernel;
 
- // update GUI
- if EditorForm is TFmBugpassLite then
-  with TFmBugpassLite(EditorForm)
-   do UpdateFrequencyBar;
+  // update GUI
+  if EditorForm is TFmBugpassLite then
+    with TFmBugpassLite(EditorForm) do
+      UpdateFrequencyBar;
 end;
 
 procedure TBugpassLiteDataModule.ParamFreqHighChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- CalculateFilterKernel;
+  CalculateFilterKernel;
 
- // update GUI
- if EditorForm is TFmBugpassLite then
-  with TFmBugpassLite(EditorForm)
-   do UpdateFrequencyBar;
+  // update GUI
+  if EditorForm is TFmBugpassLite then
+    with TFmBugpassLite(EditorForm) do
+      UpdateFrequencyBar;
 end;
 
 procedure TBugpassLiteDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] >= 1000
-  then PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 3)
-  else PreDefined := FloatToAnsiString(Parameter[Index], 3);
+  if Parameter[Index] >= 1000 then
+    PreDefined := FloatToAnsiString(1E-3 * Parameter[Index], 3)
+  else
+    PreDefined := FloatToAnsiString(Parameter[Index], 3);
 end;
 
 procedure TBugpassLiteDataModule.ParameterFrequencyLabel(
   Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
- if Parameter[Index] >= 1000
-  then PreDefined := 'kHz'
-  else PreDefined := 'Hz';
+  if Parameter[Index] >= 1000 then
+    PreDefined := 'kHz'
+  else
+    PreDefined := 'Hz';
 end;
 
 procedure TBugpassLiteDataModule.CalculateFilterKernel;
@@ -199,42 +201,45 @@ var
   n       : Double;
   CutOff  : array [0..1] of Double;
 begin
- if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
+  if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
-   FCriticalSection.Enter;
-   try
-    CutOff[0] := Parameter[0] / SampleRate;
-    CutOff[1] := Parameter[1] / SampleRate;
-    Half := BlockModeSize div 2;
-    Quarter := BlockModeSize div 4;
+    FCriticalSection.Enter;
+    try
+      CutOff[0] := Parameter[0] / SampleRate;
+      CutOff[1] := Parameter[1] / SampleRate;
+      Half := BlockModeSize div 2;
+      Quarter := BlockModeSize div 4;
 
-    // Generate sinc delayed by (N-1)/2
-    for Index := 0 to Half - 1 do
-     if (Index = Quarter)
-      then FFilterKernel^[Index] := 2.0 * (CutOff[0] - CutOff[1])
-      else
-       begin
-        n := PI * (Index - Quarter);
-        FFilterKernel^[Index] := (sin(2.0 * CutOff[0] * n) - sin(2.0 * CutOff[1] * n)) / n;
-       end;
-    ApplyBlackmanWindow(FFilterKernel, Half);
-    FillChar(FFilterKernel^[Half], Half * SizeOf(Single), 0);
+      // Generate sinc delayed by (N-1)/2
+      for Index := 0 to Half - 1 do
+        if (Index = Quarter) then
+          FFilterKernel^[Index] := 2.0 * (CutOff[0] - CutOff[1])
+        else
+        begin
+          n := PI * (Index - Quarter);
+          FFilterKernel^[Index] := (sin(2.0 * CutOff[0] * n) - sin(2.0 * CutOff[1] * n)) / n;
+        end;
+      ApplyBlackmanWindow(FFilterKernel, Half);
+      FillChar(FFilterKernel^[Half], Half * SizeOf(Single), 0);
 
-    // calculate frequency
-    {$IFDEF Use_IPPS}
-    FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
-    {$ELSE}{$IFDEF Use_CUDA}
-    FFft.PerformFFT(FFilterFreq, FFilterKernel);
-    {$ELSE}
-    case FFft.DataOrder of
-     doPackedRealImaginary : FFft.PerformFFTPackedReIm(PDAVSingleFixedArray(FFilterFreq), FFilterKernel);
-           doPackedComplex : FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
-     else raise Exception.Create('not supported');
-    end;
+      // calculate frequency
+      {$IFDEF Use_IPPS}
+      FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
+      {$ELSE}{$IFDEF Use_CUDA}
+      FFft.PerformFFT(FFilterFreq, FFilterKernel);
+      {$ELSE}
+      case FFft.DataOrder of
+        doPackedRealImaginary:
+          FFft.PerformFFTPackedReIm(PDAVSingleFixedArray(FFilterFreq), FFilterKernel);
+        doPackedComplex:
+          FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
+       else
+         raise Exception.Create('not supported');
+      end;
     {$ENDIF}{$ENDIF}
-   finally
-    FCriticalSection.Leave;
-   end;
+    finally
+      FCriticalSection.Leave;
+     end;
   end;
 end;
 
